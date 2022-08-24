@@ -42,10 +42,10 @@ export function hide(): void {
     );
 }
 
-export function update(
+export async function update(
   previous: MonkeyTypes.Mode,
   current: MonkeyTypes.Mode
-): void {
+): Promise<void> {
   if (previous === current) return;
   $("#testConfig .mode .textButton").removeClass("active");
   $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
@@ -78,6 +78,8 @@ export function update(
     zen: "zen",
   };
 
+  const animTime = 250;
+
   const puncAndNumVisible = {
     time: true,
     words: true,
@@ -86,12 +88,50 @@ export function update(
     zen: false,
   };
 
-  // const animTime = 250;
-
   if (puncAndNumVisible[current]) {
     $("#testConfig .puncAndNum").removeClass("scrolled");
   } else {
     $("#testConfig .puncAndNum").addClass("scrolled");
+  }
+
+  if (
+    puncAndNumVisible[previous] == false &&
+    puncAndNumVisible[current] == true
+  ) {
+    //show
+
+    $("#testConfig .puncAndNum")
+      .css({
+        opacity: 0,
+        maxWidth: 0,
+      })
+      .animate(
+        {
+          opacity: 1,
+          maxWidth: "13rem",
+        },
+        animTime,
+        "easeInOutSine"
+      );
+  } else if (
+    puncAndNumVisible[previous] == true &&
+    puncAndNumVisible[current] == false
+  ) {
+    //hide
+
+    $("#testConfig .puncAndNum")
+      .css({
+        opacity: 1,
+        maxWidth: "13rem",
+      })
+      .animate(
+        {
+          opacity: 1,
+          maxWidth: "0",
+        },
+        animTime,
+        "easeInOutSine"
+      );
   }
 
   // const currentWidth = Math.round(
@@ -115,9 +155,90 @@ export function update(
   //   $("#testConfig .rightSpacer").removeClass("hidden");
   // }
 
+  const previousWidth = Math.round(
+    document
+      .querySelector(`#testConfig .${submenu[previous]}`)
+      ?.getBoundingClientRect().width ?? 0
+  );
+
   $(`#testConfig .${submenu[previous]}`).addClass("hidden");
 
   $(`#testConfig .${submenu[current]}`).removeClass("hidden");
+
+  const currentWidth = Math.round(
+    document
+      .querySelector(`#testConfig .${submenu[current]}`)
+      ?.getBoundingClientRect().width ?? 0
+  );
+
+  $(`#testConfig .${submenu[previous]}`).removeClass("hidden");
+
+  $(`#testConfig .${submenu[current]}`).addClass("hidden");
+
+  const widthDifference = currentWidth - previousWidth;
+
+  const widthStep = widthDifference / 2;
+
+  $(`#testConfig .${submenu[previous]}`)
+    .css({
+      opacity: 1,
+      width: previousWidth,
+    })
+    .animate(
+      {
+        width: previousWidth + widthStep,
+        opacity: 0,
+      },
+      animTime / 2,
+      "easeInSine",
+      () => {
+        $(`#testConfig .${submenu[previous]}`)
+          .css({
+            opacity: 1,
+            width: "unset",
+          })
+          .addClass("hidden");
+        $(`#testConfig .${submenu[current]}`)
+          .css({
+            opacity: 0,
+            width: previousWidth + widthStep,
+          })
+          .removeClass("hidden")
+          .animate(
+            {
+              opacity: 1,
+              width: currentWidth,
+            },
+            animTime / 2,
+            "easeOutSine",
+            () => {
+              $(`#testConfig .${submenu[current]}`).css("width", "unset");
+            }
+          );
+      }
+    );
+
+  console.log(previousWidth);
+
+  // $(`#testConfig .${submenu[current]}`)
+  //   .css({
+  //     opacity: 0,
+  //     maxWidth: previousWidth,
+  //   })
+  //   .removeClass("hidden")
+  //   .animate(
+  //     {
+  //       maxWidth: currentWidth,
+  //       opacity: 1,
+  //     },
+  //     250,
+  //     () => {
+  //       $(`#testConfig .${submenu[current]}`).css({
+  //         opacity: 1,
+  //         maxWidth: "unset",
+  //       });
+  //     }
+  //   );
 
   // const newWidth = Math.round(
   //   document.querySelector("#testConfig .row")?.getBoundingClientRect().width ??

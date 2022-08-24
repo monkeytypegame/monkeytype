@@ -992,7 +992,7 @@
   justify-content: space-around;
   transition: 0.125s;
   .puncAndNum {
-    transition: 0.25s;
+    // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
     overflow: hidden;
     max-width: 13rem;
     opacity: 1;
@@ -1026,6 +1026,15 @@
     display: grid;
     gap: 0.5rem;
     grid-auto-flow: column;
+  }
+  .time,
+  .wordCount,
+  .customText,
+  .zen,
+  .quoteLength {
+    // width: 100%;
+    justify-content: center;
+    overflow: hidden;
   }
 }
 
