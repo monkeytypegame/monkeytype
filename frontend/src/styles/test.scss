@@ -1036,6 +1036,9 @@
     justify-content: center;
     overflow: hidden;
   }
+  &.focus {
+    opacity: 0;
+  }
 }
 
 .pageTest {
