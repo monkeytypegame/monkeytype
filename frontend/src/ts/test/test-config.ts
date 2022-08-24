@@ -94,6 +94,7 @@ export async function update(
   ) {
     //show
 
+    $("#testConfig .leftSpacer").removeClass("scrolled");
     $("#testConfig .puncAndNum")
       .css({
         opacity: 0,
@@ -112,7 +113,7 @@ export async function update(
     puncAndNumVisible[current] == false
   ) {
     //hide
-
+    $("#testConfig .leftSpacer").addClass("scrolled");
     $("#testConfig .puncAndNum")
       .css({
         opacity: 1,
@@ -126,6 +127,12 @@ export async function update(
         animTime,
         "easeInOutSine"
       );
+  }
+
+  if (current == "zen") {
+    $("#testConfig .rightSpacer").addClass("scrolled");
+  } else {
+    $("#testConfig .rightSpacer").removeClass("scrolled");
   }
 
   // const currentWidth = Math.round(

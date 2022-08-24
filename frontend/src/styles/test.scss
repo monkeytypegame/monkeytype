@@ -1010,6 +1010,11 @@
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
     margin: auto 1rem;
+    transition: 0.25s;
+    &.scrolled {
+      width: 0;
+      margin: auto 0;
+    }
   }
   .textButton {
     transition: 0.125s;
