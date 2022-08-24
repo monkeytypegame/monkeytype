@@ -88,12 +88,6 @@ export async function update(
     zen: false,
   };
 
-  if (puncAndNumVisible[current]) {
-    $("#testConfig .puncAndNum").removeClass("scrolled");
-  } else {
-    $("#testConfig .puncAndNum").addClass("scrolled");
-  }
-
   if (
     puncAndNumVisible[previous] == false &&
     puncAndNumVisible[current] == true
