@@ -159,6 +159,17 @@
 }
 
 @media only screen and (max-width: 900px) {
+  #testConfig {
+    .row {
+      padding: 0.25rem 0.25rem;
+    }
+    .spacer {
+      margin: auto 0.25rem;
+    }
+    .textButton {
+      padding: 0.5rem 0.25rem;
+    }
+  }
   .ad.ad-h {
     display: none;
   }
