@@ -219,8 +219,6 @@ export async function update(
       }
     );
 
-  console.log(previousWidth);
-
   // $(`#testConfig .${submenu[current]}`)
   //   .css({
   //     opacity: 0,
