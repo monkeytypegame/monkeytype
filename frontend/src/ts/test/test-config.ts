@@ -121,7 +121,7 @@ export async function update(
       })
       .animate(
         {
-          opacity: 1,
+          opacity: 0,
           maxWidth: "0",
         },
         animTime,
