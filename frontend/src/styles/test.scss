@@ -1032,10 +1032,14 @@
   .wordCount,
   .customText,
   .zen,
-  .quoteLength {
+  .quoteLength,
+  .puncAndNum {
     // width: 100%;
     justify-content: center;
     overflow: hidden;
+  }
+  .customText {
+    display: grid;
   }
   &.focus {
     opacity: 0;
