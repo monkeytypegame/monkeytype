@@ -38,15 +38,15 @@
 }
 
 #caret {
-  background-image: url(https://i.imgur.com/yN31JmJ.png);
-  background-color: transparent;
-  background-size: 1rem;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-image: url(https://i.imgur.com/yN31JmJ.png) !important;
+  background-color: transparent !important;
+  background-size: 1rem !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
 #caret.default {
-  width: 4px;
+  width: 4px !important;
 }
 
 .config .toggleButton {

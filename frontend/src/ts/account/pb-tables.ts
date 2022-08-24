@@ -143,7 +143,9 @@ function buildPbHtml(
     </div>
     <div class="fullTest">
       <div>${modeString}</div>
-      <div>${Math.round(pbData.wpm * multiplier)} wpm</div>
+      <div>${Math.round(pbData.wpm * multiplier)} ${
+      Config.alwaysShowCPM ? "cpm" : "wpm"
+    }</div>
       <div>${Math.round(pbData.raw * multiplier)} raw</div>
       <div>${pbData.acc === undefined ? "-" : Math.floor(pbData.acc)} acc</div>
       <div>${
