@@ -68,9 +68,9 @@
         }
         .xpGain {
           position: absolute;
-          left: 100%;
-          margin-left: 0.5rem;
-          top: 0;
+          right: 100%;
+          margin-right: 0.5rem;
+          top: 0.2rem;
           transform: translateY(-50%);
           font-size: 0.75rem;
           color: var(--main-color);
