@@ -643,7 +643,7 @@ $(".pageLogin .login .button.signInWithGoogle").on("click", () => {
 // signInWithGitHub();
 // });
 
-$(".signOut").on("click", () => {
+$("#top .signOut").on("click", () => {
   signOut();
 });
 
