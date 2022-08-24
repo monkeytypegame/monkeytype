@@ -8,12 +8,10 @@ import * as AllTimeStats from "../account/all-time-stats";
 import * as PbTables from "../account/pb-tables";
 import * as LoadingPage from "./loading";
 import * as Focus from "../test/focus";
-import * as SignOutButton from "../account/sign-out-button";
 import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../utils/misc";
-import * as ActivePage from "../states/active-page";
 import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 
@@ -841,9 +839,6 @@ function fillContent(): void {
   applyHistorySmoothing();
   ChartController.accountActivity.updateColors();
   LoadingPage.updateBar(100, true);
-  setTimeout(() => {
-    if (ActivePage.get() == "account") SignOutButton.show();
-  }, 125);
   Focus.set(false);
   Misc.swapElements(
     $(".pageAccount .preloader"),
@@ -1091,14 +1086,13 @@ export const page = new Page(
   $(".page.pageAccount"),
   "/account",
   async () => {
-    SignOutButton.hide();
+    //
   },
   async () => {
     reset();
   },
   async () => {
     await update();
-    // SignOutButton.show();
   },
   async () => {
     //
