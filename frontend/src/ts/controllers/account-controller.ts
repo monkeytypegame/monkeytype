@@ -274,8 +274,12 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
   const hash = window.location.hash;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
+    $("#top .signInOut .icon").html(
+      `<i class="fas fa-fw fa-sign-out-alt"></i>`
+    );
     await loadUser(user);
   } else {
+    $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-in-alt"></i>`);
     if (window.location.pathname == "/account") {
       window.history.replaceState("", "", "/login");
     }
@@ -643,8 +647,12 @@ $(".pageLogin .login .button.signInWithGoogle").on("click", () => {
 // signInWithGitHub();
 // });
 
-$("#top .signOut").on("click", () => {
-  signOut();
+$("#top .signInOut").on("click", () => {
+  if (Auth.currentUser) {
+    signOut();
+  } else {
+    navigate("/login");
+  }
 });
 
 $(".pageLogin .register input").keyup((e) => {
