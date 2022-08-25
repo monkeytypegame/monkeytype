@@ -38,6 +38,7 @@
       }
 
       .level {
+        transition: 0.125s;
         width: max-content;
         font-size: 0.65rem;
         line-height: 1rem;
@@ -88,6 +89,9 @@
             position: absolute;
           }
         }
+      }
+      &:hover .level {
+        background-color: var(--text-color);
       }
     }
   }
