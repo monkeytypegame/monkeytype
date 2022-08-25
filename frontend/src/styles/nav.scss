@@ -164,13 +164,13 @@
         font-size: 0.65rem;
         line-height: 0.65rem;
         color: var(--sub-color);
-        transition: 0.25s;
+        transition: color 0.25s;
       }
       position: relative;
       font-size: 2rem;
       margin-bottom: 0.4rem;
       font-family: "Lexend Deca";
-      transition: 0.25s;
+      transition: color 0.25s;
     }
     white-space: nowrap;
     user-select: none;
