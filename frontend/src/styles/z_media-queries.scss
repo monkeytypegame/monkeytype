@@ -291,32 +291,59 @@
 }
 
 @media only screen and (max-width: 800px) {
+  #testConfig {
+    .row {
+      display: grid;
+      justify-items: center;
+      padding: 0.25rem 1rem;
+    }
+  }
+
+  #top #menu {
+    gap: 0.5rem;
+    .textButton {
+      font-size: 0.8rem;
+      line-height: 0.8rem;
+      &.account {
+        .text {
+          display: none;
+        }
+        .avatar {
+          width: 1rem;
+          height: 1rem;
+        }
+        .level {
+          line-height: 0.8rem;
+        }
+      }
+    }
+  }
   .pageSettings .settingsGroup.quickNav .links {
     grid-auto-flow: unset;
     grid-template-columns: 1fr 1fr 1fr;
     justify-items: center;
   }
   #centerContent {
-    #top {
-      grid-template-areas:
-        "logo config"
-        "menu config";
-      grid-template-columns: auto auto;
-      .logo {
-        margin-bottom: 0;
-      }
-    }
+    // #top {
+    //   grid-template-areas:
+    //     "logo config"
+    //     "menu config";
+    //   grid-template-columns: auto auto;
+    //   .logo {
+    //     margin-bottom: 0;
+    //   }
+    // }
 
-    #menu {
-      gap: 0.5rem;
-      font-size: 0.8rem;
-      line-height: 0.8rem;
-      margin-top: -0.5rem;
+    // #menu {
+    //   gap: 0.5rem;
+    //   font-size: 0.8rem;
+    //   line-height: 0.8rem;
+    //   margin-top: -0.5rem;
 
-      .textButton {
-        padding: 0.25rem;
-      }
-    }
+    //   .textButton {
+    //     padding: 0.25rem;
+    //   }
+    // }
   }
 
   #contactPopupWrapper #contactPopup .buttons {
@@ -401,6 +428,12 @@
 }
 
 @media only screen and (max-width: 650px) {
+  #top #menu {
+    gap: 0.1rem;
+    .textButton {
+      padding: 0.25rem;
+    }
+  }
   #leaderboardsWrapper #leaderboards {
     width: 85vw;
     .tables .rightTableWrapper,
@@ -739,7 +772,6 @@
   }
 
   #top {
-    align-items: self-end;
     .logo {
       .icon {
         width: 1.5rem !important;
@@ -759,7 +791,7 @@
     }
     #menu {
       .textButton {
-        padding: 0;
+        // padding: 0;
       }
     }
   }
