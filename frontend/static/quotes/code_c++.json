@@ -194,7 +194,7 @@
       "id": 31
     },
     {
-      "text": "void Person::set_p(int id, char n[]) {\\n\\tthis->id = id;\\n\\tstrcpy(this->name, n);\\t   \\n}",
+      "text": "void Person::set_p(int id, char n[]) {\\n\\tthis->id = id;\\n\\tstrcpy(this->name, n);\\n}",
       "source": "geeksforgeeks - Inheritance in C++",
       "length": 90,
       "id": 32
