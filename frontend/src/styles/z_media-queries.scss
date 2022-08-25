@@ -299,21 +299,35 @@
     }
   }
 
-  #top #menu {
-    gap: 0.5rem;
-    .textButton {
-      font-size: 0.8rem;
-      line-height: 0.8rem;
-      &.account {
-        .text {
-          display: none;
-        }
-        .avatar {
-          width: 1rem;
-          height: 1rem;
-        }
-        .level {
-          line-height: 0.8rem;
+  #top {
+    .logo {
+      .text {
+        font-size: 1.9rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .bottom {
+        font-size: 1.9rem;
+        line-height: 1.9rem;
+        margin-top: 0;
+      }
+    }
+    #menu {
+      gap: 0.1rem;
+      .textButton {
+        padding: 0.25rem;
+        font-size: 0.8rem;
+        line-height: 0.8rem;
+        &.account {
+          .text {
+            display: none;
+          }
+          .avatar {
+            width: 1rem;
+            height: 1rem;
+          }
+          .level {
+            line-height: 0.8rem;
+          }
         }
       }
     }
@@ -428,12 +442,6 @@
 }
 
 @media only screen and (max-width: 650px) {
-  #top #menu {
-    gap: 0.1rem;
-    .textButton {
-      padding: 0.25rem;
-    }
-  }
   #leaderboardsWrapper #leaderboards {
     width: 85vw;
     .tables .rightTableWrapper,
@@ -773,19 +781,8 @@
 
   #top {
     .logo {
-      .icon {
-        width: 1.5rem !important;
-      }
+      grid-template-columns: auto;
       .text {
-        font-size: 1.5rem !important;
-        margin-bottom: 0.3rem !important;
-      }
-      .bottom {
-        font-size: 1.75rem;
-        line-height: 1.75rem;
-        margin-top: 0;
-      }
-      .top {
         display: none;
       }
     }
@@ -813,7 +810,7 @@
   }
   #centerContent {
     #top {
-      grid-template-columns: 1fr auto;
+      // grid-template-columns: 1fr auto;
       .desktopConfig {
         display: none;
       }
@@ -821,6 +818,7 @@
         display: block;
       }
     }
+    gap: 1rem;
     padding: 1rem;
   }
   #middle {
