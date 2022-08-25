@@ -982,6 +982,16 @@
   }
 }
 
+#mobileTestConfig {
+  padding: 0.25rem 1rem;
+  background: var(--sub-alt-color);
+  border-radius: var(--roundness);
+  width: max-content;
+  justify-self: center;
+  display: none;
+  height: max-content;
+}
+
 #testConfig {
   display: grid;
   font-size: 0.75rem;

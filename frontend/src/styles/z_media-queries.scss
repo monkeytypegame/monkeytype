@@ -857,6 +857,14 @@
     }
   }
 
+  #testConfig {
+    display: none;
+  }
+
+  #mobileTestConfig {
+    display: block;
+  }
+
   #bottom {
     font-size: 0.65rem;
     .leftright {
@@ -927,6 +935,16 @@
         line-height: 7rem;
       }
     }
+  }
+}
+
+@media (pointer: coarse) and (max-width: 800px) {
+  #testConfig {
+    display: none;
+  }
+
+  #mobileTestConfig {
+    display: block;
   }
 }
 
