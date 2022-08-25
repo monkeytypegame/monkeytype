@@ -248,6 +248,7 @@ export async function screenshot(): Promise<void> {
   }
 
   function revertScreenshot(): void {
+    $("#testConfig").removeClass("invisible");
     $("#ad-result-wrapper").removeClass("hidden");
     $("#ad-result-small-wrapper").removeClass("hidden");
     $("#notificationCenter").removeClass("hidden");
@@ -292,6 +293,7 @@ export async function screenshot(): Promise<void> {
   const sourceHeight = <number>(
     src.outerHeight(true)
   ); /*clientHeight/offsetHeight from div#target*/
+  $("#testConfig").addClass("invisible");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
