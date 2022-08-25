@@ -120,7 +120,7 @@
 }
 
 #top {
-  grid-template-areas: "logo menu config";
+  grid-template-areas: "logo menu";
   line-height: 2.3rem;
   font-size: 2.3rem;
   /* text-align: center; */
@@ -128,7 +128,7 @@
   padding: 0 5px;
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   z-index: 2;
   align-items: center;
   gap: 0.5rem;
