@@ -377,6 +377,7 @@
       "code_perl",
       "code_php",
       "code_vim",
+      "code_vimscript",
       "code_opencl",
       "code_visual_basic"
     ]
