@@ -3204,6 +3204,18 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsPageWidth,
     },
     {
+      id: "nextTest",
+      display: "Next test",
+      alias: "restart start begin type test typing",
+      icon: "fa-chevron-right",
+      available: (): boolean => {
+        return TestUI.resultVisible;
+      },
+      exec: (): void => {
+        TestLogic.restart();
+      },
+    },
+    {
       id: "viewTypingPage",
       display: "View Typing Page",
       alias: "start begin type test",

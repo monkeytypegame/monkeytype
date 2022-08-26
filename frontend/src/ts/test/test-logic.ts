@@ -613,7 +613,11 @@ export function restart(options = {} as RestartOptions): void {
         }
       }
 
-      if (Config.showAverage !== "off") Last10Average.update();
+      if (Config.showAverage !== "off") {
+        Last10Average.update().then(() => {
+          ModesNotice.update();
+        });
+      }
 
       const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";

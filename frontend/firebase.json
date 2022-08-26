@@ -8,10 +8,6 @@
         "destination": "/privacy-policy.html"
       },
       {
-        "source": "/das",
-        "destination": "/das.html"
-      },
-      {
         "source": "/terms-of-service",
         "destination": "/terms-of-service.html"
       },
