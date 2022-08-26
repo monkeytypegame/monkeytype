@@ -1,0 +1,17 @@
+{
+    "language": "code_arduino",
+    "groups": [
+      [0, 100],
+      [101, 300],
+      [301, 600],
+      [601, 9999]
+    ],
+    "quotes": [
+      {
+        "text": "void setup() {\\n\\tpinMode(LED_BUILTIN, OUTPUT);\\n}\\nvoid loop() {\\n\\tdigitalWrite(LED_BUILTIN, HIGH);\\n\\tdelay(1000);\\n\\tdigitalWrite(LED_BUILTIN, LOW);\\n\\tdelay(1000);\\n}",
+        "source": "Arduino examples - Blink",
+        "length": 171,
+        "id": 1
+      }
+    ]
+  }
