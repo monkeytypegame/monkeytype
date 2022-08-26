@@ -1,0 +1,191 @@
+{
+  "language": "code_go",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "package main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfmt.Println(\"Hello, geeksforgeeks\")\\n}",
+      "source": "GeekForGeeks - Introduction to Golang",
+      "length": 85,
+      "id": 1
+    },
+    {
+      "text": "package main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfmt.Println(\"1 + 1 =\", 1 + 1)\\n}",
+      "source": "GeekForGeeks - Introduction to Golang",
+      "length": 79,
+      "id": 2
+    },
+    {
+      "text": "package main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tvar name = \"GeeksforGeeks\"\\n}",
+      "source": "GeekForGeeks - Identifiers in Golang",
+      "length": 76,
+      "id": 3
+    },
+    {
+      "text": "// Go program to illustrate\\n// the use of integers\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\t// Using 8-bit unsigned int\\n\\tvar X uint8 = 225\\n\\tfmt.Println(X, X-3)\\n\\n\\t// Using 16-bit signed int\\n\\tvar Y int16 = 32767\\n\\tfmt.Println(Y+2, Y-2)\\n}",
+      "source": "GeekForGeeks - Data Types",
+      "length": 254,
+      "id": 4
+    },
+    {
+      "text": "// Go program to illustrate\\n// the use of complex numbers\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\nvar a complex128 = complex(6, 2)\\nvar b complex64 = complex(9, 2)\\nfmt.Println(a)\\nfmt.Println(b)\\n\\n// Display the type\\nfmt.Printf(\"The type of a is %T and \" +\\n\\t\\t\\t\"the type of b is %T\", a, b)\\n}",
+      "source": "GeekForGeeks - Data Types",
+      "length": 307,
+      "id": 5
+    },
+    {
+      "text": "package main\\n\\nimport \"fmt\"\\n\\nconst PI = 3.14\\n\\nfunc main()\\n{\\n\\tconst GFG = \"GeeksforGeeks\"\\n\\tfmt.Println(\"Hello\", GFG)\\n\\n\\tfmt.Println(\"Happy\", PI, \"Day\")\\n\\n\\tconst Correct = true\\n\\tfmt.Println(\"Go rules?\", Correct)\\n}",
+      "source": "GeekForGeeks - Constants",
+      "length": 228,
+      "id": 6
+    },
+    {
+      "text": "package main\\n\\nimport \"fmt\"\\n\\nfunc main()\\n{\\n\\tconst A = \"GFG\"\\n\\tvar B = \"GeeksforGeeks\"\\n\\n\\t// Concat strings.\\n\\tvar helloWorld = A + \" \" + B\\n\\thelloWorld += \"!\"\\n\\tfmt.Println(helloWorld)\\n\\n\\t// Compare strings.\\n\\tfmt.Println(A == \"GFG\")\\n\\tfmt.Println(B < A)\\n}",
+      "source": "GeekForGeeks - Constants",
+      "length": 273,
+      "id": 7
+    },
+    {
+      "text": "// Const demonstration using go.\\npackage main\\n\\nimport (\\n\\t\"fmt\"\\n\\t\"math\"\\n)\\n\\nconst s string = \"GeeksForGeeks\"\\n\\nfunc main() {\\n\\tfmt.Println(s)\\n\\n\\tconst n = 5\\n\\n\\tconst d = 3e10 / n\\n\\tfmt.Println(d)\\n\\n\\tfmt.Println(int64(d))\\n\\n\\tfmt.Println(math.Sin(n))\\n}",
+      "source": "GeekForGeeks - Constants",
+      "length": 270,
+      "id": 8
+    },
+    {
+      "text": "// Go program to illustrate the\\n// use of Misc Operators\\npackage main\\n\\nimport \"fmt\"\\n\\nfunc main() {\\n\\ta := 4\\n\\n\\t// Using address of operator(&) and\\n\\t// pointer indirection(*) operator\\n\\tb := &a\\n\\tfmt.Println(*b)\\n\\t*b = 7\\n\\tfmt.Println(a)\\n}",
+      "source": "GeekForGeeks - Operators in Golang",
+      "length": 254,
+      "id": 9
+    },
+    {
+      "text": "// Go program to illustrate the use\\n// of := (short declaration operator)\\npackage main\\n\\nimport \"fmt\"\\n\\nfunc main() {\\n\\t// declaring and initializing the variable\\n\\ta := 30\\n\\n\\t// taking a string variable\\n\\tlanguage := \"Go Programming\"\\n\\n\\tfmt.Println(\"The Value of a is: \", a)\\n\\tfmt.Println(\"The Value of language is: \", language)\\n}",
+      "source": "GeekForGeeks - Short Declaration Operator(:=)",
+      "length": 344,
+      "id": 10
+    },
+    {
+      "text": "// Go program to show how to use\\n// short variable declaration operator\\npackage main\\n\\nimport \"fmt\"\\n\\nfunc main() {\\n\\t// taking a variable of int type\\n\\tz := 50\\n\\n\\tfmt.Printf(\"Value of z is %d\", z)\\n\\n\\t// reassigning the value of string type\\n\\t// it will give an error\\n\\tz := \"Golang\"\\n}",
+      "source": "GeekForGeeks - Short Declaration Operator(:=)",
+      "length": 298,
+      "id": 11
+    },
+    {
+      "text": "// Go program to illustrate the\\n// use of if..else..if ladder\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\t// taking a local variable\\n\\tvar v1 int = 700\\n\\n\\t// checking the condition\\n\\tif v1 == 100 {\\n\\t\\t// if condition is true then\\n\\t\\t// display the following */\\n\\t\\tfmt.Printf(\"Value of v1 is 100\\n\")\\n\\t} else if v1 == 200 {\\n\\t\\tfmt.Printf(\"Value of a is 20\\n\")\\n\\t} else if v1 == 300 {\\n\\t\\tfmt.Printf(\"Value of a is 300\\n\")\\n\\t} else {\\n\\t\\t// if none of the conditions is true\\n\\t\\tfmt.Printf(\"None of the values is matching\\n\")\\n\\t}\\n}",
+      "source": "GeekForGeeks - Decision Making Statements",
+      "length": 554,
+      "id": 12
+    },
+    {
+      "text": "// Go program to illustrate the\\n// use of simple for loop\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfor i := 0; i < 4; i++ {\\n\\t\\tfmt.Printf(\"GeeksforGeeks\\n\")\\n\\t}\\n}",
+      "source": "GeekForGeeks - Loops in Golang",
+      "length": 174,
+      "id": 13
+    },
+    {
+      "text": "// Go program to illustrate the\\n// use of an infinite loop\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfor {\\n\\t\\tfmt.Printf(\"GeeksforGeeks\\n\")\\n\\t}\\n}",
+      "source": "GeekForGeeks - Loops in Golang",
+      "length": 156,
+      "id": 14
+    },
+    {
+      "text": "func swap(x *int, y *int) {\\n\\tvar temp int\\n\\ttemp = *x\\n\\t*x = *y\\n\\t*y = temp\\n}",
+      "source": "tutorialspoint.com - Go - Call by reference",
+      "length": 83,
+      "id": 15
+    },
+    {
+      "text": "// Go program to illustrate the\\n// concept of variadic function\\npackage main\\nimport (\\n\\t\"fmt\"\\n\\t\"strings\"\\n)\\n\\n// Variadic function to join strings\\nfunc joinstr(elements ...string) string {\\n\\treturn strings.Join(elements, \"-\")\\n}\\n\\nfunc main() {\\n\\t// pass a slice in variadic function\\n\\telements := []string{\"geeks\", \"FOR\", \"geeks\"}\\n\\tfmt.Println(joinstr(elements...))\\n}",
+      "source": "GeekForGeeks - Variadic Function",
+      "length": 383,
+      "id": 16
+    },
+    {
+      "text": "// Go program to pass arguments\\n// in the anonymous function\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tfunc(ele string) {\\n\\t\\tfmt.Println(ele)\\n\\t}(\"GeeksforGeeks\")\\n}",
+      "source": "GeekForGeeks - Anonymous Function",
+      "length": 175,
+      "id": 17
+    },
+    {
+      "text": "// Go program to pass an anonymous\\n// function as an argument into\\n// other function\\npackage main\\nimport \"fmt\"\\n\\n// Passing anonymous function\\n// as an argument\\nfunc GFG(i func(p, q string) string) {\\n\\tfmt.Println(i (\"Geeks\", \"for\"))\\n}\\n\\nfunc main() {\\n\\tvalue := func(p, q string) string {\\n\\t\\treturn p + q + \"Geeks\"\\n\\t}\\n\\tGFG(value)\\n}",
+      "source": "GeekForGeeks - Anonymous Function",
+      "length": 350,
+      "id": 18
+    },
+    {
+      "text": "// Go program to illustrate how a\\n// function return multiple values\\npackage main\\nimport \"fmt\"\\n\\n// myfunc return 3 values of int type\\nfunc myfunc(p, q int)(int, int, int) {\\n\\treturn p - q, p * q, p + q\\n}\\n\\nfunc main() {\\n\\t// The return values are assigned into\\n\\t// three different variables\\n\\tvar myvar1, myvar2, myvar3 = myfunc(4, 2)\\n\\n\\t// Display the values\\n\\tfmt.Printf(\"Result is: %d\", myvar1)\\n\\tfmt.Printf(\"\\nResult is: %d\", myvar2)\\n\\tfmt.Printf(\"\\nResult is: %d\", myvar3)\\n}",
+      "source": "GeekForGeeks - Function Returning Multiple Values",
+      "length": 498,
+      "id": 19
+    },
+    {
+      "text": "// Go program to illustrate how to\\n// give names to the return values\\npackage main\\nimport \"fmt\"\\n\\nfunc myfunc(p, q int)(rectangle int, square int) {\\n\\trectangle = p * q\\n\\tsquare = p * p\\n\\treturn\\n}\\n\\nfunc main() {\\n\\tvar area1, area2 = myfunc(2, 4)\\n\\n\\tfmt.Printf(\"Area of the rectangle is: %d\", area1)\\n\\tfmt.Printf(\"\\nArea of the square is: %d\", area2)\\n}",
+      "source": "GeekForGeeks - Function Returning Multiple Values",
+      "length": 366,
+      "id": 20
+    },
+    {
+      "text": "// Golang program to illustrate\\n// the pointer to struct\\npackage main\\nimport \"fmt\"\\n\\n// defining a structure\\ntype Employee struct {\\n\\tfirstName, lastName string\\n\\tage, salary int\\n}\\n\\nfunc main() {\\n\\t// passing the address of struct variable\\n\\t// emp is a pointer to the Employee struct\\n\\temp := &Employee{\"Sam\", \"Anderson\", 55, 6000}\\n\\n\\t// (*emp).firstName is the syntax to access\\n\\t// the firstName field of the emp struct\\n\\tfmt.Println(\"First Name:\", (*emp).firstName)\\n\\tfmt.Println(\"Age:\", (*emp).age)\\n}",
+      "source": "GeekForGeeks - Structures",
+      "length": 524,
+      "id": 21
+    },
+    {
+      "text": "// Go program to illustrate how to create\\n// an array using shorthand declaration\\n// and accessing the elements of the\\n// array using for loop\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tarr := [4]string{\"geek\", \"gfg\", \"Geeks1231\", \"GeeksforGeeks\"}\\n\\n\\tfmt.Println(\"Elements of the array:\")\\n\\n\\tfor i:= 0; i < 3; i++ {\\n\\t\\tfmt.Println(arr[i])\\n\\t}\\n}",
+      "source": "GeekForGeeks - Arrays in Golang",
+      "length": 360,
+      "id": 22
+    },
+    {
+      "text": "// Go program to illustrate\\n// how to create strings\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\t// Creating and initializing a\\n\\t// variable with a string\\n\\tMy_value_1 := \"Welcome to GeeksforGeeks\"\\n\\n\\t// Using var keyword\\n\\tvar My_value_2 string\\n\\tMy_value_2 = \"GeeksforGeeks\"\\n\\n\\t// Displaying strings\\n\\tfmt.Println(\"String 1: \", My_value_1)\\n\\tfmt.Println(\"String 2: \", My_value_2)\\n}",
+      "source": "GeekForGeeks - Strings in Golang",
+      "length": 400,
+      "id": 23
+    },
+    {
+      "text": "// Golang program to demonstrate the declaration\\n// and initialization of pointers\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\t// taking a normal variable\\n\\tvar x int = 5748\\n\\n\\t// declaration of pointer\\n\\tvar p *int\\n\\n\\t// initialization of pointer\\n\\tp = &x\\n\\n\\t// displaying the result\\n\\tfmt.Println(\"Value stored in x = \", x)\\n\\tfmt.Println(\"Address of x = \", &x)\\n\\tfmt.Println(\"Value stored in variable p = \", p)\\n}",
+      "source": "GeekForGeeks - Pointers",
+      "length": 432,
+      "id": 24
+    },
+    {
+      "text": "// Go program to return the\\n// pointer from the function\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\tn := rpf()\\n\\tfmt.Println(\"Value of n is: \", *n)\\n}\\n\\n// defining function having integer\\n// pointer as return type\\nfunc rpf() *int {\\n\\t// taking a local variable\\n\\t// inside the function\\n\\t// using short declaration\\n\\t// operator\\n\\tlv := 100\\n\\n\\t// returning the address of lv\\n\\treturn &lv\\n}",
+      "source": "GeekForGeeks - Returning Pointer from a Function Argument",
+      "length": 409,
+      "id": 25
+    },
+    {
+      "text": "// Go program to illustrate the\\n// concept of multiple interfaces\\npackage main\\nimport \"fmt\"\\n\\n// Interface 1\\ntype AuthorDetails interface {\\n\\tdetails()\\n}\\n\\n// Interface 2\\ntype AuthorArticles interface {\\n\\tarticles()\\n}\\n\\n// Structure\\ntype author struct {\\n\\ta_name string\\n\\tbranch string\\n\\tcollege string\\n\\tyear int\\n\\tsalary int\\n\\tparticles int\\n\\ttarticles int\\n}\\n\\n// Implementing method\\n// of the interface 1\\nfunc (a author) details() {\\n\\tfmt.Printf(\"Author Name: %s\", a.a_name)\\n\\tfmt.Printf(\"\\nBranch: %s and passing year: %d\", a.branch, a.year)\\n\\tfmt.Printf(\"\\nCollege Name: %s\", a.college)\\n\\tfmt.Printf(\"\\nSalary: %d\", a.salary)\\n\\tfmt.Printf(\"\\nPublished articles: %d\", a.particles)\\n}\\n\\n// Implementing method\\n// of the interface 2\\nfunc (a author) articles() {\\n\\tpendingarticles := a.tarticles - a.particles\\n\\tfmt.Printf(\"\\nPending articles: %d\", pendingarticles)\\n}\\n\\nfunc main() {\\n\\t// Assigning values\\n\\t// to the structure\\n\\tvalues := author {\\n\\t\\ta_name: \"Mickey\",\\n\\t\\tbranch: \"Computer science\",\\n\\t\\tcollege: \"XYZ\",\\n\\t\\tyear: 2012,\\n\\t\\tsalary: 50000,\\n\\t\\tparticles: 209,\\n\\t\\ttarticles: 309,\\n\\t}\\n\\n\\t// Accessing the method\\n\\t// of the interface 1\\n\\tvar i1 AuthorDetails = values\\n\\ti1.details()\\n\\n\\t// Accessing the method\\n\\t// of the interface 2\\n\\tvar i2 AuthorArticles = values\\n\\ti2.articles()\\n}",
+      "source": "GeekForGeeks - Multiple Interfaces",
+      "length": 1360,
+      "id": 26
+    },
+    {
+      "text": "// Go program to illustrate\\n// the concept of Goroutine\\npackage main\\nimport \"fmt\"\\n\\nfunc display(str string) {\\n\\tfor w := 0; w < 6; w++ {\\n\\t\\tfmt.Println(str)\\n\\t}\\n}\\n\\nfunc main() {\\n\\t// Calling Goroutine\\n\\tgo display(\"Welcome\")\\n\\n\\t// Calling normal function\\n\\tdisplay(\"GeeksforGeeks\")\\n}",
+      "source": "GeekForGeeks - Goroutines - Concurrency",
+      "length": 301,
+      "id": 27
+    },
+    {
+      "text": "// Go program to illustrate send\\n// and receive operation\\npackage main\\nimport \"fmt\"\\n\\nfunc myfunc(ch chan int) {\\n\\tfmt.Println(234 + <-ch)\\n}\\n\\nfunc main() {\\n\\tfmt.Println(\"start Main method\")\\n\\n\\t// Creating a channel\\n\\tch := make(chan int)\\n\\n\\tgo myfunc(ch)\\n\\tch <- 23\\n\\tfmt.Println(\"End Main method\")\\n}",
+      "source": "GeekForGeeks - Channel in Golang",
+      "length": 318,
+      "id": 28
+    },
+    {
+      "text": "// Go program to illustrate how to\\n// use for loop in the channel\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\t// Creating a channel\\n\\t// Using make() function\\n\\tmychnl := make(chan string)\\n\\n\\t// Anonymous goroutine\\n\\tgo func() {\\n\\t\\tmychnl <- \"GFG\"\\n\\t\\tmychnl <- \"gfg\"\\n\\t\\tmychnl <- \"Geeks\"\\n\\t\\tmychnl <- \"GeeksforGeeks\"\\n\\t\\tclose(mychnl)\\n\\t}()\\n\\n\\tfor res := range mychnl {\\n\\t\\tfmt.Println(res)\\n\\t}\\n}",
+      "source": "GeekForGeeks - Channel in Golang",
+      "length": 421,
+      "id": 29
+    },
+    {
+      "text": "// Go program to illustrate the concept\\n// of the unidirectional channel\\npackage main\\nimport \"fmt\"\\n\\nfunc main() {\\n\\t// Only for receiving\\n\\tmychanl1 := make(<-chan string)\\n\\n\\t// Only for sending\\n\\tmychanl2 := make(chan<- string)\\n\\n\\t// Display the types of channels\\n\\tfmt.Printf(\"%T\", mychanl1)\\n\\tfmt.Printf(\"\\n%T\", mychanl2)\\n}",
+      "source": "GeekForGeeks - Unidirectional Channel in Golang",
+      "length": 341,
+      "id": 30
+    }
+  ]
+}
