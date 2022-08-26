@@ -451,9 +451,11 @@
     .buttons {
       margin-top: 0.25rem;
       display: grid;
-      grid-auto-flow: column;
       gap: 1rem;
-      grid-template-columns: 1fr 2.25rem;
+      grid-template-columns: 1fr 1fr;
+      .openSettings {
+        grid-column: span 2;
+      }
     }
     .settings {
       display: grid;

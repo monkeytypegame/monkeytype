@@ -297,16 +297,23 @@ function validateOthers() {
     Object.keys(layoutsData).forEach((layoutName) => {
       const layoutData = layoutsData[layoutName];
 
-      const layoutsValidator = JSONValidator.validate(
-        layoutData,
-        layoutsSchema[layoutData.type]
-      );
-      if (!layoutsValidator.valid) {
-        console.log(
-          `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
-        );
+      if (!layoutsSchema[layoutData.type]) {
+        const msg = `Layout ${layoutName} has an invalid type: ${layoutData.type}`;
+        console.log(msg);
         layoutsAllGood = false;
-        layoutsErrors = layoutsValidator.errors;
+        layoutsErrors = [msg];
+      } else {
+        const layoutsValidator = JSONValidator.validate(
+          layoutData,
+          layoutsSchema[layoutData.type]
+        );
+        if (!layoutsValidator.valid) {
+          console.log(
+            `Layout ${layoutName} JSON schema is \u001b[31minvalid\u001b[0m`
+          );
+          layoutsAllGood = false;
+          layoutsErrors = layoutsValidator.errors;
+        }
       }
     });
     if (layoutsAllGood) {

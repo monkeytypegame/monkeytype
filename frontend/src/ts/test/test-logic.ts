@@ -56,6 +56,7 @@ import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 
 let failReason = "";
+const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 export let notSignedInLastResult: MonkeyTypes.Result<MonkeyTypes.Mode> | null =
   null;
@@ -112,9 +113,10 @@ export async function punctuateWord(
   } else {
     if (
       currentLanguage != "code" &&
+      currentLanguage != "georgian" &&
       (index == 0 || shouldCapitalize(lastChar))
     ) {
-      //always capitalise the first word or if there was a dot unless using a code alphabet
+      //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
       word = Misc.capitalizeFirstLetterOfEachWord(word);
 
@@ -287,6 +289,7 @@ export function startTest(): boolean {
   } else {
     AnalyticsController.log("testStartedNoLogin");
   }
+
   TestActive.set(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
@@ -415,6 +418,15 @@ export function restart(options = {} as RestartOptions): void {
 
   if (Config.mode == "zen") {
     $("#words").empty();
+  }
+
+  if (Config.language.startsWith("korean")) {
+    koInputVisual.innerText = " ";
+    Config.mode !== "zen"
+      ? $("#koInputVisualContainer").show()
+      : $("#koInputVisualContainer").hide();
+  } else {
+    $("#koInputVisualContainer").hide();
   }
 
   if (
@@ -601,7 +613,11 @@ export function restart(options = {} as RestartOptions): void {
         }
       }
 
-      if (Config.showAverage !== "off") Last10Average.update();
+      if (Config.showAverage !== "off") {
+        Last10Average.update().then(() => {
+          ModesNotice.update();
+        });
+      }
 
       const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";
@@ -767,8 +783,8 @@ async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/^ | $/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = await applyBritishEnglishToWord(randomWord);
   randomWord = applyFunboxesToWord(randomWord, wordset);
+  randomWord = await applyBritishEnglishToWord(randomWord);
 
   if (Config.punctuation) {
     randomWord = await punctuateWord(
@@ -1065,8 +1081,8 @@ export async function init(): Promise<void> {
       }
 
       w[i] = applyLazyModeToWord(w[i], language);
-      w[i] = await applyBritishEnglishToWord(w[i]);
       w[i] = applyFunboxesToWord(w[i]);
+      w[i] = await applyBritishEnglishToWord(w[i]);
 
       TestWords.words.push(w[i]);
     }

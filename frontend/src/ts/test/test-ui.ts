@@ -12,6 +12,7 @@ import * as Misc from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
+import * as Hangul from "hangul-js";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 
@@ -281,9 +282,9 @@ export async function screenshot(): Promise<void> {
     );
   }
   $(".pageTest .buttons").addClass("hidden");
-  const src = $("#middle");
-  const sourceX = src.position().left; /*X position from div#target*/
-  const sourceY = src.position().top; /*Y position from div#target*/
+  const src = $("#result");
+  const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
+  const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
   const sourceWidth = <number>(
     src.outerWidth(true)
   ); /*clientWidth/offsetWidth from div#target*/
@@ -300,7 +301,7 @@ export async function screenshot(): Promise<void> {
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
   try {
     const paddingX = 50;
-    const paddingY = 25;
+    const paddingY = 50;
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
@@ -359,7 +360,6 @@ export function updateWordElement(showError = !Config.blindMode): void {
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
-
   let ret = "";
 
   let newlineafter = false;
@@ -378,19 +378,41 @@ export function updateWordElement(showError = !Config.blindMode): void {
   } else {
     let correctSoFar = false;
 
-    // slice earlier if input has trailing compose characters
-    const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
-      ? input.search(Misc.trailingComposeChars)
-      : input.length;
-    if (
-      input.search(Misc.trailingComposeChars) < currentWord.length &&
-      currentWord.slice(0, inputWithoutComposeLength) ===
-        input.slice(0, inputWithoutComposeLength)
-    ) {
-      correctSoFar = true;
+    const isLangKorean: boolean = Config.language.startsWith("korean");
+
+    if (!isLangKorean) {
+      // slice earlier if input has trailing compose characters
+      const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
+        ? input.search(Misc.trailingComposeChars)
+        : input.length;
+      if (
+        input.search(Misc.trailingComposeChars) < currentWord.length &&
+        currentWord.slice(0, inputWithoutComposeLength) ===
+          input.slice(0, inputWithoutComposeLength)
+      ) {
+        correctSoFar = true;
+      }
+    } else {
+      // slice earlier if input has trailing compose characters
+      const koCurrentWord: string = Hangul.disassemble(currentWord).join("");
+      const koInput: string = Hangul.disassemble(input).join("");
+      const inputWithoutComposeLength: number = Misc.trailingComposeChars.test(
+        input
+      )
+        ? input.search(Misc.trailingComposeChars)
+        : koInput.length;
+      if (
+        input.search(Misc.trailingComposeChars) <
+          Hangul.d(koCurrentWord).length &&
+        koCurrentWord.slice(0, inputWithoutComposeLength) ===
+          koInput.slice(0, inputWithoutComposeLength)
+      ) {
+        correctSoFar = true;
+      }
     }
 
     let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
+
     if (Config.blindMode) {
       wordHighlightClassString = "correct";
     }
@@ -436,7 +458,8 @@ export function updateWordElement(showError = !Config.blindMode): void {
       } else if (
         currentLetter !== undefined &&
         CompositionState.getComposing() &&
-        i >= CompositionState.getStartPos()
+        i >= CompositionState.getStartPos() &&
+        !(isLangKorean && !correctSoFar)
       ) {
         ret += `<letter class="${
           Config.highlightMode == "word" ? wordHighlightClassString : ""
