@@ -190,7 +190,6 @@ export function set(themeIdentifier: string, isCustom: boolean): void {
 }
 
 export function clearPreview(applyTheme = true): void {
-  console.log("clearPreview", applyTheme);
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     randomTheme = null;
