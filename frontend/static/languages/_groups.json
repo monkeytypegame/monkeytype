@@ -379,7 +379,8 @@
       "code_vim",
       "code_vimscript",
       "code_opencl",
-      "code_visual_basic"
+      "code_visual_basic",
+      "code_arduino"
     ]
   },
   {
