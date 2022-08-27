@@ -14,6 +14,7 @@ import { isAnyPopupVisible } from "../utils/misc";
 
 let commandLineMouseMode = false;
 let themeChosen = false;
+let prevInput: string;
 
 function showInput(
   command: string,
@@ -220,14 +221,10 @@ function hide(shouldFocusTestUI = true): void {
 function trigger(command: string): void {
   let subgroup = false;
   let input = false;
-  let shouldFocusTestUI = true;
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
   let sticky = false;
   $.each(list.list, (_index, obj) => {
-    if (obj.id == command) {
-      if (obj.shouldFocusTestUI !== undefined) {
-        shouldFocusTestUI = obj.shouldFocusTestUI;
-      }
+    if (obj.id === command) {
       if (obj.input) {
         input = true;
         const escaped = obj.display.split("</i>")[1] ?? obj.display;
@@ -240,18 +237,22 @@ function trigger(command: string): void {
         CommandlineLists.current.push(
           obj.subgroup as MonkeyTypes.CommandsGroup
         );
+        prevInput = $("#commandLine input").val() as string;
         show();
       } else {
         if (obj.exec) obj.exec();
         if (obj.sticky === true) {
           sticky = true;
         }
+        CommandlineLists.current.pop();
+        show();
+        $("#commandLine input").val(prevInput);
+        updateSuggested();
       }
     }
   });
   if (!subgroup && !input && !sticky) {
     AnalyticsController.log("usedCommandLine", { command });
-    hide(shouldFocusTestUI);
   }
 }
 
@@ -399,7 +400,10 @@ $(document).ready(() => {
         CommandlineLists.current.pop();
         $("#commandLine").removeClass("allCommands");
         show();
+        $("#commandLine input").val(prevInput);
+        updateSuggested();
       } else {
+        prevInput = "";
         hide();
       }
       UpdateConfig.setFontFamily(Config.fontFamily, true);
@@ -450,7 +454,6 @@ $("#commandInput input").on("keydown", (e) => {
       }
     });
     AnalyticsController.log("usedCommandLine", { command: command ?? "" });
-    hide();
   }
   return;
 });
@@ -516,6 +519,7 @@ $(document).on(
 $("#commandLineWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
+    prevInput = "";
     UpdateConfig.setFontFamily(Config.fontFamily, true);
     // if (Config.customTheme === true) {
     //   applyCustomThemeColors();
