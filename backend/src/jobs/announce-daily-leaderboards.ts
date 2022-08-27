@@ -50,22 +50,18 @@ async function announceDailyLeaderboard(
     const { xpReward } = dailyLeaderboardsConfig;
 
     const inboxPromises = topResults.map(async (entry) => {
-      const mail = buildMonkeyMail(
-        {
-          rewards: [
-            {
-              type: "xp",
-              item: xpReward,
-            },
-          ],
-          getTemplate: (user) => ({
-            to: user.name,
-            subject: `${xpReward} XP for top placement in the daily leaderboard!`,
-            body: `Congratulations ${user.name} on placing top ${entry.rank} in the ${language} ${mode} ${mode2} daily leaderboard! Claim your ${xpReward} xp!`,
-          }),
-        },
-        inboxConfig
-      );
+      const mail = buildMonkeyMail({
+        rewards: [
+          {
+            type: "xp",
+            item: xpReward,
+          },
+        ],
+        getTemplate: (user) => ({
+          subject: `${xpReward} XP for top placement in the daily leaderboard!`,
+          body: `Congratulations ${user.name} on placing top ${entry.rank} in the ${language} ${mode} ${mode2} daily leaderboard! Claim your ${xpReward} xp!`,
+        }),
+      });
 
       return await addToInbox(entry.uid, [mail], inboxConfig.maxMail);
     });

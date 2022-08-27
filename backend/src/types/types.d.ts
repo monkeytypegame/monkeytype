@@ -48,7 +48,6 @@ declare namespace MonkeyTypes {
       };
       inbox: {
         enabled: boolean;
-        systemName: string;
         maxMail: number;
       };
     };
@@ -123,8 +122,6 @@ declare namespace MonkeyTypes {
 
   interface MonkeyMail {
     id: string;
-    from: string;
-    to: string;
     subject: string;
     body: string;
     timestamp: number;

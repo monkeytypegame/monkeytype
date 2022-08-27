@@ -734,6 +734,13 @@ export async function updateProfile(
   );
 }
 
+export async function getInbox(
+  uid: string
+): Promise<MonkeyTypes.User["inbox"]> {
+  const user = await getUser(uid, "get inventory");
+  return user.inbox ?? [];
+}
+
 export async function addToInbox(
   uid: string,
   mail: MonkeyMailWithTemplate[],
@@ -798,7 +805,7 @@ export async function updateInbox(
   uid: string,
   mailToRead: string[],
   mailToDelete: string[]
-): Promise<MonkeyTypes.User["inbox"]> {
+): Promise<void> {
   const user = await getUser(uid, "update inbox");
 
   const inbox = user.inbox ?? [];
@@ -834,6 +841,4 @@ export async function updateInbox(
   const mergedUpdates = _.merge(baseUpdate, rewardUpdates);
 
   await getUsersCollection().updateOne({ uid }, mergedUpdates);
-
-  return newInbox;
 }

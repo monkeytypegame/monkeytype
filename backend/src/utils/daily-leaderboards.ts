@@ -3,7 +3,7 @@ import LRUCache from "lru-cache";
 import * as RedisClient from "../init/redis";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
 
-interface DailyLeaderboardEntry {
+export interface DailyLeaderboardEntry {
   uid: string;
   name: string;
   wpm: number;

@@ -1,11 +1,5 @@
 import { buildMonkeyMail } from "../../src/utils/monkey-mail";
 
-const inboxConfig = {
-  enabled: true,
-  systemName: "Hey, I'm a system",
-  maxMail: 10,
-};
-
 describe("Monkey Mail", () => {
   it("should properly create a mail object", () => {
     const mailConfig = {
@@ -15,11 +9,9 @@ describe("Monkey Mail", () => {
       getTemplate: (): any => ({}),
     };
 
-    const mail = buildMonkeyMail(mailConfig, inboxConfig) as any;
+    const mail = buildMonkeyMail(mailConfig) as any;
 
     expect(mail.id).toBeDefined();
-    expect(mail.from).toBe("Hey, I'm a system");
-    expect(mail.to).toBe("");
     expect(mail.subject).toBe("");
     expect(mail.body).toBe("");
     expect(mail.timestamp).toBeDefined();

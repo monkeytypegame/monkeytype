@@ -479,6 +479,14 @@ const requireInboxEnabled = validateConfiguration({
   invalidMessage: "Your inbox is not available at this time.",
 });
 
+router.get(
+  "/inbox",
+  requireInboxEnabled,
+  authenticateRequest(),
+  RateLimit.userMailGet,
+  asyncHandler(UserController.getInbox)
+);
+
 router.patch(
   "/inbox",
   requireInboxEnabled,

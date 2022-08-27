@@ -117,6 +117,19 @@ export async function updateEmail(
   return new MonkeyResponse("Email updated");
 }
 
+function getRelevantUserInfo(
+  user: MonkeyTypes.User
+): Partial<MonkeyTypes.User> {
+  return _.omit(user, [
+    "bananas",
+    "lbPersonalBests",
+    "quoteMod",
+    "inbox",
+    "nameHistory",
+    "lastNameChange",
+  ]);
+}
+
 export async function getUser(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -142,7 +155,12 @@ export async function getUser(
   const agentLog = buildAgentLog(req);
   Logger.logToDb("user_data_requested", agentLog, uid);
 
-  return new MonkeyResponse("User data retrieved", userInfo);
+  const userData = {
+    ...getRelevantUserInfo(userInfo),
+    inboxUnreadSize: _.filter(userInfo.inbox, { read: false }).length,
+  };
+
+  return new MonkeyResponse("User data retrieved", userData);
 }
 
 export async function linkDiscord(
@@ -488,17 +506,23 @@ export async function updateProfile(
   return new MonkeyResponse("Profile updated");
 }
 
+export async function getInbox(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const inbox = await UserDAL.getInbox(uid);
+
+  return new MonkeyResponse("Inbox retrieved", inbox);
+}
+
 export async function updateInbox(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mailIdsToMarkRead, mailIdsToDelete } = req.body;
 
-  const inbox = await UserDAL.updateInbox(
-    uid,
-    mailIdsToMarkRead,
-    mailIdsToDelete
-  );
+  await UserDAL.updateInbox(uid, mailIdsToMarkRead, mailIdsToDelete);
 
-  return new MonkeyResponse("Inbox updated", inbox);
+  return new MonkeyResponse("Inbox updated");
 }

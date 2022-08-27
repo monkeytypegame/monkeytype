@@ -49,7 +49,6 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     },
     inbox: {
       enabled: false,
-      systemName: "",
       maxMail: 0,
     },
   },
@@ -268,10 +267,6 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
             enabled: {
               type: "boolean",
               label: "Enabled",
-            },
-            systemName: {
-              type: "string",
-              label: "System Name",
             },
             maxMail: {
               type: "number",
