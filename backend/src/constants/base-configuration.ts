@@ -47,6 +47,11 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       maxDailyBonus: 0,
       minDailyBonus: 0,
     },
+    inbox: {
+      enabled: false,
+      systemName: "",
+      maxMail: 0,
+    },
   },
   rateLimiting: {
     badAuthentication: {
@@ -63,6 +68,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
     dailyLeaderboardCacheSize: 1,
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
+    xpReward: 0,
   },
 };
 
@@ -255,6 +261,25 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
             },
           },
         },
+        inbox: {
+          type: "object",
+          label: "Inbox",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            systemName: {
+              type: "string",
+              label: "System Name",
+            },
+            maxMail: {
+              type: "number",
+              label: "Max Messages",
+              min: 0,
+            },
+          },
+        },
         profiles: {
           type: "object",
           label: "User Profiles",
@@ -346,6 +371,11 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
           type: "number",
           label: "Top Results To Announce",
           min: 1,
+        },
+        xpReward: {
+          type: "number",
+          label: "XP Reward",
+          min: 0,
         },
       },
     },

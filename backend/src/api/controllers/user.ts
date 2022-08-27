@@ -487,3 +487,18 @@ export async function updateProfile(
 
   return new MonkeyResponse("Profile updated");
 }
+
+export async function updateInbox(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { mailIdsToMarkRead, mailIdsToDelete } = req.body;
+
+  const inbox = await UserDAL.updateInbox(
+    uid,
+    mailIdsToMarkRead,
+    mailIdsToDelete
+  );
+
+  return new MonkeyResponse("Inbox updated", inbox);
+}
