@@ -1,3 +1,4 @@
+import _ from "lodash";
 import MonkeyError from "../utils/error";
 import { Response, NextFunction } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
@@ -55,7 +56,7 @@ export async function badAuthRateLimiterHandler(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  if (!req.ctx.configuration.rateLimiting.badAuthentication.enabled) {
+  if (!_.get(req, "ctx.configuration.rateLimiting.badAuthentication.enabled")) {
     return next();
   }
 
@@ -81,8 +82,11 @@ export async function incrementBadAuth(
   res: Response,
   status: number
 ): Promise<void> {
-  const { enabled, penalty, flaggedStatusCodes } =
-    req.ctx.configuration.rateLimiting.badAuthentication;
+  const { enabled, penalty, flaggedStatusCodes } = _.get(
+    req,
+    "ctx.configuration.rateLimiting.badAuthentication",
+    {}
+  );
 
   if (!enabled || !flaggedStatusCodes.includes(status)) {
     return;
