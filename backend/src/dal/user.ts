@@ -783,13 +783,13 @@ function buildRewardUpdates(
   let totalXp = 0;
   const newBadges: MonkeyTypes.Badge[] = [];
 
-  for (const reward of rewards) {
+  rewards.forEach((reward) => {
     if (reward.type === "xp") {
       totalXp += reward.item;
     } else if (reward.type === "badge") {
       newBadges.push(reward.item);
     }
-  }
+  });
 
   return {
     $inc: {
