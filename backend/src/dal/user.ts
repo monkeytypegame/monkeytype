@@ -819,16 +819,14 @@ export async function updateInbox(
     .filter((mail) => {
       const { id, rewards } = mail;
 
-      if (mailToDeleteSet.has(id)) {
-        return false;
-      }
       if (mailToReadSet.has(id) && !mail.read) {
         mail.read = true;
         if (rewards.length > 0) {
           allRewards.push(...rewards);
         }
       }
-      return true;
+
+      return !mailToDeleteSet.has(id);
     })
     .sort((a, b) => b.timestamp - a.timestamp);
 
