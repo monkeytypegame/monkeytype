@@ -105,7 +105,7 @@ export async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot();
-  $("#menu .textButton.account .text").text(snapshot.name);
+  $("#menu .textButton.account > .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
