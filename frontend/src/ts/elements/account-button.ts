@@ -2,6 +2,7 @@ import { getSnapshot } from "../db";
 import { Auth } from "../firebase";
 import * as Misc from "../utils/misc";
 import { getAll } from "./theme-colors";
+import * as SlowTimer from "../states/slow-timer";
 
 let usingAvatar = false;
 
@@ -90,7 +91,7 @@ export async function updateXpBar(
   $("#menu .xpBar")
     .stop(true, true)
     .css("opacity", 1)
-    .animate({ opacity: 0 }, 250, () => {
+    .animate({ opacity: 0 }, SlowTimer.get() ? 0 : 250, () => {
       $("#menu .xpBar .xpGain").text(``);
     });
 }
@@ -120,7 +121,7 @@ async function animateXpBreakdown(
         marginTop: "-1rem",
         opacity: 0,
       },
-      250,
+      SlowTimer.get() ? 0 : 250,
       () => {
         previous.remove();
       }
@@ -143,7 +144,7 @@ async function animateXpBreakdown(
                 `scale(${1 + step / 200}) translateY(-50%)`
               );
             },
-            duration: 250,
+            duration: SlowTimer.get() ? 0 : 250,
             easing: "swing",
           }
         );
@@ -155,7 +156,7 @@ async function animateXpBreakdown(
         opacity: "1",
         marginTop: "0",
       },
-      250,
+      SlowTimer.get() ? 0 : 250,
       "swing"
     );
   }
@@ -213,38 +214,6 @@ async function animateXpBreakdown(
   }
   await Misc.sleep(delay);
   await append("");
-  // setTimeout(() => {
-  //   xpGain
-  //     .stop(true, true)
-  //     .text(`+${total}`)
-  //     .css({
-  //       borderSpacing: 100,
-  //     })
-  //     .animate(
-  //       {
-  //         borderSpacing: 0,
-  //       },
-  //       {
-  //         step(step) {
-  //           xpGain.css(
-  //             "transform",
-  //             `scale(${1 + step / 200}) translateY(-50%)`
-  //           );
-  //         },
-  //         duration: 250,
-  //         easing: "swing",
-  //       }
-  //     );
-  // }, 125);
-  // await Misc.promiseAnimation(
-  //   xpBreakdown.find(".next"),
-  //   {
-  //     opacity: "0",
-  //     marginTop: "-1rem",
-  //   },
-  //   250,
-  //   "swing"
-  // );
   return;
   //base (100% corrected) (quote punctuation numbers) accPenalty incomplete configMultiplier daily
 }
@@ -262,7 +231,7 @@ async function animateXpBar(
     {
       opacity: "1",
     },
-    250,
+    SlowTimer.get() ? 0 : 250,
     "linear"
   );
 
@@ -276,7 +245,7 @@ async function animateXpBar(
       {
         width: "100%",
       },
-      1000,
+      SlowTimer.get() ? 0 : 1000,
       "easeOutExpo"
     );
     flashLevel();
@@ -285,7 +254,7 @@ async function animateXpBar(
     await Misc.promiseAnimation(
       barEl,
       { width: `${(endingLevel % 1) * 100}%` },
-      1000,
+      SlowTimer.get() ? 0 : 1000,
       "easeOutExpo"
     );
   } else {
@@ -306,7 +275,7 @@ async function animateXpBar(
           {
             width: "100%",
           },
-          Misc.mapRange(toAnimate - 1, 0, 0.5, 1000, 200),
+          SlowTimer.get() ? 0 : Misc.mapRange(toAnimate - 1, 0, 0.5, 1000, 200),
           "easeOutQuad"
         );
         toAnimate--;
@@ -320,7 +289,7 @@ async function animateXpBar(
           {
             width: "100%",
           },
-          quickSpeed,
+          SlowTimer.get() ? 0 : quickSpeed,
           "linear"
         );
         toAnimate--;
@@ -335,7 +304,7 @@ async function animateXpBar(
       {
         width: `${(toAnimate % 1) * 100}%`,
       },
-      1000,
+      SlowTimer.get() ? 0 : 1000,
       "easeOutExpo"
     );
   }
