@@ -762,7 +762,8 @@ async function getNextWord(
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
       regenarationCount < 100 &&
-      (previousWord == randomWord ||
+      ((/[A-Z]/.test(randomWord) && !Config.punctuation) ||
+        previousWord == randomWord ||
         previousWord2 == randomWord ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
