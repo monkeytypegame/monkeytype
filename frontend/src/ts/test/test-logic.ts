@@ -1258,7 +1258,8 @@ export async function retrySavingResult(): Promise<void> {
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
-      response.data.dailyXpBonus
+      response.data.dailyXpBonus,
+      response.data.xpBreakdown
     );
     DB.addXp(response.data.xp);
   }
@@ -1668,7 +1669,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
-      response.data.dailyXpBonus
+      response.data.dailyXpBonus,
+      response.data.xpBreakdown
     );
     DB.addXp(response.data.xp);
   }
