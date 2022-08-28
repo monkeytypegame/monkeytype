@@ -94,6 +94,7 @@ interface AddResultData {
   dailyLeaderboardRank?: number;
   xp: number;
   dailyXpBonus: boolean;
+  xpBreakdown: Record<string, number>;
 }
 
 export async function addResult(
@@ -400,6 +401,7 @@ export async function addResult(
     insertedId: addedResult.insertedId,
     xp: xpGained.xp,
     dailyXpBonus: xpGained.dailyBonus ?? false,
+    xpBreakdown: xpGained.breakdown ?? {},
   };
 
   if (dailyLeaderboardRank !== -1) {
@@ -413,6 +415,7 @@ export async function addResult(
 interface XpResult {
   xp: number;
   dailyBonus?: boolean;
+  breakdown?: Record<string, number>;
 }
 
 async function calculateXp(
@@ -441,7 +444,10 @@ async function calculateXp(
     };
   }
 
-  const seconds = testDuration - afkDuration;
+  const breakdown: Record<string, number> = {};
+
+  const baseXp = Math.round((testDuration - afkDuration) * 2);
+  breakdown["base"] = baseXp;
 
   let modifier = 1;
 
@@ -451,25 +457,32 @@ async function calculateXp(
 
   if (acc === 100) {
     modifier += 0.5;
+    breakdown["100%"] = Math.round(baseXp * 0.5);
   } else if (correctedEverything) {
     // corrected everything bonus
     modifier += 0.25;
+    breakdown["corrected"] = Math.round(baseXp * 0.25);
   }
 
   if (mode === "quote") {
     // real sentences bonus
     modifier += 0.5;
+    breakdown["quote"] = Math.round(baseXp * 0.5);
   } else {
     // punctuation bonus
     if (punctuation) {
       modifier += 0.4;
+      breakdown["punctuation"] = Math.round(baseXp * 0.4);
     }
     if (numbers) {
       modifier += 0.1;
+      breakdown["numbers"] = Math.round(baseXp * 0.1);
     }
   }
 
   const incompleteXp = Math.round(incompleteTestSeconds);
+  breakdown["incomplete"] = incompleteXp;
+
   const accuracyModifier = (acc - 50) / 50;
 
   let dailyBonus = 0;
@@ -491,18 +504,31 @@ async function calculateXp(
         Math.min(maxDailyBonus, proportionalXp),
         minDailyBonus
       );
+      breakdown["daily"] = dailyBonus;
     }
   }
 
-  const baseXp = Math.round(
-    seconds * 2 * modifier * accuracyModifier + incompleteXp
-  );
-  const totalXp = baseXp * gainMultiplier + dailyBonus;
+  const xpWithModifiers = Math.round(baseXp * modifier);
+
+  const xpAfterAccuracy = Math.round(xpWithModifiers * accuracyModifier);
+  breakdown["accPenalty"] = xpWithModifiers - xpAfterAccuracy;
+
+  const totalXp =
+    Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
+
+  if (gainMultiplier > 1) {
+    // breakdown.push([
+    //   "configMultiplier",
+    //   Math.round((xpAfterAccuracy + incompleteXp) * (gainMultiplier - 1)),
+    // ]);
+    breakdown["configMultiplier"] = gainMultiplier;
+  }
 
   const isAwardingDailyBonus = dailyBonus > 0;
 
   return {
     xp: totalXp,
     dailyBonus: isAwardingDailyBonus,
+    breakdown,
   };
 }
