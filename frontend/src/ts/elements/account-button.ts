@@ -129,6 +129,11 @@ async function animateXpBreakdown(
   xpBreakdown.empty();
 
   async function append(string: string): Promise<void> {
+    if (skipBreakdown) {
+      total = addedXp;
+      string = "";
+    }
+
     xpBreakdown.find(".next").removeClass("next").addClass("previous");
     xpBreakdown.append(
       `<div class='text next' style="opacity: 0; margin-top: 1rem;">${string}</div>`
@@ -198,11 +203,7 @@ async function animateXpBreakdown(
     total += breakdown["corrected"];
   }
 
-  if (skipBreakdown) {
-    total = addedXp;
-    await append("");
-    return;
-  }
+  if (skipBreakdown) return;
 
   if (breakdown["quote"]) {
     await Misc.sleep(delay);
@@ -218,11 +219,7 @@ async function animateXpBreakdown(
     total += breakdown["numbers"];
   }
 
-  if (skipBreakdown) {
-    total = addedXp;
-    await append("");
-    return;
-  }
+  if (skipBreakdown) return;
 
   if (breakdown["accPenalty"]) {
     await Misc.sleep(delay);
@@ -230,11 +227,7 @@ async function animateXpBreakdown(
     total -= breakdown["accPenalty"];
   }
 
-  if (skipBreakdown) {
-    total = addedXp;
-    await append("");
-    return;
-  }
+  if (skipBreakdown) return;
 
   if (breakdown["incomplete"]) {
     await Misc.sleep(delay);
@@ -242,11 +235,7 @@ async function animateXpBreakdown(
     total += breakdown["incomplete"];
   }
 
-  if (skipBreakdown) {
-    total = addedXp;
-    await append("");
-    return;
-  }
+  if (skipBreakdown) return;
 
   if (breakdown["configMultiplier"]) {
     await Misc.sleep(delay);
@@ -254,11 +243,7 @@ async function animateXpBreakdown(
     total *= breakdown["configMultiplier"];
   }
 
-  if (skipBreakdown) {
-    total = addedXp;
-    await append("");
-    return;
-  }
+  if (skipBreakdown) return;
 
   if (breakdown["daily"]) {
     await Misc.sleep(delay);
@@ -266,11 +251,7 @@ async function animateXpBreakdown(
     total += breakdown["daily"];
   }
 
-  if (skipBreakdown) {
-    total = addedXp;
-    await append("");
-    return;
-  }
+  if (skipBreakdown) return;
 
   await Misc.sleep(delay);
   await append("");
