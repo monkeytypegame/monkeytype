@@ -947,7 +947,18 @@ export async function init(): Promise<void> {
             ? await Wikipedia.getSection(Config.language)
             : await Poetry.getPoem();
 
+        if (Config.funbox == "poetry" && section === false) {
+          Notifications.add(
+            "Error while getting poetry. Please try again later",
+            -1
+          );
+          UpdateConfig.setFunbox("none");
+          restart();
+          return;
+        }
+
         if (section === undefined) continue;
+        if (section === false) continue;
 
         for (const word of section.words) {
           if (wordCount >= Config.words && Config.mode == "words") {
@@ -1156,7 +1167,19 @@ export async function addWord(): Promise<void> {
           ? await Wikipedia.getSection(Config.language)
           : await Poetry.getPoem();
 
+      if (Config.funbox == "poetry" && section === false) {
+        Notifications.add(
+          "Error while getting poetry. Please try again later",
+          -1
+        );
+        UpdateConfig.setFunbox("none");
+        restart();
+        return;
+      }
+
       if (section === undefined) return;
+      if (section === false) return;
+
       let wordCount = 0;
       for (const word of section.words) {
         if (wordCount >= Config.words && Config.mode == "words") {
