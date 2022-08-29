@@ -10,7 +10,7 @@
       {
       "text": "module fwrisc_alu (\\n\\tinput clock,\\n\\tinput reset,\\n\\tinput[31:0] op_a,\\n\\tinput[31:0] op_b,\\n\\tinput[3:0] op,\\n\\toutput reg[31:0] out);\\n\\tparameter [3:0]\\n\\t\\tOP_ADD = 4'd0,\\n\\t\\tOP_SUB = (OP_ADD+4'd1),\\n\\t\\tOP_AND = (OP_SUB+4'd1),\\n\\t\\tOP_OR = (OP_AND+4'd1),\\n\\t\\tOP_CLR = (OP_OR+4'd1),\\n\\t\\tOP_EQ = (OP_CLR+4'd1),\\n\\t\\tOP_NE = (OP_EQ+4'd1),\\n\\t\\tOP_LT = (OP_NE+4'd1),\\n\\t\\tOP_GE = (OP_LT+4'd1),\\n\\t\\tOP_LTU = (OP_GE+4'd1),\\n\\t\\tOP_GEU = (OP_LTU+4'd1),\\n\\t\\tOP_OPA = (OP_GEU+4'd1),\\n\\t\\tOP_OPB = (OP_OPA+4'd1),\\n\\t\\tOP_XOR = (OP_OPB+4'd1);\\n\\talways @* begin\\n\\t\\tcase (op)\\n\\t\\t\\tOP_ADD: out = op_a + op_b;\\n\\t\\t\\tOP_SUB: out = op_a - op_b;\\n\\t\\t\\tOP_AND: out = op_a & op_b;\\n\\t\\t\\tOP_OR: out = op_a | op_b;\\n\\t\\t\\tOP_CLR: out = op_b ^ (op_a & op_b);\\n\\t\\t\\tOP_EQ: out = {31'b0, op_a == op_b};\\n\\t\\t\\tOP_NE: out = {31'b0, op_a != op_b};\\n\\t\\t\\tOP_LT: out = {31'b0, $signed(op_a) < $signed(op_b)};\\n\\t\\t\\tOP_GE: out = {31'b0, $signed(op_a) >= $signed(op_b)};\\n\\t\\t\\tOP_LTU: out = {31'b0, op_a < op_b};\\n\\t\\t\\tOP_GEU: out = {31'b0, op_a >= op_b};\\n\\t\\t\\tOP_OPA: out = op_a;\\n\\t\\t\\tOP_OPB: out = op_b;\\n\\t\\t\\tdefault: out = op_a ^ op_b;\\n\\t\\tendcase\\n\\tend\\nendmodule",
       "source": "fwrisc_alu",
-      "length": 1169,
+      "length": 1160,
       "id": 1
     },
       {
