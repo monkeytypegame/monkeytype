@@ -2573,9 +2573,9 @@ Misc.getChallengeList().then((challenges) => {
         "loadChallenge" + Misc.capitalizeFirstLetterOfEachWord(challenge.name),
       noIcon: true,
       display: challenge.display,
-      exec: (): void => {
+      exec: async (): Promise<void> => {
         navigate("/");
-        ChallengeController.setup(challenge.name);
+        await ChallengeController.setup(challenge.name);
         TestLogic.restart({
           nosave: true,
         });

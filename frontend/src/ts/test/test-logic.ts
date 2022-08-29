@@ -496,6 +496,7 @@ export function restart(options = {} as RestartOptions): void {
     ) {
       ThemeController.randomizeTheme();
     }
+    AccountButton.skipXpBreakdown();
   }
   TestUI.setResultVisible(false);
   PageTransition.set(true);
@@ -762,7 +763,8 @@ async function getNextWord(
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
       regenarationCount < 100 &&
-      (previousWord == randomWord ||
+      ((/[A-Z]/.test(randomWord) && !Config.punctuation) ||
+        previousWord == randomWord ||
         previousWord2 == randomWord ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
@@ -1257,7 +1259,8 @@ export async function retrySavingResult(): Promise<void> {
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
-      response.data.dailyXpBonus
+      response.data.dailyXpBonus,
+      response.data.xpBreakdown
     );
     DB.addXp(response.data.xp);
   }
@@ -1667,7 +1670,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
-      response.data.dailyXpBonus
+      response.data.dailyXpBonus,
+      response.data.xpBreakdown
     );
     DB.addXp(response.data.xp);
   }
