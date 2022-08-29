@@ -6,6 +6,11 @@ import * as SlowTimer from "../states/slow-timer";
 
 let usingAvatar = false;
 
+let skipBreakdown = false;
+export function skipXpBreakdown(): void {
+  skipBreakdown = true;
+}
+
 export function loading(truefalse: boolean): void {
   if (truefalse) {
     if (usingAvatar) {
@@ -76,8 +81,21 @@ export async function updateXpBar(
   withDailyBonus: boolean,
   breakdown: Record<string, number>
 ): Promise<void> {
+  skipBreakdown = false;
   const startingLevel = Misc.getLevel(currentXp);
   const endingLevel = Misc.getLevel(currentXp + addedXp);
+
+  if (skipBreakdown) {
+    $("#menu .level").text(Math.floor(Misc.getLevel(getSnapshot().xp)));
+    $("#menu .xpBar")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate({ opacity: 0 }, SlowTimer.get() ? 0 : 250, () => {
+        $("#menu .xpBar .xpGain").text(``);
+      });
+    return;
+  }
+
   const xpBarPromise = animateXpBar(startingLevel, endingLevel);
   const xpBreakdownPromise = animateXpBreakdown(
     addedXp,
@@ -141,7 +159,7 @@ async function animateXpBreakdown(
             step(step) {
               xpGain.css(
                 "transform",
-                `scale(${1 + step / 200}) translateY(-50%)`
+                `scale(${1 + step / 300}) translateY(-50%)`
               );
             },
             duration: SlowTimer.get() ? 0 : 250,
@@ -179,6 +197,13 @@ async function animateXpBreakdown(
     await append(`clean +${breakdown["corrected"]}`);
     total += breakdown["corrected"];
   }
+
+  if (skipBreakdown) {
+    total = addedXp;
+    await append("");
+    return;
+  }
+
   if (breakdown["quote"]) {
     await Misc.sleep(delay);
     await append(`quote +${breakdown["quote"]}`);
@@ -192,26 +217,61 @@ async function animateXpBreakdown(
     await append(`numbers +${breakdown["numbers"]}`);
     total += breakdown["numbers"];
   }
+
+  if (skipBreakdown) {
+    total = addedXp;
+    await append("");
+    return;
+  }
+
   if (breakdown["accPenalty"]) {
     await Misc.sleep(delay);
     await append(`accuracy penalty -${breakdown["accPenalty"]}`);
     total -= breakdown["accPenalty"];
   }
+
+  if (skipBreakdown) {
+    total = addedXp;
+    await append("");
+    return;
+  }
+
   if (breakdown["incomplete"]) {
     await Misc.sleep(delay);
     await append(`incomplete tests +${breakdown["incomplete"]}`);
     total += breakdown["incomplete"];
   }
+
+  if (skipBreakdown) {
+    total = addedXp;
+    await append("");
+    return;
+  }
+
   if (breakdown["configMultiplier"]) {
     await Misc.sleep(delay);
     await append(`global multiplier x${breakdown["configMultiplier"]}`);
-    total += breakdown["configMultiplier"];
+    total *= breakdown["configMultiplier"];
   }
+
+  if (skipBreakdown) {
+    total = addedXp;
+    await append("");
+    return;
+  }
+
   if (breakdown["daily"]) {
     await Misc.sleep(delay);
     await append(`daily bonus +${breakdown["daily"]}`);
     total += breakdown["daily"];
   }
+
+  if (skipBreakdown) {
+    total = addedXp;
+    await append("");
+    return;
+  }
+
   await Misc.sleep(delay);
   await append("");
   return;

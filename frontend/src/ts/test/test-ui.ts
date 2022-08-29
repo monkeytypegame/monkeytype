@@ -15,6 +15,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
+import { skipXpBreakdown } from "../elements/account-button";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -1036,4 +1037,10 @@ $(document.body).on("click", "#showWordHistoryButton", () => {
 
 $("#wordsWrapper").on("click", () => {
   focusWords();
+});
+
+$(document).on("keypress", () => {
+  if (resultVisible) {
+    skipXpBreakdown();
+  }
 });

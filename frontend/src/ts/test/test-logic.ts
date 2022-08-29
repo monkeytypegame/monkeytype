@@ -496,6 +496,7 @@ export function restart(options = {} as RestartOptions): void {
     ) {
       ThemeController.randomizeTheme();
     }
+    AccountButton.skipXpBreakdown();
   }
   TestUI.setResultVisible(false);
   PageTransition.set(true);
