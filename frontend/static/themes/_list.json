@@ -774,4 +774,20 @@
     "bgColor": "#dbdbdb",
     "mainColor": "#8fd1c3"
   }
+  ,{
+    "name": "candy",
+    "bgColor": "#f30050",
+    "mainColor": "#05b92d"
+  }
+  ,{
+    "name": "cyberpunk",
+    "bgColor": "#fff01f",
+    "mainColor": "#FF10F0"
+  }
+  ,{
+    "name": "rustic",
+    "bgColor": "#4a6c6f",
+    "mainColor": "#420f06"
+  }
+
 ]
