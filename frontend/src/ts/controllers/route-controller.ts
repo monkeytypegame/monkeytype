@@ -156,7 +156,7 @@ window.addEventListener("popstate", () => {
 document.addEventListener("DOMContentLoaded", () => {
   document.body.addEventListener("click", (e) => {
     const target = e?.target as HTMLLinkElement;
-    if (target.matches("[data-link]") && target?.href) {
+    if (target.matches("[router-link]") && target?.href) {
       e.preventDefault();
       navigate(target.href);
     }
