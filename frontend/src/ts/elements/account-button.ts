@@ -196,14 +196,17 @@ async function animateXpBreakdown(
     await Misc.sleep(delay);
     await append(`quote +${breakdown["quote"]}`);
     total += breakdown["quote"];
-  } else if (breakdown["punctuation"]) {
-    await Misc.sleep(delay);
-    await append(`punctuation +${breakdown["punctuation"]}`);
-    total += breakdown["punctuation"];
-  } else if (breakdown["numbers"]) {
-    await Misc.sleep(delay);
-    await append(`numbers +${breakdown["numbers"]}`);
-    total += breakdown["numbers"];
+  } else {
+    if (breakdown["punctuation"]) {
+      await Misc.sleep(delay);
+      await append(`punctuation +${breakdown["punctuation"]}`);
+      total += breakdown["punctuation"];
+    }
+    if (breakdown["numbers"]) {
+      await Misc.sleep(delay);
+      await append(`numbers +${breakdown["numbers"]}`);
+      total += breakdown["numbers"];
+    }
   }
 
   if (skipBreakdown) return;
