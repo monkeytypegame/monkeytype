@@ -147,6 +147,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
     difficulty: string;
     raw: number;
+    isPb: boolean;
   }
 
   interface AccChartData {
