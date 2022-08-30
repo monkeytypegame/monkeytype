@@ -1,8 +1,9 @@
 {
   "name": "myanmar_burmese",
   "leftToRight": true,
+  "ligatures": true,
   "noLazyMode": true,
-  "bcp47": "my-MY",
+  "bcp47": "my-MM",
   "words": [
     "အဆိုပါ",
     "ဖြစ်သည်",
