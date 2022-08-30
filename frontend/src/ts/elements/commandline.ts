@@ -392,6 +392,10 @@ $(document).ready(() => {
     // opens command line if escape or ctrl/cmd + shift + p
     if (
       ((event.key === "Escape" && Config.quickRestart !== "esc") ||
+       (event.key.toLowerCase() === "p" &&
+          (event.metaKey || event.ctrlKey) &&
+          event.shiftKey &&
+          Config.quickRestart !== "esc") ||
         (event.key === "Tab" && Config.quickRestart === "esc")) &&
       !$("#commandLineWrapper").hasClass("hidden")
     ) {
@@ -418,7 +422,8 @@ $(document).ready(() => {
       (event.key &&
         event.key.toLowerCase() === "p" &&
         (event.metaKey || event.ctrlKey) &&
-        event.shiftKey)
+        event.shiftKey &&
+        Config.quickRestart !== "esc")
     ) {
       const popupVisible = isAnyPopupVisible();
 
