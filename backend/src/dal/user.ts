@@ -4,9 +4,10 @@ import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import { Collection, ObjectId, WithId, Long } from "mongodb";
+import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep } from "../utils/misc";
+import { MonkeyMailWithTemplate } from "../utils/monkey-mail";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -731,4 +732,111 @@ export async function updateProfile(
       },
     }
   );
+}
+
+export async function getInbox(
+  uid: string
+): Promise<MonkeyTypes.User["inbox"]> {
+  const user = await getUser(uid, "get inventory");
+  return user.inbox ?? [];
+}
+
+export async function addToInbox(
+  uid: string,
+  mail: MonkeyMailWithTemplate[],
+  maxInboxSize: number
+): Promise<void> {
+  const user = await getUser(uid, "add to inbox");
+
+  const inbox = user.inbox ?? [];
+
+  for (let i = 0; i < inbox.length + mail.length - maxInboxSize; i++) {
+    inbox.pop();
+  }
+
+  const evaluatedMail: MonkeyTypes.MonkeyMail[] = mail.map((mail) => {
+    return _.omit(
+      {
+        ...mail,
+        ...(mail.getTemplate && mail.getTemplate(user)),
+      },
+      "getTemplate"
+    );
+  });
+
+  inbox.unshift(...evaluatedMail);
+  const newInbox = inbox.sort((a, b) => b.timestamp - a.timestamp);
+
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        inbox: newInbox,
+      },
+    }
+  );
+}
+
+function buildRewardUpdates(
+  rewards: MonkeyTypes.AllRewards[]
+): UpdateFilter<WithId<MonkeyTypes.User>> {
+  let totalXp = 0;
+  const newBadges: MonkeyTypes.Badge[] = [];
+
+  rewards.forEach((reward) => {
+    if (reward.type === "xp") {
+      totalXp += reward.item;
+    } else if (reward.type === "badge") {
+      newBadges.push(reward.item);
+    }
+  });
+
+  return {
+    $inc: {
+      xp: totalXp,
+    },
+    $push: {
+      "inventory.badges": { $each: newBadges },
+    },
+  };
+}
+
+export async function updateInbox(
+  uid: string,
+  mailToRead: string[],
+  mailToDelete: string[]
+): Promise<void> {
+  const user = await getUser(uid, "update inbox");
+
+  const inbox = user.inbox ?? [];
+
+  const mailToReadSet = new Set(mailToRead);
+  const mailToDeleteSet = new Set(mailToDelete);
+
+  const allRewards: MonkeyTypes.AllRewards[] = [];
+
+  const newInbox = inbox
+    .filter((mail) => {
+      const { id, rewards } = mail;
+
+      if (mailToReadSet.has(id) && !mail.read) {
+        mail.read = true;
+        if (rewards.length > 0) {
+          allRewards.push(...rewards);
+        }
+      }
+
+      return !mailToDeleteSet.has(id);
+    })
+    .sort((a, b) => b.timestamp - a.timestamp);
+
+  const baseUpdate = {
+    $set: {
+      inbox: newInbox,
+    },
+  };
+  const rewardUpdates = buildRewardUpdates(allRewards);
+  const mergedUpdates = _.merge(baseUpdate, rewardUpdates);
+
+  await getUsersCollection().updateOne({ uid }, mergedUpdates);
 }

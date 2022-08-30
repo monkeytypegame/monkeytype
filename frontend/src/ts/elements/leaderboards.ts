@@ -322,7 +322,9 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     }</td>
     <td>
     <div class="avatarNameBadge">${avatar}
-      <span class="entryName" uid=${entry.uid}>${entry.name}</span>
+      <a href="${location.origin}/profile/${entry.uid}" class="entryName" uid=${
+      entry.uid
+    } router-link>${entry.name}</a>
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>

@@ -84,7 +84,7 @@ a {
   }
 }
 
-a[data-link] * {
+a[router-link] * {
   pointer-events: none;
 }
 
@@ -471,13 +471,15 @@ key {
 
 .configureAPI.button {
   position: fixed;
-  left: 2rem;
-  bottom: 2rem;
+  left: 0;
+  top: 10rem;
   display: grid;
   grid-auto-flow: column;
   gap: 0.5rem;
   text-decoration: none;
   z-index: 999999999;
+  border-radius: 0 1rem 1rem 0;
+  padding: 1rem;
 }
 
 .avatar {
