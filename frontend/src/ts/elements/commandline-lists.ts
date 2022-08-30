@@ -2918,15 +2918,6 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       subgroup: commandsEnableAds,
     },
     {
-      id: "watchVideoAd",
-      display: "Watch video ad",
-      alias: "support donate",
-      icon: "fa-ad",
-      exec: (): void => {
-        VideoAdPopup.show();
-      },
-    },
-    {
       id: "changeTheme",
       display: "Theme...",
       icon: "fa-palette",
@@ -3378,6 +3369,15 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-egg",
       visible: false,
       subgroup: commandsMonkeyPowerLevel,
+    },
+    {
+      id: "watchVideoAd",
+      display: "Watch video ad",
+      alias: "support donate",
+      icon: "fa-ad",
+      exec: (): void => {
+        VideoAdPopup.show();
+      },
     },
     {
       id: "shareTestSettings",
