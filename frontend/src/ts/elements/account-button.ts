@@ -78,7 +78,6 @@ export async function update(
 export async function updateXpBar(
   currentXp: number,
   addedXp: number,
-  withDailyBonus: boolean,
   breakdown: Record<string, number>
 ): Promise<void> {
   skipBreakdown = false;
@@ -97,11 +96,7 @@ export async function updateXpBar(
   }
 
   const xpBarPromise = animateXpBar(startingLevel, endingLevel);
-  const xpBreakdownPromise = animateXpBreakdown(
-    addedXp,
-    withDailyBonus,
-    breakdown
-  );
+  const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
 
   await Promise.all([xpBarPromise, xpBreakdownPromise]);
   await Misc.sleep(2000);
@@ -116,12 +111,8 @@ export async function updateXpBar(
 
 async function animateXpBreakdown(
   addedXp: number,
-  withDailyBonus: boolean,
   breakdown: Record<string, number>
 ): Promise<void> {
-  //
-
-  console.log("animateXpBreakdown", addedXp, withDailyBonus, breakdown);
   const delay = 1000;
   let total = 0;
   const xpGain = $("#menu .xpBar .xpGain");
@@ -183,10 +174,6 @@ async function animateXpBreakdown(
       "swing"
     );
   }
-
-  // $("#menu .xpBar .xpGain").text(
-  //   `+${addedXp} ${withDailyBonus === true ? "daily bonus" : ""}`
-  // );
 
   xpGain.text(`+0`);
   xpBreakdown.append(
