@@ -1274,8 +1274,10 @@ export async function retrySavingResult(): Promise<void> {
   Result.hideCrown();
 
   if (response.status !== 200) {
+    console.log("Error saving result", completedEvent);
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
+    retrySaving.completedEvent = completedEvent;
     return Notifications.add("Result not saved. " + response.message, -1);
   }
 
@@ -1320,6 +1322,17 @@ export async function retrySavingResult(): Promise<void> {
       completedEvent.acc,
       completedEvent.rawWpm,
       completedEvent.consistency
+    );
+  }
+
+  if (response.data.dailyLeaderboardRank) {
+    Notifications.add(
+      `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
+        Misc.getPositionString(response.data.dailyLeaderboardRank),
+      1,
+      10,
+      "Daily Leaderboard",
+      "list-ol"
     );
   }
 
@@ -1678,15 +1691,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const response = await Ape.results.save(completedEvent);
 
   AccountButton.loading(false);
+  Result.hideCrown();
 
   if (response.status !== 200) {
     console.log("Error saving result", completedEvent);
-    $("#retrySavingResultButton").removeClass("hidden");
-    if (response.message === "Incorrect result hash") {
-      console.log(completedEvent);
-    }
-    retrySaving.completedEvent = completedEvent;
     retrySaving.canRetry = true;
+    $("#retrySavingResultButton").removeClass("hidden");
+    retrySaving.completedEvent = completedEvent;
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
@@ -1700,8 +1711,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     );
     DB.addXp(response.data.xp);
   }
-
-  Result.hideCrown();
 
   completedEvent._id = response.data.insertedId;
   if (response.data.isPb) {
