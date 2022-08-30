@@ -1278,7 +1278,7 @@ export async function retrySavingResult(): Promise<void> {
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
     retrySaving.completedEvent = completedEvent;
-    return Notifications.add("Result not saved. " + response.message, -1);
+    return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
   if (response.data.xp) {
