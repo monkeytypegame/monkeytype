@@ -533,6 +533,8 @@ export async function fillSettingsPage(): Promise<void> {
     Config.customBackground
   );
 
+  $(".pageSettings .section.fontSize input").val(Config.fontSize);
+
   $(".pageSettings .section.customLayoutfluid input").val(
     Config.customLayoutfluid.replace(/#/g, " ")
   );
@@ -967,6 +969,32 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
     }
   }
 );
+
+$(".pageSettings .section.fontSize .inputAndButton .save").on("click", () => {
+  const didConfigSave = UpdateConfig.setFontSize(
+    parseFloat(
+      $(".pageSettings .section.fontSize .inputAndButton input").val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, 1);
+  }
+});
+
+$(".pageSettings .section.fontSize .inputAndButton input").keypress((e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setFontSize(
+      parseFloat(
+        $(
+          ".pageSettings .section.fontSize .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave === true) {
+      Notifications.add("Saved", 1, 1);
+    }
+  }
+});
 
 $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",

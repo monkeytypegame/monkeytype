@@ -2391,67 +2391,6 @@ const commandsStopOnError: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsFontSize: MonkeyTypes.CommandsGroup = {
-  title: "Font size...",
-  configKey: "fontSize",
-  list: [
-    {
-      id: "changeFontSize1",
-      display: "1x",
-      configValue: "1",
-      exec: (): void => {
-        UpdateConfig.setFontSize("1");
-        TestLogic.restart();
-      },
-    },
-    {
-      id: "changeFontSize125",
-      display: "1.25x",
-      configValue: "125",
-      exec: (): void => {
-        UpdateConfig.setFontSize("125");
-        TestLogic.restart();
-      },
-    },
-    {
-      id: "changeFontSize15",
-      display: "1.5x",
-      configValue: "15",
-      exec: (): void => {
-        UpdateConfig.setFontSize("15");
-        TestLogic.restart();
-      },
-    },
-    {
-      id: "changeFontSize2",
-      display: "2x",
-      configValue: "2",
-      exec: (): void => {
-        UpdateConfig.setFontSize("2");
-        TestLogic.restart();
-      },
-    },
-    {
-      id: "changeFontSize3",
-      display: "3x",
-      configValue: "3",
-      exec: (): void => {
-        UpdateConfig.setFontSize("3");
-        TestLogic.restart();
-      },
-    },
-    {
-      id: "changeFontSize4",
-      display: "4x",
-      configValue: "4",
-      exec: (): void => {
-        UpdateConfig.setFontSize("4");
-        TestLogic.restart();
-      },
-    },
-  ],
-};
-
 const commandsPageWidth: MonkeyTypes.CommandsGroup = {
   title: "Page width...",
   configKey: "pageWidth",
@@ -3189,7 +3128,14 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       id: "changeFontSize",
       display: "Font size...",
       icon: "fa-font",
-      subgroup: commandsFontSize,
+      input: true,
+      exec: (input): void => {
+        if (!input) return;
+        UpdateConfig.setFontSize(parseFloat(input));
+        setTimeout(() => {
+          TestUI.updateWordsHeight();
+        }, 0); //honestly no clue why it i need to wait for the next event loop to do this
+      },
     },
     {
       id: "changeFontFamily",
