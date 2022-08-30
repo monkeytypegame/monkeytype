@@ -84,7 +84,7 @@ a {
   }
 }
 
-a[data-link] * {
+a[router-link] * {
   pointer-events: none;
 }
 
