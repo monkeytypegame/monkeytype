@@ -1268,76 +1268,7 @@ export async function retrySavingResult(): Promise<void> {
 
   Notifications.add("Retrying to save...");
 
-  const response = await Ape.results.save(completedEvent);
-
-  AccountButton.loading(false);
-  Result.hideCrown();
-
-  if (response.status !== 200) {
-    console.log("Error saving result", completedEvent);
-    retrySaving.canRetry = true;
-    $("#retrySavingResultButton").removeClass("hidden");
-    retrySaving.completedEvent = completedEvent;
-    return Notifications.add("Failed to save result: " + response.message, -1);
-  }
-
-  if (response.data.xp) {
-    const snapxp = DB.getSnapshot().xp;
-    AccountButton.updateXpBar(
-      snapxp,
-      response.data.xp,
-      response.data.dailyXpBonus,
-      response.data.xpBreakdown
-    );
-    DB.addXp(response.data.xp);
-  }
-
-  completedEvent._id = response.data.insertedId;
-  if (response.data.isPb) {
-    completedEvent.isPb = true;
-  }
-
-  DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats(
-    TestStats.restartCount + 1,
-    completedEvent.testDuration +
-      completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration
-  );
-
-  AnalyticsController.log("testCompleted");
-
-  if (response.data.isPb) {
-    //new pb
-    Result.showCrown();
-    Result.updateCrown();
-    DB.saveLocalPB(
-      Config.mode,
-      completedEvent.mode2,
-      Config.punctuation,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
-      completedEvent.wpm,
-      completedEvent.acc,
-      completedEvent.rawWpm,
-      completedEvent.consistency
-    );
-  }
-
-  if (response.data.dailyLeaderboardRank) {
-    Notifications.add(
-      `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
-        Misc.getPositionString(response.data.dailyLeaderboardRank),
-      1,
-      10,
-      "Daily Leaderboard",
-      "list-ol"
-    );
-  }
-
-  $("#retrySavingResultButton").addClass("hidden");
-  Notifications.add("Result saved", 1);
+  saveResult(completedEvent, true);
 }
 
 function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
@@ -1688,6 +1619,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   completedEvent.hash = objectHash(completedEvent);
 
+  saveResult(completedEvent, false);
+}
+
+async function saveResult(
+  completedEvent: CompletedEvent,
+  isRetrying: boolean
+): Promise<void> {
   const response = await Ape.results.save(completedEvent);
 
   AccountButton.loading(false);
@@ -1697,7 +1635,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     console.log("Error saving result", completedEvent);
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
-    retrySaving.completedEvent = completedEvent;
+    if (!isRetrying) {
+      retrySaving.completedEvent = completedEvent;
+    }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
@@ -1757,6 +1697,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   $("#retrySavingResultButton").addClass("hidden");
+  if (isRetrying) {
+    Notifications.add("Result saved", 1);
+  }
 }
 
 export function fail(reason: string): void {
