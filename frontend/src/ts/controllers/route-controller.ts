@@ -156,7 +156,7 @@ window.addEventListener("popstate", () => {
 document.addEventListener("DOMContentLoaded", () => {
   document.body.addEventListener("click", (e) => {
     const target = e?.target as HTMLLinkElement;
-    if (target.matches("[data-link]") && target?.href) {
+    if (target.matches("[router-link]") && target?.href) {
       e.preventDefault();
       navigate(target.href);
     }
@@ -167,10 +167,6 @@ $("#top .logo").on("click", () => {
   navigate("/");
 });
 
-$(document).on("click", "#leaderboards .entryName", (e) => {
-  const uid = $(e.target).attr("uid");
-  if (uid) {
-    navigate(`/profile/${uid}`);
-    Leaderboards.hide();
-  }
+$(document).on("click", "#leaderboards a.entryName", () => {
+  Leaderboards.hide();
 });

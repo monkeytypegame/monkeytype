@@ -470,4 +470,35 @@ router.patch(
   asyncHandler(UserController.updateProfile)
 );
 
+const mailIdSchema = joi.array().items(joi.string().guid()).min(1).default([]);
+
+const requireInboxEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.users.inbox.enabled;
+  },
+  invalidMessage: "Your inbox is not available at this time.",
+});
+
+router.get(
+  "/inbox",
+  requireInboxEnabled,
+  authenticateRequest(),
+  RateLimit.userMailGet,
+  asyncHandler(UserController.getInbox)
+);
+
+router.patch(
+  "/inbox",
+  requireInboxEnabled,
+  authenticateRequest(),
+  RateLimit.userMailUpdate,
+  validateRequest({
+    body: {
+      mailIdsToDelete: mailIdSchema,
+      mailIdsToMarkRead: mailIdSchema,
+    },
+  }),
+  asyncHandler(UserController.updateInbox)
+);
+
 export default router;
