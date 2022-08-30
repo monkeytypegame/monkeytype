@@ -379,8 +379,7 @@ export const accountHistory: ChartWithUpdateColors<
               `punctuation: ${resultData.punctuation}` +
               "\n" +
               `language: ${resultData.language}` +
-              "\n\n" +
-              `personal best: ${resultData.isPb ? "yes" : "no"}` +
+              `${resultData.isPb ? "\n\nnew personal best" : ""}` +
               "\n\n" +
               `date: ${format(
                 new Date(resultData.timestamp),
