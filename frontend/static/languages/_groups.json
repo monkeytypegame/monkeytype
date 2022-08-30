@@ -293,6 +293,10 @@
     "languages": ["armenian_western", "armenian_western_1k"]
   },
   {
+    "name": "myanmar",
+    "languages": ["myanmar_burmese"]
+  },
+  {
     "name": "japanese",
     "languages": ["japanese_hiragana", "japanese_katakana"]
   },

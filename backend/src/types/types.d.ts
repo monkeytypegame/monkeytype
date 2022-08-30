@@ -46,6 +46,10 @@ declare namespace MonkeyTypes {
         maxDailyBonus: number;
         minDailyBonus: number;
       };
+      inbox: {
+        enabled: boolean;
+        maxMail: number;
+      };
     };
     apeKeys: {
       endpointsEnabled: boolean;
@@ -68,6 +72,7 @@ declare namespace MonkeyTypes {
       validModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
+      xpReward: number;
     };
   }
 
@@ -96,6 +101,32 @@ declare namespace MonkeyTypes {
       github?: string;
       website?: string;
     };
+  }
+
+  interface Reward<T> {
+    type: string;
+    item: T;
+  }
+
+  interface XpReward extends Reward<number> {
+    type: "xp";
+    item: number;
+  }
+
+  interface BadgeReward extends Reward<Badge> {
+    type: "badge";
+    item: Badge;
+  }
+
+  type AllRewards = XpReward | BadgeReward;
+
+  interface MonkeyMail {
+    id: string;
+    subject: string;
+    body: string;
+    timestamp: number;
+    read: boolean;
+    rewards: AllRewards[];
   }
 
   interface User {
@@ -128,6 +159,7 @@ declare namespace MonkeyTypes {
     profileDetails?: UserProfileDetails;
     inventory?: UserInventory;
     xp?: number;
+    inbox?: MonkeyMail[];
   }
 
   interface UserInventory {

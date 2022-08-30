@@ -489,4 +489,32 @@ describe("UserDal", () => {
     expect(resetUser.bananas).toStrictEqual(0);
     expect(resetUser.xp).toStrictEqual(0);
   });
+
+  it("getInbox should return the user's inbox", async () => {
+    await UserDAL.addUser("test name", "test email", "TestID");
+
+    const emptyInbox = await UserDAL.getInbox("TestID");
+
+    expect(emptyInbox).toStrictEqual([]);
+
+    await UserDAL.addToInbox(
+      "TestID",
+      [
+        {
+          getTemplate: (user) => ({
+            subject: `Hello ${user.name}!`,
+          }),
+        } as any,
+      ],
+      0
+    );
+
+    const inbox = await UserDAL.getInbox("TestID");
+
+    expect(inbox).toStrictEqual([
+      {
+        subject: "Hello test name!",
+      },
+    ]);
+  });
 });
