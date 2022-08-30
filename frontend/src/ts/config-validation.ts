@@ -62,7 +62,7 @@ export function isConfigValueValid(
         break;
 
       case "number":
-        if (typeof val === "number") isValid = true;
+        if (typeof val === "number" && !isNaN(val)) isValid = true;
         break;
 
       case "numberArray":
