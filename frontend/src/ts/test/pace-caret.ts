@@ -184,7 +184,9 @@ export function update(expectedStepEnd: number): void {
         throw ``;
       }
 
-      newTop = currentLetter.offsetTop - currentLetterHeight / 5;
+      newTop =
+        currentLetter.offsetTop -
+        Config.fontSize * Misc.convertRemToPixels(1) * 0.1;
       newLeft;
       if (settings.currentLetterIndex === -1) {
         newLeft = currentLetter.offsetLeft;

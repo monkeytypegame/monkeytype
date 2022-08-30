@@ -78,11 +78,11 @@ export async function updatePosition(): Promise<void> {
     ? currentLetter.offsetLeft
     : currentLetter.offsetLeft + ($(currentLetter).width() ?? 0);
   const currentLetterPosTop = currentLetter.offsetTop;
-  const letterHeight = $(currentLetter).height() as number;
   let newTop = 0;
   let newLeft = 0;
 
-  newTop = currentLetterPosTop - Math.round(letterHeight / 5);
+  newTop =
+    currentLetterPosTop - Config.fontSize * Misc.convertRemToPixels(1) * 0.1;
 
   if (Config.tapeMode === "letter") {
     newLeft =
