@@ -1532,60 +1532,35 @@ export function setLayout(layout: string, nosave?: boolean): boolean {
 //   return true;
 // }
 
-export function setFontSize(
-  fontSize: MonkeyTypes.FontSize,
-  nosave?: boolean
-): boolean {
+export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   if (
-    !isConfigValueValid("font size", fontSize, [
-      ["1", "125", "15", "2", "3", "4"],
-    ])
+    typeof fontSize === "string" &&
+    ["1", "125", "15", "2", "3", "4"].includes(fontSize)
   ) {
+    if (fontSize === "125") {
+      fontSize = 1.25;
+    } else if (fontSize === "15") {
+      fontSize = 1.5;
+    } else {
+      fontSize = parseInt(fontSize);
+    }
+  }
+
+  if (!isConfigValueValid("font size", fontSize, ["number"])) {
     return false;
   }
 
-  config.fontSize = fontSize;
-  $("#words").removeClass("size125");
-  $("#caret, #paceCaret").removeClass("size125");
-  $("#words").removeClass("size15");
-  $("#caret, #paceCaret").removeClass("size15");
-  $("#words").removeClass("size2");
-  $("#caret, #paceCaret").removeClass("size2");
-  $("#words").removeClass("size3");
-  $("#caret, #paceCaret").removeClass("size3");
-  $("#words").removeClass("size35");
-  $("#caret, #paceCaret").removeClass("size35");
-  $("#words").removeClass("size4");
-  $("#caret, #paceCaret").removeClass("size4");
-
-  $("#miniTimerAndLiveWpm").removeClass("size125");
-  $("#miniTimerAndLiveWpm").removeClass("size15");
-  $("#miniTimerAndLiveWpm").removeClass("size2");
-  $("#miniTimerAndLiveWpm").removeClass("size3");
-  $("#miniTimerAndLiveWpm").removeClass("size35");
-  $("#miniTimerAndLiveWpm").removeClass("size4");
-
-  if (fontSize == "125") {
-    $("#words").addClass("size125");
-    $("#caret, #paceCaret").addClass("size125");
-    $("#miniTimerAndLiveWpm").addClass("size125");
-  } else if (fontSize == "15") {
-    $("#words").addClass("size15");
-    $("#caret, #paceCaret").addClass("size15");
-    $("#miniTimerAndLiveWpm").addClass("size15");
-  } else if (fontSize == "2") {
-    $("#words").addClass("size2");
-    $("#caret, #paceCaret").addClass("size2");
-    $("#miniTimerAndLiveWpm").addClass("size2");
-  } else if (fontSize == "3") {
-    $("#words").addClass("size3");
-    $("#caret, #paceCaret").addClass("size3");
-    $("#miniTimerAndLiveWpm").addClass("size3");
-  } else if (fontSize == "4") {
-    $("#words").addClass("size4");
-    $("#caret, #paceCaret").addClass("size4");
-    $("#miniTimerAndLiveWpm").addClass("size4");
+  if (fontSize < 0) {
+    fontSize = 1;
   }
+
+  config.fontSize = fontSize;
+
+  $("#words, #caret, #paceCaret, #miniTimerAndLiveWpm").css(
+    "fontSize",
+    fontSize + "rem"
+  );
+
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize);
 

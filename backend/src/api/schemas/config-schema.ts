@@ -35,7 +35,10 @@ const CONFIG_SCHEMA = joi.object({
   mode: joi.string().valid("time", "words", "quote", "zen", "custom"),
   quoteLength: joi.array().items(joi.number()),
   language: joi.string(),
-  fontSize: joi.string().valid("1", "125", "15", "2", "3", "4"),
+  fontSize: joi.alternatives().try(
+    joi.string().valid("1", "125", "15", "2", "3", "4"), //remove after a week
+    joi.number().min(0)
+  ),
   freedomMode: joi.boolean(),
   difficulty: joi.string().valid("normal", "expert", "master"),
   blindMode: joi.boolean(),

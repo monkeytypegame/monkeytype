@@ -1646,7 +1646,6 @@ async function saveResult(
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
-      response.data.dailyXpBonus,
       response.data.xpBreakdown
     );
     DB.addXp(response.data.xp);

@@ -78,7 +78,6 @@ export async function update(
 export async function updateXpBar(
   currentXp: number,
   addedXp: number,
-  withDailyBonus: boolean,
   breakdown: Record<string, number>
 ): Promise<void> {
   skipBreakdown = false;
@@ -97,11 +96,7 @@ export async function updateXpBar(
   }
 
   const xpBarPromise = animateXpBar(startingLevel, endingLevel);
-  const xpBreakdownPromise = animateXpBreakdown(
-    addedXp,
-    withDailyBonus,
-    breakdown
-  );
+  const xpBreakdownPromise = animateXpBreakdown(addedXp, breakdown);
 
   await Promise.all([xpBarPromise, xpBreakdownPromise]);
   await Misc.sleep(2000);
@@ -116,12 +111,8 @@ export async function updateXpBar(
 
 async function animateXpBreakdown(
   addedXp: number,
-  withDailyBonus: boolean,
   breakdown: Record<string, number>
 ): Promise<void> {
-  //
-
-  console.log("animateXpBreakdown", addedXp, withDailyBonus, breakdown);
   const delay = 1000;
   let total = 0;
   const xpGain = $("#menu .xpBar .xpGain");
@@ -184,10 +175,6 @@ async function animateXpBreakdown(
     );
   }
 
-  // $("#menu .xpBar .xpGain").text(
-  //   `+${addedXp} ${withDailyBonus === true ? "daily bonus" : ""}`
-  // );
-
   xpGain.text(`+0`);
   xpBreakdown.append(
     `<div class='text next'>time typing +${breakdown["base"]}</div>`
@@ -209,14 +196,17 @@ async function animateXpBreakdown(
     await Misc.sleep(delay);
     await append(`quote +${breakdown["quote"]}`);
     total += breakdown["quote"];
-  } else if (breakdown["punctuation"]) {
-    await Misc.sleep(delay);
-    await append(`punctuation +${breakdown["punctuation"]}`);
-    total += breakdown["punctuation"];
-  } else if (breakdown["numbers"]) {
-    await Misc.sleep(delay);
-    await append(`numbers +${breakdown["numbers"]}`);
-    total += breakdown["numbers"];
+  } else {
+    if (breakdown["punctuation"]) {
+      await Misc.sleep(delay);
+      await append(`punctuation +${breakdown["punctuation"]}`);
+      total += breakdown["punctuation"];
+    }
+    if (breakdown["numbers"]) {
+      await Misc.sleep(delay);
+      await append(`numbers +${breakdown["numbers"]}`);
+      total += breakdown["numbers"];
+    }
   }
 
   if (skipBreakdown) return;
