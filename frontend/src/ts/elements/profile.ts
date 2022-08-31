@@ -142,7 +142,10 @@ export async function update(
   const level = Math.floor(levelFraction);
   const xpForLevel = Misc.getXpForLevel(level);
   const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
-  details.find(".level").text(level);
+  details
+    .find(".level")
+    .text(level)
+    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
   details
     .find(".xp")
     .text(
@@ -155,7 +158,10 @@ export async function update(
     .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
   details
     .find(".xp")
-    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
+    .attr(
+      "aria-label",
+      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
+    );
 
   //structure
 
