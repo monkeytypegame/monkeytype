@@ -910,6 +910,7 @@
 }
 
 #mobileTestConfig {
+  font-size: 0.75rem;
   padding: 0.25rem 1rem;
   background: var(--sub-alt-color);
   border-radius: var(--roundness);
@@ -932,39 +933,48 @@
   .puncAndNum {
     // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
     overflow: hidden;
-    max-width: 13rem;
+    max-width: 15rem;
     opacity: 1;
   }
   .row {
     display: flex;
-    padding: 0.25rem 1rem;
+    // padding: 0 0.5rem;
     background: var(--sub-alt-color);
     border-radius: var(--roundness);
     // width: max-content;
   }
   .spacer {
-    height: 75%;
+    height: auto;
     width: 0.25rem;
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
-    margin: auto 1rem;
+    margin: 0.5rem 0;
     transition: 0.25s;
     &.scrolled {
       width: 0;
       margin: auto 0;
     }
   }
-  .textButton {
-    transition: 0.125s;
-  }
+
   .mode,
   .time,
   .wordCount,
   .puncAndNum,
   .quoteLength {
     display: grid;
-    gap: 0.5rem;
     grid-auto-flow: column;
+
+    .textButton {
+      transition: 0.125s;
+      padding: 0.75rem 0.5rem;
+
+      &:first-child {
+        padding: 0.75rem 0.5rem 0.75rem 1rem;
+      }
+      &:last-child {
+        padding: 0.75rem 1rem 0.75rem 0.5rem;
+      }
+    }
   }
   .time,
   .wordCount,

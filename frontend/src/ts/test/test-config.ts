@@ -103,7 +103,7 @@ export async function update(
       .animate(
         {
           opacity: 1,
-          maxWidth: "13rem",
+          maxWidth: "14rem",
         },
         animTime,
         "easeInOutSine"
@@ -117,7 +117,7 @@ export async function update(
     $("#testConfig .puncAndNum")
       .css({
         opacity: 1,
-        maxWidth: "13rem",
+        maxWidth: "14rem",
       })
       .animate(
         {

@@ -160,14 +160,21 @@
 
 @media only screen and (max-width: 900px) {
   #testConfig {
-    .row {
-      padding: 0.25rem 0.25rem;
-    }
-    .spacer {
-      margin: auto 0.25rem;
-    }
-    .textButton {
-      padding: 0.5rem 0.25rem;
+    .mode,
+    .time,
+    .wordCount,
+    .puncAndNum,
+    .quoteLength {
+      .textButton {
+        padding: 0.75rem 0.3rem;
+
+        &:first-child {
+          padding: 0.75rem 0.3rem 0.75rem 0.6rem;
+        }
+        &:last-child {
+          padding: 0.75rem 0.6rem 0.75rem 0.3rem;
+        }
+      }
     }
   }
   .ad.ad-h {
@@ -292,10 +299,29 @@
 
 @media only screen and (max-width: 800px) {
   #testConfig {
+    .spacer {
+      display: none;
+    }
     .row {
       display: grid;
       justify-items: center;
       padding: 0.25rem 1rem;
+    }
+    .mode,
+    .time,
+    .wordCount,
+    .puncAndNum,
+    .quoteLength {
+      .textButton {
+        padding: 0.5rem 0.75rem;
+
+        &:first-child {
+          padding: 0.5rem 0.75rem;
+        }
+        &:last-child {
+          padding: 0.5rem 0.75rem;
+        }
+      }
     }
   }
 
@@ -693,6 +719,9 @@
       }
     }
   }
+  #testModesNotice {
+    font-size: 0.75rem;
+  }
   #cookiePopupWrapper {
     #cookiePopup,
     .extensionMessage {
@@ -848,6 +877,16 @@
   }
 }
 
+@media only screen and (max-width: 450px) {
+  #testConfig {
+    display: none;
+  }
+
+  #mobileTestConfig {
+    display: block;
+  }
+}
+
 @media only screen and (max-width: 400px) {
   #top .config {
     grid-gap: 0.25rem;
@@ -855,14 +894,6 @@
       font-size: 0.65rem;
       line-height: 0.65rem;
     }
-  }
-
-  #testConfig {
-    display: none;
-  }
-
-  #mobileTestConfig {
-    display: block;
   }
 
   #bottom {
