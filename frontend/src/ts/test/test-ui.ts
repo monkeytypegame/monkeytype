@@ -163,10 +163,6 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  if (Config.mode === "zen") {
-    $(<Element>document.querySelector(".word")).remove();
-  }
-
   updateWordsHeight();
 }
 
@@ -218,6 +214,11 @@ export function updateWordsHeight(): void {
       $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
     }
   }
+
+  if (Config.mode === "zen") {
+    $(<Element>document.querySelector(".word")).remove();
+  }
+
   updateActiveElement();
   Caret.updatePosition();
 }
