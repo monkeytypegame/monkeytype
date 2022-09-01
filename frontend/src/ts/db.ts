@@ -96,6 +96,7 @@ export async function initSnapshot(): Promise<
     snap.addedAt = userData.addedAt;
     snap.inventory = userData.inventory;
     snap.xp = userData.xp ?? 0;
+    snap.inboxUnreadSize = userData.inboxUnreadSize ?? 0;
 
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format

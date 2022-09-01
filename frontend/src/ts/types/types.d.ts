@@ -473,6 +473,7 @@ declare namespace MonkeyTypes {
     addedAt: number;
     filterPresets: ResultFilters[];
     xp: number;
+    inboxUnreadSize: number;
   }
 
   interface UserDetails {
@@ -738,4 +739,30 @@ declare namespace MonkeyTypes {
     color?: string;
     customStyle?: string;
   }
+
+  interface MonkeyMail {
+    id: string;
+    subject: string;
+    body: string;
+    timestamp: number;
+    read: boolean;
+    rewards: AllRewards[];
+  }
+
+  interface Reward<T> {
+    type: string;
+    item: T;
+  }
+
+  interface XpReward extends Reward<number> {
+    type: "xp";
+    item: number;
+  }
+
+  interface BadgeReward extends Reward<Badge> {
+    type: "badge";
+    item: Badge;
+  }
+
+  type AllRewards = XpReward | BadgeReward;
 }
