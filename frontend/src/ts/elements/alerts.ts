@@ -1,5 +1,10 @@
+import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import Ape from "../ape";
+import { Auth } from "../firebase";
+
 export function hide(): void {
   if (!$("#alertsPopupWrapper").hasClass("hidden")) {
+    setBellButtonColored(false);
     $("#alertsPopup").animate(
       {
         marginRight: "-10rem",
@@ -31,8 +36,15 @@ export async function show(): Promise<void> {
       100,
       "easeOutCubic"
     );
-    $("#alertsPopup .accountAlerts .list").html(`
-  <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`);
+
+    if (Auth.currentUser) {
+      $("#alertsPopup .accountAlerts").removeClass("hidden");
+      $("#alertsPopup .accountAlerts .list").html(`
+        <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`);
+    } else {
+      $("#alertsPopup .accountAlerts").addClass("hidden");
+    }
+
     $("#alertsPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -43,14 +55,93 @@ export async function show(): Promise<void> {
         },
         100,
         () => {
-          getAccountAlerts();
+          if (Auth.currentUser) {
+            getAccountAlerts();
+          }
         }
       );
   }
 }
 
 async function getAccountAlerts(): Promise<void> {
-  //
+  const inboxResponse = await Ape.users.getInbox();
+
+  $("#alertsPopup .accountAlerts .list").empty();
+
+  if (inboxResponse.status !== 200) {
+    // addNotification(, -1);
+    $("#alertsPopup .accountAlerts .list").html(
+      `
+      <div class="nothing">
+      Error getting inbox: ${inboxResponse.message}
+      </div>
+      `
+    );
+    return;
+  }
+  const inboxData = inboxResponse.data as {
+    inbox: MonkeyTypes.MonkeyMail[];
+    maxMail: number;
+  };
+
+  if (inboxData.inbox.length === 0) {
+    $("#alertsPopup .accountAlerts .list").html(`
+    <div class="nothing">
+    Nothing to show
+    </div>
+    `);
+    return;
+  }
+
+  $("#alertsPopup .accountAlerts .title .right").text(
+    `${inboxData.inbox.length}/${inboxData.maxMail}`
+  );
+
+  const markAsRead = [];
+
+  for (const ie of inboxData.inbox) {
+    if (!ie.read && ie.rewards.length == 0) {
+      markAsRead.push(ie.id);
+    }
+
+    let rewardsString = "";
+
+    if (ie.rewards.length > 0) {
+      rewardsString = `<div class="rewards">
+        <i class="fas fa-fw fa-gift"></i>
+        <span>${ie.rewards.length}</span>
+      </div>`;
+    }
+
+    $("#alertsPopup .accountAlerts .list").append(`
+    
+      <div class="item">
+        <div class="indicator ${ie.read ? "" : "main"}"></div>
+        <div class="timestamp">${formatDistanceToNowStrict(
+          new Date(ie.timestamp)
+        )} ago</div>
+        <div class="title">${ie.subject}</div>
+        <div class="body">
+          ${ie.body}\n\n${rewardsString}
+        </div>
+        <div class="buttons">
+          ${
+            ie.rewards.length > 0
+              ? `<div class="textButton" aria-label="Claim" data-balloon-pos="left"><i class="fas fa-gift"></i></div>`
+              : ``
+          }
+          <div class="textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>
+        </div>
+      </div>
+    
+    `);
+  }
+
+  if (markAsRead.length > 0) {
+    Ape.users.updateInbox({
+      mailIdsToMarkRead: markAsRead,
+    });
+  }
 }
 
 export function addPSA(message: string, level: number): void {
@@ -110,12 +201,26 @@ export function addNotification(
   `);
 }
 
+export function setBellButtonColored(tf: boolean): void {
+  if (tf) {
+    $("#top #menu .showAlerts").addClass("active");
+  } else {
+    $("#top #menu .showAlerts").removeClass("active");
+  }
+}
+
 $("#top #menu .showAlerts").on("click", () => {
   show();
 });
 
 $("#alertsPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "alertsPopupWrapper") {
+    hide();
+  }
+});
+
+$(document).on("keydown", (e) => {
+  if (e.key === "Escape" && !$("#alertsPopupWrapper").hasClass("hidden")) {
     hide();
   }
 });
