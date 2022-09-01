@@ -1341,7 +1341,7 @@
     // padding: 1rem;
     // border-radius: var(--roundness);
     overflow: hidden;
-    margin-right: -25rem;
+    margin-right: -10rem;
     border-radius: var(--roundness) 0 0 var(--roundness);
 
     .scrollWrapper {
@@ -1372,7 +1372,7 @@
       }
       .preloader {
         width: 100%;
-        color: var(--text-color);
+        color: var(--main-color);
         text-align: center;
         margin: 2rem 0;
       }
