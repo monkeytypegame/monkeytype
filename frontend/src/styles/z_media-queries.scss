@@ -164,6 +164,7 @@
     .time,
     .wordCount,
     .puncAndNum,
+    .customText,
     .quoteLength {
       .textButton {
         padding: 0.75rem 0.3rem;
@@ -173,6 +174,9 @@
         }
         &:last-child {
           padding: 0.75rem 0.6rem 0.75rem 0.3rem;
+        }
+        &:only-child {
+          padding: 0.75rem 0.6rem;
         }
       }
     }
@@ -311,6 +315,7 @@
     .time,
     .wordCount,
     .puncAndNum,
+    .customText,
     .quoteLength {
       .textButton {
         padding: 0.5rem 0.75rem;
@@ -319,6 +324,9 @@
           padding: 0.5rem 0.75rem;
         }
         &:last-child {
+          padding: 0.5rem 0.75rem;
+        }
+        &:only-child {
           padding: 0.5rem 0.75rem;
         }
       }
