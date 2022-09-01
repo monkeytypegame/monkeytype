@@ -115,7 +115,7 @@ async function getAccountAlerts(): Promise<void> {
 
     $("#alertsPopup .accountAlerts .list").append(`
     
-      <div class="item">
+      <div class="item" data-id="${ie.id}">
         <div class="indicator ${ie.read ? "" : "main"}"></div>
         <div class="timestamp">${formatDistanceToNowStrict(
           new Date(ie.timestamp)
