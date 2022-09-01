@@ -3455,6 +3455,11 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
       (command) => command.id == "changeCustomBackground"
     )[0].defaultValue = eventValue as string;
   }
+  if (eventKey === "fontSize") {
+    defaultCommands.list.filter(
+      (command) => command.id == "changeFontSize"
+    )[0].defaultValue = eventValue as string;
+  }
   if (eventKey === "customLayoutFluid") {
     defaultCommands.list.filter(
       (command) => command.id == "changeCustomLayoutfluid"
