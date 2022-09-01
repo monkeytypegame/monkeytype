@@ -665,6 +665,12 @@
         }
       }
 
+      &.dailyLeaderboard {
+        max-width: 10rem;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
       &.source {
         #rateQuoteButton,
         #reportQuoteButton,

@@ -1573,6 +1573,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
 
+  $("#result .stats .dailyLeaderboard").addClass("hidden");
+
   TestStats.setLastResult(completedEvent);
 
   await Result.update(
@@ -1686,14 +1688,35 @@ async function saveResult(
     );
   }
 
-  if (response.data.dailyLeaderboardRank) {
-    Notifications.add(
-      `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
-        Misc.getPositionString(response.data.dailyLeaderboardRank),
-      1,
-      10,
-      "Daily Leaderboard",
-      "list-ol"
+  // if (response.data.dailyLeaderboardRank) {
+  //   Notifications.add(
+  //     `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
+  //       Misc.getPositionString(response.data.dailyLeaderboardRank),
+  //     1,
+  //     10,
+  //     "Daily Leaderboard",
+  //     "list-ol"
+  //   );
+  // }
+
+  if (!response.data.dailyLeaderboardRank) {
+    $("#result .stats .dailyLeaderboard").addClass("hidden");
+  } else {
+    $("#result .stats .dailyLeaderboard")
+      .css({
+        maxWidth: "10rem",
+        opacity: 0,
+      })
+      .removeClass("hidden")
+      .animate(
+        {
+          // maxWidth: "10rem",
+          opacity: 1,
+        },
+        500
+      );
+    $("#result .stats .dailyLeaderboard .bottom").html(
+      Misc.getPositionString(response.data.dailyLeaderboardRank)
     );
   }
 
