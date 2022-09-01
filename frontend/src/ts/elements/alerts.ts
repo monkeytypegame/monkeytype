@@ -110,12 +110,6 @@ export function addNotification(
   `);
 }
 
-export function init(): void {
-  $("#alertsPopup .list")
-    .empty()
-    .append(`<div class="nothing">Nothing to show</div>`);
-}
-
 $("#top #menu .showAlerts").on("click", () => {
   show();
 });
