@@ -1,6 +1,7 @@
 import { debounce } from "throttle-debounce";
 import * as Misc from "../utils/misc";
 import * as BannerEvent from "../observables/banner-event";
+import * as Alerts from "./alerts";
 
 function updateMargin(): void {
   console.log("updating margin");
@@ -232,6 +233,9 @@ export function add(
   allowHTML?: boolean
 ): void {
   // notificationHistory.push(
+
+  Alerts.addNotification(message, level, customTitle);
+
   new Notification(
     "notification",
     message,
