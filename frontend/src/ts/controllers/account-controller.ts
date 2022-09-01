@@ -20,6 +20,7 @@ import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
+import * as Alerts from "../elements/alerts";
 import {
   EmailAuthProvider,
   GoogleAuthProvider,
@@ -238,8 +239,9 @@ export async function loadUser(user: UserType): Promise<void> {
   if ((await getDataAndInit()) === false) {
     signOut();
   }
-  const { discordId, discordAvatar, xp } = DB.getSnapshot();
+  const { discordId, discordAvatar, xp, inboxUnreadSize } = DB.getSnapshot();
   AccountButton.update(xp, discordId, discordAvatar);
+  Alerts.setBellButtonColored(inboxUnreadSize > 0);
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;
