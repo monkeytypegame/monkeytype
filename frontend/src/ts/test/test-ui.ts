@@ -304,8 +304,8 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-small-wrapper").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
   try {
-    const paddingX = 50;
-    const paddingY = 50;
+    const paddingX = Misc.convertRemToPixels(2);
+    const paddingY = Misc.convertRemToPixels(2);
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
