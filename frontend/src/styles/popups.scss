@@ -1344,11 +1344,18 @@
     margin-right: -10rem;
     border-radius: var(--roundness) 0 0 var(--roundness);
 
+    .separator {
+      background-color: var(--sub-alt-color);
+      height: 0.25rem;
+      width: 100%;
+      border-radius: calc(var(--roundness) / 2);
+    }
+
     .scrollWrapper {
       padding: 0 1rem 0 1rem;
       overflow-y: scroll;
       display: grid;
-      gap: 3rem;
+      gap: 2rem;
       align-content: baseline;
       height: 100%;
     }
@@ -1374,6 +1381,7 @@
         width: 100%;
         color: var(--main-color);
         text-align: center;
+        font-size: 1rem;
         margin: 2rem 0;
       }
       .item {
@@ -1399,16 +1407,15 @@
         }
         .title {
           grid-area: title;
-          font-size: 1rem;
-          line-height: 1rem;
-          color: var(--text-color);
+          font-size: 0.75rem;
+          color: var(--sub-color);
         }
         .body {
           grid-area: body;
           font-size: 0.75rem;
           color: var(--text-color);
           transition: 0.125s;
-          opacity: 0.5;
+          opacity: 1;
         }
         .buttons {
           grid-area: buttons;
@@ -1418,6 +1425,8 @@
           gap: 0.5rem;
           opacity: 0;
           transition: 0.125s;
+          align-items: center;
+          align-content: center;
           .button {
             font-size: 0.75rem;
             padding: 0.5em;
@@ -1452,6 +1461,24 @@
       }
       .body {
         opacity: 1;
+      }
+    }
+    .accountAlerts {
+      .title {
+        display: grid;
+        grid-template-columns: 1fr auto;
+      }
+      .list .item {
+        grid-template-areas: "indicator timestamp buttons" "indicator title buttons" "indicator body buttons";
+        .timestamp {
+          grid-area: timestamp;
+          font-size: 0.6rem;
+          color: var(--sub-color);
+          opacity: 0.5;
+        }
+        .rewards {
+          margin-top: 0.35rem;
+        }
       }
     }
   }
