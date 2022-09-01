@@ -10,36 +10,11 @@ import * as ConfigEvent from "../observables/config-event";
 // }
 
 export function show(): void {
-  $("#top .config")
-    .css("transition", "unset")
-    .stop(true, true)
-    .removeClass("hidden")
-    .css("opacity", 0)
-    .animate(
-      {
-        opacity: 1,
-      },
-      125,
-      () => {
-        $("#top .config").css("transition", "0.125s");
-      }
-    );
+  $("#testConfig").removeClass("invisible");
 }
 
 export function hide(): void {
-  $("#top .config")
-    .css("transition", "unset")
-    .stop(true, true)
-    .css("opacity", 1)
-    .animate(
-      {
-        opacity: 0,
-      },
-      125,
-      () => {
-        $("#top .config").addClass("hidden").css("transition", "0.125s");
-      }
-    );
+  $("#testConfig").addClass("invisible");
 }
 
 export async function update(

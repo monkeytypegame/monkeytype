@@ -54,6 +54,7 @@ import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
+import * as TestConfig from "./test-config";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -511,6 +512,7 @@ export function restart(options = {} as RestartOptions): void {
         AdController.updateTestPageAds(false);
         Focus.set(false);
       }
+      TestConfig.show();
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
