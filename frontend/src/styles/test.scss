@@ -961,7 +961,8 @@
   .wordCount,
   .puncAndNum,
   .quoteLength,
-  .customText {
+  .customText,
+  .zen {
     display: grid;
     grid-auto-flow: column;
 
