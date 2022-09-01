@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { eq } from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
@@ -513,7 +513,10 @@ export async function getInbox(
 
   const inbox = await UserDAL.getInbox(uid);
 
-  return new MonkeyResponse("Inbox retrieved", inbox);
+  return new MonkeyResponse("Inbox retrieved", {
+    inbox,
+    maxMail: req.ctx.configuration.users.inbox.maxMail,
+  });
 }
 
 export async function updateInbox(
