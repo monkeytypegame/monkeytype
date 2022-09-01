@@ -395,7 +395,8 @@ $(document).ready(() => {
         (event.key?.toLowerCase() === "p" &&
           (event.metaKey || event.ctrlKey) &&
           event.shiftKey) ||
-        (event.key === "Tab" && Config.quickRestart === "esc")) &&
+        ((event.key === "Tab" || event.key === "Escape") &&
+          Config.quickRestart === "esc")) &&
       !$("#commandLineWrapper").hasClass("hidden")
     ) {
       if (CommandlineLists.current.length > 1) {
