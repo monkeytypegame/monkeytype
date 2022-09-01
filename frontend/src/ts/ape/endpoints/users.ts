@@ -192,4 +192,8 @@ export default class Users {
       },
     });
   }
+
+  async getInbox(): Promise<Ape.EndpointData> {
+    return await this.httpClient.patch(`${BASE_PATH}/inbox`);
+  }
 }
