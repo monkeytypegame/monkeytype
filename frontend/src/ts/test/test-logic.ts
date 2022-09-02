@@ -295,10 +295,10 @@ export async function punctuateWord(
       ];
 
       if (
-        Config.language == "code_c" ||
-        Config.language == "code_c++" ||
-        Config.language == "code_csharp" ||
-        Config.language == "code_arduino"
+        Config.language.startsWith("code_c") ||
+        Config.language.startsWith("code_c++") ||
+        Config.language.startsWith("code_csharp") ||
+        Config.language.startsWith("code_arduino")
       ) {
         word = Misc.randomElementFromArray(specialsC);
       } else {
