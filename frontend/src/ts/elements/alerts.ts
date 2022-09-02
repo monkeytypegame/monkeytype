@@ -1,6 +1,10 @@
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import Ape from "../ape";
 import { Auth } from "../firebase";
+import * as AccountButton from "../elements/account-button";
+import * as DB from "../db";
+
+let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 
 let mailToMarkRead: string[] = [];
 let mailToDelete: string[] = [];
@@ -11,10 +15,33 @@ export function hide(): void {
 
     if (mailToMarkRead.length > 0 || mailToDelete.length > 0) {
       Ape.users.updateInbox({
-        mailIdsToMarkRead:
-          mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
+        mailIdsToMarkRead: undefined, //todo remove
+        // mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
         mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
       });
+
+      const rewardsClaimed = accountAlerts
+        .filter((ie) => {
+          return ie.rewards.length > 0 && mailToMarkRead.includes(ie.id);
+        })
+        .map((ie) => ie.rewards)
+        .reduce(function (a, b) {
+          return a.concat(b);
+        }, []);
+
+      let totalXpClaimed = 0;
+
+      for (const r of rewardsClaimed) {
+        if (r.type === "xp") {
+          totalXpClaimed += r.item as number;
+        } else if (r.type === "badge") {
+          // todo
+        }
+      }
+
+      const snapxp = DB.getSnapshot().xp;
+      AccountButton.updateXpBar(snapxp, totalXpClaimed);
+      DB.addXp(totalXpClaimed);
     }
 
     $("#alertsPopup").animate(
@@ -57,6 +84,7 @@ export async function show(): Promise<void> {
       $("#alertsPopup .accountAlerts").addClass("hidden");
     }
 
+    accountAlerts = [];
     mailToDelete = [];
     mailToMarkRead = [];
 
@@ -99,7 +127,9 @@ async function getAccountAlerts(): Promise<void> {
     maxMail: number;
   };
 
-  if (inboxData.inbox.length === 0) {
+  accountAlerts = inboxData.inbox;
+
+  if (accountAlerts.length === 0) {
     $("#alertsPopup .accountAlerts .list").html(`
     <div class="nothing">
     Nothing to show
@@ -109,10 +139,10 @@ async function getAccountAlerts(): Promise<void> {
   }
 
   $("#alertsPopup .accountAlerts .title .right").text(
-    `${inboxData.inbox.length}/${inboxData.maxMail}`
+    `${accountAlerts.length}/${inboxData.maxMail}`
   );
 
-  for (const ie of inboxData.inbox) {
+  for (const ie of accountAlerts) {
     if (!ie.read && ie.rewards.length == 0) {
       mailToMarkRead.push(ie.id);
     }
@@ -237,6 +267,36 @@ $("#alertsPopup .accountAlerts .list").on(
     const id = $(e.currentTarget).closest(".item").attr("data-id") as string;
     mailToDelete.push(id);
     $(e.currentTarget).closest(".item").remove();
+  }
+);
+
+$("#alertsPopup .accountAlerts .list").on(
+  "click",
+  ".item .buttons .markReadAlert",
+  (e) => {
+    const id = $(e.currentTarget).closest(".item").attr("data-id") as string;
+    mailToMarkRead.push(id);
+    const item = $(e.currentTarget).closest(".item");
+
+    item.find(".indicator").removeClass("main");
+    item.find(".buttons .markReadAlert").remove();
+    item
+      .find(".buttons")
+      .append(
+        `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
+      );
+    item.find(".rewards").animate(
+      {
+        opacity: 0,
+        height: 0,
+        marginTop: 0,
+      },
+      250,
+      "easeOutCubic",
+      () => {
+        item.find(".rewards").remove();
+      }
+    );
   }
 );
 

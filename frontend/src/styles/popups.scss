@@ -1395,6 +1395,7 @@
           width: 0.25rem;
           height: 100%;
           border-radius: calc(var(--roundness) / 2);
+          transition: 0.125s;
           &.main {
             background-color: var(--main-color);
           }
@@ -1477,6 +1478,7 @@
           opacity: 0.5;
         }
         .rewards {
+          overflow: hidden;
           margin-top: 0.35rem;
         }
       }
