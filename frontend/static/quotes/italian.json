@@ -640,13 +640,13 @@
     {
       "text": "Non ho quindici case, le ho solo cambiate.",
       "source": "Massimo Pericolo, 7 MILIARDI",
-      "lenght": "42",
+      "lenght": 42,
       "id": 106
     },
     {
       "text": "Uomo di panza, uomo di sostanza.",
       "source": "Saggezza Popolare",
-      "length": "33",
+      "length": 33,
       "id": 107
     }
   ]
