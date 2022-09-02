@@ -140,10 +140,14 @@ async function getAccountAlerts(): Promise<void> {
         <div class="buttons">
           ${
             ie.rewards.length > 0
-              ? `<div class="textButton" aria-label="Claim" data-balloon-pos="left"><i class="fas fa-gift"></i></div>`
+              ? `<div class="markReadAlert textButton" aria-label="Claim" data-balloon-pos="left"><i class="fas fa-gift"></i></div>`
               : ``
           }
-          <div class="textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>
+          ${
+            ie.rewards.length > 0 && ie.read === false
+              ? ``
+              : `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
+          }
         </div>
       </div>
     
@@ -225,6 +229,16 @@ $("#alertsPopupWrapper").on("mousedown", (e) => {
     hide();
   }
 });
+
+$("#alertsPopup .accountAlerts .list").on(
+  "click",
+  ".item .buttons .deleteAlert",
+  (e) => {
+    const id = $(e.currentTarget).closest(".item").attr("data-id") as string;
+    mailToDelete.push(id);
+    $(e.currentTarget).closest(".item").remove();
+  }
+);
 
 $(document).on("keydown", (e) => {
   if (e.key === "Escape" && !$("#alertsPopupWrapper").hasClass("hidden")) {
