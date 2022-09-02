@@ -2,9 +2,21 @@ import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import Ape from "../ape";
 import { Auth } from "../firebase";
 
+let mailToMarkRead: string[] = [];
+let mailToDelete: string[] = [];
+
 export function hide(): void {
   if (!$("#alertsPopupWrapper").hasClass("hidden")) {
     setBellButtonColored(false);
+
+    if (mailToMarkRead.length > 0 || mailToDelete.length > 0) {
+      Ape.users.updateInbox({
+        mailIdsToMarkRead:
+          mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
+        mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
+      });
+    }
+
     $("#alertsPopup").animate(
       {
         marginRight: "-10rem",
@@ -44,6 +56,9 @@ export async function show(): Promise<void> {
     } else {
       $("#alertsPopup .accountAlerts").addClass("hidden");
     }
+
+    mailToDelete = [];
+    mailToMarkRead = [];
 
     $("#alertsPopupWrapper")
       .stop(true, true)
@@ -97,11 +112,9 @@ async function getAccountAlerts(): Promise<void> {
     `${inboxData.inbox.length}/${inboxData.maxMail}`
   );
 
-  const markAsRead = [];
-
   for (const ie of inboxData.inbox) {
     if (!ie.read && ie.rewards.length == 0) {
-      markAsRead.push(ie.id);
+      mailToMarkRead.push(ie.id);
     }
 
     let rewardsString = "";
@@ -135,12 +148,6 @@ async function getAccountAlerts(): Promise<void> {
       </div>
     
     `);
-  }
-
-  if (markAsRead.length > 0) {
-    Ape.users.updateInbox({
-      mailIdsToMarkRead: markAsRead,
-    });
   }
 }
 
