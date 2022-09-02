@@ -71,7 +71,7 @@
 
         .fas {
           margin-right: 0rem;
-          vertical-align: sub;
+          vertical-align: middle;
         }
       }
     }
@@ -233,10 +233,6 @@
         grid-template-columns: 7fr 1fr 1fr;
         margin-bottom: 0.5rem;
       }
-    }
-
-    &.fontSize .buttons {
-      grid-template-columns: 1fr 1fr 1fr 1fr;
     }
 
     &.themes {

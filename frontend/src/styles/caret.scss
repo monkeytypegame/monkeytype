@@ -1,5 +1,5 @@
 #caret {
-  height: 1.5rem;
+  height: 1.2em;
   background: var(--caret-color);
   animation: caretFlashSmooth 1s infinite;
   position: absolute;
@@ -9,7 +9,7 @@
 }
 
 #paceCaret {
-  height: 1.5rem;
+  height: 1.2em;
   // background: var(--sub-color);
   background: var(--sub-color);
   opacity: 0.5;
@@ -17,7 +17,6 @@
   border-radius: var(--roundness);
   // transition: 0.25s;
   transform-origin: top left;
-  width: 2px;
 }
 
 #caret,
@@ -27,7 +26,7 @@
   }
 
   &.default {
-    width: 2px;
+    width: 0.1em;
   }
 
   &.carrot {
@@ -36,16 +35,7 @@
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    width: 0.25rem;
-    &.size2 {
-      margin-left: -0.1rem;
-    }
-    &.size3 {
-      margin-left: -0.2rem;
-    }
-    &.size4 {
-      margin-left: -0.3rem;
-    }
+    width: 0.25em;
   }
 
   &.banana {
@@ -54,20 +44,11 @@
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    width: 1rem;
-    &.size2 {
-      margin-left: -0.1rem;
-    }
-    &.size3 {
-      margin-left: -0.5rem;
-    }
-    &.size4 {
-      margin-left: -0.3rem;
-    }
+    width: 1em;
   }
 
   &.block {
-    width: 0.7em;
+    width: 0.6em;
     border-radius: 0;
     z-index: -1;
   }
@@ -82,66 +63,12 @@
   &.block,
   &.outline,
   &.underline {
-    margin-left: 0.1rem;
-
-    &.size15 {
-      margin-left: 0.15rem;
-    }
-
-    &.size2 {
-      margin-left: 0.2rem;
-    }
-
-    &.size3 {
-      margin-left: 0.25em;
-    }
-    &.size4 {
-      margin-left: 0.3rem;
-    }
+    margin-left: 0.1em;
   }
 
   &.underline {
-    height: 2px;
-    width: 0.8em;
-    margin-top: 1.3em;
-
-    &.size125 {
-      margin-top: 1.8em;
-    }
-
-    &.size15 {
-      margin-top: 2.1em;
-    }
-
-    &.size2 {
-      margin-top: 2.7em;
-    }
-
-    &.size3 {
-      margin-top: 3.9em;
-    }
-    &.size4 {
-      margin-top: 5em;
-    }
-  }
-
-  &.size125 {
-    transform: scale(1.25);
-  }
-
-  &.size15 {
-    transform: scale(1.45);
-  }
-
-  &.size2 {
-    transform: scale(1.9);
-  }
-
-  &.size3 {
-    transform: scale(2.8);
-  }
-
-  &.size4 {
-    transform: scale(3.7);
+    height: 0.1em;
+    width: 0.6em;
+    margin-top: 1.2em;
   }
 }

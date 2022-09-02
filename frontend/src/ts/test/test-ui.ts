@@ -163,6 +163,10 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
+  updateWordsHeight();
+}
+
+export function updateWordsHeight(): void {
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
     $(<Element>document.querySelector(".word")).outerHeight(true)
@@ -301,8 +305,8 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-small-wrapper").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
   try {
-    const paddingX = 50;
-    const paddingY = 50;
+    const paddingX = Misc.convertRemToPixels(2);
+    const paddingY = Misc.convertRemToPixels(2);
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
