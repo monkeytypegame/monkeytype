@@ -11,23 +11,87 @@ export function skipXpBreakdown(): void {
   skipBreakdown = true;
 }
 
-export function loading(truefalse: boolean): void {
-  if (truefalse) {
-    if (usingAvatar) {
-      $("#top #menu .account .avatar").addClass("hidden");
-      $("#top #menu .account .icon").removeClass("hidden");
-    }
-    $("#top #menu .account .icon").html(
-      '<i class="fas fa-fw fa-spin fa-circle-notch"></i>'
-    );
+export function loading(state: boolean): void {
+  if (state) {
     $("#top #menu .account").css("opacity", 1).css("pointer-events", "none");
-  } else {
+
     if (usingAvatar) {
-      $("#top #menu .account .avatar").removeClass("hidden");
-      $("#top #menu .account .icon").addClass("hidden");
+      $("#top #menu .account .loading").css("opacity", 1).removeClass("hidden");
+      $("#top #menu .account .avatar")
+        .stop(true, true)
+        .css({ opacity: 1 })
+        .animate(
+          {
+            opacity: 0,
+          },
+          100,
+          () => {
+            $("#top #menu .account .avatar").addClass("hidden");
+          }
+        );
+    } else {
+      $("#top #menu .account .loading")
+        .stop(true, true)
+        .removeClass("hidden")
+        .css({ opacity: 0 })
+        .animate(
+          {
+            opacity: 1,
+          },
+          100
+        );
+      $("#top #menu .account .user")
+        .stop(true, true)
+        .css({ opacity: 1 })
+        .animate(
+          {
+            opacity: 0,
+          },
+          100,
+          () => {
+            $("#top #menu .account .user").addClass("hidden");
+          }
+        );
     }
-    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-user"></i>');
+  } else {
     $("#top #menu .account").css("opacity", 1).css("pointer-events", "auto");
+
+    if (usingAvatar) {
+      $("#top #menu .account .loading").css("opacity", 1).addClass("hidden");
+      $("#top #menu .account .avatar")
+        .stop(true, true)
+        .removeClass("hidden")
+        .css({ opacity: 0 })
+        .animate(
+          {
+            opacity: 1,
+          },
+          100
+        );
+    } else {
+      $("#top #menu .account .loading")
+        .stop(true, true)
+        .css({ opacity: 1 })
+        .animate(
+          {
+            opacity: 0,
+          },
+          100,
+          () => {
+            $("#top #menu .account .loading").addClass("hidden");
+          }
+        );
+      $("#top #menu .account .user")
+        .stop(true, true)
+        .removeClass("hidden")
+        .css({ opacity: 0 })
+        .animate(
+          {
+            opacity: 1,
+          },
+          100
+        );
+    }
   }
 }
 
@@ -55,11 +119,12 @@ export async function update(
         );
         usingAvatar = true;
 
-        $("#top #menu .account .icon").addClass("hidden");
+        $("#top #menu .account .user").addClass("hidden");
         $("#top #menu .account .avatar").removeClass("hidden");
       }
     } else {
       $("#top #menu .account .avatar").addClass("hidden");
+      $("#top #menu .account .user").removeClass("hidden");
     }
     Misc.swapElements(
       $("#menu .textButton.login"),
