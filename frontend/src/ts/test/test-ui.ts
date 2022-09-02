@@ -288,15 +288,6 @@ export async function screenshot(): Promise<void> {
     );
   }
   $(".pageTest .buttons").addClass("hidden");
-  const src = $("#result");
-  const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
-  const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
-  const sourceWidth = <number>(
-    src.outerWidth(true)
-  ); /*clientWidth/offsetWidth from div#target*/
-  const sourceHeight = <number>(
-    src.outerHeight(true)
-  ); /*clientHeight/offsetHeight from div#target*/
   $("#testConfig").addClass("invisible");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
@@ -306,6 +297,16 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-wrapper").addClass("hidden");
   $("#ad-result-small-wrapper").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+
+  const src = $("#result");
+  const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
+  const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
+  const sourceWidth = <number>(
+    src.outerWidth(true)
+  ); /*clientWidth/offsetWidth from div#target*/
+  const sourceHeight = <number>(
+    src.outerHeight(true)
+  ); /*clientHeight/offsetHeight from div#target*/
   try {
     const paddingX = Misc.convertRemToPixels(2);
     const paddingY = Misc.convertRemToPixels(2);
