@@ -919,7 +919,7 @@ $("#wordsInput").on("beforeinput", (event) => {
 });
 let avg = 0;
 $("#wordsInput").on("input", (event) => {
-  let start = performance.now();
+  const start = performance.now();
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
