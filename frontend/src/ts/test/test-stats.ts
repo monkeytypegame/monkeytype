@@ -277,7 +277,7 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   const raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
   const end = performance.now();
   avg = (end - start + avg) / 2;
-  console.log("wpm avg", avg, "live wpm", (end - start) );
+  console.log("wpm avg", avg, "live wpm", end - start);
   return {
     wpm: wpm,
     raw: raw,
@@ -350,6 +350,97 @@ export function removeAfkData(): void {
   TestInput.wpmHistory.splice(testSeconds);
   TestInput.burstHistory.splice(testSeconds);
   TestInput.rawHistory.splice(testSeconds);
+}
+
+function controlCountChars(): CharCount {
+  let correctWordChars = 0;
+  let correctChars = 0;
+  let incorrectChars = 0;
+  let extraChars = 0;
+  let missedChars = 0;
+  let spaces = 0;
+  let correctspaces = 0;
+  for (let i = 0; i < TestInput.input.history.length; i++) {
+    const word =
+      Config.mode == "zen"
+        ? TestInput.input.getHistory(i)
+        : TestWords.words.get(i);
+    if (TestInput.input.getHistory(i) === "") {
+      //last word that was not started
+      continue;
+    }
+    if (TestInput.input.getHistory(i) == word) {
+      //the word is correct
+      correctWordChars += word.length;
+      correctChars += word.length;
+      if (
+        i < TestInput.input.history.length - 1 &&
+        Misc.getLastChar(TestInput.input.getHistory(i) as string) !== "\n"
+      ) {
+        correctspaces++;
+      }
+    } else if (TestInput.input.getHistory(i).length >= word.length) {
+      //too many chars
+      for (let c = 0; c < TestInput.input.getHistory(i).length; c++) {
+        if (c < word.length) {
+          //on char that still has a word list pair
+          if (TestInput.input.getHistory(i)[c] == word[c]) {
+            correctChars++;
+          } else {
+            incorrectChars++;
+          }
+        } else {
+          //on char that is extra
+          extraChars++;
+        }
+      }
+    } else {
+      //not enough chars
+      const toAdd = {
+        correct: 0,
+        incorrect: 0,
+        missed: 0,
+      };
+      for (let c = 0; c < word.length; c++) {
+        if (c < TestInput.input.getHistory(i).length) {
+          //on char that still has a word list pair
+          if (TestInput.input.getHistory(i)[c] == word[c]) {
+            toAdd.correct++;
+          } else {
+            toAdd.incorrect++;
+          }
+        } else {
+          //on char that is extra
+          toAdd.missed++;
+        }
+      }
+      correctChars += toAdd.correct;
+      incorrectChars += toAdd.incorrect;
+      if (i === TestInput.input.history.length - 1 && Config.mode == "time") {
+        //last word - check if it was all correct - add to correct word chars
+        if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
+      } else {
+        missedChars += toAdd.missed;
+      }
+    }
+    if (i < TestInput.input.history.length - 1) {
+      spaces++;
+    }
+  }
+  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
+    spaces = 0;
+    correctspaces = 0;
+  }
+  return {
+    spaces: spaces,
+    correctWordChars: correctWordChars,
+    allCorrectChars: correctChars,
+    incorrectChars:
+      Config.mode == "zen" ? TestInput.accuracy.incorrect : incorrectChars,
+    extraChars: extraChars,
+    missedChars: missedChars,
+    correctSpaces: correctspaces,
+  };
 }
 
 function countChars(): CharCount {
@@ -479,6 +570,22 @@ export function calculateStats(): Stats {
       (60 / testSeconds)) /
       5
   );
+
+  const charsControl = controlCountChars();
+  const wpmControl = Misc.roundTo2(
+    ((charsControl.correctWordChars + charsControl.correctSpaces) *
+      (60 / testSeconds)) /
+      5
+  );
+  const wpmrawControl = Misc.roundTo2(
+    ((charsControl.allCorrectChars +
+      charsControl.spaces +
+      charsControl.incorrectChars +
+      charsControl.extraChars) *
+      (60 / testSeconds)) /
+      5
+  );
+
   if (wpmCalcDebug) {
     console.log("chars", chars);
     console.log(
@@ -489,7 +596,11 @@ export function calculateStats(): Stats {
     console.log("wpmraw", wpmraw);
   }
   const acc = Misc.roundTo2(calculateAccuracy());
+
   return {
+    //@ts-ignore
+    wpmControl: isNaN(wpmControl) ? 0 : wpmControl,
+    wpmRawControl: isNaN(wpmraw) ? 0 : wpmrawControl,
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
     acc: acc,

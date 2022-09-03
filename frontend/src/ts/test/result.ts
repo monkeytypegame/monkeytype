@@ -244,10 +244,21 @@ function updateWpmAndAcc(): void {
       if (inf) {
         $("#result .stats .wpm .bottom").text("Infinite");
       } else {
+        //testing
         $("#result .stats .wpm .bottom").text(Math.round(result.wpm));
+        //@ts-ignore
+        $("#result .stats .control-wpm .bottom").text(
+          Math.round(result.wpmContorl)
+        );
       }
+      //testing
       $("#result .stats .raw .bottom").text(Math.round(result.rawWpm));
       $("#result .stats .raw .bottom").attr("aria-label", result.rawWpm);
+
+      //@ts-ignore
+      $("#result .stats .control-raw .bottom").text(
+        Math.round(result.rawWpmControl)
+      );
     } else {
       $("#result .stats .wpm .top .text").text("cpm");
       $("#result .stats .wpm .bottom").attr(
@@ -619,6 +630,7 @@ export async function update(
   ).scales;
   resultAnnotation = [];
   result = res;
+  console.log("ligma", res);
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")

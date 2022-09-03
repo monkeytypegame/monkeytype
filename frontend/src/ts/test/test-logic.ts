@@ -1316,6 +1316,10 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     TestStats.setLastSecondNotRound();
   }
   TestStats.setLastTestWpm(stats.wpm);
+  //@ts-ignore
+  completedEvent.wpmContorl = stats.wpmControl;
+  //@ts-ignore
+  completedEvent.rawWpmControl = stats.wpmRawControl;
   completedEvent.wpm = stats.wpm;
   completedEvent.rawWpm = stats.wpmRaw;
   completedEvent.charStats = [
@@ -1574,7 +1578,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
   TestStats.setLastResult(completedEvent);
-
+  console.log("bruh", completedEvent);
   await Result.update(
     completedEvent,
     difficultyFailed,
