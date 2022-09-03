@@ -787,7 +787,8 @@ function buildRewardUpdates(
     if (reward.type === "xp") {
       totalXp += reward.item;
     } else if (reward.type === "badge") {
-      newBadges.push(reward.item);
+      const item = _.omit(reward.item, "selected");
+      newBadges.push(item);
     }
   });
 
