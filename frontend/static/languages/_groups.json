@@ -409,5 +409,14 @@
   {
     "name": "wordle",
     "languages": ["wordle", "wordle_1k"]
+    },
+
+{
+
+  "name": "hinglish",
+
+  "languages": ["hinglish"]
+
+
   }
 ]
