@@ -815,6 +815,17 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
+export function addBadge(badge: MonkeyTypes.Badge): void {
+  const snapshot = getSnapshot();
+  if (snapshot.inventory === undefined) {
+    snapshot.inventory = {
+      badges: [],
+    };
+  }
+  snapshot.inventory.badges.push(badge);
+  setSnapshot(snapshot);
+}
+
 // export async function DB.getLocalTagPB(tagId) {
 //   function cont() {
 //     let ret = 0;

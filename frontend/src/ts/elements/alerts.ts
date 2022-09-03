@@ -4,6 +4,8 @@ import { Auth } from "../firebase";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as NotificationEvent from "../observables/notification-event";
+import * as BadgeController from "../controllers/badge-controller";
+import * as Notifications from "../elements/notifications";
 
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 
@@ -14,6 +16,8 @@ export function hide(): void {
   if (!$("#alertsPopupWrapper").hasClass("hidden")) {
     setBellButtonColored(false);
 
+    const badgesClaimed: string[] = [];
+    let totalXpClaimed = 0;
     if (mailToMarkRead.length > 0 || mailToDelete.length > 0) {
       Ape.users.updateInbox({
         mailIdsToMarkRead: undefined, //todo remove
@@ -30,19 +34,15 @@ export function hide(): void {
           return a.concat(b);
         }, []);
 
-      let totalXpClaimed = 0;
-
       for (const r of rewardsClaimed) {
         if (r.type === "xp") {
           totalXpClaimed += r.item as number;
         } else if (r.type === "badge") {
-          // todo
+          const badge = BadgeController.getById(r.item.id);
+          badgesClaimed.push(badge.name);
+          DB.addBadge(r.item);
         }
       }
-
-      const snapxp = DB.getSnapshot().xp;
-      AccountButton.updateXpBar(snapxp, totalXpClaimed);
-      DB.addXp(totalXpClaimed);
     }
 
     $("#alertsPopup").animate(
@@ -61,6 +61,22 @@ export function hide(): void {
         },
         100,
         () => {
+          if (badgesClaimed.length > 0) {
+            Notifications.add(
+              `New badge${
+                badgesClaimed.length > 1 ? "s" : ""
+              } unlocked: ${badgesClaimed.join(", ")}`,
+              1,
+              5,
+              "Reward",
+              "gift"
+            );
+          }
+          if (totalXpClaimed > 0) {
+            const snapxp = DB.getSnapshot().xp;
+            AccountButton.updateXpBar(snapxp, totalXpClaimed);
+            DB.addXp(totalXpClaimed);
+          }
           $("#alertsPopupWrapper").addClass("hidden");
         }
       );
@@ -113,14 +129,7 @@ async function getAccountAlerts(): Promise<void> {
   $("#alertsPopup .accountAlerts .list").empty();
 
   if (inboxResponse.status !== 200) {
-    // addNotification(, -1);
-    $("#alertsPopup .accountAlerts .list").html(
-      `
-      <div class="nothing">
-      Error getting inbox: ${inboxResponse.message}
-      </div>
-      `
-    );
+    Notifications.add(`Error getting inbox: ${inboxResponse.message}`, -1);
     return;
   }
   const inboxData = inboxResponse.data as {
