@@ -1,7 +1,8 @@
 import { debounce } from "throttle-debounce";
 import * as Misc from "../utils/misc";
 import * as BannerEvent from "../observables/banner-event";
-import * as Alerts from "./alerts";
+// import * as Alerts from "./alerts";
+import * as NotificationEvent from "../observables/notification-event";
 
 function updateMargin(): void {
   console.log("updating margin");
@@ -232,9 +233,7 @@ export function add(
   closeCallback?: () => void,
   allowHTML?: boolean
 ): void {
-  // notificationHistory.push(
-
-  Alerts.addNotification(message, level, customTitle);
+  NotificationEvent.dispatch(message, level, customTitle);
 
   new Notification(
     "notification",
@@ -246,7 +245,6 @@ export function add(
     closeCallback,
     allowHTML
   ).show();
-  // );
 }
 
 export function addBanner(
@@ -257,7 +255,6 @@ export function addBanner(
   closeCallback?: () => void,
   allowHTML?: boolean
 ): void {
-  // notificationHistory.push(
   new Notification(
     "banner",
     message,
@@ -268,7 +265,6 @@ export function addBanner(
     closeCallback,
     allowHTML
   ).show();
-  // );
 }
 
 const debouncedMarginUpdate = debounce(100, updateMargin);

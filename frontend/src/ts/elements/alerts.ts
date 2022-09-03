@@ -3,6 +3,7 @@ import Ape from "../ape";
 import { Auth } from "../firebase";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
+import * as NotificationEvent from "../observables/notification-event";
 
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 
@@ -208,7 +209,7 @@ export function addPSA(message: string, level: number): void {
   `);
 }
 
-export function addNotification(
+function addNotification(
   message: string,
   level: number,
   customTitle?: string
@@ -304,4 +305,8 @@ $(document).on("keydown", (e) => {
   if (e.key === "Escape" && !$("#alertsPopupWrapper").hasClass("hidden")) {
     hide();
   }
+});
+
+NotificationEvent.subscribe((message, level, customTitle) => {
+  addNotification(message, level, customTitle);
 });
