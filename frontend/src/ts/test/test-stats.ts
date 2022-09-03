@@ -188,8 +188,9 @@ export function calculateTestSeconds(now?: number): number {
     return (now - start) / 1000;
   }
 }
-
+let avg = 0;
 export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
+  const start = performance.now();
   let chars = 0;
   let correctWordChars = 0;
   let spaces = 0;
@@ -253,6 +254,9 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
     ((correctWordChars + spaces) * (60 / testSeconds)) / 5
   );
   const raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
+  const end = performance.now();
+  avg = Math.floor(end - start + avg) / 2;
+  console.log("wpm avg", avg, "wpm live", end - start);
   return {
     wpm: wpm,
     raw: raw,

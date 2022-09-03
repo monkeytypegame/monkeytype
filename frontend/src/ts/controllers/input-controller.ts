@@ -917,8 +917,9 @@ $("#wordsInput").on("beforeinput", (event) => {
     (event.target as HTMLInputElement).value = " ";
   }
 });
-
+let avg = 0;
 $("#wordsInput").on("input", (event) => {
+  let start = performance.now();
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     (event.target as HTMLInputElement).value = " ";
     return;
@@ -1025,6 +1026,9 @@ $("#wordsInput").on("input", (event) => {
       ).selectionEnd = (event.target as HTMLInputElement).value.length;
     }
   }, 0);
+  const end = performance.now();
+  avg = Math.floor(end - start + avg) / 2;
+  console.log("input avg", avg, "input live", end - start);
 });
 
 $("#wordsInput").on("focus", (event) => {
