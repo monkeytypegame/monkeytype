@@ -1064,7 +1064,7 @@ $("#wordsInput").on("input", (event) => {
   }, 0);
   const end = performance.now();
   avg = Math.floor(end - start + avg) / 2;
-  console.log("input avg", avg, "live input", (end - start) );
+  console.log("input avg", avg, "live input", end - start);
 });
 
 $("#wordsInput").on("focus", (event) => {
