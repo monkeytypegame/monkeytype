@@ -296,7 +296,7 @@ export async function punctuateWord(
 
       if (
         (Config.language.startsWith("code_c") &&
-         !Config.language.startsWith("code_css")) ||
+          !Config.language.startsWith("code_css")) ||
         Config.language.startsWith("code_arduino")
       ) {
         word = Misc.randomElementFromArray(specialsC);
