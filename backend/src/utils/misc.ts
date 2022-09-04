@@ -156,15 +156,6 @@ export function sanitizeString(str: string | undefined): string | undefined {
     .replace(/\s{3,}/g, "  ");
 }
 
-export function isToday(someDate): boolean {
-  const today = new Date();
-  return (
-    someDate.getDate() === today.getDate() &&
-    someDate.getMonth() === today.getMonth() &&
-    someDate.getFullYear() === today.getFullYear()
-  );
-}
-
 export function isYesterday(date: Date): boolean {
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
