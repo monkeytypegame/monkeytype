@@ -168,27 +168,25 @@ export function isToday(date: Date): boolean {
 
   return today.toDateString() === date.toDateString();
 }
-export function mapRange(
-  x: number,
-  in_min: number,
-  in_max: number,
-  out_min: number,
-  out_max: number
-): number {
-  let num = ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 
-  if (out_min > out_max) {
-    if (num > out_min) {
-      num = out_min;
-    } else if (num < out_max) {
-      num = out_max;
-    }
-  } else {
-    if (num < out_min) {
-      num = out_min;
-    } else if (num > out_max) {
-      num = out_max;
+export function mapRange(
+  value: number,
+  inMin: number,
+  inMax: number,
+  outMin: number,
+  outMax: number,
+  clamp = false
+): number {
+  const result =
+    ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+
+  if (clamp) {
+    if (outMin < outMax) {
+      return Math.min(Math.max(result, outMin), outMax);
+    } else {
+      return Math.max(Math.min(result, outMin), outMax);
     }
   }
-  return num;
+
+  return result;
 }
