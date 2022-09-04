@@ -259,8 +259,50 @@ export async function punctuateWord(
       }
     } else if (Math.random() < 0.25 && currentLanguage == "code") {
       const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
+      const specialsC = [
+        "{",
+        "}",
+        "[",
+        "]",
+        "(",
+        ")",
+        ";",
+        "=",
+        "+",
+        "%",
+        "/",
+        "/*",
+        "*/",
+        "//",
+        "!=",
+        "==",
+        "<=",
+        ">=",
+        "||",
+        "&&",
+        "<<",
+        ">>",
+        "%=",
+        "&=",
+        "*=",
+        "++",
+        "+=",
+        "--",
+        "-=",
+        "/=",
+        "^=",
+        "|=",
+      ];
 
-      word = Misc.randomElementFromArray(specials);
+      if (
+        (Config.language.startsWith("code_c") &&
+          !Config.language.startsWith("code_css")) ||
+        Config.language.startsWith("code_arduino")
+      ) {
+        word = Misc.randomElementFromArray(specialsC);
+      } else {
+        word = Misc.randomElementFromArray(specials);
+      }
     } else if (
       Math.random() < 0.5 &&
       currentLanguage === "english" &&
@@ -773,7 +815,10 @@ async function getNextWord(
           randomWord == "I") ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
-          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)))
+          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
+        (Config.mode !== "custom" &&
+          !Config.numbers &&
+          /[0-9]/i.test(randomWord)))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();

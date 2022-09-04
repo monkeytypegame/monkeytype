@@ -34,6 +34,7 @@ import * as George from "../../tasks/george";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
+import { buildMonkeyMail } from "../../utils/monkey-mail";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -248,11 +249,24 @@ export async function addResult(
         //autoban
         const autoBanConfig = req.ctx.configuration.users.autoBan;
         if (autoBanConfig.enabled) {
-          await recordAutoBanEvent(
+          const didUserGetBanned = await recordAutoBanEvent(
             uid,
             autoBanConfig.maxCount,
             autoBanConfig.maxHours
           );
+          if (didUserGetBanned) {
+            const mail = buildMonkeyMail({
+              getTemplate: () => ({
+                subject: "Banned",
+                body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
+              }),
+            });
+            UserDAL.addToInbox(
+              uid,
+              [mail],
+              req.ctx.configuration.users.inbox.maxMail
+            );
+          }
         }
         const status = MonkeyStatusCodes.BOT_DETECTED;
         throw new MonkeyError(status.code, "Possible bot detected");
@@ -452,7 +466,7 @@ async function calculateXp(
   let modifier = 1;
 
   const correctedEverything = charStats
-    .slice(2)
+    .slice(1)
     .every((charStat: number) => charStat === 0);
 
   if (acc === 100) {
