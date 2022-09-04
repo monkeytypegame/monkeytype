@@ -72,13 +72,15 @@ export async function update(
   const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
-  details
-    .find(".streak")
-    .text(
-      `Current streak: ${profile.streak} ${
-        profile.streak === 1 ? "day" : "days"
-      }`
-    );
+  if (profile.streak && profile?.streak > 0) {
+    details
+      .find(".streak")
+      .text(
+        `Current streak: ${profile.streak} ${
+          profile.streak === 1 ? "day" : "days"
+        }`
+      );
+  }
 
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl
