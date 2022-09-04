@@ -452,7 +452,7 @@ async function calculateXp(
   let modifier = 1;
 
   const correctedEverything = charStats
-    .slice(2)
+    .slice(1)
     .every((charStat: number) => charStat === 0);
 
   if (acc === 100) {
