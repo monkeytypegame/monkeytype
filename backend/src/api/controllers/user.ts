@@ -441,6 +441,7 @@ export async function getProfile(
     discordId,
     discordAvatar,
     xp,
+    streak,
   } = await UserDAL.getUser(uid, "get user profile");
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
@@ -466,6 +467,7 @@ export async function getProfile(
     discordId,
     discordAvatar,
     xp,
+    streak: streak?.length ?? 0,
   };
 
   if (banned) {
