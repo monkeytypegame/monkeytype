@@ -46,6 +46,7 @@ declare namespace MonkeyTypes {
         maxDailyBonus: number;
         minDailyBonus: number;
         streakBias: number;
+        maxStreakBonus: number;
       };
       inbox: {
         enabled: boolean;

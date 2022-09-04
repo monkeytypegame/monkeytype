@@ -47,6 +47,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       maxDailyBonus: 0,
       minDailyBonus: 0,
       streakBias: 0,
+      maxStreakBonus: 0,
     },
     inbox: {
       enabled: false,
@@ -232,6 +233,10 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
             streakBias: {
               type: "number",
               label: "Streak Bonus Bias",
+            },
+            maxStreakBonus: {
+              type: "number",
+              label: "Max Streak Bonus",
             },
           },
         },

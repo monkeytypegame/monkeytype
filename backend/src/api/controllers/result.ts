@@ -505,7 +505,9 @@ async function calculateXp(
   if (xpConfiguration.streakBias > 0) {
     streakBonus = streak * xpConfiguration.streakBias;
 
-    if (streakBonus > 1000) streakBonus = 1000;
+    if (streakBonus > xpConfiguration.maxStreakBonus) {
+      streakBonus = xpConfiguration.maxStreakBonus;
+    }
 
     if (streakBonus > 0) {
       breakdown["streak"] = streakBonus;
