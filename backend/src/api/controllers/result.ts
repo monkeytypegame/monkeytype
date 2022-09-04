@@ -503,7 +503,8 @@ async function calculateXp(
         0,
         xpConfiguration.streak.maxStreakDays,
         0,
-        xpConfiguration.streak.maxStreakMultiplier
+        xpConfiguration.streak.maxStreakMultiplier,
+        true
       ).toFixed(1)
     );
 
