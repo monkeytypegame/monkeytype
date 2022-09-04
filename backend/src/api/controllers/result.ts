@@ -11,6 +11,7 @@ import * as PublicStatsDAL from "../../dal/public-stats";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
+  mapRange,
   roundTo2,
   stdDev,
 } from "../../utils/misc";
@@ -501,16 +502,20 @@ async function calculateXp(
     }
   }
 
-  let streakBonus = 0;
-  if (xpConfiguration.streakBias > 0) {
-    streakBonus = streak * xpConfiguration.streakBias;
+  if (xpConfiguration.streak.enabled) {
+    const streakModifier = parseFloat(
+      mapRange(
+        streak,
+        0,
+        xpConfiguration.streak.maxStreakDays,
+        0,
+        xpConfiguration.streak.maxStreakMultiplier
+      ).toFixed(1)
+    );
 
-    if (streakBonus > xpConfiguration.maxStreakBonus) {
-      streakBonus = xpConfiguration.maxStreakBonus;
-    }
-
-    if (streakBonus > 0) {
-      breakdown["streak"] = streakBonus;
+    if (streakModifier > 0) {
+      modifier += streakModifier;
+      breakdown["streak"] = Math.round(baseXp * streakModifier);
     }
   }
 
@@ -548,9 +553,7 @@ async function calculateXp(
   breakdown["accPenalty"] = xpWithModifiers - xpAfterAccuracy;
 
   const totalXp =
-    Math.round(
-      (xpAfterAccuracy + incompleteXp + streakBonus) * gainMultiplier
-    ) + dailyBonus;
+    Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
 
   if (gainMultiplier > 1) {
     // breakdown.push([

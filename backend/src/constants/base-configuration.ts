@@ -46,8 +46,11 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       gainMultiplier: 0,
       maxDailyBonus: 0,
       minDailyBonus: 0,
-      streakBias: 0,
-      maxStreakBonus: 0,
+      streak: {
+        enabled: false,
+        maxStreakDays: 0,
+        maxStreakMultiplier: 0,
+      },
     },
     inbox: {
       enabled: false,
@@ -230,13 +233,23 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
               type: "number",
               label: "Min Daily Bonus",
             },
-            streakBias: {
-              type: "number",
-              label: "Streak Bonus Bias",
-            },
-            maxStreakBonus: {
-              type: "number",
-              label: "Max Streak Bonus",
+            streak: {
+              type: "object",
+              label: "Streak",
+              fields: {
+                enabled: {
+                  type: "boolean",
+                  label: "Enabled",
+                },
+                maxStreakDays: {
+                  type: "number",
+                  label: "Max Streak Days",
+                },
+                maxStreakMultiplier: {
+                  type: "number",
+                  label: "Max Streak Multiplier",
+                },
+              },
             },
           },
         },
