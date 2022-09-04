@@ -80,6 +80,8 @@ export async function update(
           profile.streak === 1 ? "day" : "days"
         }`
       );
+  } else {
+    details.find(".streak").text("");
   }
 
   const typingStatsEl = details.find(".typingStats");
