@@ -614,18 +614,16 @@ describe("UserDal", () => {
       .spyOn(global, "Date")
       .mockImplementation(() => mockDate as unknown as string);
 
-    console.log("FUCKING HELL");
-
     const streak1 = await updateStreak("TestID", 1659859800000);
-
-    console.log(streak1);
 
     expect(streak1).toBe(1);
 
     const streak2 = await updateStreak("TestID", 1659969721000);
 
-    console.log(streak2);
-
     expect(streak2).toBe(2);
+
+    const streak3 = await updateStreak("TestID", 1669969721000);
+
+    expect(streak2).toBe(1);
   });
 });
