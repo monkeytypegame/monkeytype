@@ -58,8 +58,8 @@ async function announceDailyLeaderboard(
           },
         ],
         getTemplate: (user) => ({
-          subject: `${xpReward} XP for top placement in the daily leaderboard!`,
-          body: `Congratulations ${user.name} on placing top ${entry.rank} in the ${language} ${mode} ${mode2} daily leaderboard! Claim your ${xpReward} xp!`,
+          subject: `Top placement reward`,
+          body: `Congratulations ${user.name} on placing in the top ${entry.rank} on the ${language} ${mode} ${mode2} daily leaderboard!`,
         }),
       });
 
