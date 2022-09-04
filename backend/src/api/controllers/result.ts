@@ -502,8 +502,8 @@ async function calculateXp(
   }
 
   let streakBonus = 0;
-  if (xpConfiguration.streaks.enabled) {
-    streakBonus = streak * xpConfiguration.streaks.bias;
+  if (xpConfiguration.streakBias > 0) {
+    streakBonus = streak * xpConfiguration.streakBias;
 
     if (streakBonus > 1000) streakBonus = 1000;
 
