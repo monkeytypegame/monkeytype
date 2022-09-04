@@ -97,6 +97,7 @@ interface AddResultData {
   xp: number;
   dailyXpBonus: boolean;
   xpBreakdown: Record<string, number>;
+  streak: number;
 }
 
 export async function addResult(
@@ -420,6 +421,7 @@ export async function addResult(
     xp: xpGained.xp,
     dailyXpBonus: xpGained.dailyBonus ?? false,
     xpBreakdown: xpGained.breakdown ?? {},
+    streak,
   };
 
   if (dailyLeaderboardRank !== -1) {
