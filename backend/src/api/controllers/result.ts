@@ -375,11 +375,14 @@ export async function addResult(
     );
   }
 
+  const streak = await updateStreak(uid, result.timestamp);
+
   const xpGained = await calculateXp(
     result,
     req.ctx.configuration.users.xp,
     uid,
-    user.xp ?? 0
+    user.xp ?? 0,
+    streak
   );
 
   if (result.bailedOut === false) delete result.bailedOut;
@@ -437,7 +440,8 @@ async function calculateXp(
   result,
   xpConfiguration: MonkeyTypes.Configuration["users"]["xp"],
   uid: string,
-  currentTotalXp: number
+  currentTotalXp: number,
+  streak: number
 ): Promise<XpResult> {
   const {
     mode,
@@ -495,12 +499,14 @@ async function calculateXp(
     }
   }
 
-  const streakModifier = parseFloat(
-    Math.log10(await updateStreak(uid, result.timestamp)).toFixed(1)
-  );
-  if (streakModifier > 0) {
-    modifier += streakModifier;
-    breakdown["streak"] = Math.round(baseXp * streakModifier);
+  if (xpConfiguration.streaks.enabled) {
+    const streakModifier = parseFloat(
+      (Math.log10(streak) * xpConfiguration.streaks.modifierBias).toFixed(1)
+    );
+    if (streakModifier > 0) {
+      modifier += streakModifier;
+      breakdown["streak"] = Math.round(baseXp * streakModifier);
+    }
   }
 
   const incompleteXp = Math.round(incompleteTestSeconds);
