@@ -495,10 +495,13 @@ async function calculateXp(
     }
   }
 
-  // Modifier is incremented with the log10 calculation of the current streak.
-  // That means that streaks greater than 10 days will increase modifier with 1.x,
-  // streaks greater than 100 will increase modifier with 2.x, greater than 1000 with 3.x, etc.
-  modifier += Math.log10(await updateStreak(uid, result.timestamp));
+  const streak = parseFloat(
+    Math.log10(await updateStreak(uid, result.timestamp)).toFixed(1)
+  );
+  if (streak > 0) {
+    modifier += streak;
+    breakdown["streak"] = Math.round(baseXp * streak);
+  }
 
   const incompleteXp = Math.round(incompleteTestSeconds);
   breakdown["incomplete"] = incompleteXp;
