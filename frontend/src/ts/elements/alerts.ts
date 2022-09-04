@@ -145,7 +145,14 @@ async function getAccountAlerts(): Promise<void> {
 
   $("#alertsPopup .accountAlerts .list").empty();
 
-  if (inboxResponse.status !== 200) {
+  if (inboxResponse.status === 503) {
+    $("#alertsPopup .accountAlerts .list").html(`
+    <div class="nothing">
+    Account inboxes are temporarily unavailable.
+    </div>
+    `);
+    return;
+  } else if (inboxResponse.status !== 200) {
     $("#alertsPopup .accountAlerts .list").html(`
     <div class="nothing">
     Error getting inbox: ${inboxResponse.message} Please try again later.
