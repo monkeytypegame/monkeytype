@@ -3,7 +3,6 @@ const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CleanTerminalPlugin = require("clean-terminal-webpack-plugin");
 
 let circularImports = 0;
 
@@ -73,7 +72,6 @@ const BASE_CONFIG = {
     },
   },
   plugins: [
-    new CleanTerminalPlugin(),
     new CircularDependencyPlugin({
       exclude: /node_modules/,
       include: /./,

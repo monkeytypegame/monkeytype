@@ -681,10 +681,12 @@ export async function recordAutoBanEvent(
   uid: string,
   maxCount: number,
   maxHours: number
-): Promise<void> {
+): Promise<boolean> {
   const user = await getUser(uid, "record auto ban event");
 
-  if (user.banned) return;
+  let ret = false;
+
+  if (user.banned) return ret;
 
   const autoBanTimestamps = user.autoBanTimestamps ?? [];
 
@@ -704,10 +706,12 @@ export async function recordAutoBanEvent(
   };
   if (recentAutoBanTimestamps.length > maxCount) {
     updateObj.banned = true;
+    ret = true;
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
   Logger.logToDb("user_auto_banned", { autoBanTimestamps }, uid);
+  return ret;
 }
 
 export async function updateProfile(
