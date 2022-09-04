@@ -8,7 +8,7 @@ import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
 
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
-
+let maxMail = 0;
 let mailToMarkRead: string[] = [];
 let mailToDelete: string[] = [];
 
@@ -16,33 +16,48 @@ export function hide(): void {
   if (!$("#alertsPopupWrapper").hasClass("hidden")) {
     setBellButtonColored(false);
 
+    let mailUpdatedPromiseResolve: (value?: unknown) => void;
+    const mailUpdatedPromise = new Promise((resolve) => {
+      mailUpdatedPromiseResolve = resolve;
+    });
+
     const badgesClaimed: string[] = [];
     let totalXpClaimed = 0;
     if (mailToMarkRead.length > 0 || mailToDelete.length > 0) {
-      Ape.users.updateInbox({
-        mailIdsToMarkRead: undefined, //todo remove
-        // mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
-        mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
-      });
-
-      const rewardsClaimed = accountAlerts
-        .filter((ie) => {
-          return ie.rewards.length > 0 && mailToMarkRead.includes(ie.id);
+      Ape.users
+        .updateInbox({
+          mailIdsToMarkRead:
+            mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
+          mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
         })
-        .map((ie) => ie.rewards)
-        .reduce(function (a, b) {
-          return a.concat(b);
-        }, []);
+        .then(async (updateResponse) => {
+          const status = (await updateResponse).status;
+          const message = (await updateResponse).message;
+          if (status !== 200) {
+            Notifications.add(`Failed to update inbox: ${message}`, -1);
+            return;
+          } else {
+            const rewardsClaimed = accountAlerts
+              .filter((ie) => {
+                return ie.rewards.length > 0 && mailToMarkRead.includes(ie.id);
+              })
+              .map((ie) => ie.rewards)
+              .reduce(function (a, b) {
+                return a.concat(b);
+              }, []);
 
-      for (const r of rewardsClaimed) {
-        if (r.type === "xp") {
-          totalXpClaimed += r.item as number;
-        } else if (r.type === "badge") {
-          const badge = BadgeController.getById(r.item.id);
-          badgesClaimed.push(badge.name);
-          DB.addBadge(r.item);
-        }
-      }
+            for (const r of rewardsClaimed) {
+              if (r.type === "xp") {
+                totalXpClaimed += r.item as number;
+              } else if (r.type === "badge") {
+                const badge = BadgeController.getById(r.item.id);
+                badgesClaimed.push(badge.name);
+                DB.addBadge(r.item);
+              }
+            }
+          }
+          mailUpdatedPromiseResolve();
+        });
     }
 
     $("#alertsPopup").animate(
@@ -61,22 +76,24 @@ export function hide(): void {
         },
         100,
         () => {
-          if (badgesClaimed.length > 0) {
-            Notifications.add(
-              `New badge${
-                badgesClaimed.length > 1 ? "s" : ""
-              } unlocked: ${badgesClaimed.join(", ")}`,
-              1,
-              5,
-              "Reward",
-              "gift"
-            );
-          }
-          if (totalXpClaimed > 0) {
-            const snapxp = DB.getSnapshot().xp;
-            AccountButton.updateXpBar(snapxp, totalXpClaimed);
-            DB.addXp(totalXpClaimed);
-          }
+          mailUpdatedPromise.then(() => {
+            if (badgesClaimed.length > 0) {
+              Notifications.add(
+                `New badge${
+                  badgesClaimed.length > 1 ? "s" : ""
+                } unlocked: ${badgesClaimed.join(", ")}`,
+                1,
+                5,
+                "Reward",
+                "gift"
+              );
+            }
+            if (totalXpClaimed > 0) {
+              const snapxp = DB.getSnapshot().xp;
+              AccountButton.updateXpBar(snapxp, totalXpClaimed);
+              DB.addXp(totalXpClaimed);
+            }
+          });
           $("#alertsPopupWrapper").addClass("hidden");
         }
       );
@@ -148,9 +165,9 @@ async function getAccountAlerts(): Promise<void> {
     return;
   }
 
-  $("#alertsPopup .accountAlerts .title .right").text(
-    `${accountAlerts.length}/${inboxData.maxMail}`
-  );
+  maxMail = inboxData.maxMail;
+
+  updateInboxSize();
 
   for (const ie of accountAlerts) {
     if (!ie.read && ie.rewards.length == 0) {
@@ -159,7 +176,7 @@ async function getAccountAlerts(): Promise<void> {
 
     let rewardsString = "";
 
-    if (ie.rewards.length > 0) {
+    if (ie.rewards.length > 0 && ie.read === false) {
       rewardsString = `<div class="rewards">
         <i class="fas fa-fw fa-gift"></i>
         <span>${ie.rewards.length}</span>
@@ -179,14 +196,15 @@ async function getAccountAlerts(): Promise<void> {
         </div>
         <div class="buttons">
           ${
-            ie.rewards.length > 0
+            ie.rewards.length > 0 && ie.read === false
               ? `<div class="markReadAlert textButton" aria-label="Claim" data-balloon-pos="left"><i class="fas fa-gift"></i></div>`
               : ``
           }
           ${
-            ie.rewards.length > 0 && ie.read === false
-              ? ``
-              : `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
+            (ie.rewards.length > 0 && ie.read === true) ||
+            ie.rewards.length == 0
+              ? `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
+              : ``
           }
         </div>
       </div>
@@ -260,6 +278,12 @@ export function setBellButtonColored(tf: boolean): void {
   }
 }
 
+function updateInboxSize(): void {
+  $("#alertsPopup .accountAlerts .title .right").text(
+    `${accountAlerts.length}/${maxMail}`
+  );
+}
+
 $("#top #menu .showAlerts").on("click", () => {
   show();
 });
@@ -277,6 +301,15 @@ $("#alertsPopup .accountAlerts .list").on(
     const id = $(e.currentTarget).closest(".item").attr("data-id") as string;
     mailToDelete.push(id);
     $(e.currentTarget).closest(".item").remove();
+    accountAlerts = accountAlerts.filter((ie) => ie.id !== id);
+    if (accountAlerts.length === 0) {
+      $("#alertsPopup .accountAlerts .list").html(`
+      <div class="nothing">
+      Nothing to show
+      </div>
+      `);
+    }
+    updateInboxSize();
   }
 );
 
@@ -289,7 +322,7 @@ $("#alertsPopup .accountAlerts .list").on(
     const item = $(e.currentTarget).closest(".item");
 
     item.find(".indicator").removeClass("main");
-    item.find(".buttons .markReadAlert").remove();
+    item.find(".buttons").empty();
     item
       .find(".buttons")
       .append(
