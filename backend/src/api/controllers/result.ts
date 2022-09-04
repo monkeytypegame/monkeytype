@@ -501,13 +501,14 @@ async function calculateXp(
     }
   }
 
+  let streakBonus = 0;
   if (xpConfiguration.streaks.enabled) {
-    const streakModifier = parseFloat(
-      (Math.log10(streak) * xpConfiguration.streaks.modifierBias).toFixed(1)
-    );
-    if (streakModifier > 0) {
-      modifier += streakModifier;
-      breakdown["streak"] = Math.round(baseXp * streakModifier);
+    streakBonus = streak * xpConfiguration.streaks.bias;
+
+    if (streakBonus > 1000) streakBonus = 1000;
+
+    if (streakBonus > 0) {
+      breakdown["streak"] = streakBonus;
     }
   }
 
@@ -545,7 +546,9 @@ async function calculateXp(
   breakdown["accPenalty"] = xpWithModifiers - xpAfterAccuracy;
 
   const totalXp =
-    Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
+    Math.round(
+      (xpAfterAccuracy + incompleteXp + streakBonus) * gainMultiplier
+    ) + dailyBonus;
 
   if (gainMultiplier > 1) {
     // breakdown.push([
