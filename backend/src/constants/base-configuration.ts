@@ -67,7 +67,8 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
     dailyLeaderboardCacheSize: 1,
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
-    xpReward: 0,
+    minXpReward: 0,
+    maxXpReward: 0,
   },
 };
 
@@ -367,9 +368,14 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
           label: "Top Results To Announce",
           min: 1,
         },
-        xpReward: {
+        minXpReward: {
           type: "number",
-          label: "XP Reward",
+          label: "Minimum XP Reward",
+          min: 0,
+        },
+        maxXpReward: {
+          type: "number",
+          label: "Maximum XP Reward",
           min: 0,
         },
       },

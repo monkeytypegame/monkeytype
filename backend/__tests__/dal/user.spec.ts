@@ -501,19 +501,102 @@ describe("UserDal", () => {
       "TestID",
       [
         {
-          getTemplate: (user) => ({
-            subject: `Hello ${user.name}!`,
-          }),
+          subject: `Hello!`,
         } as any,
       ],
-      0
+      {
+        enabled: true,
+        maxMail: 100,
+      }
     );
 
     const inbox = await UserDAL.getInbox("TestID");
 
     expect(inbox).toStrictEqual([
       {
-        subject: "Hello test name!",
+        subject: "Hello!",
+      },
+    ]);
+  });
+
+  it("addToInbox discards mail if inbox is full", async () => {
+    await UserDAL.addUser("test name", "test email", "TestID");
+
+    const config = {
+      enabled: true,
+      maxMail: 1,
+    };
+
+    await UserDAL.addToInbox(
+      "TestID",
+      [
+        {
+          subject: "Hello 1!",
+        } as any,
+      ],
+      config
+    );
+
+    await UserDAL.addToInbox(
+      "TestID",
+      [
+        {
+          subject: "Hello 2!",
+        } as any,
+      ],
+      config
+    );
+
+    const inbox = await UserDAL.getInbox("TestID");
+
+    expect(inbox).toStrictEqual([
+      {
+        subject: "Hello 2!",
+      },
+    ]);
+  });
+
+  it("addToInboxBulk should add mail to multiple users", async () => {
+    await UserDAL.addUser("test name", "test email", "TestID");
+    await UserDAL.addUser("test name 2", "test email 2", "TestID2");
+
+    await UserDAL.addToInboxBulk(
+      [
+        {
+          uid: "TestID",
+          mail: [
+            {
+              subject: `Hello!`,
+            } as any,
+          ],
+        },
+        {
+          uid: "TestID2",
+          mail: [
+            {
+              subject: `Hello 2!`,
+            } as any,
+          ],
+        },
+      ],
+      {
+        enabled: true,
+        maxMail: 100,
+      }
+    );
+
+    const inbox = await UserDAL.getInbox("TestID");
+    const inbox2 = await UserDAL.getInbox("TestID2");
+
+    expect(inbox).toStrictEqual([
+      {
+        subject: "Hello!",
+      },
+    ]);
+
+    expect(inbox2).toStrictEqual([
+      {
+        subject: "Hello 2!",
       },
     ]);
   });
