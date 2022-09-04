@@ -624,6 +624,6 @@ describe("UserDal", () => {
 
     const streak3 = await updateStreak("TestID", 1669969721000);
 
-    expect(streak2).toBe(1);
+    expect(streak3).toBe(1);
   });
 });
