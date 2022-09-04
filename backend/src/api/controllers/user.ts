@@ -16,7 +16,6 @@ import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
 import { deleteConfig } from "../../dal/config";
-import UserStreak = MonkeyTypes.UserStreak;
 
 export async function createNewUser(
   req: MonkeyTypes.Request
@@ -537,7 +536,7 @@ export async function updateInbox(
 
 export async function updateStreak(uid, timestamp): Promise<number> {
   const user = await UserDAL.getUser(uid, "calculate streak");
-  const streak: UserStreak = {
+  const streak: MonkeyTypes.UserStreak = {
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
   };
