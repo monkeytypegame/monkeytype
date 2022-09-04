@@ -165,17 +165,18 @@ export function getOrdinalNumberString(number: number): string {
   return `${number}${suffix}`;
 }
 
-export function isYesterday(date: Date): boolean {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
+export function isYesterday(timestamp: number): boolean {
+  const yesterday = getStartOfDayTimestamp(Date.now() - MILLISECONDS_IN_DAY);
+  const date = getStartOfDayTimestamp(timestamp);
 
-  return yesterday.toDateString() === date.toDateString();
+  return yesterday === date;
 }
 
-export function isToday(date: Date): boolean {
-  const today = new Date();
+export function isToday(timestamp: number): boolean {
+  const today = getStartOfDayTimestamp(Date.now());
+  const date = getStartOfDayTimestamp(timestamp);
 
-  return today.toDateString() === date.toDateString();
+  return today === date;
 }
 
 export function mapRange(
