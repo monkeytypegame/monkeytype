@@ -528,24 +528,6 @@ export async function updateInbox(
   return new MonkeyResponse("Inbox updated");
 }
 
-function isToday(someDate): boolean {
-  const today = new Date();
-  return (
-    someDate.getDate() === today.getDate() &&
-    someDate.getMonth() === today.getMonth() &&
-    someDate.getFullYear() === today.getFullYear()
-  );
-}
-
-function isYesterday(someDate): boolean {
-  const today = new Date();
-  return (
-    someDate.getDate() + 1 === today.getDate() &&
-    someDate.getMonth() === today.getMonth() &&
-    someDate.getFullYear() === today.getFullYear()
-  );
-}
-
 export async function updateStreak(uid, timestamp): Promise<number> {
   const user = await UserDAL.getUser(uid, "calculate streak");
   const streak: UserStreak = {
