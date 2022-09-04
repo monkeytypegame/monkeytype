@@ -146,7 +146,11 @@ async function getAccountAlerts(): Promise<void> {
   $("#alertsPopup .accountAlerts .list").empty();
 
   if (inboxResponse.status !== 200) {
-    Notifications.add(`Error getting inbox: ${inboxResponse.message}`, -1);
+    $("#alertsPopup .accountAlerts .list").html(`
+    <div class="nothing">
+    Error getting inbox: ${inboxResponse.message} Please try again later.
+    </div>
+    `);
     return;
   }
   const inboxData = inboxResponse.data as {
@@ -268,6 +272,10 @@ function addNotification(
     </div>
   </div>
   `);
+
+  if ($("#alertsPopup .notificationHistory .list").length > 25) {
+    $("#alertsPopup .notificationHistory .list .item:last").remove();
+  }
 }
 
 export function setBellButtonColored(tf: boolean): void {
