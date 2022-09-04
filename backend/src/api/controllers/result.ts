@@ -256,16 +256,10 @@ export async function addResult(
           );
           if (didUserGetBanned) {
             const mail = buildMonkeyMail({
-              getTemplate: () => ({
-                subject: "Banned",
-                body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
-              }),
+              subject: "Banned",
+              body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
-            UserDAL.addToInbox(
-              uid,
-              [mail],
-              req.ctx.configuration.users.inbox.maxMail
-            );
+            UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
           }
         }
         const status = MonkeyStatusCodes.BOT_DETECTED;
