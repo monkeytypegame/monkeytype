@@ -387,7 +387,7 @@ export function restart(options = {} as RestartOptions): void {
     if (
       Config.repeatQuotes === "typing" &&
       Config.mode === "quote" &&
-      Config.language.replace(/_\d*k$/g, "") === TestWords.randomQuote.language
+      Config.language.startsWith(TestWords.randomQuote.language)
     ) {
       options.withSameWordset = true;
     }
@@ -706,7 +706,7 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
     word = Misc.getArrows();
   } else if (Config.funbox === "58008") {
     word = Misc.getNumbers(7);
-    if (Config.language.split("_")[0] === "kurdish") {
+    if (Config.language.startsWith("kurdish")) {
       word = Misc.convertNumberToArabicIndic(word);
     }
   } else if (Config.funbox === "specials") {
@@ -802,7 +802,7 @@ async function getNextWord(
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
 
-      if (Config.language.split("_")[0] === "kurdish") {
+      if (Config.language.startsWith("kurdish")) {
         randomWord = Misc.convertNumberToArabicIndic(randomWord);
       }
     }
