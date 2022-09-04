@@ -54,12 +54,5 @@ describe("user controller test", () => {
         })
         .expect(409);
     });
-
-    it("updateStreak should update streak", async () => {
-      await UserDAL.addUser("test name", "test email", "TestID");
-
-      expect(await updateStreak("TestID", 1659859800000)).toBe(1);
-      expect(await updateStreak("TestID", 1659969721000)).toBe(2);
-    });
   });
 });

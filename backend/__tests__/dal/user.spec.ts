@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { ObjectId } from "mongodb";
+import { updateStreak } from "../../src/api/controllers/user";
 import * as UserDAL from "../../src/dal/user";
 
 const mockPersonalBest = {
@@ -489,8 +490,8 @@ describe("UserDal", () => {
     expect(resetUser.bananas).toStrictEqual(0);
     expect(resetUser.xp).toStrictEqual(0);
     expect(resetUser.streak).toStrictEqual({
-      value: 0,
-      lastResult: 0,
+      length: 0,
+      lastResultTimestamp: 0,
     });
   });
 
@@ -520,5 +521,12 @@ describe("UserDal", () => {
         subject: "Hello test name!",
       },
     ]);
+  });
+
+  it("updateStreak should update streak", async () => {
+    await UserDAL.addUser("test", "test email", "TestID");
+
+    expect(await updateStreak("TestID", 1659859800000)).toBe(1);
+    expect(await updateStreak("TestID", 1659969721000)).toBe(2);
   });
 });
