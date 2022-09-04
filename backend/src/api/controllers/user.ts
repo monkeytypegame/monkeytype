@@ -531,18 +531,18 @@ export async function updateInbox(
 function isToday(someDate): boolean {
   const today = new Date();
   return (
-    someDate.getDate() == today.getDate() &&
-    someDate.getMonth() == today.getMonth() &&
-    someDate.getFullYear() == today.getFullYear()
+    someDate.getDate() === today.getDate() &&
+    someDate.getMonth() === today.getMonth() &&
+    someDate.getFullYear() === today.getFullYear()
   );
 }
 
 function isYesterday(someDate): boolean {
   const today = new Date();
   return (
-    someDate.getDate() + 1 == today.getDate() &&
-    someDate.getMonth() == today.getMonth() &&
-    someDate.getFullYear() == today.getFullYear()
+    someDate.getDate() + 1 === today.getDate() &&
+    someDate.getMonth() === today.getMonth() &&
+    someDate.getFullYear() === today.getFullYear()
   );
 }
 
