@@ -815,24 +815,10 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
-export async function updateStreak(): Promise<number> {
+export function setStreak(streak: number): void {
   const snapshot = getSnapshot();
-  const userResponse = await Ape.users.getData();
-
-  if (userResponse.status !== 200) {
-    throw {
-      message: `${userResponse.message} (user)`,
-      responseCode: userResponse.status,
-    };
-  }
-
-  if (userResponse?.data?.streak) {
-    snapshot.streak = userResponse.data.streak?.length ?? 0;
-    setSnapshot(snapshot);
-    return snapshot.streak;
-  }
-
-  return 0;
+  snapshot.streak = streak;
+  setSnapshot(snapshot);
 }
 
 // export async function DB.getLocalTagPB(tagId) {
