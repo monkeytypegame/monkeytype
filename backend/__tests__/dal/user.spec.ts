@@ -607,9 +607,25 @@ describe("UserDal", () => {
   });
 
   it("updateStreak should update streak", async () => {
-    await UserDAL.addUser("test", "test email", "TestID");
+    await UserDAL.addUser("testStack", "test email", "TestID");
 
-    expect(await updateStreak("TestID", 1659859800000)).toBe(1);
-    expect(await updateStreak("TestID", 1659969721000)).toBe(2);
+    const mockDate = new Date(1659749879000);
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => mockDate as unknown as string);
+
+    console.log("FUCKING HELL");
+
+    const streak1 = await updateStreak("TestID", 1659859800000);
+
+    console.log(streak1);
+
+    expect(streak1).toBe(1);
+
+    const streak2 = await updateStreak("TestID", 1659969721000);
+
+    console.log(streak2);
+
+    expect(streak2).toBe(2);
   });
 });
