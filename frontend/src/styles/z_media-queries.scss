@@ -168,16 +168,16 @@
     .zen,
     .quoteLength {
       .textButton {
-        padding: 0.75rem 0.3rem;
+        padding: 0.75rem 0.3rem 0.7rem 0.3rem;
 
         &:first-child {
-          padding: 0.75rem 0.3rem 0.75rem 0.6rem;
+          padding: 0.75rem 0.3rem 0.7rem 0.6rem;
         }
         &:last-child {
-          padding: 0.75rem 0.6rem 0.75rem 0.3rem;
+          padding: 0.75rem 0.6rem 0.7rem 0.3rem;
         }
         &:only-child {
-          padding: 0.75rem 0.6rem;
+          padding: 0.75rem 0.6rem 0.7rem 0.6rem;
         }
       }
     }
@@ -320,16 +320,16 @@
     .zen,
     .quoteLength {
       .textButton {
-        padding: 0.5rem 0.75rem;
+        padding: 0.5rem 0.75rem 0.45rem 0.75rem;
 
         &:first-child {
-          padding: 0.5rem 0.75rem;
+          padding: 0.5rem 0.75rem 0.45rem 0.75rem;
         }
         &:last-child {
-          padding: 0.5rem 0.75rem;
+          padding: 0.5rem 0.75rem 0.45rem 0.75rem;
         }
         &:only-child {
-          padding: 0.5rem 0.75rem;
+          padding: 0.5rem 0.75rem 0.45rem 0.75rem;
         }
       }
     }

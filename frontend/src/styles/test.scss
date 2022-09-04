@@ -962,6 +962,16 @@
     }
   }
 
+  .wordCount,
+  .time {
+    .textButton {
+      line-height: 1rem;
+      span {
+        height: 1.1em;
+      }
+    }
+  }
+
   .mode,
   .time,
   .wordCount,
@@ -974,16 +984,16 @@
 
     .textButton {
       transition: 0.125s;
-      padding: 0.75rem 0.5rem;
+      padding: 0.75rem 0.5rem 0.7rem 0.5rem;
 
       &:first-child {
-        padding: 0.75rem 0.5rem 0.75rem 1rem;
+        padding: 0.75rem 0.5rem 0.7rem 1rem;
       }
       &:last-child {
-        padding: 0.75rem 1rem 0.75rem 0.5rem;
+        padding: 0.75rem 1rem 0.7rem 0.5rem;
       }
       &:only-child {
-        padding: 0.75rem 1rem;
+        padding: 0.75rem 1rem 0.7rem 1rem;
       }
     }
   }
