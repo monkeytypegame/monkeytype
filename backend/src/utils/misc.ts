@@ -165,11 +165,9 @@ export function isToday(someDate): boolean {
   );
 }
 
-export function isYesterday(someDate): boolean {
-  const today = new Date();
-  return (
-    someDate.getDate() + 1 === today.getDate() &&
-    someDate.getMonth() === today.getMonth() &&
-    someDate.getFullYear() === today.getFullYear()
-  );
+export function isYesterday(date: Date): boolean {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  return yesterday.toDateString() === date.toDateString();
 }
