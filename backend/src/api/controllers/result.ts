@@ -495,12 +495,12 @@ async function calculateXp(
     }
   }
 
-  const streak = parseFloat(
+  const streakModifier = parseFloat(
     Math.log10(await updateStreak(uid, result.timestamp)).toFixed(1)
   );
-  if (streak > 0) {
-    modifier += streak;
-    breakdown["streak"] = Math.round(baseXp * streak);
+  if (streakModifier > 0) {
+    modifier += streakModifier;
+    breakdown["streak"] = Math.round(baseXp * streakModifier);
   }
 
   const incompleteXp = Math.round(incompleteTestSeconds);
