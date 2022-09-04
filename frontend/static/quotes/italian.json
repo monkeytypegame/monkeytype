@@ -645,9 +645,15 @@
     },
     {
       "text": "Ho osservato una lumaca strisciare lungo il filo di un rasoio, questo è il mio sogno, è il mio incubo: strisciare, scivolare lungo il filo di un rasoio e sopravvivere.",
-      "source": "Saggezza Popolare",
+      "source": "Kurtz, Apocalypse Now",
       "length": 167,
       "id": 107
+    },
+    {
+      "text": "Il napalm, lo senti? Non c'è niente al mondo che abbia questo odore. Mi piace l'odore del napalm al mattino.",
+      "source": "Bill Kilgore, Apocalypse Now",
+      "length": 108,
+      "id": 108
     }
   ]
 }
