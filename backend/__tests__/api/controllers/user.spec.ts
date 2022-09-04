@@ -1,7 +1,5 @@
 import request from "supertest";
 import app from "../../../src/app";
-import * as UserDAL from "../../../src/dal/user";
-import { updateStreak } from "../../../src/api/controllers/user";
 
 const mockApp = request(app);
 
