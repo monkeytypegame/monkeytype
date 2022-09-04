@@ -14,9 +14,9 @@
       "id": 1
     },
     {
-      "text": "float Q_rsqrt( float number )\\n{\\n    long i;\\n    float x2, y;\\n    const float threehalfs = 1.5F;\\n\\n    x2 = number * 0.5F;\\n    y  = number;\\n    i  = * ( long * ) &y; // evil floating point bit level hacking\\n    i  = 0x5f3759df - ( i >> 1 ); // what the fuck?\\n    y  = * ( float * ) &i;\\n    y  = y * ( threehalfs - ( x2 * y * y ) ); // 1st iteration\\n    return y;\\n}\\n",
+      "text": "float Q_rsqrt( float number )\\n{\\n\\tlong i;\\n\\tfloat x2, y;\\n\\tconst float threehalfs = 1.5F;\\n\\n\\tx2 = number * 0.5F;\\n\\ty  = number;\\n\\ti  = * ( long * ) &y;\\n\\ti  = 0x5f3759df - ( i >> 1 );\\n\\ty  = * ( float * ) &i;\\n\\ty  = y * ( threehalfs - ( x2 * y * y ) );\\n\\treturn y;\\n}\\n",
       "source": "Quake III Arena Source Code (Fast Inverse Square Root)",
-      "length": 377,
+      "length": 281,
       "id": 2
     },
     {
