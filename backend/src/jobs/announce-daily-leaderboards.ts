@@ -63,8 +63,8 @@ async function announceDailyLeaderboard(
       );
 
       const rewardMail = buildMonkeyMail({
-        subject: `${xpReward} XP for placing ${placementString} in the daily leaderboard!`,
-        body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard! Claim your ${xpReward} xp!`,
+        subject: "Daily leaderboard placement",
+        body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
         rewards: [
           {
             type: "xp",
