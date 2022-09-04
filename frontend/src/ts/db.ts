@@ -96,7 +96,7 @@ export async function initSnapshot(): Promise<
     snap.addedAt = userData.addedAt;
     snap.inventory = userData.inventory;
     snap.xp = userData.xp ?? 0;
-    snap.streak = userData?.streak?.value ?? 0;
+    snap.streak = userData?.streak?.length ?? 0;
 
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format
@@ -827,7 +827,7 @@ export async function updateStreak(): Promise<number> {
   }
 
   if (userResponse?.data?.streak) {
-    snapshot.streak = userResponse.data.streak?.value ?? 0;
+    snapshot.streak = userResponse.data.streak?.length ?? 0;
     setSnapshot(snapshot);
     return snapshot.streak;
   }
