@@ -4,7 +4,12 @@ import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { getDiscordUser } from "../../utils/discord";
-import { buildAgentLog, sanitizeString } from "../../utils/misc";
+import {
+  buildAgentLog,
+  isToday,
+  isYesterday,
+  sanitizeString,
+} from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
