@@ -42,6 +42,11 @@
   /* Firefox */
 }
 
+::selection {
+  background-color: var(--main-color);
+  color: var(--sub-alt-color);
+}
+
 #app {
   display: grid;
   grid-template-columns: auto minmax(0, 1000px) auto;

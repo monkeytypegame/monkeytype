@@ -12,6 +12,24 @@
       "source": "Linux Kernel Source Code",
       "length": 73,
       "id": 1
+    },
+    {
+      "text": "void reverse(char s[]) {\\n\\tint c, i, j;\\n\\tfor ( i = 0, j = strlen(s)-1; i < j; i++, j--) {\\n\\t\\tc = s[i];\\n\\t\\ts[i] = s[j];\\n\\t\\ts[j] = c;\\n\\t}\\n}\\nvoid itoa(int n, char s[], int width) {\\n\\tint i, sign;\\n\\tif ((sign = n) < 0)\\n\\t\\tn = -n;\\n\\ti = 0;\\n\\tdo {\\n\\t\\ts[i++] = n % 10 + '0';\\n\\t\\tprintf(\"%d %% %d + '0' = %d\\\\n\", n, 10, s[i-1]);\\n\\t} while ((n /= 10) > 0);\\n\\tif (sign < 0)\\n\\t\\ts[i++] = '-';\\n\\twhile (i < width)\\n\\t\\ts[i++] = ' ';\\n\\ts[i] = '\\\\0';\\n\\treverse(s);\\n}",
+      "source": "clc-wiki - atoi",
+      "length": 480,
+      "id": 2
+    },
+    {
+      "text": "int hexalpha_to_int(int c)\\n{\\n\\tchar hexalpha[] = \"aAbBcCdDeEfF\";\\n\\tint i;\\n\\tint answer = 0;\\n\\tfor(i = 0; answer == 0 && hexalpha[i] != '\\\\0'; i++)\\n\\t{\\n\\t\\tif(hexalpha[i] == c)\\n\\t\\t{\\n\\t\\t\\tanswer = 10 + (i / 2);\\n\\t\\t}\\n\\t}\\n\\treturn answer;\\n}\\nunsigned int htoi(const char s[])\\n{\\n\\tunsigned int answer = 0;\\n\\tint i = 0;\\n\\tint valid = 1;\\n\\tint hexit;\\n\\n\\tif(s[i] == '0')\\n\\t{\\n\\t\\t++i;\\n\\t\\tif(s[i] == 'x' || s[i] == 'X')\\n\\t\\t{\\n\\t\\t\\t++i;\\n\\t\\t}\\n\\t}\\n\\twhile(valid && s[i] != '\\\\0')\\n\\t{\\n\\t\\tanswer = answer * 16;\\n\\t\\tif(s[i] >= '0' && s[i] <= '9')\\n\\t\\t{\\n\\t\\t\\tanswer = answer + (s[i] - '0');\\n\\t\\t}\\n\\t\\telse\\n\\t\\t{\\n\\t\\t\\thexit = hexalpha_to_int(s[i]);\\n\\t\\t\\tif(hexit == 0)\\n\\t\\t\\t{\\n\\t\\t\\t\\tvalid = 0;\\n\\t\\t\\t}\\n\\t\\t\\telse\\n\\t\\t\\t{\\n\\t\\t\\t\\tanswer = answer + hexit;\\n\\t\\t\\t}\\n\\t\\t}\\n\\t\\t++i;\\n\\t}\\n\\tif(!valid)\\n\\t{\\n\\t\\tanswer = 0;\\n\\t}\\n\\treturn answer;\\n}",
+      "source": "clc-wiki - htoi",
+      "length": 884,
+      "id": 3
+    },
+    {
+      "text": "unsigned rightrot(unsigned x, unsigned n)\\n{\\n\\twhile (n > 0) {\\n\\t\\tif ((x & 1) == 1)\\n\\t\\t\\tx = (x >> 1) | ~(~0U >> 1);\\n\\t\\telse\\n\\t\\t\\tx = (x >> 1);\\n\\t\\tn--;\\n\\t}\\n\\treturn x;\\n}",
+      "source": "clc-wiki - rightrot",
+      "length": 183,
+      "id": 4
     }
   ]
 }
