@@ -72,8 +72,8 @@ export async function resetUser(uid: string): Promise<void> {
         tags: [],
         xp: 0,
         streak: {
-          value: 0,
-          lastResult: 0,
+          length: 0,
+          lastResultTimestamp: 0,
         },
       },
       $unset: {

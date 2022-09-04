@@ -536,18 +536,18 @@ export async function updateInbox(
 export async function updateStreak(uid, timestamp): Promise<number> {
   const user = await UserDAL.getUser(uid, "calculate streak");
   const streak: UserStreak = {
-    lastResult: user.streak?.lastResult ?? 0,
-    value: user.streak?.value ?? 0,
+    lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
+    length: user.streak?.length ?? 0,
   };
 
-  if (isYesterday(new Date(streak.lastResult))) {
-    streak.value += 1;
-  } else if (!isToday(new Date(streak.lastResult))) {
-    streak.value = 1;
+  if (isYesterday(new Date(streak.lastResultTimestamp))) {
+    streak.length += 1;
+  } else if (!isToday(new Date(streak.lastResultTimestamp))) {
+    streak.length = 1;
   }
 
-  streak.lastResult = timestamp;
+  streak.lastResultTimestamp = timestamp;
   await UserDAL.getUsersCollection().updateOne({ uid }, { $set: { streak } });
 
-  return streak.value;
+  return streak.length;
 }
