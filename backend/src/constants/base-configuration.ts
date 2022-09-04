@@ -48,7 +48,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       minDailyBonus: 0,
       streaks: {
         enabled: false,
-        modifierBias: 0,
+        bias: 0,
       },
     },
     inbox: {
@@ -240,9 +240,9 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
                   type: "boolean",
                   label: "Enabled",
                 },
-                modifierBias: {
+                bias: {
                   type: "number",
-                  label: "Modifier Bias",
+                  label: "Bias",
                 },
               },
             },
