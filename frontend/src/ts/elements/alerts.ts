@@ -112,10 +112,12 @@ export async function show(): Promise<void> {
 
     if (Auth.currentUser) {
       $("#alertsPopup .accountAlerts").removeClass("hidden");
+      $("#alertsPopup .separator.accountSeparator").removeClass("hidden");
       $("#alertsPopup .accountAlerts .list").html(`
         <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`);
     } else {
       $("#alertsPopup .accountAlerts").addClass("hidden");
+      $("#alertsPopup .separator.accountSeparator").addClass("hidden");
     }
 
     accountAlerts = [];
