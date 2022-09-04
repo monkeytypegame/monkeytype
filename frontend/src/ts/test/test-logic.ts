@@ -259,8 +259,50 @@ export async function punctuateWord(
       }
     } else if (Math.random() < 0.25 && currentLanguage == "code") {
       const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
+      const specialsC = [
+        "{",
+        "}",
+        "[",
+        "]",
+        "(",
+        ")",
+        ";",
+        "=",
+        "+",
+        "%",
+        "/",
+        "/*",
+        "*/",
+        "//",
+        "!=",
+        "==",
+        "<=",
+        ">=",
+        "||",
+        "&&",
+        "<<",
+        ">>",
+        "%=",
+        "&=",
+        "*=",
+        "++",
+        "+=",
+        "--",
+        "-=",
+        "/=",
+        "^=",
+        "|=",
+      ];
 
-      word = Misc.randomElementFromArray(specials);
+      if (
+        (Config.language.startsWith("code_c") &&
+          !Config.language.startsWith("code_css")) ||
+        Config.language.startsWith("code_arduino")
+      ) {
+        word = Misc.randomElementFromArray(specialsC);
+      } else {
+        word = Misc.randomElementFromArray(specials);
+      }
     } else if (
       Math.random() < 0.5 &&
       currentLanguage === "english" &&
@@ -496,6 +538,7 @@ export function restart(options = {} as RestartOptions): void {
     ) {
       ThemeController.randomizeTheme();
     }
+    AccountButton.skipXpBreakdown();
   }
   TestUI.setResultVisible(false);
   PageTransition.set(true);
@@ -613,7 +656,11 @@ export function restart(options = {} as RestartOptions): void {
         }
       }
 
-      if (Config.showAverage !== "off") Last10Average.update();
+      if (Config.showAverage !== "off") {
+        Last10Average.update().then(() => {
+          ModesNotice.update();
+        });
+      }
 
       const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";
@@ -758,14 +805,20 @@ async function getNextWord(
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
       regenarationCount < 100 &&
-      (previousWord == randomWord ||
+      ((Config.mode !== "custom" &&
+        /[A-Z]/.test(randomWord) &&
+        !Config.punctuation) ||
+        previousWord == randomWord ||
         previousWord2 == randomWord ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
           randomWord == "I") ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
-          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)))
+          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
+        (Config.mode !== "custom" &&
+          !Config.numbers &&
+          /[0-9]/i.test(randomWord)))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();
@@ -941,7 +994,18 @@ export async function init(): Promise<void> {
             ? await Wikipedia.getSection(Config.language)
             : await Poetry.getPoem();
 
+        if (Config.funbox == "poetry" && section === false) {
+          Notifications.add(
+            "Error while getting poetry. Please try again later",
+            -1
+          );
+          UpdateConfig.setFunbox("none");
+          restart();
+          return;
+        }
+
         if (section === undefined) continue;
+        if (section === false) continue;
 
         for (const word of section.words) {
           if (wordCount >= Config.words && Config.mode == "words") {
@@ -1150,7 +1214,19 @@ export async function addWord(): Promise<void> {
           ? await Wikipedia.getSection(Config.language)
           : await Poetry.getPoem();
 
+      if (Config.funbox == "poetry" && section === false) {
+        Notifications.add(
+          "Error while getting poetry. Please try again later",
+          -1
+        );
+        UpdateConfig.setFunbox("none");
+        restart();
+        return;
+      }
+
       if (section === undefined) return;
+      if (section === false) return;
+
       let wordCount = 0;
       for (const word of section.words) {
         if (wordCount >= Config.words && Config.mode == "words") {
@@ -1237,62 +1313,7 @@ export async function retrySavingResult(): Promise<void> {
 
   Notifications.add("Retrying to save...");
 
-  const response = await Ape.results.save(completedEvent);
-
-  AccountButton.loading(false);
-  Result.hideCrown();
-
-  if (response.status !== 200) {
-    retrySaving.canRetry = true;
-    $("#retrySavingResultButton").removeClass("hidden");
-    return Notifications.add("Result not saved. " + response.message, -1);
-  }
-
-  if (response.data.xp) {
-    const snapxp = DB.getSnapshot().xp;
-    AccountButton.updateXpBar(
-      snapxp,
-      response.data.xp,
-      response.data.dailyXpBonus
-    );
-    DB.addXp(response.data.xp);
-  }
-
-  completedEvent._id = response.data.insertedId;
-  if (response.data.isPb) {
-    completedEvent.isPb = true;
-  }
-
-  DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats(
-    TestStats.restartCount + 1,
-    completedEvent.testDuration +
-      completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration
-  );
-
-  AnalyticsController.log("testCompleted");
-
-  if (response.data.isPb) {
-    //new pb
-    Result.showCrown();
-    Result.updateCrown();
-    DB.saveLocalPB(
-      Config.mode,
-      completedEvent.mode2,
-      Config.punctuation,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
-      completedEvent.wpm,
-      completedEvent.acc,
-      completedEvent.rawWpm,
-      completedEvent.consistency
-    );
-  }
-
-  $("#retrySavingResultButton").addClass("hidden");
-  Notifications.add("Result saved", 1);
+  saveResult(completedEvent, true);
 }
 
 function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
@@ -1595,6 +1616,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
 
+  $("#result .stats .dailyLeaderboard").addClass("hidden");
+
   TestStats.setLastResult(completedEvent);
 
   await Result.update(
@@ -1643,18 +1666,25 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   completedEvent.hash = objectHash(completedEvent);
 
+  saveResult(completedEvent, false);
+}
+
+async function saveResult(
+  completedEvent: CompletedEvent,
+  isRetrying: boolean
+): Promise<void> {
   const response = await Ape.results.save(completedEvent);
 
   AccountButton.loading(false);
+  Result.hideCrown();
 
   if (response.status !== 200) {
     console.log("Error saving result", completedEvent);
-    $("#retrySavingResultButton").removeClass("hidden");
-    if (response.message === "Incorrect result hash") {
-      console.log(completedEvent);
-    }
-    retrySaving.completedEvent = completedEvent;
     retrySaving.canRetry = true;
+    $("#retrySavingResultButton").removeClass("hidden");
+    if (!isRetrying) {
+      retrySaving.completedEvent = completedEvent;
+    }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
@@ -1663,12 +1693,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
-      response.data.dailyXpBonus
+      response.data.xpBreakdown
     );
     DB.addXp(response.data.xp);
   }
-
-  Result.hideCrown();
 
   completedEvent._id = response.data.insertedId;
   if (response.data.isPb) {
@@ -1703,18 +1731,42 @@ export async function finish(difficultyFailed = false): Promise<void> {
     );
   }
 
-  if (response.data.dailyLeaderboardRank) {
-    Notifications.add(
-      `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
-        Misc.getPositionString(response.data.dailyLeaderboardRank),
-      1,
-      10,
-      "Daily Leaderboard",
-      "list-ol"
+  // if (response.data.dailyLeaderboardRank) {
+  //   Notifications.add(
+  //     `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
+  //       Misc.getPositionString(response.data.dailyLeaderboardRank),
+  //     1,
+  //     10,
+  //     "Daily Leaderboard",
+  //     "list-ol"
+  //   );
+  // }
+
+  if (!response.data.dailyLeaderboardRank) {
+    $("#result .stats .dailyLeaderboard").addClass("hidden");
+  } else {
+    $("#result .stats .dailyLeaderboard")
+      .css({
+        maxWidth: "10rem",
+        opacity: 0,
+      })
+      .removeClass("hidden")
+      .animate(
+        {
+          // maxWidth: "10rem",
+          opacity: 1,
+        },
+        500
+      );
+    $("#result .stats .dailyLeaderboard .bottom").html(
+      Misc.getPositionString(response.data.dailyLeaderboardRank)
     );
   }
 
   $("#retrySavingResultButton").addClass("hidden");
+  if (isRetrying) {
+    Notifications.add("Result saved", 1);
+  }
 }
 
 export function fail(reason: string): void {

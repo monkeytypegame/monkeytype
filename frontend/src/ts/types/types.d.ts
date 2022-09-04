@@ -38,8 +38,6 @@ declare namespace MonkeyTypes {
 
   type QuoteLength = -3 | -2 | -1 | 0 | 1 | 2 | 3;
 
-  type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
-
   type CaretStyle =
     | "off"
     | "default"
@@ -149,6 +147,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
     difficulty: string;
     raw: number;
+    isPb: boolean;
   }
 
   interface AccChartData {
@@ -320,7 +319,7 @@ declare namespace MonkeyTypes {
     mode: Mode;
     quoteLength: QuoteLength[];
     language: string;
-    fontSize: FontSize;
+    fontSize: number;
     freedomMode: boolean;
     resultFilters?: ResultFilters | null;
     difficulty: Difficulty;

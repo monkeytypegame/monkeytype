@@ -15,6 +15,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
+import { skipXpBreakdown } from "../elements/account-button";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -162,6 +163,10 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
+  updateWordsHeight();
+}
+
+export function updateWordsHeight(): void {
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
     $(<Element>document.querySelector(".word")).outerHeight(true)
@@ -282,9 +287,9 @@ export async function screenshot(): Promise<void> {
     );
   }
   $(".pageTest .buttons").addClass("hidden");
-  const src = $("#middle");
-  const sourceX = src.position().left; /*X position from div#target*/
-  const sourceY = src.position().top; /*Y position from div#target*/
+  const src = $("#result");
+  const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
+  const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
   const sourceWidth = <number>(
     src.outerWidth(true)
   ); /*clientWidth/offsetWidth from div#target*/
@@ -300,8 +305,8 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-small-wrapper").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
   try {
-    const paddingX = 50;
-    const paddingY = 25;
+    const paddingX = Misc.convertRemToPixels(2);
+    const paddingY = Misc.convertRemToPixels(2);
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
@@ -1036,4 +1041,10 @@ $(document.body).on("click", "#showWordHistoryButton", () => {
 
 $("#wordsWrapper").on("click", () => {
   focusWords();
+});
+
+$(document).on("keypress", () => {
+  if (resultVisible) {
+    skipXpBreakdown();
+  }
 });

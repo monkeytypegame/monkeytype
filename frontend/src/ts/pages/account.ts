@@ -600,6 +600,7 @@ function fillContent(): void {
         raw: Config.alwaysShowCPM
           ? Misc.roundTo2(result.rawWpm * 5)
           : result.rawWpm,
+        isPb: result.isPb ?? false,
       });
 
       wpmChartData.push(result.wpm);

@@ -47,7 +47,7 @@ function setWordsInput(value: string): void {
 }
 
 function updateUI(): void {
-  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  const acc: number = Misc.roundTo2(TestStats.calculateAccuracy());
   if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -64,8 +64,8 @@ function backspaceToPrevious(): void {
   if (!TestActive.get()) return;
 
   if (
-    TestInput.input.history.length == 0 ||
-    TestUI.currentWordElementIndex == 0
+    TestInput.input.history.length === 0 ||
+    TestUI.currentWordElementIndex === 0
   ) {
     return;
   }
@@ -108,16 +108,17 @@ function handleSpace(): void {
     $("#words").append("<div class='word active'></div>");
   }
 
-  const currentWord = TestWords.words.getCurrent();
+  const currentWord: string = TestWords.words.getCurrent();
   if (Config.funbox === "layoutfluid" && Config.mode !== "time") {
-    // here I need to check if Config.customLayoutFluid exists because of my scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
-    const layouts = Config.customLayoutfluid
+    // here I need to check if Config.customLayoutFluid exists because of my
+    // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
+    const layouts: string[] = Config.customLayoutfluid
       ? Config.customLayoutfluid.split("#")
       : ["qwerty", "dvorak", "colemak"];
     let index = 0;
-    const outof = TestWords.words.length;
+    const outOf: number = TestWords.words.length;
     index = Math.floor(
-      (TestInput.input.history.length + 1) / (outof / layouts.length)
+      (TestInput.input.history.length + 1) / (outOf / layouts.length)
     );
     if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
       Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
@@ -134,13 +135,13 @@ function handleSpace(): void {
   }
   dontInsertSpace = true;
 
-  const burst = TestStats.calculateBurst();
+  const burst: number = TestStats.calculateBurst();
   LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
   //correct word or in zen mode
-  const isWordCorrect =
-    currentWord == TestInput.input.current || Config.mode == "zen";
+  const isWordCorrect: boolean =
+    currentWord === TestInput.input.current || Config.mode == "zen";
   MonkeyPower.addPower(isWordCorrect, true);
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
@@ -167,7 +168,7 @@ function handleSpace(): void {
     }
     TestInput.pushMissedWord(TestWords.words.getCurrent());
     TestInput.incrementKeypressErrors();
-    const cil = TestInput.input.current.length;
+    const cil: number = TestInput.input.current.length;
     if (cil <= TestWords.words.getCurrent().length) {
       if (cil >= TestInput.corrected.current.length) {
         TestInput.corrected.current += "_";
@@ -209,7 +210,7 @@ function handleSpace(): void {
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
       TestLogic.fail("difficulty");
       return;
-    } else if (TestWords.words.currentIndex == TestWords.words.length) {
+    } else if (TestWords.words.currentIndex === TestWords.words.length) {
       //submitted last word that is incorrect
       TestLogic.finish();
       return;
@@ -217,14 +218,14 @@ function handleSpace(): void {
     Replay.addReplayEvent("submitErrorWord");
   }
 
-  let wordLength;
+  let wordLength: number;
   if (Config.mode === "zen") {
     wordLength = TestInput.input.current.length;
   } else {
     wordLength = TestWords.words.getCurrent().length;
   }
 
-  const flex = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
+  const flex: number = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
   if (
     (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
     (Config.minBurst === "flex" && burst < flex)
@@ -238,15 +239,15 @@ function handleSpace(): void {
   if (
     !Config.showAllLines ||
     Config.mode == "time" ||
-    (CustomText.isWordRandom && CustomText.word == 0) ||
+    (CustomText.isWordRandom && CustomText.word === 0) ||
     CustomText.isTimeRandom
   ) {
-    const currentTop = Math.floor(
+    const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
         TestUI.currentWordElementIndex - 1
       ].offsetTop
     );
-    let nextTop;
+    let nextTop: number;
     try {
       nextTop = Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
@@ -302,44 +303,44 @@ function isCharCorrect(char: string, charIndex: number): boolean {
 
   const originalChar: string = TestWords.words.getCurrent()[charIndex];
 
-  if (originalChar == char) {
+  if (originalChar === char) {
     return true;
   }
 
-  if (Config.language.split("_")[0] == "russian") {
-    if ((char === "е" || char === "e") && originalChar == "ё") {
+  if (Config.language.startsWith("russian")) {
+    if ((char === "е" || char === "e") && originalChar === "ё") {
       return true;
     }
-    if (char === "ё" && (originalChar == "е" || originalChar === "e")) {
+    if (char === "ё" && (originalChar === "е" || originalChar === "e")) {
       return true;
     }
   }
 
   if (Config.funbox === "arrows") {
-    if ((char === "w" || char === "ArrowUp") && originalChar == "↑") {
+    if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
       return true;
     }
-    if ((char === "s" || char === "ArrowDown") && originalChar == "↓") {
+    if ((char === "s" || char === "ArrowDown") && originalChar === "↓") {
       return true;
     }
-    if ((char === "a" || char === "ArrowLeft") && originalChar == "←") {
+    if ((char === "a" || char === "ArrowLeft") && originalChar === "←") {
       return true;
     }
-    if ((char === "d" || char === "ArrowRight") && originalChar == "→") {
+    if ((char === "d" || char === "ArrowRight") && originalChar === "→") {
       return true;
     }
   }
 
   if (
-    (char === `’` || char === "‘" || char === "'") &&
-    (originalChar == `’` || originalChar === "‘" || originalChar === "'")
+    (char === "’" || char === "‘" || char === "'") &&
+    (originalChar === "’" || originalChar === "‘" || originalChar === "'")
   ) {
     return true;
   }
 
   if (
     (char === `"` || char === "”" || char == "“" || char === "„") &&
-    (originalChar == `"` ||
+    (originalChar === `"` ||
       originalChar === "”" ||
       originalChar === "“" ||
       originalChar === "„")
@@ -348,8 +349,8 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   }
 
   if (
-    (char === "–" || char === "—" || char == "-") &&
-    (originalChar == "-" || originalChar === "–" || originalChar === "—")
+    (char === "–" || char === "—" || char === "-") &&
+    (originalChar === "-" || originalChar === "–" || originalChar === "—")
   ) {
     return true;
   }
@@ -360,7 +361,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
 function handleChar(
   char: string,
   charIndex: number,
-  realInputVaue?: string
+  realInputValue?: string
 ): void {
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
@@ -415,7 +416,7 @@ function handleChar(
   Focus.set(true);
   Caret.stopAnimation();
 
-  const thisCharCorrect = isCharCorrect(char, charIndex);
+  const thisCharCorrect: boolean = isCharCorrect(char, charIndex);
   let resultingWord: string;
 
   if (thisCharCorrect && Config.mode !== "zen") {
@@ -442,7 +443,7 @@ function handleChar(
     // With chars alone this happens when a previous symbol is completed
     // Example:
     // input history: ['프'], input:ㄹ, expected :프ㄹ, result: 플
-    const realInput: string = (realInputVaue ?? "").slice(1);
+    const realInput: string = (realInputValue ?? "").slice(1);
     resultingWord = realInput;
     koInputVisual.innerText = resultingWord.slice(-1);
   }
@@ -549,14 +550,14 @@ function handleChar(
   if (Config.mode != "zen") {
     //not applicable to zen mode
     //auto stop the test if the last word is correct
-    const currentWord = TestWords.words.getCurrent();
-    const lastindex = TestWords.words.currentIndex;
+    const currentWord: string = TestWords.words.getCurrent();
+    const lastIndex: number = TestWords.words.currentIndex;
     if (
-      (currentWord == TestInput.input.current ||
+      (currentWord === TestInput.input.current ||
         (Config.quickEnd &&
-          currentWord.length == TestInput.input.current.length &&
+          currentWord.length === TestInput.input.current.length &&
           Config.stopOnError == "off")) &&
-      lastindex == TestWords.words.length - 1
+      lastIndex === TestWords.words.length - 1
     ) {
       TestInput.input.pushHistory();
       TestInput.corrected.pushHistory();
@@ -620,8 +621,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     const area = $("#customTextPopup .textarea")[0] as HTMLTextAreaElement;
 
-    const start = area.selectionStart;
-    const end = area.selectionEnd;
+    const start: number = area.selectionStart;
+    const end: number = area.selectionEnd;
 
     // set textarea value to: text before caret + tab + text after caret
     area.value =
@@ -642,7 +643,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     shouldInsertTabCharacter = true;
   }
 
-  const modalVisible =
+  const modalVisible: boolean =
     !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
 
   if (Config.quickRestart === "esc") {
@@ -714,14 +715,14 @@ $(document).keydown(async (event) => {
   if (ActivePage.get() == "loading") return event.preventDefault();
 
   //autofocus
-  const wordsFocused = $("#wordsInput").is(":focus");
-  const pageTestActive = ActivePage.get() === "test";
+  const wordsFocused: boolean = $("#wordsInput").is(":focus");
+  const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
 
-  const popupVisible = Misc.isAnyPopupVisible();
+  const popupVisible: boolean = Misc.isAnyPopupVisible();
 
-  const allowTyping =
+  const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
     !leaderboardsVisible &&
@@ -743,7 +744,7 @@ $(document).keydown(async (event) => {
 
   //esc
   if (event.key === "Escape" && Config.quickRestart === "esc") {
-    const modalVisible =
+    const modalVisible: boolean =
       !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
 
     if (modalVisible) return;
@@ -839,11 +840,14 @@ $(document).keydown(async (event) => {
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     Sound.playClick();
-    const word = document.querySelector<HTMLElement>("#words .word.active");
-    const len = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
+    const word: HTMLElement | null = document.querySelector<HTMLElement>(
+      "#words .word.active"
+    );
+    const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
-    const deadLetter = word?.querySelectorAll("letter")[len];
+    const deadLetter: Element | undefined =
+      word?.querySelectorAll("letter")[len];
     if (deadLetter) {
       deadLetter.classList.toggle("dead");
     }
@@ -855,7 +859,7 @@ $(document).keydown(async (event) => {
   }
 
   if (Config.funbox === "arrows") {
-    let char = event.key;
+    let char: string = event.key;
     if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(char)) {
       if (char === "ArrowLeft") char = "a";
       if (char === "ArrowRight") char = "d";
@@ -876,7 +880,7 @@ $(document).keydown(async (event) => {
       (event.altKey && window.navigator.platform.search("Linux") > -1)
     )
   ) {
-    const char = await LayoutEmulator.getCharFromEvent(event);
+    const char: string | null = await LayoutEmulator.getCharFromEvent(event);
     if (char !== null) {
       event.preventDefault();
       handleChar(char, TestInput.input.current.length);
@@ -896,9 +900,11 @@ $("#wordsInput").keyup((event) => {
   }
 
   if (TestUI.resultVisible) return;
-  const now = performance.now();
+  const now: number = performance.now();
   if (TestInput.keypressTimings.duration.current !== -1) {
-    const diff = Math.abs(TestInput.keypressTimings.duration.current - now);
+    const diff: number = Math.abs(
+      TestInput.keypressTimings.duration.current - now
+    );
     TestInput.pushKeypressDuration(diff);
   }
   TestInput.setKeypressDuration(now);
