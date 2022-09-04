@@ -72,7 +72,7 @@ export async function update(
   const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
-  if (profile.streak && profile?.streak > 0) {
+  if (profile.streak && profile?.streak > 1) {
     details
       .find(".streak")
       .text(
