@@ -70,6 +70,10 @@ export async function resetUser(uid: string): Promise<void> {
         customThemes: [],
         tags: [],
         xp: 0,
+        streak: {
+          length: 0,
+          lastResultTimestamp: 0,
+        },
       },
       $unset: {
         discordAvatar: "",

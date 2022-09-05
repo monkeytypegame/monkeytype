@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { ObjectId } from "mongodb";
+import { updateStreak } from "../../src/api/controllers/user";
 import * as UserDAL from "../../src/dal/user";
 
 const mockPersonalBest = {
@@ -488,6 +489,10 @@ describe("UserDal", () => {
 
     expect(resetUser.bananas).toStrictEqual(0);
     expect(resetUser.xp).toStrictEqual(0);
+    expect(resetUser.streak).toStrictEqual({
+      length: 0,
+      lastResultTimestamp: 0,
+    });
   });
 
   it("getInbox should return the user's inbox", async () => {
@@ -599,5 +604,27 @@ describe("UserDal", () => {
         subject: "Hello 2!",
       },
     ]);
+  });
+
+  it("updateStreak should update streak", async () => {
+    await UserDAL.addUser("testStack", "test email", "TestID");
+
+    Date.now = jest.fn(() => 1662372000000);
+
+    const streak1 = await updateStreak("TestID", 1662372000000);
+
+    await expect(streak1).toBe(1);
+
+    Date.now = jest.fn(() => 1662458400000);
+
+    const streak2 = await updateStreak("TestID", 1662458400000);
+
+    await expect(streak2).toBe(2);
+
+    Date.now = jest.fn(() => 1999969721000000);
+
+    const streak3 = await updateStreak("TestID", 1999969721000);
+
+    await expect(streak3).toBe(1);
   });
 });
