@@ -541,9 +541,9 @@ export async function updateStreak(uid, timestamp): Promise<number> {
     length: user.streak?.length ?? 0,
   };
 
-  if (isYesterday(new Date(streak.lastResultTimestamp))) {
+  if (isYesterday(streak.lastResultTimestamp)) {
     streak.length += 1;
-  } else if (!isToday(new Date(streak.lastResultTimestamp))) {
+  } else if (!isToday(streak.lastResultTimestamp)) {
     streak.length = 1;
   }
 
