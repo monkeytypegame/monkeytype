@@ -894,6 +894,15 @@
   #mobileTestConfig {
     display: block;
   }
+  #alertsPopupWrapper {
+    #alertsPopup {
+      border-radius: 0;
+      width: 100%;
+      .mobileClose {
+        display: block;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 400px) {

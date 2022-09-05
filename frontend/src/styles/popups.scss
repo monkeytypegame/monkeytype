@@ -1344,6 +1344,11 @@
     margin-right: -10rem;
     border-radius: var(--roundness) 0 0 var(--roundness);
 
+    .mobileClose {
+      margin: 0 1rem 2rem 1rem;
+      display: none;
+    }
+
     .separator {
       background-color: var(--sub-alt-color);
       height: 0.25rem;

@@ -311,6 +311,10 @@ $("#alertsPopupWrapper").on("mousedown", (e) => {
   }
 });
 
+$("#alertsPopup .mobileClose").on("click", () => {
+  hide();
+});
+
 $("#alertsPopup .accountAlerts .list").on(
   "click",
   ".item .buttons .deleteAlert",
