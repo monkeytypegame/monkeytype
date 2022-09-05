@@ -79,9 +79,15 @@ export async function update(
         `Current streak: ${profile.streak} ${
           profile.streak === 1 ? "day" : "days"
         }`
+      )
+      .attr(
+        "aria-label",
+        `Longest streak: ${profile.maxStreak} ${
+          profile.maxStreak === 1 ? "day" : "days"
+        }`
       );
   } else {
-    details.find(".streak").text("");
+    details.find(".streak").text("").attr("aria-label", "");
   }
 
   const typingStatsEl = details.find(".typingStats");

@@ -472,6 +472,7 @@ export async function getProfile(
     discordAvatar,
     xp,
     streak: streak?.length ?? 0,
+    maxStreak: streak?.maxLength ?? 0,
   };
 
   if (banned) {
