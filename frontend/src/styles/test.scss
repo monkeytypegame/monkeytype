@@ -295,6 +295,7 @@
   // transition: .25s;
   .wordInputAfter {
     opacity: 1;
+    white-space: nowrap;
     position: absolute;
     background: var(--sub-color);
     color: var(--bg-color);

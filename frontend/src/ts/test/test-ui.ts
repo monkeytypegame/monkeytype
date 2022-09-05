@@ -383,9 +383,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
   } else {
     let correctSoFar = false;
 
-    const isLangKorean: boolean = Config.language.startsWith("korean");
+    const containsKorean = TestInput.input.getKoreanStatus();
 
-    if (!isLangKorean) {
+    if (!containsKorean) {
       // slice earlier if input has trailing compose characters
       const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
         ? input.search(Misc.trailingComposeChars)
@@ -464,7 +464,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
         currentLetter !== undefined &&
         CompositionState.getComposing() &&
         i >= CompositionState.getStartPos() &&
-        !(isLangKorean && !correctSoFar)
+        !(containsKorean && !correctSoFar)
       ) {
         ret += `<letter class="${
           Config.highlightMode == "word" ? wordHighlightClassString : ""
@@ -697,6 +697,13 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < TestInput.input.history.length + 2; i++) {
     const input = <string>TestInput.input.getHistory(i);
     const word = TestWords.words.get(i);
+    const containsKorean =
+      input?.match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      ) ||
+      word?.match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      );
     let wordEl = "";
     try {
       if (input === "") throw new Error("empty input word");
@@ -704,10 +711,12 @@ async function loadWordsHistory(): Promise<boolean> {
         TestInput.corrected.getHistory(i) !== undefined &&
         TestInput.corrected.getHistory(i) !== ""
       ) {
+        const correctedChar = !containsKorean
+          ? TestInput.corrected.getHistory(i)
+          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
         wordEl = `<div class='word' burst="${
           TestInput.burstHistory[i]
-        }" input="${TestInput.corrected
-          .getHistory(i)
+        }" input="${correctedChar
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
@@ -759,19 +768,23 @@ async function loadWordsHistory(): Promise<boolean> {
         //input is shorter or equal (loop over word list)
         loop = word.length;
       }
-
       for (let c = 0; c < loop; c++) {
         let correctedChar;
         try {
-          correctedChar = TestInput.corrected.getHistory(i)[c];
+          correctedChar = !containsKorean
+            ? TestInput.corrected.getHistory(i)[c]
+            : Hangul.assemble(TestInput.corrected.getHistory(i).split(""))[c];
         } catch (e) {
           correctedChar = undefined;
         }
         let extraCorrected = "";
+        const historyWord: string = !containsKorean
+          ? TestInput.corrected.getHistory(i)
+          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
         if (
           c + 1 === loop &&
-          TestInput.corrected.getHistory(i) !== undefined &&
-          TestInput.corrected.getHistory(i).length > input.length
+          historyWord !== undefined &&
+          historyWord.length > input.length
         ) {
           extraCorrected = "extraCorrected";
         }

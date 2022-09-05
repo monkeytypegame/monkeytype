@@ -1,3 +1,4 @@
+import Hangul from "hangul-js";
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as TestInput from "./test-input";
@@ -188,18 +189,35 @@ export function calculateTestSeconds(now?: number): number {
     return (now - start) / 1000;
   }
 }
-
+let avg = 0;
 export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
+  const start = performance.now();
+  const containsKorean = TestInput.input.getKoreanStatus();
   let chars = 0;
   let correctWordChars = 0;
   let spaces = 0;
+
+  const currTestInput = !containsKorean
+    ? TestInput.input.current
+    : Hangul.disassemble(TestInput.input.current);
+
   //check input history
   for (let i = 0; i < TestInput.input.history.length; i++) {
-    const word =
+    const word: string = !containsKorean
+      ? //english
+        Config.mode == "zen"
+        ? (TestInput.input.getHistory(i) as string)
+        : TestWords.words.get(i)
+      : //korean
       Config.mode == "zen"
-        ? TestInput.input.getHistory(i)
-        : TestWords.words.get(i);
-    if (TestInput.input.getHistory(i) == word) {
+      ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
+      : Hangul.disassemble(TestWords.words.get(i)).join("");
+
+    const historyWord: string = !containsKorean
+      ? (TestInput.input.getHistory(i) as string)
+      : Hangul.disassemble(TestInput.input.getHistory(i) as string).join("");
+
+    if (historyWord === word) {
       //the word is correct
       //+1 for space
       correctWordChars += word.length;
@@ -210,13 +228,17 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
         spaces++;
       }
     }
-    chars += TestInput.input.getHistory(i).length;
+    chars += !containsKorean
+      ? TestInput.input.getHistory(i).length
+      : Hangul.disassemble(TestInput.input.getHistory(i) as string).length;
   }
-  if (TestInput.input.current !== "") {
+  if (currTestInput !== "") {
     const word =
       Config.mode == "zen"
-        ? TestInput.input.current
-        : TestWords.words.getCurrent();
+        ? currTestInput
+        : !containsKorean
+        ? TestWords.words.getCurrent()
+        : Hangul.disassemble(TestWords.words.getCurrent() ?? "");
     //check whats currently typed
     const toAdd = {
       correct: 0,
@@ -224,9 +246,9 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
       missed: 0,
     };
     for (let c = 0; c < word.length; c++) {
-      if (c < TestInput.input.current.length) {
+      if (c < currTestInput.length) {
         //on char that still has a word list pair
-        if (TestInput.input.current[c] == word[c]) {
+        if (currTestInput[c] === word[c]) {
           toAdd.correct++;
         } else {
           toAdd.incorrect++;
@@ -247,12 +269,15 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     spaces = 0;
   }
-  chars += TestInput.input.current.length;
+  chars += currTestInput.length;
   const testSeconds = calculateTestSeconds(performance.now());
   const wpm = Math.round(
     ((correctWordChars + spaces) * (60 / testSeconds)) / 5
   );
   const raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
+  const end = performance.now();
+  avg = (end - start + avg) / 2;
+  console.log("wpm avg", avg, "live wpm", end - start);
   return {
     wpm: wpm,
     raw: raw,
@@ -294,11 +319,17 @@ export function setLastSecondNotRound(): void {
 }
 
 export function calculateBurst(): number {
+  const containsKorean = TestInput.input.getKoreanStatus();
   const timeToWrite = (performance.now() - TestInput.currentBurstStart) / 1000;
   let wordLength: number;
-  wordLength = TestInput.input.current.length;
+  wordLength = !containsKorean
+    ? TestInput.input.current.length
+    : Hangul.disassemble(TestInput.input.current).length;
   if (wordLength == 0) {
-    wordLength = TestInput.input.getHistoryLast()?.length ?? 0;
+    wordLength = !containsKorean
+      ? TestInput.input.getHistoryLast()?.length ?? 0
+      : Hangul.disassemble(TestInput.input.getHistoryLast() as string)
+          ?.length ?? 0;
   }
   if (wordLength == 0) return 0;
   const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
@@ -330,30 +361,41 @@ function countChars(): CharCount {
   let spaces = 0;
   let correctspaces = 0;
   for (let i = 0; i < TestInput.input.history.length; i++) {
-    const word =
+    const containsKorean = TestInput.input.getKoreanStatus();
+    const word: string = !containsKorean
+      ? //english
+        Config.mode == "zen"
+        ? (TestInput.input.getHistory(i) as string)
+        : TestWords.words.get(i)
+      : //korean
       Config.mode == "zen"
-        ? TestInput.input.getHistory(i)
-        : TestWords.words.get(i);
+      ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
+      : Hangul.disassemble(TestWords.words.get(i)).join("");
+
     if (TestInput.input.getHistory(i) === "") {
       //last word that was not started
       continue;
     }
-    if (TestInput.input.getHistory(i) == word) {
+    const historyWord: string = !containsKorean
+      ? (TestInput.input.getHistory(i) as string)
+      : Hangul.disassemble(TestInput.input.getHistory(i) as string).join("");
+
+    if (historyWord == word) {
       //the word is correct
       correctWordChars += word.length;
       correctChars += word.length;
       if (
         i < TestInput.input.history.length - 1 &&
-        Misc.getLastChar(TestInput.input.getHistory(i) as string) !== "\n"
+        Misc.getLastChar(historyWord as string) !== "\n"
       ) {
         correctspaces++;
       }
-    } else if (TestInput.input.getHistory(i).length >= word.length) {
+    } else if (historyWord.length >= word.length) {
       //too many chars
-      for (let c = 0; c < TestInput.input.getHistory(i).length; c++) {
+      for (let c = 0; c < historyWord.length; c++) {
         if (c < word.length) {
           //on char that still has a word list pair
-          if (TestInput.input.getHistory(i)[c] == word[c]) {
+          if (historyWord[c] == word[c]) {
             correctChars++;
           } else {
             incorrectChars++;
@@ -371,9 +413,9 @@ function countChars(): CharCount {
         missed: 0,
       };
       for (let c = 0; c < word.length; c++) {
-        if (c < TestInput.input.getHistory(i).length) {
+        if (c < historyWord.length) {
           //on char that still has a word list pair
-          if (TestInput.input.getHistory(i)[c] == word[c]) {
+          if (historyWord[c] == word[c]) {
             toAdd.correct++;
           } else {
             toAdd.incorrect++;
