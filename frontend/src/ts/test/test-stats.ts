@@ -277,7 +277,6 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   const raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
   const end = performance.now();
   avg = (end - start + avg) / 2;
-  console.log("wpm avg", avg, "live wpm", end - start);
   return {
     wpm: wpm,
     raw: raw,
