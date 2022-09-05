@@ -54,32 +54,34 @@ async function announceDailyLeaderboard(
   if (inboxConfig.enabled) {
     const { maxXpReward, minXpReward, maxResults } = dailyLeaderboardsConfig;
 
-    const mailEntries = allResults.map((entry) => {
-      const rank = entry.rank ?? maxResults;
+    if (maxXpReward > 0) {
+      const mailEntries = allResults.map((entry) => {
+        const rank = entry.rank ?? maxResults;
 
-      const placementString = getOrdinalNumberString(rank);
-      const xpReward = Math.floor(
-        mapRange(rank, 1, maxResults, maxXpReward, minXpReward)
-      );
+        const placementString = getOrdinalNumberString(rank);
+        const xpReward = Math.floor(
+          mapRange(rank, 1, maxResults, maxXpReward, minXpReward)
+        );
 
-      const rewardMail = buildMonkeyMail({
-        subject: "Daily leaderboard placement",
-        body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
-        rewards: [
-          {
-            type: "xp",
-            item: xpReward,
-          },
-        ],
+        const rewardMail = buildMonkeyMail({
+          subject: "Daily leaderboard placement",
+          body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
+          rewards: [
+            {
+              type: "xp",
+              item: xpReward,
+            },
+          ],
+        });
+
+        return {
+          uid: entry.uid,
+          mail: [rewardMail],
+        };
       });
 
-      return {
-        uid: entry.uid,
-        mail: [rewardMail],
-      };
-    });
-
-    await addToInboxBulk(mailEntries, inboxConfig);
+      await addToInboxBulk(mailEntries, inboxConfig);
+    }
   }
 
   const topResults = allResults.slice(
