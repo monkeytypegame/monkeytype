@@ -75,6 +75,14 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
     xpRewardBrackets: [],
   },
+  seasons: {
+    weekly: {
+      enabled: false,
+      minXpReward: 0,
+      maxXpReward: 0,
+      expirationTimeInDays: 0, // This should atleast be 15
+    },
+  },
 };
 
 interface BaseSchema {
@@ -422,6 +430,37 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
                 label: "Max Reward",
                 min: 0,
               },
+            },
+          },
+        },
+      },
+    },
+    seasons: {
+      type: "object",
+      label: "Seasons",
+      fields: {
+        weekly: {
+          type: "object",
+          label: "Weekly",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            minXpReward: {
+              type: "number",
+              label: "Minimum XP Reward",
+              min: 0,
+            },
+            maxXpReward: {
+              type: "number",
+              label: "Maximum XP Reward",
+              min: 0,
+            },
+            expirationTimeInDays: {
+              type: "number",
+              label: "Expiration time in days",
+              min: 0,
             },
           },
         },
