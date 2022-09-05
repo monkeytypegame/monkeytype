@@ -1755,7 +1755,7 @@ async function saveResult(
   } else {
     $("#result .stats .dailyLeaderboard")
       .css({
-        maxWidth: "10rem",
+        maxWidth: "13rem",
         opacity: 0,
       })
       .removeClass("hidden")
