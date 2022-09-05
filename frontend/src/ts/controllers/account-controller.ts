@@ -251,6 +251,8 @@ export async function loadUser(user: UserType): Promise<void> {
   // var providerData = user.providerData;
   LoginPage.hidePreloader();
 
+  $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-out-alt"></i>`);
+
   // showFavouriteThemesAtTheTop();
 
   if (TestLogic.notSignedInLastResult !== null) {
@@ -478,6 +480,9 @@ export function signOut(): void {
       DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
+      $("#top .signInOut .icon").html(
+        `<i class="fas fa-fw fa-sign-in-alt"></i>`
+      );
       hideFavoriteQuoteLength();
     })
     .catch(function (error) {
