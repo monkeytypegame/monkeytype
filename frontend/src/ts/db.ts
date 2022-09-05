@@ -831,6 +831,11 @@ export function addBadge(badge: MonkeyTypes.Badge): void {
 export function setStreak(streak: number): void {
   const snapshot = getSnapshot();
   snapshot.streak = streak;
+
+  if (snapshot.streak > snapshot.maxStreak) {
+    snapshot.maxStreak = snapshot.streak;
+  }
+
   setSnapshot(snapshot);
 }
 
