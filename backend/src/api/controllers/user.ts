@@ -1,10 +1,15 @@
-import _ from "lodash";
+import _, { eq } from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { getDiscordUser } from "../../utils/discord";
-import { buildAgentLog, sanitizeString } from "../../utils/misc";
+import {
+  buildAgentLog,
+  isToday,
+  isYesterday,
+  sanitizeString,
+} from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
@@ -155,9 +160,14 @@ export async function getUser(
   const agentLog = buildAgentLog(req);
   Logger.logToDb("user_data_requested", agentLog, uid);
 
+  let inboxUnreadSize = 0;
+  if (req.ctx.configuration.users.inbox.enabled) {
+    inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+  }
+
   const userData = {
     ...getRelevantUserInfo(userInfo),
-    inboxUnreadSize: _.filter(userInfo.inbox, { read: false }).length,
+    inboxUnreadSize: inboxUnreadSize,
   };
 
   return new MonkeyResponse("User data retrieved", userData);
@@ -435,6 +445,7 @@ export async function getProfile(
     discordId,
     discordAvatar,
     xp,
+    streak,
   } = await UserDAL.getUser(uid, "get user profile");
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
@@ -460,6 +471,8 @@ export async function getProfile(
     discordId,
     discordAvatar,
     xp,
+    streak: streak?.length ?? 0,
+    maxStreak: streak?.maxLength ?? 0,
   };
 
   if (banned) {
@@ -513,7 +526,10 @@ export async function getInbox(
 
   const inbox = await UserDAL.getInbox(uid);
 
-  return new MonkeyResponse("Inbox retrieved", inbox);
+  return new MonkeyResponse("Inbox retrieved", {
+    inbox,
+    maxMail: req.ctx.configuration.users.inbox.maxMail,
+  });
 }
 
 export async function updateInbox(
@@ -525,4 +541,28 @@ export async function updateInbox(
   await UserDAL.updateInbox(uid, mailIdsToMarkRead, mailIdsToDelete);
 
   return new MonkeyResponse("Inbox updated");
+}
+
+export async function updateStreak(uid, timestamp): Promise<number> {
+  const user = await UserDAL.getUser(uid, "calculate streak");
+  const streak: MonkeyTypes.UserStreak = {
+    lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
+    length: user.streak?.length ?? 0,
+    maxLength: user.streak?.length ?? 0,
+  };
+
+  if (isYesterday(streak.lastResultTimestamp)) {
+    streak.length += 1;
+  } else if (!isToday(streak.lastResultTimestamp)) {
+    streak.length = 1;
+  }
+
+  if (streak.length > streak.maxLength) {
+    streak.maxLength = streak.length;
+  }
+
+  streak.lastResultTimestamp = timestamp;
+  await UserDAL.getUsersCollection().updateOne({ uid }, { $set: { streak } });
+
+  return streak.length;
 }

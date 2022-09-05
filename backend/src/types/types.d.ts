@@ -45,6 +45,11 @@ declare namespace MonkeyTypes {
         gainMultiplier: number;
         maxDailyBonus: number;
         minDailyBonus: number;
+        streak: {
+          enabled: boolean;
+          maxStreakDays: number;
+          maxStreakMultiplier: number;
+        };
       };
       inbox: {
         enabled: boolean;
@@ -72,7 +77,8 @@ declare namespace MonkeyTypes {
       validModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
-      xpReward: number;
+      maxXpReward: number;
+      minXpReward: number;
     };
   }
 
@@ -160,6 +166,13 @@ declare namespace MonkeyTypes {
     inventory?: UserInventory;
     xp?: number;
     inbox?: MonkeyMail[];
+    streak?: UserStreak;
+  }
+
+  interface UserStreak {
+    lastResultTimestamp: number;
+    length: number;
+    maxLength: number;
   }
 
   interface UserInventory {

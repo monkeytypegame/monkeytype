@@ -158,7 +158,7 @@
   },
   {
     "name": "hungarian",
-    "languages": ["hungarian", "hungarian_2.5k"]
+    "languages": ["hungarian", "hungarian_2k"]
   },
   {
     "name": "norwegian",

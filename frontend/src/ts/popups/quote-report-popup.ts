@@ -93,7 +93,7 @@ async function submitReport(): Promise<void> {
   }
 
   const quoteId = state.quoteToReport?.id.toString();
-  const quoteLanguage = Config.language;
+  const quoteLanguage = Config.language.replace(/_\d*k$/g, "");
   const reason = $("#quoteReportPopup .reason").val() as string;
   const comment = $("#quoteReportPopup .comment").val() as string;
   const captcha = captchaResponse as string;

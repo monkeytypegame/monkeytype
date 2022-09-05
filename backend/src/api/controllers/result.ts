@@ -11,6 +11,7 @@ import * as PublicStatsDAL from "../../dal/public-stats";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
+  mapRange,
   roundTo2,
   stdDev,
 } from "../../utils/misc";
@@ -35,6 +36,7 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
+import { updateStreak } from "./user";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -96,6 +98,7 @@ interface AddResultData {
   xp: number;
   dailyXpBonus: boolean;
   xpBreakdown: Record<string, number>;
+  streak: number;
 }
 
 export async function addResult(
@@ -256,16 +259,10 @@ export async function addResult(
           );
           if (didUserGetBanned) {
             const mail = buildMonkeyMail({
-              getTemplate: () => ({
-                subject: "Banned",
-                body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
-              }),
+              subject: "Banned",
+              body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
-            UserDAL.addToInbox(
-              uid,
-              [mail],
-              req.ctx.configuration.users.inbox.maxMail
-            );
+            UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
           }
         }
         const status = MonkeyStatusCodes.BOT_DETECTED;
@@ -374,11 +371,14 @@ export async function addResult(
     );
   }
 
+  const streak = await updateStreak(uid, result.timestamp);
+
   const xpGained = await calculateXp(
     result,
     req.ctx.configuration.users.xp,
     uid,
-    user.xp ?? 0
+    user.xp ?? 0,
+    streak
   );
 
   if (result.bailedOut === false) delete result.bailedOut;
@@ -416,6 +416,7 @@ export async function addResult(
     xp: xpGained.xp,
     dailyXpBonus: xpGained.dailyBonus ?? false,
     xpBreakdown: xpGained.breakdown ?? {},
+    streak,
   };
 
   if (dailyLeaderboardRank !== -1) {
@@ -436,7 +437,8 @@ async function calculateXp(
   result,
   xpConfiguration: MonkeyTypes.Configuration["users"]["xp"],
   uid: string,
-  currentTotalXp: number
+  currentTotalXp: number,
+  streak: number
 ): Promise<XpResult> {
   const {
     mode,
@@ -491,6 +493,24 @@ async function calculateXp(
     if (numbers) {
       modifier += 0.1;
       breakdown["numbers"] = Math.round(baseXp * 0.1);
+    }
+  }
+
+  if (xpConfiguration.streak.enabled) {
+    const streakModifier = parseFloat(
+      mapRange(
+        streak,
+        0,
+        xpConfiguration.streak.maxStreakDays,
+        0,
+        xpConfiguration.streak.maxStreakMultiplier,
+        true
+      ).toFixed(1)
+    );
+
+    if (streakModifier > 0) {
+      modifier += streakModifier;
+      breakdown["streak"] = Math.round(baseXp * streakModifier);
     }
   }
 

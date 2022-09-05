@@ -7,7 +7,6 @@ import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep } from "../utils/misc";
-import { MonkeyMailWithTemplate } from "../utils/monkey-mail";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -71,6 +70,11 @@ export async function resetUser(uid: string): Promise<void> {
         customThemes: [],
         tags: [],
         xp: 0,
+        streak: {
+          length: 0,
+          lastResultTimestamp: 0,
+          maxLength: 0,
+        },
       },
       $unset: {
         discordAvatar: "",
@@ -499,6 +503,7 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
 }
 
 export async function incrementXp(uid: string, xp: number): Promise<void> {
+  if (isNaN(xp)) xp = 0;
   await getUsersCollection().updateOne({ uid }, { $inc: { xp: new Long(xp) } });
 }
 
@@ -745,37 +750,60 @@ export async function getInbox(
   return user.inbox ?? [];
 }
 
-export async function addToInbox(
-  uid: string,
-  mail: MonkeyMailWithTemplate[],
-  maxInboxSize: number
+interface AddToInboxBulkEntry {
+  uid: string;
+  mail: MonkeyTypes.MonkeyMail[];
+}
+
+export async function addToInboxBulk(
+  entries: AddToInboxBulkEntry[],
+  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
-  const user = await getUser(uid, "add to inbox");
+  const { enabled, maxMail } = inboxConfig;
 
-  const inbox = user.inbox ?? [];
-
-  for (let i = 0; i < inbox.length + mail.length - maxInboxSize; i++) {
-    inbox.pop();
+  if (!enabled) {
+    return;
   }
 
-  const evaluatedMail: MonkeyTypes.MonkeyMail[] = mail.map((mail) => {
-    return _.omit(
-      {
-        ...mail,
-        ...(mail.getTemplate && mail.getTemplate(user)),
+  const bulk = getUsersCollection().initializeUnorderedBulkOp();
+
+  entries.forEach((entry) => {
+    bulk.find({ uid: entry.uid }).updateOne({
+      $push: {
+        inbox: {
+          $each: entry.mail,
+          $position: 0, // Prepends to the inbox
+          $slice: maxMail, // Keeps inbox size to maxInboxSize, maxMail the oldest
+        },
       },
-      "getTemplate"
-    );
+    });
   });
 
-  inbox.unshift(...evaluatedMail);
-  const newInbox = inbox.sort((a, b) => b.timestamp - a.timestamp);
+  await bulk.execute();
+}
+
+export async function addToInbox(
+  uid: string,
+  mail: MonkeyTypes.MonkeyMail[],
+  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+): Promise<void> {
+  const { enabled, maxMail } = inboxConfig;
+
+  if (!enabled) {
+    return;
+  }
 
   await getUsersCollection().updateOne(
-    { uid },
     {
-      $set: {
-        inbox: newInbox,
+      uid,
+    },
+    {
+      $push: {
+        inbox: {
+          $each: mail,
+          $position: 0, // Prepends to the inbox
+          $slice: maxMail, // Keeps inbox size to maxMail, discarding the oldest
+        },
       },
     }
   );
@@ -789,9 +817,10 @@ function buildRewardUpdates(
 
   rewards.forEach((reward) => {
     if (reward.type === "xp") {
-      totalXp += reward.item;
+      totalXp += isNaN(reward.item) ? 0 : reward.item;
     } else if (reward.type === "badge") {
-      newBadges.push(reward.item);
+      const item = _.omit(reward.item, "selected");
+      newBadges.push(item);
     }
   });
 

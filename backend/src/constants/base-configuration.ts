@@ -46,6 +46,11 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       gainMultiplier: 0,
       maxDailyBonus: 0,
       minDailyBonus: 0,
+      streak: {
+        enabled: false,
+        maxStreakDays: 0,
+        maxStreakMultiplier: 0,
+      },
     },
     inbox: {
       enabled: false,
@@ -67,7 +72,8 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
     dailyLeaderboardCacheSize: 1,
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
-    xpReward: 0,
+    minXpReward: 0,
+    maxXpReward: 0,
   },
 };
 
@@ -228,6 +234,24 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
               type: "number",
               label: "Min Daily Bonus",
             },
+            streak: {
+              type: "object",
+              label: "Streak",
+              fields: {
+                enabled: {
+                  type: "boolean",
+                  label: "Enabled",
+                },
+                maxStreakDays: {
+                  type: "number",
+                  label: "Max Streak Days",
+                },
+                maxStreakMultiplier: {
+                  type: "number",
+                  label: "Max Streak Multiplier",
+                },
+              },
+            },
           },
         },
         discordIntegration: {
@@ -367,9 +391,14 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
           label: "Top Results To Announce",
           min: 1,
         },
-        xpReward: {
+        minXpReward: {
           type: "number",
-          label: "XP Reward",
+          label: "Minimum XP Reward",
+          min: 0,
+        },
+        maxXpReward: {
+          type: "number",
+          label: "Maximum XP Reward",
           min: 0,
         },
       },
