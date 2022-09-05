@@ -1019,7 +1019,9 @@ export async function init(): Promise<void> {
     if (quotesCollection.length === 0) {
       TestUI.setTestRestarting(false);
       Notifications.add(
-        `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
+        `No ${Config.language
+          .replace(/_\d*k$/g, "")
+          .replace(/_/g, " ")} quotes found`,
         0
       );
       if (Auth.currentUser) {
