@@ -8,9 +8,9 @@ function getWeeklySeasonWithError(req: MonkeyTypes.Request): WeeklySeason {
   const { weeksBefore } = req.query;
 
   const normalizedWeeksBefore = parseInt(weeksBefore as string, 10);
-  const currentDayTimestamp = getCurrentWeekTimestamp();
+  const currentWeekTimestamp = getCurrentWeekTimestamp();
   const weekBeforeTimestamp =
-    currentDayTimestamp - normalizedWeeksBefore * MILLISECONDS_IN_DAY;
+    currentWeekTimestamp - normalizedWeeksBefore * MILLISECONDS_IN_DAY * 7;
 
   const customTimestamp = _.isNil(weeksBefore) ? -1 : weekBeforeTimestamp;
 
