@@ -276,6 +276,14 @@ async function animateXpBreakdown(
 
   if (skipBreakdown) return;
 
+  if (breakdown["streak"]) {
+    await Misc.sleep(delay);
+    await append(`streak +${breakdown["streak"]}`);
+    total += breakdown["streak"];
+  }
+
+  if (skipBreakdown) return;
+
   if (breakdown["accPenalty"]) {
     await Misc.sleep(delay);
     await append(`accuracy penalty -${breakdown["accPenalty"]}`);

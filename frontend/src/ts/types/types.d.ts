@@ -473,6 +473,7 @@ declare namespace MonkeyTypes {
     addedAt: number;
     filterPresets: ResultFilters[];
     xp: number;
+    streak: number;
   }
 
   interface UserDetails {

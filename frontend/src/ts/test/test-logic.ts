@@ -1698,6 +1698,10 @@ async function saveResult(
     DB.addXp(response.data.xp);
   }
 
+  if (response.data.streak) {
+    DB.setStreak(response.data.streak);
+  }
+
   completedEvent._id = response.data.insertedId;
   if (response.data.isPb) {
     completedEvent.isPb = true;

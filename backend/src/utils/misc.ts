@@ -165,12 +165,38 @@ export function getOrdinalNumberString(number: number): string {
   return `${number}${suffix}`;
 }
 
+export function isYesterday(timestamp: number): boolean {
+  const yesterday = getStartOfDayTimestamp(Date.now() - MILLISECONDS_IN_DAY);
+  const date = getStartOfDayTimestamp(timestamp);
+
+  return yesterday === date;
+}
+
+export function isToday(timestamp: number): boolean {
+  const today = getStartOfDayTimestamp(Date.now());
+  const date = getStartOfDayTimestamp(timestamp);
+
+  return today === date;
+}
+
 export function mapRange(
   value: number,
   inMin: number,
   inMax: number,
   outMin: number,
-  outMax: number
+  outMax: number,
+  clamp = false
 ): number {
-  return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+  const result =
+    ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+
+  if (clamp) {
+    if (outMin < outMax) {
+      return Math.min(Math.max(result, outMin), outMax);
+    } else {
+      return Math.max(Math.min(result, outMin), outMax);
+    }
+  }
+
+  return result;
 }
