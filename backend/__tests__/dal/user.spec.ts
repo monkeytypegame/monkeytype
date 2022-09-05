@@ -491,6 +491,7 @@ describe("UserDal", () => {
     expect(resetUser.xp).toStrictEqual(0);
     expect(resetUser.streak).toStrictEqual({
       length: 0,
+      maxLength: 0,
       lastResultTimestamp: 0,
       maxLength: 0,
     });
