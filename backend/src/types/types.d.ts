@@ -172,6 +172,7 @@ declare namespace MonkeyTypes {
   interface UserStreak {
     lastResultTimestamp: number;
     length: number;
+    maxLength: number;
   }
 
   interface UserInventory {

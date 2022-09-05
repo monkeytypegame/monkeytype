@@ -98,6 +98,7 @@ export async function initSnapshot(): Promise<
     snap.xp = userData.xp ?? 0;
     snap.inboxUnreadSize = userData.inboxUnreadSize ?? 0;
     snap.streak = userData?.streak?.length ?? 0;
+    snap.maxStreak = userData?.streak?.maxLength ?? 0;
 
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format

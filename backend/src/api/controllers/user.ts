@@ -547,12 +547,17 @@ export async function updateStreak(uid, timestamp): Promise<number> {
   const streak: MonkeyTypes.UserStreak = {
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
+    maxLength: user.streak?.length ?? 0,
   };
 
   if (isYesterday(streak.lastResultTimestamp)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp)) {
     streak.length = 1;
+  }
+
+  if (streak.length > streak.maxLength) {
+    streak.maxLength = streak.length;
   }
 
   streak.lastResultTimestamp = timestamp;

@@ -475,6 +475,7 @@ declare namespace MonkeyTypes {
     xp: number;
     inboxUnreadSize: number;
     streak: number;
+    maxStreak: number;
   }
 
   interface UserDetails {
