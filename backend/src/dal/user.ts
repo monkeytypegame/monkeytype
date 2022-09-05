@@ -498,6 +498,7 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
 }
 
 export async function incrementXp(uid: string, xp: number): Promise<void> {
+  if (isNaN(xp)) xp = 0;
   await getUsersCollection().updateOne({ uid }, { $inc: { xp: new Long(xp) } });
 }
 
@@ -811,7 +812,7 @@ function buildRewardUpdates(
 
   rewards.forEach((reward) => {
     if (reward.type === "xp") {
-      totalXp += reward.item;
+      totalXp += isNaN(reward.item) ? 0 : reward.item;
     } else if (reward.type === "badge") {
       newBadges.push(reward.item);
     }
