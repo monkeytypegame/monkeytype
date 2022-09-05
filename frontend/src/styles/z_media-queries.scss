@@ -159,6 +159,29 @@
 }
 
 @media only screen and (max-width: 900px) {
+  #testConfig {
+    .mode,
+    .time,
+    .wordCount,
+    .puncAndNum,
+    .customText,
+    .zen,
+    .quoteLength {
+      .textButton {
+        padding: 0.75rem 0.3rem 0.7rem 0.3rem;
+
+        &:first-child {
+          padding: 0.75rem 0.3rem 0.7rem 0.6rem;
+        }
+        &:last-child {
+          padding: 0.75rem 0.6rem 0.7rem 0.3rem;
+        }
+        &:only-child {
+          padding: 0.75rem 0.6rem 0.7rem 0.6rem;
+        }
+      }
+    }
+  }
   .ad.ad-h {
     display: none;
   }
@@ -280,32 +303,97 @@
 }
 
 @media only screen and (max-width: 800px) {
+  #testConfig {
+    .spacer {
+      display: none;
+    }
+    .row {
+      display: grid;
+      justify-items: center;
+      padding: 0.25rem 1rem;
+    }
+    .mode,
+    .time,
+    .wordCount,
+    .puncAndNum,
+    .customText,
+    .zen,
+    .quoteLength {
+      .textButton {
+        padding: 0.5rem 0.75rem 0.45rem 0.75rem;
+
+        &:first-child {
+          padding: 0.5rem 0.75rem 0.45rem 0.75rem;
+        }
+        &:last-child {
+          padding: 0.5rem 0.75rem 0.45rem 0.75rem;
+        }
+        &:only-child {
+          padding: 0.5rem 0.75rem 0.45rem 0.75rem;
+        }
+      }
+    }
+  }
+
+  #top {
+    .logo {
+      .text {
+        font-size: 1.9rem !important;
+      }
+      .bottom {
+        font-size: 1.9rem;
+        line-height: 1.9rem;
+        margin-top: 0;
+      }
+    }
+    #menu {
+      gap: 0.1rem;
+      .textButton {
+        padding: 0.25rem;
+        font-size: 0.8rem;
+        line-height: 0.8rem;
+        &.account {
+          margin-top: 0.05rem;
+          .text {
+            display: none;
+          }
+          .avatar {
+            width: 1rem;
+            height: 1rem;
+          }
+          .level {
+            line-height: 0.8rem;
+          }
+        }
+      }
+    }
+  }
   .pageSettings .settingsGroup.quickNav .links {
     grid-auto-flow: unset;
     grid-template-columns: 1fr 1fr 1fr;
     justify-items: center;
   }
   #centerContent {
-    #top {
-      grid-template-areas:
-        "logo config"
-        "menu config";
-      grid-template-columns: auto auto;
-      .logo {
-        margin-bottom: 0;
-      }
-    }
+    // #top {
+    //   grid-template-areas:
+    //     "logo config"
+    //     "menu config";
+    //   grid-template-columns: auto auto;
+    //   .logo {
+    //     margin-bottom: 0;
+    //   }
+    // }
 
-    #menu {
-      gap: 0.5rem;
-      font-size: 0.8rem;
-      line-height: 0.8rem;
-      margin-top: -0.5rem;
+    // #menu {
+    //   gap: 0.5rem;
+    //   font-size: 0.8rem;
+    //   line-height: 0.8rem;
+    //   margin-top: -0.5rem;
 
-      .textButton {
-        padding: 0.25rem;
-      }
-    }
+    //   .textButton {
+    //     padding: 0.25rem;
+    //   }
+    // }
   }
 
   #contactPopupWrapper #contactPopup .buttons {
@@ -640,6 +728,9 @@
       }
     }
   }
+  #testModesNotice {
+    font-size: 0.75rem;
+  }
   #cookiePopupWrapper {
     #cookiePopup,
     .extensionMessage {
@@ -728,27 +819,15 @@
   }
 
   #top {
-    align-items: self-end;
     .logo {
-      .icon {
-        width: 1.5rem !important;
-      }
+      grid-template-columns: auto;
       .text {
-        font-size: 1.5rem !important;
-        margin-bottom: 0.3rem !important;
-      }
-      .bottom {
-        font-size: 1.75rem;
-        line-height: 1.75rem;
-        margin-top: 0;
-      }
-      .top {
         display: none;
       }
     }
     #menu {
       .textButton {
-        padding: 0;
+        // padding: 0;
       }
     }
   }
@@ -770,7 +849,7 @@
   }
   #centerContent {
     #top {
-      grid-template-columns: 1fr auto;
+      // grid-template-columns: 1fr auto;
       .desktopConfig {
         display: none;
       }
@@ -778,6 +857,7 @@
         display: block;
       }
     }
+    gap: 1rem;
     padding: 1rem;
   }
   #middle {
@@ -803,6 +883,16 @@
   #commandLine,
   #commandLineInput {
     width: 400px !important;
+  }
+}
+
+@media only screen and (max-width: 450px) {
+  #testConfig {
+    display: none;
+  }
+
+  #mobileTestConfig {
+    display: block;
   }
 }
 
@@ -885,6 +975,16 @@
         line-height: 7rem;
       }
     }
+  }
+}
+
+@media (pointer: coarse) and (max-width: 800px) {
+  #testConfig {
+    display: none;
+  }
+
+  #mobileTestConfig {
+    display: block;
   }
 }
 

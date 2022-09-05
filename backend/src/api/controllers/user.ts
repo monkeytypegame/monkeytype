@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { eq } from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
@@ -160,9 +160,14 @@ export async function getUser(
   const agentLog = buildAgentLog(req);
   Logger.logToDb("user_data_requested", agentLog, uid);
 
+  let inboxUnreadSize = 0;
+  if (req.ctx.configuration.users.inbox.enabled) {
+    inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+  }
+
   const userData = {
     ...getRelevantUserInfo(userInfo),
-    inboxUnreadSize: _.filter(userInfo.inbox, { read: false }).length,
+    inboxUnreadSize: inboxUnreadSize,
   };
 
   return new MonkeyResponse("User data retrieved", userData);
@@ -520,7 +525,10 @@ export async function getInbox(
 
   const inbox = await UserDAL.getInbox(uid);
 
-  return new MonkeyResponse("Inbox retrieved", inbox);
+  return new MonkeyResponse("Inbox retrieved", {
+    inbox,
+    maxMail: req.ctx.configuration.users.inbox.maxMail,
+  });
 }
 
 export async function updateInbox(

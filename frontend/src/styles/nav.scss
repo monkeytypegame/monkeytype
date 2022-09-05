@@ -46,6 +46,7 @@
       }
 
       .level {
+        transition: 0.125s;
         width: max-content;
         font-size: 0.65rem;
         line-height: 1rem;
@@ -78,7 +79,7 @@
           position: absolute;
           left: 100%;
           margin-left: 0.5rem;
-          top: 0;
+          top: 0.2rem;
           transform: translateY(-50%);
           font-size: 0.75rem;
           color: var(--main-color);
@@ -96,6 +97,9 @@
             position: absolute;
           }
         }
+      }
+      &:hover .level {
+        background-color: var(--text-color);
       }
     }
   }
@@ -128,7 +132,7 @@
 }
 
 #top {
-  grid-template-areas: "logo menu config";
+  grid-template-areas: "logo menu";
   line-height: 2.3rem;
   font-size: 2.3rem;
   /* text-align: center; */
@@ -136,7 +140,7 @@
   padding: 0 5px;
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   z-index: 2;
   align-items: center;
   gap: 0.5rem;
@@ -168,13 +172,13 @@
         font-size: 0.65rem;
         line-height: 0.65rem;
         color: var(--sub-color);
-        transition: 0.25s;
+        transition: color 0.25s;
       }
       position: relative;
       font-size: 2rem;
-      margin-bottom: 0.4rem;
+      margin-top: -0.4rem;
       font-family: "Lexend Deca";
-      transition: 0.25s;
+      transition: color 0.25s;
     }
     white-space: nowrap;
     user-select: none;

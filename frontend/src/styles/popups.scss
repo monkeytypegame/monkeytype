@@ -1324,3 +1324,164 @@
     overflow-y: scroll;
   }
 }
+
+#alertsPopupWrapper {
+  padding: 0;
+  justify-content: end;
+  z-index: 99999999;
+  // padding: 2rem;
+  #alertsPopup {
+    background: var(--bg-color);
+    width: calc(350px + 2rem);
+    right: 0;
+    // height: calc(100vh - 4rem);
+    height: 100%;
+    top: 0;
+    padding: 2rem calc(1rem - 7px) 2rem 1rem; // -7px for the scrollbar
+    // padding: 1rem;
+    // border-radius: var(--roundness);
+    overflow: hidden;
+    margin-right: -10rem;
+    border-radius: var(--roundness) 0 0 var(--roundness);
+
+    .separator {
+      background-color: var(--sub-alt-color);
+      height: 0.25rem;
+      width: 100%;
+      border-radius: calc(var(--roundness) / 2);
+    }
+
+    .scrollWrapper {
+      padding: 0 1rem 0 1rem;
+      overflow-y: scroll;
+      display: grid;
+      gap: 2rem;
+      align-content: baseline;
+      height: 100%;
+    }
+    .accountAlerts > .title,
+    .notificationHistory > .title,
+    .psas > .title {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--sub-color);
+      user-select: none;
+    }
+    .list {
+      display: grid;
+      gap: 1rem;
+      .nothing {
+        width: 100%;
+        color: var(--text-color);
+        font-size: 0.75rem;
+        text-align: center;
+        margin: 2rem 0;
+      }
+      .preloader {
+        width: 100%;
+        color: var(--main-color);
+        text-align: center;
+        font-size: 1rem;
+        margin: 2rem 0;
+      }
+      .item {
+        display: grid;
+        grid-template-areas: "indicator title buttons" "indicator body buttons";
+        grid-template-columns: 0.25rem auto 1rem;
+        gap: 0.25rem 0.5rem;
+        .indicator {
+          grid-area: indicator;
+          background-color: var(--sub-alt-color);
+          width: 0.25rem;
+          height: 100%;
+          border-radius: calc(var(--roundness) / 2);
+          transition: 0.125s;
+          &.main {
+            background-color: var(--main-color);
+          }
+          &.error {
+            background-color: var(--error-color);
+          }
+          &.sub {
+            background-color: var(--sub-color);
+          }
+        }
+        .title {
+          grid-area: title;
+          font-size: 0.75rem;
+          color: var(--sub-color);
+        }
+        .body {
+          grid-area: body;
+          font-size: 0.75rem;
+          color: var(--text-color);
+          transition: 0.125s;
+          opacity: 1;
+        }
+        .buttons {
+          grid-area: buttons;
+          width: 100%;
+          display: grid;
+          grid-auto-flow: row;
+          gap: 0.5rem;
+          opacity: 0;
+          transition: 0.125s;
+          align-items: center;
+          align-content: center;
+          .button {
+            font-size: 0.75rem;
+            padding: 0.5em;
+            line-height: 1.25em;
+            height: 100%;
+            display: grid;
+          }
+        }
+        &:hover {
+          .buttons {
+            opacity: 1;
+          }
+          .body {
+            opacity: 1;
+          }
+        }
+      }
+    }
+    .psas .list .item {
+      grid-template-areas: "indicator body";
+      grid-template-columns: 0.25rem auto;
+      .body {
+        opacity: 1;
+      }
+    }
+    .notificationHistory .list .item {
+      grid-template-areas: "indicator title" "indicator body";
+      grid-template-columns: 0.25rem auto;
+      .title {
+        font-size: 0.75rem;
+        color: var(--sub-color);
+      }
+      .body {
+        opacity: 1;
+      }
+    }
+    .accountAlerts {
+      .title {
+        display: grid;
+        grid-template-columns: 1fr auto;
+      }
+      .list .item {
+        grid-template-areas: "indicator timestamp buttons" "indicator title buttons" "indicator body buttons";
+        .timestamp {
+          grid-area: timestamp;
+          font-size: 0.6rem;
+          color: var(--sub-color);
+          opacity: 0.5;
+        }
+        .rewards {
+          overflow: hidden;
+          margin-top: 0.35rem;
+        }
+      }
+    }
+  }
+}

@@ -143,7 +143,7 @@ export async function update(
 export async function updateXpBar(
   currentXp: number,
   addedXp: number,
-  breakdown: Record<string, number>
+  breakdown?: Record<string, number>
 ): Promise<void> {
   skipBreakdown = false;
   const startingLevel = Misc.getLevel(currentXp);
@@ -176,8 +176,12 @@ export async function updateXpBar(
 
 async function animateXpBreakdown(
   addedXp: number,
-  breakdown: Record<string, number>
+  breakdown?: Record<string, number>
 ): Promise<void> {
+  if (!breakdown) {
+    $("#menu .xpBar .xpGain").text(`+${addedXp}`);
+    return;
+  }
   const delay = 1000;
   let total = 0;
   const xpGain = $("#menu .xpBar .xpGain");
