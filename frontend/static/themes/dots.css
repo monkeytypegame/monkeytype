@@ -51,13 +51,16 @@
   background: #4acb8a;
 }
 
-#menu .textButton:nth-child(5) {
+#menu .textButton:nth-child(6) {
   background: #ffd543;
 }
 
-#menu .textButton:nth-child(6),
 #menu .textButton:nth-child(7) {
   background: #ff9349;
+}
+
+#menu .textButton:nth-child(8) {
+  background: #f94348;
 }
 
 /* #menu:after{
