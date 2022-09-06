@@ -810,7 +810,8 @@ export async function addToInbox(
 }
 
 function buildRewardUpdates(
-  rewards: MonkeyTypes.AllRewards[]
+  rewards: MonkeyTypes.AllRewards[],
+  inventoryIsNull = false
 ): UpdateFilter<WithId<MonkeyTypes.User>> {
   let totalXp = 0;
   const newBadges: MonkeyTypes.Badge[] = [];
@@ -824,14 +825,27 @@ function buildRewardUpdates(
     }
   });
 
-  return {
-    $inc: {
-      xp: totalXp,
-    },
-    $push: {
-      "inventory.badges": { $each: newBadges },
-    },
-  };
+  if (inventoryIsNull) {
+    return {
+      $inc: {
+        xp: totalXp,
+      },
+      $set: {
+        inventory: {
+          badges: newBadges,
+        },
+      },
+    };
+  } else {
+    return {
+      $inc: {
+        xp: totalXp,
+      },
+      $push: {
+        "inventory.badges": { $each: newBadges },
+      },
+    };
+  }
 }
 
 export async function updateInbox(
@@ -868,7 +882,7 @@ export async function updateInbox(
       inbox: newInbox,
     },
   };
-  const rewardUpdates = buildRewardUpdates(allRewards);
+  const rewardUpdates = buildRewardUpdates(allRewards, user.inventory === null);
   const mergedUpdates = _.merge(baseUpdate, rewardUpdates);
 
   await getUsersCollection().updateOne({ uid }, mergedUpdates);
