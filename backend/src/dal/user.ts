@@ -730,16 +730,19 @@ export async function updateProfile(
       value === undefined || (_.isPlainObject(value) && _.isEmpty(value))
   );
 
+  const updates = {
+    $set: {
+      ...profileUpdates,
+      inventory,
+    },
+  };
+  if (inventory === undefined) delete updates.$set.inventory;
+
   await getUsersCollection().updateOne(
     {
       uid,
     },
-    {
-      $set: {
-        ...profileUpdates,
-        inventory,
-      },
-    }
+    updates
   );
 }
 
