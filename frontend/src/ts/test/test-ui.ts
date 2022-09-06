@@ -252,7 +252,7 @@ export async function screenshot(): Promise<void> {
   }
 
   function revertScreenshot(): void {
-    $("#testConfig").removeClass("invisible");
+    // $("#testConfig").removeClass("invisible");
     $("#ad-result-wrapper").removeClass("hidden");
     $("#ad-result-small-wrapper").removeClass("hidden");
     $("#notificationCenter").removeClass("hidden");
@@ -288,7 +288,7 @@ export async function screenshot(): Promise<void> {
     );
   }
   $(".pageTest .buttons").addClass("hidden");
-  $("#testConfig").addClass("invisible");
+  // $("#testConfig").addClass("invisible");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");

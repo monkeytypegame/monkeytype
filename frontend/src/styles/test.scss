@@ -391,7 +391,7 @@
 #wordsInput {
   opacity: 0;
   padding: 0;
-  margin: 0;
+  margin: 0 auto;
   border: none;
   outline: none;
   display: block;
@@ -400,6 +400,9 @@
   z-index: -1;
   cursor: default;
   pointer-events: none;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 #capsWarning {
