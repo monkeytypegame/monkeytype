@@ -1683,12 +1683,15 @@ async function saveResult(
   Result.hideCrown();
 
   if (response.status !== 200) {
-    console.log("Error saving result", completedEvent);
-    retrySaving.canRetry = true;
-    $("#retrySavingResultButton").removeClass("hidden");
-    if (!isRetrying) {
-      retrySaving.completedEvent = completedEvent;
+    //only allow retry if status is not in this list
+    if (![460, 461, 463, 464, 465].includes(response.status)) {
+      retrySaving.canRetry = true;
+      $("#retrySavingResultButton").removeClass("hidden");
+      if (!isRetrying) {
+        retrySaving.completedEvent = completedEvent;
+      }
     }
+    console.log("Error saving result", completedEvent);
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
