@@ -10,7 +10,6 @@
   width: -moz-fit-content;
 
   .textButton {
-    background: var(--sub-alt-color);
     .text {
       font-size: 0.65em;
       line-height: 0rem;
@@ -35,6 +34,8 @@
       .avatar {
         grid-column: 1/2;
         grid-row: 1/2;
+        width: 1.25em;
+        height: 1.25em;
       }
 
       .loading,
@@ -63,7 +64,7 @@
         pointer-events: none;
         position: absolute;
         height: 0.25em;
-        bottom: -0.25em;
+        bottom: -0.5em;
         width: 100%;
         left: 0;
         background: var(--sub-alt-color);
