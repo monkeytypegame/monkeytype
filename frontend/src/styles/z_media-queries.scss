@@ -348,21 +348,23 @@
     }
     #menu {
       gap: 0.1rem;
+      font-size: 0.75rem;
       .textButton {
-        padding: 0.25rem;
-        font-size: 0.8rem;
-        line-height: 0.8rem;
+        // padding: 0.25rem;
+        // font-size: 0.8rem;
+        // line-height: 0.8rem;
         &.account {
-          margin-top: 0.05rem;
+          // margin-top: 0.05rem;
           .text {
             display: none;
           }
           .avatar {
-            width: 1rem;
-            height: 1rem;
+            // width: 1rem;
+            // height: 1rem;
           }
-          .level {
-            line-height: 0.8rem;
+          .levelAndBar {
+            font-size: 1rem;
+            // line-height: 0.8rem;
           }
         }
       }
@@ -826,9 +828,7 @@
       }
     }
     #menu {
-      .textButton {
-        // padding: 0;
-      }
+      font-size: 1rem;
     }
   }
   #bottom {
@@ -912,6 +912,10 @@
       font-size: 0.65rem;
       line-height: 0.65rem;
     }
+  }
+
+  #top #menu {
+    font-size: 0.75rem;
   }
 
   #bottom {
