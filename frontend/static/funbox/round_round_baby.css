@@ -12,10 +12,16 @@
   }
 }
 
-#middle {
+#typingTest {
   animation: woah 5s infinite linear;
 }
 
 body {
   overflow: hidden;
+}
+
+#wordsInput {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }

@@ -126,24 +126,34 @@ export async function update(
       $("#top #menu .account .avatar").addClass("hidden");
       $("#top #menu .account .user").removeClass("hidden");
     }
-    Misc.swapElements(
-      $("#menu .textButton.login"),
-      $("#menu .textButton.account"),
-      250
-    );
+    $("#menu .textButton.account")
+      .removeClass("hidden")
+      .css({ opacity: 0 })
+      .animate(
+        {
+          opacity: 1,
+        },
+        125
+      );
   } else {
-    Misc.swapElements(
-      $("#menu .textButton.account"),
-      $("#menu .textButton.login"),
-      250
-    );
+    $("#menu .textButton.account")
+      .css({ opacity: 1 })
+      .animate(
+        {
+          opacity: 0,
+        },
+        125,
+        () => {
+          $("#menu .textButton.account").addClass("hidden");
+        }
+      );
   }
 }
 
 export async function updateXpBar(
   currentXp: number,
   addedXp: number,
-  breakdown: Record<string, number>
+  breakdown?: Record<string, number>
 ): Promise<void> {
   skipBreakdown = false;
   const startingLevel = Misc.getLevel(currentXp);
@@ -176,8 +186,12 @@ export async function updateXpBar(
 
 async function animateXpBreakdown(
   addedXp: number,
-  breakdown: Record<string, number>
+  breakdown?: Record<string, number>
 ): Promise<void> {
+  if (!breakdown) {
+    $("#menu .xpBar .xpGain").text(`+${addedXp}`);
+    return;
+  }
   const delay = 1000;
   let total = 0;
   const xpGain = $("#menu .xpBar .xpGain");
@@ -272,6 +286,14 @@ async function animateXpBreakdown(
       await append(`numbers +${breakdown["numbers"]}`);
       total += breakdown["numbers"];
     }
+  }
+
+  if (skipBreakdown) return;
+
+  if (breakdown["streak"]) {
+    await Misc.sleep(delay);
+    await append(`streak +${breakdown["streak"]}`);
+    total += breakdown["streak"];
   }
 
   if (skipBreakdown) return;

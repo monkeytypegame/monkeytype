@@ -54,6 +54,7 @@ import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
+import * as TestConfig from "./test-config";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -429,7 +430,7 @@ export function restart(options = {} as RestartOptions): void {
     if (
       Config.repeatQuotes === "typing" &&
       Config.mode === "quote" &&
-      Config.language.replace(/_\d*k$/g, "") === TestWords.randomQuote.language
+      Config.language.startsWith(TestWords.randomQuote.language)
     ) {
       options.withSameWordset = true;
     }
@@ -553,6 +554,7 @@ export function restart(options = {} as RestartOptions): void {
         AdController.updateTestPageAds(false);
         Focus.set(false);
       }
+      TestConfig.show();
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
@@ -748,7 +750,7 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
     word = Misc.getArrows();
   } else if (Config.funbox === "58008") {
     word = Misc.getNumbers(7);
-    if (Config.language.split("_")[0] === "kurdish") {
+    if (Config.language.startsWith("kurdish")) {
       word = Misc.convertNumberToArabicIndic(word);
     }
   } else if (Config.funbox === "specials") {
@@ -815,7 +817,10 @@ async function getNextWord(
           randomWord == "I") ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
-          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)))
+          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
+        (Config.mode !== "custom" &&
+          !Config.numbers &&
+          /[0-9]/i.test(randomWord)))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();
@@ -844,7 +849,7 @@ async function getNextWord(
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
 
-      if (Config.language.split("_")[0] === "kurdish") {
+      if (Config.language.startsWith("kurdish")) {
         randomWord = Misc.convertNumberToArabicIndic(randomWord);
       }
     }
@@ -1061,7 +1066,9 @@ export async function init(): Promise<void> {
     if (quotesCollection.length === 0) {
       TestUI.setTestRestarting(false);
       Notifications.add(
-        `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
+        `No ${Config.language
+          .replace(/_\d*k$/g, "")
+          .replace(/_/g, " ")} quotes found`,
         0
       );
       if (Auth.currentUser) {
@@ -1676,12 +1683,15 @@ async function saveResult(
   Result.hideCrown();
 
   if (response.status !== 200) {
-    console.log("Error saving result", completedEvent);
-    retrySaving.canRetry = true;
-    $("#retrySavingResultButton").removeClass("hidden");
-    if (!isRetrying) {
-      retrySaving.completedEvent = completedEvent;
+    //only allow retry if status is not in this list
+    if (![460, 461, 463, 464, 465].includes(response.status)) {
+      retrySaving.canRetry = true;
+      $("#retrySavingResultButton").removeClass("hidden");
+      if (!isRetrying) {
+        retrySaving.completedEvent = completedEvent;
+      }
     }
+    console.log("Error saving result", completedEvent);
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
@@ -1693,6 +1703,10 @@ async function saveResult(
       response.data.xpBreakdown
     );
     DB.addXp(response.data.xp);
+  }
+
+  if (response.data.streak) {
+    DB.setStreak(response.data.streak);
   }
 
   completedEvent._id = response.data.insertedId;
@@ -1744,7 +1758,7 @@ async function saveResult(
   } else {
     $("#result .stats .dailyLeaderboard")
       .css({
-        maxWidth: "10rem",
+        maxWidth: "13rem",
         opacity: 0,
       })
       .removeClass("hidden")
@@ -1842,7 +1856,17 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
   }
 });
 
-$(document).on("click", "#top .config .wordCount .textButton", (e) => {
+$(document).on("click", "#testConfig .mode .textButton", (e) => {
+  if (TestUI.testRestarting) return;
+  if ($(e.currentTarget).hasClass("active")) return;
+  const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
+  if (mode === undefined) return;
+  UpdateConfig.setMode(mode);
+  ManualRestart.set();
+  restart();
+});
+
+$(document).on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd != "custom") {
@@ -1852,7 +1876,7 @@ $(document).on("click", "#top .config .wordCount .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .time .textButton", (e) => {
+$(document).on("click", "#testConfig .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode != "custom") {
@@ -1862,7 +1886,7 @@ $(document).on("click", "#top .config .time .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .quoteLength .textButton", (e) => {
+$(document).on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
@@ -1877,26 +1901,16 @@ $(document).on("click", "#top .config .quoteLength .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .punctuationMode .textButton", () => {
+$(document).on("click", "#testConfig .punctuationMode.textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   restart();
 });
 
-$(document).on("click", "#top .config .numbersMode .textButton", () => {
+$(document).on("click", "#testConfig .numbersMode.textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setNumbers(!Config.numbers);
-  ManualRestart.set();
-  restart();
-});
-
-$(document).on("click", "#top .config .mode .textButton", (e) => {
-  if (TestUI.testRestarting) return;
-  if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
-  if (mode === undefined) return;
-  UpdateConfig.setMode(mode);
   ManualRestart.set();
   restart();
 });

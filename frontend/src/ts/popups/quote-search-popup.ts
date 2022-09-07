@@ -394,7 +394,7 @@ $(document).on("click", "#toggleShowFavorites", (e) => {
   searchForQuotes();
 });
 
-$(document).on("click", "#top .config .quoteLength .textButton", (e) => {
+$(document).on("click", "#testConfig .quoteLength .textButton", (e) => {
   const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
   if (len == -2) {
     show();

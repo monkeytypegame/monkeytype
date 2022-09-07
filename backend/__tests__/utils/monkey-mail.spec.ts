@@ -6,7 +6,6 @@ describe("Monkey Mail", () => {
       subject: "",
       body: "",
       timestamp: Date.now(),
-      getTemplate: (): any => ({}),
     };
 
     const mail = buildMonkeyMail(mailConfig) as any;
@@ -17,6 +16,5 @@ describe("Monkey Mail", () => {
     expect(mail.timestamp).toBeDefined();
     expect(mail.read).toBe(false);
     expect(mail.rewards).toEqual([]);
-    expect(mail.getTemplate).toBeDefined();
   });
 });

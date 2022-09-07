@@ -19,16 +19,26 @@
 #top.focus #menu:after {
   background: var(--bg-color);
 }
-#menu .textButton {
+#menu .textButton:nth-child(1),
+#menu .textButton:nth-child(2),
+#menu .textButton:nth-child(3),
+#menu .textButton:nth-child(4) {
   border-radius: rem !important;
   color: #191f28 !important;
+  background: #c69f68;
 }
-#menu .textButton :hover {
+#menu .textButton:nth-child(1):hover,
+#menu
+  .textButton:nth-child(2):hover
+  #menu
+  .textButton:nth-child(3):hover
+  #menu
+  .textButton:nth-child(4):hover {
   border-radius: rem !important;
   color: #4b5975 !important;
   transition: 0.25s;
 }
-#menu .textButton:nth-child(1) {
+/* #menu .textButton:nth-child(1) {
   background: #c69f68;
 }
 #menu .textButton:nth-child(2) {
@@ -44,9 +54,10 @@
   background: #c69f68;
 }
 #menu .textButton:nth-child(6),
-#menu .textButton:nth-child(7) {
+#menu .textButton:nth-child(7),
+#menu .textButton:nth-child(8) {
   background: #c69f68;
-}
+} */
 #top.focus #menu .textButton.discord::after {
   border-color: transparent;
 }

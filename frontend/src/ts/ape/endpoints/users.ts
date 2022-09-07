@@ -192,4 +192,19 @@ export default class Users {
       },
     });
   }
+
+  async getInbox(): Promise<Ape.EndpointData> {
+    return await this.httpClient.get(`${BASE_PATH}/inbox`);
+  }
+
+  async updateInbox(options: {
+    mailIdsToDelete?: string[];
+    mailIdsToMarkRead?: string[];
+  }): Promise<Ape.EndpointData> {
+    const payload = {
+      mailIdsToDelete: options.mailIdsToDelete,
+      mailIdsToMarkRead: options.mailIdsToMarkRead,
+    };
+    return await this.httpClient.patch(`${BASE_PATH}/inbox`, { payload });
+  }
 }

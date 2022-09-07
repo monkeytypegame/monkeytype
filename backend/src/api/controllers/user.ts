@@ -155,9 +155,14 @@ export async function getUser(
   const agentLog = buildAgentLog(req);
   Logger.logToDb("user_data_requested", agentLog, uid);
 
+  let inboxUnreadSize = 0;
+  if (req.ctx.configuration.users.inbox.enabled) {
+    inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+  }
+
   const userData = {
     ...getRelevantUserInfo(userInfo),
-    inboxUnreadSize: _.filter(userInfo.inbox, { read: false }).length,
+    inboxUnreadSize: inboxUnreadSize,
   };
 
   return new MonkeyResponse("User data retrieved", userData);
@@ -435,6 +440,7 @@ export async function getProfile(
     discordId,
     discordAvatar,
     xp,
+    streak,
   } = await UserDAL.getUser(uid, "get user profile");
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
@@ -460,6 +466,8 @@ export async function getProfile(
     discordId,
     discordAvatar,
     xp,
+    streak: streak?.length ?? 0,
+    maxStreak: streak?.maxLength ?? 0,
   };
 
   if (banned) {
@@ -513,7 +521,10 @@ export async function getInbox(
 
   const inbox = await UserDAL.getInbox(uid);
 
-  return new MonkeyResponse("Inbox retrieved", inbox);
+  return new MonkeyResponse("Inbox retrieved", {
+    inbox,
+    maxMail: req.ctx.configuration.users.inbox.maxMail,
+  });
 }
 
 export async function updateInbox(
