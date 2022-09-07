@@ -426,11 +426,6 @@
     .section.themes .tabContent.customTheme {
     }
   }
-
-  #commandLine,
-  #commandLineInput {
-    width: 600px !important;
-  }
 }
 
 @media only screen and (max-width: 750px) {
@@ -661,10 +656,6 @@
   #leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup {
     grid-auto-flow: row;
   }
-  #commandLine,
-  #commandLineInput {
-    width: 500px !important;
-  }
   #customTextPopupWrapper {
     #customTextPopup {
       .wordfilter.button {
@@ -696,6 +687,9 @@
 }
 
 @media only screen and (max-width: 550px) {
+  #commandLineWrapper {
+    padding: 5rem 1rem;
+  }
   .profile .pbsWords,
   .profile .pbsTime {
     font-size: 0.9rem;
@@ -880,10 +874,6 @@
       }
     }
   }
-  #commandLine,
-  #commandLineInput {
-    width: 400px !important;
-  }
 }
 
 @media only screen and (max-width: 450px) {
@@ -936,10 +926,6 @@
     }
   }
 
-  #commandLine,
-  #commandLineInput {
-    width: 300px !important;
-  }
   #leaderboardsWrapper #leaderboards {
     .tables .titleAndTable .titleAndButtons {
       grid-template-columns: unset;
