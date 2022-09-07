@@ -51,6 +51,10 @@
   background: #4acb8a;
 }
 
+#top.focus #menu .textButton:nth-child(6) {
+  background: transparent !important;
+}
+
 #menu .textButton:nth-child(6) {
   color: var(--sub-color);
 }
@@ -82,4 +86,8 @@
 
 #top.focus #menu .textButton.discord::after {
   border-color: transparent;
+}
+
+#menu .textButton.account .xpBar {
+  bottom: -0.75rem !important;
 }
