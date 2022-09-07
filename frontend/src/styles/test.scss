@@ -400,9 +400,10 @@
   z-index: -1;
   cursor: default;
   pointer-events: none;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  margin-left: 1rem;
+  // left: 50%;
+  // top: 50%;
+  // transform: translate(-50%, -50%);
 }
 
 #capsWarning {
