@@ -6,7 +6,7 @@ import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
-import { flattenObjectDeep } from "../utils/misc";
+import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -889,4 +889,31 @@ export async function updateInbox(
   const mergedUpdates = _.merge(baseUpdate, rewardUpdates);
 
   await getUsersCollection().updateOne({ uid }, mergedUpdates);
+}
+
+export async function updateStreak(
+  uid: string,
+  timestamp: number
+): Promise<number> {
+  const user = await getUser(uid, "calculate streak");
+  const streak: MonkeyTypes.UserStreak = {
+    lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
+    length: user.streak?.length ?? 0,
+    maxLength: user.streak?.length ?? 0,
+  };
+
+  if (isYesterday(streak.lastResultTimestamp)) {
+    streak.length += 1;
+  } else if (!isToday(streak.lastResultTimestamp)) {
+    streak.length = 1;
+  }
+
+  if (streak.length > streak.maxLength) {
+    streak.maxLength = streak.length;
+  }
+
+  streak.lastResultTimestamp = timestamp;
+  await getUsersCollection().updateOne({ uid }, { $set: { streak } });
+
+  return streak.length;
 }

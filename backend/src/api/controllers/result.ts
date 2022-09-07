@@ -36,7 +36,7 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import { updateStreak } from "./user";
+import { updateStreak } from "../../dal/user";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
