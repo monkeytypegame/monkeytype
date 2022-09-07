@@ -10,18 +10,18 @@
   width: -moz-fit-content;
 
   .textButton {
+    background: var(--sub-alt-color);
     .text {
-      font-size: 0.65rem;
-      line-height: 1rem;
+      font-size: 0.65em;
+      line-height: 0rem;
       align-self: center;
-      margin-left: 0.25rem;
     }
 
     .icon,
     .loading,
     .user {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1.25em;
+      height: 1.25em;
       // background: red;
       display: grid;
       place-content: center center;
@@ -29,6 +29,7 @@
 
     &.account {
       position: relative;
+      align-items: center;
       .loading,
       .user,
       .avatar {
@@ -48,13 +49,12 @@
       .level {
         transition: 0.125s;
         width: max-content;
-        font-size: 0.65rem;
-        line-height: 1rem;
+        font-size: 0.65em;
+        line-height: 0.65em;
         align-self: center;
-        margin-left: 0.25rem;
         color: var(--bg-color);
         background: var(--sub-color);
-        padding: 0.1rem 0.3rem;
+        padding: 0.4em 0.4em;
         border-radius: calc(var(--roundness) / 2);
       }
 
@@ -62,8 +62,8 @@
         opacity: 0;
         pointer-events: none;
         position: absolute;
-        height: 0.25rem;
-        bottom: -0.25rem;
+        height: 0.25em;
+        bottom: -0.25em;
         width: 100%;
         left: 0;
         background: var(--sub-alt-color);
@@ -78,10 +78,10 @@
         .xpGain {
           position: absolute;
           left: 100%;
-          margin-left: 0.5rem;
-          top: 0.2rem;
+          margin-left: 0.5em;
+          top: 0.2em;
           transform: translateY(-50%);
-          font-size: 0.75rem;
+          font-size: 0.75em;
           color: var(--main-color);
         }
         .xpBreakdown {
@@ -90,10 +90,10 @@
           display: grid;
           justify-items: center;
           width: 100%;
-          margin-top: 0.75rem;
+          margin-top: 0.75em;
           .text {
             width: max-content;
-            font-size: 0.75rem;
+            font-size: 0.75em;
             position: absolute;
           }
         }
