@@ -322,8 +322,7 @@ $("#alertsPopup .accountAlerts .list").on(
     const id = $(e.currentTarget).closest(".item").attr("data-id") as string;
     mailToDelete.push(id);
     $(e.currentTarget).closest(".item").remove();
-    accountAlerts = accountAlerts.filter((ie) => ie.id !== id);
-    if (accountAlerts.length === 0) {
+    if ($("#alertsPopup .accountAlerts .list .item").length == 0) {
       $("#alertsPopup .accountAlerts .list").html(`
       <div class="nothing">
       Nothing to show

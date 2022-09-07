@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { ObjectId } from "mongodb";
-import { updateStreak } from "../../src/api/controllers/user";
+import { updateStreak } from "../../src/dal/user";
 import * as UserDAL from "../../src/dal/user";
 
 const mockPersonalBest = {
@@ -492,6 +492,7 @@ describe("UserDal", () => {
     expect(resetUser.streak).toStrictEqual({
       length: 0,
       lastResultTimestamp: 0,
+      maxLength: 0,
     });
   });
 

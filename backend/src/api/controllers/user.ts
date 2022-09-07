@@ -1,15 +1,10 @@
-import _, { eq } from "lodash";
+import _ from "lodash";
 import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { getDiscordUser } from "../../utils/discord";
-import {
-  buildAgentLog,
-  isToday,
-  isYesterday,
-  sanitizeString,
-} from "../../utils/misc";
+import { buildAgentLog, sanitizeString } from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
@@ -541,28 +536,4 @@ export async function updateInbox(
   await UserDAL.updateInbox(uid, mailIdsToMarkRead, mailIdsToDelete);
 
   return new MonkeyResponse("Inbox updated");
-}
-
-export async function updateStreak(uid, timestamp): Promise<number> {
-  const user = await UserDAL.getUser(uid, "calculate streak");
-  const streak: MonkeyTypes.UserStreak = {
-    lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
-    length: user.streak?.length ?? 0,
-    maxLength: user.streak?.length ?? 0,
-  };
-
-  if (isYesterday(streak.lastResultTimestamp)) {
-    streak.length += 1;
-  } else if (!isToday(streak.lastResultTimestamp)) {
-    streak.length = 1;
-  }
-
-  if (streak.length > streak.maxLength) {
-    streak.maxLength = streak.length;
-  }
-
-  streak.lastResultTimestamp = timestamp;
-  await UserDAL.getUsersCollection().updateOne({ uid }, { $set: { streak } });
-
-  return streak.length;
 }
