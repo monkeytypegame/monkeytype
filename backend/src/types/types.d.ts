@@ -77,11 +77,11 @@ declare namespace MonkeyTypes {
       validModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
-      maxXpReward: number;
-      minXpReward: number;
-      xpRewardOverrides: {
-        rank: number;
-        xpReward: number;
+      xpRewardBrackets: {
+        minRank: number;
+        maxRank: number;
+        minReward: number;
+        maxReward: number;
       }[];
     };
   }
