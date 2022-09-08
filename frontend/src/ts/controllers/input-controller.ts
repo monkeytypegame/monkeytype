@@ -53,12 +53,46 @@ function updateUI(): void {
   if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    Keymap.highlightKey(
-      TestWords.words
-        .getCurrent()
-        .charAt(TestInput.input.current.length)
-        .toString()
-    );
+    if (!Config.language.startsWith("korean")) {
+      Keymap.highlightKey(
+        TestWords.words
+          .getCurrent()
+          .charAt(TestInput.input.current.length)
+          .toString()
+      );
+    } else {
+      //word [가다]
+      //Get the current korean word and group it [[ㄱ,ㅏ],[ㄷ,ㅏ]].
+      const koCurrWord: string[][] = Hangul.disassemble(
+        TestWords.words.getCurrent(),
+        true
+      );
+      const koCurrInput: string[][] = Hangul.disassemble(
+        TestInput.input.current,
+        true
+      );
+      const inputGroupLength: number = koCurrInput.length - 1;
+      if (koCurrInput[inputGroupLength]) {
+        const inputCharLength: number = koCurrInput[inputGroupLength].length;
+        //at the end of the word, it will throw a (reading '0') this will be the space
+        try {
+          //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),
+          //take the difference between the overflow and the word
+          const koChar: string =
+            koCurrWord[inputGroupLength][inputCharLength] ??
+            koCurrWord[koCurrInput.length][
+              inputCharLength - koCurrWord[inputGroupLength].length
+            ];
+
+          Keymap.highlightKey(koChar);
+        } catch (e) {
+          Keymap.highlightKey("");
+        }
+      } else {
+        //for new words
+        Keymap.highlightKey(koCurrWord[0][0]);
+      }
+    }
   }
 }
 
@@ -496,7 +530,11 @@ function handleChar(
       ? resultingWord
       : Hangul.disassemble(resultingWord).join("");
   } else {
-    if (charIndex >= TestInput.corrected.current.length) {
+    const currCorrectedTestInputLength: number = !isCharKorean
+      ? TestInput.corrected.current.length
+      : Hangul.disassemble(TestInput.corrected.current).length;
+
+    if (charIndex >= currCorrectedTestInputLength) {
       TestInput.corrected.current += !isCharKorean
         ? char
         : Hangul.disassemble(char).concat();
@@ -525,11 +563,11 @@ function handleChar(
     char
   );
 
+  const testInputLength: number = !isCharKorean
+    ? TestInput.input.current.length
+    : Hangul.disassemble(TestInput.input.current).length;
   //update the active word top, but only once
-  if (
-    TestInput.input.current.length === 1 &&
-    TestWords.words.currentIndex === 0
-  ) {
+  if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
     TestUI.setActiveWordTop(
       (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
     );
@@ -659,7 +697,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // dont do anything special
     if (modalVisible) return;
 
-    // dont do anything on login so we can tab/esc betweeen inputs
+    // dont do anything on login so we can tab/esc between inputs
     if (ActivePage.get() === "login") return;
 
     event.preventDefault();
