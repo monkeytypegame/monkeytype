@@ -807,10 +807,7 @@ async function getNextWord(
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
       regenarationCount < 100 &&
-      ((Config.mode !== "custom" &&
-        /[A-Z]/.test(randomWord) &&
-        !Config.punctuation) ||
-        previousWord == randomWord ||
+      (previousWord == randomWord ||
         previousWord2 == randomWord ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
@@ -825,6 +822,14 @@ async function getNextWord(
       regenarationCount++;
       randomWord = wordset.randomWord();
     }
+  }
+
+  if (
+    Config.mode !== "custom" &&
+    /[A-Z]/.test(randomWord) &&
+    !Config.punctuation
+  ) {
+    randomWord = randomWord.toLowerCase();
   }
 
   if (randomWord === undefined) {
