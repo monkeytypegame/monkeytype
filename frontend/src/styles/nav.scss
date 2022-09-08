@@ -26,6 +26,10 @@
       place-content: center center;
     }
 
+    &.showAlerts {
+      position: relative;
+    }
+
     &.account {
       position: relative;
       align-items: center;
@@ -118,6 +122,9 @@
 
 #top.focus #menu {
   color: transparent !important;
+  .notificationBubble {
+    opacity: 0 !important;
+  }
 }
 
 #top.focus #menu .textButton {
