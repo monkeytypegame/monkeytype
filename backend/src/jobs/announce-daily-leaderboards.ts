@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { CronJob } from "cron";
 import {
   getCurrentDayTimestamp,
@@ -50,38 +51,52 @@ async function announceDailyLeaderboard(
   if (allResults.length === 0) {
     return;
   }
+  const { maxResults, xpRewardBrackets } = dailyLeaderboardsConfig;
 
-  if (inboxConfig.enabled) {
-    const { maxXpReward, minXpReward, maxResults } = dailyLeaderboardsConfig;
+  if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
+    const mailEntries: {
+      uid: string;
+      mail: MonkeyTypes.MonkeyMail[];
+    }[] = [];
 
-    if (maxXpReward > 0) {
-      const mailEntries = allResults.map((entry) => {
-        const rank = entry.rank ?? maxResults;
+    allResults.forEach((entry) => {
+      const rank = entry.rank ?? maxResults;
 
-        const placementString = getOrdinalNumberString(rank);
-        const xpReward = Math.floor(
-          mapRange(rank, 1, maxResults, maxXpReward, minXpReward)
-        );
+      const placementString = getOrdinalNumberString(rank);
 
-        const rewardMail = buildMonkeyMail({
-          subject: "Daily leaderboard placement",
-          body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
-          rewards: [
-            {
-              type: "xp",
-              item: xpReward,
-            },
-          ],
-        });
+      const xpReward = _(xpRewardBrackets)
+        .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
+        .map((bracket) =>
+          mapRange(
+            rank,
+            bracket.minRank,
+            bracket.maxRank,
+            bracket.maxReward,
+            bracket.minReward
+          )
+        )
+        .max();
 
-        return {
-          uid: entry.uid,
-          mail: [rewardMail],
-        };
+      if (!xpReward) return;
+
+      const rewardMail = buildMonkeyMail({
+        subject: "Daily leaderboard placement",
+        body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
+        rewards: [
+          {
+            type: "xp",
+            item: xpReward,
+          },
+        ],
       });
 
-      await addToInboxBulk(mailEntries, inboxConfig);
-    }
+      mailEntries.push({
+        uid: entry.uid,
+        mail: [rewardMail],
+      });
+    });
+
+    await addToInboxBulk(mailEntries, inboxConfig);
   }
 
   const topResults = allResults.slice(
