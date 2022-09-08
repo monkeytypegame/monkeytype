@@ -827,7 +827,8 @@ async function getNextWord(
   if (
     Config.mode !== "custom" &&
     /[A-Z]/.test(randomWord) &&
-    !Config.punctuation
+    !Config.punctuation &&
+    !Config.language.startsWith("german")
   ) {
     randomWord = randomWord.toLowerCase();
   }
