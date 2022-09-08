@@ -59,7 +59,7 @@ async function announceDailyLeaderboard(
       mail: MonkeyTypes.MonkeyMail[];
     }[] = [];
 
-    allResults.map((entry) => {
+    allResults.forEach((entry) => {
       const rank = entry.rank ?? maxResults;
 
       const placementString = getOrdinalNumberString(rank);
