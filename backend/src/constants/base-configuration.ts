@@ -74,6 +74,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
     minXpReward: 0,
     maxXpReward: 0,
+    xpRewardOverrides: [],
   },
 };
 
@@ -400,6 +401,26 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
           type: "number",
           label: "Maximum XP Reward",
           min: 0,
+        },
+        xpRewardOverrides: {
+          type: "array",
+          label: "XP Reward Overrides",
+          items: {
+            type: "object",
+            label: "Override",
+            fields: {
+              rank: {
+                type: "number",
+                label: "Rank",
+                min: 1,
+              },
+              xpReward: {
+                type: "number",
+                label: "XP Reward",
+                min: 0,
+              },
+            },
+          },
         },
       },
     },

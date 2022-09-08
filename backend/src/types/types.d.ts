@@ -79,6 +79,10 @@ declare namespace MonkeyTypes {
       topResultsToAnnounce: number;
       maxXpReward: number;
       minXpReward: number;
+      xpRewardOverrides: {
+        rank: number;
+        xpReward: number;
+      }[];
     };
   }
 

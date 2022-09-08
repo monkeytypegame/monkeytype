@@ -828,11 +828,15 @@ function buildRewardUpdates(
     }
   });
 
+  const baseUpdate = {
+    $inc: {
+      xp: _.isNumber(totalXp) ? totalXp : 0,
+    },
+  };
+
   if (inventoryIsNull) {
     return {
-      $inc: {
-        xp: totalXp,
-      },
+      ...baseUpdate,
       $set: {
         inventory: {
           badges: newBadges,
@@ -841,9 +845,7 @@ function buildRewardUpdates(
     };
   } else {
     return {
-      $inc: {
-        xp: totalXp,
-      },
+      ...baseUpdate,
       $push: {
         "inventory.badges": { $each: newBadges },
       },

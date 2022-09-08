@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { CronJob } from "cron";
 import {
   getCurrentDayTimestamp,
@@ -50,38 +51,38 @@ async function announceDailyLeaderboard(
   if (allResults.length === 0) {
     return;
   }
+  const { maxXpReward, minXpReward, maxResults, xpRewardOverrides } =
+    dailyLeaderboardsConfig;
 
-  if (inboxConfig.enabled) {
-    const { maxXpReward, minXpReward, maxResults } = dailyLeaderboardsConfig;
+  if (inboxConfig.enabled && maxXpReward > 0) {
+    const xpRewardOverridesMap = _.keyBy(xpRewardOverrides, "rank");
 
-    if (maxXpReward > 0) {
-      const mailEntries = allResults.map((entry) => {
-        const rank = entry.rank ?? maxResults;
+    const mailEntries = allResults.map((entry) => {
+      const rank = entry.rank ?? maxResults;
 
-        const placementString = getOrdinalNumberString(rank);
-        const xpReward = Math.floor(
-          mapRange(rank, 1, maxResults, maxXpReward, minXpReward)
-        );
+      const placementString = getOrdinalNumberString(rank);
+      const xpReward =
+        xpRewardOverridesMap[rank]?.xpReward ??
+        Math.floor(mapRange(rank, 1, maxResults, maxXpReward, minXpReward));
 
-        const rewardMail = buildMonkeyMail({
-          subject: "Daily leaderboard placement",
-          body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
-          rewards: [
-            {
-              type: "xp",
-              item: xpReward,
-            },
-          ],
-        });
-
-        return {
-          uid: entry.uid,
-          mail: [rewardMail],
-        };
+      const rewardMail = buildMonkeyMail({
+        subject: "Daily leaderboard placement",
+        body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
+        rewards: [
+          {
+            type: "xp",
+            item: xpReward,
+          },
+        ],
       });
 
-      await addToInboxBulk(mailEntries, inboxConfig);
-    }
+      return {
+        uid: entry.uid,
+        mail: [rewardMail],
+      };
+    });
+
+    await addToInboxBulk(mailEntries, inboxConfig);
   }
 
   const topResults = allResults.slice(
