@@ -85,7 +85,7 @@ async function announceDailyLeaderboard(
         rewards: [
           {
             type: "xp",
-            item: xpReward,
+            item: Math.round(xpReward),
           },
         ],
       });
