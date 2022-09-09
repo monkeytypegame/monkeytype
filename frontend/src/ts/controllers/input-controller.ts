@@ -979,6 +979,7 @@ $("#wordsInput").on("input", (event) => {
   TestInput.setKeypressNotAfk();
 
   if (
+    (Config.layout == "default" || Config.layout == "korean") &&
     (event.target as HTMLInputElement).value
       .normalize()
       .match(
@@ -1112,10 +1113,12 @@ $("#wordsInput").on("copy paste", (event) => {
 
 // Composing events
 $("#wordsInput").on("compositionstart", () => {
+  if (Config.layout !== "default") return;
   CompositionState.setComposing(true);
   CompositionState.setStartPos(TestInput.input.current.length);
 });
 
 $("#wordsInput").on("compositionend", () => {
+  if (Config.layout !== "default") return;
   CompositionState.setComposing(false);
 });
