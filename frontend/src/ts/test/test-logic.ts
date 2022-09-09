@@ -510,6 +510,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.setBailout(false);
   PaceCaret.reset();
   Monkey.hide();
+  TestInput.input.setKoreanStatus(false);
 
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
