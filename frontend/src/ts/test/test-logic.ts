@@ -824,17 +824,18 @@ async function getNextWord(
     }
   }
 
+  if (randomWord === undefined) {
+    randomWord = wordset.randomWord();
+  }
+
   if (
     Config.mode !== "custom" &&
+    Config.mode !== "quote" &&
     /[A-Z]/.test(randomWord) &&
     !Config.punctuation &&
     !Config.language.startsWith("german")
   ) {
     randomWord = randomWord.toLowerCase();
-  }
-
-  if (randomWord === undefined) {
-    randomWord = wordset.randomWord();
   }
 
   randomWord = randomWord.replace(/ +/gm, " ");
