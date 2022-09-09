@@ -48,21 +48,23 @@
   }
 
   &.block {
-    width: 0.6em;
+    width: 0.5em;
     border-radius: 0;
     z-index: -1;
+    border-radius: calc(var(--roundness) / 4);
   }
 
   &.outline {
     @extend #caret, .block;
     animation-name: none;
     background: transparent;
-    border: 1px solid var(--caret-color);
+    border: 0.05em solid var(--caret-color);
+    border-radius: calc(var(--roundness) / 4);
   }
 
   &.underline {
     height: 0.1em;
-    width: 0.6em;
+    width: 0.5em;
     margin-top: 1.2em;
   }
 }
