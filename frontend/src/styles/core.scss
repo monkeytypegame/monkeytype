@@ -520,3 +520,18 @@ key {
     margin-right: 0.3rem;
   }
 }
+
+.notificationBubble {
+  position: absolute;
+  background: var(--main-color);
+  width: 1em;
+  height: 1em;
+  font-size: 0.5em;
+  line-height: 2em;
+  color: transparent;
+  border-radius: 100rem;
+  right: 0.5em;
+  top: 0.5em;
+  outline: 0.5em solid var(--bg-color);
+  transition: 0.125s;
+}

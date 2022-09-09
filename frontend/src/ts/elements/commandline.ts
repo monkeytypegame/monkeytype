@@ -223,6 +223,7 @@ function trigger(command: string): void {
   let shouldFocusTestUI = true;
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
   let sticky = false;
+
   $.each(list.list, (_index, obj) => {
     if (obj.id == command) {
       if (obj.shouldFocusTestUI !== undefined) {

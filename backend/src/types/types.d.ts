@@ -77,9 +77,15 @@ declare namespace MonkeyTypes {
       validModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
-      maxXpReward: number;
-      minXpReward: number;
+      xpRewardBrackets: RewardBracket[];
     };
+  }
+
+  interface RewardBracket {
+    minRank: number;
+    maxRank: number;
+    minReward: number;
+    maxReward: number;
   }
 
   interface DecodedToken {

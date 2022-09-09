@@ -1,5 +1,10 @@
 [
   {
+    "name" : "viridescent",
+    "bgColor": "#2C3333",
+    "mainColor": "#95d5b2"
+  }
+  ,{
     "name": "dark",
     "bgColor": "#111",
     "mainColor": "#eee"

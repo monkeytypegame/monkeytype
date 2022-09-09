@@ -510,6 +510,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.setBailout(false);
   PaceCaret.reset();
   Monkey.hide();
+  TestInput.input.setKoreanStatus(false);
 
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
@@ -807,10 +808,7 @@ async function getNextWord(
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
       regenarationCount < 100 &&
-      ((Config.mode !== "custom" &&
-        /[A-Z]/.test(randomWord) &&
-        !Config.punctuation) ||
-        previousWord == randomWord ||
+      (previousWord == randomWord ||
         previousWord2 == randomWord ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
@@ -829,6 +827,16 @@ async function getNextWord(
 
   if (randomWord === undefined) {
     randomWord = wordset.randomWord();
+  }
+
+  if (
+    Config.mode !== "custom" &&
+    Config.mode !== "quote" &&
+    /[A-Z]/.test(randomWord) &&
+    !Config.punctuation &&
+    !Config.language.startsWith("german")
+  ) {
+    randomWord = randomWord.toLowerCase();
   }
 
   randomWord = randomWord.replace(/ +/gm, " ");

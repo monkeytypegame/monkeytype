@@ -241,7 +241,7 @@ export async function loadUser(user: UserType): Promise<void> {
   }
   const { discordId, discordAvatar, xp, inboxUnreadSize } = DB.getSnapshot();
   AccountButton.update(xp, discordId, discordAvatar);
-  Alerts.setBellButtonColored(inboxUnreadSize > 0);
+  Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;

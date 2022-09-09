@@ -23,6 +23,7 @@ const dailyLeaderboardsConfig = {
   topResultsToAnnounce: 3,
   maxXpReward: 0,
   minXpReward: 0,
+  xpRewardBrackets: [],
 };
 
 describe("Daily Leaderboards", () => {

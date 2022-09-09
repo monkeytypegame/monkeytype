@@ -14,7 +14,7 @@ let mailToDelete: string[] = [];
 
 export function hide(): void {
   if (!$("#alertsPopupWrapper").hasClass("hidden")) {
-    setBellButtonColored(false);
+    setNotificationBubbleVisible(false);
 
     let mailUpdatedPromiseResolve: (value?: unknown) => void;
     const mailUpdatedPromise = new Promise((resolve) => {
@@ -287,11 +287,11 @@ function addNotification(
   }
 }
 
-export function setBellButtonColored(tf: boolean): void {
+export function setNotificationBubbleVisible(tf: boolean): void {
   if (tf) {
-    $("#top #menu .showAlerts").addClass("active");
+    $("#top #menu .showAlerts .notificationBubble").removeClass("hidden");
   } else {
-    $("#top #menu .showAlerts").removeClass("active");
+    $("#top #menu .showAlerts .notificationBubble").addClass("hidden");
   }
 }
 
