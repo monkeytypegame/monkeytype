@@ -60,12 +60,6 @@
     border: 1px solid var(--caret-color);
   }
 
-  &.block,
-  &.outline,
-  &.underline {
-    margin-left: 0.1em;
-  }
-
   &.underline {
     height: 0.1em;
     width: 0.6em;

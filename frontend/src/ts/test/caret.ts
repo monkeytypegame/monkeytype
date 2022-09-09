@@ -36,20 +36,16 @@ export async function updatePosition(): Promise<void> {
   // }
 
   const caret = $("#caret");
-  let caretWidth = Math.round(
+  const caretWidth = Math.round(
     document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
   );
 
-  if (["block", "outline", "underline"].includes(Config.caretStyle)) {
-    caretWidth /= 3;
-  }
+  const fullWidthCaret = ["block", "outline", "underline"].includes(
+    Config.caretStyle
+  );
 
   const inputLen = TestInput.input.current.length;
-
-  let currentLetterIndex = inputLen - 1;
-  if (currentLetterIndex == -1) {
-    currentLetterIndex = 0;
-  }
+  const currentLetterIndex = inputLen;
   //insert temporary character so the caret will work in zen mode
   const activeWordEmpty = $("#words .active").children().length == 0;
   if (activeWordEmpty) {
@@ -62,63 +58,51 @@ export async function updatePosition(): Promise<void> {
 
   if (!currentWordNodeList) return;
 
-  let currentLetter: HTMLElement = currentWordNodeList[
+  const currentLetter: HTMLElement = currentWordNodeList[
     currentLetterIndex
   ] as HTMLElement;
-  if (inputLen > currentWordNodeList.length) {
-    currentLetter = currentWordNodeList[
-      currentWordNodeList.length - 1
-    ] as HTMLElement;
-  }
 
-  if (Config.mode != "zen" && $(currentLetter).length == 0) return;
+  const previousLetter: HTMLElement = currentWordNodeList[
+    currentLetterIndex - 1
+  ] as HTMLElement;
+
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   const isLanguageLeftToRight = currentLanguage.leftToRight;
-  const currentLetterPosLeft = isLanguageLeftToRight
-    ? currentLetter.offsetLeft
-    : currentLetter.offsetLeft + ($(currentLetter).width() ?? 0);
-  const currentLetterPosTop = currentLetter.offsetTop;
-  let newTop = 0;
-  let newLeft = 0;
+  const letterPosLeft =
+    (currentLetter
+      ? currentLetter.offsetLeft
+      : previousLetter.offsetLeft + previousLetter.offsetWidth) +
+    (isLanguageLeftToRight
+      ? 0
+      : currentLetter
+      ? currentLetter.offsetWidth
+      : -previousLetter.offsetWidth);
 
-  newTop =
-    currentLetterPosTop - Config.fontSize * Misc.convertRemToPixels(1) * 0.1;
+  const letterPosTop = currentLetter
+    ? currentLetter.offsetTop
+    : previousLetter.offsetTop;
+
+  const newTop =
+    letterPosTop - Config.fontSize * Misc.convertRemToPixels(1) * 0.1;
+  let newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
+
+  const wordsWrapperWidth =
+    $(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0;
 
   if (Config.tapeMode === "letter") {
-    newLeft =
-      ($(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0) /
-        2 -
-      caretWidth / 2;
+    newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
   } else if (Config.tapeMode === "word") {
     if (inputLen == 0) {
-      newLeft =
-        ($(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0) /
-          2 -
-        caretWidth / 2;
+      newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
     } else {
       let inputWidth = 0;
       for (let i = 0; i < inputLen; i++) {
         inputWidth += $(currentWordNodeList[i]).outerWidth(true) as number;
       }
       newLeft =
-        ($(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0) /
-          2 +
+        wordsWrapperWidth / 2 +
         inputWidth -
-        caretWidth / 2;
-    }
-  } else {
-    if (inputLen == 0) {
-      newLeft = isLanguageLeftToRight
-        ? currentLetterPosLeft - caretWidth / 2
-        : currentLetterPosLeft + caretWidth / 2;
-    } else {
-      newLeft = isLanguageLeftToRight
-        ? currentLetterPosLeft +
-          ($(currentLetter).width() as number) -
-          caretWidth / 2
-        : currentLetterPosLeft -
-          ($(currentLetter).width() as number) +
-          caretWidth / 2;
+        (fullWidthCaret ? 0 : caretWidth / 2);
     }
   }
 
