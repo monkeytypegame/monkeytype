@@ -105,27 +105,31 @@ export async function updatePosition(): Promise<void> {
         (fullWidthCaret ? 0 : caretWidth / 2);
     }
   }
+  const newWidth = fullWidthCaret
+    ? ((currentLetter
+        ? currentLetter.offsetWidth
+        : previousLetter.offsetWidth) ?? 0) + "px"
+    : "";
 
   let smoothlinescroll = $("#words .smoothScroller").height();
   if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
-  if (Config.smoothCaret) {
-    caret.stop(true, false).animate(
-      {
-        top: newTop - smoothlinescroll,
-        left: newLeft,
-      },
-      SlowTimer.get() ? 0 : 100
-    );
+  caret.css("display", "block"); //for some goddamn reason adding width animation sets the display to none ????????
+
+  const animation: { top: number; left: number; width?: string } = {
+    top: newTop - smoothlinescroll,
+    left: newLeft,
+  };
+
+  if (newWidth !== "") {
+    animation["width"] = newWidth;
   } else {
-    caret.stop(true, true).animate(
-      {
-        top: newTop - smoothlinescroll,
-        left: newLeft,
-      },
-      0
-    );
+    caret.css("width", "");
   }
+
+  caret
+    .stop(true, false)
+    .animate(animation, Config.smoothCaret && !SlowTimer.get() ? 100 : 0);
 
   if (Config.showAllLines) {
     const browserHeight = window.innerHeight;
