@@ -46,6 +46,10 @@
   background: #9f8ad4;
 }
 
+#menu .textButton:nth-child(8) {
+  background: #a692d7;
+}
+
 #top.focus #menu .textButton.discord::after {
   border-color: transparent;
 }

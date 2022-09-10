@@ -1,13 +1,10 @@
 import { v4 } from "uuid";
 
-type MonkeyMailOptions = Partial<Omit<MonkeyMailWithTemplate, "id" | "read">>;
-export interface MonkeyMailWithTemplate extends MonkeyTypes.MonkeyMail {
-  getTemplate?: (user: MonkeyTypes.User) => MonkeyMailOptions;
-}
+type MonkeyMailOptions = Partial<Omit<MonkeyTypes.MonkeyMail, "id" | "read">>;
 
 export function buildMonkeyMail(
   options: MonkeyMailOptions
-): MonkeyMailWithTemplate {
+): MonkeyTypes.MonkeyMail {
   return {
     id: v4(),
     subject: options.subject || "",
@@ -15,6 +12,5 @@ export function buildMonkeyMail(
     timestamp: options.timestamp || Date.now(),
     read: false,
     rewards: options.rewards || [],
-    getTemplate: options.getTemplate,
   };
 }

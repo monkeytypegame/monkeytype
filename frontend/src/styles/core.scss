@@ -42,6 +42,11 @@
   /* Firefox */
 }
 
+::selection {
+  background-color: var(--main-color);
+  color: var(--sub-alt-color);
+}
+
 #app {
   display: grid;
   grid-template-columns: auto minmax(0, 1000px) auto;
@@ -208,8 +213,9 @@ key {
 }
 
 .pageLoading {
+  height: 100%;
   display: grid;
-  justify-content: center;
+  align-items: center;
 }
 
 .pageLoading,
@@ -351,7 +357,7 @@ key {
   color: var(--sub-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;
-  padding: 0.5rem;
+  padding: 0.5em;
   border-radius: var(--roundness);
   text-align: center;
   user-select: none;
@@ -359,16 +365,16 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1.25rem;
+  line-height: 1.25em;
   appearance: none;
   border: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1em;
   width: max-content;
   width: -moz-max-content;
   display: grid;
   grid-auto-flow: column;
-  gap: 0.25rem;
+  gap: 0.25em;
   text-decoration: none;
 
   .fas,
@@ -513,4 +519,19 @@ key {
     margin-bottom: 0.15rem;
     margin-right: 0.3rem;
   }
+}
+
+.notificationBubble {
+  position: absolute;
+  background: var(--main-color);
+  width: 1em;
+  height: 1em;
+  font-size: 0.5em;
+  line-height: 2em;
+  color: transparent;
+  border-radius: 100rem;
+  right: 0.5em;
+  top: 0.5em;
+  outline: 0.5em solid var(--bg-color);
+  transition: 0.125s;
 }

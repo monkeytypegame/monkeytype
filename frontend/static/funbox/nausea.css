@@ -24,7 +24,7 @@
   }
 }
 
-#middle {
+#typingTest {
   animation: woah 7s infinite cubic-bezier(0.5, 0, 0.5, 1);
 }
 
@@ -35,4 +35,10 @@
 
 body {
   overflow: hidden;
+}
+
+#wordsInput {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }

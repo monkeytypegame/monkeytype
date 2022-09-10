@@ -1,9 +1,14 @@
+import _ from "lodash";
 import { CronJob } from "cron";
-import { getCurrentDayTimestamp } from "../utils/misc";
+import {
+  getCurrentDayTimestamp,
+  getOrdinalNumberString,
+  mapRange,
+} from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { DailyLeaderboard } from "../utils/daily-leaderboards";
 import { announceDailyLeaderboardTopResults } from "../tasks/george";
-import { addToInbox } from "../dal/user";
+import { addToInboxBulk } from "../dal/user";
 import { buildMonkeyMail } from "../utils/monkey-mail";
 
 const CRON_SCHEDULE = "1 0 * * *"; // At 00:01.
@@ -37,37 +42,67 @@ async function announceDailyLeaderboard(
     yesterday
   );
 
-  const topResults = await dailyLeaderboard.getResults(
+  const allResults = await dailyLeaderboard.getResults(
     0,
-    dailyLeaderboardsConfig.topResultsToAnnounce - 1,
+    -1,
     dailyLeaderboardsConfig
   );
-  if (topResults.length === 0) {
+
+  if (allResults.length === 0) {
     return;
   }
+  const { maxResults, xpRewardBrackets } = dailyLeaderboardsConfig;
 
-  if (inboxConfig.enabled) {
-    const { xpReward } = dailyLeaderboardsConfig;
+  if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
+    const mailEntries: {
+      uid: string;
+      mail: MonkeyTypes.MonkeyMail[];
+    }[] = [];
 
-    const inboxPromises = topResults.map(async (entry) => {
-      const mail = buildMonkeyMail({
+    allResults.forEach((entry) => {
+      const rank = entry.rank ?? maxResults;
+
+      const placementString = getOrdinalNumberString(rank);
+
+      const xpReward = _(xpRewardBrackets)
+        .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
+        .map((bracket) =>
+          mapRange(
+            rank,
+            bracket.minRank,
+            bracket.maxRank,
+            bracket.maxReward,
+            bracket.minReward
+          )
+        )
+        .max();
+
+      if (!xpReward) return;
+
+      const rewardMail = buildMonkeyMail({
+        subject: "Daily leaderboard placement",
+        body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
         rewards: [
           {
             type: "xp",
-            item: xpReward,
+            item: Math.round(xpReward),
           },
         ],
-        getTemplate: (user) => ({
-          subject: `${xpReward} XP for top placement in the daily leaderboard!`,
-          body: `Congratulations ${user.name} on placing top ${entry.rank} in the ${language} ${mode} ${mode2} daily leaderboard! Claim your ${xpReward} xp!`,
-        }),
       });
 
-      return await addToInbox(entry.uid, [mail], inboxConfig.maxMail);
+      mailEntries.push({
+        uid: entry.uid,
+        mail: [rewardMail],
+      });
     });
 
-    await Promise.allSettled(inboxPromises);
+    await addToInboxBulk(mailEntries, inboxConfig);
   }
+
+  const topResults = allResults.slice(
+    0,
+    dailyLeaderboardsConfig.topResultsToAnnounce
+  );
 
   const leaderboardId = `${mode} ${mode2} ${language}`;
   await announceDailyLeaderboardTopResults(

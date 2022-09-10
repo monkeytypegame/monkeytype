@@ -627,6 +627,11 @@ export function getSpecials(): string {
     "/",
     "\\",
     "|",
+    "?",
+    ";",
+    ":",
+    ">",
+    "<",
   ];
   for (let i = 0; i < randLen; i++) {
     ret += randomElementFromArray(specials);
