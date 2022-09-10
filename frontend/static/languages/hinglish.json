@@ -2,7 +2,6 @@
   "name": "hinglish",
   "leftToRight": true,
   "ligatures": false,
-  "bcp47": "EN-IN",
   "words": [
     "main",
     "mein",
