@@ -302,7 +302,7 @@
   },
   {
     "name": "hindi",
-    "languages": ["hindi", "hindi_1k"]
+    "languages": ["hindi", "hindi_1k", "hinglish"]
   },
   {
     "name": "sanskrit",
