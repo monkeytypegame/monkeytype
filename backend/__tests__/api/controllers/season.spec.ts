@@ -13,8 +13,7 @@ describe("season controller test", () => {
           weekly: {
             enabled: true,
             expirationTimeInDays: 15,
-            maxXpReward: 0,
-            minXpReward: 0,
+            xpRewardBrackets: [],
           },
         },
       } as any);

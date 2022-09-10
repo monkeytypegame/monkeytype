@@ -78,9 +78,8 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   seasons: {
     weekly: {
       enabled: false,
-      minXpReward: 0,
-      maxXpReward: 0,
       expirationTimeInDays: 0, // This should atleast be 15
+      xpRewardBrackets: [],
     },
   },
 };
@@ -447,20 +446,40 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
               type: "boolean",
               label: "Enabled",
             },
-            minXpReward: {
-              type: "number",
-              label: "Minimum XP Reward",
-              min: 0,
-            },
-            maxXpReward: {
-              type: "number",
-              label: "Maximum XP Reward",
-              min: 0,
-            },
             expirationTimeInDays: {
               type: "number",
               label: "Expiration time in days",
               min: 0,
+            },
+            xpRewardBrackets: {
+              type: "array",
+              label: "XP Reward Brackets",
+              items: {
+                type: "object",
+                label: "Bracket",
+                fields: {
+                  minRank: {
+                    type: "number",
+                    label: "Min Rank",
+                    min: 1,
+                  },
+                  maxRank: {
+                    type: "number",
+                    label: "Max Rank",
+                    min: 1,
+                  },
+                  minReward: {
+                    type: "number",
+                    label: "Min Reward",
+                    min: 0,
+                  },
+                  maxReward: {
+                    type: "number",
+                    label: "Max Reward",
+                    min: 0,
+                  },
+                },
+              },
             },
           },
         },

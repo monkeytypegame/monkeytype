@@ -83,9 +83,8 @@ declare namespace MonkeyTypes {
     seasons: {
       weekly: {
         enabled: boolean;
-        maxXpReward: number;
-        minXpReward: number;
         expirationTimeInDays: number;
+        xpRewardBrackets: RewardBracket[];
       };
     };
   }

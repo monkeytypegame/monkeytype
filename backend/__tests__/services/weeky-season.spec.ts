@@ -6,8 +6,7 @@ import {
 const weeklySeasonConfig = {
   enabled: true,
   expirationTimeInDays: 15,
-  maxXpReward: 0,
-  minXpReward: 0,
+  xpRewardBrackets: [],
 };
 
 describe("Weekly seasons", () => {
