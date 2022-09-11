@@ -1685,6 +1685,12 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean
 ): Promise<void> {
+  if (!TestState.savingEnabled) {
+    Notifications.add("Result not saved: disabled by user", -1, 3, "Notice");
+    AccountButton.loading(false);
+    return;
+  }
+
   const response = await Ape.results.save(completedEvent);
 
   AccountButton.loading(false);
