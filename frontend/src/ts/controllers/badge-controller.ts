@@ -90,8 +90,8 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
   12: {
     id: 12,
     name: "Contributor",
-    description: "Contributed code to the site",
-    icon: "fa-code",
+    description: "Contributed to the site",
+    icon: "fa-hands-helping",
     color: "var(--text-color)",
     background: "var(--sub-color)",
   },
