@@ -87,6 +87,14 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     color: "var(--text-color)",
     background: "var(--sub-color)",
   },
+  12: {
+    id: 12,
+    name: "Contributor",
+    description: "Contributed code to the site",
+    icon: "fa-code",
+    color: "var(--text-color)",
+    background: "var(--sub-color)",
+  },
 };
 
 export function getHTMLById(
