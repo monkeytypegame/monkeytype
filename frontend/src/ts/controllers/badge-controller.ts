@@ -120,3 +120,7 @@ export function getHTMLById(
     badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
   }${noText ? "" : `<div class="text">${badge.name}</div>`}</div>`;
 }
+
+export function getById(id: number): MonkeyTypes.UserBadge {
+  return badges[id];
+}

@@ -38,8 +38,6 @@ declare namespace MonkeyTypes {
 
   type QuoteLength = -3 | -2 | -1 | 0 | 1 | 2 | 3;
 
-  type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
-
   type CaretStyle =
     | "off"
     | "default"
@@ -149,6 +147,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
     difficulty: string;
     raw: number;
+    isPb: boolean;
   }
 
   interface AccChartData {
@@ -320,7 +319,7 @@ declare namespace MonkeyTypes {
     mode: Mode;
     quoteLength: QuoteLength[];
     language: string;
-    fontSize: FontSize;
+    fontSize: number;
     freedomMode: boolean;
     resultFilters?: ResultFilters | null;
     difficulty: Difficulty;
@@ -474,6 +473,9 @@ declare namespace MonkeyTypes {
     addedAt: number;
     filterPresets: ResultFilters[];
     xp: number;
+    inboxUnreadSize: number;
+    streak: number;
+    maxStreak: number;
   }
 
   interface UserDetails {
@@ -739,4 +741,30 @@ declare namespace MonkeyTypes {
     color?: string;
     customStyle?: string;
   }
+
+  interface MonkeyMail {
+    id: string;
+    subject: string;
+    body: string;
+    timestamp: number;
+    read: boolean;
+    rewards: AllRewards[];
+  }
+
+  interface Reward<T> {
+    type: string;
+    item: T;
+  }
+
+  interface XpReward extends Reward<number> {
+    type: "xp";
+    item: number;
+  }
+
+  interface BadgeReward extends Reward<Badge> {
+    type: "badge";
+    item: Badge;
+  }
+
+  type AllRewards = XpReward | BadgeReward;
 }

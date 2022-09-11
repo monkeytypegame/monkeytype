@@ -72,6 +72,24 @@ export async function update(
   const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
+  if (profile.streak && profile?.streak > 1) {
+    details
+      .find(".streak")
+      .text(
+        `Current streak: ${profile.streak} ${
+          profile.streak === 1 ? "day" : "days"
+        }`
+      )
+      .attr(
+        "aria-label",
+        `Longest streak: ${profile.maxStreak} ${
+          profile.maxStreak === 1 ? "day" : "days"
+        }`
+      );
+  } else {
+    details.find(".streak").text("").attr("aria-label", "");
+  }
+
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl
     .find(".started .value")
@@ -142,7 +160,10 @@ export async function update(
   const level = Math.floor(levelFraction);
   const xpForLevel = Misc.getXpForLevel(level);
   const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
-  details.find(".level").text(level);
+  details
+    .find(".level")
+    .text(level)
+    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
   details
     .find(".xp")
     .text(
@@ -155,7 +176,10 @@ export async function update(
     .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
   details
     .find(".xp")
-    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
+    .attr(
+      "aria-label",
+      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
+    );
 
   //structure
 

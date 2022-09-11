@@ -31,8 +31,6 @@
   color: #d44729;
 }
 
-#menu .textButton:nth-child(5),
-#menu .textButton:nth-child(6),
-#menu .textButton:nth-child(7) {
+#menu .textButton:nth-child(5) {
   color: #d44729;
 }

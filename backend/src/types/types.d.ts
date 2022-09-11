@@ -45,6 +45,15 @@ declare namespace MonkeyTypes {
         gainMultiplier: number;
         maxDailyBonus: number;
         minDailyBonus: number;
+        streak: {
+          enabled: boolean;
+          maxStreakDays: number;
+          maxStreakMultiplier: number;
+        };
+      };
+      inbox: {
+        enabled: boolean;
+        maxMail: number;
       };
     };
     apeKeys: {
@@ -68,7 +77,15 @@ declare namespace MonkeyTypes {
       validModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
+      xpRewardBrackets: RewardBracket[];
     };
+  }
+
+  interface RewardBracket {
+    minRank: number;
+    maxRank: number;
+    minReward: number;
+    maxReward: number;
   }
 
   interface DecodedToken {
@@ -96,6 +113,32 @@ declare namespace MonkeyTypes {
       github?: string;
       website?: string;
     };
+  }
+
+  interface Reward<T> {
+    type: string;
+    item: T;
+  }
+
+  interface XpReward extends Reward<number> {
+    type: "xp";
+    item: number;
+  }
+
+  interface BadgeReward extends Reward<Badge> {
+    type: "badge";
+    item: Badge;
+  }
+
+  type AllRewards = XpReward | BadgeReward;
+
+  interface MonkeyMail {
+    id: string;
+    subject: string;
+    body: string;
+    timestamp: number;
+    read: boolean;
+    rewards: AllRewards[];
   }
 
   interface User {
@@ -128,6 +171,14 @@ declare namespace MonkeyTypes {
     profileDetails?: UserProfileDetails;
     inventory?: UserInventory;
     xp?: number;
+    inbox?: MonkeyMail[];
+    streak?: UserStreak;
+  }
+
+  interface UserStreak {
+    lastResultTimestamp: number;
+    length: number;
+    maxLength: number;
   }
 
   interface UserInventory {

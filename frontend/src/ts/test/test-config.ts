@@ -1,5 +1,5 @@
 import * as ConfigEvent from "../observables/config-event";
-import * as Misc from "../utils/misc";
+// import * as Misc from "../utils/misc";
 
 // export function show() {
 //   $("#top .config").removeClass("hidden").css("opacity", 1);
@@ -10,159 +10,312 @@ import * as Misc from "../utils/misc";
 // }
 
 export function show(): void {
-  $("#top .config")
-    .css("transition", "unset")
-    .stop(true, true)
-    .removeClass("hidden")
-    .css("opacity", 0)
-    .animate(
-      {
-        opacity: 1,
-      },
-      125,
-      () => {
-        $("#top .config").css("transition", "0.125s");
-      }
-    );
+  $("#testConfig").removeClass("invisible");
 }
 
 export function hide(): void {
-  $("#top .config")
-    .css("transition", "unset")
-    .stop(true, true)
-    .css("opacity", 1)
-    .animate(
-      {
-        opacity: 0,
-      },
-      125,
-      () => {
-        $("#top .config").addClass("hidden").css("transition", "0.125s");
-      }
-    );
+  $("#testConfig").addClass("invisible");
 }
 
-export function update(
+export async function update(
   previous: MonkeyTypes.Mode,
   current: MonkeyTypes.Mode
-): void {
+): Promise<void> {
   if (previous === current) return;
-  $("#top .config .mode .textButton").removeClass("active");
-  $("#top .config .mode .textButton[mode='" + current + "']").addClass(
-    "active"
-  );
+  $("#testConfig .mode .textButton").removeClass("active");
+  $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
 
-  if (current == "time") {
-    // $("#top .config .wordCount").addClass("hidden");
-    // $("#top .config .time").removeClass("hidden");
-    // $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    // $("#top .config .puncAndNum").removeClass("disabled");
-    // $("#top .config .punctuationMode").removeClass("hidden");
-    // $("#top .config .numbersMode").removeClass("hidden");
-    // $("#top .config .quoteLength").addClass("hidden");
-  } else if (current == "words") {
-    // $("#top .config .wordCount").removeClass("hidden");
-    // $("#top .config .time").addClass("hidden");
-    // $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    // $("#top .config .puncAndNum").removeClass("disabled");
-    // $("#top .config .punctuationMode").removeClass("hidden");
-    // $("#top .config .numbersMode").removeClass("hidden");
-    // $("#top .config .quoteLength").addClass("hidden");
-  } else if (current == "custom") {
-    // $("#top .config .wordCount").addClass("hidden");
-    // $("#top .config .time").addClass("hidden");
-    // $("#top .config .customText").removeClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    // $("#top .config .puncAndNum").removeClass("disabled");
-    // $("#top .config .punctuationMode").removeClass("hidden");
-    // $("#top .config .numbersMode").removeClass("hidden");
-    // $("#top .config .quoteLength").addClass("hidden");
-  } else if (current == "quote") {
-    // $("#top .config .wordCount").addClass("hidden");
-    // $("#top .config .time").addClass("hidden");
-    // $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("disabled");
-    $("#top .config .numbersMode").addClass("disabled");
-    // $("#top .config .puncAndNum").addClass("disabled");
-    // $("#top .config .punctuationMode").removeClass("hidden");
-    // $("#top .config .numbersMode").removeClass("hidden");
-    // $("#result .stats .source").removeClass("hidden");
-    // $("#top .config .quoteLength").removeClass("hidden");
-  } else if (current == "zen") {
-    // $("#top .config .wordCount").addClass("hidden");
-    // $("#top .config .time").addClass("hidden");
-    // $("#top .config .customText").addClass("hidden");
-    // $("#top .config .punctuationMode").addClass("hidden");
-    // $("#top .config .numbersMode").addClass("hidden");
-    // $("#top .config .quoteLength").addClass("hidden");
-  }
+  // if (current == "time") {
+  //   $("#testConfig .punctuationMode").removeClass("hidden");
+  //   $("#testConfig .numbersMode").removeClass("hidden");
+  //   $("#testConfig .leftSpacer").removeClass("hidden");
+  // } else if (current == "words") {
+  //   $("#testConfig .punctuationMode").removeClass("hidden");
+  //   $("#testConfig .numbersMode").removeClass("hidden");
+  //   $("#testConfig .leftSpacer").removeClass("hidden");
+  // } else if (current == "custom") {
+  //   $("#testConfig .punctuationMode").removeClass("hidden");
+  //   $("#testConfig .numbersMode").removeClass("hidden");
+  //   $("#testConfig .leftSpacer").removeClass("hidden");
+  // } else if (current == "quote") {
+  //   $("#testConfig .punctuationMode").addClass("hidden");
+  //   $("#testConfig .numbersMode").addClass("hidden");
+  //   $("#testConfig .leftSpacer").addClass("hidden");
+  // } else if (current == "zen") {
+  //   //
+  // }
 
   const submenu = {
     time: "time",
     words: "wordCount",
     custom: "customText",
     quote: "quoteLength",
-    zen: "",
+    zen: "zen",
   };
 
   const animTime = 250;
 
+  const puncAndNumVisible = {
+    time: true,
+    words: true,
+    custom: true,
+    quote: false,
+    zen: false,
+  };
+
+  if (
+    puncAndNumVisible[previous] == false &&
+    puncAndNumVisible[current] == true
+  ) {
+    //show
+
+    $("#testConfig .leftSpacer").removeClass("scrolled");
+    $("#testConfig .puncAndNum")
+      .css({
+        opacity: 0,
+        maxWidth: 0,
+      })
+      .animate(
+        {
+          opacity: 1,
+          maxWidth: "14rem",
+        },
+        animTime,
+        "easeInOutSine"
+      );
+  } else if (
+    puncAndNumVisible[previous] == true &&
+    puncAndNumVisible[current] == false
+  ) {
+    //hide
+    $("#testConfig .leftSpacer").addClass("scrolled");
+    $("#testConfig .puncAndNum")
+      .css({
+        opacity: 1,
+        maxWidth: "14rem",
+      })
+      .animate(
+        {
+          opacity: 0,
+          maxWidth: "0",
+        },
+        animTime,
+        "easeInOutSine"
+      );
+  }
+
   if (current == "zen") {
-    $(`#top .config .${submenu[previous]}`).animate(
-      {
-        opacity: 0,
-      },
-      animTime / 2,
-      () => {
-        $(`#top .config .${submenu[previous]}`).addClass("hidden");
-      }
-    );
-    $(`#top .config .puncAndNum`).animate(
-      {
-        opacity: 0,
-      },
-      animTime / 2,
-      () => {
-        $(`#top .config .puncAndNum`).addClass("invisible");
-      }
-    );
-    return;
+    $("#testConfig .rightSpacer").addClass("scrolled");
+  } else {
+    $("#testConfig .rightSpacer").removeClass("scrolled");
   }
 
-  if (previous == "zen") {
-    setTimeout(() => {
-      $(`#top .config .${submenu[current]}`).removeClass("hidden");
-      $(`#top .config .${submenu[current]}`)
-        .css({ opacity: 0 })
-        .animate(
-          {
-            opacity: 1,
-          },
-          animTime / 2
-        );
-      $(`#top .config .puncAndNum`).removeClass("invisible");
-      $(`#top .config .puncAndNum`)
-        .css({ opacity: 0 })
-        .animate(
-          {
-            opacity: 1,
-          },
-          animTime / 2
-        );
-    }, animTime / 2);
-    return;
-  }
+  // const currentWidth = Math.round(
+  //   document.querySelector("#testConfig .row")?.getBoundingClientRect().width ??
+  //     0
+  // );
 
-  Misc.swapElements(
-    $("#top .config ." + submenu[previous]),
-    $("#top .config ." + submenu[current]),
-    animTime
+  // if (puncAndNumVisible[current]) {
+  //   $("#testConfig .punctuationMode").removeClass("hidden");
+  //   $("#testConfig .numbersMode").removeClass("hidden");
+  //   $("#testConfig .leftSpacer").removeClass("hidden");
+  // } else {
+  //   $("#testConfig .punctuationMode").addClass("hidden");
+  //   $("#testConfig .numbersMode").addClass("hidden");
+  //   $("#testConfig .leftSpacer").addClass("hidden");
+  // }
+
+  // if (current == "zen") {
+  //   $("#testConfig .rightSpacer").addClass("hidden");
+  // } else {
+  //   $("#testConfig .rightSpacer").removeClass("hidden");
+  // }
+
+  const previousWidth = Math.round(
+    document
+      .querySelector(`#testConfig .${submenu[previous]}`)
+      ?.getBoundingClientRect().width ?? 0
   );
+
+  $(`#testConfig .${submenu[previous]}`).addClass("hidden");
+
+  $(`#testConfig .${submenu[current]}`).removeClass("hidden");
+
+  const currentWidth = Math.round(
+    document
+      .querySelector(`#testConfig .${submenu[current]}`)
+      ?.getBoundingClientRect().width ?? 0
+  );
+
+  $(`#testConfig .${submenu[previous]}`).removeClass("hidden");
+
+  $(`#testConfig .${submenu[current]}`).addClass("hidden");
+
+  const widthDifference = currentWidth - previousWidth;
+
+  const widthStep = widthDifference / 2;
+
+  $(`#testConfig .${submenu[previous]}`)
+    .css({
+      opacity: 1,
+      width: previousWidth,
+    })
+    .animate(
+      {
+        width: previousWidth + widthStep,
+        opacity: 0,
+      },
+      animTime / 2,
+      "easeInSine",
+      () => {
+        $(`#testConfig .${submenu[previous]}`)
+          .css({
+            opacity: 1,
+            width: "unset",
+          })
+          .addClass("hidden");
+        $(`#testConfig .${submenu[current]}`)
+          .css({
+            opacity: 0,
+            width: previousWidth + widthStep,
+          })
+          .removeClass("hidden")
+          .animate(
+            {
+              opacity: 1,
+              width: currentWidth,
+            },
+            animTime / 2,
+            "easeOutSine",
+            () => {
+              $(`#testConfig .${submenu[current]}`).css("width", "unset");
+            }
+          );
+      }
+    );
+
+  // $(`#testConfig .${submenu[current]}`)
+  //   .css({
+  //     opacity: 0,
+  //     maxWidth: previousWidth,
+  //   })
+  //   .removeClass("hidden")
+  //   .animate(
+  //     {
+  //       maxWidth: currentWidth,
+  //       opacity: 1,
+  //     },
+  //     250,
+  //     () => {
+  //       $(`#testConfig .${submenu[current]}`).css({
+  //         opacity: 1,
+  //         maxWidth: "unset",
+  //       });
+  //     }
+  //   );
+
+  // const newWidth = Math.round(
+  //   document.querySelector("#testConfig .row")?.getBoundingClientRect().width ??
+  //     0
+  // );
+
+  // console.log(submenu[current], animTime, newWidth, currentWidth);
+
+  // if (current == "zen") {
+  //   $(`#testConfig .${submenu[previous]}`).animate(
+  //     {
+  //       opacity: 0,
+  //     },
+  //     animTime / 2,
+  //     () => {
+  //       $(`#testConfig .${submenu[previous]}`).addClass("hidden");
+  //     }
+  //   );
+  //   $(`#testConfig .puncAndNum`).animate(
+  //     {
+  //       opacity: 0,
+  //     },
+  //     animTime / 2,
+  //     () => {
+  //       $(`#testConfig .puncAndNum`).addClass("hidden");
+  //     }
+  //   );
+  //   return;
+  // }
+
+  // if (previous == "zen") {
+  //   setTimeout(() => {
+  //     $(`#testConfig .${submenu[current]}`).removeClass("hidden");
+  //     $(`#testConfig .${submenu[current]}`)
+  //       .css({ opacity: 0 })
+  //       .animate(
+  //         {
+  //           opacity: 1,
+  //         },
+  //         animTime / 2
+  //       );
+  //     $(`#testConfig .puncAndNum`).removeClass("hidden");
+  //     $(`#testConfig .puncAndNum`)
+  //       .css({ opacity: 0 })
+  //       .animate(
+  //         {
+  //           opacity: 1,
+  //         },
+  //         animTime / 2
+  //       );
+  //   }, animTime / 2);
+  //   return;
+  // }
+
+  // Misc.swapElements(
+  //   $("#testConfig ." + submenu[previous]),
+  //   $("#testConfig ." + submenu[current]),
+  //   animTime
+  // );
+}
+
+export function updateExtras(
+  key: string,
+  value: MonkeyTypes.ConfigValues
+): void {
+  if (key == "time") {
+    $("#testConfig .time .textButton").removeClass("active");
+    const timeCustom = ![15, 30, 60, 120].includes(value as number)
+      ? "custom"
+      : value;
+    $(
+      "#testConfig .time .textButton[timeConfig='" + timeCustom + "']"
+    ).addClass("active");
+  } else if (key == "words") {
+    $("#testConfig .wordCount .textButton").removeClass("active");
+
+    const wordCustom = ![10, 25, 50, 100, 200].includes(value as number)
+      ? "custom"
+      : value;
+
+    $(
+      "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']"
+    ).addClass("active");
+  } else if (key == "quoteLength") {
+    $("#testConfig .quoteLength .textButton").removeClass("active");
+    (value as MonkeyTypes.QuoteLength[]).forEach((ql) => {
+      $(
+        "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
+      ).addClass("active");
+    });
+  } else if (key == "numbers") {
+    if (!value) {
+      $("#testConfig .numbersMode.textButton").removeClass("active");
+    } else {
+      $("#testConfig .numbersMode.textButton").addClass("active");
+    }
+  } else if (key == "punctuation") {
+    if (!value) {
+      $("#testConfig .punctuationMode.textButton").removeClass("active");
+    } else {
+      $("#testConfig .punctuationMode.textButton").addClass("active");
+    }
+  }
 }
 
 export function showFavoriteQuoteLength(): void {
@@ -179,5 +332,11 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
       eventPreviousValue as MonkeyTypes.Mode,
       eventValue as MonkeyTypes.Mode
     );
+  } else if (
+    ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
+      eventKey
+    )
+  ) {
+    updateExtras(eventKey, eventValue);
   }
 });

@@ -379,6 +379,7 @@ export const accountHistory: ChartWithUpdateColors<
               `punctuation: ${resultData.punctuation}` +
               "\n" +
               `language: ${resultData.language}` +
+              `${resultData.isPb ? "\n\nnew personal best" : ""}` +
               "\n\n" +
               `date: ${format(
                 new Date(resultData.timestamp),
@@ -698,6 +699,7 @@ export async function updateColors<
   const subcolor = await ThemeColors.get("sub");
   const maincolor = await ThemeColors.get("main");
   const errorcolor = await ThemeColors.get("error");
+  const textcolor = await ThemeColors.get("text");
 
   if (
     chart.data.datasets.every(
@@ -715,7 +717,12 @@ export async function updateColors<
     return;
   }
 
-  chart.data.datasets[0].borderColor = maincolor;
+  //@ts-ignore
+  chart.data.datasets[0].borderColor = (ctx): string => {
+    const isPb = ctx.raw?.["isPb"];
+    const color = isPb ? textcolor : maincolor;
+    return color;
+  };
   chart.data.datasets[1].borderColor = subcolor;
   if (chart.data.datasets[2]) {
     chart.data.datasets[2].borderColor = errorcolor;
@@ -725,7 +732,12 @@ export async function updateColors<
     if (chart.config.type === "line") {
       (
         chart.data.datasets as ChartDataset<"line", TData>[]
-      )[0].pointBackgroundColor = maincolor;
+      )[0].pointBackgroundColor = (ctx): string => {
+        //@ts-ignore
+        const isPb = ctx.raw?.["isPb"];
+        const color = isPb ? textcolor : maincolor;
+        return color;
+      };
     } else if (chart.config.type === "bar") {
       chart.data.datasets[0].backgroundColor = maincolor;
     }

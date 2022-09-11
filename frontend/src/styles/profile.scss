@@ -1,4 +1,7 @@
 .pageProfile {
+  align-content: center;
+  height: 100%;
+  display: grid;
   .preloader {
     position: absolute;
     z-index: 1;
@@ -38,7 +41,7 @@
   .pbsWords,
   .pbsTime,
   .details {
-    user-select: none;
+    // user-select: none;
     background: var(--sub-alt-color);
     padding: 1rem;
     border-radius: var(--roundness);
@@ -292,8 +295,14 @@
         font-size: 0.7em;
         line-height: 0.7rem;
       }
+      .streak {
+        color: var(--sub-color);
+        font-size: 0.7em;
+        line-height: 0.7rem;
+      }
       .badge,
-      .joined {
+      .joined,
+      .streak {
         margin-top: 0.35rem;
       }
       .levelAndBar {
@@ -378,6 +387,11 @@
       .value {
         font-size: 1.5rem;
         line-height: 1.3rem;
+      }
+    }
+    .socials {
+      .value {
+        margin-top: 0.05rem;
       }
     }
     .title {
