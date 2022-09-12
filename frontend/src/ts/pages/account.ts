@@ -72,11 +72,11 @@ function loadMoreLines(lineIndex?: number): void {
     }
 
     if (result.punctuation) {
-      icons += `<span aria-label="punctuation" data-balloon-pos="up" style="font-weight:900">!?</span>`;
+      icons += `<span aria-label="punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-at"></i></span>`;
     }
 
     if (result.numbers) {
-      icons += `<span aria-label="numbers" data-balloon-pos="up" style="font-weight:900">15</span>`;
+      icons += `<span aria-label="numbers" data-balloon-pos="up"><i class="fas fa-fw fa-hashtag"></i></span>`;
     }
 
     if (result.blindMode) {
