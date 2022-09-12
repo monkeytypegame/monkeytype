@@ -522,6 +522,11 @@ function handleChar(
     }
   }
 
+  //keymap
+  if (Config.keymapMode === "react") {
+    Keymap.flashKey(char, thisCharCorrect);
+  }
+
   if (!correctShiftUsed && Config.difficulty != "master") return;
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
@@ -555,9 +560,6 @@ function handleChar(
     Config.stopOnError == "letter" &&
     !thisCharCorrect
   ) {
-    if (Config.keymapMode === "react") {
-      Keymap.flashKey(char, false);
-    }
     return;
   }
 
@@ -590,11 +592,6 @@ function handleChar(
     TestInput.corrected.pushHistory();
     TestLogic.fail("difficulty");
     return;
-  }
-
-  //keymap
-  if (Config.keymapMode === "react") {
-    Keymap.flashKey(char, thisCharCorrect);
   }
 
   if (Config.mode != "zen") {
