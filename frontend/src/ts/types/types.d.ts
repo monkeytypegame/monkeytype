@@ -252,6 +252,11 @@ declare namespace MonkeyTypes {
     sd: number;
   }
 
+  interface IncompleteTest {
+    acc: number;
+    seconds: number;
+  }
+
   interface Result<M extends Mode> {
     _id: string;
     wpm: number;
@@ -266,6 +271,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
     restartCount: number;
     incompleteTestSeconds: number;
+    incompleteTests: IncompleteTest[];
     testDuration: number;
     afkDuration: number;
     tags: string[];

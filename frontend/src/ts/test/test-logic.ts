@@ -442,10 +442,12 @@ export function restart(options = {} as RestartOptions): void {
       TestInput.pushKeypressesToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-      let tt = testSeconds - afkseconds;
+      let tt = Misc.roundTo2(testSeconds - afkseconds);
       if (tt < 0) tt = 0;
       TestStats.incrementIncompleteSeconds(tt);
       TestStats.incrementRestartCount();
+      const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+      TestStats.pushIncompleteTest(acc, tt);
     }
   }
 
@@ -714,8 +716,6 @@ export function restart(options = {} as RestartOptions): void {
             }
             // ChartController.result.update();
             PageTransition.set(false);
-            // console.log(TestStats.incompleteSeconds);
-            // console.log(TestStats.restartCount);
           }
         );
     }
@@ -1335,6 +1335,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     timestamp: Date.now(),
     language: Config.language,
     restartCount: TestStats.restartCount,
+    incompleteTests: TestStats.incompleteTests,
     incompleteTestSeconds:
       TestStats.incompleteSeconds < 0
         ? 0
@@ -1794,10 +1795,12 @@ export function fail(reason: string): void {
   if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-  let tt = testSeconds - afkseconds;
+  let tt = Misc.roundTo2(testSeconds - afkseconds);
   if (tt < 0) tt = 0;
   TestStats.incrementIncompleteSeconds(tt);
   TestStats.incrementRestartCount();
+  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  TestStats.pushIncompleteTest(acc, tt);
 }
 
 $(document).on("click", "#testModesNotice .textButton.restart", () => {
