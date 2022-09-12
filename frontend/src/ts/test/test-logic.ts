@@ -438,25 +438,15 @@ export function restart(options = {} as RestartOptions): void {
       options.withSameWordset = true;
     }
 
-    TestInput.pushKeypressesToHistory();
-    const testSeconds = TestStats.calculateTestSeconds(performance.now());
-    const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-    // incompleteTestSeconds += ;
-    let tt = testSeconds - afkseconds;
-    if (tt < 0) tt = 0;
-    // console.log(
-    //   `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
-    // );
-    TestStats.incrementIncompleteSeconds(tt);
-    TestStats.incrementRestartCount();
-    // if (tt > 600) {
-    //   Notifications.add(
-    //     `Your time typing just increased by ${Misc.roundTo2(
-    //       tt / 60
-    //     )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
-    //     -1
-    //   );
-    // }
+    if (TestState.savingEnabled) {
+      TestInput.pushKeypressesToHistory();
+      const testSeconds = TestStats.calculateTestSeconds(performance.now());
+      const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
+      let tt = testSeconds - afkseconds;
+      if (tt < 0) tt = 0;
+      TestStats.incrementIncompleteSeconds(tt);
+      TestStats.incrementRestartCount();
+    }
   }
 
   if (Config.mode == "zen") {
@@ -1800,6 +1790,7 @@ export function fail(reason: string): void {
   // corrected.pushHistory();
   TestInput.pushKeypressesToHistory();
   finish(true);
+  if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
   let tt = testSeconds - afkseconds;
