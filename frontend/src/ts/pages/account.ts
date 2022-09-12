@@ -179,10 +179,12 @@ function loadMoreLines(lineIndex?: number): void {
 
 export function reset(): void {
   $(".pageAccount .history table tbody").empty();
+  ChartController.accountHistogram.data.datasets[0].data = [];
   ChartController.accountActivity.data.datasets[0].data = [];
   ChartController.accountActivity.data.datasets[1].data = [];
   ChartController.accountHistory.data.datasets[0].data = [];
   ChartController.accountHistory.data.datasets[1].data = [];
+  ChartController.accountHistogram.updateColors();
   ChartController.accountActivity.updateColors();
   ChartController.accountHistory.updateColors();
 }
@@ -236,6 +238,7 @@ function fillContent(): void {
   ThemeColors.update();
   ChartController.accountHistory.updateColors();
   ChartController.accountActivity.updateColors();
+  ChartController.accountHistogram.updateColors();
   AllTimeStats.update();
 
   const snapshot = DB.getSnapshot();
@@ -285,7 +288,13 @@ function fillContent(): void {
     };
   }
 
+  interface HistogramChartData {
+    [key: string]: number;
+  }
+
   const activityChartData: ActivityChartData = {};
+
+  const histogramChartData: HistogramChartData = {};
 
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
@@ -516,6 +525,14 @@ function fillContent(): void {
         };
       }
 
+      const bucket = Math.floor(result.wpm / 10) * 10;
+
+      if (Object.keys(histogramChartData).includes(String(bucket))) {
+        histogramChartData[bucket]++;
+      } else {
+        histogramChartData[bucket] = 1;
+      }
+
       let tt = 0;
       if (
         result.testDuration == undefined &&
@@ -676,6 +693,29 @@ function fillContent(): void {
     activityChartData_time;
   ChartController.accountActivity.data.datasets[1].data =
     activityChartData_avgWpm;
+
+  const histogramChartDataBucketed: { x: number; y: number }[] = [];
+  const labels: string[] = [];
+
+  const keys = Object.keys(histogramChartData);
+  for (let i = 0; i < keys.length; i++) {
+    const bucket = parseInt(keys[i]);
+    labels.push(`${bucket} - ${bucket + 9}`);
+    if (bucket + 10 != parseInt(keys[i + 1])) {
+      for (let j = bucket + 10; j < parseInt(keys[i + 1]); j += 10) {
+        histogramChartDataBucketed.push({ x: i, y: 0 });
+        labels.push(`${j} - ${j + 9}`);
+      }
+    }
+    histogramChartDataBucketed.push({
+      x: bucket,
+      y: histogramChartData[bucket],
+    });
+  }
+
+  ChartController.accountHistogram.data.labels = labels;
+  ChartController.accountHistogram.data.datasets[0].data =
+    histogramChartDataBucketed;
 
   const accountHistoryScaleOptions = (
     ChartController.accountHistory.options as ScaleChartOptions<"line">
