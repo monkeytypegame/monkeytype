@@ -308,13 +308,14 @@ export const accountHistory: ChartWithUpdateColors<
           display: true,
           text: "Words per Minute",
         },
+        position: "right",
       },
       acc: {
         axis: "y",
         beginAtZero: true,
         max: 100,
         display: true,
-        position: "right",
+        position: "left",
         title: {
           display: true,
           text: "Error rate (100 - accuracy)",
