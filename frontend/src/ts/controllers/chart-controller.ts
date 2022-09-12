@@ -503,6 +503,8 @@ export const accountActivity: ChartWithUpdateColors<
       },
       tooltip: {
         animation: { duration: 250 },
+        intersect: false,
+        mode: "index",
         callbacks: {
           title: function (tooltipItem): string {
             const resultData = tooltipItem[0].dataset.data[
