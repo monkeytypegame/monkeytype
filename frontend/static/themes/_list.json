@@ -778,5 +778,10 @@
     "name": "modern_dolch_light",
     "bgColor": "#dbdbdb",
     "mainColor": "#8fd1c3"
+  },
+  {
+    "name": "iv_spade",
+    "bgColor": "#0c0c0c",
+    "mainColor": "#a0a0a0"
   }
 ]
