@@ -783,5 +783,10 @@
     "name": "iv_spade",
     "bgColor": "#0c0c0c",
     "mainColor": "#a0a0a0"
+  },
+  {
+    "name": "iv_clover",
+    "bgColor": "#d4d4d4",
+    "mainColor": "#a0a0a0"
   }
 ]
