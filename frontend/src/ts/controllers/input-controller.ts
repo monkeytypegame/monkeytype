@@ -555,6 +555,9 @@ function handleChar(
     Config.stopOnError == "letter" &&
     !thisCharCorrect
   ) {
+    if (Config.keymapMode === "react") {
+      Keymap.flashKey(char, false);
+    }
     return;
   }
 
