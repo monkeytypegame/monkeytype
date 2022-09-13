@@ -445,6 +445,7 @@ async function calculateXp(
     acc,
     testDuration,
     incompleteTestSeconds,
+    incompleteTests,
     afkDuration,
     charStats,
     punctuation,
@@ -514,8 +515,18 @@ async function calculateXp(
     }
   }
 
-  const incompleteXp = Math.round(incompleteTestSeconds);
-  breakdown["incomplete"] = incompleteXp;
+  let incompleteXp = 0;
+  if (incompleteTests && incompleteTests.length > 0) {
+    incompleteTests.forEach((it: { acc: number; seconds: number }) => {
+      let modifier = (it.acc - 50) / 50;
+      if (modifier < 0) modifier = 0;
+      incompleteXp += Math.round(it.seconds * modifier);
+    });
+    breakdown["incomplete"] = incompleteXp;
+  } else if (incompleteTestSeconds && incompleteTestSeconds > 0) {
+    incompleteXp = Math.round(incompleteTestSeconds);
+    breakdown["incomplete"] = incompleteXp;
+  }
 
   const accuracyModifier = (acc - 50) / 50;
 

@@ -39,6 +39,12 @@ export async function update(): Promise<void> {
     );
   }
 
+  if (!TestState.savingEnabled) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="textButton resultSaving" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`
+    );
+  }
+
   if (TestWords.hasTab) {
     if (Config.quickRestart === "esc") {
       $(".pageTest #testModesNotice").append(
