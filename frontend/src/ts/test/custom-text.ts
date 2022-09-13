@@ -19,6 +19,14 @@ export function setText(txt: string[]): void {
   text = txt;
 }
 
+export function getText(): string {
+  return text.join(" ");
+}
+
+export function getTextArray(): string[] {
+  return text;
+}
+
 export function setIsWordRandom(val: boolean): void {
   isWordRandom = val;
 }
@@ -41,8 +49,14 @@ export function setDelimiter(val: string): void {
 
 type CustomTextObject = Record<string, string>;
 
-export function getCustomText(name: string): string[] {
+export function getCustomText(name: string, progress = 0): string[] {
   const customText = getCustomTextObject();
+
+  if (progress >= customText[name].length) {
+    console.error("Custom text progress is greater than text length");
+  } else {
+    return customText[name].split(" ").slice(progress);
+  }
 
   return customText[name].split(/ +/);
 }
@@ -56,6 +70,12 @@ export function setCustomText(name: string, text: string | string[]): void {
   window.localStorage.setItem("customText", JSON.stringify(customText));
 }
 
+export function getCustoMTextProgress(name: string): number {
+  const customTextProgress = getCustomTextProgressObject();
+
+  return customTextProgress[name] ?? 0;
+}
+
 export function deleteCustomText(name: string): void {
   const customText = getCustomTextObject();
 
@@ -66,6 +86,10 @@ export function deleteCustomText(name: string): void {
 
 function getCustomTextObject(): CustomTextObject {
   return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
+}
+
+function getCustomTextProgressObject(): Record<string, number> {
+  return JSON.parse(window.localStorage.getItem("customTextProgress") ?? "{}");
 }
 
 export function getCustomTextNames(): string[] {
