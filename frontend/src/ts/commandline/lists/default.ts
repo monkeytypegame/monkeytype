@@ -18,6 +18,10 @@ import KeyTipsCommands from "./key-tips";
 import FreedomModeCommands from "./freedom-mode";
 import StrictSpaceCommands from "./strict-space";
 import BlindModeCommands from "./blind-mode";
+import ShowWordsHistoryCommands from "./show-words-history";
+import IndicateTyposCommands from "./indicate-typos";
+import HideExtraLettersCommands from "./hide-extra-letters";
+import QuickEndCommands from "./quick-end";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -221,25 +225,25 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeShowWordsHistory",
       display: "Always show words history...",
       icon: "fa-align-left",
-      subgroup: commandsShowWordsHistory,
+      subgroup: ShowWordsHistoryCommands,
     },
     {
       id: "changeIndicateTypos",
       display: "Indicate typos...",
       icon: "fa-exclamation",
-      subgroup: commandsIndicateTypos,
+      subgroup: IndicateTyposCommands,
     },
     {
       id: "changeHideExtraLetters",
       display: "Hide extra letters...",
       icon: "fa-eye-slash",
-      subgroup: commandsHideExtraLetters,
+      subgroup: HideExtraLettersCommands,
     },
     {
       id: "changeQuickEnd",
       display: "Quick end...",
       icon: "fa-step-forward",
-      subgroup: commandsQuickEnd,
+      subgroup: QuickEndCommands,
     },
     {
       id: "singleListCommandLine",
