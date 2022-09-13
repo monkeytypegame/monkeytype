@@ -29,6 +29,10 @@ import FlipTestColorsCommands from "./flip-test-colors";
 import SmoothLineScrollCommands from "./smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./always-show-decimal";
 import AlwaysShowCpmCommands from "./always-show-cpm";
+import StartGraphsAtZeroCommands from "./start-graphs-at-zero";
+import LazyModeCommands from "./lazy-mode";
+import ShowAllLinesCommands from "./show-all-lines";
+
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
@@ -336,19 +340,19 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeStartGraphsAtZero",
       display: "Start graphs at zero...",
       icon: "fa-chart-line",
-      subgroup: commandsStartGraphsAtZero,
+      subgroup: StartGraphsAtZeroCommands,
     },
     {
       id: "changeLazyMode",
       display: "Lazy mode...",
       icon: "fa-couch",
-      subgroup: commandsLazyMode,
+      subgroup: LazyModeCommands,
     },
     {
       id: "changeShowAllLines",
       display: "Show all lines...",
       icon: "fa-align-left",
-      subgroup: commandsShowAllLines,
+      subgroup: ShowAllLinesCommands,
     },
     {
       id: "changeColorfulMode",
