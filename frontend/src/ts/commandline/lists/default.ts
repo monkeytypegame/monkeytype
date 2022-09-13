@@ -23,6 +23,10 @@ import IndicateTyposCommands from "./indicate-typos";
 import HideExtraLettersCommands from "./hide-extra-letters";
 import QuickEndCommands from "./quick-end";
 import OppositeShiftModeCommands from "./opposite-shift-mode";
+import SoundOnErrorCommands from "./sound-on-error";
+import SoundVolumeCommands from "./sound-volume";
+import FlipTestColorsCommands from "./flip-test-colors";
+import SmoothLineScrollCommands from "./smooth-line-scroll";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -295,25 +299,25 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeSoundOnError",
       display: "Sound on error...",
       icon: "fa-volume-mute",
-      subgroup: commandsSoundOnError,
+      subgroup: SoundOnErrorCommands,
     },
     {
       id: "changeSoundVolume",
       display: "Sound volume...",
       icon: "fa-volume-down",
-      subgroup: commandsSoundVolume,
+      subgroup: SoundVolumeCommands,
     },
     {
       id: "changeFlipTestColors",
       display: "Flip test colors...",
       icon: "fa-adjust",
-      subgroup: commandsFlipTestColors,
+      subgroup: FlipTestColorsCommands,
     },
     {
       id: "changeSmoothLineScroll",
       display: "Smooth line scroll...",
       icon: "fa-align-left",
-      subgroup: commandsSmoothLineScroll,
+      subgroup: SmoothLineScrollCommands,
     },
     {
       id: "changeAlwaysShowDecimal",
