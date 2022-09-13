@@ -40,6 +40,7 @@ import SoundOnClickCommands from "./sound-on-click";
 import MinWpmCommands from "./min-wpm";
 import MinAccCommands from "./min-acc";
 import MinBurstCommands from "./min-burst";
+import CustomThemeCommands from "./custom-theme";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -389,7 +390,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "setCustomTheme",
       display: "Custom theme...",
       icon: "fa-palette",
-      subgroup: customThemeCommands,
+      subgroup: CustomThemeCommands,
     },
     {
       id: "setCustomThemeId",
