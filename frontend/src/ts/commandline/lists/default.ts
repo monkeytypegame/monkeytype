@@ -22,6 +22,7 @@ import ShowWordsHistoryCommands from "./show-words-history";
 import IndicateTyposCommands from "./indicate-typos";
 import HideExtraLettersCommands from "./hide-extra-letters";
 import QuickEndCommands from "./quick-end";
+import OppositeShiftModeCommands from "./opposite-shift-mode";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -249,7 +250,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "singleListCommandLine",
       display: "Single list command line...",
       icon: "fa-list",
-      subgroup: commandsSingleListCommandLine,
+      subgroup: SingleListCommandLineCommands,
     },
     {
       id: "capsLockWarning",
@@ -282,7 +283,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeOppositeShiftMode",
       display: "Change opposite shift mode...",
       icon: "fa-exchange-alt",
-      subgroup: commandsOppositeShiftMode,
+      subgroup: OppositeShiftModeCommands,
     },
     {
       id: "changeSoundOnClick",

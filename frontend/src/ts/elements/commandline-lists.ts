@@ -7,43 +7,8 @@ import Config, * as UpdateConfig from "../config";
 import * as PractiseWords from "../test/practise-words";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
-import * as ModesNotice from "./modes-notice";
 import { Auth } from "../firebase";
 import { navigate } from "../controllers/route-controller";
-
-const commandsOppositeShiftMode: MonkeyTypes.CommandsGroup = {
-  title: "Change opposite shift mode...",
-  configKey: "oppositeShiftMode",
-  list: [
-    {
-      id: "setOppositeShiftModeOff",
-      display: "off",
-      configValue: "off",
-      exec: (): void => {
-        UpdateConfig.setOppositeShiftMode("off");
-        ModesNotice.update();
-      },
-    },
-    {
-      id: "setOppositeShiftModeOn",
-      display: "on",
-      configValue: "on",
-      exec: (): void => {
-        UpdateConfig.setOppositeShiftMode("on");
-        ModesNotice.update();
-      },
-    },
-    {
-      id: "setOppositeShiftModeKeymap",
-      display: "keymap",
-      configValue: "keymap",
-      exec: (): void => {
-        UpdateConfig.setOppositeShiftMode("keymap");
-        ModesNotice.update();
-      },
-    },
-  ],
-};
 
 const commandsSoundOnError: MonkeyTypes.CommandsGroup = {
   title: "Sound on error...",
