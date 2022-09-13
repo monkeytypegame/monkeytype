@@ -37,6 +37,9 @@ import OutOfFocusWarningCommands from "./out-of-focus-warning";
 import SingleListCommandlineCommands from "./single-list-commandline";
 import CapsLockWarningCommands from "./caps-lock-warning";
 import SoundOnClickCommands from "./sound-on-click";
+import MinWpmCommands from "./min-wpm";
+import MinAccCommands from "./min-acc";
+import MinBurstCommands from "./min-burst";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -277,21 +280,21 @@ const commands: MonkeyTypes.CommandsGroup = {
       display: "Minimum wpm...",
       alias: "minimum",
       icon: "fa-bomb",
-      subgroup: commandsMinWpm,
+      subgroup: MinWpmCommands,
     },
     {
       id: "changeMinAcc",
       display: "Minimum accuracy...",
       alias: "minimum",
       icon: "fa-bomb",
-      subgroup: commandsMinAcc,
+      subgroup: MinAccCommands,
     },
     {
       id: "changeMinBurst",
       display: "Minimum burst...",
       alias: "minimum",
       icon: "fa-bomb",
-      subgroup: commandsMinBurst,
+      subgroup: MinBurstCommands,
     },
     {
       id: "changeOppositeShiftMode",
