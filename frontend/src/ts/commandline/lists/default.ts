@@ -65,7 +65,7 @@ const commands: MonkeyTypes.CommandsGroup = {
     {
       id: "changePunctuation",
       display: "Punctuation...",
-      icon: "!?",
+      icon: "fa-at",
       subgroup: PunctuationCommands,
     },
     {
@@ -135,7 +135,7 @@ const commands: MonkeyTypes.CommandsGroup = {
     {
       id: "changeNumbers",
       display: "Numbers...",
-      icon: "15",
+      icon: "fa-hashtag",
       subgroup: commandsNumbers,
     },
     {
