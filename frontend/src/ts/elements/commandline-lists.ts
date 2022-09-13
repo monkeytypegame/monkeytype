@@ -50,105 +50,6 @@ const commandsKeymapMode: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsSoundOnClick: MonkeyTypes.CommandsGroup = {
-  title: "Sound on click...",
-  configKey: "playSoundOnClick",
-  list: [
-    {
-      id: "setSoundOnClickOff",
-      display: "off",
-      configValue: "off",
-      exec: (): void => {
-        UpdateConfig.setPlaySoundOnClick("off");
-      },
-    },
-    {
-      id: "setSoundOnClick1",
-      display: "click",
-      configValue: "1",
-      hover: (): void => {
-        Sound.previewClick("1");
-      },
-      exec: (): void => {
-        UpdateConfig.setPlaySoundOnClick("1");
-        Sound.playClick();
-      },
-    },
-    {
-      id: "setSoundOnClick2",
-      display: "beep",
-      configValue: "2",
-      hover: (): void => {
-        Sound.previewClick("2");
-      },
-      exec: (): void => {
-        UpdateConfig.setPlaySoundOnClick("2");
-        Sound.playClick();
-      },
-    },
-    {
-      id: "setSoundOnClick3",
-      display: "pop",
-      configValue: "3",
-      hover: (): void => {
-        Sound.previewClick("3");
-      },
-      exec: (): void => {
-        UpdateConfig.setPlaySoundOnClick("3");
-        Sound.playClick();
-      },
-    },
-    {
-      id: "setSoundOnClick4",
-      display: "nk creams",
-      configValue: "4",
-      hover: (): void => {
-        Sound.previewClick("4");
-      },
-      exec: (): void => {
-        UpdateConfig.setPlaySoundOnClick("4");
-        Sound.playClick();
-      },
-    },
-    {
-      id: "setSoundOnClick5",
-      display: "typewriter",
-      configValue: "5",
-      hover: (): void => {
-        Sound.previewClick("5");
-      },
-      exec: (): void => {
-        UpdateConfig.setPlaySoundOnClick("5");
-        Sound.playClick();
-      },
-    },
-    {
-      id: "setSoundOnClick6",
-      display: "osu",
-      configValue: "6",
-      hover: (): void => {
-        Sound.previewClick("6");
-      },
-      exec: (): void => {
-        UpdateConfig.setPlaySoundOnClick("6");
-        Sound.playClick();
-      },
-    },
-    {
-      id: "setSoundOnClick7",
-      display: "hitmarker",
-      configValue: "7",
-      hover: (): void => {
-        Sound.previewClick("7");
-      },
-      exec: (): void => {
-        UpdateConfig.setPlaySoundOnClick("7");
-        Sound.playClick();
-      },
-    },
-  ],
-};
-
 const commandsRandomTheme: MonkeyTypes.CommandsGroup = {
   title: "Random theme...",
   configKey: "randomTheme",
@@ -900,29 +801,6 @@ const commandsTimerColor: MonkeyTypes.CommandsGroup = {
       configValue: "main",
       exec: (): void => {
         UpdateConfig.setTimerColor("main");
-      },
-    },
-  ],
-};
-
-const commandsCapsLockWarning: MonkeyTypes.CommandsGroup = {
-  title: "Caps lock warning...",
-  configKey: "capsLockWarning",
-  list: [
-    {
-      id: "capsLockWarningOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setCapsLockWarning(true);
-      },
-    },
-    {
-      id: "capsLockWarningOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setCapsLockWarning(false);
       },
     },
   ],

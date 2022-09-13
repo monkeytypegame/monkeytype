@@ -35,6 +35,8 @@ import ShowAllLinesCommands from "./show-all-lines";
 import ColorfulModeCommands from "./colorful-mode";
 import OutOfFocusWarningCommands from "./out-of-focus-warning";
 import SingleListCommandlineCommands from "./single-list-commandline";
+import CapsLockWarningCommands from "./caps-lock-warning";
+import SoundOnClickCommands from "./sound-on-click";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -268,7 +270,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "capsLockWarning",
       display: "Caps lock warning...",
       icon: "fa-exclamation-triangle",
-      subgroup: commandsCapsLockWarning,
+      subgroup: CapsLockWarningCommands,
     },
     {
       id: "changeMinWpm",
@@ -301,7 +303,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeSoundOnClick",
       display: "Sound on click...",
       icon: "fa-volume-up",
-      subgroup: commandsSoundOnClick,
+      subgroup: SoundOnClickCommands,
     },
     {
       id: "changeSoundOnError",
