@@ -13,6 +13,8 @@ import LiveWpmCommands from "./live-wpm";
 import LiveAccCommands from "./live-acc";
 import LiveBurstCommands from "./live-burst";
 import ShowAverageCommands from "./show-average";
+import ShowTimerCommands from "./show-timer";
+
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
@@ -186,7 +188,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeShowTimer",
       display: "Timer/progress...",
       icon: "fa-clock",
-      subgroup: commandsShowTimer,
+      subgroup: ShowTimerCommands,
     },
     {
       id: "changeKeyTips",
