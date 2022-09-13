@@ -70,10 +70,21 @@ export function setCustomText(name: string, text: string | string[]): void {
   window.localStorage.setItem("customText", JSON.stringify(customText));
 }
 
-export function getCustoMTextProgress(name: string): number {
+export function getCustomTextProgress(name: string): number {
   const customTextProgress = getCustomTextProgressObject();
 
   return customTextProgress[name] ?? 0;
+}
+
+export function setCustomTextProgress(name: string, progress: number): void {
+  const customTextProgress = getCustomTextProgressObject();
+
+  customTextProgress[name] = progress;
+
+  window.localStorage.setItem(
+    "customTextProgress",
+    JSON.stringify(customTextProgress)
+  );
 }
 
 export function deleteCustomText(name: string): void {

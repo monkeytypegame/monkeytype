@@ -6,7 +6,7 @@ import * as Misc from "../utils/misc";
 import QuotesController from "../controllers/quotes-controller";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
-import * as CustomTextProgress from "../states/custom-text";
+import * as CustomTextState from "../states/custom-text";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
@@ -1600,12 +1600,14 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
-  if (Config.mode === "custom") {
+  if (Config.mode === "custom" && CustomTextState.getCustomTextName() !== "") {
     // Let's update the custom text progress
-    const customTextProgress = CustomText.getCustomTextProgressObject();
-    customTextProgress[CustomTextProgress.getCustomTextName()] =
-      TestInput.input.getHistory().length - 1;
-    CustomText.setCustomTextProgressObject(customTextProgress);
+    CustomText.setCustomTextProgress(
+      CustomTextState.getCustomTextName(),
+      TestInput.bailout
+        ? Math.min(TestInput.input.getHistory().length - 1, 0)
+        : 0
+    );
   }
 
   if (!dontSave) {
