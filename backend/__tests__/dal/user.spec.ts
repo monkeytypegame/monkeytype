@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { ObjectId } from "mongodb";
+import { updateStreak } from "../../src/dal/user";
 import * as UserDAL from "../../src/dal/user";
 
 const mockPersonalBest = {
@@ -488,5 +489,143 @@ describe("UserDal", () => {
 
     expect(resetUser.bananas).toStrictEqual(0);
     expect(resetUser.xp).toStrictEqual(0);
+    expect(resetUser.streak).toStrictEqual({
+      length: 0,
+      lastResultTimestamp: 0,
+      maxLength: 0,
+    });
+  });
+
+  it("getInbox should return the user's inbox", async () => {
+    await UserDAL.addUser("test name", "test email", "TestID");
+
+    const emptyInbox = await UserDAL.getInbox("TestID");
+
+    expect(emptyInbox).toStrictEqual([]);
+
+    await UserDAL.addToInbox(
+      "TestID",
+      [
+        {
+          subject: `Hello!`,
+        } as any,
+      ],
+      {
+        enabled: true,
+        maxMail: 100,
+      }
+    );
+
+    const inbox = await UserDAL.getInbox("TestID");
+
+    expect(inbox).toStrictEqual([
+      {
+        subject: "Hello!",
+      },
+    ]);
+  });
+
+  it("addToInbox discards mail if inbox is full", async () => {
+    await UserDAL.addUser("test name", "test email", "TestID");
+
+    const config = {
+      enabled: true,
+      maxMail: 1,
+    };
+
+    await UserDAL.addToInbox(
+      "TestID",
+      [
+        {
+          subject: "Hello 1!",
+        } as any,
+      ],
+      config
+    );
+
+    await UserDAL.addToInbox(
+      "TestID",
+      [
+        {
+          subject: "Hello 2!",
+        } as any,
+      ],
+      config
+    );
+
+    const inbox = await UserDAL.getInbox("TestID");
+
+    expect(inbox).toStrictEqual([
+      {
+        subject: "Hello 2!",
+      },
+    ]);
+  });
+
+  it("addToInboxBulk should add mail to multiple users", async () => {
+    await UserDAL.addUser("test name", "test email", "TestID");
+    await UserDAL.addUser("test name 2", "test email 2", "TestID2");
+
+    await UserDAL.addToInboxBulk(
+      [
+        {
+          uid: "TestID",
+          mail: [
+            {
+              subject: `Hello!`,
+            } as any,
+          ],
+        },
+        {
+          uid: "TestID2",
+          mail: [
+            {
+              subject: `Hello 2!`,
+            } as any,
+          ],
+        },
+      ],
+      {
+        enabled: true,
+        maxMail: 100,
+      }
+    );
+
+    const inbox = await UserDAL.getInbox("TestID");
+    const inbox2 = await UserDAL.getInbox("TestID2");
+
+    expect(inbox).toStrictEqual([
+      {
+        subject: "Hello!",
+      },
+    ]);
+
+    expect(inbox2).toStrictEqual([
+      {
+        subject: "Hello 2!",
+      },
+    ]);
+  });
+
+  it("updateStreak should update streak", async () => {
+    await UserDAL.addUser("testStack", "test email", "TestID");
+
+    Date.now = jest.fn(() => 1662372000000);
+
+    const streak1 = await updateStreak("TestID", 1662372000000);
+
+    await expect(streak1).toBe(1);
+
+    Date.now = jest.fn(() => 1662458400000);
+
+    const streak2 = await updateStreak("TestID", 1662458400000);
+
+    await expect(streak2).toBe(2);
+
+    Date.now = jest.fn(() => 1999969721000000);
+
+    const streak3 = await updateStreak("TestID", 1999969721000);
+
+    await expect(streak3).toBe(1);
   });
 });

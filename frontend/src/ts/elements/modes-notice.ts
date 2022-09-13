@@ -39,6 +39,12 @@ export async function update(): Promise<void> {
     );
   }
 
+  if (!TestState.savingEnabled) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="textButton resultSaving" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`
+    );
+  }
+
   if (TestWords.hasTab) {
     if (Config.quickRestart === "esc") {
       $(".pageTest #testModesNotice").append(
@@ -63,12 +69,14 @@ export async function update(): Promise<void> {
     );
   }
 
-  $(".pageTest #testModesNotice").append(
-    `<div class="textButton" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
-      /_/g,
-      " "
-    )}</div>`
-  );
+  if (Config.mode !== "zen") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="textButton" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
+        /_/g,
+        " "
+      )}</div>`
+    );
+  }
 
   if (Config.difficulty === "expert") {
     $(".pageTest #testModesNotice").append(

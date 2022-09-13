@@ -425,23 +425,22 @@ export async function fillSettingsPage(): Promise<void> {
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
   layoutEl.append(`<option value='default'>off</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
-    layoutEl.append(
-      `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-    );
-  });
-  layoutEl.select2({
-    width: "100%",
-  });
-
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
   Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
+    if (layout.toString() !== "korean") {
+      layoutEl.append(
+        `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
+      );
+    }
     if (layout.toString() != "default") {
       keymapEl.append(
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
       );
     }
+  });
+  layoutEl.select2({
+    width: "100%",
   });
   keymapEl.select2({
     width: "100%",
@@ -532,6 +531,8 @@ export async function fillSettingsPage(): Promise<void> {
   $(".pageSettings .section.customBackgroundSize input").val(
     Config.customBackground
   );
+
+  $(".pageSettings .section.fontSize input").val(Config.fontSize);
 
   $(".pageSettings .section.customLayoutfluid input").val(
     Config.customLayoutfluid.replace(/#/g, " ")
@@ -967,6 +968,32 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
     }
   }
 );
+
+$(".pageSettings .section.fontSize .inputAndButton .save").on("click", () => {
+  const didConfigSave = UpdateConfig.setFontSize(
+    parseFloat(
+      $(".pageSettings .section.fontSize .inputAndButton input").val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, 1);
+  }
+});
+
+$(".pageSettings .section.fontSize .inputAndButton input").keypress((e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setFontSize(
+      parseFloat(
+        $(
+          ".pageSettings .section.fontSize .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave === true) {
+      Notifications.add("Saved", 1, 1);
+    }
+  }
+});
 
 $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",

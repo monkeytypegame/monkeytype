@@ -203,7 +203,7 @@ $(document).on("click", `${popup} .wordfilter`, () => {
   WordFilterPopup.show();
 });
 
-$(document).on("click", "#top .config .customText .textButton", () => {
+$(document).on("click", "#testConfig .customText .textButton", () => {
   show();
 });
 

@@ -12,8 +12,10 @@ import * as Misc from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
+import * as Hangul from "hangul-js";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
+import { skipXpBreakdown } from "../elements/account-button";
 import * as PractiseWords from "./practise-words";
 import * as TestLogic from "./test-logic";
 import * as ManualRestart from "./manual-restart-tracker";
@@ -166,6 +168,10 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
+  updateWordsHeight();
+}
+
+export function updateWordsHeight(): void {
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
     $(<Element>document.querySelector(".word")).outerHeight(true)
@@ -251,6 +257,7 @@ export async function screenshot(): Promise<void> {
   }
 
   function revertScreenshot(): void {
+    // $("#testConfig").removeClass("invisible");
     $("#ad-result-wrapper").removeClass("hidden");
     $("#ad-result-small-wrapper").removeClass("hidden");
     $("#notificationCenter").removeClass("hidden");
@@ -289,15 +296,7 @@ export async function screenshot(): Promise<void> {
     );
   }
   $(".pageTest .buttons").addClass("hidden");
-  const src = $("#middle");
-  const sourceX = src.position().left; /*X position from div#target*/
-  const sourceY = src.position().top; /*Y position from div#target*/
-  const sourceWidth = <number>(
-    src.outerWidth(true)
-  ); /*clientWidth/offsetWidth from div#target*/
-  const sourceHeight = <number>(
-    src.outerHeight(true)
-  ); /*clientHeight/offsetHeight from div#target*/
+  // $("#testConfig").addClass("invisible");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
@@ -307,9 +306,19 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-wrapper").addClass("hidden");
   $("#ad-result-small-wrapper").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+
+  const src = $("#result");
+  const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
+  const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
+  const sourceWidth = <number>(
+    src.outerWidth(true)
+  ); /*clientWidth/offsetWidth from div#target*/
+  const sourceHeight = <number>(
+    src.outerHeight(true)
+  ); /*clientHeight/offsetHeight from div#target*/
   try {
-    const paddingX = 50;
-    const paddingY = 25;
+    const paddingX = Misc.convertRemToPixels(2);
+    const paddingY = Misc.convertRemToPixels(2);
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
@@ -368,7 +377,6 @@ export function updateWordElement(showError = !Config.blindMode): void {
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
-
   let ret = "";
 
   let newlineafter = false;
@@ -387,19 +395,41 @@ export function updateWordElement(showError = !Config.blindMode): void {
   } else {
     let correctSoFar = false;
 
-    // slice earlier if input has trailing compose characters
-    const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
-      ? input.search(Misc.trailingComposeChars)
-      : input.length;
-    if (
-      input.search(Misc.trailingComposeChars) < currentWord.length &&
-      currentWord.slice(0, inputWithoutComposeLength) ===
-        input.slice(0, inputWithoutComposeLength)
-    ) {
-      correctSoFar = true;
+    const containsKorean = TestInput.input.getKoreanStatus();
+
+    if (!containsKorean) {
+      // slice earlier if input has trailing compose characters
+      const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
+        ? input.search(Misc.trailingComposeChars)
+        : input.length;
+      if (
+        input.search(Misc.trailingComposeChars) < currentWord.length &&
+        currentWord.slice(0, inputWithoutComposeLength) ===
+          input.slice(0, inputWithoutComposeLength)
+      ) {
+        correctSoFar = true;
+      }
+    } else {
+      // slice earlier if input has trailing compose characters
+      const koCurrentWord: string = Hangul.disassemble(currentWord).join("");
+      const koInput: string = Hangul.disassemble(input).join("");
+      const inputWithoutComposeLength: number = Misc.trailingComposeChars.test(
+        input
+      )
+        ? input.search(Misc.trailingComposeChars)
+        : koInput.length;
+      if (
+        input.search(Misc.trailingComposeChars) <
+          Hangul.d(koCurrentWord).length &&
+        koCurrentWord.slice(0, inputWithoutComposeLength) ===
+          koInput.slice(0, inputWithoutComposeLength)
+      ) {
+        correctSoFar = true;
+      }
     }
 
     let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
+
     if (Config.blindMode) {
       wordHighlightClassString = "correct";
     }
@@ -445,7 +475,8 @@ export function updateWordElement(showError = !Config.blindMode): void {
       } else if (
         currentLetter !== undefined &&
         CompositionState.getComposing() &&
-        i >= CompositionState.getStartPos()
+        i >= CompositionState.getStartPos() &&
+        !(containsKorean && !correctSoFar)
       ) {
         ret += `<letter class="${
           Config.highlightMode == "word" ? wordHighlightClassString : ""
@@ -678,6 +709,13 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < TestInput.input.history.length + 2; i++) {
     const input = <string>TestInput.input.getHistory(i);
     const word = TestWords.words.get(i);
+    const containsKorean =
+      input?.match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      ) ||
+      word?.match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      );
     let wordEl = "";
     try {
       if (input === "") throw new Error("empty input word");
@@ -685,10 +723,12 @@ async function loadWordsHistory(): Promise<boolean> {
         TestInput.corrected.getHistory(i) !== undefined &&
         TestInput.corrected.getHistory(i) !== ""
       ) {
+        const correctedChar = !containsKorean
+          ? TestInput.corrected.getHistory(i)
+          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
         wordEl = `<div class='word' burst="${
           TestInput.burstHistory[i]
-        }" input="${TestInput.corrected
-          .getHistory(i)
+        }" input="${correctedChar
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
@@ -740,19 +780,23 @@ async function loadWordsHistory(): Promise<boolean> {
         //input is shorter or equal (loop over word list)
         loop = word.length;
       }
-
       for (let c = 0; c < loop; c++) {
         let correctedChar;
         try {
-          correctedChar = TestInput.corrected.getHistory(i)[c];
+          correctedChar = !containsKorean
+            ? TestInput.corrected.getHistory(i)[c]
+            : Hangul.assemble(TestInput.corrected.getHistory(i).split(""))[c];
         } catch (e) {
           correctedChar = undefined;
         }
         let extraCorrected = "";
+        const historyWord: string = !containsKorean
+          ? TestInput.corrected.getHistory(i)
+          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
         if (
           c + 1 === loop &&
-          TestInput.corrected.getHistory(i) !== undefined &&
-          TestInput.corrected.getHistory(i).length > input.length
+          historyWord !== undefined &&
+          historyWord.length > input.length
         ) {
           extraCorrected = "extraCorrected";
         }
@@ -1094,4 +1138,10 @@ $(document.body).on("click", "#showWordHistoryButton", () => {
 
 $("#wordsWrapper").on("click", () => {
   focusWords();
+});
+
+$(document).on("keypress", () => {
+  if (resultVisible) {
+    skipXpBreakdown();
+  }
 });

@@ -31,6 +31,13 @@ const RESULT_SCHEMA = joi
     funbox: joi.string().required(),
     hash: joi.string().required(),
     incompleteTestSeconds: joi.number().required(),
+    incompleteTests: joi.array().items(
+      joi.object({
+        acc: joi.number().min(0).max(100).required(),
+        seconds: joi.number().min(0).required(),
+      })
+    ),
+    // .required(), //add required after a few days
     keyConsistency: joi.number().required(),
     keyDuration: joi
       .alternatives()

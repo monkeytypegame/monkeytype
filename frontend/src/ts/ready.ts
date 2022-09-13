@@ -16,7 +16,7 @@ if (window.location.hostname === "localhost") {
   $("#bottom .version .text").text("localhost");
   $("#bottom .version").css("opacity", 1);
   $("body").prepend(
-    `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank'><i class="fas fa-fw fa-server"></i>Configure Server</a>`
+    `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
   Misc.getReleasesFromGitHub().then((v) => {

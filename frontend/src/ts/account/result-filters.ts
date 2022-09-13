@@ -330,18 +330,9 @@ export function updateActive(): void {
     } else if (group == "mode") {
       ret += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
     } else if (group == "punctuation") {
-      ret += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
-      width: 1.25rem;
-      text-align: center;
-      display: inline-block;
-      letter-spacing: -.1rem;">!?</span>`;
+      ret += `<span aria-label="Punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-at"></i>`;
     } else if (group == "numbers") {
-      ret += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
-        width: 1.25rem;
-        text-align: center;
-        margin-right: .1rem;
-        display: inline-block;
-        letter-spacing: -.1rem;">15</span>`;
+      ret += `<span aria-label="Numbers" data-balloon-pos="up"><i class="fas fa-fw fa-hashtag"></i>`;
     } else if (group == "words") {
       ret += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
     } else if (group == "time") {

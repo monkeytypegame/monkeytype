@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;700&display=swap");
@@ -40,6 +40,11 @@
   color: var(--sub-color);
   opacity: 1;
   /* Firefox */
+}
+
+::selection {
+  background-color: var(--main-color);
+  color: var(--sub-alt-color);
 }
 
 #app {
@@ -84,7 +89,7 @@ a {
   }
 }
 
-a[data-link] * {
+a[router-link] * {
   pointer-events: none;
 }
 
@@ -208,8 +213,9 @@ key {
 }
 
 .pageLoading {
+  height: 100%;
   display: grid;
-  justify-content: center;
+  align-items: center;
 }
 
 .pageLoading,
@@ -351,7 +357,7 @@ key {
   color: var(--sub-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;
-  padding: 0.5rem;
+  padding: 0.5em;
   border-radius: var(--roundness);
   text-align: center;
   user-select: none;
@@ -359,16 +365,16 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1.25rem;
+  line-height: 1.25em;
   appearance: none;
   border: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1em;
   width: max-content;
   width: -moz-max-content;
   display: grid;
   grid-auto-flow: column;
-  gap: 0.25rem;
+  gap: 0.25em;
   text-decoration: none;
 
   .fas,
@@ -470,13 +476,15 @@ key {
 
 .configureAPI.button {
   position: fixed;
-  left: 2rem;
-  bottom: 2rem;
+  left: 0;
+  top: 10rem;
   display: grid;
   grid-auto-flow: column;
   gap: 0.5rem;
   text-decoration: none;
   z-index: 999999999;
+  border-radius: 0 1rem 1rem 0;
+  padding: 1rem;
 }
 
 .avatar {
@@ -511,4 +519,19 @@ key {
     margin-bottom: 0.15rem;
     margin-right: 0.3rem;
   }
+}
+
+.notificationBubble {
+  position: absolute;
+  background: var(--main-color);
+  width: 1em;
+  height: 1em;
+  font-size: 0.5em;
+  line-height: 2em;
+  color: transparent;
+  border-radius: 100rem;
+  right: 0.5em;
+  top: 0.5em;
+  outline: 0.5em solid var(--bg-color);
+  transition: 0.125s;
 }

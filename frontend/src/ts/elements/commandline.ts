@@ -223,6 +223,7 @@ function trigger(command: string): void {
   let shouldFocusTestUI = true;
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
   let sticky = false;
+
   $.each(list.list, (_index, obj) => {
     if (obj.id == command) {
       if (obj.shouldFocusTestUI !== undefined) {
@@ -392,7 +393,11 @@ $(document).ready(() => {
     // opens command line if escape or ctrl/cmd + shift + p
     if (
       ((event.key === "Escape" && Config.quickRestart !== "esc") ||
-        (event.key === "Tab" && Config.quickRestart === "esc")) &&
+        (event.key?.toLowerCase() === "p" &&
+          (event.metaKey || event.ctrlKey) &&
+          event.shiftKey) ||
+        ((event.key === "Tab" || event.key === "Escape") &&
+          Config.quickRestart === "esc")) &&
       !$("#commandLineWrapper").hasClass("hidden")
     ) {
       if (CommandlineLists.current.length > 1) {
@@ -611,7 +616,10 @@ $(document).on("keydown", (e) => {
       $.each(entries, (index, obj) => {
         if ($(obj).hasClass("activeKeyboard")) activenum = index;
       });
-      if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
+      if (
+        e.key === "ArrowUp" ||
+        (e.key === "Tab" && e.shiftKey && Config.quickRestart !== "esc")
+      ) {
         entries.removeClass("activeKeyboard");
         if (activenum == 0) {
           $(entries[entries.length - 1]).addClass("activeKeyboard");
@@ -621,7 +629,10 @@ $(document).on("keydown", (e) => {
           hoverId = $(entries[activenum]).attr("command") as string;
         }
       }
-      if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
+      if (
+        e.key === "ArrowDown" ||
+        (e.key === "Tab" && !e.shiftKey && Config.quickRestart !== "esc")
+      ) {
         entries.removeClass("activeKeyboard");
         if (activenum + 1 == entries.length) {
           $(entries[0]).addClass("activeKeyboard");

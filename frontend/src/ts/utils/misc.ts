@@ -639,6 +639,11 @@ export function getSpecials(): string {
     "/",
     "\\",
     "|",
+    "?",
+    ";",
+    ":",
+    ">",
+    "<",
   ];
   for (let i = 0; i < randLen; i++) {
     ret += randomElementFromArray(specials);
@@ -1220,4 +1225,8 @@ export function abbreviateNumber(num: number): string {
   const exp = Math.floor(Math.log(num) / Math.log(1000));
   const pre = "kmbtqQsSond".charAt(exp - 1);
   return (num / Math.pow(1000, exp)).toFixed(1) + pre;
+}
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

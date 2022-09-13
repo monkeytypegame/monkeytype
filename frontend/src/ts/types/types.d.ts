@@ -38,8 +38,6 @@ declare namespace MonkeyTypes {
 
   type QuoteLength = -3 | -2 | -1 | 0 | 1 | 2 | 3;
 
-  type FontSize = "1" | "125" | "15" | "2" | "3" | "4";
-
   type CaretStyle =
     | "off"
     | "default"
@@ -149,6 +147,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
     difficulty: string;
     raw: number;
+    isPb: boolean;
   }
 
   interface AccChartData {
@@ -253,6 +252,11 @@ declare namespace MonkeyTypes {
     sd: number;
   }
 
+  interface IncompleteTest {
+    acc: number;
+    seconds: number;
+  }
+
   interface Result<M extends Mode> {
     _id: string;
     wpm: number;
@@ -267,6 +271,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
     restartCount: number;
     incompleteTestSeconds: number;
+    incompleteTests: IncompleteTest[];
     testDuration: number;
     afkDuration: number;
     tags: string[];
@@ -320,7 +325,7 @@ declare namespace MonkeyTypes {
     mode: Mode;
     quoteLength: QuoteLength[];
     language: string;
-    fontSize: FontSize;
+    fontSize: number;
     freedomMode: boolean;
     resultFilters?: ResultFilters | null;
     difficulty: Difficulty;
@@ -474,6 +479,9 @@ declare namespace MonkeyTypes {
     addedAt: number;
     filterPresets: ResultFilters[];
     xp: number;
+    inboxUnreadSize: number;
+    streak: number;
+    maxStreak: number;
   }
 
   interface UserDetails {
@@ -745,4 +753,30 @@ declare namespace MonkeyTypes {
     from: string;
     to: string;
   }
+
+  interface MonkeyMail {
+    id: string;
+    subject: string;
+    body: string;
+    timestamp: number;
+    read: boolean;
+    rewards: AllRewards[];
+  }
+
+  interface Reward<T> {
+    type: string;
+    item: T;
+  }
+
+  interface XpReward extends Reward<number> {
+    type: "xp";
+    item: number;
+  }
+
+  interface BadgeReward extends Reward<Badge> {
+    type: "badge";
+    item: Badge;
+  }
+
+  type AllRewards = XpReward | BadgeReward;
 }

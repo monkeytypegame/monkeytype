@@ -1,13 +1,4 @@
-@media only screen and (max-width: 1330px) {
-  .ad.ad-v {
-    display: none;
-  }
-  #app {
-    grid-template-columns: auto;
-  }
-}
-
-@media only screen and (max-width: 1250px) {
+@media only screen and (max-width: 1450px) {
   #leaderboardsWrapper #leaderboards {
     .mainTitle {
       font-size: 2rem;
@@ -34,6 +25,25 @@
       }
       td {
         padding: 0.25rem 0.5rem;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1330px) {
+  .ad.ad-v {
+    display: none;
+  }
+  #app {
+    grid-template-columns: auto;
+  }
+}
+
+@media only screen and (max-width: 1250px) {
+  #leaderboardsWrapper #leaderboards {
+    .tables table {
+      tr td:nth-child(5) {
+        display: none;
       }
     }
   }
@@ -80,6 +90,50 @@
       width: 50% !important;
     }
   }
+  #leaderboardsWrapper {
+    #leaderboards {
+      .leaderboardsTop {
+        flex-direction: column;
+        align-items: baseline;
+        grid-template-areas:
+          "title title"
+          "subtitle subtitle"
+          "yesterday yesterday"
+          "buttons buttons";
+        grid-template-columns: 1fr;
+        .buttons {
+          margin-top: 0.5rem;
+        }
+        .buttonGroup {
+          grid-auto-flow: column;
+        }
+        .showYesterdayButton {
+          margin-left: 0;
+        }
+      }
+      .tables {
+        grid-template-columns: unset;
+        table {
+          .avatarNameBadge .badge .text {
+            display: block;
+          }
+          tr td:last-child {
+            width: 30%;
+          }
+        }
+      }
+      .tables .rightTableWrapper,
+      .tables .leftTableWrapper {
+        height: calc(50vh - 10rem);
+      }
+      .tables table {
+        tr td:nth-child(5) {
+          display: table-cell;
+          width: auto;
+        }
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 1000px) {
@@ -102,16 +156,32 @@
       }
     }
   }
-  #leaderboardsWrapper #leaderboards {
-    .tables table {
-      tr td:nth-child(5) {
-        display: none;
-      }
-    }
-  }
 }
 
 @media only screen and (max-width: 900px) {
+  #testConfig {
+    .mode,
+    .time,
+    .wordCount,
+    .puncAndNum,
+    .customText,
+    .zen,
+    .quoteLength {
+      .textButton {
+        padding: 0.75rem 0.3rem 0.7rem 0.3rem;
+
+        &:first-child {
+          padding: 0.75rem 0.3rem 0.7rem 0.6rem;
+        }
+        &:last-child {
+          padding: 0.75rem 0.6rem 0.7rem 0.3rem;
+        }
+        &:only-child {
+          padding: 0.75rem 0.6rem 0.7rem 0.6rem;
+        }
+      }
+    }
+  }
   .ad.ad-h {
     display: none;
   }
@@ -233,32 +303,99 @@
 }
 
 @media only screen and (max-width: 800px) {
+  #testConfig {
+    .spacer {
+      display: none;
+    }
+    .row {
+      display: grid;
+      justify-items: center;
+      padding: 0.25rem 1rem;
+    }
+    .mode,
+    .time,
+    .wordCount,
+    .puncAndNum,
+    .customText,
+    .zen,
+    .quoteLength {
+      .textButton {
+        padding: 0.5rem 0.75rem 0.45rem 0.75rem;
+
+        &:first-child {
+          padding: 0.5rem 0.75rem 0.45rem 0.75rem;
+        }
+        &:last-child {
+          padding: 0.5rem 0.75rem 0.45rem 0.75rem;
+        }
+        &:only-child {
+          padding: 0.5rem 0.75rem 0.45rem 0.75rem;
+        }
+      }
+    }
+  }
+
+  #top {
+    .logo {
+      .text {
+        font-size: 1.9rem !important;
+      }
+      .bottom {
+        font-size: 1.9rem;
+        line-height: 1.9rem;
+        margin-top: 0;
+      }
+    }
+    #menu {
+      gap: 0.1rem;
+      font-size: 0.75rem;
+      .textButton {
+        // padding: 0.25rem;
+        // font-size: 0.8rem;
+        // line-height: 0.8rem;
+        &.account {
+          // margin-top: 0.05rem;
+          & > .text {
+            display: none;
+          }
+          .avatar {
+            // width: 1rem;
+            // height: 1rem;
+          }
+          .levelAndBar {
+            font-size: 1rem;
+            // line-height: 0.8rem;
+          }
+        }
+      }
+    }
+  }
   .pageSettings .settingsGroup.quickNav .links {
     grid-auto-flow: unset;
     grid-template-columns: 1fr 1fr 1fr;
     justify-items: center;
   }
   #centerContent {
-    #top {
-      grid-template-areas:
-        "logo config"
-        "menu config";
-      grid-template-columns: auto auto;
-      .logo {
-        margin-bottom: 0;
-      }
-    }
+    // #top {
+    //   grid-template-areas:
+    //     "logo config"
+    //     "menu config";
+    //   grid-template-columns: auto auto;
+    //   .logo {
+    //     margin-bottom: 0;
+    //   }
+    // }
 
-    #menu {
-      gap: 0.5rem;
-      font-size: 0.8rem;
-      line-height: 0.8rem;
-      margin-top: -0.5rem;
+    // #menu {
+    //   gap: 0.5rem;
+    //   font-size: 0.8rem;
+    //   line-height: 0.8rem;
+    //   margin-top: -0.5rem;
 
-      .textButton {
-        padding: 0.25rem;
-      }
-    }
+    //   .textButton {
+    //     padding: 0.25rem;
+    //   }
+    // }
   }
 
   #contactPopupWrapper #contactPopup .buttons {
@@ -289,46 +426,13 @@
     .section.themes .tabContent.customTheme {
     }
   }
+}
 
-  #commandLine,
-  #commandLineInput {
-    width: 600px !important;
-  }
-  #leaderboardsWrapper {
-    #leaderboards {
-      .leaderboardsTop {
-        flex-direction: column;
-        align-items: baseline;
-        grid-template-areas:
-          "title title"
-          "subtitle subtitle"
-          "yesterday yesterday"
-          "buttons buttons";
-        grid-template-columns: 1fr;
-        .buttons {
-          margin-top: 0.5rem;
-        }
-        .buttonGroup {
-          grid-auto-flow: column;
-        }
-        .showYesterdayButton {
-          margin-left: 0;
-        }
-      }
-      .tables {
-        grid-template-columns: unset;
-        table {
-          .avatarNameBadge .badge .text {
-            display: block;
-          }
-          tr td:last-child {
-            width: 30%;
-          }
-        }
-      }
-      .tables .rightTableWrapper,
-      .tables .leftTableWrapper {
-        height: calc(50vh - 10rem);
+@media only screen and (max-width: 750px) {
+  #leaderboardsWrapper #leaderboards {
+    .tables table {
+      tr td:nth-child(5) {
+        display: none;
       }
     }
   }
@@ -371,6 +475,24 @@
 }
 
 @media only screen and (max-width: 650px) {
+  #leaderboardsWrapper #leaderboards {
+    width: 85vw;
+    .tables .rightTableWrapper,
+    .tables .leftTableWrapper {
+      height: calc(50vh - 10rem);
+    }
+    .tables {
+      grid-template-columns: unset;
+      table {
+        .avatarNameBadge .badge .text {
+          display: block;
+        }
+        tr td:nth-child(4) {
+          display: none;
+        }
+      }
+    }
+  }
   .profile {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
@@ -534,10 +656,6 @@
   #leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup {
     grid-auto-flow: row;
   }
-  #commandLine,
-  #commandLineInput {
-    width: 500px !important;
-  }
   #customTextPopupWrapper {
     #customTextPopup {
       .wordfilter.button {
@@ -569,6 +687,9 @@
 }
 
 @media only screen and (max-width: 550px) {
+  #commandLineWrapper {
+    padding: 5rem 1rem;
+  }
   .profile .pbsWords,
   .profile .pbsTime {
     font-size: 0.9rem;
@@ -602,6 +723,9 @@
         grid-template-columns: 1fr;
       }
     }
+  }
+  #testModesNotice {
+    font-size: 0.75rem;
   }
   #cookiePopupWrapper {
     #cookiePopup,
@@ -691,28 +815,14 @@
   }
 
   #top {
-    align-items: self-end;
     .logo {
-      .icon {
-        width: 1.5rem !important;
-      }
+      grid-template-columns: auto;
       .text {
-        font-size: 1.5rem !important;
-        margin-bottom: 0.3rem !important;
-      }
-      .bottom {
-        font-size: 1.75rem;
-        line-height: 1.75rem;
-        margin-top: 0;
-      }
-      .top {
         display: none;
       }
     }
     #menu {
-      .textButton {
-        padding: 0;
-      }
+      font-size: 1rem;
     }
   }
   #bottom {
@@ -733,7 +843,7 @@
   }
   #centerContent {
     #top {
-      grid-template-columns: 1fr auto;
+      // grid-template-columns: 1fr auto;
       .desktopConfig {
         display: none;
       }
@@ -741,6 +851,7 @@
         display: block;
       }
     }
+    gap: 1rem;
     padding: 1rem;
   }
   #middle {
@@ -763,25 +874,22 @@
       }
     }
   }
-  #commandLine,
-  #commandLineInput {
-    width: 400px !important;
+}
+
+@media only screen and (max-width: 450px) {
+  #testConfig {
+    display: none;
   }
-  #leaderboardsWrapper #leaderboards {
-    width: 85vw;
-    .tables .rightTableWrapper,
-    .tables .leftTableWrapper {
-      height: calc(50vh - 10rem);
-    }
-    .tables {
-      grid-template-columns: unset;
-      table {
-        .avatarNameBadge .badge .text {
-          display: block;
-        }
-        tr td:nth-child(4) {
-          display: none;
-        }
+
+  #mobileTestConfig {
+    display: block;
+  }
+  #alertsPopupWrapper {
+    #alertsPopup {
+      border-radius: 0;
+      width: 100%;
+      .mobileClose {
+        display: block;
       }
     }
   }
@@ -794,6 +902,10 @@
       font-size: 0.65rem;
       line-height: 0.65rem;
     }
+  }
+
+  #top #menu {
+    font-size: 0.75rem;
   }
 
   #bottom {
@@ -814,10 +926,6 @@
     }
   }
 
-  #commandLine,
-  #commandLineInput {
-    width: 300px !important;
-  }
   #leaderboardsWrapper #leaderboards {
     .tables .titleAndTable .titleAndButtons {
       grid-template-columns: unset;
@@ -866,6 +974,16 @@
         line-height: 7rem;
       }
     }
+  }
+}
+
+@media (pointer: coarse) and (max-width: 800px) {
+  #testConfig {
+    display: none;
+  }
+
+  #mobileTestConfig {
+    display: block;
   }
 }
 

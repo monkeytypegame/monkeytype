@@ -87,6 +87,15 @@ $("#cookiePopup .acceptAll").on("click", () => {
   hide();
 });
 
+$("#cookiePopup .rejectAll").on("click", () => {
+  const accepted = {
+    security: true,
+    analytics: false,
+  };
+  setAcceptedObject(accepted);
+  hide();
+});
+
 $("#cookiePopup .acceptSelected").on("click", () => {
   const analytics = $("#cookiePopup .cookie.analytics input").prop("checked");
   const accepted = {
