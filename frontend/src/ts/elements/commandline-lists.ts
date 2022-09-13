@@ -12,40 +12,6 @@ import * as ModesNotice from "./modes-notice";
 import { Auth } from "../firebase";
 import { navigate } from "../controllers/route-controller";
 
-const commandsFunbox: MonkeyTypes.CommandsGroup = {
-  title: "Funbox...",
-  configKey: "funbox",
-  list: [
-    {
-      id: "changeFunboxNone",
-      display: "none",
-      configValue: "none",
-      alias: "off",
-      exec: (): void => {
-        if (Funbox.setFunbox("none", null)) {
-          TestLogic.restart();
-        }
-      },
-    },
-  ],
-};
-
-Misc.getFunboxList().then((funboxes) => {
-  funboxes.forEach((funbox) => {
-    commandsFunbox.list.push({
-      id: "changeFunbox" + funbox.name,
-      display: funbox.name.replace(/_/g, " "),
-      alias: funbox.alias,
-      configValue: funbox.name,
-      exec: (): void => {
-        if (Funbox.setFunbox(funbox.name, funbox.type)) {
-          TestLogic.restart();
-        }
-      },
-    });
-  });
-});
-
 const commandsFonts: MonkeyTypes.CommandsGroup = {
   title: "Font family...",
   configKey: "fontFamily",

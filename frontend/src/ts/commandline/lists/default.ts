@@ -6,6 +6,7 @@ import QuoteLengthCommands from "./quote-length";
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
+import FunboxCommands, { update as updateFunboxCommands } from "./funbox";
 import LanguagesCommands, {
   update as updateLanguagesCommands,
 } from "./languages";
@@ -24,6 +25,10 @@ Misc.getLayoutsList().then((layouts) => {
 
 Misc.getLanguageList().then((languages) => {
   updateLanguagesCommands(languages);
+});
+
+Misc.getFunboxList().then((funboxes) => {
+  updateFunboxCommands(funboxes);
 });
 
 function canBailOut(): boolean {
@@ -461,7 +466,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       display: "Funbox...",
       alias: "fun box",
       icon: "fa-gamepad",
-      subgroup: commandsFunbox,
+      subgroup: FunboxCommands,
     },
     {
       id: "changeLayout",
