@@ -162,16 +162,14 @@ export async function getLayout(
   return layoutsList[layoutName];
 }
 
-interface Font {
-  name: string;
-  display?: string;
-}
-
-let fontsList: Font[] = [];
-export async function getFontsList(): Promise<Font[]> {
+let fontsList: MonkeyTypes.FontObject[] = [];
+export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
   if (fontsList.length === 0) {
     return $.getJSON("/./fonts/_list.json", function (data) {
-      fontsList = data.sort(function (a: Font, b: Font) {
+      fontsList = data.sort(function (
+        a: MonkeyTypes.FontObject,
+        b: MonkeyTypes.FontObject
+      ) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;

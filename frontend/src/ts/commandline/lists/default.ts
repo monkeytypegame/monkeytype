@@ -7,6 +7,9 @@ import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
 import FunboxCommands, { update as updateFunboxCommands } from "./funbox";
+import FontFamilyCommands, {
+  update as updateFontFamilyCommands,
+} from "./font-family";
 import LanguagesCommands, {
   update as updateLanguagesCommands,
 } from "./languages";
@@ -29,6 +32,10 @@ Misc.getLanguageList().then((languages) => {
 
 Misc.getFunboxList().then((funboxes) => {
   updateFunboxCommands(funboxes);
+});
+
+Misc.getFontsList().then((fonts) => {
+  updateFontFamilyCommands(fonts);
 });
 
 function canBailOut(): boolean {
@@ -550,7 +557,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeFontFamily",
       display: "Font family...",
       icon: "fa-font",
-      subgroup: commandsFonts,
+      subgroup: FontFamilyCommands,
     },
     {
       id: "changePageWidth",

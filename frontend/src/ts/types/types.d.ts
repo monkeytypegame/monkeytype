@@ -162,6 +162,11 @@ declare namespace MonkeyTypes {
     amount?: number;
   }
 
+  interface FontObject {
+    name: string;
+    display?: string;
+  }
+
   interface FunboxObject {
     name: string;
     type: FunboxObjectType;

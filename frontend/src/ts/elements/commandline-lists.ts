@@ -6,47 +6,10 @@ import * as ThemeController from "../controllers/theme-controller";
 import Config, * as UpdateConfig from "../config";
 import * as PractiseWords from "../test/practise-words";
 import * as TestLogic from "../test/test-logic";
-import * as Funbox from "../test/funbox";
 import * as ChallengeController from "../controllers/challenge-controller";
 import * as ModesNotice from "./modes-notice";
 import { Auth } from "../firebase";
 import { navigate } from "../controllers/route-controller";
-
-const commandsFonts: MonkeyTypes.CommandsGroup = {
-  title: "Font family...",
-  configKey: "fontFamily",
-  list: [],
-};
-
-Misc.getFontsList().then((fonts) => {
-  fonts.forEach((font) => {
-    const configVal = font.name.replace(/ /g, "_");
-    commandsFonts.list.push({
-      id: "changeFont" + font.name.replace(/ /g, "_"),
-      display: font.display !== undefined ? font.display : font.name,
-      configValue: configVal,
-      hover: (): void => {
-        UpdateConfig.previewFontFamily(font.name);
-      },
-      exec: (): void => {
-        UpdateConfig.setFontFamily(font.name.replace(/ /g, "_"));
-      },
-    });
-  });
-  commandsFonts.list.push({
-    id: "setFontFamilyCustom",
-    display: "custom...",
-    input: true,
-    hover: (): void => {
-      UpdateConfig.previewFontFamily(Config.fontFamily);
-    },
-    exec: (name) => {
-      if (!name) return;
-      UpdateConfig.setFontFamily(name.replace(/\s/g, "_"));
-      // Settings.groups.fontFamily.updateInput();
-    },
-  });
-});
 
 const commandsRepeatQuotes: MonkeyTypes.CommandsGroup = {
   title: "Repeat quotes...",
