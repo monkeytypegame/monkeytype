@@ -676,6 +676,12 @@ declare namespace MonkeyTypes {
     list: Command[];
   }
 
+  interface Theme {
+    name: string;
+    bgColor: string;
+    mainColor: string;
+  }
+
   interface Quote {
     text: string;
     source: string;

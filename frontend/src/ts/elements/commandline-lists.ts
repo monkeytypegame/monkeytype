@@ -842,29 +842,6 @@ const commandsPractiseWords: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-export const themeCommands: MonkeyTypes.CommandsGroup = {
-  title: "Theme...",
-  configKey: "theme",
-  list: [],
-};
-
-Misc.getThemesList().then((themes) => {
-  themes.forEach((theme) => {
-    themeCommands.list.push({
-      id: "changeTheme" + Misc.capitalizeFirstLetterOfEachWord(theme.name),
-      display: theme.name.replace(/_/g, " "),
-      configValue: theme.name,
-      hover: (): void => {
-        // previewTheme(theme.name);
-        ThemeController.preview(theme.name, false);
-      },
-      exec: (): void => {
-        UpdateConfig.setTheme(theme.name);
-      },
-    });
-  });
-});
-
 export const commandsChallenges: MonkeyTypes.CommandsGroup = {
   title: "Load challenge...",
   list: [],

@@ -45,6 +45,7 @@ import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
 import FunboxCommands, { update as updateFunboxCommands } from "./funbox";
+import ThemesCommands, { update as updateThemesCommands } from "./themes";
 import FontFamilyCommands, {
   update as updateFontFamilyCommands,
 } from "./font-family";
@@ -74,6 +75,10 @@ Misc.getFunboxList().then((funboxes) => {
 
 Misc.getFontsList().then((fonts) => {
   updateFontFamilyCommands(fonts);
+});
+
+Misc.getThemesList().then((themes) => {
+  updateThemesCommands(themes);
 });
 
 function canBailOut(): boolean {
@@ -378,7 +383,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeTheme",
       display: "Theme...",
       icon: "fa-palette",
-      subgroup: themeCommands,
+      subgroup: ThemesCommands,
     },
     {
       id: "setCustomTheme",
