@@ -27,7 +27,8 @@ import SoundOnErrorCommands from "./sound-on-error";
 import SoundVolumeCommands from "./sound-volume";
 import FlipTestColorsCommands from "./flip-test-colors";
 import SmoothLineScrollCommands from "./smooth-line-scroll";
-
+import AlwaysShowDecimalCommands from "./always-show-decimal";
+import AlwaysShowCpmCommands from "./always-show-cpm";
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
@@ -323,13 +324,13 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeAlwaysShowDecimal",
       display: "Always show decimal places...",
       icon: "00",
-      subgroup: commandsAlwaysShowDecimal,
+      subgroup: AlwaysShowDecimalCommands,
     },
     {
       id: "changeAlwaysShowCPM",
       display: "Always show CPM...",
       icon: "fa-tachometer-alt",
-      subgroup: commandsAlwaysShowCPM,
+      subgroup: AlwaysShowCpmCommands,
     },
     {
       id: "changeStartGraphsAtZero",

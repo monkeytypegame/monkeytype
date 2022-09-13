@@ -10,52 +10,6 @@ import * as ChallengeController from "../controllers/challenge-controller";
 import { Auth } from "../firebase";
 import { navigate } from "../controllers/route-controller";
 
-const commandsAlwaysShowDecimal: MonkeyTypes.CommandsGroup = {
-  title: "Always show decimal places...",
-  configKey: "alwaysShowDecimalPlaces",
-  list: [
-    {
-      id: "setAlwaysShowDecimalPlacesOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setAlwaysShowDecimalPlaces(false);
-      },
-    },
-    {
-      id: "setAlwaysShowDecimalPlacesOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setAlwaysShowDecimalPlaces(true);
-      },
-    },
-  ],
-};
-
-const commandsAlwaysShowCPM: MonkeyTypes.CommandsGroup = {
-  title: "Always show CPM...",
-  configKey: "alwaysShowCPM",
-  list: [
-    {
-      id: "setAlwaysShowCPMOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setAlwaysShowCPM(false);
-      },
-    },
-    {
-      id: "setAlwaysShowCPMOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setAlwaysShowCPM(true);
-      },
-    },
-  ],
-};
-
 const commandsStartGraphsAtZero: MonkeyTypes.CommandsGroup = {
   title: "Start graphs at zero...",
   configKey: "startGraphsAtZero",
