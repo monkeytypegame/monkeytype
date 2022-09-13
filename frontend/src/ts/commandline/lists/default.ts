@@ -12,6 +12,7 @@ import RepeatQuotesCommands from "./repeat-quotes";
 import LiveWpmCommands from "./live-wpm";
 import LiveAccCommands from "./live-acc";
 import LiveBurstCommands from "./live-burst";
+import ShowAverageCommands from "./show-average";
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
@@ -452,7 +453,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeShowAverage",
       display: "Show average...",
       icon: "fa-chart-bar",
-      subgroup: commandsShowAverage,
+      subgroup: ShowAverageCommands,
     },
     {
       id: "changeCustomBackground",
