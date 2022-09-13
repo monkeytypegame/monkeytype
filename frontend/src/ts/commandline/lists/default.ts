@@ -375,12 +375,6 @@ const commands: MonkeyTypes.CommandsGroup = {
       subgroup: OutOfFocusWarningCommands,
     },
     {
-      id: "setEnableAds",
-      display: "Enable ads...",
-      icon: "fa-ad",
-      subgroup: commandsEnableAds,
-    },
-    {
       id: "changeTheme",
       display: "Theme...",
       icon: "fa-palette",
@@ -714,6 +708,12 @@ const commands: MonkeyTypes.CommandsGroup = {
       display: "Load challenge...",
       icon: "fa-award",
       subgroup: commandsChallenges,
+    },
+    {
+      id: "setEnableAds",
+      display: "Enable ads...",
+      icon: "fa-ad",
+      subgroup: commandsEnableAds,
     },
     {
       id: "joinDiscord",
