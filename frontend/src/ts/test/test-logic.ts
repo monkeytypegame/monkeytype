@@ -1605,7 +1605,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
     CustomText.setCustomTextProgress(
       CustomTextState.getCustomTextName(),
       TestInput.bailout
-        ? Math.min(TestInput.input.getHistory().length - 1, 0)
+        ? CustomText.getCustomTextProgress(
+            CustomTextState.getCustomTextName()
+          ) + Math.max(TestInput.input.getHistory().length, 0)
         : 0
     );
   }
