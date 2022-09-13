@@ -14,6 +14,10 @@ import LiveAccCommands from "./live-acc";
 import LiveBurstCommands from "./live-burst";
 import ShowAverageCommands from "./show-average";
 import ShowTimerCommands from "./show-timer";
+import KeyTipsCommands from "./key-tips";
+import FreedomModeCommands from "./freedom-mode";
+import StrictSpaceCommands from "./strict-space";
+import BlindModeCommands from "./blind-mode";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -194,24 +198,24 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeKeyTips",
       display: "Key tips...",
       icon: "fa-question",
-      subgroup: commandsKeyTips,
+      subgroup: KeyTipsCommands,
     },
     {
       id: "changeFreedomMode",
       display: "Freedom mode...",
-      subgroup: commandsFreedomMode,
+      subgroup: FreedomModeCommands,
     },
     {
       id: "changeStrictSpace",
       display: "Strict space...",
       icon: "fa-minus",
-      subgroup: commandsStrictSpace,
+      subgroup: StrictSpaceCommands,
     },
     {
       id: "changeBlindMode",
       display: "Blind mode...",
       icon: "fa-eye-slash",
-      subgroup: commandsBlindMode,
+      subgroup: BlindModeCommands,
     },
     {
       id: "changeShowWordsHistory",
