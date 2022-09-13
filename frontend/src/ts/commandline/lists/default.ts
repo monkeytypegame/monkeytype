@@ -33,6 +33,7 @@ import StartGraphsAtZeroCommands from "./start-graphs-at-zero";
 import LazyModeCommands from "./lazy-mode";
 import ShowAllLinesCommands from "./show-all-lines";
 import ColorfulModeCommands from "./colorful-mode";
+import OutOfFocusWarningCommands from "./out-of-focus-warning";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -365,7 +366,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeOutOfFocusWarning",
       display: "Out of focus warning...",
       icon: "fa-exclamation",
-      subgroup: commandsOutOfFocusWarning,
+      subgroup: OutOfFocusWarningCommands,
     },
     {
       id: "setEnableAds",

@@ -10,29 +10,6 @@ import * as ChallengeController from "../controllers/challenge-controller";
 import { Auth } from "../firebase";
 import { navigate } from "../controllers/route-controller";
 
-const commandsOutOfFocusWarning: MonkeyTypes.CommandsGroup = {
-  title: "Colorful mode...",
-  configKey: "showOutOfFocusWarning",
-  list: [
-    {
-      id: "setShowOutOfFocusWarningOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setShowOutOfFocusWarning(false);
-      },
-    },
-    {
-      id: "setShowOutOfFocusWarningOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setShowOutOfFocusWarning(true);
-      },
-    },
-  ],
-};
-
 const commandsKeymapMode: MonkeyTypes.CommandsGroup = {
   title: "Keymap mode...",
   configKey: "keymapMode",
