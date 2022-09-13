@@ -5,6 +5,7 @@ import WordsCommands from "./words";
 import ConfidenceModeCommands from "./words";
 import QuoteLengthCommands from "./quote-length";
 import StopOnErrorCommands from "./stop-on-error";
+import NumbersCommands from "./numbers";
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
@@ -136,7 +137,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeNumbers",
       display: "Numbers...",
       icon: "fa-hashtag",
-      subgroup: commandsNumbers,
+      subgroup: NumbersCommands,
     },
     {
       id: "changeSmoothCaret",

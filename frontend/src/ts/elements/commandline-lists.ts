@@ -1638,31 +1638,6 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsNumbers: MonkeyTypes.CommandsGroup = {
-  title: "Numbers...",
-  configKey: "numbers",
-  list: [
-    {
-      id: "changeNumbersOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setNumbers(true);
-        TestLogic.restart();
-      },
-    },
-    {
-      id: "changeNumbersOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setNumbers(false);
-        TestLogic.restart();
-      },
-    },
-  ],
-};
-
 const commandsSmoothCaret: MonkeyTypes.CommandsGroup = {
   title: "Smooth caret...",
   configKey: "smoothCaret",
