@@ -34,6 +34,7 @@ import LazyModeCommands from "./lazy-mode";
 import ShowAllLinesCommands from "./show-all-lines";
 import ColorfulModeCommands from "./colorful-mode";
 import OutOfFocusWarningCommands from "./out-of-focus-warning";
+import SingleListCommandlineCommands from "./single-list-commandline";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -261,7 +262,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "singleListCommandLine",
       display: "Single list command line...",
       icon: "fa-list",
-      subgroup: SingleListCommandLineCommands,
+      subgroup: SingleListCommandlineCommands,
     },
     {
       id: "capsLockWarning",
