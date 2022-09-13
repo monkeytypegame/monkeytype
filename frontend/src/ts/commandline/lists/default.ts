@@ -32,6 +32,7 @@ import AlwaysShowCpmCommands from "./always-show-cpm";
 import StartGraphsAtZeroCommands from "./start-graphs-at-zero";
 import LazyModeCommands from "./lazy-mode";
 import ShowAllLinesCommands from "./show-all-lines";
+import ColorfulModeCommands from "./colorful-mode";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -358,7 +359,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeColorfulMode",
       display: "Colorful mode...",
       icon: "fa-fill-drip",
-      subgroup: commandsColorfulMode,
+      subgroup: ColorfulModeCommands,
     },
     {
       id: "changeOutOfFocusWarning",

@@ -10,29 +10,6 @@ import * as ChallengeController from "../controllers/challenge-controller";
 import { Auth } from "../firebase";
 import { navigate } from "../controllers/route-controller";
 
-const commandsColorfulMode: MonkeyTypes.CommandsGroup = {
-  title: "Colorful mode...",
-  configKey: "colorfulMode",
-  list: [
-    {
-      id: "setColorfulModeOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setColorfulMode(false);
-      },
-    },
-    {
-      id: "setColorfulModeOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setColorfulMode(true);
-      },
-    },
-  ],
-};
-
 const commandsOutOfFocusWarning: MonkeyTypes.CommandsGroup = {
   title: "Colorful mode...",
   configKey: "showOutOfFocusWarning",
