@@ -24,6 +24,7 @@ import { Auth } from "../firebase";
 import * as EditPresetPopup from "../popups/edit-preset-popup";
 import * as EditTagPopup from "../popups/edit-tags-popup";
 import { navigate } from "../controllers/route-controller";
+import * as TestState from "../test/test-state";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
@@ -3385,6 +3386,35 @@ export const defaultCommands: MonkeyTypes.CommandsGroup = {
       icon: "fa-share",
       exec: async (): Promise<void> => {
         ShareTestSettingsPopup.show();
+      },
+    },
+    {
+      id: "setResultSaving",
+      display: "Result saving...",
+      icon: "fa-save",
+      alias: "results",
+      subgroup: {
+        title: "Result saving...",
+        list: [
+          {
+            id: "setResultSavingOff",
+            display: "off",
+            alias: "disabled",
+            exec: (): void => {
+              TestState.setSaving(false);
+              ModesNotice.update();
+            },
+          },
+          {
+            id: "setResultSavingOn",
+            display: "on",
+            alias: "enabled",
+            exec: (): void => {
+              TestState.setSaving(true);
+              ModesNotice.update();
+            },
+          },
+        ],
       },
     },
     {

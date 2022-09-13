@@ -875,6 +875,7 @@ export async function updateInbox(
         mail.read = true;
         if (rewards.length > 0) {
           allRewards.push(...rewards);
+          mail.rewards = [];
         }
       }
 

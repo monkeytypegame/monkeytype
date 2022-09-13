@@ -438,25 +438,17 @@ export function restart(options = {} as RestartOptions): void {
       options.withSameWordset = true;
     }
 
-    TestInput.pushKeypressesToHistory();
-    const testSeconds = TestStats.calculateTestSeconds(performance.now());
-    const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-    // incompleteTestSeconds += ;
-    let tt = testSeconds - afkseconds;
-    if (tt < 0) tt = 0;
-    // console.log(
-    //   `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
-    // );
-    TestStats.incrementIncompleteSeconds(tt);
-    TestStats.incrementRestartCount();
-    // if (tt > 600) {
-    //   Notifications.add(
-    //     `Your time typing just increased by ${Misc.roundTo2(
-    //       tt / 60
-    //     )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
-    //     -1
-    //   );
-    // }
+    if (TestState.savingEnabled) {
+      TestInput.pushKeypressesToHistory();
+      const testSeconds = TestStats.calculateTestSeconds(performance.now());
+      const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
+      let tt = Misc.roundTo2(testSeconds - afkseconds);
+      if (tt < 0) tt = 0;
+      TestStats.incrementIncompleteSeconds(tt);
+      TestStats.incrementRestartCount();
+      const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+      TestStats.pushIncompleteTest(acc, tt);
+    }
   }
 
   if (Config.mode == "zen") {
@@ -724,8 +716,6 @@ export function restart(options = {} as RestartOptions): void {
             }
             // ChartController.result.update();
             PageTransition.set(false);
-            // console.log(TestStats.incompleteSeconds);
-            // console.log(TestStats.restartCount);
           }
         );
     }
@@ -834,7 +824,8 @@ async function getNextWord(
     Config.mode !== "quote" &&
     /[A-Z]/.test(randomWord) &&
     !Config.punctuation &&
-    !Config.language.startsWith("german")
+    !Config.language.startsWith("german") &&
+    !Config.language.startsWith("swiss_german")
   ) {
     randomWord = randomWord.toLowerCase();
   }
@@ -1344,6 +1335,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     timestamp: Date.now(),
     language: Config.language,
     restartCount: TestStats.restartCount,
+    incompleteTests: TestStats.incompleteTests,
     incompleteTestSeconds:
       TestStats.incompleteSeconds < 0
         ? 0
@@ -1685,6 +1677,12 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean
 ): Promise<void> {
+  if (!TestState.savingEnabled) {
+    Notifications.add("Result not saved: disabled by user", -1, 3, "Notice");
+    AccountButton.loading(false);
+    return;
+  }
+
   const response = await Ape.results.save(completedEvent);
 
   AccountButton.loading(false);
@@ -1794,12 +1792,15 @@ export function fail(reason: string): void {
   // corrected.pushHistory();
   TestInput.pushKeypressesToHistory();
   finish(true);
+  if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-  let tt = testSeconds - afkseconds;
+  let tt = Misc.roundTo2(testSeconds - afkseconds);
   if (tt < 0) tt = 0;
   TestStats.incrementIncompleteSeconds(tt);
   TestStats.incrementRestartCount();
+  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  TestStats.pushIncompleteTest(acc, tt);
 }
 
 $(document).on("click", "#testModesNotice .textButton.restart", () => {

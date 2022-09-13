@@ -160,6 +160,8 @@ export function restart(): void {
 export let restartCount = 0;
 export let incompleteSeconds = 0;
 
+export let incompleteTests: MonkeyTypes.IncompleteTest[] = [];
+
 export function incrementRestartCount(): void {
   restartCount++;
 }
@@ -168,9 +170,14 @@ export function incrementIncompleteSeconds(val: number): void {
   incompleteSeconds += val;
 }
 
+export function pushIncompleteTest(acc: number, seconds: number): void {
+  incompleteTests.push({ acc, seconds });
+}
+
 export function resetIncomplete(): void {
   restartCount = 0;
   incompleteSeconds = 0;
+  incompleteTests = [];
 }
 
 export function setInvalid(): void {
