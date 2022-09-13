@@ -8,6 +8,8 @@ import StopOnErrorCommands from "./stop-on-error";
 import NumbersCommands from "./numbers";
 import SmoothCaretCommands from "./smooth-caret";
 import QuickRestartCommands from "./quick-restart";
+import RepeatQuotesCommands from "./repeat-quotes";
+import LiveWpmCommands from "./live-wpm";
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
@@ -157,13 +159,13 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeRepeatQuotes",
       display: "Repeat quotes...",
       icon: "fa-sync-alt",
-      subgroup: commandsRepeatQuotes,
+      subgroup: RepeatQuotesCommands,
     },
     {
       id: "changeLiveWpm",
       display: "Live WPM...",
       icon: "fa-tachometer-alt",
-      subgroup: commandsLiveWpm,
+      subgroup: LiveWpmCommands,
     },
     {
       id: "changeLiveAcc",

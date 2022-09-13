@@ -11,52 +11,6 @@ import * as ModesNotice from "./modes-notice";
 import { Auth } from "../firebase";
 import { navigate } from "../controllers/route-controller";
 
-const commandsRepeatQuotes: MonkeyTypes.CommandsGroup = {
-  title: "Repeat quotes...",
-  configKey: "repeatQuotes",
-  list: [
-    {
-      id: "setRepeatQuotesOff",
-      display: "off",
-      configValue: "off",
-      exec: (): void => {
-        UpdateConfig.setRepeatQuotes("off");
-      },
-    },
-    {
-      id: "setRepeatQuotesTyping",
-      display: "typing",
-      configValue: "typing",
-      exec: (): void => {
-        UpdateConfig.setRepeatQuotes("typing");
-      },
-    },
-  ],
-};
-
-const commandsLiveWpm: MonkeyTypes.CommandsGroup = {
-  title: "Live WPM...",
-  configKey: "showLiveWpm",
-  list: [
-    {
-      id: "setLiveWpmOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setShowLiveWpm(false);
-      },
-    },
-    {
-      id: "setLiveWpmOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setShowLiveWpm(true);
-      },
-    },
-  ],
-};
-
 const commandsShowAverage: MonkeyTypes.CommandsGroup = {
   title: "Show average...",
   configKey: "showAverage",
@@ -1633,60 +1587,6 @@ const commandsTimerOpacity: MonkeyTypes.CommandsGroup = {
       configValue: 1,
       exec: (): void => {
         UpdateConfig.setTimerOpacity("1");
-      },
-    },
-  ],
-};
-
-const commandsSmoothCaret: MonkeyTypes.CommandsGroup = {
-  title: "Smooth caret...",
-  configKey: "smoothCaret",
-  list: [
-    {
-      id: "changeSmoothCaretOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setSmoothCaret(true);
-      },
-    },
-    {
-      id: "changeSmoothCaretOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setSmoothCaret(false);
-      },
-    },
-  ],
-};
-
-const commandsQuickRestart: MonkeyTypes.CommandsGroup = {
-  title: "Quick restart...",
-  configKey: "quickRestart",
-  list: [
-    {
-      id: "changeQuickRestartTab",
-      display: "tab",
-      configValue: "tab",
-      exec: (): void => {
-        UpdateConfig.setQuickRestartMode("tab");
-      },
-    },
-    {
-      id: "changeQuickRestartEsc",
-      display: "esc",
-      configValue: "esc",
-      exec: (): void => {
-        UpdateConfig.setQuickRestartMode("esc");
-      },
-    },
-    {
-      id: "changeQuickRestartOff",
-      display: "off",
-      configValue: "off",
-      exec: (): void => {
-        UpdateConfig.setQuickRestartMode("off");
       },
     },
   ],
