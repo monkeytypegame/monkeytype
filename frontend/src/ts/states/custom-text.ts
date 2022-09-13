@@ -1,4 +1,4 @@
-let customTestName = "";
+let customTestName = ""; // It should be empty when the text is not saved or a saved text has been modified
 
 export function getCustomTextName(): string {
   return customTestName;

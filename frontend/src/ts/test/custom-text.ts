@@ -88,8 +88,12 @@ function getCustomTextObject(): CustomTextObject {
   return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
 }
 
-function getCustomTextProgressObject(): Record<string, number> {
+export function getCustomTextProgressObject(): Record<string, number> {
   return JSON.parse(window.localStorage.getItem("customTextProgress") ?? "{}");
+}
+
+export function setCustomTextProgressObject(obj: Record<string, number>): void {
+  window.localStorage.setItem("customTextProgress", JSON.stringify(obj));
 }
 
 export function getCustomTextNames(): string[] {
