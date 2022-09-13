@@ -1,7 +1,7 @@
 import * as ThemeController from "../controllers/theme-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
-import * as CommandlineLists from "./commandline-lists";
+import * as CommandlineLists from "../elements/commandline-lists";
 import * as TestUI from "../test/test-ui";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
