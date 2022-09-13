@@ -1,12 +1,50 @@
 :root {
-    --bg-color: #FDF0D5;
-    --main-color: #892948;
-    --caret-color: #892948;
-    --sub-color: #CF2059;
-    --sub-alt-color: #E47B90;
-    --text-color: #3A3335;
-    --error-color: #B12452;
-    --error-extra-color: #F9D6C6;
-    --colorful-error-color: #D81E5B;
-    --colorful-error-extra-color: #F9D6C6;
+  --bg-color: #fdf0d5;
+  --main-color: #8e2949;
+  --caret-color: #892948;
+  --sub-color: #d91c81;
+  --sub-alt-color: #fefff5;
+  --text-color: #3a3335;
+  --error-color: #5cf074;
+  --error-extra-color: #5cf074;
+  --colorful-error-color: #fff;
+  --colorful-error-extra-color: #8affdc;
+}
+@keyframes rgb {
+  0% {
+    fill: #FF0090;
   }
+  10% {
+    fill: #C11384;
+  }
+  20% {
+    fill: #832678;
+  }
+  30% {
+    fill: #44396C;
+  }
+  40% {
+    fill: #064C60;
+  }
+  50% {
+    fill: #064C60;
+  }
+  65% {
+    fill: #44396C;
+  }
+  75% {
+    fill: #832678;
+  }
+  85% {
+    fill: #C11384;
+  }
+  100% {
+    fill: #FF0090;
+  }
+}
+
+#top > div.logo > div.icon > svg path{
+		animation:3s linear infinite .1s rgb;
+}
+
+
