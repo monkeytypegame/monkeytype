@@ -13,9 +13,8 @@ const commands: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-commands.list = [];
-
 function update(languages: string[]): void {
+  commands.list = [];
   languages.forEach((language) => {
     commands.list.push({
       id: "changeLanguage" + capitalizeFirstLetterOfEachWord(language),
