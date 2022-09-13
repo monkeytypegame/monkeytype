@@ -2,6 +2,7 @@ import PunctuationCommands from "./punctuation";
 import ModeCommands from "./mode";
 import TimeCommands from "./time";
 import WordsCommands from "./words";
+import ConfidenceModeCommands from "./words";
 import QuoteLengthCommands from "./quote-length";
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
@@ -122,7 +123,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeConfidenceMode",
       display: "Confidence mode...",
       icon: "fa-backspace",
-      subgroup: commandsConfidenceMode,
+      subgroup: ConfidenceModeCommands,
     },
     {
       id: "changeStopOnError",

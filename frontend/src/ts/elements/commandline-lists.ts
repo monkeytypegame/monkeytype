@@ -1717,37 +1717,6 @@ const commandsQuickRestart: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsConfidenceMode: MonkeyTypes.CommandsGroup = {
-  title: "Confidence mode...",
-  configKey: "confidenceMode",
-  list: [
-    {
-      id: "changeConfidenceModeOff",
-      display: "off",
-      configValue: "off",
-      exec: (): void => {
-        UpdateConfig.setConfidenceMode("off");
-      },
-    },
-    {
-      id: "changeConfidenceModeOn",
-      display: "on",
-      configValue: "on",
-      exec: (): void => {
-        UpdateConfig.setConfidenceMode("on");
-      },
-    },
-    {
-      id: "changeConfidenceModeMax",
-      display: "max",
-      configValue: "max",
-      exec: (): void => {
-        UpdateConfig.setConfidenceMode("max");
-      },
-    },
-  ],
-};
-
 const commandsStopOnError: MonkeyTypes.CommandsGroup = {
   title: "Stop on error...",
   configKey: "stopOnError",
