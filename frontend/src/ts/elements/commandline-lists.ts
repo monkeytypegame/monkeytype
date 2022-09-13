@@ -50,52 +50,6 @@ const commandsShowAverage: MonkeyTypes.CommandsGroup = {
   ],
 };
 
-const commandsLiveAcc: MonkeyTypes.CommandsGroup = {
-  title: "Live accuracy...",
-  configKey: "showLiveAcc",
-  list: [
-    {
-      id: "setLiveAccOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setShowLiveAcc(false);
-      },
-    },
-    {
-      id: "setLiveAccOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setShowLiveAcc(true);
-      },
-    },
-  ],
-};
-
-const commandsLiveBurst: MonkeyTypes.CommandsGroup = {
-  title: "Live burst...",
-  configKey: "showLiveBurst",
-  list: [
-    {
-      id: "setLiveBurstOff",
-      display: "off",
-      configValue: false,
-      exec: (): void => {
-        UpdateConfig.setShowLiveBurst(false);
-      },
-    },
-    {
-      id: "setLiveBurstOn",
-      display: "on",
-      configValue: true,
-      exec: (): void => {
-        UpdateConfig.setShowLiveBurst(true);
-      },
-    },
-  ],
-};
-
 const commandsShowTimer: MonkeyTypes.CommandsGroup = {
   title: "Timer/progress...",
   configKey: "showTimerProgress",

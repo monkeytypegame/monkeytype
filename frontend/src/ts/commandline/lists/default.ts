@@ -10,6 +10,8 @@ import SmoothCaretCommands from "./smooth-caret";
 import QuickRestartCommands from "./quick-restart";
 import RepeatQuotesCommands from "./repeat-quotes";
 import LiveWpmCommands from "./live-wpm";
+import LiveAccCommands from "./live-acc";
+import LiveBurstCommands from "./live-burst";
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
@@ -171,13 +173,13 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeLiveAcc",
       display: "Live accuracy...",
       icon: "fa-percentage",
-      subgroup: commandsLiveAcc,
+      subgroup: LiveAccCommands,
     },
     {
       id: "changeLiveBurst",
       display: "Live burst...",
       icon: "fa-fire-alt",
-      subgroup: commandsLiveBurst,
+      subgroup: LiveBurstCommands,
     },
     {
       id: "changeShowTimer",
