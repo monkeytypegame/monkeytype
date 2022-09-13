@@ -7,3 +7,5 @@ export function getCustomTextName(): string {
 export function setCustomTextName(newName: string): void {
   customTestName = newName;
 }
+
+setInterval(() => console.log(customTestName), 5000); // TODO: Rizwan Mustafa: Remove this line
