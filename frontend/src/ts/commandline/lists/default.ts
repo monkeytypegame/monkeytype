@@ -6,6 +6,8 @@ import ConfidenceModeCommands from "./words";
 import QuoteLengthCommands from "./quote-length";
 import StopOnErrorCommands from "./stop-on-error";
 import NumbersCommands from "./numbers";
+import SmoothCaretCommands from "./smooth-caret";
+import QuickRestartCommands from "./quick-restart";
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
@@ -143,13 +145,13 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeSmoothCaret",
       display: "Smooth caret...",
       icon: "fa-i-cursor",
-      subgroup: commandsSmoothCaret,
+      subgroup: SmoothCaretCommands,
     },
     {
       id: "changeQuickRestart",
       display: "Quick restart...",
       icon: "fa-redo-alt",
-      subgroup: commandsQuickRestart,
+      subgroup: QuickRestartCommands,
     },
     {
       id: "changeRepeatQuotes",
