@@ -1,4 +1,5 @@
 import * as CustomText from "../test/custom-text";
+import * as CustomTextState from "../states/custom-text";
 
 export async function show(): Promise<void> {
   const names = CustomText.getCustomTextNames();
@@ -36,6 +37,7 @@ $(document).on(
   `#savedTextsPopupWrapper .list .savedText .button.name`,
   (e) => {
     const name = $(e.target).text();
+    CustomTextState.setCustomTextName(name);
     applySaved(name);
     hide();
   }
