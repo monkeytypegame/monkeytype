@@ -61,6 +61,7 @@ import PageWidthCommands from "./page-width";
 import EnableAdsCommands from "./enable-ads";
 import PractiseWordsCommands from "./practise-words";
 import MonkeyPowerLevelCommands from "./monkey-power-level";
+import CopyWordsToClipboardCommands from "./copy-words-to-clipboard";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import CustomThemesListCommands, {
@@ -830,10 +831,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "copyWordsToClipboard",
       display: "Copy words to clipboard",
       icon: "fa-copy",
-      subgroup: true,
-      exec: (): void => {
-        current.push(commandsCopyWordsToClipboard);
-      },
+      subgroup: CopyWordsToClipboardCommands,
     },
     {
       id: "importSettingsJSON",
