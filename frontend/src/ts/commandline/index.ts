@@ -22,17 +22,17 @@ let themeChosen = false;
 function showInput(
   command: string,
   placeholder: string,
-  defaultValue = ""
+  inputValue = ""
 ): void {
   $("#commandLineWrapper").removeClass("hidden");
   $("#commandLine").addClass("hidden");
   $("#commandInput").removeClass("hidden");
   $("#commandInput input").attr("placeholder", placeholder);
-  $("#commandInput input").val(defaultValue);
+  $("#commandInput input").val(inputValue);
   $("#commandInput input").trigger("focus");
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
-  if (defaultValue != "") {
+  if (inputValue != "") {
     $("#commandInput input").trigger("select");
   }
 }
@@ -238,7 +238,7 @@ function trigger(command: string): void {
       if (obj.input) {
         input = true;
         const escaped = obj.display.split("</i>")[1] ?? obj.display;
-        showInput(obj.id, escaped, obj.defaultValue);
+        showInput(obj.id, escaped, obj.defaultValue ? obj.defaultValue() : "");
       } else if (obj.subgroup) {
         subgroup = true;
         if (obj.beforeSubgroup) {

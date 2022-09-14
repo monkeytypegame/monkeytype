@@ -104,7 +104,6 @@ import * as Notifications from "../elements/notifications";
 import * as ModesNotice from "../elements/modes-notice";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
-import * as ConfigEvent from "../observables/config-event";
 
 Misc.getLayoutsList().then((layouts) => {
   updateLayoutsCommands(layouts);
@@ -536,7 +535,9 @@ export const commands: MonkeyTypes.CommandsGroup = {
       id: "changeCustomBackground",
       display: "Custom background...",
       icon: "fa-image",
-      defaultValue: "",
+      defaultValue: (): string => {
+        return Config.customBackground;
+      },
       input: true,
       exec: (input): void => {
         if (!input) input = "";
@@ -606,7 +607,9 @@ export const commands: MonkeyTypes.CommandsGroup = {
     {
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
-      defaultValue: "qwerty dvorak colemak",
+      defaultValue: (): string => {
+        return Config.customLayoutfluid;
+      },
       input: true,
       icon: "fa-tint",
       exec: (input): void => {
@@ -622,6 +625,9 @@ export const commands: MonkeyTypes.CommandsGroup = {
       display: "Font size...",
       icon: "fa-font",
       input: true,
+      defaultValue: (): string => {
+        return Config.fontSize.toString();
+      },
       exec: (input): void => {
         if (!input) return;
         UpdateConfig.setFontSize(parseFloat(input));
@@ -865,7 +871,9 @@ export const commands: MonkeyTypes.CommandsGroup = {
       icon: "fa-cog",
       alias: "export config",
       input: true,
-      defaultValue: "",
+      defaultValue: (): string => {
+        return JSON.stringify(Config);
+      },
     },
     {
       id: "monkeyPower",
@@ -983,26 +991,3 @@ export function setCurrent(val: MonkeyTypes.CommandsGroup[]): void {
 export function pushCurrent(val: MonkeyTypes.CommandsGroup): void {
   current.push(val);
 }
-
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "saveToLocalStorage") {
-    commands.list.filter(
-      (command) => command.id == "exportSettingsJSON"
-    )[0].defaultValue = eventValue as string;
-  }
-  if (eventKey === "customBackground") {
-    commands.list.filter(
-      (command) => command.id == "changeCustomBackground"
-    )[0].defaultValue = eventValue as string;
-  }
-  if (eventKey === "fontSize") {
-    commands.list.filter(
-      (command) => command.id == "changeFontSize"
-    )[0].defaultValue = eventValue as string;
-  }
-  if (eventKey === "customLayoutFluid") {
-    commands.list.filter(
-      (command) => command.id == "changeCustomLayoutfluid"
-    )[0].defaultValue = (eventValue as string)?.replace(/#/g, " ");
-  }
-});
