@@ -44,6 +44,7 @@ $(document).on(
   (e) => {
     const name = $(e.target).text();
     CustomTextState.setCustomTextName(name);
+    CustomText.setCustomTextProgress(name, 0);
     applySaved(name);
     hide();
   }
