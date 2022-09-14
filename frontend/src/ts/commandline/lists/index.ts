@@ -940,3 +940,20 @@ const commands: MonkeyTypes.CommandsGroup = {
 };
 
 export default commands;
+export {
+  LoadChallengeCommands,
+  LanguagesCommands,
+  DifficultyCommands,
+  LazyModeCommands,
+  PaceCaretModeCommands,
+  ShowAverageCommands,
+  MinWpmCommands,
+  MinAccCommands,
+  MinBurstCommands,
+  FunboxCommands,
+  ConfidenceModeCommands,
+  StopOnErrorCommands,
+  LayoutsCommands,
+  OppositeShiftModeCommands,
+  TagsCommands,
+};
