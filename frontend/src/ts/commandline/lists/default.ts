@@ -41,8 +41,16 @@ import MinWpmCommands from "./min-wpm";
 import MinAccCommands from "./min-acc";
 import MinBurstCommands from "./min-burst";
 import CustomThemeCommands from "./custom-theme";
+import RandomThemeCommands from "./random-theme";
+import DifficultyCommands from "./difficulty";
+import PaceCaretStyleCommands from "./pace-caret-style";
+import PaceCaretModeCommands from "./pace-caret";
+import CaretStyleCommands from "./caret-style";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
+import CustomThemesListCommands, {
+  update as updateCustomThemesListCommands,
+} from "./tags";
 import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
 import FunboxCommands, { update as updateFunboxCommands } from "./funbox";
@@ -56,10 +64,12 @@ import LanguagesCommands, {
 import KeymapLayoutsCommands, {
   update as updateKeymapLayoutsCommands,
 } from "./layouts";
+
 import { Auth } from "../../firebase";
 import Config from "../../config";
 import * as CustomText from "../../test/custom-text";
 import * as Misc from "../../utils/misc";
+import { randomizeTheme } from "../../controllers/theme-controller";
 
 Misc.getLayoutsList().then((layouts) => {
   updateLayoutsCommands(layouts);
@@ -396,8 +406,8 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "setCustomThemeId",
       display: "Custom themes...",
       icon: "fa-palette",
-      subgroup: customThemeListCommands,
-      beforeSubgroup: (): void => updateCustomThemeListCommands(),
+      subgroup: CustomThemesListCommands,
+      beforeSubgroup: (): void => updateCustomThemesListCommands(),
       available: (): boolean => {
         return Auth.currentUser !== null;
       },
@@ -406,13 +416,13 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeRandomTheme",
       display: "Random theme...",
       icon: "fa-random",
-      subgroup: commandsRandomTheme,
+      subgroup: RandomThemeCommands,
     },
     {
       id: "randomizeTheme",
       display: "Next random theme",
       icon: "fa-random",
-      exec: (): Promise<void> => ThemeController.randomizeTheme(),
+      exec: (): Promise<void> => randomizeTheme(),
       available: (): boolean => {
         return Config.randomTheme !== "off";
       },
@@ -421,25 +431,25 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeDifficulty",
       display: "Difficulty...",
       icon: "fa-star",
-      subgroup: commandsDifficulty,
+      subgroup: DifficultyCommands,
     },
     {
       id: "changeCaretStyle",
       display: "Caret style...",
       icon: "fa-i-cursor",
-      subgroup: commandsCaretStyle,
+      subgroup: CaretStyleCommands,
     },
     {
       id: "changePaceCaret",
       display: "Pace caret mode...",
       icon: "fa-i-cursor",
-      subgroup: commandsPaceCaret,
+      subgroup: PaceCaretModeCommands,
     },
     {
       id: "changePaceCaretStyle",
       display: "Pace caret style...",
       icon: "fa-i-cursor",
-      subgroup: commandsPaceCaretStyle,
+      subgroup: PaceCaretStyleCommands,
     },
     {
       id: "changeRepeatedPace",
