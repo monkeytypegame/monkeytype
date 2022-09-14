@@ -1,17 +1,19 @@
 import * as ConfigEvent from "../observables/config-event";
 
-import DefaultCommands from "./lists/default";
+import Commands, * as Lists from "./lists/index";
 
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
-current = [DefaultCommands];
+current = [Commands];
 
-export function setCurrent(val: MonkeyTypes.CommandsGroup[]): void {
-  current = val;
+export type ListsObjectKeys = keyof typeof Lists;
+
+export function setCurrent(val: ListsObjectKeys): void {
+  current = [Lists[val]];
 }
 
-export function pushCurrent(val: MonkeyTypes.CommandsGroup): void {
-  current.push(val);
+export function pushCurrent(val: ListsObjectKeys): void {
+  current.push(Lists[val]);
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
