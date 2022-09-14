@@ -56,6 +56,11 @@ import BritishEnglishCommands from "./british-english";
 import KeymapModeCommands from "./keymap-mode";
 import KeymapStyleCommands from "./keymap-style";
 import KeymapLegendStyleCommands from "./keymap-legend-style";
+import KeymapShowTopRowCommands from "./keymap-show-top-row";
+import PageWidthCommands from "./page-width";
+import EnableAdsCommands from "./enable-ads";
+import PractiseWordsCommands from "./practise-words";
+import MonkeyPowerLevelCommands from "./monkey-power-level";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import CustomThemesListCommands, {
@@ -65,6 +70,9 @@ import PresetsCommands, { update as updatePresetCommands } from "./presets";
 import LayoutsCommands, { update as updateLayoutsCommands } from "./layouts";
 import FunboxCommands, { update as updateFunboxCommands } from "./funbox";
 import ThemesCommands, { update as updateThemesCommands } from "./themes";
+import LoadChallengeCommands, {
+  update as updateLoadChallengeCommands,
+} from "./load-challenge";
 import FontFamilyCommands, {
   update as updateFontFamilyCommands,
 } from "./font-family";
@@ -79,7 +87,18 @@ import { Auth } from "../../firebase";
 import Config, * as UpdateConfig from "../../config";
 import * as CustomText from "../../test/custom-text";
 import * as Misc from "../../utils/misc";
+import * as TestLogic from "../../test/test-logic";
+import * as TestInput from "../../test/test-input";
+import * as TestUI from "../../test/test-ui";
+import * as TestState from "../../test/test-state";
 import { randomizeTheme } from "../../controllers/theme-controller";
+import { navigate } from "../../controllers/route-controller";
+import * as CustomTextPopup from "../../popups/custom-text-popup";
+import * as Settings from "../../pages/settings";
+import * as Notifications from "../../elements/notifications";
+import * as ModesNotice from "../../elements/modes-notice";
+import * as VideoAdPopup from "../../popups/video-ad-popup";
+import * as ShareTestSettingsPopup from "../../popups/share-test-settings-popup";
 
 Misc.getLayoutsList().then((layouts) => {
   updateLayoutsCommands(layouts);
@@ -100,6 +119,10 @@ Misc.getFontsList().then((fonts) => {
 
 Misc.getThemesList().then((themes) => {
   updateThemesCommands(themes);
+});
+
+Misc.getChallengeList().then((challenges) => {
+  updateLoadChallengeCommands(challenges);
 });
 
 function canBailOut(): boolean {
@@ -572,7 +595,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       display: "Keymap show top row...",
       alias: "keyboard",
       icon: "fa-keyboard",
-      subgroup: commandsKeymapShowTopRow,
+      subgroup: KeymapShowTopRowCommands,
     },
     {
       id: "changeCustomLayoutfluid",
@@ -586,16 +609,6 @@ const commands: MonkeyTypes.CommandsGroup = {
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );
         if (Config.funbox === "layoutfluid") TestLogic.restart();
-        // UpdateConfig.setLayout(
-        //   Config.customLayoutfluid
-        //     ? Config.customLayoutfluid.split("_")[0]
-        //     : "qwerty"
-        // );
-        // UpdateConfig.setKeymapLayout(
-        //   Config.customLayoutfluid
-        //     ? Config.customLayoutfluid.split("_")[0]
-        //     : "qwerty"
-        // );
       },
     },
     {
@@ -621,7 +634,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changePageWidth",
       display: "Page width...",
       icon: "fa-arrows-alt-h",
-      subgroup: commandsPageWidth,
+      subgroup: PageWidthCommands,
     },
     {
       id: "nextTest",
@@ -733,13 +746,13 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "loadChallenge",
       display: "Load challenge...",
       icon: "fa-award",
-      subgroup: commandsChallenges,
+      subgroup: LoadChallengeCommands,
     },
     {
       id: "setEnableAds",
       display: "Enable ads...",
       icon: "fa-ad",
-      subgroup: commandsEnableAds,
+      subgroup: EnableAdsCommands,
     },
     {
       id: "joinDiscord",
@@ -766,7 +779,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "practiseWords",
       display: "Practice words...",
       icon: "fa-exclamation-triangle",
-      subgroup: commandsPractiseWords,
+      subgroup: PractiseWordsCommands,
       available: (): boolean => {
         return TestUI.resultVisible;
       },
@@ -857,7 +870,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       alias: "powermode",
       icon: "fa-egg",
       visible: false,
-      subgroup: commandsMonkeyPowerLevel,
+      subgroup: MonkeyPowerLevelCommands,
     },
     {
       id: "watchVideoAd",
