@@ -50,6 +50,12 @@ import RepeatedPaceCommands from "./repeated-pace";
 import TimerStyleCommands from "./timer-style";
 import TimerColorCommands from "./timer-color";
 import TimerOpacityCommands from "./timer-opacity";
+import HighlightModeCommands from "./highlight-mode";
+import TapeModeCommands from "./tape-mode";
+import BritishEnglishCommands from "./british-english";
+import KeymapModeCommands from "./keymap-mode";
+import KeymapStyleCommands from "./keymap-style";
+import KeymapLegendStyleCommands from "./keymap-legend-style";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import CustomThemesListCommands, {
@@ -70,7 +76,7 @@ import KeymapLayoutsCommands, {
 } from "./layouts";
 
 import { Auth } from "../../firebase";
-import Config from "../../config";
+import Config, * as UpdateConfig from "../../config";
 import * as CustomText from "../../test/custom-text";
 import * as Misc from "../../utils/misc";
 import { randomizeTheme } from "../../controllers/theme-controller";
@@ -483,13 +489,13 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeHighlightMode",
       display: "Highlight mode...",
       icon: "fa-highlighter",
-      subgroup: commandsHighlightMode,
+      subgroup: HighlightModeCommands,
     },
     {
       id: "changeTapeMode",
       display: "Tape mode...",
       icon: "fa-tape",
-      subgroup: commandsTapeMode,
+      subgroup: TapeModeCommands,
     },
     {
       id: "changeShowAverage",
@@ -518,7 +524,7 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeBritishEnglish",
       display: "British english...",
       icon: "fa-language",
-      subgroup: commandsBritishEnglish,
+      subgroup: BritishEnglishCommands,
     },
     {
       id: "changeFunbox",
@@ -538,21 +544,21 @@ const commands: MonkeyTypes.CommandsGroup = {
       display: "Keymap mode...",
       icon: "fa-keyboard",
       alias: "keyboard",
-      subgroup: commandsKeymapMode,
+      subgroup: KeymapModeCommands,
     },
     {
       id: "changeKeymapStyle",
       display: "Keymap style...",
       alias: "keyboard",
       icon: "fa-keyboard",
-      subgroup: commandsKeymapStyle,
+      subgroup: KeymapStyleCommands,
     },
     {
       id: "changeKeymapLegendStyle",
       display: "Keymap legend style...",
       alias: "keyboard",
       icon: "fa-keyboard",
-      subgroup: commandsKeymapLegendStyle,
+      subgroup: KeymapLegendStyleCommands,
     },
     {
       id: "changeKeymapLayout",
