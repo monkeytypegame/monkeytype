@@ -1084,6 +1084,7 @@ list["saveCustomText"] = new SimplePopup(
   (_thisPopup, input) => {
     const text = ($(`#customTextPopup textarea`).val() as string).normalize();
     CustomText.setCustomText(input, text);
+    CustomText.setCustomTextProgress(input, 0);
     Notifications.add("Custom text saved", 1);
     CustomTextPopup.show();
   },
