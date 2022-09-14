@@ -46,6 +46,10 @@ import DifficultyCommands from "./difficulty";
 import PaceCaretStyleCommands from "./pace-caret-style";
 import PaceCaretModeCommands from "./pace-caret";
 import CaretStyleCommands from "./caret-style";
+import RepeatedPaceCommands from "./repeated-pace";
+import TimerStyleCommands from "./timer-style";
+import TimerColorCommands from "./timer-color";
+import TimerOpacityCommands from "./timer-opacity";
 
 import TagsCommands, { update as updateTagsCommands } from "./tags";
 import CustomThemesListCommands, {
@@ -455,25 +459,25 @@ const commands: MonkeyTypes.CommandsGroup = {
       id: "changeRepeatedPace",
       display: "Repeated pace...",
       icon: "fa-i-cursor",
-      subgroup: commandsRepeatedPace,
+      subgroup: RepeatedPaceCommands,
     },
     {
       id: "changeTimerStyle",
       display: "Timer/progress style...",
       icon: "fa-clock",
-      subgroup: commandsTimerStyle,
+      subgroup: TimerStyleCommands,
     },
     {
       id: "changeTimerColor",
       display: "Timer/progress color...",
       icon: "fa-clock",
-      subgroup: commandsTimerColor,
+      subgroup: TimerColorCommands,
     },
     {
       id: "changeTimerOpacity",
       display: "Timer/progress opacity...",
       icon: "fa-clock",
-      subgroup: commandsTimerOpacity,
+      subgroup: TimerOpacityCommands,
     },
     {
       id: "changeHighlightMode",
