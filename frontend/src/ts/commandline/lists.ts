@@ -150,7 +150,7 @@ function canBailOut(): boolean {
   );
 }
 
-const commands: MonkeyTypes.CommandsGroup = {
+export const commands: MonkeyTypes.CommandsGroup = {
   title: "",
   list: [
     {
@@ -945,6 +945,11 @@ const commands: MonkeyTypes.CommandsGroup = {
 };
 
 const lists = {
+  keymapLayouts: KeymapLayoutsCommands,
+  enableAds: EnableAdsCommands,
+  customThemesList: CustomThemesListCommands,
+  themes: ThemesCommands,
+
   LoadChallengeCommands,
   LanguagesCommands,
   DifficultyCommands,
@@ -962,18 +967,22 @@ const lists = {
   TagsCommands,
 };
 
+export function getList(listName: ListsObjectKeys): MonkeyTypes.CommandsGroup {
+  return lists[listName];
+}
+
 export let current: MonkeyTypes.CommandsGroup[] = [];
 
 current = [commands];
 
 export type ListsObjectKeys = keyof typeof lists;
 
-export function setCurrent(val: ListsObjectKeys): void {
-  current = [lists[val]];
+export function setCurrent(val: MonkeyTypes.CommandsGroup[]): void {
+  current = val;
 }
 
-export function pushCurrent(val: ListsObjectKeys): void {
-  current.push(lists[val]);
+export function pushCurrent(val: MonkeyTypes.CommandsGroup): void {
+  current.push(val);
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
@@ -998,5 +1007,3 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
     )[0].defaultValue = (eventValue as string)?.replace(/#/g, " ");
   }
 });
-
-export default commands;
