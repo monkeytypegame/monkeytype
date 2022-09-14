@@ -1600,16 +1600,17 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
-  if (Config.mode === "custom" && CustomTextState.getCustomTextName() !== "") {
+  const customTextName = CustomTextState.getCustomTextName();
+  if (Config.mode === "custom" && customTextName !== "") {
     // Let's update the custom text progress
-    CustomText.setCustomTextProgress(
-      CustomTextState.getCustomTextName(),
-      TestInput.bailout
-        ? CustomText.getCustomTextProgress(
-            CustomTextState.getCustomTextName()
-          ) + Math.max(TestInput.input.getHistory().length, 0)
-        : 0
-    );
+    const oldProgress = CustomText.getCustomTextProgress(customTextName);
+    const newProgress = TestInput.bailout
+      ? oldProgress + TestInput.input.getHistory().length
+      : 0;
+    CustomText.setCustomTextProgress(customTextName, newProgress);
+
+    const newText = CustomText.getCustomText(customTextName, newProgress);
+    CustomText.setText(newText);
   }
 
   if (!dontSave) {
