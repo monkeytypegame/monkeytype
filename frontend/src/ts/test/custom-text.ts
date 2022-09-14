@@ -70,6 +70,14 @@ export function setCustomText(name: string, text: string | string[]): void {
   window.localStorage.setItem("customText", JSON.stringify(customText));
 }
 
+export function deleteCustomText(name: string): void {
+  const customText = getCustomTextObject();
+
+  if (customText[name]) delete customText[name];
+
+  window.localStorage.setItem("customText", JSON.stringify(customText));
+}
+
 export function getCustomTextProgress(name: string): number {
   const customTextProgress = getCustomTextProgressObject();
 
@@ -85,14 +93,6 @@ export function setCustomTextProgress(name: string, progress: number): void {
     "customTextProgress",
     JSON.stringify(customTextProgress)
   );
-}
-
-export function deleteCustomText(name: string): void {
-  const customText = getCustomTextObject();
-
-  if (customText[name]) delete customText[name];
-
-  window.localStorage.setItem("customText", JSON.stringify(customText));
 }
 
 function getCustomTextObject(): CustomTextObject {
