@@ -11,6 +11,9 @@ export async function show(): Promise<void> {
     for (const name of names) {
       list += `<div class="savedText">
       <div class="button name">${name}</div>
+      <div class="button ${
+        CustomText.getCustomTextProgress(name) <= 0 ? "disabled" : ""
+      } continue">continue</div>
       <div class="button delete">
       <i class="fas fa-fw fa-trash"></i>
       </div>
@@ -27,8 +30,11 @@ function hide(full = false): void {
   if (!full) $("#customTextPopupWrapper").removeClass("hidden");
 }
 
-function applySaved(name: string): void {
-  const text = CustomText.getCustomText(name);
+function applySaved(name: string, progress = false): void {
+  const text = CustomText.getCustomText(
+    name,
+    progress ? CustomText.getCustomTextProgress(name) : 0
+  );
   $(`#customTextPopupWrapper textarea`).val(text.join(CustomText.delimiter));
 }
 
@@ -39,6 +45,17 @@ $(document).on(
     const name = $(e.target).text();
     CustomTextState.setCustomTextName(name);
     applySaved(name);
+    hide();
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .list .savedText .button.continue`,
+  (e) => {
+    const name = $(e.target).siblings(`.button.name`).text();
+    CustomTextState.setCustomTextName(name);
+    applySaved(name, true);
     hide();
   }
 );

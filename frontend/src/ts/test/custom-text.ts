@@ -50,15 +50,15 @@ export function setDelimiter(val: string): void {
 type CustomTextObject = Record<string, string>;
 
 export function getCustomText(name: string, progress = 0): string[] {
-  const customText = getCustomTextObject();
+  const customTextObj = getCustomTextObject();
 
-  if (progress >= customText[name].length) {
+  if (progress >= customTextObj[name].length) {
     console.error("Custom text progress is greater than text length");
   } else {
-    return customText[name].split(" ").slice(progress);
+    return customTextObj[name].split(" ").slice(progress);
   }
 
-  return customText[name].split(/ +/);
+  return customTextObj[name].split(/ +/);
 }
 
 export function setCustomText(name: string, text: string | string[]): void {
