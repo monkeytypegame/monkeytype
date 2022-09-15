@@ -754,3 +754,8 @@ $(".supportButtons .button.ads").on("click", () => {
   CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
   show();
 });
+
+$(document.body).on("click", "#supportMeWrapper .button.ads", () => {
+  CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
+  show();
+});

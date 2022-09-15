@@ -1,6 +1,3 @@
-import * as Commandline from "../commandline/index";
-import * as CommandlineLists from "../commandline/commands";
-
 $(document.body).on("click", "#supportMeButton, #supportMeAboutButton", () => {
   $("#supportMeWrapper")
     .css("opacity", 0)
@@ -17,8 +14,6 @@ $(document.body).on("click", "#supportMeWrapper", () => {
 });
 
 $(document.body).on("click", "#supportMeWrapper .button.ads", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
-  Commandline.show();
   $("#supportMeWrapper")
     .css("opacity", 1)
     .animate({ opacity: 0 }, 125, () => {
