@@ -930,6 +930,10 @@
   display: none;
   height: max-content;
   margin-bottom: 1rem;
+  transition: 0.125s;
+  &.focus {
+    opacity: 0;
+  }
 }
 
 #testConfig {
