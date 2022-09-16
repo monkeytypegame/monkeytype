@@ -4,17 +4,34 @@ import * as ModesNotice from "../../elements/modes-notice";
 import * as TagController from "../../controllers/tag-controller";
 import Config from "../../config";
 import * as PaceCaret from "../../test/pace-caret";
+import { Auth } from "../../firebase";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change tags...",
   list: [],
 };
 
+const commands: MonkeyTypes.Command[] = [
+  {
+    visible: false,
+    id: "changeTags",
+    display: "Tags...",
+    icon: "fa-tag",
+    subgroup,
+    beforeSubgroup: (): void => {
+      update();
+    },
+    available: (): boolean => {
+      return !!Auth.currentUser;
+    },
+  },
+];
+
 function update(): void {
   const snapshot = DB.getSnapshot();
-  commands.list = [];
+  subgroup.list = [];
   if (!snapshot || !snapshot.tags || snapshot.tags.length === 0) {
-    commands.list.push({
+    subgroup.list.push({
       id: "createTag",
       display: "Create tag",
       icon: "fa-plus",
@@ -25,7 +42,7 @@ function update(): void {
     });
     return;
   }
-  commands.list.push({
+  subgroup.list.push({
     id: "clearTags",
     display: `Clear tags`,
     icon: "fa-times",
@@ -53,7 +70,7 @@ function update(): void {
       dis = '<i class="fas fa-fw"></i>' + dis;
     }
 
-    commands.list.push({
+    subgroup.list.push({
       id: "toggleTag" + tag._id,
       noIcon: true,
       display: dis,
@@ -89,7 +106,7 @@ function update(): void {
       },
     });
   });
-  commands.list.push({
+  subgroup.list.push({
     id: "createTag",
     display: "Create tag",
     icon: "fa-plus",

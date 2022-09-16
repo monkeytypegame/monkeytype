@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Timer/progress...",
   configKey: "showTimerProgress",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeShowTimer",
+    display: "Timer/progress...",
+    icon: "fa-clock",
+    subgroup,
+  },
+];
 
 export default commands;

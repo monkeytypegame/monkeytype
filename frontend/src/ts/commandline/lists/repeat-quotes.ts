@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Repeat quotes...",
   configKey: "repeatQuotes",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeRepeatQuotes",
+    display: "Repeat quotes...",
+    icon: "fa-sync-alt",
+    subgroup,
+  },
+];
 
 export default commands;

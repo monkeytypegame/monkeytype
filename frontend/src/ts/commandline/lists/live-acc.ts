@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Live accuracy...",
   configKey: "showLiveAcc",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeLiveAcc",
+    display: "Live accuracy...",
+    icon: "fa-percentage",
+    subgroup,
+  },
+];
 
 export default commands;

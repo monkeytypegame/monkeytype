@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Always show words history...",
   configKey: "alwaysShowWordsHistory",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeShowWordsHistory",
+    display: "Always show words history...",
+    icon: "fa-align-left",
+    subgroup,
+  },
+];
 
 export default commands;

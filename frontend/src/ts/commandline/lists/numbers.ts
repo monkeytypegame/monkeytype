@@ -1,7 +1,7 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Numbers...",
   configKey: "numbers",
   list: [
@@ -25,5 +25,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeNumbers",
+    display: "Numbers...",
+    icon: "fa-hashtag",
+    subgroup,
+  },
+];
 
 export default commands;

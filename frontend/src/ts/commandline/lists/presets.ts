@@ -3,20 +3,37 @@ import * as ModesNotice from "../../elements/modes-notice";
 import * as Settings from "../../pages/settings";
 import * as PresetController from "../../controllers/preset-controller";
 import * as EditPresetPopup from "../../popups/edit-preset-popup";
+import { Auth } from "../../firebase";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Presets...",
   list: [],
 };
 
+const commands: MonkeyTypes.Command[] = [
+  {
+    visible: false,
+    id: "applyPreset",
+    display: "Presets...",
+    icon: "fa-sliders-h",
+    subgroup,
+    beforeSubgroup: (): void => {
+      update();
+    },
+    available: (): boolean => {
+      return !!Auth.currentUser;
+    },
+  },
+];
+
 function update(): void {
   const snapshot = DB.getSnapshot();
-  commands.list = [];
+  subgroup.list = [];
   if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
   snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
     const dis = preset.display;
 
-    commands.list.push({
+    subgroup.list.push({
       id: "applyPreset" + preset._id,
       display: dis,
       exec: (): void => {
@@ -28,7 +45,7 @@ function update(): void {
       },
     });
   });
-  commands.list.push({
+  subgroup.list.push({
     id: "createPreset",
     display: "Create preset",
     icon: "fa-plus",

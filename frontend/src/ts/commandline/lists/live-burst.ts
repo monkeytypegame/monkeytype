@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Live burst...",
   configKey: "showLiveBurst",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeLiveBurst",
+    display: "Live burst...",
+    icon: "fa-fire-alt",
+    subgroup,
+  },
+];
 
 export default commands;

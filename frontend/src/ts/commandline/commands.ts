@@ -2,7 +2,7 @@ import PunctuationCommands from "./lists/punctuation";
 import ModeCommands from "./lists/mode";
 import TimeCommands from "./lists/time";
 import WordsCommands from "./lists/words";
-import ConfidenceModeCommands from "./lists/words";
+import ConfidenceModeCommands from "./lists/confidence-mode";
 import QuoteLengthCommands from "./lists/quote-length";
 import StopOnErrorCommands from "./lists/stop-on-error";
 import NumbersCommands from "./lists/numbers";
@@ -63,13 +63,11 @@ import PractiseWordsCommands from "./lists/practise-words";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import CopyWordsToClipboardCommands from "./lists/copy-words-to-clipboard";
 
-import TagsCommands, { update as updateTagsCommands } from "./lists/tags";
+import TagsCommands from "./lists/tags";
 import CustomThemesListCommands, {
   update as updateCustomThemesListCommands,
-} from "./lists/tags";
-import PresetsCommands, {
-  update as updatePresetCommands,
-} from "./lists/presets";
+} from "./lists/custom-themes-list";
+import PresetsCommands from "./lists/presets";
 import LayoutsCommands, {
   update as updateLayoutsCommands,
 } from "./lists/layouts";
@@ -154,142 +152,26 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
   list: [
     ...PunctuationCommands,
     ...ModeCommands,
-
-    {
-      id: "changeTimeConfig",
-      display: "Time...",
-      icon: "fa-clock",
-      subgroup: TimeCommands,
-    },
-    {
-      id: "changeWordCount",
-      display: "Words...",
-      alias: "words",
-      icon: "fa-font",
-      subgroup: WordsCommands,
-    },
-    {
-      id: "changeQuoteLength",
-      display: "Quote length...",
-      icon: "fa-quote-right",
-      alias: "quotes",
-      subgroup: QuoteLengthCommands,
-    },
-    {
-      visible: false,
-      id: "changeTags",
-      display: "Tags...",
-      icon: "fa-tag",
-      subgroup: TagsCommands,
-      beforeSubgroup: (): void => {
-        updateTagsCommands();
-      },
-      available: (): boolean => {
-        return !!Auth.currentUser;
-      },
-    },
-    {
-      visible: false,
-      id: "applyPreset",
-      display: "Presets...",
-      icon: "fa-sliders-h",
-      subgroup: PresetsCommands,
-      beforeSubgroup: (): void => {
-        updatePresetCommands();
-      },
-      available: (): boolean => {
-        return !!Auth.currentUser;
-      },
-    },
-    {
-      id: "changeConfidenceMode",
-      display: "Confidence mode...",
-      icon: "fa-backspace",
-      subgroup: ConfidenceModeCommands,
-    },
-    {
-      id: "changeStopOnError",
-      display: "Stop on error...",
-      icon: "fa-hand-paper",
-      subgroup: StopOnErrorCommands,
-    },
-    {
-      id: "changeNumbers",
-      display: "Numbers...",
-      icon: "fa-hashtag",
-      subgroup: NumbersCommands,
-    },
-    {
-      id: "changeSmoothCaret",
-      display: "Smooth caret...",
-      icon: "fa-i-cursor",
-      subgroup: SmoothCaretCommands,
-    },
-    {
-      id: "changeQuickRestart",
-      display: "Quick restart...",
-      icon: "fa-redo-alt",
-      subgroup: QuickRestartCommands,
-    },
-    {
-      id: "changeRepeatQuotes",
-      display: "Repeat quotes...",
-      icon: "fa-sync-alt",
-      subgroup: RepeatQuotesCommands,
-    },
-    {
-      id: "changeLiveWpm",
-      display: "Live WPM...",
-      icon: "fa-tachometer-alt",
-      subgroup: LiveWpmCommands,
-    },
-    {
-      id: "changeLiveAcc",
-      display: "Live accuracy...",
-      icon: "fa-percentage",
-      subgroup: LiveAccCommands,
-    },
-    {
-      id: "changeLiveBurst",
-      display: "Live burst...",
-      icon: "fa-fire-alt",
-      subgroup: LiveBurstCommands,
-    },
-    {
-      id: "changeShowTimer",
-      display: "Timer/progress...",
-      icon: "fa-clock",
-      subgroup: ShowTimerCommands,
-    },
-    {
-      id: "changeKeyTips",
-      display: "Key tips...",
-      icon: "fa-question",
-      subgroup: KeyTipsCommands,
-    },
-    {
-      id: "changeFreedomMode",
-      display: "Freedom mode...",
-      subgroup: FreedomModeCommands,
-    },
-    {
-      id: "changeStrictSpace",
-      display: "Strict space...",
-      icon: "fa-minus",
-      subgroup: StrictSpaceCommands,
-    },
-    {
-      id: "changeBlindMode",
-      display: "Blind mode...",
-      icon: "fa-eye-slash",
-      subgroup: BlindModeCommands,
-    },
-    {
-      id: "changeShowWordsHistory",
-      display: "Always show words history...",
-      icon: "fa-align-left",
-      subgroup: ShowWordsHistoryCommands,
-    },
+    ...TimeCommands,
+    ...WordsCommands,
+    ...QuoteLengthCommands,
+    ...TagsCommands,
+    ...PresetsCommands,
+    ...ConfidenceModeCommands,
+    ...StopOnErrorCommands,
+    ...NumbersCommands,
+    ...SmoothCaretCommands,
+    ...QuickRestartCommands,
+    ...RepeatQuotesCommands,
+    ...LiveWpmCommands,
+    ...LiveAccCommands,
+    ...LiveBurstCommands,
+    ...ShowTimerCommands,
+    ...KeyTipsCommands,
+    ...FreedomModeCommands,
+    ...StrictSpaceCommands,
+    ...BlindModeCommands,
+    ...ShowWordsHistoryCommands,
     {
       id: "changeIndicateTypos",
       display: "Indicate typos...",

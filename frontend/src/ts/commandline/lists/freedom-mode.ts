@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Freedom mode...",
   configKey: "freedomMode",
   list: [
@@ -22,5 +22,13 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeFreedomMode",
+    display: "Freedom mode...",
+    subgroup,
+  },
+];
 
 export default commands;

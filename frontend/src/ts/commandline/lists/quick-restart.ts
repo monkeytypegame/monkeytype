@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Quick restart...",
   configKey: "quickRestart",
   list: [
@@ -30,5 +30,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeQuickRestart",
+    display: "Quick restart...",
+    icon: "fa-redo-alt",
+    subgroup,
+  },
+];
 
 export default commands;
