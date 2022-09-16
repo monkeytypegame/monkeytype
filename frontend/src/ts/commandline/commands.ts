@@ -64,6 +64,9 @@ import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import CopyWordsToClipboardCommands from "./lists/copy-words-to-clipboard";
 import BailOutCommands from "./lists/bail-out";
 import ResultSavingCommands from "./lists/result-saving";
+import NavigationCommands from "./lists/navigation";
+import FontSizeCommands from "./lists/font-size";
+import ResultScreenCommands from "./lists/result-screen";
 
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
@@ -89,9 +92,7 @@ import KeymapLayoutsCommands, {
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
 import * as TestLogic from "../test/test-logic";
-import * as TestUI from "../test/test-ui";
 import { randomizeTheme } from "../controllers/theme-controller";
-import { navigate } from "../controllers/route-controller";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
@@ -194,6 +195,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...KeymapLayoutsCommands,
     ...KeymapShowTopRowCommands,
     ...FontFamilyCommands,
+    ...FontSizeCommands,
     ...PageWidthCommands,
     ...BailOutCommands,
     ...LoadChallengeCommands,
@@ -242,68 +244,8 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         if (Config.funbox === "layoutfluid") TestLogic.restart();
       },
     },
-    {
-      id: "changeFontSize",
-      display: "Font size...",
-      icon: "fa-font",
-      input: true,
-      defaultValue: (): string => {
-        return Config.fontSize.toString();
-      },
-      exec: (input): void => {
-        if (!input) return;
-        UpdateConfig.setFontSize(parseFloat(input));
-        setTimeout(() => {
-          TestUI.updateWordsHeight();
-        }, 0); //honestly no clue why it i need to wait for the next event loop to do this
-      },
-    },
 
-    {
-      id: "nextTest",
-      display: "Next test",
-      alias: "restart start begin type test typing",
-      icon: "fa-chevron-right",
-      available: (): boolean => {
-        return TestUI.resultVisible;
-      },
-      exec: (): void => {
-        TestLogic.restart();
-      },
-    },
-    {
-      id: "viewTypingPage",
-      display: "View Typing Page",
-      alias: "start begin type test",
-      icon: "fa-keyboard",
-      exec: (): void => {
-        navigate("/");
-      },
-    },
-    {
-      id: "viewLeaderboards",
-      display: "View Leaderboards",
-      icon: "fa-crown",
-      exec: (): void => {
-        $("#top #menu .textButton.view-leaderboards").trigger("click");
-      },
-    },
-    {
-      id: "viewAbout",
-      display: "View About Page",
-      icon: "fa-info",
-      exec: (): void => {
-        navigate("/about");
-      },
-    },
-    {
-      id: "viewSettings",
-      display: "View Settings Page",
-      icon: "fa-cog",
-      exec: (): void => {
-        navigate("/settings");
-      },
-    },
+    ...NavigationCommands,
     {
       id: "viewQuoteSearchPopup",
       display: "Search for quotes",
@@ -314,72 +256,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
       shouldFocusTestUI: false,
     },
-    {
-      id: "viewAccount",
-      display: "View Account Page",
-      icon: "fa-user",
-      alias: "stats",
-      exec: (): void => {
-        $("#top #menu .textButton.view-account").hasClass("hidden")
-          ? navigate("/login")
-          : navigate("/account");
-      },
-    },
-    {
-      id: "toggleFullscreen",
-      display: "Toggle Fullscreen",
-      icon: "fa-expand",
-      exec: (): void => {
-        Misc.toggleFullscreen();
-      },
-    },
-
-    {
-      id: "joinDiscord",
-      display: "Join the Discord server",
-      icon: "fa-users",
-      exec: (): void => {
-        window.open("https://discord.gg/monkeytype");
-      },
-    },
-    {
-      id: "repeatTest",
-      display: "Repeat test",
-      icon: "fa-sync-alt",
-      exec: (): void => {
-        TestLogic.restart({
-          withSameWordset: true,
-        });
-      },
-      available: (): boolean => {
-        return TestUI.resultVisible;
-      },
-    },
-    {
-      id: "toggleWordHistory",
-      display: "Toggle word history",
-      icon: "fa-align-left",
-      exec: (): void => {
-        TestUI.toggleResultWords();
-      },
-      available: (): boolean => {
-        return TestUI.resultVisible;
-      },
-    },
-    {
-      id: "saveScreenshot",
-      display: "Save screenshot",
-      icon: "fa-image",
-      alias: "ss picture",
-      exec: (): void => {
-        setTimeout(() => {
-          TestUI.screenshot();
-        }, 500);
-      },
-      available: (): boolean => {
-        return TestUI.resultVisible;
-      },
-    },
+    ...ResultScreenCommands,
     {
       id: "changeCustomModeText",
       display: "Change custom text",
@@ -395,6 +272,14 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       visible: false,
       exec: (): void => {
         UpdateConfig.setMonkey(!Config.monkey);
+      },
+    },
+    {
+      id: "shareTestSettings",
+      display: "Share test settings",
+      icon: "fa-share",
+      exec: async (): Promise<void> => {
+        ShareTestSettingsPopup.show();
       },
     },
     {
@@ -438,11 +323,11 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
-      id: "shareTestSettings",
-      display: "Share test settings",
-      icon: "fa-share",
-      exec: async (): Promise<void> => {
-        ShareTestSettingsPopup.show();
+      id: "joinDiscord",
+      display: "Join the Discord server",
+      icon: "fa-users",
+      exec: (): void => {
+        window.open("https://discord.gg/monkeytype");
       },
     },
     {
