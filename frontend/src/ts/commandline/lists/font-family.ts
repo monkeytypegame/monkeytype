@@ -1,15 +1,24 @@
 import Config, * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Font family...",
   configKey: "fontFamily",
   list: [],
 };
 
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeFontFamily",
+    display: "Font family...",
+    icon: "fa-font",
+    subgroup,
+  },
+];
+
 function update(fonts: MonkeyTypes.FontObject[]): void {
   fonts.forEach((font) => {
     const configVal = font.name.replace(/ /g, "_");
-    commands.list.push({
+    subgroup.list.push({
       id: "changeFont" + font.name.replace(/ /g, "_"),
       display: font.display !== undefined ? font.display : font.name,
       configValue: configVal,
@@ -21,7 +30,7 @@ function update(fonts: MonkeyTypes.FontObject[]): void {
       },
     });
   });
-  commands.list.push({
+  subgroup.list.push({
     id: "setFontFamilyCustom",
     display: "custom...",
     input: true,

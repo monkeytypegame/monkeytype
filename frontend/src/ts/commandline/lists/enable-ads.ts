@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-export const commands: MonkeyTypes.CommandsSubgroup = {
+export const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Set enable ads...",
   configKey: "ads",
   list: [
@@ -38,5 +38,14 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "setEnableAds",
+    display: "Enable ads...",
+    icon: "fa-ad",
+    subgroup,
+  },
+];
 
 export default commands;

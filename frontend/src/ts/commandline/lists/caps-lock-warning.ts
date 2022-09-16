@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Caps lock warning...",
   configKey: "capsLockWarning",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "capsLockWarning",
+    display: "Caps lock warning...",
+    icon: "fa-exclamation-triangle",
+    subgroup,
+  },
+];
 
 export default commands;

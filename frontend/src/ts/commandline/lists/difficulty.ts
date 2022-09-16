@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Difficulty...",
   configKey: "difficulty",
   list: [
@@ -30,5 +30,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeDifficulty",
+    display: "Difficulty...",
+    icon: "fa-star",
+    subgroup,
+  },
+];
 
 export default commands;

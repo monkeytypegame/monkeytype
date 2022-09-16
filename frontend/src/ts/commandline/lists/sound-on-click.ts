@@ -1,7 +1,7 @@
 import * as UpdateConfig from "../../config";
 import * as SoundController from "../../controllers/sound-controller";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Sound on click...",
   configKey: "playSoundOnClick",
   list: [
@@ -99,5 +99,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeSoundOnClick",
+    display: "Sound on click...",
+    icon: "fa-volume-up",
+    subgroup,
+  },
+];
 
 export default commands;

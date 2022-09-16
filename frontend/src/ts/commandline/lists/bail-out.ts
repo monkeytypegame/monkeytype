@@ -46,6 +46,8 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
+const commands: MonkeyTypes.Command[] = [];
+
 const commands: MonkeyTypes.Command[] = [
   {
     id: "bailOut",

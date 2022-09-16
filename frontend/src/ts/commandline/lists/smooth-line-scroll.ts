@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Smooth line scroll...",
   configKey: "smoothLineScroll",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeSmoothLineScroll",
+    display: "Smooth line scroll...",
+    icon: "fa-align-left",
+    subgroup,
+  },
+];
 
 export default commands;

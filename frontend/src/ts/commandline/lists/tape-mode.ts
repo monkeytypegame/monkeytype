@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Tape mode...",
   configKey: "tapeMode",
   list: [
@@ -30,5 +30,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeTapeMode",
+    display: "Tape mode...",
+    icon: "fa-tape",
+    subgroup,
+  },
+];
 
 export default commands;

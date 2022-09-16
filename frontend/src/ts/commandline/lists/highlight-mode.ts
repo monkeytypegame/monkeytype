@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Highlight mode...",
   configKey: "highlightMode",
   list: [
@@ -30,5 +30,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeHighlightMode",
+    display: "Highlight mode...",
+    icon: "fa-highlighter",
+    subgroup,
+  },
+];
 
 export default commands;

@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Repeated pace...",
   configKey: "repeatedPace",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeRepeatedPace",
+    display: "Repeated pace...",
+    icon: "fa-i-cursor",
+    subgroup,
+  },
+];
 
 export default commands;

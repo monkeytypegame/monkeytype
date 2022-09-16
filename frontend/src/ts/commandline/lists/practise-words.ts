@@ -1,7 +1,8 @@
 import * as PractiseWords from "../../test/practise-words";
 import * as TestLogic from "../../test/test-logic";
+import * as TestUI from "../../test/test-ui";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Practice words...",
   list: [
     {
@@ -39,5 +40,17 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "practiseWords",
+    display: "Practice words...",
+    icon: "fa-exclamation-triangle",
+    subgroup,
+    available: (): boolean => {
+      return TestUI.resultVisible;
+    },
+  },
+];
 
 export default commands;

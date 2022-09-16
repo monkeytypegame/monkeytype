@@ -1,7 +1,7 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "British english...",
   configKey: "britishEnglish",
   list: [
@@ -25,5 +25,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeBritishEnglish",
+    display: "British english...",
+    icon: "fa-language",
+    subgroup,
+  },
+];
 
 export default commands;

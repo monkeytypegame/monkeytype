@@ -3,18 +3,31 @@ import { Auth } from "../../firebase";
 import * as DB from "../../db";
 import * as ThemeController from "../../controllers/theme-controller";
 
-export const commands: MonkeyTypes.CommandsSubgroup = {
+export const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Custom themes list...",
   // configKey: "customThemeId",
   list: [],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "setCustomThemeId",
+    display: "Custom themes...",
+    icon: "fa-palette",
+    subgroup,
+    beforeSubgroup: (): void => update(),
+    available: (): boolean => {
+      return Auth.currentUser !== null;
+    },
+  },
+];
 
 export function update(): void {
   if (Auth.currentUser === null) {
     return;
   }
 
-  commands.list = [];
+  subgroup.list = [];
 
   const snapshot = DB.getSnapshot();
 
@@ -24,7 +37,7 @@ export function update(): void {
     return;
   }
   DB.getSnapshot().customThemes.forEach((theme) => {
-    commands.list.push({
+    subgroup.list.push({
       id: "setCustomThemeId" + theme._id,
       display: theme.name,
       configValue: theme._id,

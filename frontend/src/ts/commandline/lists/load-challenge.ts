@@ -3,14 +3,23 @@ import * as ChallengeController from "../../controllers/challenge-controller";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
 
-export const commands: MonkeyTypes.CommandsSubgroup = {
+export const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Load challenge...",
   list: [],
 };
 
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "loadChallenge",
+    display: "Load challenge...",
+    icon: "fa-award",
+    subgroup,
+  },
+];
+
 function update(challenges: MonkeyTypes.Challenge[]): void {
   challenges.forEach((challenge) => {
-    commands.list.push({
+    subgroup.list.push({
       id: "loadChallenge" + capitalizeFirstLetterOfEachWord(challenge.name),
       noIcon: true,
       display: challenge.display,

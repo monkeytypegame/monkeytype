@@ -11,6 +11,8 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   list: [],
 };
 
+const commands: MonkeyTypes.Command[] = [];
+
 const commands: MonkeyTypes.Command[] = [
   {
     visible: false,

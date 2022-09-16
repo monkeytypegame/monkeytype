@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-export const commands: MonkeyTypes.CommandsSubgroup = {
+export const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Custom theme",
   configKey: "customTheme",
   list: [
@@ -22,5 +22,14 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "setCustomTheme",
+    display: "Custom theme...",
+    icon: "fa-palette",
+    subgroup,
+  },
+];
 
 export default commands;

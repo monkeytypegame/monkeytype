@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Colorful mode...",
   configKey: "colorfulMode",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeColorfulMode",
+    display: "Colorful mode...",
+    icon: "fa-fill-drip",
+    subgroup,
+  },
+];
 
 export default commands;

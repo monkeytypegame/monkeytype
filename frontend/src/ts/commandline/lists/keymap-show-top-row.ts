@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Keymap show top row...",
   configKey: "keymapShowTopRow",
   list: [
@@ -30,5 +30,15 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeKeymapShowTopRow",
+    display: "Keymap show top row...",
+    alias: "keyboard",
+    icon: "fa-keyboard",
+    subgroup,
+  },
+];
 
 export default commands;

@@ -2,7 +2,7 @@ import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Language...",
   configKey: "language",
   list: [
@@ -13,10 +13,19 @@ const commands: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeLanguage",
+    display: "Language...",
+    icon: "fa-language",
+    subgroup,
+  },
+];
+
 function update(languages: string[]): void {
-  commands.list = [];
+  subgroup.list = [];
   languages.forEach((language) => {
-    commands.list.push({
+    subgroup.list.push({
       id: "changeLanguage" + capitalizeFirstLetterOfEachWord(language),
       display: language.replace(/_/g, " "),
       configValue: language,

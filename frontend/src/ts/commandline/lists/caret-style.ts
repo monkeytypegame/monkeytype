@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Caret style...",
   configKey: "caretStyle",
   list: [
@@ -64,5 +64,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeCaretStyle",
+    display: "Caret style...",
+    icon: "fa-i-cursor",
+    subgroup,
+  },
+];
 
 export default commands;

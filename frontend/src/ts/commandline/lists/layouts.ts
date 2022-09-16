@@ -2,7 +2,7 @@ import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Layout emulator...",
   configKey: "layout",
   list: [
@@ -13,9 +13,18 @@ const commands: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeLayout",
+    display: "Layout emulator...",
+    icon: "fa-keyboard",
+    subgroup
+  },
+];
+
 function update(layouts: MonkeyTypes.Layouts): void {
-  commands.list = [];
-  commands.list.push({
+  subgroup.list = [];
+  subgroup.list.push({
     id: "changeLayoutDefault",
     display: "off",
     configValue: "default",
@@ -25,7 +34,7 @@ function update(layouts: MonkeyTypes.Layouts): void {
     },
   });
   Object.keys(layouts).forEach((layout) => {
-    commands.list.push({
+    subgroup.list.push({
       id: "changeLayout" + capitalizeFirstLetterOfEachWord(layout),
       display: layout === "default" ? "off" : layout.replace(/_/g, " "),
       configValue: layout,

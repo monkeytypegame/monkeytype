@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Show average...",
   configKey: "showAverage",
   list: [
@@ -38,5 +38,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeShowAverage",
+    display: "Show average...",
+    icon: "fa-chart-bar",
+    subgroup,
+  },
+];
 
 export default commands;

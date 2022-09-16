@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Start graphs at zero...",
   configKey: "startGraphsAtZero",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeStartGraphsAtZero",
+    display: "Start graphs at zero...",
+    icon: "fa-chart-line",
+    subgroup,
+  },
+];
 
 export default commands;

@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Power mode...",
   configKey: "monkeyPowerLevel",
   list: [
@@ -36,5 +36,16 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "monkeyPower",
+    display: "Power mode...",
+    alias: "powermode",
+    icon: "fa-egg",
+    visible: false,
+    subgroup,
+  },
+];
 
 export default commands;

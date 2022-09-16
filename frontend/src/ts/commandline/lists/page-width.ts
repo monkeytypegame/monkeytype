@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Page width...",
   configKey: "pageWidth",
   list: [
@@ -46,5 +46,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changePageWidth",
+    display: "Page width...",
+    icon: "fa-arrows-alt-h",
+    subgroup,
+  },
+];
 
 export default commands;

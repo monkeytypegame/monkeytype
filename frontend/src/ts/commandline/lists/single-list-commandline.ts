@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Single list command line...",
   configKey: "singleListCommandLine",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "singleListCommandLine",
+    display: "Single list command line...",
+    icon: "fa-list",
+    subgroup,
+  },
+];
 
 export default commands;

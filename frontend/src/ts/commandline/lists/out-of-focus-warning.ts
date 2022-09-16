@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Colorful mode...",
   configKey: "showOutOfFocusWarning",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeOutOfFocusWarning",
+    display: "Out of focus warning...",
+    icon: "fa-exclamation",
+    subgroup,
+  },
+];
 
 export default commands;

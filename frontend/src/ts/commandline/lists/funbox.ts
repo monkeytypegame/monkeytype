@@ -1,7 +1,7 @@
 import * as Funbox from "../../test/funbox";
 import * as TestLogic from "../../test/test-logic";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Funbox...",
   configKey: "funbox",
   list: [
@@ -19,9 +19,19 @@ const commands: MonkeyTypes.CommandsSubgroup = {
   ],
 };
 
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeFunbox",
+    display: "Funbox...",
+    alias: "fun box",
+    icon: "fa-gamepad",
+    subgroup,
+  },
+];
+
 function update(funboxes: MonkeyTypes.FunboxObject[]): void {
   funboxes.forEach((funbox) => {
-    commands.list.push({
+    subgroup.list.push({
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
       alias: funbox.alias,

@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change min burst mode...",
   configKey: "minBurst",
   list: [
@@ -36,5 +36,15 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeMinBurst",
+    display: "Minimum burst...",
+    alias: "minimum",
+    icon: "fa-bomb",
+    subgroup,
+  },
+];
 
 export default commands;

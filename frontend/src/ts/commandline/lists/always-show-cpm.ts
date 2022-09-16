@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Always show CPM...",
   configKey: "alwaysShowCPM",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeAlwaysShowCPM",
+    display: "Always show CPM...",
+    icon: "fa-tachometer-alt",
+    subgroup,
+  },
+];
 
 export default commands;

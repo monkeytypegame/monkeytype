@@ -1,7 +1,7 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Pace caret mode...",
   configKey: "paceCaret",
   list: [
@@ -55,5 +55,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changePaceCaret",
+    display: "Pace caret mode...",
+    icon: "fa-i-cursor",
+    subgroup,
+  },
+];
 
 export default commands;

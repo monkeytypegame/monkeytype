@@ -1,7 +1,7 @@
 import * as UpdateConfig from "../../config";
 import * as SoundController from "../../controllers/sound-controller";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Sound volume...",
   configKey: "soundVolume",
   list: [
@@ -34,5 +34,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeSoundVolume",
+    display: "Sound volume...",
+    icon: "fa-volume-down",
+    subgroup,
+  },
+];
 
 export default commands;

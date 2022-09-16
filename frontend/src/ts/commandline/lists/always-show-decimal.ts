@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Always show decimal places...",
   configKey: "alwaysShowDecimalPlaces",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeAlwaysShowDecimal",
+    display: "Always show decimal places...",
+    icon: "00",
+    subgroup,
+  },
+];
 
 export default commands;

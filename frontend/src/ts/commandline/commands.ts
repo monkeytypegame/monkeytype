@@ -66,9 +66,7 @@ import BailOutCommands from "./lists/bail-out";
 import ResultSavingCommands from "./lists/result-saving";
 
 import TagsCommands from "./lists/tags";
-import CustomThemesListCommands, {
-  update as updateCustomThemesListCommands,
-} from "./lists/custom-themes-list";
+import CustomThemesListCommands from "./lists/custom-themes-list";
 import PresetsCommands from "./lists/presets";
 import LayoutsCommands, {
   update as updateLayoutsCommands,
@@ -88,7 +86,6 @@ import KeymapLayoutsCommands, {
   update as updateKeymapLayoutsCommands,
 } from "./lists/layouts";
 
-import { Auth } from "../firebase";
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
 import * as TestLogic from "../test/test-logic";
@@ -153,151 +150,58 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...ShowWordsHistoryCommands,
     ...IndicateTyposCommands,
     ...HideExtraLettersCommands,
-    {
-      id: "changeQuickEnd",
-      display: "Quick end...",
-      icon: "fa-step-forward",
-      subgroup: QuickEndCommands,
-    },
-    {
-      id: "singleListCommandLine",
-      display: "Single list command line...",
-      icon: "fa-list",
-      subgroup: SingleListCommandlineCommands,
-    },
-    {
-      id: "capsLockWarning",
-      display: "Caps lock warning...",
-      icon: "fa-exclamation-triangle",
-      subgroup: CapsLockWarningCommands,
-    },
-    {
-      id: "changeMinWpm",
-      display: "Minimum wpm...",
-      alias: "minimum",
-      icon: "fa-bomb",
-      subgroup: MinWpmCommands,
-    },
-    {
-      id: "changeMinAcc",
-      display: "Minimum accuracy...",
-      alias: "minimum",
-      icon: "fa-bomb",
-      subgroup: MinAccCommands,
-    },
-    {
-      id: "changeMinBurst",
-      display: "Minimum burst...",
-      alias: "minimum",
-      icon: "fa-bomb",
-      subgroup: MinBurstCommands,
-    },
-    {
-      id: "changeOppositeShiftMode",
-      display: "Change opposite shift mode...",
-      icon: "fa-exchange-alt",
-      subgroup: OppositeShiftModeCommands,
-    },
-    {
-      id: "changeSoundOnClick",
-      display: "Sound on click...",
-      icon: "fa-volume-up",
-      subgroup: SoundOnClickCommands,
-    },
-    {
-      id: "changeSoundOnError",
-      display: "Sound on error...",
-      icon: "fa-volume-mute",
-      subgroup: SoundOnErrorCommands,
-    },
-    {
-      id: "changeSoundVolume",
-      display: "Sound volume...",
-      icon: "fa-volume-down",
-      subgroup: SoundVolumeCommands,
-    },
-    {
-      id: "changeFlipTestColors",
-      display: "Flip test colors...",
-      icon: "fa-adjust",
-      subgroup: FlipTestColorsCommands,
-    },
-    {
-      id: "changeSmoothLineScroll",
-      display: "Smooth line scroll...",
-      icon: "fa-align-left",
-      subgroup: SmoothLineScrollCommands,
-    },
-    {
-      id: "changeAlwaysShowDecimal",
-      display: "Always show decimal places...",
-      icon: "00",
-      subgroup: AlwaysShowDecimalCommands,
-    },
-    {
-      id: "changeAlwaysShowCPM",
-      display: "Always show CPM...",
-      icon: "fa-tachometer-alt",
-      subgroup: AlwaysShowCpmCommands,
-    },
-    {
-      id: "changeStartGraphsAtZero",
-      display: "Start graphs at zero...",
-      icon: "fa-chart-line",
-      subgroup: StartGraphsAtZeroCommands,
-    },
-    {
-      id: "changeLazyMode",
-      display: "Lazy mode...",
-      icon: "fa-couch",
-      subgroup: LazyModeCommands,
-    },
-    {
-      id: "changeShowAllLines",
-      display: "Show all lines...",
-      icon: "fa-align-left",
-      subgroup: ShowAllLinesCommands,
-    },
-    {
-      id: "changeColorfulMode",
-      display: "Colorful mode...",
-      icon: "fa-fill-drip",
-      subgroup: ColorfulModeCommands,
-    },
-    {
-      id: "changeOutOfFocusWarning",
-      display: "Out of focus warning...",
-      icon: "fa-exclamation",
-      subgroup: OutOfFocusWarningCommands,
-    },
-    {
-      id: "changeTheme",
-      display: "Theme...",
-      icon: "fa-palette",
-      subgroup: ThemesCommands,
-    },
-    {
-      id: "setCustomTheme",
-      display: "Custom theme...",
-      icon: "fa-palette",
-      subgroup: CustomThemeCommands,
-    },
-    {
-      id: "setCustomThemeId",
-      display: "Custom themes...",
-      icon: "fa-palette",
-      subgroup: CustomThemesListCommands,
-      beforeSubgroup: (): void => updateCustomThemesListCommands(),
-      available: (): boolean => {
-        return Auth.currentUser !== null;
-      },
-    },
-    {
-      id: "changeRandomTheme",
-      display: "Random theme...",
-      icon: "fa-random",
-      subgroup: RandomThemeCommands,
-    },
+    ...QuickEndCommands,
+    ...SingleListCommandlineCommands,
+    ...CapsLockWarningCommands,
+    ...MinWpmCommands,
+    ...MinAccCommands,
+    ...MinBurstCommands,
+    ...OppositeShiftModeCommands,
+    ...SoundOnClickCommands,
+    ...SoundOnErrorCommands,
+    ...SoundVolumeCommands,
+    ...FlipTestColorsCommands,
+    ...SmoothLineScrollCommands,
+    ...AlwaysShowDecimalCommands,
+    ...AlwaysShowCpmCommands,
+    ...StartGraphsAtZeroCommands,
+    ...LazyModeCommands,
+    ...ShowAllLinesCommands,
+    ...ColorfulModeCommands,
+    ...OutOfFocusWarningCommands,
+    ...ThemesCommands,
+    ...CustomThemeCommands,
+    ...CustomThemesListCommands,
+    ...RandomThemeCommands,
+    ...DifficultyCommands,
+    ...CaretStyleCommands,
+    ...PaceCaretModeCommands,
+    ...PaceCaretStyleCommands,
+    ...RepeatedPaceCommands,
+    ...TimerStyleCommands,
+    ...TimerColorCommands,
+    ...TimerOpacityCommands,
+    ...HighlightModeCommands,
+    ...TapeModeCommands,
+    ...ShowAverageCommands,
+    ...LanguagesCommands,
+    ...BritishEnglishCommands,
+    ...FunboxCommands,
+    ...LayoutsCommands,
+    ...KeymapModeCommands,
+    ...KeymapStyleCommands,
+    ...KeymapLegendStyleCommands,
+    ...KeymapLayoutsCommands,
+    ...KeymapShowTopRowCommands,
+    ...FontFamilyCommands,
+    ...PageWidthCommands,
+    ...BailOutCommands,
+    ...LoadChallengeCommands,
+    ...EnableAdsCommands,
+    ...PractiseWordsCommands,
+    ...CopyWordsToClipboardCommands,
+    ...MonkeyPowerLevelCommands,
+    ...ResultSavingCommands,
     {
       id: "randomizeTheme",
       display: "Next random theme",
@@ -307,72 +211,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         return Config.randomTheme !== "off";
       },
     },
-    {
-      id: "changeDifficulty",
-      display: "Difficulty...",
-      icon: "fa-star",
-      subgroup: DifficultyCommands,
-    },
-    {
-      id: "changeCaretStyle",
-      display: "Caret style...",
-      icon: "fa-i-cursor",
-      subgroup: CaretStyleCommands,
-    },
-    {
-      id: "changePaceCaret",
-      display: "Pace caret mode...",
-      icon: "fa-i-cursor",
-      subgroup: PaceCaretModeCommands,
-    },
-    {
-      id: "changePaceCaretStyle",
-      display: "Pace caret style...",
-      icon: "fa-i-cursor",
-      subgroup: PaceCaretStyleCommands,
-    },
-    {
-      id: "changeRepeatedPace",
-      display: "Repeated pace...",
-      icon: "fa-i-cursor",
-      subgroup: RepeatedPaceCommands,
-    },
-    {
-      id: "changeTimerStyle",
-      display: "Timer/progress style...",
-      icon: "fa-clock",
-      subgroup: TimerStyleCommands,
-    },
-    {
-      id: "changeTimerColor",
-      display: "Timer/progress color...",
-      icon: "fa-clock",
-      subgroup: TimerColorCommands,
-    },
-    {
-      id: "changeTimerOpacity",
-      display: "Timer/progress opacity...",
-      icon: "fa-clock",
-      subgroup: TimerOpacityCommands,
-    },
-    {
-      id: "changeHighlightMode",
-      display: "Highlight mode...",
-      icon: "fa-highlighter",
-      subgroup: HighlightModeCommands,
-    },
-    {
-      id: "changeTapeMode",
-      display: "Tape mode...",
-      icon: "fa-tape",
-      subgroup: TapeModeCommands,
-    },
-    {
-      id: "changeShowAverage",
-      display: "Show average...",
-      icon: "fa-chart-bar",
-      subgroup: ShowAverageCommands,
-    },
+
     {
       id: "changeCustomBackground",
       display: "Custom background...",
@@ -386,66 +225,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setCustomBackground(input);
       },
     },
-    {
-      id: "changeLanguage",
-      display: "Language...",
-      icon: "fa-language",
-      subgroup: LanguagesCommands,
-    },
-    {
-      id: "changeBritishEnglish",
-      display: "British english...",
-      icon: "fa-language",
-      subgroup: BritishEnglishCommands,
-    },
-    {
-      id: "changeFunbox",
-      display: "Funbox...",
-      alias: "fun box",
-      icon: "fa-gamepad",
-      subgroup: FunboxCommands,
-    },
-    {
-      id: "changeLayout",
-      display: "Layout emulator...",
-      icon: "fa-keyboard",
-      subgroup: LayoutsCommands,
-    },
-    {
-      id: "toggleKeymap",
-      display: "Keymap mode...",
-      icon: "fa-keyboard",
-      alias: "keyboard",
-      subgroup: KeymapModeCommands,
-    },
-    {
-      id: "changeKeymapStyle",
-      display: "Keymap style...",
-      alias: "keyboard",
-      icon: "fa-keyboard",
-      subgroup: KeymapStyleCommands,
-    },
-    {
-      id: "changeKeymapLegendStyle",
-      display: "Keymap legend style...",
-      alias: "keyboard",
-      icon: "fa-keyboard",
-      subgroup: KeymapLegendStyleCommands,
-    },
-    {
-      id: "changeKeymapLayout",
-      display: "Keymap layout...",
-      alias: "keyboard",
-      icon: "fa-keyboard",
-      subgroup: KeymapLayoutsCommands,
-    },
-    {
-      id: "changeKeymapShowTopRow",
-      display: "Keymap show top row...",
-      alias: "keyboard",
-      icon: "fa-keyboard",
-      subgroup: KeymapShowTopRowCommands,
-    },
+
     {
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
@@ -478,18 +258,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         }, 0); //honestly no clue why it i need to wait for the next event loop to do this
       },
     },
-    {
-      id: "changeFontFamily",
-      display: "Font family...",
-      icon: "fa-font",
-      subgroup: FontFamilyCommands,
-    },
-    {
-      id: "changePageWidth",
-      display: "Page width...",
-      icon: "fa-arrows-alt-h",
-      subgroup: PageWidthCommands,
-    },
+
     {
       id: "nextTest",
       display: "Next test",
@@ -564,19 +333,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         Misc.toggleFullscreen();
       },
     },
-    ...BailOutCommands,
-    {
-      id: "loadChallenge",
-      display: "Load challenge...",
-      icon: "fa-award",
-      subgroup: LoadChallengeCommands,
-    },
-    {
-      id: "setEnableAds",
-      display: "Enable ads...",
-      icon: "fa-ad",
-      subgroup: EnableAdsCommands,
-    },
+
     {
       id: "joinDiscord",
       display: "Join the Discord server",
@@ -594,15 +351,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
           withSameWordset: true,
         });
       },
-      available: (): boolean => {
-        return TestUI.resultVisible;
-      },
-    },
-    {
-      id: "practiseWords",
-      display: "Practice words...",
-      icon: "fa-exclamation-triangle",
-      subgroup: PractiseWordsCommands,
       available: (): boolean => {
         return TestUI.resultVisible;
       },
@@ -650,12 +398,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
-      id: "copyWordsToClipboard",
-      display: "Copy words to clipboard",
-      icon: "fa-copy",
-      subgroup: CopyWordsToClipboardCommands,
-    },
-    {
       id: "importSettingsJSON",
       display: "Import settings JSON",
       icon: "fa-cog",
@@ -687,14 +429,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
-      id: "monkeyPower",
-      display: "Power mode...",
-      alias: "powermode",
-      icon: "fa-egg",
-      visible: false,
-      subgroup: MonkeyPowerLevelCommands,
-    },
-    {
       id: "watchVideoAd",
       display: "Watch video ad",
       alias: "support donate",
@@ -711,7 +445,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         ShareTestSettingsPopup.show();
       },
     },
-    ...ResultSavingCommands,
     {
       id: "clearSwCache",
       display: "Clear SW cache",
