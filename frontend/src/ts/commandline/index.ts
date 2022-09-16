@@ -245,7 +245,7 @@ function trigger(command: string): void {
           obj.beforeSubgroup();
         }
         CommandlineLists.current.push(
-          obj.subgroup as MonkeyTypes.CommandsGroup
+          obj.subgroup as MonkeyTypes.CommandsSubgroup
         );
         show();
       } else {
@@ -265,9 +265,9 @@ function trigger(command: string): void {
 //todo rewrite this mess
 function addChildCommands(
   unifiedCommands: MonkeyTypes.Command[],
-  commandItem: MonkeyTypes.Command | MonkeyTypes.CommandsGroup,
+  commandItem: MonkeyTypes.Command | MonkeyTypes.CommandsSubgroup,
   parentCommandDisplay = "",
-  parentCommand?: MonkeyTypes.CommandsGroup
+  parentCommand?: MonkeyTypes.CommandsSubgroup
 ): void {
   let commandItemDisplay = (commandItem as MonkeyTypes.Command).display.replace(
     /\s?\.\.\.$/g,
@@ -295,17 +295,17 @@ function addChildCommands(
     try {
       (
         (commandItem as MonkeyTypes.Command)
-          ?.subgroup as MonkeyTypes.CommandsGroup
+          ?.subgroup as MonkeyTypes.CommandsSubgroup
       ).list?.forEach((cmd) => {
-        (commandItem as MonkeyTypes.CommandsGroup).configKey = (
+        (commandItem as MonkeyTypes.CommandsSubgroup).configKey = (
           (commandItem as MonkeyTypes.Command)
-            .subgroup as MonkeyTypes.CommandsGroup
+            .subgroup as MonkeyTypes.CommandsSubgroup
         ).configKey;
         addChildCommands(
           unifiedCommands,
           cmd,
           commandItemDisplay,
-          commandItem as MonkeyTypes.CommandsGroup
+          commandItem as MonkeyTypes.CommandsSubgroup
         );
       });
       // commandItem.exec();

@@ -652,7 +652,7 @@ declare namespace MonkeyTypes {
   interface Command {
     id: string;
     display: string;
-    subgroup?: CommandsGroup | boolean;
+    subgroup?: CommandsSubgroup;
     found?: boolean;
     icon?: string;
     noIcon?: boolean;
@@ -670,7 +670,7 @@ declare namespace MonkeyTypes {
     shouldFocusTestUI?: boolean;
   }
 
-  interface CommandsGroup {
+  interface CommandsSubgroup {
     title: string;
     configKey?: keyof Config;
     list: Command[];
