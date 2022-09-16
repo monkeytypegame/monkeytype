@@ -152,12 +152,7 @@ function canBailOut(): boolean {
 export const commands: MonkeyTypes.CommandsGroup = {
   title: "",
   list: [
-    {
-      id: "changePunctuation",
-      display: "Punctuation...",
-      icon: "fa-at",
-      subgroup: PunctuationCommands,
-    },
+    ...PunctuationCommands,
     {
       id: "changeMode",
       display: "Mode...",
