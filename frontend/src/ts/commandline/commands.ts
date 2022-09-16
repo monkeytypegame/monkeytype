@@ -59,9 +59,7 @@ import KeymapLegendStyleCommands from "./lists/keymap-legend-style";
 import KeymapShowTopRowCommands from "./lists/keymap-show-top-row";
 import PageWidthCommands from "./lists/page-width";
 import EnableAdsCommands from "./lists/enable-ads";
-import PractiseWordsCommands from "./lists/practise-words";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
-import CopyWordsToClipboardCommands from "./lists/copy-words-to-clipboard";
 import BailOutCommands from "./lists/bail-out";
 import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
@@ -127,107 +125,63 @@ Misc.getChallengeList().then((challenges) => {
 export const commands: MonkeyTypes.CommandsSubgroup = {
   title: "",
   list: [
+    //result
+    ...ResultScreenCommands,
+
+    //test screen
     ...PunctuationCommands,
+    ...NumbersCommands,
     ...ModeCommands,
     ...TimeCommands,
     ...WordsCommands,
     ...QuoteLengthCommands,
+    {
+      id: "changeCustomModeText",
+      display: "Change custom text",
+      icon: "fa-align-left",
+      exec: (): void => {
+        CustomTextPopup.show();
+      },
+    },
+    {
+      id: "viewQuoteSearchPopup",
+      display: "Search for quotes",
+      icon: "fa-search",
+      exec: (): void => {
+        UpdateConfig.setMode("quote");
+        $("#quote-search-button").trigger("click");
+      },
+      shouldFocusTestUI: false,
+    },
+    ...BailOutCommands,
+    ...LoadChallengeCommands,
+    {
+      id: "shareTestSettings",
+      display: "Share test settings",
+      icon: "fa-share",
+      exec: async (): Promise<void> => {
+        ShareTestSettingsPopup.show();
+      },
+    },
+
+    //account
     ...TagsCommands,
     ...PresetsCommands,
-    ...ConfidenceModeCommands,
-    ...StopOnErrorCommands,
-    ...NumbersCommands,
-    ...SmoothCaretCommands,
+    ...ResultSavingCommands,
+
+    //behavior
+    ...DifficultyCommands,
     ...QuickRestartCommands,
     ...RepeatQuotesCommands,
-    ...LiveWpmCommands,
-    ...LiveAccCommands,
-    ...LiveBurstCommands,
-    ...ShowTimerCommands,
-    ...KeyTipsCommands,
-    ...FreedomModeCommands,
-    ...StrictSpaceCommands,
     ...BlindModeCommands,
     ...ShowWordsHistoryCommands,
-    ...IndicateTyposCommands,
-    ...HideExtraLettersCommands,
-    ...QuickEndCommands,
     ...SingleListCommandlineCommands,
-    ...CapsLockWarningCommands,
     ...MinWpmCommands,
     ...MinAccCommands,
     ...MinBurstCommands,
-    ...OppositeShiftModeCommands,
-    ...SoundOnClickCommands,
-    ...SoundOnErrorCommands,
-    ...SoundVolumeCommands,
-    ...FlipTestColorsCommands,
-    ...SmoothLineScrollCommands,
-    ...AlwaysShowDecimalCommands,
-    ...AlwaysShowCpmCommands,
-    ...StartGraphsAtZeroCommands,
-    ...LazyModeCommands,
-    ...ShowAllLinesCommands,
-    ...ColorfulModeCommands,
-    ...OutOfFocusWarningCommands,
-    ...ThemesCommands,
-    ...CustomThemeCommands,
-    ...CustomThemesListCommands,
-    ...RandomThemeCommands,
-    ...DifficultyCommands,
-    ...CaretStyleCommands,
-    ...PaceCaretModeCommands,
-    ...PaceCaretStyleCommands,
-    ...RepeatedPaceCommands,
-    ...TimerStyleCommands,
-    ...TimerColorCommands,
-    ...TimerOpacityCommands,
-    ...HighlightModeCommands,
-    ...TapeModeCommands,
-    ...ShowAverageCommands,
-    ...LanguagesCommands,
     ...BritishEnglishCommands,
+    ...LanguagesCommands,
     ...FunboxCommands,
-    ...LayoutsCommands,
-    ...KeymapModeCommands,
-    ...KeymapStyleCommands,
-    ...KeymapLegendStyleCommands,
-    ...KeymapLayoutsCommands,
-    ...KeymapShowTopRowCommands,
-    ...FontFamilyCommands,
-    ...FontSizeCommands,
-    ...PageWidthCommands,
-    ...BailOutCommands,
-    ...LoadChallengeCommands,
-    ...EnableAdsCommands,
-    ...PractiseWordsCommands,
-    ...CopyWordsToClipboardCommands,
-    ...MonkeyPowerLevelCommands,
-    ...ResultSavingCommands,
-    {
-      id: "randomizeTheme",
-      display: "Next random theme",
-      icon: "fa-random",
-      exec: (): Promise<void> => randomizeTheme(),
-      available: (): boolean => {
-        return Config.randomTheme !== "off";
-      },
-    },
-
-    {
-      id: "changeCustomBackground",
-      display: "Custom background...",
-      icon: "fa-image",
-      defaultValue: (): string => {
-        return Config.customBackground;
-      },
-      input: true,
-      exec: (input): void => {
-        if (!input) input = "";
-        UpdateConfig.setCustomBackground(input);
-      },
-    },
-
     {
       id: "changeCustomLayoutfluid",
       display: "Custom layoutfluid...",
@@ -245,26 +199,90 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
     },
 
-    ...NavigationCommands,
+    //input
+    ...FreedomModeCommands,
+    ...StrictSpaceCommands,
+    ...OppositeShiftModeCommands,
+    ...StopOnErrorCommands,
+    ...ConfidenceModeCommands,
+    ...QuickEndCommands,
+    ...IndicateTyposCommands,
+    ...HideExtraLettersCommands,
+    ...LazyModeCommands,
+    ...LayoutsCommands,
+
+    //sound
+    ...SoundVolumeCommands,
+    ...SoundOnClickCommands,
+    ...SoundOnErrorCommands,
+
+    //caret
+    ...SmoothCaretCommands,
+    ...CaretStyleCommands,
+    ...PaceCaretModeCommands,
+    ...RepeatedPaceCommands,
+    ...PaceCaretStyleCommands,
+
+    //appearence
+    ...TimerStyleCommands,
+    ...TimerColorCommands,
+    ...TimerOpacityCommands,
+    ...HighlightModeCommands,
+    ...TapeModeCommands,
+    ...SmoothLineScrollCommands,
+    ...ShowAllLinesCommands,
+    ...AlwaysShowCpmCommands,
+    ...AlwaysShowDecimalCommands,
+    ...StartGraphsAtZeroCommands,
+    ...FontSizeCommands,
+    ...FontFamilyCommands,
+    ...PageWidthCommands,
+    ...KeymapModeCommands,
+    ...KeymapStyleCommands,
+    ...KeymapLegendStyleCommands,
+    ...KeymapLayoutsCommands,
+    ...KeymapShowTopRowCommands,
+
+    //theme
+    ...FlipTestColorsCommands,
+    ...ColorfulModeCommands,
     {
-      id: "viewQuoteSearchPopup",
-      display: "Search for quotes",
-      icon: "fa-search",
-      exec: (): void => {
-        UpdateConfig.setMode("quote");
-        $("#quote-search-button").trigger("click");
+      id: "changeCustomBackground",
+      display: "Custom background...",
+      icon: "fa-image",
+      defaultValue: (): string => {
+        return Config.customBackground;
       },
-      shouldFocusTestUI: false,
+      input: true,
+      exec: (input): void => {
+        if (!input) input = "";
+        UpdateConfig.setCustomBackground(input);
+      },
     },
-    ...ResultScreenCommands,
+    ...RandomThemeCommands,
     {
-      id: "changeCustomModeText",
-      display: "Change custom text",
-      icon: "fa-align-left",
-      exec: (): void => {
-        CustomTextPopup.show();
+      id: "randomizeTheme",
+      display: "Next random theme",
+      icon: "fa-random",
+      exec: (): Promise<void> => randomizeTheme(),
+      available: (): boolean => {
+        return Config.randomTheme !== "off";
       },
     },
+    ...ThemesCommands,
+    ...CustomThemeCommands,
+    ...CustomThemesListCommands,
+
+    //showhide elements
+    ...LiveWpmCommands,
+    ...LiveAccCommands,
+    ...LiveBurstCommands,
+    ...ShowTimerCommands,
+    ...KeyTipsCommands,
+    ...OutOfFocusWarningCommands,
+    ...CapsLockWarningCommands,
+    ...ShowAverageCommands,
+    ...MonkeyPowerLevelCommands,
     {
       id: "toggleMonkey",
       display: "Toggle Monkey",
@@ -274,14 +292,12 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setMonkey(!Config.monkey);
       },
     },
-    {
-      id: "shareTestSettings",
-      display: "Share test settings",
-      icon: "fa-share",
-      exec: async (): Promise<void> => {
-        ShareTestSettingsPopup.show();
-      },
-    },
+
+    //danger zone
+    ...EnableAdsCommands,
+
+    //other
+    ...NavigationCommands,
     {
       id: "watchVideoAd",
       display: "Watch video ad",
