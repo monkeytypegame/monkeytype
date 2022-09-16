@@ -62,6 +62,8 @@ import EnableAdsCommands from "./lists/enable-ads";
 import PractiseWordsCommands from "./lists/practise-words";
 import MonkeyPowerLevelCommands from "./lists/monkey-power-level";
 import CopyWordsToClipboardCommands from "./lists/copy-words-to-clipboard";
+import BailOutCommands from "./lists/bail-out";
+import ResultSavingCommands from "./lists/result-saving";
 
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands, {
@@ -88,18 +90,14 @@ import KeymapLayoutsCommands, {
 
 import { Auth } from "../firebase";
 import Config, * as UpdateConfig from "../config";
-import * as CustomText from "../test/custom-text";
 import * as Misc from "../utils/misc";
 import * as TestLogic from "../test/test-logic";
-import * as TestInput from "../test/test-input";
 import * as TestUI from "../test/test-ui";
-import * as TestState from "../test/test-state";
 import { randomizeTheme } from "../controllers/theme-controller";
 import { navigate } from "../controllers/route-controller";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
-import * as ModesNotice from "../elements/modes-notice";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 
@@ -128,25 +126,6 @@ Misc.getChallengeList().then((challenges) => {
   updateLoadChallengeCommands(challenges);
 });
 
-function canBailOut(): boolean {
-  return (
-    (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      (CustomText.word >= 5000 || CustomText.word == 0)) ||
-    (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      CustomText.text.length >= 5000) ||
-    (Config.mode === "custom" &&
-      CustomText.isTimeRandom &&
-      (CustomText.time >= 3600 || CustomText.time == 0)) ||
-    (Config.mode === "words" && Config.words >= 5000) ||
-    Config.words === 0 ||
-    (Config.mode === "time" && (Config.time >= 3600 || Config.time === 0)) ||
-    Config.mode == "zen"
-  );
-}
-
 export const commands: MonkeyTypes.CommandsSubgroup = {
   title: "",
   list: [
@@ -172,18 +151,8 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...StrictSpaceCommands,
     ...BlindModeCommands,
     ...ShowWordsHistoryCommands,
-    {
-      id: "changeIndicateTypos",
-      display: "Indicate typos...",
-      icon: "fa-exclamation",
-      subgroup: IndicateTyposCommands,
-    },
-    {
-      id: "changeHideExtraLetters",
-      display: "Hide extra letters...",
-      icon: "fa-eye-slash",
-      subgroup: HideExtraLettersCommands,
-    },
+    ...IndicateTyposCommands,
+    ...HideExtraLettersCommands,
     {
       id: "changeQuickEnd",
       display: "Quick end...",
@@ -595,38 +564,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         Misc.toggleFullscreen();
       },
     },
-    {
-      id: "bailOut",
-      display: "Bail out...",
-      icon: "fa-running",
-      subgroup: {
-        title: "Are you sure...",
-        list: [
-          {
-            id: "bailOutNo",
-            display: "Nevermind",
-            available: (): boolean => {
-              return canBailOut();
-            },
-          },
-          {
-            id: "bailOutForSure",
-            display: "Yes, I am sure",
-            exec: (): void => {
-              TestInput.setBailout(true);
-              TestLogic.finish();
-            },
-            available: (): boolean => {
-              return canBailOut();
-            },
-          },
-        ],
-      },
-      visible: false,
-      available: (): boolean => {
-        return canBailOut();
-      },
-    },
+    ...BailOutCommands,
     {
       id: "loadChallenge",
       display: "Load challenge...",
@@ -773,35 +711,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         ShareTestSettingsPopup.show();
       },
     },
-    {
-      id: "setResultSaving",
-      display: "Result saving...",
-      icon: "fa-save",
-      alias: "results",
-      subgroup: {
-        title: "Result saving...",
-        list: [
-          {
-            id: "setResultSavingOff",
-            display: "off",
-            alias: "disabled",
-            exec: (): void => {
-              TestState.setSaving(false);
-              ModesNotice.update();
-            },
-          },
-          {
-            id: "setResultSavingOn",
-            display: "on",
-            alias: "enabled",
-            exec: (): void => {
-              TestState.setSaving(true);
-              ModesNotice.update();
-            },
-          },
-        ],
-      },
-    },
+    ...ResultSavingCommands,
     {
       id: "clearSwCache",
       display: "Clear SW cache",

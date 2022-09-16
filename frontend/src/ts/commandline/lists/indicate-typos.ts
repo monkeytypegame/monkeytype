@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Indicate typos...",
   configKey: "indicateTypos",
   list: [
@@ -30,5 +30,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeIndicateTypos",
+    display: "Indicate typos...",
+    icon: "fa-exclamation",
+    subgroup,
+  },
+];
 
 export default commands;

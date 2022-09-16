@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Hide extra letters...",
   configKey: "hideExtraLetters",
   list: [
@@ -22,5 +22,14 @@ const commands: MonkeyTypes.CommandsSubgroup = {
     },
   ],
 };
+
+const commands: MonkeyTypes.Command[] = [
+  {
+    id: "changeHideExtraLetters",
+    display: "Hide extra letters...",
+    icon: "fa-eye-slash",
+    subgroup,
+  },
+];
 
 export default commands;
