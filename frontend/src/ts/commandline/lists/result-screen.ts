@@ -83,6 +83,9 @@ const commands: MonkeyTypes.Command[] = [
     display: "Copy words to clipboard",
     icon: "fa-copy",
     subgroup: copyWords,
+    available: (): boolean => {
+      return TestUI.resultVisible;
+    },
   },
 ];
 export default commands;
