@@ -283,6 +283,15 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
+      id: "watchVideoAd",
+      display: "Watch video ad",
+      alias: "support donate",
+      icon: "fa-ad",
+      exec: (): void => {
+        VideoAdPopup.show();
+      },
+    },
+    {
       id: "importSettingsJSON",
       display: "Import settings JSON",
       icon: "fa-cog",
@@ -314,23 +323,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
-      id: "watchVideoAd",
-      display: "Watch video ad",
-      alias: "support donate",
-      icon: "fa-ad",
-      exec: (): void => {
-        VideoAdPopup.show();
-      },
-    },
-    {
-      id: "joinDiscord",
-      display: "Join the Discord server",
-      icon: "fa-users",
-      exec: (): void => {
-        window.open("https://discord.gg/monkeytype");
-      },
-    },
-    {
       id: "clearSwCache",
       display: "Clear SW cache",
       icon: "fa-cog",
@@ -348,6 +340,14 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-cog",
       exec: async (): Promise<void> => {
         alert(await caches.keys());
+      },
+    },
+    {
+      id: "joinDiscord",
+      display: "Join the Discord server",
+      icon: "fa-users",
+      exec: (): void => {
+        window.open("https://discord.gg/monkeytype");
       },
     },
   ],
