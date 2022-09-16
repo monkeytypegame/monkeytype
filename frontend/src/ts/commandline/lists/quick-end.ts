@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Quick end...",
   configKey: "quickEnd",
   list: [

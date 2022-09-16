@@ -1,7 +1,7 @@
 import * as Funbox from "../../test/funbox";
 import * as TestLogic from "../../test/test-logic";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Funbox...",
   configKey: "funbox",
   list: [

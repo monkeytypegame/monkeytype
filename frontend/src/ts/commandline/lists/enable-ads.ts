@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-export const commands: MonkeyTypes.CommandsGroup = {
+export const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Set enable ads...",
   configKey: "ads",
   list: [

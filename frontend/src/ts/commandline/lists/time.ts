@@ -1,7 +1,7 @@
 import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Change time config...",
   configKey: "time",
   list: [

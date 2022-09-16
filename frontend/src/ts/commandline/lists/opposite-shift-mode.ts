@@ -1,7 +1,7 @@
 import * as UpdateConfig from "../../config";
 import * as ModesNotice from "./../../elements/modes-notice";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Change opposite shift mode...",
   configKey: "oppositeShiftMode",
   list: [

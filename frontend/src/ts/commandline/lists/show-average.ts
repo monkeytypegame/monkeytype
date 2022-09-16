@@ -1,6 +1,6 @@
 import * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Show average...",
   configKey: "showAverage",
   list: [

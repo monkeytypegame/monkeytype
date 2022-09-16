@@ -5,7 +5,7 @@ import * as TagController from "../../controllers/tag-controller";
 import Config from "../../config";
 import * as PaceCaret from "../../test/pace-caret";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Change tags...",
   list: [],
 };

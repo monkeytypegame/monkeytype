@@ -2,7 +2,7 @@ import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Layout emulator...",
   configKey: "layout",
   list: [

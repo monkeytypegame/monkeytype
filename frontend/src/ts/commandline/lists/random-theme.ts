@@ -2,7 +2,7 @@ import * as UpdateConfig from "../../config";
 import { Auth } from "../../firebase";
 import * as Notifications from "../../elements/notifications";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Random theme...",
   configKey: "randomTheme",
   list: [

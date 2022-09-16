@@ -1,6 +1,6 @@
 import Config, * as UpdateConfig from "../../config";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Font family...",
   configKey: "fontFamily",
   list: [],

@@ -3,7 +3,7 @@ import { Auth } from "../../firebase";
 import * as DB from "../../db";
 import * as ThemeController from "../../controllers/theme-controller";
 
-export const commands: MonkeyTypes.CommandsGroup = {
+export const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Custom themes list...",
   // configKey: "customThemeId",
   list: [],

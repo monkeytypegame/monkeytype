@@ -2,7 +2,7 @@ import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
 
-export const commands: MonkeyTypes.CommandsGroup = {
+export const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Change keymap layout...",
   configKey: "keymapLayout",
   list: [

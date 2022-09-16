@@ -1,7 +1,7 @@
 import * as PractiseWords from "../../test/practise-words";
 import * as TestLogic from "../../test/test-logic";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Practice words...",
   list: [
     {

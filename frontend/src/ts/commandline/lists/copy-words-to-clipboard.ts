@@ -1,7 +1,7 @@
 import * as Misc from "../../utils/misc";
 import * as Notifications from "../../elements/notifications";
 
-const commands: MonkeyTypes.CommandsGroup = {
+const commands: MonkeyTypes.CommandsSubgroup = {
   title: "Are you sure...",
   list: [
     {
