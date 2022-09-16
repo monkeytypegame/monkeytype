@@ -149,16 +149,12 @@ function canBailOut(): boolean {
   );
 }
 
-export const commands: MonkeyTypes.CommandsGroup = {
+export const commands: MonkeyTypes.CommandsSubgroup = {
   title: "",
   list: [
     ...PunctuationCommands,
-    {
-      id: "changeMode",
-      display: "Mode...",
-      icon: "fa-bars",
-      subgroup: ModeCommands,
-    },
+    ...ModeCommands,
+
     {
       id: "changeTimeConfig",
       display: "Time...",
@@ -969,20 +965,22 @@ const lists = {
   tags: TagsCommands,
 };
 
-export function getList(listName: ListsObjectKeys): MonkeyTypes.CommandsGroup {
+export function getList(
+  listName: ListsObjectKeys
+): MonkeyTypes.CommandsSubgroup {
   return lists[listName];
 }
 
-export let current: MonkeyTypes.CommandsGroup[] = [];
+export let current: MonkeyTypes.CommandsSubgroup[] = [];
 
 current = [commands];
 
 export type ListsObjectKeys = keyof typeof lists;
 
-export function setCurrent(val: MonkeyTypes.CommandsGroup[]): void {
+export function setCurrent(val: MonkeyTypes.CommandsSubgroup[]): void {
   current = val;
 }
 
-export function pushCurrent(val: MonkeyTypes.CommandsGroup): void {
+export function pushCurrent(val: MonkeyTypes.CommandsSubgroup): void {
   current.push(val);
 }
