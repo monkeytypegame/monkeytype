@@ -326,6 +326,11 @@ function addChildCommands(
       ).icon;
     }
     if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
+    //@ts-ignore
+    if (parentCommand?.available) {
+      //@ts-ignore
+      tempCommandItem.available = parentCommand.available;
+    }
     unifiedCommands.push(tempCommandItem);
   }
 }
