@@ -469,31 +469,36 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
 };
 
 const lists = {
-  keymapLayouts: KeymapLayoutsCommands,
-  enableAds: EnableAdsCommands,
-  customThemesList: CustomThemesListCommands,
-  themes: ThemesCommands,
-  loadChallange: LoadChallengeCommands,
-  languages: LanguagesCommands,
-  difficulty: DifficultyCommands,
-  lazyMode: LazyModeCommands,
-  paceCaretMode: PaceCaretModeCommands,
-  showAverage: ShowAverageCommands,
-  minWpm: MinWpmCommands,
-  minAcc: MinAccCommands,
-  minBurst: MinBurstCommands,
-  funbox: FunboxCommands,
-  confidenceMode: ConfidenceModeCommands,
-  stopOnError: StopOnErrorCommands,
-  layouts: LayoutsCommands,
-  oppositeShiftMode: OppositeShiftModeCommands,
-  tags: TagsCommands,
+  keymapLayouts: KeymapLayoutsCommands[0].subgroup,
+  enableAds: EnableAdsCommands[0].subgroup,
+  customThemesList: CustomThemesListCommands[0].subgroup,
+  themes: ThemesCommands[0].subgroup,
+  loadChallange: LoadChallengeCommands[0].subgroup,
+  languages: LanguagesCommands[0].subgroup,
+  difficulty: DifficultyCommands[0].subgroup,
+  lazyMode: LazyModeCommands[0].subgroup,
+  paceCaretMode: PaceCaretModeCommands[0].subgroup,
+  showAverage: ShowAverageCommands[0].subgroup,
+  minWpm: MinWpmCommands[0].subgroup,
+  minAcc: MinAccCommands[0].subgroup,
+  minBurst: MinBurstCommands[0].subgroup,
+  funbox: FunboxCommands[0].subgroup,
+  confidenceMode: ConfidenceModeCommands[0].subgroup,
+  stopOnError: StopOnErrorCommands[0].subgroup,
+  layouts: LayoutsCommands[0].subgroup,
+  oppositeShiftMode: OppositeShiftModeCommands[0].subgroup,
+  tags: TagsCommands[0].subgroup,
 };
 
 export function getList(
   listName: ListsObjectKeys
 ): MonkeyTypes.CommandsSubgroup {
-  return lists[listName];
+  const list = lists[listName];
+  if (!list) {
+    Notifications.add(`List not found: ${listName}`, -1);
+    throw new Error(`List ${listName} not found`);
+  }
+  return list;
 }
 
 export let current: MonkeyTypes.CommandsSubgroup[] = [];
