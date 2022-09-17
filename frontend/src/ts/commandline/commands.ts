@@ -389,6 +389,12 @@ const lists = {
   layouts: LayoutsCommands[0].subgroup,
   oppositeShiftMode: OppositeShiftModeCommands[0].subgroup,
   tags: TagsCommands[0].subgroup,
+  mode: ModeCommands[0].subgroup,
+  time: TimeCommands[0].subgroup,
+  words: WordsCommands[0].subgroup,
+  quoteLength: QuoteLengthCommands[0].subgroup,
+  punctuation: PunctuationCommands[0].subgroup,
+  numbers: NumbersCommands[0].subgroup,
 };
 
 export function getList(

@@ -97,20 +97,20 @@ export function updateRoomConfig(): void {
   const room = Tribe.room;
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Mode" data-balloon-pos="up" commands="commandsMode">
+    <div class='group' aria-label="Mode" data-balloon-pos="up" commands="mode">
     <i class="fas fa-bars"></i>${room.config.mode}
     </div>
     `);
 
   if (room.config.mode === "time") {
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Time" data-balloon-pos="up" commands="commandsTimeConfig">
+    <div class='group' aria-label="Time" data-balloon-pos="up" commands="time">
     <i class="fas fa-clock"></i>${room.config.mode2}
     </div>
     `);
   } else if (room.config.mode === "words") {
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Words" data-balloon-pos="up" commands="commandsWordCount">
+    <div class='group' aria-label="Words" data-balloon-pos="up" commands="words">
     <i class="fas fa-font"></i>${room.config.mode2}
     </div>
     `);
@@ -128,7 +128,7 @@ export function updateRoomConfig(): void {
     }
 
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Quote length" data-balloon-pos="up" commands="commandsQuoteLengthConfig">
+    <div class='group' aria-label="Quote length" data-balloon-pos="up" commands="quoteLength">
     <i class="fas fa-quote-right"></i>${qstring}
     </div>
     `);
@@ -150,7 +150,7 @@ export function updateRoomConfig(): void {
     }
 
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="${t}" data-balloon-pos="up" data-balloon-break commands="commandsQuoteLengthConfig">
+    <div class='group' aria-label="${t}" data-balloon-pos="up" data-balloon-break commands="customText">
     <i class="fas fa-tools"></i>custom
     </div>
     `);
@@ -158,85 +158,70 @@ export function updateRoomConfig(): void {
 
   if (room.config.difficulty === "normal") {
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="commandsDifficulty">
+    <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="difficulty">
     <i class="far fa-star"></i>normal
     </div>
     `);
   } else if (room.config.difficulty === "expert") {
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="commandsDifficulty">
+    <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="difficulty">
     <i class="fas fa-star-half-alt"></i>expert
     </div>
     `);
   } else if (room.config.difficulty === "master") {
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="commandsDifficulty">
+    <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="difficulty">
     <i class="fas fa-star"></i>master
     </div>
     `);
   }
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Language" data-balloon-pos="up" commands="commandsLanguages">
+    <div class='group' aria-label="Language" data-balloon-pos="up" commands="languages">
     <i class="fas fa-globe-americas"></i>${room.config.language}
     </div>
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Punctuation" data-balloon-pos="up" commands="commandsPunctuation">
-    <span class="punc" style="font-weight: 900;
-      color: var(--main-color);
-      width: 1.25rem;
-      text-align: center;
-      display: inline-block;
-      margin-right: .5rem;
-      letter-spacing: -.1rem;">!?</span>${
-        room.config.punctuation ? "on" : "off"
-      }
+    <div class='group' aria-label="Punctuation" data-balloon-pos="up" commands="punctuation">
+    <i class="fas fa-at"></i>${room.config.punctuation ? "on" : "off"}
     </div>
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Numbers" data-balloon-pos="up" commands="commandsNumbers">
-    <span class="numbers" style="font-weight: 900;
-        color: var(--main-color);
-        width: 1.25rem;
-        text-align: center;
-        margin-right: .1rem;
-        display: inline-block;
-        margin-right: .5rem;
-        letter-spacing: -.1rem;">15</span>${room.config.numbers ? "on" : "off"}
+    <div class='group' aria-label="Numbers" data-balloon-pos="up" commands="numbers">
+    <i class="fas fa-hashtag"></i>${room.config.numbers ? "on" : "off"}
     </div>
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Funbox" data-balloon-pos="up" commands="commandsFunbox">
+    <div class='group' aria-label="Funbox" data-balloon-pos="up" commands="funbox">
     <i class="fas fa-gamepad"></i>${room.config.funbox}
     </div>
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Lazy mode" data-balloon-pos="up" commands="commandsLazyMode">
+    <div class='group' aria-label="Lazy mode" data-balloon-pos="up" commands="lazyMode">
     <i class="fas fa-couch"></i>${room.config.lazyMode ? "on" : "off"}
     </div>
     `);
 
   if (room.config.stopOnError === "off") {
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Stop on error" data-balloon-pos="up" commands="commandsStopOnError">
+    <div class='group' aria-label="Stop on error" data-balloon-pos="up" commands="stopOnError">
     <i class="fas fa-hand-paper"></i>off
     </div>
     `);
   } else {
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Stop on error" data-balloon-pos="up" commands="commandsStopOnError">
+    <div class='group' aria-label="Stop on error" data-balloon-pos="up" commands="stopOnError">
     <i class="fas fa-hand-paper"></i>stop on ${room.config.stopOnError}
     </div>
     `);
   }
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Min Wpm" data-balloon-pos="up" commands="commandsMinWpm">
+    <div class='group' aria-label="Min Wpm" data-balloon-pos="up" commands="minWpm">
     <i class="fas fa-bomb"></i>${room.config.minWpm}${
     room.config.minWpm !== "off" ? "wpm" : ""
   }
@@ -244,7 +229,7 @@ export function updateRoomConfig(): void {
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Min Acc" data-balloon-pos="up" commands="commandsMinAcc">
+    <div class='group' aria-label="Min Acc" data-balloon-pos="up" commands="minAcc">
     <i class="fas fa-bomb"></i>${room.config.minAcc}${
     room.config.minAcc !== "off" ? "%" : ""
   }
@@ -252,7 +237,7 @@ export function updateRoomConfig(): void {
     `);
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="Min Burst" data-balloon-pos="up" commands="commandsMinBurst">
+    <div class='group' aria-label="Min Burst" data-balloon-pos="up" commands="minBurst">
     <i class="fas fa-bomb"></i>${room.config.minBurst}${
     room.config.minBurst !== "off" ? "wpm" : ""
   }
