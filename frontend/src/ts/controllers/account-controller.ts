@@ -15,7 +15,6 @@ import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
 import * as PaceCaret from "../test/pace-caret";
-import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as URLHandler from "../utils/url-handler";
@@ -47,6 +46,7 @@ import {
   showFavoriteQuoteLength,
 } from "../test/test-config";
 import { navigate } from "./route-controller";
+import { update as updateTagsCommands } from "../commandline/lists/tags";
 
 export const gmailProvider = new GoogleAuthProvider();
 let canCall = true;
@@ -211,7 +211,7 @@ export async function getDataAndInit(): Promise<boolean> {
   }
   AccountButton.loading(false);
   ResultFilters.updateTags();
-  CommandlineLists.updateTagCommands();
+  updateTagsCommands();
   TagController.loadActiveFromLocalStorage();
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
