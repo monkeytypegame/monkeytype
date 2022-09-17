@@ -9,7 +9,7 @@ import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
 
 export function updateKeytips(): void {
-  const modifierKey = window.navigator.platform.includes("Mac")
+  const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
     ? "cmd"
     : "ctrl";
 
