@@ -162,6 +162,11 @@ declare namespace MonkeyTypes {
     amount?: number;
   }
 
+  interface FontObject {
+    name: string;
+    display?: string;
+  }
+
   interface FunboxObject {
     name: string;
     type: FunboxObjectType;
@@ -647,7 +652,7 @@ declare namespace MonkeyTypes {
   interface Command {
     id: string;
     display: string;
-    subgroup?: CommandsGroup | boolean;
+    subgroup?: CommandsSubgroup;
     found?: boolean;
     icon?: string;
     noIcon?: boolean;
@@ -655,7 +660,7 @@ declare namespace MonkeyTypes {
     alias?: string;
     input?: boolean;
     visible?: boolean;
-    defaultValue?: string;
+    defaultValue?: () => string;
     configValue?: string | number | boolean | number[];
     configValueMode?: string;
     exec?: (input?: string) => void;
@@ -665,10 +670,16 @@ declare namespace MonkeyTypes {
     shouldFocusTestUI?: boolean;
   }
 
-  interface CommandsGroup {
+  interface CommandsSubgroup {
     title: string;
     configKey?: keyof Config;
     list: Command[];
+  }
+
+  interface Theme {
+    name: string;
+    bgColor: string;
+    mainColor: string;
   }
 
   interface Quote {
