@@ -4,6 +4,7 @@ import * as TestUI from "../test/test-ui";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox";
+import * as TestConfig from "../test/test-config";
 import Page from "./page";
 import { updateTestPageAds } from "../controllers/ad-controller";
 
