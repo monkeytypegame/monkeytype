@@ -1421,7 +1421,9 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const stddev2 = Misc.stdDev(smoothedraw);
   const avg2 = Misc.mean(smoothedraw);
   const smoothConsistency = Misc.roundTo2(Misc.kogasa(stddev2 / avg2));
-  completedEvent.smoothConsistency = smoothConsistency;
+  completedEvent.smoothConsistency = isNaN(smoothConsistency)
+    ? 0
+    : smoothConsistency;
 
   //wpm consistency
   const stddev3 = Misc.stdDev(completedEvent.chartData.wpm ?? []);
