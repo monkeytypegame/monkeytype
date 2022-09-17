@@ -3,11 +3,10 @@ import * as Notifications from "../../elements/notifications";
 import * as TribeChat from "../tribe-chat";
 import * as CustomText from "../../test/custom-text";
 import * as TribeConfig from "../tribe-config";
-import * as Commandline from "../../elements/commandline";
-import * as CommandlineLists from "../../elements/commandline-lists";
 import * as TribeUserList from "../tribe-user-list";
 import * as TribeButtons from "../tribe-buttons";
-import { ListsObjectKeys } from "../../elements/commandline-lists";
+import * as CommandlineLists from "../../commandline/commands";
+import * as Commandline from "../../commandline/index";
 import tribeSocket from "../tribe-socket";
 
 export function reset(): void {
@@ -354,12 +353,9 @@ $(document).on(
     if (Tribe.getSelf()?.isLeader) {
       // let commands = eval($(e.currentTarget).attr("commands"));
       const commands = CommandlineLists.getList(
-        $(e.currentTarget).attr("commands") as ListsObjectKeys
+        $(e.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
       );
       if (commands != undefined) {
-        if ($(e.currentTarget).attr("commands") === "commandsTags") {
-          CommandlineLists.updateTagCommands();
-        }
         CommandlineLists.pushCurrent(commands);
         Commandline.show();
       }
