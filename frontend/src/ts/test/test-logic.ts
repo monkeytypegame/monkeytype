@@ -1429,7 +1429,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const stddev3 = Misc.stdDev(completedEvent.chartData.wpm ?? []);
   const avg3 = Misc.mean(completedEvent.chartData.wpm ?? []);
   const wpmConsistency = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
-  completedEvent.wpmConsistency = wpmConsistency;
+  completedEvent.wpmConsistency = isNaN(wpmConsistency) ? 0 : wpmConsistency;
 
   completedEvent.testDuration = parseFloat(stats.time.toString());
   completedEvent.afkDuration = TestStats.calculateAfkSeconds(
@@ -1519,7 +1519,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const completedEvent = buildCompletedEvent(difficultyFailed);
 
   function countUndefined(input: unknown): number {
-    if (typeof input === "undefined") {
+    if (typeof input === "number") {
+      return isNaN(input) ? 1 : 0;
+    } else if (typeof input === "undefined") {
       return 1;
     } else if (typeof input === "object" && input !== null) {
       return Object.values(input).reduce(
@@ -1531,13 +1533,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
+  let dontSave = false;
+
   if (countUndefined(completedEvent) > 0) {
     console.log(completedEvent);
     Notifications.add(
-      "Failed to save result: One of the result fields is undefined. Please report this",
+      "Failed to build result object: One of the fields is undefined or NaN",
       -1
     );
-    return;
+    dontSave = true;
   }
 
   ///////// completed event ready
@@ -1548,7 +1552,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (TestInput.bailout) afkDetected = false;
 
   let tooShort = false;
-  let dontSave = false;
   //fail checks
   if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, 1);
