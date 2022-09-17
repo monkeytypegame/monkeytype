@@ -1,4 +1,7 @@
 .pageTribe {
+  height: 100%;
+  display: grid;
+  align-items: center;
   .tribePage {
     &.preloader {
       display: grid;
