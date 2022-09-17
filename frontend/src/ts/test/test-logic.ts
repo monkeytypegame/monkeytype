@@ -62,6 +62,8 @@ import * as Random from "../utils/random";
 
 export const glarsesMode = false;
 
+let resolve: TribeTypes.ResultResolve = {};
+
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
@@ -1574,7 +1576,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let afkDetected = kps.every((second) => second.afk);
   if (TestInput.bailout) afkDetected = false;
 
-  const resolve: TribeTypes.ResultResolve = {};
+  resolve = {};
 
   let tooShort = false;
   let dontSave = false;
