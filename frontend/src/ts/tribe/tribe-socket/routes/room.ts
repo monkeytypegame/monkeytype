@@ -212,7 +212,7 @@ function progressUpdate(
     roomMaxWpm: number;
   }) => void
 ): void {
-  Socket.on("room_chat_message", callback);
+  Socket.on("room_progress_update", callback);
 }
 
 function userResult(
