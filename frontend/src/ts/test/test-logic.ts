@@ -1830,18 +1830,20 @@ async function saveResult(
 
   Result.hideCrown();
 
-  completedEvent._id = response.data.insertedId;
-  if (response?.data?.isPb) {
-    completedEvent.isPb = true;
-  }
+  if (response?.data?.insertedId) {
+    completedEvent._id = response.data.insertedId;
+    if (response?.data?.isPb) {
+      completedEvent.isPb = true;
+    }
 
-  DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats(
-    TestStats.restartCount + 1,
-    completedEvent.testDuration +
-      completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration
-  );
+    DB.saveLocalResult(completedEvent);
+    DB.updateLocalStats(
+      TestStats.restartCount + 1,
+      completedEvent.testDuration +
+        completedEvent.incompleteTestSeconds -
+        completedEvent.afkDuration
+    );
+  }
 
   AnalyticsController.log("testCompleted");
 
@@ -1897,7 +1899,7 @@ async function saveResult(
 
   resolve.login = true;
   resolve.saved = true;
-  resolve.isPb = response.data.isPb;
+  resolve.isPb = response?.data?.isPb ?? false;
 
   resolveTestSavePromise(resolve);
 
