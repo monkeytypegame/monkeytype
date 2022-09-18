@@ -35,7 +35,7 @@ const ONE_HOUR_MS = 1000 * ONE_HOUR_SECONDS;
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
   windowMs: ONE_HOUR_MS,
-  max: 2000 * REQUEST_MULTIPLIER,
+  max: 1000 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: (_req, _res, _next, _options): void => {
     throw new MonkeyError(
@@ -278,7 +278,7 @@ export const userGet = rateLimit({
 
 export const userSignup = rateLimit({
   windowMs: 24 * ONE_HOUR_MS, // 1 day
-  max: 3 * REQUEST_MULTIPLIER,
+  max: 2 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: customHandler,
 });
