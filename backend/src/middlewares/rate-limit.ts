@@ -40,7 +40,7 @@ export const rootRateLimiter = rateLimit({
   handler: (_req, _res, _next, _options): void => {
     throw new MonkeyError(
       429,
-      "Maximum API request limit reached. Please try again later."
+      "Maximum API request (root) limit reached. Please try again later."
     );
   },
 });
@@ -279,7 +279,7 @@ export const userGet = rateLimit({
 export const userSignup = rateLimit({
   windowMs: 24 * ONE_HOUR_MS, // 1 day
   max: 3 * REQUEST_MULTIPLIER,
-  keyGenerator: getKeyWithUid,
+  keyGenerator: getKey,
   handler: customHandler,
 });
 
