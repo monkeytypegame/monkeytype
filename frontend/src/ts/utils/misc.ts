@@ -67,17 +67,14 @@ export function isColorDark(hex: string): boolean {
   return hsl.lgt < 50;
 }
 
-interface Theme {
-  name: string;
-  bgColor: string;
-  mainColor: string;
-}
-
-let themesList: Theme[] = [];
-export async function getThemesList(): Promise<Theme[]> {
+let themesList: MonkeyTypes.Theme[] = [];
+export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
   if (themesList.length == 0) {
     return $.getJSON("/./themes/_list.json", function (data) {
-      const list = data.sort(function (a: Theme, b: Theme) {
+      const list = data.sort(function (
+        a: MonkeyTypes.Theme,
+        b: MonkeyTypes.Theme
+      ) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -92,8 +89,8 @@ export async function getThemesList(): Promise<Theme[]> {
   }
 }
 
-let sortedThemesList: Theme[] = [];
-export async function getSortedThemesList(): Promise<Theme[]> {
+let sortedThemesList: MonkeyTypes.Theme[] = [];
+export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
   if (sortedThemesList.length === 0) {
     if (themesList.length === 0) {
       await getThemesList();
@@ -162,16 +159,14 @@ export async function getLayout(
   return layoutsList[layoutName];
 }
 
-interface Font {
-  name: string;
-  display?: string;
-}
-
-let fontsList: Font[] = [];
-export async function getFontsList(): Promise<Font[]> {
+let fontsList: MonkeyTypes.FontObject[] = [];
+export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
   if (fontsList.length === 0) {
     return $.getJSON("/./fonts/_list.json", function (data) {
-      fontsList = data.sort(function (a: Font, b: Font) {
+      fontsList = data.sort(function (
+        a: MonkeyTypes.FontObject,
+        b: MonkeyTypes.FontObject
+      ) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;

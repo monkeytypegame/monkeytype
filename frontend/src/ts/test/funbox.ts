@@ -28,7 +28,6 @@ function rememberSetting(
 }
 
 function loadMemory(): void {
-  Notifications.add("Reverting funbox settings", 0);
   Object.keys(settingsMemory).forEach((setting) => {
     settingsMemory[setting].setFunction(settingsMemory[setting].value, true);
   });
@@ -99,8 +98,8 @@ export function setFunbox(
   mode: MonkeyTypes.FunboxObjectType | null
 ): boolean {
   modeSaved = mode;
+  loadMemory();
   UpdateConfig.setFunbox(funbox, false);
-  if (funbox === "none") loadMemory();
   return true;
 }
 

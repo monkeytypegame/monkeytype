@@ -63,7 +63,7 @@ export async function updatePosition(): Promise<void> {
   ] as HTMLElement;
 
   const previousLetter: HTMLElement = currentWordNodeList[
-    currentLetterIndex - 1
+    Math.min(currentLetterIndex - 1, currentWordNodeList.length - 1)
   ] as HTMLElement;
 
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
