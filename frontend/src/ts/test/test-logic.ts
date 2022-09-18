@@ -1674,6 +1674,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Result.updateTodayTracker();
   }
 
+  if (completedEvent.bailedOut === true) {
+    resolve.bailedOut = true;
+  }
+
   if (Auth.currentUser == null) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
     $(".pageTest #result #reportQuoteButton").addClass("hidden");
@@ -1759,6 +1763,19 @@ async function saveResult(
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, 3, "Notice");
     AccountButton.loading(false);
+    resolve.saved = false;
+    resolve.saveFailedMessage = "Disabled by user";
+    resolveTestSavePromise(resolve);
+    TribeResults.send({
+      wpm: completedEvent.wpm,
+      raw: completedEvent.rawWpm,
+      acc: completedEvent.acc,
+      consistency: completedEvent.consistency,
+      testDuration: completedEvent.testDuration,
+      charStats: completedEvent.charStats,
+      chartData: completedEvent.chartData,
+      resolve: await testSavePromise,
+    });
     return;
   }
 
@@ -1782,6 +1799,17 @@ async function saveResult(
     resolve.login = true;
     resolve.saved = false;
     resolve.saveFailedMessage = response.message;
+    resolveTestSavePromise(resolve);
+    TribeResults.send({
+      wpm: completedEvent.wpm,
+      raw: completedEvent.rawWpm,
+      acc: completedEvent.acc,
+      consistency: completedEvent.consistency,
+      testDuration: completedEvent.testDuration,
+      charStats: completedEvent.charStats,
+      chartData: completedEvent.chartData,
+      resolve: await testSavePromise,
+    });
     console.log("Error saving result", completedEvent);
     return Notifications.add("Failed to save result: " + response.message, -1);
   }

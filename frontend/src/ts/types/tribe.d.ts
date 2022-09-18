@@ -34,6 +34,7 @@ declare namespace TribeTypes {
     tooShort?: boolean;
     saveFailedMessage?: string;
     isPb?: boolean;
+    bailedOut?: boolean;
   }
 
   interface RoomJoin {
