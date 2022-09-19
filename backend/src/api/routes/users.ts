@@ -420,7 +420,7 @@ const requireProfilesEnabled = validateConfiguration({
 });
 
 router.get(
-  "/:uiOrName/profile",
+  "/:uidOrName/profile",
   requireProfilesEnabled,
   authenticateRequest({
     isPublic: true,
@@ -432,7 +432,7 @@ router.get(
       uidOrName: joi.string().required(),
     },
     query: {
-      uid: joi.string().allow([""]),
+      uid: joi.string().allow(""),
     },
   }),
   asyncHandler(UserController.getProfile)
