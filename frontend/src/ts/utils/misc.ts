@@ -697,6 +697,28 @@ export function findGetParameter(
   return result;
 }
 
+export function checkIfGetParameterExists(
+  parameterName: string,
+  getOverride?: string
+): boolean {
+  let result = false;
+  let tmp = [];
+
+  let search = location.search;
+  if (getOverride) {
+    search = getOverride;
+  }
+
+  search
+    .substr(1)
+    .split("&")
+    .forEach(function (item) {
+      tmp = item.split("=");
+      if (tmp[0] === parameterName) result = true;
+    });
+  return result;
+}
+
 export function objectToQueryString<T extends string | number | boolean>(
   obj: Record<string, T | T[]>
 ): string {
