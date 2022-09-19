@@ -175,6 +175,21 @@ export async function getUser(
   return user;
 }
 
+export async function getUserByName(
+  name: string,
+  stack: string
+): Promise<MonkeyTypes.User> {
+  const user = (
+    await getUsersCollection()
+      .find({ name })
+      .collation({ locale: "en", strength: 1 })
+      .limit(1)
+      .toArray()
+  )[0];
+  if (!user) throw new MonkeyError(404, "User not found", stack);
+  return user;
+}
+
 export async function isDiscordIdAvailable(
   discordId: string
 ): Promise<boolean> {
