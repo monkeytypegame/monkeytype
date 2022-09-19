@@ -3,6 +3,7 @@ import Page from "./page";
 import * as Profile from "../elements/profile";
 import * as PbTables from "../account/pb-tables";
 import * as Notifications from "../elements/notifications";
+import { checkIfGetParameterExists } from "../utils/misc";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");
@@ -126,8 +127,16 @@ function reset(): void {
       </div>`);
 }
 
-async function update(userId: string): Promise<void> {
-  const response = await Ape.users.getProfile(userId ?? "");
+async function update(userIdOrName: string): Promise<void> {
+  if (userIdOrName === "") {
+    Notifications.add("TODO no user found", -1);
+    return;
+  }
+
+  const response =
+    checkIfGetParameterExists("uid") === true
+      ? await Ape.users.getProfileByUid(userIdOrName)
+      : await Ape.users.getProfileByName(userIdOrName);
   $(".page.pageProfile .preloader").addClass("hidden");
 
   if (response.status !== 200) {
@@ -151,7 +160,7 @@ export const page = new Page(
   },
   async (params) => {
     reset();
-    update(params?.["uid"] ?? "");
+    update(params?.["uidOrName"] ?? "");
   },
   async () => {
     //
