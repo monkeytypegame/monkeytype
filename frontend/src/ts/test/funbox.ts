@@ -121,7 +121,17 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     funbox = Config.funbox;
   }
 
-  const funboxInfo = await Misc.getFunbox(funbox);
+  // if (funbox === "none") {
+  reset();
+  $("#wordsWrapper").removeClass("hidden");
+  // }
+
+  if (funbox === "none") {
+    mode = null;
+  } else {
+    const list = await Misc.getFunboxList();
+    mode = list.filter((f) => f.name === funbox)[0].type;
+  }
 
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
@@ -138,32 +148,39 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
   }
   if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
-    if (funboxInfo?.affectsWordGeneration === true) {
+    if (mode === "wordlist" || mode === "modificator") {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
           Config.mode
         )} mode does not support the ${funbox} funbox`,
         0
       );
-      UpdateConfig.setFunbox("none", true);
-      await clear();
-      return;
+      UpdateConfig.setMode("time", true);
+    }
+    if (mode === "quote") {
+      Notifications.add(
+        `${Misc.capitalizeFirstLetterOfEachWord(
+          Config.mode
+        )} mode does not support the ${funbox} funbox`,
+        0
+      );
+      UpdateConfig.setMode("time", true);
     }
   }
-  // if (funbox === "none") {
-
-  reset();
-
-  $("#wordsWrapper").removeClass("hidden");
-  // }
-  if (funbox === "none" && mode === undefined) {
-    mode = null;
-  } else if (
-    (funbox !== "none" && mode === undefined) ||
-    (funbox !== "none" && mode === null)
+  if (
+    (Config.time === 0 && Config.mode === "time") ||
+    (Config.words === 0 && Config.mode === "words")
   ) {
-    const list = await Misc.getFunboxList();
-    mode = list.filter((f) => f.name === funbox)[0].type;
+    if (mode === "quote") {
+      Notifications.add(
+        `${Misc.capitalizeFirstLetterOfEachWord(
+          Config.mode
+        )} mode with value 0 does not support the ${funbox} funbox`,
+        0
+      );
+      if (Config.mode === "time") UpdateConfig.setTimeConfig(15, true);
+      if (Config.mode === "words") UpdateConfig.setWordCount(10, true);
+    }
   }
 
   ManualRestart.set();
@@ -183,7 +200,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     ) {
       UpdateConfig.setHighlightMode("letter", true);
     }
-  } else if (mode === "script") {
+  } else if (mode !== null) {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
       UpdateConfig.setKeymapMode("off", true);
