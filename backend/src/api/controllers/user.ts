@@ -431,6 +431,13 @@ export async function getProfile(
 ): Promise<MonkeyResponse> {
   const { uid } = req.params;
 
+  const hasUidInQuery =
+    Object.keys(req.query).filter((key) => key == "uid").length == 1;
+
+  const user = hasUidInQuery
+    ? await UserDAL.getUser(uid, "get user profile")
+    : await UserDAL.getUserByName(uid, "get user profile");
+
   const {
     name,
     banned,
@@ -445,7 +452,7 @@ export async function getProfile(
     discordAvatar,
     xp,
     streak,
-  } = await UserDAL.getUser(uid, "get user profile");
+  } = user;
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
   const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
