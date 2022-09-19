@@ -18,6 +18,10 @@ export async function createNewUser(
   const { name } = req.body;
   const { email, uid } = req.ctx.decodedToken;
 
+  if (email.endsWith("@tidal.lol")) {
+    throw new MonkeyError(400, "Invalid domain");
+  }
+
   const available = await UserDAL.isNameAvailable(name);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");

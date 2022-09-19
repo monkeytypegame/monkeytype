@@ -29,6 +29,7 @@ declare namespace MonkeyTypes {
       };
     };
     users: {
+      signUp: boolean;
       autoBan: {
         enabled: boolean;
         maxCount: number;
