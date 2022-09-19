@@ -176,7 +176,7 @@ async function findByName(name: string): Promise<MonkeyTypes.User | undefined> {
 }
 
 export async function isNameAvailable(name: string): Promise<boolean> {
-  return findByName(name) === undefined;
+  return (await findByName(name)) === undefined;
 }
 
 export async function getUserByName(
