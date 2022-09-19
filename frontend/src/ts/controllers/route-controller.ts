@@ -101,7 +101,7 @@ const routes: Route[] = [
     },
   },
   {
-    path: "/profile/:uid",
+    path: "/profile/:uidOrName",
     load: (params): void => {
       PageController.change(PageProfile.page, {
         force: true,
@@ -112,7 +112,7 @@ const routes: Route[] = [
 ];
 
 export function navigate(
-  url = window.location.pathname,
+  url = window.location.pathname + window.location.search,
   options = {} as NavigateOptions
 ): void {
   if (
