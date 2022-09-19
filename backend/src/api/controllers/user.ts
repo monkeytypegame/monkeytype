@@ -429,14 +429,14 @@ export async function removeFavoriteQuote(
 export async function getProfile(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { uid } = req.params;
+  const { uidOrName } = req.params;
 
   const hasUidInQuery =
     Object.keys(req.query).filter((key) => key == "uid").length == 1;
 
   const user = hasUidInQuery
-    ? await UserDAL.getUser(uid, "get user profile")
-    : await UserDAL.getUserByName(uid, "get user profile");
+    ? await UserDAL.getUser(uidOrName, "get user profile")
+    : await UserDAL.getUserByName(uidOrName, "get user profile");
 
   const {
     name,
