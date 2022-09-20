@@ -933,10 +933,10 @@ export async function swapElements(
   el1: JQuery,
   el2: JQuery,
   totalDuration: number,
-  callback = function (): Promise<void> {
+  callback = async function (): Promise<void> {
     return Promise.resolve();
   },
-  middleCallback = function (): Promise<void> {
+  middleCallback = async function (): Promise<void> {
     return Promise.resolve();
   }
 ): Promise<boolean | undefined> {
@@ -1210,6 +1210,6 @@ export function abbreviateNumber(num: number): string {
   return (num / Math.pow(1000, exp)).toFixed(1) + pre;
 }
 
-export function sleep(ms: number): Promise<void> {
+export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

@@ -130,7 +130,7 @@ async function updateGraph(): Promise<void> {
 
   resultScaleOptions["wpm"].max = maxChartVal;
   resultScaleOptions["raw"].max = maxChartVal;
-  resultScaleOptions["error"].max = Math.max(...result.chartData.err) + 1;
+  resultScaleOptions["error"].max = Math.max(...result.chartData.err);
 }
 
 export async function updateGraphPBLine(): Promise<void> {
