@@ -54,6 +54,10 @@
     ]
   },
   {
+    "name": "friulian",
+    "languages": ["friulian"]
+  },
+  {
     "name": "latin",
     "languages": ["latin"]
   },
