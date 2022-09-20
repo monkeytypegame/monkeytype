@@ -789,4 +789,9 @@
     "bgColor": "#d4d4d4",
     "mainColor": "#a0a0a0"
   }
+  ,{
+    "name": "cheesecake",
+    "bgColor": "#fdf0d5",
+    "mainColor": "#892948"
+  }
 ]
