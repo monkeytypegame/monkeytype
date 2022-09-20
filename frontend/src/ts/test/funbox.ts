@@ -107,6 +107,10 @@ export function toggleFunbox(
   funbox: string,
   mode: MonkeyTypes.FunboxObjectType
 ): boolean {
+  if (funbox == "none") {
+    setFunbox("none", null);
+    return true;
+  }
   loadMemory();
   const e = UpdateConfig.toggleFunbox(funbox, false);
   if (e === false || e === true) return false;

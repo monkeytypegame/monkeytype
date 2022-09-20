@@ -634,9 +634,11 @@ export function updateAuthSections(): void {
 
 function setActiveFunboxButton(): void {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
-  $(
-    `.pageSettings .section.funbox .button[funbox='${Config.funbox}']`
-  ).addClass("active");
+  Config.funbox.split("#").forEach((funbox) => {
+    $(`.pageSettings .section.funbox .button[funbox='${funbox}']`).addClass(
+      "active"
+    );
+  });
 }
 
 function refreshTagsSettingsSection(): void {

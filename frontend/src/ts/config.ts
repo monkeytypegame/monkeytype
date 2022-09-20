@@ -244,13 +244,19 @@ export function toggleFunbox(
   let r;
 
   const funboxArray = config.funbox.split("#");
+  if (funboxArray[0] == "none") funboxArray.splice(0, 1);
   if (!funboxArray.includes(funbox)) {
     funboxArray.push(funbox);
     config.funbox = funboxArray.sort().join("#");
     r = funboxArray.indexOf(funbox);
   } else {
     r = funboxArray.indexOf(funbox);
-    config.funbox = funboxArray.splice(r, 1).join("#");
+    funboxArray.splice(r, 1);
+    if (funboxArray.length == 0) {
+      config.funbox = "none";
+    } else {
+      config.funbox = funboxArray.join("#");
+    }
     r = -r - 1;
   }
   saveToLocalStorage("funbox", nosave);
