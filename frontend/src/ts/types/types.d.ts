@@ -178,7 +178,6 @@ declare namespace MonkeyTypes {
     type: FunboxObjectType;
     info: string;
     alias?: string;
-    affectsWordGeneration?: boolean;
   }
 
   interface CustomText {

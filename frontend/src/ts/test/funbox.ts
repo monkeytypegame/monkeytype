@@ -6,7 +6,7 @@ import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
 
-let modeSaved: MonkeyTypes.FunboxObjectType[] | null = null;
+let modeSaved: MonkeyTypes.FunboxObjectType[] = [];
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
@@ -93,11 +93,41 @@ export function toggleScript(...params: string[]): void {
   }
 }
 
+export function checkFunbox(
+  funbox: string,
+  mode: MonkeyTypes.FunboxObjectType
+): boolean {
+  if (funbox === "none") return true;
+  return !(
+    modeSaved?.includes(mode) ||
+    (mode == "quote" &&
+      (modeSaved?.includes("wordlist") ||
+        modeSaved?.includes("modificator"))) ||
+    ((mode == "wordlist" || mode == "modificator") &&
+      modeSaved?.includes("quote")) ||
+    (mode == "script" && modeSaved !== null) ||
+    modeSaved?.includes("script") ||
+    ((funbox == "capitals" || funbox == "rAnDoMcAsE") &&
+      (Config.funbox.includes("58008") ||
+        Config.funbox.includes("arrows") ||
+        Config.funbox.includes("ascii") ||
+        Config.funbox.includes("specials"))) ||
+    ((funbox == "58008" ||
+      funbox == "arrows" ||
+      funbox == "ascii" ||
+      funbox == "specials") &&
+      (Config.funbox.includes("capitals") ||
+        Config.funbox.includes("rAnDoMcAsE"))) ||
+    (funbox == "arrows" && Config.funbox.includes("nospace")) ||
+    (funbox == "nospace" && Config.funbox.includes("arrows"))
+  );
+}
+
 export function setFunbox(
   funbox: string,
   mode: MonkeyTypes.FunboxObjectType | null
 ): boolean {
-  modeSaved = mode ? [mode] : null;
+  modeSaved = mode ? [mode] : [];
   loadMemory();
   UpdateConfig.setFunbox(funbox, false);
   return true;
@@ -105,9 +135,13 @@ export function setFunbox(
 
 export function toggleFunbox(
   funbox: string,
-  mode: MonkeyTypes.FunboxObjectType
+  mode: MonkeyTypes.FunboxObjectType | null
 ): boolean {
-  if (funbox == "none") {
+  if (
+    funbox == "none" ||
+    mode === null ||
+    (!checkFunbox(funbox, mode) && !Config.funbox.includes(funbox))
+  ) {
     setFunbox("none", null);
     return true;
   }
@@ -115,7 +149,7 @@ export function toggleFunbox(
   const e = UpdateConfig.toggleFunbox(funbox, false);
   if (e === false || e === true) return false;
   if (e < 0) {
-    modeSaved?.splice(-e + 1, 1);
+    modeSaved?.splice(-e - 1, 1);
   } else {
     modeSaved?.splice(e, 0, mode);
   }
@@ -154,6 +188,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       mode[i] = list.filter((f) => f.name === funbox?.split("#")[i])[0].type;
     }
   }
+  modeSaved = mode;
 
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");

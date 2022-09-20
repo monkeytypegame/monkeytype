@@ -82,12 +82,12 @@
   },
   {
     "name": "plus_one",
-    "type": "script",
+    "type": "style",
     "info": "React quickly! Only one future word is visible."
   },
   {
     "name": "plus_two",
-    "type": "script",
+    "type": "style",
     "info": "Only two future words are visible."
   },
   {

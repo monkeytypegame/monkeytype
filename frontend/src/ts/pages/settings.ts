@@ -634,6 +634,19 @@ export function updateAuthSections(): void {
 
 function setActiveFunboxButton(): void {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
+  $(`.pageSettings .section.funbox .button`).removeClass("disabled");
+  Misc.getFunboxList().then((funboxModes) => {
+    funboxModes.forEach((funbox) => {
+      if (
+        !Funbox.checkFunbox(funbox.name, funbox.type) &&
+        !Config.funbox.includes(funbox.name)
+      ) {
+        $(
+          `.pageSettings .section.funbox .button[funbox='${funbox.name}']`
+        ).addClass("disabled");
+      }
+    });
+  });
   Config.funbox.split("#").forEach((funbox) => {
     $(`.pageSettings .section.funbox .button[funbox='${funbox}']`).addClass(
       "active"
