@@ -70,10 +70,9 @@
         "checksVoidReturn": false
       }
     ],
-    // "@typescript-eslint/no-floating-promises": "error"
     "@typescript-eslint/promise-function-async": "warn"
+    // "@typescript-eslint/no-floating-promises": "error" // consider adding these
     // "@typescript-eslint/strict-boolean-expressions": "warn",
-    // "@typescript-eslint/no-unnecessary-condition": "warn"
   },
   "overrides": [
     {
