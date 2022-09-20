@@ -90,7 +90,7 @@ export async function punctuateWord(
 
   const lastChar = Misc.getLastChar(previousWord);
 
-  if (Config.funbox === "58008") {
+  if (Config.funbox.split("#").includes("58008")) {
     if (currentWord.length > 3) {
       if (Math.random() < 0.5) {
         word = Misc.setCharAt(
@@ -347,7 +347,7 @@ export function startTest(): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  if (Config.funbox === "memory") {
+  if (Config.funbox.split("#").includes("memory")) {
     Funbox.resetMemoryTimer();
     $("#wordsWrapper").addClass("hidden");
   }
@@ -565,28 +565,29 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      if (Config.funbox === "arrows") {
+      if (Config.funbox.split("#").includes("arrows")) {
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
-      } else if (Config.funbox === "58008") {
+      } else if (Config.funbox.split("#").includes("58008")) {
         UpdateConfig.setNumbers(false, true);
-      } else if (Config.funbox === "specials") {
+      } else if (Config.funbox.split("#").includes("specials")) {
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
-      } else if (Config.funbox === "ascii") {
+      } else if (Config.funbox.split("#").includes("ascii")) {
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
       }
       if (
         options.withSameWordset &&
-        (Config.funbox === "plus_one" || Config.funbox === "plus_two")
+        (Config.funbox.split("#").includes("plus_one") ||
+          Config.funbox.split("#").includes("plus_two"))
       ) {
         const toPush = [];
-        if (Config.funbox === "plus_one") {
+        if (Config.funbox.split("#").includes("plus_one")) {
           toPush.push(TestWords.words.get(0));
           toPush.push(TestWords.words.get(1));
         }
-        if (Config.funbox === "plus_two") {
+        if (Config.funbox.split("#").includes("plus_two")) {
           toPush.push(TestWords.words.get(0));
           toPush.push(TestWords.words.get(1));
           toPush.push(TestWords.words.get(2));
@@ -644,7 +645,7 @@ export function restart(options = {} as RestartOptions): void {
       (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
       (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
-      if (Config.funbox === "memory") {
+      if (Config.funbox.split("#").includes("memory")) {
         Funbox.startMemoryTimer();
         if (Config.keymapMode === "next") {
           UpdateConfig.setKeymapMode("react");
@@ -660,14 +661,14 @@ export function restart(options = {} as RestartOptions): void {
       const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";
       if (Config.funbox !== "none") {
-        fbtext = " " + Config.funbox;
+        fbtext = " " + Config.funbox.split("#").join(" ");
       }
       $(".pageTest #premidTestMode").text(
         `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
       );
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
-      if (Config.funbox === "layoutfluid") {
+      if (Config.funbox.split("#").includes("layoutfluid")) {
         UpdateConfig.setLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
@@ -723,7 +724,7 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
-  if (Config.funbox === "rAnDoMcAsE") {
+  if (Config.funbox.split("#").includes("rAnDoMcAsE")) {
     let randomcaseword = "";
     for (let i = 0; i < word.length; i++) {
       if (i % 2 != 0) {
@@ -733,22 +734,25 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
       }
     }
     word = randomcaseword;
-  } else if (Config.funbox === "capitals") {
+  } else if (Config.funbox.split("#").includes("capitals")) {
     word = Misc.capitalizeFirstLetterOfEachWord(word);
-  } else if (Config.funbox === "gibberish") {
+  } else if (Config.funbox.split("#").includes("gibberish")) {
     word = Misc.getGibberish();
-  } else if (Config.funbox === "arrows") {
+  } else if (Config.funbox.split("#").includes("arrows")) {
     word = Misc.getArrows();
-  } else if (Config.funbox === "58008") {
+  } else if (Config.funbox.split("#").includes("58008")) {
     word = Misc.getNumbers(7);
     if (Config.language.startsWith("kurdish")) {
       word = Misc.convertNumberToArabicIndic(word);
     }
-  } else if (Config.funbox === "specials") {
+  } else if (Config.funbox.split("#").includes("specials")) {
     word = Misc.getSpecials();
-  } else if (Config.funbox === "ascii") {
+  } else if (Config.funbox.split("#").includes("ascii")) {
     word = Misc.getASCII();
-  } else if (wordset !== undefined && Config.funbox === "weakspot") {
+  } else if (
+    wordset !== undefined &&
+    Config.funbox.split("#").includes("weakspot")
+  ) {
     word = WeakSpot.getWord(wordset);
   }
   return word;
@@ -955,13 +959,13 @@ export async function init(): Promise<void> {
   if (Config.mode === "words" && Config.words === 0) {
     wordsBound = 100;
   }
-  if (Config.funbox === "plus_one") {
+  if (Config.funbox.split("#").includes("plus_one")) {
     wordsBound = 2;
     if (Config.mode === "words" && Config.words < wordsBound) {
       wordsBound = Config.words;
     }
   }
-  if (Config.funbox === "plus_two") {
+  if (Config.funbox.split("#").includes("plus_two")) {
     wordsBound = 3;
     if (Config.mode === "words" && Config.words < wordsBound) {
       wordsBound = Config.words;
@@ -980,7 +984,8 @@ export async function init(): Promise<void> {
     const wordset = Wordset.withWords(wordList, Config.funbox);
 
     if (
-      (Config.funbox == "wikipedia" || Config.funbox == "poetry") &&
+      (Config.funbox.split("#").includes("wikipedia") ||
+        Config.funbox.split("#").includes("poetry")) &&
       Config.mode != "custom"
     ) {
       let wordCount = 0;
@@ -990,12 +995,11 @@ export async function init(): Promise<void> {
         (Config.mode == "words" && Config.words >= wordCount) ||
         (Config.mode === "time" && wordCount < 100)
       ) {
-        const section =
-          Config.funbox == "wikipedia"
-            ? await Wikipedia.getSection(Config.language)
-            : await Poetry.getPoem();
+        const section = Config.funbox.split("#").includes("wikipedia")
+          ? await Wikipedia.getSection(Config.language)
+          : await Poetry.getPoem();
 
-        if (Config.funbox == "poetry" && section === false) {
+        if (Config.funbox.split("#").includes("poetry") && section === false) {
           Notifications.add(
             "Error while getting poetry. Please try again later",
             -1
@@ -1189,8 +1193,8 @@ export async function init(): Promise<void> {
 
 export async function addWord(): Promise<void> {
   let bound = 100;
-  if (Config.funbox === "plus_one") bound = 1;
-  if (Config.funbox === "plus_two") bound = 2;
+  if (Config.funbox.split("#").includes("plus_one")) bound = 1;
+  if (Config.funbox.split("#").includes("plus_two")) bound = 2;
   if (
     TestWords.words.length - TestInput.input.history.length > bound ||
     (Config.mode === "words" &&
@@ -1210,14 +1214,16 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
+  if (
+    Config.funbox.split("#").includes("wikipedia") ||
+    Config.funbox.split("#").includes("poetry")
+  ) {
     if (TestWords.words.length - TestWords.words.currentIndex < 20) {
-      const section =
-        Config.funbox == "wikipedia"
-          ? await Wikipedia.getSection(Config.language)
-          : await Poetry.getPoem();
+      const section = Config.funbox.split("#").includes("wikipedia")
+        ? await Wikipedia.getSection(Config.language)
+        : await Poetry.getPoem();
 
-      if (Config.funbox == "poetry" && section === false) {
+      if (Config.funbox.split("#").includes("poetry") && section === false) {
         Notifications.add(
           "Error while getting poetry. Please try again later",
           -1

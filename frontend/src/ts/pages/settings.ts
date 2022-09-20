@@ -892,7 +892,7 @@ $(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   const funbox = <string>$(e.currentTarget).attr("funbox");
   const type = <MonkeyTypes.FunboxObjectType>$(e.currentTarget).attr("type");
-  Funbox.setFunbox(funbox, type);
+  Funbox.toggleFunbox(funbox, type);
   setActiveFunboxButton();
 });
 

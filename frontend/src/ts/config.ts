@@ -235,6 +235,27 @@ export function setFunbox(funbox: string, nosave?: boolean): boolean {
   return true;
 }
 
+export function toggleFunbox(funbox: string, nosave?: boolean): number {
+  if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
+
+  let r;
+
+  const funboxArray = config.funbox.split("#");
+  if (!funboxArray.includes(funbox)) {
+    funboxArray.push(funbox);
+    config.funbox = funboxArray.sort().join("#");
+    r = funboxArray.indexOf(funbox);
+  } else {
+    r = funboxArray.indexOf(funbox);
+    config.funbox = funboxArray.splice(r, 1).join("#");
+    r = -r - 1;
+  }
+  saveToLocalStorage("funbox", nosave);
+  ConfigEvent.dispatch("funbox", config.funbox);
+
+  return r;
+}
+
 export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("blind mode", blind, ["boolean"])) return false;
 

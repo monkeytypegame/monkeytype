@@ -6,7 +6,7 @@ import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
 
-let modeSaved: MonkeyTypes.FunboxObjectType | null = null;
+let modeSaved: MonkeyTypes.FunboxObjectType[] | null = null;
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
@@ -88,7 +88,7 @@ export function reset(): void {
 }
 
 export function toggleScript(...params: string[]): void {
-  if (Config.funbox === "tts") {
+  if (Config.funbox.split("#").includes("tts")) {
     TTS.speak(params[0]);
   }
 }
@@ -97,9 +97,24 @@ export function setFunbox(
   funbox: string,
   mode: MonkeyTypes.FunboxObjectType | null
 ): boolean {
-  modeSaved = mode;
+  modeSaved = mode ? [mode] : null;
   loadMemory();
   UpdateConfig.setFunbox(funbox, false);
+  return true;
+}
+
+export function toggleFunbox(
+  funbox: string,
+  mode: MonkeyTypes.FunboxObjectType
+): boolean {
+  loadMemory();
+  const e = UpdateConfig.toggleFunbox(funbox, false);
+  if (e === false) return false;
+  if (e < 0) {
+    modeSaved?.splice(-e + 1, 1);
+  } else {
+    modeSaved?.splice(e, 0, mode);
+  }
   return true;
 }
 
@@ -127,10 +142,13 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   // }
 
   if (funbox === "none") {
-    mode = null;
+    mode = [];
   } else {
     const list = await Misc.getFunboxList();
-    mode = list.filter((f) => f.name === funbox)[0].type;
+    mode = [];
+    for (let i = 0; i < funbox.split("#").length; i++) {
+      mode[i] = list.filter((f) => f.name === funbox?.split("#")[i])[0].type;
+    }
   }
 
   $("#funBoxTheme").attr("href", ``);
@@ -148,7 +166,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
   }
   if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
-    if (mode === "wordlist" || mode === "modificator") {
+    if (mode?.includes("wordlist") || mode?.includes("modificator")) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
           Config.mode
@@ -157,7 +175,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       );
       UpdateConfig.setMode("time", true);
     }
-    if (mode === "quote") {
+    if (mode?.includes("quote")) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
           Config.mode
@@ -171,7 +189,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     (Config.time === 0 && Config.mode === "time") ||
     (Config.words === 0 && Config.mode === "words")
   ) {
-    if (mode === "quote") {
+    if (mode?.includes("quote")) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
           Config.mode
@@ -184,52 +202,56 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  if (mode === "style") {
-    if (funbox != undefined) {
-      $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
-    }
+  if (funbox !== "none") {
+    for (let i = 0; i < funbox.split("#").length; i++) {
+      if (mode[i] === "style") {
+        if (funbox.split("#")[i] != undefined) {
+          $("#funBoxTheme").attr("href", `funbox/${funbox.split("#")[i]}.css`);
+        }
 
-    if (funbox === "simon_says") {
-      UpdateConfig.setKeymapMode("next", true);
-    }
+        if (funbox.split("#")[i] === "simon_says") {
+          UpdateConfig.setKeymapMode("next", true);
+        }
 
-    if (
-      funbox === "read_ahead" ||
-      funbox === "read_ahead_easy" ||
-      funbox === "read_ahead_hard"
-    ) {
-      UpdateConfig.setHighlightMode("letter", true);
-    }
-  } else if (mode !== null) {
-    if (funbox === "tts") {
-      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-      UpdateConfig.setKeymapMode("off", true);
-      UpdateConfig.setHighlightMode("letter", true);
-    } else if (funbox === "layoutfluid") {
-      UpdateConfig.setLayout(
-        Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("#")[0]
-          : "qwerty",
-        true
-      );
-      UpdateConfig.setKeymapLayout(
-        Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("#")[0]
-          : "qwerty",
-        true
-      );
-    } else if (funbox === "memory") {
-      UpdateConfig.setMode("words", true);
-      UpdateConfig.setShowAllLines(true, true);
-      if (Config.keymapMode === "next") {
-        UpdateConfig.setKeymapMode("react", true);
+        if (
+          funbox.split("#")[i] === "read_ahead" ||
+          funbox.split("#")[i] === "read_ahead_easy" ||
+          funbox.split("#")[i] === "read_ahead_hard"
+        ) {
+          UpdateConfig.setHighlightMode("letter", true);
+        }
+      } else if (mode[i] !== null) {
+        if (funbox.split("#")[i] === "tts") {
+          $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+          UpdateConfig.setKeymapMode("off", true);
+          UpdateConfig.setHighlightMode("letter", true);
+        } else if (funbox.split("#")[i] === "layoutfluid") {
+          UpdateConfig.setLayout(
+            Config.customLayoutfluid
+              ? Config.customLayoutfluid.split("#")[0]
+              : "qwerty",
+            true
+          );
+          UpdateConfig.setKeymapLayout(
+            Config.customLayoutfluid
+              ? Config.customLayoutfluid.split("#")[0]
+              : "qwerty",
+            true
+          );
+        } else if (funbox.split("#")[i] === "memory") {
+          UpdateConfig.setMode("words", true);
+          UpdateConfig.setShowAllLines(true, true);
+          if (Config.keymapMode === "next") {
+            UpdateConfig.setKeymapMode("react", true);
+          }
+        } else if (funbox.split("#")[i] === "nospace") {
+          $("#words").addClass("nospace");
+          UpdateConfig.setHighlightMode("letter", true);
+        } else if (funbox.split("#")[i] === "arrows") {
+          $("#words").addClass("arrows");
+          UpdateConfig.setHighlightMode("letter", true);
+        }
       }
-    } else if (funbox === "nospace") {
-      $("#words").addClass("nospace");
-      UpdateConfig.setHighlightMode("letter", true);
-    } else if (funbox === "arrows") {
-      $("#words").addClass("arrows");
-      UpdateConfig.setHighlightMode("letter", true);
     }
   }
   // ModesNotice.update();
@@ -239,17 +261,17 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 export async function rememberSettings(): Promise<void> {
   const funbox = Config.funbox;
   let mode = modeSaved;
-  if (funbox === "none" && mode === undefined) {
-    mode = null;
-  } else if (
-    (funbox !== "none" && mode === undefined) ||
-    (funbox !== "none" && mode === null)
-  ) {
+  if (funbox === "none") {
+    mode = [];
+  } else {
     const list = await Misc.getFunboxList();
-    mode = list.filter((f) => f.name === funbox)[0].type;
+    mode = [];
+    for (let i = 0; i < funbox.split("#").length; i++) {
+      mode[i] = list.filter((f) => f.name === funbox?.split("#")[i])[0].type;
+    }
   }
-  if (mode === "style") {
-    if (funbox === "simon_says") {
+  if (mode.includes("style")) {
+    if (funbox.split("#").includes("simon_says")) {
       rememberSetting(
         "keymapMode",
         Config.keymapMode,
@@ -258,9 +280,9 @@ export async function rememberSettings(): Promise<void> {
     }
 
     if (
-      funbox === "read_ahead" ||
-      funbox === "read_ahead_easy" ||
-      funbox === "read_ahead_hard"
+      funbox.split("#").includes("read_ahead") ||
+      funbox.split("#").includes("read_ahead_easy") ||
+      funbox.split("#").includes("read_ahead_hard")
     ) {
       rememberSetting(
         "highlightMode",
@@ -268,14 +290,14 @@ export async function rememberSettings(): Promise<void> {
         UpdateConfig.setHighlightMode
       );
     }
-  } else if (mode === "script") {
-    if (funbox === "tts") {
+  } else if (mode.includes("script")) {
+    if (funbox.split("#").includes("tts")) {
       rememberSetting(
         "keymapMode",
         Config.keymapMode,
         UpdateConfig.setKeymapMode
       );
-    } else if (funbox === "layoutfluid") {
+    } else if (funbox.split("#").includes("layoutfluid")) {
       rememberSetting(
         "keymapMode",
         Config.keymapMode,
@@ -287,7 +309,7 @@ export async function rememberSettings(): Promise<void> {
         Config.keymapLayout,
         UpdateConfig.setKeymapLayout
       );
-    } else if (funbox === "memory") {
+    } else if (funbox.split("#").includes("memory")) {
       rememberSetting("mode", Config.mode, UpdateConfig.setMode);
       rememberSetting(
         "showAllLines",
@@ -301,19 +323,19 @@ export async function rememberSettings(): Promise<void> {
           UpdateConfig.setKeymapMode
         );
       }
-    } else if (funbox === "nospace") {
+    } else if (funbox.split("#").includes("nospace")) {
       rememberSetting(
         "highlightMode",
         Config.highlightMode,
         UpdateConfig.setHighlightMode
       );
-    } else if (funbox === "arrows") {
+    } else if (funbox.split("#").includes("arrows")) {
       rememberSetting(
         "highlightMode",
         Config.highlightMode,
         UpdateConfig.setHighlightMode
       );
-    } else if (funbox === "58008") {
+    } else if (funbox.split("#").includes("58008")) {
       rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
     }
   }

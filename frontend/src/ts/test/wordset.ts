@@ -95,7 +95,7 @@ class WordGenerator extends Wordset {
 }
 
 export function withWords(words: string[], funbox: string): Wordset {
-  if (funbox == "pseudolang") {
+  if (funbox.split("#").includes("pseudolang")) {
     if (currentWordGenerator == null || words !== currentWordGenerator.words) {
       currentWordGenerator = new WordGenerator(words);
     }
