@@ -38,5 +38,7 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
       init();
     }
   }
-  if (eventKey === "language" && Config.funbox === "tts") setLanguage();
+  if (eventKey === "language" && Config.funbox.split("#").includes("tts")) {
+    setLanguage();
+  }
 });

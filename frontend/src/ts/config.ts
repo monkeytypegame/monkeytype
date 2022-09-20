@@ -125,7 +125,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     return false;
   }
 
-  if (mode !== "words" && config.funbox === "memory") {
+  if (mode !== "words" && config.funbox.split("#").includes("memory")) {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return false;
   }
@@ -235,7 +235,10 @@ export function setFunbox(funbox: string, nosave?: boolean): boolean {
   return true;
 }
 
-export function toggleFunbox(funbox: string, nosave?: boolean): number {
+export function toggleFunbox(
+  funbox: string,
+  nosave?: boolean
+): number | boolean {
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
 
   let r;
@@ -835,12 +838,12 @@ export function setHighlightMode(
 
   if (
     mode === "word" &&
-    (config.funbox === "nospace" ||
-      config.funbox === "read_ahead" ||
-      config.funbox === "read_ahead_easy" ||
-      config.funbox === "read_ahead_hard" ||
-      config.funbox === "tts" ||
-      config.funbox === "arrows")
+    (config.funbox.split("#").includes("nospace") ||
+      config.funbox.split("#").includes("read_ahead") ||
+      config.funbox.split("#").includes("read_ahead_easy") ||
+      config.funbox.split("#").includes("read_ahead_hard") ||
+      config.funbox.split("#").includes("tts") ||
+      config.funbox.split("#").includes("arrows"))
   ) {
     Notifications.add("Can't use word highlight with this funbox", 0);
     return false;

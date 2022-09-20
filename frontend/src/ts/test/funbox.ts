@@ -109,7 +109,7 @@ export function toggleFunbox(
 ): boolean {
   loadMemory();
   const e = UpdateConfig.toggleFunbox(funbox, false);
-  if (e === false) return false;
+  if (e === false || e === true) return false;
   if (e < 0) {
     modeSaved?.splice(-e + 1, 1);
   } else {
@@ -155,7 +155,10 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
   if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
-    if (funbox == "choo_choo" || funbox == "earthquake") {
+    if (
+      funbox.split("#").includes("choo_choo") ||
+      funbox.split("#").includes("earthquake")
+    ) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0

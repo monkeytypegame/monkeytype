@@ -121,7 +121,10 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
+  if (
+    Config.funbox.split("#").includes("nospace") ||
+    Config.funbox.split("#").includes("arrows")
+  ) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
   }
   TestWords.words.decreaseCurrentIndex();
@@ -145,7 +148,10 @@ function handleSpace(): void {
   }
 
   const currentWord: string = TestWords.words.getCurrent();
-  if (Config.funbox === "layoutfluid" && Config.mode !== "time") {
+  if (
+    Config.funbox.split("#").includes("layoutfluid") &&
+    Config.mode !== "time"
+  ) {
     // here I need to check if Config.customLayoutFluid exists because of my
     // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
     const layouts: string[] = Config.customLayoutfluid
@@ -190,12 +196,18 @@ function handleSpace(): void {
     Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
-    if (Config.funbox !== "nospace" && Config.funbox !== "arrows") {
+    if (
+      !Config.funbox.split("#").includes("nospace") &&
+      !Config.funbox.split("#").includes("arrows")
+    ) {
       Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
   } else {
-    if (Config.funbox !== "nospace" && Config.funbox !== "arrows") {
+    if (
+      !Config.funbox.split("#").includes("nospace") &&
+      !Config.funbox.split("#").includes("arrows")
+    ) {
       if (!Config.playSoundOnError || Config.blindMode) {
         Sound.playClick();
       } else {
@@ -353,7 +365,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     }
   }
 
-  if (Config.funbox === "arrows") {
+  if (Config.funbox.split("#").includes("arrows")) {
     if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
       return true;
     }
@@ -412,12 +424,17 @@ function handleChar(
     return;
   }
 
-  if (char === "\n" && Config.funbox === "58008") {
+  if (char === "\n" && Config.funbox.split("#").includes("58008")) {
     char = " ";
   }
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
-    if (Config.funbox === "nospace" || Config.funbox === "arrows") return;
+    if (
+      Config.funbox.split("#").includes("nospace") ||
+      Config.funbox.split("#").includes("arrows")
+    ) {
+      return;
+    }
     handleSpace();
 
     //insert space for expert and master or strict space,
@@ -645,7 +662,8 @@ function handleChar(
 
   //simulate space press in nospace funbox
   if (
-    ((Config.funbox === "nospace" || Config.funbox === "arrows") &&
+    ((Config.funbox.split("#").includes("nospace") ||
+      Config.funbox.split("#").includes("arrows")) &&
       TestInput.input.current.length === TestWords.words.getCurrent().length) ||
     (char === "\n" && thisCharCorrect)
   ) {
@@ -855,7 +873,10 @@ $(document).keydown(async (event) => {
     }
   }
 
-  if (Config.funbox !== "arrows" && /Arrow/i.test(event.key)) {
+  if (
+    !Config.funbox.split("#").includes("arrows") &&
+    /Arrow/i.test(event.key)
+  ) {
     event.preventDefault();
     return;
   }
@@ -906,7 +927,7 @@ $(document).keydown(async (event) => {
       (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
 
-  if (Config.funbox === "arrows") {
+  if (Config.funbox.split("#").includes("arrows")) {
     let char: string = event.key;
     if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(char)) {
       if (char === "ArrowLeft") char = "a";

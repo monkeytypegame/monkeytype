@@ -105,7 +105,7 @@ function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
   for (let c = 0; c < word.length; c++) {
-    if (Config.funbox === "arrows") {
+    if (Config.funbox.split("#").includes("arrows")) {
       if (word.charAt(c) === "↑") {
         retval += `<letter><i class="fas fa-arrow-up"></i></letter>`;
       }
@@ -436,7 +436,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
       let currentLetter = currentWord[i];
       let tabChar = "";
       let nlChar = "";
-      if (Config.funbox === "arrows") {
+      if (Config.funbox.split("#").includes("arrows")) {
         if (currentLetter === "↑") {
           currentLetter = `<i class="fas fa-arrow-up"></i>`;
         }
@@ -510,7 +510,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
     }
 
     for (let i = input.length; i < currentWord.length; i++) {
-      if (Config.funbox === "arrows") {
+      if (Config.funbox.split("#").includes("arrows")) {
         if (currentWord[i] === "↑") {
           ret += `<letter><i class="fas fa-arrow-up"></i></letter>`;
         }

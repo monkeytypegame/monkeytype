@@ -97,7 +97,7 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = Config.funbox;
-    if (Config.funbox === "layoutfluid") {
+    if (Config.funbox.split("#").includes("layoutfluid")) {
       content += " " + Config.customLayoutfluid.replace(/#/g, " ");
     }
     resultAnnotation.push({
@@ -480,9 +480,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   }
   if (
     Config.mode != "custom" &&
-    Config.funbox !== "gibberish" &&
-    Config.funbox !== "ascii" &&
-    Config.funbox !== "58008"
+    !Config.funbox.split("#").includes("gibberish") &&
+    !Config.funbox.split("#").includes("ascii") &&
+    !Config.funbox.split("#").includes("58008")
   ) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }

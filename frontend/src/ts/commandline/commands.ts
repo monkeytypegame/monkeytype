@@ -195,7 +195,9 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );
-        if (Config.funbox === "layoutfluid") TestLogic.restart();
+        if (Config.funbox.split("#").includes("layoutfluid")) {
+          TestLogic.restart();
+        }
       },
     },
 

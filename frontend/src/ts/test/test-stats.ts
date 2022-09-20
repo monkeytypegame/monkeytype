@@ -273,7 +273,10 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
       correctWordChars += toAdd.correct;
     }
   }
-  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
+  if (
+    Config.funbox.split("#").includes("nospace") ||
+    Config.funbox.split("#").includes("arrows")
+  ) {
     spaces = 0;
   }
   chars += currTestInput.length;
@@ -444,7 +447,10 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
+  if (
+    Config.funbox.split("#").includes("nospace") ||
+    Config.funbox.split("#").includes("arrows")
+  ) {
     spaces = 0;
     correctspaces = 0;
   }
