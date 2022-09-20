@@ -6,10 +6,10 @@ import * as PageAccount from "../pages/account";
 import * as PageLogin from "../pages/login";
 import * as Page404 from "../pages/404";
 import * as PageProfile from "../pages/profile";
+import * as PageProfileSearch from "../pages/profile-search";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import { Auth } from "../firebase";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -17,6 +17,7 @@ import { Auth } from "../firebase";
 //this will be used in tribe
 interface NavigateOptions {
   empty?: boolean;
+  data?: any;
 }
 
 function pathToRegex(path: string): RegExp {
@@ -92,20 +93,19 @@ const routes: Route[] = [
   },
   {
     path: "/profile",
-    load: (): void => {
-      if (Auth.currentUser) {
-        navigate("/account");
-      } else {
-        navigate("/");
-      }
+    load: (_params): void => {
+      PageController.change(PageProfileSearch.page);
     },
   },
   {
     path: "/profile/:uidOrName",
-    load: (params): void => {
+    load: (params, options): void => {
       PageController.change(PageProfile.page, {
         force: true,
-        params,
+        params: {
+          uidOrName: params["uidOrName"],
+        },
+        data: options.data,
       });
     },
   },
