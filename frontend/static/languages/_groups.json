@@ -193,6 +193,10 @@
     "languages": ["estonian", "estonian_1k", "estonian_10k"]
   },
   {
+    "name": "udmurt",
+    "languages": ["udmurt"]
+  },
+  {
     "name": "welsh",
     "languages": ["welsh", "welsh_1k"]
   },
