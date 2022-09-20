@@ -17,7 +17,7 @@ export function updateText(text: string): void {
   $(".pageLoading .text, .pageAccount .preloader .text").text(text);
 }
 
-export function showBar(): Promise<void> {
+export async function showBar(): Promise<void> {
   return new Promise((resolve) => {
     Misc.swapElements(
       $(".pageLoading .preloader .icon"),

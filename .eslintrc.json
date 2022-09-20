@@ -69,9 +69,9 @@
       {
         "checksVoidReturn": false
       }
-    ]
-    // "@typescript-eslint/no-floating-promises": "error",
-    // "@typescript-eslint/promise-function-async": "warn",
+    ],
+    // "@typescript-eslint/no-floating-promises": "error"
+    "@typescript-eslint/promise-function-async": "warn"
     // "@typescript-eslint/strict-boolean-expressions": "warn",
     // "@typescript-eslint/no-unnecessary-condition": "warn"
   },

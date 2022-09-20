@@ -326,7 +326,7 @@ export function signIn(): void {
     ? browserLocalPersistence
     : browserSessionPersistence;
 
-  setPersistence(Auth, persistence).then(function () {
+  setPersistence(Auth, persistence).then(async function () {
     return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);

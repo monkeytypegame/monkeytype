@@ -267,7 +267,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       id: "randomizeTheme",
       display: "Next random theme",
       icon: "fa-random",
-      exec: (): Promise<void> => randomizeTheme(),
+      exec: async (): Promise<void> => randomizeTheme(),
       available: (): boolean => {
         return Config.randomTheme !== "off";
       },
