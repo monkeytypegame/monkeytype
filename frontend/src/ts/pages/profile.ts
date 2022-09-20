@@ -127,25 +127,41 @@ function reset(): void {
       </div>`);
 }
 
-async function update(userIdOrName: string): Promise<void> {
-  if (userIdOrName === "") {
+interface UpdateOptions {
+  uidOrName?: string;
+  data?: any;
+}
+
+async function update(options: UpdateOptions): Promise<void> {
+  if (options.uidOrName && options.uidOrName === "") {
     Notifications.add("TODO no user found", -1);
     return;
   }
 
-  const response =
-    checkIfGetParameterExists("uid") === true
-      ? await Ape.users.getProfileByUid(userIdOrName)
-      : await Ape.users.getProfileByName(userIdOrName);
-  $(".page.pageProfile .preloader").addClass("hidden");
+  if (options.data) {
+    $(".page.pageProfile .preloader").addClass("hidden");
+    Profile.update("profile", options.data);
+    PbTables.update(options.data.personalBests, true);
+  } else if (options.uidOrName) {
+    const response =
+      checkIfGetParameterExists("uid") === true
+        ? await Ape.users.getProfileByUid(options.uidOrName)
+        : await Ape.users.getProfileByName(options.uidOrName);
+    $(".page.pageProfile .preloader").addClass("hidden");
 
-  if (response.status !== 200) {
-    // $(".page.pageProfile .failedToLoad").removeClass("hidden");
-    return Notifications.add("Failed to load profile: " + response.message, -1);
+    if (response.status !== 200) {
+      // $(".page.pageProfile .failedToLoad").removeClass("hidden");
+      return Notifications.add(
+        "Failed to load profile: " + response.message,
+        -1
+      );
+    }
+
+    Profile.update("profile", response.data);
+    PbTables.update(response.data.personalBests, true);
+  } else {
+    Notifications.add("Missing update parameter!", -1);
   }
-
-  Profile.update("profile", response.data);
-  PbTables.update(response.data.personalBests, true);
 }
 
 export const page = new Page(
@@ -158,9 +174,22 @@ export const page = new Page(
   async () => {
     reset();
   },
-  async (params) => {
-    reset();
-    update(params?.["uidOrName"] ?? "");
+  async (options) => {
+    const uidOrName = options?.params?.["uidOrName"];
+    if (uidOrName) {
+      $(".page.pageProfile .preloader").addClass("hidden");
+      $(".page.pageProfile .search").addClass("hidden");
+      $(".page.pageProfile .content").removeClass("hidden");
+      reset();
+      update({
+        uidOrName,
+        data: options?.["data"],
+      });
+    } else {
+      $(".page.pageProfile .preloader").addClass("hidden");
+      $(".page.pageProfile .search").removeClass("hidden");
+      $(".page.pageProfile .content").addClass("hidden");
+    }
   },
   async () => {
     //
