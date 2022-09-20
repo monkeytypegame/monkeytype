@@ -18,7 +18,7 @@ export async function createNewUser(
   const { name } = req.body;
   const { email, uid } = req.ctx.decodedToken;
 
-  if (email.endsWith("@tidal.lol")) {
+  if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
     throw new MonkeyError(400, "Invalid domain");
   }
 
