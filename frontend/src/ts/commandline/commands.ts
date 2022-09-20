@@ -244,6 +244,9 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...KeymapShowTopRowCommands,
 
     //theme
+    ...ThemesCommands,
+    ...CustomThemeCommands,
+    ...CustomThemesListCommands,
     ...FlipTestColorsCommands,
     ...ColorfulModeCommands,
     {
@@ -269,9 +272,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         return Config.randomTheme !== "off";
       },
     },
-    ...ThemesCommands,
-    ...CustomThemeCommands,
-    ...CustomThemesListCommands,
 
     //showhide elements
     ...LiveWpmCommands,
