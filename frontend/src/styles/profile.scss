@@ -1,3 +1,26 @@
+.pageProfileSearch {
+  align-content: center;
+  height: 100%;
+  display: grid;
+  .search {
+    justify-self: center;
+    max-width: 400px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    font-size: 1.25rem;
+    .title {
+      font-size: 1.25em;
+      grid-column: span 2;
+      color: var(--sub-color);
+    }
+    .button {
+      height: auto;
+    }
+  }
+}
+
 .pageProfile {
   align-content: center;
   height: 100%;
