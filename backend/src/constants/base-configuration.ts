@@ -30,6 +30,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     apeKeySaltRounds: 5,
   },
   users: {
+    signUp: false,
     discordIntegration: {
       enabled: false,
     },
@@ -213,6 +214,10 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
       type: "object",
       label: "Users",
       fields: {
+        signUp: {
+          type: "boolean",
+          label: "Enabled",
+        },
         xp: {
           type: "object",
           label: "XP",

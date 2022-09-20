@@ -1726,7 +1726,7 @@ async function saveResult(
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
-  if (response.data.xp) {
+  if (response?.data?.xp) {
     const snapxp = DB.getSnapshot().xp;
     AccountButton.updateXpBar(
       snapxp,
@@ -1736,26 +1736,27 @@ async function saveResult(
     DB.addXp(response.data.xp);
   }
 
-  if (response.data.streak) {
+  if (response?.data?.streak) {
     DB.setStreak(response.data.streak);
   }
 
-  completedEvent._id = response.data.insertedId;
-  if (response.data.isPb) {
-    completedEvent.isPb = true;
+  if (response?.data?.insertedId) {
+    completedEvent._id = response.data.insertedId;
+    if (response?.data?.isPb) {
+      completedEvent.isPb = true;
+    }
+    DB.saveLocalResult(completedEvent);
+    DB.updateLocalStats(
+      TestStats.restartCount + 1,
+      completedEvent.testDuration +
+        completedEvent.incompleteTestSeconds -
+        completedEvent.afkDuration
+    );
   }
-
-  DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats(
-    TestStats.restartCount + 1,
-    completedEvent.testDuration +
-      completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration
-  );
 
   AnalyticsController.log("testCompleted");
 
-  if (response.data.isPb) {
+  if (response?.data?.isPb) {
     //new pb
     Result.showCrown();
     Result.updateCrown();
@@ -1784,7 +1785,7 @@ async function saveResult(
   //   );
   // }
 
-  if (!response.data.dailyLeaderboardRank) {
+  if (!response?.data?.dailyLeaderboardRank) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
   } else {
     $("#result .stats .dailyLeaderboard")
