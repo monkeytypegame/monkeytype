@@ -122,7 +122,15 @@ export function checkFunbox(
     ((modeSaved.includes("style") || modeSaved.includes("script")) &&
       funbox == "simon_says") ||
     ((mode == "style" || mode == "script") &&
-      Config.funbox.includes("simon_says"))
+      Config.funbox.includes("simon_says")) ||
+    (funbox == "space_balls" &&
+      modeSaved.includes("script") &&
+      !(
+        Config.funbox.includes("plus_one") || Config.funbox.includes("plus_two")
+      )) ||
+    (Config.funbox.includes("space_balls") &&
+      mode == "script" &&
+      !(funbox == "plus_one" || funbox == "plus_two"))
   );
 }
 
