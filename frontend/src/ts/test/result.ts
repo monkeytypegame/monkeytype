@@ -499,7 +499,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     testType += "<br>lazy";
   }
   if (Config.funbox !== "none") {
-    testType += "<br>" + Config.funbox.replace(/_/g, " ");
+    testType += "<br>" + Config.funbox.replace(/_/g, " ").replace(/#/g, ", ");
   }
   if (Config.difficulty == "expert") {
     testType += "<br>expert";
