@@ -131,6 +131,12 @@ export function checkFunbox(
     (Config.funbox.includes("space_balls") &&
       mode == "script" &&
       !(funbox == "plus_one" || funbox == "plus_two")) ||
+    (mode == "script" &&
+      modeSaved.includes("style") &&
+      !Config.funbox.includes("space_balls")) ||
+    (modeSaved.includes("script") &&
+      mode == "style" &&
+      funbox != "space_balls") ||
     (mode == "script" && Config.funbox.includes("memory")) ||
     (modeSaved.includes("script") && funbox == "memory")
   );
