@@ -99,12 +99,11 @@ export function checkFunbox(
 ): boolean {
   if (funbox === "none") return true;
   return !(
-    (modeSaved?.includes(mode) && mode != "modificator") ||
+    (modeSaved.includes(mode) && mode != "modificator") ||
     (mode == "quote" &&
-      (modeSaved?.includes("wordlist") ||
-        modeSaved?.includes("modificator"))) ||
+      (modeSaved.includes("wordlist") || modeSaved.includes("modificator"))) ||
     ((mode == "wordlist" || mode == "modificator") &&
-      modeSaved?.includes("quote")) ||
+      modeSaved.includes("quote")) ||
     ((funbox == "capitals" || funbox == "rAnDoMcAsE") &&
       (Config.funbox.includes("58008") ||
         Config.funbox.includes("arrows") ||
@@ -119,7 +118,11 @@ export function checkFunbox(
     (funbox == "arrows" && Config.funbox.includes("nospace")) ||
     (funbox == "nospace" && Config.funbox.includes("arrows")) ||
     (funbox == "capitals" && Config.funbox.includes("rAnDoMcAsE")) ||
-    (funbox == "rAnDoMcAsE" && Config.funbox.includes("capitals"))
+    (funbox == "rAnDoMcAsE" && Config.funbox.includes("capitals")) ||
+    ((modeSaved.includes("style") || modeSaved.includes("script")) &&
+      funbox == "simon_says") ||
+    ((mode == "style" || mode == "script") &&
+      Config.funbox.includes("simon_says"))
   );
 }
 
@@ -246,53 +249,50 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   ManualRestart.set();
   if (funbox !== "none") {
     for (let i = 0; i < funbox.split("#").length; i++) {
-      if (mode[i] === "style") {
-        if (funbox.split("#")[i] != undefined) {
-          $("#funBoxTheme").attr("href", `funbox/${funbox.split("#")[i]}.css`);
-        }
+      if (funbox.split("#")[i] != undefined) {
+        $("#funBoxTheme").attr("href", `funbox/${funbox.split("#")[i]}.css`);
+      }
 
-        if (funbox.split("#")[i] === "simon_says") {
-          UpdateConfig.setKeymapMode("next", true);
-        }
+      if (funbox.split("#")[i] === "simon_says") {
+        UpdateConfig.setKeymapMode("next", true);
+      }
 
-        if (
-          funbox.split("#")[i] === "read_ahead" ||
-          funbox.split("#")[i] === "read_ahead_easy" ||
-          funbox.split("#")[i] === "read_ahead_hard"
-        ) {
-          UpdateConfig.setHighlightMode("letter", true);
+      if (
+        funbox.split("#")[i] === "read_ahead" ||
+        funbox.split("#")[i] === "read_ahead_easy" ||
+        funbox.split("#")[i] === "read_ahead_hard"
+      ) {
+        UpdateConfig.setHighlightMode("letter", true);
+      }
+      if (funbox.split("#")[i] === "tts") {
+        $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+        UpdateConfig.setKeymapMode("off", true);
+        UpdateConfig.setHighlightMode("letter", true);
+      } else if (funbox.split("#")[i] === "layoutfluid") {
+        UpdateConfig.setLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty",
+          true
+        );
+        UpdateConfig.setKeymapLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty",
+          true
+        );
+      } else if (funbox.split("#")[i] === "memory") {
+        UpdateConfig.setMode("words", true);
+        UpdateConfig.setShowAllLines(true, true);
+        if (Config.keymapMode === "next") {
+          UpdateConfig.setKeymapMode("react", true);
         }
-      } else if (mode[i] !== null) {
-        if (funbox.split("#")[i] === "tts") {
-          $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-          UpdateConfig.setKeymapMode("off", true);
-          UpdateConfig.setHighlightMode("letter", true);
-        } else if (funbox.split("#")[i] === "layoutfluid") {
-          UpdateConfig.setLayout(
-            Config.customLayoutfluid
-              ? Config.customLayoutfluid.split("#")[0]
-              : "qwerty",
-            true
-          );
-          UpdateConfig.setKeymapLayout(
-            Config.customLayoutfluid
-              ? Config.customLayoutfluid.split("#")[0]
-              : "qwerty",
-            true
-          );
-        } else if (funbox.split("#")[i] === "memory") {
-          UpdateConfig.setMode("words", true);
-          UpdateConfig.setShowAllLines(true, true);
-          if (Config.keymapMode === "next") {
-            UpdateConfig.setKeymapMode("react", true);
-          }
-        } else if (funbox.split("#")[i] === "nospace") {
-          $("#words").addClass("nospace");
-          UpdateConfig.setHighlightMode("letter", true);
-        } else if (funbox.split("#")[i] === "arrows") {
-          $("#words").addClass("arrows");
-          UpdateConfig.setHighlightMode("letter", true);
-        }
+      } else if (funbox.split("#")[i] === "nospace") {
+        $("#words").addClass("nospace");
+        UpdateConfig.setHighlightMode("letter", true);
+      } else if (funbox.split("#")[i] === "arrows") {
+        $("#words").addClass("arrows");
+        UpdateConfig.setHighlightMode("letter", true);
       }
     }
   }
