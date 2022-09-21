@@ -11,7 +11,7 @@
   },
   {
     "name": "simon_says",
-    "type": "style",
+    "type": "minigame",
     "info": "Type what simon says."
   },
   {
@@ -82,27 +82,27 @@
   },
   {
     "name": "plus_one",
-    "type": "style",
+    "type": "script",
     "info": "React quickly! Only one future word is visible."
   },
   {
     "name": "plus_two",
-    "type": "style",
+    "type": "script",
     "info": "Only two future words are visible."
   },
   {
     "name": "read_ahead_easy",
-    "type": "style",
+    "type": "script",
     "info": "Only the current word is invisible."
   },
   {
     "name": "read_ahead",
-    "type": "style",
+    "type": "script",
     "info": "Current and the next word are invisible!"
   },
   {
     "name": "read_ahead_hard",
-    "type": "style",
+    "type": "script",
     "info": "Current and the next two words are invisible!"
   },
   {

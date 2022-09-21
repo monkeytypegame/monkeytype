@@ -105,8 +105,6 @@ export function checkFunbox(
         modeSaved?.includes("modificator"))) ||
     ((mode == "wordlist" || mode == "modificator") &&
       modeSaved?.includes("quote")) ||
-    (mode == "script" && modeSaved !== null) ||
-    modeSaved?.includes("script") ||
     ((funbox == "capitals" || funbox == "rAnDoMcAsE") &&
       (Config.funbox.includes("58008") ||
         Config.funbox.includes("arrows") ||
