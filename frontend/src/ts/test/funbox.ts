@@ -99,7 +99,7 @@ export function checkFunbox(
 ): boolean {
   if (funbox === "none") return true;
   return !(
-    modeSaved?.includes(mode) ||
+    (modeSaved?.includes(mode) && mode != "modificator") ||
     (mode == "quote" &&
       (modeSaved?.includes("wordlist") ||
         modeSaved?.includes("modificator"))) ||
@@ -117,7 +117,9 @@ export function checkFunbox(
       (Config.funbox.includes("capitals") ||
         Config.funbox.includes("rAnDoMcAsE"))) ||
     (funbox == "arrows" && Config.funbox.includes("nospace")) ||
-    (funbox == "nospace" && Config.funbox.includes("arrows"))
+    (funbox == "nospace" && Config.funbox.includes("arrows")) ||
+    (funbox == "capitals" && Config.funbox.includes("rAnDoMcAsE")) ||
+    (funbox == "rAnDoMcAsE" && Config.funbox.includes("capitals"))
   );
 }
 
