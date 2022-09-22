@@ -9,11 +9,17 @@ export default class Users {
     return await this.httpClient.get(BASE_PATH);
   }
 
-  async create(name: string, email?: string, uid?: string): Ape.EndpointData {
+  async create(
+    name: string,
+    captcha: string,
+    email?: string,
+    uid?: string
+  ): Ape.EndpointData {
     const payload = {
       email,
       name,
       uid,
+      captcha,
     };
 
     return await this.httpClient.post(`${BASE_PATH}/signup`, { payload });
