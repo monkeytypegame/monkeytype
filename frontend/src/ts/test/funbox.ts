@@ -158,7 +158,9 @@ export function checkFunbox(
       mode == "style" &&
       funbox != "space_balls") ||
     (mode == "script" && Config.funbox.includes("memory")) ||
-    (modeSaved.includes("script") && funbox == "memory")
+    (modeSaved.includes("script") && funbox == "memory") ||
+    (funbox == "arrows" && Config.funbox.includes("choo_choo")) ||
+    (funbox == "choo_choo" && Config.funbox.includes("arrows"))
   );
 }
 
