@@ -28,6 +28,7 @@ describe("user controller test", () => {
       // });
 
       jest.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue({
+        //if stuff breaks this might be the reason
         users: {
           signUp: true,
           discordIntegration: {
