@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../../src/app";
+import * as Configuration from "../../../src/init/configuration";
 
 const mockApp = request(app);
 
@@ -17,7 +18,46 @@ describe("user controller test", () => {
         name: "NewUser",
         uid: "123456789",
         email: "newuser@mail.com",
+        captcha: "captcha",
       };
+
+      // getCachedConfiguration = jest.fn().mockResolvedValue({
+      //   users: {
+      //     signUp: true,
+      //   },
+      // });
+
+      jest.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue({
+        users: {
+          signUp: true,
+          discordIntegration: {
+            enabled: false,
+          },
+          autoBan: {
+            enabled: false,
+            maxCount: 5,
+            maxHours: 1,
+          },
+          profiles: {
+            enabled: false,
+          },
+          xp: {
+            enabled: false,
+            gainMultiplier: 0,
+            maxDailyBonus: 0,
+            minDailyBonus: 0,
+            streak: {
+              enabled: false,
+              maxStreakDays: 0,
+              maxStreakMultiplier: 0,
+            },
+          },
+          inbox: {
+            enabled: false,
+            maxMail: 0,
+          },
+        },
+      } as any);
 
       await mockApp
         .post("/users/signup")
@@ -51,6 +91,8 @@ describe("user controller test", () => {
           Accept: "application/json",
         })
         .expect(409);
+
+      jest.restoreAllMocks();
     });
   });
 });
