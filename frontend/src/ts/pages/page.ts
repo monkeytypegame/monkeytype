@@ -1,5 +1,5 @@
 interface Options {
-  params?: { [key: string]: string };
+  params?: Record<string, string>;
   data?: any;
 }
 
