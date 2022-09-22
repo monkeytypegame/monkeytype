@@ -37,6 +37,21 @@
     transform: translate(-50%, -50%);
     color: var(--main-color);
   }
+  .error {
+    position: absolute;
+    z-index: 1;
+    font-size: 2rem;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--error-color);
+    .message {
+      display: inline;
+    }
+  }
 }
 
 .profile {
