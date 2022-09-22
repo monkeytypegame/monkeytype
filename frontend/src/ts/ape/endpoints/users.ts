@@ -183,8 +183,12 @@ export default class Users {
     });
   }
 
-  async getProfile(uid: string): Promise<Ape.EndpointData> {
-    return await this.httpClient.get(`${BASE_PATH}/${uid}/profile`);
+  async getProfileByUid(uid: string): Promise<Ape.EndpointData> {
+    return await this.httpClient.get(`${BASE_PATH}/${uid}/profile?isUid`);
+  }
+
+  async getProfileByName(name: string): Promise<Ape.EndpointData> {
+    return await this.httpClient.get(`${BASE_PATH}/${name}/profile`);
   }
 
   async updateProfile(

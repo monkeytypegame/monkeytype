@@ -23,6 +23,7 @@ import "./popups/edit-preset-popup";
 import "./popups/simple-popups";
 import "./controllers/input-controller";
 import "./ready";
+import "./controllers/route-controller";
 import "./pages/about";
 import "./popups/pb-tables-popup";
 import "./elements/scroll-to-top";

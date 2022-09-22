@@ -306,7 +306,7 @@ key {
   color: var(--text-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;
-  padding: 0.5rem;
+  padding: 0.5em;
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
   text-align: center;
@@ -315,11 +315,11 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1.25rem;
+  line-height: 1.25em;
   appearance: none;
   border: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1em;
 
   &.active {
     background: var(--main-color);
@@ -454,15 +454,15 @@ key {
   }
   position: relative;
   .statusIndicator {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.25em;
+    height: 2.25em;
     position: absolute;
     right: 0;
     top: 0;
     /* background: red; */
     display: grid;
-    grid-template-columns: 2.25rem;
-    grid-template-rows: 2.25rem;
+    grid-template-columns: 2.25em;
+    grid-template-rows: 2.25em;
     place-items: center center;
     cursor: pointer;
 
