@@ -14,7 +14,8 @@
   "ignorePatterns": [
     "backend/__tests__/**/*",
     "backend/setup-tests.ts",
-    "backend/jest.config.ts"
+    "backend/jest.config.ts",
+    "frontend/static/**/*"
   ],
   "extends": [
     "eslint:recommended",
