@@ -8,7 +8,7 @@ const JSONValidation = require("./scripts/json-validation");
 const eslintConfig = "../.eslintrc.json";
 
 task("lint", function () {
-  return src(["./src/ts/**/*.ts"])
+  return src(["./frontend/src/ts/**/*.ts"])
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
