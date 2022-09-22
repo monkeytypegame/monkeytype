@@ -244,6 +244,9 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...KeymapShowTopRowCommands,
 
     //theme
+    ...ThemesCommands,
+    ...CustomThemeCommands,
+    ...CustomThemesListCommands,
     ...FlipTestColorsCommands,
     ...ColorfulModeCommands,
     {
@@ -264,14 +267,11 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       id: "randomizeTheme",
       display: "Next random theme",
       icon: "fa-random",
-      exec: (): Promise<void> => randomizeTheme(),
+      exec: async (): Promise<void> => randomizeTheme(),
       available: (): boolean => {
         return Config.randomTheme !== "off";
       },
     },
-    ...ThemesCommands,
-    ...CustomThemeCommands,
-    ...CustomThemesListCommands,
 
     //showhide elements
     ...LiveWpmCommands,

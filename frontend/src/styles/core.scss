@@ -28,6 +28,14 @@
     url("../webfonts/Boon-400.otf") format("opentype");
 }
 
+@font-face {
+  font-family: "Open Dyslexic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/OpenDyslexic.otf") format("opentype");
+}
+
 :root {
   --roundness: 0.5rem;
   --font: "Roboto Mono", "Vazirmatn";

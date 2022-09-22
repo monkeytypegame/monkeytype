@@ -54,6 +54,10 @@
     ]
   },
   {
+    "name": "friulian",
+    "languages": ["friulian"]
+  },
+  {
     "name": "latin",
     "languages": ["latin"]
   },
@@ -191,6 +195,10 @@
   {
     "name": "estonian",
     "languages": ["estonian", "estonian_1k", "estonian_10k"]
+  },
+  {
+    "name": "udmurt",
+    "languages": ["udmurt"]
   },
   {
     "name": "welsh",

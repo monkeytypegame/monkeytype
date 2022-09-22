@@ -602,6 +602,7 @@ function handleChar(
     if (
       (currentWord === TestInput.input.current ||
         (Config.quickEnd &&
+          !Config.language.startsWith("korean") &&
           currentWord.length === TestInput.input.current.length &&
           Config.stopOnError == "off")) &&
       lastIndex === TestWords.words.length - 1
