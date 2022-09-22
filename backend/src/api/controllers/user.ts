@@ -440,12 +440,12 @@ export async function getProfile(
 ): Promise<MonkeyResponse> {
   const { uidOrName } = req.params;
 
-  const hasUidInQuery =
-    Object.keys(req.query).filter((key) => key == "uid").length == 1;
+  const { isUid } = req.query;
 
-  const user = hasUidInQuery
-    ? await UserDAL.getUser(uidOrName, "get user profile")
-    : await UserDAL.getUserByName(uidOrName, "get user profile");
+  const user =
+    isUid !== undefined
+      ? await UserDAL.getUser(uidOrName, "get user profile")
+      : await UserDAL.getUserByName(uidOrName, "get user profile");
 
   const {
     name,
