@@ -280,7 +280,11 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   ManualRestart.set();
   if (funbox !== "none") {
     for (let i = 0; i < funbox.split("#").length; i++) {
-      if (funbox.split("#")[i] != undefined) {
+      if (
+        modeSaved[i] == "minigame" ||
+        modeSaved[i] == "script" ||
+        modeSaved[i] == "style"
+      ) {
         $("#funBoxTheme").attr("href", `funbox/${funbox.split("#")[i]}.css`);
       }
 
