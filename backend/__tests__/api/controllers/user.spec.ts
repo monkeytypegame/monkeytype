@@ -21,12 +21,6 @@ describe("user controller test", () => {
         captcha: "captcha",
       };
 
-      // getCachedConfiguration = jest.fn().mockResolvedValue({
-      //   users: {
-      //     signUp: true,
-      //   },
-      // });
-
       jest.spyOn(Configuration, "getCachedConfiguration").mockResolvedValue({
         //if stuff breaks this might be the reason
         users: {
