@@ -197,7 +197,7 @@ async function createFilterPresetCallback(name: string): Promise<void> {
 
 // shows popup for user to select name
 export async function startCreateFilterPreset(): Promise<void> {
-  showNewResultFilterPresetPopup((name: string) =>
+  showNewResultFilterPresetPopup(async (name: string) =>
     createFilterPresetCallback(name)
   );
 }

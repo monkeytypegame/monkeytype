@@ -9,7 +9,7 @@ interface RetryOptions {
   retryDelayMs?: number;
 }
 
-const wait = (delay: number): Promise<number> =>
+const wait = async (delay: number): Promise<number> =>
   new Promise((resolve) => window.setTimeout(resolve, delay));
 
 const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {

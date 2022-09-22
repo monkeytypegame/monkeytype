@@ -89,6 +89,12 @@ router.get(
 
 router.post(
   "/signup",
+  validateConfiguration({
+    criteria: (configuration) => {
+      return configuration.users.signUp;
+    },
+    invalidMessage: "Sign up is temporarily disabled",
+  }),
   authenticateRequest(),
   RateLimit.userSignup,
   validateRequest({
@@ -96,6 +102,7 @@ router.post(
       email: joi.string().email(),
       name: usernameValidation,
       uid: joi.string(),
+      captcha: joi.string().required(),
     },
   }),
   asyncHandler(UserController.createNewUser)

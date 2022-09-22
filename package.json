@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "lint": "eslint \"./backend/**/*.ts\" \"./frontend/src/ts/**/*.ts\"",
+    "lint": "cd backend && eslint \"**/*.ts\" && cd ../frontend && eslint \"**/*.ts\"",
     "install-all": "sh ./bin/install.sh",
     "install-windows": ".\\bin\\install.cmd",
     "docker": "cd backend && docker-compose up",

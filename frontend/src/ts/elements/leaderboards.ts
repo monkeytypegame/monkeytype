@@ -255,7 +255,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
 
   const snap = DB.getSnapshot();
 
-  const avatarUrlPromises = currentData[lb].map((entry) => {
+  const avatarUrlPromises = currentData[lb].map(async (entry) => {
     const isCurrentUser =
       Auth.currentUser &&
       entry.uid === Auth.currentUser.uid &&
@@ -429,7 +429,7 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
-  const leaderboardRequests = timeModes.map((mode2) => {
+  const leaderboardRequests = timeModes.map(async (mode2) => {
     return Ape.leaderboards.get({
       language: currentLanguage,
       mode: "time",
@@ -440,7 +440,7 @@ async function update(): Promise<void> {
 
   if (Auth.currentUser) {
     leaderboardRequests.push(
-      ...timeModes.map((mode2) => {
+      ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
           language: currentLanguage,
           mode: "time",

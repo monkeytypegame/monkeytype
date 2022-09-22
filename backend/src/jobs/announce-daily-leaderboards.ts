@@ -123,7 +123,7 @@ async function announceDailyLeaderboards(): Promise<void> {
   }
 
   await Promise.allSettled(
-    leaderboardsToAnnounce.map(({ language, mode, mode2 }) => {
+    leaderboardsToAnnounce.map(async ({ language, mode, mode2 }) => {
       return announceDailyLeaderboard(
         language,
         mode,

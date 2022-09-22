@@ -17,6 +17,7 @@ import * as ResultFilters from "../account/result-filters";
 import * as PaceCaret from "../test/pace-caret";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
+import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
@@ -327,7 +328,7 @@ export function signIn(): void {
     ? browserLocalPersistence
     : browserSessionPersistence;
 
-  setPersistence(Auth, persistence).then(function () {
+  setPersistence(Auth, persistence).then(async function () {
     return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);
@@ -492,6 +493,12 @@ export function signOut(): void {
 }
 
 async function signUp(): Promise<void> {
+  RegisterCaptchaPopup.show();
+  const captcha = await RegisterCaptchaPopup.promise;
+  if (!captcha) {
+    Notifications.add("Please complete the captcha", -1);
+    return;
+  }
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
   LoginPage.showPreloader();
@@ -577,6 +584,7 @@ async function signUp(): Promise<void> {
 
     const signInResponse = await Ape.users.create(
       nname,
+      captcha,
       email,
       createdAuthUser.user.uid
     );

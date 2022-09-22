@@ -1828,14 +1828,11 @@ async function saveResult(
     DB.setStreak(response.data.streak);
   }
 
-  Result.hideCrown();
-
   if (response?.data?.insertedId) {
     completedEvent._id = response.data.insertedId;
     if (response?.data?.isPb) {
       completedEvent.isPb = true;
     }
-
     DB.saveLocalResult(completedEvent);
     DB.updateLocalStats(
       TestStats.restartCount + 1,
