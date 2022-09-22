@@ -15,7 +15,7 @@ task("lint", function () {
 });
 
 task("lint-json", function () {
-  return src("./static/**/*.json")
+  return src("./frontend/static/**/*.json")
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
