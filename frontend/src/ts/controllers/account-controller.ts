@@ -46,7 +46,7 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import { navigate } from "./route-controller";
+import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
 
 export const gmailProvider = new GoogleAuthProvider();
