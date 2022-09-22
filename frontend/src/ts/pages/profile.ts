@@ -133,7 +133,7 @@ interface UpdateOptions {
 }
 
 async function update(options: UpdateOptions): Promise<void> {
-  const getParamExists = checkIfGetParameterExists("uid");
+  const getParamExists = checkIfGetParameterExists("isUid");
   if (options.data) {
     $(".page.pageProfile .preloader").addClass("hidden");
     Profile.update("profile", options.data);

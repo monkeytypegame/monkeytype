@@ -433,7 +433,7 @@ router.get(
       uidOrName: joi.string().required(),
     },
     query: {
-      uid: joi.string().allow(""),
+      isUid: joi.string().allow(""),
     },
   }),
   asyncHandler(UserController.getProfile)
