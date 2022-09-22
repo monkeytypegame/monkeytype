@@ -8,14 +8,14 @@ const JSONValidation = require("./scripts/json-validation");
 const eslintConfig = "../.eslintrc.json";
 
 task("lint", function () {
-  return src(["./frontend/src/ts/**/*.ts"])
+  return src(["./src/ts/**/*.ts"])
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 });
 
 task("lint-json", function () {
-  return src("./frontend/static/**/*.json")
+  return src("./static/**/*.json")
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
