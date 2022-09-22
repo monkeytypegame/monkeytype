@@ -6,7 +6,6 @@ import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
 
-let modeSaved: MonkeyTypes.FunboxObjectType[] = [];
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
@@ -93,11 +92,32 @@ export function toggleScript(...params: string[]): void {
   }
 }
 
+let modeSaved: MonkeyTypes.FunboxObjectType[] = [];
+async function updateModes(
+  funbox: string
+): Promise<MonkeyTypes.FunboxObjectType[]> {
+  if (funbox === "none") {
+    modeSaved = [];
+  } else {
+    const list = await Misc.getFunboxList();
+    modeSaved = [];
+    for (let i = 0; i < funbox.split("#").length; i++) {
+      modeSaved[i] = list.filter(
+        (f) => f.name === funbox?.split("#")[i]
+      )[0].type;
+    }
+  }
+  return modeSaved;
+}
+
 export function checkFunbox(
   funbox: string,
   mode: MonkeyTypes.FunboxObjectType
 ): boolean {
   if (funbox === "none") return true;
+  if (Config.funbox.split("#").length != modeSaved.length) {
+    updateModes(Config.funbox).then();
+  }
   return !(
     (modeSaved.includes(mode) && mode != "modificator") ||
     (mode == "quote" &&
@@ -187,8 +207,6 @@ export async function clear(): Promise<boolean> {
 }
 
 export async function activate(funbox?: string): Promise<boolean | undefined> {
-  let mode = modeSaved;
-
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
   }
@@ -198,16 +216,8 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#wordsWrapper").removeClass("hidden");
   // }
 
-  if (funbox === "none") {
-    mode = [];
-  } else {
-    const list = await Misc.getFunboxList();
-    mode = [];
-    for (let i = 0; i < funbox.split("#").length; i++) {
-      mode[i] = list.filter((f) => f.name === funbox?.split("#")[i])[0].type;
-    }
-  }
-  modeSaved = mode;
+  if (funbox.split("#").length != modeSaved.length) await updateModes(funbox);
+  const mode = modeSaved;
 
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
@@ -227,7 +237,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
   }
   if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
-    if (mode?.includes("wordlist") || mode?.includes("modificator")) {
+    if (mode.includes("wordlist") || mode.includes("modificator")) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
           Config.mode
