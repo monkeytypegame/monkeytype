@@ -133,11 +133,6 @@ interface UpdateOptions {
 }
 
 async function update(options: UpdateOptions): Promise<void> {
-  if (options.uidOrName && options.uidOrName === "") {
-    Notifications.add("TODO no user found", -1);
-    return;
-  }
-
   if (options.data) {
     $(".page.pageProfile .preloader").addClass("hidden");
     Profile.update("profile", options.data);
