@@ -1,5 +1,6 @@
 import * as Funbox from "../../test/funbox";
 import * as TestLogic from "../../test/test-logic";
+import Config from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Funbox...",
@@ -31,14 +32,43 @@ const commands: MonkeyTypes.Command[] = [
 
 function update(funboxes: MonkeyTypes.FunboxObject[]): void {
   funboxes.forEach((funbox) => {
+    let dis;
+    if (Config.funbox.includes(funbox.name)) {
+      dis =
+        '<i class="fas fa-fw fa-check"></i>' + funbox.name.replace(/_/g, " ");
+    } else {
+      dis = '<i class="fas fa-fw"></i>' + funbox.name.replace(/_/g, " ");
+    }
     subgroup.list.push({
       id: "changeFunbox" + funbox.name,
-      display: funbox.name.replace(/_/g, " "),
+      noIcon: true,
+      display: dis,
+      visible: Funbox.checkFunbox(funbox.name, funbox.type),
+      sticky: true,
       alias: funbox.alias,
       configValue: funbox.name,
       exec: (): void => {
-        if (Funbox.setFunbox(funbox.name, funbox.type)) {
-          TestLogic.restart();
+        Funbox.toggleFunbox(funbox.name, funbox.type);
+        TestLogic.restart();
+
+        let txt = funbox.name.replace(/_/g, " ");
+
+        if (Config.funbox.includes(funbox.name)) {
+          txt = '<i class="fas fa-fw fa-check"></i>' + txt;
+        } else {
+          txt = '<i class="fas fa-fw"></i>' + txt;
+        }
+        if ($("#commandLine").hasClass("allCommands")) {
+          $(
+            `#commandLine .suggestions .entry[command='changeFunbox${funbox.name}']`
+          ).html(
+            `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
+              txt
+          );
+        } else {
+          $(
+            `#commandLine .suggestions .entry[command='changeFunbox${funbox.name}']`
+          ).html(txt);
         }
       },
     });
