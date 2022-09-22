@@ -2,7 +2,7 @@ import Page from "./page";
 import { InputIndicator } from "../elements/input-indicator";
 import { sleep } from "../utils/misc";
 import Ape from "../ape";
-import { navigate } from "../controllers/route-controller";
+import { navigate } from "../observables/navigate-event";
 
 const searchIndicator = new InputIndicator(
   $(".page.pageProfileSearch .search input"),

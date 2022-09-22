@@ -10,6 +10,7 @@ import * as PageProfileSearch from "../pages/profile-search";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
+import * as NavigateEvent from "../observables/navigate-event";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -111,7 +112,7 @@ const routes: Route[] = [
   },
 ];
 
-export function navigate(
+function nav(
   url = window.location.pathname + window.location.search,
   options = {} as NavigateOptions
 ): void {
@@ -158,15 +159,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = e?.target as HTMLLinkElement;
     if (target.matches("[router-link]") && target?.href) {
       e.preventDefault();
-      navigate(target.href);
+      nav(target.href);
     }
   });
 });
 
 $("#top .logo").on("click", () => {
-  navigate("/");
+  nav("/");
 });
 
 $(document).on("click", "#leaderboards a.entryName", () => {
   Leaderboards.hide();
+});
+
+NavigateEvent.subscribe((url, options) => {
+  nav(url, options);
 });
