@@ -24,6 +24,7 @@
     "@types/jquery": "3.5.14",
     "@types/object-hash": "2.2.1",
     "@types/select2": "4.0.55",
+    "@types/throttle-debounce": "2.1.0",
     "@types/tinycolor2": "1.4.3",
     "buffer": "6.0.3",
     "circular-dependency-plugin": "5.2.2",
@@ -53,7 +54,6 @@
     "webpack-merge": "5.8.0"
   },
   "dependencies": {
-    "@types/throttle-debounce": "2.1.0",
     "axios": "0.21.4",
     "chart.js": "3.7.1",
     "chartjs-adapter-date-fns": "2.0.0",
