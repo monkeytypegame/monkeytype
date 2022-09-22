@@ -181,7 +181,10 @@ export function toggleFunbox(
   if (
     funbox == "none" ||
     mode === null ||
-    (!checkFunbox(funbox, mode) && !Config.funbox.includes(funbox))
+    (!checkFunbox(funbox, mode) &&
+      !(
+        Config.funbox.includes(funbox) && !Config.funbox.includes(funbox + "_")
+      ))
   ) {
     setFunbox("none", null);
     return true;

@@ -639,7 +639,10 @@ function setActiveFunboxButton(): void {
     funboxModes.forEach((funbox) => {
       if (
         !Funbox.checkFunbox(funbox.name, funbox.type) &&
-        !Config.funbox.includes(funbox.name)
+        !(
+          Config.funbox.includes(funbox.name) &&
+          !Config.funbox.includes(funbox.name + "_")
+        )
       ) {
         $(
           `.pageSettings .section.funbox .button[funbox='${funbox.name}']`
