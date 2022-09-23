@@ -1235,3 +1235,105 @@ export function abbreviateNumber(num: number): string {
 export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export class Section {
+  public title: string;
+  public author: string;
+  public words: string[];
+  constructor(title: string, author: string, words: string[]) {
+    this.title = title;
+    this.author = author;
+    this.words = words;
+  }
+}
+
+const prefixSize = 2;
+
+class CharDistribution {
+  public chars: { [char: string]: number };
+  public count: number;
+  constructor() {
+    this.chars = {};
+    this.count = 0;
+  }
+
+  public addChar(char: string): void {
+    this.count++;
+    if (char in this.chars) {
+      this.chars[char]++;
+    } else {
+      this.chars[char] = 1;
+    }
+  }
+
+  public randomChar(): string {
+    const randomIndex = randomIntFromRange(0, this.count - 1);
+    let runningCount = 0;
+    for (const [char, charCount] of Object.entries(this.chars)) {
+      runningCount += charCount;
+      if (runningCount > randomIndex) {
+        return char;
+      }
+    }
+
+    return Object.keys(this.chars)[0];
+  }
+}
+
+export class Wordset {
+  public words: string[];
+  public length: number;
+  constructor(words: string[]) {
+    this.words = words;
+    this.length = this.words.length;
+  }
+
+  public randomWord(): string {
+    return randomElementFromArray(this.words);
+  }
+}
+
+export class PseudolangWordGenerator extends Wordset {
+  public ngrams: { [prefix: string]: CharDistribution } = {};
+  constructor(words: string[]) {
+    super(words);
+    // Can generate an unbounded number of words in theory.
+    this.length = Infinity;
+
+    for (let word of words) {
+      // Mark the end of each word with a space.
+      word += " ";
+      let prefix = "";
+      for (const c of word) {
+        // Add `c` to the distribution of chars that can come after `prefix`.
+        if (!(prefix in this.ngrams)) {
+          this.ngrams[prefix] = new CharDistribution();
+        }
+        this.ngrams[prefix].addChar(c);
+        prefix = (prefix + c).substr(-prefixSize);
+      }
+    }
+  }
+
+  public override randomWord(): string {
+    let word = "";
+    for (;;) {
+      const prefix = word.substr(-prefixSize);
+      const charDistribution = this.ngrams[prefix];
+      if (!charDistribution) {
+        // This shouldn't happen if this.ngrams is complete. If it does
+        // somehow, start generating a new word.
+        word = "";
+        continue;
+      }
+      // Pick a random char from the distribution that comes after `prefix`.
+      const nextChar = charDistribution.randomChar();
+      if (nextChar == " ") {
+        // A space marks the end of the word, so stop generating and return.
+        break;
+      }
+      word += nextChar;
+    }
+    return word;
+  }
+}

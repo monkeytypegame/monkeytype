@@ -5,17 +5,22 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
+import * as WeakSpot from "./weak-spot";
+import { getPoem } from "./poetry";
+import { getSection } from "./wikipedia";
 
 interface Funbox {
   name: string;
   languageDependent?: boolean;
   noLingatures?: boolean;
-  getWord?: () => string;
-  alterText?: (text: string) => string;
+  getWord?: (wordset?: Misc.Wordset) => string;
+  withWords?: (words: string[]) => Misc.Wordset;
+  alterText?: (word: string) => string;
   applyCSS?: () => void;
   applyConfig?: () => void;
   rememberSettings?: () => void;
   toggleScript?: (params: string[]) => void;
+  pullSection?: (language?: string) => Promise<Misc.Section | false>;
 }
 
 export const Funboxes: Funbox[] = [
@@ -82,6 +87,9 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "arrows",
+    getWord(): string {
+      return Misc.getArrows();
+    },
     applyConfig(): void {
       $("#words").addClass("arrows");
       UpdateConfig.setHighlightMode("letter", true);
@@ -96,9 +104,23 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "rAnDoMcAsE",
+    alterText(word: string): string {
+      let randomcaseword = "";
+      for (let i = 0; i < word.length; i++) {
+        if (i % 2 != 0) {
+          randomcaseword += word[i].toUpperCase();
+        } else {
+          randomcaseword += word[i];
+        }
+      }
+      return randomcaseword;
+    },
   },
   {
     name: "capitals",
+    alterText(word: string): string {
+      return Misc.capitalizeFirstLetterOfEachWord(word);
+    },
   },
   {
     name: "layoutfluid",
@@ -164,9 +186,15 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "ascii",
+    getWord(): string {
+      return Misc.getASCII();
+    },
   },
   {
     name: "specials",
+    getWord(): string {
+      return Misc.getSpecials();
+    },
   },
   {
     name: "plus_one",
@@ -263,17 +291,29 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "poetry",
+    async pullSection(): Promise<Misc.Section | false> {
+      return getPoem();
+    },
   },
   {
     name: "wikipedia",
+    async pullSection(lang?: string): Promise<Misc.Section | false> {
+      return getSection(lang ? lang : "english");
+    },
   },
   {
     name: "weakspot",
     languageDependent: true,
+    getWord(wordset?: Misc.Wordset): string {
+      if (wordset !== undefined) return WeakSpot.getWord(wordset);
+      else return "";
+    },
   },
   {
     name: "pseudolang",
-    languageDependent: true,
+    withWords(words: string[]): Misc.Wordset {
+      return new Misc.PseudolangWordGenerator(words);
+    },
   },
 ];
 

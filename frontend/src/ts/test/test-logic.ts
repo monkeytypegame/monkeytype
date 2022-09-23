@@ -27,8 +27,6 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
-import * as Poetry from "./poetry";
-import * as Wikipedia from "./wikipedia";
 import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
@@ -723,7 +721,7 @@ export function restart(options = {} as RestartOptions): void {
   );
 }
 
-function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
+function applyFunboxesToWord(word: string, wordset?: Misc.Wordset): string {
   if (Config.funbox.split("#").includes("rAnDoMcAsE")) {
     let randomcaseword = "";
     for (let i = 0; i < word.length; i++) {
@@ -776,7 +774,7 @@ function applyLazyModeToWord(
 }
 
 async function getNextWord(
-  wordset: Wordset.Wordset,
+  wordset: Misc.Wordset,
   language: MonkeyTypes.LanguageObject,
   wordsBound: number
 ): Promise<string> {
@@ -982,46 +980,42 @@ export async function init(): Promise<void> {
       wordList = CustomText.text;
     }
     const wordset = Wordset.withWords(wordList, Config.funbox);
+    let wordCount = 0;
 
-    if (
-      (Config.funbox.split("#").includes("wikipedia") ||
-        Config.funbox.split("#").includes("poetry")) &&
-      Config.mode != "custom"
-    ) {
-      let wordCount = 0;
+    for (const f of Funbox.Funboxes) {
+      if (Config.funbox.split("#").includes(f.name) && f.pullSection) {
+        while (
+          (Config.mode == "words" && Config.words >= wordCount) ||
+          (Config.mode === "time" && wordCount < 100)
+        ) {
+          const section = await f.pullSection(Config.language);
 
-      // If mode is words, get as many sections as you need until the wordCount is fullfilled
-      while (
-        (Config.mode == "words" && Config.words >= wordCount) ||
-        (Config.mode === "time" && wordCount < 100)
-      ) {
-        const section = Config.funbox.split("#").includes("wikipedia")
-          ? await Wikipedia.getSection(Config.language)
-          : await Poetry.getPoem();
-
-        if (Config.funbox.split("#").includes("poetry") && section === false) {
-          Notifications.add(
-            "Error while getting poetry. Please try again later",
-            -1
-          );
-          UpdateConfig.setFunbox("none");
-          restart();
-          return;
-        }
-
-        if (section === undefined) continue;
-        if (section === false) continue;
-
-        for (const word of section.words) {
-          if (wordCount >= Config.words && Config.mode == "words") {
-            wordCount++;
-            break;
+          if (section === false) {
+            Notifications.add(
+              "Error while getting section. Please try again later",
+              -1
+            );
+            UpdateConfig.toggleFunbox(f.name);
+            restart();
+            return;
           }
-          wordCount++;
-          TestWords.words.push(word);
+
+          if (section === undefined) continue;
+
+          for (const word of section.words) {
+            if (wordCount >= Config.words && Config.mode == "words") {
+              wordCount++;
+              break;
+            }
+            wordCount++;
+            TestWords.words.push(word);
+          }
         }
+        break;
       }
-    } else {
+    }
+
+    if (wordCount == 0) {
       for (let i = 0; i < wordsBound; i++) {
         const randomWord = await getNextWord(wordset, language, wordsBound);
 
@@ -1214,39 +1208,34 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  if (
-    Config.funbox.split("#").includes("wikipedia") ||
-    Config.funbox.split("#").includes("poetry")
-  ) {
-    if (TestWords.words.length - TestWords.words.currentIndex < 20) {
-      const section = Config.funbox.split("#").includes("wikipedia")
-        ? await Wikipedia.getSection(Config.language)
-        : await Poetry.getPoem();
+  for (const f of Funbox.Funboxes) {
+    if (Config.funbox.split("#").includes(f.name) && f.pullSection) {
+      if (TestWords.words.length - TestWords.words.currentIndex < 20) {
+        const section = await f.pullSection(Config.language);
 
-      if (Config.funbox.split("#").includes("poetry") && section === false) {
-        Notifications.add(
-          "Error while getting poetry. Please try again later",
-          -1
-        );
-        UpdateConfig.setFunbox("none");
-        restart();
-        return;
-      }
-
-      if (section === undefined) return;
-      if (section === false) return;
-
-      let wordCount = 0;
-      for (const word of section.words) {
-        if (wordCount >= Config.words && Config.mode == "words") {
-          break;
+        if (section === false) {
+          Notifications.add(
+            "Error while getting section. Please try again later",
+            -1
+          );
+          UpdateConfig.toggleFunbox(f.name);
+          restart();
+          return;
         }
-        wordCount++;
-        TestWords.words.push(word);
-        TestUI.addWord(word);
+
+        if (section === undefined) return;
+
+        let wordCount = 0;
+        for (const word of section.words) {
+          if (wordCount >= Config.words && Config.mode == "words") {
+            break;
+          }
+          wordCount++;
+          TestWords.words.push(word);
+          TestUI.addWord(word);
+        }
       }
-    } else {
-      return;
+      break;
     }
   }
 
