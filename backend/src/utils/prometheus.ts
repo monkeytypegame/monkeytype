@@ -216,7 +216,7 @@ export function recordRequestCountry(
   country: string,
   req: MonkeyTypes.Request
 ): void {
-  const reqPath = req.baseUrl + req?.route?.path ?? "";
+  const reqPath = req.url;
 
   let normalizedPath = "/";
   if (reqPath !== "/") {
