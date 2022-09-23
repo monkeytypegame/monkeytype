@@ -8,24 +8,149 @@ import * as ModesNotice from "../elements/modes-notice";
 
 interface Funbox {
   name: string;
-  ignoresLanguage: boolean;
+  languageDependent?: boolean;
+  noLingatures?: boolean;
   getWord?: () => string;
   alterText?: (text: string) => string;
   applyCSS?: () => void;
   applyConfig?: () => void;
+  rememberSettings?: () => void;
+  toggleScript?: (params: string[]) => void;
 }
 
 export const Funboxes: Funbox[] = [
   {
+    name: "nausea",
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/nausea.css`);
+    },
+  },
+  {
+    name: "round_round_baby",
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/round_round_baby.css`);
+    },
+  },
+  {
+    name: "simon_says",
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+    },
+    applyConfig(): void {
+      UpdateConfig.setKeymapMode("next", true);
+    },
+    rememberSettings(): void {
+      rememberSetting(
+        "keymapMode",
+        Config.keymapMode,
+        UpdateConfig.setKeymapMode
+      );
+    },
+  },
+  {
+    name: "mirror",
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/mirror.css`);
+    },
+  },
+  {
+    name: "tts",
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+    },
+    applyConfig(): void {
+      UpdateConfig.setKeymapMode("off", true);
+      UpdateConfig.setHighlightMode("letter", true);
+    },
+    rememberSettings(): void {
+      rememberSetting(
+        "keymapMode",
+        Config.keymapMode,
+        UpdateConfig.setKeymapMode
+      );
+    },
+    toggleScript(params: string[]): void {
+      TTS.speak(params[0]);
+    },
+  },
+  {
+    name: "choo_choo",
+    noLingatures: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
+    },
+  },
+  {
+    name: "arrows",
+    applyConfig(): void {
+      $("#words").addClass("arrows");
+      UpdateConfig.setHighlightMode("letter", true);
+    },
+    rememberSettings(): void {
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
+    },
+  },
+  {
+    name: "rAnDoMcAsE",
+  },
+  {
+    name: "capitals",
+  },
+  {
+    name: "layoutfluid",
+    applyConfig(): void {
+      UpdateConfig.setLayout(
+        Config.customLayoutfluid
+          ? Config.customLayoutfluid.split("#")[0]
+          : "qwerty",
+        true
+      );
+      UpdateConfig.setKeymapLayout(
+        Config.customLayoutfluid
+          ? Config.customLayoutfluid.split("#")[0]
+          : "qwerty",
+        true
+      );
+    },
+    rememberSettings(): void {
+      rememberSetting(
+        "keymapMode",
+        Config.keymapMode,
+        UpdateConfig.setKeymapMode
+      );
+      rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
+      rememberSetting(
+        "keymapLayout",
+        Config.keymapLayout,
+        UpdateConfig.setKeymapLayout
+      );
+    },
+  },
+  {
+    name: "earthquake",
+    noLingatures: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
+    },
+  },
+  {
+    name: "space_balls",
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
+    },
+  },
+  {
     name: "gibberish",
-    ignoresLanguage: true,
     getWord(): string {
       return Misc.getGibberish();
     },
   },
   {
     name: "58008",
-    ignoresLanguage: true,
     getWord(): string {
       let num = Misc.getNumbers(7);
       if (Config.language.startsWith("kurdish")) {
@@ -33,145 +158,122 @@ export const Funboxes: Funbox[] = [
       }
       return num;
     },
-  },
-  {
-    name: "nausea",
-    ignoresLanguage: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/nausea.css`);
-    },
-  },
-  {
-    name: "round_round_baby",
-    ignoresLanguage: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/round_round_baby.css`);
-    },
-  },
-  {
-    name: "simon_says",
-    ignoresLanguage: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-    },
-  },
-  {
-    name: "mirror",
-    ignoresLanguage: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/mirror.css`);
-    },
-  },
-  {
-    name: "tts",
-    ignoresLanguage: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-    },
-  },
-  {
-    name: "choo_choo",
-    ignoresLanguage: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
-    },
-  },
-  {
-    name: "arrows",
-    ignoresLanguage: true,
-    applyCSS(): void {
-      $("#words").addClass("arrows");
-    },
-  },
-  {
-    name: "rAnDoMcAsE",
-    ignoresLanguage: true,
-  },
-  {
-    name: "capitals",
-    ignoresLanguage: true,
-  },
-  {
-    name: "layoutfluid",
-    ignoresLanguage: true,
-  },
-  {
-    name: "earthquake",
-    ignoresLanguage: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
-    },
-  },
-  {
-    name: "space_balls",
-    ignoresLanguage: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
+    rememberSettings(): void {
+      rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
     },
   },
   {
     name: "ascii",
-    ignoresLanguage: true,
   },
   {
     name: "specials",
-    ignoresLanguage: true,
   },
   {
     name: "plus_one",
-    ignoresLanguage: true,
   },
   {
     name: "plus_two",
-    ignoresLanguage: true,
   },
   {
     name: "read_ahead_easy",
-    ignoresLanguage: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
+    },
+    applyConfig(): void {
+      UpdateConfig.setHighlightMode("letter", true);
+    },
+    rememberSettings(): void {
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
     },
   },
   {
     name: "read_ahead",
-    ignoresLanguage: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
+    },
+    applyConfig(): void {
+      UpdateConfig.setHighlightMode("letter", true);
+    },
+    rememberSettings(): void {
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
     },
   },
   {
     name: "read_ahead_hard",
-    ignoresLanguage: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
+    },
+    applyConfig(): void {
+      UpdateConfig.setHighlightMode("letter", true);
+    },
+    rememberSettings(): void {
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
     },
   },
   {
     name: "memory",
-    ignoresLanguage: true,
+    applyConfig(): void {
+      UpdateConfig.setMode("words", true);
+      UpdateConfig.setShowAllLines(true, true);
+      if (Config.keymapMode === "next") {
+        UpdateConfig.setKeymapMode("react", true);
+      }
+    },
+    rememberSettings(): void {
+      rememberSetting("mode", Config.mode, UpdateConfig.setMode);
+      rememberSetting(
+        "showAllLines",
+        Config.showAllLines,
+        UpdateConfig.setShowAllLines
+      );
+      if (Config.keymapMode === "next") {
+        rememberSetting(
+          "keymapMode",
+          Config.keymapMode,
+          UpdateConfig.setKeymapMode
+        );
+      }
+    },
   },
   {
     name: "nospace",
-    ignoresLanguage: true,
-    applyCSS(): void {
+    applyConfig(): void {
       $("#words").addClass("nospace");
+      UpdateConfig.setHighlightMode("letter", true);
+    },
+    rememberSettings(): void {
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
     },
   },
   {
     name: "poetry",
-    ignoresLanguage: true,
   },
   {
     name: "wikipedia",
-    ignoresLanguage: true,
   },
   {
     name: "weakspot",
-    ignoresLanguage: true,
+    languageDependent: true,
   },
   {
     name: "pseudolang",
-    ignoresLanguage: true,
+    languageDependent: true,
   },
 ];
 
@@ -256,9 +358,11 @@ export function reset(): void {
 }
 
 export function toggleScript(...params: string[]): void {
-  if (Config.funbox.split("#").includes("tts")) {
-    TTS.speak(params[0]);
-  }
+  Funboxes.forEach((funbox) => {
+    if (Config.funbox.split("#").includes(funbox.name)) {
+      if (funbox.toggleScript) funbox.toggleScript(params);
+    }
+  });
 }
 
 let modeSaved: MonkeyTypes.FunboxObjectType[] = [];
@@ -394,18 +498,19 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
   if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
-    if (
-      funbox.split("#").includes("choo_choo") ||
-      funbox.split("#").includes("earthquake")
-    ) {
-      Notifications.add(
-        "Current language does not support this funbox mode",
-        0
-      );
-      UpdateConfig.setFunbox("none", true);
-      await clear();
-      return;
-    }
+    Funboxes.forEach(async (funbox) => {
+      if (Config.funbox.split("#").includes(funbox.name)) {
+        if (funbox.noLingatures) {
+          Notifications.add(
+            "Current language does not support this funbox mode",
+            0
+          );
+          UpdateConfig.setFunbox("none", true);
+          await clear();
+          return;
+        }
+      }
+    });
   }
   if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
     if (mode.includes("wordlist") || mode.includes("modificator")) {
@@ -445,53 +550,10 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   ManualRestart.set();
   if (funbox !== "none") {
-    for (let i = 0; i < funbox.split("#").length; i++) {
-      if (funbox.split("#")[i] === "simon_says") {
-        UpdateConfig.setKeymapMode("next", true);
-      }
-
-      if (
-        funbox.split("#")[i] === "read_ahead" ||
-        funbox.split("#")[i] === "read_ahead_easy" ||
-        funbox.split("#")[i] === "read_ahead_hard"
-      ) {
-        UpdateConfig.setHighlightMode("letter", true);
-      }
-      if (funbox.split("#")[i] === "tts") {
-        UpdateConfig.setKeymapMode("off", true);
-        UpdateConfig.setHighlightMode("letter", true);
-      } else if (funbox.split("#")[i] === "layoutfluid") {
-        UpdateConfig.setLayout(
-          Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty",
-          true
-        );
-        UpdateConfig.setKeymapLayout(
-          Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty",
-          true
-        );
-      } else if (funbox.split("#")[i] === "memory") {
-        UpdateConfig.setMode("words", true);
-        UpdateConfig.setShowAllLines(true, true);
-        if (Config.keymapMode === "next") {
-          UpdateConfig.setKeymapMode("react", true);
-        }
-      } else if (funbox.split("#")[i] === "nospace") {
-        UpdateConfig.setHighlightMode("letter", true);
-      } else if (funbox.split("#")[i] === "arrows") {
-        UpdateConfig.setHighlightMode("letter", true);
-      }
-    }
-    Funboxes.forEach((f) => {
-      if (
-        Config.funbox.includes(f.name) &&
-        !Config.funbox.includes(f.name + "_")
-      ) {
-        if (f.applyCSS) f.applyCSS();
-        if (f.applyConfig) f.applyConfig();
+    Funboxes.forEach(async (funbox) => {
+      if (Config.funbox.split("#").includes(funbox.name)) {
+        if (funbox.applyCSS) funbox.applyCSS();
+        if (funbox.applyConfig) funbox.applyConfig();
       }
     });
   }
@@ -500,84 +562,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 }
 
 export async function rememberSettings(): Promise<void> {
-  const funbox = Config.funbox;
-  let mode = modeSaved;
-  if (funbox === "none") {
-    mode = [];
-  } else {
-    const list = await Misc.getFunboxList();
-    mode = [];
-    for (let i = 0; i < funbox.split("#").length; i++) {
-      mode[i] = list.filter((f) => f.name === funbox?.split("#")[i])[0].type;
+  Funboxes.forEach(async (funbox) => {
+    if (Config.funbox.split("#").includes(funbox.name)) {
+      if (funbox.rememberSettings) funbox.rememberSettings();
     }
-  }
-  if (mode.includes("style")) {
-    if (funbox.split("#").includes("simon_says")) {
-      rememberSetting(
-        "keymapMode",
-        Config.keymapMode,
-        UpdateConfig.setKeymapMode
-      );
-    }
-
-    if (
-      funbox.split("#").includes("read_ahead") ||
-      funbox.split("#").includes("read_ahead_easy") ||
-      funbox.split("#").includes("read_ahead_hard")
-    ) {
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
-    }
-  } else if (mode.includes("script")) {
-    if (funbox.split("#").includes("tts")) {
-      rememberSetting(
-        "keymapMode",
-        Config.keymapMode,
-        UpdateConfig.setKeymapMode
-      );
-    } else if (funbox.split("#").includes("layoutfluid")) {
-      rememberSetting(
-        "keymapMode",
-        Config.keymapMode,
-        UpdateConfig.setKeymapMode
-      );
-      rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
-      rememberSetting(
-        "keymapLayout",
-        Config.keymapLayout,
-        UpdateConfig.setKeymapLayout
-      );
-    } else if (funbox.split("#").includes("memory")) {
-      rememberSetting("mode", Config.mode, UpdateConfig.setMode);
-      rememberSetting(
-        "showAllLines",
-        Config.showAllLines,
-        UpdateConfig.setShowAllLines
-      );
-      if (Config.keymapMode === "next") {
-        rememberSetting(
-          "keymapMode",
-          Config.keymapMode,
-          UpdateConfig.setKeymapMode
-        );
-      }
-    } else if (funbox.split("#").includes("nospace")) {
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
-    } else if (funbox.split("#").includes("arrows")) {
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
-    } else if (funbox.split("#").includes("58008")) {
-      rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
-    }
-  }
+  });
 }
