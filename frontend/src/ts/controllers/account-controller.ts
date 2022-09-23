@@ -217,6 +217,7 @@ export async function getDataAndInit(): Promise<boolean> {
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
   if (window.location.pathname === "/account") {
+    LoadingPage.updateBar(90);
     await Account.downloadResults();
   }
   if (window.location.pathname === "/login") {
