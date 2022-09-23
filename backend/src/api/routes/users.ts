@@ -102,6 +102,7 @@ router.post(
       email: joi.string().email(),
       name: usernameValidation,
       uid: joi.string(),
+      captcha: joi.string().required(),
     },
   }),
   asyncHandler(UserController.createNewUser)
@@ -420,7 +421,7 @@ const requireProfilesEnabled = validateConfiguration({
 });
 
 router.get(
-  "/:uid/profile",
+  "/:uidOrName/profile",
   requireProfilesEnabled,
   authenticateRequest({
     isPublic: true,
@@ -429,7 +430,10 @@ router.get(
   withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({
     params: {
-      uid: joi.string().required(),
+      uidOrName: joi.string().required(),
+    },
+    query: {
+      isUid: joi.string().allow(""),
     },
   }),
   asyncHandler(UserController.getProfile)

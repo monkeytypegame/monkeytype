@@ -1,4 +1,4 @@
-import { navigate } from "../../controllers/route-controller";
+import { navigate } from "../../observables/navigate-event";
 import * as ChallengeController from "../../controllers/challenge-controller";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
