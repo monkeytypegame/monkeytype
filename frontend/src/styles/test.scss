@@ -1095,6 +1095,9 @@
 
     .textButton {
       margin: 0 0.5rem;
+      &.noInteraction {
+        pointer-events: none;
+      }
     }
 
     .fas {
