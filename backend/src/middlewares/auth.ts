@@ -5,7 +5,11 @@ import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
-import { incrementAuth, recordAuthTime } from "../utils/prometheus";
+import {
+  incrementAuth,
+  recordAuthTime,
+  recordRequestCountry,
+} from "../utils/prometheus";
 import { performance } from "perf_hooks";
 
 interface RequestAuthenticationOptions {
@@ -84,6 +88,11 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
       Math.round(performance.now() - startTime),
       req
     );
+
+    const country = req.headers["cf-ipcountry"] as string;
+    if (country) {
+      recordRequestCountry(country, req as MonkeyTypes.Request);
+    }
 
     next();
   };

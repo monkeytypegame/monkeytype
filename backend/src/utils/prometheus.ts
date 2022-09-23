@@ -205,3 +205,25 @@ export function recordAuthTime(
 
   authTime.observe({ type, status, path: pathNoGet }, time);
 }
+
+const requestCountry = new Counter({
+  name: "api_request_country",
+  help: "Country of request",
+  labelNames: ["path", "country"],
+});
+
+export function recordRequestCountry(
+  country: string,
+  req: MonkeyTypes.Request
+): void {
+  const reqPath = req.baseUrl + req.route.path;
+
+  let normalizedPath = "/";
+  if (reqPath !== "/") {
+    normalizedPath = reqPath.endsWith("/") ? reqPath.slice(0, -1) : reqPath;
+  }
+
+  const pathNoGet = normalizedPath.replace(/\?.*/, "");
+
+  requestCountry.inc({ path: pathNoGet, country });
+}
