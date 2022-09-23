@@ -784,4 +784,9 @@
     "bgColor": "#fdf0d5",
     "mainColor": "#892948"
   }
+  ,{
+    "name": "theme_name",
+    "bgColor": "#ffffff",
+    "mainColor": "#ffffff"
+}
 ]
