@@ -206,7 +206,6 @@ export function clearPreview(applyTheme = true): void {
 let themesList: string[] = [];
 
 async function changeThemeList(): Promise<void> {
-  if (!DB.getSnapshot()) return;
   const themes = await Misc.getThemesList();
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
@@ -222,7 +221,7 @@ async function changeThemeList(): Promise<void> {
     themesList = themes.map((t) => {
       return t.name;
     });
-  } else {
+  } else if (Config.randomTheme === "custom" && DB.getSnapshot()) {
     themesList = DB.getSnapshot().customThemes.map((ct) => ct._id);
   }
   Misc.shuffle(themesList);
