@@ -6,6 +6,175 @@ import Config, * as UpdateConfig from "../config";
 import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
 
+interface Funbox {
+  name: string;
+  ignoresLanguage: boolean;
+  getWord?: () => string;
+  alterText?: (text: string) => string;
+  applyCSS?: () => void;
+  applyConfig?: () => void;
+}
+
+export const Funboxes: Funbox[] = [
+  {
+    name: "gibberish",
+    ignoresLanguage: true,
+    getWord(): string {
+      return Misc.getGibberish();
+    },
+  },
+  {
+    name: "58008",
+    ignoresLanguage: true,
+    getWord(): string {
+      let num = Misc.getNumbers(7);
+      if (Config.language.startsWith("kurdish")) {
+        num = Misc.convertNumberToArabicIndic(num);
+      }
+      return num;
+    },
+  },
+  {
+    name: "nausea",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/nausea.css`);
+    },
+  },
+  {
+    name: "round_round_baby",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/round_round_baby.css`);
+    },
+  },
+  {
+    name: "simon_says",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+    },
+  },
+  {
+    name: "mirror",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/mirror.css`);
+    },
+  },
+  {
+    name: "tts",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+    },
+  },
+  {
+    name: "choo_choo",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
+    },
+  },
+  {
+    name: "arrows",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#words").addClass("arrows");
+    },
+  },
+  {
+    name: "rAnDoMcAsE",
+    ignoresLanguage: true,
+  },
+  {
+    name: "capitals",
+    ignoresLanguage: true,
+  },
+  {
+    name: "layoutfluid",
+    ignoresLanguage: true,
+  },
+  {
+    name: "earthquake",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
+    },
+  },
+  {
+    name: "space_balls",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
+    },
+  },
+  {
+    name: "ascii",
+    ignoresLanguage: true,
+  },
+  {
+    name: "specials",
+    ignoresLanguage: true,
+  },
+  {
+    name: "plus_one",
+    ignoresLanguage: true,
+  },
+  {
+    name: "plus_two",
+    ignoresLanguage: true,
+  },
+  {
+    name: "read_ahead_easy",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
+    },
+  },
+  {
+    name: "read_ahead",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
+    },
+  },
+  {
+    name: "read_ahead_hard",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
+    },
+  },
+  {
+    name: "memory",
+    ignoresLanguage: true,
+  },
+  {
+    name: "nospace",
+    ignoresLanguage: true,
+    applyCSS(): void {
+      $("#words").addClass("nospace");
+    },
+  },
+  {
+    name: "poetry",
+    ignoresLanguage: true,
+  },
+  {
+    name: "wikipedia",
+    ignoresLanguage: true,
+  },
+  {
+    name: "weakspot",
+    ignoresLanguage: true,
+  },
+  {
+    name: "pseudolang",
+    ignoresLanguage: true,
+  },
+];
+
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
@@ -280,14 +449,6 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   ManualRestart.set();
   if (funbox !== "none") {
     for (let i = 0; i < funbox.split("#").length; i++) {
-      if (
-        modeSaved[i] == "minigame" ||
-        modeSaved[i] == "script" ||
-        modeSaved[i] == "style"
-      ) {
-        $("#funBoxTheme").attr("href", `funbox/${funbox.split("#")[i]}.css`);
-      }
-
       if (funbox.split("#")[i] === "simon_says") {
         UpdateConfig.setKeymapMode("next", true);
       }
@@ -300,7 +461,6 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         UpdateConfig.setHighlightMode("letter", true);
       }
       if (funbox.split("#")[i] === "tts") {
-        $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
         UpdateConfig.setKeymapMode("off", true);
         UpdateConfig.setHighlightMode("letter", true);
       } else if (funbox.split("#")[i] === "layoutfluid") {
@@ -323,13 +483,20 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
           UpdateConfig.setKeymapMode("react", true);
         }
       } else if (funbox.split("#")[i] === "nospace") {
-        $("#words").addClass("nospace");
         UpdateConfig.setHighlightMode("letter", true);
       } else if (funbox.split("#")[i] === "arrows") {
-        $("#words").addClass("arrows");
         UpdateConfig.setHighlightMode("letter", true);
       }
     }
+    Funboxes.forEach((f) => {
+      if (
+        Config.funbox.includes(f.name) &&
+        !Config.funbox.includes(f.name + "_")
+      ) {
+        if (f.applyCSS) f.applyCSS();
+        if (f.applyConfig) f.applyConfig();
+      }
+    });
   }
   // ModesNotice.update();
   return true;
