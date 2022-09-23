@@ -88,8 +88,10 @@ const routes: Route[] = [
   },
   {
     path: "/account",
-    load: (): void => {
-      PageController.change(PageAccount.page);
+    load: (_params, options): void => {
+      PageController.change(PageAccount.page, {
+        data: options.data,
+      });
     },
   },
   {

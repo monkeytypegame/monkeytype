@@ -900,7 +900,6 @@ function fillContent(): void {
 
 export async function downloadResults(): Promise<void> {
   if (DB.getSnapshot().results !== undefined) return;
-  LoadingPage.updateBar(45, true);
   const results = await DB.getUserResults();
   TodayTracker.addAllFromToday();
   if (results) {
@@ -914,6 +913,7 @@ export async function update(): Promise<void> {
     Notifications.add(`Missing account data. Please refresh.`, -1);
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
   } else {
+    LoadingPage.updateBar(90);
     await downloadResults();
     try {
       fillContent();
@@ -1135,7 +1135,12 @@ export const page = new Page(
     reset();
   },
   async () => {
-    await update();
+    if (DB.getSnapshot().results == undefined) {
+      $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
+      $(".pageAccount .content").addClass("hidden");
+      $(".pageAccount .preloader").removeClass("hidden");
+    }
+    update();
   },
   async () => {
     //
