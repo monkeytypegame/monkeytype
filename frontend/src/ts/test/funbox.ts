@@ -11,11 +11,15 @@ import { getSection } from "./wikipedia";
 
 interface Funbox {
   name: string;
-  languageDependent?: boolean;
+  ignoresLanguage?: boolean;
   noLingatures?: boolean;
   mode?: MonkeyTypes.Mode;
   blockWordHighlight?: boolean;
+  nospace?: boolean;
+  noPunctuation?: boolean;
+  noNumbers?: boolean;
   getWord?: (wordset?: Misc.Wordset) => string;
+  punctuateWord?: (word: string) => string;
   withWords?: (words: string[]) => Misc.Wordset;
   alterText?: (word: string) => string;
   applyCSS?: () => void;
@@ -91,6 +95,10 @@ export const Funboxes: Funbox[] = [
   {
     name: "arrows",
     blockWordHighlight: true,
+    ignoresLanguage: true,
+    nospace: true,
+    noPunctuation: true,
+    noNumbers: true,
     getWord(): string {
       return Misc.getArrows();
     },
@@ -171,12 +179,15 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "gibberish",
+    ignoresLanguage: true,
     getWord(): string {
       return Misc.getGibberish();
     },
   },
   {
     name: "58008",
+    noNumbers: true,
+    ignoresLanguage: true,
     getWord(): string {
       let num = Misc.getNumbers(7);
       if (Config.language.startsWith("kurdish")) {
@@ -184,18 +195,47 @@ export const Funboxes: Funbox[] = [
       }
       return num;
     },
+    punctuateWord(word: string): string {
+      if (word.length > 3) {
+        if (Math.random() < 0.5) {
+          word = Misc.setCharAt(
+            word,
+            Misc.randomIntFromRange(1, word.length - 2),
+            "."
+          );
+        }
+        if (Math.random() < 0.75) {
+          const index = Misc.randomIntFromRange(1, word.length - 2);
+          if (
+            word[index - 1] !== "." &&
+            word[index + 1] !== "." &&
+            word[index + 1] !== "0"
+          ) {
+            const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
+            word = Misc.setCharAt(word, index, special);
+          }
+        }
+      }
+      return word;
+    },
     rememberSettings(): void {
       rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
     },
   },
   {
     name: "ascii",
+    ignoresLanguage: true,
+    noPunctuation: true,
+    noNumbers: true,
     getWord(): string {
       return Misc.getASCII();
     },
   },
   {
     name: "specials",
+    ignoresLanguage: true,
+    noPunctuation: true,
+    noNumbers: true,
     getWord(): string {
       return Misc.getSpecials();
     },
@@ -286,6 +326,7 @@ export const Funboxes: Funbox[] = [
   {
     name: "nospace",
     blockWordHighlight: true,
+    nospace: true,
     applyConfig(): void {
       $("#words").addClass("nospace");
       UpdateConfig.setHighlightMode("letter", true);
@@ -300,19 +341,22 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "poetry",
+    noPunctuation: true,
+    noNumbers: true,
     async pullSection(): Promise<Misc.Section | false> {
       return getPoem();
     },
   },
   {
     name: "wikipedia",
+    noPunctuation: true,
+    noNumbers: true,
     async pullSection(lang?: string): Promise<Misc.Section | false> {
       return getSection(lang ? lang : "english");
     },
   },
   {
     name: "weakspot",
-    languageDependent: true,
     getWord(wordset?: Misc.Wordset): string {
       if (wordset !== undefined) return WeakSpot.getWord(wordset);
       else return "";

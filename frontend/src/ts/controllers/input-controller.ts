@@ -121,11 +121,10 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (
-    Config.funbox.split("#").includes("nospace") ||
-    Config.funbox.split("#").includes("arrows")
-  ) {
-    TestInput.input.current = TestInput.input.current.slice(0, -1);
+  for (const f of Funbox.Funboxes) {
+    if (Config.funbox.split("#").includes(f.name) && f.nospace) {
+      TestInput.input.current = TestInput.input.current.slice(0, -1);
+    }
   }
   TestWords.words.decreaseCurrentIndex();
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
@@ -181,6 +180,14 @@ function handleSpace(): void {
   LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
+  let nospace = false;
+  for (const f of Funbox.Funboxes) {
+    if (Config.funbox.split("#").includes(f.name) && f.nospace) {
+      nospace = true;
+      break;
+    }
+  }
+
   //correct word or in zen mode
   const isWordCorrect: boolean =
     currentWord === TestInput.input.current || Config.mode == "zen";
@@ -196,18 +203,12 @@ function handleSpace(): void {
     Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
-    if (
-      !Config.funbox.split("#").includes("nospace") &&
-      !Config.funbox.split("#").includes("arrows")
-    ) {
+    if (!nospace) {
       Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
   } else {
-    if (
-      !Config.funbox.split("#").includes("nospace") &&
-      !Config.funbox.split("#").includes("arrows")
-    ) {
+    if (!nospace) {
       if (!Config.playSoundOnError || Config.blindMode) {
         Sound.playClick();
       } else {
@@ -428,13 +429,16 @@ function handleChar(
     char = " ";
   }
 
-  if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
-    if (
-      Config.funbox.split("#").includes("nospace") ||
-      Config.funbox.split("#").includes("arrows")
-    ) {
-      return;
+  let nospace = false;
+  for (const f of Funbox.Funboxes) {
+    if (Config.funbox.split("#").includes(f.name) && f.nospace) {
+      nospace = true;
+      break;
     }
+  }
+
+  if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
+    if (nospace) return;
     handleSpace();
 
     //insert space for expert and master or strict space,
@@ -662,8 +666,7 @@ function handleChar(
 
   //simulate space press in nospace funbox
   if (
-    ((Config.funbox.split("#").includes("nospace") ||
-      Config.funbox.split("#").includes("arrows")) &&
+    (nospace &&
       TestInput.input.current.length === TestWords.words.getCurrent().length) ||
     (char === "\n" && thisCharCorrect)
   ) {

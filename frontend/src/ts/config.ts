@@ -128,7 +128,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
 
   if (mode !== "words") {
     for (const f of Funboxes) {
-      if (f.mode == "words") {
+      if (config.funbox.split("#").includes(f.name) && f.mode == "words") {
         Notifications.add(
           `${f.name} funbox can only be used with words mode.`,
           0
@@ -852,7 +852,7 @@ export function setHighlightMode(
 
   if (mode === "word") {
     for (const f of Funboxes) {
-      if (f.blockWordHighlight) {
+      if (config.funbox.split("#").includes(f.name) && f.blockWordHighlight) {
         Notifications.add("Can't use word highlight with this funbox", 0);
         return false;
       }

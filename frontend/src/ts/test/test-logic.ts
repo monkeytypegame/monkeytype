@@ -28,7 +28,6 @@ import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
-import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
@@ -88,227 +87,210 @@ export async function punctuateWord(
 
   const lastChar = Misc.getLastChar(previousWord);
 
-  if (Config.funbox.split("#").includes("58008")) {
-    if (currentWord.length > 3) {
-      if (Math.random() < 0.5) {
-        word = Misc.setCharAt(
-          word,
-          Misc.randomIntFromRange(1, word.length - 2),
-          "."
-        );
+  for (const f of Funbox.Funboxes) {
+    if (Config.funbox.split("#").includes(f.name) && f.punctuateWord) {
+      return f.punctuateWord(word);
+    }
+  }
+
+  if (
+    currentLanguage != "code" &&
+    currentLanguage != "georgian" &&
+    (index == 0 || shouldCapitalize(lastChar))
+  ) {
+    //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
+
+    word = Misc.capitalizeFirstLetterOfEachWord(word);
+
+    if (currentLanguage == "turkish") {
+      word = word.replace(/I/g, "İ");
+    }
+
+    if (currentLanguage == "spanish" || currentLanguage == "catalan") {
+      const rand = Math.random();
+      if (rand > 0.9) {
+        word = "¿" + word;
+        spanishSentenceTracker = "?";
+      } else if (rand > 0.8) {
+        word = "¡" + word;
+        spanishSentenceTracker = "!";
       }
-      if (Math.random() < 0.75) {
-        const index = Misc.randomIntFromRange(1, word.length - 2);
-        if (
-          word[index - 1] !== "." &&
-          word[index + 1] !== "." &&
-          word[index + 1] !== "0"
+    }
+  } else if (
+    (Math.random() < 0.1 &&
+      lastChar != "." &&
+      lastChar != "," &&
+      index != maxindex - 2) ||
+    index == maxindex - 1
+  ) {
+    if (currentLanguage == "spanish" || currentLanguage == "catalan") {
+      if (spanishSentenceTracker == "?" || spanishSentenceTracker == "!") {
+        word += spanishSentenceTracker;
+        spanishSentenceTracker = "";
+      }
+    } else {
+      const rand = Math.random();
+      if (rand <= 0.8) {
+        if (currentLanguage == "kurdish") {
+          word += ".";
+        } else {
+          word += ".";
+        }
+      } else if (rand > 0.8 && rand < 0.9) {
+        if (currentLanguage == "french") {
+          word = "?";
+        } else if (
+          currentLanguage == "arabic" ||
+          currentLanguage == "persian" ||
+          currentLanguage == "urdu" ||
+          currentLanguage == "kurdish"
         ) {
-          const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
-          word = Misc.setCharAt(word, index, special);
+          word += "؟";
+        } else if (currentLanguage == "greek") {
+          word += ";";
+        } else {
+          word += "?";
+        }
+      } else {
+        if (currentLanguage == "french") {
+          word = "!";
+        } else {
+          word += "!";
         }
       }
     }
-  } else {
-    if (
-      currentLanguage != "code" &&
-      currentLanguage != "georgian" &&
-      (index == 0 || shouldCapitalize(lastChar))
-    ) {
-      //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
-
-      word = Misc.capitalizeFirstLetterOfEachWord(word);
-
-      if (currentLanguage == "turkish") {
-        word = word.replace(/I/g, "İ");
-      }
-
-      if (currentLanguage == "spanish" || currentLanguage == "catalan") {
-        const rand = Math.random();
-        if (rand > 0.9) {
-          word = "¿" + word;
-          spanishSentenceTracker = "?";
-        } else if (rand > 0.8) {
-          word = "¡" + word;
-          spanishSentenceTracker = "!";
-        }
-      }
-    } else if (
-      (Math.random() < 0.1 &&
-        lastChar != "." &&
-        lastChar != "," &&
-        index != maxindex - 2) ||
-      index == maxindex - 1
-    ) {
-      if (currentLanguage == "spanish" || currentLanguage == "catalan") {
-        if (spanishSentenceTracker == "?" || spanishSentenceTracker == "!") {
-          word += spanishSentenceTracker;
-          spanishSentenceTracker = "";
-        }
-      } else {
-        const rand = Math.random();
-        if (rand <= 0.8) {
-          if (currentLanguage == "kurdish") {
-            word += ".";
-          } else {
-            word += ".";
-          }
-        } else if (rand > 0.8 && rand < 0.9) {
-          if (currentLanguage == "french") {
-            word = "?";
-          } else if (
-            currentLanguage == "arabic" ||
-            currentLanguage == "persian" ||
-            currentLanguage == "urdu" ||
-            currentLanguage == "kurdish"
-          ) {
-            word += "؟";
-          } else if (currentLanguage == "greek") {
-            word += ";";
-          } else {
-            word += "?";
-          }
-        } else {
-          if (currentLanguage == "french") {
-            word = "!";
-          } else {
-            word += "!";
-          }
-        }
-      }
-    } else if (
-      Math.random() < 0.01 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      currentLanguage !== "russian"
-    ) {
-      word = `"${word}"`;
-    } else if (
-      Math.random() < 0.011 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      currentLanguage !== "russian" &&
-      currentLanguage !== "ukrainian"
-    ) {
-      word = `'${word}'`;
-    } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
-      if (currentLanguage == "code") {
-        const r = Math.random();
-        if (r < 0.25) {
-          word = `(${word})`;
-        } else if (r < 0.5) {
-          word = `{${word}}`;
-        } else if (r < 0.75) {
-          word = `[${word}]`;
-        } else {
-          word = `<${word}>`;
-        }
-      } else {
+  } else if (
+    Math.random() < 0.01 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    currentLanguage !== "russian"
+  ) {
+    word = `"${word}"`;
+  } else if (
+    Math.random() < 0.011 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    currentLanguage !== "russian" &&
+    currentLanguage !== "ukrainian"
+  ) {
+    word = `'${word}'`;
+  } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
+    if (currentLanguage == "code") {
+      const r = Math.random();
+      if (r < 0.25) {
         word = `(${word})`;
-      }
-    } else if (
-      Math.random() < 0.013 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      lastChar != ";" &&
-      lastChar != "؛" &&
-      lastChar != ":"
-    ) {
-      if (currentLanguage == "french") {
-        word = ":";
-      } else if (currentLanguage == "greek") {
-        word = "·";
+      } else if (r < 0.5) {
+        word = `{${word}}`;
+      } else if (r < 0.75) {
+        word = `[${word}]`;
       } else {
-        word += ":";
+        word = `<${word}>`;
       }
-    } else if (
-      Math.random() < 0.014 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      previousWord != "-"
-    ) {
-      word = "-";
-    } else if (
-      Math.random() < 0.015 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      lastChar != ";" &&
-      lastChar != "؛" &&
-      lastChar != ":"
-    ) {
-      if (currentLanguage == "french") {
-        word = ";";
-      } else if (currentLanguage == "greek") {
-        word = "·";
-      } else if (currentLanguage == "arabic" || currentLanguage == "kurdish") {
-        word += "؛";
-      } else {
-        word += ";";
-      }
-    } else if (Math.random() < 0.2 && lastChar != ",") {
-      if (
-        currentLanguage == "arabic" ||
-        currentLanguage == "urdu" ||
-        currentLanguage == "persian" ||
-        currentLanguage == "kurdish"
-      ) {
-        word += "،";
-      } else {
-        word += ",";
-      }
-    } else if (Math.random() < 0.25 && currentLanguage == "code") {
-      const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
-      const specialsC = [
-        "{",
-        "}",
-        "[",
-        "]",
-        "(",
-        ")",
-        ";",
-        "=",
-        "+",
-        "%",
-        "/",
-        "/*",
-        "*/",
-        "//",
-        "!=",
-        "==",
-        "<=",
-        ">=",
-        "||",
-        "&&",
-        "<<",
-        ">>",
-        "%=",
-        "&=",
-        "*=",
-        "++",
-        "+=",
-        "--",
-        "-=",
-        "/=",
-        "^=",
-        "|=",
-      ];
-
-      if (
-        (Config.language.startsWith("code_c") &&
-          !Config.language.startsWith("code_css")) ||
-        Config.language.startsWith("code_arduino")
-      ) {
-        word = Misc.randomElementFromArray(specialsC);
-      } else {
-        word = Misc.randomElementFromArray(specials);
-      }
-    } else if (
-      Math.random() < 0.5 &&
-      currentLanguage === "english" &&
-      (await EnglishPunctuation.check(word))
-    ) {
-      word = await applyEnglishPunctuationToWord(word);
+    } else {
+      word = `(${word})`;
     }
+  } else if (
+    Math.random() < 0.013 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    lastChar != ";" &&
+    lastChar != "؛" &&
+    lastChar != ":"
+  ) {
+    if (currentLanguage == "french") {
+      word = ":";
+    } else if (currentLanguage == "greek") {
+      word = "·";
+    } else {
+      word += ":";
+    }
+  } else if (
+    Math.random() < 0.014 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    previousWord != "-"
+  ) {
+    word = "-";
+  } else if (
+    Math.random() < 0.015 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    lastChar != ";" &&
+    lastChar != "؛" &&
+    lastChar != ":"
+  ) {
+    if (currentLanguage == "french") {
+      word = ";";
+    } else if (currentLanguage == "greek") {
+      word = "·";
+    } else if (currentLanguage == "arabic" || currentLanguage == "kurdish") {
+      word += "؛";
+    } else {
+      word += ";";
+    }
+  } else if (Math.random() < 0.2 && lastChar != ",") {
+    if (
+      currentLanguage == "arabic" ||
+      currentLanguage == "urdu" ||
+      currentLanguage == "persian" ||
+      currentLanguage == "kurdish"
+    ) {
+      word += "،";
+    } else {
+      word += ",";
+    }
+  } else if (Math.random() < 0.25 && currentLanguage == "code") {
+    const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
+    const specialsC = [
+      "{",
+      "}",
+      "[",
+      "]",
+      "(",
+      ")",
+      ";",
+      "=",
+      "+",
+      "%",
+      "/",
+      "/*",
+      "*/",
+      "//",
+      "!=",
+      "==",
+      "<=",
+      ">=",
+      "||",
+      "&&",
+      "<<",
+      ">>",
+      "%=",
+      "&=",
+      "*=",
+      "++",
+      "+=",
+      "--",
+      "-=",
+      "/=",
+      "^=",
+      "|=",
+    ];
+
+    if (
+      (Config.language.startsWith("code_c") &&
+        !Config.language.startsWith("code_css")) ||
+      Config.language.startsWith("code_arduino")
+    ) {
+      word = Misc.randomElementFromArray(specialsC);
+    } else {
+      word = Misc.randomElementFromArray(specials);
+    }
+  } else if (
+    Math.random() < 0.5 &&
+    currentLanguage === "english" &&
+    (await EnglishPunctuation.check(word))
+  ) {
+    word = await applyEnglishPunctuationToWord(word);
   }
   return word;
 }
@@ -563,18 +545,15 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      if (Config.funbox.split("#").includes("arrows")) {
-        UpdateConfig.setPunctuation(false, true);
-        UpdateConfig.setNumbers(false, true);
-      } else if (Config.funbox.split("#").includes("58008")) {
-        UpdateConfig.setNumbers(false, true);
-      } else if (Config.funbox.split("#").includes("specials")) {
-        UpdateConfig.setPunctuation(false, true);
-        UpdateConfig.setNumbers(false, true);
-      } else if (Config.funbox.split("#").includes("ascii")) {
-        UpdateConfig.setPunctuation(false, true);
-        UpdateConfig.setNumbers(false, true);
+      for (const f of Funbox.Funboxes) {
+        if (Config.funbox.split("#").includes(f.name) && f.noPunctuation) {
+          UpdateConfig.setPunctuation(false, true);
+        }
+        if (Config.funbox.split("#").includes(f.name) && f.noNumbers) {
+          UpdateConfig.setNumbers(false, true);
+        }
       }
+
       if (
         options.withSameWordset &&
         (Config.funbox.split("#").includes("plus_one") ||
@@ -722,36 +701,17 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 function applyFunboxesToWord(word: string, wordset?: Misc.Wordset): string {
-  if (Config.funbox.split("#").includes("rAnDoMcAsE")) {
-    let randomcaseword = "";
-    for (let i = 0; i < word.length; i++) {
-      if (i % 2 != 0) {
-        randomcaseword += word[i].toUpperCase();
-      } else {
-        randomcaseword += word[i];
-      }
+  for (const f of Funbox.Funboxes) {
+    if (Config.funbox.split("#").includes(f.name) && f.getWord) {
+      word = f.getWord(wordset);
+      break;
     }
-    word = randomcaseword;
-  } else if (Config.funbox.split("#").includes("capitals")) {
-    word = Misc.capitalizeFirstLetterOfEachWord(word);
-  } else if (Config.funbox.split("#").includes("gibberish")) {
-    word = Misc.getGibberish();
-  } else if (Config.funbox.split("#").includes("arrows")) {
-    word = Misc.getArrows();
-  } else if (Config.funbox.split("#").includes("58008")) {
-    word = Misc.getNumbers(7);
-    if (Config.language.startsWith("kurdish")) {
-      word = Misc.convertNumberToArabicIndic(word);
+  }
+  for (const f of Funbox.Funboxes) {
+    if (Config.funbox.split("#").includes(f.name) && f.alterText) {
+      word = f.alterText(word);
+      break;
     }
-  } else if (Config.funbox.split("#").includes("specials")) {
-    word = Misc.getSpecials();
-  } else if (Config.funbox.split("#").includes("ascii")) {
-    word = Misc.getASCII();
-  } else if (
-    wordset !== undefined &&
-    Config.funbox.split("#").includes("weakspot")
-  ) {
-    word = WeakSpot.getWord(wordset);
   }
   return word;
 }

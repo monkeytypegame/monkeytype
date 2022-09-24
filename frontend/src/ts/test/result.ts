@@ -22,6 +22,7 @@ import { Auth } from "../firebase";
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
+import { Funboxes } from "./funbox";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -478,12 +479,14 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
-  if (
-    Config.mode != "custom" &&
-    !Config.funbox.split("#").includes("gibberish") &&
-    !Config.funbox.split("#").includes("ascii") &&
-    !Config.funbox.split("#").includes("58008")
-  ) {
+  let ignoresLanguage = false;
+  for (const f of Funboxes) {
+    if (Config.funbox.split("#").includes(f.name) && f.ignoresLanguage) {
+      ignoresLanguage = true;
+      break;
+    }
+  }
+  if (Config.mode != "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }
   if (Config.punctuation) {

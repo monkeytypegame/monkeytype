@@ -5,10 +5,8 @@ let currentWordset: Wordset | null = null;
 
 export function withWords(words: string[], funbox: string): Wordset {
   for (const f of Funboxes) {
-    if (funbox.split("#").includes(f.name)) {
-      if (f.withWords) {
-        return f.withWords(words);
-      }
+    if (funbox.split("#").includes(f.name) && f.withWords) {
+      return f.withWords(words);
     }
   }
 
