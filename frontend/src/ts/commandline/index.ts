@@ -709,9 +709,11 @@ $(document).on("click", "#keymap .r5 .keySpace", () => {
 });
 
 $(document).on("click", "#testModesNotice .textButton", (event) => {
-  const commands = CommandlineLists.getList(
-    $(event.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
-  );
+  const attr = $(event.currentTarget).attr(
+    "commands"
+  ) as CommandlineLists.ListsObjectKeys;
+  if (attr === undefined) return;
+  const commands = CommandlineLists.getList(attr);
   if (commands !== undefined) {
     if ($(event.currentTarget).attr("commands") === "commandsTags") {
       updateTagsCommands();

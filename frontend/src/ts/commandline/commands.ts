@@ -389,6 +389,8 @@ const lists = {
   layouts: LayoutsCommands[0].subgroup,
   oppositeShiftMode: OppositeShiftModeCommands[0].subgroup,
   tags: TagsCommands[0].subgroup,
+  resultSaving: ResultSavingCommands[0].subgroup,
+  blindMode: BlindModeCommands[0].subgroup,
 };
 
 export function getList(

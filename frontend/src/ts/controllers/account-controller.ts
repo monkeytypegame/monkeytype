@@ -17,6 +17,7 @@ import * as ResultFilters from "../account/result-filters";
 import * as PaceCaret from "../test/pace-caret";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
+import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
@@ -45,7 +46,7 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import { navigate } from "./route-controller";
+import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
 
 export const gmailProvider = new GoogleAuthProvider();
@@ -216,6 +217,7 @@ export async function getDataAndInit(): Promise<boolean> {
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
   if (window.location.pathname === "/account") {
+    LoadingPage.updateBar(90);
     await Account.downloadResults();
   }
   if (window.location.pathname === "/login") {
@@ -491,6 +493,12 @@ export function signOut(): void {
 }
 
 async function signUp(): Promise<void> {
+  RegisterCaptchaPopup.show();
+  const captcha = await RegisterCaptchaPopup.promise;
+  if (!captcha) {
+    Notifications.add("Please complete the captcha", -1);
+    return;
+  }
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
   LoginPage.showPreloader();
@@ -576,6 +584,7 @@ async function signUp(): Promise<void> {
 
     const signInResponse = await Ape.users.create(
       nname,
+      captcha,
       email,
       createdAuthUser.user.uid
     );

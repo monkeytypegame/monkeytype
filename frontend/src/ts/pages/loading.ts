@@ -1,10 +1,10 @@
 import * as Misc from "../utils/misc";
 import Page from "./page";
 
-export function updateBar(percentage: number, fast?: boolean): void {
+export function updateBar(percentage: number, fast = false): void {
   const speed = fast ? 100 : 1000;
   $(".pageLoading .fill, .pageAccount .fill")
-    .stop(true, true)
+    .stop(true, fast)
     .animate(
       {
         width: percentage + "%",

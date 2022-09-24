@@ -7,6 +7,7 @@ import * as PageAbout from "../pages/about";
 import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageProfile from "../pages/profile";
+import * as PageProfileSearch from "../pages/profile-search";
 import * as Page404 from "../pages/404";
 import * as PageTransition from "../states/page-transition";
 import type Page from "../pages/page";
@@ -16,6 +17,7 @@ import * as Focus from "../test/focus";
 interface ChangeOptions {
   force?: boolean;
   params?: { [key: string]: string };
+  data?: any;
 }
 
 export async function change(
@@ -48,6 +50,7 @@ export async function change(
       account: Account.page,
       login: PageLogin.page,
       profile: PageProfile.page,
+      profileSearch: PageProfileSearch.page,
       404: Page404.page,
     };
 
@@ -72,7 +75,10 @@ export async function change(
         Focus.set(false);
         ActivePage.set(nextPage.name);
         previousPage?.afterHide();
-        await nextPage?.beforeShow(options.params);
+        await nextPage?.beforeShow({
+          params: options.params,
+          data: options.data,
+        });
       }
     );
   });
