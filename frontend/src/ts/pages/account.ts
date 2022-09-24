@@ -1110,7 +1110,8 @@ $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
 });
 
 $(document).on("click", ".pageAccount .profile .details .copyLink", () => {
-  const url = `${location.origin}/profile/${Auth.currentUser?.uid}?isUid`;
+  const { name } = DB.getSnapshot();
+  const url = `${location.origin}/profile/${name}`;
 
   navigator.clipboard.writeText(url).then(
     function () {
