@@ -13,6 +13,8 @@ interface Funbox {
   name: string;
   languageDependent?: boolean;
   noLingatures?: boolean;
+  mode?: MonkeyTypes.Mode;
+  blockWordHighlight?: boolean;
   getWord?: (wordset?: Misc.Wordset) => string;
   withWords?: (words: string[]) => Misc.Wordset;
   alterText?: (word: string) => string;
@@ -60,6 +62,7 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "tts",
+    blockWordHighlight: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
     },
@@ -87,6 +90,7 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "arrows",
+    blockWordHighlight: true,
     getWord(): string {
       return Misc.getArrows();
     },
@@ -204,6 +208,7 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "read_ahead_easy",
+    blockWordHighlight: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
     },
@@ -220,6 +225,7 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "read_ahead",
+    blockWordHighlight: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
     },
@@ -236,6 +242,7 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "read_ahead_hard",
+    blockWordHighlight: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
     },
@@ -252,8 +259,9 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "memory",
+    mode: "words",
     applyConfig(): void {
-      UpdateConfig.setMode("words", true);
+      if (this.mode) UpdateConfig.setMode(this.mode, true);
       UpdateConfig.setShowAllLines(true, true);
       if (Config.keymapMode === "next") {
         UpdateConfig.setKeymapMode("react", true);
@@ -277,6 +285,7 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "nospace",
+    blockWordHighlight: true,
     applyConfig(): void {
       $("#words").addClass("nospace");
       UpdateConfig.setHighlightMode("letter", true);

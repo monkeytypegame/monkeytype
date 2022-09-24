@@ -12,6 +12,7 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
+import { Funboxes } from "./test/funbox";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -125,9 +126,16 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     return false;
   }
 
-  if (mode !== "words" && config.funbox.split("#").includes("memory")) {
-    Notifications.add("Memory funbox can only be used with words mode.", 0);
-    return false;
+  if (mode !== "words") {
+    for (const f of Funboxes) {
+      if (f.mode == "words") {
+        Notifications.add(
+          `${f.name} funbox can only be used with words mode.`,
+          0
+        );
+        return false;
+      }
+    }
   }
   const previous = config.mode;
   config.mode = mode;
@@ -842,17 +850,13 @@ export function setHighlightMode(
     return false;
   }
 
-  if (
-    mode === "word" &&
-    (config.funbox.split("#").includes("nospace") ||
-      config.funbox.split("#").includes("read_ahead") ||
-      config.funbox.split("#").includes("read_ahead_easy") ||
-      config.funbox.split("#").includes("read_ahead_hard") ||
-      config.funbox.split("#").includes("tts") ||
-      config.funbox.split("#").includes("arrows"))
-  ) {
-    Notifications.add("Can't use word highlight with this funbox", 0);
-    return false;
+  if (mode === "word") {
+    for (const f of Funboxes) {
+      if (f.blockWordHighlight) {
+        Notifications.add("Can't use word highlight with this funbox", 0);
+        return false;
+      }
+    }
   }
 
   config.highlightMode = mode;
