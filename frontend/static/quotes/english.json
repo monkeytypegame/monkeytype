@@ -35464,8 +35464,20 @@
     {
       "text": "I look around, I look around, I see a lot of new faces. Which means a lot of people have been breaking the first two rules of Fight Club. Man, I see in fight club the strongest and smartest men who've ever lived. I see all this potential, and I see squandering. God damn it, an entire generation pumping gas, waiting tables; slaves with white collars. Advertising has us chasing cars and clothes, working jobs we hate so we can buy shit we don't need. We're the middle children of history, man. No purpose or place. We have no Great War. No Great Depression. Our Great War's a spiritual war. Our Great Depression is our lives. We've all been raised on television to believe that one day we'd all be millionaires, and movie gods, and rockstars. But we won't. And we're slowly learning that fact. And we're very, very pissed off.",
       "source": "Fight Club",
-      "length": 827,
+      "length": 827, 
       "id": 6231
+    },
+    {
+      "text": "What is it about society that disappoints you so much? Oh, I don't know. Is it that we collectively thought Steve Jobs was a great man, even when we knew he made billions off the backs of children? Or maybe it's that it feels like all our heroes are counterfeit. The world itself's just one big hoax. Spamming each other with our burning commentary of bullshit masquerading as insight. Our social media faking as intimacy. Or is it that we voted for this? Not with our rigged elections, but with our things. Our property. Our money. I not saying anything new. We all know why we do this. Not because Hunger Games books makes us happy. But because we wanna be sedated. Because it's painful not to pretend. Because we're cowards. F... society.",
+      "source": "Mr. Robot",
+      "length": 741,
+      "id": 6232
+    },
+    {
+      "text": "That, to me, is an absolute tragedy. But that's just what the world wants now. People wonder why jazz is dying. I tell you, man, and every Starbucks \"jazz\" album... just proves my point really. There are no two words in the English language more harmful than \"good job.\"",
+      "source": "Whiplash",
+      "length": 266,
+      "id": 6233
     }
   ]
 }
