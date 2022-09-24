@@ -53,7 +53,7 @@ export class InputIndicator {
   hide(): void {
     this.parentElement.find(".statusIndicator div").addClass("hidden");
     this.currentStatus = null;
-    $(this.inputElement).css("padding-right", "0.5rem");
+    $(this.inputElement).css("padding-right", "0.5em");
   }
 
   show(optionId: keyof typeof this.options, messageOverride?: string): void {
@@ -74,7 +74,7 @@ export class InputIndicator {
       indicator.attr("aria-label", messageOverride);
     }
 
-    $(this.inputElement).css("padding-right", "2.1rem");
+    $(this.inputElement).css("padding-right", "2.1em");
   }
 
   get(): keyof typeof this.options | null {

@@ -11,14 +11,23 @@ import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
 import { deleteConfig } from "../../dal/config";
+import { verify } from "../../utils/captcha";
+
+async function verifyCaptcha(captcha: string): Promise<void> {
+  if (!(await verify(captcha))) {
+    throw new MonkeyError(422, "Captcha check failed");
+  }
+}
 
 export async function createNewUser(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { name } = req.body;
+  const { name, captcha } = req.body;
   const { email, uid } = req.ctx.decodedToken;
 
-  if (email.endsWith("@tidal.lol")) {
+  await verifyCaptcha(captcha);
+
+  if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
     throw new MonkeyError(400, "Invalid domain");
   }
 
@@ -429,7 +438,14 @@ export async function removeFavoriteQuote(
 export async function getProfile(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { uid } = req.params;
+  const { uidOrName } = req.params;
+
+  const { isUid } = req.query;
+
+  const user =
+    isUid !== undefined
+      ? await UserDAL.getUser(uidOrName, "get user profile")
+      : await UserDAL.getUserByName(uidOrName, "get user profile");
 
   const {
     name,
@@ -445,7 +461,7 @@ export async function getProfile(
     discordAvatar,
     xp,
     streak,
-  } = await UserDAL.getUser(uid, "get user profile");
+  } = user;
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
   const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");

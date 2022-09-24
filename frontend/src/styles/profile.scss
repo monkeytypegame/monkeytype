@@ -1,3 +1,26 @@
+.pageProfileSearch {
+  align-content: center;
+  height: 100%;
+  display: grid;
+  .search {
+    justify-self: center;
+    max-width: 400px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    font-size: 1.25rem;
+    .title {
+      font-size: 1.25em;
+      grid-column: span 2;
+      color: var(--sub-color);
+    }
+    .button {
+      height: auto;
+    }
+  }
+}
+
 .pageProfile {
   align-content: center;
   height: 100%;
@@ -13,6 +36,21 @@
     top: 50%;
     transform: translate(-50%, -50%);
     color: var(--main-color);
+  }
+  .error {
+    position: absolute;
+    z-index: 1;
+    font-size: 2rem;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--error-color);
+    .message {
+      display: inline;
+    }
   }
 }
 

@@ -136,16 +136,6 @@ export async function clearPb(uid: string): Promise<void> {
   );
 }
 
-export async function isNameAvailable(name: string): Promise<boolean> {
-  const nameDocs = await getUsersCollection()
-    .find({ name })
-    .collation({ locale: "en", strength: 1 })
-    .limit(1)
-    .toArray();
-
-  return nameDocs.length === 0;
-}
-
 export async function updateQuoteRatings(
   uid: string,
   quoteRatings: MonkeyTypes.UserQuoteRatings
@@ -171,6 +161,29 @@ export async function getUser(
   stack: string
 ): Promise<MonkeyTypes.User> {
   const user = await getUsersCollection().findOne({ uid });
+  if (!user) throw new MonkeyError(404, "User not found", stack);
+  return user;
+}
+
+async function findByName(name: string): Promise<MonkeyTypes.User | undefined> {
+  return (
+    await getUsersCollection()
+      .find({ name })
+      .collation({ locale: "en", strength: 1 })
+      .limit(1)
+      .toArray()
+  )[0];
+}
+
+export async function isNameAvailable(name: string): Promise<boolean> {
+  return (await findByName(name)) === undefined;
+}
+
+export async function getUserByName(
+  name: string,
+  stack: string
+): Promise<MonkeyTypes.User> {
+  const user = await findByName(name);
   if (!user) throw new MonkeyError(404, "User not found", stack);
   return user;
 }

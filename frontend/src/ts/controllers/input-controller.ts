@@ -28,7 +28,7 @@ import * as CompositionState from "../states/composition";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
-import { navigate } from "./route-controller";
+import { navigate } from "../observables/navigate-event";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -602,6 +602,7 @@ function handleChar(
     if (
       (currentWord === TestInput.input.current ||
         (Config.quickEnd &&
+          !Config.language.startsWith("korean") &&
           currentWord.length === TestInput.input.current.length &&
           Config.stopOnError == "off")) &&
       lastIndex === TestWords.words.length - 1

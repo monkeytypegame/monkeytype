@@ -697,6 +697,28 @@ export function findGetParameter(
   return result;
 }
 
+export function checkIfGetParameterExists(
+  parameterName: string,
+  getOverride?: string
+): boolean {
+  let result = false;
+  let tmp = [];
+
+  let search = location.search;
+  if (getOverride) {
+    search = getOverride;
+  }
+
+  search
+    .substr(1)
+    .split("&")
+    .forEach(function (item) {
+      tmp = item.split("=");
+      if (tmp[0] === parameterName) result = true;
+    });
+  return result;
+}
+
 export function objectToQueryString<T extends string | number | boolean>(
   obj: Record<string, T | T[]>
 ): string {
@@ -933,10 +955,10 @@ export async function swapElements(
   el1: JQuery,
   el2: JQuery,
   totalDuration: number,
-  callback = function (): Promise<void> {
+  callback = async function (): Promise<void> {
     return Promise.resolve();
   },
-  middleCallback = function (): Promise<void> {
+  middleCallback = async function (): Promise<void> {
     return Promise.resolve();
   }
 ): Promise<boolean | undefined> {
@@ -1210,6 +1232,6 @@ export function abbreviateNumber(num: number): string {
   return (num / Math.pow(1000, exp)).toFixed(1) + pre;
 }
 
-export function sleep(ms: number): Promise<void> {
+export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
