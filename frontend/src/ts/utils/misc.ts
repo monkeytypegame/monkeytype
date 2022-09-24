@@ -1235,3 +1235,23 @@ export function abbreviateNumber(num: number): string {
 export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export function memoizeAsync<T extends (...args: any) => any>(
+  fn: T,
+  getKey?: (...args: Parameters<T>) => any
+): T {
+  const cache = new Map();
+
+  return (async (...args: Parameters<T>): Promise<any> => {
+    const key = getKey ? getKey.apply(args) : args[0];
+
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    const result = await fn.apply(args);
+    cache.set(key, result);
+
+    return result;
+  }) as T;
+}
