@@ -16,7 +16,6 @@ import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 
 import type { ScaleChartOptions } from "chart.js";
-import { Auth } from "../firebase";
 
 let filterDebug = false;
 //toggle filterdebug
