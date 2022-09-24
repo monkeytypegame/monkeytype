@@ -1236,13 +1236,13 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function memoizeAsync<T extends (...args: any) => any>(
+export function memoizeAsync<T extends (...args: any) => Promise<any>>(
   fn: T,
   getKey?: (...args: Parameters<T>) => any
 ): T {
-  const cache = new Map();
+  const cache = new Map<any, ReturnType<T>>();
 
-  return (async (...args: Parameters<T>): Promise<any> => {
+  return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
     const key = getKey ? getKey.apply(args) : args[0];
 
     if (cache.has(key)) {
