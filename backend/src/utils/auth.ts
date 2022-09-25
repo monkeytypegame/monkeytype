@@ -26,7 +26,7 @@ export async function verifyIdToken(idToken: string): Promise<DecodedIdToken> {
   if (cached) {
     const expirationDate = cached.exp * 1000 - TOKEN_CACHE_BUFFER;
 
-    if (expirationDate > Date.now()) {
+    if (expirationDate < Date.now()) {
       recordTokenCacheAccess("hit_expired");
       tokenCache.delete(idToken);
     } else {
