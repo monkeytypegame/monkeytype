@@ -2,7 +2,7 @@ import Config from "../config";
 import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
 import { randomElementFromArray } from "../utils/misc";
-import { capsState } from "../test/caps-warning";
+import { leftState, rightState } from "../test/shift-tracker";
 
 interface ClickSounds {
   [key: string]: {
@@ -234,10 +234,10 @@ export function previewClick(val: string): void {
   (clickSounds as ClickSounds)[val][0].sounds[0].play();
 }
 
-let currentCharacter = "a";
+let currentCode = "KeyA";
 
-addEventListener("beforeinput", (event) => {
-  currentCharacter = event.data || "a";
+$(document).on("keydown", (event) => {
+  currentCode = event.code || "KeyA";
 });
 
 const notes = {
@@ -255,36 +255,55 @@ const notes = {
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
 };
 
-type OctaveCallback = (octave: number) => number;
+type GetNoteFrequencyCallback = (octave: number) => number;
 
-function bindToOctave(
+function bindToNote(
   noteFrequencies: number[],
   octaveOffset = 0
-): OctaveCallback {
+): GetNoteFrequencyCallback {
   return (octave: number): number => {
     return noteFrequencies[octave + octaveOffset];
   };
 }
 
-const characterToFrequency: Record<string, OctaveCallback> = {
-  a: bindToOctave(notes.C),
-  w: bindToOctave(notes.Db),
-  s: bindToOctave(notes.D),
-  e: bindToOctave(notes.Eb),
-  d: bindToOctave(notes.E),
-  f: bindToOctave(notes.F),
-  t: bindToOctave(notes.Gb),
-  g: bindToOctave(notes.G),
-  y: bindToOctave(notes.Ab),
-  h: bindToOctave(notes.A),
-  u: bindToOctave(notes.Bb),
-  j: bindToOctave(notes.B),
-  k: bindToOctave(notes.C, 1),
-  o: bindToOctave(notes.Db, 1),
-  l: bindToOctave(notes.D, 1),
-  p: bindToOctave(notes.Eb, 1),
-  ";": bindToOctave(notes.E, 1),
-  "'": bindToOctave(notes.F, 1),
+const codeToNote: Record<string, GetNoteFrequencyCallback> = {
+  KeyZ: bindToNote(notes.C),
+  KeyS: bindToNote(notes.Db),
+  KeyX: bindToNote(notes.D),
+  KeyD: bindToNote(notes.Eb),
+  KeyC: bindToNote(notes.E),
+  KeyV: bindToNote(notes.F),
+  KeyG: bindToNote(notes.Gb),
+  KeyB: bindToNote(notes.G),
+  KeyH: bindToNote(notes.Ab),
+  KeyN: bindToNote(notes.A),
+  KeyJ: bindToNote(notes.Bb),
+  KeyM: bindToNote(notes.B),
+  Comma: bindToNote(notes.C, 1),
+  KeyL: bindToNote(notes.Db, 1),
+  Period: bindToNote(notes.D, 1),
+  Semicolon: bindToNote(notes.Eb, 1),
+  Slash: bindToNote(notes.E, 1),
+  KeyQ: bindToNote(notes.C, 1),
+  Digit2: bindToNote(notes.Db, 1),
+  KeyW: bindToNote(notes.D, 1),
+  Digit3: bindToNote(notes.Eb, 1),
+  KeyE: bindToNote(notes.E, 1),
+  KeyR: bindToNote(notes.F, 1),
+  Digit5: bindToNote(notes.Gb, 1),
+  KeyT: bindToNote(notes.G, 1),
+  Digit6: bindToNote(notes.Ab, 1),
+  KeyY: bindToNote(notes.A, 1),
+  Digit7: bindToNote(notes.Bb, 1),
+  KeyU: bindToNote(notes.B, 1),
+  KeyI: bindToNote(notes.C, 2),
+  Digit9: bindToNote(notes.Db, 2),
+  KeyO: bindToNote(notes.D, 2),
+  Digit0: bindToNote(notes.Eb, 2),
+  KeyP: bindToNote(notes.E, 2),
+  BracketLeft: bindToNote(notes.F, 2),
+  Equal: bindToNote(notes.Gb, 2),
+  BracketRight: bindToNote(notes.G, 2),
 };
 
 type DynamicClickSounds = Extract<
@@ -306,18 +325,17 @@ const clickSoundIdsToOscillatorType: Record<
 const audioCtx = new AudioContext();
 
 export function playNote(
-  characterOverride?: string,
+  codeOverride?: string,
   oscillatorTypeOverride?: SupportedOscillatorTypes
 ): void {
-  currentCharacter = (
-    characterOverride ?? currentCharacter
-  ).toLocaleLowerCase();
-
-  if (!(currentCharacter in characterToFrequency)) {
+  currentCode = codeOverride ?? currentCode;
+  if (!(currentCode in codeToNote)) {
     return;
   }
-  const octave = capsState ? 5 : 4;
-  const currentFrequency = characterToFrequency[currentCharacter](octave);
+
+  const baseOctave = 3;
+  const octave = baseOctave + (leftState || rightState ? 1 : 0);
+  const currentFrequency = codeToNote[currentCode](octave);
 
   const oscillatorNode = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
