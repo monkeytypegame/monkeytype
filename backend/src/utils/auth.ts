@@ -5,21 +5,21 @@ import LRUCache from "lru-cache";
 import {
   recordTokenCacheAccess,
   setTokenCacheLength,
-  // setTokenCacheSize,
+  setTokenCacheSize,
 } from "./prometheus";
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({
   max: 20000,
-  // maxSize: 20000000, // 20MB
-  // sizeCalculation: (token, key): number =>
-  // JSON.stringify(token).length + key.length, //sizeInBytes
+  maxSize: 20000000, // 20MB
+  sizeCalculation: (token, key): number =>
+    JSON.stringify(token).length + key.length, //sizeInBytes
 });
 
 const TOKEN_CACHE_BUFFER = 1000 * 60 * 5; // 5 minutes
 
 export async function verifyIdToken(idToken: string): Promise<DecodedIdToken> {
   setTokenCacheLength(tokenCache.size);
-  // setTokenCacheSize(tokenCache.calculatedSize ?? 0);
+  setTokenCacheSize(tokenCache.calculatedSize ?? 0);
 
   const cached = tokenCache.get(idToken);
 
@@ -33,8 +33,9 @@ export async function verifyIdToken(idToken: string): Promise<DecodedIdToken> {
       recordTokenCacheAccess("hit");
       return cached;
     }
+  } else {
+    recordTokenCacheAccess("miss");
   }
-  recordTokenCacheAccess("miss");
 
   const decoded = await admin.auth().verifyIdToken(idToken, true);
   tokenCache.set(idToken, decoded);
