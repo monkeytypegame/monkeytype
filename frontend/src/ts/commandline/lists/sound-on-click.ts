@@ -102,11 +102,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "sine",
       configValue: "8",
       hover: (): void => {
-        SoundController.playNote("a", "sine");
+        SoundController.playNote("KeyQ", "sine");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("8");
-        SoundController.playNote("a", "sine");
+        SoundController.playNote("KeyQ", "sine");
       },
     },
     {
@@ -114,11 +114,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "sawtooth",
       configValue: "9",
       hover: (): void => {
-        SoundController.playNote("a", "sawtooth");
+        SoundController.playNote("KeyQ", "sawtooth");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("9");
-        SoundController.playNote("a", "sawtooth");
+        SoundController.playNote("KeyQ", "sawtooth");
       },
     },
     {
@@ -126,11 +126,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "square",
       configValue: "10",
       hover: (): void => {
-        SoundController.playNote("a", "square");
+        SoundController.playNote("KeyQ", "square");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("10");
-        SoundController.playNote("a", "square");
+        SoundController.playNote("KeyQ", "square");
       },
     },
     {
@@ -138,11 +138,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "triangle",
       configValue: "11",
       hover: (): void => {
-        SoundController.playNote("a", "triangle");
+        SoundController.playNote("KeyQ", "triangle");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("11");
-        SoundController.playNote("a", "triangle");
+        SoundController.playNote("KeyQ", "triangle");
       },
     },
   ],
