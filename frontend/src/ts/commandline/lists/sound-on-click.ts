@@ -97,6 +97,54 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         SoundController.playClick();
       },
     },
+    {
+      id: "setSoundOnClick8",
+      display: "sine",
+      configValue: "8",
+      hover: (): void => {
+        SoundController.playNote("a", "sine");
+      },
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnClick("8");
+        SoundController.playNote("a", "sine");
+      },
+    },
+    {
+      id: "setSoundOnClick9",
+      display: "sawtooth",
+      configValue: "9",
+      hover: (): void => {
+        SoundController.playNote("a", "sawtooth");
+      },
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnClick("9");
+        SoundController.playNote("a", "sawtooth");
+      },
+    },
+    {
+      id: "setSoundOnClick10",
+      display: "square",
+      configValue: "10",
+      hover: (): void => {
+        SoundController.playNote("a", "square");
+      },
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnClick("10");
+        SoundController.playNote("a", "square");
+      },
+    },
+    {
+      id: "setSoundOnClick11",
+      display: "triangle",
+      configValue: "11",
+      hover: (): void => {
+        SoundController.playNote("a", "triangle");
+      },
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnClick("11");
+        SoundController.playNote("a", "triangle");
+      },
+    },
   ],
 };
 
