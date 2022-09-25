@@ -3,6 +3,7 @@ import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
 import { randomElementFromArray } from "../utils/misc";
 import { leftState, rightState } from "../test/shift-tracker";
+import { capsState } from "../test/caps-warning";
 
 interface ClickSounds {
   [key: string]: {
@@ -334,7 +335,7 @@ export function playNote(
   }
 
   const baseOctave = 3;
-  const octave = baseOctave + (leftState || rightState ? 1 : 0);
+  const octave = baseOctave + (leftState || rightState || capsState ? 1 : 0);
   const currentFrequency = codeToNote[currentCode](octave);
 
   const oscillatorNode = audioCtx.createOscillator();
