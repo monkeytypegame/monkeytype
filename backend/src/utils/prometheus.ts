@@ -227,3 +227,33 @@ export function recordRequestCountry(
 
   requestCountry.inc({ path: pathNoGet, country });
 }
+
+const tokenCacheAccess = new Counter({
+  name: "api_token_cache_access",
+  help: "Token cache access",
+  labelNames: ["status"],
+});
+
+export function recordTokenCacheAccess(
+  status: "hit" | "miss" | "hit_expired"
+): void {
+  tokenCacheAccess.inc({ status });
+}
+
+const tokenCacheSize = new Gauge({
+  name: "api_token_cache_size",
+  help: "Token cache size",
+});
+
+export function setTokenCacheSize(size: number): void {
+  tokenCacheSize.set(size);
+}
+
+const tokenCacheLength = new Gauge({
+  name: "api_token_cache_length",
+  help: "Token cache length",
+});
+
+export function setTokenCacheLength(length: number): void {
+  tokenCacheLength.set(length);
+}
