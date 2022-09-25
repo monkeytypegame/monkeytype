@@ -15,6 +15,7 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import QuotesController from "../controllers/quotes-controller";
 import * as AdController from "../controllers/ad-controller";
+import * as TestConfig from "./test-config";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 
@@ -129,7 +130,7 @@ async function updateGraph(): Promise<void> {
 
   resultScaleOptions["wpm"].max = maxChartVal;
   resultScaleOptions["raw"].max = maxChartVal;
-  resultScaleOptions["error"].max = Math.max(...result.chartData.err) + 1;
+  resultScaleOptions["error"].max = Math.max(...result.chartData.err);
 }
 
 export async function updateGraphPBLine(): Promise<void> {
@@ -710,6 +711,8 @@ export async function update(
       .stop()
       .animate({ scrollTop: 0 }, 250);
   }
+
+  TestConfig.hide();
 
   Misc.swapElements(
     $("#typingTest"),

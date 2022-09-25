@@ -35,12 +35,12 @@ const ONE_HOUR_MS = 1000 * ONE_HOUR_SECONDS;
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
   windowMs: ONE_HOUR_MS,
-  max: 2000 * REQUEST_MULTIPLIER,
+  max: 1000 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: (_req, _res, _next, _options): void => {
     throw new MonkeyError(
       429,
-      "Maximum API request limit reached. Please try again later."
+      "Maximum API request (root) limit reached. Please try again later."
     );
   },
 });
@@ -278,8 +278,8 @@ export const userGet = rateLimit({
 
 export const userSignup = rateLimit({
   windowMs: 24 * ONE_HOUR_MS, // 1 day
-  max: 3 * REQUEST_MULTIPLIER,
-  keyGenerator: getKeyWithUid,
+  max: 2 * REQUEST_MULTIPLIER,
+  keyGenerator: getKey,
   handler: customHandler,
 });
 
@@ -433,6 +433,20 @@ export const userProfileGet = rateLimit({
 });
 
 export const userProfileUpdate = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userMailGet = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userMailUpdate = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,

@@ -9,11 +9,17 @@ export default class Users {
     return await this.httpClient.get(BASE_PATH);
   }
 
-  async create(name: string, email?: string, uid?: string): Ape.EndpointData {
+  async create(
+    name: string,
+    captcha: string,
+    email?: string,
+    uid?: string
+  ): Ape.EndpointData {
     const payload = {
       email,
       name,
       uid,
+      captcha,
     };
 
     return await this.httpClient.post(`${BASE_PATH}/signup`, { payload });
@@ -177,8 +183,12 @@ export default class Users {
     });
   }
 
-  async getProfile(uid: string): Promise<Ape.EndpointData> {
-    return await this.httpClient.get(`${BASE_PATH}/${uid}/profile`);
+  async getProfileByUid(uid: string): Promise<Ape.EndpointData> {
+    return await this.httpClient.get(`${BASE_PATH}/${uid}/profile?isUid`);
+  }
+
+  async getProfileByName(name: string): Promise<Ape.EndpointData> {
+    return await this.httpClient.get(`${BASE_PATH}/${name}/profile`);
   }
 
   async updateProfile(
@@ -191,5 +201,20 @@ export default class Users {
         selectedBadgeId,
       },
     });
+  }
+
+  async getInbox(): Promise<Ape.EndpointData> {
+    return await this.httpClient.get(`${BASE_PATH}/inbox`);
+  }
+
+  async updateInbox(options: {
+    mailIdsToDelete?: string[];
+    mailIdsToMarkRead?: string[];
+  }): Promise<Ape.EndpointData> {
+    const payload = {
+      mailIdsToDelete: options.mailIdsToDelete,
+      mailIdsToMarkRead: options.mailIdsToMarkRead,
+    };
+    return await this.httpClient.patch(`${BASE_PATH}/inbox`, { payload });
   }
 }

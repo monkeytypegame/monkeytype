@@ -2,6 +2,7 @@ import Ape from "../ape";
 import { secondsToString } from "../utils/misc";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
+import * as Alerts from "./alerts";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
@@ -64,10 +65,6 @@ export async function show(): Promise<void> {
   }
   const localmemory = getMemory();
   latest.forEach((psa) => {
-    if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false) {
-      return;
-    }
-
     if (psa.date) {
       const dateObj = new Date(psa.date);
       const diff = psa.date - Date.now();
@@ -88,6 +85,12 @@ export async function show(): Promise<void> {
         "{date}",
         format(dateObj, "dd MMM yyyy HH:mm")
       );
+    }
+
+    Alerts.addPSA(psa.message, psa.level ?? -1);
+
+    if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false) {
+      return;
     }
 
     Notifications.addBanner(

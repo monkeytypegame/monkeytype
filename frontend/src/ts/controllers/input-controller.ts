@@ -28,10 +28,12 @@ import * as CompositionState from "../states/composition";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
-import { navigate } from "./route-controller";
+import { navigate } from "../observables/navigate-event";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
+let isKoCompiling = false;
+let isBackspace: boolean;
 
 const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -51,12 +53,46 @@ function updateUI(): void {
   if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    Keymap.highlightKey(
-      TestWords.words
-        .getCurrent()
-        .charAt(TestInput.input.current.length)
-        .toString()
-    );
+    if (!Config.language.startsWith("korean")) {
+      Keymap.highlightKey(
+        TestWords.words
+          .getCurrent()
+          .charAt(TestInput.input.current.length)
+          .toString()
+      );
+    } else {
+      //word [가다]
+      //Get the current korean word and group it [[ㄱ,ㅏ],[ㄷ,ㅏ]].
+      const koCurrWord: string[][] = Hangul.disassemble(
+        TestWords.words.getCurrent(),
+        true
+      );
+      const koCurrInput: string[][] = Hangul.disassemble(
+        TestInput.input.current,
+        true
+      );
+      const inputGroupLength: number = koCurrInput.length - 1;
+      if (koCurrInput[inputGroupLength]) {
+        const inputCharLength: number = koCurrInput[inputGroupLength].length;
+        //at the end of the word, it will throw a (reading '0') this will be the space
+        try {
+          //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),
+          //take the difference between the overflow and the word
+          const koChar: string =
+            koCurrWord[inputGroupLength][inputCharLength] ??
+            koCurrWord[koCurrInput.length][
+              inputCharLength - koCurrWord[inputGroupLength].length
+            ];
+
+          Keymap.highlightKey(koChar);
+        } catch (e) {
+          Keymap.highlightKey("");
+        }
+      } else {
+        //for new words
+        Keymap.highlightKey(koCurrWord[0][0]);
+      }
+    }
   }
 }
 
@@ -291,7 +327,8 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  if (Config.language.startsWith("korean")) {
+  //Checking for Korean char
+  if (TestInput.input.getKoreanStatus()) {
     //disassembles Korean current Test word to check against char Input
     const koWordArray: string[] = Hangul.disassemble(
       TestWords.words.getCurrent()
@@ -366,7 +403,7 @@ function handleChar(
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
   }
-
+  const isCharKorean: boolean = TestInput.input.getKoreanStatus();
   if (char === "…") {
     for (let i = 0; i < 3; i++) {
       handleChar(".", charIndex + i);
@@ -420,7 +457,9 @@ function handleChar(
   let resultingWord: string;
 
   if (thisCharCorrect && Config.mode !== "zen") {
-    char = TestWords.words.getCurrent().charAt(charIndex);
+    char = !isCharKorean
+      ? TestWords.words.getCurrent().charAt(charIndex)
+      : Hangul.disassemble(TestWords.words.getCurrent())[charIndex];
   }
 
   if (!thisCharCorrect && char === "\n") {
@@ -432,7 +471,7 @@ function handleChar(
     TestInput.setBurstStart(performance.now());
   }
 
-  if (!Config.language.startsWith("korean")) {
+  if (!isCharKorean && !Config.language.startsWith("korean")) {
     resultingWord =
       TestInput.input.current.substring(0, charIndex) +
       char +
@@ -483,14 +522,27 @@ function handleChar(
     }
   }
 
+  //keymap
+  if (Config.keymapMode === "react") {
+    Keymap.flashKey(char, thisCharCorrect);
+  }
+
   if (!correctShiftUsed && Config.difficulty != "master") return;
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
   if (TestInput.corrected.current === "") {
-    TestInput.corrected.current += resultingWord;
+    TestInput.corrected.current += !isCharKorean
+      ? resultingWord
+      : Hangul.disassemble(resultingWord).join("");
   } else {
-    if (charIndex >= TestInput.corrected.current.length) {
-      TestInput.corrected.current += char;
+    const currCorrectedTestInputLength: number = !isCharKorean
+      ? TestInput.corrected.current.length
+      : Hangul.disassemble(TestInput.corrected.current).length;
+
+    if (charIndex >= currCorrectedTestInputLength) {
+      TestInput.corrected.current += !isCharKorean
+        ? char
+        : Hangul.disassemble(char).concat();
     } else if (!thisCharCorrect) {
       TestInput.corrected.current =
         TestInput.corrected.current.substring(0, charIndex) +
@@ -516,11 +568,11 @@ function handleChar(
     char
   );
 
+  const testInputLength: number = !isCharKorean
+    ? TestInput.input.current.length
+    : Hangul.disassemble(TestInput.input.current).length;
   //update the active word top, but only once
-  if (
-    TestInput.input.current.length === 1 &&
-    TestWords.words.currentIndex === 0
-  ) {
+  if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
     TestUI.setActiveWordTop(
       (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
     );
@@ -542,11 +594,6 @@ function handleChar(
     return;
   }
 
-  //keymap
-  if (Config.keymapMode === "react") {
-    Keymap.flashKey(char, thisCharCorrect);
-  }
-
   if (Config.mode != "zen") {
     //not applicable to zen mode
     //auto stop the test if the last word is correct
@@ -555,6 +602,7 @@ function handleChar(
     if (
       (currentWord === TestInput.input.current ||
         (Config.quickEnd &&
+          !Config.language.startsWith("korean") &&
           currentWord.length === TestInput.input.current.length &&
           Config.stopOnError == "off")) &&
       lastIndex === TestWords.words.length - 1
@@ -650,7 +698,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // dont do anything special
     if (modalVisible) return;
 
-    // dont do anything on login so we can tab/esc betweeen inputs
+    // dont do anything on login so we can tab/esc between inputs
     if (ActivePage.get() === "login") return;
 
     event.preventDefault();
@@ -891,6 +939,8 @@ $(document).keydown(async (event) => {
       TestUI.scrollTape();
     }
   }
+
+  isBackspace = event.key === "Backspace" || event.key === "delete";
 });
 
 $("#wordsInput").keyup((event) => {
@@ -925,25 +975,50 @@ $("#wordsInput").on("input", (event) => {
   }
 
   const popupVisible = Misc.isAnyPopupVisible();
-
   if (popupVisible) return;
 
   TestInput.setKeypressNotAfk();
 
-  const isLangKorean: boolean = Config.language.startsWith("korean");
+  if (
+    (Config.layout == "default" || Config.layout == "korean") &&
+    (event.target as HTMLInputElement).value
+      .normalize()
+      .match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      )
+  ) {
+    TestInput.input.setKoreanStatus(true);
+  }
+
+  const containsKorean = TestInput.input.getKoreanStatus();
 
   //Hangul.disassemble breaks down Korean characters into its components
   //allowing it to be treated as normal latin characters
   //Hangul.disassemble('한글') //['ㅎ','ㅏ','ㄴ','ㄱ','ㅡ','ㄹ']
   //Hangul.disassemble('한글',true) //[['ㅎ','ㅏ','ㄴ'],['ㄱ','ㅡ','ㄹ']]
   const realInputValue = (event.target as HTMLInputElement).value.normalize();
-  const inputValue = isLangKorean
+  const inputValue = containsKorean
     ? Hangul.disassemble(realInputValue).join("").slice(1)
     : realInputValue.slice(1);
 
-  const currTestInput = isLangKorean
+  const currTestInput = containsKorean
     ? Hangul.disassemble(TestInput.input.current).join("")
     : TestInput.input.current;
+
+  //checks to see if a korean word has compiled into two characters.
+  //inputs: ㄱ, 가, 갇, 가다
+  //what it actually reads: ㄱ, 가, 갇, , 가, 가다
+  //this skips this part (, , 가,)
+  if (containsKorean && !isBackspace) {
+    if (
+      isKoCompiling ||
+      (realInputValue.slice(1).length < TestInput.input.current.length &&
+        Hangul.disassemble(TestInput.input.current.slice(-1)).length > 1)
+    ) {
+      isKoCompiling = !isKoCompiling;
+      return;
+    }
+  }
 
   // input will be modified even with the preventDefault() in
   // beforeinput/keydown if it's part of a compose sequence. this undoes
@@ -960,7 +1035,7 @@ $("#wordsInput").on("input", (event) => {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
-    if (!isLangKorean) {
+    if (!containsKorean) {
       TestInput.input.current = inputValue;
     } else {
       const realInput = (event.target as HTMLInputElement).value
@@ -1039,10 +1114,12 @@ $("#wordsInput").on("copy paste", (event) => {
 
 // Composing events
 $("#wordsInput").on("compositionstart", () => {
+  if (Config.layout !== "default") return;
   CompositionState.setComposing(true);
   CompositionState.setStartPos(TestInput.input.current.length);
 });
 
 $("#wordsInput").on("compositionend", () => {
+  if (Config.layout !== "default") return;
   CompositionState.setComposing(false);
 });

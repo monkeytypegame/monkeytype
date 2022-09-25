@@ -15,11 +15,12 @@ import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
 import * as PaceCaret from "../test/pace-caret";
-import * as CommandlineLists from "../elements/commandline-lists";
 import * as TagController from "./tag-controller";
 import * as ResultTagsPopup from "../popups/result-tags-popup";
+import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
+import * as Alerts from "../elements/alerts";
 import {
   EmailAuthProvider,
   GoogleAuthProvider,
@@ -45,7 +46,8 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import { navigate } from "./route-controller";
+import { navigate } from "../observables/navigate-event";
+import { update as updateTagsCommands } from "../commandline/lists/tags";
 
 export const gmailProvider = new GoogleAuthProvider();
 let canCall = true;
@@ -105,7 +107,7 @@ export async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot();
-  $("#menu .textButton.account .text").text(snapshot.name);
+  $("#menu .textButton.account > .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -210,11 +212,12 @@ export async function getDataAndInit(): Promise<boolean> {
   }
   AccountButton.loading(false);
   ResultFilters.updateTags();
-  CommandlineLists.updateTagCommands();
+  updateTagsCommands();
   TagController.loadActiveFromLocalStorage();
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
   if (window.location.pathname === "/account") {
+    LoadingPage.updateBar(90);
     await Account.downloadResults();
   }
   if (window.location.pathname === "/login") {
@@ -238,8 +241,9 @@ export async function loadUser(user: UserType): Promise<void> {
   if ((await getDataAndInit()) === false) {
     signOut();
   }
-  const { discordId, discordAvatar, xp } = DB.getSnapshot();
+  const { discordId, discordAvatar, xp, inboxUnreadSize } = DB.getSnapshot();
   AccountButton.update(xp, discordId, discordAvatar);
+  Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;
@@ -248,6 +252,8 @@ export async function loadUser(user: UserType): Promise<void> {
   // var uid = user.uid;
   // var providerData = user.providerData;
   LoginPage.hidePreloader();
+
+  $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-out-alt"></i>`);
 
   // showFavouriteThemesAtTheTop();
 
@@ -274,8 +280,12 @@ const authListener = Auth.onAuthStateChanged(async function (user) {
   const hash = window.location.hash;
   console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
+    $("#top .signInOut .icon").html(
+      `<i class="fas fa-fw fa-sign-out-alt"></i>`
+    );
     await loadUser(user);
   } else {
+    $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-in-alt"></i>`);
     if (window.location.pathname == "/account") {
       window.history.replaceState("", "", "/login");
     }
@@ -318,7 +328,7 @@ export function signIn(): void {
     ? browserLocalPersistence
     : browserSessionPersistence;
 
-  setPersistence(Auth, persistence).then(function () {
+  setPersistence(Auth, persistence).then(async function () {
     return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);
@@ -472,6 +482,9 @@ export function signOut(): void {
       DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
+      $("#top .signInOut .icon").html(
+        `<i class="fas fa-fw fa-sign-in-alt"></i>`
+      );
       hideFavoriteQuoteLength();
     })
     .catch(function (error) {
@@ -480,6 +493,12 @@ export function signOut(): void {
 }
 
 async function signUp(): Promise<void> {
+  RegisterCaptchaPopup.show();
+  const captcha = await RegisterCaptchaPopup.promise;
+  if (!captcha) {
+    Notifications.add("Please complete the captcha", -1);
+    return;
+  }
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
   LoginPage.showPreloader();
@@ -565,6 +584,7 @@ async function signUp(): Promise<void> {
 
     const signInResponse = await Ape.users.create(
       nname,
+      captcha,
       email,
       createdAuthUser.user.uid
     );
@@ -643,8 +663,12 @@ $(".pageLogin .login .button.signInWithGoogle").on("click", () => {
 // signInWithGitHub();
 // });
 
-$(".signOut").on("click", () => {
-  signOut();
+$("#top .signInOut").on("click", () => {
+  if (Auth.currentUser) {
+    signOut();
+  } else {
+    navigate("/login");
+  }
 });
 
 $(".pageLogin .register input").keyup((e) => {

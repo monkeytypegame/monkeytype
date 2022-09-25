@@ -89,7 +89,7 @@ $("#mobileTestConfigPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#top .mobileConfig").on("click", () => {
+$("#mobileTestConfig").on("click", () => {
   showPopup();
 });
 

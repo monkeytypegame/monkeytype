@@ -88,6 +88,8 @@ export const result: ChartWithUpdateColors<
     labels: [],
     datasets: [
       {
+        //@ts-ignore the type is defined incorrectly, have to ingore the error
+        clip: false,
         label: "wpm",
         data: [],
         borderColor: "rgba(125, 125, 125, 1)",
@@ -97,6 +99,8 @@ export const result: ChartWithUpdateColors<
         pointRadius: 2,
       },
       {
+        //@ts-ignore the type is defined incorrectly, have to ingore the error
+        clip: false,
         label: "raw",
         data: [],
         borderColor: "rgba(125, 125, 125, 1)",
@@ -106,6 +110,8 @@ export const result: ChartWithUpdateColors<
         pointRadius: 2,
       },
       {
+        //@ts-ignore the type is defined incorrectly, have to ingore the error
+        clip: false,
         label: "errors",
         data: [],
         borderColor: "rgba(255, 125, 125, 1)",
@@ -129,11 +135,6 @@ export const result: ChartWithUpdateColors<
     ],
   },
   options: {
-    layout: {
-      padding: {
-        top: 2,
-      },
-    },
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -308,13 +309,14 @@ export const accountHistory: ChartWithUpdateColors<
           display: true,
           text: "Words per Minute",
         },
+        position: "right",
       },
       acc: {
         axis: "y",
         beginAtZero: true,
         max: 100,
         display: true,
-        position: "right",
+        position: "left",
         title: {
           display: true,
           text: "Error rate (100 - accuracy)",
@@ -379,6 +381,7 @@ export const accountHistory: ChartWithUpdateColors<
               `punctuation: ${resultData.punctuation}` +
               "\n" +
               `language: ${resultData.language}` +
+              `${resultData.isPb ? "\n\nnew personal best" : ""}` +
               "\n\n" +
               `date: ${format(
                 new Date(resultData.timestamp),
@@ -501,6 +504,8 @@ export const accountActivity: ChartWithUpdateColors<
       },
       tooltip: {
         animation: { duration: 250 },
+        intersect: false,
+        mode: "index",
         callbacks: {
           title: function (tooltipItem): string {
             const resultData = tooltipItem[0].dataset.data[
@@ -531,6 +536,103 @@ export const accountActivity: ChartWithUpdateColors<
             return "";
           },
         },
+      },
+    },
+  },
+});
+
+export const accountHistogram: ChartWithUpdateColors<
+  "bar",
+  MonkeyTypes.ActivityChartDataPoint[],
+  string
+> = new ChartWithUpdateColors($(".pageAccount #accountHistogramChart"), {
+  type: "bar",
+  data: {
+    labels: [],
+    datasets: [
+      {
+        yAxisID: "count",
+        label: "Tests",
+        data: [],
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    hover: {
+      mode: "nearest",
+      intersect: false,
+    },
+    scales: {
+      x: {
+        axis: "x",
+        // ticks: {
+        //   autoSkip: true,
+        //   autoSkipPadding: 20,
+        // },
+        bounds: "ticks",
+        display: true,
+        title: {
+          display: false,
+          text: "Bucket",
+        },
+        offset: true,
+      },
+      count: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
+          stepSize: 10,
+        },
+        display: true,
+        title: {
+          display: true,
+          text: "Tests",
+        },
+      },
+    },
+    plugins: {
+      annotation: {
+        annotations: [],
+      },
+      tooltip: {
+        animation: { duration: 250 },
+        intersect: false,
+        mode: "index",
+        // callbacks: {
+        //   title: function (tooltipItem): string {
+        //     const resultData = tooltipItem[0].dataset.data[
+        //       tooltipItem[0].dataIndex
+        //     ] as MonkeyTypes.ActivityChartDataPoint;
+        //     return format(new Date(resultData.x), "dd MMM yyyy");
+        //   },
+        //   beforeLabel: function (tooltipItem): string {
+        //     const resultData = tooltipItem.dataset.data[
+        //       tooltipItem.dataIndex
+        //     ] as MonkeyTypes.ActivityChartDataPoint;
+        //     switch (tooltipItem.datasetIndex) {
+        //       case 0:
+        //         return `Time Typing: ${Misc.secondsToString(
+        //           Math.round(resultData.y),
+        //           true,
+        //           true
+        //         )}\nTests Completed: ${resultData.amount}`;
+        //       case 1:
+        //         return `Average ${
+        //           Config.alwaysShowCPM ? "Cpm" : "Wpm"
+        //         }: ${Misc.roundTo2(resultData.y)}`;
+        //       default:
+        //         return "";
+        //     }
+        //   },
+        //   label: function (): string {
+        //     return "";
+        //   },
+        // },
       },
     },
   },
@@ -698,6 +800,7 @@ export async function updateColors<
   const subcolor = await ThemeColors.get("sub");
   const maincolor = await ThemeColors.get("main");
   const errorcolor = await ThemeColors.get("error");
+  const textcolor = await ThemeColors.get("text");
 
   if (
     chart.data.datasets.every(
@@ -715,8 +818,15 @@ export async function updateColors<
     return;
   }
 
-  chart.data.datasets[0].borderColor = maincolor;
-  chart.data.datasets[1].borderColor = subcolor;
+  //@ts-ignore
+  chart.data.datasets[0].borderColor = (ctx): string => {
+    const isPb = ctx.raw?.["isPb"];
+    const color = isPb ? textcolor : maincolor;
+    return color;
+  };
+  if (chart.data.datasets[1]) {
+    chart.data.datasets[1].borderColor = subcolor;
+  }
   if (chart.data.datasets[2]) {
     chart.data.datasets[2].borderColor = errorcolor;
   }
@@ -725,7 +835,12 @@ export async function updateColors<
     if (chart.config.type === "line") {
       (
         chart.data.datasets as ChartDataset<"line", TData>[]
-      )[0].pointBackgroundColor = maincolor;
+      )[0].pointBackgroundColor = (ctx): string => {
+        //@ts-ignore
+        const isPb = ctx.raw?.["isPb"];
+        const color = isPb ? textcolor : maincolor;
+        return color;
+      };
     } else if (chart.config.type === "bar") {
       chart.data.datasets[0].backgroundColor = maincolor;
     }
@@ -736,21 +851,22 @@ export async function updateColors<
       chart.data.datasets as ChartDataset<"line", TData>[]
     )[0].pointBackgroundColor = maincolor;
   }
-
-  if (chart.data.datasets[1].type === undefined) {
-    if (chart.config.type === "line") {
+  if (chart.data.datasets[1]) {
+    if (chart.data.datasets[1].type === undefined) {
+      if (chart.config.type === "line") {
+        (
+          chart.data.datasets as ChartDataset<"line", TData>[]
+        )[1].pointBackgroundColor = subcolor;
+      } else if (chart.config.type === "bar") {
+        chart.data.datasets[1].backgroundColor = subcolor;
+      }
+    } else if (chart.data.datasets[1].type === "bar") {
+      chart.data.datasets[1].backgroundColor = subcolor;
+    } else if (chart.data.datasets[1].type === "line") {
       (
         chart.data.datasets as ChartDataset<"line", TData>[]
       )[1].pointBackgroundColor = subcolor;
-    } else if (chart.config.type === "bar") {
-      chart.data.datasets[1].backgroundColor = subcolor;
     }
-  } else if (chart.data.datasets[1].type === "bar") {
-    chart.data.datasets[1].backgroundColor = subcolor;
-  } else if (chart.data.datasets[1].type === "line") {
-    (
-      chart.data.datasets as ChartDataset<"line", TData>[]
-    )[1].pointBackgroundColor = subcolor;
   }
 
   const chartScaleOptions = chart.options as ScaleChartOptions<TType>;

@@ -1,5 +1,10 @@
 [
   {
+    "name" : "viridescent",
+    "bgColor": "#2C3333",
+    "mainColor": "#95d5b2"
+  }
+  ,{
     "name": "dark",
     "bgColor": "#111",
     "mainColor": "#eee"
@@ -773,5 +778,10 @@
     "name": "modern_dolch_light",
     "bgColor": "#dbdbdb",
     "mainColor": "#8fd1c3"
+  }
+  ,{
+    "name": "cheesecake",
+    "bgColor": "#fdf0d5",
+    "mainColor": "#892948"
   }
 ]

@@ -23,12 +23,14 @@ class Input {
   current: string;
   history: string[];
   historyLength: number;
+  koreanStatus: boolean;
   length: number;
   constructor() {
     this.current = "";
     this.history = [];
     this.historyLength = 0;
     this.length = 0;
+    this.koreanStatus = false;
   }
 
   reset(): void {
@@ -47,6 +49,10 @@ class Input {
     this.length = this.current.length;
   }
 
+  setKoreanStatus(val: boolean): void {
+    this.koreanStatus = val;
+  }
+
   appendCurrent(val: string): void {
     this.current += val;
     this.length = this.current.length;
@@ -58,6 +64,10 @@ class Input {
 
   getCurrent(): string {
     return this.current;
+  }
+
+  getKoreanStatus(): boolean {
+    return this.koreanStatus;
   }
 
   pushHistory(): void {

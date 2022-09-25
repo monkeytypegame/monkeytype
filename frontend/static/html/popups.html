@@ -1,3 +1,46 @@
+<div id="registerCaptchaPopupWrapper" class="popupWrapper hidden">
+  <div id="registerCaptchaPopup">
+    <div class="g-recaptcha"></div>
+  </div>
+</div>
+
+<div id="alertsPopupWrapper" class="popupWrapper hidden">
+  <div id="alertsPopup">
+    <div class="button mobileClose">
+      <i class="fas fa-times"></i>
+      Close
+    </div>
+    <div class="scrollWrapper">
+      <div class="accountAlerts">
+        <div class="title">
+          <div class="left">
+            <i class="fas fa-inbox"></i>
+            Inbox
+          </div>
+          <div class="right"></div>
+        </div>
+        <div class="list"><div class="nothing">Nothing to show</div></div>
+      </div>
+      <div class="separator accountSeparator"></div>
+      <div class="psas">
+        <div class="title">
+          <i class="fas fa-bullhorn"></i>
+          Announcements
+        </div>
+        <div class="list"><div class="nothing">Nothing to show</div></div>
+      </div>
+      <div class="separator"></div>
+      <div class="notificationHistory">
+        <div class="title">
+          <i class="fas fa-comment-alt"></i>
+          Notifications
+        </div>
+        <div class="list"><div class="nothing">Nothing to show</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="simplePopupWrapper" class="popupWrapper hidden">
   <div id="simplePopup" popupId=""></div>
 </div>
@@ -485,6 +528,7 @@
     <div class="title">Account name</div>
     <div class="text">You need to choose a username before continuing</div>
     <input type="text" placeholder="username" />
+    <div class="captcha"></div>
     <div class="button disabled">Sign up</div>
   </div>
 </div>
