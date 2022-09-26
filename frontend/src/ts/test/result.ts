@@ -348,8 +348,8 @@ export function showConfetti(): void {
   playConfetti();
   const style = getComputedStyle(document.body);
   const colors = [
-    style.getPropertyValue("--error-color"), 
-    style.getPropertyValue("--text-color")
+    style.getPropertyValue("--main-color"),
+    style.getPropertyValue("--text-color"),
   ];
   const duration = Date.now() + 2000;
 
@@ -372,9 +372,7 @@ export function showConfetti(): void {
     if (Date.now() < duration) {
       requestAnimationFrame(f);
     }
-
-  }());
-  
+  })();
 }
 
 export function hideCrown(): void {
