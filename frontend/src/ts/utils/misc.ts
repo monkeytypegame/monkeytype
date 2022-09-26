@@ -158,18 +158,6 @@ const layoutsList: MonkeyTypes.Layouts | undefined = undefined;
 export async function getLayoutsList(): Promise<
   MonkeyTypes.Layouts | undefined
 > {
-  // if (
-  //   layoutsList === undefined ||
-  //   typeof (await layoutsList) !== "object" ||
-  //   Object.keys(await layoutsList).length === 0
-  // ) {
-  //   layoutsList = getJSON(
-  //     "/./layouts/_list.json"
-  //   ) as Promise<MonkeyTypes.Layouts>;
-  // }
-
-  // return await layoutsList;
-
   const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
     "/./layouts/_lis.json"
   );
@@ -1272,11 +1260,6 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
 
   return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
     const key = getKey ? getKey.apply(args) : args[0];
-
-    console.log(fn);
-    console.log(key);
-    console.log(args);
-    console.log(cache);
 
     if (cache.has(key)) {
       return (await cache.get(key)) as ReturnType<T>;
