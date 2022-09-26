@@ -1,10 +1,10 @@
 :root {
   --bg-color: #0c0c0c;
-  --main-color: #d3c2c3;
+  --main-color: #b7976a;
   --caret-color: #bebebe;
   --sub-color: #404040;
   --sub-alt-color: #121212;
-  --text-color: #dccedc;
+  --text-color: #d3c2c3;
   --error-color: #9d7b7d;
   --error-extra-color: #a78587;
   --colorful-error-color: #b7976a;
