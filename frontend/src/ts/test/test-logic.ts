@@ -710,7 +710,6 @@ function applyFunboxesToWord(word: string, wordset?: Misc.Wordset): string {
   for (const f of Funbox.Funboxes) {
     if (Config.funbox.split("#").includes(f.name) && f.alterText) {
       word = f.alterText(word);
-      break;
     }
   }
   return word;
