@@ -87,8 +87,24 @@ declare namespace MonkeyTypes {
     5 = typewriter
     6 = osu
     7 = hitmarker
+    8 = sine
+    9 = sawtooth
+    10 = square
+    11 = triangle
   */
-  type PlaySoundOnClick = "off" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
+  type PlaySoundOnClick =
+    | "off"
+    | "1"
+    | "2"
+    | "3"
+    | "4"
+    | "5"
+    | "6"
+    | "7"
+    | "8"
+    | "9"
+    | "10"
+    | "11";
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
