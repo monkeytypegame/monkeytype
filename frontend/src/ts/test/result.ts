@@ -22,6 +22,7 @@ import { Auth } from "../firebase";
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
+import confetti from "canvas-confetti";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -340,6 +341,39 @@ function updateKey(): void {
 
 export function showCrown(): void {
   PbCrown.show();
+}
+
+export function showConfetti(): void {
+  playConfetti();
+  const style = getComputedStyle(document.body);
+  const colors = [
+    style.getPropertyValue("--error-color"), 
+    style.getPropertyValue("--text-color")
+  ];
+  const duration = Date.now() + 2000;
+
+  (function f(): void {
+    confetti({
+      particleCount: 2,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 },
+      colors: colors,
+    });
+    confetti({
+      particleCount: 2,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 },
+      colors: colors,
+    });
+
+    if (Date.now() < duration) {
+      requestAnimationFrame(f);
+    }
+
+  }());
+  
 }
 
 export function hideCrown(): void {
