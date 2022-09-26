@@ -1,6 +1,22 @@
 import * as Loader from "../elements/loader";
 import format from "date-fns/format";
 
+async function fetchJson<T>(url: string): Promise<T | undefined> {
+  try {
+    if (!url) throw new Error("No URL");
+    const res = await fetch(url);
+    if (res.ok) {
+      return await res.json();
+    } else {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+  } catch (e) {
+    const error = e as Error;
+    console.error(`Failed to fetch ${url}: ${error.message}`);
+    return;
+  }
+}
+
 function hexToHSL(hex: string): {
   hue: number;
   sat: number;
@@ -138,25 +154,37 @@ export async function getFunbox(
   });
 }
 
-let layoutsList: MonkeyTypes.Layouts = {};
-export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
-  if (Object.keys(layoutsList).length === 0) {
-    return $.getJSON("/./layouts/_list.json", function (data) {
-      layoutsList = data;
-      return layoutsList;
-    });
-  } else {
-    return layoutsList;
-  }
+const layoutsList: MonkeyTypes.Layouts | undefined = undefined;
+export async function getLayoutsList(): Promise<
+  MonkeyTypes.Layouts | undefined
+> {
+  // if (
+  //   layoutsList === undefined ||
+  //   typeof (await layoutsList) !== "object" ||
+  //   Object.keys(await layoutsList).length === 0
+  // ) {
+  //   layoutsList = getJSON(
+  //     "/./layouts/_list.json"
+  //   ) as Promise<MonkeyTypes.Layouts>;
+  // }
+
+  // return await layoutsList;
+
+  const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
+    "/./layouts/_lis.json"
+  );
+  return layoutsList;
 }
+
+export const cachedFetchJson = memoizeAsync(fetchJson);
 
 export async function getLayout(
   layoutName: string
 ): Promise<MonkeyTypes.Layout> {
-  if (Object.keys(layoutsList).length === 0) {
+  if (layoutsList === undefined || Object.keys(layoutsList).length === 0) {
     await getLayoutsList();
   }
-  return layoutsList[layoutName];
+  return (layoutsList as MonkeyTypes.Layouts)[layoutName];
 }
 
 let fontsList: MonkeyTypes.FontObject[] = [];
@@ -1240,16 +1268,22 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
   fn: T,
   getKey?: (...args: Parameters<T>) => any
 ): T {
-  const cache = new Map<any, ReturnType<T>>();
+  const cache = new Map<any, Promise<ReturnType<T>>>();
 
   return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
     const key = getKey ? getKey.apply(args) : args[0];
 
+    console.log(fn);
+    console.log(key);
+    console.log(args);
+    console.log(cache);
+
     if (cache.has(key)) {
-      return cache.get(key) as ReturnType<T>;
+      return (await cache.get(key)) as ReturnType<T>;
     }
 
-    const result = await fn.apply(args);
+    // eslint-disable-next-line prefer-spread
+    const result = fn.apply(null, args);
     cache.set(key, result);
 
     return result;
