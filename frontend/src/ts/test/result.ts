@@ -351,7 +351,7 @@ export function showConfetti(): void {
     style.getPropertyValue("--main-color"),
     style.getPropertyValue("--text-color"),
   ];
-  const duration = Date.now() + 2000;
+  const duration = Date.now() + 2500;
 
   (function f(): void {
     confetti({
