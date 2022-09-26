@@ -118,7 +118,13 @@
   },
   {
     "name": "greek",
-    "languages": ["greek"]
+    "languages": [
+      "greek",
+      "greek_1k",
+      "greek_5k",
+      "greek_10k",
+      "greek_25k"
+    ]
   },
   {
     "name": "turkish",
