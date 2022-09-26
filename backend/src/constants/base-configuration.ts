@@ -216,7 +216,7 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
       fields: {
         signUp: {
           type: "boolean",
-          label: "Enabled",
+          label: "Sign Up Enabled",
         },
         xp: {
           type: "object",
