@@ -23,6 +23,7 @@ import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 import confetti from "canvas-confetti";
+import { playConfetti } from "../controllers/sound-controller";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -344,6 +345,7 @@ export function showCrown(): void {
 }
 
 export function showConfetti(): void {
+  playConfetti();
   const style = getComputedStyle(document.body);
   const colors = [
     style.getPropertyValue("--main-color"),
