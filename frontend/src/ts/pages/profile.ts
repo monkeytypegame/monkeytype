@@ -161,7 +161,7 @@ async function update(options: UpdateOptions): Promise<void> {
       );
     }
 
-    window.history.pushState(null, "", `/profile/${response.data.name}`);
+    window.history.replaceState(null, "", `/profile/${response.data.name}`);
 
     Profile.update("profile", response.data);
     PbTables.update(response.data.personalBests, true);
