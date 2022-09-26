@@ -1738,6 +1738,7 @@ async function saveResult(
 
   if (response?.data?.isPb) {
     //new pb
+    Result.showConfetti();
     Result.showCrown();
     Result.updateCrown();
     DB.saveLocalPB(
