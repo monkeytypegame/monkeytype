@@ -348,7 +348,7 @@ export function showConfetti(): void {
   playConfetti();
   const style = getComputedStyle(document.body);
   const colors = [
-    style.getPropertyValue("--main-color"),
+    style.getPropertyValue("--error-color"),
     style.getPropertyValue("--text-color"),
   ];
   const duration = Date.now() + 2500;
