@@ -1246,7 +1246,7 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
     const key = getKey ? getKey.apply(args) : args[0];
 
     if (cache.has(key)) {
-      return cache.get(key);
+      return cache.get(key) as ReturnType<T>;
     }
 
     const result = await fn.apply(args);
