@@ -1372,6 +1372,14 @@
       color: var(--sub-color);
       user-select: none;
     }
+    .accountAlerts > .claimAll,
+    .accountAlerts > .deleteAll {
+      font-size: 0.75em;
+      margin-bottom: 1rem;
+      .fas {
+        margin-right: 0.25em;
+      }
+    }
     .list {
       display: grid;
       gap: 1rem;
