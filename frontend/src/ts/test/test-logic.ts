@@ -1738,6 +1738,11 @@ async function saveResult(
 
   if (response?.data?.isPb) {
     //new pb
+    if (
+      DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
+    ) {
+      Result.showConfetti();
+    }
     Result.showCrown();
     Result.updateCrown();
     DB.saveLocalPB(
@@ -1768,6 +1773,7 @@ async function saveResult(
   if (!response?.data?.dailyLeaderboardRank) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
   } else {
+    Result.showConfetti();
     $("#result .stats .dailyLeaderboard")
       .css({
         maxWidth: "13rem",
