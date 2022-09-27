@@ -18,6 +18,7 @@ import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
+import * as SlowTimer from "../states/slow-timer";
 
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -344,6 +345,7 @@ export function showCrown(): void {
 }
 
 export function showConfetti(): void {
+  if (SlowTimer.get()) return;
   const style = getComputedStyle(document.body);
   const colors = [
     style.getPropertyValue("--main-color"),
