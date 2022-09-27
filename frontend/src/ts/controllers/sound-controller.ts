@@ -375,11 +375,6 @@ export function playClick(): void {
   randomSound.sounds[randomSound.counter].play();
 }
 
-export function playConfetti(): void {
-  const confettiSound = new Howl({ src: "../sound/party_horn.wav" });
-  confettiSound.play();
-}
-
 export function playError(): void {
   if (!Config.playSoundOnError) return;
   if (errorSound === null) initErrorSound();
