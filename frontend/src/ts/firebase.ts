@@ -11,12 +11,19 @@ export let Auth: AuthType | undefined;
 try {
   app = initializeApp(firebaseConfig);
   Auth = getAuth(app);
-  // throw new Error("Firebase is not initialized");
+  throw new Error("Firebase is not initialized");
 } catch (e) {
   app = undefined;
   Auth = undefined;
   console.error(e);
-  Notifications.addBanner("Offline mode", 0, undefined, true);
+  const error = e as Error;
+  Notifications.addBanner(
+    "Offline mode: " +
+      (window.location.hostname === "localhost" ? error.message : ""),
+    0,
+    undefined,
+    true
+  );
   // $("body").text(
   //   "Failed to initialize Firebase. Are you sure you have the correct config in the firebase-config.ts file?"
   // );
