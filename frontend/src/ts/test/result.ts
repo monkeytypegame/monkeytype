@@ -350,21 +350,22 @@ export function showConfetti(): void {
   const colors = [
     style.getPropertyValue("--main-color"),
     style.getPropertyValue("--text-color"),
+    style.getPropertyValue("--sub-color"),
   ];
-  const duration = Date.now() + 2500;
+  const duration = Date.now() + 125;
 
   (function f(): void {
     confetti({
-      particleCount: 2,
+      particleCount: 5,
       angle: 60,
-      spread: 55,
+      spread: 75,
       origin: { x: 0 },
       colors: colors,
     });
     confetti({
-      particleCount: 2,
+      particleCount: 5,
       angle: 120,
-      spread: 55,
+      spread: 75,
       origin: { x: 1 },
       colors: colors,
     });
