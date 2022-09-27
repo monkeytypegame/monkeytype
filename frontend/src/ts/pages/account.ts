@@ -16,7 +16,6 @@ import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 
 import type { ScaleChartOptions } from "chart.js";
-import { Auth } from "../firebase";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -898,7 +897,6 @@ function fillContent(): void {
 
 export async function downloadResults(): Promise<void> {
   if (DB.getSnapshot().results !== undefined) return;
-  LoadingPage.updateBar(45, true);
   const results = await DB.getUserResults();
   TodayTracker.addAllFromToday();
   if (results) {
@@ -912,6 +910,7 @@ export async function update(): Promise<void> {
     Notifications.add(`Missing account data. Please refresh.`, -1);
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
   } else {
+    LoadingPage.updateBar(90);
     await downloadResults();
     try {
       fillContent();
@@ -1110,7 +1109,8 @@ $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
 });
 
 $(document).on("click", ".pageAccount .profile .details .copyLink", () => {
-  const url = `${location.origin}/profile/${Auth.currentUser?.uid}`;
+  const { name } = DB.getSnapshot();
+  const url = `${location.origin}/profile/${name}`;
 
   navigator.clipboard.writeText(url).then(
     function () {
@@ -1133,7 +1133,12 @@ export const page = new Page(
     reset();
   },
   async () => {
-    await update();
+    if (DB.getSnapshot().results == undefined) {
+      $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
+      $(".pageAccount .content").addClass("hidden");
+      $(".pageAccount .preloader").removeClass("hidden");
+    }
+    update();
   },
   async () => {
     //

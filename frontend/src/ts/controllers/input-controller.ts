@@ -29,7 +29,7 @@ import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Tribe from "../tribe/tribe";
 import * as Hangul from "hangul-js";
-import { navigate } from "./route-controller";
+import { navigate } from "../observables/navigate-event";
 import tribeSocket from "../tribe/tribe-socket";
 
 let dontInsertSpace = false;
@@ -852,6 +852,25 @@ $(document).on("keydown", async (event) => {
         navigate("/");
         return;
       }
+    }
+
+    // tribe
+    if (Tribe.state >= 5) {
+      if (Tribe.state > 5 && Tribe.state < 22) return;
+      if (Tribe.getSelf()?.isLeader) {
+        if (Tribe.state === 5 || Tribe.state === 22) {
+          Tribe.initRace();
+          return;
+        }
+      } else if (
+        Tribe.state === 5 ||
+        Tribe.state === 21 ||
+        Tribe.state === 22
+      ) {
+        tribeSocket.out.room.readyUpdate();
+        return;
+      }
+    }
     }
 
     // tribe

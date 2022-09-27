@@ -35,37 +35,37 @@ export async function update(): Promise<void> {
 
   if (TestState.isRepeated && Config.mode !== "quote") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton restart" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
+      `<div class="textButton noInteraction" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
   }
 
   if (!TestState.savingEnabled) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton resultSaving" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`
+      `<div class="textButton" commands="resultSaving" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`
     );
   }
 
   if (TestWords.hasTab) {
     if (Config.quickRestart === "esc") {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
+        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
       );
     } else {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
       );
     }
   }
 
   if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="loadChallenge"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
+      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
     );
   }
 
   if (Config.mode === "zen") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
+      `<div class="textButton noInteraction"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
     );
   }
 
@@ -90,7 +90,7 @@ export async function update(): Promise<void> {
 
   if (Config.blindMode) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton blind"><i class="fas fa-eye-slash"></i>blind</div>`
+      `<div class="textButton" commands="blindMode"><i class="fas fa-eye-slash"></i>blind</div>`
     );
   }
 

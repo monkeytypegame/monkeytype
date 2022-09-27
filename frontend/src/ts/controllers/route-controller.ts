@@ -6,11 +6,12 @@ import * as PageAccount from "../pages/account";
 import * as PageLogin from "../pages/login";
 import * as Page404 from "../pages/404";
 import * as PageProfile from "../pages/profile";
+import * as PageProfileSearch from "../pages/profile-search";
 import * as PageTribe from "../pages/tribe";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import { Auth } from "../firebase";
+import * as NavigateEvent from "../observables/navigate-event";
 import * as Tribe from "../tribe/tribe";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
@@ -19,6 +20,7 @@ import * as Tribe from "../tribe/tribe";
 interface NavigateOptions {
   tribeOverride?: boolean;
   force?: boolean;
+  data?: any;
 }
 
 function pathToRegex(path: string): RegExp {
@@ -95,26 +97,27 @@ const routes: Route[] = [
   },
   {
     path: "/account",
-    load: (): void => {
-      PageController.change(PageAccount.page);
+    load: (_params, options): void => {
+      PageController.change(PageAccount.page, {
+        data: options.data,
+      });
     },
   },
   {
     path: "/profile",
-    load: (): void => {
-      if (Auth.currentUser) {
-        navigate("/account");
-      } else {
-        navigate("/");
-      }
+    load: (_params): void => {
+      PageController.change(PageProfileSearch.page);
     },
   },
   {
-    path: "/profile/:uid",
-    load: (params): void => {
+    path: "/profile/:uidOrName",
+    load: (params, options): void => {
       PageController.change(PageProfile.page, {
         force: true,
-        params,
+        params: {
+          uidOrName: params["uidOrName"],
+        },
+        data: options.data,
       });
     },
   },
@@ -139,8 +142,8 @@ const routes: Route[] = [
   },
 ];
 
-export function navigate(
-  url = window.location.pathname,
+function nav(
+  url = window.location.pathname + window.location.search,
   options = {} as NavigateOptions
 ): void {
   if (Tribe.state > 5 && Tribe.state < 22 && !options?.tribeOverride) return;
@@ -187,15 +190,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = e?.target as HTMLLinkElement;
     if (target.matches("[router-link]") && target?.href) {
       e.preventDefault();
-      navigate(target.href);
+      nav(target.href);
     }
   });
 });
 
 $("#top .logo").on("click", () => {
-  navigate("/");
+  nav("/");
 });
 
 $(document).on("click", "#leaderboards a.entryName", () => {
   Leaderboards.hide();
+});
+
+NavigateEvent.subscribe((url, options) => {
+  nav(url, options);
 });

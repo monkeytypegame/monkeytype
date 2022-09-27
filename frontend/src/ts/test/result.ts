@@ -26,6 +26,7 @@ import * as TribeButtons from "../tribe/tribe-buttons";
 import * as TribeChat from "../tribe/tribe-chat";
 import * as TribeChartController from "../tribe/tribe-chart-controller";
 
+// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 

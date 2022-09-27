@@ -8,6 +8,7 @@ import * as PageLogin from "../pages/login";
 import * as PageLoading from "../pages/loading";
 import * as PageTribe from "../pages/tribe";
 import * as PageProfile from "../pages/profile";
+import * as PageProfileSearch from "../pages/profile-search";
 import * as Page404 from "../pages/404";
 import * as PageTransition from "../states/page-transition";
 import type Page from "../pages/page";
@@ -17,6 +18,7 @@ import * as Focus from "../test/focus";
 interface ChangeOptions {
   force?: boolean;
   params?: { [key: string]: string };
+  data?: any;
   tribeOverride?: boolean;
 }
 
@@ -52,6 +54,7 @@ export async function change(
       login: PageLogin.page,
       tribe: PageTribe.page,
       profile: PageProfile.page,
+      profileSearch: PageProfileSearch.page,
       404: Page404.page,
     };
 
@@ -80,6 +83,7 @@ export async function change(
         previousPage?.afterHide();
         await nextPage?.beforeShow({
           params: options.params,
+          data: options.data,
           tribeOverride: options.tribeOverride ?? false,
         });
       }

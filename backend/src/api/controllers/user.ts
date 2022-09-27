@@ -438,7 +438,14 @@ export async function removeFavoriteQuote(
 export async function getProfile(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { uid } = req.params;
+  const { uidOrName } = req.params;
+
+  const { isUid } = req.query;
+
+  const user =
+    isUid !== undefined
+      ? await UserDAL.getUser(uidOrName, "get user profile")
+      : await UserDAL.getUserByName(uidOrName, "get user profile");
 
   const {
     name,
@@ -454,7 +461,7 @@ export async function getProfile(
     discordAvatar,
     xp,
     streak,
-  } = await UserDAL.getUser(uid, "get user profile");
+  } = user;
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
   const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
