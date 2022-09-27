@@ -1,5 +1,5 @@
 import * as TestUI from "./test-ui";
-import Config from "../config";
+import Config, { ActiveFunboxes } from "../config";
 import * as Misc from "../utils/misc";
 import * as TestStats from "./test-stats";
 import * as Keymap from "../elements/keymap";
@@ -22,7 +22,6 @@ import { Auth } from "../firebase";
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import { Funboxes } from "./funbox";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -479,13 +478,8 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
-  let ignoresLanguage = false;
-  for (const f of Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.ignoresLanguage) {
-      ignoresLanguage = true;
-      break;
-    }
-  }
+  const ignoresLanguage =
+    ActiveFunboxes.find((f) => f.ignoresLanguage) !== undefined;
   if (Config.mode != "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }

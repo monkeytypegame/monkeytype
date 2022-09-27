@@ -638,7 +638,7 @@ function setActiveFunboxButton(): void {
   Misc.getFunboxList().then((funboxModes) => {
     funboxModes.forEach((funbox) => {
       if (
-        !Funbox.checkFunbox(funbox.name, funbox.type) &&
+        !Funbox.checkFunbox(funbox.name) &&
         !Config.funbox.split("#").includes(funbox.name)
       ) {
         $(

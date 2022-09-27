@@ -121,10 +121,8 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  for (const f of Funbox.Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.nospace) {
-      TestInput.input.current = TestInput.input.current.slice(0, -1);
-    }
+  if (UpdateConfig.ActiveFunboxes.find((f) => f.nospace)) {
+    TestInput.input.current = TestInput.input.current.slice(0, -1);
   }
   TestWords.words.decreaseCurrentIndex();
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
@@ -180,13 +178,8 @@ function handleSpace(): void {
   LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
-  let nospace = false;
-  for (const f of Funbox.Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.nospace) {
-      nospace = true;
-      break;
-    }
-  }
+  const nospace =
+    UpdateConfig.ActiveFunboxes.find((f) => f.nospace) !== undefined;
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -429,13 +422,8 @@ function handleChar(
     char = " ";
   }
 
-  let nospace = false;
-  for (const f of Funbox.Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.nospace) {
-      nospace = true;
-      break;
-    }
-  }
+  const nospace =
+    UpdateConfig.ActiveFunboxes.find((f) => f.nospace) !== undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;

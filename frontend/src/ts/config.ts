@@ -127,14 +127,13 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
   }
 
   if (mode !== "words") {
-    for (const f of Funboxes) {
-      if (config.funbox.split("#").includes(f.name) && f.mode == "words") {
-        Notifications.add(
-          `${f.name} funbox can only be used with words mode.`,
-          0
-        );
-        return false;
-      }
+    const funbox = ActiveFunboxes.find((f) => f.mode == "words");
+    if (funbox) {
+      Notifications.add(
+        `${funbox} funbox can only be used with words mode.`,
+        0
+      );
+      return false;
     }
   }
   const previous = config.mode;
@@ -851,11 +850,9 @@ export function setHighlightMode(
   }
 
   if (mode === "word") {
-    for (const f of Funboxes) {
-      if (config.funbox.split("#").includes(f.name) && f.blockWordHighlight) {
-        Notifications.add("Can't use word highlight with this funbox", 0);
-        return false;
-      }
+    if (ActiveFunboxes.find((f) => f.blockWordHighlight)) {
+      Notifications.add("Can't use word highlight with this funbox", 0);
+      return false;
     }
   }
 
@@ -1884,5 +1881,15 @@ export function setConfig(newConfig: MonkeyTypes.Config): void {
 export const loadPromise = new Promise((v) => {
   loadDone = v;
 });
+
+export let ActiveFunboxes: MonkeyTypes.Funbox[] = [];
+
+export function initFunboxes(): void {
+  ActiveFunboxes = [];
+  for (const i of config.funbox.split("#")) {
+    const f = Funboxes.find((f) => f.name === i);
+    if (f) ActiveFunboxes.push(f);
+  }
+}
 
 export default config;

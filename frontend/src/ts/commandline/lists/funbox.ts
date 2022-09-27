@@ -12,7 +12,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "none",
       alias: "off",
       exec: (): void => {
-        if (Funbox.setFunbox("none", null)) {
+        if (Funbox.setFunbox("none")) {
           TestLogic.restart();
         }
       },

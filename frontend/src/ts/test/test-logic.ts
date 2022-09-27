@@ -87,11 +87,8 @@ export async function punctuateWord(
 
   const lastChar = Misc.getLastChar(previousWord);
 
-  for (const f of Funbox.Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.punctuateWord) {
-      return f.punctuateWord(word);
-    }
-  }
+  const funbox = UpdateConfig.ActiveFunboxes.find((f) => f.punctuateWord);
+  if (funbox?.punctuateWord) return funbox.punctuateWord(word);
 
   if (
     currentLanguage != "code" &&
@@ -545,13 +542,11 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      for (const f of Funbox.Funboxes) {
-        if (Config.funbox.split("#").includes(f.name) && f.noPunctuation) {
-          UpdateConfig.setPunctuation(false, true);
-        }
-        if (Config.funbox.split("#").includes(f.name) && f.noNumbers) {
-          UpdateConfig.setNumbers(false, true);
-        }
+      if (UpdateConfig.ActiveFunboxes.find((f) => f.noPunctuation)) {
+        UpdateConfig.setPunctuation(false, true);
+      }
+      if (UpdateConfig.ActiveFunboxes.find((f) => f.noNumbers)) {
+        UpdateConfig.setNumbers(false, true);
       }
 
       if (
@@ -701,14 +696,10 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 function applyFunboxesToWord(word: string, wordset?: Misc.Wordset): string {
-  for (const f of Funbox.Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.getWord) {
-      word = f.getWord(wordset);
-      break;
-    }
-  }
-  for (const f of Funbox.Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.alterText) {
+  const wordFunbox = UpdateConfig.ActiveFunboxes.find((f) => f.getWord);
+  if (wordFunbox?.getWord) word = wordFunbox.getWord(wordset);
+  for (const f of UpdateConfig.ActiveFunboxes) {
+    if (f.alterText) {
       word = f.alterText(word);
     }
   }
@@ -938,39 +929,39 @@ export async function init(): Promise<void> {
     if (Config.mode == "custom") {
       wordList = CustomText.text;
     }
-    const wordset = Wordset.withWords(wordList, Config.funbox);
+    const wordset = Wordset.withWords(wordList);
     let wordCount = 0;
 
-    for (const f of Funbox.Funboxes) {
-      if (Config.funbox.split("#").includes(f.name) && f.pullSection) {
-        while (
-          (Config.mode == "words" && Config.words >= wordCount) ||
-          (Config.mode === "time" && wordCount < 100)
-        ) {
-          const section = await f.pullSection(Config.language);
+    const sectionFunbox = UpdateConfig.ActiveFunboxes.find(
+      (f) => f.pullSection
+    );
+    if (sectionFunbox?.pullSection) {
+      while (
+        (Config.mode == "words" && Config.words >= wordCount) ||
+        (Config.mode === "time" && wordCount < 100)
+      ) {
+        const section = await sectionFunbox.pullSection(Config.language);
 
-          if (section === false) {
-            Notifications.add(
-              "Error while getting section. Please try again later",
-              -1
-            );
-            UpdateConfig.toggleFunbox(f.name);
-            restart();
-            return;
-          }
-
-          if (section === undefined) continue;
-
-          for (const word of section.words) {
-            if (wordCount >= Config.words && Config.mode == "words") {
-              wordCount++;
-              break;
-            }
-            wordCount++;
-            TestWords.words.push(word);
-          }
+        if (section === false) {
+          Notifications.add(
+            "Error while getting section. Please try again later",
+            -1
+          );
+          UpdateConfig.toggleFunbox(sectionFunbox.name);
+          restart();
+          return;
         }
-        break;
+
+        if (section === undefined) continue;
+
+        for (const word of section.words) {
+          if (wordCount >= Config.words && Config.mode == "words") {
+            wordCount++;
+            break;
+          }
+          wordCount++;
+          TestWords.words.push(word);
+        }
       }
     }
 
@@ -1167,34 +1158,32 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  for (const f of Funbox.Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.pullSection) {
-      if (TestWords.words.length - TestWords.words.currentIndex < 20) {
-        const section = await f.pullSection(Config.language);
+  const sectionFunbox = UpdateConfig.ActiveFunboxes.find((f) => f.pullSection);
+  if (sectionFunbox?.pullSection) {
+    if (TestWords.words.length - TestWords.words.currentIndex < 20) {
+      const section = await sectionFunbox.pullSection(Config.language);
 
-        if (section === false) {
-          Notifications.add(
-            "Error while getting section. Please try again later",
-            -1
-          );
-          UpdateConfig.toggleFunbox(f.name);
-          restart();
-          return;
-        }
-
-        if (section === undefined) return;
-
-        let wordCount = 0;
-        for (const word of section.words) {
-          if (wordCount >= Config.words && Config.mode == "words") {
-            break;
-          }
-          wordCount++;
-          TestWords.words.push(word);
-          TestUI.addWord(word);
-        }
+      if (section === false) {
+        Notifications.add(
+          "Error while getting section. Please try again later",
+          -1
+        );
+        UpdateConfig.toggleFunbox(sectionFunbox.name);
+        restart();
+        return;
       }
-      break;
+
+      if (section === undefined) return;
+
+      let wordCount = 0;
+      for (const word of section.words) {
+        if (wordCount >= Config.words && Config.mode == "words") {
+          break;
+        }
+        wordCount++;
+        TestWords.words.push(word);
+        TestUI.addWord(word);
+      }
     }
   }
 
@@ -1206,7 +1195,7 @@ export async function addWord(): Promise<void> {
           ...(await Misc.getCurrentLanguage(Config.language)),
           words: CustomText.text,
         };
-  const wordset = Wordset.withWords(language.words, Config.funbox);
+  const wordset = Wordset.withWords(language.words);
 
   const randomWord = await getNextWord(wordset, language, bound);
 

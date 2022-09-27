@@ -9,27 +9,7 @@ import * as WeakSpot from "./weak-spot";
 import { getPoem } from "./poetry";
 import { getSection } from "./wikipedia";
 
-interface Funbox {
-  name: string;
-  ignoresLanguage?: boolean;
-  noLingatures?: boolean;
-  mode?: MonkeyTypes.Mode;
-  blockWordHighlight?: boolean;
-  nospace?: boolean;
-  noPunctuation?: boolean;
-  noNumbers?: boolean;
-  getWord?: (wordset?: Misc.Wordset) => string;
-  punctuateWord?: (word: string) => string;
-  withWords?: (words: string[]) => Misc.Wordset;
-  alterText?: (word: string) => string;
-  applyCSS?: () => void;
-  applyConfig?: () => void;
-  rememberSettings?: () => void;
-  toggleScript?: (params: string[]) => void;
-  pullSection?: (language?: string) => Promise<Misc.Section | false>;
-}
-
-export const Funboxes: Funbox[] = [
+export const Funboxes: MonkeyTypes.Funbox[] = [
   {
     name: "nausea",
     applyCSS(): void {
@@ -99,6 +79,7 @@ export const Funboxes: Funbox[] = [
     nospace: true,
     noPunctuation: true,
     noNumbers: true,
+    noLetters: true,
     getWord(): string {
       return Misc.getArrows();
     },
@@ -116,6 +97,7 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "rAnDoMcAsE",
+    changesCapitalisation: true,
     alterText(word: string): string {
       let randomcaseword = "";
       for (let i = 0; i < word.length; i++) {
@@ -130,6 +112,7 @@ export const Funboxes: Funbox[] = [
   },
   {
     name: "capitals",
+    changesCapitalisation: true,
     alterText(word: string): string {
       return Misc.capitalizeFirstLetterOfEachWord(word);
     },
@@ -188,6 +171,7 @@ export const Funboxes: Funbox[] = [
     name: "58008",
     noNumbers: true,
     ignoresLanguage: true,
+    noLetters: true,
     getWord(): string {
       let num = Misc.getNumbers(7);
       if (Config.language.startsWith("kurdish")) {
@@ -227,6 +211,7 @@ export const Funboxes: Funbox[] = [
     ignoresLanguage: true,
     noPunctuation: true,
     noNumbers: true,
+    noLetters: true,
     getWord(): string {
       return Misc.getASCII();
     },
@@ -236,6 +221,7 @@ export const Funboxes: Funbox[] = [
     ignoresLanguage: true,
     noPunctuation: true,
     noNumbers: true,
+    noLetters: true,
     getWord(): string {
       return Misc.getSpecials();
     },
@@ -451,92 +437,78 @@ export function reset(): void {
 }
 
 export function toggleScript(...params: string[]): void {
-  Funboxes.forEach((funbox) => {
-    if (Config.funbox.split("#").includes(funbox.name)) {
-      if (funbox.toggleScript) funbox.toggleScript(params);
-    }
+  UpdateConfig.ActiveFunboxes.forEach((funbox) => {
+    if (funbox.toggleScript) funbox.toggleScript(params);
   });
 }
 
-let modeSaved: MonkeyTypes.FunboxObjectType[] = [];
-async function updateModes(
-  funbox: string
-): Promise<MonkeyTypes.FunboxObjectType[]> {
-  if (funbox === "none") {
-    modeSaved = [];
-  } else {
-    const list = await Misc.getFunboxList();
-    modeSaved = [];
-    for (let i = 0; i < funbox.split("#").length; i++) {
-      modeSaved[i] = list.filter(
-        (f) => f.name === funbox?.split("#")[i]
-      )[0].type;
-    }
-  }
-  return modeSaved;
-}
-
-export function checkFunbox(
-  funbox: string,
-  mode: MonkeyTypes.FunboxObjectType
-): boolean {
-  if (funbox === "none") return true;
-  if (Config.funbox.split("#").length != modeSaved.length) {
-    updateModes(Config.funbox).then();
-  }
+export function checkFunbox(funbox: string): boolean {
+  if (funbox === "none" || Config.funbox === "none") return true;
+  UpdateConfig.initFunboxes();
+  // return !(
+  //   (modeSaved.includes(mode) && mode != "modificator") ||
+  //   (mode == "quote" &&
+  //     (modeSaved.includes("wordlist") || modeSaved.includes("modificator"))) ||
+  //   ((mode == "wordlist" || mode == "modificator") &&
+  //     modeSaved.includes("quote")) ||
+  //   ((funbox == "capitals" || funbox == "rAnDoMcAsE") &&
+  //     (Config.funbox.includes("58008") ||
+  //       Config.funbox.includes("arrows") ||
+  //       Config.funbox.includes("ascii") ||
+  //       Config.funbox.includes("specials"))) ||
+  //   ((funbox == "58008" ||
+  //     funbox == "arrows" ||
+  //     funbox == "ascii" ||
+  //     funbox == "specials") &&
+  //     (Config.funbox.includes("capitals") ||
+  //       Config.funbox.includes("rAnDoMcAsE"))) ||
+  //   (funbox == "arrows" && Config.funbox.includes("nospace")) ||
+  //   (funbox == "nospace" && Config.funbox.includes("arrows")) ||
+  //   (funbox == "capitals" && Config.funbox.includes("rAnDoMcAsE")) ||
+  //   (funbox == "rAnDoMcAsE" && Config.funbox.includes("capitals")) ||
+  //   ((modeSaved.includes("style") || modeSaved.includes("script")) &&
+  //     funbox == "simon_says") ||
+  //   ((mode == "style" || mode == "script") &&
+  //     Config.funbox.includes("simon_says")) ||
+  //   (funbox == "space_balls" &&
+  //     modeSaved.includes("script") &&
+  //     !(
+  //       Config.funbox.includes("plus_one") || Config.funbox.includes("plus_two")
+  //     )) ||
+  //   (Config.funbox.includes("space_balls") &&
+  //     mode == "script" &&
+  //     !(funbox == "plus_one" || funbox == "plus_two")) ||
+  //   (mode == "script" &&
+  //     modeSaved.includes("style") &&
+  //     !Config.funbox.includes("space_balls")) ||
+  //   (modeSaved.includes("script") &&
+  //     mode == "style" &&
+  //     funbox != "space_balls") ||
+  //   (mode == "script" && Config.funbox.includes("memory")) ||
+  //   (modeSaved.includes("script") && funbox == "memory") ||
+  //   (funbox == "arrows" && Config.funbox.includes("choo_choo")) ||
+  //   (funbox == "choo_choo" && Config.funbox.includes("arrows"))
+  // );
+  const checkingFunbox = UpdateConfig.ActiveFunboxes.concat(
+    Funboxes.filter((f) => f.name == funbox)
+  );
   return !(
-    (modeSaved.includes(mode) && mode != "modificator") ||
-    (mode == "quote" &&
-      (modeSaved.includes("wordlist") || modeSaved.includes("modificator"))) ||
-    ((mode == "wordlist" || mode == "modificator") &&
-      modeSaved.includes("quote")) ||
-    ((funbox == "capitals" || funbox == "rAnDoMcAsE") &&
-      (Config.funbox.includes("58008") ||
-        Config.funbox.includes("arrows") ||
-        Config.funbox.includes("ascii") ||
-        Config.funbox.includes("specials"))) ||
-    ((funbox == "58008" ||
-      funbox == "arrows" ||
-      funbox == "ascii" ||
-      funbox == "specials") &&
-      (Config.funbox.includes("capitals") ||
-        Config.funbox.includes("rAnDoMcAsE"))) ||
-    (funbox == "arrows" && Config.funbox.includes("nospace")) ||
-    (funbox == "nospace" && Config.funbox.includes("arrows")) ||
-    (funbox == "capitals" && Config.funbox.includes("rAnDoMcAsE")) ||
-    (funbox == "rAnDoMcAsE" && Config.funbox.includes("capitals")) ||
-    ((modeSaved.includes("style") || modeSaved.includes("script")) &&
-      funbox == "simon_says") ||
-    ((mode == "style" || mode == "script") &&
-      Config.funbox.includes("simon_says")) ||
-    (funbox == "space_balls" &&
-      modeSaved.includes("script") &&
-      !(
-        Config.funbox.includes("plus_one") || Config.funbox.includes("plus_two")
-      )) ||
-    (Config.funbox.includes("space_balls") &&
-      mode == "script" &&
-      !(funbox == "plus_one" || funbox == "plus_two")) ||
-    (mode == "script" &&
-      modeSaved.includes("style") &&
-      !Config.funbox.includes("space_balls")) ||
-    (modeSaved.includes("script") &&
-      mode == "style" &&
-      funbox != "space_balls") ||
-    (mode == "script" && Config.funbox.includes("memory")) ||
-    (modeSaved.includes("script") && funbox == "memory") ||
-    (funbox == "arrows" && Config.funbox.includes("choo_choo")) ||
-    (funbox == "choo_choo" && Config.funbox.includes("arrows"))
+    checkingFunbox.filter((f) => f.getWord).length > 1 ||
+    checkingFunbox.filter((f) => f.applyCSS).length > 1 ||
+    checkingFunbox.filter((f) => f.pullSection).length > 1 ||
+    checkingFunbox.filter((f) => f.punctuateWord).length > 1 ||
+    checkingFunbox.filter((f) => f.nospace).length > 1 ||
+    (checkingFunbox.filter((f) => f.getWord).length > 0 &&
+      checkingFunbox.filter((f) => f.pullSection).length > 0) ||
+    (checkingFunbox.filter((f) => f.noLetters).length > 0 &&
+      checkingFunbox.filter((f) => f.changesCapitalisation).length > 0)
   );
 }
 
-export function setFunbox(
-  funbox: string,
-  mode: MonkeyTypes.FunboxObjectType | null
-): boolean {
-  modeSaved = mode ? [mode] : [];
+export function setFunbox(funbox: string): boolean {
   loadMemory();
   UpdateConfig.setFunbox(funbox, false);
+  UpdateConfig.initFunboxes();
   return true;
 }
 
@@ -547,19 +519,15 @@ export function toggleFunbox(
   if (
     funbox == "none" ||
     mode === null ||
-    (!checkFunbox(funbox, mode) && !Config.funbox.split("#").includes(funbox))
+    (!checkFunbox(funbox) && !Config.funbox.split("#").includes(funbox))
   ) {
-    setFunbox("none", null);
+    setFunbox("none");
     return true;
   }
   loadMemory();
   const e = UpdateConfig.toggleFunbox(funbox, false);
+  UpdateConfig.initFunboxes();
   if (e === false || e === true) return false;
-  if (e < 0) {
-    modeSaved?.splice(-e - 1, 1);
-  } else {
-    modeSaved?.splice(e, 0, mode);
-  }
   return true;
 }
 
@@ -584,38 +552,27 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#wordsWrapper").removeClass("hidden");
   // }
 
-  if (funbox.split("#").length != modeSaved.length) await updateModes(funbox);
-  const mode = modeSaved;
+  UpdateConfig.initFunboxes();
 
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
   if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
-    Funboxes.forEach(async (funbox) => {
-      if (Config.funbox.split("#").includes(funbox.name)) {
-        if (funbox.noLingatures) {
-          Notifications.add(
-            "Current language does not support this funbox mode",
-            0
-          );
-          UpdateConfig.setFunbox("none", true);
-          await clear();
-          return;
-        }
-      }
-    });
-  }
-  if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
-    if (mode.includes("wordlist") || mode.includes("modificator")) {
+    if (UpdateConfig.ActiveFunboxes.find((f) => f.noLingatures)) {
       Notifications.add(
-        `${Misc.capitalizeFirstLetterOfEachWord(
-          Config.mode
-        )} mode does not support the ${funbox} funbox`,
+        "Current language does not support this funbox mode",
         0
       );
-      UpdateConfig.setMode("time", true);
+      UpdateConfig.setFunbox("none", true);
+      await clear();
+      return;
     }
-    if (mode?.includes("quote")) {
+  }
+  if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
+    const fb = UpdateConfig.ActiveFunboxes.filter(
+      (f) => f.getWord || f.alterText || f.pullSection
+    );
+    if (fb.length > 0) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
           Config.mode
@@ -629,7 +586,8 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     (Config.time === 0 && Config.mode === "time") ||
     (Config.words === 0 && Config.mode === "words")
   ) {
-    if (mode?.includes("quote")) {
+    const fb = UpdateConfig.ActiveFunboxes.filter((f) => f.pullSection);
+    if (fb.length > 0) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
           Config.mode
@@ -643,11 +601,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   ManualRestart.set();
   if (funbox !== "none") {
-    Funboxes.forEach(async (funbox) => {
-      if (Config.funbox.split("#").includes(funbox.name)) {
-        if (funbox.applyCSS) funbox.applyCSS();
-        if (funbox.applyConfig) funbox.applyConfig();
-      }
+    UpdateConfig.ActiveFunboxes.forEach(async (funbox) => {
+      if (funbox.applyCSS) funbox.applyCSS();
+      if (funbox.applyConfig) funbox.applyConfig();
     });
   }
   // ModesNotice.update();
@@ -655,9 +611,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 }
 
 export async function rememberSettings(): Promise<void> {
-  Funboxes.forEach(async (funbox) => {
-    if (Config.funbox.split("#").includes(funbox.name)) {
-      if (funbox.rememberSettings) funbox.rememberSettings();
-    }
+  UpdateConfig.ActiveFunboxes.forEach(async (funbox) => {
+    if (funbox.rememberSettings) funbox.rememberSettings();
   });
 }

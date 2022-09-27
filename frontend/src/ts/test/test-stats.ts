@@ -1,7 +1,6 @@
 import Hangul from "hangul-js";
-import Config from "../config";
+import Config, { ActiveFunboxes } from "../config";
 import * as Misc from "../utils/misc";
-import { Funboxes } from "./funbox";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 
@@ -274,11 +273,8 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
       correctWordChars += toAdd.correct;
     }
   }
-  for (const f of Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.nospace) {
-      spaces = 0;
-      break;
-    }
+  if (ActiveFunboxes.find((f) => f.nospace)) {
+    spaces = 0;
   }
   chars += currTestInput.length;
   const testSeconds = calculateTestSeconds(performance.now());
@@ -448,12 +444,9 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  for (const f of Funboxes) {
-    if (Config.funbox.split("#").includes(f.name) && f.nospace) {
-      spaces = 0;
-      correctspaces = 0;
-      break;
-    }
+  if (ActiveFunboxes.find((f) => f.nospace)) {
+    spaces = 0;
+    correctspaces = 0;
   }
   return {
     spaces: spaces,

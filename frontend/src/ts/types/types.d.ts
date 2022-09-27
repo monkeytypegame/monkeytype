@@ -196,6 +196,28 @@ declare namespace MonkeyTypes {
     alias?: string;
   }
 
+  interface Funbox {
+    name: string;
+    ignoresLanguage?: boolean;
+    noLingatures?: boolean;
+    noLetters?: boolean;
+    changesCapitalisation?: boolean;
+    mode?: MonkeyTypes.Mode;
+    blockWordHighlight?: boolean;
+    nospace?: boolean;
+    noPunctuation?: boolean;
+    noNumbers?: boolean;
+    getWord?: (wordset?: Misc.Wordset) => string;
+    punctuateWord?: (word: string) => string;
+    withWords?: (words: string[]) => Misc.Wordset;
+    alterText?: (word: string) => string;
+    applyCSS?: () => void;
+    applyConfig?: () => void;
+    rememberSettings?: () => void;
+    toggleScript?: (params: string[]) => void;
+    pullSection?: (language?: string) => Promise<Misc.Section | false>;
+  }
+
   interface CustomText {
     text: string[];
     isWordRandom: boolean;
