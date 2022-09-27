@@ -169,6 +169,8 @@ async function getAccountAlerts(): Promise<void> {
 
   accountAlerts = inboxData.inbox;
 
+  updateClaimDeleteAllButton();
+
   if (accountAlerts.length === 0) {
     $("#alertsPopup .accountAlerts .list").html(`
     <div class="nothing">
@@ -301,6 +303,80 @@ function updateInboxSize(): void {
   );
 }
 
+function deleteAlert(id: string): void {
+  mailToDelete.push(id);
+  $(`#alertsPopup .accountAlerts .list .item[data-id="${id}"]`).remove();
+  if ($("#alertsPopup .accountAlerts .list .item").length == 0) {
+    $("#alertsPopup .accountAlerts .list").html(`
+    <div class="nothing">
+    Nothing to show
+    </div>
+    `);
+  }
+  updateClaimDeleteAllButton();
+  updateInboxSize();
+}
+
+function markReadAlert(id: string): void {
+  mailToMarkRead.push(id);
+  const item = $(`#alertsPopup .accountAlerts .list .item[data-id="${id}"]`);
+  updateClaimDeleteAllButton();
+
+  item.find(".indicator").removeClass("main");
+  item.find(".buttons").empty();
+  item
+    .find(".buttons")
+    .append(
+      `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
+    );
+  item.find(".rewards").animate(
+    {
+      opacity: 0,
+      height: 0,
+      marginTop: 0,
+    },
+    250,
+    "easeOutCubic",
+    () => {
+      item.find(".rewards").remove();
+    }
+  );
+}
+
+function updateClaimDeleteAllButton(): void {
+  const claimAllButton = $("#alertsPopup .accountAlerts .claimAll");
+  const deleteAllButton = $("#alertsPopup .accountAlerts .deleteAll");
+
+  claimAllButton.addClass("hidden");
+  deleteAllButton.addClass("hidden");
+  if (accountAlerts.length > 0) {
+    let rewardsCount = 0;
+    for (const ie of accountAlerts) {
+      if (ie.read === false) {
+        rewardsCount += ie.rewards.length;
+      }
+    }
+
+    if (rewardsCount > 0) {
+      claimAllButton.removeClass("hidden");
+    } else {
+      deleteAllButton.removeClass("hidden");
+    }
+  }
+}
+
+$("#alertsPopup .accountAlerts").on("click", ".claimAll", () => {
+  for (const ie of accountAlerts) {
+    markReadAlert(ie.id);
+  }
+});
+
+$("#alertsPopup .accountAlerts").on("click", ".deleteAll", () => {
+  for (const ie of accountAlerts) {
+    deleteAlert(ie.id);
+  }
+});
+
 $("#top #menu .showAlerts").on("click", () => {
   show();
 });
@@ -320,16 +396,7 @@ $("#alertsPopup .accountAlerts .list").on(
   ".item .buttons .deleteAlert",
   (e) => {
     const id = $(e.currentTarget).closest(".item").attr("data-id") as string;
-    mailToDelete.push(id);
-    $(e.currentTarget).closest(".item").remove();
-    if ($("#alertsPopup .accountAlerts .list .item").length == 0) {
-      $("#alertsPopup .accountAlerts .list").html(`
-      <div class="nothing">
-      Nothing to show
-      </div>
-      `);
-    }
-    updateInboxSize();
+    deleteAlert(id);
   }
 );
 
@@ -338,28 +405,7 @@ $("#alertsPopup .accountAlerts .list").on(
   ".item .buttons .markReadAlert",
   (e) => {
     const id = $(e.currentTarget).closest(".item").attr("data-id") as string;
-    mailToMarkRead.push(id);
-    const item = $(e.currentTarget).closest(".item");
-
-    item.find(".indicator").removeClass("main");
-    item.find(".buttons").empty();
-    item
-      .find(".buttons")
-      .append(
-        `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
-      );
-    item.find(".rewards").animate(
-      {
-        opacity: 0,
-        height: 0,
-        marginTop: 0,
-      },
-      250,
-      "easeOutCubic",
-      () => {
-        item.find(".rewards").remove();
-      }
-    );
+    markReadAlert(id);
   }
 );
 

@@ -16,7 +16,6 @@ import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 
 import type { ScaleChartOptions } from "chart.js";
-import { Auth } from "../firebase";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1110,7 +1109,8 @@ $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
 });
 
 $(document).on("click", ".pageAccount .profile .details .copyLink", () => {
-  const url = `${location.origin}/profile/${Auth.currentUser?.uid}?isUid`;
+  const { name } = DB.getSnapshot();
+  const url = `${location.origin}/profile/${name}`;
 
   navigator.clipboard.writeText(url).then(
     function () {

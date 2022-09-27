@@ -59,7 +59,7 @@ export async function update(): Promise<void> {
 
   if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="loadChallenge"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
+      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
     );
   }
 

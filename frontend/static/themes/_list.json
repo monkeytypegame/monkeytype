@@ -778,6 +778,16 @@
     "name": "modern_dolch_light",
     "bgColor": "#dbdbdb",
     "mainColor": "#8fd1c3"
+  },
+  {
+    "name": "iv_spade",
+    "bgColor": "#0c0c0c",
+    "mainColor": "#b7976a"
+  },
+  {
+    "name": "iv_clover",
+    "bgColor": "#a0a0a0",
+    "mainColor": "#573e40"
   }
   ,{
     "name": "cheesecake",
