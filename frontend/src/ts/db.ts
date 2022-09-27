@@ -27,7 +27,7 @@ export async function initSnapshot(): Promise<
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = defaultSnap;
   try {
-    if (Auth.currentUser == null) return false;
+    if (!Auth?.currentUser) return false;
     // if (ActivePage.get() == "loading") {
     //   LoadingPage.updateBar(22.5);
     // } else {
@@ -188,8 +188,8 @@ export async function initSnapshot(): Promise<
 }
 
 export async function getUserResults(): Promise<boolean> {
-  const user = Auth.currentUser;
-  if (user == null) return false;
+  const user = Auth?.currentUser;
+  if (user) return false;
   if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {
     return true;
@@ -264,8 +264,8 @@ export async function editCustomTheme(
   themeId: string,
   newTheme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
-  const user = Auth.currentUser;
-  if (user === null) return false;
+  const user = Auth?.currentUser;
+  if (!user) return false;
   if (dbSnapshot === null) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
@@ -295,8 +295,8 @@ export async function editCustomTheme(
 }
 
 export async function deleteCustomTheme(themeId: string): Promise<boolean> {
-  const user = Auth.currentUser;
-  if (user === null) return false;
+  const user = Auth?.currentUser;
+  if (!user) return false;
   if (dbSnapshot === null) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
@@ -762,7 +762,7 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
 }
 
 export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
-  if (Auth.currentUser !== null) {
+  if (Auth?.currentUser) {
     const response = await Ape.configs.save(config);
     if (response.status !== 200) {
       Notifications.add("Failed to save config: " + response.message, -1);
