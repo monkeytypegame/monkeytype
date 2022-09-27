@@ -85,7 +85,7 @@ import LanguagesCommands, {
 } from "./lists/languages";
 import KeymapLayoutsCommands, {
   update as updateKeymapLayoutsCommands,
-} from "./lists/layouts";
+} from "./lists/keymap-layouts";
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";

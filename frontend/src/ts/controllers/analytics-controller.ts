@@ -1,5 +1,9 @@
-import { Analytics as AnalyticsType, getAnalytics } from "firebase/analytics";
-import { logEvent, setAnalyticsCollectionEnabled } from "firebase/analytics";
+import {
+  Analytics as AnalyticsType,
+  getAnalytics,
+  logEvent,
+  setAnalyticsCollectionEnabled,
+} from "firebase/analytics";
 import { app as firebaseApp } from "../firebase";
 
 export let Analytics: AnalyticsType;
