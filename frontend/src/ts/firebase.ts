@@ -11,7 +11,6 @@ export let Auth: AuthType | undefined;
 try {
   app = initializeApp(firebaseConfig);
   Auth = getAuth(app);
-  throw new Error("Firebase is not initialized");
 } catch (e) {
   app = undefined;
   Auth = undefined;
