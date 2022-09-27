@@ -1773,7 +1773,6 @@ async function saveResult(
   if (!response?.data?.dailyLeaderboardRank) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
   } else {
-    Result.showConfetti();
     $("#result .stats .dailyLeaderboard")
       .css({
         maxWidth: "13rem",
