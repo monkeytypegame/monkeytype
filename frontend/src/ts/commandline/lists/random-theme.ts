@@ -51,7 +51,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "custom",
       configValue: "custom",
       exec: (): void => {
-        if (Auth.currentUser === null) {
+        if (!Auth?.currentUser) {
           Notifications.add(
             "Multiple custom themes are available to logged in users only",
             0
