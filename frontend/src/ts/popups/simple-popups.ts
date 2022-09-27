@@ -287,6 +287,10 @@ list["updateEmail"] = new SimplePopup(
   "",
   "Update",
   async (_thisPopup, password, email, emailConfirm) => {
+    if (Auth === undefined) {
+      Notifications.add("Offline mode", -1, 3);
+      return;
+    }
     try {
       const user = Auth.currentUser;
       if (user === null) return;
@@ -327,8 +331,8 @@ list["updateEmail"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -354,6 +358,10 @@ list["removeGoogleAuth"] = new SimplePopup(
   "",
   "Remove",
   async (_thisPopup, password) => {
+    if (Auth === undefined) {
+      Notifications.add("Offline mode", -1, 3);
+      return;
+    }
     try {
       const user = Auth.currentUser;
       if (user === null) return;
@@ -388,8 +396,8 @@ list["removeGoogleAuth"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -420,6 +428,10 @@ list["updateName"] = new SimplePopup(
   "",
   "Update",
   async (_thisPopup, pass, newName) => {
+    if (Auth === undefined) {
+      Notifications.add("Offline mode", -1, 3);
+      return;
+    }
     try {
       const user = Auth.currentUser;
       if (user === null) return;
@@ -472,8 +484,8 @@ list["updateName"] = new SimplePopup(
     Loader.hide();
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs[0].hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
@@ -513,6 +525,10 @@ list["updatePassword"] = new SimplePopup(
   "",
   "Update",
   async (_thisPopup, previousPass, newPass, newPassConfirm) => {
+    if (Auth === undefined) {
+      Notifications.add("Offline mode", -1, 3);
+      return;
+    }
     try {
       const user = Auth.currentUser;
       if (user === null) return;
@@ -543,8 +559,8 @@ list["updatePassword"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -619,7 +635,10 @@ list["deleteAccount"] = new SimplePopup(
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
   async (_thisPopup, password: string) => {
-    //
+    if (Auth === undefined) {
+      Notifications.add("Offline mode", -1, 3);
+      return;
+    }
     try {
       const user = Auth.currentUser;
       if (user === null) return;
@@ -675,9 +694,8 @@ list["deleteAccount"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
-
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
@@ -702,7 +720,10 @@ list["resetAccount"] = new SimplePopup(
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Reset",
   async (_thisPopup, password: string) => {
-    //
+    if (Auth === undefined) {
+      Notifications.add("Offline mode", -1, 3);
+      return;
+    }
     try {
       const user = Auth.currentUser;
       if (user === null) return;
@@ -744,9 +765,8 @@ list["resetAccount"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
-
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
@@ -836,6 +856,10 @@ list["resetPersonalBests"] = new SimplePopup(
   "",
   "Reset",
   async (_thisPopup, password: string) => {
+    if (Auth === undefined) {
+      Notifications.add("Offline mode", -1, 3);
+      return;
+    }
     try {
       const user = Auth.currentUser;
       if (user === null) return;
@@ -873,9 +897,8 @@ list["resetPersonalBests"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
-
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
