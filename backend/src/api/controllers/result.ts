@@ -36,7 +36,6 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import { updateStreak } from "../../dal/user";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -371,7 +370,7 @@ export async function addResult(
     );
   }
 
-  const streak = await updateStreak(uid, result.timestamp);
+  const streak = await UserDAL.updateStreak(uid, result.timestamp);
 
   const xpGained = await calculateXp(
     result,

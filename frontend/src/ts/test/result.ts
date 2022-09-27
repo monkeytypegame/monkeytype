@@ -19,6 +19,7 @@ import * as TestConfig from "./test-config";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 
+// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
