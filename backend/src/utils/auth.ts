@@ -10,7 +10,7 @@ import {
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({
   max: 20000,
-  maxSize: 20000000, // 20MB
+  maxSize: 50000000, // 50MB
   sizeCalculation: (token, key): number =>
     JSON.stringify(token).length + key.length, //sizeInBytes
 });
