@@ -656,7 +656,7 @@ list["deleteAccount"] = new SimplePopup(
       }
 
       Notifications.add("Deleting login information...", 0);
-      await Auth.currentUser?.delete();
+      await Auth?.currentUser?.delete();
 
       Notifications.add("Goodbye", 1, 5);
 
