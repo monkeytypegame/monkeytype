@@ -287,13 +287,9 @@ list["updateEmail"] = new SimplePopup(
   "",
   "Update",
   async (_thisPopup, password, email, emailConfirm) => {
-    if (Auth === undefined) {
-      Notifications.add("Offline mode", -1, 3);
-      return;
-    }
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (email !== emailConfirm) {
         Notifications.add("Emails don't match", 0);
         return;
@@ -358,13 +354,9 @@ list["removeGoogleAuth"] = new SimplePopup(
   "",
   "Remove",
   async (_thisPopup, password) => {
-    if (Auth === undefined) {
-      Notifications.add("Offline mode", -1, 3);
-      return;
-    }
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -428,13 +420,9 @@ list["updateName"] = new SimplePopup(
   "",
   "Update",
   async (_thisPopup, pass, newName) => {
-    if (Auth === undefined) {
-      Notifications.add("Offline mode", -1, 3);
-      return;
-    }
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
 
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
@@ -525,13 +513,9 @@ list["updatePassword"] = new SimplePopup(
   "",
   "Update",
   async (_thisPopup, previousPass, newPass, newPassConfirm) => {
-    if (Auth === undefined) {
-      Notifications.add("Offline mode", -1, 3);
-      return;
-    }
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       const credential = EmailAuthProvider.credential(
         user.email as string,
         previousPass
@@ -635,13 +619,9 @@ list["deleteAccount"] = new SimplePopup(
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
   async (_thisPopup, password: string) => {
-    if (Auth === undefined) {
-      Notifications.add("Offline mode", -1, 3);
-      return;
-    }
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -720,13 +700,9 @@ list["resetAccount"] = new SimplePopup(
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Reset",
   async (_thisPopup, password: string) => {
-    if (Auth === undefined) {
-      Notifications.add("Offline mode", -1, 3);
-      return;
-    }
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -856,13 +832,9 @@ list["resetPersonalBests"] = new SimplePopup(
   "",
   "Reset",
   async (_thisPopup, password: string) => {
-    if (Auth === undefined) {
-      Notifications.add("Offline mode", -1, 3);
-      return;
-    }
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
