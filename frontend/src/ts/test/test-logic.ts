@@ -1738,7 +1738,11 @@ async function saveResult(
 
   if (response?.data?.isPb) {
     //new pb
-    Result.showConfetti();
+    if (
+      DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
+    ) {
+      Result.showConfetti();
+    }
     Result.showCrown();
     Result.updateCrown();
     DB.saveLocalPB(
