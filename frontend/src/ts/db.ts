@@ -428,6 +428,65 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
   return retval;
 }
 
+export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean
+): Promise<number> {
+  const snapshot = getSnapshot();
+
+  if (!snapshot) return 0;
+
+  function cont(): number {
+    const activeTagIds: string[] = [];
+    snapshot.tags?.forEach((tag) => {
+      if (tag.active === true) {
+        activeTagIds.push(tag._id);
+      }
+    });
+
+    let bestWpm = 0;
+
+    if (snapshot.results !== undefined) {
+      for (const result of snapshot.results) {
+        if (
+          result.mode === mode &&
+          result.punctuation === punctuation &&
+          result.language === language &&
+          result.difficulty === difficulty &&
+          (result.lazyMode === lazyMode ||
+            (result.lazyMode === undefined && lazyMode === false)) &&
+          (activeTagIds.length === 0 ||
+            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+        ) {
+          if (result.timestamp < Date.now() - 86400000) {
+            continue;
+          }
+
+          // Continue if the mode2 doesn't match and it's not a quote
+          if (result.mode2 !== mode2 && mode !== "quote") {
+            continue;
+          }
+
+          if (result.wpm > bestWpm) {
+            bestWpm = result.wpm;
+          }
+        }
+      }
+    }
+
+    return bestWpm;
+  }
+
+  const retval: number =
+    snapshot === null || (await getUserResults()) === null ? 0 : cont();
+
+  return retval;
+}
+
 export async function getLocalPB<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,

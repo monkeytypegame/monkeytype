@@ -346,7 +346,7 @@ export function setPaceCaret(
 ): boolean {
   if (
     !isConfigValueValid("pace caret", val, [
-      ["custom", "off", "average", "pb", "last"],
+      ["custom", "off", "average", "pb", "last", "daily"],
     ])
   ) {
     return false;
