@@ -921,6 +921,7 @@ export async function updateStreak(
   if (isYesterday(streak.lastResultTimestamp)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp)) {
+    Logger.logToDb("streak_lost", { streak }, uid);
     streak.length = 1;
   }
 
