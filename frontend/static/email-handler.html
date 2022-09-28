@@ -175,6 +175,16 @@
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js?useEmulator=true'"></script>
   <script defer>
+    function isPasswordStrong(password) {
+      const hasCapital = !!password.match(/[A-Z]/);
+      const hasNumber = !!password.match(/[\d]/);
+      const hasSpecial = !!password.match(
+        /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/
+      );
+      const isLong = password.length >= 8;
+      return hasCapital && hasNumber && hasSpecial && isLong;
+    }
+
     function handleVerifyEmail(actionCode, continueUrl) {
       firebase
         .auth()
@@ -228,6 +238,14 @@
 
           if (newPassword !== newPasswordConfirm) {
             alert("Passwords do not match");
+            showResetPassword();
+            return;
+          }
+
+          if (!isPasswordStrong(newPassword)) {
+            alert(
+              "Password must be at least 8 characters long and contain at least one capital letter, one number and one special character."
+            );
             showResetPassword();
             return;
           }
