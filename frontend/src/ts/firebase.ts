@@ -3,6 +3,7 @@ import { FirebaseApp, initializeApp } from "firebase/app";
 import { getAuth, Auth as AuthType } from "firebase/auth";
 import { firebaseConfig } from "./constants/firebase-config"; // eslint-disable-line require-path-exists/exists
 import * as Notifications from "./elements/notifications";
+import { createErrorMessage } from "./utils/misc";
 
 // Initialize Firebase
 export let app: FirebaseApp | undefined;
@@ -15,15 +16,13 @@ try {
   app = undefined;
   Auth = undefined;
   console.error("Authentication failed to initialize", e);
-  const error = e as Error;
-  Notifications.addBanner(
-    "Authentication failed to initialize" +
-      (window.location.hostname === "localhost" ? ": " + error.message : ""),
-    0,
-    undefined,
-    false
-  );
-  // $("body").text(
-  //   "Failed to initialize Firebase. Are you sure you have the correct config in the firebase-config.ts file?"
-  // );
+  if (window.location.hostname === "localhost") {
+    Notifications.addBanner(
+      createErrorMessage(e, "Authentication uninitialized") +
+        " Check your firebase-config.ts",
+      0,
+      undefined,
+      false
+    );
+  }
 }

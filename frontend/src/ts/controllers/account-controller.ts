@@ -55,7 +55,7 @@ let canCall = true;
 
 export function sendVerificationEmail(): void {
   if (Auth === undefined) {
-    Notifications.add("Offline mode", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
   Loader.show();
@@ -353,7 +353,7 @@ if (Auth) {
 
 export function signIn(): void {
   if (Auth === undefined) {
-    Notifications.add("Offline mode", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
 
@@ -397,7 +397,7 @@ export function signIn(): void {
 
 export async function forgotPassword(email: any): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Offline mode", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
   if (!canCall) {
@@ -426,7 +426,7 @@ export async function forgotPassword(email: any): Promise<void> {
 
 export async function signInWithGoogle(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Offline mode", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
 
@@ -471,7 +471,7 @@ export async function signInWithGoogle(): Promise<void> {
 
 export async function addGoogleAuth(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Offline mode", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
   Loader.show();
@@ -496,7 +496,7 @@ export async function addPasswordAuth(
   password: string
 ): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Offline mode", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
   Loader.show();
@@ -532,7 +532,7 @@ export async function addPasswordAuth(
 
 export function signOut(): void {
   if (Auth === undefined) {
-    Notifications.add("Offline mode", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
   if (!Auth.currentUser) return;
@@ -558,7 +558,7 @@ export function signOut(): void {
 
 async function signUp(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Offline mode", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
   RegisterCaptchaPopup.show();
@@ -733,7 +733,7 @@ $(".pageLogin .login .button.signInWithGoogle").on("click", () => {
 
 $("#top .signInOut").on("click", () => {
   if (Auth === undefined) {
-    Notifications.add("Offline mode", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
   if (Auth.currentUser) {
