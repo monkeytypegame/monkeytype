@@ -14,11 +14,11 @@ try {
 } catch (e) {
   app = undefined;
   Auth = undefined;
-  console.error(e);
+  console.error("Authentication failed to initialize", e);
   const error = e as Error;
   Notifications.addBanner(
-    "Offline mode" +
-      (window.location.hostname === "localhost" ? ":" + error.message : ""),
+    "Authentication failed to initialize" +
+      (window.location.hostname === "localhost" ? ": " + error.message : ""),
     0,
     undefined,
     false
