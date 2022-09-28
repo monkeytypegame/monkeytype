@@ -17,6 +17,7 @@
     "npm": "8.1.2"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",
     "@types/damerau-levenshtein": "1.0.0",
     "@types/grecaptcha": "3.0.4",
@@ -55,6 +56,7 @@
   },
   "dependencies": {
     "axios": "0.21.4",
+    "canvas-confetti": "1.5.1",
     "chart.js": "3.7.1",
     "chartjs-adapter-date-fns": "2.0.0",
     "chartjs-plugin-annotation": "1.4.0",

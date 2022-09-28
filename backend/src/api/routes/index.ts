@@ -2,7 +2,6 @@ import _ from "lodash";
 import psas from "./psas";
 import users from "./users";
 import { join } from "path";
-import express from "express";
 import quotes from "./quotes";
 import configs from "./configs";
 import results from "./results";
@@ -15,7 +14,13 @@ import addSwaggerMiddlewares from "./swagger";
 import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import { recordClientVersion } from "../../utils/prometheus";
-import { Application, NextFunction, Response, Router } from "express";
+import {
+  Application,
+  NextFunction,
+  Response,
+  Router,
+  static as expressStatic,
+} from "express";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
@@ -41,7 +46,7 @@ function addApiRoutes(app: Application): void {
   app.use("/configuration", configuration);
 
   if (process.env.MODE === "dev") {
-    app.use("/configure", express.static(join(__dirname, "../../../private")));
+    app.use("/configure", expressStatic(join(__dirname, "../../../private")));
   }
 
   addSwaggerMiddlewares(app);

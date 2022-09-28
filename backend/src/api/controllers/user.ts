@@ -25,7 +25,16 @@ export async function createNewUser(
   const { name, captcha } = req.body;
   const { email, uid } = req.ctx.decodedToken;
 
-  await verifyCaptcha(captcha);
+  try {
+    await verifyCaptcha(captcha);
+  } catch (e) {
+    try {
+      await admin.auth().deleteUser(uid);
+    } catch (e) {
+      // user might be deleted on the frontend
+    }
+    throw e;
+  }
 
   if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
     throw new MonkeyError(400, "Invalid domain");
