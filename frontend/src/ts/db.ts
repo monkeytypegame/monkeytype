@@ -189,7 +189,7 @@ export async function initSnapshot(): Promise<
 
 export async function getUserResults(): Promise<boolean> {
   const user = Auth?.currentUser;
-  if (user) return false;
+  if (!user) return false;
   if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {
     return true;
