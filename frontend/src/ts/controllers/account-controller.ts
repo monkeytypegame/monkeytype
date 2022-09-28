@@ -620,8 +620,16 @@ async function signUp(): Promise<void> {
   } catch (e) {
     //make sure to do clean up here
     if (createdAuthUser) {
-      await Ape.users.delete();
-      await createdAuthUser.user.delete();
+      try {
+        await Ape.users.delete();
+      } catch (e) {
+        // account might already be deleted
+      }
+      try {
+        await createdAuthUser.user.delete();
+      } catch (e) {
+        // account might already be deleted
+      }
     }
     console.log(e);
     const message = Misc.createErrorMessage(e, "Failed to create account");
