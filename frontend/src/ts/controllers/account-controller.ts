@@ -325,6 +325,8 @@ if (Auth) {
     }
   });
 } else {
+  $("#menu .signInOut").remove();
+
   $("document").ready(async () => {
     // await UpdateConfig.loadPromise;
     const search = window.location.search;
