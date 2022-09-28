@@ -20,6 +20,7 @@ import {
   unlink,
   updatePassword,
 } from "firebase/auth";
+import { isPasswordStrong } from "../utils/misc";
 
 interface Input {
   placeholder?: string;
@@ -522,6 +523,17 @@ list["updatePassword"] = new SimplePopup(
       );
       if (newPass !== newPassConfirm) {
         Notifications.add("New passwords don't match", 0);
+        return;
+      }
+      if (
+        window.location.hostname !== "localhost" &&
+        !isPasswordStrong(newPass)
+      ) {
+        Notifications.add(
+          "New password must contain at least one capital letter, number, a special character and at least 8 characters long",
+          0,
+          4
+        );
         return;
       }
       Loader.show();
