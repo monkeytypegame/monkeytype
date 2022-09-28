@@ -116,6 +116,8 @@ export async function update(): Promise<void> {
           ? "pb"
           : Config.paceCaret === "last"
           ? "last"
+          : Config.paceCaret === "daily"
+          ? "daily"
           : "custom"
       } pace${speed}</div>`
     );
