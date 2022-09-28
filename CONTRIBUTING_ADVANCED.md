@@ -14,7 +14,7 @@
 
 ## Prerequisites
 
-This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with version 16.13.2. There are some additional requirements depending on what you're looking to contribute, such as Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 16.13.2. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
 #### Git
 
@@ -26,7 +26,19 @@ To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and 
 
 Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (you might need to specify the exact version) to use the version of Node.js in the `.nvmrc` file (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)).
 
-#### Firebase
+#### Docker (Recommended but Optional)
+
+You can use docker to run the frontend development environment. This will take care of OS specific problems. After installing [Docker](https://www.docker.com/get-started/#h_installation) run the following command to start the frontend server:
+
+```bash
+cd frontend && docker-compose up
+```
+
+Once wepback has compiled, the frontend will be served on [port 3000](http://localhost:3000)
+
+#### Firebase (optional)
+
+If you want to use the authentication system locally you need to follow this step. Otherwise, just duplicate `firebase-config-example.ts` and rename it to `firebase-config.ts`.
 
 1. Create a Firebase account if you already haven't done so.
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
@@ -72,16 +84,6 @@ Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (yo
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
 
-#### Docker (Recommended but Optional)
-
-You can use docker to run the frontend development environment. This will take care of OS specific problems. After installing [Docker](https://www.docker.com/get-started/#h_installation) run the following command to start the frontend server:
-
-```bash
-cd frontend && docker-compose up
-```
-
-Once wepback has compiled, the frontend will be served on [port 3000](http://localhost:3000)
-
 #### Backend (optional)
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
@@ -104,7 +106,7 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 1. Run `npm run install-all` in the project root to install all dependencies.
    - If you are on Windows, use `npm run install-windows`.
    - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-2. Run `npm run dev` (`npm run dev-fe` if you skipped the mongo section) to start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
+2. Run `npm run dev` (`npm run dev-fe` if you skipped the Backend section) to start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 ## Standards and Guidelines
 
