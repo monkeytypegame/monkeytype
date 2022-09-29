@@ -121,6 +121,7 @@ function backspaceToPrevious(): void {
   TestInput.corrected.popHistory();
   if (UpdateConfig.ActiveFunboxes.find((f) => f.nospace)) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
+    setWordsInput(" " + TestInput.input.current + " ");
   }
   TestWords.words.decreaseCurrentIndex();
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);

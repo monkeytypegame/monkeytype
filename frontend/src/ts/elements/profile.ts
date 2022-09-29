@@ -9,11 +9,16 @@ import * as ActivePage from "../states/active-page";
 
 type ProfileViewPaths = "profile" | "account";
 
+interface ProfileData extends MonkeyTypes.Snapshot {
+  allTimeLbs: MonkeyTypes.LeaderboardMemory;
+}
+
 export async function update(
   where: ProfileViewPaths,
-  profile: Partial<MonkeyTypes.Snapshot>
+  profile: Partial<ProfileData>
 ): Promise<void> {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
+  const profileElement = $(`.page${elementClass} .profile`);
   const details = $(`.page${elementClass} .profile .details`);
 
   // ============================================================================
@@ -180,6 +185,32 @@ export async function update(
       "aria-label",
       `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
     );
+
+  //lbs
+
+  if (banned) {
+    profileElement.find(".leaderboardsPositions").addClass("hidden");
+  } else {
+    profileElement.find(".leaderboardsPositions").removeClass("hidden");
+
+    const lbPos = where === "profile" ? profile.allTimeLbs : profile.lbMemory;
+
+    const t15 = lbPos?.time?.[15]?.["english"];
+    const t60 = lbPos?.time?.[60]?.["english"];
+
+    if (!t15 && !t60) {
+      profileElement.find(".leaderboardsPositions").addClass("hidden");
+    } else {
+      const t15string = t15 ? Misc.getPositionString(t15) : "-";
+      profileElement
+        .find(".leaderboardsPositions .group.t15 .pos")
+        .text(t15string);
+      const t60string = t60 ? Misc.getPositionString(t60) : "-";
+      profileElement
+        .find(".leaderboardsPositions .group.t60 .pos")
+        .text(t60string);
+    }
+  }
 
   //structure
 
