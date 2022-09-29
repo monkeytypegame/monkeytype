@@ -743,16 +743,20 @@ function fillContent(): void {
     accountHistoryScaleOptions["wpm"].min = 0;
   }
 
-  if (chartData == [] || chartData.length == 0) {
+  if (!chartData || chartData.length == 0) {
     $(".pageAccount .group.noDataError").removeClass("hidden");
     $(".pageAccount .group.chart").addClass("hidden");
     $(".pageAccount .group.dailyActivityChart").addClass("hidden");
+    $(".pageAccount .group.histogramChart").addClass("hidden");
+    $(".pageAccount .group.aboveHistory").addClass("hidden");
     $(".pageAccount .group.history").addClass("hidden");
     $(".pageAccount .triplegroup.stats").addClass("hidden");
   } else {
     $(".pageAccount .group.noDataError").addClass("hidden");
     $(".pageAccount .group.chart").removeClass("hidden");
     $(".pageAccount .group.dailyActivityChart").removeClass("hidden");
+    $(".pageAccount .group.histogramChart").removeClass("hidden");
+    $(".pageAccount .group.aboveHistory").removeClass("hidden");
     $(".pageAccount .group.history").removeClass("hidden");
     $(".pageAccount .triplegroup.stats").removeClass("hidden");
   }

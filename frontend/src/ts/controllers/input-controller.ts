@@ -123,6 +123,7 @@ function backspaceToPrevious(): void {
   TestInput.corrected.popHistory();
   if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
+    setWordsInput(" " + TestInput.input.current + " ");
   }
   TestWords.words.decreaseCurrentIndex();
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);

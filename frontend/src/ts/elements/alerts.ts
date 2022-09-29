@@ -110,7 +110,7 @@ export async function show(): Promise<void> {
       "easeOutCubic"
     );
 
-    if (Auth.currentUser) {
+    if (Auth?.currentUser) {
       $("#alertsPopup .accountAlerts").removeClass("hidden");
       $("#alertsPopup .separator.accountSeparator").removeClass("hidden");
       $("#alertsPopup .accountAlerts .list").html(`
@@ -134,7 +134,7 @@ export async function show(): Promise<void> {
         },
         100,
         () => {
-          if (Auth.currentUser) {
+          if (Auth?.currentUser) {
             getAccountAlerts();
           }
         }
