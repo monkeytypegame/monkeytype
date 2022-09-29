@@ -7,7 +7,6 @@ import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
 import * as CookiePopup from "./popups/cookie-popup";
 import * as PSA from "./elements/psa";
-import { CLIENT_VERSION } from "./version";
 
 ManualRestart.set();
 UpdateConfig.loadFromLocalStorage();
@@ -23,20 +22,6 @@ if (window.location.hostname === "localhost") {
     NewVersionNotification.show(v[0].name);
   });
 }
-
-$("#nocss .requestedStylesheets").html(
-  "Requested stylesheets:<br>" +
-    (
-      [
-        ...document.querySelectorAll("link[rel=stylesheet"),
-      ] as HTMLAnchorElement[]
-    )
-      .map((l) => l.href)
-      .filter((l) => /\/css\//gi.test(l))
-      .join("<br>") +
-    "<br><br>Client version:<br>" +
-    CLIENT_VERSION
-);
 
 Focus.set(true, true);
 $(document).ready(() => {
