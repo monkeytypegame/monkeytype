@@ -69,5 +69,14 @@
     "usersettings",
     "version",
     "warn"
+    
+    "bit32",
+    "coroutine",
+    "debug",
+    "math",
+    "os",
+    "string",
+    "table",
+    "utf8"
   ]
 }
