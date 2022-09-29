@@ -65,6 +65,17 @@ function reset(): void {
           <div class="value">-</div>
         </div>
       </div>
+      <div class="leaderboardsPositions">
+        <div class="title">All-Time English Leaderboards</div>
+        <div class="group t15">
+          <div class="testType">15 seconds</div>
+          <div class="pos">-</div>
+        </div>
+        <div class="group t60">
+          <div class="testType">60 seconds</div>
+          <div class="pos">-</div>
+        </div>
+      </div>
       <div class="pbsWords">
         <div class="group">
           <div class="quick">
