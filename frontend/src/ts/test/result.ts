@@ -618,7 +618,7 @@ function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote): void {
 
   const icon = $(".pageTest #result #favoriteQuoteButton .icon");
 
-  if (Config.mode === "quote" && Auth.currentUser) {
+  if (Config.mode === "quote" && Auth?.currentUser) {
     const userFav = QuotesController.isQuoteFavorite(randomQuote);
 
     icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
@@ -663,7 +663,7 @@ export async function update(
   $("#words").removeClass("blurred");
   $("#wordsInput").blur();
   $("#result .stats .time .bottom .afk").text("");
-  if (Auth.currentUser != null) {
+  if (Auth?.currentUser) {
     $("#result .loginTip").addClass("hidden");
   } else {
     $("#result .loginTip").removeClass("hidden");
@@ -730,7 +730,7 @@ export async function update(
     $("#middle #result .stats").removeClass("hidden");
     $("#middle #result .chart").removeClass("hidden");
     // $("#middle #result #resultWordsHistory").removeClass("hidden");
-    if (Auth.currentUser == null) {
+    if (!Auth?.currentUser) {
       $("#middle #result .loginTip").removeClass("hidden");
     }
     $("#middle #result #showWordHistoryButton").removeClass("hidden");

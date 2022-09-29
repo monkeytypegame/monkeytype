@@ -125,7 +125,7 @@ function updateFooter(lb: LbKey): void {
     side = "right";
   }
 
-  if (!Auth.currentUser) {
+  if (!Auth?.currentUser) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;"></>
@@ -257,8 +257,8 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
 
   const avatarUrlPromises = currentData[lb].map(async (entry) => {
     const isCurrentUser =
-      Auth.currentUser &&
-      entry.uid === Auth.currentUser.uid &&
+      Auth?.currentUser &&
+      entry.uid === Auth?.currentUser.uid &&
       snap.discordAvatar &&
       snap.discordId;
 
@@ -438,7 +438,7 @@ async function update(): Promise<void> {
     });
   });
 
-  if (Auth.currentUser) {
+  if (Auth?.currentUser) {
     leaderboardRequests.push(
       ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
@@ -573,7 +573,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 
 export function show(): void {
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
-    if (Auth.currentUser) {
+    if (Auth?.currentUser) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
       );

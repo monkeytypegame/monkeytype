@@ -42,6 +42,15 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
+      id: "setPaceCaretDaily",
+      display: "daily",
+      configValue: "daily",
+      exec: (): void => {
+        UpdateConfig.setPaceCaret("daily");
+        TestLogic.restart();
+      },
+    },
+    {
       id: "setPaceCaretCustom",
       display: "custom...",
       configValue: "custom",

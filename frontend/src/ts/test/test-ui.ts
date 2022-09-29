@@ -264,7 +264,7 @@ export async function screenshot(): Promise<void> {
     $("#nocss").removeClass("hidden");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
-    if (Auth.currentUser == null) {
+    if (!Auth?.currentUser) {
       $(".pageTest .loginTip").removeClass("hidden");
     }
   }
@@ -279,7 +279,7 @@ export async function screenshot(): Promise<void> {
   $(".pageTest .ssWatermark").text(
     format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
   );
-  if (Auth.currentUser != null) {
+  if (Auth?.currentUser) {
     $(".pageTest .ssWatermark").text(
       DB.getSnapshot().name +
         " | " +

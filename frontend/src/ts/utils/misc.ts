@@ -1337,3 +1337,11 @@ export class PseudolangWordGenerator extends Wordset {
     return word;
   }
 }
+
+export function isPasswordStrong(password: string): boolean {
+  const hasCapital = !!password.match(/[A-Z]/);
+  const hasNumber = !!password.match(/[\d]/);
+  const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  const isLong = password.length >= 8;
+  return hasCapital && hasNumber && hasSpecial && isLong;
+}
