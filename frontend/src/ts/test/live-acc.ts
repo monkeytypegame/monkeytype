@@ -44,7 +44,7 @@ export function hide(): void {
   // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
   $("#liveAcc").animate(
     {
-      opacity: Config.timerOpacity,
+      opacity: 0,
     },
     125,
     () => {
@@ -53,7 +53,7 @@ export function hide(): void {
   );
   $("#miniTimerAndLiveWpm .acc").animate(
     {
-      opacity: Config.timerOpacity,
+      opacity: 0,
     },
     125,
     () => {
