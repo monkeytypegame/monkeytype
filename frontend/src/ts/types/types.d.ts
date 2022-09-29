@@ -229,6 +229,7 @@ declare namespace MonkeyTypes {
     handleKeydown?: (
       event: JQuery.KeyDownEvent<Document, null, Document, Document>
     ) => Promise<void>;
+    getResultContent?: () => string;
   }
 
   interface CustomText {

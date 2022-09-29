@@ -99,10 +99,15 @@ async function updateGraph(): Promise<void> {
 
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
-    let content = Config.funbox;
-    if (Config.funbox.split("#").includes("layoutfluid")) {
-      content += " " + Config.customLayoutfluid.replace(/#/g, " ");
+    let content = "";
+    for (const f of ActiveFunboxes) {
+      content += f.name;
+      if (f.getResultContent) {
+        content += "(" + f.getResultContent() + ")";
+      }
+      content += " ";
     }
+    content = content.trimEnd();
     resultAnnotation.push({
       display: true,
       id: "funbox-label",

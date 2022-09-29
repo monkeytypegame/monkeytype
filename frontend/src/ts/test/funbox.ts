@@ -213,6 +213,9 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
         Settings.groups["layout"]?.updateInput();
       }
     },
+    getResultContent(): string {
+      return Config.customLayoutfluid.replace(/#/g, " ");
+    },
   },
   {
     name: "earthquake",
