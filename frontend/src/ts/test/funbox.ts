@@ -3,8 +3,11 @@ import * as Notifications from "../elements/notifications";
 import * as Misc from "../utils/misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-import * as TTS from "./tts";
 import * as ModesNotice from "../elements/modes-notice";
+import * as TestInput from "../test/test-input";
+import * as Keymap from "../elements/keymap";
+import * as Settings from "../pages/settings";
+import * as TTS from "./tts";
 import * as WeakSpot from "./weak-spot";
 import { getPoem } from "./poetry";
 import { getSection } from "./wikipedia";
@@ -68,6 +71,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   {
     name: "choo_choo",
     noLingatures: true,
+    conflictsWithSymmetricChars: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
     },
@@ -80,6 +84,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
     noPunctuation: true,
     noNumbers: true,
     noLetters: true,
+    symmetricChars: true,
     getWord(): string {
       return Misc.getArrows();
     },
@@ -92,6 +97,42 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
         "highlightMode",
         Config.highlightMode,
         UpdateConfig.setHighlightMode
+      );
+    },
+    isCharCorrect(char: string, originalChar: string): boolean {
+      if (
+        (char === Config.arrowKeys[0] || char === "ArrowLeft") &&
+        originalChar === "←"
+      ) {
+        return true;
+      }
+      if (
+        (char === Config.arrowKeys[1] || char === "ArrowDown") &&
+        originalChar === "↓"
+      ) {
+        return true;
+      }
+      if (
+        (char === Config.arrowKeys[2] || char === "ArrowUp") &&
+        originalChar === "↑"
+      ) {
+        return true;
+      }
+      if (
+        (char === Config.arrowKeys[3] || char === "ArrowRight") &&
+        originalChar === "→"
+      ) {
+        return true;
+      }
+      return false;
+    },
+    async preventDefaultEvent(
+      event: JQuery.KeyDownEvent<Document, null, Document, Document>
+    ): Promise<boolean> {
+      // TODO What's better?
+      // return /Arrow/i.test(event.key);
+      return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
+        event.key
       );
     },
   },
@@ -145,6 +186,32 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
         Config.keymapLayout,
         UpdateConfig.setKeymapLayout
       );
+    },
+    handleSpace(): void {
+      if (Config.mode !== "time") {
+        // here I need to check if Config.customLayoutFluid exists because of my
+        // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
+        const layouts: string[] = Config.customLayoutfluid
+          ? Config.customLayoutfluid.split("#")
+          : ["qwerty", "dvorak", "colemak"];
+        let index = 0;
+        const outOf: number = TestWords.words.length;
+        index = Math.floor(
+          (TestInput.input.history.length + 1) / (outOf / layouts.length)
+        );
+        if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
+          Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
+        }
+        UpdateConfig.setLayout(layouts[index]);
+        UpdateConfig.setKeymapLayout(layouts[index]);
+        Keymap.highlightKey(
+          TestWords.words
+            .getCurrent()
+            .charAt(TestInput.input.current.length)
+            .toString()
+        );
+        Settings.groups["layout"]?.updateInput();
+      }
     },
   },
   {
@@ -204,6 +271,12 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
     },
     rememberSettings(): void {
       rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
+    },
+    handleChar(char: string): string {
+      if (char === "\n") {
+        return " ";
+      }
+      return char;
     },
   },
   {
@@ -497,11 +570,14 @@ export function checkFunbox(funbox: string): boolean {
     checkingFunbox.filter((f) => f.applyCSS).length > 1 ||
     checkingFunbox.filter((f) => f.pullSection).length > 1 ||
     checkingFunbox.filter((f) => f.punctuateWord).length > 1 ||
+    checkingFunbox.filter((f) => f.isCharCorrect).length > 1 ||
     checkingFunbox.filter((f) => f.nospace).length > 1 ||
     (checkingFunbox.filter((f) => f.getWord).length > 0 &&
       checkingFunbox.filter((f) => f.pullSection).length > 0) ||
     (checkingFunbox.filter((f) => f.noLetters).length > 0 &&
-      checkingFunbox.filter((f) => f.changesCapitalisation).length > 0)
+      checkingFunbox.filter((f) => f.changesCapitalisation).length > 0) ||
+    (checkingFunbox.filter((f) => f.conflictsWithSymmetricChars).length > 0 &&
+      checkingFunbox.filter((f) => f.symmetricChars).length > 0)
   );
 }
 

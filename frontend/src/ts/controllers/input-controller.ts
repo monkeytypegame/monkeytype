@@ -11,9 +11,7 @@ import * as Funbox from "../test/funbox";
 import * as Sound from "./sound-controller";
 import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
-import * as Notifications from "../elements/notifications";
 import * as CustomText from "../test/custom-text";
-import * as Settings from "../pages/settings";
 import * as LayoutEmulator from "../test/layout-emulator";
 import * as PaceCaret from "../test/pace-caret";
 import * as TimerProgress from "../test/timer-progress";
@@ -145,33 +143,13 @@ function handleSpace(): void {
   }
 
   const currentWord: string = TestWords.words.getCurrent();
-  if (
-    Config.funbox.split("#").includes("layoutfluid") &&
-    Config.mode !== "time"
-  ) {
-    // here I need to check if Config.customLayoutFluid exists because of my
-    // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
-    const layouts: string[] = Config.customLayoutfluid
-      ? Config.customLayoutfluid.split("#")
-      : ["qwerty", "dvorak", "colemak"];
-    let index = 0;
-    const outOf: number = TestWords.words.length;
-    index = Math.floor(
-      (TestInput.input.history.length + 1) / (outOf / layouts.length)
-    );
-    if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
-      Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
+
+  for (const f of UpdateConfig.ActiveFunboxes) {
+    if (f.handleSpace) {
+      f.handleSpace();
     }
-    UpdateConfig.setLayout(layouts[index]);
-    UpdateConfig.setKeymapLayout(layouts[index]);
-    Keymap.highlightKey(
-      TestWords.words
-        .getCurrent()
-        .charAt(TestInput.input.current.length)
-        .toString()
-    );
-    Settings.groups["layout"]?.updateInput();
   }
+
   dontInsertSpace = true;
 
   const burst: number = TestStats.calculateBurst();
@@ -359,20 +337,8 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     }
   }
 
-  if (Config.funbox.split("#").includes("arrows")) {
-    if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
-      return true;
-    }
-    if ((char === "s" || char === "ArrowDown") && originalChar === "↓") {
-      return true;
-    }
-    if ((char === "a" || char === "ArrowLeft") && originalChar === "←") {
-      return true;
-    }
-    if ((char === "d" || char === "ArrowRight") && originalChar === "→") {
-      return true;
-    }
-  }
+  const funbox = UpdateConfig.ActiveFunboxes.find((f) => f.isCharCorrect);
+  if (funbox?.isCharCorrect) return funbox.isCharCorrect(char, originalChar);
 
   if (
     (char === "’" || char === "‘" || char === "'") &&
@@ -418,8 +384,8 @@ function handleChar(
     return;
   }
 
-  if (char === "\n" && Config.funbox.split("#").includes("58008")) {
-    char = " ";
+  for (const f of UpdateConfig.ActiveFunboxes) {
+    if (f.handleChar) char = f.handleChar(char);
   }
 
   const nospace =
@@ -864,14 +830,6 @@ $(document).keydown(async (event) => {
     }
   }
 
-  if (
-    !Config.funbox.split("#").includes("arrows") &&
-    /Arrow/i.test(event.key)
-  ) {
-    event.preventDefault();
-    return;
-  }
-
   Monkey.type();
 
   if (event.key === "Backspace" && TestInput.input.current.length === 0) {
@@ -918,22 +876,20 @@ $(document).keydown(async (event) => {
       (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
 
-  if (Config.funbox.split("#").includes("arrows")) {
-    let char: string = event.key;
-    if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(char)) {
-      if (char === "ArrowLeft") char = "a";
-      if (char === "ArrowRight") char = "d";
-      if (char === "ArrowDown") char = "s";
-      if (char === "ArrowUp") char = "w";
+  const funbox = UpdateConfig.ActiveFunboxes.find((f) => f.preventDefaultEvent);
+  if (funbox?.preventDefaultEvent) {
+    if (await funbox.preventDefaultEvent(event)) {
       event.preventDefault();
-      handleChar(char, TestInput.input.current.length);
+      handleChar(event.key, TestInput.input.current.length);
       updateUI();
       setWordsInput(" " + TestInput.input.current);
       if (Config.tapeMode !== "off") {
         TestUI.scrollTape();
       }
     }
-  } else if (
+  }
+
+  if (
     Config.layout !== "default" &&
     !(
       event.ctrlKey ||

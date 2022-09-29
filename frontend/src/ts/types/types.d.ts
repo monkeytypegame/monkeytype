@@ -153,6 +153,8 @@ declare namespace MonkeyTypes {
 
   type CustomLayoutFluid = `${string}#${string}#${string}`;
 
+  type ArrowKeys = `${string}`;
+
   type CustomLayoutFluidSpaces =
     | CustomLayoutFluid
     | `${string} ${string} ${string}`;
@@ -207,6 +209,8 @@ declare namespace MonkeyTypes {
     nospace?: boolean;
     noPunctuation?: boolean;
     noNumbers?: boolean;
+    symmetricChars?: boolean;
+    conflictsWithSymmetricChars?: boolean;
     getWord?: (wordset?: Misc.Wordset) => string;
     punctuateWord?: (word: string) => string;
     withWords?: (words: string[]) => Misc.Wordset;
@@ -216,6 +220,15 @@ declare namespace MonkeyTypes {
     rememberSettings?: () => void;
     toggleScript?: (params: string[]) => void;
     pullSection?: (language?: string) => Promise<Misc.Section | false>;
+    handleSpace?: () => void;
+    handleChar?: (char: string) => string;
+    isCharCorrect?: (char: string, originalChar: string) => boolean;
+    preventDefaultEvent?: (
+      event: JQuery.KeyDownEvent<Document, null, Document, Document>
+    ) => Promise<boolean>;
+    handleKeydown?: (
+      event: JQuery.KeyDownEvent<Document, null, Document, Document>
+    ) => Promise<void>;
   }
 
   interface CustomText {
@@ -433,6 +446,7 @@ declare namespace MonkeyTypes {
     customBackgroundSize: CustomBackgroundSize;
     customBackgroundFilter: CustomBackgroundFilter;
     customLayoutfluid: CustomLayoutFluid;
+    arrowKeys: ArrowKeys;
     monkeyPowerLevel: MonkeyPowerLevel;
     minBurst: MinimumBurst;
     minBurstCustomSpeed: number;
