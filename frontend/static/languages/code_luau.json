@@ -68,7 +68,7 @@
     "time",
     "usersettings",
     "version",
-    "warn"
+    "warn",
     
     "bit32",
     "coroutine",
