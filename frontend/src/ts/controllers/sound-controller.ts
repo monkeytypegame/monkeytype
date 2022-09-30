@@ -1,9 +1,10 @@
 import Config from "../config";
 import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
-import { randomElementFromArray } from "../utils/misc";
+import { createErrorMessage, randomElementFromArray } from "../utils/misc";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
+import * as Notifications from "../elements/notifications";
 
 interface ClickSounds {
   [key: string]: {
@@ -323,12 +324,32 @@ const clickSoundIdsToOscillatorType: Record<
   "11": "triangle",
 };
 
-const audioCtx = new AudioContext();
+let audioCtx: AudioContext | undefined | null;
+
+function initAudioContext(): void {
+  if (audioCtx === null) return;
+  try {
+    audioCtx = new AudioContext();
+  } catch (e) {
+    audioCtx = null;
+    console.error(e);
+    Notifications.add(
+      createErrorMessage(e, "Error initializing audio context") +
+        ". Notes will not play.",
+      -1
+    );
+  }
+}
 
 export function playNote(
   codeOverride?: string,
   oscillatorTypeOverride?: SupportedOscillatorTypes
 ): void {
+  if (audioCtx === undefined) {
+    initAudioContext();
+  }
+  if (!audioCtx) return;
+
   currentCode = codeOverride ?? currentCode;
   if (!(currentCode in codeToNote)) {
     return;
