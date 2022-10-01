@@ -1,6 +1,6 @@
 $(document.body).on(
   "click",
-  "#contactPopupButton, #contactPopupButton2",
+  "#contactPopupButton",
   () => {
     $("#contactPopupWrapper")
       .css("opacity", 0)
@@ -21,7 +21,7 @@ $(document.body).on("click", "#contactPopupWrapper", (e) => {
 
 $(document.body).on(
   "keypress",
-  "#contactPopupButton, #contactPopupButton2",
+  "#contactPopupButton",
   (e) => {
     if (e.key === "Enter") {
       $(e.currentTarget).trigger("click");
