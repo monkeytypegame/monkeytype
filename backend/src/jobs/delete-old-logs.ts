@@ -4,7 +4,7 @@ import Logger from "../utils/logger";
 import { getCachedConfiguration } from "../init/configuration";
 
 const CRON_SCHEDULE = "0 0 0 * * *";
-const LOG_MAX_AGE_DAYS = 7;
+const LOG_MAX_AGE_DAYS = 30;
 const LOG_MAX_AGE_MILLISECONDS = LOG_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
 
 async function deleteOldLogs(): Promise<void> {

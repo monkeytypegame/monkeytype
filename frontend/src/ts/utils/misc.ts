@@ -67,17 +67,14 @@ export function isColorDark(hex: string): boolean {
   return hsl.lgt < 50;
 }
 
-interface Theme {
-  name: string;
-  bgColor: string;
-  mainColor: string;
-}
-
-let themesList: Theme[] = [];
-export async function getThemesList(): Promise<Theme[]> {
+let themesList: MonkeyTypes.Theme[] = [];
+export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
   if (themesList.length == 0) {
     return $.getJSON("/./themes/_list.json", function (data) {
-      const list = data.sort(function (a: Theme, b: Theme) {
+      const list = data.sort(function (
+        a: MonkeyTypes.Theme,
+        b: MonkeyTypes.Theme
+      ) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -92,8 +89,8 @@ export async function getThemesList(): Promise<Theme[]> {
   }
 }
 
-let sortedThemesList: Theme[] = [];
-export async function getSortedThemesList(): Promise<Theme[]> {
+let sortedThemesList: MonkeyTypes.Theme[] = [];
+export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
   if (sortedThemesList.length === 0) {
     if (themesList.length === 0) {
       await getThemesList();
@@ -162,16 +159,14 @@ export async function getLayout(
   return layoutsList[layoutName];
 }
 
-interface Font {
-  name: string;
-  display?: string;
-}
-
-let fontsList: Font[] = [];
-export async function getFontsList(): Promise<Font[]> {
+let fontsList: MonkeyTypes.FontObject[] = [];
+export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
   if (fontsList.length === 0) {
     return $.getJSON("/./fonts/_list.json", function (data) {
-      fontsList = data.sort(function (a: Font, b: Font) {
+      fontsList = data.sort(function (
+        a: MonkeyTypes.FontObject,
+        b: MonkeyTypes.FontObject
+      ) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -627,6 +622,11 @@ export function getSpecials(): string {
     "/",
     "\\",
     "|",
+    "?",
+    ";",
+    ":",
+    ">",
+    "<",
   ];
   for (let i = 0; i < randLen; i++) {
     ret += randomElementFromArray(specials);
@@ -693,6 +693,28 @@ export function findGetParameter(
     .forEach(function (item) {
       tmp = item.split("=");
       if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+    });
+  return result;
+}
+
+export function checkIfGetParameterExists(
+  parameterName: string,
+  getOverride?: string
+): boolean {
+  let result = false;
+  let tmp = [];
+
+  let search = location.search;
+  if (getOverride) {
+    search = getOverride;
+  }
+
+  search
+    .substr(1)
+    .split("&")
+    .forEach(function (item) {
+      tmp = item.split("=");
+      if (tmp[0] === parameterName) result = true;
     });
   return result;
 }
@@ -933,10 +955,10 @@ export async function swapElements(
   el1: JQuery,
   el2: JQuery,
   totalDuration: number,
-  callback = function (): Promise<void> {
+  callback = async function (): Promise<void> {
     return Promise.resolve();
   },
-  middleCallback = function (): Promise<void> {
+  middleCallback = async function (): Promise<void> {
     return Promise.resolve();
   }
 ): Promise<boolean | undefined> {
@@ -1208,4 +1230,16 @@ export function abbreviateNumber(num: number): string {
   const exp = Math.floor(Math.log(num) / Math.log(1000));
   const pre = "kmbtqQsSond".charAt(exp - 1);
   return (num / Math.pow(1000, exp)).toFixed(1) + pre;
+}
+
+export async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function isPasswordStrong(password: string): boolean {
+  const hasCapital = !!password.match(/[A-Z]/);
+  const hasNumber = !!password.match(/[\d]/);
+  const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  const isLong = password.length >= 8;
+  return hasCapital && hasNumber && hasSpecial && isLong;
 }

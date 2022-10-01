@@ -1,7 +1,8 @@
 import * as ThemeController from "../controllers/theme-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
-import * as CommandlineLists from "./commandline-lists";
+import * as CommandlineLists from "./commands";
+import * as Misc from "./../utils/misc";
 import * as TestUI from "../test/test-ui";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
@@ -11,6 +12,9 @@ import * as TestWords from "../test/test-words";
 import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 import { isAnyPopupVisible } from "../utils/misc";
+import { update as updateCustomThemesList } from "./lists/custom-themes-list";
+import { update as updateTagsCommands } from "./lists/tags";
+import { update as updateThemesCommands } from "./lists/themes";
 
 let commandLineMouseMode = false;
 let themeChosen = false;
@@ -18,17 +22,17 @@ let themeChosen = false;
 function showInput(
   command: string,
   placeholder: string,
-  defaultValue = ""
+  inputValue = ""
 ): void {
   $("#commandLineWrapper").removeClass("hidden");
   $("#commandLine").addClass("hidden");
   $("#commandInput").removeClass("hidden");
   $("#commandInput input").attr("placeholder", placeholder);
-  $("#commandInput input").val(defaultValue);
+  $("#commandInput input").val(inputValue);
   $("#commandInput input").trigger("focus");
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
-  if (defaultValue != "") {
+  if (inputValue != "") {
     $("#commandInput input").trigger("select");
   }
 }
@@ -185,7 +189,9 @@ export let show = (): void => {
       );
   }
   $("#commandLine input").val("");
-  CommandlineLists.updateThemeCommands();
+  Misc.getThemesList().then((themes) => {
+    updateThemesCommands(themes);
+  });
   updateSuggested();
   $("#commandLine input").trigger("focus");
 };
@@ -223,6 +229,7 @@ function trigger(command: string): void {
   let shouldFocusTestUI = true;
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
   let sticky = false;
+
   $.each(list.list, (_index, obj) => {
     if (obj.id == command) {
       if (obj.shouldFocusTestUI !== undefined) {
@@ -231,14 +238,14 @@ function trigger(command: string): void {
       if (obj.input) {
         input = true;
         const escaped = obj.display.split("</i>")[1] ?? obj.display;
-        showInput(obj.id, escaped, obj.defaultValue);
+        showInput(obj.id, escaped, obj.defaultValue ? obj.defaultValue() : "");
       } else if (obj.subgroup) {
         subgroup = true;
         if (obj.beforeSubgroup) {
           obj.beforeSubgroup();
         }
         CommandlineLists.current.push(
-          obj.subgroup as MonkeyTypes.CommandsGroup
+          obj.subgroup as MonkeyTypes.CommandsSubgroup
         );
         show();
       } else {
@@ -258,9 +265,9 @@ function trigger(command: string): void {
 //todo rewrite this mess
 function addChildCommands(
   unifiedCommands: MonkeyTypes.Command[],
-  commandItem: MonkeyTypes.Command | MonkeyTypes.CommandsGroup,
+  commandItem: MonkeyTypes.Command | MonkeyTypes.CommandsSubgroup,
   parentCommandDisplay = "",
-  parentCommand?: MonkeyTypes.CommandsGroup
+  parentCommand?: MonkeyTypes.CommandsSubgroup
 ): void {
   let commandItemDisplay = (commandItem as MonkeyTypes.Command).display.replace(
     /\s?\.\.\.$/g,
@@ -288,17 +295,17 @@ function addChildCommands(
     try {
       (
         (commandItem as MonkeyTypes.Command)
-          ?.subgroup as MonkeyTypes.CommandsGroup
+          ?.subgroup as MonkeyTypes.CommandsSubgroup
       ).list?.forEach((cmd) => {
-        (commandItem as MonkeyTypes.CommandsGroup).configKey = (
+        (commandItem as MonkeyTypes.CommandsSubgroup).configKey = (
           (commandItem as MonkeyTypes.Command)
-            .subgroup as MonkeyTypes.CommandsGroup
+            .subgroup as MonkeyTypes.CommandsSubgroup
         ).configKey;
         addChildCommands(
           unifiedCommands,
           cmd,
           commandItemDisplay,
-          commandItem as MonkeyTypes.CommandsGroup
+          commandItem as MonkeyTypes.CommandsSubgroup
         );
       });
       // commandItem.exec();
@@ -319,6 +326,11 @@ function addChildCommands(
       ).icon;
     }
     if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
+    //@ts-ignore
+    if (parentCommand?.available) {
+      //@ts-ignore
+      tempCommandItem.available = parentCommand.available;
+    }
     unifiedCommands.push(tempCommandItem);
   }
 }
@@ -332,7 +344,7 @@ function generateSingleListOfCommands(): {
   show = (): void => {
     //
   };
-  CommandlineLists.defaultCommands.list.forEach((c) =>
+  CommandlineLists.commands.list.forEach((c) =>
     addChildCommands(allCommands, c)
   );
   show = oldShowCommandLine;
@@ -362,7 +374,7 @@ function restoreOldCommandLine(sshow = true): void {
       CommandlineLists.current.filter((l) => l.title != "All Commands")
     );
     if (CommandlineLists.current.length < 1) {
-      CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
+      CommandlineLists.setCurrent([CommandlineLists.commands]);
     }
   }
   if (sshow) show();
@@ -392,7 +404,11 @@ $(document).ready(() => {
     // opens command line if escape or ctrl/cmd + shift + p
     if (
       ((event.key === "Escape" && Config.quickRestart !== "esc") ||
-        (event.key === "Tab" && Config.quickRestart === "esc")) &&
+        (event.key?.toLowerCase() === "p" &&
+          (event.metaKey || event.ctrlKey) &&
+          event.shiftKey) ||
+        ((event.key === "Tab" || event.key === "Escape") &&
+          Config.quickRestart === "esc")) &&
       !$("#commandLineWrapper").hasClass("hidden")
     ) {
       if (CommandlineLists.current.length > 1) {
@@ -430,7 +446,7 @@ $(document).ready(() => {
       if (Config.singleListCommandLine == "on") {
         useSingleListCommandLine(false);
       } else {
-        CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
+        CommandlineLists.setCurrent([CommandlineLists.commands]);
       }
       show();
     }
@@ -611,7 +627,10 @@ $(document).on("keydown", (e) => {
       $.each(entries, (index, obj) => {
         if ($(obj).hasClass("activeKeyboard")) activenum = index;
       });
-      if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
+      if (
+        e.key === "ArrowUp" ||
+        (e.key === "Tab" && e.shiftKey && Config.quickRestart !== "esc")
+      ) {
         entries.removeClass("activeKeyboard");
         if (activenum == 0) {
           $(entries[entries.length - 1]).addClass("activeKeyboard");
@@ -621,7 +640,10 @@ $(document).on("keydown", (e) => {
           hoverId = $(entries[activenum]).attr("command") as string;
         }
       }
-      if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
+      if (
+        e.key === "ArrowDown" ||
+        (e.key === "Tab" && !e.shiftKey && Config.quickRestart !== "esc")
+      ) {
         entries.removeClass("activeKeyboard");
         if (activenum + 1 == entries.length) {
           $(entries[0]).addClass("activeKeyboard");
@@ -676,23 +698,25 @@ $(document).on("click", "#commandLineMobileButton", () => {
   if (Config.singleListCommandLine == "on") {
     useSingleListCommandLine(false);
   } else {
-    CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
+    CommandlineLists.setCurrent([CommandlineLists.commands]);
   }
   show();
 });
 
 $(document).on("click", "#keymap .r5 .keySpace", () => {
-  CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
+  CommandlineLists.setCurrent([CommandlineLists.getList("keymapLayouts")]);
   show();
 });
 
 $(document).on("click", "#testModesNotice .textButton", (event) => {
-  const commands = CommandlineLists.getList(
-    $(event.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
-  );
+  const attr = $(event.currentTarget).attr(
+    "commands"
+  ) as CommandlineLists.ListsObjectKeys;
+  if (attr === undefined) return;
+  const commands = CommandlineLists.getList(attr);
   if (commands !== undefined) {
     if ($(event.currentTarget).attr("commands") === "commandsTags") {
-      CommandlineLists.updateTagCommands();
+      updateTagsCommands();
     }
     CommandlineLists.pushCurrent(commands);
     show();
@@ -702,7 +726,7 @@ $(document).on("click", "#testModesNotice .textButton", (event) => {
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
-      if (Auth.currentUser !== null) {
+      if (Auth?.currentUser) {
         if (DB.getSnapshot().customThemes.length < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);
@@ -718,22 +742,27 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
       UpdateConfig.setCustomTheme(true);
     } else UpdateConfig.setCustomTheme(false);
   } else {
-    if (Config.customTheme) CommandlineLists.updateCustomThemeListCommands();
+    if (Config.customTheme) updateCustomThemesList();
     CommandlineLists.setCurrent([
       Config.customTheme
-        ? CommandlineLists.customThemeListCommands
-        : CommandlineLists.themeCommands,
+        ? CommandlineLists.getList("customThemesList")
+        : CommandlineLists.getList("themes"),
     ]);
     show();
   }
 });
 
 $(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+  CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
   show();
 });
 
 $(".supportButtons .button.ads").on("click", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+  CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
+  show();
+});
+
+$(document.body).on("click", "#supportMeWrapper .button.ads", () => {
+  CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
   show();
 });

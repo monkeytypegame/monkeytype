@@ -9,11 +9,16 @@ import * as ActivePage from "../states/active-page";
 
 type ProfileViewPaths = "profile" | "account";
 
+interface ProfileData extends MonkeyTypes.Snapshot {
+  allTimeLbs: MonkeyTypes.LeaderboardMemory;
+}
+
 export async function update(
   where: ProfileViewPaths,
-  profile: Partial<MonkeyTypes.Snapshot>
+  profile: Partial<ProfileData>
 ): Promise<void> {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
+  const profileElement = $(`.page${elementClass} .profile`);
   const details = $(`.page${elementClass} .profile .details`);
 
   // ============================================================================
@@ -71,6 +76,24 @@ export async function update(
   const diffDays = differenceInDays(new Date(), creationDate);
   const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
+
+  if (profile.streak && profile?.streak > 1) {
+    details
+      .find(".streak")
+      .text(
+        `Current streak: ${profile.streak} ${
+          profile.streak === 1 ? "day" : "days"
+        }`
+      )
+      .attr(
+        "aria-label",
+        `Longest streak: ${profile.maxStreak} ${
+          profile.maxStreak === 1 ? "day" : "days"
+        }`
+      );
+  } else {
+    details.find(".streak").text("").attr("aria-label", "");
+  }
 
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl
@@ -142,7 +165,10 @@ export async function update(
   const level = Math.floor(levelFraction);
   const xpForLevel = Misc.getXpForLevel(level);
   const xpToDisplay = Math.round(xpForLevel * (levelFraction % 1));
-  details.find(".level").text(level);
+  details
+    .find(".level")
+    .text(level)
+    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
   details
     .find(".xp")
     .text(
@@ -155,7 +181,36 @@ export async function update(
     .css("width", `${(xpToDisplay / xpForLevel) * 100}%`);
   details
     .find(".xp")
-    .attr("aria-label", `${Misc.abbreviateNumber(xp)} total xp`);
+    .attr(
+      "aria-label",
+      `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
+    );
+
+  //lbs
+
+  if (banned) {
+    profileElement.find(".leaderboardsPositions").addClass("hidden");
+  } else {
+    profileElement.find(".leaderboardsPositions").removeClass("hidden");
+
+    const lbPos = where === "profile" ? profile.allTimeLbs : profile.lbMemory;
+
+    const t15 = lbPos?.time?.[15]?.["english"];
+    const t60 = lbPos?.time?.[60]?.["english"];
+
+    if (!t15 && !t60) {
+      profileElement.find(".leaderboardsPositions").addClass("hidden");
+    } else {
+      const t15string = t15 ? Misc.getPositionString(t15) : "-";
+      profileElement
+        .find(".leaderboardsPositions .group.t15 .pos")
+        .text(t15string);
+      const t60string = t60 ? Misc.getPositionString(t60) : "-";
+      profileElement
+        .find(".leaderboardsPositions .group.t60 .pos")
+        .text(t60string);
+    }
+  }
 
   //structure
 

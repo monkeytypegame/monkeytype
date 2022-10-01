@@ -1,3 +1,19 @@
 #words .word.active:nth-of-type(n + 2) {
   color: transparent;
+  animation: none;
+}
+
+#words.flipped .word.active:nth-of-type(n + 2) {
+  color: transparent;
+  animation: none;
+}
+
+#words.colorfulMode .word.active:nth-of-type(n + 2) {
+  color: transparent;
+  animation: none;
+}
+
+#words.colorfulMode.flipped .word.active:nth-of-type(n + 2) {
+  color: transparent;
+  animation: none;
 }

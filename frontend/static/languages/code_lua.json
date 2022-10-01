@@ -53,6 +53,16 @@
     "tostring",
     "type",
     "unpack",
-    "xpcall"
+    "xpcall",
+    
+    "bit32",
+    "coroutine",
+    "debug",
+    "math",
+    "os",
+    "string",
+    "table",
+    "utf8"
+    
   ]
 }

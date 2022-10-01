@@ -45,12 +45,11 @@ interface PoemObject {
   author: string;
 }
 
-export async function getPoem(): Promise<Poem | undefined> {
+export async function getPoem(): Promise<Poem | false> {
   console.log("Getting poem");
 
-  const response = await axios.get(apiURL);
-
   try {
+    const response = await axios.get(apiURL);
     const poemObj: PoemObject = response.data[0];
 
     const words: string[] = [];
@@ -64,7 +63,6 @@ export async function getPoem(): Promise<Poem | undefined> {
     return new Poem(poemObj.title, poemObj.author, words);
   } catch (e) {
     console.log(e);
+    return false;
   }
-
-  return;
 }

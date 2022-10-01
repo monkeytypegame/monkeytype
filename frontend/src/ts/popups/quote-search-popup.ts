@@ -108,7 +108,7 @@ function buildQuoteSearchResult(
     lengthDesc = "thicc";
   }
 
-  const loggedOut = !Auth.currentUser;
+  const loggedOut = !Auth?.currentUser;
   const isFav = !loggedOut && QuotesController.isQuoteFavorite(quote);
 
   return `
@@ -193,7 +193,7 @@ export async function show(clearText = true): Promise<void> {
 
     const quoteSearchInputValue = $("#quoteSearchPopup input").val() as string;
 
-    if (!Auth.currentUser) {
+    if (!Auth?.currentUser) {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
       $("#quoteSearchPopup #toggleShowFavorites").addClass("hidden");
     } else {
@@ -385,7 +385,7 @@ $(document).on("click", "#quoteSearchPopup .textButton.favorite", async (e) => {
 });
 
 $(document).on("click", "#toggleShowFavorites", (e) => {
-  if (!Auth.currentUser) {
+  if (!Auth?.currentUser) {
     // Notifications.add("You need to be logged in to use this feature!", 0);
     return;
   }
@@ -394,7 +394,7 @@ $(document).on("click", "#toggleShowFavorites", (e) => {
   searchForQuotes();
 });
 
-$(document).on("click", "#top .config .quoteLength .textButton", (e) => {
+$(document).on("click", "#testConfig .quoteLength .textButton", (e) => {
   const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
   if (len == -2) {
     show();

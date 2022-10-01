@@ -894,6 +894,38 @@
         >
           hitmarker
         </div>
+        <div
+          class="button"
+          playSoundOnClick="8"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          sine
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="9"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          sawtooth
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="10"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          square
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="11"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          triangle
+        </div>
       </div>
     </div>
     <div class="section playSoundOnError">
@@ -1003,7 +1035,8 @@
       <h1>pace caret</h1>
       <div class="text">
         Displays a second caret that moves at constant speed. The 'average'
-        option averages the speed of last 10 results.
+        option averages the speed of last 10 results. The 'daily' option takes
+        the highest speed of the last 24 hours.
       </div>
       <div>
         <div class="inputAndButton">
@@ -1052,6 +1085,14 @@
             onclick="this.blur();"
           >
             last
+          </div>
+          <div
+            class="button"
+            paceCaret="daily"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            daily
           </div>
           <div
             class="button"
@@ -1442,24 +1483,15 @@
     <div class="section fontSize">
       <h1>font size</h1>
       <div class="text">Change the font size of the test words.</div>
-      <div class="buttons">
-        <div class="button" fontsize="1" tabindex="0" onclick="this.blur();">
-          1
-        </div>
-        <div class="button" fontsize="125" tabindex="0" onclick="this.blur();">
-          1.25
-        </div>
-        <div class="button" fontsize="15" tabindex="0" onclick="this.blur();">
-          1.5
-        </div>
-        <div class="button" fontsize="2" tabindex="0" onclick="this.blur();">
-          2
-        </div>
-        <div class="button" fontsize="3" tabindex="0" onclick="this.blur();">
-          3
-        </div>
-        <div class="button" fontsize="4" tabindex="0" onclick="this.blur();">
-          4
+      <div class="inputAndButton">
+        <input
+          type="number"
+          placeholder="font size"
+          class="input"
+          tabindex="0"
+        />
+        <div class="button save" tabindex="0" onclick="this.blur();">
+          <i class="fas fa-save fa-fw"></i>
         </div>
       </div>
     </div>

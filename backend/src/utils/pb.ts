@@ -64,7 +64,7 @@ function updatePersonalBest(
   personalBest: MonkeyTypes.PersonalBest,
   result: Result
 ): boolean {
-  if (personalBest.wpm > result.wpm) {
+  if (personalBest.wpm >= result.wpm) {
     return false;
   }
 

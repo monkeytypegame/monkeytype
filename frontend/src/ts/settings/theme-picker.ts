@@ -110,7 +110,7 @@ export async function refreshButtons(): Promise<void> {
     ).empty();
     const addButton = $(".pageSettings .section.themes .addCustomThemeButton");
 
-    if (Auth.currentUser === null) {
+    if (!Auth?.currentUser) {
       $(
         ".pageSettings .section.themes .customThemeEdit .saveCustomThemeButton"
       ).text("save");
@@ -430,7 +430,7 @@ $("#shareCustomThemeButton").on("click", () => {
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
   saveCustomThemeColors();
-  if (Auth.currentUser) {
+  if (Auth?.currentUser) {
     const newCustomTheme = {
       name: "custom",
       colors: Config.customThemeColors,

@@ -27,12 +27,16 @@ import * as TestActive from "../states/test-active";
 import * as CompositionState from "../states/composition";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
-import { navigate } from "./route-controller";
+import * as Hangul from "hangul-js";
+import { navigate } from "../observables/navigate-event";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
+let isKoCompiling = false;
+let isBackspace: boolean;
 
 const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
+const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 function setWordsInput(value: string): void {
   // Only change #wordsInput if it's not already the wanted value
@@ -45,16 +49,50 @@ function setWordsInput(value: string): void {
 }
 
 function updateUI(): void {
-  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  const acc: number = Misc.roundTo2(TestStats.calculateAccuracy());
   if (!isNaN(acc)) LiveAcc.update(acc);
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    Keymap.highlightKey(
-      TestWords.words
-        .getCurrent()
-        .charAt(TestInput.input.current.length)
-        .toString()
-    );
+    if (!Config.language.startsWith("korean")) {
+      Keymap.highlightKey(
+        TestWords.words
+          .getCurrent()
+          .charAt(TestInput.input.current.length)
+          .toString()
+      );
+    } else {
+      //word [가다]
+      //Get the current korean word and group it [[ㄱ,ㅏ],[ㄷ,ㅏ]].
+      const koCurrWord: string[][] = Hangul.disassemble(
+        TestWords.words.getCurrent(),
+        true
+      );
+      const koCurrInput: string[][] = Hangul.disassemble(
+        TestInput.input.current,
+        true
+      );
+      const inputGroupLength: number = koCurrInput.length - 1;
+      if (koCurrInput[inputGroupLength]) {
+        const inputCharLength: number = koCurrInput[inputGroupLength].length;
+        //at the end of the word, it will throw a (reading '0') this will be the space
+        try {
+          //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),
+          //take the difference between the overflow and the word
+          const koChar: string =
+            koCurrWord[inputGroupLength][inputCharLength] ??
+            koCurrWord[koCurrInput.length][
+              inputCharLength - koCurrWord[inputGroupLength].length
+            ];
+
+          Keymap.highlightKey(koChar);
+        } catch (e) {
+          Keymap.highlightKey("");
+        }
+      } else {
+        //for new words
+        Keymap.highlightKey(koCurrWord[0][0]);
+      }
+    }
   }
 }
 
@@ -62,8 +100,8 @@ function backspaceToPrevious(): void {
   if (!TestActive.get()) return;
 
   if (
-    TestInput.input.history.length == 0 ||
-    TestUI.currentWordElementIndex == 0
+    TestInput.input.history.length === 0 ||
+    TestUI.currentWordElementIndex === 0
   ) {
     return;
   }
@@ -85,6 +123,7 @@ function backspaceToPrevious(): void {
   TestInput.corrected.popHistory();
   if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
+    setWordsInput(" " + TestInput.input.current + " ");
   }
   TestWords.words.decreaseCurrentIndex();
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
@@ -106,16 +145,17 @@ function handleSpace(): void {
     $("#words").append("<div class='word active'></div>");
   }
 
-  const currentWord = TestWords.words.getCurrent();
+  const currentWord: string = TestWords.words.getCurrent();
   if (Config.funbox === "layoutfluid" && Config.mode !== "time") {
-    // here I need to check if Config.customLayoutFluid exists because of my scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
-    const layouts = Config.customLayoutfluid
+    // here I need to check if Config.customLayoutFluid exists because of my
+    // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
+    const layouts: string[] = Config.customLayoutfluid
       ? Config.customLayoutfluid.split("#")
       : ["qwerty", "dvorak", "colemak"];
     let index = 0;
-    const outof = TestWords.words.length;
+    const outOf: number = TestWords.words.length;
     index = Math.floor(
-      (TestInput.input.history.length + 1) / (outof / layouts.length)
+      (TestInput.input.history.length + 1) / (outOf / layouts.length)
     );
     if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
       Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
@@ -132,13 +172,13 @@ function handleSpace(): void {
   }
   dontInsertSpace = true;
 
-  const burst = TestStats.calculateBurst();
+  const burst: number = TestStats.calculateBurst();
   LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
   //correct word or in zen mode
-  const isWordCorrect =
-    currentWord == TestInput.input.current || Config.mode == "zen";
+  const isWordCorrect: boolean =
+    currentWord === TestInput.input.current || Config.mode == "zen";
   MonkeyPower.addPower(isWordCorrect, true);
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
@@ -165,7 +205,7 @@ function handleSpace(): void {
     }
     TestInput.pushMissedWord(TestWords.words.getCurrent());
     TestInput.incrementKeypressErrors();
-    const cil = TestInput.input.current.length;
+    const cil: number = TestInput.input.current.length;
     if (cil <= TestWords.words.getCurrent().length) {
       if (cil >= TestInput.corrected.current.length) {
         TestInput.corrected.current += "_";
@@ -207,7 +247,7 @@ function handleSpace(): void {
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
       TestLogic.fail("difficulty");
       return;
-    } else if (TestWords.words.currentIndex == TestWords.words.length) {
+    } else if (TestWords.words.currentIndex === TestWords.words.length) {
       //submitted last word that is incorrect
       TestLogic.finish();
       return;
@@ -215,14 +255,14 @@ function handleSpace(): void {
     Replay.addReplayEvent("submitErrorWord");
   }
 
-  let wordLength;
+  let wordLength: number;
   if (Config.mode === "zen") {
     wordLength = TestInput.input.current.length;
   } else {
     wordLength = TestWords.words.getCurrent().length;
   }
 
-  const flex = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
+  const flex: number = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
   if (
     (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
     (Config.minBurst === "flex" && burst < flex)
@@ -236,15 +276,15 @@ function handleSpace(): void {
   if (
     !Config.showAllLines ||
     Config.mode == "time" ||
-    (CustomText.isWordRandom && CustomText.word == 0) ||
+    (CustomText.isWordRandom && CustomText.word === 0) ||
     CustomText.isTimeRandom
   ) {
-    const currentTop = Math.floor(
+    const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
         TestUI.currentWordElementIndex - 1
       ].offsetTop
     );
-    let nextTop;
+    let nextTop: number;
     try {
       nextTop = Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
@@ -288,46 +328,57 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  const originalChar = TestWords.words.getCurrent()[charIndex];
+  //Checking for Korean char
+  if (TestInput.input.getKoreanStatus()) {
+    //disassembles Korean current Test word to check against char Input
+    const koWordArray: string[] = Hangul.disassemble(
+      TestWords.words.getCurrent()
+    );
+    const koOriginalChar: string = koWordArray[charIndex];
 
-  if (originalChar == char) {
+    return koOriginalChar === char;
+  }
+
+  const originalChar: string = TestWords.words.getCurrent()[charIndex];
+
+  if (originalChar === char) {
     return true;
   }
 
-  if (Config.language.split("_")[0] == "russian") {
-    if ((char === "е" || char === "e") && originalChar == "ё") {
+  if (Config.language.startsWith("russian")) {
+    if ((char === "е" || char === "e") && originalChar === "ё") {
       return true;
     }
-    if (char === "ё" && (originalChar == "е" || originalChar === "e")) {
+    if (char === "ё" && (originalChar === "е" || originalChar === "e")) {
       return true;
     }
   }
 
   if (Config.funbox === "arrows") {
-    if ((char === "w" || char === "ArrowUp") && originalChar == "↑") {
+    if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
       return true;
     }
-    if ((char === "s" || char === "ArrowDown") && originalChar == "↓") {
+    if ((char === "s" || char === "ArrowDown") && originalChar === "↓") {
       return true;
     }
-    if ((char === "a" || char === "ArrowLeft") && originalChar == "←") {
+    if ((char === "a" || char === "ArrowLeft") && originalChar === "←") {
       return true;
     }
-    if ((char === "d" || char === "ArrowRight") && originalChar == "→") {
+    if ((char === "d" || char === "ArrowRight") && originalChar === "→") {
       return true;
     }
   }
 
   if (
-    (char === `’` || char === "‘" || char === "'") &&
-    (originalChar == `’` || originalChar === "‘" || originalChar === "'")
+    (char === "’" || char === "‘" || char === "'") &&
+    (originalChar === "’" || originalChar === "‘" || originalChar === "'")
   ) {
     return true;
   }
 
   if (
     (char === `"` || char === "”" || char == "“" || char === "„") &&
-    (originalChar == `"` ||
+    (originalChar === `"` ||
       originalChar === "”" ||
       originalChar === "“" ||
       originalChar === "„")
@@ -336,8 +387,8 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   }
 
   if (
-    (char === "–" || char === "—" || char == "-") &&
-    (originalChar == "-" || originalChar === "–" || originalChar === "—")
+    (char === "–" || char === "—" || char === "-") &&
+    (originalChar === "-" || originalChar === "–" || originalChar === "—")
   ) {
     return true;
   }
@@ -345,11 +396,15 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   return false;
 }
 
-function handleChar(char: string, charIndex: number): void {
+function handleChar(
+  char: string,
+  charIndex: number,
+  realInputValue?: string
+): void {
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
   }
-
+  const isCharKorean: boolean = TestInput.input.getKoreanStatus();
   if (char === "…") {
     for (let i = 0; i < 3; i++) {
       handleChar(".", charIndex + i);
@@ -399,10 +454,13 @@ function handleChar(char: string, charIndex: number): void {
   Focus.set(true);
   Caret.stopAnimation();
 
-  const thisCharCorrect = isCharCorrect(char, charIndex);
+  const thisCharCorrect: boolean = isCharCorrect(char, charIndex);
+  let resultingWord: string;
 
   if (thisCharCorrect && Config.mode !== "zen") {
-    char = TestWords.words.getCurrent().charAt(charIndex);
+    char = !isCharKorean
+      ? TestWords.words.getCurrent().charAt(charIndex)
+      : Hangul.disassemble(TestWords.words.getCurrent())[charIndex];
   }
 
   if (!thisCharCorrect && char === "\n") {
@@ -414,10 +472,21 @@ function handleChar(char: string, charIndex: number): void {
     TestInput.setBurstStart(performance.now());
   }
 
-  const resultingWord =
-    TestInput.input.current.substring(0, charIndex) +
-    char +
-    TestInput.input.current.substring(charIndex + 1);
+  if (!isCharKorean && !Config.language.startsWith("korean")) {
+    resultingWord =
+      TestInput.input.current.substring(0, charIndex) +
+      char +
+      TestInput.input.current.substring(charIndex + 1);
+  } else {
+    // Get real input from #WordsInput char call.
+    // This is because the chars can't be confirmed correctly.
+    // With chars alone this happens when a previous symbol is completed
+    // Example:
+    // input history: ['프'], input:ㄹ, expected :프ㄹ, result: 플
+    const realInput: string = (realInputValue ?? "").slice(1);
+    resultingWord = realInput;
+    koInputVisual.innerText = resultingWord.slice(-1);
+  }
 
   // If a trailing composed char is used, ignore it when counting accuracy
   if (
@@ -454,14 +523,27 @@ function handleChar(char: string, charIndex: number): void {
     }
   }
 
+  //keymap
+  if (Config.keymapMode === "react") {
+    Keymap.flashKey(char, thisCharCorrect);
+  }
+
   if (!correctShiftUsed && Config.difficulty != "master") return;
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
   if (TestInput.corrected.current === "") {
-    TestInput.corrected.current += resultingWord;
+    TestInput.corrected.current += !isCharKorean
+      ? resultingWord
+      : Hangul.disassemble(resultingWord).join("");
   } else {
-    if (charIndex >= TestInput.corrected.current.length) {
-      TestInput.corrected.current += char;
+    const currCorrectedTestInputLength: number = !isCharKorean
+      ? TestInput.corrected.current.length
+      : Hangul.disassemble(TestInput.corrected.current).length;
+
+    if (charIndex >= currCorrectedTestInputLength) {
+      TestInput.corrected.current += !isCharKorean
+        ? char
+        : Hangul.disassemble(char).concat();
     } else if (!thisCharCorrect) {
       TestInput.corrected.current =
         TestInput.corrected.current.substring(0, charIndex) +
@@ -487,11 +569,11 @@ function handleChar(char: string, charIndex: number): void {
     char
   );
 
+  const testInputLength: number = !isCharKorean
+    ? TestInput.input.current.length
+    : Hangul.disassemble(TestInput.input.current).length;
   //update the active word top, but only once
-  if (
-    TestInput.input.current.length === 1 &&
-    TestWords.words.currentIndex === 0
-  ) {
+  if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
     TestUI.setActiveWordTop(
       (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
     );
@@ -513,22 +595,18 @@ function handleChar(char: string, charIndex: number): void {
     return;
   }
 
-  //keymap
-  if (Config.keymapMode === "react") {
-    Keymap.flashKey(char, thisCharCorrect);
-  }
-
   if (Config.mode != "zen") {
     //not applicable to zen mode
     //auto stop the test if the last word is correct
-    const currentWord = TestWords.words.getCurrent();
-    const lastindex = TestWords.words.currentIndex;
+    const currentWord: string = TestWords.words.getCurrent();
+    const lastIndex: number = TestWords.words.currentIndex;
     if (
-      (currentWord == TestInput.input.current ||
+      (currentWord === TestInput.input.current ||
         (Config.quickEnd &&
-          currentWord.length == TestInput.input.current.length &&
+          !Config.language.startsWith("korean") &&
+          currentWord.length === TestInput.input.current.length &&
           Config.stopOnError == "off")) &&
-      lastindex == TestWords.words.length - 1
+      lastIndex === TestWords.words.length - 1
     ) {
       TestInput.input.pushHistory();
       TestInput.corrected.pushHistory();
@@ -592,8 +670,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     const area = $("#customTextPopup .textarea")[0] as HTMLTextAreaElement;
 
-    const start = area.selectionStart;
-    const end = area.selectionEnd;
+    const start: number = area.selectionStart;
+    const end: number = area.selectionEnd;
 
     // set textarea value to: text before caret + tab + text after caret
     area.value =
@@ -614,14 +692,14 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     shouldInsertTabCharacter = true;
   }
 
-  const modalVisible =
+  const modalVisible: boolean =
     !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
 
   if (Config.quickRestart === "esc") {
     // dont do anything special
     if (modalVisible) return;
 
-    // dont do anything on login so we can tab/esc betweeen inputs
+    // dont do anything on login so we can tab/esc between inputs
     if (ActivePage.get() === "login") return;
 
     event.preventDefault();
@@ -686,14 +764,14 @@ $(document).keydown(async (event) => {
   if (ActivePage.get() == "loading") return event.preventDefault();
 
   //autofocus
-  const wordsFocused = $("#wordsInput").is(":focus");
-  const pageTestActive = ActivePage.get() === "test";
+  const wordsFocused: boolean = $("#wordsInput").is(":focus");
+  const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
 
-  const popupVisible = Misc.isAnyPopupVisible();
+  const popupVisible: boolean = Misc.isAnyPopupVisible();
 
-  const allowTyping =
+  const allowTyping: boolean =
     pageTestActive &&
     !commandLineVisible &&
     !leaderboardsVisible &&
@@ -715,7 +793,7 @@ $(document).keydown(async (event) => {
 
   //esc
   if (event.key === "Escape" && Config.quickRestart === "esc") {
-    const modalVisible =
+    const modalVisible: boolean =
       !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
 
     if (modalVisible) return;
@@ -811,11 +889,14 @@ $(document).keydown(async (event) => {
   //show dead keys
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     Sound.playClick();
-    const word = document.querySelector<HTMLElement>("#words .word.active");
-    const len = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
+    const word: HTMLElement | null = document.querySelector<HTMLElement>(
+      "#words .word.active"
+    );
+    const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
     // Check to see if the letter actually exists to toggle it as dead
-    const deadLetter = word?.querySelectorAll("letter")[len];
+    const deadLetter: Element | undefined =
+      word?.querySelectorAll("letter")[len];
     if (deadLetter) {
       deadLetter.classList.toggle("dead");
     }
@@ -827,7 +908,7 @@ $(document).keydown(async (event) => {
   }
 
   if (Config.funbox === "arrows") {
-    let char = event.key;
+    let char: string = event.key;
     if (["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(char)) {
       if (char === "ArrowLeft") char = "a";
       if (char === "ArrowRight") char = "d";
@@ -848,7 +929,7 @@ $(document).keydown(async (event) => {
       (event.altKey && window.navigator.platform.search("Linux") > -1)
     )
   ) {
-    const char = await LayoutEmulator.getCharFromEvent(event);
+    const char: string | null = await LayoutEmulator.getCharFromEvent(event);
     if (char !== null) {
       event.preventDefault();
       handleChar(char, TestInput.input.current.length);
@@ -859,6 +940,8 @@ $(document).keydown(async (event) => {
       TestUI.scrollTape();
     }
   }
+
+  isBackspace = event.key === "Backspace" || event.key === "delete";
 });
 
 $("#wordsInput").keyup((event) => {
@@ -868,9 +951,11 @@ $("#wordsInput").keyup((event) => {
   }
 
   if (TestUI.resultVisible) return;
-  const now = performance.now();
+  const now: number = performance.now();
   if (TestInput.keypressTimings.duration.current !== -1) {
-    const diff = Math.abs(TestInput.keypressTimings.duration.current - now);
+    const diff: number = Math.abs(
+      TestInput.keypressTimings.duration.current - now
+    );
     TestInput.pushKeypressDuration(diff);
   }
   TestInput.setKeypressDuration(now);
@@ -891,43 +976,91 @@ $("#wordsInput").on("input", (event) => {
   }
 
   const popupVisible = Misc.isAnyPopupVisible();
-
   if (popupVisible) return;
 
   TestInput.setKeypressNotAfk();
 
+  if (
+    (Config.layout == "default" || Config.layout == "korean") &&
+    (event.target as HTMLInputElement).value
+      .normalize()
+      .match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      )
+  ) {
+    TestInput.input.setKoreanStatus(true);
+  }
+
+  const containsKorean = TestInput.input.getKoreanStatus();
+
+  //Hangul.disassemble breaks down Korean characters into its components
+  //allowing it to be treated as normal latin characters
+  //Hangul.disassemble('한글') //['ㅎ','ㅏ','ㄴ','ㄱ','ㅡ','ㄹ']
+  //Hangul.disassemble('한글',true) //[['ㅎ','ㅏ','ㄴ'],['ㄱ','ㅡ','ㄹ']]
   const realInputValue = (event.target as HTMLInputElement).value.normalize();
-  const inputValue = realInputValue.slice(1);
+  const inputValue = containsKorean
+    ? Hangul.disassemble(realInputValue).join("").slice(1)
+    : realInputValue.slice(1);
+
+  const currTestInput = containsKorean
+    ? Hangul.disassemble(TestInput.input.current).join("")
+    : TestInput.input.current;
+
+  //checks to see if a korean word has compiled into two characters.
+  //inputs: ㄱ, 가, 갇, 가다
+  //what it actually reads: ㄱ, 가, 갇, , 가, 가다
+  //this skips this part (, , 가,)
+  if (containsKorean && !isBackspace) {
+    if (
+      isKoCompiling ||
+      (realInputValue.slice(1).length < TestInput.input.current.length &&
+        Hangul.disassemble(TestInput.input.current.slice(-1)).length > 1)
+    ) {
+      isKoCompiling = !isKoCompiling;
+      return;
+    }
+  }
 
   // input will be modified even with the preventDefault() in
   // beforeinput/keydown if it's part of a compose sequence. this undoes
   // the effects of that and takes the input out of compose mode.
   if (
     Config.layout !== "default" &&
-    inputValue.length >= TestInput.input.current.length
+    inputValue.length >= currTestInput.length
   ) {
-    setWordsInput(" " + TestInput.input.current);
+    setWordsInput(" " + currTestInput);
     return;
   }
 
-  if (realInputValue.length === 0 && TestInput.input.current.length === 0) {
+  if (realInputValue.length === 0 && currTestInput.length === 0) {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
-  } else if (inputValue.length < TestInput.input.current.length) {
-    TestInput.input.current = inputValue;
+  } else if (inputValue.length < currTestInput.length) {
+    if (!containsKorean) {
+      TestInput.input.current = inputValue;
+    } else {
+      const realInput = (event.target as HTMLInputElement).value
+        .normalize()
+        .slice(1);
+
+      TestInput.input.current = realInput;
+      koInputVisual.innerText = realInput.slice(-1);
+    }
+
     TestUI.updateWordElement();
     Caret.updatePosition();
     if (!CompositionState.getComposing()) {
-      Replay.addReplayEvent("setLetterIndex", TestInput.input.current.length);
+      Replay.addReplayEvent("setLetterIndex", currTestInput.length);
     }
-  } else if (inputValue !== TestInput.input.current) {
+  } else if (inputValue !== currTestInput) {
     let diffStart = 0;
-    while (inputValue[diffStart] === TestInput.input.current[diffStart]) {
+    while (inputValue[diffStart] === currTestInput[diffStart]) {
       diffStart++;
     }
 
     for (let i = diffStart; i < inputValue.length; i++) {
-      handleChar(inputValue[i], i);
+      // passing realInput to allow for correct Korean character compilation
+      handleChar(inputValue[i], i, realInputValue);
     }
   }
 
@@ -982,10 +1115,12 @@ $("#wordsInput").on("copy paste", (event) => {
 
 // Composing events
 $("#wordsInput").on("compositionstart", () => {
+  if (Config.layout !== "default") return;
   CompositionState.setComposing(true);
   CompositionState.setStartPos(TestInput.input.current.length);
 });
 
 $("#wordsInput").on("compositionend", () => {
+  if (Config.layout !== "default") return;
   CompositionState.setComposing(false);
 });

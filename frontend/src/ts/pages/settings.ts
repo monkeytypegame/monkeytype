@@ -425,23 +425,22 @@ export async function fillSettingsPage(): Promise<void> {
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
   layoutEl.append(`<option value='default'>off</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
-    layoutEl.append(
-      `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-    );
-  });
-  layoutEl.select2({
-    width: "100%",
-  });
-
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
   Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
+    if (layout.toString() !== "korean") {
+      layoutEl.append(
+        `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
+      );
+    }
     if (layout.toString() != "default") {
       keymapEl.append(
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
       );
     }
+  });
+  layoutEl.select2({
+    width: "100%",
   });
   keymapEl.select2({
     width: "100%",
@@ -533,6 +532,8 @@ export async function fillSettingsPage(): Promise<void> {
     Config.customBackground
   );
 
+  $(".pageSettings .section.fontSize input").val(Config.fontSize);
+
   $(".pageSettings .section.customLayoutfluid input").val(
     Config.customLayoutfluid.replace(/#/g, " ")
   );
@@ -561,7 +562,7 @@ export function hideAccountSection(): void {
 
 export function updateDiscordSection(): void {
   //no code and no discord
-  if (Auth.currentUser == null) {
+  if (Auth?.currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
     if (DB.getSnapshot() == null) return;
@@ -588,7 +589,7 @@ export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings .button").addClass("hidden");
   $(".pageSettings .section.googleAuthSettings .button").addClass("hidden");
 
-  const user = Auth.currentUser;
+  const user = Auth?.currentUser;
   if (!user) return;
 
   const passwordProvider = user.providerData.find(
@@ -639,7 +640,7 @@ function setActiveFunboxButton(): void {
 }
 
 function refreshTagsSettingsSection(): void {
-  if (Auth.currentUser !== null && DB.getSnapshot() !== null) {
+  if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot().tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
@@ -674,7 +675,7 @@ function refreshTagsSettingsSection(): void {
 }
 
 function refreshPresetsSettingsSection(): void {
-  if (Auth.currentUser !== null && DB.getSnapshot() !== null) {
+  if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
@@ -967,6 +968,32 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
     }
   }
 );
+
+$(".pageSettings .section.fontSize .inputAndButton .save").on("click", () => {
+  const didConfigSave = UpdateConfig.setFontSize(
+    parseFloat(
+      $(".pageSettings .section.fontSize .inputAndButton input").val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, 1);
+  }
+});
+
+$(".pageSettings .section.fontSize .inputAndButton input").keypress((e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setFontSize(
+      parseFloat(
+        $(
+          ".pageSettings .section.fontSize .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave === true) {
+      Notifications.add("Saved", 1, 1);
+    }
+  }
+});
 
 $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",

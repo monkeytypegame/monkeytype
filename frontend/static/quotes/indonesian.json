@@ -1154,7 +1154,7 @@
       "id": 192
     },
     {
-      "text": "Dari Sabang sampai Merauke, berjajar pulau-pulau. Sambung-menyambung menjadi satu, itulah Indonesia. Indonesia tanah airku, aku berjanji padamu. Menjunjung tanah airku, tanah airku indonesia.",
+      "text": "Dari Sabang sampai Merauke, berjajar pulau-pulau. Sambung-menyambung menjadi satu, itulah Indonesia. Indonesia tanah airku, aku berjanji padamu. Menjunjung tanah airku, tanah airku Indonesia.",
       "source": "Dari Sabang Sampai Merauke",
       "length": 191,
       "id": 193
@@ -1260,6 +1260,24 @@
       "source": "Wa Brontok, Hansip Sukrawetan Indramayu",
       "length": 209,
       "id": 210
+    },
+    {
+      "text": "Saya manusia biasa, makan nasi.",
+      "source": "Joko Widodo",
+      "length": 31,
+      "id": 211
+    },
+    {
+      "text": "Kok kamu tanya begitu, siapa yang suruh?",
+      "source": "Soeharto",
+      "length": 40,
+      "id": 212
+    },
+    {
+      "text": "Manusia memang bodoh. Tapi manusia juga makhluk yang bisa berubah.",
+      "source": "Hissats",
+      "length": 66,
+      "id": 213
     }
   ]
 }

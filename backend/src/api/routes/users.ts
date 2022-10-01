@@ -89,6 +89,12 @@ router.get(
 
 router.post(
   "/signup",
+  validateConfiguration({
+    criteria: (configuration) => {
+      return configuration.users.signUp;
+    },
+    invalidMessage: "Sign up is temporarily disabled",
+  }),
   authenticateRequest(),
   RateLimit.userSignup,
   validateRequest({
@@ -96,6 +102,7 @@ router.post(
       email: joi.string().email(),
       name: usernameValidation,
       uid: joi.string(),
+      captcha: joi.string().required(),
     },
   }),
   asyncHandler(UserController.createNewUser)
@@ -414,7 +421,7 @@ const requireProfilesEnabled = validateConfiguration({
 });
 
 router.get(
-  "/:uid/profile",
+  "/:uidOrName/profile",
   requireProfilesEnabled,
   authenticateRequest({
     isPublic: true,
@@ -423,7 +430,10 @@ router.get(
   withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({
     params: {
-      uid: joi.string().required(),
+      uidOrName: joi.string().required(),
+    },
+    query: {
+      isUid: joi.string().allow(""),
     },
   }),
   asyncHandler(UserController.getProfile)
@@ -468,6 +478,37 @@ router.patch(
     },
   }),
   asyncHandler(UserController.updateProfile)
+);
+
+const mailIdSchema = joi.array().items(joi.string().guid()).min(1).default([]);
+
+const requireInboxEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.users.inbox.enabled;
+  },
+  invalidMessage: "Your inbox is not available at this time.",
+});
+
+router.get(
+  "/inbox",
+  requireInboxEnabled,
+  authenticateRequest(),
+  RateLimit.userMailGet,
+  asyncHandler(UserController.getInbox)
+);
+
+router.patch(
+  "/inbox",
+  requireInboxEnabled,
+  authenticateRequest(),
+  RateLimit.userMailUpdate,
+  validateRequest({
+    body: {
+      mailIdsToDelete: mailIdSchema,
+      mailIdsToMarkRead: mailIdSchema,
+    },
+  }),
+  asyncHandler(UserController.updateInbox)
 );
 
 export default router;

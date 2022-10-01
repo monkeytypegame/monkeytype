@@ -1,3 +1,54 @@
+<div id="registerCaptchaPopupWrapper" class="popupWrapper hidden">
+  <div id="registerCaptchaPopup">
+    <div class="g-recaptcha"></div>
+  </div>
+</div>
+
+<div id="alertsPopupWrapper" class="popupWrapper hidden">
+  <div id="alertsPopup">
+    <div class="button mobileClose">
+      <i class="fas fa-times"></i>
+      Close
+    </div>
+    <div class="scrollWrapper">
+      <div class="accountAlerts">
+        <div class="title">
+          <div class="left">
+            <i class="fas fa-inbox"></i>
+            Inbox
+          </div>
+          <div class="right"></div>
+        </div>
+        <div class="button claimAll hidden">
+          <i class="fas fa-fw fa-gift"></i>
+          Claim all
+        </div>
+        <div class="button deleteAll hidden">
+          <i class="fas fa-fw fa-trash"></i>
+          Delete all
+        </div>
+        <div class="list"><div class="nothing">Nothing to show</div></div>
+      </div>
+      <div class="separator accountSeparator"></div>
+      <div class="psas">
+        <div class="title">
+          <i class="fas fa-bullhorn"></i>
+          Announcements
+        </div>
+        <div class="list"><div class="nothing">Nothing to show</div></div>
+      </div>
+      <div class="separator"></div>
+      <div class="notificationHistory">
+        <div class="title">
+          <i class="fas fa-comment-alt"></i>
+          Notifications
+        </div>
+        <div class="list"><div class="nothing">Nothing to show</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="simplePopupWrapper" class="popupWrapper hidden">
   <div id="simplePopup" popupId=""></div>
 </div>
@@ -23,9 +74,8 @@
       </div>
       <div class="buttons">
         <div class="button active acceptAll">Accept all</div>
-        <div class="button openSettings">
-          <i class="fas far fa-cog"></i>
-        </div>
+        <div class="button rejectAll">Reject all</div>
+        <div class="button openSettings">More options</div>
       </div>
     </div>
     <div class="settings hidden">
@@ -486,6 +536,7 @@
     <div class="title">Account name</div>
     <div class="text">You need to choose a username before continuing</div>
     <input type="text" placeholder="username" />
+    <div class="captcha"></div>
     <div class="button disabled">Sign up</div>
   </div>
 </div>
@@ -686,7 +737,7 @@
       <div class="subTitle">Next update in: --:--</div>
       <div class="textButton showYesterdayButton hidden">
         <i class="fas fa-calendar-day"></i>
-        Show Yesterday
+        <div class="text">Show yesterday</div>
       </div>
       <div class="buttons">
         <div class="buttonGroup timeRange">
@@ -854,19 +905,6 @@
       >
         <div class="icon"><i class="fas fa-fw fa-tshirt"></i></div>
         <div class="text">Buy Merch</div>
-      </a>
-      <a
-        class="button"
-        href="https://monkeytype.com/das"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <div class="icon"><i class="fas fa-fw fa-keyboard"></i></div>
-        <div class="text">
-          Buy
-          <br />
-          a DAS Keyboard
-        </div>
       </a>
     </div>
   </div>

@@ -5,7 +5,11 @@ import { verifyIdToken } from "../utils/auth";
 import { base64UrlDecode } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
-import { incrementAuth, recordAuthTime } from "../utils/prometheus";
+import {
+  incrementAuth,
+  recordAuthTime,
+  recordRequestCountry,
+} from "../utils/prometheus";
 import { performance } from "perf_hooks";
 
 interface RequestAuthenticationOptions {
@@ -85,6 +89,11 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
       req
     );
 
+    const country = req.headers["cf-ipcountry"] as string;
+    if (country) {
+      recordRequestCountry(country, req as MonkeyTypes.Request);
+    }
+
     next();
   };
 }
@@ -135,7 +144,7 @@ async function authenticateWithBearerToken(
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   try {
-    const decodedToken = await verifyIdToken(token);
+    const decodedToken = await verifyIdToken(token, options.requireFreshToken);
 
     if (options.requireFreshToken) {
       const now = Date.now();

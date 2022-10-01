@@ -27,7 +27,7 @@ export async function initSnapshot(): Promise<
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = defaultSnap;
   try {
-    if (Auth.currentUser == null) return false;
+    if (!Auth?.currentUser) return false;
     // if (ActivePage.get() == "loading") {
     //   LoadingPage.updateBar(22.5);
     // } else {
@@ -96,6 +96,9 @@ export async function initSnapshot(): Promise<
     snap.addedAt = userData.addedAt;
     snap.inventory = userData.inventory;
     snap.xp = userData.xp ?? 0;
+    snap.inboxUnreadSize = userData.inboxUnreadSize ?? 0;
+    snap.streak = userData?.streak?.length ?? 0;
+    snap.maxStreak = userData?.streak?.maxLength ?? 0;
 
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format
@@ -185,8 +188,8 @@ export async function initSnapshot(): Promise<
 }
 
 export async function getUserResults(): Promise<boolean> {
-  const user = Auth.currentUser;
-  if (user == null) return false;
+  const user = Auth?.currentUser;
+  if (!user) return false;
   if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {
     return true;
@@ -261,8 +264,8 @@ export async function editCustomTheme(
   themeId: string,
   newTheme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
-  const user = Auth.currentUser;
-  if (user === null) return false;
+  const user = Auth?.currentUser;
+  if (!user) return false;
   if (dbSnapshot === null) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
@@ -292,8 +295,8 @@ export async function editCustomTheme(
 }
 
 export async function deleteCustomTheme(themeId: string): Promise<boolean> {
-  const user = Auth.currentUser;
-  if (user === null) return false;
+  const user = Auth?.currentUser;
+  if (!user) return false;
   if (dbSnapshot === null) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
@@ -421,6 +424,65 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
 
   const retval: [number, number] =
     snapshot === null || (await getUserResults()) === null ? [0, 0] : cont();
+
+  return retval;
+}
+
+export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean
+): Promise<number> {
+  const snapshot = getSnapshot();
+
+  if (!snapshot) return 0;
+
+  function cont(): number {
+    const activeTagIds: string[] = [];
+    snapshot.tags?.forEach((tag) => {
+      if (tag.active === true) {
+        activeTagIds.push(tag._id);
+      }
+    });
+
+    let bestWpm = 0;
+
+    if (snapshot.results !== undefined) {
+      for (const result of snapshot.results) {
+        if (
+          result.mode === mode &&
+          result.punctuation === punctuation &&
+          result.language === language &&
+          result.difficulty === difficulty &&
+          (result.lazyMode === lazyMode ||
+            (result.lazyMode === undefined && lazyMode === false)) &&
+          (activeTagIds.length === 0 ||
+            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+        ) {
+          if (result.timestamp < Date.now() - 86400000) {
+            continue;
+          }
+
+          // Continue if the mode2 doesn't match and it's not a quote
+          if (result.mode2 !== mode2 && mode !== "quote") {
+            continue;
+          }
+
+          if (result.wpm > bestWpm) {
+            bestWpm = result.wpm;
+          }
+        }
+      }
+    }
+
+    return bestWpm;
+  }
+
+  const retval: number =
+    snapshot === null || (await getUserResults()) === null ? 0 : cont();
 
   return retval;
 }
@@ -759,7 +821,7 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
 }
 
 export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
-  if (Auth.currentUser !== null) {
+  if (Auth?.currentUser) {
     const response = await Ape.configs.save(config);
     if (response.status !== 200) {
       Notifications.add("Failed to save config: " + response.message, -1);
@@ -811,6 +873,28 @@ export function addXp(xp: number): void {
     snapshot.xp = 0;
   }
   snapshot.xp += xp;
+  setSnapshot(snapshot);
+}
+
+export function addBadge(badge: MonkeyTypes.Badge): void {
+  const snapshot = getSnapshot();
+  if (snapshot.inventory === undefined) {
+    snapshot.inventory = {
+      badges: [],
+    };
+  }
+  snapshot.inventory.badges.push(badge);
+  setSnapshot(snapshot);
+}
+
+export function setStreak(streak: number): void {
+  const snapshot = getSnapshot();
+  snapshot.streak = streak;
+
+  if (snapshot.streak > snapshot.maxStreak) {
+    snapshot.maxStreak = snapshot.streak;
+  }
+
   setSnapshot(snapshot);
 }
 

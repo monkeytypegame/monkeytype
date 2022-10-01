@@ -8,6 +8,7 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as AnalyticsController from "../controllers/analytics-controller";
+import { debounce } from "throttle-debounce";
 
 let isPreviewingTheme = false;
 export let randomTheme: string | null = null;
@@ -173,9 +174,16 @@ export function preview(
   isCustom: boolean,
   randomTheme = false
 ): void {
-  isPreviewingTheme = true;
-  apply(themeIdentifier, isCustom, !randomTheme);
+  debouncedPreview(themeIdentifier, isCustom, randomTheme);
 }
+
+const debouncedPreview = debounce(
+  100,
+  (themeIdenfitier, isCustom, randomTheme) => {
+    isPreviewingTheme = true;
+    apply(themeIdenfitier, isCustom, !randomTheme);
+  }
+);
 
 export function set(themeIdentifier: string, isCustom: boolean): void {
   apply(themeIdentifier, isCustom);
@@ -198,7 +206,6 @@ export function clearPreview(applyTheme = true): void {
 let themesList: string[] = [];
 
 async function changeThemeList(): Promise<void> {
-  if (!DB.getSnapshot()) return;
   const themes = await Misc.getThemesList();
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
@@ -214,7 +221,7 @@ async function changeThemeList(): Promise<void> {
     themesList = themes.map((t) => {
       return t.name;
     });
-  } else {
+  } else if (Config.randomTheme === "custom" && DB.getSnapshot()) {
     themesList = DB.getSnapshot().customThemes.map((ct) => ct._id);
   }
   Misc.shuffle(themesList);

@@ -3,6 +3,7 @@ import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 import * as Misc from "../utils/misc";
+import * as Hangul from "hangul-js";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
@@ -13,6 +14,9 @@ export function highlightKey(currentKey: string): void {
     }
 
     let highlightKey;
+    if (Config.language.startsWith("korean")) {
+      currentKey = Hangul.disassemble(currentKey)[0];
+    }
     if (currentKey == " ") {
       highlightKey = "#keymap .keySpace, #keymap .keySplitSpace";
     } else if (currentKey == '"') {
@@ -33,7 +37,7 @@ export function highlightKey(currentKey: string): void {
 
 export async function flashKey(key: string, correct: boolean): Promise<void> {
   if (key == undefined) return;
-
+  //console.log("key", key);
   if (key == " ") {
     key = "#keymap .keySpace, #keymap .keySplitSpace";
   } else if (key == '"') {
