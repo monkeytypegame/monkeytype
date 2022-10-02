@@ -87,7 +87,7 @@ export async function punctuateWord(
 
   const lastChar = Misc.getLastChar(previousWord);
 
-  const funbox = UpdateConfig.ActiveFunboxes.find((f) => f.punctuateWord);
+  const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.punctuateWord);
   if (funbox?.punctuateWord) return funbox.punctuateWord(word);
 
   if (
@@ -324,9 +324,8 @@ export function startTest(): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  if (Config.funbox.split("#").includes("memory")) {
-    Funbox.resetMemoryTimer();
-    $("#wordsWrapper").addClass("hidden");
+  for (const f of UpdateConfig.ActiveFunboxes()) {
+    if (f.start) f.start();
   }
 
   try {
@@ -542,30 +541,23 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      if (UpdateConfig.ActiveFunboxes.find((f) => f.noPunctuation)) {
+      if (UpdateConfig.ActiveFunboxes().find((f) => f.noPunctuation)) {
         UpdateConfig.setPunctuation(false, true);
       }
-      if (UpdateConfig.ActiveFunboxes.find((f) => f.noNumbers)) {
+      if (UpdateConfig.ActiveFunboxes().find((f) => f.noNumbers)) {
         UpdateConfig.setNumbers(false, true);
       }
 
-      if (
-        options.withSameWordset &&
-        (Config.funbox.split("#").includes("plus_one") ||
-          Config.funbox.split("#").includes("plus_two"))
-      ) {
-        const toPush = [];
-        if (Config.funbox.split("#").includes("plus_one")) {
-          toPush.push(TestWords.words.get(0));
-          toPush.push(TestWords.words.get(1));
+      if (options.withSameWordset) {
+        const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.toPushCount);
+        if (funbox?.toPushCount) {
+          const toPush = [];
+          for (let i = 0; i < funbox.toPushCount; i++) {
+            toPush.push(TestWords.words.get(i));
+          }
+          TestWords.words.reset();
+          toPush.forEach((word) => TestWords.words.push(word));
         }
-        if (Config.funbox.split("#").includes("plus_two")) {
-          toPush.push(TestWords.words.get(0));
-          toPush.push(TestWords.words.get(1));
-          toPush.push(TestWords.words.get(2));
-        }
-        TestWords.words.reset();
-        toPush.forEach((word) => TestWords.words.push(word));
       }
       if (!options.withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
@@ -617,11 +609,8 @@ export function restart(options = {} as RestartOptions): void {
       (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
       (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
-      if (Config.funbox.split("#").includes("memory")) {
-        Funbox.startMemoryTimer();
-        if (Config.keymapMode === "next") {
-          UpdateConfig.setKeymapMode("react");
-        }
+      for (const f of UpdateConfig.ActiveFunboxes()) {
+        if (f.restart) f.restart();
       }
 
       if (Config.showAverage !== "off") {
@@ -639,30 +628,6 @@ export function restart(options = {} as RestartOptions): void {
         `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
       );
       $(".pageTest #premidSecondsLeft").text(Config.time);
-
-      if (Config.funbox.split("#").includes("layoutfluid")) {
-        UpdateConfig.setLayout(
-          Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty",
-          true
-        );
-        UpdateConfig.setKeymapLayout(
-          Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty",
-          true
-        );
-        Keymap.highlightKey(
-          TestWords.words
-            .getCurrent()
-            .substring(
-              TestInput.input.current.length,
-              TestInput.input.current.length + 1
-            )
-            .toString()
-        );
-      }
 
       $("#result").addClass("hidden");
       $("#testModesNotice").removeClass("hidden").css({
@@ -696,9 +661,9 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 function applyFunboxesToWord(word: string, wordset?: Misc.Wordset): string {
-  const wordFunbox = UpdateConfig.ActiveFunboxes.find((f) => f.getWord);
+  const wordFunbox = UpdateConfig.ActiveFunboxes().find((f) => f.getWord);
   if (wordFunbox?.getWord) word = wordFunbox.getWord(wordset);
-  for (const f of UpdateConfig.ActiveFunboxes) {
+  for (const f of UpdateConfig.ActiveFunboxes()) {
     if (f.alterText) {
       word = f.alterText(word);
     }
@@ -907,14 +872,10 @@ export async function init(): Promise<void> {
   if (Config.mode === "words" && Config.words === 0) {
     wordsBound = 100;
   }
-  if (Config.funbox.split("#").includes("plus_one")) {
-    wordsBound = 2;
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-  }
-  if (Config.funbox.split("#").includes("plus_two")) {
-    wordsBound = 3;
+
+  const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.toPushCount);
+  if (funbox?.toPushCount) {
+    wordsBound = funbox.toPushCount;
     if (Config.mode === "words" && Config.words < wordsBound) {
       wordsBound = Config.words;
     }
@@ -932,7 +893,7 @@ export async function init(): Promise<void> {
     const wordset = Wordset.withWords(wordList);
     let wordCount = 0;
 
-    const sectionFunbox = UpdateConfig.ActiveFunboxes.find(
+    const sectionFunbox = UpdateConfig.ActiveFunboxes().find(
       (f) => f.pullSection
     );
     if (sectionFunbox?.pullSection) {
@@ -1137,8 +1098,8 @@ export async function init(): Promise<void> {
 
 export async function addWord(): Promise<void> {
   let bound = 100;
-  if (Config.funbox.split("#").includes("plus_one")) bound = 1;
-  if (Config.funbox.split("#").includes("plus_two")) bound = 2;
+  const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.toPushCount);
+  if (funbox?.toPushCount) bound = funbox.toPushCount - 1;
   if (
     TestWords.words.length - TestInput.input.history.length > bound ||
     (Config.mode === "words" &&
@@ -1158,7 +1119,9 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  const sectionFunbox = UpdateConfig.ActiveFunboxes.find((f) => f.pullSection);
+  const sectionFunbox = UpdateConfig.ActiveFunboxes().find(
+    (f) => f.pullSection
+  );
   if (sectionFunbox?.pullSection) {
     if (TestWords.words.length - TestWords.words.currentIndex < 20) {
       const section = await sectionFunbox.pullSection(Config.language);

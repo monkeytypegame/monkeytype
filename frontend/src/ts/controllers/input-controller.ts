@@ -119,7 +119,7 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (UpdateConfig.ActiveFunboxes.find((f) => f.nospace)) {
+  if (UpdateConfig.ActiveFunboxes().find((f) => f.nospace)) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -145,7 +145,7 @@ function handleSpace(): void {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const f of UpdateConfig.ActiveFunboxes) {
+  for (const f of UpdateConfig.ActiveFunboxes()) {
     if (f.handleSpace) {
       f.handleSpace();
     }
@@ -158,7 +158,7 @@ function handleSpace(): void {
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
-    UpdateConfig.ActiveFunboxes.find((f) => f.nospace) !== undefined;
+    UpdateConfig.ActiveFunboxes().find((f) => f.nospace) !== undefined;
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -338,7 +338,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     }
   }
 
-  const funbox = UpdateConfig.ActiveFunboxes.find((f) => f.isCharCorrect);
+  const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.isCharCorrect);
   if (funbox?.isCharCorrect) return funbox.isCharCorrect(char, originalChar);
 
   if (
@@ -385,12 +385,12 @@ function handleChar(
     return;
   }
 
-  for (const f of UpdateConfig.ActiveFunboxes) {
+  for (const f of UpdateConfig.ActiveFunboxes()) {
     if (f.handleChar) char = f.handleChar(char);
   }
 
   const nospace =
-    UpdateConfig.ActiveFunboxes.find((f) => f.nospace) !== undefined;
+    UpdateConfig.ActiveFunboxes().find((f) => f.nospace) !== undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -877,7 +877,9 @@ $(document).keydown(async (event) => {
       (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
 
-  const funbox = UpdateConfig.ActiveFunboxes.find((f) => f.preventDefaultEvent);
+  const funbox = UpdateConfig.ActiveFunboxes().find(
+    (f) => f.preventDefaultEvent
+  );
   if (funbox?.preventDefaultEvent) {
     if (await funbox.preventDefaultEvent(event)) {
       event.preventDefault();

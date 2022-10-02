@@ -211,6 +211,9 @@ declare namespace MonkeyTypes {
     noNumbers?: boolean;
     symmetricChars?: boolean;
     conflictsWithSymmetricChars?: boolean;
+    toPushCount?: number;
+    changesWordsVisibility?: boolean;
+    unspeakable?: boolean;
     getWord?: (wordset?: Misc.Wordset) => string;
     punctuateWord?: (word: string) => string;
     withWords?: (words: string[]) => Misc.Wordset;
@@ -230,6 +233,9 @@ declare namespace MonkeyTypes {
       event: JQuery.KeyDownEvent<Document, null, Document, Document>
     ) => Promise<void>;
     getResultContent?: () => string;
+    start?: () => void;
+    restart?: () => void;
+    getWordHtml?: (char: string, letterTag?: boolean) => string;
   }
 
   interface CustomText {

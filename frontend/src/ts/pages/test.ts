@@ -1,4 +1,3 @@
-import Config from "../config";
 import * as TestStats from "../test/test-stats";
 import * as TestUI from "../test/test-ui";
 import * as ManualRestart from "../test/manual-restart-tracker";
@@ -26,7 +25,7 @@ export const page = new Page(
     TestLogic.restart({
       noAnim: true,
     });
-    Funbox.activate(Config.funbox);
+    Funbox.activate();
   },
   async () => {
     TestUI.focusWords();
