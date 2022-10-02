@@ -48,7 +48,7 @@ function update(funboxes: MonkeyTypes.FunboxObject[]): void {
       alias: funbox.alias,
       configValue: funbox.name,
       exec: (): void => {
-        Funbox.toggleFunbox(funbox.name, funbox.type);
+        Funbox.toggleFunbox(funbox.name);
         TestLogic.restart();
 
         for (let i = 0; i < funboxes.length; i++) {

@@ -482,9 +482,7 @@ export async function fillSettingsPage(): Promise<void> {
         funboxEl.append(
           `<div class="funbox button" funbox='${funbox.name}' aria-label="${
             funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }" style="transform:scaleX(-1);">${funbox.name.replace(
+          }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
             /_/g,
             " "
           )}</div>`
@@ -493,9 +491,10 @@ export async function fillSettingsPage(): Promise<void> {
         funboxEl.append(
           `<div class="funbox button" funbox='${funbox.name}' aria-label="${
             funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }">${funbox.name.replace(/_/g, " ")}</div>`
+          }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
+            /_/g,
+            " "
+          )}</div>`
         );
       }
     });
@@ -906,8 +905,7 @@ $(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
 //funbox
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   const funbox = <string>$(e.currentTarget).attr("funbox");
-  const type = <MonkeyTypes.FunboxObjectType>$(e.currentTarget).attr("type");
-  Funbox.toggleFunbox(funbox, type);
+  Funbox.toggleFunbox(funbox);
   setActiveFunboxButton();
 });
 

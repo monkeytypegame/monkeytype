@@ -193,13 +193,8 @@ declare namespace MonkeyTypes {
 
   interface FunboxObject {
     name: string;
-    type: FunboxObjectType;
     info: string;
     alias?: string;
-  }
-
-  interface Funbox {
-    name: string;
     ignoresLanguage?: boolean;
     noLingatures?: boolean;
     noLetters?: boolean;

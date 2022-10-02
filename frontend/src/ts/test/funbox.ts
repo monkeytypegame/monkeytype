@@ -12,21 +12,24 @@ import * as WeakSpot from "./weak-spot";
 import { getPoem } from "./poetry";
 import { getSection } from "./wikipedia";
 
-export const Funboxes: MonkeyTypes.Funbox[] = [
+export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "nausea",
+    info: "I think I'm gonna be sick.",
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/nausea.css`);
     },
   },
   {
     name: "round_round_baby",
+    info: "...right round, like a record baby. Right, round round round.",
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/round_round_baby.css`);
     },
   },
   {
     name: "simon_says",
+    info: "Type what simon says.",
     changesWordsVisibility: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
@@ -44,12 +47,14 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "mirror",
+    info: "Everything is mirrored!",
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/mirror.css`);
     },
   },
   {
     name: "tts",
+    info: "Listen closely.",
     blockWordHighlight: true,
     changesWordsVisibility: true,
     applyCSS(): void {
@@ -72,6 +77,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "choo_choo",
+    info: "All the letters are spinning!",
     noLingatures: true,
     conflictsWithSymmetricChars: true,
     applyCSS(): void {
@@ -80,6 +86,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "arrows",
+    info: "Eurobeat Intensifies...",
     blockWordHighlight: true,
     ignoresLanguage: true,
     nospace: true,
@@ -179,6 +186,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "rAnDoMcAsE",
+    info: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
     changesCapitalisation: true,
     alterText(word: string): string {
       let randomcaseword = "";
@@ -194,6 +202,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "capitals",
+    info: "Capitalize Every Word.",
     changesCapitalisation: true,
     alterText(word: string): string {
       return Misc.capitalizeFirstLetterOfEachWord(word);
@@ -201,6 +210,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "layoutfluid",
+    info: "Switch between layouts specified below proportionately to the length of the test.",
     changesLayout: true,
     applyConfig(): void {
       UpdateConfig.setLayout(
@@ -284,6 +294,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "earthquake",
+    info: "Everybody get down! The words are shaking!",
     noLingatures: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
@@ -291,12 +302,14 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "space_balls",
+    info: "In a galaxy far far away.",
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
     },
   },
   {
     name: "gibberish",
+    info: "Anvbuefl dizzs eoos alsb?",
     ignoresLanguage: true,
     unspeakable: true,
     getWord(): string {
@@ -305,6 +318,8 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "58008",
+    alias: "numbers",
+    info: "A special mode for accountants.",
     noNumbers: true,
     ignoresLanguage: true,
     noLetters: true,
@@ -351,6 +366,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "ascii",
+    info: "Where was the ampersand again?. Only ASCII characters.",
     ignoresLanguage: true,
     noPunctuation: true,
     noNumbers: true,
@@ -362,6 +378,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "specials",
+    info: "!@#$%^&*. Only special characters.",
     ignoresLanguage: true,
     noPunctuation: true,
     noNumbers: true,
@@ -373,16 +390,19 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "plus_one",
+    info: "React quickly! Only one future word is visible.",
     toPushCount: 2,
     changesWordsVisibility: true,
   },
   {
     name: "plus_two",
+    info: "Only two future words are visible.",
     toPushCount: 3,
     changesWordsVisibility: true,
   },
   {
     name: "read_ahead_easy",
+    info: "Only the current word is invisible.",
     blockWordHighlight: true,
     changesWordsVisibility: true,
     applyCSS(): void {
@@ -401,6 +421,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "read_ahead",
+    info: "Current and the next word are invisible!",
     blockWordHighlight: true,
     changesWordsVisibility: true,
     applyCSS(): void {
@@ -419,6 +440,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "read_ahead_hard",
+    info: "Current and the next two words are invisible!",
     blockWordHighlight: true,
     changesWordsVisibility: true,
     applyCSS(): void {
@@ -437,6 +459,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "memory",
+    info: "Test your memory. Remember the words and type them blind.",
     mode: "words",
     changesWordsVisibility: true,
     applyConfig(): void {
@@ -475,6 +498,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "nospace",
+    info: "Whoneedsspacesanyway?",
     blockWordHighlight: true,
     nospace: true,
     applyConfig(): void {
@@ -491,6 +515,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "poetry",
+    info: "Practice typing some beautiful prose.",
     noPunctuation: true,
     noNumbers: true,
     async pullSection(): Promise<Misc.Section | false> {
@@ -499,6 +524,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "wikipedia",
+    info: "Practice typing wikipedia sections.",
     noPunctuation: true,
     noNumbers: true,
     async pullSection(lang?: string): Promise<Misc.Section | false> {
@@ -507,6 +533,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "weakspot",
+    info: "Focus on slow and mistyped letters.",
     getWord(wordset?: Misc.Wordset): string {
       if (wordset !== undefined) return WeakSpot.getWord(wordset);
       else return "";
@@ -514,6 +541,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "pseudolang",
+    info: "Nonsense words that look like the current language.",
     unspeakable: true,
     withWords(words: string[]): Misc.Wordset {
       return new Misc.PseudolangWordGenerator(words);
@@ -647,13 +675,9 @@ export function setFunbox(funbox: string): boolean {
   return true;
 }
 
-export function toggleFunbox(
-  funbox: string,
-  mode: MonkeyTypes.FunboxObjectType | null
-): boolean {
+export function toggleFunbox(funbox: string): boolean {
   if (
     funbox == "none" ||
-    mode === null ||
     (!checkFunbox(funbox) && !Config.funbox.split("#").includes(funbox))
   ) {
     setFunbox("none");

@@ -1885,8 +1885,8 @@ export const loadPromise = new Promise((v) => {
   loadDone = v;
 });
 
-export const ActiveFunboxes = (): MonkeyTypes.Funbox[] => {
-  const funboxes: MonkeyTypes.Funbox[] = [];
+export const ActiveFunboxes = (): MonkeyTypes.FunboxObject[] => {
+  const funboxes: MonkeyTypes.FunboxObject[] = [];
   for (const i of config.funbox.split("#")) {
     const f = Funboxes.find((f) => f.name === i);
     if (f) funboxes.push(f);
