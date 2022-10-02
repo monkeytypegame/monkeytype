@@ -214,6 +214,8 @@ declare namespace MonkeyTypes {
     toPushCount?: number;
     changesWordsVisibility?: boolean;
     unspeakable?: boolean;
+    changesLayout?: boolean;
+    ignoresLayout?: boolean;
     getWord?: (wordset?: Misc.Wordset) => string;
     punctuateWord?: (word: string) => string;
     withWords?: (words: string[]) => Misc.Wordset;

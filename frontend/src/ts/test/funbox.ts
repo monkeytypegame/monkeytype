@@ -201,6 +201,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
   },
   {
     name: "layoutfluid",
+    changesLayout: true,
     applyConfig(): void {
       UpdateConfig.setLayout(
         Config.customLayoutfluid
@@ -307,6 +308,7 @@ export const Funboxes: MonkeyTypes.Funbox[] = [
     noNumbers: true,
     ignoresLanguage: true,
     noLetters: true,
+    ignoresLayout: true,
     getWord(): string {
       let num = Misc.getNumbers(7);
       if (Config.language.startsWith("kurdish")) {
@@ -633,7 +635,9 @@ export function checkFunbox(funbox?: string): boolean {
     (checkingFunbox.filter((f) => f.toPushCount).length > 0 &&
       checkingFunbox.filter((f) => f.pullSection).length > 0) ||
     (checkingFunbox.find((f) => f.name == "tts") &&
-      checkingFunbox.filter((f) => f.unspeakable).length > 0)
+      checkingFunbox.filter((f) => f.unspeakable).length > 0) ||
+    (checkingFunbox.find((f) => f.changesLayout) &&
+      checkingFunbox.filter((f) => f.ignoresLayout).length > 0)
   );
 }
 
