@@ -99,6 +99,19 @@
       .savedText {
         display: grid;
         gap: 0.5rem;
+        grid-template-columns: 2fr 3rem;
+        .button .fas {
+          pointer-events: none;
+        }
+      }
+    }
+
+    .listLong {
+      display: grid;
+      gap: 1rem;
+      .savedText {
+        display: grid;
+        gap: 0.5rem;
         grid-template-columns: 2fr 1fr 3rem;
         .button .fas {
           pointer-events: none;
