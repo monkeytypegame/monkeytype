@@ -10,23 +10,30 @@ import {
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({
   max: 20000,
-  maxSize: 20000000, // 20MB
+  maxSize: 50000000, // 50MB
   sizeCalculation: (token, key): number =>
     JSON.stringify(token).length + key.length, //sizeInBytes
 });
 
 const TOKEN_CACHE_BUFFER = 1000 * 60 * 5; // 5 minutes
 
-export async function verifyIdToken(idToken: string): Promise<DecodedIdToken> {
+export async function verifyIdToken(
+  idToken: string,
+  noCache = false
+): Promise<DecodedIdToken> {
+  if (noCache) {
+    return await admin.auth().verifyIdToken(idToken, true);
+  }
+
   setTokenCacheLength(tokenCache.size);
   setTokenCacheSize(tokenCache.calculatedSize ?? 0);
 
   const cached = tokenCache.get(idToken);
 
   if (cached) {
-    const expirationDate = (cached.exp - TOKEN_CACHE_BUFFER) * 1000;
+    const expirationDate = cached.exp * 1000 - TOKEN_CACHE_BUFFER;
 
-    if (expirationDate > Date.now()) {
+    if (expirationDate < Date.now()) {
       recordTokenCacheAccess("hit_expired");
       tokenCache.delete(idToken);
     } else {

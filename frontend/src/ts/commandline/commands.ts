@@ -85,7 +85,7 @@ import LanguagesCommands, {
 } from "./lists/languages";
 import KeymapLayoutsCommands, {
   update as updateKeymapLayoutsCommands,
-} from "./lists/layouts";
+} from "./lists/keymap-layouts";
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
@@ -374,7 +374,7 @@ const lists = {
   enableAds: EnableAdsCommands[0].subgroup,
   customThemesList: CustomThemesListCommands[0].subgroup,
   themes: ThemesCommands[0].subgroup,
-  loadChallange: LoadChallengeCommands[0].subgroup,
+  loadChallenge: LoadChallengeCommands[0].subgroup,
   languages: LanguagesCommands[0].subgroup,
   difficulty: DifficultyCommands[0].subgroup,
   lazyMode: LazyModeCommands[0].subgroup,

@@ -38,6 +38,7 @@ import {
   getAdditionalUserInfo,
   sendPasswordResetEmail,
   User as UserType,
+  Unsubscribe,
 } from "firebase/auth";
 import { Auth } from "../firebase";
 import { defaultSnap } from "../constants/default-snapshot";
@@ -53,6 +54,10 @@ export const gmailProvider = new GoogleAuthProvider();
 let canCall = true;
 
 export function sendVerificationEmail(): void {
+  if (Auth === undefined) {
+    Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
   Loader.show();
   const user = Auth.currentUser;
   if (user === null) return;
@@ -274,47 +279,86 @@ export async function loadUser(user: UserType): Promise<void> {
   }
 }
 
-const authListener = Auth.onAuthStateChanged(async function (user) {
-  // await UpdateConfig.loadPromise;
-  const search = window.location.search;
-  const hash = window.location.hash;
-  console.log(`auth state changed, user ${user ? true : false}`);
-  if (user) {
-    $("#top .signInOut .icon").html(
-      `<i class="fas fa-fw fa-sign-out-alt"></i>`
-    );
-    await loadUser(user);
-  } else {
+let authListener: Unsubscribe;
+
+// eslint-disable-next-line no-constant-condition
+if (Auth) {
+  authListener = Auth?.onAuthStateChanged(async function (user) {
+    // await UpdateConfig.loadPromise;
+    const search = window.location.search;
+    const hash = window.location.hash;
+    console.log(`auth state changed, user ${user ? true : false}`);
+    if (user) {
+      $("#top .signInOut .icon").html(
+        `<i class="fas fa-fw fa-sign-out-alt"></i>`
+      );
+      await loadUser(user);
+    } else {
+      $("#top .signInOut .icon").html(
+        `<i class="fas fa-fw fa-sign-in-alt"></i>`
+      );
+      if (window.location.pathname == "/account") {
+        window.history.replaceState("", "", "/login");
+      }
+      PageTransition.set(false);
+    }
+    if (!user) {
+      navigate();
+    }
+
+    URLHandler.loadCustomThemeFromUrl(search);
+    URLHandler.loadTestSettingsFromUrl(search);
+    URLHandler.linkDiscord(hash);
+
+    if (/challenge_.+/g.test(window.location.pathname)) {
+      Notifications.add(
+        "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
+        0,
+        7
+      );
+      return;
+      // Notifications.add("Loading challenge", 0);
+      // let challengeName = window.location.pathname.split("_")[1];
+      // setTimeout(() => {
+      //   ChallengeController.setup(challengeName);
+      // }, 1000);
+    }
+  });
+} else {
+  $("#menu .signInOut").remove();
+
+  $("document").ready(async () => {
+    // await UpdateConfig.loadPromise;
+    const search = window.location.search;
+    const hash = window.location.hash;
     $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-in-alt"></i>`);
     if (window.location.pathname == "/account") {
       window.history.replaceState("", "", "/login");
     }
     PageTransition.set(false);
-  }
-  if (!user) {
     navigate();
-  }
 
-  URLHandler.loadCustomThemeFromUrl(search);
-  URLHandler.loadTestSettingsFromUrl(search);
-  URLHandler.linkDiscord(hash);
+    URLHandler.loadCustomThemeFromUrl(search);
+    URLHandler.loadTestSettingsFromUrl(search);
+    URLHandler.linkDiscord(hash);
 
-  if (/challenge_.+/g.test(window.location.pathname)) {
-    Notifications.add(
-      "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
-      0,
-      7
-    );
-    return;
-    // Notifications.add("Loading challenge", 0);
-    // let challengeName = window.location.pathname.split("_")[1];
-    // setTimeout(() => {
-    //   ChallengeController.setup(challengeName);
-    // }, 1000);
-  }
-});
+    if (/challenge_.+/g.test(window.location.pathname)) {
+      Notifications.add(
+        "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
+        0,
+        7
+      );
+      return;
+    }
+  });
+}
 
 export function signIn(): void {
+  if (Auth === undefined) {
+    Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+
   UpdateConfig.setChangedBeforeDb(false);
   authListener();
   LoginPage.showPreloader();
@@ -329,6 +373,7 @@ export function signIn(): void {
     : browserSessionPersistence;
 
   setPersistence(Auth, persistence).then(async function () {
+    if (Auth === undefined) return; //todo convert this function to async and remove this line
     return signInWithEmailAndPassword(Auth, email, password)
       .then(async (e) => {
         await loadUser(e.user);
@@ -353,6 +398,10 @@ export function signIn(): void {
 }
 
 export async function forgotPassword(email: any): Promise<void> {
+  if (Auth === undefined) {
+    Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
   if (!canCall) {
     return Notifications.add(
       "Please wait before requesting another password reset link",
@@ -378,6 +427,11 @@ export async function forgotPassword(email: any): Promise<void> {
 }
 
 export async function signInWithGoogle(): Promise<void> {
+  if (Auth === undefined) {
+    Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+
   UpdateConfig.setChangedBeforeDb(false);
   LoginPage.showPreloader();
   LoginPage.disableInputs();
@@ -418,6 +472,10 @@ export async function signInWithGoogle(): Promise<void> {
 }
 
 export async function addGoogleAuth(): Promise<void> {
+  if (Auth === undefined) {
+    Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
   Loader.show();
   if (Auth.currentUser === null) return;
   linkWithPopup(Auth.currentUser, gmailProvider)
@@ -439,6 +497,10 @@ export async function addPasswordAuth(
   email: string,
   password: string
 ): Promise<void> {
+  if (Auth === undefined) {
+    Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
   Loader.show();
   const user = Auth.currentUser;
   if (user === null) return;
@@ -471,6 +533,10 @@ export async function addPasswordAuth(
 }
 
 export function signOut(): void {
+  if (Auth === undefined) {
+    Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
   if (!Auth.currentUser) return;
   Auth.signOut()
     .then(function () {
@@ -493,6 +559,10 @@ export function signOut(): void {
 }
 
 async function signUp(): Promise<void> {
+  if (Auth === undefined) {
+    Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
   RegisterCaptchaPopup.show();
   const captcha = await RegisterCaptchaPopup.promise;
   if (!captcha) {
@@ -540,32 +610,24 @@ async function signUp(): Promise<void> {
     return;
   }
 
-  // Force user to use a capital letter, number, special character when setting up an account and changing password
-  if (password.length < 8) {
-    Notifications.add("Password must be at least 8 characters", 0, 3);
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    return;
-  }
-
-  const hasCapital = password.match(/[A-Z]/);
-  const hasNumber = password.match(/[\d]/);
-  const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
-  if (!hasCapital || !hasNumber || !hasSpecial) {
-    Notifications.add(
-      "Password must contain at least one capital letter, number, and special character",
-      0,
-      3
-    );
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    return;
-  }
-
   if (password !== passwordVerify) {
     Notifications.add("Passwords do not match", 0, 3);
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
+    return;
+  }
+
+  // Force user to use a capital letter, number, special character when setting up an account and changing password
+  if (
+    window.location.hostname !== "localhost" &&
+    !Misc.isPasswordStrong(password)
+  ) {
+    Notifications.add(
+      "Password must contain at least one capital letter, number, a special character and at least 8 characters long",
+      0,
+      4
+    );
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
@@ -620,8 +682,16 @@ async function signUp(): Promise<void> {
   } catch (e) {
     //make sure to do clean up here
     if (createdAuthUser) {
-      await Ape.users.delete();
-      await createdAuthUser.user.delete();
+      try {
+        await Ape.users.delete();
+      } catch (e) {
+        // account might already be deleted
+      }
+      try {
+        await createdAuthUser.user.delete();
+      } catch (e) {
+        // account might already be deleted
+      }
     }
     console.log(e);
     const message = Misc.createErrorMessage(e, "Failed to create account");
@@ -664,6 +734,10 @@ $(".pageLogin .login .button.signInWithGoogle").on("click", () => {
 // });
 
 $("#top .signInOut").on("click", () => {
+  if (Auth === undefined) {
+    Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
   if (Auth.currentUser) {
     signOut();
   } else {

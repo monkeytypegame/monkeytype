@@ -144,7 +144,7 @@ async function authenticateWithBearerToken(
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   try {
-    const decodedToken = await verifyIdToken(token);
+    const decodedToken = await verifyIdToken(token, options.requireFreshToken);
 
     if (options.requireFreshToken) {
       const now = Date.now();

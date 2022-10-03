@@ -59,7 +59,7 @@ export async function update(): Promise<void> {
 
   if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="loadChallenge"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
+      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
     );
   }
 
@@ -116,6 +116,8 @@ export async function update(): Promise<void> {
           ? "pb"
           : Config.paceCaret === "last"
           ? "last"
+          : Config.paceCaret === "daily"
+          ? "daily"
           : "custom"
       } pace${speed}</div>`
     );
@@ -130,7 +132,7 @@ export async function update(): Promise<void> {
       avgAcc = Math.round(avgAcc);
     }
 
-    if (Auth.currentUser && avgWPM > 0) {
+    if (Auth?.currentUser && avgWPM > 0) {
       const avgWPMText = ["wpm", "both"].includes(Config.showAverage)
         ? Config.alwaysShowCPM
           ? `${Math.round(avgWPM * 5)} cpm`

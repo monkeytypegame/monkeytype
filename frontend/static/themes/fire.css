@@ -11,7 +11,7 @@
   --colorful-error-extra-color: #434a8f;
 }
 
-@keyframes rgb {
+@keyframes fire {
   0% {
     color: #b31313;
   }
@@ -29,7 +29,7 @@
   }
 }
 
-@keyframes rgb-bg {
+@keyframes fire-bg {
   0% {
     background: #b31313;
   }
@@ -52,7 +52,7 @@
 .pageSettings .section .buttons .button.active,
 .pageSettings .section.languages .buttons .language.active,
 .pageAccount .group.filterButtons .buttons .button.active {
-  animation: rgb-bg 5s linear infinite;
+  animation: fire-bg 5s linear infinite;
 }
 
 #top.focus .button.discord::after,
@@ -67,7 +67,7 @@
 #top .config .group .buttons .textButton:hover,
 a:hover,
 #words.flipped .word {
-  animation: rgb 5s linear infinite;
+  animation: fire 5s linear infinite;
 }
 
 #words.flipped .word letter.correct {
@@ -75,5 +75,5 @@ a:hover,
 }
 
 #words:not(.flipped) .word letter.correct {
-  animation: rgb 5s linear infinite;
+  animation: fire 5s linear infinite;
 }
