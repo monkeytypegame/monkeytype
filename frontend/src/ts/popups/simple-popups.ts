@@ -1121,7 +1121,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   "Reset progress for custom text",
   [],
   "Are you sure?",
-  "Delete",
+  "Reset",
   (_thisPopup) => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
     Notifications.add("Custom text progress reset", 1);
