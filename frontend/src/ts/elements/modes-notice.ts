@@ -6,6 +6,7 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
+import * as CustomTextState from "../states/custom-text-name";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -55,6 +56,14 @@ export async function update(): Promise<void> {
         `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
       );
     }
+  }
+
+  const customTextName = CustomTextState.getCustomTextName();
+  const isLong = CustomTextState.isCustomTextLong();
+  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="textButton noInteraction"><i class="fas fa-book"></i>tracking progress for ${customTextName}</div>`
+    );
   }
 
   if (TestState.activeChallenge) {
