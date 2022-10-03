@@ -66,14 +66,27 @@ export function setCustomText(
   text: string | string[],
   long = false
 ): void {
-  const customText = long ? getCustomTextLongObject() : getCustomTextObject();
-
-  if (typeof text === "string") customText[name] = text;
-  else customText[name] = text.join(" ");
-
   if (long) {
+    const customText = getCustomTextLongObject();
+
+    if (typeof text === "string") {
+      customText[name]["text"] = text;
+    } else {
+      customText[name]["text"] = text.join(" ");
+    }
+
+    customText[name]["progress"] = 0;
+
     window.localStorage.setItem("customTextLong", JSON.stringify(customText));
   } else {
+    const customText = getCustomTextObject();
+
+    if (typeof text === "string") {
+      customText[name] = text;
+    } else {
+      customText[name] = text.join(" ");
+    }
+
     window.localStorage.setItem("customText", JSON.stringify(customText));
   }
 }
@@ -118,6 +131,10 @@ function getCustomTextLongObject(): CustomTextLongObject {
   return JSON.parse(window.localStorage.getItem("customTextLong") ?? "{}");
 }
 
-export function getCustomTextNames(): string[] {
-  return Object.keys(getCustomTextObject());
+export function getCustomTextNames(long = false): string[] {
+  if (long) {
+    return Object.keys(getCustomTextLongObject());
+  } else {
+    return Object.keys(getCustomTextObject());
+  }
 }
