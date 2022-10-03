@@ -10,7 +10,9 @@ export async function show(): Promise<void> {
 
 function hide(full = false): void {
   $("#saveCustomTextPopupWrapper").addClass("hidden");
-  if (!full) $("#customTextPopupWrapper").removeClass("hidden");
+  if (!full) {
+    $("#customTextPopupWrapper").removeClass("hidden").css("opacity", 1);
+  }
 }
 
 function save(): void {
