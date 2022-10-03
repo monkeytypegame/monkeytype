@@ -8,7 +8,6 @@ import * as Settings from "../pages/settings";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
@@ -1076,33 +1075,6 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
-list["saveCustomText"] = new SimplePopup(
-  "saveCustomText",
-  "text",
-  "Save custom text",
-  [
-    {
-      placeholder: "Name",
-      initVal: "",
-    },
-  ],
-  "",
-  "Save",
-  (_thisPopup, input) => {
-    const text = ($(`#customTextPopup textarea`).val() as string).normalize();
-    CustomText.setCustomText(input, text);
-    CustomText.setCustomTextProgress(input, 0);
-    Notifications.add("Custom text saved", 1);
-    CustomTextPopup.show();
-  },
-  () => {
-    //
-  },
-  () => {
-    //
-  }
-);
-
 list["deleteCustomText"] = new SimplePopup(
   "deleteCustomText",
   "text",
@@ -1261,10 +1233,6 @@ $(".pageSettings #resetAccount").on("click", () => {
 
 $("#apeKeysPopup .generateApeKey").on("click", () => {
   list["generateApeKey"].show();
-});
-
-$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
-  list["saveCustomText"].show();
 });
 
 $(document).on(

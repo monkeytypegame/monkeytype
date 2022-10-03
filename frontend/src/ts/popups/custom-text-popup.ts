@@ -8,6 +8,7 @@ import * as Misc from "../utils/misc";
 import * as WordFilterPopup from "./word-filter-popup";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts-popup";
+import * as SaveCustomTextPopup from "./save-custom-text-popup";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
@@ -217,4 +218,8 @@ $(document).on("keydown", (event) => {
     hide();
     event.preventDefault();
   }
+});
+
+$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
+  SaveCustomTextPopup.show();
 });
