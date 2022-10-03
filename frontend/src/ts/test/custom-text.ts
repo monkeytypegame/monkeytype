@@ -51,8 +51,6 @@ type CustomTextObject = Record<string, string>;
 
 type CustomTextLongObject = Record<string, { text: string; progress: number }>;
 
-// return customTextObj[name].split(" ").slice(progress);
-
 export function getCustomText(name: string, long = false): string[] {
   if (long) {
     return getCustomTextLongObject()[name]["text"].split(/ +/);
