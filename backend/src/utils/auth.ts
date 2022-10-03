@@ -17,7 +17,14 @@ const tokenCache = new LRUCache<string, DecodedIdToken>({
 
 const TOKEN_CACHE_BUFFER = 1000 * 60 * 5; // 5 minutes
 
-export async function verifyIdToken(idToken: string): Promise<DecodedIdToken> {
+export async function verifyIdToken(
+  idToken: string,
+  noCache = false
+): Promise<DecodedIdToken> {
+  if (noCache) {
+    return await admin.auth().verifyIdToken(idToken, true);
+  }
+
   setTokenCacheLength(tokenCache.size);
   setTokenCacheSize(tokenCache.calculatedSize ?? 0);
 

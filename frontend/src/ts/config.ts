@@ -377,14 +377,14 @@ export function setPaceCaret(
 ): boolean {
   if (
     !isConfigValueValid("pace caret", val, [
-      ["custom", "off", "average", "pb", "last"],
+      ["custom", "off", "average", "pb", "last", "daily"],
     ])
   ) {
     return false;
   }
 
   if (document.readyState === "complete") {
-    if (val == "pb" && Auth.currentUser === null) {
+    if (val == "pb" && !Auth?.currentUser) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
@@ -1372,7 +1372,7 @@ export function setRandomTheme(
   }
 
   if (val === "custom") {
-    if (Auth.currentUser === null) {
+    if (!Auth?.currentUser) {
       config.randomTheme = val;
       return false;
     }

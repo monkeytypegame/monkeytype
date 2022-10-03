@@ -72,7 +72,7 @@ const commands: MonkeyTypes.Command[] = [
           configValue: -3,
           configValueMode: "include",
           available: (): boolean => {
-            return !!Auth.currentUser;
+            return !!Auth?.currentUser;
           },
           exec: (): void => {
             UpdateConfig.setMode("quote");

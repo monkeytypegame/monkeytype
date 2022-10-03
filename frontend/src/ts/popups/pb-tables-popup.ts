@@ -53,7 +53,7 @@ function update(mode: MonkeyTypes.Mode): void {
       <tr>
         <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>
         <td>
-          ${pb.wpm}
+          ${pb.wpm.toFixed(2)}
           <br />
           <span class="sub">${pb.acc ? pb.acc + "%" : "-"}</span>
         </td>

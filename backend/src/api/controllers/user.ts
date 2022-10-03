@@ -12,6 +12,7 @@ import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
 import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
+import * as LeaderboardsDAL from "../../dal/leaderboards";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -25,7 +26,16 @@ export async function createNewUser(
   const { name, captcha } = req.body;
   const { email, uid } = req.ctx.decodedToken;
 
-  await verifyCaptcha(captcha);
+  try {
+    await verifyCaptcha(captcha);
+  } catch (e) {
+    try {
+      await admin.auth().deleteUser(uid);
+    } catch (e) {
+      // user might be deleted on the frontend
+    }
+    throw e;
+  }
 
   if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
     throw new MonkeyError(400, "Invalid domain");
@@ -494,10 +504,43 @@ export async function getProfile(
     return new MonkeyResponse("Profile retrived: banned user", baseProfile);
   }
 
+  const allTime15English = await LeaderboardsDAL.getRank(
+    "time",
+    "15",
+    "english",
+    user.uid
+  );
+
+  const allTime60English = await LeaderboardsDAL.getRank(
+    "time",
+    "60",
+    "english",
+    user.uid
+  );
+
+  const allTime15EnglishRank = allTime15English
+    ? allTime15English.rank
+    : undefined;
+  const allTime60EnglishRank = allTime60English
+    ? allTime60English.rank
+    : undefined;
+
+  const alltimelbs = {
+    time: {
+      "15": {
+        english: allTime15EnglishRank,
+      },
+      "60": {
+        english: allTime60EnglishRank,
+      },
+    },
+  };
+
   const profileData = {
     ...baseProfile,
     inventory,
     details: profileDetails,
+    allTimeLbs: alltimelbs,
   };
 
   return new MonkeyResponse("Profile retrieved", profileData);

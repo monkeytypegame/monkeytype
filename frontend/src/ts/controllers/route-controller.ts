@@ -12,6 +12,7 @@ import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
 import * as NavigateEvent from "../observables/navigate-event";
+import { Auth } from "../firebase";
 import * as Tribe from "../tribe/tribe";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
@@ -92,12 +93,20 @@ const routes: Route[] = [
   {
     path: "/login",
     load: (): void => {
+      if (!Auth) {
+        nav("/");
+        return;
+      }
       PageController.change(PageLogin.page);
     },
   },
   {
     path: "/account",
     load: (_params, options): void => {
+      if (!Auth) {
+        nav("/");
+        return;
+      }
       PageController.change(PageAccount.page, {
         data: options.data,
       });

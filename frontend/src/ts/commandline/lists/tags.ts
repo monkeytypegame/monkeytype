@@ -22,7 +22,7 @@ const commands: MonkeyTypes.Command[] = [
       update();
     },
     available: (): boolean => {
-      return !!Auth.currentUser;
+      return !!Auth?.currentUser;
     },
   },
 ];

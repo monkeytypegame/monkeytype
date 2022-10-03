@@ -1035,7 +1035,8 @@
       <h1>pace caret</h1>
       <div class="text">
         Displays a second caret that moves at constant speed. The 'average'
-        option averages the speed of last 10 results.
+        option averages the speed of last 10 results. The 'daily' option takes
+        the highest speed of the last 24 hours.
       </div>
       <div>
         <div class="inputAndButton">
@@ -1084,6 +1085,14 @@
             onclick="this.blur();"
           >
             last
+          </div>
+          <div
+            class="button"
+            paceCaret="daily"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            daily
           </div>
           <div
             class="button"

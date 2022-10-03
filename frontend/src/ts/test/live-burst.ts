@@ -42,7 +42,7 @@ export function show(): void {
 export function hide(): void {
   $("#liveBurst").animate(
     {
-      opacity: Config.timerOpacity,
+      opacity: 0,
     },
     125,
     () => {
@@ -51,7 +51,7 @@ export function hide(): void {
   );
   $("#miniTimerAndLiveWpm .burst").animate(
     {
-      opacity: Config.timerOpacity,
+      opacity: 0,
     },
     125,
     () => {

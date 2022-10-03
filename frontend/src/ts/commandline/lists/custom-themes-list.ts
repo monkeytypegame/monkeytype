@@ -17,13 +17,13 @@ const commands: MonkeyTypes.Command[] = [
     subgroup,
     beforeSubgroup: (): void => update(),
     available: (): boolean => {
-      return Auth.currentUser !== null;
+      return !!Auth?.currentUser;
     },
   },
 ];
 
 export function update(): void {
-  if (Auth.currentUser === null) {
+  if (!Auth?.currentUser) {
     return;
   }
 

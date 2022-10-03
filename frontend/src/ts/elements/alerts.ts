@@ -110,7 +110,7 @@ export async function show(): Promise<void> {
       "easeOutCubic"
     );
 
-    if (Auth.currentUser) {
+    if (Auth?.currentUser) {
       $("#alertsPopup .accountAlerts").removeClass("hidden");
       $("#alertsPopup .separator.accountSeparator").removeClass("hidden");
       $("#alertsPopup .accountAlerts .list").html(`
@@ -134,7 +134,7 @@ export async function show(): Promise<void> {
         },
         100,
         () => {
-          if (Auth.currentUser) {
+          if (Auth?.currentUser) {
             getAccountAlerts();
           }
         }
@@ -352,7 +352,7 @@ function updateClaimDeleteAllButton(): void {
   if (accountAlerts.length > 0) {
     let rewardsCount = 0;
     for (const ie of accountAlerts) {
-      if (ie.read === false) {
+      if (ie.read === false && !mailToMarkRead.includes(ie.id)) {
         rewardsCount += ie.rewards.length;
       }
     }
@@ -363,17 +363,24 @@ function updateClaimDeleteAllButton(): void {
       deleteAllButton.removeClass("hidden");
     }
   }
+  if (mailToDelete.length === accountAlerts.length) {
+    deleteAllButton.addClass("hidden");
+  }
 }
 
 $("#alertsPopup .accountAlerts").on("click", ".claimAll", () => {
   for (const ie of accountAlerts) {
-    markReadAlert(ie.id);
+    if (ie.read === false && !mailToMarkRead.includes(ie.id)) {
+      markReadAlert(ie.id);
+    }
   }
 });
 
 $("#alertsPopup .accountAlerts").on("click", ".deleteAll", () => {
   for (const ie of accountAlerts) {
-    deleteAlert(ie.id);
+    if (!mailToDelete.includes(ie.id)) {
+      deleteAlert(ie.id);
+    }
   }
 });
 
