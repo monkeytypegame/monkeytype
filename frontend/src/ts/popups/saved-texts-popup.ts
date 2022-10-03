@@ -45,7 +45,14 @@ export async function show(): Promise<void> {
 
 function hide(full = false): void {
   $("#savedTextsPopupWrapper").addClass("hidden");
-  if (!full) $("#customTextPopupWrapper").removeClass("hidden");
+  if (!full) {
+    if (CustomTextState.isCustomTextLong() === true) {
+      $(`#customTextPopup .longCustomTextWarning`).removeClass("hidden");
+    } else {
+      $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
+    }
+    $("#customTextPopupWrapper").removeClass("hidden");
+  }
 }
 
 function applySaved(name: string, long: boolean): void {
@@ -89,7 +96,7 @@ $(document).on(
 $(document).on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
-  (e) => {
+  () => {
     hide(true);
   }
 );

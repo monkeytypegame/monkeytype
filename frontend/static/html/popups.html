@@ -438,7 +438,16 @@
       <div class="title">saved texts</div>
       <div class="buttons"></div>
     </div>
-    <textarea class="textarea" placeholder="Custom text"></textarea>
+    <div style="position: relative">
+      <div class="longCustomTextWarning">
+        <div class="textAndButton">
+          A long custom text is currently loaded. Editing the text will disable
+          progress tracking.
+          <div class="button">Got it</div>
+        </div>
+      </div>
+      <textarea class="textarea" placeholder="Custom text"></textarea>
+    </div>
     <div class="inputs">
       <label class="checkbox">
         <input type="checkbox" />

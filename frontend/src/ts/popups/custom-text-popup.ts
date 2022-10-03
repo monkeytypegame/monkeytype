@@ -13,8 +13,17 @@ import * as SaveCustomTextPopup from "./save-custom-text-popup";
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
 
+function updateLongTextWarning(): void {
+  if (CustomTextState.isCustomTextLong() === true) {
+    $(`${popup} .longCustomTextWarning`).removeClass("hidden");
+  } else {
+    $(`${popup} .longCustomTextWarning`).addClass("hidden");
+  }
+}
+
 export function show(): void {
   if ($(wrapper).hasClass("hidden")) {
+    updateLongTextWarning();
     if ($(`${popup} .checkbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
     } else {
@@ -38,7 +47,9 @@ export function show(): void {
       });
   }
   setTimeout(() => {
-    $(`${popup} textarea`).trigger("focus");
+    if (!CustomTextState.isCustomTextLong()) {
+      $(`${popup} textarea`).trigger("focus");
+    }
   }, 150);
 }
 
@@ -101,6 +112,10 @@ $(`${popup} .inputs .checkbox input`).on("change", () => {
 });
 
 $(`${popup} textarea`).on("keypress", (e) => {
+  if (!$(`${popup} .longCustomTextWarning`).hasClass("hidden")) {
+    e.preventDefault();
+    return;
+  }
   if (e.code === "Enter" && e.ctrlKey) {
     $(`${popup} .button.apply`).trigger("click");
   }
@@ -222,4 +237,8 @@ $(document).on("keydown", (event) => {
 
 $(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
   SaveCustomTextPopup.show();
+});
+
+$(`#customTextPopup .longCustomTextWarning .button`).on("click", () => {
+  $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
 });

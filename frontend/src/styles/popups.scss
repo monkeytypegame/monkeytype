@@ -21,6 +21,25 @@
     gap: 1rem;
     width: 60vw;
 
+    .longCustomTextWarning {
+      background: rgba(0, 0, 0, 0.9);
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: grid;
+      place-items: center center;
+      border-radius: var(--roundness);
+      .textAndButton {
+        width: 80%;
+        max-width: 20rem;
+        text-align: center;
+        display: grid;
+        gap: 1rem;
+      }
+    }
+
     .buttonsTop {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
