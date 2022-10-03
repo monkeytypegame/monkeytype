@@ -1615,7 +1615,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
         CustomText.getCustomTextLongProgress(customTextName) +
         TestInput.input.getHistory().length;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
-      Notifications.add("Long custom text progress saved", 1);
+      Notifications.add("Long custom text progress saved", 1, 5);
 
       let newText = CustomText.getCustomText(customTextName, true);
       newText = newText.slice(newProgress);
@@ -1624,7 +1624,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       // They finished the test
       CustomText.setCustomTextLongProgress(customTextName, 0);
       CustomText.setText(CustomText.getCustomText(customTextName, true));
-      Notifications.add("Long custom text completed", 1);
+      Notifications.add("Long custom text completed", 1, 5);
     }
   }
 
