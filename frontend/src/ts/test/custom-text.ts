@@ -69,13 +69,16 @@ export function setCustomText(
   if (long) {
     const customText = getCustomTextLongObject();
 
+    customText[name] = {
+      text: "",
+      progress: 0,
+    };
+
     if (typeof text === "string") {
       customText[name]["text"] = text;
     } else {
       customText[name]["text"] = text.join(" ");
     }
-
-    customText[name]["progress"] = 0;
 
     window.localStorage.setItem("customTextLong", JSON.stringify(customText));
   } else {
