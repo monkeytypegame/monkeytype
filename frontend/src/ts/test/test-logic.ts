@@ -1606,21 +1606,21 @@ export async function finish(difficultyFailed = false): Promise<void> {
   // test is valid
 
   const customTextName = CustomTextState.getCustomTextName();
-  if (Config.mode === "custom" && customTextName !== "") {
+  const isLong = CustomTextState.isCustomTextLong();
+  if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (TestInput.bailout) {
       // They bailed out
       const newProgress =
-        CustomText.getCustomTextProgress(customTextName) +
+        CustomText.getCustomTextLongProgress(customTextName) +
         TestInput.input.getHistory().length;
-      CustomText.setCustomTextProgress(customTextName, newProgress);
+      CustomText.setCustomTextLongProgress(customTextName, newProgress);
 
-      const newText = CustomText.getCustomText(customTextName, newProgress);
-      CustomText.setText(newText);
+      CustomText.setCustomTextLongProgress(customTextName, newProgress);
     } else {
       // They finished the test
-      CustomText.setCustomTextProgress(customTextName, 0);
-      CustomText.setText(CustomText.getCustomText(customTextName));
+      CustomText.setCustomTextLongProgress(customTextName, 0);
+      CustomText.setText(CustomText.getCustomText(customTextName, true));
     }
   }
 
