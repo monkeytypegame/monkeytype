@@ -119,7 +119,13 @@ $(`${popup} textarea`).on("keypress", (e) => {
   if (e.code === "Enter" && e.ctrlKey) {
     $(`${popup} .button.apply`).trigger("click");
   }
-  CustomTextState.setCustomTextName("", undefined);
+  if (
+    CustomTextState.isCustomTextLong() &&
+    CustomTextState.getCustomTextName() !== ""
+  ) {
+    CustomTextState.setCustomTextName("", undefined);
+    Notifications.add("Disabled long custom text progress tracking", 0, 5);
+  }
 });
 
 $(`${popup} .randomInputFields .wordcount input`).on("keypress", () => {
