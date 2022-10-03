@@ -1,5 +1,5 @@
 import * as CustomText from "../test/custom-text";
-import * as CustomTextState from "../states/custom-text";
+import * as CustomTextState from "../states/custom-text-name";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
@@ -104,7 +104,7 @@ $(`${popup} textarea`).on("keypress", (e) => {
   if (e.code === "Enter" && e.ctrlKey) {
     $(`${popup} .button.apply`).trigger("click");
   }
-  CustomTextState.setCustomTextName("");
+  CustomTextState.setCustomTextName("", undefined);
 });
 
 $(`${popup} .randomInputFields .wordcount input`).on("keypress", () => {

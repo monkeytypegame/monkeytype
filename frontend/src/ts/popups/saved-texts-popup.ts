@@ -1,5 +1,5 @@
 import * as CustomText from "../test/custom-text";
-import * as CustomTextState from "../states/custom-text";
+import * as CustomTextState from "../states/custom-text-name";
 
 export async function show(): Promise<void> {
   const names = CustomText.getCustomTextNames();
@@ -49,7 +49,10 @@ function hide(full = false): void {
 }
 
 function applySaved(name: string, long: boolean): void {
-  const text = CustomText.getCustomText(name, long);
+  let text = CustomText.getCustomText(name, long);
+  if (long) {
+    text = text.slice(CustomText.getCustomTextLongProgress(name));
+  }
   $(`#customTextPopupWrapper textarea`).val(text.join(CustomText.delimiter));
 }
 
@@ -58,7 +61,7 @@ $(document).on(
   `#savedTextsPopupWrapper .list .savedText .button.name`,
   (e) => {
     const name = $(e.target).text();
-    CustomTextState.setCustomTextName(name);
+    CustomTextState.setCustomTextName(name, false);
     applySaved(name, false);
     hide();
   }
@@ -77,7 +80,7 @@ $(document).on(
   `#savedTextsPopupWrapper .listLong .savedText .button.name`,
   (e) => {
     const name = $(e.target).text();
-    CustomTextState.setCustomTextName(name);
+    CustomTextState.setCustomTextName(name, true);
     applySaved(name, true);
     hide();
   }

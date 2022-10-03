@@ -1,5 +1,6 @@
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
+import * as CustomTextState from "../states/custom-text-name";
 
 export async function show(): Promise<void> {
   $("#saveCustomTextPopupWrapper").removeClass("hidden");
@@ -21,6 +22,7 @@ function save(): void {
   const checkbox = $("#saveCustomTextPopupWrapper .isLongText").prop("checked");
 
   CustomText.setCustomText(name, text, checkbox);
+  CustomTextState.setCustomTextName(name, checkbox);
   Notifications.add("Custom text saved", 1);
 }
 
