@@ -11,9 +11,6 @@ export async function show(): Promise<void> {
     for (const name of names) {
       list += `<div class="savedText">
       <div class="button name">${name}</div>
-      <div class="button ${
-        CustomText.getCustomTextProgress(name) <= 0 ? "disabled" : ""
-      } continue">continue</div>
       <div class="button delete">
       <i class="fas fa-fw fa-trash"></i>
       </div>
@@ -21,6 +18,27 @@ export async function show(): Promise<void> {
     }
   }
   listEl.html(list);
+
+  const longNames = CustomText.getCustomTextNames(true);
+  const longListEl = $(`#savedTextsPopup .listLong`).empty();
+  let longList = "";
+  if (longNames.length === 0) {
+    longList += "<div>No saved long custom texts found</div>";
+  } else {
+    for (const name of longNames) {
+      longList += `<div class="savedText">
+      <div class="button name">${name}</div>
+      <div class="button ${
+        CustomText.getCustomTextLongProgress(name) <= 0 ? "disabled" : ""
+      } resetProgress">reset</div>
+      <div class="button delete">
+      <i class="fas fa-fw fa-trash"></i>
+      </div>
+      </div>`;
+    }
+  }
+  longListEl.html(longList);
+
   $("#savedTextsPopupWrapper").removeClass("hidden");
   $("#customTextPopupWrapper").addClass("hidden");
 }
@@ -30,11 +48,8 @@ function hide(full = false): void {
   if (!full) $("#customTextPopupWrapper").removeClass("hidden");
 }
 
-function applySaved(name: string, progress = false): void {
-  const text = CustomText.getCustomText(
-    name,
-    progress ? CustomText.getCustomTextProgress(name) : 0
-  );
+function applySaved(name: string, long: boolean): void {
+  const text = CustomText.getCustomText(name, long);
   $(`#customTextPopupWrapper textarea`).val(text.join(CustomText.delimiter));
 }
 
@@ -44,17 +59,24 @@ $(document).on(
   (e) => {
     const name = $(e.target).text();
     CustomTextState.setCustomTextName(name);
-    CustomText.setCustomTextProgress(name, 0);
-    applySaved(name);
+    applySaved(name, false);
     hide();
   }
 );
 
 $(document).on(
   "click",
-  `#savedTextsPopupWrapper .list .savedText .button.continue`,
+  `#savedTextsPopupWrapper .list .savedText .button.delete`,
+  () => {
+    hide(true);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.name`,
   (e) => {
-    const name = $(e.target).siblings(`.button.name`).text();
+    const name = $(e.target).text();
     CustomTextState.setCustomTextName(name);
     applySaved(name, true);
     hide();
@@ -63,7 +85,15 @@ $(document).on(
 
 $(document).on(
   "click",
-  `#savedTextsPopupWrapper .list .savedText .button.delete`,
+  `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
+  (e) => {
+    hide(true);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
   () => {
     hide(true);
   }

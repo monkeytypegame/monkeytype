@@ -1095,6 +1095,46 @@ list["deleteCustomText"] = new SimplePopup(
   }
 );
 
+list["deleteCustomTextLong"] = new SimplePopup(
+  "deleteCustomTextLong",
+  "text",
+  "Delete custom text",
+  [],
+  "Are you sure?",
+  "Delete",
+  (_thisPopup) => {
+    CustomText.deleteCustomText(_thisPopup.parameters[0], true);
+    Notifications.add("Custom text deleted", 1);
+    SavedTextsPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+list["resetProgressCustomTextLong"] = new SimplePopup(
+  "resetProgressCustomTextLong",
+  "text",
+  "Reset progress for custom text",
+  [],
+  "Are you sure?",
+  "Delete",
+  (_thisPopup) => {
+    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
+    Notifications.add("Custom text progress reset", 1);
+    SavedTextsPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
 list["updateCustomTheme"] = new SimplePopup(
   "updateCustomTheme",
   "text",
@@ -1261,6 +1301,24 @@ $(document).on(
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
     list["deleteCustomText"].show([name]);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["deleteCustomTextLong"].show([name]);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["resetProgressCustomTextLong"].show([name]);
   }
 );
 
