@@ -18,10 +18,9 @@ function hide(full = false): void {
 function save(): void {
   const name = $("#saveCustomTextPopupWrapper .textName").val() as string;
   const text = ($(`#customTextPopup textarea`).val() as string).normalize();
-  // const _checkbox = $("#saveCustomTextPopupWrapper .isLongText").prop("checked");
+  const checkbox = $("#saveCustomTextPopupWrapper .isLongText").prop("checked");
 
-  CustomText.setCustomText(name, text);
-  CustomText.setCustomTextProgress(name, 0);
+  CustomText.setCustomText(name, text, checkbox);
   Notifications.add("Custom text saved", 1);
 }
 

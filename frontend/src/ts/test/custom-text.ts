@@ -49,48 +49,63 @@ export function setDelimiter(val: string): void {
 
 type CustomTextObject = Record<string, string>;
 
-export function getCustomText(name: string, progress = 0): string[] {
-  const customTextObj = getCustomTextObject();
+type CustomTextLongObject = Record<string, { text: string; progress: number }>;
 
-  if (progress >= customTextObj[name].length) {
-    console.error("Custom text progress is greater than text length");
+// return customTextObj[name].split(" ").slice(progress);
+
+export function getCustomText(name: string, long = false): string[] {
+  if (long) {
+    return getCustomTextLongObject()[name]["text"].split(/ +/);
   } else {
-    return customTextObj[name].split(" ").slice(progress);
+    return getCustomTextObject()[name].split(/ +/);
   }
-
-  return customTextObj[name].split(/ +/);
 }
 
-export function setCustomText(name: string, text: string | string[]): void {
-  const customText = getCustomTextObject();
+export function setCustomText(
+  name: string,
+  text: string | string[],
+  long = false
+): void {
+  const customText = long ? getCustomTextLongObject() : getCustomTextObject();
 
   if (typeof text === "string") customText[name] = text;
   else customText[name] = text.join(" ");
 
-  window.localStorage.setItem("customText", JSON.stringify(customText));
+  if (long) {
+    window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+  } else {
+    window.localStorage.setItem("customText", JSON.stringify(customText));
+  }
 }
 
-export function deleteCustomText(name: string): void {
-  const customText = getCustomTextObject();
+export function deleteCustomText(name: string, long = false): void {
+  const customText = long ? getCustomTextLongObject() : getCustomTextObject();
 
   if (customText[name]) delete customText[name];
 
-  window.localStorage.setItem("customText", JSON.stringify(customText));
+  if (long) {
+    window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+  } else {
+    window.localStorage.setItem("customText", JSON.stringify(customText));
+  }
 }
 
-export function getCustomTextProgress(name: string): number {
-  const customTextProgress = getCustomTextProgressObject();
+export function getCustomTextLongProgress(name: string): number {
+  const customText = getCustomTextLongObject();
 
-  return customTextProgress[name] ?? 0;
+  return customText[name]["progress"] ?? 0;
 }
 
-export function setCustomTextProgress(name: string, progress: number): void {
-  const customTextProgress = getCustomTextProgressObject();
+export function setCustomTextLongProgress(
+  name: string,
+  progress: number
+): void {
+  const customTextProgress = getCustomTextLongObject();
 
-  customTextProgress[name] = progress;
+  customTextProgress[name]["progress"] = progress;
 
   window.localStorage.setItem(
-    "customTextProgress",
+    "customTextLong",
     JSON.stringify(customTextProgress)
   );
 }
@@ -99,12 +114,8 @@ function getCustomTextObject(): CustomTextObject {
   return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
 }
 
-export function getCustomTextProgressObject(): Record<string, number> {
-  return JSON.parse(window.localStorage.getItem("customTextProgress") ?? "{}");
-}
-
-export function setCustomTextProgressObject(obj: Record<string, number>): void {
-  window.localStorage.setItem("customTextProgress", JSON.stringify(obj));
+function getCustomTextLongObject(): CustomTextLongObject {
+  return JSON.parse(window.localStorage.getItem("customTextLong") ?? "{}");
 }
 
 export function getCustomTextNames(): string[] {
