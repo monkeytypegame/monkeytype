@@ -2,7 +2,7 @@
   "name": "ukrainain_common_endings",
   "leftToRight": true,
   "noLazyMode": true,
-  "ligatures": true,
+  "ligatures": false,
   "words": [
     "я",
     "ся",
