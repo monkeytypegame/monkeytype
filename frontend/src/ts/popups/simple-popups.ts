@@ -8,7 +8,6 @@ import * as Settings from "../pages/settings";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
@@ -1076,32 +1075,6 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
-list["saveCustomText"] = new SimplePopup(
-  "saveCustomText",
-  "text",
-  "Save custom text",
-  [
-    {
-      placeholder: "Name",
-      initVal: "",
-    },
-  ],
-  "",
-  "Save",
-  (_thisPopup, input) => {
-    const text = ($(`#customTextPopup textarea`).val() as string).normalize();
-    CustomText.setCustomText(input, text);
-    Notifications.add("Custom text saved", 1);
-    CustomTextPopup.show();
-  },
-  () => {
-    //
-  },
-  () => {
-    //
-  }
-);
-
 list["deleteCustomText"] = new SimplePopup(
   "deleteCustomText",
   "text",
@@ -1116,6 +1089,49 @@ list["deleteCustomText"] = new SimplePopup(
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+list["deleteCustomTextLong"] = new SimplePopup(
+  "deleteCustomTextLong",
+  "text",
+  "Delete custom text",
+  [],
+  "Are you sure?",
+  "Delete",
+  (_thisPopup) => {
+    CustomText.deleteCustomText(_thisPopup.parameters[0], true);
+    Notifications.add("Custom text deleted", 1);
+    SavedTextsPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+list["resetProgressCustomTextLong"] = new SimplePopup(
+  "resetProgressCustomTextLong",
+  "text",
+  "Reset progress for custom text",
+  [],
+  "Are you sure?",
+  "Reset",
+  (_thisPopup) => {
+    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
+    Notifications.add("Custom text progress reset", 1);
+    SavedTextsPopup.show();
+    $(`#customTextPopupWrapper textarea`).val(
+      CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
+    );
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
   },
   () => {
     //
@@ -1262,10 +1278,6 @@ $("#apeKeysPopup .generateApeKey").on("click", () => {
   list["generateApeKey"].show();
 });
 
-$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
-  list["saveCustomText"].show();
-});
-
 $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme .delButton",
@@ -1292,6 +1304,24 @@ $(document).on(
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
     list["deleteCustomText"].show([name]);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["deleteCustomTextLong"].show([name]);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["resetProgressCustomTextLong"].show([name]);
   }
 );
 

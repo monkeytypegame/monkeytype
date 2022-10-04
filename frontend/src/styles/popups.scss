@@ -21,6 +21,25 @@
     gap: 1rem;
     width: 60vw;
 
+    .longCustomTextWarning {
+      background: rgba(0, 0, 0, 0.9);
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: grid;
+      place-items: center center;
+      border-radius: var(--roundness);
+      .textAndButton {
+        width: 80%;
+        max-width: 20rem;
+        text-align: center;
+        display: grid;
+        gap: 1rem;
+      }
+    }
+
     .buttonsTop {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -99,11 +118,43 @@
       .savedText {
         display: grid;
         gap: 0.5rem;
-        grid-template-columns: 1fr 3rem;
+        grid-template-columns: 2fr 3rem;
         .button .fas {
           pointer-events: none;
         }
       }
+    }
+
+    .listLong {
+      display: grid;
+      gap: 1rem;
+      .savedText {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 2fr 1fr 3rem;
+        .button .fas {
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
+
+#saveCustomTextPopupWrapper {
+  #saveCustomTextPopup {
+    color: var(--sub-color);
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    width: 400px;
+    max-height: 80vh;
+    overflow: auto;
+
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
     }
   }
 }
