@@ -540,6 +540,9 @@
         letter.incorrect.extra {
           color: var(--error-extra-color);
         }
+        &.unreached letter {
+          filter: opacity(0.2);
+        }
         &.heatmap0 letter {
           color: var(--colorful-error-color);
         }
