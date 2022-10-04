@@ -294,9 +294,7 @@ if (Auth) {
       );
       await loadUser(user);
     } else {
-      $("#top .signInOut .icon").html(
-        `<i class="fas fa-fw fa-sign-in-alt"></i>`
-      );
+      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       if (window.location.pathname == "/account") {
         window.history.replaceState("", "", "/login");
       }
@@ -331,7 +329,7 @@ if (Auth) {
     // await UpdateConfig.loadPromise;
     const search = window.location.search;
     const hash = window.location.hash;
-    $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-in-alt"></i>`);
+    $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
     if (window.location.pathname == "/account") {
       window.history.replaceState("", "", "/login");
     }
@@ -548,9 +546,7 @@ export function signOut(): void {
       DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
-      $("#top .signInOut .icon").html(
-        `<i class="fas fa-fw fa-sign-in-alt"></i>`
-      );
+      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       hideFavoriteQuoteLength();
     })
     .catch(function (error) {
