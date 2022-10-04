@@ -491,7 +491,7 @@ function handleChar(
   // If a trailing composed char is used, ignore it when counting accuracy
   if (
     !thisCharCorrect &&
-    Misc.trailingComposeChars.test(resultingWord) &&
+    // Misc.trailingComposeChars.test(resultingWord) &&
     CompositionState.getComposing()
   ) {
     TestInput.input.current = resultingWord;
