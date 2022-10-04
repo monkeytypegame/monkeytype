@@ -101,8 +101,8 @@
     "languages": ["ukrainian", "ukrainian_1k", "ukrainian_10k", "ukrainian_50k"]
   },
   {
-  "name": "ukrainian_endings",
-  "languages": ["ukrainian_endings"]
+    "name": "ukrainian_endings",
+    "languages": ["ukrainian_endings"]
   },
   {
     "name": "lithuanian",
