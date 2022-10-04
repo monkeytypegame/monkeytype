@@ -98,11 +98,13 @@
   },
   {
     "name": "ukrainian",
-    "languages": ["ukrainian", "ukrainian_1k", "ukrainian_10k", "ukrainian_50k"]
-  },
-  {
-    "name": "ukrainianendings",
-    "languages": ["ukrainianendings"]
+    "languages": [
+      "ukrainian",
+      "ukrainian_1k",
+      "ukrainian_10k",
+      "ukrainian_50k",
+      "ukrainian_endings"
+    ]
   },
   {
     "name": "lithuanian",
