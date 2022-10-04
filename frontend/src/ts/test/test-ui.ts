@@ -941,11 +941,16 @@ export function applyBurstHeatmap(): void {
     });
 
     $("#resultWordsHistory .words .word").each((_, word) => {
-      const wordBurstVal = parseInt(<string>$(word).attr("burst"));
       let cls = "";
-      steps.forEach((step) => {
-        if (wordBurstVal > step.val) cls = step.class;
-      });
+      const wordBurstAttr = $(word).attr("burst");
+      if (wordBurstAttr === undefined) {
+        cls = "unreached";
+      } else {
+        const wordBurstVal = parseInt(<string>wordBurstAttr);
+        steps.forEach((step) => {
+          if (wordBurstVal >= step.val) cls = step.class;
+        });
+      }
       $(word).addClass(cls);
     });
   } else {
@@ -955,6 +960,7 @@ export function applyBurstHeatmap(): void {
     $("#resultWordsHistory .words .word").removeClass("heatmap2");
     $("#resultWordsHistory .words .word").removeClass("heatmap3");
     $("#resultWordsHistory .words .word").removeClass("heatmap4");
+    $("#resultWordsHistory .words .word").removeClass("unreached");
   }
 }
 
