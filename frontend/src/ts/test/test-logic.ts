@@ -6,6 +6,7 @@ import * as Misc from "../utils/misc";
 import QuotesController from "../controllers/quotes-controller";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
+import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
@@ -1603,6 +1604,29 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // test is valid
+
+  const customTextName = CustomTextState.getCustomTextName();
+  const isLong = CustomTextState.isCustomTextLong();
+  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+    // Let's update the custom text progress
+    if (TestInput.bailout) {
+      // They bailed out
+      const newProgress =
+        CustomText.getCustomTextLongProgress(customTextName) +
+        TestInput.input.getHistory().length;
+      CustomText.setCustomTextLongProgress(customTextName, newProgress);
+      Notifications.add("Long custom text progress saved", 1, 5);
+
+      let newText = CustomText.getCustomText(customTextName, true);
+      newText = newText.slice(newProgress);
+      CustomText.setText(newText);
+    } else {
+      // They finished the test
+      CustomText.setCustomTextLongProgress(customTextName, 0);
+      CustomText.setText(CustomText.getCustomText(customTextName, true));
+      Notifications.add("Long custom text completed", 1, 5);
+    }
+  }
 
   if (!dontSave) {
     TodayTracker.addSeconds(
