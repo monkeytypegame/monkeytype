@@ -77,7 +77,7 @@ const CONFIG_SCHEMA = joi.object({
   playSoundOnError: joi.boolean(),
   playSoundOnClick: joi
     .string()
-    .valid("off", ..._.range(1, 11).map(_.toString)),
+    .valid("off", ..._.range(1, 12).map(_.toString)),
   soundVolume: joi.string().valid("0.1", "0.5", "1.0"),
   startGraphsAtZero: joi.boolean(),
   showOutOfFocusWarning: joi.boolean(),
