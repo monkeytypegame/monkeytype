@@ -890,6 +890,7 @@ function fillContent(): void {
     250,
     async () => {
       // Profile.updateNameFontSize("account");
+      $(".page.pageAccount").css("height", "unset"); //weird safari fix
     },
     async () => {
       setTimeout(() => {
