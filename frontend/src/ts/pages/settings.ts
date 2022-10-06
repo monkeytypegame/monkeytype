@@ -427,18 +427,21 @@ export async function fillSettingsPage(): Promise<void> {
   layoutEl.append(`<option value='default'>off</option>`);
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
-    if (layout.toString() !== "korean") {
-      layoutEl.append(
-        `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-      );
-    }
-    if (layout.toString() != "default") {
-      keymapEl.append(
-        `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-      );
-    }
-  });
+  const layoutsList = await Misc.getLayoutsList();
+  if (layoutsList) {
+    Object.keys(layoutsList).forEach((layout) => {
+      if (layout.toString() !== "korean") {
+        layoutEl.append(
+          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
+        );
+      }
+      if (layout.toString() != "default") {
+        keymapEl.append(
+          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
+        );
+      }
+    });
+  }
   layoutEl.select2({
     width: "100%",
   });
