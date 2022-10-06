@@ -6,6 +6,7 @@ import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
+import * as CustomTextState from "../states/custom-text-name";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -57,9 +58,17 @@ export async function update(): Promise<void> {
     }
   }
 
+  const customTextName = CustomTextState.getCustomTextName();
+  const isLong = CustomTextState.isCustomTextLong();
+  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="textButton noInteraction"><i class="fas fa-book"></i>tracking progress for ${customTextName}</div>`
+    );
+  }
+
   if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="loadChallenge"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
+      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
     );
   }
 
@@ -116,6 +125,8 @@ export async function update(): Promise<void> {
           ? "pb"
           : Config.paceCaret === "last"
           ? "last"
+          : Config.paceCaret === "daily"
+          ? "daily"
           : "custom"
       } pace${speed}</div>`
     );
@@ -130,7 +141,7 @@ export async function update(): Promise<void> {
       avgAcc = Math.round(avgAcc);
     }
 
-    if (Auth.currentUser && avgWPM > 0) {
+    if (Auth?.currentUser && avgWPM > 0) {
       const avgWPMText = ["wpm", "both"].includes(Config.showAverage)
         ? Config.alwaysShowCPM
           ? `${Math.round(avgWPM * 5)} cpm`

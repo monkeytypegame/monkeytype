@@ -6,6 +6,7 @@ import * as Misc from "../utils/misc";
 import QuotesController from "../controllers/quotes-controller";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
+import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
@@ -327,7 +328,7 @@ export function startTest(): boolean {
     UpdateConfig.setChangedBeforeDb(true);
   }
 
-  if (Auth.currentUser !== null) {
+  if (Auth?.currentUser) {
     AnalyticsController.log("testStarted");
   } else {
     AnalyticsController.log("testStartedNoLogin");
@@ -876,7 +877,7 @@ export async function init(): Promise<void> {
     await Funbox.activate();
   }
 
-  if (Config.quoteLength.includes(-3) && !Auth.currentUser) {
+  if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
     UpdateConfig.setQuoteLength(-1);
   }
 
@@ -1070,7 +1071,7 @@ export async function init(): Promise<void> {
           .replace(/_/g, " ")} quotes found`,
         0
       );
-      if (Auth.currentUser) {
+      if (Auth?.currentUser) {
         QuoteSubmitPopup.show(false);
       }
       UpdateConfig.setMode("words");
@@ -1604,6 +1605,29 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
+  const customTextName = CustomTextState.getCustomTextName();
+  const isLong = CustomTextState.isCustomTextLong();
+  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+    // Let's update the custom text progress
+    if (TestInput.bailout) {
+      // They bailed out
+      const newProgress =
+        CustomText.getCustomTextLongProgress(customTextName) +
+        TestInput.input.getHistory().length;
+      CustomText.setCustomTextLongProgress(customTextName, newProgress);
+      Notifications.add("Long custom text progress saved", 1, 5);
+
+      let newText = CustomText.getCustomText(customTextName, true);
+      newText = newText.slice(newProgress);
+      CustomText.setText(newText);
+    } else {
+      // They finished the test
+      CustomText.setCustomTextLongProgress(customTextName, 0);
+      CustomText.setText(CustomText.getCustomText(customTextName, true));
+      Notifications.add("Long custom text completed", 1, 5);
+    }
+  }
+
   if (!dontSave) {
     TodayTracker.addSeconds(
       completedEvent.testDuration +
@@ -1615,7 +1639,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Result.updateTodayTracker();
   }
 
-  if (Auth.currentUser == null) {
+  if (!Auth?.currentUser) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
     $(".pageTest #result #reportQuoteButton").addClass("hidden");
     AnalyticsController.log("testCompletedNoLogin");
@@ -1666,7 +1690,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.resetIncomplete();
   }
 
-  completedEvent.uid = Auth.currentUser?.uid as string;
+  completedEvent.uid = Auth?.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.randomQuote);
 
   AccountButton.loading(true);
@@ -1738,6 +1762,11 @@ async function saveResult(
 
   if (response?.data?.isPb) {
     //new pb
+    if (
+      DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
+    ) {
+      Result.showConfetti();
+    }
     Result.showCrown();
     Result.updateCrown();
     DB.saveLocalPB(

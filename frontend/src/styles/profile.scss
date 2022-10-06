@@ -62,6 +62,7 @@
   grid-template-rows: auto 1fr;
   grid-template-areas:
     "info info"
+    "leaderboards leaderboards"
     "pbsTime pbsWords";
 
   .pbsWords {
@@ -78,7 +79,8 @@
 
   .pbsWords,
   .pbsTime,
-  .details {
+  .details,
+  .leaderboardsPositions {
     // user-select: none;
     background: var(--sub-alt-color);
     padding: 1rem;
@@ -119,6 +121,43 @@
     .editProfileButton {
       font-size: 0.9rem;
     }
+  }
+
+  .leaderboardsPositions {
+    grid-area: leaderboards;
+    display: grid;
+    gap: 1rem;
+    align-items: center;
+    grid-template-areas: "title t15 t60";
+    grid-template-columns: unset;
+    justify-items: center;
+    .title {
+      color: var(--sub-color);
+      text-align: center;
+      grid-area: title;
+    }
+    .group {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      .testType {
+        color: var(--sub-color);
+      }
+      .pos {
+        font-size: 2rem;
+      }
+      &.t15 {
+        grid-area: t15;
+      }
+      &.t60 {
+        grid-area: t60;
+      }
+    }
+  }
+
+  .pbsWords,
+  .pbsTime {
     .group {
       justify-self: center;
       display: grid;

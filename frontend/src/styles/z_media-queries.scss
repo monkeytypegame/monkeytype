@@ -85,10 +85,6 @@
   }
   #customTextPopup {
     width: 80vw !important;
-
-    .wordfilter.button {
-      width: 50% !important;
-    }
   }
   #leaderboardsWrapper {
     #leaderboards {
@@ -197,6 +193,7 @@
     grid-template-rows: auto auto auto;
     grid-template-areas:
       "info"
+      "leaderboards"
       "pbsTime"
       "pbsWords";
     .details.soc {
@@ -246,6 +243,9 @@
         //   display: none;
         // }
       }
+    }
+    .leaderboardsPositions {
+      grid-template-areas: "title title" "t15 t60";
     }
   }
   #leaderboards {
@@ -498,6 +498,7 @@
     grid-template-rows: auto auto auto;
     grid-template-areas:
       "info"
+      "leaderboards"
       "pbsTime"
       "pbsWords";
     .details.none {
@@ -722,6 +723,9 @@
       .typingStats {
         grid-template-columns: 1fr;
       }
+    }
+    .leaderboardsPositions {
+      grid-template-areas: "title" "t15" "t60";
     }
   }
   #testModesNotice {

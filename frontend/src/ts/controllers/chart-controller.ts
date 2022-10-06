@@ -48,6 +48,7 @@ import * as ConfigEvent from "../observables/config-event";
 import format from "date-fns/format";
 import "chartjs-adapter-date-fns";
 
+// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
 import type {
   AnimationSpec,
   CartesianScaleOptions,
@@ -59,6 +60,7 @@ import type {
   ScaleChartOptions,
 } from "chart.js";
 
+// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
 import type {
   AnnotationOptions,
   LabelOptions,

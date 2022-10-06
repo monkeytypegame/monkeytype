@@ -915,12 +915,13 @@ export async function updateStreak(
   const streak: MonkeyTypes.UserStreak = {
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
-    maxLength: user.streak?.length ?? 0,
+    maxLength: user.streak?.maxLength ?? 0,
   };
 
   if (isYesterday(streak.lastResultTimestamp)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp)) {
+    Logger.logToDb("streak_lost", { streak }, uid);
     streak.length = 1;
   }
 

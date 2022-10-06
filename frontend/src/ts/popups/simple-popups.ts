@@ -8,7 +8,6 @@ import * as Settings from "../pages/settings";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
@@ -20,6 +19,7 @@ import {
   unlink,
   updatePassword,
 } from "firebase/auth";
+import { isPasswordStrong } from "../utils/misc";
 
 interface Input {
   placeholder?: string;
@@ -288,8 +288,8 @@ list["updateEmail"] = new SimplePopup(
   "Update",
   async (_thisPopup, password, email, emailConfirm) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (email !== emailConfirm) {
         Notifications.add("Emails don't match", 0);
         return;
@@ -327,8 +327,8 @@ list["updateEmail"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -355,8 +355,8 @@ list["removeGoogleAuth"] = new SimplePopup(
   "Remove",
   async (_thisPopup, password) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -388,8 +388,8 @@ list["removeGoogleAuth"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -421,8 +421,8 @@ list["updateName"] = new SimplePopup(
   "Update",
   async (_thisPopup, pass, newName) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
 
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
@@ -472,8 +472,8 @@ list["updateName"] = new SimplePopup(
     Loader.hide();
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs[0].hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
@@ -514,14 +514,25 @@ list["updatePassword"] = new SimplePopup(
   "Update",
   async (_thisPopup, previousPass, newPass, newPassConfirm) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       const credential = EmailAuthProvider.credential(
         user.email as string,
         previousPass
       );
       if (newPass !== newPassConfirm) {
         Notifications.add("New passwords don't match", 0);
+        return;
+      }
+      if (
+        window.location.hostname !== "localhost" &&
+        !isPasswordStrong(newPass)
+      ) {
+        Notifications.add(
+          "New password must contain at least one capital letter, number, a special character and at least 8 characters long",
+          0,
+          4
+        );
         return;
       }
       Loader.show();
@@ -543,8 +554,8 @@ list["updatePassword"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -619,10 +630,9 @@ list["deleteAccount"] = new SimplePopup(
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
   async (_thisPopup, password: string) => {
-    //
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -657,7 +667,7 @@ list["deleteAccount"] = new SimplePopup(
       }
 
       Notifications.add("Deleting login information...", 0);
-      await Auth.currentUser?.delete();
+      await Auth?.currentUser?.delete();
 
       Notifications.add("Goodbye", 1, 5);
 
@@ -675,9 +685,8 @@ list["deleteAccount"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
-
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
@@ -702,10 +711,9 @@ list["resetAccount"] = new SimplePopup(
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Reset",
   async (_thisPopup, password: string) => {
-    //
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -744,9 +752,8 @@ list["resetAccount"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
-
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
@@ -837,8 +844,8 @@ list["resetPersonalBests"] = new SimplePopup(
   "Reset",
   async (_thisPopup, password: string) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -873,9 +880,8 @@ list["resetPersonalBests"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
-
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
@@ -1069,32 +1075,6 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
-list["saveCustomText"] = new SimplePopup(
-  "saveCustomText",
-  "text",
-  "Save custom text",
-  [
-    {
-      placeholder: "Name",
-      initVal: "",
-    },
-  ],
-  "",
-  "Save",
-  (_thisPopup, input) => {
-    const text = ($(`#customTextPopup textarea`).val() as string).normalize();
-    CustomText.setCustomText(input, text);
-    Notifications.add("Custom text saved", 1);
-    CustomTextPopup.show();
-  },
-  () => {
-    //
-  },
-  () => {
-    //
-  }
-);
-
 list["deleteCustomText"] = new SimplePopup(
   "deleteCustomText",
   "text",
@@ -1109,6 +1089,49 @@ list["deleteCustomText"] = new SimplePopup(
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+list["deleteCustomTextLong"] = new SimplePopup(
+  "deleteCustomTextLong",
+  "text",
+  "Delete custom text",
+  [],
+  "Are you sure?",
+  "Delete",
+  (_thisPopup) => {
+    CustomText.deleteCustomText(_thisPopup.parameters[0], true);
+    Notifications.add("Custom text deleted", 1);
+    SavedTextsPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+list["resetProgressCustomTextLong"] = new SimplePopup(
+  "resetProgressCustomTextLong",
+  "text",
+  "Reset progress for custom text",
+  [],
+  "Are you sure?",
+  "Reset",
+  (_thisPopup) => {
+    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
+    Notifications.add("Custom text progress reset", 1);
+    SavedTextsPopup.show();
+    $(`#customTextPopupWrapper textarea`).val(
+      CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
+    );
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
   },
   () => {
     //
@@ -1255,10 +1278,6 @@ $("#apeKeysPopup .generateApeKey").on("click", () => {
   list["generateApeKey"].show();
 });
 
-$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
-  list["saveCustomText"].show();
-});
-
 $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme .delButton",
@@ -1285,6 +1304,24 @@ $(document).on(
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
     list["deleteCustomText"].show([name]);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["deleteCustomTextLong"].show([name]);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["resetProgressCustomTextLong"].show([name]);
   }
 );
 

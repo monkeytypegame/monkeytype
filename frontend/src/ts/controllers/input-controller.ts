@@ -123,6 +123,7 @@ function backspaceToPrevious(): void {
   TestInput.corrected.popHistory();
   if (Config.funbox === "nospace" || Config.funbox === "arrows") {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
+    setWordsInput(" " + TestInput.input.current + " ");
   }
   TestWords.words.decreaseCurrentIndex();
   TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
@@ -490,7 +491,7 @@ function handleChar(
   // If a trailing composed char is used, ignore it when counting accuracy
   if (
     !thisCharCorrect &&
-    Misc.trailingComposeChars.test(resultingWord) &&
+    // Misc.trailingComposeChars.test(resultingWord) &&
     CompositionState.getComposing()
   ) {
     TestInput.input.current = resultingWord;

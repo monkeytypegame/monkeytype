@@ -154,14 +154,16 @@ export async function getFunbox(
   });
 }
 
-const layoutsList: MonkeyTypes.Layouts | undefined = undefined;
-export async function getLayoutsList(): Promise<
-  MonkeyTypes.Layouts | undefined
-> {
-  const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-    "/./layouts/_list.json"
-  );
-  return layoutsList;
+let layoutsList: MonkeyTypes.Layouts = {};
+export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
+  if (Object.keys(layoutsList).length === 0) {
+    return $.getJSON("/./layouts/_list.json", function (data) {
+      layoutsList = data;
+      return layoutsList;
+    });
+  } else {
+    return layoutsList;
+  }
 }
 
 export const cachedFetchJson = memoizeAsync(fetchJson);
@@ -1274,4 +1276,12 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
 
     return result;
   }) as T;
+}
+
+export function isPasswordStrong(password: string): boolean {
+  const hasCapital = !!password.match(/[A-Z]/);
+  const hasNumber = !!password.match(/[\d]/);
+  const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  const isLong = password.length >= 8;
+  return hasCapital && hasNumber && hasSpecial && isLong;
 }

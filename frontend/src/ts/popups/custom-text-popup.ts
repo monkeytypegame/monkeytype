@@ -1,4 +1,5 @@
 import * as CustomText from "../test/custom-text";
+import * as CustomTextState from "../states/custom-text-name";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as ChallengeController from "../controllers/challenge-controller";
@@ -7,12 +8,22 @@ import * as Misc from "../utils/misc";
 import * as WordFilterPopup from "./word-filter-popup";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts-popup";
+import * as SaveCustomTextPopup from "./save-custom-text-popup";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
 
+function updateLongTextWarning(): void {
+  if (CustomTextState.isCustomTextLong() === true) {
+    $(`${popup} .longCustomTextWarning`).removeClass("hidden");
+  } else {
+    $(`${popup} .longCustomTextWarning`).addClass("hidden");
+  }
+}
+
 export function show(): void {
   if ($(wrapper).hasClass("hidden")) {
+    updateLongTextWarning();
     if ($(`${popup} .checkbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
     } else {
@@ -36,7 +47,9 @@ export function show(): void {
       });
   }
   setTimeout(() => {
-    $(`${popup} textarea`).trigger("focus");
+    if (!CustomTextState.isCustomTextLong()) {
+      $(`${popup} textarea`).trigger("focus");
+    }
   }, 150);
 }
 
@@ -99,8 +112,19 @@ $(`${popup} .inputs .checkbox input`).on("change", () => {
 });
 
 $(`${popup} textarea`).on("keypress", (e) => {
+  if (!$(`${popup} .longCustomTextWarning`).hasClass("hidden")) {
+    e.preventDefault();
+    return;
+  }
   if (e.code === "Enter" && e.ctrlKey) {
     $(`${popup} .button.apply`).trigger("click");
+  }
+  if (
+    CustomTextState.isCustomTextLong() &&
+    CustomTextState.getCustomTextName() !== ""
+  ) {
+    CustomTextState.setCustomTextName("", undefined);
+    Notifications.add("Disabled long custom text progress tracking", 0, 5);
   }
 });
 
@@ -215,4 +239,12 @@ $(document).on("keydown", (event) => {
     hide();
     event.preventDefault();
   }
+});
+
+$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
+  SaveCustomTextPopup.show();
+});
+
+$(`#customTextPopup .longCustomTextWarning .button`).on("click", () => {
+  $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
 });
