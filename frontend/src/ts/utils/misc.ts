@@ -159,7 +159,7 @@ export async function getLayoutsList(): Promise<
   MonkeyTypes.Layouts | undefined
 > {
   const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-    "/./layouts/_lis.json"
+    "/./layouts/_list.json"
   );
   return layoutsList;
 }
@@ -1262,7 +1262,10 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
     const key = getKey ? getKey.apply(args) : args[0];
 
     if (cache.has(key)) {
-      return (await cache.get(key)) as ReturnType<T>;
+      const ret = await cache.get(key);
+      if (ret) {
+        return ret as ReturnType<T>;
+      }
     }
 
     // eslint-disable-next-line prefer-spread
