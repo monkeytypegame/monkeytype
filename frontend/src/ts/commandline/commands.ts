@@ -98,6 +98,7 @@ import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 
 Misc.getLayoutsList().then((layouts) => {
+  if (!layouts) return;
   updateLayoutsCommands(layouts);
   updateKeymapLayoutsCommands(layouts);
 });
