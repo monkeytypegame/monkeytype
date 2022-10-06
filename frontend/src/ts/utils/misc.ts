@@ -154,16 +154,14 @@ export async function getFunbox(
   });
 }
 
-let layoutsList: MonkeyTypes.Layouts = {};
-export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
-  if (Object.keys(layoutsList).length === 0) {
-    return $.getJSON("/./layouts/_list.json", function (data) {
-      layoutsList = data;
-      return layoutsList;
-    });
-  } else {
-    return layoutsList;
-  }
+const layoutsList: MonkeyTypes.Layouts | undefined = undefined;
+export async function getLayoutsList(): Promise<
+  MonkeyTypes.Layouts | undefined
+> {
+  const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
+    "/./layouts/_list.json"
+  );
+  return layoutsList;
 }
 
 export const cachedFetchJson = memoizeAsync(fetchJson);
