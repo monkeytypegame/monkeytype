@@ -169,7 +169,7 @@ export async function purgeUserFromDailyLeaderboards(
   let currentCursor = "0";
   do {
     const [nextCursor, ids] = await connection.scan(
-      "0",
+      currentCursor,
       "MATCH",
       `${dailyLeaderboardNamespace}*`
     );
