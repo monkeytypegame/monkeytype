@@ -157,6 +157,39 @@ export class DailyLeaderboard {
   }
 }
 
+export async function purgeUserFromDailyLeaderboards(
+  uid: string,
+  configuration: MonkeyTypes.Configuration["dailyLeaderboards"]
+): Promise<void> {
+  const connection = RedisClient.getConnection();
+  if (!connection || !configuration.enabled) {
+    return;
+  }
+
+  let currentCursor = "0";
+  do {
+    const [nextCursor, ids] = await connection.scan(
+      "0",
+      "MATCH",
+      `${dailyLeaderboardNamespace}*`
+    );
+
+    const pipeline = connection.pipeline();
+
+    ids.forEach((id) => {
+      const [_, __, type] = id.split(":");
+      if (type === "results") {
+        pipeline.hdel(id, uid);
+      } else if (type === "scores") {
+        pipeline.zrem(id, uid);
+      }
+    });
+
+    await pipeline.exec();
+    currentCursor = nextCursor;
+  } while (currentCursor !== "0");
+}
+
 let DAILY_LEADERBOARDS: LRUCache<string, DailyLeaderboard>;
 
 export function initializeDailyLeaderboardsCache(
