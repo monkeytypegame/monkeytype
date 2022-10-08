@@ -193,12 +193,12 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
     changesCapitalisation: true,
     alterText(word: string): string {
-      let randomcaseword = "";
-      for (let i = 0; i < word.length; i++) {
-        if (i % 2 != 0) {
-          randomcaseword += word[i].toUpperCase();
+      let randomcaseword = word[0];
+      for (let i = 1; i < word.length; i++) {
+        if (randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase()) {
+          randomcaseword += word[i].toLowerCase();
         } else {
-          randomcaseword += word[i];
+          randomcaseword += word[i].toUpperCase();
         }
       }
       return randomcaseword;

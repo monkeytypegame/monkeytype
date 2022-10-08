@@ -661,9 +661,13 @@ export function restart(options = {} as RestartOptions): void {
   );
 }
 
-function applyFunboxesToWord(word: string, wordset?: Misc.Wordset): string {
+function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
   const wordFunbox = UpdateConfig.ActiveFunboxes().find((f) => f.getWord);
   if (wordFunbox?.getWord) word = wordFunbox.getWord(wordset);
+  return word;
+}
+
+function applyFunboxesToWord(word: string): string {
   for (const f of UpdateConfig.ActiveFunboxes()) {
     if (f.alterText) {
       word = f.alterText(word);
@@ -751,7 +755,7 @@ async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/^ | $/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = applyFunboxesToWord(randomWord, wordset);
+  randomWord = getFunboxWord(randomWord, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
   if (Config.punctuation) {
@@ -771,6 +775,8 @@ async function getNextWord(
       }
     }
   }
+
+  randomWord = applyFunboxesToWord(randomWord);
 
   return randomWord;
 }
