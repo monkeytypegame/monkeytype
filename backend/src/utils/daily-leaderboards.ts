@@ -166,28 +166,8 @@ export async function purgeUserFromDailyLeaderboards(
     return;
   }
 
-  let currentCursor = "0";
-  do {
-    const [nextCursor, ids] = await connection.scan(
-      currentCursor,
-      "MATCH",
-      `${dailyLeaderboardNamespace}*`
-    );
-
-    const pipeline = connection.pipeline();
-
-    ids.forEach((id) => {
-      const [_, __, type] = id.split(":");
-      if (type === "results") {
-        pipeline.hdel(id, uid);
-      } else if (type === "scores") {
-        pipeline.zrem(id, uid);
-      }
-    });
-
-    await pipeline.exec();
-    currentCursor = nextCursor;
-  } while (currentCursor !== "0");
+  // @ts-ignore
+  await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
 }
 
 let DAILY_LEADERBOARDS: LRUCache<string, DailyLeaderboard>;
