@@ -17,8 +17,8 @@
     }
   }
 
-  .left a,
-  .right a {
+  .left .textButton,
+  .right .textButton {
     transition: 0.125s;
   }
 
@@ -52,7 +52,7 @@
     display: grid;
     grid-template-columns: auto auto;
     gap: 1rem;
-    a {
+    .textButton {
       text-decoration: none;
       font-size: 0.75rem;
       line-height: 1rem;
@@ -76,8 +76,8 @@
       gap: 1rem;
       // align-items: center;
     }
-    .left a,
-    .right a {
+    .left .textButton,
+    .right .textButton {
       display: grid;
       grid-auto-flow: column;
       gap: 0.25rem;
@@ -107,7 +107,7 @@
   .keyTips {
     opacity: 0 !important;
   }
-  a {
+  .textButton {
     opacity: 0 !important;
   }
   #newVersionIndicator {
