@@ -72,6 +72,10 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
       );
     },
     toggleScript(params: string[]): void {
+      if (window.speechSynthesis == undefined) {
+        Notifications.add("Failed to load text-to-speech script", -1);
+        return;
+      }
       TTS.speak(params[0]);
     },
   },
