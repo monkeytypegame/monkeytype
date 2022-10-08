@@ -492,7 +492,8 @@ function handleChar(
   if (
     !thisCharCorrect &&
     // Misc.trailingComposeChars.test(resultingWord) &&
-    CompositionState.getComposing()
+    CompositionState.getComposing() &&
+    !Config.language.startsWith("korean")
   ) {
     TestInput.input.current = resultingWord;
     TestUI.updateWordElement();
