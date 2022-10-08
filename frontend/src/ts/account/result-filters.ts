@@ -664,34 +664,45 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
   );
 });
 
-Misc.getLanguageList().then((languages) => {
-  languages.forEach((language) => {
-    $(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
-    ).append(
-      `<div class="button" filter="${language}">${language.replace(
-        "_",
-        " "
-      )}</div>`
-    );
+export function appendButtons(): void {
+  Misc.getLanguageList().then((languages) => {
+    languages.forEach((language) => {
+      $(
+        ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+      ).append(
+        `<div class="button" filter="${language}">${language.replace(
+          "_",
+          " "
+        )}</div>`
+      );
+    });
   });
-});
 
-$(
-  ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-).append(`<div class="button" filter="none">none</div>`);
-Misc.getFunboxList().then((funboxModes) => {
-  funboxModes.forEach((funbox) => {
-    $(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-    ).append(
-      `<div class="button" filter="${funbox.name}">${funbox.name.replace(
-        /_/g,
-        " "
-      )}</div>`
-    );
+  $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+  ).append(`<div class="button" filter="none">none</div>`);
+  Misc.getFunboxList().then((funboxModes) => {
+    funboxModes.forEach((funbox) => {
+      $(
+        ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+      ).append(
+        `<div class="button" filter="${funbox.name}">${funbox.name.replace(
+          /_/g,
+          " "
+        )}</div>`
+      );
+    });
   });
-});
+}
+
+export function removeButtons(): void {
+  $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+  ).empty();
+  $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+  ).empty();
+}
 
 $(".pageAccount .topFilters .button.createFilterPresetBtn").on("click", () => {
   startCreateFilterPreset();
