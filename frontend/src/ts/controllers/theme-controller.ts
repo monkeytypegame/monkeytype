@@ -291,7 +291,9 @@ export function applyCustomBackground(): void {
   } else {
     $("#words").addClass("noErrorBorder");
     $("#resultWordsHistory").addClass("noErrorBorder");
-    $(".customBackground").html(`<img src="${Config.customBackground}" />`);
+    $(".customBackground").html(
+      `<img src="${Config.customBackground}" alt="" />`
+    );
     BackgroundFilter.apply();
     applyCustomBackgroundSize();
   }
