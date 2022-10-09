@@ -418,13 +418,18 @@ function fillContent(): void {
             return;
           }
         } else {
+          let counter = 0;
           for (const f of result.funbox.split("#")) {
-            if (!ResultFilters.getFilter("funbox", f)) {
-              if (filterDebug) {
-                console.log(`skipping result due to funbox filter`, result);
-              }
-              return;
+            if (ResultFilters.getFilter("funbox", f)) {
+              counter++;
+              break;
             }
+          }
+          if (counter == 0) {
+            if (filterDebug) {
+              console.log(`skipping result due to funbox filter`, result);
+            }
+            return;
           }
         }
 
