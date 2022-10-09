@@ -1113,6 +1113,13 @@
     @extend .ffscroll;
     overflow-y: scroll;
 
+    .preloader {
+      color: var(--main-color);
+      display: grid;
+      place-content: center center;
+      font-size: 2rem;
+    }
+
     .tip {
       text-align: center;
       color: var(--sub-color);

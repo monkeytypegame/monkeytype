@@ -18,8 +18,10 @@ if (window.location.hostname === "localhost") {
     `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
-  Misc.getReleasesFromGitHub().then((v) => {
-    NewVersionNotification.show(v[0].name);
+  Misc.getLatestReleaseFromGitHub().then((v) => {
+    $("#bottom .version .text").text(v);
+    $("#bottom .version").css("opacity", 1);
+    NewVersionNotification.show(v);
   });
 }
 

@@ -461,6 +461,9 @@ async function flashLevel(): Promise<void> {
         },
         duration: 2000,
         easing: "easeOutCubic",
+        complete: () => {
+          barEl.css("background-color", "");
+        },
       }
     );
 }

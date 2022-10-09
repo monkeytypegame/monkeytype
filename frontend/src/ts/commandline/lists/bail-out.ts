@@ -2,9 +2,11 @@ import Config from "../../config";
 import * as CustomText from "../../test/custom-text";
 import * as TestLogic from "../../test/test-logic";
 import * as TestInput from "../../test/test-input";
+import * as CustomTextState from "../../states/custom-text-name";
 
 function canBailOut(): boolean {
   return (
+    (Config.mode === "custom" && CustomTextState.isCustomTextLong() === true) ||
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
       (CustomText.word >= 5000 || CustomText.word == 0)) ||

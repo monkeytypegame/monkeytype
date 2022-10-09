@@ -1,5 +1,4 @@
 import * as Loader from "../elements/loader";
-import format from "date-fns/format";
 
 function hexToHSL(hex: string): {
   hue: number;
@@ -344,30 +343,18 @@ export function median(arr: number[]): number {
   }
 }
 
+export async function getLatestReleaseFromGitHub(): Promise<string> {
+  const releases = await $.getJSON(
+    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1"
+  );
+  return releases[0].name;
+}
+
 export async function getReleasesFromGitHub(): Promise<
   MonkeyTypes.GithubRelease[]
 > {
   return $.getJSON(
-    "https://api.github.com/repos/Miodec/monkeytype/releases",
-    (data) => {
-      $("#bottom .version .text").text(data[0].name);
-      $("#bottom .version").css("opacity", 1);
-      $("#versionHistory .releases").empty();
-      data.forEach((release: MonkeyTypes.GithubRelease) => {
-        if (!release.draft && !release.prerelease) {
-          $("#versionHistory .releases").append(`
-          <div class="release">
-            <div class="title">${release.name}</div>
-            <div class="date">${format(
-              new Date(release.published_at),
-              "dd MMM yyyy"
-            )}</div>
-            <div class="body">${release.body.replace(/\r\n/g, "<br>")}</div>
-          </div>
-        `);
-        }
-      });
-    }
+    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5"
   );
 }
 

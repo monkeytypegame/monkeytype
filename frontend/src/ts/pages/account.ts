@@ -1136,8 +1136,10 @@ export const page = new Page(
   },
   async () => {
     reset();
+    ResultFilters.removeButtons();
   },
   async () => {
+    ResultFilters.appendButtons();
     if (DB.getSnapshot().results == undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
