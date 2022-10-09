@@ -541,6 +541,7 @@ export async function getProfile(
     inventory,
     details: profileDetails,
     allTimeLbs: alltimelbs,
+    uid: user.uid,
   };
 
   return new MonkeyResponse("Profile retrieved", profileData);
