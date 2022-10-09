@@ -827,7 +827,7 @@ export async function init(): Promise<void> {
   }
 
   let wordsBound = 100;
-  
+
   const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.toPushCount);
   if (funbox?.toPushCount) {
     wordsBound = funbox.toPushCount;
