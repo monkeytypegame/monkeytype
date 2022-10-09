@@ -56,6 +56,15 @@
         ]
       },
       {
+        "source": "**/*.@(json)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=3600"
+          }
+        ]
+      },
+      {
         "source": "/service-worker.js",
         "headers": [
           {
