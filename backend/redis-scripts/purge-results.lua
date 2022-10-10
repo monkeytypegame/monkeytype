@@ -20,4 +20,4 @@ repeat
     end
 
     current_cursor = next_cursor
-until (current_cursor ~= '0')
+until (current_cursor == '0')
