@@ -91,6 +91,11 @@
       align-items: center;
       width: 100%;
       gap: 1rem;
+      &.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+        user-select: none;
+      }
     }
   }
 }
