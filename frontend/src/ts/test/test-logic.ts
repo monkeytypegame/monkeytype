@@ -698,6 +698,7 @@ export function restart(options = {} as RestartOptions): void {
       });
       // resetPaceCaret();
       ModesNotice.update();
+      ManualRestart.reset();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
