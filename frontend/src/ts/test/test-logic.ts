@@ -892,6 +892,13 @@ export async function init(): Promise<void> {
     language = await Misc.getLanguage(Config.language);
   }
 
+  if (Config.mode === "quote") {
+    const group = await Misc.findCurrentGroup(Config.language);
+    if (group && group.name !== Config.language) {
+      UpdateConfig.setLanguage(group.name);
+    }
+  }
+
   if (Config.lazyMode === true && language.noLazyMode) {
     rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0);
