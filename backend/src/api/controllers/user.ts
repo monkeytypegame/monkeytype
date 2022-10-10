@@ -13,6 +13,7 @@ import { deleteAll as deleteAllResults } from "../../dal/result";
 import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
+import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -76,6 +77,10 @@ export async function resetUser(
     deleteAllPresets(uid),
     deleteAllResults(uid),
     deleteConfig(uid),
+    purgeUserFromDailyLeaderboards(
+      uid,
+      req.ctx.configuration.dailyLeaderboards
+    ),
   ]);
   Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
@@ -105,6 +110,10 @@ export async function clearPb(
   const { uid } = req.ctx.decodedToken;
 
   await UserDAL.clearPb(uid);
+  await purgeUserFromDailyLeaderboards(
+    uid,
+    req.ctx.configuration.dailyLeaderboards
+  );
   Logger.logToDb("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
