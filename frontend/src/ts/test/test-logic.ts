@@ -410,7 +410,8 @@ export function restart(options = {} as RestartOptions): void {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText
+          CustomText,
+          CustomTextState.isCustomTextLong() ?? false
         )
       ) {
         let message = "Use your mouse to confirm.";
