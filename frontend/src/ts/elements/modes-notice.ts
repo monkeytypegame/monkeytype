@@ -62,7 +62,7 @@ export async function update(): Promise<void> {
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-book"></i>tracking progress for ${customTextName}</div>`
+      `<div class="textButton noInteraction"><i class="fas fa-book"></i>${customTextName} (shift + enter to save progress)</div>`
     );
   }
 

@@ -26,6 +26,7 @@ import * as CompositionState from "../states/composition";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
+import * as CustomTextState from "../states/custom-text-name";
 import { navigate } from "../observables/navigate-event";
 
 let dontInsertSpace = false;
@@ -848,6 +849,13 @@ $(document).keydown(async (event) => {
       event.shiftKey &&
       ((Config.mode == "time" && Config.time === 0) ||
         (Config.mode == "words" && Config.words === 0))
+    ) {
+      TestInput.setBailout(true);
+      TestLogic.finish();
+    } else if (
+      event.shiftKey &&
+      Config.mode == "custom" &&
+      CustomTextState.isCustomTextLong() === true
     ) {
       TestInput.setBailout(true);
       TestLogic.finish();

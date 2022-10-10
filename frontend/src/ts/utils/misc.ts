@@ -864,21 +864,33 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: MonkeyTypes.CustomText
+  CustomText: MonkeyTypes.CustomText,
+  customTextIsLong: boolean
 ): boolean {
+  const wordsLong = mode === "words" && words >= 1000;
+  const timeLong = mode === "time" && time >= 900;
+  const customTextLong = mode === "custom" && customTextIsLong == true;
+  const customTextRandomWordsLong =
+    mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
+  const customTextRandomTimeLong =
+    mode === "custom" && CustomText.isTimeRandom && CustomText.time > 900;
+  const customTextNoRandomLong =
+    mode === "custom" &&
+    !CustomText.isWordRandom &&
+    !CustomText.isTimeRandom &&
+    CustomText.text.length >= 1000;
+
   if (
-    (mode === "words" && words < 1000) ||
-    (mode === "time" && time < 3600) ||
-    mode === "quote" ||
-    (mode === "custom" && CustomText.isWordRandom && CustomText.word < 1000) ||
-    (mode === "custom" && CustomText.isTimeRandom && CustomText.time < 3600) ||
-    (mode === "custom" &&
-      !CustomText.isWordRandom &&
-      CustomText.text.length < 1000)
+    wordsLong ||
+    timeLong ||
+    customTextLong ||
+    customTextRandomWordsLong ||
+    customTextRandomTimeLong ||
+    customTextNoRandomLong
   ) {
-    return true;
-  } else {
     return false;
+  } else {
+    return true;
   }
 }
 
