@@ -110,6 +110,10 @@ export async function clearPb(
   const { uid } = req.ctx.decodedToken;
 
   await UserDAL.clearPb(uid);
+  await purgeUserFromDailyLeaderboards(
+    uid,
+    req.ctx.configuration.dailyLeaderboards
+  );
   Logger.logToDb("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
