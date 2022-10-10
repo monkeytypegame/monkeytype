@@ -15,7 +15,7 @@ export async function createReport(
   if (reportsCount >= maxReports) {
     throw new MonkeyError(
       503,
-      "Reports are not being accepted at this time. Please try again later."
+      "Reports are not being accepted at this time due to a large backlog of reports. Please try again later."
     );
   }
 
