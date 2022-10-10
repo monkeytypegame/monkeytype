@@ -461,9 +461,9 @@
           Randomize the above words, and control how many words are generated.
         </span>
       </label>
-      <div class="randomInputFields hidden">
+      <div class="randomInputFields disabled">
         <label class="wordcount">
-          Word count
+          Words
           <input type="number" value="" min="1" max="10000" />
         </label>
         <div style="color: var(--sub-color)">or</div>
@@ -495,6 +495,19 @@
         <span>
           Change how words are separated. Using the pipe delimiter allows you to
           randomize groups of words.
+        </span>
+      </label>
+      <label class="checkbox replaceNewlineWithSpace">
+        <input type="checkbox" />
+        <div class="customTextCheckbox">
+          <div class="check">
+            <i class="fas fa-fw fa-check"></i>
+          </div>
+        </div>
+        Replace new lines with spaces
+        <span>
+          Replace all new line characters with spaces. Automatically adds
+          periods to the end of lines.
         </span>
       </label>
     </div>

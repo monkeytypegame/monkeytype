@@ -25,9 +25,9 @@ export function show(): void {
   if ($(wrapper).hasClass("hidden")) {
     updateLongTextWarning();
     if ($(`${popup} .checkbox input`).prop("checked")) {
-      $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
+      $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
     } else {
-      $(`${popup} .inputs .randomInputFields`).addClass("hidden");
+      $(`${popup} .inputs .randomInputFields`).addClass("disabled");
     }
     $(wrapper)
       .stop(true, true)
@@ -105,9 +105,9 @@ $(wrapper).on("mousedown", (e) => {
 
 $(`${popup} .inputs .checkbox input`).on("change", () => {
   if ($(`${popup} .checkbox input`).prop("checked")) {
-    $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
+    $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
   } else {
-    $(`${popup} .inputs .randomInputFields`).addClass("hidden");
+    $(`${popup} .inputs .randomInputFields`).addClass("disabled");
   }
 });
 
@@ -159,6 +159,11 @@ function apply(): void {
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   if ($(`${popup} .typographyCheck input`).prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
+  }
+  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked")) {
+    text = text.replace(/\n/gm, ". ");
+    text = text.replace(/\.\. /gm, ". ");
+    text = text.replace(/ +/gm, " ");
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
