@@ -157,6 +157,19 @@ export class DailyLeaderboard {
   }
 }
 
+export async function purgeUserFromDailyLeaderboards(
+  uid: string,
+  configuration: MonkeyTypes.Configuration["dailyLeaderboards"]
+): Promise<void> {
+  const connection = RedisClient.getConnection();
+  if (!connection || !configuration.enabled) {
+    return;
+  }
+
+  // @ts-ignore
+  await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
+}
+
 let DAILY_LEADERBOARDS: LRUCache<string, DailyLeaderboard>;
 
 export function initializeDailyLeaderboardsCache(

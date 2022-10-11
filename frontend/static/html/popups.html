@@ -449,7 +449,7 @@
       <textarea class="textarea" placeholder="Custom text"></textarea>
     </div>
     <div class="inputs">
-      <label class="checkbox">
+      <label class="checkbox randomWordsCheckbox">
         <input type="checkbox" />
         <div class="customTextCheckbox">
           <div class="check">
@@ -461,9 +461,9 @@
           Randomize the above words, and control how many words are generated.
         </span>
       </label>
-      <div class="randomInputFields hidden">
+      <div class="randomInputFields disabled">
         <label class="wordcount">
-          Word count
+          Words
           <input type="number" value="" min="1" max="10000" />
         </label>
         <div style="color: var(--sub-color)">or</div>
@@ -497,6 +497,19 @@
           randomize groups of words.
         </span>
       </label>
+      <label class="checkbox replaceNewlineWithSpace">
+        <input type="checkbox" />
+        <div class="customTextCheckbox">
+          <div class="check">
+            <i class="fas fa-fw fa-check"></i>
+          </div>
+        </div>
+        Replace new lines with spaces
+        <span>
+          Replace all new line characters with spaces. Automatically adds
+          periods to the end of lines.
+        </span>
+      </label>
     </div>
     <div class="button apply">ok</div>
   </div>
@@ -523,9 +536,9 @@
         </div>
         Long text (book mode)
         <span>
-          Disables editing this text but allows you to save progress when
-          bailing out. You can then load this text again to continue where you
-          left off.
+          Disables editing this text but allows you to save progress by pressing
+          shift + enter or bailing out. You can then load this text again to
+          continue where you left off.
         </span>
       </label>
     </div>

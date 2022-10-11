@@ -48,8 +48,17 @@ function hide(full = false): void {
   if (!full) {
     if (CustomTextState.isCustomTextLong() === true) {
       $(`#customTextPopup .longCustomTextWarning`).removeClass("hidden");
+      $(`#customTextPopup .randomWordsCheckbox input`).prop("checked", false);
+      $(`#customTextPopup .delimiterCheck input`).prop("checked", false);
+      $(`#customTextPopup .typographyCheck`).prop("checked", true);
+      $(`#customTextPopup .replaceNewlineWithSpace input`).prop(
+        "checked",
+        false
+      );
+      $(`#customTextPopup .inputs`).addClass("disabled");
     } else {
       $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
+      $(`#customTextPopup .inputs`).removeClass("disabled");
     }
     $("#customTextPopupWrapper").removeClass("hidden");
   }

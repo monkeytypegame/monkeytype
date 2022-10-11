@@ -82,6 +82,11 @@
       gap: 1rem;
       align-items: center;
       justify-items: left;
+      &.disabled {
+        opacity: 0.5;
+        user-select: none;
+        pointer-events: none;
+      }
     }
 
     .randomInputFields {
@@ -91,6 +96,11 @@
       align-items: center;
       width: 100%;
       gap: 1rem;
+      &.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+        user-select: none;
+      }
     }
   }
 }

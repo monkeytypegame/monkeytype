@@ -410,7 +410,8 @@ export function restart(options = {} as RestartOptions): void {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText
+          CustomText,
+          CustomTextState.isCustomTextLong() ?? false
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -698,6 +699,7 @@ export function restart(options = {} as RestartOptions): void {
       });
       // resetPaceCaret();
       ModesNotice.update();
+      ManualRestart.reset();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -889,6 +891,13 @@ export async function init(): Promise<void> {
   if (!language) {
     UpdateConfig.setLanguage("english");
     language = await Misc.getLanguage(Config.language);
+  }
+
+  if (Config.mode === "quote") {
+    const group = await Misc.findCurrentGroup(Config.language);
+    if (group && group.name !== Config.language) {
+      UpdateConfig.setLanguage(group.name);
+    }
   }
 
   if (Config.lazyMode === true && language.noLazyMode) {
@@ -1589,6 +1598,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     dontSave = true;
   } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
     Notifications.add("Test invalid - wpm", 0);
+    TestStats.setInvalid();
+    dontSave = true;
+  } else if (completedEvent.rawWpm < 0 || completedEvent.rawWpm > 350) {
+    Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
     dontSave = true;
   } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {

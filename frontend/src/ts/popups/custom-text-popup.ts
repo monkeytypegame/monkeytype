@@ -13,21 +13,27 @@ import * as SaveCustomTextPopup from "./save-custom-text-popup";
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
 
-function updateLongTextWarning(): void {
+export function updateLongTextWarning(): void {
   if (CustomTextState.isCustomTextLong() === true) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
+    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+    $(`${popup} .delimiterCheck input`).prop("checked", false);
+    $(`${popup} .typographyCheck`).prop("checked", true);
+    $(`${popup} .replaceNewlineWithSpace input`).prop("checked", false);
+    $(`${popup} .inputs`).addClass("disabled");
   } else {
     $(`${popup} .longCustomTextWarning`).addClass("hidden");
+    $(`${popup} .inputs`).removeClass("disabled");
   }
 }
 
 export function show(): void {
   if ($(wrapper).hasClass("hidden")) {
     updateLongTextWarning();
-    if ($(`${popup} .checkbox input`).prop("checked")) {
-      $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
+    if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
+      $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
     } else {
-      $(`${popup} .inputs .randomInputFields`).addClass("hidden");
+      $(`${popup} .inputs .randomInputFields`).addClass("disabled");
     }
     $(wrapper)
       .stop(true, true)
@@ -103,11 +109,11 @@ $(wrapper).on("mousedown", (e) => {
   }
 });
 
-$(`${popup} .inputs .checkbox input`).on("change", () => {
-  if ($(`${popup} .checkbox input`).prop("checked")) {
-    $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
+$(`${popup} .inputs .randomWordsCheckbox input`).on("change", () => {
+  if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
+    $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
   } else {
-    $(`${popup} .inputs .randomInputFields`).addClass("hidden");
+    $(`${popup} .inputs .randomInputFields`).addClass("disabled");
   }
 });
 
@@ -125,6 +131,7 @@ $(`${popup} textarea`).on("keypress", (e) => {
   ) {
     CustomTextState.setCustomTextName("", undefined);
     Notifications.add("Disabled long custom text progress tracking", 0, 5);
+    updateLongTextWarning();
   }
 });
 
@@ -160,6 +167,11 @@ function apply(): void {
   if ($(`${popup} .typographyCheck input`).prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
+  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked")) {
+    text = text.replace(/\n/gm, ". ");
+    text = text.replace(/\.\. /gm, ". ");
+    text = text.replace(/ +/gm, " ");
+  }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   CustomText.setText(text.split(CustomText.delimiter));
@@ -169,14 +181,16 @@ function apply(): void {
   CustomText.setTime(parseInt($(`${popup} .time input`).val() as string) || -1);
 
   CustomText.setIsWordRandom(
-    $(`${popup} .checkbox input`).prop("checked") && CustomText.word > -1
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+      CustomText.word > -1
   );
   CustomText.setIsTimeRandom(
-    $(`${popup} .checkbox input`).prop("checked") && CustomText.time > -1
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+      CustomText.time > -1
   );
 
   if (
-    $(`${popup} .checkbox input`).prop("checked") &&
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
     !CustomText.isTimeRandom &&
     !CustomText.isWordRandom
   ) {
@@ -189,7 +203,7 @@ function apply(): void {
   }
 
   if (
-    $(`${popup} .checkbox input`).prop("checked") &&
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
     CustomText.isTimeRandom &&
     CustomText.isWordRandom
   ) {
