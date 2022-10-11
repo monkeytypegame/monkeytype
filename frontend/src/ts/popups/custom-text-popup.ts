@@ -13,11 +13,17 @@ import * as SaveCustomTextPopup from "./save-custom-text-popup";
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
 
-function updateLongTextWarning(): void {
+export function updateLongTextWarning(): void {
   if (CustomTextState.isCustomTextLong() === true) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
+    $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+    $(`${popup} .delimiterCheck input`).prop("checked", false);
+    $(`${popup} .typographyCheck`).prop("checked", true);
+    $(`${popup} .replaceNewlineWithSpace input`).prop("checked", false);
+    $(`${popup} .inputs`).addClass("disabled");
   } else {
     $(`${popup} .longCustomTextWarning`).addClass("hidden");
+    $(`${popup} .inputs`).removeClass("disabled");
   }
 }
 
@@ -125,6 +131,7 @@ $(`${popup} textarea`).on("keypress", (e) => {
   ) {
     CustomTextState.setCustomTextName("", undefined);
     Notifications.add("Disabled long custom text progress tracking", 0, 5);
+    updateLongTextWarning();
   }
 });
 
