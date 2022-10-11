@@ -24,7 +24,7 @@ function updateLongTextWarning(): void {
 export function show(): void {
   if ($(wrapper).hasClass("hidden")) {
     updateLongTextWarning();
-    if ($(`${popup} .checkbox input`).prop("checked")) {
+    if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
     } else {
       $(`${popup} .inputs .randomInputFields`).addClass("disabled");
@@ -103,8 +103,8 @@ $(wrapper).on("mousedown", (e) => {
   }
 });
 
-$(`${popup} .inputs .checkbox input`).on("change", () => {
-  if ($(`${popup} .checkbox input`).prop("checked")) {
+$(`${popup} .inputs .randomWordsCheckbox input`).on("change", () => {
+  if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
     $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
   } else {
     $(`${popup} .inputs .randomInputFields`).addClass("disabled");
@@ -174,14 +174,16 @@ function apply(): void {
   CustomText.setTime(parseInt($(`${popup} .time input`).val() as string) || -1);
 
   CustomText.setIsWordRandom(
-    $(`${popup} .checkbox input`).prop("checked") && CustomText.word > -1
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+      CustomText.word > -1
   );
   CustomText.setIsTimeRandom(
-    $(`${popup} .checkbox input`).prop("checked") && CustomText.time > -1
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+      CustomText.time > -1
   );
 
   if (
-    $(`${popup} .checkbox input`).prop("checked") &&
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
     !CustomText.isTimeRandom &&
     !CustomText.isWordRandom
   ) {
@@ -194,7 +196,7 @@ function apply(): void {
   }
 
   if (
-    $(`${popup} .checkbox input`).prop("checked") &&
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
     CustomText.isTimeRandom &&
     CustomText.isWordRandom
   ) {
