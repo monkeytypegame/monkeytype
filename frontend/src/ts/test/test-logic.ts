@@ -1600,6 +1600,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
+  } else if (completedEvent.rawWpm < 0 || completedEvent.rawWpm > 350) {
+    Notifications.add("Test invalid - raw", 0);
+    TestStats.setInvalid();
+    dontSave = true;
   } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();

@@ -561,18 +561,18 @@ function updateOther(
   }
   if (TestStats.invalid) {
     otherText += "<br>invalid";
-    let extra = "";
+    const extra: string[] = [];
     if (result.wpm < 0 || result.wpm > 350) {
-      extra += "wpm";
+      extra.push("wpm");
+    }
+    if (result.rawWpm < 0 || result.rawWpm > 350) {
+      extra.push("raw");
     }
     if (result.acc < 75 || result.acc > 100) {
-      if (extra.length > 0) {
-        extra += ", ";
-      }
-      extra += "accuracy";
+      extra.push("accuracy");
     }
     if (extra.length > 0) {
-      otherText += ` (${extra})`;
+      otherText += ` (${extra.join(",")})`;
     }
   }
   if (isRepeated) {
