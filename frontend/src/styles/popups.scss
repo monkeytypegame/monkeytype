@@ -82,6 +82,11 @@
       gap: 1rem;
       align-items: center;
       justify-items: left;
+      &.disabled {
+        opacity: 0.5;
+        user-select: none;
+        pointer-events: none;
+      }
     }
 
     .randomInputFields {
