@@ -52,7 +52,8 @@
     "webpack-bundle-analyzer": "4.5.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.7.4",
-    "webpack-merge": "5.8.0"
+    "webpack-merge": "5.8.0",
+    "workbox-webpack-plugin": "6.5.4"
   },
   "dependencies": {
     "axios": "0.21.4",
@@ -72,6 +73,7 @@
     "object-hash": "3.0.0",
     "remove-files-webpack-plugin": "1.5.0",
     "stemmer": "2.0.0",
-    "throttle-debounce": "3.0.1"
+    "throttle-debounce": "3.0.1",
+    "workbox-window": "6.5.4"
   }
 }

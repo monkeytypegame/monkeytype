@@ -7,6 +7,7 @@ import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
+import * as ConnectionState from "../states/connection";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
@@ -572,6 +573,10 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 }
 
 export function show(): void {
+  if (!ConnectionState.get()) {
+    Notifications.add("You can't view leaderboards while offline", 0);
+    return;
+  }
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
     if (Auth?.currentUser) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(

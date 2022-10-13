@@ -424,5 +424,9 @@
   {
     "name": "wordle",
     "languages": ["wordle", "wordle_1k"]
+  },
+  {
+    "name": "kyrgyz",
+    "languages": ["kyrgyz"]
   }
 ]

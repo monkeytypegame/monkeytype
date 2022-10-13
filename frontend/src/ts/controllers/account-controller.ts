@@ -49,6 +49,8 @@ import {
 } from "../test/test-config";
 import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
+import * as ConnectionEvent from "../observables/connection-event";
+import * as ConnectionState from "../states/connection";
 
 export const gmailProvider = new GoogleAuthProvider();
 let canCall = true;
@@ -282,7 +284,7 @@ export async function loadUser(user: UserType): Promise<void> {
 let authListener: Unsubscribe;
 
 // eslint-disable-next-line no-constant-condition
-if (Auth) {
+if (Auth && ConnectionState.get()) {
   authListener = Auth?.onAuthStateChanged(async function (user) {
     // await UpdateConfig.loadPromise;
     const search = window.location.search;
@@ -323,7 +325,7 @@ if (Auth) {
     }
   });
 } else {
-  $("#menu .signInOut").remove();
+  $("#menu .signInOut").addClass("hidden");
 
   $("document").ready(async () => {
     // await UpdateConfig.loadPromise;
@@ -759,4 +761,13 @@ $(".pageSettings #addGoogleAuth").on("click", async () => {
 
 $(document).on("click", ".pageAccount .sendVerificationEmail", () => {
   sendVerificationEmail();
+});
+
+ConnectionEvent.subscribe((state) => {
+  if (state) {
+    $("#menu .signInOut").removeClass("hidden");
+  } else {
+    $("#menu .signInOut").addClass("hidden");
+    signOut();
+  }
 });
