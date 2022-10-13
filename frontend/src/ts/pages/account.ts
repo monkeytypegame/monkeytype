@@ -428,7 +428,7 @@ function fillContent(): void {
         let tagHide = true;
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
-          if (DB.getSnapshot()?.tags?.length || 0 > 0) {
+          if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
             if (ResultFilters.getFilter("tags", "none")) tagHide = false;
           } else {
             tagHide = false;
