@@ -895,7 +895,7 @@ export async function init(): Promise<void> {
 
   if (Config.mode === "quote") {
     const group = await Misc.findCurrentGroup(Config.language);
-    if (group && group.name !== Config.language) {
+    if (group && group.name !== "code" && group.name !== Config.language) {
       UpdateConfig.setLanguage(group.name);
     }
   }
