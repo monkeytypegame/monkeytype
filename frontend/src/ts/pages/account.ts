@@ -30,7 +30,7 @@ let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
-  if (filteredResults == [] || filteredResults.length == 0) return;
+  if (!filteredResults || filteredResults.length == 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
@@ -105,7 +105,7 @@ function loadMoreLines(lineIndex?: number): void {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
-        DB.getSnapshot().tags?.forEach((snaptag) => {
+        DB.getSnapshot()?.tags?.forEach((snaptag) => {
           if (tag === snaptag._id) {
             tagNames += snaptag.display + ", ";
           }
@@ -241,6 +241,7 @@ function fillContent(): void {
   AllTimeStats.update();
 
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
 
   PbTables.update(snapshot.personalBests);
   Profile.update("account", snapshot);
@@ -297,7 +298,7 @@ function fillContent(): void {
 
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
-  DB.getSnapshot().results?.forEach(
+  DB.getSnapshot()?.results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       // totalSeconds += tt;
 
@@ -427,14 +428,14 @@ function fillContent(): void {
         let tagHide = true;
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
-          if (DB.getSnapshot().tags?.length || 0 > 0) {
+          if (DB.getSnapshot()?.tags?.length || 0 > 0) {
             if (ResultFilters.getFilter("tags", "none")) tagHide = false;
           } else {
             tagHide = false;
           }
         } else {
           //tags exist
-          const validTags = DB.getSnapshot().tags?.map((t) => t._id);
+          const validTags = DB.getSnapshot()?.tags?.map((t) => t._id);
 
           if (validTags === undefined) return;
 
@@ -901,7 +902,7 @@ function fillContent(): void {
 }
 
 export async function downloadResults(): Promise<void> {
-  if (DB.getSnapshot().results !== undefined) return;
+  if (DB.getSnapshot()?.results !== undefined) return;
   const results = await DB.getUserResults();
   TodayTracker.addAllFromToday();
   if (results) {
@@ -1114,7 +1115,9 @@ $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
 });
 
 $(document).on("click", ".pageAccount .profile .details .copyLink", () => {
-  const { name } = DB.getSnapshot();
+  const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
+  const { name } = snapshot;
   const url = `${location.origin}/profile/${name}`;
 
   navigator.clipboard.writeText(url).then(
@@ -1140,7 +1143,7 @@ export const page = new Page(
   },
   async () => {
     ResultFilters.appendButtons();
-    if (DB.getSnapshot().results == undefined) {
+    if (DB.getSnapshot()?.results == undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");

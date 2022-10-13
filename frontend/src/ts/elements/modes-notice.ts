@@ -225,7 +225,7 @@ export async function update(): Promise<void> {
 
   let tagsString = "";
   try {
-    DB.getSnapshot().tags?.forEach((tag) => {
+    DB.getSnapshot()?.tags?.forEach((tag) => {
       if (tag.active === true) {
         tagsString += tag.display + ", ";
       }

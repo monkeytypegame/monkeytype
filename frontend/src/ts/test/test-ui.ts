@@ -281,7 +281,7 @@ export async function screenshot(): Promise<void> {
   );
   if (Auth?.currentUser) {
     $(".pageTest .ssWatermark").text(
-      DB.getSnapshot().name +
+      DB.getSnapshot()?.name +
         " | " +
         format(dateNow, "dd MMM yyyy HH:mm") +
         " | monkeytype.com  "
