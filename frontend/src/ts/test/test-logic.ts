@@ -745,7 +745,9 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
   } else if (Config.funbox === "58008") {
     word = Misc.getNumbers(7);
     if (Config.language.startsWith("kurdish")) {
-      word = Misc.convertNumberToArabicIndic(word);
+      word = Misc.convertNumberToArabic(word);
+    } else if (Config.language.startsWith("nepali")) {
+      word = Misc.convertNumberToNepali(word);
     }
   } else if (Config.funbox === "specials") {
     word = Misc.getSpecials();
@@ -852,7 +854,9 @@ async function getNextWord(
       randomWord = Misc.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {
-        randomWord = Misc.convertNumberToArabicIndic(randomWord);
+        randomWord = Misc.convertNumberToArabic(randomWord);
+      } else if (Config.language.startsWith("nepali")) {
+        randomWord = Misc.convertNumberToNepali(randomWord);
       }
     }
   }
