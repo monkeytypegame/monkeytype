@@ -52,7 +52,7 @@ function updateActiveButtons(active: string[]): void {
 }
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
-  if (DB.getSnapshot()?.tags?.length || 0 > 0) {
+  if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
     const resultid = $(f.target).parents("span").attr("resultid") as string;
     const tags = $(f.target).parents("span").attr("tags") as string;
     $("#resultEditTagsPanel").attr("resultid", resultid);
