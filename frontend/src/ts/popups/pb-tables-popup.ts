@@ -10,6 +10,7 @@ function update(mode: MonkeyTypes.Mode): void {
   $($("#pbTablesPopup table thead tr td")[0]).text(mode);
 
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
 
   const allmode2 = (
     snapshot.personalBests === undefined
