@@ -19,7 +19,30 @@
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    width: 60vw;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow-y: auto;
+    grid-template-areas:
+      "topButtons topButtons topButtons"
+      "textArea textArea checkboxes"
+      "ok ok ok";
+    grid-template-columns: 1fr 1fr 1fr;
+
+    .buttonsTop {
+      grid-area: topButtons;
+    }
+
+    .textAreaWrapper {
+      grid-area: textArea;
+    }
+
+    .inputs {
+      grid-area: checkboxes;
+    }
+
+    .button.apply {
+      grid-area: ok;
+    }
 
     .longCustomTextWarning {
       background: rgba(0, 0, 0, 0.9);
@@ -70,7 +93,7 @@
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
-      height: 200px;
+      height: 330px;
       color: var(--text-color);
       overflow-x: hidden;
       overflow-y: scroll;
@@ -78,10 +101,11 @@
 
     .inputs {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 1rem;
       align-items: center;
       justify-items: left;
+      height: min-content;
       &.disabled {
         opacity: 0.5;
         user-select: none;
