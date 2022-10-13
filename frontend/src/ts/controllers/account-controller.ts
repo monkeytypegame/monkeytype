@@ -41,7 +41,6 @@ import {
   Unsubscribe,
 } from "firebase/auth";
 import { Auth } from "../firebase";
-import { defaultSnap } from "../constants/default-snapshot";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
   hideFavoriteQuoteLength,
