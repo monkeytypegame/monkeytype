@@ -7,20 +7,22 @@ import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
 import * as CookiePopup from "./popups/cookie-popup";
 import * as PSA from "./elements/psa";
+import * as ConnectionState from "./states/connection";
+import { Workbox } from "workbox-window";
 
 ManualRestart.set();
 UpdateConfig.loadFromLocalStorage();
 
 if (window.location.hostname === "localhost") {
   $("#bottom .version .text").text("localhost");
-  $("#bottom .version").css("opacity", 1);
+  $("#bottom #versionGroup").removeClass("hidden");
   $("body").prepend(
     `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
   Misc.getLatestReleaseFromGitHub().then((v) => {
     $("#bottom .version .text").text(v);
-    $("#bottom .version").css("opacity", 1);
+    $("#bottom #versionGroup").removeClass("hidden");
     NewVersionNotification.show(v);
   });
 }

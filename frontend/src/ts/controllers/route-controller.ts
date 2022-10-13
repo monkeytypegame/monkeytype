@@ -12,6 +12,7 @@ import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
 import * as NavigateEvent from "../observables/navigate-event";
 import { Auth } from "../firebase";
+import * as ConnectionState from "../states/connection";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -84,7 +85,7 @@ const routes: Route[] = [
   {
     path: "/login",
     load: (): void => {
-      if (!Auth) {
+      if (!Auth || !ConnectionState.get()) {
         nav("/");
         return;
       }
@@ -94,7 +95,7 @@ const routes: Route[] = [
   {
     path: "/account",
     load: (_params, options): void => {
-      if (!Auth) {
+      if (!Auth || !ConnectionState.get()) {
         nav("/");
         return;
       }
