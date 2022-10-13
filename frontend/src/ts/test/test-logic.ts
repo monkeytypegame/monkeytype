@@ -1746,6 +1746,12 @@ async function saveResult(
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
+  $("#result .stats .tags .editTagsButton").attr(
+    "result-id",
+    response.data.insertedId
+  );
+  $("#result .stats .tags .editTagsButton").removeClass("invisible");
+
   if (response?.data?.xp) {
     const snapxp = DB.getSnapshot().xp;
     AccountButton.updateXpBar(

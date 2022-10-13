@@ -447,6 +447,12 @@
   // "login login"
   // "ssw ssw";
 
+  .editTagsButton {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding-bottom: 0;
+  }
+
   &:focus {
     outline: none;
   }

@@ -402,6 +402,7 @@ export async function updateCrown(): Promise<void> {
 
 function updateTags(dontSave: boolean): void {
   const activeTags: MonkeyTypes.Tag[] = [];
+  const userTagsCount = DB.getSnapshot().tags?.length ?? 0;
   try {
     DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active === true) {
@@ -410,13 +411,23 @@ function updateTags(dontSave: boolean): void {
     });
   } catch (e) {}
 
-  $("#result .stats .tags").addClass("hidden");
-  if (activeTags.length == 0) {
+  if (userTagsCount === 0) {
     $("#result .stats .tags").addClass("hidden");
   } else {
     $("#result .stats .tags").removeClass("hidden");
   }
-  $("#result .stats .tags .bottom").text("");
+  if (activeTags.length === 0) {
+    $("#result .stats .tags .bottom").text("no tags");
+  } else {
+    $("#result .stats .tags .bottom").text("");
+  }
+  $("#result .stats .tags .editTagsButton").attr("result-id", "");
+  $("#result .stats .tags .editTagsButton").attr(
+    "active-tag-ids",
+    activeTags.map((t) => t._id).join(",")
+  );
+  $("#result .stats .tags .editTagsButton").addClass("invisible");
+
   let annotationSide = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
