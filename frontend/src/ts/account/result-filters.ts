@@ -461,7 +461,7 @@ export function updateTags(): void {
 
   const snapshot = DB.getSnapshot();
 
-  if (snapshot?.tags?.length || 0 > 0) {
+  if ((snapshot?.tags?.length ?? 0) > 0) {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
