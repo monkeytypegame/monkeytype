@@ -11,12 +11,14 @@ export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(newSnapshot: MonkeyTypes.Snapshot): void {
+export function setSnapshot(
+  newSnapshot: MonkeyTypes.Snapshot | undefined
+): void {
   try {
-    delete newSnapshot.banned;
+    delete newSnapshot?.banned;
   } catch {}
   try {
-    delete newSnapshot.verified;
+    delete newSnapshot?.verified;
   } catch {}
   dbSnapshot = newSnapshot;
 }

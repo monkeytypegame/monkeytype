@@ -545,7 +545,7 @@ export function signOut(): void {
       Settings.hideAccountSection();
       AccountButton.update();
       navigate("/login");
-      DB.setSnapshot(defaultSnap);
+      DB.setSnapshot(undefined);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
