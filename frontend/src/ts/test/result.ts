@@ -402,7 +402,7 @@ export async function updateCrown(): Promise<void> {
 
 function updateTags(dontSave: boolean): void {
   const activeTags: MonkeyTypes.Tag[] = [];
-  const userTagsCount = DB.getSnapshot().tags?.length ?? 0;
+  const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
     DB.getSnapshot().tags?.forEach((tag) => {
       if (tag.active === true) {
