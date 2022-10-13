@@ -64,6 +64,65 @@ $(document).ready(() => {
     .removeClass("hidden")
     .stop(true, true)
     .animate({ opacity: 1 }, 250);
-  PSA.show();
+  if (ConnectionState.get()) PSA.show();
   MonkeyPower.init();
 });
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    // disabling service workers on localhost - they dont really work well with local development
+    // and cause issues with hot reloading
+    if (window.location.hostname === "localhost") {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (const registration of registrations) {
+          // if (registration.scope !== "https://monkeytype.com/")
+          registration.unregister();
+        }
+      });
+    } else {
+      const wb = new Workbox("/service-worker.js");
+
+      let updateBannerId: number;
+
+      // Add an event listener to detect when the registered
+      // service worker has installed but is waiting to activate.
+      wb.addEventListener("waiting", (event) => {
+        // set up a listener that will show a banner as soon as
+        // the previously waiting service worker has taken control.
+        wb.addEventListener("controlling", (event2) => {
+          if (
+            (event.isUpdate || event2.isUpdate) &&
+            updateBannerId === undefined
+          ) {
+            updateBannerId = Notifications.addBanner(
+              "Update ready - please refresh",
+              1,
+              "gift",
+              true
+            );
+          }
+        });
+
+        wb.messageSkipWaiting();
+      });
+
+      wb.register()
+        .then((registration) => {
+          // if (registration?.waiting) {
+          //   //@ts-ignore
+          //   registration?.onupdatefound = (): void => {
+          //     Notifications.add("Downloading update...", 1, 0, "Update");
+          //   };
+          // }
+          console.log("Service worker registration succeeded:", registration);
+
+          setInterval(() => {
+            wb.update(); //check for updates every 15 minutes
+          }, 900000);
+        })
+        .catch((e) => {
+          console.log("Service worker registration failed:", e);
+        });
+    }
+  });
+}
