@@ -1,5 +1,6 @@
 import * as Misc from "../utils/misc";
 import Page from "./page";
+import Ape from "../ape";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -9,6 +10,14 @@ function reset(): void {
 async function fill(): Promise<void> {
   const supporters = await Misc.getSupportersList();
   const contributors = await Misc.getContributorsList();
+  const speedStats = await Ape.publicStats.getSpeedStats({
+    language: "english",
+    mode: "time",
+    mode2: "15",
+  });
+  $(".histogramChart").append(`
+  <pre>${JSON.stringify(speedStats.data, null, 2)}</pre>
+  `);
   supporters.forEach((supporter) => {
     $(".pageAbout .supporters").append(`
       <div>${supporter}</div>
