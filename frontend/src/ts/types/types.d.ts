@@ -208,6 +208,7 @@ declare namespace MonkeyTypes {
     conflictsWithSymmetricChars?: boolean;
     toPushCount?: number;
     changesWordsVisibility?: boolean;
+    speaks?: boolean;
     unspeakable?: boolean;
     changesLayout?: boolean;
     ignoresLayout?: boolean;

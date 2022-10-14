@@ -57,6 +57,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Listen closely.",
     blockWordHighlight: true,
     changesWordsVisibility: true,
+    speaks: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
     },
@@ -668,9 +669,9 @@ export function checkFunbox(funbox?: string): boolean {
       checkingFunbox.filter((f) => f.symmetricChars).length > 0) ||
     (checkingFunbox.filter((f) => f.toPushCount).length > 0 &&
       checkingFunbox.filter((f) => f.pullSection).length > 0) ||
-    (checkingFunbox.find((f) => f.name == "tts") &&
+    (checkingFunbox.filter((f) => f.speaks).length > 0 &&
       checkingFunbox.filter((f) => f.unspeakable).length > 0) ||
-    (checkingFunbox.find((f) => f.changesLayout) &&
+    (checkingFunbox.filter((f) => f.changesLayout).length > 0 &&
       checkingFunbox.filter((f) => f.ignoresLayout).length > 0)
   );
 }
@@ -739,20 +740,39 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       return;
     }
   }
-  if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
-    const fb = UpdateConfig.ActiveFunboxes().filter(
-      (f) => f.getWord || f.alterText || f.pullSection
+
+  let fb: MonkeyTypes.FunboxObject[] = [];
+  if (Config.mode === "zen") {
+    fb = fb.concat(
+      UpdateConfig.ActiveFunboxes().filter(
+        (f) =>
+          f.getWord ||
+          f.pullSection ||
+          f.alterText ||
+          f.changesCapitalisation ||
+          f.nospace ||
+          f.toPushCount ||
+          f.changesWordsVisibility ||
+          f.speaks ||
+          f.changesLayout
+      )
     );
-    if (fb.length > 0) {
-      Notifications.add(
-        `${Misc.capitalizeFirstLetterOfEachWord(
-          Config.mode
-        )} mode does not support the ${fb[0].name.replace(/_/g, " ")} funbox`,
-        0
-      );
-      UpdateConfig.setMode("time", true);
-    }
   }
+  if (Config.mode === "quote") {
+    fb = fb.concat(
+      UpdateConfig.ActiveFunboxes().filter((f) => f.getWord || f.pullSection)
+    );
+  }
+  if (fb.length > 0) {
+    Notifications.add(
+      `${Misc.capitalizeFirstLetterOfEachWord(
+        Config.mode
+      )} mode does not support the ${fb[0].name.replace(/_/g, " ")} funbox`,
+      0
+    );
+    UpdateConfig.setMode("time", true);
+  }
+
   if (
     (Config.time === 0 && Config.mode === "time") ||
     (Config.words === 0 && Config.mode === "words")
