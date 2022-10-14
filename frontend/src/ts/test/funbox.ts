@@ -749,6 +749,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
           f.getWord ||
           f.pullSection ||
           f.alterText ||
+          f.withWords ||
           f.changesCapitalisation ||
           f.nospace ||
           f.toPushCount ||
@@ -760,7 +761,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
   if (Config.mode === "quote") {
     fb = fb.concat(
-      UpdateConfig.ActiveFunboxes().filter((f) => f.getWord || f.pullSection)
+      UpdateConfig.ActiveFunboxes().filter(
+        (f) => f.getWord || f.pullSection || f.withWords
+      )
     );
   }
   if (fb.length > 0) {
