@@ -4,8 +4,14 @@ import * as Config from "../config";
 import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
+import * as ConnectionState from "../states/connection";
 
 export function show(action: string, id?: string, name?: string): void {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
+
   if (action === "add") {
     $("#presetWrapper #presetEdit").attr("action", "add");
     $("#presetWrapper #presetEdit .title").html("Add new preset");

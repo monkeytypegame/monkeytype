@@ -3,10 +3,15 @@ import { getHTMLById } from "../controllers/badge-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import * as ConnectionState from "../states/connection";
 
 let callbackFuncOnHide: (() => void) | null = null;
 
 export function show(callbackOnHide: () => void): void {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   if ($("#editProfilePopupWrapper").hasClass("hidden")) {
     callbackFuncOnHide = callbackOnHide;
 

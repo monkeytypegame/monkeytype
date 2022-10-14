@@ -2,8 +2,13 @@ import Ape from "../ape";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import * as ConnectionState from "../states/connection";
 
 function show(): void {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
     $("#resultEditTagsPanelWrapper")
       .stop(true, true)
