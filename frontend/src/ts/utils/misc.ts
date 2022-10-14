@@ -573,11 +573,20 @@ export function getNumbers(len: number): string {
 }
 
 //convert numbers to arabic-indic
-export function convertNumberToArabicIndic(numString: string): string {
+export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
   for (let i = 0; i < numString.length; i++) {
     ret += arabicIndic[parseInt(numString[i])];
+  }
+  return ret;
+}
+
+export function convertNumberToNepali(numString: string): string {
+  const nepaliIndic = "०१२३४५६७८९";
+  let ret = "";
+  for (let i = 0; i < numString.length; i++) {
+    ret += nepaliIndic[parseInt(numString[i])];
   }
   return ret;
 }

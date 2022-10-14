@@ -131,6 +131,8 @@ export async function punctuateWord(
       if (rand <= 0.8) {
         if (currentLanguage == "kurdish") {
           word += ".";
+        } else if (currentLanguage === "nepali") {
+          word += "।";
         } else {
           word += ".";
         }
@@ -773,7 +775,9 @@ async function getNextWord(
       randomWord = Misc.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {
-        randomWord = Misc.convertNumberToArabicIndic(randomWord);
+        randomWord = Misc.convertNumberToArabic(randomWord);
+      } else if (Config.language.startsWith("nepali")) {
+        randomWord = Misc.convertNumberToNepali(randomWord);
       }
     }
   }
@@ -1652,6 +1656,12 @@ async function saveResult(
     console.log("Error saving result", completedEvent);
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
+
+  $("#result .stats .tags .editTagsButton").attr(
+    "result-id",
+    response.data.insertedId
+  );
+  $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
   if (response?.data?.xp) {
     const snapxp = DB.getSnapshot().xp;

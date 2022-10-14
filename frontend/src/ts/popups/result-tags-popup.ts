@@ -40,7 +40,7 @@ export function updateButtons(): void {
 }
 
 function updateActiveButtons(active: string[]): void {
-  if (active === []) return;
+  if (active.length === 0) return;
   $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
     const tagid: string = $(obj).attr("tagid") ?? "";
     if (active.includes(tagid)) {
@@ -57,6 +57,7 @@ $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
     const tags = $(f.target).parents("span").attr("tags") as string;
     $("#resultEditTagsPanel").attr("resultid", resultid);
     $("#resultEditTagsPanel").attr("tags", tags);
+    $("#resultEditTagsPanel").attr("source", "accountPage");
     updateActiveButtons(JSON.parse(tags));
     show();
   } else {
@@ -65,6 +66,22 @@ $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
       0,
       4
     );
+  }
+});
+
+$(document).on("click", ".pageTest .tags .editTagsButton", () => {
+  if (DB.getSnapshot().tags?.length ?? 0 > 0) {
+    const resultid = $(".pageTest .tags .editTagsButton").attr(
+      "result-id"
+    ) as string;
+    const tags = $(".pageTest .tags .editTagsButton")
+      .attr("active-tag-ids")
+      ?.split(",") as string[];
+    $("#resultEditTagsPanel").attr("resultid", resultid);
+    $("#resultEditTagsPanel").attr("tags", JSON.stringify(tags));
+    $("#resultEditTagsPanel").attr("source", "resultPage");
+    updateActiveButtons(tags);
+    show();
   }
 });
 
@@ -111,17 +128,16 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
     }
   );
 
-  let tagNames = "";
+  const tagNames: string[] = [];
 
   if (newTags.length > 0) {
     newTags.forEach((tag) => {
       DB.getSnapshot().tags?.forEach((snaptag) => {
         if (tag === snaptag._id) {
-          tagNames += snaptag.display + ", ";
+          tagNames.push(snaptag.display);
         }
       });
     });
-    tagNames = tagNames.substring(0, tagNames.length - 2);
   }
 
   let restags;
@@ -135,20 +151,29 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
     "tags",
     restags
   );
-  if (newTags.length > 0) {
-    $(`.pageAccount #resultEditTags[resultid='${resultId}']`).css("opacity", 1);
-    $(`.pageAccount #resultEditTags[resultid='${resultId}']`).attr(
-      "aria-label",
-      tagNames
-    );
-  } else {
-    $(`.pageAccount #resultEditTags[resultid='${resultId}']`).css(
-      "opacity",
-      0.25
-    );
-    $(`.pageAccount #resultEditTags[resultid='${resultId}']`).attr(
-      "aria-label",
-      "no tags"
-    );
+  const source = $("#resultEditTagsPanel").attr("source") as string;
+
+  if (source === "accountPage") {
+    if (newTags.length > 0) {
+      $(`.pageAccount #resultEditTags[resultid='${resultId}']`).css(
+        "opacity",
+        1
+      );
+      $(`.pageAccount #resultEditTags[resultid='${resultId}']`).attr(
+        "aria-label",
+        tagNames.join(", ")
+      );
+    } else {
+      $(`.pageAccount #resultEditTags[resultid='${resultId}']`).css(
+        "opacity",
+        0.25
+      );
+      $(`.pageAccount #resultEditTags[resultid='${resultId}']`).attr(
+        "aria-label",
+        "no tags"
+      );
+    }
+  } else if (source === "resultPage") {
+    $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
   }
 });
