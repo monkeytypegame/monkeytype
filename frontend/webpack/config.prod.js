@@ -81,6 +81,13 @@ const PRODUCTION_CONFIG = {
       skipWaiting: false,
       //include the generated css and js files
       maximumFileSizeToCacheInBytes: 11000000,
+      exclude: [
+        /html\/.*\.html/,
+        /LICENSE\.txt/,
+        /\.DS_Store/,
+        /\.map$/,
+        /^manifest.*\.js$/,
+      ],
     }),
   ],
 };
