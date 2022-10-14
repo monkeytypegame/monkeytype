@@ -82,8 +82,7 @@ const PRODUCTION_CONFIG = {
       //include the generated css and js files
       maximumFileSizeToCacheInBytes: 11000000,
       exclude: [
-        /pages\/./,
-        /html\/./,
+        /html\/.*\.html/,
         /LICENSE\.txt/,
         /\.DS_Store/,
         /\.map$/,
