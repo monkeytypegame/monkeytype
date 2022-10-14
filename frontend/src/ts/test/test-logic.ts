@@ -56,6 +56,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
+import * as ConnectionState from "../states/connection";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -1725,6 +1726,17 @@ async function saveResult(
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, 3, "Notice");
     AccountButton.loading(false);
+    return;
+  }
+
+  if (!ConnectionState.get()) {
+    Notifications.add("Result not saved: offline", -1, 2, "Notice");
+    AccountButton.loading(false);
+    retrySaving.canRetry = true;
+    $("#retrySavingResultButton").removeClass("hidden");
+    if (!isRetrying) {
+      retrySaving.completedEvent = completedEvent;
+    }
     return;
   }
 

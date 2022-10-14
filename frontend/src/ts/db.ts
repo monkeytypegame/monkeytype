@@ -4,6 +4,7 @@ import * as LoadingPage from "./pages/loading";
 import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
+import * as ConnectionState from "./states/connection";
 
 let dbSnapshot: MonkeyTypes.Snapshot;
 
@@ -191,6 +192,11 @@ export async function getUserResults(): Promise<boolean> {
   const user = Auth?.currentUser;
   if (!user) return false;
   if (dbSnapshot === null) return false;
+
+  if (!ConnectionState.get()) {
+    return false;
+  }
+
   if (dbSnapshot.results !== undefined) {
     return true;
   } else {
