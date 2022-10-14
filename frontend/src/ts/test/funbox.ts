@@ -331,9 +331,9 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     getWord(): string {
       let num = Misc.getNumbers(7);
       if (Config.language.startsWith("kurdish")) {
-        word = Misc.convertNumberToArabic(word);
+        num = Misc.convertNumberToArabic(num);
       } else if (Config.language.startsWith("nepali")) {
-        word = Misc.convertNumberToNepali(word);
+        num = Misc.convertNumberToNepali(num);
       }
       return num;
     },
