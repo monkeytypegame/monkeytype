@@ -12,6 +12,7 @@ import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import { Auth } from "../firebase";
+import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
@@ -1230,51 +1231,99 @@ list["deleteCustomTheme"] = new SimplePopup(
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     list["unlinkDiscord"].show();
   }
 );
 
 $(".pageSettings #removeGoogleAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["removeGoogleAuth"].show();
 });
 
 $("#resetSettingsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetSettings"].show();
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetPersonalBests"].show();
 });
 
 $(".pageSettings #updateAccountName").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateName"].show();
 });
 
 $(document).on("click", "#bannerCenter .banner .text .openNameChange", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateName"].show();
 });
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["addPasswordAuth"].show();
 });
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateEmail"].show();
 });
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updatePassword"].show();
 });
 
 $(".pageSettings #deleteAccount").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["deleteAccount"].show();
 });
 
 $(".pageSettings #resetAccount").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetAccount"].show();
 });
 
 $("#apeKeysPopup .generateApeKey").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["generateApeKey"].show();
 });
 
@@ -1282,6 +1331,10 @@ $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme .delButton",
   (e) => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     list["deleteCustomTheme"].show([customThemeId]);
@@ -1292,6 +1345,10 @@ $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme .editButton",
   (e) => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     list["updateCustomTheme"].show([customThemeId]);
@@ -1326,11 +1383,19 @@ $(document).on(
 );
 
 $(document).on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   list["deleteApeKey"].show([keyId]);
 });
 
 $(document).on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   list["editApeKey"].show([keyId]);
 });

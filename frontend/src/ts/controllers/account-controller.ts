@@ -49,7 +49,6 @@ import {
 } from "../test/test-config";
 import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
-import * as ConnectionEvent from "../observables/connection-event";
 import * as ConnectionState from "../states/connection";
 
 export const gmailProvider = new GoogleAuthProvider();
@@ -358,6 +357,10 @@ export function signIn(): void {
     Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
 
   UpdateConfig.setChangedBeforeDb(false);
   authListener();
@@ -429,6 +432,10 @@ export async function forgotPassword(email: any): Promise<void> {
 export async function signInWithGoogle(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
     return;
   }
 
@@ -559,6 +566,10 @@ export function signOut(): void {
 async function signUp(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
     return;
   }
   RegisterCaptchaPopup.show();
@@ -756,18 +767,17 @@ $(".pageLogin .register .button").on("click", () => {
 });
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   addGoogleAuth();
 });
 
 $(document).on("click", ".pageAccount .sendVerificationEmail", () => {
-  sendVerificationEmail();
-});
-
-ConnectionEvent.subscribe((state) => {
-  if (state) {
-    $("#menu .signInOut").removeClass("hidden");
-  } else {
-    $("#menu .signInOut").addClass("hidden");
-    signOut();
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
   }
+  sendVerificationEmail();
 });

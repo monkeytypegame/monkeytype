@@ -72,7 +72,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     // disabling service workers on localhost - they dont really work well with local development
     // and cause issues with hot reloading
-    if (window.location.hostname === "localhost") {
+    if (window.location.hostname === "localhos") {
       navigator.serviceWorker.getRegistrations().then(function (registrations) {
         for (const registration of registrations) {
           // if (registration.scope !== "https://monkeytype.com/")
