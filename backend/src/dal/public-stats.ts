@@ -18,3 +18,18 @@ export async function updateStats(
   );
   return true;
 }
+
+/** Get the histogram stats of speed buckets for all users.
+ * @returns an object mapping wpm => count, eg { '80': 4388, '90': 2149}
+ */
+export async function getSpeedStats(
+  language,
+  mode,
+  mode2
+): Promise<Record<string, number>> {
+  const key = `${language}_${mode}_${mode2}`;
+  const stats = await db
+    .collection<MonkeyTypes.PublicSpeedStats>("public")
+    .findOne({ type: "speedStats" }, { projection: { [key]: 1 } });
+  return stats?.[key] ?? {};
+}
