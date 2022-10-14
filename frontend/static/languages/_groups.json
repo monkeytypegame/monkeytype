@@ -86,7 +86,7 @@
   },
   {
     "name": "polish",
-    "languages": ["polish", "polish_2k", "polish_200k"]
+    "languages": ["polish", "polish_2k", "polish_10k", "polish_200k"]
   },
   {
     "name": "czech",
