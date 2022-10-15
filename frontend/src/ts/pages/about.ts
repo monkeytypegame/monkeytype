@@ -64,7 +64,10 @@ export const page = new Page(
 );
 
 /** Convert histogram data to the format required to draw a bar chart. */
-function getHistogramDataBucketed(data: Record<string, number>): { data: { x: number; y: number }[]; labels: string[] } {
+function getHistogramDataBucketed(data: Record<string, number>): {
+  data: { x: number; y: number }[];
+  labels: string[];
+} {
   const histogramChartDataBucketed: { x: number; y: number }[] = [];
   const labels: string[] = [];
 
