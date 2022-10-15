@@ -1310,7 +1310,7 @@ export function setRandomTheme(
       return false;
     }
     if (!DB.getSnapshot()) return true;
-    if (DB.getSnapshot().customThemes.length === 0) {
+    if (DB.getSnapshot()?.customThemes.length === 0) {
       Notifications.add("You need to create a custom theme first", 0);
       config.randomTheme = "off";
       return false;

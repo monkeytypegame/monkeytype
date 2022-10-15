@@ -1476,7 +1476,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   //tags
   const activeTagsIds: string[] = [];
   try {
-    DB.getSnapshot().tags?.forEach((tag) => {
+    DB.getSnapshot()?.tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTagsIds.push(tag._id);
       }
@@ -1765,7 +1765,7 @@ async function saveResult(
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
   if (response?.data?.xp) {
-    const snapxp = DB.getSnapshot().xp;
+    const snapxp = DB.getSnapshot()?.xp ?? 0;
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,

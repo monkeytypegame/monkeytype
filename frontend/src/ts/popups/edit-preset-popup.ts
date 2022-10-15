@@ -82,7 +82,7 @@ async function apply(): Promise<void> {
   if ((updateConfig && action === "edit") || action === "add") {
     configChanges = Config.getConfigChanges();
 
-    const tags = DB.getSnapshot().tags || [];
+    const tags = DB.getSnapshot()?.tags ?? [];
 
     const activeTagIds: string[] = tags
       .filter((tag: MonkeyTypes.Tag) => tag.active)
@@ -90,7 +90,7 @@ async function apply(): Promise<void> {
     configChanges.tags = activeTagIds;
   }
 
-  const snapshotPresets = DB.getSnapshot().presets || [];
+  const snapshotPresets = DB.getSnapshot()?.presets ?? [];
 
   hide();
 

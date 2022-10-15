@@ -90,7 +90,7 @@ async function apply(): Promise<void> {
       );
     } else {
       Notifications.add("Tag added", 1);
-      DB.getSnapshot().tags?.push({
+      DB.getSnapshot()?.tags?.push({
         display: propTagName,
         name: response.data.name,
         _id: response.data._id,
@@ -106,7 +106,7 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to edit tag: " + response.message, -1);
     } else {
       Notifications.add("Tag updated", 1);
-      DB.getSnapshot().tags?.forEach((tag) => {
+      DB.getSnapshot()?.tags?.forEach((tag) => {
         if (tag._id === tagId) {
           tag.name = tagName;
           tag.display = propTagName;
@@ -123,9 +123,9 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to remove tag: " + response.message, -1);
     } else {
       Notifications.add("Tag removed", 1);
-      DB.getSnapshot().tags?.forEach((tag, index: number) => {
+      DB.getSnapshot()?.tags?.forEach((tag, index: number) => {
         if (tag._id === tagId) {
-          DB.getSnapshot().tags?.splice(index, 1);
+          DB.getSnapshot()?.tags?.splice(index, 1);
         }
       });
       ResultTagsPopup.updateButtons();
@@ -139,7 +139,7 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to clear tag pb: " + response.message, -1);
     } else {
       Notifications.add("Tag PB cleared", 1);
-      DB.getSnapshot().tags?.forEach((tag) => {
+      DB.getSnapshot()?.tags?.forEach((tag) => {
         if (tag._id === tagId) {
           tag.personalBests = {
             time: {},

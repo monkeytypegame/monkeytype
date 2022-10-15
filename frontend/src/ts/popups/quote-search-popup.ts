@@ -348,6 +348,7 @@ $(document).on("click", "#quoteSearchPopup .textButton.favorite", async (e) => {
     `#quoteSearchPopup .searchResult[id=${quoteId}] .textButton.favorite i`
   );
   const dbSnapshot = DB.getSnapshot();
+  if (!dbSnapshot) return;
 
   if ($button.hasClass("fas")) {
     // Remove from favorites

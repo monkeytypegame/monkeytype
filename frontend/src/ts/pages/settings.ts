@@ -565,10 +565,10 @@ export function updateDiscordSection(): void {
   if (Auth?.currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
-    if (DB.getSnapshot() == null) return;
+    if (!DB.getSnapshot()) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
-    if (DB.getSnapshot().discordId == undefined) {
+    if (DB.getSnapshot()?.discordId == undefined) {
       //show button
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
@@ -642,7 +642,7 @@ function setActiveFunboxButton(): void {
 function refreshTagsSettingsSection(): void {
   if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    DB.getSnapshot().tags?.forEach((tag) => {
+    DB.getSnapshot()?.tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb != undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
@@ -677,7 +677,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
+    DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">

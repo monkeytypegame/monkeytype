@@ -123,7 +123,7 @@ export async function refreshButtons(): Promise<void> {
 
     addButton.removeClass("hidden");
 
-    const customThemes = DB.getSnapshot().customThemes;
+    const customThemes = DB.getSnapshot()?.customThemes ?? [];
 
     customThemes.forEach((customTheme) => {
       // const activeTheme =

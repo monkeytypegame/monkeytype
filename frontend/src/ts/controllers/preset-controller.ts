@@ -7,6 +7,7 @@ import * as TagController from "./tag-controller";
 export function apply(_id: string): void {
   // console.log(DB.getSnapshot().presets);
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   snapshot.presets?.forEach((preset) => {
     if (preset._id == _id) {
       UpdateConfig.apply(preset.config);
