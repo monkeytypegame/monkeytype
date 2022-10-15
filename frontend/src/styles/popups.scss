@@ -19,7 +19,49 @@
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    width: 60vw;
+    max-width: 1200px;
+    max-height: 100%;
+    overflow-y: auto;
+    grid-template-areas:
+      "topButtons topButtons topButtons"
+      "textArea textArea checkboxes"
+      "ok ok ok";
+    grid-template-columns: 1fr 1fr 1fr;
+
+    .buttonsTop {
+      grid-area: topButtons;
+    }
+
+    .textAreaWrapper {
+      grid-area: textArea;
+    }
+
+    .inputs {
+      grid-area: checkboxes;
+    }
+
+    .button.apply {
+      grid-area: ok;
+    }
+
+    .longCustomTextWarning {
+      background: rgba(0, 0, 0, 0.9);
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      display: grid;
+      place-items: center center;
+      border-radius: var(--roundness);
+      .textAndButton {
+        width: 80%;
+        max-width: 20rem;
+        text-align: center;
+        display: grid;
+        gap: 1rem;
+      }
+    }
 
     .buttonsTop {
       display: grid;
@@ -51,7 +93,7 @@
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
-      height: 200px;
+      height: 330px;
       color: var(--text-color);
       overflow-x: hidden;
       overflow-y: scroll;
@@ -59,10 +101,16 @@
 
     .inputs {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 1rem;
       align-items: center;
       justify-items: left;
+      height: min-content;
+      &.disabled {
+        opacity: 0.5;
+        user-select: none;
+        pointer-events: none;
+      }
     }
 
     .randomInputFields {
@@ -72,6 +120,11 @@
       align-items: center;
       width: 100%;
       gap: 1rem;
+      &.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+        user-select: none;
+      }
     }
   }
 }
@@ -99,11 +152,43 @@
       .savedText {
         display: grid;
         gap: 0.5rem;
-        grid-template-columns: 1fr 3rem;
+        grid-template-columns: 2fr 3rem;
         .button .fas {
           pointer-events: none;
         }
       }
+    }
+
+    .listLong {
+      display: grid;
+      gap: 1rem;
+      .savedText {
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: 2fr 1fr 3rem;
+        .button .fas {
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
+
+#saveCustomTextPopupWrapper {
+  #saveCustomTextPopup {
+    color: var(--sub-color);
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    width: 400px;
+    max-height: 80vh;
+    overflow: auto;
+
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
     }
   }
 }
@@ -1234,6 +1319,13 @@
     gap: 1rem;
     @extend .ffscroll;
     overflow-y: scroll;
+
+    .preloader {
+      color: var(--main-color);
+      display: grid;
+      place-content: center center;
+      font-size: 2rem;
+    }
 
     .tip {
       text-align: center;

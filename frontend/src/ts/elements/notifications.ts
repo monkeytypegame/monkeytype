@@ -254,8 +254,8 @@ export function addBanner(
   sticky = false,
   closeCallback?: () => void,
   allowHTML?: boolean
-): void {
-  new Notification(
+): number {
+  const banner = new Notification(
     "banner",
     message,
     level,
@@ -264,7 +264,9 @@ export function addBanner(
     customIcon,
     closeCallback,
     allowHTML
-  ).show();
+  );
+  banner.show();
+  return banner.id;
 }
 
 const debouncedMarginUpdate = debounce(100, updateMargin);

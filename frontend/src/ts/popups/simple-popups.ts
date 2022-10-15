@@ -8,11 +8,11 @@ import * as Settings from "../pages/settings";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import { Auth } from "../firebase";
+import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
@@ -1076,32 +1076,6 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
-list["saveCustomText"] = new SimplePopup(
-  "saveCustomText",
-  "text",
-  "Save custom text",
-  [
-    {
-      placeholder: "Name",
-      initVal: "",
-    },
-  ],
-  "",
-  "Save",
-  (_thisPopup, input) => {
-    const text = ($(`#customTextPopup textarea`).val() as string).normalize();
-    CustomText.setCustomText(input, text);
-    Notifications.add("Custom text saved", 1);
-    CustomTextPopup.show();
-  },
-  () => {
-    //
-  },
-  () => {
-    //
-  }
-);
-
 list["deleteCustomText"] = new SimplePopup(
   "deleteCustomText",
   "text",
@@ -1116,6 +1090,49 @@ list["deleteCustomText"] = new SimplePopup(
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+list["deleteCustomTextLong"] = new SimplePopup(
+  "deleteCustomTextLong",
+  "text",
+  "Delete custom text",
+  [],
+  "Are you sure?",
+  "Delete",
+  (_thisPopup) => {
+    CustomText.deleteCustomText(_thisPopup.parameters[0], true);
+    Notifications.add("Custom text deleted", 1);
+    SavedTextsPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+list["resetProgressCustomTextLong"] = new SimplePopup(
+  "resetProgressCustomTextLong",
+  "text",
+  "Reset progress for custom text",
+  [],
+  "Are you sure?",
+  "Reset",
+  (_thisPopup) => {
+    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
+    Notifications.add("Custom text progress reset", 1);
+    SavedTextsPopup.show();
+    $(`#customTextPopupWrapper textarea`).val(
+      CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
+    );
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
   },
   () => {
     //
@@ -1214,62 +1231,110 @@ list["deleteCustomTheme"] = new SimplePopup(
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     list["unlinkDiscord"].show();
   }
 );
 
 $(".pageSettings #removeGoogleAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["removeGoogleAuth"].show();
 });
 
 $("#resetSettingsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetSettings"].show();
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetPersonalBests"].show();
 });
 
 $(".pageSettings #updateAccountName").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateName"].show();
 });
 
 $(document).on("click", "#bannerCenter .banner .text .openNameChange", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateName"].show();
 });
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["addPasswordAuth"].show();
 });
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateEmail"].show();
 });
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updatePassword"].show();
 });
 
 $(".pageSettings #deleteAccount").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["deleteAccount"].show();
 });
 
 $(".pageSettings #resetAccount").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetAccount"].show();
 });
 
 $("#apeKeysPopup .generateApeKey").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["generateApeKey"].show();
-});
-
-$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
-  list["saveCustomText"].show();
 });
 
 $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme .delButton",
   (e) => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     list["deleteCustomTheme"].show([customThemeId]);
@@ -1280,6 +1345,10 @@ $(document).on(
   "click",
   ".pageSettings .section.themes .customTheme .editButton",
   (e) => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     list["updateCustomTheme"].show([customThemeId]);
@@ -1295,12 +1364,38 @@ $(document).on(
   }
 );
 
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["deleteCustomTextLong"].show([name]);
+  }
+);
+
+$(document).on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["resetProgressCustomTextLong"].show([name]);
+  }
+);
+
 $(document).on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   list["deleteApeKey"].show([keyId]);
 });
 
 $(document).on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   list["editApeKey"].show([keyId]);
 });

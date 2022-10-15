@@ -29,6 +29,7 @@ import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Tribe from "../tribe/tribe";
 import * as Hangul from "hangul-js";
+import * as CustomTextState from "../states/custom-text-name";
 import { navigate } from "../observables/navigate-event";
 import tribeSocket from "../tribe/tribe-socket";
 
@@ -493,8 +494,9 @@ function handleChar(
   // If a trailing composed char is used, ignore it when counting accuracy
   if (
     !thisCharCorrect &&
-    Misc.trailingComposeChars.test(resultingWord) &&
-    CompositionState.getComposing()
+    // Misc.trailingComposeChars.test(resultingWord) &&
+    CompositionState.getComposing() &&
+    !Config.language.startsWith("korean")
   ) {
     TestInput.input.current = resultingWord;
     TestUI.updateWordElement();
@@ -965,6 +967,13 @@ $(document).on("keydown", async (event) => {
       event.shiftKey &&
       ((Config.mode == "time" && Config.time === 0) ||
         (Config.mode == "words" && Config.words === 0))
+    ) {
+      TestInput.setBailout(true);
+      TestLogic.finish();
+    } else if (
+      event.shiftKey &&
+      Config.mode == "custom" &&
+      CustomTextState.isCustomTextLong() === true
     ) {
       TestInput.setBailout(true);
       TestLogic.finish();

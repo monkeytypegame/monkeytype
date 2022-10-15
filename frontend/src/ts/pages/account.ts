@@ -14,6 +14,7 @@ import Page from "./page";
 import * as Misc from "../utils/misc";
 import * as Profile from "../elements/profile";
 import format from "date-fns/format";
+import * as ConnectionState from "../states/connection";
 
 import type { ScaleChartOptions } from "chart.js";
 
@@ -30,7 +31,7 @@ let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
-  if (filteredResults == [] || filteredResults.length == 0) return;
+  if (!filteredResults || filteredResults.length == 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
@@ -890,6 +891,7 @@ function fillContent(): void {
     250,
     async () => {
       // Profile.updateNameFontSize("account");
+      $(".page.pageAccount").css("height", "unset"); //weird safari fix
     },
     async () => {
       setTimeout(() => {
@@ -902,6 +904,10 @@ function fillContent(): void {
 export async function downloadResults(): Promise<void> {
   if (DB.getSnapshot().results !== undefined) return;
   const results = await DB.getUserResults();
+  if (results === false && !ConnectionState.get()) {
+    Notifications.add("Could not get results - you are offline", -1, 5);
+    return;
+  }
   TodayTracker.addAllFromToday();
   if (results) {
     ResultFilters.updateActive();
@@ -1135,8 +1141,10 @@ export const page = new Page(
   },
   async () => {
     reset();
+    ResultFilters.removeButtons();
   },
   async () => {
+    ResultFilters.appendButtons();
     if (DB.getSnapshot().results == undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");

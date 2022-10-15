@@ -49,6 +49,7 @@ import {
 } from "../test/test-config";
 import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
+import * as ConnectionState from "../states/connection";
 
 export const gmailProvider = new GoogleAuthProvider();
 let canCall = true;
@@ -282,7 +283,7 @@ export async function loadUser(user: UserType): Promise<void> {
 let authListener: Unsubscribe;
 
 // eslint-disable-next-line no-constant-condition
-if (Auth) {
+if (Auth && ConnectionState.get()) {
   authListener = Auth?.onAuthStateChanged(async function (user) {
     // await UpdateConfig.loadPromise;
     const search = window.location.search;
@@ -294,9 +295,7 @@ if (Auth) {
       );
       await loadUser(user);
     } else {
-      $("#top .signInOut .icon").html(
-        `<i class="fas fa-fw fa-sign-in-alt"></i>`
-      );
+      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       if (window.location.pathname == "/account") {
         window.history.replaceState("", "", "/login");
       }
@@ -325,13 +324,13 @@ if (Auth) {
     }
   });
 } else {
-  $("#menu .signInOut").remove();
+  $("#menu .signInOut").addClass("hidden");
 
   $("document").ready(async () => {
     // await UpdateConfig.loadPromise;
     const search = window.location.search;
     const hash = window.location.hash;
-    $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-in-alt"></i>`);
+    $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
     if (window.location.pathname == "/account") {
       window.history.replaceState("", "", "/login");
     }
@@ -356,6 +355,10 @@ if (Auth) {
 export function signIn(): void {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
     return;
   }
 
@@ -429,6 +432,10 @@ export async function forgotPassword(email: any): Promise<void> {
 export async function signInWithGoogle(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
     return;
   }
 
@@ -548,9 +555,7 @@ export function signOut(): void {
       DB.setSnapshot(defaultSnap);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
-      $("#top .signInOut .icon").html(
-        `<i class="fas fa-fw fa-sign-in-alt"></i>`
-      );
+      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       hideFavoriteQuoteLength();
     })
     .catch(function (error) {
@@ -561,6 +566,10 @@ export function signOut(): void {
 async function signUp(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
     return;
   }
   RegisterCaptchaPopup.show();
@@ -758,9 +767,17 @@ $(".pageLogin .register .button").on("click", () => {
 });
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   addGoogleAuth();
 });
 
 $(document).on("click", ".pageAccount .sendVerificationEmail", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   sendVerificationEmail();
 });

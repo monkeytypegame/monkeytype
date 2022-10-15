@@ -35,6 +35,7 @@ import "./elements/leaderboards";
 import "./commandline/index";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
+import "./states/connection";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 

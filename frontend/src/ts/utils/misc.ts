@@ -1,5 +1,4 @@
 import * as Loader from "../elements/loader";
-import format from "date-fns/format";
 import * as Random from "../utils/random";
 
 function hexToHSL(hex: string): {
@@ -356,30 +355,18 @@ export function median(arr: number[]): number {
   }
 }
 
+export async function getLatestReleaseFromGitHub(): Promise<string> {
+  const releases = await $.getJSON(
+    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=1"
+  );
+  return releases[0].name;
+}
+
 export async function getReleasesFromGitHub(): Promise<
   MonkeyTypes.GithubRelease[]
 > {
   return $.getJSON(
-    "https://api.github.com/repos/Miodec/monkeytype/releases",
-    (data) => {
-      $("#bottom .version .text").text(data[0].name);
-      $("#bottom .version").css("opacity", 1);
-      $("#versionHistory .releases").empty();
-      data.forEach((release: MonkeyTypes.GithubRelease) => {
-        if (!release.draft && !release.prerelease) {
-          $("#versionHistory .releases").append(`
-          <div class="release">
-            <div class="title">${release.name}</div>
-            <div class="date">${format(
-              new Date(release.published_at),
-              "dd MMM yyyy"
-            )}</div>
-            <div class="body">${release.body.replace(/\r\n/g, "<br>")}</div>
-          </div>
-        `);
-        }
-      });
-    }
+    "https://api.github.com/repos/monkeytypegame/monkeytype/releases?per_page=5"
   );
 }
 
@@ -598,11 +585,20 @@ export function getNumbers(len: number): string {
 }
 
 //convert numbers to arabic-indic
-export function convertNumberToArabicIndic(numString: string): string {
+export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
   for (let i = 0; i < numString.length; i++) {
     ret += arabicIndic[parseInt(numString[i])];
+  }
+  return ret;
+}
+
+export function convertNumberToNepali(numString: string): string {
+  const nepaliIndic = "०१२३४५६७८९";
+  let ret = "";
+  for (let i = 0; i < numString.length; i++) {
+    ret += nepaliIndic[parseInt(numString[i])];
   }
   return ret;
 }
@@ -889,21 +885,33 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: MonkeyTypes.CustomText
+  CustomText: MonkeyTypes.CustomText,
+  customTextIsLong: boolean
 ): boolean {
+  const wordsLong = mode === "words" && words >= 1000;
+  const timeLong = mode === "time" && time >= 900;
+  const customTextLong = mode === "custom" && customTextIsLong == true;
+  const customTextRandomWordsLong =
+    mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
+  const customTextRandomTimeLong =
+    mode === "custom" && CustomText.isTimeRandom && CustomText.time > 900;
+  const customTextNoRandomLong =
+    mode === "custom" &&
+    !CustomText.isWordRandom &&
+    !CustomText.isTimeRandom &&
+    CustomText.text.length >= 1000;
+
   if (
-    (mode === "words" && words < 1000) ||
-    (mode === "time" && time < 3600) ||
-    mode === "quote" ||
-    (mode === "custom" && CustomText.isWordRandom && CustomText.word < 1000) ||
-    (mode === "custom" && CustomText.isTimeRandom && CustomText.time < 3600) ||
-    (mode === "custom" &&
-      !CustomText.isWordRandom &&
-      CustomText.text.length < 1000)
+    wordsLong ||
+    timeLong ||
+    customTextLong ||
+    customTextRandomWordsLong ||
+    customTextRandomTimeLong ||
+    customTextNoRandomLong
   ) {
-    return true;
-  } else {
     return false;
+  } else {
+    return true;
   }
 }
 

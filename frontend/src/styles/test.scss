@@ -451,6 +451,12 @@
   // "login login"
   // "ssw ssw";
 
+  .editTagsButton {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding-bottom: 0;
+  }
+
   &:focus {
     outline: none;
   }
@@ -602,6 +608,9 @@
         }
         letter.incorrect.extra {
           color: var(--error-extra-color);
+        }
+        &.unreached letter {
+          filter: opacity(0.2);
         }
         &.heatmap0 letter {
           color: var(--colorful-error-color);

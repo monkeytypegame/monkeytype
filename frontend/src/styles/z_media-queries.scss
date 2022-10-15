@@ -37,6 +37,13 @@
   #app {
     grid-template-columns: auto;
   }
+  #customTextPopupWrapper {
+    padding: 2rem;
+    #customTextPopup {
+      grid-template-columns: 1fr 1fr 2fr;
+      width: 100%;
+    }
+  }
 }
 
 @media only screen and (max-width: 1250px) {
@@ -81,13 +88,6 @@
           line-height: 3rem !important;
         }
       }
-    }
-  }
-  #customTextPopup {
-    width: 80vw !important;
-
-    .wordfilter.button {
-      width: 50% !important;
     }
   }
   #leaderboardsWrapper {
@@ -159,6 +159,13 @@
 }
 
 @media only screen and (max-width: 900px) {
+  #customTextPopupWrapper #customTextPopup {
+    grid-template-areas:
+      "topButtons topButtons topButtons"
+      "textArea textArea textArea"
+      "checkboxes checkboxes checkboxes"
+      "ok ok ok";
+  }
   #testConfig {
     .mode,
     .time,
@@ -430,6 +437,11 @@
     .section.themes .tabContent.customTheme {
     }
   }
+  #customTextPopupWrapper #customTextPopup {
+    .buttonsTop {
+      grid-template-columns: 1fr;
+    }
+  }
 }
 
 @media only screen and (max-width: 750px) {
@@ -660,20 +672,6 @@
   }
   #leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup {
     grid-auto-flow: row;
-  }
-  #customTextPopupWrapper {
-    #customTextPopup {
-      .wordfilter.button {
-        width: 100% !important;
-        justify-self: auto;
-      }
-
-      .inputs {
-        display: flex !important;
-        flex-direction: column;
-        justify-content: flex-start;
-      }
-    }
   }
 
   .pageAccount {

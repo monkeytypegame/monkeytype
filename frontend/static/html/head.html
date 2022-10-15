@@ -63,14 +63,5 @@
   />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="darkreader-lock" />
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function (registrations) {
-        for (let registration of registrations) {
-          // if (registration.scope !== "https://monkeytype.com/")
-          registration.unregister();
-        }
-      });
-    }
-  </script>
+  <meta http-equiv="Cache-Control" content="no-store" />
 </head>

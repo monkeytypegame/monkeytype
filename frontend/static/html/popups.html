@@ -484,9 +484,18 @@
       <div class="title">saved texts</div>
       <div class="buttons"></div>
     </div>
-    <textarea class="textarea" placeholder="Custom text"></textarea>
+    <div class="textAreaWrapper" style="position: relative">
+      <div class="longCustomTextWarning">
+        <div class="textAndButton">
+          A long custom text is currently loaded. Editing the text will disable
+          progress tracking.
+          <div class="button">Got it</div>
+        </div>
+      </div>
+      <textarea class="textarea" placeholder="Custom text"></textarea>
+    </div>
     <div class="inputs">
-      <label class="checkbox">
+      <label class="checkbox randomWordsCheckbox">
         <input type="checkbox" />
         <div class="customTextCheckbox">
           <div class="check">
@@ -498,9 +507,9 @@
           Randomize the above words, and control how many words are generated.
         </span>
       </label>
-      <div class="randomInputFields hidden">
+      <div class="randomInputFields disabled">
         <label class="wordcount">
-          Word count
+          Words
           <input type="number" value="" min="1" max="10000" />
         </label>
         <div style="color: var(--sub-color)">or</div>
@@ -534,6 +543,19 @@
           randomize groups of words.
         </span>
       </label>
+      <label class="checkbox replaceNewlineWithSpace">
+        <input type="checkbox" />
+        <div class="customTextCheckbox">
+          <div class="check">
+            <i class="fas fa-fw fa-check"></i>
+          </div>
+        </div>
+        Replace new lines with spaces
+        <span>
+          Replace all new line characters with spaces. Automatically adds
+          periods to the end of lines.
+        </span>
+      </label>
     </div>
     <div class="button apply">ok</div>
   </div>
@@ -542,6 +564,31 @@
   <div id="savedTextsPopup">
     <div class="title">Saved texts</div>
     <div class="list"></div>
+    <div class="title">Saved long texts</div>
+    <div class="listLong"></div>
+  </div>
+</div>
+<div id="saveCustomTextPopupWrapper" class="popupWrapper hidden">
+  <div id="saveCustomTextPopup">
+    <div class="title">Save custom text</div>
+    <input class="textName" type="text" placeholder="name" />
+    <div>
+      <label class="checkbox">
+        <input type="checkbox" class="isLongText" />
+        <div class="customTextCheckbox">
+          <div class="check">
+            <i class="fas fa-fw fa-check"></i>
+          </div>
+        </div>
+        Long text (book mode)
+        <span>
+          Disables editing this text but allows you to save progress by pressing
+          shift + enter or bailing out. You can then load this text again to
+          continue where you left off.
+        </span>
+      </label>
+    </div>
+    <div class="button save">save</div>
   </div>
 </div>
 <div id="wordFilterPopupWrapper" class="popupWrapper hidden">
@@ -884,21 +931,7 @@
   </div>
 </div>
 <div id="versionHistoryWrapper" class="popupWrapper hidden">
-  <div id="versionHistory">
-    <!-- <div class="tip">Click anywhere to dismiss</div> -->
-    <div class="releases">
-      <div class="release">
-        <div class="title">v1</div>
-        <div class="date">010101</div>
-        <div class="body">test</div>
-      </div>
-      <div class="release">
-        <div class="title">v2</div>
-        <div class="date">010101</div>
-        <div class="body">test</div>
-      </div>
-    </div>
-  </div>
+  <div id="versionHistory"></div>
 </div>
 <div id="supportMeWrapper" class="popupWrapper hidden">
   <div id="supportMe">

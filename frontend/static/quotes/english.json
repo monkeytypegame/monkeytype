@@ -32390,12 +32390,6 @@
       "id": 5596
     },
     {
-      "text": "Live as if you were to die tomorrow. Learn as if you were to live forever.",
-      "source": "Mahatma Gandhi",
-      "length": 74,
-      "id": 5597
-    },
-    {
       "text": "Here's to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes. The ones who see things differently. They're not fond of rules. And they have no respect for the status quo. You can quote them, disagree with them, glorify or vilify them. About the only thing you can't do is ignore them. Because they change things. They push the human race forward. And while some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do.",
       "source": "Rob Siltanen",
       "length": 549,
@@ -35616,6 +35610,48 @@
       "source": "Tool",
       "length": 220,
       "id": 6256
+    },
+    {
+      "text": "What is it about society that disappoints you so much? Oh, I don't know. Is it that we collectively thought Steve Jobs was a great man, even when we knew he made billions off the backs of children? Or maybe it's that it feels like all our heroes are counterfeit. The world itself's just one big hoax. Spamming each other with our burning commentary of bullshit masquerading as insight. Our social media faking as intimacy. Or is it that we voted for this? Not with our rigged elections, but with our things. Our property. Our money. I not saying anything new. We all know why we do this. Not because Hunger Games books makes us happy. But because we wanna be sedated. Because it's painful not to pretend. Because we're cowards. F... society.",
+      "source": "Mr. Robot",
+      "length": 741,
+      "id": 6257
+    },
+    {
+      "text": "That, to me, is an absolute tragedy. But that's just what the world wants now. People wonder why jazz is dying. I tell you, man, and every Starbucks \"jazz\" album... just proves my point really. There are no two words in the English language more harmful than \"good job.\"",
+      "source": "Whiplash",
+      "length": 270,
+      "id": 6258
+    },
+    {
+      "text": "The Material Plane is the nexus where the philosophical and elemental forces that define the other planes collide in the jumbled existence of mortal life and mundane matter.",
+      "source": "Dungeons & Dragons - Player's Handbook",
+      "length": 173,
+      "id": 6259
+    },
+    {
+      "text": "The Feywild and the Shadowfell are parallel dimensions occupying the same cosmological space, so they are often called echo planes or mirror planes to the Material Plane. The worlds and landscapes of these planes mirror the natural world of the Material Plane but reflect those features into different forms - more marvelous and magical in the Feywild, distorted and colorless in the Shadowfell.",
+      "source": "Dungeons & Dragons - Player's Handbook",
+      "length": 395,
+      "id": 6260
+    },
+    {
+      "text": "When gods walk the world, clerics channel divine power, evil cults perform dark sacrifices in subterranean lairs, and shining paladins stand like beacons against the darkness, it's hard to be ambivalent about the deities and deny their existence.",
+      "source": "Dungeons & Dragons - Player's Handbook",
+      "length": 246,
+      "id": 6261
+    },
+    {
+      "text": "Go forth now. Read the rules of the game and the story of its worlds, but always remember that you are the one who brings them to life. They are nothing without the spark of life that you give them.",
+      "source": "Dungeons & Dragons - Player's Handbook",
+      "length": 198,
+      "id": 6262
+    },
+    {
+      "text": "Well, well! Look at the city slicker pulling up on his fancy german car.",
+      "source": "The Simpsons",
+      "length": 72,
+      "id": 6263
     }
   ]
 }

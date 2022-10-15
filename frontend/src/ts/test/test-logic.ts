@@ -6,6 +6,7 @@ import * as Misc from "../utils/misc";
 import QuotesController from "../controllers/quotes-controller";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
+import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
@@ -63,6 +64,7 @@ import * as Random from "../utils/random";
 export const glarsesMode = false;
 
 let resolve: TribeTypes.ResultResolve = {};
+import * as ConnectionState from "../states/connection";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -160,6 +162,8 @@ export async function punctuateWord(
         if (rand <= 0.8) {
           if (currentLanguage == "kurdish") {
             word += ".";
+          } else if (currentLanguage === "nepali") {
+            word += "।";
           } else {
             word += ".";
           }
@@ -424,7 +428,8 @@ export function restart(options = {} as RestartOptions): void {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText
+          CustomText,
+          CustomTextState.isCustomTextLong() ?? false
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -713,6 +718,7 @@ export function restart(options = {} as RestartOptions): void {
       });
       // resetPaceCaret();
       ModesNotice.update();
+      ManualRestart.reset();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -758,7 +764,9 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
   } else if (Config.funbox === "58008") {
     word = Misc.getNumbers(7);
     if (Config.language.startsWith("kurdish")) {
-      word = Misc.convertNumberToArabicIndic(word);
+      word = Misc.convertNumberToArabic(word);
+    } else if (Config.language.startsWith("nepali")) {
+      word = Misc.convertNumberToNepali(word);
     }
   } else if (Config.funbox === "specials") {
     word = Misc.getSpecials();
@@ -865,7 +873,9 @@ async function getNextWord(
       randomWord = Misc.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {
-        randomWord = Misc.convertNumberToArabicIndic(randomWord);
+        randomWord = Misc.convertNumberToArabic(randomWord);
+      } else if (Config.language.startsWith("nepali")) {
+        randomWord = Misc.convertNumberToNepali(randomWord);
       }
     }
   }
@@ -909,6 +919,13 @@ export async function init(): Promise<void> {
     language = await Misc.getLanguage(Config.language);
   }
 
+  if (Config.mode === "quote") {
+    const group = await Misc.findCurrentGroup(Config.language);
+    if (group && group.name !== "code" && group.name !== Config.language) {
+      UpdateConfig.setLanguage(group.name);
+    }
+  }
+
   if (Config.lazyMode === true && language.noLazyMode) {
     rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0);
@@ -922,7 +939,17 @@ export async function init(): Promise<void> {
   }
 
   let wordsBound = 100;
-  if (Config.showAllLines) {
+  if (Config.funbox === "plus_one") {
+    wordsBound = 2;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+  } else if (Config.funbox === "plus_two") {
+    wordsBound = 3;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+  } else if (Config.showAllLines) {
     if (Config.mode === "quote") {
       wordsBound = 100;
     } else if (Config.mode === "custom") {
@@ -973,18 +1000,6 @@ export async function init(): Promise<void> {
 
   if (Config.mode === "words" && Config.words === 0) {
     wordsBound = 100;
-  }
-  if (Config.funbox === "plus_one") {
-    wordsBound = 2;
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-  }
-  if (Config.funbox === "plus_two") {
-    wordsBound = 3;
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
   }
 
   if (
@@ -1151,11 +1166,7 @@ export async function init(): Promise<void> {
 
     if (w === undefined) return;
 
-    if (Config.showAllLines) {
-      wordsBound = w.length;
-    } else {
-      wordsBound = Math.min(wordsBound, w.length);
-    }
+    wordsBound = Math.min(wordsBound, w.length);
 
     for (let i = 0; i < wordsBound; i++) {
       if (/\t/g.test(w[i])) {
@@ -1648,9 +1659,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.setInvalid();
     dontSave = true;
     resolve.valid = false;
-    // resolveTestSavePromise({
-    //   valid: false,
-    // });
+  } else if (completedEvent.rawWpm < 0 || completedEvent.rawWpm > 350) {
+    Notifications.add("Test invalid - raw", 0);
+    TestStats.setInvalid();
+    dontSave = true;
+    resolve.valid = false;
   } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
@@ -1662,6 +1675,29 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // test is valid
+
+  const customTextName = CustomTextState.getCustomTextName();
+  const isLong = CustomTextState.isCustomTextLong();
+  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+    // Let's update the custom text progress
+    if (TestInput.bailout) {
+      // They bailed out
+      const newProgress =
+        CustomText.getCustomTextLongProgress(customTextName) +
+        TestInput.input.getHistory().length;
+      CustomText.setCustomTextLongProgress(customTextName, newProgress);
+      Notifications.add("Long custom text progress saved", 1, 5);
+
+      let newText = CustomText.getCustomText(customTextName, true);
+      newText = newText.slice(newProgress);
+      CustomText.setText(newText);
+    } else {
+      // They finished the test
+      CustomText.setCustomTextLongProgress(customTextName, 0);
+      CustomText.setText(CustomText.getCustomText(customTextName, true));
+      Notifications.add("Long custom text completed", 1, 5);
+    }
+  }
 
   if (!dontSave) {
     TodayTracker.addSeconds(
@@ -1748,7 +1784,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   Result.updateRateQuote(TestWords.randomQuote);
 
   AccountButton.loading(true);
-  completedEvent.challenge = ChallengeContoller.verify(completedEvent);
+  if (completedEvent.bailedOut !== true) {
+    completedEvent.challenge = ChallengeContoller.verify(completedEvent);
+  }
+
   if (completedEvent.challenge === null) delete completedEvent?.challenge;
 
   completedEvent.hash = objectHash(completedEvent);
@@ -1776,6 +1815,30 @@ async function saveResult(
       chartData: completedEvent.chartData,
       resolve: await testSavePromise,
     });
+    return;
+  }
+
+  if (!ConnectionState.get()) {
+    Notifications.add("Result not saved: offline", -1, 2, "Notice");
+    AccountButton.loading(false);
+    resolve.saved = false;
+    resolve.saveFailedMessage = "Offline";
+    resolveTestSavePromise(resolve);
+    TribeResults.send({
+      wpm: completedEvent.wpm,
+      raw: completedEvent.rawWpm,
+      acc: completedEvent.acc,
+      consistency: completedEvent.consistency,
+      testDuration: completedEvent.testDuration,
+      charStats: completedEvent.charStats,
+      chartData: completedEvent.chartData,
+      resolve: await testSavePromise,
+    });
+    retrySaving.canRetry = true;
+    $("#retrySavingResultButton").removeClass("hidden");
+    if (!isRetrying) {
+      retrySaving.completedEvent = completedEvent;
+    }
     return;
   }
 
@@ -1813,6 +1876,12 @@ async function saveResult(
     console.log("Error saving result", completedEvent);
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
+
+  $("#result .stats .tags .editTagsButton").attr(
+    "result-id",
+    response.data.insertedId
+  );
+  $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
   if (response?.data?.xp) {
     const snapxp = DB.getSnapshot().xp;
