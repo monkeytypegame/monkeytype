@@ -37,7 +37,7 @@ function hide(): void {
 
 export function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
-  DB.getSnapshot().tags?.forEach((tag) => {
+  DB.getSnapshot()?.tags?.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
       `<div class="button tag" tagid="${tag._id}">${tag.display}</div>`
     );
@@ -57,7 +57,7 @@ function updateActiveButtons(active: string[]): void {
 }
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
-  if (DB.getSnapshot().tags?.length || 0 > 0) {
+  if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
     const resultid = $(f.target).parents("span").attr("resultid") as string;
     const tags = $(f.target).parents("span").attr("tags") as string;
     $("#resultEditTagsPanel").attr("resultid", resultid);
@@ -75,7 +75,7 @@ $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
 });
 
 $(document).on("click", ".pageTest .tags .editTagsButton", () => {
-  if (DB.getSnapshot().tags?.length ?? 0 > 0) {
+  if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
     const resultid = $(".pageTest .tags .editTagsButton").attr(
       "result-id"
     ) as string;
@@ -125,7 +125,7 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
   }
 
   Notifications.add("Tags updated", 1, 2);
-  DB.getSnapshot().results?.forEach(
+  DB.getSnapshot()?.results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       if (result._id === resultId) {
         result.tags = newTags;
@@ -137,7 +137,7 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
 
   if (newTags.length > 0) {
     newTags.forEach((tag) => {
-      DB.getSnapshot().tags?.forEach((snaptag) => {
+      DB.getSnapshot()?.tags?.forEach((snaptag) => {
         if (tag === snaptag._id) {
           tagNames.push(snaptag.display);
         }

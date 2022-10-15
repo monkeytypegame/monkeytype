@@ -409,7 +409,7 @@ function updateTags(dontSave: boolean): void {
   const activeTags: MonkeyTypes.Tag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
-    DB.getSnapshot().tags?.forEach((tag) => {
+    DB.getSnapshot()?.tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTags.push(tag);
       }
@@ -610,7 +610,7 @@ function updateOther(
 export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
   if (Config.mode === "quote") {
     const userqr =
-      DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[randomQuote.id];
+      DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
     if (userqr) {
       $(".pageTest #result #rateQuoteButton .icon")
         .removeClass("far")
@@ -803,6 +803,7 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
   const $button = $(".pageTest #favoriteQuoteButton .icon");
   const dbSnapshot = DB.getSnapshot();
+  if (!dbSnapshot) return;
 
   if ($button.hasClass("fas")) {
     // Remove from favorites

@@ -90,7 +90,7 @@ export function hide(): void {
               );
             }
             if (totalXpClaimed > 0) {
-              const snapxp = DB.getSnapshot().xp;
+              const snapxp = DB.getSnapshot()?.xp ?? 0;
               AccountButton.updateXpBar(snapxp, totalXpClaimed);
               DB.addXp(totalXpClaimed);
             }

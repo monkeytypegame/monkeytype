@@ -651,7 +651,7 @@ declare namespace MonkeyTypes {
   }
 
   interface Global {
-    snapshot(): Snapshot;
+    snapshot(): Snapshot | undefined;
     config: Config;
     toggleFilterDebug(): void;
     glarsesMode(): void;

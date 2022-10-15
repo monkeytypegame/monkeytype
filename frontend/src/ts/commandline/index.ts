@@ -731,7 +731,7 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
       if (Auth?.currentUser) {
-        if (DB.getSnapshot().customThemes.length < 1) {
+        if ((DB.getSnapshot()?.customThemes.length ?? 0) < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);
           // UpdateConfig.setCustomThemeId("");

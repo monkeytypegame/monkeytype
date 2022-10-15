@@ -41,7 +41,6 @@ import {
   Unsubscribe,
 } from "firebase/auth";
 import { Auth } from "../firebase";
-import { defaultSnap } from "../constants/default-snapshot";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
   hideFavoriteQuoteLength,
@@ -112,7 +111,7 @@ export async function getDataAndInit(): Promise<boolean> {
     LoadingPage.updateBar(45);
   }
   LoadingPage.updateText("Applying settings...");
-  const snapshot = DB.getSnapshot();
+  const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
   $("#menu .textButton.account > .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
@@ -247,7 +246,8 @@ export async function loadUser(user: UserType): Promise<void> {
   if ((await getDataAndInit()) === false) {
     signOut();
   }
-  const { discordId, discordAvatar, xp, inboxUnreadSize } = DB.getSnapshot();
+  const { discordId, discordAvatar, xp, inboxUnreadSize } =
+    DB.getSnapshot() as MonkeyTypes.Snapshot;
   AccountButton.update(xp, discordId, discordAvatar);
   Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
   // var displayName = user.displayName;
@@ -552,7 +552,7 @@ export function signOut(): void {
       Settings.hideAccountSection();
       AccountButton.update();
       navigate("/login");
-      DB.setSnapshot(defaultSnap);
+      DB.setSnapshot(undefined);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);

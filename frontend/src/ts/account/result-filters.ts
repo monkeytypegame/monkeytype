@@ -115,10 +115,11 @@ export async function updateFilterPresets(): Promise<void> {
   // remove all previous filter preset buttons
   $(".pageAccount .presetFilterButtons .filterBtns").html("");
 
-  const filterPresets = DB.getSnapshot().filterPresets.map((filter) => {
-    filter.name = filter.name.replace(/_/g, " ");
-    return filter;
-  });
+  const filterPresets =
+    DB.getSnapshot()?.filterPresets.map((filter) => {
+      filter.name = filter.name.replace(/_/g, " ");
+      return filter;
+    }) ?? [];
 
   // if user has filter presets
   if (filterPresets.length > 0) {
@@ -126,7 +127,7 @@ export async function updateFilterPresets(): Promise<void> {
     $(".pageAccount .presetFilterButtons").show();
 
     // add button for each filter
-    DB.getSnapshot().filterPresets.forEach((filter) => {
+    DB.getSnapshot()?.filterPresets.forEach((filter) => {
       $(".pageAccount .group.presetFilterButtons .filterBtns").append(
         `<div class="filterPresets">
           <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
@@ -143,7 +144,7 @@ export async function updateFilterPresets(): Promise<void> {
 
 // sets the current filter to be a user custom filter
 export async function setFilterPreset(id: string): Promise<void> {
-  const filter = DB.getSnapshot().filterPresets.find(
+  const filter = DB.getSnapshot()?.filterPresets.find(
     (filter) => filter._id === id
   );
   if (filter) {
@@ -173,6 +174,7 @@ function deepCopyFilter(
 
 function addFilterPresetToSnapshot(filter: MonkeyTypes.ResultFilters): void {
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   DB.setSnapshot({
     ...snapshot,
     filterPresets: [...snapshot.filterPresets, deepCopyFilter(filter)],
@@ -204,6 +206,7 @@ export async function startCreateFilterPreset(): Promise<void> {
 
 function removeFilterPresetFromSnapshot(id: string): void {
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   const filterPresets = [...snapshot.filterPresets];
   const toDeleteIx = filterPresets.findIndex((filter) => filter._id === id);
 
@@ -354,6 +357,7 @@ export function updateActive(): void {
           ?.map((id) => {
             if (id == "none") return id;
             const snapshot = DB.getSnapshot();
+            if (snapshot === undefined) return id;
             const name = snapshot.tags?.filter((t) => t._id == id)[0];
             if (name !== undefined) {
               return snapshot.tags?.filter((t) => t._id == id)[0].display;
@@ -457,14 +461,14 @@ export function updateTags(): void {
 
   const snapshot = DB.getSnapshot();
 
-  if (snapshot.tags?.length || 0 > 0) {
+  if ((snapshot?.tags?.length ?? 0) > 0) {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
-    snapshot.tags?.forEach((tag) => {
+    snapshot?.tags?.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
       ).append(`<div class="button" filter="${tag._id}">${tag.display}</div>`);
@@ -645,7 +649,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
 
   filters["tags"]["none"] = true;
 
-  DB.getSnapshot().tags?.forEach((tag) => {
+  DB.getSnapshot()?.tags?.forEach((tag) => {
     if (tag.active === true) {
       filters["tags"]["none"] = false;
       filters["tags"][tag._id] = true;
