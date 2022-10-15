@@ -71,20 +71,22 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   const histogramChartDataBucketed: { x: number; y: number }[] = [];
   const labels: string[] = [];
 
-  const keys = Object.keys(data);
+  const keys = Object.keys(data).sort(
+    (a, b) => parseInt(a, 10) - parseInt(b, 10)
+  );
   for (let i = 0; i < keys.length; i++) {
     const bucket = parseInt(keys[i], 10);
-    labels.push(`${bucket} - ${bucket + 9}`);
-    if (bucket + 10 != parseInt(keys[i + 1], 10)) {
-      for (let j = bucket + 10; j < parseInt(keys[i + 1]); j += 10) {
-        histogramChartDataBucketed.push({ x: i, y: 0 });
-        labels.push(`${j} - ${j + 9}`);
-      }
-    }
     histogramChartDataBucketed.push({
       x: bucket,
       y: data[bucket],
     });
+    labels.push(`${bucket} - ${bucket + 9}`);
+    if (bucket + 10 != parseInt(keys[i + 1], 10)) {
+      for (let j = bucket + 10; j < parseInt(keys[i + 1], 10); j += 10) {
+        histogramChartDataBucketed.push({ x: j, y: 0 });
+        labels.push(`${j} - ${j + 9}`);
+      }
+    }
   }
   return { data: histogramChartDataBucketed, labels };
 }
