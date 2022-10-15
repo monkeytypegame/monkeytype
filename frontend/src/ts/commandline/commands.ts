@@ -154,7 +154,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       shouldFocusTestUI: false,
     },
     ...BailOutCommands,
-    ...LoadChallengeCommands,
     {
       id: "shareTestSettings",
       display: "Share test settings",
@@ -299,6 +298,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...EnableAdsCommands,
 
     //other
+    ...LoadChallengeCommands,
     ...NavigationCommands,
     {
       id: "watchVideoAd",
