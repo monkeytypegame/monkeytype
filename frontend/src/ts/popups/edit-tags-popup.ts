@@ -5,8 +5,14 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
 import * as ResultTagsPopup from "./result-tags-popup";
+import * as ConnectionState from "../states/connection";
 
 export function show(action: string, id?: string, name?: string): void {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
+
   if (action === "add") {
     $("#tagsWrapper #tagsEdit").attr("action", "add");
     $("#tagsWrapper #tagsEdit .title").html("Add new tag");
