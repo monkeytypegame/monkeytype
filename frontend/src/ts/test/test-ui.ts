@@ -979,10 +979,6 @@ $("#saveScreenshotButton").on("keypress", (e) => {
   }
 });
 
-$(document).on("click", "#testModesNotice .textButton.blind", () => {
-  UpdateConfig.setBlindMode(!Config.blindMode);
-});
-
 $(".pageTest #copyWordsListButton").on("click", async () => {
   try {
     let words;
