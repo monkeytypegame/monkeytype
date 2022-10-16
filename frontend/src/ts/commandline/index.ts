@@ -698,7 +698,7 @@ $(document).on("keydown", (e) => {
   return;
 });
 
-$(document).on("click", "#commandLineMobileButton", () => {
+$("#commandLineMobileButton").on("click", () => {
   if (Config.singleListCommandLine == "on") {
     useSingleListCommandLine(false);
   } else {
