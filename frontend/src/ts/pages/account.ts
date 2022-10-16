@@ -1058,43 +1058,59 @@ $(".pageAccount").on("click", ".miniResultChartButton", (event) => {
   );
 });
 
-$(document).on("click", ".history-wpm-header", () => {
+$(".pageAccount .group.history").on("click", ".history-wpm-header", () => {
   sortAndRefreshHistory("wpm", ".history-wpm-header");
 });
 
-$(document).on("click", ".history-raw-header", () => {
+$(".pageAccount .group.history").on("click", ".history-raw-header", () => {
   sortAndRefreshHistory("rawWpm", ".history-raw-header");
 });
 
-$(document).on("click", ".history-acc-header", () => {
+$(".pageAccount .group.history").on("click", ".history-acc-header", () => {
   sortAndRefreshHistory("acc", ".history-acc-header");
 });
 
-$(document).on("click", ".history-correct-chars-header", () => {
-  sortAndRefreshHistory("correctChars", ".history-correct-chars-header");
-});
+$(".pageAccount .group.history").on(
+  "click",
+  ".history-correct-chars-header",
+  () => {
+    sortAndRefreshHistory("correctChars", ".history-correct-chars-header");
+  }
+);
 
-$(document).on("click", ".history-incorrect-chars-header", () => {
-  sortAndRefreshHistory("incorrectChars", ".history-incorrect-chars-header");
-});
+$(".pageAccount .group.history").on(
+  "click",
+  ".history-incorrect-chars-header",
+  () => {
+    sortAndRefreshHistory("incorrectChars", ".history-incorrect-chars-header");
+  }
+);
 
-$(document).on("click", ".history-consistency-header", () => {
-  sortAndRefreshHistory("consistency", ".history-consistency-header");
-});
+$(".pageAccount .group.history").on(
+  "click",
+  ".history-consistency-header",
+  () => {
+    sortAndRefreshHistory("consistency", ".history-consistency-header");
+  }
+);
 
-$(document).on("click", ".history-date-header", () => {
+$(".pageAccount .group.history").on("click", ".history-date-header", () => {
   sortAndRefreshHistory("timestamp", ".history-date-header");
 });
 
 // Resets sorting to by date' when applying filers (normal or advanced)
-$(document).on("click", ".buttonsAndTitle .buttons .button", () => {
-  // We want to 'force' descending sort:
-  sortAndRefreshHistory("timestamp", ".history-date-header", true);
-});
-
-$(document).on(
+$(".pageAccount .group.history").on(
   "click",
-  ".pageAccount .topFilters .button, .pageAccount .filterButtons .button",
+  ".buttonsAndTitle .buttons .button",
+  () => {
+    // We want to 'force' descending sort:
+    sortAndRefreshHistory("timestamp", ".history-date-header", true);
+  }
+);
+
+$(".pageAccount .group.topFilters").on(
+  "click",
+  ".button, .pageAccount .filterButtons .button",
   () => {
     setTimeout(() => {
       update();
@@ -1102,9 +1118,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageAccount .group.presetFilterButtons").on(
   "click",
-  ".pageAccount .group.presetFilterButtons .filterBtns .filterPresets .select-filter-preset",
+  ".filterBtns .filterPresets .select-filter-preset",
   (e) => {
     ResultFilters.setFilterPreset($(e.target).data("id"));
     update();
@@ -1119,7 +1135,7 @@ $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
   Misc.downloadResultsCSV(filteredResults);
 });
 
-$(document).on("click", ".pageAccount .profile .details .copyLink", () => {
+$(".pageAccount .profile").on("click", ".details .copyLink", () => {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   const { name } = snapshot;
