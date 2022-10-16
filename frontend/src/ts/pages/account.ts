@@ -1044,7 +1044,7 @@ $(".pageAccount #accountHistoryChart").on("click", () => {
   $(`#result-${index}`).addClass("active");
 });
 
-$(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
+$(".pageAccount").on("click", ".miniResultChartButton", (event) => {
   console.log("updating");
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
