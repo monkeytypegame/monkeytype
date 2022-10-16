@@ -813,7 +813,7 @@ $(document).on("keydown", (event) => {
   }
 });
 
-$(document).on("click", "#top #menu .textButton", (e) => {
+$("#top #menu").on("click", ".textButton", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
     show();
   }

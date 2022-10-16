@@ -774,7 +774,7 @@ $(".pageSettings #addGoogleAuth").on("click", async () => {
   addGoogleAuth();
 });
 
-$(document).on("click", ".pageAccount .sendVerificationEmail", () => {
+$(".pageAccount").on("click", ".sendVerificationEmail", () => {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
