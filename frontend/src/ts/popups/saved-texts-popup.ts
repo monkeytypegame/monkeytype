@@ -72,7 +72,7 @@ function applySaved(name: string, long: boolean): void {
   $(`#customTextPopupWrapper textarea`).val(text.join(CustomText.delimiter));
 }
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .list .savedText .button.name`,
   (e) => {
@@ -83,7 +83,7 @@ $(document).on(
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .list .savedText .button.delete`,
   () => {
@@ -91,7 +91,7 @@ $(document).on(
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.name`,
   (e) => {
@@ -102,7 +102,7 @@ $(document).on(
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
   () => {
@@ -110,7 +110,7 @@ $(document).on(
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
   () => {
