@@ -253,12 +253,12 @@ $("#simplePopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$(document).on("click", "#simplePopupWrapper .button", () => {
+$("#popups").on("click", "#simplePopupWrapper .button", () => {
   const id = $("#simplePopup").attr("popupId") ?? "";
   list[id].exec();
 });
 
-$(document).on("keyup", "#simplePopupWrapper input", (e) => {
+$("#popups").on("keyup", "#simplePopupWrapper input", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
     const id = $("#simplePopup").attr("popupId") ?? "";
@@ -1276,7 +1276,7 @@ $(".pageSettings #updateAccountName").on("click", () => {
   list["updateName"].show();
 });
 
-$(document).on("click", "#bannerCenter .banner .text .openNameChange", () => {
+$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
@@ -1332,9 +1332,9 @@ $("#apeKeysPopup .generateApeKey").on("click", () => {
   list["generateApeKey"].show();
 });
 
-$(document).on(
+$(".pageSettings").on(
   "click",
-  ".pageSettings .section.themes .customTheme .delButton",
+  ".section.themes .customTheme .delButton",
   (e) => {
     if (!ConnectionState.get()) {
       Notifications.add("You are offline", 0, 2);
@@ -1346,9 +1346,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageSettings").on(
   "click",
-  ".pageSettings .section.themes .customTheme .editButton",
+  ".section.themes .customTheme .editButton",
   (e) => {
     if (!ConnectionState.get()) {
       Notifications.add("You are offline", 0, 2);
@@ -1360,7 +1360,7 @@ $(document).on(
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .list .savedText .button.delete`,
   (e) => {
@@ -1369,7 +1369,7 @@ $(document).on(
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
   (e) => {
@@ -1378,7 +1378,7 @@ $(document).on(
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
   (e) => {
@@ -1387,7 +1387,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
+$("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
@@ -1396,7 +1396,7 @@ $(document).on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
   list["deleteApeKey"].show([keyId]);
 });
 
-$(document).on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
+$("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
@@ -1405,13 +1405,9 @@ $(document).on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
   list["editApeKey"].show([keyId]);
 });
 
-$(document).on(
-  "click",
-  ".pageSettings .section.fontFamily .button.custom",
-  () => {
-    list["applyCustomFont"].show([]);
-  }
-);
+$(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
+  list["applyCustomFont"].show([]);
+});
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#simplePopupWrapper").hasClass("hidden")) {
