@@ -40,16 +40,16 @@ function hide(): void {
     });
 }
 
-$(document.body).on("click", "#newVersionIndicator", () => {
+$("#bottom").on("click", "#newVersionIndicator", () => {
   $("#newVersionIndicator").addClass("hidden");
 });
 
-$(document.body).on("click", ".version", (e) => {
+$("#bottom").on("click", ".version", (e) => {
   if (e.shiftKey) return;
   show();
 });
 
-$(document.body).on("click", "#versionHistoryWrapper", (e) => {
+$("#popups").on("click", "#versionHistoryWrapper", (e) => {
   if ($(e.target).attr("id") === "versionHistoryWrapper") {
     hide();
   }

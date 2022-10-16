@@ -288,35 +288,27 @@ $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
 });
 
 // Handle click on custom theme button
-$(document).on(
-  "click",
-  ".pageSettings .section.themes .customTheme.button",
-  (e) => {
-    // Do not apply if user wanted to delete it
-    if ($(e.target).hasClass("delButton")) return;
-    if ($(e.target).hasClass("editButton")) return;
-    const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
-    ThemeController.set(customThemeId, true);
-  }
-);
+$(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
+  // Do not apply if user wanted to delete it
+  if ($(e.target).hasClass("delButton")) return;
+  if ($(e.target).hasClass("editButton")) return;
+  const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
+  ThemeController.set(customThemeId, true);
+});
 
 // Handle click on favorite preset theme button
-$(document).on(
-  "click",
-  ".pageSettings .section.themes .theme .favButton",
-  (e) => {
-    const theme = $(e.currentTarget).parents(".theme.button").attr("theme");
-    if (theme !== undefined) toggleFavourite(theme);
-    else {
-      console.error(
-        "Could not find the theme attribute attached to the button clicked!"
-      );
-    }
+$(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
+  const theme = $(e.currentTarget).parents(".theme.button").attr("theme");
+  if (theme !== undefined) toggleFavourite(theme);
+  else {
+    console.error(
+      "Could not find the theme attribute attached to the button clicked!"
+    );
   }
-);
+});
 
 // Handle click on preset theme button
-$(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
+$(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
     UpdateConfig.setTheme(theme);

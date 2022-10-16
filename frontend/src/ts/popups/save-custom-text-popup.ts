@@ -51,7 +51,7 @@ function save(): boolean {
   return true;
 }
 
-$(document).on("click", `#saveCustomTextPopupWrapper .button.save`, () => {
+$("#popups").on("click", `#saveCustomTextPopupWrapper .button.save`, () => {
   if (save() === true) hide();
 });
 
