@@ -540,6 +540,7 @@ key {
   border-radius: 100rem;
   right: 0.5em;
   top: 0.5em;
-  outline: 0.5em solid var(--bg-color);
+  // outline: 0.5em solid var(--bg-color);
+  box-shadow: 0 0 0 0.5em var(--bg-color);
   transition: 0.125s;
 }
