@@ -712,9 +712,9 @@ $(".pageAccount .topFilters .button.createFilterPresetBtn").on("click", () => {
   startCreateFilterPreset();
 });
 
-$(document).on(
+$(".group.presetFilterButtons .filterBtns").on(
   "click",
-  ".pageAccount .group.presetFilterButtons .filterBtns .filterPresets .delete-filter-preset",
+  ".filterPresets .delete-filter-preset",
   (e) => {
     deleteFilterPreset($(e.currentTarget).data("id"));
   }

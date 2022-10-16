@@ -1872,7 +1872,7 @@ export function fail(reason: string): void {
   TestStats.pushIncompleteTest(acc, tt);
 }
 
-$(document).on("click", "#testModesNotice .textButton.restart", () => {
+$(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
   restart();
 });
 
@@ -1882,7 +1882,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#restartTestButton", () => {
+$(".pageTest").on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
@@ -1898,7 +1898,7 @@ $(document.body).on("click", "#restartTestButton", () => {
   }
 });
 
-$(document.body).on("click", "#retrySavingResultButton", retrySavingResult);
+$(".pageTest").on("click", "#retrySavingResultButton", retrySavingResult);
 
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.key === "Enter") {
@@ -1906,12 +1906,12 @@ $(document).on("keypress", "#nextTestButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#nextTestButton", () => {
+$(".pageTest").on("click", "#nextTestButton", () => {
   ManualRestart.set();
   restart();
 });
 
-$(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
+$(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode == "zen") {
     Notifications.add("Repeat test disabled in zen mode");
     return;
@@ -1934,7 +1934,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
   }
 });
 
-$(document).on("click", "#testConfig .mode .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
@@ -1944,7 +1944,7 @@ $(document).on("click", "#testConfig .mode .textButton", (e) => {
   restart();
 });
 
-$(document).on("click", "#testConfig .wordCount .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd != "custom") {
@@ -1954,7 +1954,7 @@ $(document).on("click", "#testConfig .wordCount .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#testConfig .time .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode != "custom") {
@@ -1964,7 +1964,7 @@ $(document).on("click", "#testConfig .time .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#testConfig .quoteLength .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
@@ -1979,14 +1979,14 @@ $(document).on("click", "#testConfig .quoteLength .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#testConfig .punctuationMode.textButton", () => {
+$(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   restart();
 });
 
-$(document).on("click", "#testConfig .numbersMode.textButton", () => {
+$(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setNumbers(!Config.numbers);
   ManualRestart.set();
@@ -2017,7 +2017,7 @@ $("#practiseWordsPopup .button.both").on("click", () => {
   });
 });
 
-$(document).on(
+$("#popups").on(
   "click",
   "#quoteSearchPopup #quoteSearchResults .searchResult",
   (e) => {
@@ -2033,7 +2033,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", "#top #menu #startTestButton, #top .logo", () => {
+$("#top").on("click", "#menu #startTestButton, .logo", () => {
   if (ActivePage.get() === "test") restart();
 });
 

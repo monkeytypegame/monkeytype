@@ -56,7 +56,7 @@ function updateActiveButtons(active: string[]): void {
   });
 }
 
-$(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
+$(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
   if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
     const resultid = $(f.target).parents("span").attr("resultid") as string;
     const tags = $(f.target).parents("span").attr("tags") as string;
@@ -74,7 +74,7 @@ $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
   }
 });
 
-$(document).on("click", ".pageTest .tags .editTagsButton", () => {
+$(".pageTest").on("click", ".tags .editTagsButton", () => {
   if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
     const resultid = $(".pageTest .tags .editTagsButton").attr(
       "result-id"
@@ -90,7 +90,7 @@ $(document).on("click", ".pageTest .tags .editTagsButton", () => {
   }
 });
 
-$(document).on("click", "#resultEditTagsPanelWrapper .button.tag", (f) => {
+$("#popups").on("click", "#resultEditTagsPanelWrapper .button.tag", (f) => {
   $(f.target).toggleClass("active");
 });
 

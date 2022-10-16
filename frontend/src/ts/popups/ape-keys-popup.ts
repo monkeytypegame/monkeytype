@@ -119,25 +119,29 @@ $("#apeKeysPopup .generateApeKey").on("click", () => {
   hide();
 });
 
-$(document).on("click", "#apeKeysPopup table .keyButtons .button", () => {
+$("#popups #apeKeysPopup").on("click", "table .keyButtons .button", () => {
   hide();
 });
 
-$(document).on("click", "#apeKeysPopup table .textButton", async (e) => {
-  const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  const key = apeKeys?.[keyId];
-  if (!key || !apeKeys) return;
-  Loader.show();
-  const response = await Ape.apeKeys.update(keyId, { enabled: !key.enabled });
-  Loader.hide();
-  if (response.status !== 200) {
-    return Notifications.add("Failed to update key: " + response.message, -1);
+$("#popups #apeKeysPopup").on(
+  "click",
+  "#apeKeysPopup table .textButton",
+  async (e) => {
+    const keyId = $(e.target).closest("tr").attr("keyId") as string;
+    const key = apeKeys?.[keyId];
+    if (!key || !apeKeys) return;
+    Loader.show();
+    const response = await Ape.apeKeys.update(keyId, { enabled: !key.enabled });
+    Loader.hide();
+    if (response.status !== 200) {
+      return Notifications.add("Failed to update key: " + response.message, -1);
+    }
+    apeKeys[keyId].enabled = !key.enabled;
+    refreshList();
+    if (key.enabled) {
+      Notifications.add("Key active", 1);
+    } else {
+      Notifications.add("Key inactive", 1);
+    }
   }
-  apeKeys[keyId].enabled = !key.enabled;
-  refreshList();
-  if (key.enabled) {
-    Notifications.add("Key active", 1);
-  } else {
-    Notifications.add("Key inactive", 1);
-  }
-});
+);
