@@ -108,24 +108,23 @@ Run `npm run install-all` in the project root to install all dependencies.
 Then, you are ready to build and run Monkeytype. If you are using Docker:
 
 - Frontend:
-
-  ```bash
+  ```
   cd frontend && docker-compose up
   ```
 
 - Backend (in another terminal window):
-  ```bash
+  ```
   cd backend && docker-compose up
   ```
 
 If you are **_not_** using Docker:
 
 - Frontend and backend
-  ```bash
+  ```
   npm run dev
   ```
 - Only frontend (if you skipped the Backend section):
-  ```bash
+  ```
   npm run dev-fe
   ```
 
