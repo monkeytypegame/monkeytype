@@ -51,10 +51,10 @@ function matchesPersonalBest(
   personalBest: MonkeyTypes.PersonalBest
 ): boolean {
   if (
-    !result.difficulty ||
-    !result.language ||
-    !result.punctuation ||
-    !result.lazyMode
+    result.difficulty === undefined ||
+    result.language === undefined ||
+    result.punctuation === undefined ||
+    result.lazyMode === undefined
   ) {
     throw new Error("Missing result data (matchesPersonalBest)");
   }
@@ -78,14 +78,14 @@ function updatePersonalBest(
   }
 
   if (
-    !result.difficulty ||
-    !result.language ||
-    !result.punctuation ||
-    !result.lazyMode ||
-    !result.acc ||
-    !result.consistency ||
-    !result.rawWpm ||
-    !result.wpm
+    result.difficulty === undefined ||
+    result.language === undefined ||
+    result.punctuation === undefined ||
+    result.lazyMode === undefined ||
+    result.acc === undefined ||
+    result.consistency === undefined ||
+    result.rawWpm === undefined ||
+    result.wpm === undefined
   ) {
     throw new Error("Missing result data (updatePersonalBest)");
   }
@@ -105,14 +105,14 @@ function updatePersonalBest(
 
 function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
   if (
-    !result.difficulty ||
-    !result.language ||
-    !result.punctuation ||
-    !result.lazyMode ||
-    !result.acc ||
-    !result.consistency ||
-    !result.rawWpm ||
-    !result.wpm
+    result.difficulty === undefined ||
+    result.language === undefined ||
+    result.punctuation === undefined ||
+    result.lazyMode === undefined ||
+    result.acc === undefined ||
+    result.consistency === undefined ||
+    result.rawWpm === undefined ||
+    result.wpm === undefined
   ) {
     throw new Error("Missing result data (buildPersonalBest)");
   }
