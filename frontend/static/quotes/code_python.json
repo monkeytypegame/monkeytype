@@ -80,7 +80,7 @@
       "length": 196
     },
     {
-      "text": "def append(self, new_data):\\n\\tnew_node = Node(new_data)\\n\\tif self.head is None:\\n\\t\\tself.head = new_node\\n\\t\\treturn\\n\\tlast = self.head\\n\\twhile last.next:\\n\\t\\tlast = last.next\\n\\tlast.next = new_node\\n\\tnew_node.prev = last\\n\\tretur",
+      "text": "def append(self, new_data):\\n\\tnew_node = Node(new_data)\\n\\tif self.head is None:\\n\\t\\tself.head = new_node\\n\\t\\treturn\\n\\tlast = self.head\\n\\twhile last.next:\\n\\t\\tlast = last.next\\n\\tlast.next = new_node\\n\\tnew_node.prev = last\\n\\treturn",
       "source": "geeksforgeeks - Doubly Linked List",
       "id": 13,
       "length": 238

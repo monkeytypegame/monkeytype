@@ -1481,7 +1481,7 @@
       "id": 247,
       "length": 281,
       "source": "Create a Zip archive - programming-idioms.org",
-      "text": "use zip::write::FileOptions;\nlet path = std::path::Path::new(_name);\nlet file = std::fs::File::create(&path).unwrap();\nlet mut zip = zip::ZipWriter::new(file); zip.start_file(\"readme.txt\", FileOptions::default())?;\t\t\t\t\t\t\t\t\t\t\t\t\t\t  \nzip.write_all(b\"Hello, World!\\n\")?;\nzip.finish()?;"
+      "text": "use zip::write::FileOptions;\nlet path = std::path::Path::new(_name);\nlet file = std::fs::File::create(&path).unwrap();\nlet mut zip = zip::ZipWriter::new(file); zip.start_file(\"readme.txt\", FileOptions::default())?;\nzip.write_all(b\"Hello, World!\\n\")?;\nzip.finish()?;"
     },
     {
       "id": 248,
