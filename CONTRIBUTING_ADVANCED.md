@@ -111,7 +111,7 @@ Then, you are ready to build and run Monkeytype. If you are using Docker:
   ```
   cd frontend && docker-compose up
   ```
-
+  
 - Backend (in another terminal window):
   ```
   cd backend && docker-compose up
@@ -123,6 +123,7 @@ If you are **_not_** using Docker:
   ```
   npm run dev
   ```
+  
 - Only frontend (if you skipped the Backend section):
   ```
   npm run dev-fe
