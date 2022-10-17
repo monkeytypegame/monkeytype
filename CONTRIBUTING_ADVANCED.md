@@ -105,29 +105,29 @@ Run `npm run install-all` in the project root to install all dependencies.
 - If you are on Windows, use `npm run install-windows`.
 - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
 
-Then, you are ready to build and run Monkeytype. If you are using Docker, run this to start the frontend server:
+Then, you are ready to build and run Monkeytype. If you are using Docker:
 
-```bash
-cd frontend && docker-compose up
-```
+- Frontend:
 
-and this to run the backend (in another terminal window):
+  ```bash
+  cd frontend && docker-compose up
+  ```
 
-```bash
-cd backend && docker-compose up
-```
+- Backend (in another terminal window):
+  ```bash
+  cd backend && docker-compose up
+  ```
 
-If you are **_not_** using Docker, run this:
+If you are **_not_** using Docker:
 
-```bash
-npm run dev
-```
-
-If you skipped the Backend section, use this to only run the frontend:
-
-```bash
-npm run dev-fe
-```
+- Frontend and backend
+  ```bash
+  npm run dev
+  ```
+- Only frontend (if you skipped the Backend section):
+  ```bash
+  npm run dev-fe
+  ```
 
 These commands will start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use `Ctrl+C` to stop it.
 
