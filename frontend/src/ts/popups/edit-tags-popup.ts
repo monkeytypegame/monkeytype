@@ -174,13 +174,13 @@ $("#tagsWrapper #tagsEdit input").on("keypress", (e) => {
   }
 });
 
-$(document).on("click", ".pageSettings .section.tags .addTagButton", () => {
+$(".pageSettings .section.tags").on("click", ".addTagButton", () => {
   show("add");
 });
 
-$(document).on(
+$(".pageSettings .section.tags").on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .editButton",
+  ".tagsList .tag .editButton",
   (e) => {
     const tagid = $(e.currentTarget).parent(".tag").attr("id");
     const name = $(e.currentTarget)
@@ -191,9 +191,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageSettings .section.tags").on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
+  ".tagsList .tag .clearPbButton",
   (e) => {
     const tagid = $(e.currentTarget).parent(".tag").attr("id");
     const name = $(e.currentTarget)
@@ -204,9 +204,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageSettings .section.tags").on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .removeButton",
+  ".tagsList .tag .removeButton",
   (e) => {
     const tagid = $(e.currentTarget).parent(".tag").attr("id");
     const name = $(e.currentTarget)

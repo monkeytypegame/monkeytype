@@ -311,17 +311,17 @@ $("#quoteSearchPopupWrapper").on("click", (e) => {
   }
 });
 
-$(document).on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", () => {
+$("#popups").on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", () => {
   hide(true);
   QuoteSubmitPopup.show(true);
 });
 
-$(document).on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
+$("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
   hide(true);
   QuoteApprovePopup.show(true);
 });
 
-$(document).on("click", "#quoteSearchPopup .report", async (e) => {
+$("#popups").on("click", "#quoteSearchPopup .report", async (e) => {
   const quoteId = e.target.closest(".searchResult").id;
   const quoteIdSelectedForReport = parseInt(quoteId);
 
@@ -335,57 +335,62 @@ $(document).on("click", "#quoteSearchPopup .report", async (e) => {
   });
 });
 
-$(document).on("click", "#quoteSearchPopup .textButton.favorite", async (e) => {
-  const quoteLang = Config.language;
-  const quoteId = e.target.closest(".searchResult").id as string;
+$("#popups").on(
+  "click",
+  "#quoteSearchPopup .textButton.favorite",
+  async (e) => {
+    const quoteLang = Config.language;
+    const quoteId = e.target.closest(".searchResult").id as string;
 
-  if (quoteLang === "" || quoteId === "") {
-    Notifications.add("Could not get quote stats!", -1);
-    return;
-  }
+    if (quoteLang === "" || quoteId === "") {
+      Notifications.add("Could not get quote stats!", -1);
+      return;
+    }
 
-  const $button = $(
-    `#quoteSearchPopup .searchResult[id=${quoteId}] .textButton.favorite i`
-  );
-  const dbSnapshot = DB.getSnapshot();
-  if (!dbSnapshot) return;
-
-  if ($button.hasClass("fas")) {
-    // Remove from favorites
-    Loader.show();
-    const response = await Ape.users.removeQuoteFromFavorites(
-      quoteLang,
-      quoteId
+    const $button = $(
+      `#quoteSearchPopup .searchResult[id=${quoteId}] .textButton.favorite i`
     );
-    Loader.hide();
+    const dbSnapshot = DB.getSnapshot();
+    if (!dbSnapshot) return;
 
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
+    if ($button.hasClass("fas")) {
+      // Remove from favorites
+      Loader.show();
+      const response = await Ape.users.removeQuoteFromFavorites(
+        quoteLang,
+        quoteId
+      );
+      Loader.hide();
 
-    if (response.status === 200) {
-      $button.removeClass("fas").addClass("far");
-      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
-      dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
-    }
-  } else {
-    // Add to favorites
-    Loader.show();
-    const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
-    Loader.hide();
+      Notifications.add(response.message, response.status === 200 ? 1 : -1);
 
-    Notifications.add(response.message, response.status === 200 ? 1 : -1);
-
-    if (response.status === 200) {
-      $button.removeClass("far").addClass("fas");
-      if (!dbSnapshot.favoriteQuotes[quoteLang]) {
-        dbSnapshot.favoriteQuotes[quoteLang] = [];
+      if (response.status === 200) {
+        $button.removeClass("fas").addClass("far");
+        const quoteIndex =
+          dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
+        dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
       }
-      dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
-    }
-  }
-  e.preventDefault();
-});
+    } else {
+      // Add to favorites
+      Loader.show();
+      const response = await Ape.users.addQuoteToFavorites(quoteLang, quoteId);
+      Loader.hide();
 
-$(document).on("click", "#toggleShowFavorites", (e) => {
+      Notifications.add(response.message, response.status === 200 ? 1 : -1);
+
+      if (response.status === 200) {
+        $button.removeClass("far").addClass("fas");
+        if (!dbSnapshot.favoriteQuotes[quoteLang]) {
+          dbSnapshot.favoriteQuotes[quoteLang] = [];
+        }
+        dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
+      }
+    }
+    e.preventDefault();
+  }
+);
+
+$("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
   if (!Auth?.currentUser) {
     // Notifications.add("You need to be logged in to use this feature!", 0);
     return;
@@ -395,7 +400,7 @@ $(document).on("click", "#toggleShowFavorites", (e) => {
   searchForQuotes();
 });
 
-$(document).on("click", "#testConfig .quoteLength .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
   if (len == -2) {
     show();

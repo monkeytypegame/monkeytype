@@ -969,7 +969,7 @@ export function highlightBadWord(index: number, showError: boolean): void {
   $($("#words .word")[index]).addClass("error");
 }
 
-$(document.body).on("click", "#saveScreenshotButton", () => {
+$(".pageTest").on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
@@ -977,10 +977,6 @@ $("#saveScreenshotButton").on("keypress", (e) => {
   if (e.key === "Enter") {
     screenshot();
   }
-});
-
-$(document).on("click", "#testModesNotice .textButton.blind", () => {
-  UpdateConfig.setBlindMode(!Config.blindMode);
 });
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
@@ -1004,7 +1000,7 @@ $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
 });
 
-$(document).on("mouseleave", "#resultWordsHistory .words .word", () => {
+$(".pageTest").on("mouseleave", "#resultWordsHistory .words .word", () => {
   $(".wordInputAfter").remove();
 });
 
@@ -1012,7 +1008,7 @@ $("#wpmChart").on("mouseleave", () => {
   $(".wordInputAfter").remove();
 });
 
-$(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
+$(".pageTest").on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   if (resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
@@ -1057,7 +1053,7 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#showWordHistoryButton", () => {
+$(".pageTest").on("click", "#showWordHistoryButton", () => {
   toggleResultWords();
 });
 

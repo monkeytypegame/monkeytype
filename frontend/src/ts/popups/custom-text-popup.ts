@@ -233,15 +233,15 @@ function apply(): void {
   hide();
 }
 
-$(document).on("click", `${popup} .button.apply`, () => {
+$("#popups").on("click", `${popup} .button.apply`, () => {
   apply();
 });
 
-$(document).on("click", `${popup} .wordfilter`, () => {
+$("#popups").on("click", `${popup} .wordfilter`, () => {
   WordFilterPopup.show();
 });
 
-$(document).on("click", "#testConfig .customText .textButton", () => {
+$("#popups").on("click", "#testConfig .customText .textButton", () => {
   show();
 });
 

@@ -114,14 +114,10 @@ $("#pbTablesPopupWrapper").on("click", (e) => {
   }
 });
 
-$(document).on("click", ".pageAccount .profile .pbsTime .showAllButton", () => {
+$(".pageAccount .profile").on("click", ".pbsTime .showAllButton", () => {
   show("time");
 });
 
-$(document).on(
-  "click",
-  ".pageAccount .profile .pbsWords .showAllButton",
-  () => {
-    show("words");
-  }
-);
+$(".pageAccount .profile").on("click", ".pbsWords .showAllButton", () => {
+  show("words");
+});

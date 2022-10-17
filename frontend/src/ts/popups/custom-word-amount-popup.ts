@@ -71,7 +71,7 @@ $("#customWordAmountPopup .button").on("click", () => {
   apply();
 });
 
-$(document).on("click", "#testConfig .wordCount .textButton", (e) => {
+$("#testConfig").on("click", ".wordCount .textButton", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
   if (wrd == "custom") {
     show();

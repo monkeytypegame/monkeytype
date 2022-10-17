@@ -168,21 +168,17 @@ $("#presetWrapper #presetEdit input").on("keypress", (e) => {
   }
 });
 
-$(document).on(
-  "click",
-  ".pageSettings .section.presets .addPresetButton",
-  () => {
-    show("add");
-  }
-);
+$(".pageSettings .section.presets").on("click", ".addPresetButton", () => {
+  show("add");
+});
 
-$(document).on("click", ".pageSettings .section.presets .editButton", (e) => {
+$(".pageSettings .section.presets").on("click", ".editButton", (e) => {
   const presetid = $(e.currentTarget).parent(".preset").attr("id");
   const name = $(e.currentTarget).siblings(".button").children(".title").text();
   show("edit", presetid, name);
 });
 
-$(document).on("click", ".pageSettings .section.presets .removeButton", (e) => {
+$(".pageSettings .section.presets").on("click", ".removeButton", (e) => {
   const presetid = $(e.currentTarget).parent(".preset").attr("id");
   const name = $(e.currentTarget).siblings(".button").children(".title").text();
   show("remove", presetid, name);
