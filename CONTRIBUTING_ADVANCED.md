@@ -18,27 +18,25 @@ This contribution guide is for cases in which you need to test the functionality
 
 #### Git
 
+**IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before cloning this repo to prevent CRLF errors.**
+
 Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management (SCM) system for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Using a Git client such as Sourcetree won't give you access to the full functionality of Git, but provides an easy to understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
 #### NodeJS and NPM
 
-To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `16.13.2 LTS`.
+Currently, the project is using version `16.13.2 LTS`.
 
-Alternatively, if you use `nvm` then you can run `nvm install` and `nvm use` (you might need to specify the exact version) to use the version of Node.js in the `.nvmrc` file (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)).
+If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version) to use the version of Node.js in the `.nvmrc` file.
+
+Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 
 #### Docker (Recommended but Optional)
 
-You can use docker to run the frontend development environment. This will take care of OS specific problems. After installing [Docker](https://www.docker.com/get-started/#h_installation) run the following command to start the frontend server:
-
-```bash
-cd frontend && docker-compose up
-```
-
-Once wepback has compiled, the frontend will be served on [port 3000](http://localhost:3000)
+You can use docker to run the frontend and backend. This will take care of OS specific problems, but might be a bit more resource intensive. You can download it from the [Docker website](https://www.docker.com/get-started/#h_installation).
 
 #### Firebase (optional)
 
-If you want to use the authentication system locally you need to follow this step. Otherwise, just duplicate `firebase-config-example.ts` and rename it to `firebase-config.ts`.
+The account system will not let you create an account without a Firebase project. You can skip this if you don't think you will need it (you can always set it up later)
 
 1. Create a Firebase account if you already haven't done so.
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
@@ -46,33 +44,7 @@ If you want to use the authentication system locally you need to follow this ste
    - The project name doesn't matter, but the name `monkeytype` would be preferred.
    - Google Analytics is not necessary.
 
-1. Run `npm install -g firebase-tools` to install the Firebase Command Line Interface.
-1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
-1. Git clone this project.
-   - IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before-hand to prevent CRLF errors.
-1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
-
-   - If `.firebaserc_example` does not exist after cloning, create your own with:
-
-   ```.firebaserc
-    {
-        "projects": {
-            "default": "your-firebase-project-id"
-        }
-    }
-   ```
-
-   - Run `firebase projects:list` to find your firebase project id.
-
-1. Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts` and paste in your firebase config object
-
-   - To find it, go to the Firebase console
-   - Navigate to `Project Settings > General > Your apps`
-     - If there are no apps in your project, create a new web app
-   - In the `SDK setup and configuration` section, select `npm`
-   - The Firebase config will be visible below
-
-1. Enable Firebase Authentication (optional)
+1. Enable Firebase Authentication
 
    - In the Firebase console, go to `Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
@@ -84,6 +56,33 @@ If you want to use the authentication system locally you need to follow this ste
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
 
+1. Run `npm install -g firebase-tools` to install the Firebase Command Line Interface.
+1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
+1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name to the firebase project id you just created.
+
+   - Run `firebase projects:list` to find your firebase project id.
+   - If `.firebaserc_example` does not exist after cloning, create your own with:
+
+   ```.firebaserc
+    {
+        "projects": {
+            "default": "your-firebase-project-id"
+        }
+    }
+   ```
+
+#### Config file
+
+Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
+
+- If you skipped the Firebase step, you can leave the fields blank
+- Otherwise:
+  1. Navigate to `Project Settings > General > Your apps`
+  2. If there are no apps in your project, create a new web app
+  3. In the `SDK setup and configuration` section, select `npm`
+  4. The Firebase config will be visible below
+  5. Paste the config into `firebase-config.ts`
+
 #### Backend (optional)
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
@@ -92,27 +91,61 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 2. Setup the database server
 
-| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                   |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory</li></ol> |
+| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                                                             |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory (this is also how you start the database)</li></ol> |
 
-3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
-   1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown after the server is started.
+3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your database visually.
+   - To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The Monkeytype database will be created and shown after the server is started.
 
 ## Building and Running Monkeytype
 
-Once you have completed the above steps, you are ready to build and run Monkeytype.
+Run `npm run install-all` in the project root to install all dependencies.
 
-1. Run `npm run install-all` in the project root to install all dependencies.
-   - If you are on Windows, use `npm run install-windows`.
-   - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-2. Run `npm run dev` (`npm run dev-fe` if you skipped the Backend section) to start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
+- If you are on Windows, use `npm run install-windows`.
+- If neither works, you will have to run `npm install` in root, frontend, and backend directories.
+
+Then, you are ready to build and run Monkeytype:
+
+---
+
+If you are using Docker, run this to start the frontend server:
+
+```bash
+cd frontend && docker-compose up
+```
+
+and this to run the backend (in another terminal window):
+
+```bash
+cd backend && docker-compose up
+```
+
+---
+
+If you are **_not_** using Docker, run this:
+
+```bash
+npm run dev
+```
+
+If you skipped the Backend section, use this to only run the frontend:
+
+```bash
+npm run dev-fe
+```
+
+---
+
+These commands will start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use `Ctrl+C` to stop it.
+
+Note: Rebuilding doesn't happen instantaneously and depends on your machine, so be patient for changes to appear.
 
 ## Standards and Guidelines
 
-Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit (`git commit`) (if you've followed the above instructions properly).
+Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit.
 
-We recommend following the guidelines below to increase your chances of getting your change accepted.
+For guidelines on adding themes, languages or quotes, pleases refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 
 ## Questions
 
