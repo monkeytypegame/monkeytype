@@ -1,4 +1,4 @@
-const BASE_PATH = "/public-stats";
+const BASE_PATH = "/public";
 
 interface SpeedStatsQuery {
   language: string;
@@ -6,7 +6,7 @@ interface SpeedStatsQuery {
   mode2: string;
 }
 
-export default class PublicStats {
+export default class Public {
   constructor(private httpClient: Ape.HttpClient) {
     this.httpClient = httpClient;
   }

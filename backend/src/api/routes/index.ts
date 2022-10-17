@@ -1,6 +1,6 @@
 import _ from "lodash";
 import psas from "./psas";
-import publicStats from "./public-stats";
+import publicStats from "./public";
 import users from "./users";
 import { join } from "path";
 import quotes from "./quotes";
@@ -33,7 +33,7 @@ const API_ROUTE_MAP = {
   "/results": results,
   "/presets": presets,
   "/psas": psas,
-  "/public-stats": publicStats,
+  "/public": publicStats,
   "/leaderboards": leaderboards,
   "/quotes": quotes,
   "/ape-keys": apeKeys,

@@ -1,5 +1,6 @@
 import * as db from "../init/db";
 import { roundTo2 } from "../utils/misc";
+import MonkeyError from "../utils/error";
 
 export async function updateStats(
   restartCount: number,
@@ -35,8 +36,16 @@ export async function getSpeedHistogram(
 }
 
 /** Get typing stats such as total number of tests completed on site */
-export async function getTypingStats() {
-  return await db
-    .collection<MonkeyTypes.PublicSpeedStats>("public")
+export async function getTypingStats(): Promise<MonkeyTypes.PublicStats> {
+  const stats = await db
+    .collection<MonkeyTypes.PublicStats>("public")
     .findOne({ type: "stats" }, { projection: { _id: 0 } });
+  if (!stats) {
+    throw new MonkeyError(
+      404,
+      "Public typing stats not found",
+      "get typing stats"
+    );
+  }
+  return stats;
 }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as PublicStatsController from "../controllers/public-stats";
+import * as PublicController from "../controllers/public";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
 import joi from "joi";
@@ -18,13 +18,13 @@ router.get(
   validateRequest({
     query: GET_MODE_STATS_VALIDATION_SCHEMA,
   }),
-  asyncHandler(PublicStatsController.getPublicSpeedHistogram)
+  asyncHandler(PublicController.getPublicSpeedHistogram)
 );
 
 router.get(
   "/typingStats",
   RateLimit.publicStatsGet,
-  asyncHandler(PublicStatsController.getPublicTypingStats)
+  asyncHandler(PublicController.getPublicTypingStats)
 );
 
 export default router;

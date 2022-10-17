@@ -6,14 +6,14 @@ import Quotes from "./quotes";
 import Results from "./results";
 import Users from "./users";
 import ApeKeys from "./ape-keys";
-import PublicStats from "./public-stats";
+import Public from "./public";
 
 export default {
   Configs,
   Leaderboards,
   Presets,
   Psas,
-  PublicStats,
+  Public,
   Quotes,
   Results,
   Users,
