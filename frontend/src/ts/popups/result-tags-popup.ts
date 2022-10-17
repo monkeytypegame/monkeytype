@@ -79,9 +79,10 @@ $(".pageTest").on("click", ".tags .editTagsButton", () => {
     const resultid = $(".pageTest .tags .editTagsButton").attr(
       "result-id"
     ) as string;
-    const tags = $(".pageTest .tags .editTagsButton")
-      .attr("active-tag-ids")
-      ?.split(",") as string[];
+    const activeTagIds = $(".pageTest .tags .editTagsButton").attr(
+      "active-tag-ids"
+    ) as string;
+    const tags = activeTagIds == "" ? [] : activeTagIds.split(",");
     $("#resultEditTagsPanel").attr("resultid", resultid);
     $("#resultEditTagsPanel").attr("tags", JSON.stringify(tags));
     $("#resultEditTagsPanel").attr("source", "resultPage");
