@@ -179,7 +179,7 @@ $(document).on("keypress", "#practiseWordsButton", (event) => {
   }
 });
 
-$("#popups").on("click", "#practiseWordsButton", () => {
+$(".pageTest").on("click", "#practiseWordsButton", () => {
   showPopup();
 });
 
