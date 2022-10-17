@@ -1,5 +1,3 @@
-import { CLIENT_VERSION } from "../../version";
-
 const BASE_PATH = "/public-stats";
 
 interface SpeedStatsQuery {
@@ -16,9 +14,6 @@ export default class PublicStats {
   async getSpeedStats(searchQuery: SpeedStatsQuery): Ape.EndpointData {
     return await this.httpClient.get(`${BASE_PATH}/speed`, {
       searchQuery,
-      headers: {
-        "Client-Version": CLIENT_VERSION,
-      },
     });
   }
 }
