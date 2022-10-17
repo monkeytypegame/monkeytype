@@ -11,9 +11,13 @@ export default class PublicStats {
     this.httpClient = httpClient;
   }
 
-  async getSpeedStats(searchQuery: SpeedStatsQuery): Ape.EndpointData {
-    return await this.httpClient.get(`${BASE_PATH}/speed`, {
+  async getSpeedHistogram(searchQuery: SpeedStatsQuery): Ape.EndpointData {
+    return await this.httpClient.get(`${BASE_PATH}/speedHistogram`, {
       searchQuery,
     });
+  }
+
+  async getTypingStats(): Ape.EndpointData {
+    return await this.httpClient.get(`${BASE_PATH}/typingStats`);
   }
 }

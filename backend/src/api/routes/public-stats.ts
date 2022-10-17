@@ -13,12 +13,18 @@ const GET_MODE_STATS_VALIDATION_SCHEMA = {
 const router = Router();
 
 router.get(
-  "/speed",
-  RateLimit.publicStatsGetSpeed,
+  "/speedHistogram",
+  RateLimit.publicStatsGet,
   validateRequest({
     query: GET_MODE_STATS_VALIDATION_SCHEMA,
   }),
-  asyncHandler(PublicStatsController.getPublicSpeedStats)
+  asyncHandler(PublicStatsController.getPublicSpeedHistogram)
+);
+
+router.get(
+  "/typingStats",
+  RateLimit.publicStatsGet,
+  asyncHandler(PublicStatsController.getPublicTypingStats)
 );
 
 export default router;

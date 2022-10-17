@@ -14,7 +14,7 @@ function reset(): void {
 async function fill(): Promise<void> {
   const supporters = await Misc.getSupportersList();
   const contributors = await Misc.getContributorsList();
-  const speedStats = await Ape.publicStats.getSpeedStats({
+  const speedStats = await Ape.publicStats.getSpeedHistogram({
     language: "english",
     mode: "time",
     mode2: "15",

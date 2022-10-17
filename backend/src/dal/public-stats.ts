@@ -22,7 +22,7 @@ export async function updateStats(
 /** Get the histogram stats of speed buckets for all users.
  * @returns an object mapping wpm => count, eg { '80': 4388, '90': 2149}
  */
-export async function getSpeedStats(
+export async function getSpeedHistogram(
   language,
   mode,
   mode2
@@ -32,4 +32,11 @@ export async function getSpeedStats(
     .collection<MonkeyTypes.PublicSpeedStats>("public")
     .findOne({ type: "speedStats" }, { projection: { [key]: 1 } });
   return stats?.[key] ?? {};
+}
+
+/** Get typing stats such as total number of tests completed on site */
+export async function getTypingStats() {
+  return await db
+    .collection<MonkeyTypes.PublicSpeedStats>("public")
+    .findOne({ type: "stats" }, { projection: { _id: 0 } });
 }

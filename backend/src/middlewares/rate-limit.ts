@@ -226,7 +226,7 @@ export const psaGet = rateLimit({
 });
 
 // get public speed stats
-export const publicStatsGetSpeed = rateLimit({
+export const publicStatsGet = rateLimit({
   windowMs: 60 * 1000,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
