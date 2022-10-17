@@ -3,6 +3,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import { areUnsortedArraysEqual } from "../utils/misc";
 
 function show(): void {
   if (!ConnectionState.get()) {
@@ -112,6 +113,16 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
       newTags.push(tagid);
     }
   });
+
+  const currentTags = JSON.parse(
+    $("#resultEditTagsPanel").attr("tags") as string
+  );
+
+  if (areUnsortedArraysEqual(currentTags, newTags)) {
+    hide();
+    return;
+  }
+
   Loader.show();
   hide();
 
