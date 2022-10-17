@@ -12,6 +12,30 @@
     <br />
     Launched on 15th of May, 2020.
   </div>
+  <div class="section histogramChart">
+    <div class="title">stats</div>
+    <div class="triplegroup">
+      <div class="group" id="totalTimeTypingStat">
+        <div class="label">time typing</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group" id="totalStartedTestsStat">
+        <div class="label">started tests</div>
+        <div class="val">-</div>
+      </div>
+      <div class="group" id="totalCompletedTestsStat">
+        <div class="label">completed tests</div>
+        <div class="val">-</div>
+      </div>
+    </div>
+    <p>
+      Distribution of all users' typing speeds (counts each user's best score on
+      English time 60).
+    </p>
+    <div class="chart" style="height: 200px">
+      <canvas id="publicStatsHistogramChart"></canvas>
+    </div>
+  </div>
   <div class="section">
     <div class="title">about</div>
     <!-- <h1>about</h1> -->
@@ -70,16 +94,6 @@
       better. Calculated using the coefficient of variation of raw wpm and
       mapped onto a scale from 0 to 100.
     </p>
-  </div>
-  <div class="section histogramChart">
-    <h1>Overall stats</h1>
-    <p>
-      Distribution of all users typing speeds (takes each user's best score on
-      English time 15).
-    </p>
-    <div class="chart" style="height: 200px">
-      <canvas id="publicStatsHistogramChart"></canvas>
-    </div>
   </div>
   <div id="ad-about-1-wrapper" class="ad advertisement ad-h">
     <div class="icon"><i class="fas fa-ad"></i></div>

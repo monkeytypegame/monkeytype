@@ -64,4 +64,29 @@
       color: var(--text-color);
     }
   }
+
+  .triplegroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+  }
+  .group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .label {
+      color: var(--sub-color);
+    }
+    .val {
+      font-size: 3rem;
+      line-height: 3.5rem;
+    }
+  }
+
+  .chart canvas {
+    width: 100% !important;
+  }
+  .chart {
+    position: relative;
+  }
 }

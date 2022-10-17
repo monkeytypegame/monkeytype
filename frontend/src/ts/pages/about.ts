@@ -17,7 +17,7 @@ async function fill(): Promise<void> {
   const speedStats = await Ape.publicStats.getSpeedHistogram({
     language: "english",
     mode: "time",
-    mode2: "15",
+    mode2: "60",
   });
   if (speedStats.status >= 200 && speedStats.status < 300) {
     ChartController.globalSpeedHistogram.updateColors();
@@ -32,7 +32,23 @@ async function fill(): Promise<void> {
       -1
     );
   }
-
+  const typingStats = await Ape.publicStats.getTypingStats();
+  if (typingStats.status >= 200 && typingStats.status < 300) {
+    $(".pageAbout #totalTimeTypingStat .val").text(
+      Misc.secondsToString(Math.round(typingStats.data.timeTyping), true, true)
+    );
+    $(".pageAbout #totalStartedTestsStat .val").text(
+      Misc.abbreviateNumber(typingStats.data.testsStarted)
+    );
+    $(".pageAbout #totalCompletedTestsStat .val").text(
+      Misc.abbreviateNumber(typingStats.data.testsCompleted)
+    );
+  } else {
+    Notifications.add(
+      `Failed to get global typing stats: ${speedStats.message}`,
+      -1
+    );
+  }
   supporters.forEach((supporter) => {
     $(".pageAbout .supporters").append(`
       <div>${supporter}</div>
