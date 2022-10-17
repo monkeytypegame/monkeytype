@@ -421,7 +421,7 @@ export async function checkIfTagPb(
 
   const ret: string[] = [];
 
-  tagsToCheck.forEach(async (tag) => {
+  for (const tag of tagsToCheck) {
     const tagPbs: MonkeyTypes.PersonalBests = tag.personalBests ?? {
       time: {},
       words: {},
@@ -438,7 +438,7 @@ export async function checkIfTagPb(
         { $set: { "tags.$.personalBests": tagpb.personalBests } }
       );
     }
-  });
+  }
 
   return ret;
 }
