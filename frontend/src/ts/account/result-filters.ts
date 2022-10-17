@@ -9,6 +9,10 @@ import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-pres
 export const defaultResultFilters: MonkeyTypes.ResultFilters = {
   _id: "default-result-filters-id",
   name: "default result filters",
+  pb: {
+    no: true,
+    yes: true,
+  },
   difficulty: {
     normal: true,
     expert: true,
@@ -593,6 +597,9 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
       filters[group][filter] = false;
     });
   });
+
+  filters["pb"]["no"] = true;
+  filters["pb"]["yes"] = true;
 
   filters["difficulty"][Config.difficulty] = true;
   filters["mode"][Config.mode] = true;

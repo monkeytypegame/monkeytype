@@ -305,6 +305,15 @@ function fillContent(): void {
 
       //apply filters
       try {
+        if (
+          !ResultFilters.getFilter("pb", result.isPb === true ? "yes" : "no")
+        ) {
+          if (filterDebug) {
+            console.log(`skipping result due to pb filter`, result);
+          }
+          return;
+        }
+
         let resdiff = result.difficulty;
         if (resdiff == undefined) {
           resdiff = "normal";
