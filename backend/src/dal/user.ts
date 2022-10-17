@@ -397,8 +397,12 @@ export async function checkIfTagPb(
   }
 
   const { mode, tags: resultTags, funbox } = result;
-
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+  if (
+    funbox !== undefined &&
+    funbox !== "none" &&
+    funbox !== "plus_one" &&
+    funbox !== "plus_two"
+  ) {
     return [];
   }
 
