@@ -307,6 +307,15 @@ function fillContent(): void {
 
       //apply filters
       try {
+        if (
+          !ResultFilters.getFilter("pb", result.isPb === true ? "yes" : "no")
+        ) {
+          if (filterDebug) {
+            console.log(`skipping result due to pb filter`, result);
+          }
+          return;
+        }
+
         let resdiff = result.difficulty;
         if (resdiff == undefined) {
           resdiff = "normal";
@@ -1172,7 +1181,8 @@ export const page = new Page(
     ResultFilters.removeButtons();
   },
   async () => {
-    ResultFilters.appendButtons();
+    await ResultFilters.appendButtons();
+    ResultFilters.updateActive();
     if (DB.getSnapshot()?.results == undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
