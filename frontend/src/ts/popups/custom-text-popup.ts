@@ -241,7 +241,7 @@ $("#popups").on("click", `${popup} .wordfilter`, () => {
   WordFilterPopup.show();
 });
 
-$("#popups").on("click", "#testConfig .customText .textButton", () => {
+$(".pageTest").on("click", "#testConfig .customText .textButton", () => {
   show();
 });
 

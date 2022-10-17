@@ -466,6 +466,9 @@ export function restart(options = {} as RestartOptions): void {
     repeatWithPace = true;
   }
 
+  $("#words").stop(true, true);
+  $("#words .smoothScroller").stop(true, true).remove();
+
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
