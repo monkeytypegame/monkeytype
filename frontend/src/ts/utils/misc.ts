@@ -1252,10 +1252,10 @@ export function isPasswordStrong(password: string): boolean {
   return hasCapital && hasNumber && hasSpecial && isLong;
 }
 
-export function areUnsortedArraysEqual<T>(a: T[], b: T[]): boolean {
+export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
   return a.length === b.length && a.every((v) => b.includes(v));
 }
 
-export function areSortedArraysEqual<T>(a: T[], b: T[]): boolean {
+export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
