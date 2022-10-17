@@ -50,6 +50,15 @@ function matchesPersonalBest(
   result: Result,
   personalBest: MonkeyTypes.PersonalBest
 ): boolean {
+  if (
+    !result.difficulty ||
+    !result.language ||
+    !result.punctuation ||
+    !result.lazyMode
+  ) {
+    throw new Error("Missing result data (matchesPersonalBest)");
+  }
+
   const sameLazyMode =
     result.lazyMode === personalBest.lazyMode ||
     (!result.lazyMode && !personalBest.lazyMode);
@@ -68,14 +77,23 @@ function updatePersonalBest(
     return false;
   }
 
-  if (!result.acc || !result.consistency || !result.rawWpm || !result.wpm) {
-    throw new Error("Missing result data");
+  if (
+    !result.difficulty ||
+    !result.language ||
+    !result.punctuation ||
+    !result.lazyMode ||
+    !result.acc ||
+    !result.consistency ||
+    !result.rawWpm ||
+    !result.wpm
+  ) {
+    throw new Error("Missing result data (updatePersonalBest)");
   }
 
-  personalBest.difficulty = result.difficulty ?? "normal";
-  personalBest.language = result.language ?? "english";
-  personalBest.punctuation = result.punctuation ?? false;
-  personalBest.lazyMode = result.lazyMode ?? false;
+  personalBest.difficulty = result.difficulty;
+  personalBest.language = result.language;
+  personalBest.punctuation = result.punctuation;
+  personalBest.lazyMode = result.lazyMode;
   personalBest.acc = result.acc;
   personalBest.consistency = result.consistency;
   personalBest.raw = result.rawWpm;
@@ -86,13 +104,25 @@ function updatePersonalBest(
 }
 
 function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
+  if (
+    !result.difficulty ||
+    !result.language ||
+    !result.punctuation ||
+    !result.lazyMode ||
+    !result.acc ||
+    !result.consistency ||
+    !result.rawWpm ||
+    !result.wpm
+  ) {
+    throw new Error("Missing result data (buildPersonalBest)");
+  }
   return {
     acc: result.acc,
     consistency: result.consistency,
     difficulty: result.difficulty,
-    lazyMode: result.lazyMode ?? false,
+    lazyMode: result.lazyMode,
     language: result.language,
-    punctuation: result.punctuation ?? false,
+    punctuation: result.punctuation,
     raw: result.rawWpm,
     wpm: result.wpm,
     timestamp: Date.now(),
