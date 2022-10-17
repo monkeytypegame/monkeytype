@@ -68,12 +68,16 @@ function updatePersonalBest(
     return false;
   }
 
-  personalBest.acc = result.acc;
-  personalBest.consistency = result.consistency;
-  personalBest.difficulty = result.difficulty;
-  personalBest.language = result.language;
+  if (!result.acc || !result.consistency || !result.rawWpm || !result.wpm) {
+    throw new Error("Missing result data");
+  }
+
+  personalBest.difficulty = result.difficulty ?? "normal";
+  personalBest.language = result.language ?? "english";
   personalBest.punctuation = result.punctuation ?? false;
   personalBest.lazyMode = result.lazyMode ?? false;
+  personalBest.acc = result.acc;
+  personalBest.consistency = result.consistency;
   personalBest.raw = result.rawWpm;
   personalBest.wpm = result.wpm;
   personalBest.timestamp = Date.now();
