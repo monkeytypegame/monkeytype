@@ -1251,3 +1251,11 @@ export function isPasswordStrong(password: string): boolean {
   const isLong = password.length >= 8;
   return hasCapital && hasNumber && hasSpecial && isLong;
 }
+
+export function areUnsortedArraysEqual<T>(a: T[], b: T[]): boolean {
+  return a.length === b.length && a.every((v) => b.includes(v));
+}
+
+export function areSortedArraysEqual<T>(a: T[], b: T[]): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
+}
