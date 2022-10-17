@@ -35,6 +35,11 @@ export function show(): void {
     } else {
       $(`${popup} .inputs .randomInputFields`).addClass("disabled");
     }
+    if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked")) {
+      $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
+    } else {
+      $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
+    }
     $(wrapper)
       .stop(true, true)
       .css("opacity", 0)
@@ -117,6 +122,19 @@ $(`${popup} .inputs .randomWordsCheckbox input`).on("change", () => {
   }
 });
 
+$(`${popup} .replaceNewlineWithSpace input`).on("change", () => {
+  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked")) {
+    $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
+  } else {
+    $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
+  }
+});
+
+$(`${popup} .inputs .replaceNewLinesButtons .button`).on("click", (e) => {
+  $(`${popup} .inputs .replaceNewLinesButtons .button`).removeClass("active");
+  $(e.target).addClass("active");
+});
+
 $(`${popup} textarea`).on("keypress", (e) => {
   if (!$(`${popup} .longCustomTextWarning`).hasClass("hidden")) {
     e.preventDefault();
@@ -168,9 +186,21 @@ function apply(): void {
     text = Misc.cleanTypographySymbols(text);
   }
   if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked")) {
-    text = text.replace(/\n/gm, ". ");
-    text = text.replace(/\.\. /gm, ". ");
-    text = text.replace(/ +/gm, " ");
+    let periods = true;
+    if (
+      $($(`${popup} .replaceNewLinesButtons .button`)[0]).hasClass("active")
+    ) {
+      periods = false;
+    }
+
+    if (periods) {
+      text = text.replace(/\n/gm, ". ");
+      text = text.replace(/\.\. /gm, ". ");
+      text = text.replace(/ +/gm, " ");
+    } else {
+      text = text.replace(/\n/gm, " ");
+      text = text.replace(/ +/gm, " ");
+    }
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
