@@ -3,6 +3,7 @@ import Page from "./page";
 import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
+import * as ConnectionState from "../states/connection";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -11,21 +12,51 @@ function reset(): void {
   ChartController.globalSpeedHistogram.updateColors();
 }
 
-async function fill(): Promise<void> {
-  const supporters = await Misc.getSupportersList();
-  const contributors = await Misc.getContributorsList();
+let speedStatsResponseData: any | undefined;
+let typingStatsResponseData: any | undefined;
+
+function updateStatsAndHistogram(): void {
+  if (!speedStatsResponseData && !typingStatsResponseData) {
+    return;
+  }
+  ChartController.globalSpeedHistogram.updateColors();
+  const bucketedSpeedStats = getHistogramDataBucketed(speedStatsResponseData);
+  ChartController.globalSpeedHistogram.data.labels = bucketedSpeedStats.labels;
+  ChartController.globalSpeedHistogram.data.datasets[0].data =
+    bucketedSpeedStats.data;
+
+  $(".pageAbout #totalTimeTypingStat .val").text(
+    Misc.secondsToString(
+      Math.round(typingStatsResponseData.timeTyping),
+      true,
+      true
+    )
+  );
+  $(".pageAbout #totalStartedTestsStat .val").text(
+    Misc.abbreviateNumber(typingStatsResponseData.testsStarted)
+  );
+  $(".pageAbout #totalCompletedTestsStat .val").text(
+    Misc.abbreviateNumber(typingStatsResponseData.testsCompleted)
+  );
+}
+
+async function getStatsAndHistogramData(): Promise<void> {
+  if (speedStatsResponseData && typingStatsResponseData) {
+    return;
+  }
+
+  if (!ConnectionState.get()) {
+    Notifications.add("Cannot update all time stats - offline", 0);
+    return;
+  }
+
   const speedStats = await Ape.publicStats.getSpeedHistogram({
     language: "english",
     mode: "time",
     mode2: "60",
   });
   if (speedStats.status >= 200 && speedStats.status < 300) {
-    ChartController.globalSpeedHistogram.updateColors();
-    const bucketedSpeedStats = getHistogramDataBucketed(speedStats.data);
-    ChartController.globalSpeedHistogram.data.labels =
-      bucketedSpeedStats.labels;
-    ChartController.globalSpeedHistogram.data.datasets[0].data =
-      bucketedSpeedStats.data;
+    speedStatsResponseData = speedStats.data;
   } else {
     Notifications.add(
       `Failed to get global speed stats for histogram: ${speedStats.message}`,
@@ -34,21 +65,22 @@ async function fill(): Promise<void> {
   }
   const typingStats = await Ape.publicStats.getTypingStats();
   if (typingStats.status >= 200 && typingStats.status < 300) {
-    $(".pageAbout #totalTimeTypingStat .val").text(
-      Misc.secondsToString(Math.round(typingStats.data.timeTyping), true, true)
-    );
-    $(".pageAbout #totalStartedTestsStat .val").text(
-      Misc.abbreviateNumber(typingStats.data.testsStarted)
-    );
-    $(".pageAbout #totalCompletedTestsStat .val").text(
-      Misc.abbreviateNumber(typingStats.data.testsCompleted)
-    );
+    typingStatsResponseData = typingStats.data;
   } else {
     Notifications.add(
       `Failed to get global typing stats: ${speedStats.message}`,
       -1
     );
   }
+}
+
+async function fill(): Promise<void> {
+  const supporters = await Misc.getSupportersList();
+  const contributors = await Misc.getContributorsList();
+
+  await getStatsAndHistogramData();
+  updateStatsAndHistogram();
+
   supporters.forEach((supporter) => {
     $(".pageAbout .supporters").append(`
       <div>${supporter}</div>
