@@ -225,6 +225,14 @@ export const psaGet = rateLimit({
   handler: customHandler,
 });
 
+// get public speed stats
+export const publicStatsGet = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 // Results Routing
 export const resultsGet = rateLimit({
   windowMs: ONE_HOUR_MS,

@@ -447,6 +447,12 @@ declare namespace MonkeyTypes {
     type: string;
   }
 
+  interface PublicSpeedStats {
+    _id: string;
+    type: "speedStats";
+    [language_mode_mode2: string]: Record<string, number>;
+  }
+
   interface QuoteRating {
     _id: string;
     average: number;
