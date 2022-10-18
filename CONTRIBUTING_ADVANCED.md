@@ -100,11 +100,6 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 ## Building and Running Monkeytype
 
-Run `npm run install-all` in the project root to install all dependencies.
-
-- If you are on Windows, use `npm run install-windows`.
-- If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-
 Then, you are ready to build and run Monkeytype. If you are using Docker:
 
 - Frontend:
@@ -118,6 +113,10 @@ Then, you are ready to build and run Monkeytype. If you are using Docker:
   ```
 
 If you are **_not_** using Docker:
+
+- Run `npm run install-all` in the project root to install all dependencies.
+  - If you are on Windows, use `npm run install-windows`.
+  - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
 
 - Frontend and backend
   ```
