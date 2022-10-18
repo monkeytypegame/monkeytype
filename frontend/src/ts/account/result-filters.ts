@@ -153,7 +153,7 @@ export async function setFilterPreset(id: string): Promise<void> {
   );
   if (filter) {
     // deep copy filter
-    filters = deepCopyFilter(filter);
+    filters = verifyResultFiltersStructure(filter);
 
     save();
     updateActive();
@@ -726,3 +726,17 @@ $(".group.presetFilterButtons .filterBtns").on(
     deleteFilterPreset($(e.currentTarget).data("id"));
   }
 );
+
+function verifyResultFiltersStructure(
+  filterIn: MonkeyTypes.ResultFilters
+): MonkeyTypes.ResultFilters {
+  const filter = deepCopyFilter(filterIn);
+  Object.entries(defaultResultFilters).forEach((entry) => {
+    const key = entry[0] as keyof MonkeyTypes.ResultFilters;
+    const value = entry[1];
+    if (filter[key] === undefined) {
+      filter[key] = value;
+    }
+  });
+  return filter;
+}
