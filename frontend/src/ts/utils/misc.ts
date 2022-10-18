@@ -1230,14 +1230,14 @@ export async function promiseAnimation(
 }
 
 //abbreviateNumber
-export function abbreviateNumber(num: number): string {
+export function abbreviateNumber(num: number, decimalPoints = 1): string {
   if (num < 1000) {
     return num.toString();
   }
 
   const exp = Math.floor(Math.log(num) / Math.log(1000));
   const pre = "kmbtqQsSond".charAt(exp - 1);
-  return (num / Math.pow(1000, exp)).toFixed(1) + pre;
+  return (num / Math.pow(1000, exp)).toFixed(decimalPoints) + pre;
 }
 
 export async function sleep(ms: number): Promise<void> {
