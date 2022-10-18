@@ -539,9 +539,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
 
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
       if (input.length > currentWord.length && !Config.blindMode) {
-        $(wordAtIndex).addClass("error");
+        wordAtIndex.classList.add("error");
       } else if (input.length == currentWord.length) {
-        $(wordAtIndex).removeClass("error");
+        wordAtIndex.classList.remove("error");
       }
     }
   }
@@ -1019,15 +1019,15 @@ $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
 });
 
-$(".pageTest").on("mouseleave", "#resultWordsHistory .words .word", () => {
+$(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
   $(".wordInputAfter").remove();
 });
 
-$("#wpmChart").on("mouseleave", () => {
+$(".pageTest #result #wpmChart").on("mouseleave", () => {
   $(".wordInputAfter").remove();
 });
 
-$(".pageTest").on("mouseenter", "#resultWordsHistory .words .word", (e) => {
+$(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
   if (resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
