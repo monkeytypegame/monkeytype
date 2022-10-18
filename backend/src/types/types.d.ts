@@ -461,4 +461,45 @@ declare namespace MonkeyTypes {
     ratings: number;
     totalRating: number;
   }
+
+  interface FunboxObject {
+    name: string;
+    info: string;
+    alias?: string;
+    ignoresLanguage?: boolean;
+    noLingatures?: boolean;
+    noLetters?: boolean;
+    changesCapitalisation?: boolean;
+    mode?: MonkeyTypes.Mode;
+    blockWordHighlight?: boolean;
+    nospace?: boolean;
+    noPunctuation?: boolean;
+    noNumbers?: boolean;
+    symmetricChars?: boolean;
+    conflictsWithSymmetricChars?: boolean;
+    toPushCount?: number;
+    changesWordsVisibility?: boolean;
+    speaks?: boolean;
+    unspeakable?: boolean;
+    changesLayout?: boolean;
+    ignoresLayout?: boolean;
+    getWord?: boolean;
+    punctuateWord?: boolean;
+    withWords?: boolean;
+    alterText?: boolean;
+    applyCSS?: boolean;
+    applyConfig?: boolean;
+    rememberSettings?: boolean;
+    toggleScript?: boolean;
+    pullSection?: boolean;
+    handleSpace?: boolean;
+    handleChar?: boolean;
+    isCharCorrect?: boolean;
+    preventDefaultEvent?: boolean;
+    handleKeydown?: boolean;
+    getResultContent?: boolean;
+    start?: boolean;
+    restart?: boolean;
+    getWordHtml?: boolean;
+  }
 }
