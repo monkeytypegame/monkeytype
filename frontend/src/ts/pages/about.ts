@@ -4,6 +4,7 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
+import intervalToDuration from "date-fns/intervalToDuration";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -25,18 +26,38 @@ function updateStatsAndHistogram(): void {
   ChartController.globalSpeedHistogram.data.datasets[0].data =
     bucketedSpeedStats.data;
 
+  const secondsRounded = Math.round(typingStatsResponseData.timeTyping);
+
+  const timeTypingDuration = intervalToDuration({
+    start: 0,
+    end: secondsRounded * 1000,
+  });
+
   $(".pageAbout #totalTimeTypingStat .val").text(
-    Misc.secondsToString(
-      Math.round(typingStatsResponseData.timeTyping),
-      true,
-      true
-    )
+    timeTypingDuration.years?.toString() ?? ""
   );
+  $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
+  $(".pageAbout #totalTimeTypingStat").attr(
+    "aria-label",
+    Math.round(secondsRounded / 3600) + " hours"
+  );
+
   $(".pageAbout #totalStartedTestsStat .val").text(
-    Misc.abbreviateNumber(typingStatsResponseData.testsStarted)
+    Math.round(typingStatsResponseData.testsStarted / 1000000)
   );
+  $(".pageAbout #totalStartedTestsStat .valSmall").text("million");
+  $(".pageAbout #totalStartedTestsStat").attr(
+    "aria-label",
+    typingStatsResponseData.testsStarted + " tests"
+  );
+
   $(".pageAbout #totalCompletedTestsStat .val").text(
-    Misc.abbreviateNumber(typingStatsResponseData.testsCompleted)
+    Math.round(typingStatsResponseData.testsCompleted / 1000000)
+  );
+  $(".pageAbout #totalCompletedTestsStat .valSmall").text("million");
+  $(".pageAbout #totalCompletedTestsStat").attr(
+    "aria-label",
+    typingStatsResponseData.testsCompleted + " tests"
   );
 }
 
