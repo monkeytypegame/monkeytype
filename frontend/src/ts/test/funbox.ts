@@ -799,12 +799,10 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  if (funbox !== "none") {
-    UpdateConfig.ActiveFunboxes().forEach(async (funbox) => {
-      if (funbox.applyCSS) funbox.applyCSS();
-      if (funbox.applyConfig) funbox.applyConfig();
-    });
-  }
+  UpdateConfig.ActiveFunboxes().forEach(async (funbox) => {
+    if (funbox.applyCSS) funbox.applyCSS();
+    if (funbox.applyConfig) funbox.applyConfig();
+  });
   // ModesNotice.update();
   return true;
 }

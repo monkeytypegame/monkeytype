@@ -7,6 +7,7 @@ import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
+import { Funboxes } from "../../../frontend/src/ts/test/funbox";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -348,7 +349,26 @@ export async function checkIfPb(
 ): Promise<boolean> {
   const { mode, funbox } = result;
 
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+  const funboxes = Funboxes.filter(
+    (f) => funbox?.split("#").find((F) => F === f.name) !== undefined
+  );
+  if (
+    funboxes.filter(
+      (f) =>
+        f.alterText ||
+        f.changesCapitalisation ||
+        f.getWord ||
+        f.handleChar ||
+        f.handleKeydown ||
+        f.handleSpace ||
+        f.ignoresLanguage ||
+        f.isCharCorrect ||
+        f.preventDefaultEvent ||
+        f.pullSection ||
+        f.punctuateWord ||
+        f.withWords
+    ).length > 0
+  ) {
     return false;
   }
 
@@ -397,11 +417,25 @@ export async function checkIfTagPb(
   }
 
   const { mode, tags: resultTags, funbox } = result;
+  const funboxes = Funboxes.filter(
+    (f) => funbox?.split("#").find((F) => F === f.name) !== undefined
+  );
   if (
-    funbox !== undefined &&
-    funbox !== "none" &&
-    funbox !== "plus_one" &&
-    funbox !== "plus_two"
+    funboxes.filter(
+      (f) =>
+        f.alterText ||
+        f.changesCapitalisation ||
+        f.getWord ||
+        f.handleChar ||
+        f.handleKeydown ||
+        f.handleSpace ||
+        f.ignoresLanguage ||
+        f.isCharCorrect ||
+        f.preventDefaultEvent ||
+        f.pullSection ||
+        f.punctuateWord ||
+        f.withWords
+    ).length > 0
   ) {
     return [];
   }
