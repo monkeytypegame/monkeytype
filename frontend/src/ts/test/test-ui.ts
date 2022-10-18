@@ -539,9 +539,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
 
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
       if (input.length > currentWord.length && !Config.blindMode) {
-        $(wordAtIndex).addClass("error");
+        wordAtIndex.classList.add("error");
       } else if (input.length == currentWord.length) {
-        $(wordAtIndex).removeClass("error");
+        wordAtIndex.classList.remove("error");
       }
     }
   }
