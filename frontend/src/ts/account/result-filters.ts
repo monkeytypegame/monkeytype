@@ -651,7 +651,9 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   if (Config.funbox === "none") {
     filters.funbox.none = true;
   } else {
-    filters.funbox[Config.funbox] = true;
+    for (const f of Config.funbox.split("#")) {
+      filters.funbox[f] = true;
+    }
   }
 
   filters["tags"]["none"] = true;
