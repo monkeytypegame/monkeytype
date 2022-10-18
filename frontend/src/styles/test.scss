@@ -34,6 +34,10 @@
 .pageTest {
   position: relative;
 
+  #typingTest {
+    position: relative;
+  }
+
   .ssWatermark {
     font-size: 1.25rem;
     color: var(--sub-color);
@@ -423,7 +427,7 @@
   top: -2.5rem;
 
   &.focus {
-    top: 0rem;
+    // top: 0rem;
   }
 
   i {

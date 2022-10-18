@@ -1174,7 +1174,7 @@ export function createErrorMessage(error: unknown, message: string): string {
 }
 
 export function isAnyPopupVisible(): boolean {
-  const popups = document.querySelectorAll(".popupWrapper");
+  const popups = document.querySelectorAll("#popups .popupWrapper");
   let popupVisible = false;
   for (const popup of popups) {
     const style = window.getComputedStyle(popup);

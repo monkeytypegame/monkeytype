@@ -5,11 +5,12 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestActive from "../states/test-active";
 
 export let caretAnimating = true;
+const caret = $("#caret");
 
 export function stopAnimation(): void {
   if (caretAnimating === true) {
-    $("#caret").css("animation-name", "none");
-    $("#caret").css("opacity", "1");
+    caret.css("animation-name", "none");
+    caret.css("opacity", "1");
     caretAnimating = false;
   }
 }
@@ -17,25 +18,19 @@ export function stopAnimation(): void {
 export function startAnimation(): void {
   if (caretAnimating === false) {
     if (Config.smoothCaret && !SlowTimer.get()) {
-      $("#caret").css("animation-name", "caretFlashSmooth");
+      caret.css("animation-name", "caretFlashSmooth");
     } else {
-      $("#caret").css("animation-name", "caretFlashHard");
+      caret.css("animation-name", "caretFlashHard");
     }
     caretAnimating = true;
   }
 }
 
 export function hide(): void {
-  $("#caret").addClass("hidden");
+  caret.addClass("hidden");
 }
 
 export async function updatePosition(): Promise<void> {
-  if ($("#wordsWrapper").hasClass("hidden")) return;
-  // if ($("#caret").hasClass("off")) {
-  //   return;
-  // }
-
-  const caret = $("#caret");
   const caretWidth = Math.round(
     document.querySelector("#caret")?.getBoundingClientRect().width ?? 0
   );
@@ -133,8 +128,7 @@ export async function updatePosition(): Promise<void> {
 
   if (Config.showAllLines) {
     const browserHeight = window.innerHeight;
-    const middlePos =
-      browserHeight / 2 - ($("#caret").outerHeight() as number) / 2;
+    const middlePos = browserHeight / 2 - (caret.outerHeight() as number) / 2;
     const contentHeight = document.body.scrollHeight;
 
     if (
@@ -157,7 +151,7 @@ export async function updatePosition(): Promise<void> {
 
 export function show(): void {
   if ($("#result").hasClass("hidden")) {
-    $("#caret").removeClass("hidden");
+    caret.removeClass("hidden");
     updatePosition();
     startAnimation();
   }
