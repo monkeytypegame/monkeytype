@@ -139,7 +139,7 @@ $("#customTestDurationPopup .button").on("click", () => {
   apply();
 });
 
-$(document).on("click", "#testConfig .time .textButton", (e) => {
+$("#testConfig").on("click", ".time .textButton", (e) => {
   const mode = $(e.currentTarget).attr("timeConfig");
   if (mode == "custom") {
     show();

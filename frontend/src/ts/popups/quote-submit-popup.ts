@@ -100,7 +100,7 @@ $("#quoteSubmitPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$(document).on("click", "#quoteSubmitPopup #submitQuoteButton", () => {
+$("#popups").on("click", "#quoteSubmitPopup #submitQuoteButton", () => {
   submitQuote();
 });
 
