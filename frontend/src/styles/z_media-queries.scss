@@ -413,14 +413,16 @@
     grid-template-columns: 1fr;
   }
 
-  .pageAbout .section {
-    .contributors,
-    .supporters {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-    .contactButtons,
-    .supportButtons {
-      grid-template-columns: 1fr 1fr;
+  .pageAbout {
+    .section {
+      .contributors,
+      .supporters {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .contactButtons,
+      .supportButtons {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   }
 
@@ -449,6 +451,20 @@
     .tables table {
       tr td:nth-child(5) {
         display: none;
+      }
+    }
+  }
+  .pageAbout {
+    .triplegroup {
+      grid-template-columns: 1fr;
+      .group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 0rem 1rem;
+        .label {
+          grid-column: span 2;
+        }
       }
     }
   }
