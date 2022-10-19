@@ -7,7 +7,7 @@ import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
-import Funboxes from "../utils/funbox";
+import Funboxes from "../constants/funbox";
 
 const SECONDS_PER_HOUR = 3600;
 
