@@ -778,12 +778,12 @@ function fillContent(): void {
 
   const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
 
-  let highestSpeed = topWpm;
+  let highestSpeed: number | string = topWpm;
   if (Config.alwaysShowCPM) {
     highestSpeed = topWpm * 5;
   }
   if (Config.alwaysShowDecimalPlaces) {
-    highestSpeed = Misc.roundTo2(highestSpeed);
+    highestSpeed = Misc.roundTo2(highestSpeed).toFixed(2);
   } else {
     highestSpeed = Math.round(highestSpeed);
   }
@@ -791,12 +791,12 @@ function fillContent(): void {
   $(".pageAccount .highestWpm .title").text(`highest ${wpmCpm}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
 
-  let averageSpeed = totalWpm;
+  let averageSpeed: number | string = totalWpm;
   if (Config.alwaysShowCPM) {
     averageSpeed = totalWpm * 5;
   }
   if (Config.alwaysShowDecimalPlaces) {
-    averageSpeed = Misc.roundTo2(averageSpeed / testCount);
+    averageSpeed = Misc.roundTo2(averageSpeed / testCount).toFixed(2);
   } else {
     averageSpeed = Math.round(averageSpeed / testCount);
   }
@@ -804,12 +804,12 @@ function fillContent(): void {
   $(".pageAccount .averageWpm .title").text(`average ${wpmCpm}`);
   $(".pageAccount .averageWpm .val").text(averageSpeed);
 
-  let averageSpeedLast10 = wpmLast10total;
+  let averageSpeedLast10: number | string = wpmLast10total;
   if (Config.alwaysShowCPM) {
     averageSpeedLast10 = wpmLast10total * 5;
   }
   if (Config.alwaysShowDecimalPlaces) {
-    averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10);
+    averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2);
   } else {
     averageSpeedLast10 = Math.round(averageSpeedLast10 / last10);
   }
@@ -819,12 +819,12 @@ function fillContent(): void {
   );
   $(".pageAccount .averageWpm10 .val").text(averageSpeedLast10);
 
-  let highestRawSpeed = rawWpm.max;
+  let highestRawSpeed: number | string = rawWpm.max;
   if (Config.alwaysShowCPM) {
     highestRawSpeed = rawWpm.max * 5;
   }
   if (Config.alwaysShowDecimalPlaces) {
-    highestRawSpeed = Misc.roundTo2(highestRawSpeed);
+    highestRawSpeed = Misc.roundTo2(highestRawSpeed).toFixed(2);
   } else {
     highestRawSpeed = Math.round(highestRawSpeed);
   }
@@ -832,12 +832,12 @@ function fillContent(): void {
   $(".pageAccount .highestRaw .title").text(`highest raw ${wpmCpm}`);
   $(".pageAccount .highestRaw .val").text(highestRawSpeed);
 
-  let averageRawSpeed = rawWpm.total;
+  let averageRawSpeed: number | string = rawWpm.total;
   if (Config.alwaysShowCPM) {
     averageRawSpeed = rawWpm.total * 5;
   }
   if (Config.alwaysShowDecimalPlaces) {
-    averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count);
+    averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2);
   } else {
     averageRawSpeed = Math.round(averageRawSpeed / rawWpm.count);
   }
@@ -845,14 +845,14 @@ function fillContent(): void {
   $(".pageAccount .averageRaw .title").text(`average raw ${wpmCpm}`);
   $(".pageAccount .averageRaw .val").text(averageRawSpeed);
 
-  let averageRawSpeedLast10 = rawWpm.last10Total;
+  let averageRawSpeedLast10: number | string = rawWpm.last10Total;
   if (Config.alwaysShowCPM) {
     averageRawSpeedLast10 = rawWpm.last10Total * 5;
   }
   if (Config.alwaysShowDecimalPlaces) {
     averageRawSpeedLast10 = Misc.roundTo2(
       averageRawSpeedLast10 / rawWpm.last10Count
-    );
+    ).toFixed(2);
   } else {
     averageRawSpeedLast10 = Math.round(
       averageRawSpeedLast10 / rawWpm.last10Count
@@ -876,18 +876,18 @@ function fillContent(): void {
 
   $(".pageAccount .highestAcc .val").text(highestAcc + "%");
 
-  let averageAcc = totalAcc;
+  let averageAcc: number | string = totalAcc;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAcc = Misc.roundTo2(averageAcc / testCount);
+    averageAcc = Misc.roundTo2(averageAcc / testCount).toFixed(2);
   } else {
     averageAcc = Math.round(averageAcc / testCount);
   }
 
   $(".pageAccount .avgAcc .val").text(averageAcc + "%");
 
-  let averageAccLast10 = totalAcc10;
+  let averageAccLast10: number | string = totalAcc10;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAccLast10 = Misc.roundTo2(averageAccLast10 / last10);
+    averageAccLast10 = Misc.roundTo2(averageAccLast10 / last10).toFixed(2);
   } else {
     averageAccLast10 = Math.round(averageAccLast10 / last10);
   }
@@ -898,29 +898,29 @@ function fillContent(): void {
     $(".pageAccount .avgCons .val").text("-");
     $(".pageAccount .avgCons10 .val").text("-");
   } else {
-    let highestCons = topCons;
+    let highestCons: number | string = topCons;
     if (Config.alwaysShowDecimalPlaces) {
-      highestCons = Misc.roundTo2(highestCons);
+      highestCons = Misc.roundTo2(highestCons).toFixed(2);
     } else {
       highestCons = Math.round(highestCons);
     }
 
     $(".pageAccount .highestCons .val").text(highestCons + "%");
 
-    let averageCons = totalCons;
+    let averageCons: number | string = totalCons;
     if (Config.alwaysShowDecimalPlaces) {
-      averageCons = Misc.roundTo2(averageCons / consCount);
+      averageCons = Misc.roundTo2(averageCons / consCount).toFixed(2);
     } else {
       averageCons = Math.round(averageCons / consCount);
     }
 
     $(".pageAccount .avgCons .val").text(averageCons + "%");
 
-    let averageConsLast10 = totalCons10;
+    let averageConsLast10: number | string = totalCons10;
     if (Config.alwaysShowDecimalPlaces) {
       averageConsLast10 = Misc.roundTo2(
         averageConsLast10 / Math.min(last10, consCount)
-      );
+      ).toFixed(2);
     } else {
       averageConsLast10 = Math.round(
         averageConsLast10 / Math.min(last10, consCount)
