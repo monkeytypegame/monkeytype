@@ -255,12 +255,12 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   const loggedInUserName = DB.getSnapshot()?.name;
 
   const snap = DB.getSnapshot();
-  if (!snap) return;
 
   const avatarUrlPromises = currentData[lb].map(async (entry) => {
     const isCurrentUser =
       Auth?.currentUser &&
       entry.uid === Auth?.currentUser.uid &&
+      snap &&
       snap.discordAvatar &&
       snap.discordId;
 
