@@ -35,7 +35,19 @@
       "text": "#include <stdio.h>\\nint fib(int n)\\n{\\n\\tif (n <= 1)\\n\\t\\treturn n;\\n\\treturn fib(n - 1) + fib(n - 2);\\n}\\nint main()\\n{\\n\\tint n = 9;\\n\\tprintf(\"%d\", fib(n));\\n\\tgetchar();\\n\\treturn 0;\\n}",
       "source": "Geeks for Geeks - C Program For Fibonacci Numbers",
       "length": 155,
-      "id":5
+      "id": 5
+    },
+    {
+      "text": "int\\nmain(int argc, char **argv)\\n{\\n\\tstruct api_signature *sig = NULL;\\n\\tint load_type, load_unit, load_slice, load_partition;\\n\\tint i;\\n\\tconst char *ldev;",
+      "source": "FreeBSD Boot Sequence",
+      "length": 144,
+      "id": 6
+    },
+    {
+      "text": "tree\\nc_sizeof (exp)\\n\\ttree exp;\\n{\\n\\tif (pedantic)\\n\\t{\\n\\t\\tenum tree_code code = TREE_CODE (TREE_TYPE (exp));\\n\\t\\tif (code == FUNCTION_TYPE)\\n\\t\\t\\twarning (\"sizeof applied to a value of function type\");\\n\\t\\tif (code == VOID_TYPE)\\n\\t\\t\\twarning (\"sizeof applied to a value of void type\");\\n\\t}\\n\\treturn size_in_bytes (exp);\\n}",
+      "source": "GCC Version 0.9",
+      "length": 292,
+      "id": 7
     }
   ]
 }
