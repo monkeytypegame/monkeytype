@@ -793,10 +793,5 @@
     "name": "cheesecake",
     "bgColor": "#fdf0d5",
     "mainColor": "#892948"
-  },
-  {
-    "name": "vintage_red",
-    "bgColor": "#3a160e",
-    "mainColor": "#a71f16"
   }
 ]
