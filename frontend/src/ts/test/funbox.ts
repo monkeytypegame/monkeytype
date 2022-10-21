@@ -641,7 +641,8 @@ export function checkFunbox(funbox?: string): boolean {
     );
   }
   return !(
-    checkingFunbox.filter((f) => f.getWord || f.pullSection || f.withWords).length > 1 ||
+    checkingFunbox.filter((f) => f.getWord || f.pullSection || f.withWords)
+      .length > 1 ||
     checkingFunbox.filter((f) => f.applyCSS).length > 1 ||
     checkingFunbox.filter((f) => f.punctuateWord).length > 1 ||
     checkingFunbox.filter((f) => f.isCharCorrect).length > 1 ||
