@@ -30,6 +30,12 @@
       "source": "clc-wiki - rightrot",
       "length": 183,
       "id": 4
+    },
+    {
+      "text": "#include <stdio.h>\\nint fib(int n)\\n{\\n\\tif (n <= 1)\\n\\t\\treturn n;\\n\\treturn fib(n - 1) + fib(n - 2);\\n}\\nint main()\\n{\\n\\tint n = 9;\\n\\tprintf(\"%d\", fib(n));\\n\\tgetchar();\\n\\treturn 0;\\n}",
+      "source": "Geeks for Geeks - C Program For Fibonacci Numbers",
+      "length": 155,
+      "id":5
     }
   ]
 }
