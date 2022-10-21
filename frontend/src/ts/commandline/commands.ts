@@ -178,8 +178,8 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...MinWpmCommands,
     ...MinAccCommands,
     ...MinBurstCommands,
-    ...BritishEnglishCommands,
     ...LanguagesCommands,
+    ...BritishEnglishCommands,
     ...FunboxCommands,
     {
       id: "changeCustomLayoutfluid",
