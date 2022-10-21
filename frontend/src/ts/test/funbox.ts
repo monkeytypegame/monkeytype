@@ -274,18 +274,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
       return Config.customLayoutfluid.replace(/#/g, " ");
     },
     restart(): void {
-      UpdateConfig.setLayout(
-        Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("#")[0]
-          : "qwerty",
-        true
-      );
-      UpdateConfig.setKeymapLayout(
-        Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("#")[0]
-          : "qwerty",
-        true
-      );
+      if (this.applyConfig) this.applyConfig();
       Keymap.highlightKey(
         TestWords.words
           .getCurrent()
@@ -550,8 +539,9 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "pseudolang",
     info: "Nonsense words that look like the current language.",
     unspeakable: true,
-    withWords(words: string[]): Misc.Wordset {
-      return new Misc.PseudolangWordGenerator(words);
+    async withWords(words?: string[]): Promise<Misc.Wordset> {
+      if (words !== undefined) return new Misc.PseudolangWordGenerator(words);
+      return new Misc.Wordset([]);
     },
   },
 ];
@@ -651,18 +641,13 @@ export function checkFunbox(funbox?: string): boolean {
     );
   }
   return !(
-    checkingFunbox.filter((f) => f.getWord).length > 1 ||
+    checkingFunbox.filter((f) => f.getWord || f.pullSection || f.withWords).length > 1 ||
     checkingFunbox.filter((f) => f.applyCSS).length > 1 ||
-    checkingFunbox.filter((f) => f.pullSection).length > 1 ||
     checkingFunbox.filter((f) => f.punctuateWord).length > 1 ||
     checkingFunbox.filter((f) => f.isCharCorrect).length > 1 ||
     checkingFunbox.filter((f) => f.nospace).length > 1 ||
     checkingFunbox.filter((f) => f.toPushCount).length > 1 ||
     checkingFunbox.filter((f) => f.changesWordsVisibility).length > 1 ||
-    (checkingFunbox.filter((f) => f.getWord).length > 0 &&
-      checkingFunbox.filter((f) => f.pullSection).length > 0) ||
-    (checkingFunbox.filter((f) => f.getWord).length > 0 &&
-      checkingFunbox.filter((f) => f.withWords).length > 0) ||
     (checkingFunbox.filter((f) => f.noLetters).length > 0 &&
       checkingFunbox.filter((f) => f.changesCapitalisation).length > 0) ||
     (checkingFunbox.filter((f) => f.conflictsWithSymmetricChars).length > 0 &&

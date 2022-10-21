@@ -3,7 +3,7 @@ import { Wordset } from "../utils/misc";
 
 let currentWordset: Wordset | null = null;
 
-export function withWords(words: string[]): Wordset {
+export async function withWords(words: string[]): Promise<Wordset> {
   const wordFunbox = ActiveFunboxes().find((f) => f.withWords);
   if (wordFunbox?.withWords) return wordFunbox.withWords(words);
 

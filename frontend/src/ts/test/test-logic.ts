@@ -913,7 +913,7 @@ export async function init(): Promise<void> {
     if (Config.mode == "custom") {
       wordList = CustomText.text;
     }
-    const wordset = Wordset.withWords(wordList);
+    const wordset = await Wordset.withWords(wordList);
     let wordCount = 0;
 
     const sectionFunbox = UpdateConfig.ActiveFunboxes().find(
@@ -1177,7 +1177,7 @@ export async function addWord(): Promise<void> {
           ...(await Misc.getCurrentLanguage(Config.language)),
           words: CustomText.text,
         };
-  const wordset = Wordset.withWords(language.words);
+  const wordset = await Wordset.withWords(language.words);
 
   const randomWord = await getNextWord(wordset, language, bound);
 
