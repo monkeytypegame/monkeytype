@@ -48,6 +48,18 @@
       "source": "GCC Version 0.9",
       "length": 292,
       "id": 7
+    },
+    {
+      "text": "static int initialized;\\nstatic void PyThread__init_thread(void); /* Forward */\\nvoid\\nPyThread_init_thread(void)\\n{\\n#ifdef Py_DEBUG\\n\\tconst char *p = Py_GETENV(\"PYTHONTHREADDEBUG\");\\n\\tif (p) {\\n\\t\\tif (*p)\\n\\t\\t\\tthread_debug = atoi(p);\\n\\t\\telse\\n\\t\\t\\tthread_debug = 1;\\n\\t}\\n#endif /* Py_DEBUG */\\n\\tif (initialized)\\n\\t\\treturn;\\n\\tinitialized = 1;\\n\\tdprintf((\"PyThread_init_thread called\"));\\n\\tPyThread__init_thread();\\n}",
+      "source": "Python 3.10.8 Source Code",
+      "length": 377,
+      "id": 8
+    },
+    {
+      "text": "static bool read_shader(struct vkd3d_shader_code *shader, FILE *f)\\n{\\n\\tsize_t size = 4096;\\n\\tstruct stat st;\\n\\tsize_t pos = 0;\\n\\tuint8_t *data;\\n\\tsize_t ret;\\n\\tmemset(shader, 0, sizeof(*shader));\\n\\tif (fstat(fileno(f), &st) == -1)\\n\\t{\\n\\t\\tfprintf(stderr, \"Could not stat input.\");\\n\\t\\treturn false;\\n\\t}\\n\\tif (S_ISREG(st.st_mode))\\n\\t\\tsize = st.st_size;\\n\\tif (!(data = malloc(size)))\\n\\t{\\n\\t\\tfprintf(stderr, \"Out of memory.\");\\n\\t\\treturn false;\\n\\t}\\n\\tfor (;;)\\n\\t{\\n\\t\\tif (pos >= size)\\n\\t\\t{\\n\\t\\t\\tif (size > SIZE_MAX / 2 || !(data = realloc(data, size * 2)))\\n\\t\\t\\t{\\n\\t\\t\\t\\tfprintf(stderr, \"Out of memory.\");\\n\\t\\t\\t\\tfree(data);\\n\\t\\t\\t\\treturn false;\\n\\t\\t\\t}\\n\\t\\t\\tsize *= 2;\\n\\t\\t}\\n\\t\\tif (!(ret = fread(&data[pos], 1, size - pos, f)))\\n\\t\\t\\tbreak;\\n\\t\\tpos += ret;\\n\\t}\\n\\tif (!feof(f))\\n\\t{\\n\\t\\tfree(data);\\n\\t\\treturn false;\\n\\t}\\n\\tshader->code = data;\\n\\tshader->size = pos;\\n\\treturn true;\\n}",
+      "source": "vkd3d 3D Graphics Library",
+      "length": 996,
+      "id": 9
     }
   ]
 }
