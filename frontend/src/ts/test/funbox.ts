@@ -641,6 +641,9 @@ export function checkFunbox(funbox?: string): boolean {
     );
   }
   return !(
+    Funboxes.filter(
+      (f) => Config.funbox.split("#").find((cf) => cf == f.name) !== undefined
+    ).length != Config.funbox.split("#").length ||
     checkingFunbox.filter((f) => f.getWord || f.pullSection || f.withWords)
       .length > 1 ||
     checkingFunbox.filter((f) => f.applyCSS).length > 1 ||
