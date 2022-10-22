@@ -178,6 +178,21 @@ class Notification {
           }
         );
       }
+      if (this.message.includes("please refresh")) {
+        // add pointer when refresh is needed
+        $(`#bannerCenter .banner[id='${this.id}']`).hover(function () {
+          $(this).css('cursor', 'pointer');
+        }, function () {
+          $(this).css('cursor', 'auto');
+        });
+        // refresh on clicking banner
+        $(`#bannerCenter .banner[id='${this.id}']`).on(
+          "click",
+          () => {
+            window.location.reload();
+          }
+        );
+      }
     }
     if (this.duration > 0) {
       setTimeout(() => {
