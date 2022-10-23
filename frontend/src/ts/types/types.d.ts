@@ -196,7 +196,7 @@ declare namespace MonkeyTypes {
     info: string;
     alias?: string;
     ignoresLanguage?: boolean;
-    noLingatures?: boolean;
+    noLigatures?: boolean;
     noLetters?: boolean;
     changesCapitalisation?: boolean;
     mode?: MonkeyTypes.Mode;

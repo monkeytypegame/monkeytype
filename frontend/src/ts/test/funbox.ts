@@ -81,7 +81,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "choo_choo",
     info: "All the letters are spinning!",
-    noLingatures: true,
+    noLigatures: true,
     conflictsWithSymmetricChars: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
@@ -288,7 +288,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "earthquake",
     info: "Everybody get down! The words are shaking!",
-    noLingatures: true,
+    noLigatures: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
     },
@@ -728,7 +728,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
   if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
-    if (ActiveFunboxes().find((f) => f.noLingatures)) {
+    if (ActiveFunboxes().find((f) => f.noLigatures)) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0

@@ -36,7 +36,7 @@ const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "choo_choo",
     info: "All the letters are spinning!",
-    noLingatures: true,
+    noLigatures: true,
     conflictsWithSymmetricChars: true,
     applyCSS: true,
   },
@@ -83,7 +83,7 @@ const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "earthquake",
     info: "Everybody get down! The words are shaking!",
-    noLingatures: true,
+    noLigatures: true,
     applyCSS: true,
   },
   {
