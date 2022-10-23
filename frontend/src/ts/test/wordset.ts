@@ -1,4 +1,4 @@
-import { ActiveFunboxes } from "../config";
+import { ActiveFunboxes } from "./funbox";
 import { Wordset } from "../utils/misc";
 
 let currentWordset: Wordset | null = null;

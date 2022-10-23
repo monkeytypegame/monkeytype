@@ -3,10 +3,8 @@ import * as Notifications from "../elements/notifications";
 import * as Misc from "../utils/misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-import * as ModesNotice from "../elements/modes-notice";
 import * as TestInput from "../test/test-input";
 import * as Keymap from "../elements/keymap";
-import * as Settings from "../pages/settings";
 import * as TTS from "./tts";
 import * as WeakSpot from "./weak-spot";
 import { getPoem } from "./poetry";
@@ -219,13 +217,13 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     changesLayout: true,
     applyConfig(): void {
       UpdateConfig.setLayout(
-        Config.customLayoutfluid
+        Config.customLayoutfluid.split("#")[0]
           ? Config.customLayoutfluid.split("#")[0]
           : "qwerty",
         true
       );
       UpdateConfig.setKeymapLayout(
-        Config.customLayoutfluid
+        Config.customLayoutfluid.split("#")[0]
           ? Config.customLayoutfluid.split("#")[0]
           : "qwerty",
         true
@@ -259,15 +257,16 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
         if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
           Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
         }
-        UpdateConfig.setLayout(layouts[index]);
-        UpdateConfig.setKeymapLayout(layouts[index]);
+        if (layouts[index]) {
+          UpdateConfig.setLayout(layouts[index]);
+          UpdateConfig.setKeymapLayout(layouts[index]);
+        }
         Keymap.highlightKey(
           TestWords.words
             .getCurrent()
             .charAt(TestInput.input.current.length)
             .toString()
         );
-        Settings.groups["layout"]?.updateInput();
       }
     },
     getResultContent(): string {
@@ -546,6 +545,15 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   },
 ];
 
+export const ActiveFunboxes = (): MonkeyTypes.FunboxObject[] => {
+  const funboxes: MonkeyTypes.FunboxObject[] = [];
+  for (const i of Config.funbox.split("#")) {
+    const f = Funboxes.find((f) => f.name === i);
+    if (f) funboxes.push(f);
+  }
+  return funboxes;
+};
+
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
 
@@ -627,14 +635,14 @@ export function reset(): void {
 }
 
 export function toggleScript(...params: string[]): void {
-  UpdateConfig.ActiveFunboxes().forEach((funbox) => {
+  ActiveFunboxes().forEach((funbox) => {
     if (funbox.toggleScript) funbox.toggleScript(params);
   });
 }
 
 export function checkFunbox(funbox?: string): boolean {
   if (funbox === "none" || Config.funbox === "none") return true;
-  let checkingFunbox = UpdateConfig.ActiveFunboxes();
+  let checkingFunbox = ActiveFunboxes();
   if (funbox !== undefined) {
     checkingFunbox = checkingFunbox.concat(
       Funboxes.filter((f) => f.name == funbox)
@@ -694,7 +702,6 @@ export async function clear(): Promise<boolean> {
   reset();
   $("#wordsWrapper").removeClass("hidden");
   ManualRestart.set();
-  ModesNotice.update();
   return true;
 }
 
@@ -721,7 +728,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
   if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
-    if (UpdateConfig.ActiveFunboxes().find((f) => f.noLingatures)) {
+    if (ActiveFunboxes().find((f) => f.noLingatures)) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
@@ -735,7 +742,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   let fb: MonkeyTypes.FunboxObject[] = [];
   if (Config.mode === "zen") {
     fb = fb.concat(
-      UpdateConfig.ActiveFunboxes().filter(
+      ActiveFunboxes().filter(
         (f) =>
           f.getWord ||
           f.pullSection ||
@@ -752,9 +759,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
   if (Config.mode === "quote") {
     fb = fb.concat(
-      UpdateConfig.ActiveFunboxes().filter(
-        (f) => f.getWord || f.pullSection || f.withWords
-      )
+      ActiveFunboxes().filter((f) => f.getWord || f.pullSection || f.withWords)
     );
   }
   if (fb.length > 0) {
@@ -771,9 +776,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     (Config.time === 0 && Config.mode === "time") ||
     (Config.words === 0 && Config.mode === "words")
   ) {
-    const fb = UpdateConfig.ActiveFunboxes().filter(
-      (f) => f.pullSection || f.toPushCount
-    );
+    const fb = ActiveFunboxes().filter((f) => f.pullSection || f.toPushCount);
     if (fb.length > 0) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
@@ -790,7 +793,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  UpdateConfig.ActiveFunboxes().forEach(async (funbox) => {
+  ActiveFunboxes().forEach(async (funbox) => {
     if (funbox.applyCSS) funbox.applyCSS();
     if (funbox.applyConfig) funbox.applyConfig();
   });
@@ -799,7 +802,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 }
 
 export async function rememberSettings(): Promise<void> {
-  UpdateConfig.ActiveFunboxes().forEach(async (funbox) => {
+  ActiveFunboxes().forEach(async (funbox) => {
     if (funbox.rememberSettings) funbox.rememberSettings();
   });
 }

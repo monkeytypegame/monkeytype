@@ -12,7 +12,7 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
-import { Funboxes } from "./test/funbox";
+import { ActiveFunboxes } from "./test/funbox";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -1893,14 +1893,5 @@ export function setConfig(newConfig: MonkeyTypes.Config): void {
 export const loadPromise = new Promise((v) => {
   loadDone = v;
 });
-
-export const ActiveFunboxes = (): MonkeyTypes.FunboxObject[] => {
-  const funboxes: MonkeyTypes.FunboxObject[] = [];
-  for (const i of config.funbox.split("#")) {
-    const f = Funboxes.find((f) => f.name === i);
-    if (f) funboxes.push(f);
-  }
-  return funboxes;
-};
 
 export default config;

@@ -16,6 +16,7 @@ import * as Hangul from "hangul-js";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
+import { ActiveFunboxes } from "./funbox";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -104,7 +105,7 @@ export function updateActiveElement(backspace?: boolean): void {
 function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
-  const funbox = UpdateConfig.ActiveFunboxes().filter((f) => f.getWordHtml);
+  const funbox = ActiveFunboxes().filter((f) => f.getWordHtml);
   for (let c = 0; c < word.length; c++) {
     if (funbox.length > 0) {
       for (const f of funbox) {
@@ -428,7 +429,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
       let currentLetter = currentWord[i];
       let tabChar = "";
       let nlChar = "";
-      const funbox = UpdateConfig.ActiveFunboxes().filter((f) => f.getWordHtml);
+      const funbox = ActiveFunboxes().filter((f) => f.getWordHtml);
       if (funbox.length > 0) {
         let cl = "";
         for (const f of funbox) {
@@ -498,7 +499,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
       }
     }
 
-    const funbox = UpdateConfig.ActiveFunboxes().filter((f) => f.getWordHtml);
+    const funbox = ActiveFunboxes().filter((f) => f.getWordHtml);
     for (let i = input.length; i < currentWord.length; i++) {
       if (funbox.length > 0) {
         for (const f of funbox) {

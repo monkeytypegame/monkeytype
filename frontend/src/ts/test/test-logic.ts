@@ -54,6 +54,7 @@ import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
+import { ActiveFunboxes } from "./funbox";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -89,7 +90,7 @@ export async function punctuateWord(
 
   const lastChar = Misc.getLastChar(previousWord);
 
-  const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.punctuateWord);
+  const funbox = ActiveFunboxes().find((f) => f.punctuateWord);
   if (funbox?.punctuateWord) return funbox.punctuateWord(word);
 
   if (
@@ -328,7 +329,7 @@ export function startTest(): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const f of UpdateConfig.ActiveFunboxes()) {
+  for (const f of ActiveFunboxes()) {
     if (f.start) f.start();
   }
 
@@ -549,15 +550,15 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      if (UpdateConfig.ActiveFunboxes().find((f) => f.noPunctuation)) {
+      if (ActiveFunboxes().find((f) => f.noPunctuation)) {
         UpdateConfig.setPunctuation(false, true);
       }
-      if (UpdateConfig.ActiveFunboxes().find((f) => f.noNumbers)) {
+      if (ActiveFunboxes().find((f) => f.noNumbers)) {
         UpdateConfig.setNumbers(false, true);
       }
 
       if (options.withSameWordset) {
-        const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.toPushCount);
+        const funbox = ActiveFunboxes().find((f) => f.toPushCount);
         if (funbox?.toPushCount) {
           const toPush = [];
           for (let i = 0; i < funbox.toPushCount; i++) {
@@ -617,7 +618,7 @@ export function restart(options = {} as RestartOptions): void {
       (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
       (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
-      for (const f of UpdateConfig.ActiveFunboxes()) {
+      for (const f of ActiveFunboxes()) {
         if (f.restart) f.restart();
       }
 
@@ -670,13 +671,13 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
-  const wordFunbox = UpdateConfig.ActiveFunboxes().find((f) => f.getWord);
+  const wordFunbox = ActiveFunboxes().find((f) => f.getWord);
   if (wordFunbox?.getWord) word = wordFunbox.getWord(wordset);
   return word;
 }
 
 function applyFunboxesToWord(word: string): string {
-  for (const f of UpdateConfig.ActiveFunboxes()) {
+  for (const f of ActiveFunboxes()) {
     if (f.alterText) {
       word = f.alterText(word);
     }
@@ -845,7 +846,7 @@ export async function init(): Promise<void> {
 
   let wordsBound = 100;
 
-  const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.toPushCount);
+  const funbox = ActiveFunboxes().find((f) => f.toPushCount);
   if (funbox?.toPushCount) {
     wordsBound = funbox.toPushCount;
     if (Config.mode === "words" && Config.words < wordsBound) {
@@ -916,9 +917,7 @@ export async function init(): Promise<void> {
     const wordset = await Wordset.withWords(wordList);
     let wordCount = 0;
 
-    const sectionFunbox = UpdateConfig.ActiveFunboxes().find(
-      (f) => f.pullSection
-    );
+    const sectionFunbox = ActiveFunboxes().find((f) => f.pullSection);
     if (sectionFunbox?.pullSection) {
       while (
         (Config.mode == "words" && Config.words >= wordCount) ||
@@ -1117,7 +1116,7 @@ export async function init(): Promise<void> {
 
 export async function addWord(): Promise<void> {
   let bound = 100;
-  const funbox = UpdateConfig.ActiveFunboxes().find((f) => f.toPushCount);
+  const funbox = ActiveFunboxes().find((f) => f.toPushCount);
   if (funbox?.toPushCount) bound = funbox.toPushCount - 1;
   if (
     TestWords.words.length - TestInput.input.history.length > bound ||
@@ -1138,9 +1137,7 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  const sectionFunbox = UpdateConfig.ActiveFunboxes().find(
-    (f) => f.pullSection
-  );
+  const sectionFunbox = ActiveFunboxes().find((f) => f.pullSection);
   if (sectionFunbox?.pullSection) {
     if (TestWords.words.length - TestWords.words.currentIndex < 20) {
       const section = await sectionFunbox.pullSection(Config.language);
@@ -1429,6 +1426,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestTimer.clear();
   Funbox.clear();
   Monkey.hide();
+  ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {

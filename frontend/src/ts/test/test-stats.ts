@@ -1,8 +1,9 @@
 import Hangul from "hangul-js";
-import Config, { ActiveFunboxes } from "../config";
+import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
+import { ActiveFunboxes } from "./funbox";
 
 interface CharCount {
   spaces: number;
