@@ -342,12 +342,10 @@ export async function updateLbMemory(
   );
 }
 
-export async function checkIfPb(
-  uid: string,
-  user: MonkeyTypes.User,
+async function canGetPb(
   result: MonkeyTypes.Result<MonkeyTypes.Mode>
 ): Promise<boolean> {
-  const { mode, funbox } = result;
+  const funbox = result.funbox;
 
   const funboxes = Funboxes.filter(
     (f) => funbox?.split("#").find((F) => F === f.name) !== undefined
@@ -371,6 +369,17 @@ export async function checkIfPb(
   ) {
     return false;
   }
+  return true;
+}
+
+export async function checkIfPb(
+  uid: string,
+  user: MonkeyTypes.User,
+  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+): Promise<boolean> {
+  const { mode } = result;
+
+  if (!(await canGetPb(result))) return false;
 
   if (mode === "quote") {
     return false;
@@ -416,29 +425,8 @@ export async function checkIfTagPb(
     return [];
   }
 
-  const { mode, tags: resultTags, funbox } = result;
-  const funboxes = Funboxes.filter(
-    (f) => funbox?.split("#").find((F) => F === f.name) !== undefined
-  );
-  if (
-    funboxes.filter(
-      (f) =>
-        f.alterText ||
-        f.changesCapitalisation ||
-        f.getWord ||
-        f.handleChar ||
-        f.handleKeydown ||
-        f.handleSpace ||
-        f.ignoresLanguage ||
-        f.isCharCorrect ||
-        f.preventDefaultEvent ||
-        f.pullSection ||
-        f.punctuateWord ||
-        f.withWords
-    ).length > 0
-  ) {
-    return [];
-  }
+  const { mode, tags: resultTags } = result;
+  if (!(await canGetPb(result))) return [];
 
   if (mode === "quote") {
     return [];
