@@ -660,6 +660,8 @@ export function checkFunbox(funbox?: string): boolean {
       checkingFunbox.filter((f) => f.pullSection).length > 0) ||
     (checkingFunbox.filter((f) => f.speaks).length > 0 &&
       checkingFunbox.filter((f) => f.unspeakable).length > 0) ||
+    (checkingFunbox.filter((f) => f.speaks).length > 0 &&
+      checkingFunbox.filter((f) => f.ignoresLanguage).length > 0) ||
     (checkingFunbox.filter((f) => f.changesLayout).length > 0 &&
       checkingFunbox.filter((f) => f.ignoresLayout).length > 0)
   );
