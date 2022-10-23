@@ -12,6 +12,10 @@ const FILTER_SCHEMA = {
         "Filter name invalid. Name cannot contain special characters or more than 16 characters. Can include _ . and -",
       "string.max": "Filter name exceeds maximum of 16 characters",
     }),
+  pb: joi.object({
+    no: joi.bool().required(),
+    yes: joi.bool().required(),
+  }),
   difficulty: joi
     .object({
       normal: joi.bool().required(),

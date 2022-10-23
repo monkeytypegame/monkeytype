@@ -7,7 +7,7 @@ import {
   updateTypingStats,
   recordAutoBanEvent,
 } from "../../dal/user";
-import * as PublicStatsDAL from "../../dal/public-stats";
+import * as PublicDAL from "../../dal/public";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
@@ -351,7 +351,7 @@ export async function addResult(
   }
   tt = result.testDuration + result.incompleteTestSeconds - afk;
   updateTypingStats(uid, result.restartCount, tt);
-  PublicStatsDAL.updateStats(result.restartCount, tt);
+  PublicDAL.updateStats(result.restartCount, tt);
 
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
   const dailyLeaderboard = getDailyLeaderboard(
