@@ -29,6 +29,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "simon_says",
     info: "Type what simon says.",
     changesWordsVisibility: true,
+    blockWordHighlight: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
     },
