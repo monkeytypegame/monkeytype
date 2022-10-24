@@ -4,6 +4,11 @@ interface Options {
   tribeOverride?: boolean;
 }
 
+interface PageFunctionOptions {
+  params?: { [key: string]: string };
+  tribeOverride?: boolean;
+}
+
 export default class Page {
   public name: string;
   public element: JQuery;
