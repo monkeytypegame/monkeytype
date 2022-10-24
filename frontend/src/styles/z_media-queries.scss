@@ -1007,6 +1007,10 @@
   #mobileTestConfig {
     display: block;
   }
+
+  #restartTestButton {
+    display: block !important;
+  }
 }
 
 @media (hover: none) and (pointer: coarse) {
