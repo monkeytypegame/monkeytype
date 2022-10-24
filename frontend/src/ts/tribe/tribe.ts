@@ -18,7 +18,7 @@ import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import * as TribeChartController from "./tribe-chart-controller";
 import * as TribeDelta from "./tribe-delta";
 import * as TestActive from "../states/test-active";
-import { navigate } from "../controllers/route-controller";
+import { navigate } from "../observables/navigate-event";
 import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
 

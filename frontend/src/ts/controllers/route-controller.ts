@@ -54,7 +54,7 @@ const routes: Route[] = [
     path: "/",
     load: (_params, navigateOptions): void => {
       if (Tribe.state >= 5 && !navigateOptions?.tribeOverride) {
-        navigate("/tribe", navigateOptions);
+        nav("/tribe", navigateOptions);
       } else {
         PageController.change(PageTest.page, {
           tribeOverride: navigateOptions?.tribeOverride ?? false,

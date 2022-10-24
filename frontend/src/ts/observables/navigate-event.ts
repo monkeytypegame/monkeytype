@@ -7,8 +7,9 @@ export function subscribe(fn: SubscribeFunction): void {
 }
 
 interface NavigateOptions {
-  empty?: boolean;
   data?: any;
+  tribeOverride?: boolean;
+  force?: boolean;
 }
 
 export function navigate(url?: string, options?: NavigateOptions): void {
