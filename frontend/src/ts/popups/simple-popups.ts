@@ -21,6 +21,7 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { isPasswordStrong } from "../utils/misc";
+import * as CustomTextState from "../states/custom-text-name";
 
 interface Input {
   placeholder?: string;
@@ -1089,6 +1090,7 @@ list["deleteCustomText"] = new SimplePopup(
   (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0]);
     Notifications.add("Custom text deleted", 1);
+    CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show();
   },
   (_thisPopup) => {
@@ -1109,6 +1111,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0], true);
     Notifications.add("Custom text deleted", 1);
+    CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show();
   },
   (_thisPopup) => {
