@@ -25,7 +25,7 @@ import TribeSocket from "./tribe-socket";
 let name = "Guest";
 
 export let state = -1;
-export const expectedVersion = "0.11.1";
+export const expectedVersion = "0.11.2";
 
 let autoJoin: string | undefined = undefined;
 
