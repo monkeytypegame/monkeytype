@@ -178,6 +178,15 @@ class Notification {
           }
         );
       }
+      // NOTE: This need to be changed if the update banner text is changed
+      if (this.message.includes("please refresh")) {
+        // add pointer when refresh is needed
+        $(`#bannerCenter .banner[id='${this.id}']`).css("cursor", "pointer");
+        // refresh on clicking banner
+        $(`#bannerCenter .banner[id='${this.id}']`).on("click", () => {
+          window.location.reload();
+        });
+      }
     }
     if (this.duration > 0) {
       setTimeout(() => {
