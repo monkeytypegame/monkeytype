@@ -76,7 +76,7 @@
     "object-hash": "3.0.0",
     "remove-files-webpack-plugin": "1.5.0",
     "seedrandom": "3.0.5",
-    "socket.io-client": "4.3.2",
+    "socket.io-client": "4.5.3",
     "stemmer": "2.0.0",
     "throttle-debounce": "3.0.1",
     "workbox-window": "6.5.4"
