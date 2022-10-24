@@ -534,6 +534,10 @@ declare namespace MonkeyTypes {
   interface ResultFilters {
     _id: string;
     name: string;
+    pb: {
+      no: boolean;
+      yes: boolean;
+    };
     difficulty: {
       normal: boolean;
       expert: boolean;
@@ -605,7 +609,7 @@ declare namespace MonkeyTypes {
   }
 
   interface Global {
-    snapshot(): Snapshot;
+    snapshot(): Snapshot | undefined;
     config: Config;
     toggleFilterDebug(): void;
     glarsesMode(): void;

@@ -479,18 +479,18 @@ $(document).on("mousemove", () => {
   if (!commandLineMouseMode) commandLineMouseMode = true;
 });
 
-$(document).on(
+$("#commandLineWrapper #commandLine").on(
   "mouseenter",
-  "#commandLineWrapper #commandLine .suggestions .entry",
+  ".suggestions .entry",
   (e) => {
     if (!commandLineMouseMode) return;
     $(e.target).addClass("activeMouse");
   }
 );
 
-$(document).on(
+$("#commandLineWrapper #commandLine").on(
   "mouseleave",
-  "#commandLineWrapper #commandLine .suggestions .entry",
+  ".suggestions .entry",
   (e) => {
     if (!commandLineMouseMode) return;
     $(e.target).removeClass("activeMouse");
@@ -523,9 +523,9 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   } catch (e) {}
 });
 
-$(document).on(
+$("#commandLineWrapper #commandLine").on(
   "click",
-  "#commandLineWrapper #commandLine .suggestions .entry",
+  ".suggestions .entry",
   (e) => {
     themeChosen = true;
     $(".suggestions .entry").removeClass("activeKeyboard");
@@ -698,7 +698,7 @@ $(document).on("keydown", (e) => {
   return;
 });
 
-$(document).on("click", "#commandLineMobileButton", () => {
+$("#commandLineMobileButton").on("click", () => {
   if (Config.singleListCommandLine == "on") {
     useSingleListCommandLine(false);
   } else {
@@ -707,12 +707,12 @@ $(document).on("click", "#commandLineMobileButton", () => {
   show();
 });
 
-$(document).on("click", "#keymap .r5 .keySpace", () => {
+$("#keymap").on("click", ".r5 .keySpace", () => {
   CommandlineLists.setCurrent([CommandlineLists.getList("keymapLayouts")]);
   show();
 });
 
-$(document).on("click", "#testModesNotice .textButton", (event) => {
+$(".pageTest").on("click", "#testModesNotice .textButton", (event) => {
   const attr = $(event.currentTarget).attr(
     "commands"
   ) as CommandlineLists.ListsObjectKeys;
@@ -727,11 +727,11 @@ $(document).on("click", "#testModesNotice .textButton", (event) => {
   }
 });
 
-$(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
+$("#bottom").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
       if (Auth?.currentUser) {
-        if (DB.getSnapshot().customThemes.length < 1) {
+        if ((DB.getSnapshot()?.customThemes.length ?? 0) < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);
           // UpdateConfig.setCustomThemeId("");

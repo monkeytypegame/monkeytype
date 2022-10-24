@@ -122,7 +122,7 @@ $("#quoteApprovePopupWrapper .button.refreshList").on("click", () => {
   getQuotes();
 });
 
-$(document).on("click", "#quoteApprovePopup .quote .undo", async (e) => {
+$("#popups").on("click", "#quoteApprovePopup .quote .undo", async (e) => {
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
   $(`#quoteApprovePopup .quote[id=${index}] .text`).val(quotes[index].text);
   $(`#quoteApprovePopup .quote[id=${index}] .source`).val(quotes[index].source);
@@ -132,7 +132,7 @@ $(document).on("click", "#quoteApprovePopup .quote .undo", async (e) => {
   updateQuoteLength(index);
 });
 
-$(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
+$("#popups").on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   if (!confirm("Are you sure?")) return;
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
   const dbid = $(e.target).closest(".quote").attr("dbid") as string;
@@ -158,7 +158,7 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   updateList();
 });
 
-$(document).on("click", "#quoteApprovePopup .quote .refuse", async (e) => {
+$("#popups").on("click", "#quoteApprovePopup .quote .refuse", async (e) => {
   if (!confirm("Are you sure?")) return;
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
   const dbid = $(e.target).closest(".quote").attr("dbid") as string;
@@ -181,7 +181,7 @@ $(document).on("click", "#quoteApprovePopup .quote .refuse", async (e) => {
   updateList();
 });
 
-$(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
+$("#popups").on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   if (!confirm("Are you sure?")) return;
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
   const dbid = $(e.target).closest(".quote").attr("dbid") as string;

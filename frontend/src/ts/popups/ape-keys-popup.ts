@@ -119,11 +119,11 @@ $("#apeKeysPopup .generateApeKey").on("click", () => {
   hide();
 });
 
-$(document).on("click", "#apeKeysPopup table .keyButtons .button", () => {
+$("#popups").on("click", "#apeKeysPopup table .keyButtons .button", () => {
   hide();
 });
 
-$(document).on("click", "#apeKeysPopup table .textButton", async (e) => {
+$("#popups").on("click", "#apeKeysPopup table .textButton", async (e) => {
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   const key = apeKeys?.[keyId];
   if (!key || !apeKeys) return;

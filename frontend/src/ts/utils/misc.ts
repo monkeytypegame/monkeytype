@@ -1186,7 +1186,7 @@ export function createErrorMessage(error: unknown, message: string): string {
 }
 
 export function isAnyPopupVisible(): boolean {
-  const popups = document.querySelectorAll(".popupWrapper");
+  const popups = document.querySelectorAll("#popups .popupWrapper");
   let popupVisible = false;
   for (const popup of popups) {
     const style = window.getComputedStyle(popup);
@@ -1242,14 +1242,14 @@ export async function promiseAnimation(
 }
 
 //abbreviateNumber
-export function abbreviateNumber(num: number): string {
+export function abbreviateNumber(num: number, decimalPoints = 1): string {
   if (num < 1000) {
     return num.toString();
   }
 
   const exp = Math.floor(Math.log(num) / Math.log(1000));
   const pre = "kmbtqQsSond".charAt(exp - 1);
-  return (num / Math.pow(1000, exp)).toFixed(1) + pre;
+  return (num / Math.pow(1000, exp)).toFixed(decimalPoints) + pre;
 }
 
 export async function sleep(ms: number): Promise<void> {
@@ -1262,4 +1262,12 @@ export function isPasswordStrong(password: string): boolean {
   const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
   const isLong = password.length >= 8;
   return hasCapital && hasNumber && hasSpecial && isLong;
+}
+
+export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
+  return a.length === b.length && a.every((v) => b.includes(v));
+}
+
+export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
+  return a.length === b.length && a.every((v, i) => v === b[i]);
 }

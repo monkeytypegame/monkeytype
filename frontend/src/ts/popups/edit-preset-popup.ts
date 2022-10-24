@@ -82,7 +82,7 @@ async function apply(): Promise<void> {
   if ((updateConfig && action === "edit") || action === "add") {
     configChanges = Config.getConfigChanges();
 
-    const tags = DB.getSnapshot().tags || [];
+    const tags = DB.getSnapshot()?.tags ?? [];
 
     const activeTagIds: string[] = tags
       .filter((tag: MonkeyTypes.Tag) => tag.active)
@@ -90,7 +90,7 @@ async function apply(): Promise<void> {
     configChanges.tags = activeTagIds;
   }
 
-  const snapshotPresets = DB.getSnapshot().presets || [];
+  const snapshotPresets = DB.getSnapshot()?.presets ?? [];
 
   hide();
 
@@ -168,21 +168,17 @@ $("#presetWrapper #presetEdit input").on("keypress", (e) => {
   }
 });
 
-$(document).on(
-  "click",
-  ".pageSettings .section.presets .addPresetButton",
-  () => {
-    show("add");
-  }
-);
+$(".pageSettings .section.presets").on("click", ".addPresetButton", () => {
+  show("add");
+});
 
-$(document).on("click", ".pageSettings .section.presets .editButton", (e) => {
+$(".pageSettings .section.presets").on("click", ".editButton", (e) => {
   const presetid = $(e.currentTarget).parent(".preset").attr("id");
   const name = $(e.currentTarget).siblings(".button").children(".title").text();
   show("edit", presetid, name);
 });
 
-$(document).on("click", ".pageSettings .section.presets .removeButton", (e) => {
+$(".pageSettings .section.presets").on("click", ".removeButton", (e) => {
   const presetid = $(e.currentTarget).parent(".preset").attr("id");
   const name = $(e.currentTarget).siblings(".button").children(".title").text();
   show("remove", presetid, name);

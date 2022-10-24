@@ -3,6 +3,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import { areUnsortedArraysEqual } from "../utils/misc";
 
 function show(): void {
   if (!ConnectionState.get()) {
@@ -37,7 +38,7 @@ function hide(): void {
 
 export function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
-  DB.getSnapshot().tags?.forEach((tag) => {
+  DB.getSnapshot()?.tags?.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
       `<div class="button tag" tagid="${tag._id}">${tag.display}</div>`
     );
@@ -56,8 +57,8 @@ function updateActiveButtons(active: string[]): void {
   });
 }
 
-$(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
-  if (DB.getSnapshot().tags?.length || 0 > 0) {
+$(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
+  if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
     const resultid = $(f.target).parents("span").attr("resultid") as string;
     const tags = $(f.target).parents("span").attr("tags") as string;
     $("#resultEditTagsPanel").attr("resultid", resultid);
@@ -74,14 +75,15 @@ $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
   }
 });
 
-$(document).on("click", ".pageTest .tags .editTagsButton", () => {
-  if (DB.getSnapshot().tags?.length ?? 0 > 0) {
+$(".pageTest").on("click", ".tags .editTagsButton", () => {
+  if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
     const resultid = $(".pageTest .tags .editTagsButton").attr(
       "result-id"
     ) as string;
-    const tags = $(".pageTest .tags .editTagsButton")
-      .attr("active-tag-ids")
-      ?.split(",") as string[];
+    const activeTagIds = $(".pageTest .tags .editTagsButton").attr(
+      "active-tag-ids"
+    ) as string;
+    const tags = activeTagIds == "" ? [] : activeTagIds.split(",");
     $("#resultEditTagsPanel").attr("resultid", resultid);
     $("#resultEditTagsPanel").attr("tags", JSON.stringify(tags));
     $("#resultEditTagsPanel").attr("source", "resultPage");
@@ -90,7 +92,7 @@ $(document).on("click", ".pageTest .tags .editTagsButton", () => {
   }
 });
 
-$(document).on("click", "#resultEditTagsPanelWrapper .button.tag", (f) => {
+$("#popups").on("click", "#resultEditTagsPanelWrapper .button.tag", (f) => {
   $(f.target).toggleClass("active");
 });
 
@@ -111,6 +113,16 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
       newTags.push(tagid);
     }
   });
+
+  const currentTags = JSON.parse(
+    $("#resultEditTagsPanel").attr("tags") as string
+  );
+
+  if (areUnsortedArraysEqual(currentTags, newTags)) {
+    hide();
+    return;
+  }
+
   Loader.show();
   hide();
 
@@ -124,8 +136,10 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
     );
   }
 
+  const responseTagPbs = response.data.tagPbs;
+
   Notifications.add("Tags updated", 1, 2);
-  DB.getSnapshot().results?.forEach(
+  DB.getSnapshot()?.results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       if (result._id === resultId) {
         result.tags = newTags;
@@ -137,7 +151,7 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
 
   if (newTags.length > 0) {
     newTags.forEach((tag) => {
-      DB.getSnapshot().tags?.forEach((snaptag) => {
+      DB.getSnapshot()?.tags?.forEach((snaptag) => {
         if (tag === snaptag._id) {
           tagNames.push(snaptag.display);
         }
@@ -179,6 +193,34 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
       );
     }
   } else if (source === "resultPage") {
-    $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
+    const currentElements = $(`.pageTest #result .tags .bottom div[tagid]`);
+
+    const checked: string[] = [];
+    currentElements.each((_, element) => {
+      const tagId = $(element).attr("tagid") as string;
+      if (!newTags.includes(tagId)) {
+        $(element).remove();
+      } else {
+        checked.push(tagId);
+      }
+    });
+
+    let html = "";
+
+    newTags.forEach((tag, index) => {
+      if (checked.includes(tag)) return;
+      if (responseTagPbs.includes(tag)) {
+        html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
+      } else {
+        html += `<div tagid="${tag}">${tagNames[index]}</div>`;
+      }
+    });
+
+    // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
+    $(`.pageTest #result .tags .bottom`).append(html);
+    $(`.pageTest #result .tags .top .editTagsButton`).attr(
+      "active-tag-ids",
+      newTags.join(",")
+    );
   }
 });

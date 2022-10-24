@@ -159,8 +159,11 @@ export async function updateXpBar(
   const startingLevel = Misc.getLevel(currentXp);
   const endingLevel = Misc.getLevel(currentXp + addedXp);
 
+  const snapshot = getSnapshot();
+  if (!snapshot) return;
+
   if (skipBreakdown) {
-    $("#menu .level").text(Math.floor(Misc.getLevel(getSnapshot().xp)));
+    $("#menu .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
     $("#menu .xpBar")
       .stop(true, true)
       .css("opacity", 1)
@@ -175,7 +178,7 @@ export async function updateXpBar(
 
   await Promise.all([xpBarPromise, xpBreakdownPromise]);
   await Misc.sleep(2000);
-  $("#menu .level").text(Math.floor(Misc.getLevel(getSnapshot().xp)));
+  $("#menu .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
   $("#menu .xpBar")
     .stop(true, true)
     .css("opacity", 1)

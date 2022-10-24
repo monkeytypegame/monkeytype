@@ -6,18 +6,20 @@ import { Auth } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 
-let dbSnapshot: MonkeyTypes.Snapshot;
+let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
-export function getSnapshot(): MonkeyTypes.Snapshot {
+export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(newSnapshot: MonkeyTypes.Snapshot): void {
+export function setSnapshot(
+  newSnapshot: MonkeyTypes.Snapshot | undefined
+): void {
   try {
-    delete newSnapshot.banned;
+    delete newSnapshot?.banned;
   } catch {}
   try {
-    delete newSnapshot.verified;
+    delete newSnapshot?.verified;
   } catch {}
   dbSnapshot = newSnapshot;
 }
@@ -191,7 +193,7 @@ export async function initSnapshot(): Promise<
 export async function getUserResults(): Promise<boolean> {
   const user = Auth?.currentUser;
   if (!user) return false;
-  if (dbSnapshot === null) return false;
+  if (!dbSnapshot) return false;
 
   if (!ConnectionState.get()) {
     return false;
@@ -238,13 +240,13 @@ export async function getUserResults(): Promise<boolean> {
 export function getCustomThemeById(
   themeID: string
 ): MonkeyTypes.CustomTheme | undefined {
-  return dbSnapshot.customThemes.find((t) => t._id === themeID);
+  return dbSnapshot?.customThemes.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
   theme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
-  if (dbSnapshot === null) return false;
+  if (!dbSnapshot) return false;
 
   if (dbSnapshot.customThemes.length >= 10) {
     Notifications.add("Too many custom themes!", 0);
@@ -272,7 +274,7 @@ export async function editCustomTheme(
 ): Promise<boolean> {
   const user = Auth?.currentUser;
   if (!user) return false;
-  if (dbSnapshot === null) return false;
+  if (!dbSnapshot) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
   if (!customTheme) {
@@ -303,7 +305,7 @@ export async function editCustomTheme(
 export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   const user = Auth?.currentUser;
   if (!user) return false;
-  if (dbSnapshot === null) return false;
+  if (!dbSnapshot) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
   if (!customTheme) return false;
@@ -332,7 +334,7 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   function cont(): number {
     let topWpm = 0;
 
-    dbSnapshot.results?.forEach((result) => {
+    dbSnapshot?.results?.forEach((result) => {
       if (
         result.mode == mode &&
         result.mode2 == mode2 &&
@@ -350,8 +352,7 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
     return topWpm;
   }
 
-  const retval =
-    dbSnapshot === null || dbSnapshot.results === undefined ? 0 : cont();
+  const retval = !dbSnapshot || dbSnapshot.results === undefined ? 0 : cont();
 
   return retval;
 }
@@ -370,7 +371,7 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
 
   function cont(): [number, number] {
     const activeTagIds: string[] = [];
-    snapshot.tags?.forEach((tag) => {
+    snapshot?.tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTagIds.push(tag._id);
       }
@@ -383,7 +384,7 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
     let count = 0;
     let last10Count = 0;
 
-    if (snapshot.results !== undefined) {
+    if (snapshot?.results !== undefined) {
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
@@ -448,7 +449,7 @@ export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
 
   function cont(): number {
     const activeTagIds: string[] = [];
-    snapshot.tags?.forEach((tag) => {
+    snapshot?.tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTagIds.push(tag._id);
       }
@@ -456,7 +457,7 @@ export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
 
     let bestWpm = 0;
 
-    if (snapshot.results !== undefined) {
+    if (snapshot?.results !== undefined) {
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
@@ -509,7 +510,7 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
   function cont(): number {
     let ret = 0;
     try {
-      if (!dbSnapshot.personalBests) return ret;
+      if (!dbSnapshot?.personalBests) return ret;
 
       (
         dbSnapshot.personalBests[mode][
@@ -551,7 +552,9 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
   consistency: number
 ): Promise<void> {
   if (mode == "quote") return;
+  if (!dbSnapshot) return;
   function cont(): void {
+    if (!dbSnapshot) return;
     let found = false;
     if (dbSnapshot.personalBests === undefined) {
       dbSnapshot.personalBests = {
@@ -636,7 +639,7 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
   function cont(): number {
     let ret = 0;
 
-    const filteredtag = (getSnapshot().tags ?? []).filter(
+    const filteredtag = (getSnapshot()?.tags ?? []).filter(
       (t) => t._id === tagId
     )[0];
 
@@ -693,7 +696,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
 ): Promise<number | undefined> {
   if (mode == "quote") return;
   function cont(): void {
-    const filteredtag = dbSnapshot.tags?.filter(
+    const filteredtag = dbSnapshot?.tags?.filter(
       (t) => t._id === tagId
     )[0] as MonkeyTypes.Tag;
 
@@ -798,13 +801,12 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
   rank: number,
   api = false
 ): Promise<void> {
-  //could dbSnapshot just be used here instead of getSnapshot()
-
   if (mode === "time") {
     const timeMode = mode as "time";
     const timeMode2 = mode2 as 15 | 60;
 
     const snapshot = getSnapshot();
+    if (!snapshot) return;
     if (snapshot.lbMemory === undefined) {
       snapshot.lbMemory = { time: { 15: { english: 0 }, 60: { english: 0 } } };
     }
@@ -839,6 +841,7 @@ export function saveLocalResult(
   result: MonkeyTypes.Result<MonkeyTypes.Mode>
 ): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
 
   if (snapshot !== null && snapshot.results !== undefined) {
     snapshot.results.unshift(result);
@@ -849,6 +852,7 @@ export function saveLocalResult(
 
 export function updateLocalStats(started: number, time: number): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
   if (snapshot.typingStats === undefined) {
     snapshot.typingStats = {} as MonkeyTypes.TypingStats;
   }
@@ -875,6 +879,8 @@ export function updateLocalStats(started: number, time: number): void {
 
 export function addXp(xp: number): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
+
   if (snapshot.xp === undefined) {
     snapshot.xp = 0;
   }
@@ -884,6 +890,8 @@ export function addXp(xp: number): void {
 
 export function addBadge(badge: MonkeyTypes.Badge): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
+
   if (snapshot.inventory === undefined) {
     snapshot.inventory = {
       badges: [],
@@ -895,6 +903,8 @@ export function addBadge(badge: MonkeyTypes.Badge): void {
 
 export function setStreak(streak: number): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
+
   snapshot.streak = streak;
 
   if (snapshot.streak > snapshot.maxStreak) {

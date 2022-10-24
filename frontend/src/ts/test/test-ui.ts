@@ -289,7 +289,7 @@ export async function screenshot(): Promise<void> {
   );
   if (Auth?.currentUser) {
     $(".pageTest .ssWatermark").text(
-      DB.getSnapshot().name +
+      DB.getSnapshot()?.name +
         " | " +
         format(dateNow, "dd MMM yyyy HH:mm") +
         " | monkeytype.com  "
@@ -548,9 +548,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
 
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
       if (input.length > currentWord.length && !Config.blindMode) {
-        $(wordAtIndex).addClass("error");
+        wordAtIndex.classList.add("error");
       } else if (input.length == currentWord.length) {
-        $(wordAtIndex).removeClass("error");
+        wordAtIndex.classList.remove("error");
       }
     }
   }
@@ -612,6 +612,8 @@ export function scrollTape(): void {
   }
 }
 
+let currentLinesAnimating = 0;
+
 export function lineJump(currentTop: number): void {
   //last word of the line
   if (
@@ -637,29 +639,41 @@ export function lineJump(currentTop: number): void {
     );
     if (Config.smoothLineScroll && toHide.length > 0) {
       lineTransition = true;
-      $("#words").prepend(
-        `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
-      );
-      $("#words .smoothScroller").animate(
-        {
-          height: 0,
-        },
-        SlowTimer.get() ? 0 : 125,
-        () => {
-          $("#words .smoothScroller").remove();
-        }
-      );
-      $("#paceCaret").animate(
-        {
-          top:
-            (<HTMLElement>document.querySelector("#paceCaret"))?.offsetTop -
-            wordHeight,
-        },
-        SlowTimer.get() ? 0 : 125
-      );
+      const smoothScroller = $("#words .smoothScroller");
+      if (smoothScroller.length === 0) {
+        $("#words").prepend(
+          `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
+        );
+      } else {
+        smoothScroller.css(
+          "height",
+          `${(smoothScroller.outerHeight(true) ?? 0) + wordHeight}px`
+        );
+      }
+      $("#words .smoothScroller")
+        .stop(true, false)
+        .animate(
+          {
+            height: 0,
+          },
+          SlowTimer.get() ? 0 : 125,
+          () => {
+            $("#words .smoothScroller").remove();
+          }
+        );
+      $("#paceCaret")
+        .stop(true, false)
+        .animate(
+          {
+            top:
+              (<HTMLElement>document.querySelector("#paceCaret"))?.offsetTop -
+              wordHeight,
+          },
+          SlowTimer.get() ? 0 : 125
+        );
 
       const newCss: { [key: string]: string } = {
-        marginTop: `-${wordHeight}px`,
+        marginTop: `-${wordHeight * (currentLinesAnimating + 1)}px`,
       };
 
       if (Config.tapeMode !== "off") {
@@ -669,15 +683,20 @@ export function lineJump(currentTop: number): void {
         const newMargin = wordsWrapperWidth / 2;
         newCss["marginLeft"] = `${newMargin}px`;
       }
-      $("#words").animate(newCss, SlowTimer.get() ? 0 : 125, () => {
-        activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
-          .offsetTop;
+      currentLinesAnimating++;
+      $("#words")
+        .stop(true, false)
+        .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
+          currentLinesAnimating = 0;
+          activeWordTop = (<HTMLElement>(
+            document.querySelector("#words .active")
+          )).offsetTop;
 
-        currentWordElementIndex -= toHide.length;
-        lineTransition = false;
-        toHide.forEach((el) => el.remove());
-        $("#words").css("marginTop", "0");
-      });
+          currentWordElementIndex -= toHide.length;
+          lineTransition = false;
+          toHide.forEach((el) => el.remove());
+          $("#words").css("marginTop", "0");
+        });
     } else {
       toHide.forEach((el) => el.remove());
       currentWordElementIndex -= toHide.length;
@@ -978,7 +997,7 @@ export function highlightBadWord(index: number, showError: boolean): void {
   $($("#words .word")[index]).addClass("error");
 }
 
-$(document.body).on("click", "#saveScreenshotButton", () => {
+$(".pageTest").on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
@@ -986,10 +1005,6 @@ $("#saveScreenshotButton").on("keypress", (e) => {
   if (e.key === "Enter") {
     screenshot();
   }
-});
-
-$(document).on("click", "#testModesNotice .textButton.blind", () => {
-  UpdateConfig.setBlindMode(!Config.blindMode);
 });
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
@@ -1013,15 +1028,15 @@ $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
 });
 
-$(document).on("mouseleave", "#resultWordsHistory .words .word", () => {
+$(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
   $(".wordInputAfter").remove();
 });
 
-$("#wpmChart").on("mouseleave", () => {
+$(".pageTest #result #wpmChart").on("mouseleave", () => {
   $(".wordInputAfter").remove();
 });
 
-$(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
+$(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
   if (resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
@@ -1138,7 +1153,7 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#showWordHistoryButton", () => {
+$(".pageTest").on("click", "#showWordHistoryButton", () => {
   toggleResultWords();
 });
 

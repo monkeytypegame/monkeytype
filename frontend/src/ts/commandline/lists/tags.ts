@@ -48,6 +48,7 @@ function update(): void {
     icon: "fa-times",
     exec: (): void => {
       const snapshot = DB.getSnapshot();
+      if (!snapshot) return;
 
       snapshot.tags = snapshot.tags?.map((tag) => {
         tag.active = false;
@@ -61,7 +62,7 @@ function update(): void {
     },
   });
 
-  DB.getSnapshot().tags?.forEach((tag) => {
+  DB.getSnapshot()?.tags?.forEach((tag) => {
     let dis = tag.display;
 
     if (tag.active === true) {

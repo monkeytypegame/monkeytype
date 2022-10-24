@@ -54,6 +54,7 @@ let currentSelectedBadgeId = -1;
 
 function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   const badges = snapshot.inventory?.badges ?? [];
   const { bio, keyboard, socialProfiles } = snapshot.details ?? {};
   currentSelectedBadgeId = -1;
@@ -118,6 +119,8 @@ function buildUpdatesFromInputs(): MonkeyTypes.UserDetails {
 }
 
 async function updateProfile(): Promise<void> {
+  const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   const updates = buildUpdatesFromInputs();
 
   Loader.show();
@@ -132,7 +135,6 @@ async function updateProfile(): Promise<void> {
     return;
   }
 
-  const snapshot = DB.getSnapshot();
   snapshot.details = updates;
   snapshot.inventory?.badges.forEach((badge) => {
     if (badge.id === currentSelectedBadgeId) {

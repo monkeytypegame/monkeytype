@@ -208,7 +208,7 @@ $("#top .logo").on("click", () => {
   nav("/");
 });
 
-$(document).on("click", "#leaderboards a.entryName", () => {
+$("#popups").on("click", "#leaderboards a.entryName", () => {
   Leaderboards.hide();
 });
 
