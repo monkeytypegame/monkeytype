@@ -258,7 +258,6 @@ export async function getLanguage(
 ): Promise<MonkeyTypes.LanguageObject> {
   try {
     if (currentLanguage == undefined || currentLanguage.name !== lang) {
-      console.log("getting language json");
       await $.getJSON(`/./languages/${lang}.json`, function (data) {
         currentLanguage = data;
       });
