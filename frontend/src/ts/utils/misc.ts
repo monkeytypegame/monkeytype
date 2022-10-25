@@ -1,12 +1,17 @@
 import * as Loader from "../elements/loader";
 
 async function fetchJson<T>(url: string): Promise<T> {
-  if (!url) throw new Error("No URL");
-  const res = await fetch(url);
-  if (res.ok) {
-    return await res.json();
-  } else {
-    throw new Error(`${res.status} ${res.statusText}`);
+  try {
+    if (!url) throw new Error("No URL");
+    const res = await fetch(url);
+    if (res.ok) {
+      return await res.json();
+    } else {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+  } catch (e) {
+    console.error("Error fetching JSON: " + url, e);
+    throw e;
   }
 }
 
