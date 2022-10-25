@@ -82,34 +82,40 @@ export function isColorDark(hex: string): boolean {
   return hsl.lgt < 50;
 }
 
-let themesList: MonkeyTypes.Theme[] = [];
-export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
-  if (themesList.length == 0) {
-    return $.getJSON("/./themes/_list.json", function (data) {
-      const list = data.sort(function (
-        a: MonkeyTypes.Theme,
-        b: MonkeyTypes.Theme
-      ) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      themesList = list;
-      return themesList;
+let themesList: MonkeyTypes.Theme[] | undefined;
+export async function getThemesList(): Promise<
+  MonkeyTypes.Theme[] | undefined
+> {
+  if (!themesList) {
+    let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
+      "/./layouts/_lis.json"
+    );
+
+    if (!themes) return undefined;
+
+    themes = themes.sort(function (a: MonkeyTypes.Theme, b: MonkeyTypes.Theme) {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
     });
+    themesList = themes;
+    return themesList;
   } else {
     return themesList;
   }
 }
 
-let sortedThemesList: MonkeyTypes.Theme[] = [];
-export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
-  if (sortedThemesList.length === 0) {
-    if (themesList.length === 0) {
+let sortedThemesList: MonkeyTypes.Theme[] | undefined;
+export async function getSortedThemesList(): Promise<
+  MonkeyTypes.Theme[] | undefined
+> {
+  if (!sortedThemesList) {
+    if (!themesList) {
       await getThemesList();
     }
+    if (!themesList) return undefined;
     let sorted = [...themesList];
     sorted = sorted.sort((a, b) => {
       const b1 = hexToHSL(a.bgColor);
