@@ -1277,7 +1277,7 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
 
     if (cache.has(key)) {
       const ret = await cache.get(key);
-      if (ret) {
+      if (ret !== undefined) {
         return ret as ReturnType<T>;
       }
     }
