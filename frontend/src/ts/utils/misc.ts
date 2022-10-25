@@ -17,6 +17,31 @@ async function fetchJson<T>(url: string): Promise<T> {
 
 export const cachedFetchJson = memoizeAsync(fetchJson);
 
+export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
+  try {
+    const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
+      "/./layouts/_list.json"
+    );
+    return layoutsList;
+  } catch (e) {
+    throw new Error("Layouts JSON fetch failed");
+  }
+}
+
+/**
+ * @throws {Error} If layout list or layout doesnt exist.
+ */
+export async function getLayout(
+  layoutName: string
+): Promise<MonkeyTypes.Layout> {
+  const layouts = await getLayoutsList();
+  const layout = layouts[layoutName];
+  if (layout === undefined) {
+    throw new Error(`Layout ${layoutName} is undefined`);
+  }
+  return layout;
+}
+
 function hexToHSL(hex: string): {
   hue: number;
   sat: number;
@@ -158,31 +183,6 @@ export async function getFunbox(
   return list.find(function (element) {
     return element.name == funbox;
   });
-}
-
-export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
-  try {
-    const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-      "/./layouts/_list.json"
-    );
-    return layoutsList;
-  } catch (e) {
-    throw new Error("Layouts JSON fetch failed");
-  }
-}
-
-/**
- * @throws {Error} If layout list or layout doesnt exist.
- */
-export async function getLayout(
-  layoutName: string
-): Promise<MonkeyTypes.Layout> {
-  const layouts = await getLayoutsList();
-  const layout = layouts[layoutName];
-  if (layout === undefined) {
-    throw new Error(`Layout ${layoutName} is undefined`);
-  }
-  return layout;
 }
 
 let fontsList: MonkeyTypes.FontObject[] = [];
