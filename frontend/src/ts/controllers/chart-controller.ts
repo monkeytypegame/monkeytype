@@ -640,6 +640,69 @@ export const accountHistogram: ChartWithUpdateColors<
   },
 });
 
+export const globalSpeedHistogram: ChartWithUpdateColors<
+  "bar",
+  MonkeyTypes.ActivityChartDataPoint[],
+  string
+> = new ChartWithUpdateColors($(".pageAbout #publicStatsHistogramChart"), {
+  type: "bar",
+  data: {
+    labels: [],
+    datasets: [
+      {
+        yAxisID: "count",
+        label: "Users",
+        data: [],
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    hover: {
+      mode: "nearest",
+      intersect: false,
+    },
+    scales: {
+      x: {
+        axis: "x",
+        bounds: "ticks",
+        display: true,
+        title: {
+          display: false,
+          text: "Bucket",
+        },
+        offset: true,
+      },
+      count: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 20,
+          stepSize: 10,
+        },
+        display: true,
+        title: {
+          display: true,
+          text: "Users",
+        },
+      },
+    },
+    plugins: {
+      annotation: {
+        annotations: [],
+      },
+      tooltip: {
+        animation: { duration: 250 },
+        intersect: false,
+        mode: "index",
+      },
+    },
+  },
+});
+
 export const miniResult: ChartWithUpdateColors<
   "line" | "scatter",
   number[],
@@ -910,6 +973,7 @@ export function setDefaultFontFamily(font: string): void {
 export function updateAllChartColors(): void {
   ThemeColors.update();
   accountHistory.updateColors();
+  globalSpeedHistogram.updateColors();
   result.updateColors();
   accountActivity.updateColors();
   miniResult.updateColors();

@@ -490,6 +490,9 @@ export function restart(options = {} as RestartOptions): void {
     repeatWithPace = true;
   }
 
+  $("#words").stop(true, true);
+  $("#words .smoothScroller").stop(true, true).remove();
+
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
@@ -1619,15 +1622,26 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
+  if (TestState.isRepeated) {
+    const testSeconds = completedEvent.testDuration;
+    const afkseconds = completedEvent.afkDuration;
+    let tt = Misc.roundTo2(testSeconds - afkseconds);
+    if (tt < 0) tt = 0;
+    const acc = completedEvent.acc;
+    TestStats.incrementIncompleteSeconds(tt);
+    TestStats.pushIncompleteTest(acc, tt);
+  }
+
   const customTextName = CustomTextState.getCustomTextName();
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
-    if (TestInput.bailout) {
+    if (TestInput.bailout || TestInput.input.length < TestWords.words.length) {
       // They bailed out
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) +
-        TestInput.input.getHistory().length;
+        TestInput.input.getHistory().length -
+        1;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
       Notifications.add("Long custom text progress saved", 1, 5);
 

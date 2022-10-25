@@ -9,6 +9,10 @@ import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-pres
 export const defaultResultFilters: MonkeyTypes.ResultFilters = {
   _id: "default-result-filters-id",
   name: "default result filters",
+  pb: {
+    no: true,
+    yes: true,
+  },
   difficulty: {
     normal: true,
     expert: true,
@@ -149,7 +153,7 @@ export async function setFilterPreset(id: string): Promise<void> {
   );
   if (filter) {
     // deep copy filter
-    filters = deepCopyFilter(filter);
+    filters = verifyResultFiltersStructure(filter);
 
     save();
     updateActive();
@@ -594,6 +598,9 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
     });
   });
 
+  filters["pb"]["no"] = true;
+  filters["pb"]["yes"] = true;
+
   filters["difficulty"][Config.difficulty] = true;
   filters["mode"][Config.mode] = true;
   if (Config.mode === "time") {
@@ -668,8 +675,8 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
   );
 });
 
-export function appendButtons(): void {
-  Misc.getLanguageList().then((languages) => {
+export async function appendButtons(): Promise<void> {
+  await Misc.getLanguageList().then((languages) => {
     languages.forEach((language) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
@@ -685,7 +692,7 @@ export function appendButtons(): void {
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
   ).append(`<div class="button" filter="none">none</div>`);
-  Misc.getFunboxList().then((funboxModes) => {
+  await Misc.getFunboxList().then((funboxModes) => {
     funboxModes.forEach((funbox) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
@@ -719,3 +726,17 @@ $(".group.presetFilterButtons .filterBtns").on(
     deleteFilterPreset($(e.currentTarget).data("id"));
   }
 );
+
+function verifyResultFiltersStructure(
+  filterIn: MonkeyTypes.ResultFilters
+): MonkeyTypes.ResultFilters {
+  const filter = deepCopyFilter(filterIn);
+  Object.entries(defaultResultFilters).forEach((entry) => {
+    const key = entry[0] as keyof MonkeyTypes.ResultFilters;
+    const value = entry[1];
+    if (filter[key] === undefined) {
+      filter[key] = value;
+    }
+  });
+  return filter;
+}

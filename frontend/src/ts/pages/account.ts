@@ -305,6 +305,15 @@ function fillContent(): void {
 
       //apply filters
       try {
+        if (
+          !ResultFilters.getFilter("pb", result.isPb === true ? "yes" : "no")
+        ) {
+          if (filterDebug) {
+            console.log(`skipping result due to pb filter`, result);
+          }
+          return;
+        }
+
         let resdiff = result.difficulty;
         if (resdiff == undefined) {
           resdiff = "normal";
@@ -767,91 +776,160 @@ function fillContent(): void {
     Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
+  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
+
+  let highestSpeed: number | string = topWpm;
   if (Config.alwaysShowCPM) {
-    $(".pageAccount .highestWpm .title").text("highest cpm");
-    $(".pageAccount .highestWpm .val").text(Misc.roundTo2(topWpm * 5));
+    highestSpeed = topWpm * 5;
+  }
+  if (Config.alwaysShowDecimalPlaces) {
+    highestSpeed = Misc.roundTo2(highestSpeed).toFixed(2);
   } else {
-    $(".pageAccount .highestWpm .title").text("highest wpm");
-    $(".pageAccount .highestWpm .val").text(Misc.roundTo2(topWpm));
+    highestSpeed = Math.round(highestSpeed);
   }
 
+  $(".pageAccount .highestWpm .title").text(`highest ${wpmCpm}`);
+  $(".pageAccount .highestWpm .val").text(highestSpeed);
+
+  let averageSpeed: number | string = totalWpm;
   if (Config.alwaysShowCPM) {
-    $(".pageAccount .averageWpm .title").text("average cpm");
-    $(".pageAccount .averageWpm .val").text(
-      Math.round((totalWpm * 5) / testCount)
-    );
+    averageSpeed = totalWpm * 5;
+  }
+  if (Config.alwaysShowDecimalPlaces) {
+    averageSpeed = Misc.roundTo2(averageSpeed / testCount).toFixed(2);
   } else {
-    $(".pageAccount .averageWpm .title").text("average wpm");
-    $(".pageAccount .averageWpm .val").text(Math.round(totalWpm / testCount));
+    averageSpeed = Math.round(averageSpeed / testCount);
   }
 
+  $(".pageAccount .averageWpm .title").text(`average ${wpmCpm}`);
+  $(".pageAccount .averageWpm .val").text(averageSpeed);
+
+  let averageSpeedLast10: number | string = wpmLast10total;
   if (Config.alwaysShowCPM) {
-    $(".pageAccount .averageWpm10 .title").text("average cpm (last 10 tests)");
-    $(".pageAccount .averageWpm10 .val").text(
-      Math.round((wpmLast10total * 5) / last10)
-    );
+    averageSpeedLast10 = wpmLast10total * 5;
+  }
+  if (Config.alwaysShowDecimalPlaces) {
+    averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2);
   } else {
-    $(".pageAccount .averageWpm10 .title").text("average wpm (last 10 tests)");
-    $(".pageAccount .averageWpm10 .val").text(
-      Math.round(wpmLast10total / last10)
+    averageSpeedLast10 = Math.round(averageSpeedLast10 / last10);
+  }
+
+  $(".pageAccount .averageWpm10 .title").text(
+    `average ${wpmCpm} (last 10 tests)`
+  );
+  $(".pageAccount .averageWpm10 .val").text(averageSpeedLast10);
+
+  let highestRawSpeed: number | string = rawWpm.max;
+  if (Config.alwaysShowCPM) {
+    highestRawSpeed = rawWpm.max * 5;
+  }
+  if (Config.alwaysShowDecimalPlaces) {
+    highestRawSpeed = Misc.roundTo2(highestRawSpeed).toFixed(2);
+  } else {
+    highestRawSpeed = Math.round(highestRawSpeed);
+  }
+
+  $(".pageAccount .highestRaw .title").text(`highest raw ${wpmCpm}`);
+  $(".pageAccount .highestRaw .val").text(highestRawSpeed);
+
+  let averageRawSpeed: number | string = rawWpm.total;
+  if (Config.alwaysShowCPM) {
+    averageRawSpeed = rawWpm.total * 5;
+  }
+  if (Config.alwaysShowDecimalPlaces) {
+    averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2);
+  } else {
+    averageRawSpeed = Math.round(averageRawSpeed / rawWpm.count);
+  }
+
+  $(".pageAccount .averageRaw .title").text(`average raw ${wpmCpm}`);
+  $(".pageAccount .averageRaw .val").text(averageRawSpeed);
+
+  let averageRawSpeedLast10: number | string = rawWpm.last10Total;
+  if (Config.alwaysShowCPM) {
+    averageRawSpeedLast10 = rawWpm.last10Total * 5;
+  }
+  if (Config.alwaysShowDecimalPlaces) {
+    averageRawSpeedLast10 = Misc.roundTo2(
+      averageRawSpeedLast10 / rawWpm.last10Count
+    ).toFixed(2);
+  } else {
+    averageRawSpeedLast10 = Math.round(
+      averageRawSpeedLast10 / rawWpm.last10Count
     );
   }
 
-  if (Config.alwaysShowCPM) {
-    $(".pageAccount .highestRaw .title").text("highest raw cpm");
-    $(".pageAccount .highestRaw .val").text(Misc.roundTo2(rawWpm.max * 5));
-  } else {
-    $(".pageAccount .highestRaw .title").text("highest raw wpm");
-    $(".pageAccount .highestRaw .val").text(Misc.roundTo2(rawWpm.max));
-  }
-
-  if (Config.alwaysShowCPM) {
-    $(".pageAccount .averageRaw .title").text("average raw cpm");
-    $(".pageAccount .averageRaw .val").text(
-      Math.round((rawWpm.total * 5) / rawWpm.count)
-    );
-  } else {
-    $(".pageAccount .averageRaw .title").text("average raw wpm");
-    $(".pageAccount .averageRaw .val").text(
-      Math.round(rawWpm.total / rawWpm.count)
-    );
-  }
-
-  if (Config.alwaysShowCPM) {
-    $(".pageAccount .averageRaw10 .title").text(
-      "average raw cpm (last 10 tests)"
-    );
-    $(".pageAccount .averageRaw10 .val").text(
-      Math.round((rawWpm.last10Total * 5) / rawWpm.last10Count)
-    );
-  } else {
-    $(".pageAccount .averageRaw10 .title").text(
-      "average raw wpm (last 10 tests)"
-    );
-    $(".pageAccount .averageRaw10 .val").text(
-      Math.round(rawWpm.last10Total / rawWpm.last10Count)
-    );
-  }
+  $(".pageAccount .averageRaw10 .title").text(
+    `average raw ${wpmCpm} (last 10 tests)`
+  );
+  $(".pageAccount .averageRaw10 .val").text(averageRawSpeedLast10);
 
   $(".pageAccount .highestWpm .mode").html(topMode);
   $(".pageAccount .testsTaken .val").text(testCount);
 
-  $(".pageAccount .highestAcc .val").text(topAcc + "%");
-  $(".pageAccount .avgAcc .val").text(Math.round(totalAcc / testCount) + "%");
-  $(".pageAccount .avgAcc10 .val").text(Math.round(totalAcc10 / last10) + "%");
+  let highestAcc: string | number = topAcc;
+  if (Config.alwaysShowDecimalPlaces) {
+    highestAcc = Misc.roundTo2(highestAcc).toFixed(2);
+  } else {
+    highestAcc = Math.round(highestAcc);
+  }
+
+  $(".pageAccount .highestAcc .val").text(highestAcc + "%");
+
+  let averageAcc: number | string = totalAcc;
+  if (Config.alwaysShowDecimalPlaces) {
+    averageAcc = Misc.roundTo2(averageAcc / testCount).toFixed(2);
+  } else {
+    averageAcc = Math.round(averageAcc / testCount);
+  }
+
+  $(".pageAccount .avgAcc .val").text(averageAcc + "%");
+
+  let averageAccLast10: number | string = totalAcc10;
+  if (Config.alwaysShowDecimalPlaces) {
+    averageAccLast10 = Misc.roundTo2(averageAccLast10 / last10).toFixed(2);
+  } else {
+    averageAccLast10 = Math.round(averageAccLast10 / last10);
+  }
+
+  $(".pageAccount .avgAcc10 .val").text(averageAccLast10 + "%");
 
   if (totalCons == 0 || totalCons == undefined) {
     $(".pageAccount .avgCons .val").text("-");
     $(".pageAccount .avgCons10 .val").text("-");
   } else {
-    $(".pageAccount .highestCons .val").text(topCons + "%");
-    $(".pageAccount .avgCons .val").text(
-      Math.round(totalCons / consCount) + "%"
-    );
-    $(".pageAccount .avgCons10 .val").text(
-      Math.round(totalCons10 / Math.min(last10, consCount)) + "%"
-    );
+    let highestCons: number | string = topCons;
+    if (Config.alwaysShowDecimalPlaces) {
+      highestCons = Misc.roundTo2(highestCons).toFixed(2);
+    } else {
+      highestCons = Math.round(highestCons);
+    }
+
+    $(".pageAccount .highestCons .val").text(highestCons + "%");
+
+    let averageCons: number | string = totalCons;
+    if (Config.alwaysShowDecimalPlaces) {
+      averageCons = Misc.roundTo2(averageCons / consCount).toFixed(2);
+    } else {
+      averageCons = Math.round(averageCons / consCount);
+    }
+
+    $(".pageAccount .avgCons .val").text(averageCons + "%");
+
+    let averageConsLast10: number | string = totalCons10;
+    if (Config.alwaysShowDecimalPlaces) {
+      averageConsLast10 = Misc.roundTo2(
+        averageConsLast10 / Math.min(last10, consCount)
+      ).toFixed(2);
+    } else {
+      averageConsLast10 = Math.round(
+        averageConsLast10 / Math.min(last10, consCount)
+      );
+    }
+
+    $(".pageAccount .avgCons10 .val").text(averageConsLast10 + "%");
   }
+
   $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
   $(".pageAccount .testsCompleted .val").text(
     `${testCount}(${Math.floor(
@@ -1163,7 +1241,8 @@ export const page = new Page(
     ResultFilters.removeButtons();
   },
   async () => {
-    ResultFilters.appendButtons();
+    await ResultFilters.appendButtons();
+    ResultFilters.updateActive();
     if (DB.getSnapshot()?.results == undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");

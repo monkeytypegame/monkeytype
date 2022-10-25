@@ -296,7 +296,7 @@ function handleSpace(): void {
       nextTop = 0;
     }
 
-    if (nextTop > currentTop && !TestUI.lineTransition) {
+    if (nextTop > currentTop) {
       TestUI.lineJump(currentTop);
     }
   } //end of line wrap

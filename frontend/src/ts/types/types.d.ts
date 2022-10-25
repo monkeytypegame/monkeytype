@@ -534,6 +534,10 @@ declare namespace MonkeyTypes {
   interface ResultFilters {
     _id: string;
     name: string;
+    pb: {
+      no: boolean;
+      yes: boolean;
+    };
     difficulty: {
       normal: boolean;
       expert: boolean;
