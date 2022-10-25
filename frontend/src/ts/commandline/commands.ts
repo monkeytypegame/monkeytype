@@ -65,6 +65,7 @@ import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
 import ResultScreenCommands from "./lists/result-screen";
+import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
@@ -250,6 +251,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...CustomThemesListCommands,
     ...FlipTestColorsCommands,
     ...ColorfulModeCommands,
+    ...AddOrRemoveThemeToFavorite,
     {
       id: "changeCustomBackground",
       display: "Custom background...",
