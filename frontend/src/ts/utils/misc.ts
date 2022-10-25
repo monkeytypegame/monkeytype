@@ -153,11 +153,9 @@ export async function getFunbox(
   });
 }
 
-export async function getLayoutsList(): Promise<
-  MonkeyTypes.Layouts | undefined
-> {
+export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
   const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-    "/./layouts/_list.json"
+    "/./layouts/_lis.json"
   );
   return layoutsList;
 }
@@ -171,9 +169,6 @@ export async function getLayout(
   layoutName: string
 ): Promise<MonkeyTypes.Layout> {
   const layouts = await getLayoutsList();
-  if (layouts === undefined) {
-    throw new Error("Layouts list is undefined");
-  }
   const layout = layouts[layoutName];
   if (layout === undefined) {
     throw new Error(`Layout ${layoutName} is undefined`);
