@@ -18,6 +18,10 @@
     "languages": ["spanish", "spanish_1k", "spanish_10k"]
   },
   {
+    "name": "lorem_ipsum",
+    "languages": ["lorem_ipsum"]
+  },
+  {
     "name": "nepali",
     "languages": ["nepali", "nepali_1k"]
   },
