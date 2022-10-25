@@ -116,6 +116,12 @@ export async function isConfigValueValidAsync(
 
         if (layoutNames.length < 2 || layoutNames.length > 5) break;
 
+        if ((await Misc.getLayoutsList()) === undefined) {
+          customMessage =
+            "Failed to validate layoutfluid value: Layout list is undefined";
+          break;
+        }
+
         // convert the layout names to layouts
         const layouts = await Promise.all(
           layoutNames.map(async (layoutName) => Misc.getLayout(layoutName))
