@@ -161,7 +161,7 @@ export async function getFunbox(
 export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
   try {
     const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-      "/./layouts/_lis.json"
+      "/./layouts/_list.json"
     );
     return layoutsList;
   } catch (e) {
