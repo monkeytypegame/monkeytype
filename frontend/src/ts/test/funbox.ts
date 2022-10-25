@@ -126,7 +126,21 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
+
+  let language;
+  try {
+    language = await Misc.getCurrentLanguage(Config.language);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to activate funbox"),
+      -1
+    );
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return false;
+  }
+
+  if (language.ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
         "Current language does not support this funbox mode",

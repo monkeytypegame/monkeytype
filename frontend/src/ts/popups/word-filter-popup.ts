@@ -1,5 +1,6 @@
 import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
+import * as Notifications from "../elements/notifications";
 
 let initialised = false;
 
@@ -55,7 +56,18 @@ async function filter(language: string): Promise<string[]> {
   filterout = filterout.replace(/\s+/gi, "|");
   const regexcl = new RegExp(filterout, "i");
   const filteredWords = [];
-  const languageWordList = await Misc.getLanguage(language);
+
+  let languageWordList;
+  try {
+    languageWordList = await Misc.getLanguage(language);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to filter language words"),
+      -1
+    );
+    return [];
+  }
+
   const maxLengthInput = $("#wordFilterPopup .wordMaxInput").val() as string;
   const minLengthInput = $("#wordFilterPopup .wordMinInput").val() as string;
   let maxLength;
