@@ -121,9 +121,15 @@ Misc.getFontsList().then((fonts) => {
   updateFontFamilyCommands(fonts);
 });
 
-Misc.getThemesList().then((themes) => {
-  updateThemesCommands(themes);
-});
+Misc.getThemesList()
+  .then((themes) => {
+    updateThemesCommands(themes);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update themes commands")
+    );
+  });
 
 Misc.getChallengeList().then((challenges) => {
   updateLoadChallengeCommands(challenges);
