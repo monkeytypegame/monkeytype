@@ -101,14 +101,17 @@ export async function refresh(
 ): Promise<void> {
   if (!layoutName) return;
   try {
-    const layouts = await Misc.getLayoutsList();
-    if (!layouts) {
+    let layouts;
+    try {
+      layouts = await Misc.getLayoutsList();
+    } catch (e) {
       Notifications.add(
-        "Failed to refresh keymap: layouts list is undefined",
+        Misc.createErrorMessage(e, "Failed to refresh keymap"),
         -1
       );
       return;
     }
+
     let lts = layouts[layoutName]; //layout to show
     let layoutString = layoutName;
     if (Config.keymapLayout === "overrideSync") {
