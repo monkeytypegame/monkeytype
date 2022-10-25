@@ -470,7 +470,6 @@ export async function fillSettingsPage(): Promise<void> {
     console.error(
       Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
     );
-    return;
   }
 
   if (themes) {
