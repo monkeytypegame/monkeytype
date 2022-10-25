@@ -1,6 +1,7 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
+import * as Notifications from "../elements/notifications";
 
 export let leftState = false;
 export let rightState = false;
@@ -50,9 +51,16 @@ function dynamicKeymapLegendStyle(uppercase: boolean): void {
 async function buildKeymapStrings(): Promise<void> {
   if (keymapStrings.keymap === Config.keymapLayout) return;
 
-  const layout = await Misc.getLayout(Config.keymapLayout);
-
-  if (layout === undefined) return;
+  let layout;
+  try {
+    layout = await Misc.getLayout(Config.keymapLayout);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to track shift state"),
+      -1
+    );
+    return;
+  }
 
   const layoutKeys = layout.keys;
   const layoutKeysEntries = Object.entries(layoutKeys) as [string, string[]][];
