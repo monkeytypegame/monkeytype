@@ -153,7 +153,6 @@ export async function getFunbox(
   });
 }
 
-const layoutsList: MonkeyTypes.Layouts | undefined = undefined;
 export async function getLayoutsList(): Promise<
   MonkeyTypes.Layouts | undefined
 > {
@@ -165,13 +164,21 @@ export async function getLayoutsList(): Promise<
 
 export const cachedFetchJson = memoizeAsync(fetchJson);
 
+/**
+ * @throws {Error} If layout list or layout doesnt exist.
+ */
 export async function getLayout(
   layoutName: string
 ): Promise<MonkeyTypes.Layout> {
-  if (layoutsList === undefined || Object.keys(layoutsList).length === 0) {
-    await getLayoutsList();
+  const layouts = await getLayoutsList();
+  if (layouts === undefined) {
+    throw new Error("Layouts list is undefined");
   }
-  return (layoutsList as MonkeyTypes.Layouts)[layoutName];
+  const layout = layouts[layoutName];
+  if (layout === undefined) {
+    throw new Error(`Layout ${layoutName} is undefined`);
+  }
+  return layout;
 }
 
 let fontsList: MonkeyTypes.FontObject[] = [];
