@@ -6,7 +6,7 @@ const commands: MonkeyTypes.Command[] = [
     display: "Add current theme to favorite",
     icon: "fa-heart",
     available: (): boolean => {
-      return !Config.favThemes.includes(Config.theme);
+      return !Config.customTheme && !Config.favThemes.includes(Config.theme);
     },
     exec: (): void => {
       const { theme, favThemes, customTheme } = Config;
@@ -20,7 +20,7 @@ const commands: MonkeyTypes.Command[] = [
     display: "Remove current theme from favorite",
     icon: "fa-heart-broken",
     available: (): boolean => {
-      return Config.favThemes.includes(Config.theme);
+      return !Config.customTheme && Config.favThemes.includes(Config.theme);
     },
     exec: (): void => {
       const { theme, favThemes, customTheme } = Config;
