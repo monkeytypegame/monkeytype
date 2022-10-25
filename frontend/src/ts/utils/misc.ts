@@ -85,29 +85,27 @@ export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
   }
 }
 
-let languageList: string[] = [];
 export async function getLanguageList(): Promise<string[]> {
-  if (languageList.length === 0) {
-    return $.getJSON("/./languages/_list.json", function (data) {
-      languageList = data;
-      return languageList;
-    });
-  } else {
+  try {
+    const languageList = await cachedFetchJson<string[]>(
+      "/./languages/_list.json"
+    );
     return languageList;
+  } catch (e) {
+    throw new Error("Language list JSON fetch failed");
   }
 }
 
-let languageGroupList: MonkeyTypes.LanguageGroup[] = [];
 export async function getLanguageGroups(): Promise<
   MonkeyTypes.LanguageGroup[]
 > {
-  if (languageGroupList.length === 0) {
-    return $.getJSON("/./languages/_groups.json", function (data) {
-      languageGroupList = data;
-      return languageGroupList;
-    });
-  } else {
+  try {
+    const languageGroupList = await cachedFetchJson<
+      MonkeyTypes.LanguageGroup[]
+    >("/./languages/_groups.json");
     return languageGroupList;
+  } catch (e) {
+    throw new Error("Language groups JSON fetch failed");
   }
 }
 
@@ -115,21 +113,21 @@ let currentLanguage: MonkeyTypes.LanguageObject;
 export async function getLanguage(
   lang: string
 ): Promise<MonkeyTypes.LanguageObject> {
-  try {
-    if (currentLanguage == undefined || currentLanguage.name !== lang) {
-      await $.getJSON(`/./languages/${lang}.json`, function (data) {
-        currentLanguage = data;
-      });
-    }
-    return currentLanguage;
-  } catch (e) {
-    console.error(`error getting language`);
-    console.error(e);
-    await $.getJSON(`/./languages/english.json`, function (data) {
-      currentLanguage = data;
-    });
-    return currentLanguage;
+  // try {
+  if (currentLanguage == undefined || currentLanguage.name !== lang) {
+    currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
+      `/./language/${lang}.json`
+    );
   }
+  return currentLanguage;
+  // } catch (e) {
+  //   console.error(`error getting language`);
+  //   console.error(e);
+  //   currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
+  //     `/./language/english.json`
+  //   );
+  //   return currentLanguage;
+  // }
 }
 
 export async function getCurrentLanguage(
