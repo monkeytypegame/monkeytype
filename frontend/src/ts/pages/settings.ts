@@ -427,7 +427,14 @@ export async function fillSettingsPage(): Promise<void> {
   layoutEl.append(`<option value='default'>off</option>`);
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  const layoutsList = await Misc.getLayoutsList();
+
+  let layoutsList;
+  try {
+    layoutsList = await Misc.getLayoutsList();
+  } catch (e) {
+    console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
+  }
+
   if (layoutsList) {
     Object.keys(layoutsList).forEach((layout) => {
       if (layout.toString() !== "korean") {
