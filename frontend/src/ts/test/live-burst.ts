@@ -20,6 +20,7 @@ export function show(): void {
   if (Config.timerStyle === "mini") {
     if (!$("#miniTimerAndLiveWpm .burst").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .burst")
+      .stop(true, false)
       .removeClass("hidden")
       .css("opacity", 0)
       .animate(
@@ -30,34 +31,42 @@ export function show(): void {
       );
   } else {
     if (!$("#liveBurst").hasClass("hidden")) return;
-    $("#liveBurst").removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: Config.timerOpacity,
-      },
-      125
-    );
+    $("#liveBurst")
+      .stop(true, false)
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: Config.timerOpacity,
+        },
+        125
+      );
   }
 }
 
 export function hide(): void {
-  $("#liveBurst").animate(
-    {
-      opacity: 0,
-    },
-    125,
-    () => {
-      $("#liveBurst").addClass("hidden");
-    }
-  );
-  $("#miniTimerAndLiveWpm .burst").animate(
-    {
-      opacity: 0,
-    },
-    125,
-    () => {
-      $("#miniTimerAndLiveWpm .burst").addClass("hidden");
-    }
-  );
+  $("#liveBurst")
+    .stop(true, false)
+    .animate(
+      {
+        opacity: 0,
+      },
+      125,
+      () => {
+        $("#liveBurst").addClass("hidden");
+      }
+    );
+  $("#miniTimerAndLiveWpm .burst")
+    .stop(true, false)
+    .animate(
+      {
+        opacity: 0,
+      },
+      125,
+      () => {
+        $("#miniTimerAndLiveWpm .burst").addClass("hidden");
+      }
+    );
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

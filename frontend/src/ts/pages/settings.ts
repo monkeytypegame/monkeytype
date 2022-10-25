@@ -568,10 +568,10 @@ export function updateDiscordSection(): void {
   if (Auth?.currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
-    if (DB.getSnapshot() == null) return;
+    if (!DB.getSnapshot()) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
-    if (DB.getSnapshot().discordId == undefined) {
+    if (DB.getSnapshot()?.discordId == undefined) {
       //show button
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
@@ -645,7 +645,7 @@ function setActiveFunboxButton(): void {
 function refreshTagsSettingsSection(): void {
   if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    DB.getSnapshot().tags?.forEach((tag) => {
+    DB.getSnapshot()?.tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb != undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
@@ -680,7 +680,7 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
+    DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
@@ -792,9 +792,9 @@ function toggleSettingsGroup(groupName: string): void {
   }
 }
 
-$(document).on(
+$(".pageSettings .section.paceCaret").on(
   "focusout",
-  ".pageSettings .section.paceCaret input.customPaceCaretSpeed",
+  "input.customPaceCaretSpeed",
   () => {
     UpdateConfig.setPaceCaretCustomSpeed(
       parseInt(
@@ -806,7 +806,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", ".pageSettings .section.paceCaret .button.save", () => {
+$(".pageSettings .section.paceCaret").on("click", ".button.save", () => {
   UpdateConfig.setPaceCaretCustomSpeed(
     parseInt(
       $(
@@ -816,9 +816,9 @@ $(document).on("click", ".pageSettings .section.paceCaret .button.save", () => {
   );
 });
 
-$(document).on(
+$(".pageSettings .section.minWpm").on(
   "focusout",
-  ".pageSettings .section.minWpm input.customMinWpmSpeed",
+  "input.customMinWpmSpeed",
   () => {
     UpdateConfig.setMinWpmCustomSpeed(
       parseInt(
@@ -830,7 +830,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", ".pageSettings .section.minWpm .button.save", () => {
+$(".pageSettings .section.minWpm").on("click", ".button.save", () => {
   UpdateConfig.setMinWpmCustomSpeed(
     parseInt(
       $(".pageSettings .section.minWpm input.customMinWpmSpeed").val() as string
@@ -838,19 +838,7 @@ $(document).on("click", ".pageSettings .section.minWpm .button.save", () => {
   );
 });
 
-$(document).on(
-  "focusout",
-  ".pageSettings .section.minAcc input.customMinAcc",
-  () => {
-    UpdateConfig.setMinAccCustom(
-      parseInt(
-        $(".pageSettings .section.minAcc input.customMinAcc").val() as string
-      )
-    );
-  }
-);
-
-$(document).on("click", ".pageSettings .section.minAcc .button.save", () => {
+$(".pageSettings .section.minAcc").on("focusout", "input.customMinAcc", () => {
   UpdateConfig.setMinAccCustom(
     parseInt(
       $(".pageSettings .section.minAcc input.customMinAcc").val() as string
@@ -858,9 +846,17 @@ $(document).on("click", ".pageSettings .section.minAcc .button.save", () => {
   );
 });
 
-$(document).on(
+$(".pageSettings .section.minAcc").on("click", ".button.save", () => {
+  UpdateConfig.setMinAccCustom(
+    parseInt(
+      $(".pageSettings .section.minAcc input.customMinAcc").val() as string
+    )
+  );
+});
+
+$(".pageSettings .section.minBurst").on(
   "focusout",
-  ".pageSettings .section.minBurst input.customMinBurst",
+  "input.customMinBurst",
   () => {
     UpdateConfig.setMinBurstCustomSpeed(
       parseInt(
@@ -872,7 +868,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
+$(".pageSettings .section.minBurst").on("click", ".button.save", () => {
   UpdateConfig.setMinBurstCustomSpeed(
     parseInt(
       $(".pageSettings .section.minBurst input.customMinBurst").val() as string
@@ -880,19 +876,8 @@ $(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
   );
 });
 
-// Commented because started using combo-box for choosing languages instead of grouped buttons
-// languages
-// $(document).on(
-//   "click",
-//   ".pageSettings .section.languageGroups .button",
-//   (e) => {
-//     const group = $(e.currentTarget).attr("group");
-//     LanguagePicker.setActiveGroup(group, true);
-//   }
-// );
-
 //funbox
-$(document).on("click", ".pageSettings .section.funbox .button", (e) => {
+$(".pageSettings .section.funbox").on("click", ".button", (e) => {
   const funbox = <string>$(e.currentTarget).attr("funbox");
   const type = <MonkeyTypes.FunboxObjectType>$(e.currentTarget).attr("type");
   Funbox.setFunbox(funbox, type);
@@ -900,9 +885,9 @@ $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
 });
 
 //tags
-$(document).on(
+$(".pageSettings .section.tags").on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .tagButton",
+  ".tagsList .tag .tagButton",
   (e) => {
     const target = e.currentTarget;
     const tagid = $(target).parent(".tag").attr("id") as string;
@@ -911,9 +896,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageSettings .section.presets").on(
   "click",
-  ".pageSettings .section.presets .presetsList .preset .presetButton",
+  ".presetsList .preset .presetButton",
   (e) => {
     const target = e.currentTarget;
     const presetid = $(target).parent(".preset").attr("id") as string;
@@ -1042,9 +1027,9 @@ $(".pageSettings .section.updateCookiePreferences .button").on("click", () => {
   CookiePopup.showSettings();
 });
 
-$(document).on(
+$(".pageSettings .section.autoSwitchThemeInputs").on(
   "change",
-  `.pageSettings .section.autoSwitchThemeInputs select.light`,
+  `select.light`,
   (e) => {
     const target = $(e.currentTarget);
     if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
@@ -1054,9 +1039,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageSettings .section.autoSwitchThemeInputs").on(
   "change",
-  `.pageSettings .section.autoSwitchThemeInputs select.dark`,
+  `select.dark`,
   (e) => {
     const target = $(e.currentTarget);
     if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {

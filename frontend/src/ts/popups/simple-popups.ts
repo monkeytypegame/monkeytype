@@ -12,6 +12,7 @@ import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import { Auth } from "../firebase";
+import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
@@ -20,6 +21,7 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { isPasswordStrong } from "../utils/misc";
+import * as CustomTextState from "../states/custom-text-name";
 
 interface Input {
   placeholder?: string;
@@ -252,12 +254,12 @@ $("#simplePopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$(document).on("click", "#simplePopupWrapper .button", () => {
+$("#popups").on("click", "#simplePopupWrapper .button", () => {
   const id = $("#simplePopup").attr("popupId") ?? "";
   list[id].exec();
 });
 
-$(document).on("keyup", "#simplePopupWrapper input", (e) => {
+$("#popups").on("keyup", "#simplePopupWrapper input", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
     const id = $("#simplePopup").attr("popupId") ?? "";
@@ -422,7 +424,8 @@ list["updateName"] = new SimplePopup(
   async (_thisPopup, pass, newName) => {
     try {
       const user = Auth?.currentUser;
-      if (!user) return;
+      const snapshot = DB.getSnapshot();
+      if (!user || !snapshot) return;
 
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
@@ -454,9 +457,9 @@ list["updateName"] = new SimplePopup(
       }
 
       Notifications.add("Name updated", 1);
-      DB.getSnapshot().name = newName;
+      snapshot.name = newName;
       $("#menu .textButton.account .text").text(newName);
-      if (DB.getSnapshot().needsToChangeName) {
+      if (snapshot.needsToChangeName) {
         setTimeout(() => {
           location.reload();
         }, 3000);
@@ -473,12 +476,12 @@ list["updateName"] = new SimplePopup(
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
-    if (!user) return;
+    const snapshot = DB.getSnapshot();
+    if (!user || !snapshot) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs[0].hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
-    const snapshot = DB.getSnapshot();
     if (snapshot.needsToChangeName === true) {
       thisPopup.text =
         "We've recently identified several issues that allowed users to register with names that were already taken. Accounts which signed up earliest get to keep the duplicated name, and others are forced to change. Unique names are essential for smooth operation of upcoming features like public profiles, multiplayer, and more. Sorry for the inconvenience.";
@@ -784,7 +787,7 @@ list["clearTagPb"] = new SimplePopup(
     }
 
     if (response.data.resultCode === 1) {
-      const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagId)[0];
+      const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
 
       if (tag === undefined) return;
       tag.personalBests = {
@@ -845,7 +848,8 @@ list["resetPersonalBests"] = new SimplePopup(
   async (_thisPopup, password: string) => {
     try {
       const user = Auth?.currentUser;
-      if (!user) return;
+      const snapshot = DB.getSnapshot();
+      if (!user || !snapshot) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -867,7 +871,7 @@ list["resetPersonalBests"] = new SimplePopup(
       }
 
       Notifications.add("Personal bests have been reset", 1);
-      DB.getSnapshot().personalBests = {
+      snapshot.personalBests = {
         time: {},
         words: {},
         zen: { zen: [] },
@@ -921,6 +925,8 @@ list["unlinkDiscord"] = new SimplePopup(
   "Are you sure you want to unlink your Discord account?",
   "Unlink",
   async () => {
+    const snap = DB.getSnapshot();
+    if (!snap) return;
     Loader.show();
     const response = await Ape.users.unlinkDiscord();
     Loader.hide();
@@ -933,7 +939,6 @@ list["unlinkDiscord"] = new SimplePopup(
     }
 
     Notifications.add("Accounts unlinked", 1);
-    const snap = DB.getSnapshot();
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
     AccountButton.update();
@@ -1085,6 +1090,7 @@ list["deleteCustomText"] = new SimplePopup(
   (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0]);
     Notifications.add("Custom text deleted", 1);
+    CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show();
   },
   (_thisPopup) => {
@@ -1105,6 +1111,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0], true);
     Notifications.add("Custom text deleted", 1);
+    CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show();
   },
   (_thisPopup) => {
@@ -1158,6 +1165,7 @@ list["updateCustomTheme"] = new SimplePopup(
   "Update",
   async (_thisPopup, name, updateColors) => {
     const snapshot = DB.getSnapshot();
+    if (!snapshot) return;
 
     const customTheme = snapshot.customThemes.find(
       (t) => t._id === _thisPopup.parameters[0]
@@ -1193,6 +1201,7 @@ list["updateCustomTheme"] = new SimplePopup(
   },
   (_thisPopup) => {
     const snapshot = DB.getSnapshot();
+    if (!snapshot) return;
 
     const customTheme = snapshot.customThemes.find(
       (t) => t._id === _thisPopup.parameters[0]
@@ -1230,75 +1239,131 @@ list["deleteCustomTheme"] = new SimplePopup(
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     list["unlinkDiscord"].show();
   }
 );
 
 $(".pageSettings #removeGoogleAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["removeGoogleAuth"].show();
 });
 
 $("#resetSettingsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetSettings"].show();
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetPersonalBests"].show();
 });
 
 $(".pageSettings #updateAccountName").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateName"].show();
 });
 
-$(document).on("click", "#bannerCenter .banner .text .openNameChange", () => {
+$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateName"].show();
 });
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["addPasswordAuth"].show();
 });
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateEmail"].show();
 });
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updatePassword"].show();
 });
 
 $(".pageSettings #deleteAccount").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["deleteAccount"].show();
 });
 
 $(".pageSettings #resetAccount").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetAccount"].show();
 });
 
 $("#apeKeysPopup .generateApeKey").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["generateApeKey"].show();
 });
 
-$(document).on(
+$(".pageSettings").on(
   "click",
-  ".pageSettings .section.themes .customTheme .delButton",
+  ".section.themes .customTheme .delButton",
   (e) => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     list["deleteCustomTheme"].show([customThemeId]);
   }
 );
 
-$(document).on(
+$(".pageSettings").on(
   "click",
-  ".pageSettings .section.themes .customTheme .editButton",
+  ".section.themes .customTheme .editButton",
   (e) => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     list["updateCustomTheme"].show([customThemeId]);
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .list .savedText .button.delete`,
   (e) => {
@@ -1307,7 +1372,7 @@ $(document).on(
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
   (e) => {
@@ -1316,7 +1381,7 @@ $(document).on(
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
   (e) => {
@@ -1325,23 +1390,27 @@ $(document).on(
   }
 );
 
-$(document).on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
+$("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   list["deleteApeKey"].show([keyId]);
 });
 
-$(document).on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
+$("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   list["editApeKey"].show([keyId]);
 });
 
-$(document).on(
-  "click",
-  ".pageSettings .section.fontFamily .button.custom",
-  () => {
-    list["applyCustomFont"].show([]);
-  }
-);
+$(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
+  list["applyCustomFont"].show([]);
+});
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#simplePopupWrapper").hasClass("hidden")) {

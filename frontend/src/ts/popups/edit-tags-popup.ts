@@ -5,8 +5,14 @@ import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
 import * as ResultTagsPopup from "./result-tags-popup";
+import * as ConnectionState from "../states/connection";
 
 export function show(action: string, id?: string, name?: string): void {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
+
   if (action === "add") {
     $("#tagsWrapper #tagsEdit").attr("action", "add");
     $("#tagsWrapper #tagsEdit .title").html("Add new tag");
@@ -84,7 +90,7 @@ async function apply(): Promise<void> {
       );
     } else {
       Notifications.add("Tag added", 1);
-      DB.getSnapshot().tags?.push({
+      DB.getSnapshot()?.tags?.push({
         display: propTagName,
         name: response.data.name,
         _id: response.data._id,
@@ -100,7 +106,7 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to edit tag: " + response.message, -1);
     } else {
       Notifications.add("Tag updated", 1);
-      DB.getSnapshot().tags?.forEach((tag) => {
+      DB.getSnapshot()?.tags?.forEach((tag) => {
         if (tag._id === tagId) {
           tag.name = tagName;
           tag.display = propTagName;
@@ -117,9 +123,9 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to remove tag: " + response.message, -1);
     } else {
       Notifications.add("Tag removed", 1);
-      DB.getSnapshot().tags?.forEach((tag, index: number) => {
+      DB.getSnapshot()?.tags?.forEach((tag, index: number) => {
         if (tag._id === tagId) {
-          DB.getSnapshot().tags?.splice(index, 1);
+          DB.getSnapshot()?.tags?.splice(index, 1);
         }
       });
       ResultTagsPopup.updateButtons();
@@ -133,7 +139,7 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to clear tag pb: " + response.message, -1);
     } else {
       Notifications.add("Tag PB cleared", 1);
-      DB.getSnapshot().tags?.forEach((tag) => {
+      DB.getSnapshot()?.tags?.forEach((tag) => {
         if (tag._id === tagId) {
           tag.personalBests = {
             time: {},
@@ -168,13 +174,13 @@ $("#tagsWrapper #tagsEdit input").on("keypress", (e) => {
   }
 });
 
-$(document).on("click", ".pageSettings .section.tags .addTagButton", () => {
+$(".pageSettings .section.tags").on("click", ".addTagButton", () => {
   show("add");
 });
 
-$(document).on(
+$(".pageSettings .section.tags").on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .editButton",
+  ".tagsList .tag .editButton",
   (e) => {
     const tagid = $(e.currentTarget).parent(".tag").attr("id");
     const name = $(e.currentTarget)
@@ -185,9 +191,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageSettings .section.tags").on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
+  ".tagsList .tag .clearPbButton",
   (e) => {
     const tagid = $(e.currentTarget).parent(".tag").attr("id");
     const name = $(e.currentTarget)
@@ -198,9 +204,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageSettings .section.tags").on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .removeButton",
+  ".tagsList .tag .removeButton",
   (e) => {
     const tagid = $(e.currentTarget).parent(".tag").attr("id");
     const name = $(e.currentTarget)

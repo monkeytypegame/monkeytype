@@ -65,6 +65,7 @@ import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
 import ResultScreenCommands from "./lists/result-screen";
+import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
@@ -155,7 +156,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       shouldFocusTestUI: false,
     },
     ...BailOutCommands,
-    ...LoadChallengeCommands,
     {
       id: "shareTestSettings",
       display: "Share test settings",
@@ -180,8 +180,8 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...MinWpmCommands,
     ...MinAccCommands,
     ...MinBurstCommands,
-    ...BritishEnglishCommands,
     ...LanguagesCommands,
+    ...BritishEnglishCommands,
     ...FunboxCommands,
     {
       id: "changeCustomLayoutfluid",
@@ -250,6 +250,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...CustomThemesListCommands,
     ...FlipTestColorsCommands,
     ...ColorfulModeCommands,
+    ...AddOrRemoveThemeToFavorite,
     {
       id: "changeCustomBackground",
       display: "Custom background...",
@@ -298,6 +299,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...EnableAdsCommands,
 
     //other
+    ...LoadChallengeCommands,
     ...NavigationCommands,
     {
       id: "watchVideoAd",

@@ -41,7 +41,6 @@ import {
   Unsubscribe,
 } from "firebase/auth";
 import { Auth } from "../firebase";
-import { defaultSnap } from "../constants/default-snapshot";
 import { dispatch as dispatchSignUpEvent } from "../observables/google-sign-up-event";
 import {
   hideFavoriteQuoteLength,
@@ -49,6 +48,7 @@ import {
 } from "../test/test-config";
 import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
+import * as ConnectionState from "../states/connection";
 
 export const gmailProvider = new GoogleAuthProvider();
 let canCall = true;
@@ -111,7 +111,7 @@ export async function getDataAndInit(): Promise<boolean> {
     LoadingPage.updateBar(45);
   }
   LoadingPage.updateText("Applying settings...");
-  const snapshot = DB.getSnapshot();
+  const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
   $("#menu .textButton.account > .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
@@ -246,7 +246,8 @@ export async function loadUser(user: UserType): Promise<void> {
   if ((await getDataAndInit()) === false) {
     signOut();
   }
-  const { discordId, discordAvatar, xp, inboxUnreadSize } = DB.getSnapshot();
+  const { discordId, discordAvatar, xp, inboxUnreadSize } =
+    DB.getSnapshot() as MonkeyTypes.Snapshot;
   AccountButton.update(xp, discordId, discordAvatar);
   Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
   // var displayName = user.displayName;
@@ -282,7 +283,7 @@ export async function loadUser(user: UserType): Promise<void> {
 let authListener: Unsubscribe;
 
 // eslint-disable-next-line no-constant-condition
-if (Auth) {
+if (Auth && ConnectionState.get()) {
   authListener = Auth?.onAuthStateChanged(async function (user) {
     // await UpdateConfig.loadPromise;
     const search = window.location.search;
@@ -323,7 +324,7 @@ if (Auth) {
     }
   });
 } else {
-  $("#menu .signInOut").remove();
+  $("#menu .signInOut").addClass("hidden");
 
   $("document").ready(async () => {
     // await UpdateConfig.loadPromise;
@@ -354,6 +355,10 @@ if (Auth) {
 export function signIn(): void {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
     return;
   }
 
@@ -427,6 +432,10 @@ export async function forgotPassword(email: any): Promise<void> {
 export async function signInWithGoogle(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
     return;
   }
 
@@ -543,7 +552,7 @@ export function signOut(): void {
       Settings.hideAccountSection();
       AccountButton.update();
       navigate("/login");
-      DB.setSnapshot(defaultSnap);
+      DB.setSnapshot(undefined);
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
@@ -557,6 +566,10 @@ export function signOut(): void {
 async function signUp(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
+    return;
+  }
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
     return;
   }
   RegisterCaptchaPopup.show();
@@ -754,9 +767,17 @@ $(".pageLogin .register .button").on("click", () => {
 });
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   addGoogleAuth();
 });
 
-$(document).on("click", ".pageAccount .sendVerificationEmail", () => {
+$(".pageAccount").on("click", ".sendVerificationEmail", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   sendVerificationEmail();
 });

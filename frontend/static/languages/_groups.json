@@ -9,12 +9,17 @@
       "english_25k",
       "english_450k",
       "english_commonly_misspelled",
-      "english_contractions"
+      "english_contractions",
+      "english_doubleletter"
     ]
   },
   {
     "name": "spanish",
     "languages": ["spanish", "spanish_1k", "spanish_10k"]
+  },
+  {
+    "name": "lorem_ipsum",
+    "languages": ["lorem_ipsum"]
   },
   {
     "name": "nepali",
@@ -424,5 +429,10 @@
   {
     "name": "wordle",
     "languages": ["wordle", "wordle_1k"]
+  },
+  {
+    "name": "kyrgyz",
+    "languages": ["kyrgyz"]
   }
+  
 ]

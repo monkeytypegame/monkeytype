@@ -7,7 +7,7 @@ import {
   updateTypingStats,
   recordAutoBanEvent,
 } from "../../dal/user";
-import * as PublicStatsDAL from "../../dal/public-stats";
+import * as PublicDAL from "../../dal/public";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
@@ -86,7 +86,29 @@ export async function updateTags(
   const { tagIds, resultId } = req.body;
 
   await ResultDAL.updateTags(uid, resultId, tagIds);
-  return new MonkeyResponse("Result tags updated");
+  const result = await ResultDAL.getResult(uid, resultId);
+
+  if (!result.difficulty) {
+    result.difficulty = "normal";
+  }
+  if (!result.language) {
+    result.language = "english";
+  }
+  if (!result.funbox) {
+    result.funbox = "none";
+  }
+  if (!result.lazyMode) {
+    result.lazyMode = false;
+  }
+  if (!result.punctuation) {
+    result.punctuation = false;
+  }
+
+  const user = await getUser(uid, "update tags");
+  const tagPbs = await checkIfTagPb(uid, user, result);
+  return new MonkeyResponse("Result tags updated", {
+    tagPbs,
+  });
 }
 
 interface AddResultData {
@@ -329,7 +351,7 @@ export async function addResult(
   }
   tt = result.testDuration + result.incompleteTestSeconds - afk;
   updateTypingStats(uid, result.restartCount, tt);
-  PublicStatsDAL.updateStats(result.restartCount, tt);
+  PublicDAL.updateStats(result.restartCount, tt);
 
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
   const dailyLeaderboard = getDailyLeaderboard(

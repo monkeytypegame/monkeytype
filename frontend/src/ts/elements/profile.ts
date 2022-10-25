@@ -283,8 +283,10 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
 }
 
 $(".details .editProfileButton").on("click", () => {
+  const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   EditProfilePopup.show(() => {
-    update("account", DB.getSnapshot());
+    update("account", snapshot);
   });
 });
 

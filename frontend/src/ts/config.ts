@@ -1310,7 +1310,7 @@ export function setRandomTheme(
       return false;
     }
     if (!DB.getSnapshot()) return true;
-    if (DB.getSnapshot().customThemes.length === 0) {
+    if (DB.getSnapshot()?.customThemes.length === 0) {
       Notifications.add("You need to create a custom theme first", 0);
       config.randomTheme = "off";
       return false;
@@ -1552,6 +1552,15 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   if (fontSize < 0) {
     fontSize = 1;
+  }
+
+  // i dont know why the above check is not enough
+  // some people are getting font size 15 when it should be converted to 1.5
+  // after converting from the string to float system
+
+  // keeping this in for now, if you want a big font go 14.9 or something
+  if (fontSize == 15) {
+    fontSize = 1.5;
   }
 
   config.fontSize = fontSize;

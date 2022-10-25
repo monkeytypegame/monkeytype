@@ -56,6 +56,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
+import * as ConnectionState from "../states/connection";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -153,6 +154,8 @@ export async function punctuateWord(
         if (rand <= 0.8) {
           if (currentLanguage == "kurdish") {
             word += ".";
+          } else if (currentLanguage === "nepali") {
+            word += "।";
           } else {
             word += ".";
           }
@@ -410,7 +413,8 @@ export function restart(options = {} as RestartOptions): void {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText
+          CustomText,
+          CustomTextState.isCustomTextLong() ?? false
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -485,6 +489,9 @@ export function restart(options = {} as RestartOptions): void {
   if (TestUI.resultVisible && Config.repeatedPace && options.withSameWordset) {
     repeatWithPace = true;
   }
+
+  $("#words").stop(true, true);
+  $("#words .smoothScroller").stop(true, true).remove();
 
   ManualRestart.reset();
   TestTimer.clear();
@@ -698,6 +705,7 @@ export function restart(options = {} as RestartOptions): void {
       });
       // resetPaceCaret();
       ModesNotice.update();
+      ManualRestart.reset();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -743,7 +751,9 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
   } else if (Config.funbox === "58008") {
     word = Misc.getNumbers(7);
     if (Config.language.startsWith("kurdish")) {
-      word = Misc.convertNumberToArabicIndic(word);
+      word = Misc.convertNumberToArabic(word);
+    } else if (Config.language.startsWith("nepali")) {
+      word = Misc.convertNumberToNepali(word);
     }
   } else if (Config.funbox === "specials") {
     word = Misc.getSpecials();
@@ -850,7 +860,9 @@ async function getNextWord(
       randomWord = Misc.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {
-        randomWord = Misc.convertNumberToArabicIndic(randomWord);
+        randomWord = Misc.convertNumberToArabic(randomWord);
+      } else if (Config.language.startsWith("nepali")) {
+        randomWord = Misc.convertNumberToNepali(randomWord);
       }
     }
   }
@@ -891,6 +903,13 @@ export async function init(): Promise<void> {
     language = await Misc.getLanguage(Config.language);
   }
 
+  if (Config.mode === "quote") {
+    const group = await Misc.findCurrentGroup(Config.language);
+    if (group && group.name !== "code" && group.name !== Config.language) {
+      UpdateConfig.setLanguage(group.name);
+    }
+  }
+
   if (Config.lazyMode === true && language.noLazyMode) {
     rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0);
@@ -904,7 +923,17 @@ export async function init(): Promise<void> {
   }
 
   let wordsBound = 100;
-  if (Config.showAllLines) {
+  if (Config.funbox === "plus_one") {
+    wordsBound = 2;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+  } else if (Config.funbox === "plus_two") {
+    wordsBound = 3;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+  } else if (Config.showAllLines) {
     if (Config.mode === "quote") {
       wordsBound = 100;
     } else if (Config.mode === "custom") {
@@ -955,18 +984,6 @@ export async function init(): Promise<void> {
 
   if (Config.mode === "words" && Config.words === 0) {
     wordsBound = 100;
-  }
-  if (Config.funbox === "plus_one") {
-    wordsBound = 2;
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-  }
-  if (Config.funbox === "plus_two") {
-    wordsBound = 3;
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
   }
 
   if (
@@ -1133,11 +1150,7 @@ export async function init(): Promise<void> {
 
     if (w === undefined) return;
 
-    if (Config.showAllLines) {
-      wordsBound = w.length;
-    } else {
-      wordsBound = Math.min(wordsBound, w.length);
-    }
+    wordsBound = Math.min(wordsBound, w.length);
 
     for (let i = 0; i < wordsBound; i++) {
       if (/\t/g.test(w[i])) {
@@ -1466,7 +1479,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   //tags
   const activeTagsIds: string[] = [];
   try {
-    DB.getSnapshot().tags?.forEach((tag) => {
+    DB.getSnapshot()?.tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTagsIds.push(tag._id);
       }
@@ -1597,6 +1610,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
+  } else if (completedEvent.rawWpm < 0 || completedEvent.rawWpm > 350) {
+    Notifications.add("Test invalid - raw", 0);
+    TestStats.setInvalid();
+    dontSave = true;
   } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
@@ -1605,15 +1622,26 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // test is valid
 
+  if (TestState.isRepeated) {
+    const testSeconds = completedEvent.testDuration;
+    const afkseconds = completedEvent.afkDuration;
+    let tt = Misc.roundTo2(testSeconds - afkseconds);
+    if (tt < 0) tt = 0;
+    const acc = completedEvent.acc;
+    TestStats.incrementIncompleteSeconds(tt);
+    TestStats.pushIncompleteTest(acc, tt);
+  }
+
   const customTextName = CustomTextState.getCustomTextName();
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
-    if (TestInput.bailout) {
+    if (TestInput.bailout || TestInput.input.length < TestWords.words.length) {
       // They bailed out
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) +
-        TestInput.input.getHistory().length;
+        TestInput.input.getHistory().length -
+        1;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
       Notifications.add("Long custom text progress saved", 1, 5);
 
@@ -1694,7 +1722,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   Result.updateRateQuote(TestWords.randomQuote);
 
   AccountButton.loading(true);
-  completedEvent.challenge = ChallengeContoller.verify(completedEvent);
+  if (completedEvent.bailedOut !== true) {
+    completedEvent.challenge = ChallengeContoller.verify(completedEvent);
+  }
+
   if (completedEvent.challenge === null) delete completedEvent?.challenge;
 
   completedEvent.hash = objectHash(completedEvent);
@@ -1709,6 +1740,17 @@ async function saveResult(
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, 3, "Notice");
     AccountButton.loading(false);
+    return;
+  }
+
+  if (!ConnectionState.get()) {
+    Notifications.add("Result not saved: offline", -1, 2, "Notice");
+    AccountButton.loading(false);
+    retrySaving.canRetry = true;
+    $("#retrySavingResultButton").removeClass("hidden");
+    if (!isRetrying) {
+      retrySaving.completedEvent = completedEvent;
+    }
     return;
   }
 
@@ -1730,8 +1772,14 @@ async function saveResult(
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
+  $("#result .stats .tags .editTagsButton").attr(
+    "result-id",
+    response.data.insertedId
+  );
+  $("#result .stats .tags .editTagsButton").removeClass("invisible");
+
   if (response?.data?.xp) {
-    const snapxp = DB.getSnapshot().xp;
+    const snapxp = DB.getSnapshot()?.xp ?? 0;
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
@@ -1838,7 +1886,7 @@ export function fail(reason: string): void {
   TestStats.pushIncompleteTest(acc, tt);
 }
 
-$(document).on("click", "#testModesNotice .textButton.restart", () => {
+$(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
   restart();
 });
 
@@ -1848,7 +1896,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#restartTestButton", () => {
+$(".pageTest").on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
@@ -1864,7 +1912,7 @@ $(document.body).on("click", "#restartTestButton", () => {
   }
 });
 
-$(document.body).on("click", "#retrySavingResultButton", retrySavingResult);
+$(".pageTest").on("click", "#retrySavingResultButton", retrySavingResult);
 
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.key === "Enter") {
@@ -1872,12 +1920,12 @@ $(document).on("keypress", "#nextTestButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#nextTestButton", () => {
+$(".pageTest").on("click", "#nextTestButton", () => {
   ManualRestart.set();
   restart();
 });
 
-$(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
+$(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode == "zen") {
     Notifications.add("Repeat test disabled in zen mode");
     return;
@@ -1900,7 +1948,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
   }
 });
 
-$(document).on("click", "#testConfig .mode .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
@@ -1910,7 +1958,7 @@ $(document).on("click", "#testConfig .mode .textButton", (e) => {
   restart();
 });
 
-$(document).on("click", "#testConfig .wordCount .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd != "custom") {
@@ -1920,7 +1968,7 @@ $(document).on("click", "#testConfig .wordCount .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#testConfig .time .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode != "custom") {
@@ -1930,7 +1978,7 @@ $(document).on("click", "#testConfig .time .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#testConfig .quoteLength .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
@@ -1945,14 +1993,14 @@ $(document).on("click", "#testConfig .quoteLength .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#testConfig .punctuationMode.textButton", () => {
+$(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   restart();
 });
 
-$(document).on("click", "#testConfig .numbersMode.textButton", () => {
+$(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setNumbers(!Config.numbers);
   ManualRestart.set();
@@ -1983,7 +2031,7 @@ $("#practiseWordsPopup .button.both").on("click", () => {
   });
 });
 
-$(document).on(
+$("#popups").on(
   "click",
   "#quoteSearchPopup #quoteSearchResults .searchResult",
   (e) => {
@@ -1999,7 +2047,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", "#top #menu #startTestButton, #top .logo", () => {
+$("#top").on("click", "#menu #startTestButton, .logo", () => {
   if (ActivePage.get() === "test") restart();
 });
 

@@ -397,8 +397,12 @@ export async function checkIfTagPb(
   }
 
   const { mode, tags: resultTags, funbox } = result;
-
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+  if (
+    funbox !== undefined &&
+    funbox !== "none" &&
+    funbox !== "plus_one" &&
+    funbox !== "plus_two"
+  ) {
     return [];
   }
 
@@ -417,7 +421,7 @@ export async function checkIfTagPb(
 
   const ret: string[] = [];
 
-  tagsToCheck.forEach(async (tag) => {
+  for (const tag of tagsToCheck) {
     const tagPbs: MonkeyTypes.PersonalBests = tag.personalBests ?? {
       time: {},
       words: {},
@@ -434,7 +438,7 @@ export async function checkIfTagPb(
         { $set: { "tags.$.personalBests": tagpb.personalBests } }
       );
     }
-  });
+  }
 
   return ret;
 }

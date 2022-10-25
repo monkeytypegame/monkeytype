@@ -28,9 +28,9 @@ export function show(): void {
   if (!Config.showLiveWpm) return;
   if (!TestActive.get()) return;
   if (Config.timerStyle === "mini") {
-    // $("#miniTimerAndLiveWpm .wpm").css("opacity", Config.timerOpacity);
     if (!$("#miniTimerAndLiveWpm .wpm").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .wpm")
+      .stop(true, true)
       .removeClass("hidden")
       .css("opacity", 0)
       .animate(
@@ -40,36 +40,43 @@ export function show(): void {
         125
       );
   } else {
-    // $("#liveWpm").css("opacity", Config.timerOpacity);
     if (!$("#liveWpm").hasClass("hidden")) return;
-    $("#liveWpm").removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: Config.timerOpacity,
-      },
-      125
-    );
+    $("#liveWpm")
+      .stop(true, true)
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: Config.timerOpacity,
+        },
+        125
+      );
   }
 }
 
 export function hide(): void {
-  $("#liveWpm").animate(
-    {
-      opacity: 0,
-    },
-    125,
-    () => {
-      $("#liveWpm").addClass("hidden");
-    }
-  );
-  $("#miniTimerAndLiveWpm .wpm").animate(
-    {
-      opacity: 0,
-    },
-    125,
-    () => {
-      $("#miniTimerAndLiveWpm .wpm").addClass("hidden");
-    }
-  );
+  $("#liveWpm")
+    .stop(true, true)
+    .animate(
+      {
+        opacity: 0,
+      },
+      125,
+      () => {
+        $("#liveWpm").addClass("hidden");
+      }
+    );
+  $("#miniTimerAndLiveWpm .wpm")
+    .stop(true, true)
+    .animate(
+      {
+        opacity: 0,
+      },
+      125,
+      () => {
+        $("#miniTimerAndLiveWpm .wpm").addClass("hidden");
+      }
+    );
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

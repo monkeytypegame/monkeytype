@@ -153,14 +153,31 @@ export async function update(
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
   const end4 = performance.now();
 
+  const start5 = performance.now();
+  const buckets = {}; // { "70": count, "80": count }
+  for (const lbEntry of lb) {
+    const bucket = Math.floor(lbEntry.wpm / 10).toString() + "0";
+    if (bucket in buckets) buckets[bucket]++;
+    else buckets[bucket] = 1;
+  }
+  await db
+    .collection("public")
+    .updateOne(
+      { type: "speedStats" },
+      { $set: { [`${language}_${mode}_${mode2}`]: buckets } },
+      { upsert: true }
+    );
+  const end5 = performance.now();
+
   const timeToRunAggregate = (end1 - start1) / 1000;
   const timeToRunLoop = (end2 - start2) / 1000;
   const timeToRunInsert = (end3 - start3) / 1000;
   const timeToRunIndex = (end4 - start4) / 1000;
+  const timeToSaveHistogram = (end5 - start5) / 1000; // not sent to prometheus yet
 
   Logger.logToDb(
     `system_lb_update_${language}_${mode}_${mode2}`,
-    `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s, index ${timeToRunIndex}s`,
+    `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`,
     uid
   );
 
