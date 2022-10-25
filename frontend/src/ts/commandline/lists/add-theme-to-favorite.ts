@@ -7,10 +7,7 @@ const commands: MonkeyTypes.Command[] = [
     icon: "fa-heart",
     exec: (): void => {
       const { theme, favThemes } = Config;
-      console.log(theme);
-      if (favThemes.includes(theme)) {
-        UpdateConfig.setFavThemes([...favThemes.filter((t) => t !== theme)]);
-      } else {
+      if (!favThemes.includes(theme)) {
         UpdateConfig.setFavThemes([...favThemes, theme]);
       }
     },
