@@ -518,30 +518,36 @@ export async function fillSettingsPage(): Promise<void> {
 
   const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
-  Misc.getFunboxList().then((funboxModes) => {
-    funboxModes.forEach((funbox) => {
-      if (funbox.name === "mirror") {
-        funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }" style="transform:scaleX(-1);">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`
-        );
-      } else {
-        funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }">${funbox.name.replace(/_/g, " ")}</div>`
-        );
-      }
+  Misc.getFunboxList()
+    .then((funboxModes) => {
+      funboxModes.forEach((funbox) => {
+        if (funbox.name === "mirror") {
+          funboxEl.append(
+            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
+              funbox.info
+            }" data-balloon-pos="up" data-balloon-length="fit" type="${
+              funbox.type
+            }" style="transform:scaleX(-1);">${funbox.name.replace(
+              /_/g,
+              " "
+            )}</div>`
+          );
+        } else {
+          funboxEl.append(
+            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
+              funbox.info
+            }" data-balloon-pos="up" data-balloon-length="fit" type="${
+              funbox.type
+            }">${funbox.name.replace(/_/g, " ")}</div>`
+          );
+        }
+      });
+    })
+    .catch((e) => {
+      console.error(
+        Misc.createErrorMessage(e, "Failed to update funbox settings buttons")
+      );
     });
-  });
 
   let isCustomFont = true;
   const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();

@@ -698,18 +698,24 @@ export async function appendButtons(): Promise<void> {
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
   ).append(`<div class="button" filter="none">none</div>`);
-  await Misc.getFunboxList().then((funboxModes) => {
-    funboxModes.forEach((funbox) => {
-      $(
-        ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-      ).append(
-        `<div class="button" filter="${funbox.name}">${funbox.name.replace(
-          /_/g,
-          " "
-        )}</div>`
+  await Misc.getFunboxList()
+    .then((funboxModes) => {
+      funboxModes.forEach((funbox) => {
+        $(
+          ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+        ).append(
+          `<div class="button" filter="${funbox.name}">${funbox.name.replace(
+            /_/g,
+            " "
+          )}</div>`
+        );
+      });
+    })
+    .catch((e) => {
+      console.error(
+        Misc.createErrorMessage(e, "Failed to append funbox buttons")
       );
     });
-  });
 }
 
 export function removeButtons(): void {

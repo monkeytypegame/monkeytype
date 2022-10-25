@@ -120,8 +120,18 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
   }
-
-  const funboxInfo = await Misc.getFunbox(funbox);
+  let funboxInfo;
+  try {
+    funboxInfo = await Misc.getFunbox(funbox);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to activate funbox"),
+      -1
+    );
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return false;
+  }
 
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
@@ -176,7 +186,17 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     (funbox !== "none" && mode === undefined) ||
     (funbox !== "none" && mode === null)
   ) {
-    const list = await Misc.getFunboxList();
+    let list;
+    try {
+      list = await Misc.getFunboxList();
+    } catch (e) {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to activate funbox"),
+        -1
+      );
+      await clear();
+      return;
+    }
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
 
@@ -242,7 +262,17 @@ export async function rememberSettings(): Promise<void> {
     (funbox !== "none" && mode === undefined) ||
     (funbox !== "none" && mode === null)
   ) {
-    const list = await Misc.getFunboxList();
+    let list;
+    try {
+      list = await Misc.getFunboxList();
+    } catch (e) {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to remember setting"),
+        -1
+      );
+      await clear();
+      return;
+    }
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
   if (mode === "style") {

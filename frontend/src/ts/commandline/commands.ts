@@ -119,9 +119,15 @@ Misc.getLanguageList()
     );
   });
 
-Misc.getFunboxList().then((funboxes) => {
-  updateFunboxCommands(funboxes);
-});
+Misc.getFunboxList()
+  .then((funboxes) => {
+    updateFunboxCommands(funboxes);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update funbox commands")
+    );
+  });
 
 Misc.getFontsList().then((fonts) => {
   updateFontFamilyCommands(fonts);
