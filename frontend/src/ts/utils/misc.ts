@@ -64,14 +64,14 @@ export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
 }
 
 let sortedThemesList: MonkeyTypes.Theme[] | undefined;
-export async function getSortedThemesList(): Promise<
-  MonkeyTypes.Theme[] | undefined
-> {
+export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
   if (!sortedThemesList) {
     if (!themesList) {
       await getThemesList();
     }
-    if (!themesList) return undefined;
+    if (!themesList) {
+      throw new Error("Themes list is undefined");
+    }
     let sorted = [...themesList];
     sorted = sorted.sort((a, b) => {
       const b1 = hexToHSL(a.bgColor);
