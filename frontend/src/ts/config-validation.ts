@@ -116,9 +116,13 @@ export async function isConfigValueValidAsync(
 
         if (layoutNames.length < 2 || layoutNames.length > 5) break;
 
-        if ((await Misc.getLayoutsList()) === undefined) {
-          customMessage =
-            "Failed to validate layoutfluid value: Layout list is undefined";
+        try {
+          await Misc.getLayoutsList();
+        } catch (e) {
+          customMessage = Misc.createErrorMessage(
+            e,
+            "Failed to validate layoutfluid value"
+          );
           break;
         }
 
