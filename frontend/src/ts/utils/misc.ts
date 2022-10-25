@@ -87,7 +87,7 @@ export async function getThemesList(): Promise<
 > {
   if (!themesList) {
     let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
-      "/./layouts/_lis.json"
+      "/./themes/_list.json"
     );
 
     if (!themes) return undefined;
