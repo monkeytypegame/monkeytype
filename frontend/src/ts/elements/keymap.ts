@@ -4,6 +4,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 import * as Misc from "../utils/misc";
 import * as Hangul from "hangul-js";
+import * as Notifications from "../elements/notifications";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
@@ -101,6 +102,13 @@ export async function refresh(
   if (!layoutName) return;
   try {
     const layouts = await Misc.getLayoutsList();
+    if (!layouts) {
+      Notifications.add(
+        "Failed to refresh keymap: layouts list is undefined",
+        -1
+      );
+      return;
+    }
     let lts = layouts[layoutName]; //layout to show
     let layoutString = layoutName;
     if (Config.keymapLayout === "overrideSync") {
