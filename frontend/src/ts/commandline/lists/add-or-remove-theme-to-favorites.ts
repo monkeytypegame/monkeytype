@@ -18,7 +18,7 @@ const commands: MonkeyTypes.Command[] = [
   {
     id: "removeThemeFromFavorite",
     display: "Remove current theme from favorite",
-    icon: "fa-trash",
+    icon: "fa-heart-broken",
     available: (): boolean => {
       return Config.favThemes.includes(Config.theme);
     },
