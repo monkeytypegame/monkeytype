@@ -15,6 +15,8 @@ async function fetchJson<T>(url: string): Promise<T> {
   }
 }
 
+export const cachedFetchJson = memoizeAsync(fetchJson);
+
 function hexToHSL(hex: string): {
   hue: number;
   sat: number;
@@ -168,8 +170,6 @@ export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
     throw new Error("Layouts JSON fetch failed");
   }
 }
-
-export const cachedFetchJson = memoizeAsync(fetchJson);
 
 /**
  * @throws {Error} If layout list or layout doesnt exist.
