@@ -116,7 +116,7 @@ export async function getLanguage(
   // try {
   if (currentLanguage == undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
-      `/./language/${lang}.json`
+      `/./languages/${lang}.json`
     );
   }
   return currentLanguage;
@@ -149,6 +149,38 @@ export async function findCurrentGroup(
     }
   });
   return retgroup;
+}
+
+let funboxList: MonkeyTypes.FunboxObject[] | undefined;
+export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
+  if (!funboxList) {
+    let list = await cachedFetchJson<MonkeyTypes.FunboxObject[]>(
+      "/./funbox/_list.json"
+    );
+    list = list.sort(function (
+      a: MonkeyTypes.FunboxObject,
+      b: MonkeyTypes.FunboxObject
+    ) {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+    funboxList = list;
+    return funboxList;
+  } else {
+    return funboxList;
+  }
+}
+
+export async function getFunbox(
+  funbox: string
+): Promise<MonkeyTypes.FunboxObject | undefined> {
+  const list: MonkeyTypes.FunboxObject[] = await getFunboxList();
+  return list.find(function (element) {
+    return element.name == funbox;
+  });
 }
 
 function hexToHSL(hex: string): {
@@ -215,36 +247,6 @@ export function isColorLight(hex: string): boolean {
 export function isColorDark(hex: string): boolean {
   const hsl = hexToHSL(hex);
   return hsl.lgt < 50;
-}
-
-let funboxList: MonkeyTypes.FunboxObject[] = [];
-export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
-  if (funboxList.length === 0) {
-    return $.getJSON("/./funbox/_list.json", function (data) {
-      funboxList = data.sort(function (
-        a: MonkeyTypes.FunboxObject,
-        b: MonkeyTypes.FunboxObject
-      ) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      return funboxList;
-    });
-  } else {
-    return funboxList;
-  }
-}
-
-export async function getFunbox(
-  funbox: string
-): Promise<MonkeyTypes.FunboxObject | undefined> {
-  const list: MonkeyTypes.FunboxObject[] = await getFunboxList();
-  return list.find(function (element) {
-    return element.name == funbox;
-  });
 }
 
 let fontsList: MonkeyTypes.FontObject[] = [];
