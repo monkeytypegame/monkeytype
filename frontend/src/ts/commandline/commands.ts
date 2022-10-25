@@ -109,9 +109,15 @@ Misc.getLayoutsList()
     );
   });
 
-Misc.getLanguageList().then((languages) => {
-  updateLanguagesCommands(languages);
-});
+Misc.getLanguageList()
+  .then((languages) => {
+    updateLanguagesCommands(languages);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update language commands")
+    );
+  });
 
 Misc.getFunboxList().then((funboxes) => {
   updateFunboxCommands(funboxes);

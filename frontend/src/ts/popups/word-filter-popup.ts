@@ -6,7 +6,20 @@ let initialised = false;
 async function init(): Promise<void> {
   if (!initialised) {
     $("#wordFilterPopup .languageInput").empty();
-    const LanguageList = await Misc.getLanguageList();
+
+    let LanguageList;
+    try {
+      LanguageList = await Misc.getLanguageList();
+    } catch (e) {
+      console.error(
+        Misc.createErrorMessage(
+          e,
+          "Failed to initialise word filter popup language list"
+        )
+      );
+      return;
+    }
+
     LanguageList.forEach((language) => {
       let prettyLang = language;
       prettyLang = prettyLang.replace("_", " ");
