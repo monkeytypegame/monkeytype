@@ -159,10 +159,14 @@ export async function getFunbox(
 }
 
 export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
-  const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
-    "/./layouts/_lis.json"
-  );
-  return layoutsList;
+  try {
+    const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
+      "/./layouts/_lis.json"
+    );
+    return layoutsList;
+  } catch (e) {
+    throw new Error("Layouts JSON fetch failed");
+  }
 }
 
 export const cachedFetchJson = memoizeAsync(fetchJson);
