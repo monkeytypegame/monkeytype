@@ -462,13 +462,32 @@ export async function fillSettingsPage(): Promise<void> {
   const themeEl2 = $(
     ".pageSettings .section.autoSwitchThemeInputs select.dark"
   ).empty();
-  for (const theme of await Misc.getThemesList()) {
-    themeEl1.append(
-      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
+
+  let themes;
+  try {
+    themes = await Misc.getThemesList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
     );
-    themeEl2.append(
-      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
-    );
+    return;
+  }
+
+  if (themes) {
+    for (const theme of themes) {
+      themeEl1.append(
+        `<option value='${theme.name}'>${theme.name.replace(
+          /_/g,
+          " "
+        )}</option>`
+      );
+      themeEl2.append(
+        `<option value='${theme.name}'>${theme.name.replace(
+          /_/g,
+          " "
+        )}</option>`
+      );
+    }
   }
   themeEl1.select2({
     width: "100%",

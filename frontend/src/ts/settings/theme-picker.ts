@@ -158,7 +158,16 @@ export async function refreshButtons(): Promise<void> {
       activeThemeName = ThemeController.randomTheme as string;
     }
 
-    const themes = await Misc.getSortedThemesList();
+    let themes;
+    try {
+      themes = await Misc.getSortedThemesList();
+    } catch (e) {
+      console.error(
+        Misc.createErrorMessage(e, "Failed to refresh theme buttons")
+      );
+      return;
+    }
+
     //first show favourites
     if (Config.favThemes.length > 0) {
       favThemesEl.css({ paddingBottom: "1rem" });

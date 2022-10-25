@@ -206,7 +206,16 @@ export function clearPreview(applyTheme = true): void {
 let themesList: string[] = [];
 
 async function changeThemeList(): Promise<void> {
-  const themes = await Misc.getThemesList();
+  let themes;
+  try {
+    themes = await Misc.getThemesList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update random theme list")
+    );
+    return;
+  }
+
   if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
     themesList = Config.favThemes;
   } else if (Config.randomTheme === "light") {
