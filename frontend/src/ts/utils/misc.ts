@@ -43,15 +43,11 @@ export async function getLayout(
 }
 
 let themesList: MonkeyTypes.Theme[] | undefined;
-export async function getThemesList(): Promise<
-  MonkeyTypes.Theme[] | undefined
-> {
+export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
   if (!themesList) {
     let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
       "/./themes/_list.json"
     );
-
-    if (!themes) return undefined;
 
     themes = themes.sort(function (a: MonkeyTypes.Theme, b: MonkeyTypes.Theme) {
       const nameA = a.name.toLowerCase();
