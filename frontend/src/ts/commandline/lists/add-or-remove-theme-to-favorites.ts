@@ -3,7 +3,7 @@ import Config, * as UpdateConfig from "../../config";
 const commands: MonkeyTypes.Command[] = [
   {
     id: "addThemeToFavorite",
-    display: "Add current theme to favorite...",
+    display: "Add current theme to favorite",
     icon: "fa-heart",
     available: (): boolean => {
       return !Config.favThemes.includes(Config.theme);
@@ -17,7 +17,7 @@ const commands: MonkeyTypes.Command[] = [
   },
   {
     id: "removeThemeFromFavorite",
-    display: "Remove current theme from favorite...",
+    display: "Remove current theme from favorite",
     icon: "fa-trash",
     available: (): boolean => {
       return Config.favThemes.includes(Config.theme);
