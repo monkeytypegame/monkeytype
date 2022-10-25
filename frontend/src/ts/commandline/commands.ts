@@ -98,11 +98,16 @@ import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 
-Misc.getLayoutsList().then((layouts) => {
-  if (!layouts) return;
-  updateLayoutsCommands(layouts);
-  updateKeymapLayoutsCommands(layouts);
-});
+Misc.getLayoutsList()
+  .then((layouts) => {
+    updateLayoutsCommands(layouts);
+    updateKeymapLayoutsCommands(layouts);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update layouts commands")
+    );
+  });
 
 Misc.getLanguageList().then((languages) => {
   updateLanguagesCommands(languages);
