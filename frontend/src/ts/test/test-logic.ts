@@ -904,7 +904,14 @@ export async function init(): Promise<void> {
   }
 
   if (Config.mode === "quote") {
-    const group = await Misc.findCurrentGroup(Config.language);
+    let group;
+    try {
+      group = await Misc.findCurrentGroup(Config.language);
+    } catch (e) {
+      console.error(
+        Misc.createErrorMessage(e, "Failed to find current language group")
+      );
+    }
     if (group && group.name !== "code" && group.name !== Config.language) {
       UpdateConfig.setLanguage(group.name);
     }

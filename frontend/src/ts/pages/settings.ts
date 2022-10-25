@@ -408,17 +408,31 @@ export async function fillSettingsPage(): Promise<void> {
 
   // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
-  const languageGroups = await Misc.getLanguageGroups();
-  languageGroups.forEach((group) => {
-    let langComboBox = `<optgroup label="${group.name}">`;
-    group.languages.forEach((language: string) => {
-      langComboBox += `<option value="${language}">
+
+  let languageGroups;
+  try {
+    languageGroups = await Misc.getLanguageGroups();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(
+        e,
+        "Failed to initialize settings language picker"
+      )
+    );
+  }
+
+  if (languageGroups) {
+    languageGroups.forEach((group) => {
+      let langComboBox = `<optgroup label="${group.name}">`;
+      group.languages.forEach((language: string) => {
+        langComboBox += `<option value="${language}">
         ${language.replace(/_/g, " ")}
       </option>`;
+      });
+      langComboBox += `</optgroup>`;
+      languageEl.append(langComboBox);
     });
-    langComboBox += `</optgroup>`;
-    languageEl.append(langComboBox);
-  });
+  }
   languageEl.select2({
     width: "100%",
   });
