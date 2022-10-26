@@ -60,7 +60,11 @@
     "no-duplicate-imports": ["error"],
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-var-requires": "off"
+    "@typescript-eslint/no-var-requires": "off",
+    "unicorn/prevent-abbreviations": "off",
+    "unicorn/prefer-top-level-await": "off",
+    "unicorn/prefer-number-properties": "off",
+    "unicorn/no-process-exit": "off"
     // "@typescript-eslint/no-floating-promises": "error" // consider adding these
     // "@typescript-eslint/strict-boolean-expressions": "warn",
   },
