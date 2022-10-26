@@ -64,11 +64,19 @@
     "unicorn/prevent-abbreviations": "off",
     "unicorn/prefer-top-level-await": "off",
     "unicorn/prefer-number-properties": "off",
-    "unicorn/no-process-exit": "off"
+    "unicorn/prefer-ternary": ["error", "only-single-line"],
+    "unicorn/prefer-switch": "off"
     // "@typescript-eslint/no-floating-promises": "error" // consider adding these
     // "@typescript-eslint/strict-boolean-expressions": "warn",
   },
   "overrides": [
+    {
+      "files": ["backend/**/*.ts"],
+      "rules": {
+        "unicorn/no-process-exit": "off",
+        "unicorn/prefer-module": "off"
+      }
+    },
     {
       // enable the rule specifically for TypeScript files
       "files": ["*.ts", "*.tsx"],
