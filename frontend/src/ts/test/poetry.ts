@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const bannedChars = ["—", "_", " "];
+const bannedChars = new Set(["—", "_", " "]);
 const maxWords = 100;
 const apiURL = "https://poetrydb.org/random";
 
@@ -22,7 +22,7 @@ export class Poem {
     for (let i = 0; i < this.words.length; i++) {
       let scrubbed = "";
       for (let j = 0; j < this.words[i].length; j++) {
-        if (!bannedChars.includes(this.words[i][j])) {
+        if (!bannedChars.has(this.words[i][j])) {
           scrubbed += this.words[i][j];
         }
       }
@@ -54,15 +54,15 @@ export async function getPoem(): Promise<Poem | false> {
 
     const words: string[] = [];
 
-    poemObj.lines.forEach((line) => {
-      line.split(/ +/).forEach((word) => {
+    for (const line of poemObj.lines) {
+      for (const word of line.split(/ +/)) {
         words.push(word);
-      });
-    });
+      }
+    }
 
     return new Poem(poemObj.title, poemObj.author, words);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
     return false;
   }
 }

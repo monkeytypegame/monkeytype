@@ -121,13 +121,13 @@ export async function update(): Promise<void> {
       `<div class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
         Config.paceCaret === "average"
           ? "average"
-          : Config.paceCaret === "pb"
+          : (Config.paceCaret === "pb"
           ? "pb"
           : Config.paceCaret === "last"
           ? "last"
           : Config.paceCaret === "daily"
           ? "daily"
-          : "custom"
+          : "custom")
       } pace${speed}</div>`
     );
   }
@@ -143,9 +143,9 @@ export async function update(): Promise<void> {
 
     if (Auth?.currentUser && avgWPM > 0) {
       const avgWPMText = ["wpm", "both"].includes(Config.showAverage)
-        ? Config.alwaysShowCPM
+        ? (Config.alwaysShowCPM
           ? `${Math.round(avgWPM * 5)} cpm`
-          : `${avgWPM} wpm`
+          : `${avgWPM} wpm`)
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
@@ -233,9 +233,9 @@ export async function update(): Promise<void> {
 
     if (tagsString !== "") {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton" commands="tags"><i class="fas fa-tag"></i>${tagsString.substring(
+        `<div class="textButton" commands="tags"><i class="fas fa-tag"></i>${tagsString.slice(
           0,
-          tagsString.length - 2
+          Math.max(0, tagsString.length - 2)
         )}</div>`
       );
     }

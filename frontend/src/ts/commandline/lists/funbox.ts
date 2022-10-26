@@ -30,7 +30,7 @@ const commands: MonkeyTypes.Command[] = [
 ];
 
 function update(funboxes: MonkeyTypes.FunboxObject[]): void {
-  funboxes.forEach((funbox) => {
+  for (const funbox of funboxes) {
     subgroup.list.push({
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
@@ -42,7 +42,7 @@ function update(funboxes: MonkeyTypes.FunboxObject[]): void {
         }
       },
     });
-  });
+  }
 }
 
 export default commands;

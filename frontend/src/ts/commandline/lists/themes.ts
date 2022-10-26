@@ -34,8 +34,8 @@ function update(themes: MonkeyTypes.Theme[]): void {
       });
     });
   }
-  themes.forEach((theme) => {
-    if ((Config.favThemes as string[]).includes(theme.name)) return;
+  for (const theme of themes) {
+    if ((Config.favThemes as string[]).includes(theme.name)) continue;
     subgroup.list.push({
       id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
       display: theme.name.replace(/_/g, " "),
@@ -47,7 +47,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
         UpdateConfig.setTheme(theme.name);
       },
     });
-  });
+  }
 }
 
 export default commands;

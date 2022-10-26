@@ -125,9 +125,9 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to edit preset: " + response.message, -1);
     } else {
       Notifications.add("Preset updated", 1);
-      const preset: MonkeyTypes.Preset = snapshotPresets.filter(
+      const preset: MonkeyTypes.Preset = snapshotPresets.find(
         (preset: MonkeyTypes.Preset) => preset._id === presetId
-      )[0];
+      );
       preset.name = presetName;
       if (updateConfig) {
         preset.config = configChanges;

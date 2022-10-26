@@ -34,7 +34,7 @@ function update(layouts: MonkeyTypes.Layouts): void {
       TestLogic.restart();
     },
   });
-  Object.keys(layouts).forEach((layout) => {
+  for (const layout of Object.keys(layouts)) {
     if (layout.toString() != "default") {
       subgroup.list.push({
         id: "changeKeymapLayout" + capitalizeFirstLetterOfEachWord(layout),
@@ -46,7 +46,7 @@ function update(layouts: MonkeyTypes.Layouts): void {
         },
       });
     }
-  });
+  }
 }
 
 export default commands;

@@ -15,12 +15,12 @@ export function dispatch(
   level: number,
   customTitle?: string
 ): void {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn(message, level, customTitle);
-    } catch (e) {
+    } catch (error) {
       console.error("Notification event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }

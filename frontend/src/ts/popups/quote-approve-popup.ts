@@ -15,7 +15,7 @@ let quotes: Quote[] = [];
 
 function updateList(): void {
   $("#quoteApprovePopupWrapper .quotes").empty();
-  quotes.forEach((quote, index) => {
+  for (const [index, quote] of quotes.entries()) {
     const quoteEl = $(`
       <div class="quote" id="${index}" dbid="${quote._id}">
         <textarea class="text">${quote.text}</textarea>
@@ -41,7 +41,7 @@ function updateList(): void {
       </div>
     `);
     $("#quoteApprovePopupWrapper .quotes").append(quoteEl);
-  });
+  }
 }
 
 function updateQuoteLength(index: number): void {

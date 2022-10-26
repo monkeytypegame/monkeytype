@@ -62,7 +62,7 @@ function normalizedTermFrequency(
 }
 
 function tokenize(text: string): string[] {
-  return text.match(/[^\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]+/g) || [];
+  return text.match(/[^\s!"#$%&()*,./:;=?[\\\]^_`{}~\-]+/g) || [];
 }
 
 export const buildSearchService = <T>(
@@ -73,7 +73,7 @@ export const buildSearchService = <T>(
   const reverseIndex: ReverseIndex = {};
   const normalizedTokenToOriginal: TokenMap = {};
 
-  documents.forEach((document, documentIndex) => {
+  for (const [documentIndex, document] of documents.entries()) {
     const rawTokens = tokenize(getSearchableText(document));
 
     const internalDocument: InternalDocument = {
@@ -84,7 +84,7 @@ export const buildSearchService = <T>(
 
     let maxTermFrequency = 0;
 
-    rawTokens.forEach((token) => {
+    for (const token of rawTokens) {
       const stemmedToken = stemmer(token);
 
       if (!(stemmedToken in normalizedTokenToOriginal)) {
@@ -106,10 +106,10 @@ export const buildSearchService = <T>(
         maxTermFrequency,
         internalDocument.termFrequencies[stemmedToken]
       );
-    });
+    }
 
     internalDocument.maxTermFrequency = maxTermFrequency;
-  });
+  }
 
   const tokenSet = Object.keys(reverseIndex);
 
@@ -129,8 +129,8 @@ export const buildSearchService = <T>(
     const results = new Map<number, number>();
     const matchedTokens = new Set<string>();
 
-    normalizedSearchQuery.forEach((searchToken) => {
-      tokenSet.forEach((token) => {
+    for (const searchToken of normalizedSearchQuery) {
+      for (const token of tokenSet) {
         const { similarity } = levenshtein(searchToken, token);
 
         const matchesSearchToken = token === searchToken;
@@ -143,7 +143,7 @@ export const buildSearchService = <T>(
             documents.length,
             documentMatches.size
           );
-          documentMatches.forEach((document) => {
+          for (const document of documentMatches) {
             const currentScore = results.get(document.id) ?? 0;
 
             const termFrequency = normalizedTermFrequency(token, document);
@@ -159,14 +159,14 @@ export const buildSearchService = <T>(
             const scoreForToken = score * idf * termFrequency;
 
             results.set(document.id, currentScore + scoreForToken);
-          });
+          }
 
-          normalizedTokenToOriginal[token].forEach((originalToken) => {
+          for (const originalToken of normalizedTokenToOriginal[token]) {
             matchedTokens.add(originalToken);
-          });
+          }
         }
-      });
-    });
+      }
+    }
 
     const orderedResults = [...results]
       .sort((match1, match2) => {

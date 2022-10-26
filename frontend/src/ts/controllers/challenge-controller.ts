@@ -56,12 +56,10 @@ export function verify(
                 requirementsMet = false;
                 failReasons.push(`WPM not ${requirementValue["exact"]}`);
               }
-            } else if (wpmMode == "min") {
-              if (result.wpm < requirementValue["min"]) {
+            } else if (wpmMode == "min" && result.wpm < requirementValue["min"]) {
                 requirementsMet = false;
                 failReasons.push(`WPM below ${requirementValue["min"]}`);
               }
-            }
           } else if (requirementType == "acc") {
             const accMode = Object.keys(requirementValue)[0];
             if (accMode == "exact") {
@@ -69,30 +67,24 @@ export function verify(
                 requirementsMet = false;
                 failReasons.push(`Accuracy not ${requirementValue["exact"]}`);
               }
-            } else if (accMode == "min") {
-              if (result.acc < requirementValue["min"]) {
+            } else if (accMode == "min" && result.acc < requirementValue["min"]) {
                 requirementsMet = false;
                 failReasons.push(`Accuracy below ${requirementValue["min"]}`);
               }
-            }
           } else if (requirementType == "afk") {
             const afkMode = Object.keys(requirementValue)[0];
-            if (afkMode == "max") {
-              if (Math.round(afk) > requirementValue["max"]) {
+            if (afkMode == "max" && Math.round(afk) > requirementValue["max"]) {
                 requirementsMet = false;
                 failReasons.push(
                   `AFK percentage above ${requirementValue["max"]}`
                 );
               }
-            }
           } else if (requirementType == "time") {
             const timeMode = Object.keys(requirementValue)[0];
-            if (timeMode == "min") {
-              if (Math.round(result.testDuration) < requirementValue["min"]) {
+            if (timeMode == "min" && Math.round(result.testDuration) < requirementValue["min"]) {
                 requirementsMet = false;
                 failReasons.push(`Test time below ${requirementValue["min"]}`);
               }
-            }
           } else if (requirementType == "funbox") {
             const funboxMode = requirementValue["exact"];
             if (funboxMode != result.funbox) {
@@ -101,22 +93,18 @@ export function verify(
             }
           } else if (requirementType == "raw") {
             const rawMode = Object.keys(requirementValue)[0];
-            if (rawMode == "exact") {
-              if (Math.round(result.rawWpm) != requirementValue["exact"]) {
+            if (rawMode == "exact" && Math.round(result.rawWpm) != requirementValue["exact"]) {
                 requirementsMet = false;
                 failReasons.push(`Raw WPM not ${requirementValue["exact"]}`);
               }
-            }
           } else if (requirementType == "con") {
             const conMode = Object.keys(requirementValue)[0];
-            if (conMode == "exact") {
-              if (Math.round(result.consistency) != requirementValue["exact"]) {
+            if (conMode == "exact" && Math.round(result.consistency) != requirementValue["exact"]) {
                 requirementsMet = false;
                 failReasons.push(
                   `Consistency not ${requirementValue["exact"]}`
                 );
               }
-            }
           } else if (requirementType == "config") {
             for (const configKey in requirementValue) {
               const configValue = requirementValue[configKey];
@@ -155,10 +143,10 @@ export function verify(
     } else {
       return null;
     }
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     Notifications.add(
-      `Something went wrong when verifying challenge: ${(e as Error).message}`,
+      `Something went wrong when verifying challenge: ${(error as Error).message}`,
       0
     );
     return null;
@@ -171,7 +159,7 @@ export async function setup(challengeName: string): Promise<boolean> {
   UpdateConfig.setFunbox("none");
 
   const list = await Misc.getChallengeList();
-  const challenge = list.filter((c) => c.name === challengeName)[0];
+  const challenge = list.find((c) => c.name === challengeName);
   let notitext;
   try {
     if (challenge === undefined) {
@@ -210,7 +198,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       Loader.hide();
       const scriptdata = await response.text();
       let text = scriptdata.trim();
-      text = text.replace(/[\n\r\t ]/gm, " ");
+      text = text.replace(/[\t\n\r ]/gm, " ");
       text = text.replace(/ +/gm, " ");
       CustomText.setText(text.split(" "));
       CustomText.setIsWordRandom(false);
@@ -243,8 +231,7 @@ export async function setup(challengeName: string): Promise<boolean> {
           true
         );
       }
-    } else if (challenge.type === "special") {
-      if (challenge.name === "semimak") {
+    } else if (challenge.type === "special" && challenge.name === "semimak") {
         // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
         UpdateConfig.setMode("time", true);
         UpdateConfig.setTimeConfig(120, true);
@@ -255,7 +242,6 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setKeymapLayout("overrideSync", true);
         UpdateConfig.setKeymapMode("static", true);
       }
-    }
     ManualRestart.set();
     notitext = challenge.message;
     $("#top .config").removeClass("hidden");
@@ -269,8 +255,8 @@ export async function setup(challengeName: string): Promise<boolean> {
     TestState.setActiveChallenge(challenge);
     challengeLoading = false;
     return true;
-  } catch (e) {
-    Notifications.add("Something went wrong: " + e, -1);
+  } catch (error) {
+    Notifications.add("Something went wrong: " + error, -1);
     return false;
   }
 }

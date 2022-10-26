@@ -222,7 +222,7 @@ export const result: ChartWithUpdateColors<
                 TestInput.keypressPerSecond[parseInt(ti.label) - 1].words;
 
               const unique = [...new Set(wordsToHighlight)];
-              unique.forEach((wordIndex) => {
+              for (const wordIndex of unique) {
                 const wordEl = $(
                   $("#resultWordsHistory .words .word")[wordIndex]
                 );
@@ -236,7 +236,7 @@ export const result: ChartWithUpdateColors<
                       .replace(/>/g, "&gt")}</div>`
                   );
                 }
-              });
+              }
             } catch {}
             return "";
           },
@@ -520,18 +520,21 @@ export const accountActivity: ChartWithUpdateColors<
               tooltipItem.dataIndex
             ] as MonkeyTypes.ActivityChartDataPoint;
             switch (tooltipItem.datasetIndex) {
-              case 0:
+              case 0: {
                 return `Time Typing: ${Misc.secondsToString(
                   Math.round(resultData.y),
                   true,
                   true
                 )}\nTests Completed: ${resultData.amount}`;
-              case 1:
+              }
+              case 1: {
                 return `Average ${
                   Config.alwaysShowCPM ? "Cpm" : "Wpm"
                 }: ${Misc.roundTo2(resultData.y)}`;
-              default:
+              }
+              default: {
                 return "";
+              }
             }
           },
           label: function (): string {
@@ -935,11 +938,11 @@ export async function updateColors<
   }
 
   const chartScaleOptions = chart.options as ScaleChartOptions<TType>;
-  Object.keys(chartScaleOptions.scales).forEach((scaleID) => {
+  for (const scaleID of Object.keys(chartScaleOptions.scales)) {
     const axis = chartScaleOptions.scales[scaleID] as CartesianScaleOptions;
     axis.ticks.color = subcolor;
     axis.title.color = subcolor;
-  });
+  }
 
   try {
     (
@@ -952,16 +955,14 @@ export async function updateColors<
     ).style = subcolor;
   } catch {}
 
-  (
-    (chart.options as PluginChartOptions<TType>).plugins.annotation
-      .annotations as AnnotationOptions<"line">[]
-  ).forEach((annotation) => {
+  for (const annotation of ((chart.options as PluginChartOptions<TType>).plugins.annotation
+      .annotations as AnnotationOptions<"line">[])) {
     if (annotation.id !== "funbox-label") {
       annotation.borderColor = subcolor;
     }
     (annotation.label as LabelOptions).backgroundColor = subcolor;
     (annotation.label as LabelOptions).color = bgcolor;
-  });
+  }
 
   chart.update("none");
 }

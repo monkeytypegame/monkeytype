@@ -59,12 +59,12 @@ async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
 export async function show(): Promise<void> {
   const latest = await getLatest();
   if (latest === null) return;
-  if (latest.length == 0) {
+  if (latest.length === 0) {
     clearMemory();
     return;
   }
   const localmemory = getMemory();
-  latest.forEach((psa) => {
+  for (const psa of latest) {
     if (psa.date) {
       const dateObj = new Date(psa.date);
       const diff = psa.date - Date.now();
@@ -90,7 +90,7 @@ export async function show(): Promise<void> {
     Alerts.addPSA(psa.message, psa.level ?? -1);
 
     if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false) {
-      return;
+      continue;
     }
 
     Notifications.addBanner(
@@ -103,5 +103,5 @@ export async function show(): Promise<void> {
       },
       true
     );
-  });
+  }
 }

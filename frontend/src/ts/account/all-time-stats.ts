@@ -16,11 +16,7 @@ export function update(): void {
     // let ts = Math.floor((DB.getSnapshot().typingStats.time % 3600) % 60);
     const seconds = snapshot?.typingStats?.timeTyping ?? 0;
     let string = "";
-    if (seconds === 0) {
-      string = "-";
-    } else {
-      string = Misc.secondsToString(Math.round(seconds), true, true);
-    }
+    string = seconds === 0 ? "-" : Misc.secondsToString(Math.round(seconds), true, true);
     $(".pageAccount .globalTimeTyping .val").text(string);
   }
 

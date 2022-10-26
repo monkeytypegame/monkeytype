@@ -97,13 +97,13 @@ export async function load(): Promise<void> {
       [tag: string]: boolean;
     } = { none: false };
 
-    Object.keys(defaultResultFilters.tags).forEach((tag) => {
+    for (const tag of Object.keys(defaultResultFilters.tags)) {
       if (filters.tags[tag] !== undefined) {
         newTags[tag] = filters.tags[tag];
       } else {
         newTags[tag] = true;
       }
-    });
+    }
 
     filters.tags = newTags;
     await updateFilterPresets();
@@ -131,7 +131,7 @@ export async function updateFilterPresets(): Promise<void> {
     $(".pageAccount .presetFilterButtons").show();
 
     // add button for each filter
-    DB.getSnapshot()?.filterPresets.forEach((filter) => {
+    for (const filter of DB.getSnapshot()?.filterPresets) {
       $(".pageAccount .group.presetFilterButtons .filterBtns").append(
         `<div class="filterPresets">
           <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
@@ -140,7 +140,7 @@ export async function updateFilterPresets(): Promise<void> {
           </div>
         </div>`
       );
-    });
+    }
   } else {
     $(".pageAccount .presetFilterButtons").hide();
   }
@@ -270,9 +270,9 @@ export function getFilter<G extends MonkeyTypes.Group>(
 
 export function loadTags(tags: MonkeyTypes.Tag[]): void {
   console.log("loading tags");
-  tags.forEach((tag) => {
+  for (const tag of tags) {
     defaultResultFilters.tags[tag._id] = true;
-  });
+  }
 }
 
 export function reset(): void {
@@ -287,22 +287,20 @@ type AboveChartDisplay = MonkeyTypes.PartialRecord<
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+  for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
-      return;
+      continue;
     }
 
     aboveChartDisplay[group] = {
       all: true,
       array: [],
     };
-    (
-      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-    ).forEach((filter) => {
+    for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
-      if (groupAboveChartDisplay === undefined) return;
+      if (groupAboveChartDisplay === undefined) continue;
 
       if (getFilter(group, filter)) {
         groupAboveChartDisplay["array"]?.push(filter);
@@ -326,8 +324,8 @@ export function updateActive(): void {
       } else {
         buttonEl.removeClass("active");
       }
-    });
-  });
+    }
+  }
 
   function addText(group: MonkeyTypes.Group): string {
     let ret = "";
@@ -436,23 +434,22 @@ export function toggle<G extends MonkeyTypes.Group>(
 
   try {
     if (group === "date") {
-      (Object.keys(getGroup("date")) as MonkeyTypes.Filter<"date">[]).forEach(
-        (date) => {
+      for (const date of (Object.keys(getGroup("date")) as MonkeyTypes.Filter<"date">[])) {
           filters["date"][date] = false;
         }
-      );
+      
     }
     filters[group][filter] = !filters[group][
       filter
     ] as unknown as MonkeyTypes.ResultFilters[G][keyof MonkeyTypes.ResultFilters[G]];
     save();
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
       "Something went wrong toggling filter. Reverting to defaults.",
       0
     );
     console.log("toggling filter error");
-    console.error(e);
+    console.error(error);
     reset();
     updateActive();
   }
@@ -472,11 +469,11 @@ export function updateTags(): void {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
-    snapshot?.tags?.forEach((tag) => {
+    if (snapshot?.tags) {for (const tag of snapshot?.tags) {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
       ).append(`<div class="button" filter="${tag._id}">${tag.display}</div>`);
-    });
+    }}
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
       "hidden"
@@ -492,15 +489,13 @@ $(
     .attr("group") as MonkeyTypes.Group;
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
-    (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+    for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
-        return;
+        continue;
       }
 
-      (
-        Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-      ).forEach((filter) => {
+      for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
         if (group === "date") {
           // TODO figure out why "filter" is never
           // @ts-ignore
@@ -509,35 +504,31 @@ $(
           // @ts-ignore
           filters[group][filter] = true;
         }
-      });
-    });
+      }
+    }
     filters["date"]["all"] = true;
   } else if ($(e.target).hasClass("noFilters")) {
-    (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+    for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
-        return;
+        continue;
       }
 
       if (group !== "date") {
-        (
-          Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-        ).forEach((filter) => {
+        for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
           // TODO figure out why "filter" is never
           // @ts-ignore
           filters[group][filter] = false;
-        });
+        }
       }
-    });
+    }
   } else if ($(e.target).hasClass("button")) {
     if (e.shiftKey) {
-      (
-        Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-      ).forEach((filter) => {
+      for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
         // TODO figure out why "filter" is never
         // @ts-ignore
         filters[group][filter] = false;
-      });
+      }
       // TODO figure out why "filter" is never
       // @ts-ignore
       filters[group][filter] = true;
@@ -554,15 +545,13 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
-  (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+  for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
-      return;
+      continue;
     }
 
-    (
-      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-    ).forEach((filter) => {
+    for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
       if (group === "date") {
         // TODO figure out why "filter" is never
         // @ts-ignore
@@ -572,8 +561,8 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
         // @ts-ignore
         filters[group][filter] = true;
       }
-    });
-  });
+    }
+  }
   filters["date"]["all"] = true;
   updateActive();
   save();
@@ -583,20 +572,18 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
-  (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+  for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
-      return;
+      continue;
     }
 
-    (
-      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-    ).forEach((filter) => {
+    for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
       // TODO figure out why "filter" is never
       // @ts-ignore
       filters[group][filter] = false;
-    });
-  });
+    }
+  }
 
   filters["pb"]["no"] = true;
   filters["pb"]["yes"] = true;
@@ -624,13 +611,13 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
       "long",
       "thicc",
     ];
-    filterName.forEach((ql, index) => {
+    for (const [index, ql] of filterName.entries()) {
       if (Config.quoteLength.includes(index as MonkeyTypes.QuoteLength)) {
         filters["quoteLength"][ql] = true;
       } else {
         filters["quoteLength"][ql] = false;
       }
-    });
+    }
   }
   if (Config.punctuation) {
     filters["punctuation"]["on"] = true;
@@ -677,7 +664,7 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
 
 export async function appendButtons(): Promise<void> {
   await Misc.getLanguageList().then((languages) => {
-    languages.forEach((language) => {
+    for (const language of languages) {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
       ).append(
@@ -686,14 +673,14 @@ export async function appendButtons(): Promise<void> {
           " "
         )}</div>`
       );
-    });
+    }
   });
 
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
   ).append(`<div class="button" filter="none">none</div>`);
   await Misc.getFunboxList().then((funboxModes) => {
-    funboxModes.forEach((funbox) => {
+    for (const funbox of funboxModes) {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
       ).append(
@@ -702,7 +689,7 @@ export async function appendButtons(): Promise<void> {
           " "
         )}</div>`
       );
-    });
+    }
   });
 }
 
@@ -731,12 +718,12 @@ function verifyResultFiltersStructure(
   filterIn: MonkeyTypes.ResultFilters
 ): MonkeyTypes.ResultFilters {
   const filter = deepCopyFilter(filterIn);
-  Object.entries(defaultResultFilters).forEach((entry) => {
+  for (const entry of Object.entries(defaultResultFilters)) {
     const key = entry[0] as keyof MonkeyTypes.ResultFilters;
     const value = entry[1];
     if (filter[key] === undefined) {
       filter[key] = value;
     }
-  });
+  }
   return filter;
 }

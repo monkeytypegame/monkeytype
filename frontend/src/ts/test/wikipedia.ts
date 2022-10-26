@@ -17,29 +17,37 @@ export async function getTLD(
 ): Promise<"en" | "es" | "fr" | "de" | "pt" | "it" | "nl"> {
   // language group to tld
   switch (languageGroup.name) {
-    case "english":
+    case "english": {
       return "en";
+    }
 
-    case "spanish":
+    case "spanish": {
       return "es";
+    }
 
-    case "french":
+    case "french": {
       return "fr";
+    }
 
-    case "german":
+    case "german": {
       return "de";
+    }
 
-    case "portuguese":
+    case "portuguese": {
       return "pt";
+    }
 
-    case "italian":
+    case "italian": {
       return "it";
+    }
 
-    case "dutch":
+    case "dutch": {
       return "nl";
+    }
 
-    default:
+    default: {
       return "en";
+    }
   }
 }
 
@@ -86,7 +94,7 @@ export async function getSection(language: string): Promise<Section> {
     const sectionURL = `https://${urlTLD}.wikipedia.org/w/api.php?action=query&format=json&pageids=${pageid}&prop=extracts&exintro=true&origin=*`;
 
     const sectionReq = new XMLHttpRequest();
-    sectionReq.onload = (): void => {
+    sectionReq.addEventListener("load", (): void => {
       if (sectionReq.readyState == 4) {
         if (sectionReq.status == 200) {
           let sectionText: string = JSON.parse(sectionReq.responseText).query
@@ -99,7 +107,7 @@ export async function getSection(language: string): Promise<Section> {
           sectionText = $("<div/>").html(sectionText).text();
 
           // Remove reference links
-          sectionText = sectionText.replace(/\[\d+\]/gi, "");
+          sectionText = sectionText.replace(/\[\d+]/gi, "");
 
           // Remove invisible characters
           sectionText = sectionText.replace(/[\u200B-\u200D\uFEFF]/g, "");
@@ -124,7 +132,7 @@ export async function getSection(language: string): Promise<Section> {
           rej(sectionReq.status);
         }
       }
-    };
+    });
     sectionReq.open("GET", sectionURL);
     sectionReq.send();
   });

@@ -35,7 +35,7 @@ export function addAllFromToday(): void {
   if (!snapshot) return;
   const results = snapshot.results;
 
-  results?.forEach((result) => {
+  if (results) {for (const result of results) {
     const resultDate = new Date(result.timestamp);
     resultDate.setSeconds(0);
     resultDate.setMinutes(0);
@@ -47,7 +47,7 @@ export function addAllFromToday(): void {
       seconds +=
         result.testDuration + result.incompleteTestSeconds - result.afkDuration;
     }
-  });
+  }}
 
   addedAllToday = true;
 }

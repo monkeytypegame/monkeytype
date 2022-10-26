@@ -68,7 +68,7 @@ export function isColorDark(hex: string): boolean {
 
 let themesList: MonkeyTypes.Theme[] = [];
 export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
-  if (themesList.length == 0) {
+  if (themesList.length === 0) {
     return $.getJSON("/./themes/_list.json", function (data) {
       const list = data.sort(function (
         a: MonkeyTypes.Theme,
@@ -241,9 +241,9 @@ export async function getLanguage(
       });
     }
     return currentLanguage;
-  } catch (e) {
+  } catch (error) {
     console.error(`error getting language`);
-    console.error(e);
+    console.error(error);
     await $.getJSON(`/./languages/english.json`, function (data) {
       currentLanguage = data;
     });
@@ -262,13 +262,11 @@ export async function findCurrentGroup(
 ): Promise<MonkeyTypes.LanguageGroup | undefined> {
   let retgroup: MonkeyTypes.LanguageGroup | undefined;
   const groups = await getLanguageGroups();
-  groups.forEach((group) => {
-    if (retgroup === undefined) {
-      if (group.languages.includes(language)) {
+  for (const group of groups) {
+    if (retgroup === undefined && group.languages.includes(language)) {
         retgroup = group;
       }
-    }
-  });
+  }
   return retgroup;
 }
 
@@ -317,7 +315,7 @@ export function stdDev(array: number[]): number {
     return Math.sqrt(
       array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
     );
-  } catch (e) {
+  } catch {
     return 0;
   }
 }
@@ -327,7 +325,7 @@ export function mean(array: number[]): number {
     return (
       array.reduce((previous, current) => (current += previous)) / array.length
     );
-  } catch (e) {
+  } catch {
     return 0;
   }
 }
@@ -338,7 +336,7 @@ export function median(arr: number[]): number {
     const mid = Math.floor(arr.length / 2),
       nums = [...arr].sort((a, b) => a - b);
     return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
-  } catch (e) {
+  } catch {
     return 0;
   }
 }
@@ -474,8 +472,8 @@ export function secondsToString(
   let days = 0;
   let hours;
   if (showDays) {
-    days = Math.floor(sec / 86400);
-    hours = Math.floor((sec % 86400) / 3600);
+    days = Math.floor(sec / 86_400);
+    hours = Math.floor((sec % 86_400) / 3600);
   } else {
     hours = Math.floor(sec / 3600);
   }
@@ -508,11 +506,7 @@ export function secondsToString(
   if (days > 0 && showDays) {
     ret += daysString;
     if (delimiter === "text") {
-      if (days == 1) {
-        ret += " day ";
-      } else {
-        ret += " days ";
-      }
+      ret += days == 1 ? " day " : " days ";
     } else {
       ret += delimiter;
     }
@@ -520,11 +514,7 @@ export function secondsToString(
   if (hours > 0 || alwaysShowHours) {
     ret += hoursString;
     if (delimiter === "text") {
-      if (hours == 1) {
-        ret += " hour ";
-      } else {
-        ret += " hours ";
-      }
+      ret += hours == 1 ? " hour " : " hours ";
     } else {
       ret += delimiter;
     }
@@ -532,11 +522,7 @@ export function secondsToString(
   if (minutes > 0 || hours > 0 || alwaysShowMinutes) {
     ret += minutesString;
     if (delimiter === "text") {
-      if (minutes == 1) {
-        ret += " minute ";
-      } else {
-        ret += " minutes ";
-      }
+      ret += minutes == 1 ? " minute " : " minutes ";
     } else if (showSeconds) {
       ret += delimiter;
     }
@@ -544,11 +530,7 @@ export function secondsToString(
   if (showSeconds) {
     ret += secondsString;
     if (delimiter === "text") {
-      if (seconds == 1) {
-        ret += " second";
-      } else {
-        ret += " seconds";
-      }
+      ret += seconds == 1 ? " second" : " seconds";
     }
   }
   if (hours === 0 && minutes === 0 && !showSeconds && delimiter === "text") {
@@ -562,11 +544,7 @@ export function getNumbers(len: number): string {
   let ret = "";
   for (let i = 0; i < randLen; i++) {
     let randomNum;
-    if (i === 0) {
-      randomNum = randomIntFromRange(1, 9);
-    } else {
-      randomNum = randomIntFromRange(0, 9);
-    }
+    randomNum = i === 0 ? randomIntFromRange(1, 9) : randomIntFromRange(0, 9);
     ret += randomNum.toString();
   }
   return ret;
@@ -576,8 +554,8 @@ export function getNumbers(len: number): string {
 export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += arabicIndic[parseInt(numString[i])];
+  for (const element of numString) {
+    ret += arabicIndic[parseInt(element)];
   }
   return ret;
 }
@@ -585,8 +563,8 @@ export function convertNumberToArabic(numString: string): string {
 export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += nepaliIndic[parseInt(numString[i])];
+  for (const element of numString) {
+    ret += nepaliIndic[parseInt(element)];
   }
   return ret;
 }
@@ -683,13 +661,12 @@ export function findGetParameter(
     search = getOverride;
   }
 
-  search
-    .substr(1)
-    .split("&")
-    .forEach(function (item) {
+  for (const item of search
+    .slice(1)
+    .split("&")) {
       tmp = item.split("=");
       if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-    });
+    }
   return result;
 }
 
@@ -705,13 +682,12 @@ export function checkIfGetParameterExists(
     search = getOverride;
   }
 
-  search
-    .substr(1)
-    .split("&")
-    .forEach(function (item) {
+  for (const item of search
+    .slice(1)
+    .split("&")) {
       tmp = item.split("=");
       if (tmp[0] === parameterName) result = true;
-    });
+    }
   return result;
 }
 
@@ -795,11 +771,11 @@ export function remove_non_ascii(str: string): string {
   if (str === null || str === "") return "";
   else str = str.toString();
 
-  return str.replace(/[^\x20-\x7E]/g, "");
+  return str.replace(/[^\u0020-\u007E]/g, "");
 }
 
 export function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return str.replace(/[$()*+.?[\\\]^{|}]/g, "\\$&");
 }
 
 export function escapeHTML(str: string): string {
@@ -830,7 +806,7 @@ export function cleanTypographySymbols(textToClean: string): string {
     " ": " ",
   };
   return textToClean.replace(
-    /[“”’‘—,…«»–\u2007\u202F\u00A0]/g,
+    /[,\u00A0«»\u2007–—‘’“”…\u202F]/g,
     (char) => specials[char as keyof typeof specials] || ""
   );
 }
@@ -841,7 +817,7 @@ export function isUsernameValid(name: string): boolean {
   if (/bitly/.test(name.toLowerCase())) return false;
   if (name.length > 14) return false;
   if (/^\..*/.test(name.toLowerCase())) return false;
-  return /^[0-9a-zA-Z_.-]+$/.test(name);
+  return /^[\w.-]+$/.test(name);
 }
 
 export function mapRange(
@@ -904,16 +880,16 @@ export function canQuickRestart(
 }
 
 export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
-  timeouts.forEach((to) => {
+  for (const to of timeouts) {
     if (typeof to === "number") clearTimeout(to);
     else clearTimeout(to);
-  });
+  }
 }
 
 //https://stackoverflow.com/questions/1431094/how-do-i-replace-a-character-at-a-particular-index-in-javascript
 export function setCharAt(str: string, index: number, chr: string): string {
   if (index > str.length - 1) return str;
-  return str.substring(0, index) + chr + str.substring(index + 1);
+  return str.slice(0, Math.max(0, index)) + chr + str.slice(Math.max(0, index + 1));
 }
 
 //https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
@@ -922,7 +898,7 @@ export function regexIndexOf(
   regex: RegExp,
   startpos: number
 ): number {
-  const indexOf = string.substring(startpos || 0).search(regex);
+  const indexOf = string.slice(Math.max(0, startpos || 0)).search(regex);
   return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
 }
 
@@ -952,7 +928,7 @@ interface LastIndex extends String {
   return match ? this.lastIndexOf(match[match.length - 1]) : -1;
 };
 
-export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
+export const trailingComposeChars = /[^`~¨´\u02B0-\u02FF]+$|⎄.*$/;
 
 //https://stackoverflow.com/questions/36532307/rem-px-in-javascript
 export function convertRemToPixels(rem: number): number {
@@ -964,10 +940,10 @@ export async function swapElements(
   el2: JQuery,
   totalDuration: number,
   callback = async function (): Promise<void> {
-    return Promise.resolve();
+    return;
   },
   middleCallback = async function (): Promise<void> {
-    return Promise.resolve();
+    return;
   }
 ): Promise<boolean | undefined> {
   if (
@@ -1116,7 +1092,7 @@ export async function downloadResultsCSV(
   const link = document.createElement("a");
   link.setAttribute("href", href);
   link.setAttribute("download", "results.csv");
-  document.body.appendChild(link); // Required for FF
+  document.body.append(link); // Required for FF
 
   link.click();
   link.remove();
@@ -1205,13 +1181,13 @@ export async function getDiscordAvatarUrl(
     }
 
     return avatarUrl;
-  } catch (error) {}
+  } catch {}
 
   return null;
 }
 
 export function getLevel(xp: number): number {
-  return (1 / 98) * (-151 + Math.sqrt(392 * xp + 22801)) + 1;
+  return (1 / 98) * (-151 + Math.sqrt(392 * xp + 22_801)) + 1;
 }
 
 export function getXpForLevel(level: number): number {
@@ -1245,9 +1221,9 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 export function isPasswordStrong(password: string): boolean {
-  const hasCapital = !!password.match(/[A-Z]/);
-  const hasNumber = !!password.match(/[\d]/);
-  const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+  const hasCapital = !!/[A-Z]/.test(password);
+  const hasNumber = !!/\d/.test(password);
+  const hasSpecial = !!/[!"#$%&'()*+,./:;<=>?@[\\\]^_{|}\-]/.test(password);
   const isLong = password.length >= 8;
   return hasCapital && hasNumber && hasSpecial && isLong;
 }

@@ -31,9 +31,9 @@ function hide(): void {
         UpdateConfig.apply(
           JSON.parse($("#settingsImportWrapper input").val() as string)
         );
-      } catch (e) {
+      } catch (error) {
         Notifications.add(
-          "An error occured while importing settings: " + e,
+          "An error occured while importing settings: " + error,
           -1
         );
       }

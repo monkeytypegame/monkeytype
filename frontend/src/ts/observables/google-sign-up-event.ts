@@ -15,12 +15,12 @@ export function dispatch(
   signedInUser: UserCredential,
   isNewUser: boolean
 ): void {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn(signedInUser, isNewUser);
-    } catch (e) {
+    } catch (error) {
       console.error("Google Sign Up event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }

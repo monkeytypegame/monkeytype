@@ -409,7 +409,7 @@ export async function fillSettingsPage(): Promise<void> {
   // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
   const languageGroups = await Misc.getLanguageGroups();
-  languageGroups.forEach((group) => {
+  for (const group of languageGroups) {
     let langComboBox = `<optgroup label="${group.name}">`;
     group.languages.forEach((language: string) => {
       langComboBox += `<option value="${language}">
@@ -418,7 +418,7 @@ export async function fillSettingsPage(): Promise<void> {
     });
     langComboBox += `</optgroup>`;
     languageEl.append(langComboBox);
-  });
+  }
   languageEl.select2({
     width: "100%",
   });
@@ -427,7 +427,7 @@ export async function fillSettingsPage(): Promise<void> {
   layoutEl.append(`<option value='default'>off</option>`);
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
+  for (const layout of Object.keys(await Misc.getLayoutsList())) {
     if (layout.toString() !== "korean") {
       layoutEl.append(
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
@@ -438,7 +438,7 @@ export async function fillSettingsPage(): Promise<void> {
         `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
       );
     }
-  });
+  }
   layoutEl.select2({
     width: "100%",
   });
@@ -477,7 +477,7 @@ export async function fillSettingsPage(): Promise<void> {
   const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
   Misc.getFunboxList().then((funboxModes) => {
-    funboxModes.forEach((funbox) => {
+    for (const funbox of funboxModes) {
       if (funbox.name === "mirror") {
         funboxEl.append(
           `<div class="funbox button" funbox='${funbox.name}' aria-label="${
@@ -498,13 +498,13 @@ export async function fillSettingsPage(): Promise<void> {
           }">${funbox.name.replace(/_/g, " ")}</div>`
         );
       }
-    });
+    }
   });
 
   let isCustomFont = true;
   const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
   Misc.getFontsList().then((fonts) => {
-    fonts.forEach((font) => {
+    for (const font of fonts) {
       if (Config.fontFamily === font.name) isCustomFont = false;
       fontsEl.append(
         `<div class="button${
@@ -516,7 +516,7 @@ export async function fillSettingsPage(): Promise<void> {
           font.display !== undefined ? font.display : font.name
         }</div>`
       );
-    });
+    }
 
     fontsEl.append(
       isCustomFont
@@ -543,9 +543,9 @@ export async function fillSettingsPage(): Promise<void> {
     await initGroups();
     groupsInitialized = true;
   } else {
-    Object.keys(groups).forEach((groupKey) => {
+    for (const groupKey of Object.keys(groups)) {
       groups[groupKey].updateInput();
-    });
+    }
   }
   setEventDisabled(false);
   await ThemePicker.refreshButtons();
@@ -709,9 +709,9 @@ export function showAccountSection(): void {
 }
 
 export function update(): void {
-  Object.keys(groups).forEach((group) => {
+  for (const group of Object.keys(groups)) {
     groups[group].updateInput();
-  });
+  }
 
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();

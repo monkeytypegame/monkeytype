@@ -11,7 +11,7 @@ export function saveActiveToLocalStorage(): void {
       }
     });
     window.localStorage.setItem("activeTags", JSON.stringify(tags));
-  } catch (e) {}
+  } catch {}
 }
 
 export function clear(nosave = false): void {
@@ -49,11 +49,7 @@ export function set(tagid: string, state: boolean, nosave = false): void {
 export function toggle(tagid: string, nosave = false): void {
   DB.getSnapshot()?.tags?.forEach((tag) => {
     if (tag._id === tagid) {
-      if (tag.active === undefined) {
-        tag.active = true;
-      } else {
-        tag.active = !tag.active;
-      }
+      tag.active = tag.active === undefined ? true : !tag.active;
     }
   });
   ModesNotice.update();
@@ -67,12 +63,12 @@ export function loadActiveFromLocalStorage(): void {
   if (newTags != undefined && newTags !== "") {
     try {
       newTags = JSON.parse(newTags) ?? [];
-    } catch (e) {
+    } catch {
       newTags = [];
     }
-    (newTags as string[]).forEach((ntag) => {
+    for (const ntag of (newTags as string[])) {
       toggle(ntag, true);
-    });
+    }
     saveActiveToLocalStorage();
   }
 }

@@ -43,7 +43,7 @@ function updateStatsAndHistogram(): void {
   );
 
   $(".pageAbout #totalStartedTestsStat .val").text(
-    Math.round(typingStatsResponseData.testsStarted / 1000000)
+    Math.round(typingStatsResponseData.testsStarted / 1_000_000)
   );
   $(".pageAbout #totalStartedTestsStat .valSmall").text("million");
   $(".pageAbout #totalStartedTestsStat").attr(
@@ -52,7 +52,7 @@ function updateStatsAndHistogram(): void {
   );
 
   $(".pageAbout #totalCompletedTestsStat .val").text(
-    Math.round(typingStatsResponseData.testsCompleted / 1000000)
+    Math.round(typingStatsResponseData.testsCompleted / 1_000_000)
   );
   $(".pageAbout #totalCompletedTestsStat .valSmall").text("million");
   $(".pageAbout #totalCompletedTestsStat").attr(
@@ -102,16 +102,16 @@ async function fill(): Promise<void> {
   await getStatsAndHistogramData();
   updateStatsAndHistogram();
 
-  supporters.forEach((supporter) => {
+  for (const supporter of supporters) {
     $(".pageAbout .supporters").append(`
       <div>${supporter}</div>
     `);
-  });
-  contributors.forEach((contributor) => {
+  }
+  for (const contributor of contributors) {
     $(".pageAbout .contributors").append(`
       <div>${contributor}</div>
     `);
-  });
+  }
 }
 
 export const page = new Page(

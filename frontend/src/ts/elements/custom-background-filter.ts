@@ -23,14 +23,14 @@ const filters = {
 
 export function getCSS(): string {
   let ret = "";
-  Object.keys(filters).forEach((filterKey) => {
+  for (const filterKey of Object.keys(filters)) {
     const key = filterKey as keyof typeof filters;
     if (filters[key].value != filters[key].default) {
       ret += `${filterKey}(${filters[key].value}${
         filterKey == "blur" ? "rem" : ""
       }) `;
     }
-  });
+  }
   return ret;
 }
 

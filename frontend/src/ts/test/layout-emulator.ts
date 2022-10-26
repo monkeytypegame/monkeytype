@@ -182,24 +182,16 @@ export async function getCharFromEvent(
     .concat(layoutKeys["row5"]);
 
   let mapIndex = null;
-  for (let i = 0; i < keyEventCodes.length; i++) {
-    if (event.code == keyEventCodes[i]) {
+  for (const [i, keyEventCode] of keyEventCodes.entries()) {
+    if (event.code == keyEventCode) {
       mapIndex = i;
     }
   }
   if (!mapIndex) {
-    if (event.code.includes("Numpad")) {
-      return event.key;
-    } else {
-      return null;
-    }
+    return event.code.includes("Numpad") ? event.key : null;
   }
   const newKeyPreview = layoutMap[mapIndex][0];
   const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
   const char = layoutMap[mapIndex][shift];
-  if (char) {
-    return char;
-  } else {
-    return event.key;
-  }
+  return char ? char : event.key;
 }

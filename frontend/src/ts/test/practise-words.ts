@@ -31,16 +31,16 @@ export function init(missed: boolean, slow: boolean): void {
 
   let sortableMissedWords: [string, number][] = [];
   if (missed) {
-    Object.keys(TestInput.missedWords).forEach((missedWord) => {
+    for (const missedWord of Object.keys(TestInput.missedWords)) {
       sortableMissedWords.push([missedWord, TestInput.missedWords[missedWord]]);
-    });
+    }
     sortableMissedWords.sort((a, b) => {
       return b[1] - a[1];
     });
     sortableMissedWords = sortableMissedWords.slice(0, limit);
   }
 
-  if (missed && !slow && sortableMissedWords.length == 0) {
+  if (missed && !slow && sortableMissedWords.length === 0) {
     Notifications.add("You haven't missed any words", 0);
     return;
   }
@@ -63,23 +63,23 @@ export function init(missed: boolean, slow: boolean): void {
   // console.log(sortableMissedWords);
   // console.log(sortableSlowWords);
 
-  if (sortableMissedWords.length == 0 && sortableSlowWords.length == 0) {
+  if (sortableMissedWords.length === 0 && sortableSlowWords.length === 0) {
     Notifications.add("Could not start a new custom test", 0);
     return;
   }
 
   const newCustomText: string[] = [];
-  sortableMissedWords.forEach((missed) => {
+  for (const missed of sortableMissedWords) {
     for (let i = 0; i < missed[1]; i++) {
       newCustomText.push(missed[0]);
     }
-  });
+  }
 
-  sortableSlowWords.forEach((slow, index) => {
+  for (const [index, slow] of sortableSlowWords.entries()) {
     for (let i = 0; i < sortableSlowWords.length - index; i++) {
       newCustomText.push(slow[0]);
     }
-  });
+  }
 
   // console.log(newCustomText);
 
@@ -97,7 +97,7 @@ export function init(missed: boolean, slow: boolean): void {
   );
   CustomText.setTime(-1);
 
-  setCustomTextName("practise", undefined);
+  setCustomTextName("practise");
 
   before.mode = mode;
   before.punctuation = punctuation;

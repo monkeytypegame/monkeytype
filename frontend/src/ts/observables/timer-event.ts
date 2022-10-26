@@ -7,12 +7,12 @@ export function subscribe(fn: SubscribeFunction): void {
 }
 
 export function dispatch(key: string, value?: string, value2?: string): void {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn(key, value, value2);
-    } catch (e) {
+    } catch (error) {
       console.error("Timer event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }

@@ -25,7 +25,7 @@ let targetWordPos = 0;
 let targetCurPos = 0;
 let timeoutList: NodeJS.Timeout[] = [];
 let stopwatchList: NodeJS.Timeout[] = [];
-const toggleButton = document.getElementById("playpauseReplayButton")
+const toggleButton = document.querySelector("#playpauseReplayButton")
   ?.children[0];
 
 function replayGetWordsList(wordsListFromScript: string[]): void {
@@ -33,13 +33,13 @@ function replayGetWordsList(wordsListFromScript: string[]): void {
 }
 
 function initializeReplayPrompt(): void {
-  const replayWordsElement = document.getElementById("replayWords");
+  const replayWordsElement = document.querySelector("#replayWords");
 
   if (replayWordsElement === null) return;
 
   replayWordsElement.innerHTML = "";
   let wordCount = 0;
-  replayData.forEach((item) => {
+  for (const item of replayData) {
     //trim wordsList for timed tests
     if (item.action === "backWord") {
       wordCount--;
@@ -49,28 +49,28 @@ function initializeReplayPrompt(): void {
     ) {
       wordCount++;
     }
-  });
-  wordsList.forEach((item, i) => {
-    if (i > wordCount) return;
+  }
+  for (let [i, item] of wordsList.entries()) {
+    if (i > wordCount) continue;
     const x = document.createElement("div");
     x.className = "word";
     for (i = 0; i < item.length; i++) {
       const letter = document.createElement("letter");
       letter.innerHTML = item[i];
-      x.appendChild(letter);
+      x.append(letter);
     }
-    replayWordsElement.appendChild(x);
-  });
+    replayWordsElement.append(x);
+  }
 }
 
 export function pauseReplay(): void {
-  timeoutList.forEach((item) => {
+  for (const item of timeoutList) {
     clearTimeout(item);
-  });
+  }
   timeoutList = [];
-  stopwatchList.forEach((item) => {
+  for (const item of stopwatchList) {
     clearTimeout(item);
-  });
+  }
   stopwatchList = [];
   targetCurPos = curPos;
   targetWordPos = wordPos;
@@ -97,7 +97,7 @@ function playSound(error = false): void {
 }
 
 function handleDisplayLogic(item: Replay, nosound = false): void {
-  let activeWord = document.getElementById("replayWords")?.children[wordPos];
+  let activeWord = document.querySelector("#replayWords")?.children[wordPos];
 
   if (activeWord === undefined) return;
 
@@ -113,7 +113,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
       myElement = document.createElement("letter");
       myElement.classList.add("extra");
       myElement.innerHTML = item.value?.toString() ?? "";
-      activeWord.appendChild(myElement);
+      activeWord.append(myElement);
     }
     myElement = activeWord.children[curPos];
     myElement.classList.add("incorrect");
@@ -145,7 +145,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     if (!nosound) playSound();
     wordPos--;
 
-    const replayWords = document.getElementById("replayWords");
+    const replayWords = document.querySelector("#replayWords");
 
     if (replayWords !== null) activeWord = replayWords.children[wordPos];
 
@@ -159,7 +159,7 @@ function loadOldReplay(): number {
   let startingIndex = 0;
   curPos = 0;
   wordPos = 0;
-  replayData.forEach((item, i) => {
+  for (const [i, item] of replayData.entries()) {
     if (
       wordPos < targetWordPos ||
       (wordPos === targetWordPos && curPos < targetCurPos)
@@ -168,7 +168,7 @@ function loadOldReplay(): number {
       handleDisplayLogic(item, true);
       startingIndex = i + 1;
     }
-  });
+  }
   const time = Math.floor(replayData[startingIndex].time / 1000);
   $("#replayStopwatch").text(time + "s");
   return startingIndex;
@@ -258,14 +258,14 @@ function playReplay(): void {
     );
     swTime++;
   }
-  replayData.forEach((item, i) => {
-    if (i < startingIndex) return;
+  for (const [i, item] of replayData.entries()) {
+    if (i < startingIndex) continue;
     timeoutList.push(
       setTimeout(() => {
         handleDisplayLogic(item);
       }, item.time - lastTime)
     );
-  });
+  }
   timeoutList.push(
     setTimeout(() => {
       //after the replay has finished, this will run

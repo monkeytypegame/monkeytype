@@ -83,10 +83,10 @@ async function updateGraph(): Promise<void> {
     ? "cpm"
     : "wpm";
 
-  maxChartVal = Math.max(...[Math.max(...chartData2), Math.max(...chartData1)]);
+  maxChartVal = Math.max(Math.max(...chartData2), Math.max(...chartData1));
   if (!Config.startGraphsAtZero) {
     const minChartVal = Math.min(
-      ...[Math.min(...chartData2), Math.min(...chartData1)]
+      Math.min(...chartData2), Math.min(...chartData1)
     );
     resultScaleOptions["wpm"].min = minChartVal;
     resultScaleOptions["raw"].min = minChartVal;
@@ -409,7 +409,7 @@ function updateTags(dontSave: boolean): void {
         activeTags.push(tag);
       }
     });
-  } catch (e) {}
+  } catch {}
 
   if (userTagsCount === 0) {
     $("#result .stats .tags").addClass("hidden");
@@ -519,11 +519,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     testType += " " + Config.time;
   } else if (Config.mode === "words") {
     testType += " " + Config.words;
-  } else if (Config.mode === "quote") {
-    if (randomQuote.group !== undefined) {
+  } else if (Config.mode === "quote" && randomQuote.group !== undefined) {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
-  }
   if (
     Config.mode != "custom" &&
     Config.funbox !== "gibberish" &&
@@ -600,7 +598,7 @@ function updateOther(
     $("#result .stats .info").addClass("hidden");
   } else {
     $("#result .stats .info").removeClass("hidden");
-    otherText = otherText.substring(4);
+    otherText = otherText.slice(4);
     $("#result .stats .info .bottom").html(otherText);
   }
 }

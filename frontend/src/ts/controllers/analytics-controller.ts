@@ -15,7 +15,7 @@ export async function log(
 ): Promise<void> {
   try {
     logEvent(Analytics, eventName, params);
-  } catch (e) {
+  } catch {
     console.log("Analytics unavailable");
   }
 }
@@ -25,17 +25,11 @@ let acceptedCookies: {
   security: boolean;
   analytics: boolean;
 } | null;
-if (lsString) {
-  acceptedCookies = JSON.parse(lsString);
-} else {
-  acceptedCookies = null;
-}
+acceptedCookies = lsString ? JSON.parse(lsString) : null;
 
-if (acceptedCookies !== null) {
-  if (acceptedCookies["analytics"] === true) {
+if (acceptedCookies !== null && acceptedCookies["analytics"] === true) {
     activateAnalytics();
   }
-}
 
 export function activateAnalytics(): void {
   try {
@@ -55,7 +49,7 @@ export function activateAnalytics(): void {
 
     gtag("config", "UA-165993088-1");
   </script>`);
-  } catch (e) {
-    console.error(createErrorMessage(e, "Failed to activate analytics"));
+  } catch (error) {
+    console.error(createErrorMessage(error, "Failed to activate analytics"));
   }
 }

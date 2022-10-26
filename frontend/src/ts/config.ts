@@ -137,11 +137,9 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
   } else if (config.mode == "quote") {
     setPunctuation(false, true);
     setNumbers(false, true);
-  } else if (config.mode == "zen") {
-    if (config.paceCaret != "off") {
+  } else if (config.mode == "zen" && config.paceCaret != "off") {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
     }
-  }
   saveToLocalStorage("mode", nosave);
   ConfigEvent.dispatch("mode", config.mode, nosave, previous);
 
@@ -352,12 +350,10 @@ export function setPaceCaret(
     return false;
   }
 
-  if (document.readyState === "complete") {
-    if (val == "pb" && !Auth?.currentUser) {
+  if (document.readyState === "complete" && val == "pb" && !Auth?.currentUser) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
-  }
   // if (config.mode === "zen" && val != "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
@@ -1031,7 +1027,7 @@ export function setWordCount(
   if (!isConfigValueValid("words", wordCount, ["number"])) return false;
 
   const newWordCount =
-    wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
+    wordCount < 0 || wordCount > 100_000 ? DefaultConfig.words : wordCount;
 
   config.words = newWordCount;
 
@@ -1435,9 +1431,9 @@ export function setKeymapLegendStyle(
 
   // Remove existing styles
   const keymapLegendStyles = ["lowercase", "uppercase", "blank", "dynamic"];
-  keymapLegendStyles.forEach((name) => {
+  for (const name of keymapLegendStyles) {
     $(".keymapLegendStyle").removeClass(name);
-  });
+  }
 
   style = style || "lowercase";
 
@@ -1584,7 +1580,7 @@ export function setCustomBackground(value: string, nosave?: boolean): boolean {
     (/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
       value
     ) &&
-      !/[<> "]/.test(value)) ||
+      !/[ "<>]/.test(value)) ||
     value == ""
   ) {
     config.customBackground = value;
@@ -1699,14 +1695,13 @@ export function apply(
 ): void {
   if (!configToApply) return;
   const configObj = configToApply as MonkeyTypes.Config;
-  (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
-    (configKey) => {
+  for (const configKey of (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[])) {
       if (configObj[configKey] === undefined) {
         const newValue = DefaultConfig[configKey];
         (configObj[configKey] as typeof newValue) = newValue;
       }
     }
-  );
+  
   if (configObj !== undefined && configObj !== null) {
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
@@ -1825,7 +1820,7 @@ export function loadFromLocalStorage(): void {
   ) {
     try {
       newConfig = JSON.parse(newConfigString);
-    } catch (e) {
+    } catch {
       newConfig = {} as MonkeyTypes.Config;
     }
     apply(newConfig);
@@ -1842,13 +1837,12 @@ export function loadFromLocalStorage(): void {
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
-  (Object.keys(config) as (keyof MonkeyTypes.Config)[])
+  for (const key of (Object.keys(config) as (keyof MonkeyTypes.Config)[])
     .filter((key) => {
       return config[key] != DefaultConfig[key];
-    })
-    .forEach((key) => {
+    })) {
       (configChanges[key] as typeof config[typeof key]) = config[key];
-    });
+    }
   return configChanges;
 }
 

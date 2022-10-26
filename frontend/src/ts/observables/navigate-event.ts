@@ -12,12 +12,12 @@ interface NavigateOptions {
 }
 
 export function navigate(url?: string, options?: NavigateOptions): void {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn(url, options);
-    } catch (e) {
+    } catch (error) {
       console.error("Navigate event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }

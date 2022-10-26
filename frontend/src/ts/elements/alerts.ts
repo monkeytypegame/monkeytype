@@ -32,8 +32,8 @@ export function hide(): void {
           mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
         })
         .then(async (updateResponse) => {
-          const status = (await updateResponse).status;
-          const message = (await updateResponse).message;
+          const {status} = await updateResponse;
+          const {message} = await updateResponse;
           if (status !== 200) {
             Notifications.add(`Failed to update inbox: ${message}`, -1);
             return;
@@ -195,7 +195,7 @@ async function getAccountAlerts(): Promise<void> {
   updateInboxSize();
 
   for (const ie of accountAlerts) {
-    if (!ie.read && ie.rewards.length == 0) {
+    if (!ie.read && ie.rewards.length === 0) {
       mailToMarkRead.push(ie.id);
     }
 
@@ -227,7 +227,7 @@ async function getAccountAlerts(): Promise<void> {
           }
           ${
             (ie.rewards.length > 0 && ie.read === true) ||
-            ie.rewards.length == 0
+            ie.rewards.length === 0
               ? `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
               : ``
           }
@@ -316,7 +316,7 @@ function updateInboxSize(): void {
 function deleteAlert(id: string): void {
   mailToDelete.push(id);
   $(`#alertsPopup .accountAlerts .list .item[data-id="${id}"]`).remove();
-  if ($("#alertsPopup .accountAlerts .list .item").length == 0) {
+  if ($("#alertsPopup .accountAlerts .list .item").length === 0) {
     $("#alertsPopup .accountAlerts .list").html(`
     <div class="nothing">
     Nothing to show

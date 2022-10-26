@@ -76,7 +76,7 @@ class QuotesController {
           this.quoteCollection.quotes.push(monkeyTypeQuote);
         });
 
-        data.groups.forEach((quoteGroup, groupIndex) => {
+        for (const [groupIndex, quoteGroup] of data.groups.entries()) {
           const lower = quoteGroup[0];
           const upper = quoteGroup[1];
 
@@ -88,7 +88,7 @@ class QuotesController {
               }
               return false;
             });
-        });
+        }
 
         if (quoteLengths !== undefined) {
           this.updateQuoteQueue(quoteLengths);
@@ -114,14 +114,14 @@ class QuotesController {
   updateQuoteQueue(quoteGroups: number[]): void {
     this.quoteQueue = [];
 
-    quoteGroups.forEach((group) => {
+    for (const group of quoteGroups) {
       if (group < 0) {
-        return;
+        continue;
       }
-      this.quoteCollection.groups[group]?.forEach((quote) => {
+      if (this.quoteCollection.groups[group]) {for (const quote of this.quoteCollection.groups[group]) {
         this.quoteQueue.push(quote);
-      });
-    });
+      }}
+    }
 
     shuffle(this.quoteQueue);
     this.queueIndex = 0;
@@ -162,13 +162,13 @@ class QuotesController {
     const quoteIds: string[] = [];
     const { favoriteQuotes } = snapshot;
 
-    Object.keys(favoriteQuotes).forEach((language) => {
+    for (const language of Object.keys(favoriteQuotes)) {
       if (normalizeLanguage(language) !== normalizedLanguage) {
-        return;
+        continue;
       }
 
       quoteIds.push(...favoriteQuotes[language]);
-    });
+    }
 
     if (quoteIds.length === 0) {
       return null;

@@ -43,11 +43,7 @@ class Notification {
       this.duration = duration as number;
     } else {
       if (duration == undefined) {
-        if (level === -1) {
-          this.duration = 0;
-        } else {
-          this.duration = 3000;
-        }
+        this.duration = level === -1 ? 0 : 3000;
       } else {
         this.duration = duration * 1000;
       }

@@ -49,17 +49,17 @@ function updateColors(
   }
   const colorREGEX = [
     {
-      rule: /\b[0-9]{1,3},\s?[0-9]{1,3},\s?[0-9]{1,3}\s*\b/,
+      rule: /\b(?:\d{1,3},\s?){2}\d{1,3}\s*\b/,
       start: "rgb(",
       end: ")",
     },
     {
-      rule: /\b[A-Z, a-z, 0-9]{6}\b/,
+      rule: /\b[\d ,A-Za-z]{6}\b/,
       start: "#",
       end: "",
     },
     {
-      rule: /\b[0-9]{1,3},\s?[0-9]{1,3}%,\s?[0-9]{1,3}%?\s*\b/,
+      rule: /\b\d{1,3},\s?\d{1,3}%,\s?\d{1,3}%?\s*\b/,
       start: "hsl(",
       end: ")",
     },
@@ -68,7 +68,7 @@ function updateColors(
   color = color.replace("°", "");
 
   for (const regex of colorREGEX) {
-    if (color.match(regex.rule)) {
+    if (regex.rule.test(color)) {
       color = regex.start + color + regex.end;
       break;
     }
@@ -125,7 +125,7 @@ export async function refreshButtons(): Promise<void> {
 
     const customThemes = DB.getSnapshot()?.customThemes ?? [];
 
-    customThemes.forEach((customTheme) => {
+    for (const customTheme of customThemes) {
       // const activeTheme =
       //   Config.customThemeId === customTheme._id ? "active" : "";
       const bgColor = customTheme.colors[0];
@@ -139,7 +139,7 @@ export async function refreshButtons(): Promise<void> {
         <div class="delButton"><i class="fas fa-trash fa-fw"></i></div>
         </div>`
       );
-    });
+    }
   } else {
     // Update theme buttons
     const favThemesEl = $(
@@ -162,7 +162,7 @@ export async function refreshButtons(): Promise<void> {
     //first show favourites
     if (Config.favThemes.length > 0) {
       favThemesEl.css({ paddingBottom: "1rem" });
-      themes.forEach((theme) => {
+      for (const theme of themes) {
         if (Config.favThemes.includes(theme.name)) {
           const activeTheme = activeThemeName === theme.name ? "active" : "";
           favThemesEl.append(
@@ -173,14 +173,14 @@ export async function refreshButtons(): Promise<void> {
             <div class="favButton active"><i class="fas fa-star"></i></div></div>`
           );
         }
-      });
+      }
     } else {
       favThemesEl.css({ paddingBottom: "0" });
     }
     //then the rest
-    themes.forEach((theme) => {
+    for (const theme of themes) {
       if (Config.favThemes.includes(theme.name)) {
-        return;
+        continue;
       }
 
       const activeTheme = activeThemeName === theme.name ? "active" : "";
@@ -192,7 +192,7 @@ export async function refreshButtons(): Promise<void> {
         <div class="text">${theme.name.replace(/_/g, " ")}</div>
         <div class="favButton"><i class="far fa-star"></i></div></div>`
       );
-    });
+    }
   }
   updateActiveButton();
 }
@@ -359,16 +359,16 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
   // $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
   await ThemeController.loadStyle(Config.theme);
 
-  ThemeController.colorVars.forEach((e) => {
+  for (const e of ThemeController.colorVars) {
     document.documentElement.style.setProperty(e, "");
-  });
+  }
 
   // setTimeout(async () => {
   ChartController.updateAllChartColors();
 
   const themeColors = await ThemeColors.getAll();
 
-  ThemeController.colorVars.forEach((colorName) => {
+  for (const colorName of ThemeController.colorVars) {
     let color;
     if (colorName === "--bg-color") {
       color = themeColors.bg;
@@ -393,7 +393,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
     }
 
     updateColors($(".colorPicker #" + colorName).parent(), color as string);
-  });
+  }
   // }, 250);
 });
 

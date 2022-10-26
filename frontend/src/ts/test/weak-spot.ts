@@ -18,7 +18,7 @@ class Score {
   public average: number;
   public count: number;
   constructor() {
-    this.average = 0.0;
+    this.average = 0;
     this.count = 0;
   }
 
@@ -26,7 +26,7 @@ class Score {
     if (this.count < perCharCount) {
       this.count++;
     }
-    const adjustRate = 1.0 / this.count;
+    const adjustRate = 1 / this.count;
     // Keep an exponential moving average of the score over time.
     this.average = score * adjustRate + this.average * (1 - adjustRate);
   }
@@ -48,7 +48,7 @@ export function updateScore(char: string, isCorrect: boolean): void {
 }
 
 function score(word: string): number {
-  let total = 0.0;
+  let total = 0;
   let numChars = 0;
   for (const c of word) {
     if (c in scores) {
@@ -56,7 +56,7 @@ function score(word: string): number {
       numChars++;
     }
   }
-  return numChars == 0 ? 0.0 : total / numChars;
+  return numChars == 0 ? 0 : total / numChars;
 }
 
 export function getWord(wordset: Wordset): string {

@@ -36,8 +36,8 @@ let correctShiftUsed = true;
 let isKoCompiling = false;
 let isBackspace: boolean;
 
-const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
-const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
+const wordsInput = document.querySelector("#wordsInput") as HTMLInputElement;
+const koInputVisual = document.querySelector("#koInputVisual") as HTMLElement;
 
 function setWordsInput(value: string): void {
   // Only change #wordsInput if it's not already the wanted value
@@ -86,7 +86,7 @@ function updateUI(): void {
             ];
 
           Keymap.highlightKey(koChar);
-        } catch (e) {
+        } catch {
           Keymap.highlightKey("");
         }
       } else {
@@ -212,9 +212,9 @@ function handleSpace(): void {
         TestInput.corrected.current += "_";
       } else {
         TestInput.corrected.current =
-          TestInput.corrected.current.substring(0, cil) +
+          TestInput.corrected.current.slice(0, Math.max(0, cil)) +
           "_" +
-          TestInput.corrected.current.substring(cil + 1);
+          TestInput.corrected.current.slice(Math.max(0, cil + 1));
       }
     }
     if (Config.stopOnError != "off") {
@@ -257,11 +257,7 @@ function handleSpace(): void {
   }
 
   let wordLength: number;
-  if (Config.mode === "zen") {
-    wordLength = TestInput.input.current.length;
-  } else {
-    wordLength = TestWords.words.getCurrent().length;
-  }
+  wordLength = Config.mode === "zen" ? TestInput.input.current.length : TestWords.words.getCurrent().length;
 
   const flex: number = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
   if (
@@ -292,7 +288,7 @@ function handleSpace(): void {
           TestUI.currentWordElementIndex
         ].offsetTop
       );
-    } catch (e) {
+    } catch {
       nextTop = 0;
     }
 
@@ -475,9 +471,9 @@ function handleChar(
 
   if (!isCharKorean && !Config.language.startsWith("korean")) {
     resultingWord =
-      TestInput.input.current.substring(0, charIndex) +
+      TestInput.input.current.slice(0, Math.max(0, charIndex)) +
       char +
-      TestInput.input.current.substring(charIndex + 1);
+      TestInput.input.current.slice(Math.max(0, charIndex + 1));
   } else {
     // Get real input from #WordsInput char call.
     // This is because the chars can't be confirmed correctly.
@@ -545,12 +541,12 @@ function handleChar(
     if (charIndex >= currCorrectedTestInputLength) {
       TestInput.corrected.current += !isCharKorean
         ? char
-        : Hangul.disassemble(char).concat();
+        : [...Hangul.disassemble(char)];
     } else if (!thisCharCorrect) {
       TestInput.corrected.current =
-        TestInput.corrected.current.substring(0, charIndex) +
+        TestInput.corrected.current.slice(0, Math.max(0, charIndex)) +
         char +
-        TestInput.corrected.current.substring(charIndex + 1);
+        TestInput.corrected.current.slice(Math.max(0, charIndex + 1));
     }
   }
 
@@ -677,7 +673,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     // set textarea value to: text before caret + tab + text after caret
     area.value =
-      area.value.substring(0, start) + "\t" + area.value.substring(end);
+      area.value.slice(0, Math.max(0, start)) + "\t" + area.value.slice(Math.max(0, end));
 
     // put caret at right position again
     area.selectionStart = area.selectionEnd = start + 1;
@@ -842,7 +838,7 @@ $(document).keydown(async (event) => {
   //blocking firefox from going back in history with backspace
   if (event.key === "Backspace") {
     Sound.playClick();
-    const t = /INPUT|SELECT|TEXTAREA/i;
+    const t = /input|select|textarea/i;
     if (
       !t.test((event.target as unknown as Element).tagName)
       // if this breaks in the future, call mio and tell him to stop being lazy
@@ -858,7 +854,7 @@ $(document).keydown(async (event) => {
     }
   }
 
-  if (Config.funbox !== "arrows" && /Arrow/i.test(event.key)) {
+  if (Config.funbox !== "arrows" && /arrow/i.test(event.key)) {
     event.preventDefault();
     return;
   }
@@ -991,10 +987,10 @@ $("#wordsInput").on("input", (event) => {
 
   if (
     (Config.layout == "default" || Config.layout == "korean") &&
-    (event.target as HTMLInputElement).value
+    /[\uAC00-\uD7AF]|[\u1100-\u11FF]|[\u3130-\u318F]|[\uA960-\uA97F]|[\uD7B0-\uD7FF]/g
+      .test(
+        (event.target as HTMLInputElement).value
       .normalize()
-      .match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
       )
   ) {
     TestInput.input.setKoreanStatus(true);
@@ -1019,16 +1015,14 @@ $("#wordsInput").on("input", (event) => {
   //inputs: ㄱ, 가, 갇, 가다
   //what it actually reads: ㄱ, 가, 갇, , 가, 가다
   //this skips this part (, , 가,)
-  if (containsKorean && !isBackspace) {
-    if (
+  if (containsKorean && !isBackspace && (
       isKoCompiling ||
       (realInputValue.slice(1).length < TestInput.input.current.length &&
         Hangul.disassemble(TestInput.input.current.slice(-1)).length > 1)
-    ) {
+    )) {
       isKoCompiling = !isKoCompiling;
       return;
     }
-  }
 
   // input will be modified even with the preventDefault() in
   // beforeinput/keydown if it's part of a compose sequence. this undoes

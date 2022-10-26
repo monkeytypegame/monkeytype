@@ -77,9 +77,9 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
     Notifications.add("Custom theme applied", 1);
 
     if (!Config.customTheme) UpdateConfig.setCustomTheme(true);
-  } catch (e) {
+  } catch (error) {
     Notifications.add("Something went wrong. Reverting to previous state.", 0);
-    console.error(e);
+    console.error(error);
     UpdateConfig.setCustomTheme(oldCustomTheme);
     UpdateConfig.setCustomThemeColors(oldCustomThemeColors);
   }
@@ -166,10 +166,10 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   let appliedString = "";
 
-  Object.keys(applied).forEach((setKey) => {
+  for (const setKey of Object.keys(applied)) {
     const set = applied[setKey];
     appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
-  });
+  }
 
   if (appliedString !== "") {
     Notifications.add(

@@ -11,11 +11,7 @@ interface Accepted {
 
 function getAcceptedObject(): Accepted | null {
   const acceptedCookies = localStorage.getItem("acceptedCookies");
-  if (acceptedCookies) {
-    return JSON.parse(acceptedCookies);
-  } else {
-    return null;
-  }
+  return acceptedCookies ? JSON.parse(acceptedCookies) : null;
 }
 
 function setAcceptedObject(obj: Accepted): void {
@@ -126,7 +122,7 @@ $("#cookiePopup .cookie.ads .text-button").on("click", () => {
     window.__tcfapi("displayConsentUi", 2, function () {
       //
     });
-  } catch (e) {
+  } catch {
     console.error("Failed to open ad consent UI");
     Notifications.add(
       "Failed to open Ad consent popup. Do you have an ad or cookie popup blocker enabled?",

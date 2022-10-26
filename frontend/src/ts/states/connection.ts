@@ -7,7 +7,7 @@ export function get(): boolean {
   return state;
 }
 
-let noInternetBannerId: number | undefined = undefined;
+let noInternetBannerId: number | undefined;
 
 function showBanner(): void {
   if (noInternetBannerId == undefined) {

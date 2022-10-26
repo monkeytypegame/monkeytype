@@ -31,7 +31,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return;
     }
     refreshVisible();
-  }, 60000);
+  }, 60_000);
 
   initialised = true;
 }
@@ -81,11 +81,7 @@ function updateVerticalMargin(): void {
 function updateBreakpoint(noReinstate = false): void {
   const beforeUpdate = widerThanBreakpoint;
 
-  if (window.innerWidth > breakpoint) {
-    widerThanBreakpoint = true;
-  } else {
-    widerThanBreakpoint = false;
-  }
+  widerThanBreakpoint = window.innerWidth > breakpoint ? true : false;
   if (noReinstate) return;
   if (beforeUpdate !== widerThanBreakpoint) {
     reinstate();
@@ -97,16 +93,16 @@ export async function refreshVisible(): Promise<void> {
   const adDivs = Object.keys(window.egAdPack.gptAdSlots);
   const visibleAdDivs = [];
 
-  for (let i = 0; i < adDivs.length; i++) {
+  for (const adDiv of adDivs) {
     const el = document.querySelectorAll(
-      "[data-adunit-name='" + adDivs[i] + "']"
+      "[data-adunit-name='" + adDiv + "']"
     )[0];
     if (!el) continue;
     const elParent = el.parentElement as HTMLElement;
     if (
       window.getComputedStyle(elParent).getPropertyValue("display") != "none"
     ) {
-      visibleAdDivs.push(adDivs[i]);
+      visibleAdDivs.push(adDiv);
     }
   }
   //@ts-ignore
@@ -117,11 +113,7 @@ export async function checkAdblock(): Promise<void> {
   return new Promise((resolve) => {
     if (adBlock === undefined) {
       //@ts-ignore
-      if (window.egAdPack === undefined) {
-        adBlock = true;
-      } else {
-        adBlock = false;
-      }
+      adBlock = window.egAdPack === undefined ? true : false;
     }
     resolve();
   });
@@ -138,11 +130,7 @@ export async function checkCookieblocker(): Promise<void> {
       //@ts-ignore
       window.__tcfapi("getTCData", 2, (tcData, success) => {
         if (success) {
-          if (tcData.eventStatus === "cmpuishown") {
-            cookieBlocker = true;
-          } else {
-            cookieBlocker = false;
-          }
+          cookieBlocker = tcData.eventStatus === "cmpuishown" ? true : false;
         } else {
           cookieBlocker = true;
         }
@@ -168,8 +156,8 @@ export async function reinstate(): Promise<boolean> {
     //@ts-ignore
     window.egAps.reinstate();
     return true;
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     return false;
   }
 }
@@ -296,7 +284,7 @@ $(document).ready(() => {
 });
 
 window.onerror = function (error): void {
-  if (typeof error === "string" && error.substring(0, 6) === "EG APS") {
+  if (typeof error === "string" && error.slice(0, 6) === "EG APS") {
     $("#ad-result-wrapper .iconAndText").addClass("withLeft");
   }
 };

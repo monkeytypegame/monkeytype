@@ -322,9 +322,9 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
           UpdateConfig.saveFullConfigToLocalStorage();
           Settings.update();
           Notifications.add("Done", 1);
-        } catch (e) {
+        } catch (error) {
           Notifications.add(
-            "An error occured while importing settings: " + e,
+            "An error occured while importing settings: " + error,
             -1
           );
         }

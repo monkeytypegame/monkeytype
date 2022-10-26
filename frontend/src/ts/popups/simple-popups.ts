@@ -116,7 +116,7 @@ class SimplePopup {
     const el = this.element;
     if (this.inputs.length > 0) {
       if (this.type === "number") {
-        this.inputs.forEach((input) => {
+        for (const input of this.inputs) {
           el.find(".inputs").append(`
             <input
               type="number"
@@ -128,9 +128,9 @@ class SimplePopup {
               autocomplete="off"
             >
           `);
-        });
+        }
       } else if (this.type === "text") {
-        this.inputs.forEach((input) => {
+        for (const input of this.inputs) {
           if (input.type) {
             if (input.type === "textarea") {
               el.find(".inputs").append(`
@@ -180,7 +180,7 @@ class SimplePopup {
               >
             `);
           }
-        });
+        }
       }
       el.find(".inputs").removeClass("hidden");
     } else {
@@ -319,12 +319,12 @@ list["updateEmail"] = new SimplePopup(
       setTimeout(() => {
         window.location.reload();
       }, 3000);
-    } catch (e) {
-      const typedError = e as FirebaseError;
+    } catch (error) {
+      const typedError = error as FirebaseError;
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
-        Notifications.add("Something went wrong: " + e, -1);
+        Notifications.add("Something went wrong: " + error, -1);
       }
     }
   },
@@ -380,12 +380,12 @@ list["removeGoogleAuth"] = new SimplePopup(
       setTimeout(() => {
         window.location.reload();
       }, 3000);
-    } catch (e) {
-      const typedError = e as FirebaseError;
+    } catch (error) {
+      const typedError = error as FirebaseError;
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
-        Notifications.add("Something went wrong: " + e, -1);
+        Notifications.add("Something went wrong: " + error, -1);
       }
     }
   },
@@ -464,12 +464,12 @@ list["updateName"] = new SimplePopup(
           location.reload();
         }, 3000);
       }
-    } catch (e) {
-      const typedError = e as FirebaseError;
+    } catch (error) {
+      const typedError = error as FirebaseError;
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
-        Notifications.add("Something went wrong: " + e, -1);
+        Notifications.add("Something went wrong: " + error, -1);
       }
     }
     Loader.hide();
@@ -546,13 +546,13 @@ list["updatePassword"] = new SimplePopup(
       setTimeout(() => {
         window.location.reload();
       }, 3000);
-    } catch (e) {
-      const typedError = e as FirebaseError;
+    } catch (error) {
+      const typedError = error as FirebaseError;
       Loader.hide();
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
-        Notifications.add("Something went wrong: " + e, -1);
+        Notifications.add("Something went wrong: " + error, -1);
       }
     }
   },
@@ -677,13 +677,13 @@ list["deleteAccount"] = new SimplePopup(
       setTimeout(() => {
         location.reload();
       }, 3000);
-    } catch (e) {
-      const typedError = e as FirebaseError;
+    } catch (error) {
+      const typedError = error as FirebaseError;
       Loader.hide();
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
-        Notifications.add("Something went wrong: " + e, -1);
+        Notifications.add("Something went wrong: " + error, -1);
       }
     }
   },
@@ -744,13 +744,13 @@ list["resetAccount"] = new SimplePopup(
       setTimeout(() => {
         location.reload();
       }, 3000);
-    } catch (e) {
-      const typedError = e as FirebaseError;
+    } catch (error) {
+      const typedError = error as FirebaseError;
       Loader.hide();
       if (typedError.code === "auth/wrong-password") {
         Notifications.add("Incorrect password", -1);
       } else {
-        Notifications.add("Something went wrong: " + e, -1);
+        Notifications.add("Something went wrong: " + error, -1);
       }
     }
   },
@@ -878,9 +878,9 @@ list["resetPersonalBests"] = new SimplePopup(
         quote: { custom: [] },
         custom: { custom: [] },
       };
-    } catch (e) {
+    } catch (error) {
       Loader.hide();
-      Notifications.add(e as string, -1);
+      Notifications.add(error as string, -1);
     }
   },
   (thisPopup) => {
@@ -1090,7 +1090,7 @@ list["deleteCustomText"] = new SimplePopup(
   (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0]);
     Notifications.add("Custom text deleted", 1);
-    CustomTextState.setCustomTextName("", undefined);
+    CustomTextState.setCustomTextName("");
     SavedTextsPopup.show();
   },
   (_thisPopup) => {
@@ -1111,7 +1111,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0], true);
     Notifications.add("Custom text deleted", 1);
-    CustomTextState.setCustomTextName("", undefined);
+    CustomTextState.setCustomTextName("");
     SavedTextsPopup.show();
   },
   (_thisPopup) => {

@@ -80,9 +80,9 @@ export function updateActiveElement(backspace?: boolean): void {
     active?.remove();
   } else if (active !== null) {
     if (Config.highlightMode == "word") {
-      active.querySelectorAll("letter").forEach((e) => {
+      for (const e of active.querySelectorAll("letter")) {
         e.classList.remove("correct");
-      });
+      }
     }
     active.classList.remove("active");
   }
@@ -94,11 +94,11 @@ export function updateActiveElement(backspace?: boolean): void {
     activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
       .offsetTop;
     if (Config.highlightMode == "word") {
-      activeWord.querySelectorAll("letter").forEach((e) => {
+      for (const e of activeWord.querySelectorAll("letter")) {
         e.classList.add("correct");
-      });
+      }
     }
-  } catch (e) {}
+  } catch {}
 }
 
 function getWordHTML(word: string): string {
@@ -320,7 +320,7 @@ export async function screenshot(): Promise<void> {
       canvas.toBlob((blob) => {
         try {
           if (blob === null) return;
-          if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+          if (navigator.userAgent.toLowerCase().includes("firefox")) {
             open(URL.createObjectURL(blob));
             revertScreenshot();
           } else {
@@ -337,25 +337,25 @@ export async function screenshot(): Promise<void> {
                 Notifications.add("Copied to clipboard", 1, 2);
                 revertScreenshot();
               })
-              .catch((e) => {
+              .catch((error) => {
                 Notifications.add(
-                  Misc.createErrorMessage(e, "Error saving image to clipboard"),
+                  Misc.createErrorMessage(error, "Error saving image to clipboard"),
                   -1
                 );
                 revertScreenshot();
               });
           }
-        } catch (e) {
+        } catch (error) {
           Notifications.add(
-            Misc.createErrorMessage(e, "Error saving image to clipboard"),
+            Misc.createErrorMessage(error, "Error saving image to clipboard"),
             -1
           );
           revertScreenshot();
         }
       });
     });
-  } catch (e) {
-    Notifications.add(Misc.createErrorMessage(e, "Error creating image"), -1);
+  } catch (error) {
+    Notifications.add(Misc.createErrorMessage(error, "Error creating image"), -1);
     revertScreenshot();
   }
   setTimeout(() => {
@@ -425,8 +425,8 @@ export function updateWordElement(showError = !Config.blindMode): void {
       wordHighlightClassString = "correct";
     }
 
-    for (let i = 0; i < input.length; i++) {
-      const charCorrect = currentWord[i] == input[i];
+    for (let [i, letter] of input.entries()) {
+      const charCorrect = currentWord[i] == letter;
 
       let correctClass = "correct";
       if (Config.highlightMode == "off") {
@@ -482,7 +482,6 @@ export function updateWordElement(showError = !Config.blindMode): void {
         }
       } else if (currentLetter === undefined) {
         if (!Config.hideExtraLetters) {
-          let letter = input[i];
           if (letter == " " || letter == "\t" || letter == "\n") {
             letter = "_";
           }
@@ -500,11 +499,11 @@ export function updateWordElement(showError = !Config.blindMode): void {
               : "incorrect"
           } ${tabChar}${nlChar}">` +
           (Config.indicateTypos === "replace"
-            ? input[i] == " "
+            ? (letter == " "
               ? "_"
-              : input[i]
+              : letter)
             : currentLetter) +
-          (Config.indicateTypos === "below" ? `<hint>${input[i]}</hint>` : "") +
+          (Config.indicateTypos === "below" ? `<hint>${letter}</hint>` : "") +
           "</letter>";
       }
     }
@@ -570,15 +569,14 @@ export function scrollTape(): void {
     }
     if (toHide.length > 0) {
       currentWordElementIndex -= toHide.length;
-      toHide.forEach((e) => e.remove());
+      for (const e of toHide) e.remove();
       fullWordsWidth -= widthToHide;
       const currentMargin = parseInt($("#words").css("margin-left"), 10);
       $("#words").css("margin-left", `${currentMargin + widthToHide}px`);
     }
   }
   let currentWordWidth = 0;
-  if (Config.tapeMode === "letter") {
-    if (TestInput.input.current.length > 0) {
+  if (Config.tapeMode === "letter" && TestInput.input.current.length > 0) {
       for (let i = 0; i < TestInput.input.current.length; i++) {
         const words = document.querySelectorAll("#words .word");
         currentWordWidth +=
@@ -587,7 +585,6 @@ export function scrollTape(): void {
           ).outerWidth(true) ?? 0;
       }
     }
-  }
   const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
   if (Config.smoothLineScroll) {
     $("#words")
@@ -685,11 +682,11 @@ export function lineJump(currentTop: number): void {
 
           currentWordElementIndex -= toHide.length;
           lineTransition = false;
-          toHide.forEach((el) => el.remove());
+          for (const el of toHide) el.remove();
           $("#words").css("marginTop", "0");
         });
     } else {
-      toHide.forEach((el) => el.remove());
+      for (const el of toHide) el.remove();
       currentWordElementIndex -= toHide.length;
       $("#paceCaret").css({
         top:
@@ -721,10 +718,10 @@ async function loadWordsHistory(): Promise<boolean> {
     const word = TestWords.words.get(i);
     const containsKorean =
       input?.match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+        /[\uAC00-\uD7AF]|[\u1100-\u11FF]|[\u3130-\u318F]|[\uA960-\uA97F]|[\uD7B0-\uD7FF]/g
       ) ||
       word?.match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+        /[\uAC00-\uD7AF]|[\u1100-\u11FF]|[\u3130-\u318F]|[\uA960-\uA97F]|[\uD7B0-\uD7FF]/g
       );
     let wordEl = "";
     try {
@@ -767,13 +764,11 @@ async function loadWordsHistory(): Promise<boolean> {
             wordstats.missed++;
           }
         }
-        if (wordstats.incorrect !== 0 || Config.mode !== "time") {
-          if (Config.mode != "zen" && input !== word) {
+        if ((wordstats.incorrect !== 0 || Config.mode !== "time") && Config.mode != "zen" && input !== word) {
             wordEl = `<div class='word error' burst="${
               TestInput.burstHistory[i]
             }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
           }
-        }
       } else {
         if (Config.mode != "zen" && input !== word) {
           wordEl = `<div class='word error' burst="${
@@ -796,7 +791,7 @@ async function loadWordsHistory(): Promise<boolean> {
           correctedChar = !containsKorean
             ? TestInput.corrected.getHistory(i)[c]
             : Hangul.assemble(TestInput.corrected.getHistory(i).split(""))[c];
-        } catch (e) {
+        } catch {
           correctedChar = undefined;
         }
         let extraCorrected = "";
@@ -840,11 +835,11 @@ async function loadWordsHistory(): Promise<boolean> {
         }
       }
       wordEl += "</div>";
-    } catch (e) {
+    } catch {
       try {
         wordEl = "<div class='word'>";
-        for (let c = 0; c < word.length; c++) {
-          wordEl += "<letter>" + word[c] + "</letter>";
+        for (const element of word) {
+          wordEl += "<letter>" + element + "</letter>";
         }
         wordEl += "</div>";
       } catch {}
@@ -915,9 +910,9 @@ export function applyBurstHeatmap(): void {
 
     const median = Misc.median(burstlist);
     const adatm: number[] = [];
-    burstlist.forEach((burst) => {
+    for (const burst of burstlist) {
       adatm.push(Math.abs(median - burst));
-    });
+    }
     const step = Misc.mean(adatm);
     const steps = [
       {
@@ -942,7 +937,7 @@ export function applyBurstHeatmap(): void {
       },
     ];
 
-    steps.forEach((step, index) => {
+    for (const [index, step] of steps.entries()) {
       let string = "";
       if (index === 0) {
         string = `<${Math.round(steps[index + 1].val)}`;
@@ -957,7 +952,7 @@ export function applyBurstHeatmap(): void {
       $("#resultWordsHistory .heatmapLegend .box" + index).html(
         `<div>${string}</div>`
       );
-    });
+    }
 
     $("#resultWordsHistory .words .word").each((_, word) => {
       let cls = "";
@@ -966,9 +961,9 @@ export function applyBurstHeatmap(): void {
         cls = "unreached";
       } else {
         const wordBurstVal = parseInt(<string>wordBurstAttr);
-        steps.forEach((step) => {
+        for (const step of steps) {
           if (wordBurstVal >= step.val) cls = step.class;
-        });
+        }
       }
       $(word).addClass(cls);
     });
@@ -1010,8 +1005,8 @@ $(".pageTest #copyWordsListButton").on("click", async () => {
     }
     await navigator.clipboard.writeText(words);
     Notifications.add("Copied to clipboard", 0, 2);
-  } catch (e) {
-    Notifications.add("Could not copy to clipboard: " + e, -1);
+  } catch (error) {
+    Notifications.add("Could not copy to clipboard: " + error, -1);
   }
 });
 

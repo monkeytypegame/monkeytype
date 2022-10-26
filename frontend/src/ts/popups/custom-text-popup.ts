@@ -66,11 +66,7 @@ export function show(): void {
 
 $(`${popup} .delimiterCheck input`).on("change", () => {
   let delimiter;
-  if ($(`${popup} .delimiterCheck input`).prop("checked")) {
-    delimiter = "|";
-  } else {
-    delimiter = " ";
-  }
+  delimiter = $(`${popup} .delimiterCheck input`).prop("checked") ? "|" : " ";
   if (
     $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
   ) {
@@ -147,7 +143,7 @@ $(`${popup} textarea`).on("keypress", (e) => {
     CustomTextState.isCustomTextLong() &&
     CustomTextState.getCustomTextName() !== ""
   ) {
-    CustomTextState.setCustomTextName("", undefined);
+    CustomTextState.setCustomTextName("");
     Notifications.add("Disabled long custom text progress tracking", 0, 5);
     updateLongTextWarning();
   }
@@ -203,7 +199,7 @@ function apply(): void {
     }
   }
   // text = Misc.remove_non_ascii(text);
-  text = text.replace(/[\u2060]/g, "");
+  text = text.replace(/\u2060/g, "");
   CustomText.setText(text.split(CustomText.delimiter));
   CustomText.setWord(
     parseInt($(`${popup} .wordcount input`).val() as string) || -1

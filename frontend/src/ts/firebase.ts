@@ -12,13 +12,13 @@ export let Auth: AuthType | undefined;
 try {
   app = initializeApp(firebaseConfig);
   Auth = getAuth(app);
-} catch (e) {
+} catch (error) {
   app = undefined;
   Auth = undefined;
-  console.error("Authentication failed to initialize", e);
+  console.error("Authentication failed to initialize", error);
   if (window.location.hostname === "localhost") {
     Notifications.addBanner(
-      createErrorMessage(e, "Authentication uninitialized") +
+      createErrorMessage(error, "Authentication uninitialized") +
         " Check your firebase-config.ts",
       0,
       undefined,

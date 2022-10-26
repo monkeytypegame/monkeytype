@@ -36,7 +36,7 @@ export function update(): void {
   if (DB.getSnapshot()?.customThemes.length === 0) {
     return;
   }
-  DB.getSnapshot()?.customThemes.forEach((theme) => {
+  for (const theme of DB.getSnapshot()?.customThemes) {
     subgroup.list.push({
       id: "setCustomThemeId" + theme._id,
       display: theme.name,
@@ -50,7 +50,7 @@ export function update(): void {
         ThemeController.set(theme._id, true);
       },
     });
-  });
+  }
 }
 
 export default commands;

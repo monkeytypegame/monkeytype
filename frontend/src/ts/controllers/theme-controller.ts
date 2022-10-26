@@ -68,9 +68,9 @@ async function updateFavicon(size: number, curveSize: number): Promise<void> {
 }
 
 function clearCustomTheme(): void {
-  colorVars.forEach((e) => {
+  for (const e of colorVars) {
     document.documentElement.style.setProperty(e, "");
-  });
+  }
 }
 
 let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
@@ -88,7 +88,7 @@ export async function loadStyle(name: string): Promise<void> {
     link.type = "text/css";
     link.rel = "stylesheet";
     link.id = "nextTheme";
-    link.onload = (): void => {
+    link.addEventListener("load", (): void => {
       Loader.hide();
       $("#currentTheme").remove();
       $("#nextTheme").attr("id", "currentTheme");
@@ -96,15 +96,11 @@ export async function loadStyle(name: string): Promise<void> {
       loadStyleLoaderTimeouts = [];
       $("#keymap .keymapKey").stop(true, true).removeAttr("style");
       resolve();
-    };
-    if (name === "custom") {
-      link.href = `/./themes/serika_dark.css`;
-    } else {
-      link.href = `/./themes/${name}.css`;
-    }
+    });
+    link.href = name === "custom" ? `/./themes/serika_dark.css` : `/./themes/${name}.css`;
 
     if (!headScript) {
-      document.head.appendChild(link);
+      document.head.append(link);
     } else {
       headScript.after(link);
     }
@@ -122,11 +118,7 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
   clearCustomTheme();
 
   let name = "serika_dark";
-  if (!isCustom) {
-    name = themeName;
-  } else {
-    name = "custom";
-  }
+  name = !isCustom ? themeName : "custom";
 
   ThemeColors.reset();
 
@@ -149,9 +141,9 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
         const customThemeById = customThemes.find((e) => e._id === themeName);
         colorValues = customThemeById?.colors as string[];
       }
-      colorVars.forEach((e, index) => {
+      for (const [index, e] of colorVars.entries()) {
         document.documentElement.style.setProperty(e, colorValues[index]);
-      });
+      }
     }
 
     AnalyticsController.log("changedTheme", { theme: themeName });

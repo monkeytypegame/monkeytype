@@ -18,7 +18,7 @@ import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import { InputIndicator } from "../elements/input-indicator";
 
-let signedInUser: UserCredential | undefined = undefined;
+let signedInUser: UserCredential | undefined;
 
 export function show(credential: UserCredential): void {
   if ($("#googleSignUpPopupWrapper").hasClass("hidden")) {
@@ -126,9 +126,9 @@ async function apply(): Promise<void> {
       Loader.hide();
       hide();
     }
-  } catch (e) {
-    console.log(e);
-    const message = createErrorMessage(e, "Failed to sign in with Google");
+  } catch (error) {
+    console.log(error);
+    const message = createErrorMessage(error, "Failed to sign in with Google");
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();

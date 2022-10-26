@@ -31,13 +31,9 @@ let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
-  if (!filteredResults || filteredResults.length == 0) return;
+  if (!filteredResults || filteredResults.length === 0) return;
   let newVisibleLines;
-  if (lineIndex && lineIndex > visibleTableLines) {
-    newVisibleLines = Math.ceil(lineIndex / 10) * 10;
-  } else {
-    newVisibleLines = visibleTableLines + 10;
-  }
+  newVisibleLines = lineIndex && lineIndex > visibleTableLines ? Math.ceil(lineIndex / 10) * 10 : visibleTableLines + 10;
   for (let i = visibleTableLines; i < newVisibleLines; i++) {
     const result = filteredResults[i];
     if (!result) continue;
@@ -54,7 +50,7 @@ function loadMoreLines(lineIndex?: number): void {
       if (raw == undefined) {
         raw = "-";
       }
-    } catch (e) {
+    } catch {
       raw = "-";
     }
 
@@ -105,31 +101,23 @@ function loadMoreLines(lineIndex?: number): void {
     let tagNames = "";
 
     if (result.tags !== undefined && result.tags.length > 0) {
-      result.tags.forEach((tag) => {
+      for (const tag of result.tags) {
         DB.getSnapshot()?.tags?.forEach((snaptag) => {
           if (tag === snaptag._id) {
             tagNames += snaptag.display + ", ";
           }
         });
-      });
-      tagNames = tagNames.substring(0, tagNames.length - 2);
+      }
+      tagNames = tagNames.slice(0, Math.max(0, tagNames.length - 2));
     }
 
     let restags;
-    if (result.tags === undefined) {
-      restags = "[]";
-    } else {
-      restags = JSON.stringify(result.tags);
-    }
+    restags = result.tags === undefined ? "[]" : JSON.stringify(result.tags);
 
     let tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="no tags" data-balloon-pos="up" style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
 
     if (tagNames !== "") {
-      if (result.tags !== undefined && result.tags.length > 1) {
-        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
-      } else {
-        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
-      }
+      tagIcons = result.tags !== undefined && result.tags.length > 1 ? `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>` : `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
     }
 
     let consistency = "-";
@@ -139,18 +127,10 @@ function loadMoreLines(lineIndex?: number): void {
     }
 
     let pb = result.isPb?.toString();
-    if (pb) {
-      pb = '<i class="fas fa-fw fa-crown"></i>';
-    } else {
-      pb = "";
-    }
+    pb = pb ? '<i class="fas fa-fw fa-crown"></i>' : "";
 
     let charStats = "-";
-    if (result.charStats) {
-      charStats = result.charStats.join("/");
-    } else {
-      charStats = result.correctChars + "/" + result.incorrectChars + "/-/-";
-    }
+    charStats = result.charStats ? result.charStats.join("/") : result.correctChars + "/" + result.incorrectChars + "/-/-";
 
     const date = new Date(result.timestamp);
     $(".pageAccount .history table tbody").append(`
@@ -218,7 +198,7 @@ export function smoothHistory(factor: number): void {
   ChartController.accountHistory.data.datasets[0].data = chartData2;
   ChartController.accountHistory.data.datasets[1].data = accChartData2;
 
-  if (chartData2.length || accChartData2.length) {
+  if (chartData2.length > 0 || accChartData2.length > 0) {
     ChartController.accountHistory.update();
   }
 }
@@ -358,7 +338,7 @@ function fillContent(): void {
         }
 
         if (result.quoteLength != null) {
-          let filter: MonkeyTypes.QuoteModes | undefined = undefined;
+          let filter: MonkeyTypes.QuoteModes | undefined;
           if (result.quoteLength === 0) {
             filter = "short";
           } else if (result.quoteLength === 1) {
@@ -449,9 +429,9 @@ function fillContent(): void {
 
           if (validTags === undefined) return;
 
-          result.tags.forEach((tag) => {
+          for (const tag of result.tags) {
             //check if i even need to check tags anymore
-            if (!tagHide) return;
+            if (!tagHide) continue;
             //check if tag is valid
             if (validTags?.includes(tag)) {
               //tag valid, check if filter is on
@@ -460,7 +440,7 @@ function fillContent(): void {
               //tag not found in valid tags, meaning probably deleted
               if (ResultFilters.getFilter("tags", "none")) tagHide = false;
             }
-          });
+          }
         }
 
         if (tagHide) {
@@ -477,13 +457,13 @@ function fillContent(): void {
         if (
           ResultFilters.getFilter("date", "all") ||
           (ResultFilters.getFilter("date", "last_day") &&
-            timeSinceTest <= 86400) ||
+            timeSinceTest <= 86_400) ||
           (ResultFilters.getFilter("date", "last_week") &&
-            timeSinceTest <= 604800) ||
+            timeSinceTest <= 604_800) ||
           (ResultFilters.getFilter("date", "last_month") &&
-            timeSinceTest <= 2592000) ||
+            timeSinceTest <= 2_592_000) ||
           (ResultFilters.getFilter("date", "last_3months") &&
-            timeSinceTest <= 7776000)
+            timeSinceTest <= 7_776_000)
         ) {
           datehide = false;
         }
@@ -496,13 +476,13 @@ function fillContent(): void {
         }
 
         filteredResults.push(result);
-      } catch (e) {
+      } catch (error) {
         Notifications.add(
           "Something went wrong when filtering. Resetting filters.",
           0
         );
         console.log(result);
-        console.error(e);
+        console.error(error);
         ResultFilters.reset();
         ResultFilters.updateActive();
         update();
@@ -666,7 +646,7 @@ function fillContent(): void {
   const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
   const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
   // let lastTimestamp = 0;
-  Object.keys(activityChartData).forEach((date) => {
+  for (const date of Object.keys(activityChartData)) {
     const dateInt = parseInt(date);
     activityChartData_amount.push({
       x: dateInt,
@@ -687,17 +667,13 @@ function fillContent(): void {
       ),
     });
     // lastTimestamp = date;
-  });
+  }
 
   const accountActivityScaleOptions = (
     ChartController.accountActivity.options as ScaleChartOptions<"bar" | "line">
   ).scales;
 
-  if (Config.alwaysShowCPM) {
-    accountActivityScaleOptions["avgWpm"].title.text = "Average Cpm";
-  } else {
-    accountActivityScaleOptions["avgWpm"].title.text = "Average Wpm";
-  }
+  accountActivityScaleOptions["avgWpm"].title.text = Config.alwaysShowCPM ? "Average Cpm" : "Average Wpm";
 
   ChartController.accountActivity.data.datasets[0].data =
     activityChartData_time;
@@ -731,11 +707,7 @@ function fillContent(): void {
     ChartController.accountHistory.options as ScaleChartOptions<"line">
   ).scales;
 
-  if (Config.alwaysShowCPM) {
-    accountHistoryScaleOptions["wpm"].title.text = "Characters per Minute";
-  } else {
-    accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
-  }
+  accountHistoryScaleOptions["wpm"].title.text = Config.alwaysShowCPM ? "Characters per Minute" : "Words per Minute";
 
   ChartController.accountHistory.data.datasets[0].data = chartData;
   ChartController.accountHistory.data.datasets[1].data = accChartData;
@@ -748,13 +720,9 @@ function fillContent(): void {
   accountHistoryScaleOptions["wpm"].max =
     Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
-  if (!Config.startGraphsAtZero) {
-    accountHistoryScaleOptions["wpm"].min = Math.floor(minWpmChartVal);
-  } else {
-    accountHistoryScaleOptions["wpm"].min = 0;
-  }
+  accountHistoryScaleOptions["wpm"].min = !Config.startGraphsAtZero ? Math.floor(minWpmChartVal) : 0;
 
-  if (!chartData || chartData.length == 0) {
+  if (!chartData || chartData.length === 0) {
     $(".pageAccount .group.noDataError").removeClass("hidden");
     $(".pageAccount .group.chart").addClass("hidden");
     $(".pageAccount .group.dailyActivityChart").addClass("hidden");
@@ -782,11 +750,7 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     highestSpeed = topWpm * 5;
   }
-  if (Config.alwaysShowDecimalPlaces) {
-    highestSpeed = Misc.roundTo2(highestSpeed).toFixed(2);
-  } else {
-    highestSpeed = Math.round(highestSpeed);
-  }
+  highestSpeed = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(highestSpeed).toFixed(2) : Math.round(highestSpeed);
 
   $(".pageAccount .highestWpm .title").text(`highest ${wpmCpm}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
@@ -795,11 +759,7 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     averageSpeed = totalWpm * 5;
   }
-  if (Config.alwaysShowDecimalPlaces) {
-    averageSpeed = Misc.roundTo2(averageSpeed / testCount).toFixed(2);
-  } else {
-    averageSpeed = Math.round(averageSpeed / testCount);
-  }
+  averageSpeed = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(averageSpeed / testCount).toFixed(2) : Math.round(averageSpeed / testCount);
 
   $(".pageAccount .averageWpm .title").text(`average ${wpmCpm}`);
   $(".pageAccount .averageWpm .val").text(averageSpeed);
@@ -808,11 +768,7 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     averageSpeedLast10 = wpmLast10total * 5;
   }
-  if (Config.alwaysShowDecimalPlaces) {
-    averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2);
-  } else {
-    averageSpeedLast10 = Math.round(averageSpeedLast10 / last10);
-  }
+  averageSpeedLast10 = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2) : Math.round(averageSpeedLast10 / last10);
 
   $(".pageAccount .averageWpm10 .title").text(
     `average ${wpmCpm} (last 10 tests)`
@@ -823,11 +779,7 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     highestRawSpeed = rawWpm.max * 5;
   }
-  if (Config.alwaysShowDecimalPlaces) {
-    highestRawSpeed = Misc.roundTo2(highestRawSpeed).toFixed(2);
-  } else {
-    highestRawSpeed = Math.round(highestRawSpeed);
-  }
+  highestRawSpeed = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(highestRawSpeed).toFixed(2) : Math.round(highestRawSpeed);
 
   $(".pageAccount .highestRaw .title").text(`highest raw ${wpmCpm}`);
   $(".pageAccount .highestRaw .val").text(highestRawSpeed);
@@ -836,11 +788,7 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     averageRawSpeed = rawWpm.total * 5;
   }
-  if (Config.alwaysShowDecimalPlaces) {
-    averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2);
-  } else {
-    averageRawSpeed = Math.round(averageRawSpeed / rawWpm.count);
-  }
+  averageRawSpeed = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2) : Math.round(averageRawSpeed / rawWpm.count);
 
   $(".pageAccount .averageRaw .title").text(`average raw ${wpmCpm}`);
   $(".pageAccount .averageRaw .val").text(averageRawSpeed);
@@ -868,29 +816,17 @@ function fillContent(): void {
   $(".pageAccount .testsTaken .val").text(testCount);
 
   let highestAcc: string | number = topAcc;
-  if (Config.alwaysShowDecimalPlaces) {
-    highestAcc = Misc.roundTo2(highestAcc).toFixed(2);
-  } else {
-    highestAcc = Math.round(highestAcc);
-  }
+  highestAcc = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(highestAcc).toFixed(2) : Math.round(highestAcc);
 
   $(".pageAccount .highestAcc .val").text(highestAcc + "%");
 
   let averageAcc: number | string = totalAcc;
-  if (Config.alwaysShowDecimalPlaces) {
-    averageAcc = Math.floor(averageAcc / testCount).toFixed(2);
-  } else {
-    averageAcc = Math.round(averageAcc / testCount);
-  }
+  averageAcc = Config.alwaysShowDecimalPlaces ? Math.floor(averageAcc / testCount).toFixed(2) : Math.round(averageAcc / testCount);
 
   $(".pageAccount .avgAcc .val").text(averageAcc + "%");
 
   let averageAccLast10: number | string = totalAcc10;
-  if (Config.alwaysShowDecimalPlaces) {
-    averageAccLast10 = Math.floor(averageAccLast10 / last10).toFixed(2);
-  } else {
-    averageAccLast10 = Math.round(averageAccLast10 / last10);
-  }
+  averageAccLast10 = Config.alwaysShowDecimalPlaces ? Math.floor(averageAccLast10 / last10).toFixed(2) : Math.round(averageAccLast10 / last10);
 
   $(".pageAccount .avgAcc10 .val").text(averageAccLast10 + "%");
 
@@ -899,20 +835,12 @@ function fillContent(): void {
     $(".pageAccount .avgCons10 .val").text("-");
   } else {
     let highestCons: number | string = topCons;
-    if (Config.alwaysShowDecimalPlaces) {
-      highestCons = Misc.roundTo2(highestCons).toFixed(2);
-    } else {
-      highestCons = Math.round(highestCons);
-    }
+    highestCons = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(highestCons).toFixed(2) : Math.round(highestCons);
 
     $(".pageAccount .highestCons .val").text(highestCons + "%");
 
     let averageCons: number | string = totalCons;
-    if (Config.alwaysShowDecimalPlaces) {
-      averageCons = Misc.roundTo2(averageCons / consCount).toFixed(2);
-    } else {
-      averageCons = Math.round(averageCons / consCount);
-    }
+    averageCons = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(averageCons / consCount).toFixed(2) : Math.round(averageCons / consCount);
 
     $(".pageAccount .avgCons .val").text(averageCons + "%");
 
@@ -1003,9 +931,9 @@ export async function update(): Promise<void> {
     await downloadResults();
     try {
       fillContent();
-    } catch (e) {
-      console.error(e);
-      Notifications.add(`Something went wrong: ${e}`, -1);
+    } catch (error) {
+      console.error(error);
+      Notifications.add(`Something went wrong: ${error}`, -1);
     }
   }
 }
@@ -1058,22 +986,22 @@ function sortAndRefreshHistory(
     let highest = -1;
     let idx = -1;
 
-    for (let i = 0; i < filteredResults.length; i++) {
+    for (const [i, filteredResult] of filteredResults.entries()) {
       //find the lowest wpm with index not already parsed
       if (!descending) {
         if (
-          (filteredResults[i][key] as number) <= lowest &&
+          (filteredResult[key] as number) <= lowest &&
           !parsedIndexes.includes(i)
         ) {
-          lowest = filteredResults[i][key] as number;
+          lowest = filteredResult[key] as number;
           idx = i;
         }
       } else {
         if (
-          (filteredResults[i][key] as number) >= highest &&
+          (filteredResult[key] as number) >= highest &&
           !parsedIndexes.includes(i)
         ) {
-          highest = filteredResults[i][key] as number;
+          highest = filteredResult[key] as number;
           idx = i;
         }
       }

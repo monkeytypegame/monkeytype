@@ -19,12 +19,12 @@ export function dispatch(
   previousValue?: MonkeyTypes.ConfigValues,
   fullConfig?: MonkeyTypes.Config
 ): void {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn(key, newValue, nosave, previousValue, fullConfig);
-    } catch (e) {
+    } catch (error) {
       console.error("Config event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }

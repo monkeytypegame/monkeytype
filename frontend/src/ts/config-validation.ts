@@ -17,7 +17,7 @@ type PossibleTypeAsync = "layoutfluid";
 export function isConfigKeyValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
   if (name.length > 30) return false;
-  return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
+  return /^[\w#+.\-]+$/.test(name);
 }
 
 function invalid(key: string, val: unknown, customMessage?: string): void {
@@ -37,7 +37,7 @@ function invalid(key: string, val: unknown, customMessage?: string): void {
 }
 
 function isArray(val: unknown): val is unknown[] {
-  return val instanceof Array;
+  return Array.isArray(val);
 }
 
 export function isConfigValueValid(
@@ -53,43 +53,49 @@ export function isConfigValueValid(
 
   for (const possibleType of possibleTypes) {
     switch (possibleType) {
-      case "boolean":
+      case "boolean": {
         if (typeof val === "boolean") isValid = true;
         break;
+      }
 
-      case "null":
+      case "null": {
         if (val === null) isValid = true;
         break;
+      }
 
-      case "number":
+      case "number": {
         if (typeof val === "number" && !isNaN(val)) isValid = true;
         break;
+      }
 
-      case "numberArray":
+      case "numberArray": {
         if (isArray(val) && val.every((v) => typeof v === "number")) {
           isValid = true;
         }
         break;
+      }
 
-      case "string":
+      case "string": {
         if (typeof val === "string") isValid = true;
         break;
+      }
 
-      case "stringArray":
+      case "stringArray": {
         if (isArray(val) && val.every((v) => typeof v === "string")) {
           isValid = true;
         }
         break;
+      }
 
-      case "undefined":
+      case "undefined": {
         if (typeof val === "undefined" || val === undefined) isValid = true;
         break;
+      }
 
-      default:
-        if (isArray(possibleType)) {
-          if (possibleType.includes(<never>val)) isValid = true;
-        }
+      default: {
+        if (isArray(possibleType) && possibleType.includes(<never>val)) isValid = true;
         break;
+      }
     }
   }
 
@@ -105,14 +111,14 @@ export async function isConfigValueValidAsync(
 ): Promise<boolean> {
   let isValid = false;
 
-  let customMessage: string | undefined = undefined;
+  let customMessage: string | undefined;
 
   for (const possibleType of possibleTypes) {
     switch (possibleType) {
       case "layoutfluid": {
         if (typeof val !== "string") break;
 
-        const layoutNames = val.split(/[# ]+/);
+        const layoutNames = val.split(/[ #]+/);
 
         if (layoutNames.length < 2 || layoutNames.length > 5) break;
 

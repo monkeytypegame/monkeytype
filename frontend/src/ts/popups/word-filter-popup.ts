@@ -7,13 +7,13 @@ async function init(): Promise<void> {
   if (!initialised) {
     $("#wordFilterPopup .languageInput").empty();
     const LanguageList = await Misc.getLanguageList();
-    LanguageList.forEach((language) => {
+    for (const language of LanguageList) {
       let prettyLang = language;
       prettyLang = prettyLang.replace("_", " ");
       $("#wordFilterPopup .languageInput").append(`
         <option value=${language}>${prettyLang}</option>
       `);
-    });
+    }
     initialised = true;
   }
 }
@@ -47,16 +47,8 @@ async function filter(language: string): Promise<string[]> {
   const minLengthInput = $("#wordFilterPopup .wordMinInput").val() as string;
   let maxLength;
   let minLength;
-  if (maxLengthInput == "") {
-    maxLength = 999;
-  } else {
-    maxLength = parseInt(maxLengthInput);
-  }
-  if (minLengthInput == "") {
-    minLength = 1;
-  } else {
-    minLength = parseInt(minLengthInput);
-  }
+  maxLength = maxLengthInput == "" ? 999 : parseInt(maxLengthInput);
+  minLength = minLengthInput == "" ? 1 : parseInt(minLengthInput);
   for (let i = 0; i < languageWordList.words.length; i++) {
     const word = languageWordList.words[i];
     const test1 = regincl.test(word);

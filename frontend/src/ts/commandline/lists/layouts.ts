@@ -33,7 +33,7 @@ function update(layouts: MonkeyTypes.Layouts): void {
       TestLogic.restart();
     },
   });
-  Object.keys(layouts).forEach((layout) => {
+  for (const layout of Object.keys(layouts)) {
     subgroup.list.push({
       id: "changeLayout" + capitalizeFirstLetterOfEachWord(layout),
       display: layout === "default" ? "off" : layout.replace(/_/g, " "),
@@ -44,7 +44,7 @@ function update(layouts: MonkeyTypes.Layouts): void {
         TestLogic.restart();
       },
     });
-  });
+  }
 }
 
 

@@ -150,21 +150,17 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
   const tagNames: string[] = [];
 
   if (newTags.length > 0) {
-    newTags.forEach((tag) => {
+    for (const tag of newTags) {
       DB.getSnapshot()?.tags?.forEach((snaptag) => {
         if (tag === snaptag._id) {
           tagNames.push(snaptag.display);
         }
       });
-    });
+    }
   }
 
   let restags;
-  if (newTags === undefined) {
-    restags = "[]";
-  } else {
-    restags = JSON.stringify(newTags);
-  }
+  restags = newTags === undefined ? "[]" : JSON.stringify(newTags);
 
   $(`.pageAccount #resultEditTags[resultid='${resultId}']`).attr(
     "tags",
@@ -207,14 +203,10 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
 
     let html = "";
 
-    newTags.forEach((tag, index) => {
-      if (checked.includes(tag)) return;
-      if (responseTagPbs.includes(tag)) {
-        html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
-      } else {
-        html += `<div tagid="${tag}">${tagNames[index]}</div>`;
-      }
-    });
+    for (const [index, tag] of newTags.entries()) {
+      if (checked.includes(tag)) continue;
+      html += responseTagPbs.includes(tag) ? `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>` : `<div tagid="${tag}">${tagNames[index]}</div>`;
+    }
 
     // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
     $(`.pageTest #result .tags .bottom`).append(html);

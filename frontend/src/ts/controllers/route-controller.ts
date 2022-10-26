@@ -32,7 +32,7 @@ function getParams(match: { route: Route; result: RegExpMatchArray }): {
   [key: string]: string;
 } {
   const values = match.result.slice(1);
-  const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(
+  const keys = [...match.route.path.matchAll(/:(\w+)/g)].map(
     (result) => result[1]
   );
 

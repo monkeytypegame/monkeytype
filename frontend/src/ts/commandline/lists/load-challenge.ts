@@ -18,7 +18,7 @@ const commands: MonkeyTypes.Command[] = [
 ];
 
 function update(challenges: MonkeyTypes.Challenge[]): void {
-  challenges.forEach((challenge) => {
+  for (const challenge of challenges) {
     subgroup.list.push({
       id: "loadChallenge" + capitalizeFirstLetterOfEachWord(challenge.name),
       noIcon: true,
@@ -31,7 +31,7 @@ function update(challenges: MonkeyTypes.Challenge[]): void {
         });
       },
     });
-  });
+  }
 }
 
 export default commands;

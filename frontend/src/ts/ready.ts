@@ -118,10 +118,10 @@ if ("serviceWorker" in navigator) {
 
           setInterval(() => {
             wb.update(); //check for updates every 15 minutes
-          }, 900000);
+          }, 900_000);
         })
-        .catch((e) => {
-          console.log("Service worker registration failed:", e);
+        .catch((error) => {
+          console.log("Service worker registration failed:", error);
         });
     }
   });

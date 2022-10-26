@@ -143,18 +143,17 @@ function checkIfFailed(
 
 function checkIfTimeIsUp(): void {
   if (timerDebug) console.time("times up check");
-  if (
+  if ((
     Config.mode == "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
-  ) {
-    if (
+  ) && (
       (Time.get() >= Config.time &&
         Config.time !== 0 &&
         Config.mode === "time") ||
       (Time.get() >= CustomText.time &&
         CustomText.time !== 0 &&
         Config.mode === "custom")
-    ) {
+    )) {
       //times up
       if (timer !== null) clearTimeout(timer);
       Caret.hide();
@@ -165,7 +164,6 @@ function checkIfTimeIsUp(): void {
       TimerEvent.dispatch("finish");
       return;
     }
-  }
   if (timerDebug) console.timeEnd("times up check");
 }
 

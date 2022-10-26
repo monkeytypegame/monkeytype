@@ -147,9 +147,9 @@ export async function initSnapshot(): Promise<
     snap.customThemes = userData.customThemes ?? [];
     snap.tags = tagsData;
 
-    snap.tags.forEach((tag) => {
+    for (const tag of snap.tags) {
       tag.display = tag.name.replaceAll("_", " ");
-    });
+    }
 
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
@@ -168,9 +168,9 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading presets...");
     snap.presets = presetsData;
 
-    snap.presets?.forEach((preset) => {
+    if (snap.presets) {for (const preset of snap.presets) {
       preset.display = preset.name.replaceAll("_", " ");
-    });
+    }}
 
     snap.presets = snap.presets?.sort((a, b) => {
       if (a.name > b.name) {
@@ -184,9 +184,9 @@ export async function initSnapshot(): Promise<
 
     dbSnapshot = snap;
     return dbSnapshot;
-  } catch (e) {
+  } catch (error) {
     dbSnapshot = defaultSnap;
-    throw e;
+    throw error;
   }
 }
 
@@ -213,7 +213,7 @@ export async function getUserResults(): Promise<boolean> {
     }
 
     const results = response.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
-    results.forEach((result) => {
+    for (const result of results) {
       if (result.bailedOut === undefined) result.bailedOut = false;
       if (result.blindMode === undefined) result.blindMode = false;
       if (result.lazyMode === undefined) result.lazyMode = false;
@@ -231,7 +231,7 @@ export async function getUserResults(): Promise<boolean> {
       }
       if (result.afkDuration === undefined) result.afkDuration = 0;
       if (result.tags === undefined) result.tags = [];
-    });
+    }
     dbSnapshot.results = results?.sort((a, b) => b.timestamp - a.timestamp);
     return true;
   }
@@ -334,7 +334,7 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   function cont(): number {
     let topWpm = 0;
 
-    dbSnapshot?.results?.forEach((result) => {
+    if (dbSnapshot?.results) {for (const result of dbSnapshot?.results) {
       if (
         result.mode == mode &&
         result.mode2 == mode2 &&
@@ -343,12 +343,10 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
         result.difficulty == difficulty &&
         (result.lazyMode === lazyMode ||
           (result.lazyMode === undefined && lazyMode === false))
-      ) {
-        if (result.wpm > topWpm) {
+       && result.wpm > topWpm) {
           topWpm = result.wpm;
         }
-      }
-    });
+    }}
     return topWpm;
   }
 
@@ -371,11 +369,11 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
 
   function cont(): [number, number] {
     const activeTagIds: string[] = [];
-    snapshot?.tags?.forEach((tag) => {
+    if (snapshot?.tags) {for (const tag of snapshot?.tags) {
       if (tag.active === true) {
         activeTagIds.push(tag._id);
       }
-    });
+    }}
 
     let wpmSum = 0;
     let accSum = 0;
@@ -449,11 +447,11 @@ export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
 
   function cont(): number {
     const activeTagIds: string[] = [];
-    snapshot?.tags?.forEach((tag) => {
+    if (snapshot?.tags) {for (const tag of snapshot?.tags) {
       if (tag.active === true) {
         activeTagIds.push(tag._id);
       }
-    });
+    }}
 
     let bestWpm = 0;
 
@@ -469,7 +467,7 @@ export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
           (activeTagIds.length === 0 ||
             activeTagIds.some((tagId) => result.tags.includes(tagId)))
         ) {
-          if (result.timestamp < Date.now() - 86400000) {
+          if (result.timestamp < Date.now() - 86_400_000) {
             continue;
           }
 
@@ -512,11 +510,9 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
     try {
       if (!dbSnapshot?.personalBests) return ret;
 
-      (
-        dbSnapshot.personalBests[mode][
+      for (const pb of (dbSnapshot.personalBests[mode][
           mode2
-        ] as unknown as MonkeyTypes.PersonalBest[]
-      ).forEach((pb) => {
+        ] as unknown as MonkeyTypes.PersonalBest[])) {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
@@ -526,10 +522,10 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
         ) {
           ret = pb.wpm;
         }
-      });
+      }
 
       return ret;
-    } catch (e) {
+    } catch {
       return ret;
     }
   }
@@ -581,11 +577,9 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
         [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
     }
 
-    (
-      dbSnapshot.personalBests[mode][
+    for (const pb of (dbSnapshot.personalBests[mode][
         mode2
-      ] as unknown as MonkeyTypes.PersonalBest[]
-    ).forEach((pb) => {
+      ] as unknown as MonkeyTypes.PersonalBest[])) {
       if (
         pb.punctuation == punctuation &&
         pb.difficulty == difficulty &&
@@ -601,7 +595,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
         pb.consistency = consistency;
         pb.lazyMode = lazyMode;
       }
-    });
+    }
     if (!found) {
       //nothing found
       (
@@ -639,9 +633,9 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
   function cont(): number {
     let ret = 0;
 
-    const filteredtag = (getSnapshot()?.tags ?? []).filter(
+    const filteredtag = (getSnapshot()?.tags ?? []).find(
       (t) => t._id === tagId
-    )[0];
+    );
 
     if (filteredtag === undefined) return ret;
 
@@ -659,7 +653,7 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
       const personalBests = (filteredtag.personalBests[mode][mode2] ??
         []) as MonkeyTypes.PersonalBest[];
 
-      personalBests.forEach((pb) => {
+      for (const pb of personalBests) {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
@@ -669,9 +663,9 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
         ) {
           ret = pb.wpm;
         }
-      });
-    } catch (e) {
-      console.log(e);
+      }
+    } catch (error) {
+      console.log(error);
     }
     return ret;
   }
@@ -716,11 +710,9 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
         filteredtag.personalBests[mode][mode2] =
           [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
       }
-      (
-        filteredtag.personalBests[mode][
+      for (const pb of (filteredtag.personalBests[mode][
           mode2
-        ] as unknown as MonkeyTypes.PersonalBest[]
-      ).forEach((pb) => {
+        ] as unknown as MonkeyTypes.PersonalBest[])) {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
@@ -736,7 +728,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
           pb.consistency = consistency;
           pb.lazyMode = lazyMode;
         }
-      });
+      }
       if (!found) {
         //nothing found
         (
@@ -755,7 +747,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
           consistency: consistency,
         });
       }
-    } catch (e) {
+    } catch {
       //that mode or mode2 is not found
       filteredtag.personalBests = {
         time: {},

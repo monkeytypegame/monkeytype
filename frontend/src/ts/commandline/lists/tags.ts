@@ -65,11 +65,7 @@ function update(): void {
   DB.getSnapshot()?.tags?.forEach((tag) => {
     let dis = tag.display;
 
-    if (tag.active === true) {
-      dis = '<i class="fas fa-fw fa-check"></i>' + dis;
-    } else {
-      dis = '<i class="fas fa-fw"></i>' + dis;
-    }
+    dis = tag.active === true ? '<i class="fas fa-fw fa-check"></i>' + dis : '<i class="fas fa-fw"></i>' + dis;
 
     subgroup.list.push({
       id: "toggleTag" + tag._id,
@@ -87,11 +83,7 @@ function update(): void {
 
         let txt = tag.display;
 
-        if (tag.active === true) {
-          txt = '<i class="fas fa-fw fa-check"></i>' + txt;
-        } else {
-          txt = '<i class="fas fa-fw"></i>' + txt;
-        }
+        txt = tag.active === true ? '<i class="fas fa-fw fa-check"></i>' + txt : '<i class="fas fa-fw"></i>' + txt;
         if ($("#commandLine").hasClass("allCommands")) {
           $(
             `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`

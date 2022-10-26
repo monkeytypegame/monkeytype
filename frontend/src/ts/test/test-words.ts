@@ -13,11 +13,7 @@ class Words {
     if (i === undefined) {
       return this.list;
     } else {
-      if (raw) {
-        return this.list[i]?.replace(/[.?!":\-,]/g, "")?.toLowerCase();
-      } else {
-        return this.list[i];
-      }
+      return raw ? this.list[i]?.replace(/[!",.:?\-]/g, "")?.toLowerCase() : this.list[i];
     }
   }
   getCurrent(): string {
@@ -50,8 +46,8 @@ class Words {
         const id = this.list.indexOf(s);
         const tempList = s.split(" ");
         this.list.splice(id, 1);
-        for (let i = 0; i < tempList.length; i++) {
-          this.list.splice(id + i, 0, tempList[i]);
+        for (const [i, element] of tempList.entries()) {
+          this.list.splice(id + i, 0, element);
         }
       }
     }

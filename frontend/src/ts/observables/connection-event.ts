@@ -16,12 +16,12 @@ window.addEventListener("load", () => {
 });
 
 function dispatch(state: boolean): void {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn(state);
-    } catch (e) {
+    } catch (error) {
       console.error("Connection event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }

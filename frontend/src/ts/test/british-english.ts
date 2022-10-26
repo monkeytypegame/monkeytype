@@ -16,17 +16,17 @@ export async function getList(): Promise<string[]> {
 export async function replace(word: string): Promise<string> {
   const list = await getList();
   const replacement = list.find((a) =>
-    word.match(RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))
+    word.match(new RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))
   );
   return replacement
     ? word.replace(
-        RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
+        new RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
         (_, $1, $2, $3) =>
           $1 +
           ($2.charAt(0) === $2.charAt(0).toUpperCase()
-            ? $2 === $2.toUpperCase()
+            ? ($2 === $2.toUpperCase()
               ? replacement[1].toUpperCase()
-              : capitalizeFirstLetterOfEachWord(replacement[1])
+              : capitalizeFirstLetterOfEachWord(replacement[1]))
             : replacement[1]) +
           $3
       )

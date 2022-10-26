@@ -48,12 +48,8 @@ function showFound(): void {
   $.each(list.list, (_index, obj) => {
     if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
       let icon = obj.icon ?? "fa-chevron-right";
-      const faIcon = /^fa-/g.test(icon);
-      if (!faIcon) {
-        icon = `<div class="textIcon">${icon}</div>`;
-      } else {
-        icon = `<i class="fas fa-fw ${icon}"></i>`;
-      }
+      const faIcon = icon.startsWith("fa-");
+      icon = !faIcon ? `<div class="textIcon">${icon}</div>` : `<i class="fas fa-fw ${icon}"></i>`;
       if (list.configKey) {
         if (
           (obj.configValueMode &&
@@ -82,7 +78,7 @@ function showFound(): void {
     }
   });
   $("#commandLine .suggestions").html(commandsHTML);
-  if ($("#commandLine .suggestions .entry").length == 0) {
+  if ($("#commandLine .suggestions .entry").length === 0) {
     $("#commandLine .separator").css({ height: 0, margin: 0 });
   } else {
     $("#commandLine .separator").css({
@@ -111,7 +107,7 @@ function showFound(): void {
           return true;
         }
       });
-    } catch (e) {}
+    } catch {}
   }
   $("#commandLine .listTitle").remove();
 }
@@ -146,7 +142,7 @@ function updateSuggested(): void {
       let foundcount = 0;
       $.each(inputVal, (_index2, obj2) => {
         if (obj2 == "") return;
-        const escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+        const escaped = obj2.replace(/[\s#$()*+,.?[\\\]^{|}-]/g, "\\$&");
         const re = new RegExp("\\b" + escaped, "g");
         const res = obj.display.toLowerCase().match(re);
         const res2 =
@@ -160,11 +156,7 @@ function updateSuggested(): void {
           foundcount--;
         }
       });
-      if (foundcount > inputVal.length - 1) {
-        obj.found = true;
-      } else {
-        obj.found = false;
-      }
+      obj.found = foundcount > inputVal.length - 1 ? true : false;
     });
   }
   showFound();
@@ -272,7 +264,7 @@ function addChildCommands(
   parentCommand?: MonkeyTypes.CommandsSubgroup
 ): void {
   let commandItemDisplay = (commandItem as MonkeyTypes.Command).display.replace(
-    /\s?\.\.\.$/g,
+    /\s?\.{3}$/g,
     ""
   );
   let icon = `<i class="fas fa-fw"></i>`;
@@ -295,10 +287,13 @@ function addChildCommands(
     const command = commandItem as MonkeyTypes.Command;
     if (command.beforeSubgroup) command.beforeSubgroup();
     try {
-      (
+      if ((
         (commandItem as MonkeyTypes.Command)
           ?.subgroup as MonkeyTypes.CommandsSubgroup
-      ).list?.forEach((cmd) => {
+      ).list) {for (const cmd of (
+        (commandItem as MonkeyTypes.Command)
+          ?.subgroup as MonkeyTypes.CommandsSubgroup
+      ).list) {
         (commandItem as MonkeyTypes.CommandsSubgroup).configKey = (
           (commandItem as MonkeyTypes.Command)
             .subgroup as MonkeyTypes.CommandsSubgroup
@@ -309,7 +304,7 @@ function addChildCommands(
           commandItemDisplay,
           commandItem as MonkeyTypes.CommandsSubgroup
         );
-      });
+      }}
       // commandItem.exec();
       // const currentCommandsIndex = CommandlineLists.current.length - 1;
       // CommandlineLists.current[currentCommandsIndex].list.forEach((cmd) => {
@@ -317,7 +312,7 @@ function addChildCommands(
       //   addChildCommands(unifiedCommands, cmd, commandItemDisplay);
       // });
       // CommandlineLists.current.pop();
-    } catch (e) {}
+    } catch {}
   } else {
     const tempCommandItem: MonkeyTypes.Command = {
       ...(commandItem as MonkeyTypes.Command),
@@ -346,9 +341,8 @@ function generateSingleListOfCommands(): {
   show = (): void => {
     //
   };
-  CommandlineLists.commands.list.forEach((c) =>
-    addChildCommands(allCommands, c)
-  );
+  for (const c of CommandlineLists.commands.list) addChildCommands(allCommands, c)
+  ;
   show = oldShowCommandLine;
   return {
     title: "All Commands",
@@ -375,7 +369,7 @@ function restoreOldCommandLine(sshow = true): void {
     CommandlineLists.setCurrent(
       CommandlineLists.current.filter((l) => l.title != "All Commands")
     );
-    if (CommandlineLists.current.length < 1) {
+    if (CommandlineLists.current.length === 0) {
       CommandlineLists.setCurrent([CommandlineLists.commands]);
     }
   }
@@ -463,9 +457,7 @@ $("#commandInput input").on("keydown", (e) => {
     const value = $("#commandInput input").val() as string;
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (_index, obj) => {
-      if (obj.id == command) {
-        if (obj.exec) obj.exec(value);
-      }
+      if (obj.id == command && obj.exec) obj.exec(value);
     });
     AnalyticsController.log("usedCommandLine", { command: command ?? "" });
     hide();
@@ -518,7 +510,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
         if (obj.hover && !themeChosen) obj.hover();
       }
     });
-  } catch (e) {}
+  } catch {}
 });
 
 $("#commandLineWrapper #commandLine").on(
@@ -665,9 +657,9 @@ $(document).on("keydown", (e) => {
           ($(".suggestions").outerHeight() as number) / 2 +
           ($($(".entry")[0]).outerHeight() as number);
         $(".suggestions").scrollTop(scroll);
-      } catch (e) {
-        if (e instanceof Error) {
-          console.log("could not scroll suggestions: " + e.message);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log("could not scroll suggestions: " + error.message);
         }
       }
       // console.log(`scrolling to ${scroll}`);
@@ -688,7 +680,7 @@ $(document).on("keydown", (e) => {
             if (obj.hover) obj.hover();
           }
         });
-      } catch (e) {}
+      } catch {}
 
       return false;
     }
@@ -728,8 +720,7 @@ $(".pageTest").on("click", "#testModesNotice .textButton", (event) => {
 $("#bottom").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
-      if (Auth?.currentUser) {
-        if ((DB.getSnapshot()?.customThemes.length ?? 0) < 1) {
+      if (Auth?.currentUser && (DB.getSnapshot()?.customThemes.length ?? 0) < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);
           // UpdateConfig.setCustomThemeId("");
@@ -740,7 +731,6 @@ $("#bottom").on("click", ".leftright .right .current-theme", (e) => {
         //   const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
         //   UpdateConfig.setCustomThemeId(firstCustomThemeId);
         // }
-      }
       UpdateConfig.setCustomTheme(true);
     } else UpdateConfig.setCustomTheme(false);
   } else {

@@ -41,9 +41,9 @@ export function replaceAccents(
   if (!accents && !accentsOverride) return newWord;
   let regex;
   const list = accentsOverride || accents;
-  for (let i = 0; i < list.length; i++) {
-    regex = new RegExp(`[${list[i][0]}]`, "gi");
-    newWord = newWord.replace(regex, list[i][1]);
+  for (const element of list) {
+    regex = new RegExp(`[${element[0]}]`, "gi");
+    newWord = newWord.replace(regex, element[1]);
   }
   return newWord;
 }

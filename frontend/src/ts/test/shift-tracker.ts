@@ -20,7 +20,7 @@ const keymapStrings: KeymapStrings = {
 
 function dynamicKeymapLegendStyle(uppercase: boolean): void {
   const keymapKeys = <HTMLElement[]>[
-    ...document.getElementsByClassName("keymapKey"),
+    ...document.querySelectorAll(".keymapKey"),
   ];
 
   const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);
@@ -37,9 +37,8 @@ function dynamicKeymapLegendStyle(uppercase: boolean): void {
 
   const index = caseState ? 1 : 0;
 
-  for (let i = 0; i < layoutKeys.length; i++) {
-    const layoutKey = layoutKeys[i],
-      key = keys[i];
+  for (const [i, layoutKey] of layoutKeys.entries()) {
+    const key = keys[i];
 
     if (key === undefined || layoutKey === undefined) continue;
 
@@ -70,9 +69,9 @@ async function buildKeymapStrings(): Promise<void> {
           .slice(
             0,
             ["row1", "row2"].includes(rowName)
-              ? rowName === "row1"
+              ? (rowName === "row1"
                 ? 7
-                : 6
+                : 6)
               : 5
           )
           .map((key) => key.split(""))
@@ -85,9 +84,9 @@ async function buildKeymapStrings(): Promise<void> {
           // includes "b" (buttons on qwerty) into the right hand
           .slice(
             ["row1", "row4"].includes(rowName)
-              ? rowName === "row1"
+              ? (rowName === "row1"
                 ? 6
-                : 4
+                : 4)
               : 5
           )
           .map((key) => key.split(""))
@@ -126,7 +125,7 @@ export function reset(): void {
   rightState = false;
 }
 
-const leftSideKeys = [
+const leftSideKeys = new Set([
   "KeyQ",
   "KeyW",
   "KeyE",
@@ -150,9 +149,9 @@ const leftSideKeys = [
   "Digit3",
   "Digit4",
   "Digit5",
-];
+]);
 
-const rightSideKeys = [
+const rightSideKeys = new Set([
   "KeyU",
   "KeyI",
   "KeyO",
@@ -179,7 +178,7 @@ const rightSideKeys = [
   "Comma",
   "Period",
   "Slash",
-];
+]);
 
 export async function isUsingOppositeShift(
   event: JQuery.KeyDownEvent
@@ -188,15 +187,15 @@ export async function isUsingOppositeShift(
 
   if (Config.oppositeShiftMode === "on") {
     if (
-      !rightSideKeys.includes(event.code) &&
-      !leftSideKeys.includes(event.code)
+      !rightSideKeys.has(event.code) &&
+      !leftSideKeys.has(event.code)
     ) {
       return null;
     }
 
     if (
-      (leftState && rightSideKeys.includes(event.code)) ||
-      (rightState && leftSideKeys.includes(event.code))
+      (leftState && rightSideKeys.has(event.code)) ||
+      (rightState && leftSideKeys.has(event.code))
     ) {
       return true;
     } else {

@@ -157,7 +157,7 @@ export function update(expectedStepEnd: number): void {
         }
       }
     }
-  } catch (e) {
+  } catch {
     //out of words
     settings = null;
     $("#paceCaret").addClass("hidden");
@@ -205,7 +205,7 @@ export function update(expectedStepEnd: number): void {
           currentLetter.offsetLeft + currentLetterWidth - caretWidth / 2;
       }
       caret.removeClass("hidden");
-    } catch (e) {
+    } catch {
       caret.addClass("hidden");
     }
 
@@ -240,12 +240,12 @@ export function update(expectedStepEnd: number): void {
     settings.timeout = setTimeout(() => {
       try {
         update(expectedStepEnd + (settings?.spc ?? 0) * 1000);
-      } catch (e) {
+      } catch {
         settings = null;
       }
     }, duration);
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     $("#paceCaret").addClass("hidden");
   }
 }

@@ -56,7 +56,7 @@ function createCanvas(): HTMLCanvasElement {
     canvas.width = window.innerWidth;
   });
 
-  document.body.appendChild(canvas);
+  document.body.append(canvas);
 
   return canvas;
 }
@@ -154,7 +154,7 @@ function render(): void {
   }
   ctx.particles = keep;
 
-  if (ctx.particles.length && !SlowTimer.get()) {
+  if (ctx.particles.length > 0 && !SlowTimer.get()) {
     requestAnimationFrame(render);
   } else {
     ctx.context2d.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -234,9 +234,9 @@ export async function addPower(good = true, extra = false): Promise<void> {
   ) {
     const color = ["2", "4"].includes(Config.monkeyPowerLevel)
       ? randomColor()
-      : good
+      : (good
       ? await ThemeColors.get("caret")
-      : await ThemeColors.get("error");
+      : await ThemeColors.get("error"));
     ctx.particles.push(
       createParticle(...(coords as [x: number, y: number]), color)
     );

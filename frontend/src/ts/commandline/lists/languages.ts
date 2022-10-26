@@ -24,7 +24,7 @@ const commands: MonkeyTypes.Command[] = [
 
 function update(languages: string[]): void {
   subgroup.list = [];
-  languages.forEach((language) => {
+  for (const language of languages) {
     subgroup.list.push({
       id: "changeLanguage" + capitalizeFirstLetterOfEachWord(language),
       display: language.replace(/_/g, " "),
@@ -34,7 +34,7 @@ function update(languages: string[]): void {
         TestLogic.restart();
       },
     });
-  });
+  }
 }
 
 export default commands;

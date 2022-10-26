@@ -16,7 +16,7 @@ const commands: MonkeyTypes.Command[] = [
 ];
 
 function update(fonts: MonkeyTypes.FontObject[]): void {
-  fonts.forEach((font) => {
+  for (const font of fonts) {
     const configVal = font.name.replace(/ /g, "_");
     subgroup.list.push({
       id: "changeFont" + font.name.replace(/ /g, "_"),
@@ -29,7 +29,7 @@ function update(fonts: MonkeyTypes.FontObject[]): void {
         UpdateConfig.setFontFamily(font.name.replace(/ /g, "_"));
       },
     });
-  });
+  }
   subgroup.list.push({
     id: "setFontFamilyCustom",
     display: "custom...",

@@ -59,7 +59,7 @@ import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
 
 let failReason = "";
-const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
+const koInputVisual = document.querySelector("#koInputVisual") as HTMLElement;
 
 export let notSignedInLastResult: MonkeyTypes.Result<MonkeyTypes.Mode> | null =
   null;
@@ -76,7 +76,7 @@ export function setNotSignedInUid(uid: string): void {
 }
 
 function shouldCapitalize(lastChar: string): boolean {
-  return /[?!.؟]/.test(lastChar);
+  return /[!.?؟]/.test(lastChar);
 }
 
 let spanishSentenceTracker = "";
@@ -363,7 +363,7 @@ export function startTest(): boolean {
     ) {
       PaceCaret.start();
     }
-  } catch (e) {}
+  } catch {}
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(performance.now());
   TestTimer.start();
@@ -398,8 +398,7 @@ export function restart(options = {} as RestartOptions): void {
     event?.preventDefault();
     return;
   }
-  if (ActivePage.get() == "test" && !TestUI.resultVisible) {
-    if (!ManualRestart.get()) {
+  if (ActivePage.get() == "test" && !TestUI.resultVisible && !ManualRestart.get()) {
       if (
         TestWords.hasTab &&
         !options.event?.shiftKey &&
@@ -430,7 +429,6 @@ export function restart(options = {} as RestartOptions): void {
       //   return;
       // }
     }
-  }
   if (TestActive.get()) {
     if (
       Config.repeatQuotes === "typing" &&
@@ -600,7 +598,7 @@ export function restart(options = {} as RestartOptions): void {
           toPush.push(TestWords.words.get(2));
         }
         TestWords.words.reset();
-        toPush.forEach((word) => TestWords.words.push(word));
+        for (const word of toPush) TestWords.words.push(word);
       }
       if (!options.withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
@@ -734,12 +732,8 @@ export function restart(options = {} as RestartOptions): void {
 function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
   if (Config.funbox === "rAnDoMcAsE") {
     let randomcaseword = "";
-    for (let i = 0; i < word.length; i++) {
-      if (i % 2 != 0) {
-        randomcaseword += word[i].toUpperCase();
-      } else {
-        randomcaseword += word[i];
-      }
+    for (const [i, element] of word.entries()) {
+      randomcaseword += i % 2 != 0 ? element.toUpperCase() : element;
     }
     word = randomcaseword;
   } else if (Config.funbox === "capitals") {
@@ -816,10 +810,10 @@ async function getNextWord(
           randomWord == "I") ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
-          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
+          /["'+,./:;<=>?[\\\]_{|}-]/i.test(randomWord)) ||
         (Config.mode !== "custom" &&
           !Config.numbers &&
-          /[0-9]/i.test(randomWord)))
+          /\d/i.test(randomWord)))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();
@@ -855,8 +849,7 @@ async function getNextWord(
       wordsBound
     );
   }
-  if (Config.numbers) {
-    if (Math.random() < 0.1) {
+  if (Config.numbers && Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
 
       if (Config.language.startsWith("kurdish")) {
@@ -865,7 +858,6 @@ async function getNextWord(
         randomWord = Misc.convertNumberToNepali(randomWord);
       }
     }
-  }
 
   return randomWord;
 }
@@ -1096,7 +1088,7 @@ export async function init(): Promise<void> {
       return;
     }
 
-    let rq: MonkeyTypes.Quote | undefined = undefined;
+    let rq: MonkeyTypes.Quote | undefined;
     if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
       const targetQuote = QuotesController.getQuoteById(
         QuoteSearchPopup.selectedId
@@ -1272,10 +1264,10 @@ export async function addWord(): Promise<void> {
 
   const split = randomWord.split(" ");
   if (split.length > 1) {
-    split.forEach((word) => {
+    for (const word of split) {
       TestWords.words.push(word);
       TestUI.addWord(word);
-    });
+    }
   } else {
     TestWords.words.push(randomWord);
     TestUI.addWord(randomWord);
@@ -1407,11 +1399,11 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   let keyConsistencyArray =
     TestInput.keypressTimings.spacing.array === "toolong"
       ? []
-      : TestInput.keypressTimings.spacing.array.slice();
+      : [...TestInput.keypressTimings.spacing.array];
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
       0,
-      keyConsistencyArray.length - 1
+      - 1
     );
   }
   let keyConsistency = Misc.roundTo2(
@@ -1484,7 +1476,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
         activeTagsIds.push(tag._id);
       }
     });
-  } catch (e) {}
+  } catch {}
   completedEvent.tags = activeTagsIds;
 
   if (completedEvent.mode != "custom") delete completedEvent.customText;
@@ -1494,7 +1486,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestActive.get()) return;
-  if (Config.mode == "zen" && TestInput.input.current.length != 0) {
+  if (Config.mode == "zen" && TestInput.input.current.length > 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);

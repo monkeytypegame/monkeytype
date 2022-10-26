@@ -9,7 +9,7 @@ const BASE_URL =
   window.location.hostname === "localhost" ? DEV_SERVER_HOST : PROD_SERVER_HOST;
 const API_URL = `${BASE_URL}${API_PATH}`;
 
-const httpClient = buildHttpClient(API_URL, 10000);
+const httpClient = buildHttpClient(API_URL, 10_000);
 
 // API Endpoints
 const Ape = {

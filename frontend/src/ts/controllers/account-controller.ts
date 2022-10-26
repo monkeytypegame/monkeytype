@@ -66,10 +66,10 @@ export function sendVerificationEmail(): void {
       Loader.hide();
       Notifications.add("Email sent to " + user.email, 4000);
     })
-    .catch((e) => {
+    .catch((error) => {
       Loader.hide();
-      Notifications.add("Error: " + e.message, 3000);
-      console.error(e.message);
+      Notifications.add("Error: " + error.message, 3000);
+      console.error(error.message);
     });
 }
 
@@ -119,12 +119,12 @@ export async function getDataAndInit(): Promise<boolean> {
 
   Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
     const [languages, funboxes] = values;
-    languages.forEach((language) => {
+    for (const language of languages) {
       ResultFilters.defaultResultFilters.language[language] = true;
-    });
-    funboxes.forEach((funbox) => {
+    }
+    for (const funbox of funboxes) {
       ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
-    });
+    }
     // filters = defaultResultFilters;
     ResultFilters.load();
   });
@@ -153,13 +153,13 @@ export async function getDataAndInit(): Promise<boolean> {
     } else if (snapshot.config !== undefined) {
       //loading db config, keep for now
       let configsDifferent = false;
-      Object.keys(Config).forEach((ke) => {
+      for (const ke of Object.keys(Config)) {
         const key = ke as keyof typeof Config;
-        if (configsDifferent) return;
+        if (configsDifferent) continue;
         try {
           if (key !== "resultFilters") {
             if (Array.isArray(Config[key])) {
-              (Config[key] as string[]).forEach((arrval, index) => {
+              for (const [index, arrval] of (Config[key] as string[]).entries()) {
                 const arrayValue = (
                   snapshot?.config?.[key] as
                     | string[]
@@ -172,7 +172,7 @@ export async function getDataAndInit(): Promise<boolean> {
                     `.config is different: ${arrval} != ${arrayValue}`
                   );
                 }
-              });
+              }
             } else {
               if (Config[key] != snapshot?.config?.[key]) {
                 configsDifferent = true;
@@ -182,12 +182,12 @@ export async function getDataAndInit(): Promise<boolean> {
               }
             }
           }
-        } catch (e) {
-          console.log(e);
+        } catch (error) {
+          console.log(error);
           configsDifferent = true;
           console.log(`...config is different`);
         }
-      });
+      }
       if (configsDifferent) {
         console.log("configs are different, applying config from db");
         AccountButton.loading(false);
@@ -210,11 +210,9 @@ export async function getDataAndInit(): Promise<boolean> {
     console.log("config changed before db");
     AccountButton.loading(false);
   }
-  if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-    if (!TestActive.get()) {
+  if ((Config.paceCaret === "pb" || Config.paceCaret === "average") && !TestActive.get()) {
       PaceCaret.init();
     }
-  }
   AccountButton.loading(false);
   ResultFilters.updateTags();
   updateTagsCommands();
@@ -424,7 +422,7 @@ export async function forgotPassword(email: any): Promise<void> {
   canCall = false;
   setTimeout(function () {
     canCall = true;
-  }, 10000);
+  }, 10_000);
 }
 
 export async function signInWithGoogle(): Promise<void> {
@@ -514,9 +512,9 @@ export async function addPasswordAuth(
   ) {
     try {
       await reauthenticateWithPopup(user, gmailProvider);
-    } catch (e) {
+    } catch (error) {
       Loader.hide();
-      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
+      const message = Misc.createErrorMessage(error, "Failed to reauthenticate");
       return Notifications.add(message, -1);
     }
   }
@@ -550,7 +548,7 @@ export function signOut(): void {
       Settings.hideAccountSection();
       AccountButton.update();
       navigate("/login");
-      DB.setSnapshot(undefined);
+      DB.setSnapshot();
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
@@ -598,8 +596,8 @@ async function signUp(): Promise<void> {
   }
 
   if (
-    !email.match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    !/^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z\-]+\.)+[A-Za-z]{2,}))$/.test(
+      email
     )
   ) {
     Notifications.add("Invalid email", 0, 3);
@@ -686,22 +684,22 @@ async function signUp(): Promise<void> {
       }
     }
     Notifications.add("Account created", 1, 3);
-  } catch (e) {
+  } catch (error) {
     //make sure to do clean up here
     if (createdAuthUser) {
       try {
         await Ape.users.delete();
-      } catch (e) {
+      } catch {
         // account might already be deleted
       }
       try {
         await createdAuthUser.user.delete();
-      } catch (e) {
+      } catch {
         // account might already be deleted
       }
     }
-    console.log(e);
-    const message = Misc.createErrorMessage(e, "Failed to create account");
+    console.log(error);
+    const message = Misc.createErrorMessage(error, "Failed to create account");
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();

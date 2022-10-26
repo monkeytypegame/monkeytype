@@ -120,11 +120,7 @@ function hideLoader(lb: number): void {
 
 function updateFooter(lb: LbKey): void {
   let side;
-  if (lb === 15) {
-    side = "left";
-  } else {
-    side = "right";
-  }
+  side = lb === 15 ? "left" : "right";
 
   if (!Auth?.currentUser) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
@@ -158,11 +154,7 @@ function updateFooter(lb: LbKey): void {
     const num = Misc.roundTo2(
       (currentRank[lb]["rank"] / (currentRank[lb].count as number)) * 100
     );
-    if (currentRank[lb]["rank"] == 1) {
-      toppercent = "GOAT";
-    } else {
-      toppercent = `Top ${num}%`;
-    }
+    toppercent = currentRank[lb]["rank"] == 1 ? "GOAT" : `Top ${num}%`;
     toppercent = `<br><span class="sub">${toppercent}</span>`;
   }
 
@@ -196,11 +188,7 @@ function checkLbMemory(lb: LbKey): void {
   if (currentTimeRange === "daily") return;
 
   let side;
-  if (lb === 15) {
-    side = "left";
-  } else {
-    side = "right";
-  }
+  side = lb === 15 ? "left" : "right";
 
   const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"] ?? 0;
 
@@ -240,11 +228,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   }
 
   let side;
-  if (lb === 15) {
-    side = "left";
-  } else {
-    side = "right";
-  }
+  side = lb === 15 ? "left" : "right";
 
   if (currentData[lb].length === 0) {
     $(`#leaderboardsWrapper table.${side} tbody`).html(

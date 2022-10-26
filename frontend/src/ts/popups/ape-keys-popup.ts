@@ -31,7 +31,7 @@ function refreshList(): void {
     );
     return;
   }
-  apeKeyIds.forEach((apeKeyId) => {
+  for (const apeKeyId of apeKeyIds) {
     const key = data[apeKeyId] as MonkeyTypes.ApeKey;
     table.append(`
       <tr keyId="${apeKeyId}">
@@ -64,7 +64,7 @@ function refreshList(): void {
         </td>
       </tr>
     `);
-  });
+  }
 }
 
 export function hide(): void {

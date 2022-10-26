@@ -45,7 +45,7 @@ function highlightMatches(text: string, matchedText: string[]): string {
   if (matchedText.length === 0) {
     return text;
   }
-  const words = splitByAndKeep(text, `.,"/#!$%^&*;:{}=-_\`~() `.split(""));
+  const words = splitByAndKeep(text, [...`.,"/#!$%^&*;:{}=-_\`~() `]);
 
   const normalizedWords = words.map((word) => {
     const shouldHighlight = matchedText.find((match) => {
@@ -67,11 +67,11 @@ function applyQuoteLengthFilter(
     return quotes;
   }
 
-  const quoteLengthFilter = quoteLengthFilterValue.map((filterValue) =>
+  const quoteLengthFilter = new Set(quoteLengthFilterValue.map((filterValue) =>
     parseInt(filterValue, 10)
-  );
+  ));
   const filteredQuotes = quotes.filter((quote) =>
-    quoteLengthFilter.includes(quote.group)
+    quoteLengthFilter.has(quote.group)
   );
 
   return filteredQuotes;
@@ -171,10 +171,10 @@ async function updateResults(searchText: string): Promise<void> {
   const resultsList = $("#quoteSearchResults");
   resultsList.empty();
 
-  quotesToShow.slice(0, 100).forEach((quote) => {
+  for (const quote of quotesToShow.slice(0, 100)) {
     const quoteSearchResult = buildQuoteSearchResult(quote, matchedQueryTerms);
     resultsList.append(quoteSearchResult);
-  });
+  }
 
   const resultsExceededText =
     quotesToShow.length > 100
@@ -275,7 +275,7 @@ export function hide(noAnim = false, focusWords = true): void {
 export function apply(val: number): boolean {
   if (isNaN(val)) {
     val = parseInt(
-      (<HTMLInputElement>document.getElementById("searchBox")).value as string
+      (<HTMLInputElement>document.querySelector("#searchBox")).value as string
     );
   }
   let ret;
@@ -293,7 +293,7 @@ export function apply(val: number): boolean {
 }
 
 const searchForQuotes = debounce(250, (): void => {
-  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+  const searchText = (<HTMLInputElement>document.querySelector("#searchBox"))
     .value;
   updateResults(searchText);
 });

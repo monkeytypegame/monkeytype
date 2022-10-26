@@ -29,9 +29,9 @@ export function highlightKey(currentKey: string): void {
     // console.log("highlighting", highlightKey);
 
     $(highlightKey).addClass("activeKey");
-  } catch (e) {
-    if (e instanceof Error) {
-      console.log("could not update highlighted keymap key: " + e.message);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.log("could not update highlighted keymap key: " + error.message);
     }
   }
 }
@@ -85,7 +85,7 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
           "easeOutExpo"
         );
     }
-  } catch (e) {}
+  } catch {}
 }
 
 export function hide(): void {
@@ -129,8 +129,7 @@ export async function refresh(
 
     let keymapElement = "";
 
-    (Object.keys(lts.keys) as (keyof MonkeyTypes.Keys)[]).forEach(
-      (row, index) => {
+    for (const [index, row] of (Object.keys(lts.keys) as (keyof MonkeyTypes.Keys)[]).entries()) {
         let rowKeys = lts.keys[row];
         if (
           row === "row1" &&
@@ -140,7 +139,7 @@ export async function refresh(
         }
         let rowElement = "";
         if (row === "row1" && !showTopRow) {
-          return;
+          continue;
         }
 
         if ((row === "row2" || row === "row3" || row === "row4") && !isMatrix) {
@@ -166,7 +165,7 @@ export async function refresh(
           <div class="letter"></div>
         </div>`;
         } else {
-          for (let i = 0; i < rowKeys.length; i++) {
+          for (const [i, key] of rowKeys.entries()) {
             if (row === "row2" && i === 12) continue;
             if (
               (Config.keymapStyle === "matrix" ||
@@ -175,7 +174,6 @@ export async function refresh(
             ) {
               continue;
             }
-            const key = rowKeys[i];
             const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
             let keyDisplay = key[0];
             let letterStyle = "";
@@ -232,14 +230,12 @@ export async function refresh(
               }
             }
 
-            if (Config.keymapStyle === "alice" && row === "row4") {
-              if (
+            if (Config.keymapStyle === "alice" && row === "row4" && (
                 (lts.type === "iso" && i === 6) ||
                 (lts.type !== "iso" && i === 5)
-              ) {
+              )) {
                 splitSpacer += `<div class="extraKey"><span class="letter"></span></div>`;
               }
-            }
 
             rowElement += splitSpacer + keyElement;
           }
@@ -247,7 +243,7 @@ export async function refresh(
 
         keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
       }
-    );
+    
 
     $("#keymap").html(keymapElement);
 
@@ -257,10 +253,10 @@ export async function refresh(
     $("#keymap").removeClass("split_matrix");
     $("#keymap").removeClass("alice");
     $("#keymap").addClass(Config.keymapStyle);
-  } catch (e) {
-    if (e instanceof Error) {
+  } catch (error) {
+    if (error instanceof Error) {
       console.log(
-        "something went wrong when changing layout, resettings: " + e.message
+        "something went wrong when changing layout, resettings: " + error.message
       );
       // UpdateConfig.setKeymapLayout("qwerty", true);
     }

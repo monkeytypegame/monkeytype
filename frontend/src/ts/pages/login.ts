@@ -80,7 +80,7 @@ const checkNameDebounced = debounce(1000, async () => {
 
 const checkEmail = (): void => {
   const emailRegex =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z\-]+\.)+[A-Za-z]{2,}))$/;
 
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   if (emailRegex.test(email)) {
@@ -117,8 +117,8 @@ const checkPassword = (): void => {
     return;
   } else {
     const hasCapital = password.match(/[A-Z]/);
-    const hasNumber = password.match(/[\d]/);
-    const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
+    const hasNumber = password.match(/\d/);
+    const hasSpecial = password.match(/[!"#$%&'()*+,./:;<=>?@[\\\]^_{|}\-]/);
     if (!hasCapital || !hasNumber || !hasSpecial) {
       passwordIndicator.show(
         "weak",

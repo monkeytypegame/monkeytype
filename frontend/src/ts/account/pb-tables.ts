@@ -93,9 +93,9 @@ export function update(
   $(`.page${source} .profile .pbsWords`).html("");
 
   text = "";
-  [15, 30, 60, 120].forEach((mode2) => {
+  for (const mode2 of [15, 30, 60, 120]) {
     text += buildPbHtml(personalBests, "time", mode2);
-  });
+  }
 
   const showAllButton = isProfile
     ? ""
@@ -110,9 +110,9 @@ export function update(
   $(`.page${source} .profile .pbsTime`).append(text + showAllButton);
 
   text = "";
-  [10, 25, 50, 100].forEach((mode2) => {
+  for (const mode2 of [10, 25, 50, 100]) {
     text += buildPbHtml(personalBests, "words", mode2);
-  });
+  }
 
   $(`.page${source} .profile .pbsWords`).append(text + showAllButton);
 }
@@ -153,7 +153,7 @@ function buildPbHtml(
       } con</div>
       <div>${dateText}</div>
     </div>`;
-  } catch (e) {
+  } catch {
     retval = `<div class="quick">
     <div class="test">${modeString}</div>
     <div class="wpm">-</div>

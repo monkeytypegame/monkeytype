@@ -298,11 +298,11 @@ export function updateExtras(
     ).addClass("active");
   } else if (key == "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
-    (value as MonkeyTypes.QuoteLength[]).forEach((ql) => {
+    for (const ql of (value as MonkeyTypes.QuoteLength[])) {
       $(
         "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
       ).addClass("active");
-    });
+    }
   } else if (key == "numbers") {
     if (!value) {
       $("#testConfig .numbersMode.textButton").removeClass("active");

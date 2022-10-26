@@ -7,12 +7,12 @@ export function subscribe(fn: SubscribeFunction): void {
 }
 
 export function dispatch(): void {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn();
-    } catch (e) {
+    } catch (error) {
       console.error("Banner event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }

@@ -14,7 +14,7 @@ export async function getList(): Promise<string[]> {
 export async function check(word: string): Promise<boolean> {
   const list = await getList();
   if (
-    list.find((a) => word.match(RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))) ===
+    list.find((a) => word.match(new RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))) ===
     undefined
   ) {
     return false;
@@ -25,11 +25,11 @@ export async function check(word: string): Promise<boolean> {
 export async function replace(word: string): Promise<string> {
   const list = await getList();
   const replacement = list.find((a) =>
-    word.match(RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))
+    word.match(new RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))
   );
   return replacement
     ? word.replace(
-        RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
+        new RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
         replacement[1]
       )
     : word;

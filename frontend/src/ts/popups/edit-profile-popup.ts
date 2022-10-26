@@ -136,13 +136,13 @@ async function updateProfile(): Promise<void> {
   }
 
   snapshot.details = updates;
-  snapshot.inventory?.badges.forEach((badge) => {
+  for (const badge of snapshot.inventory?.badges) {
     if (badge.id === currentSelectedBadgeId) {
       badge.selected = true;
     } else {
       delete badge.selected;
     }
-  });
+  }
 
   Notifications.add("Profile updated", 1);
 

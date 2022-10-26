@@ -28,9 +28,9 @@ function rememberSetting(
 }
 
 function loadMemory(): void {
-  Object.keys(settingsMemory).forEach((setting) => {
+  for (const setting of Object.keys(settingsMemory)) {
     settingsMemory[setting].setFunction(settingsMemory[setting].value, true);
-  });
+  }
   settingsMemory = {};
 }
 
@@ -126,8 +126,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
-    if (funbox == "choo_choo" || funbox == "earthquake") {
+  if ((await Misc.getCurrentLanguage(Config.language)).ligatures && (funbox == "choo_choo" || funbox == "earthquake")) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
@@ -136,9 +135,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       await clear();
       return;
     }
-  }
-  if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote")) {
-    if (funboxInfo?.affectsWordGeneration === true) {
+  if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote") && funboxInfo?.affectsWordGeneration === true) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
           Config.mode
@@ -149,7 +146,6 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       await clear();
       return;
     }
-  }
   // if (funbox === "none") {
 
   reset();
@@ -163,7 +159,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     (funbox !== "none" && mode === null)
   ) {
     const list = await Misc.getFunboxList();
-    mode = list.filter((f) => f.name === funbox)[0].type;
+    mode = list.find((f) => f.name === funbox).type;
   }
 
   ManualRestart.set();
@@ -229,7 +225,7 @@ export async function rememberSettings(): Promise<void> {
     (funbox !== "none" && mode === null)
   ) {
     const list = await Misc.getFunboxList();
-    mode = list.filter((f) => f.name === funbox)[0].type;
+    mode = list.find((f) => f.name === funbox).type;
   }
   if (mode === "style") {
     if (funbox === "simon_says") {

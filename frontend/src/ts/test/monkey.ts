@@ -47,12 +47,12 @@ function toBit(b: boolean): "1" | "0" {
 function update(): void {
   if (!Config.monkey) return;
   if (!document.querySelector("#monkey")?.classList.contains("hidden")) {
-    (Object.keys(elements) as (keyof typeof elements)[]).forEach((key) => {
+    for (const key of (Object.keys(elements) as (keyof typeof elements)[])) {
       elements[key]?.classList.add("hidden");
-    });
-    (Object.keys(elementsFast) as (keyof typeof elements)[]).forEach((key) => {
+    }
+    for (const key of (Object.keys(elementsFast) as (keyof typeof elements)[])) {
       elementsFast[key]?.classList.add("hidden");
-    });
+    }
 
     const id: keyof typeof elements = `${toBit(left)}${toBit(right)}`;
 
