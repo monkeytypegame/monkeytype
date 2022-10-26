@@ -65,7 +65,8 @@
     "unicorn/prefer-top-level-await": "off",
     "unicorn/prefer-number-properties": "off",
     "unicorn/prefer-ternary": ["error", "only-single-line"],
-    "unicorn/prefer-switch": "off"
+    "unicorn/prefer-switch": "off",
+    "unicorn/no-null": "off"
     // "@typescript-eslint/no-floating-promises": "error" // consider adding these
     // "@typescript-eslint/strict-boolean-expressions": "warn",
   },
