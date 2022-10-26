@@ -544,8 +544,9 @@ export async function fillSettingsPage(): Promise<void> {
       });
     })
     .catch((e) => {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to update funbox settings buttons")
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to update funbox settings buttons"),
+        -1
       );
     });
 
