@@ -4,6 +4,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
 import * as Misc from "../utils/misc";
 import * as Hangul from "hangul-js";
+import * as ActivePage from "../states/active-page";
 
 export function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
@@ -98,6 +99,8 @@ export function show(): void {
 export async function refresh(
   layoutName: string = Config.layout
 ): Promise<void> {
+  if (Config.keymapMode === "off") return;
+  if (ActivePage.get() !== "test") return;
   if (!layoutName) return;
   try {
     const layouts = await Misc.getLayoutsList();
@@ -271,7 +274,8 @@ ConfigEvent.subscribe((eventKey) => {
   if (
     eventKey === "keymapLayout" ||
     eventKey === "keymapStyle" ||
-    eventKey === "keymapShowTopRow"
+    eventKey === "keymapShowTopRow" ||
+    eventKey === "keymapMode"
   ) {
     refresh();
   }

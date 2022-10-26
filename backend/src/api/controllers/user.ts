@@ -59,7 +59,17 @@ export async function deleteUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "delete user");
-  await UserDAL.deleteUser(uid);
+  await Promise.all([
+    UserDAL.deleteUser(uid),
+    deleteAllApeKeys(uid),
+    deleteAllPresets(uid),
+    deleteConfig(uid),
+    purgeUserFromDailyLeaderboards(
+      uid,
+      req.ctx.configuration.dailyLeaderboards
+    ),
+  ]);
+
   Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User deleted");
