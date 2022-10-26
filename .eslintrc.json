@@ -21,7 +21,8 @@
     "plugin:json/recommended",
     "plugin:require-path-exists/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:unicorn/recommended"
   ],
   "plugins": ["json", "require-path-exists", "@typescript-eslint"],
   "rules": {
