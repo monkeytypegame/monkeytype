@@ -149,9 +149,15 @@ Misc.getThemesList()
     );
   });
 
-Misc.getChallengeList().then((challenges) => {
-  updateLoadChallengeCommands(challenges);
-});
+Misc.getChallengeList()
+  .then((challenges) => {
+    updateLoadChallengeCommands(challenges);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update challenges commands")
+    );
+  });
 
 export const commands: MonkeyTypes.CommandsSubgroup = {
   title: "",
