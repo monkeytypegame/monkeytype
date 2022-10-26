@@ -17,7 +17,7 @@ const router = Router();
 const tagNameValidation = joi
   .string()
   .required()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(/^[\w.-]+$/)
   .max(16)
   .messages({
     "string.pattern.base":
@@ -28,7 +28,7 @@ const tagNameValidation = joi
 const customThemeNameValidation = joi
   .string()
   .max(16)
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(/^[\w.-]+$/)
   .required()
   .messages({
     "string.max": "The name must not exceed 16 characters",
@@ -42,7 +42,7 @@ const customThemeColorsValidation = joi
     joi
       .string()
       .length(7)
-      .regex(/^#[0-9a-fA-F]{6}$/)
+      .regex(/^#[\dA-Fa-f]{6}$/)
       .messages({
         "string.pattern.base": "The colors must be valid hexadecimal",
         "string.length": "The colors must be 7 characters long",
@@ -57,7 +57,7 @@ const customThemeColorsValidation = joi
 const customThemeIdValidation = joi
   .string()
   .length(24)
-  .regex(/^[0-9a-fA-F]+$/)
+  .regex(/^[\dA-Fa-f]+$/)
   .required()
   .messages({
     "string.length": "The themeId must be 24 characters long",

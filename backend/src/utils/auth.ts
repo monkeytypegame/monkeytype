@@ -9,8 +9,8 @@ import {
 } from "./prometheus";
 
 const tokenCache = new LRUCache<string, DecodedIdToken>({
-  max: 20000,
-  maxSize: 50000000, // 50MB
+  max: 20_000,
+  maxSize: 50_000_000, // 50MB
   sizeCalculation: (token, key): number =>
     JSON.stringify(token).length + key.length, //sizeInBytes
 });

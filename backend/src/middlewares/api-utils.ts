@@ -108,7 +108,7 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
   if (process.env.MODE === "dev") {
     validationSchema.body = {
       uid: joi.any(),
-      ...(validationSchema.body ?? {}),
+      ...validationSchema.body,
     };
   }
 

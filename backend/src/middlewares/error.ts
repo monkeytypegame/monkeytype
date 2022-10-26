@@ -22,7 +22,7 @@ async function errorHandlingMiddleware(
       uid: monkeyError.uid ?? req.ctx?.decodedToken?.uid,
     };
 
-    if (/ECONNREFUSED.*27017/i.test(error.message)) {
+    if (/econnrefused.*27017/i.test(error.message)) {
       monkeyResponse.message =
         "Could not connect to the database. It may be down.";
     } else if (error instanceof URIError || error instanceof SyntaxError) {
@@ -55,18 +55,18 @@ async function errorHandlingMiddleware(
           stack: error.stack,
           endpoint: req.originalUrl,
         });
-      } catch (e) {
+      } catch (error) {
         Logger.error("Logging to db failed.");
-        Logger.error(e);
+        Logger.error(error);
       }
     } else {
       Logger.error(`Error: ${error.message} Stack: ${error.stack}`);
     }
 
     return handleMonkeyResponse(monkeyResponse, res);
-  } catch (e) {
+  } catch (error) {
     Logger.error("Error handling middleware failed.");
-    Logger.error(e);
+    Logger.error(error);
   }
 
   return handleMonkeyResponse(

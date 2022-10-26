@@ -149,7 +149,7 @@ function updateLeaderboardPersonalBests(
 
   const bestForEveryLanguage = {};
 
-  userPersonalBests[mode][mode2].forEach((pb: MonkeyTypes.PersonalBest) => {
+  for (const pb of userPersonalBests[mode][mode2]) {
     const language = pb.language;
     if (
       !bestForEveryLanguage[language] ||
@@ -157,7 +157,7 @@ function updateLeaderboardPersonalBests(
     ) {
       bestForEveryLanguage[language] = pb;
     }
-  });
+  }
 
   _.each(
     bestForEveryLanguage,

@@ -1,7 +1,7 @@
 import * as db from "../init/db";
 import chalk from "chalk";
 import winston, { format } from "winston";
-import { resolve } from "path";
+import { resolve } from "node:path";
 import { ObjectId } from "mongodb";
 
 const errorColor = chalk.red.bold;
@@ -39,15 +39,18 @@ const coloredOutputFormat = format.printf((log) => {
   let color = infoColor;
 
   switch (log.level) {
-    case "error":
+    case "error": {
       color = errorColor;
       break;
-    case "warning":
+    }
+    case "warning": {
       color = warningColor;
       break;
-    case "success":
+    }
+    case "success": {
       color = successColor;
       break;
+    }
   }
 
   return `${log.timestamp}\t${color(log.message)}`;

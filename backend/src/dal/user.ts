@@ -166,13 +166,12 @@ export async function getUser(
 }
 
 async function findByName(name: string): Promise<MonkeyTypes.User | undefined> {
-  return (
-    await getUsersCollection()
-      .find({ name })
-      .collation({ locale: "en", strength: 1 })
-      .limit(1)
-      .toArray()
-  )[0];
+  const users = await getUsersCollection()
+    .find({ name })
+    .collation({ locale: "en", strength: 1 })
+    .limit(1)
+    .toArray();
+  return users[0];
 }
 
 export async function isNameAvailable(name: string): Promise<boolean> {
@@ -201,9 +200,8 @@ export async function addResultFilterPreset(
   maxFiltersPerUser: number
 ): Promise<ObjectId> {
   // ensure limit not reached
-  const filtersCount = (
-    (await getUser(uid, "Add Result filter")).resultFilterPresets ?? []
-  ).length;
+  const user = await getUser(uid, "Add Result filter");
+  const filtersCount = (user.resultFilterPresets ?? []).length;
 
   if (filtersCount >= maxFiltersPerUser) {
     throw new MonkeyError(
@@ -411,13 +409,13 @@ export async function checkIfTagPb(
   }
 
   const tagsToCheck: MonkeyTypes.UserTag[] = [];
-  user.tags.forEach((userTag) => {
-    resultTags.forEach((resultTag) => {
+  for (const userTag of user.tags) {
+    for (const resultTag of resultTags) {
       if (resultTag === userTag._id.toHexString()) {
         tagsToCheck.push(userTag);
       }
-    });
-  });
+    }
+  }
 
   const ret: string[] = [];
 
@@ -787,7 +785,7 @@ export async function addToInboxBulk(
 
   const bulk = getUsersCollection().initializeUnorderedBulkOp();
 
-  entries.forEach((entry) => {
+  for (const entry of entries) {
     bulk.find({ uid: entry.uid }).updateOne({
       $push: {
         inbox: {
@@ -797,7 +795,7 @@ export async function addToInboxBulk(
         },
       },
     });
-  });
+  }
 
   await bulk.execute();
 }
@@ -836,14 +834,14 @@ function buildRewardUpdates(
   let totalXp = 0;
   const newBadges: MonkeyTypes.Badge[] = [];
 
-  rewards.forEach((reward) => {
+  for (const reward of rewards) {
     if (reward.type === "xp") {
       totalXp += isNaN(reward.item) ? 0 : reward.item;
     } else if (reward.type === "badge") {
       const item = _.omit(reward.item, "selected");
       newBadges.push(item);
     }
-  });
+  }
 
   const baseUpdate = {
     $inc: {
@@ -886,9 +884,9 @@ export async function updateInbox(
 
   const newInbox = inbox
     .filter((mail) => {
-      const { id, rewards } = mail;
+      const { id, rewards, read } = mail;
 
-      if (mailToReadSet.has(id) && !mail.read) {
+      if (mailToReadSet.has(id) && !read) {
         mail.read = true;
         if (rewards.length > 0) {
           allRewards.push(...rewards);

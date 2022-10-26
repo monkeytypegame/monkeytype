@@ -40,7 +40,7 @@ import { buildMonkeyMail } from "../../utils/monkey-mail";
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
   Logger.success("Anticheat module loaded");
-} catch (e) {
+} catch {
   if (process.env.MODE === "dev") {
     Logger.warning(
       "No anticheat module found. Continuing in dev mode, results will not be validated."
@@ -209,8 +209,9 @@ export async function addResult(
   //get latest result ordered by timestamp
   let lastResultTimestamp;
   try {
-    lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
-  } catch (e) {
+    const lastResult = await ResultDAL.getLastResult(uid);
+    lastResultTimestamp = lastResult.timestamp;
+  } catch {
     lastResultTimestamp = null;
   }
 
@@ -238,22 +239,21 @@ export async function addResult(
   try {
     result.keySpacingStats = {
       average:
-        result.keySpacing.reduce((previous, current) => (current += previous)) /
+        result.keySpacing.reduce((total, item) => total + item) /
         result.keySpacing.length,
       sd: stdDev(result.keySpacing),
     };
-  } catch (e) {
+  } catch {
     //
   }
   try {
     result.keyDurationStats = {
       average:
-        result.keyDuration.reduce(
-          (previous, current) => (current += previous)
-        ) / result.keyDuration.length,
+        result.keyDuration.reduce((total, item) => total + item) /
+        result.keyDuration.length,
       sd: stdDev(result.keyDuration),
     };
-  } catch (e) {
+  } catch {
     //
   }
 
@@ -309,7 +309,7 @@ export async function addResult(
     result.keyDurationStats.sd = roundTo2(result.keyDurationStats.sd);
     result.keySpacingStats.average = roundTo2(result.keySpacingStats.average);
     result.keySpacingStats.sd = roundTo2(result.keySpacingStats.sd);
-  } catch (e) {
+  } catch {
     //
   }
 
@@ -362,11 +362,11 @@ export async function addResult(
   );
 
   let dailyLeaderboardRank = -1;
-
-  const { funbox, bailedOut } = result;
   const validResultCriteria =
-    (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
-    !bailedOut &&
+    (result.funbox === "none" ||
+      result.funbox === "plus_one" ||
+      result.funbox === "plus_two") &&
+    !result.bailedOut &&
     !user.banned &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
@@ -538,11 +538,11 @@ async function calculateXp(
 
   let incompleteXp = 0;
   if (incompleteTests && incompleteTests.length > 0) {
-    incompleteTests.forEach((it: { acc: number; seconds: number }) => {
+    for (const it of incompleteTests as { acc: number; seconds: number }[]) {
       let modifier = (it.acc - 50) / 50;
       if (modifier < 0) modifier = 0;
       incompleteXp += Math.round(it.seconds * modifier);
-    });
+    }
     breakdown["incomplete"] = incompleteXp;
   } else if (incompleteTestSeconds && incompleteTestSeconds > 0) {
     incompleteXp = Math.round(incompleteTestSeconds);
@@ -557,8 +557,8 @@ async function calculateXp(
   try {
     const { timestamp } = await ResultDAL.getLastResult(uid);
     lastResultTimestamp = timestamp;
-  } catch (err) {
-    Logger.error(`Could not fetch last result: ${err}`);
+  } catch (error) {
+    Logger.error(`Could not fetch last result: ${error}`);
   }
 
   if (lastResultTimestamp) {

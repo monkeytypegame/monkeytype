@@ -1,9 +1,9 @@
-import { join } from "path";
+import { join } from "node:path";
 import { padNumbers } from "./utils/misc";
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const SERVER_VERSION_FILE_PATH = join(__dirname, "./server.version");
-const { COMMIT_HASH = "NO_HASH" } = process.env;
+const { COMMIT_HASH = "NO_HASH", MODE } = process.env;
 
 function getDateVersion(): string {
   const date = new Date();
@@ -21,12 +21,12 @@ function getDateVersion(): string {
 }
 
 function getVersion(): string {
-  if (process.env.MODE === "dev") {
+  if (MODE === "dev") {
     return "DEVELOPMENT-VERSION";
   }
 
   if (existsSync(SERVER_VERSION_FILE_PATH)) {
-    return readFileSync(SERVER_VERSION_FILE_PATH, "utf-8");
+    return readFileSync(SERVER_VERSION_FILE_PATH, "utf8");
   }
 
   const serverVersion = `${getDateVersion()}.${COMMIT_HASH}`;

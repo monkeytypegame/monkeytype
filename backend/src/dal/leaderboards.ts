@@ -1,6 +1,6 @@
 import * as db from "../init/db";
 import Logger from "../utils/logger";
-import { performance } from "perf_hooks";
+import { performance } from "node:perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 
 const leaderboardUpdating: { [key: string]: boolean } = {};
@@ -112,8 +112,8 @@ export async function update(
   const end1 = performance.now();
 
   const start2 = performance.now();
-  let retval: number | undefined = undefined;
-  lb.forEach((lbEntry, index) => {
+  let retval: number | undefined;
+  for (const [index, lbEntry] of lb.entries()) {
     lbEntry.rank = index + 1;
     if (uid && lbEntry.uid === uid) {
       retval = index + 1;
@@ -127,14 +127,14 @@ export async function update(
       }
       delete lbEntry.badges;
     }
-  });
+  }
   const end2 = performance.now();
   const start3 = performance.now();
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
   try {
     await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
-  } catch (e) {}
-  if (lb && lb.length !== 0) {
+  } catch {}
+  if (lb && lb.length > 0) {
     await db
       .collection<MonkeyTypes.LeaderboardEntry>(
         `leaderboards.${language}.${mode}.${mode2}`
@@ -188,14 +188,12 @@ export async function update(
     timeToRunIndex,
   ]);
 
-  if (retval) {
-    return {
-      message: "Successfully updated leaderboard",
-      rank: retval,
-    };
-  } else {
-    return {
-      message: "Successfully updated leaderboard",
-    };
-  }
+  return retval
+    ? {
+        message: "Successfully updated leaderboard",
+        rank: retval,
+      }
+    : {
+        message: "Successfully updated leaderboard",
+      };
 }

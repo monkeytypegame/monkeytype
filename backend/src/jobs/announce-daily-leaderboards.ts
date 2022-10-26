@@ -51,7 +51,8 @@ async function announceDailyLeaderboard(
   if (allResults.length === 0) {
     return;
   }
-  const { maxResults, xpRewardBrackets } = dailyLeaderboardsConfig;
+  const { maxResults, xpRewardBrackets, topResultsToAnnounce } =
+    dailyLeaderboardsConfig;
 
   if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
     const mailEntries: {
@@ -59,7 +60,7 @@ async function announceDailyLeaderboard(
       mail: MonkeyTypes.MonkeyMail[];
     }[] = [];
 
-    allResults.forEach((entry) => {
+    for (const entry of allResults) {
       const rank = entry.rank ?? maxResults;
 
       const placementString = getOrdinalNumberString(rank);
@@ -77,7 +78,7 @@ async function announceDailyLeaderboard(
         )
         .max();
 
-      if (!xpReward) return;
+      if (!xpReward) continue;
 
       const rewardMail = buildMonkeyMail({
         subject: "Daily leaderboard placement",
@@ -94,15 +95,12 @@ async function announceDailyLeaderboard(
         uid: entry.uid,
         mail: [rewardMail],
       });
-    });
+    }
 
     await addToInboxBulk(mailEntries, inboxConfig);
   }
 
-  const topResults = allResults.slice(
-    0,
-    dailyLeaderboardsConfig.topResultsToAnnounce
-  );
+  const topResults = allResults.slice(0, topResultsToAnnounce);
 
   const leaderboardId = `${mode} ${mode2} ${language}`;
   await announceDailyLeaderboardTopResults(

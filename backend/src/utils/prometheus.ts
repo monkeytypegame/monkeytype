@@ -102,6 +102,9 @@ export function incrementResult(
     language,
     numbers,
     punctuation,
+    wpm,
+    acc,
+    testDuration,
   } = res;
 
   let m2 = mode2 as string;
@@ -137,7 +140,7 @@ export function incrementResult(
       mode,
       mode2: m2,
     },
-    res.wpm
+    wpm
   );
 
   resultAcc.observe(
@@ -145,10 +148,10 @@ export function incrementResult(
       mode,
       mode2: m2,
     },
-    res.acc
+    acc
   );
 
-  resultDuration.observe(res.testDuration);
+  resultDuration.observe(testDuration);
 }
 
 export function incrementDailyLeaderboard(

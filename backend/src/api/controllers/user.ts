@@ -29,13 +29,13 @@ export async function createNewUser(
 
   try {
     await verifyCaptcha(captcha);
-  } catch (e) {
+  } catch (error) {
     try {
       await admin.auth().deleteUser(uid);
-    } catch (e) {
+    } catch {
       // user might be deleted on the frontend
     }
-    throw e;
+    throw error;
   }
 
   if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
@@ -150,8 +150,8 @@ export async function updateEmail(
 
   try {
     await UserDAL.updateEmail(uid, newEmail);
-  } catch (e) {
-    throw new MonkeyError(404, e.message, "update email", uid);
+  } catch (error) {
+    throw new MonkeyError(404, error.message, "update email", uid);
   }
 
   Logger.logToDb("user_email_updated", `changed email to ${newEmail}`, uid);
@@ -180,8 +180,8 @@ export async function getUser(
   let userInfo: MonkeyTypes.User;
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
-  } catch (e) {
-    if (e.status === 404) {
+  } catch (error) {
+    if (error.status === 404) {
       await admin.auth().deleteUser(uid);
       throw new MonkeyError(
         404,
@@ -191,7 +191,7 @@ export async function getUser(
       );
     }
 
-    throw e;
+    throw error;
   }
 
   const agentLog = buildAgentLog(req);
@@ -477,6 +477,7 @@ export async function getProfile(
       : await UserDAL.getUserByName(uidOrName, "get user profile");
 
   const {
+    uid,
     name,
     banned,
     inventory,
@@ -527,14 +528,14 @@ export async function getProfile(
     "time",
     "15",
     "english",
-    user.uid
+    uid
   );
 
   const allTime60English = await LeaderboardsDAL.getRank(
     "time",
     "60",
     "english",
-    user.uid
+    uid
   );
 
   const allTime15EnglishRank = allTime15English
@@ -560,7 +561,7 @@ export async function getProfile(
     inventory,
     details: profileDetails,
     allTimeLbs: alltimelbs,
-    uid: user.uid,
+    uid,
   };
 
   return new MonkeyResponse("Profile retrieved", profileData);
@@ -578,13 +579,15 @@ export async function updateProfile(
     throw new MonkeyError(403, "Banned users cannot update their profile");
   }
 
-  user.inventory?.badges.forEach((badge) => {
-    if (badge.id === selectedBadgeId) {
-      badge.selected = true;
-    } else {
-      delete badge.selected;
+  if (user.inventory?.badges) {
+    for (const badge of user.inventory.badges) {
+      if (badge.id === selectedBadgeId) {
+        badge.selected = true;
+      } else {
+        delete badge.selected;
+      }
     }
-  });
+  }
 
   const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
     bio: sanitizeString(bio),

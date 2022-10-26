@@ -95,7 +95,7 @@ export async function incrementBadAuth(
   try {
     const key = getKey(req, res);
     await badAuthRateLimiter.penalty(key, penalty);
-  } catch (error) {}
+  } catch {}
 }
 
 // Config Routing

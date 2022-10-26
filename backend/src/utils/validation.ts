@@ -6,7 +6,7 @@ export function inRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
 }
 
-const VALID_NAME_PATTERN = /^[\da-zA-Z_.-]+$/;
+const VALID_NAME_PATTERN = /^[\w.-]+$/;
 
 export function isUsernameValid(name: string): boolean {
   if (_.isNil(name) || !inRange(name.length, 1, 16)) {
@@ -33,7 +33,7 @@ export function isUsernameValid(name: string): boolean {
 export function containsProfanity(text: string): boolean {
   const normalizedText = text
     .toLowerCase()
-    .split(/[.,"/#!?$%^&*;:{}=\-_`~()\s\n]+/g)
+    .split(/[\s!"#$%&()*,./:;=?^_`{}~-]+/g)
     .map((str) => {
       return sanitizeString(str) ?? "";
     });

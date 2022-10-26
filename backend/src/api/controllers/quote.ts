@@ -20,9 +20,8 @@ export async function getQuotes(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const quoteMod: boolean | undefined | string = (
-    await getUser(uid, "get quotes")
-  ).quoteMod;
+  const user = await getUser(uid, "get quotes");
+  const quoteMod: boolean | undefined | string = user.quoteMod;
   let quoteModString: string;
   if (quoteMod === true) {
     quoteModString = "all";
@@ -142,7 +141,7 @@ export async function reportQuote(
     _id: new ObjectId(),
     id: uuidv4(),
     type: "quote",
-    timestamp: new Date().getTime(),
+    timestamp: Date.now(),
     uid,
     contentId: `${quoteLanguage}-${quoteId}`,
     reason,

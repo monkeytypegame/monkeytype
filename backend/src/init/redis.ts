@@ -1,6 +1,6 @@
-import fs from "fs";
+import fs from "node:fs";
 import _ from "lodash";
-import { join } from "path";
+import { join } from "node:path";
 import IORedis from "ioredis";
 import Logger from "../utils/logger";
 
@@ -12,15 +12,15 @@ const REDIS_SCRIPTS_DIRECTORY_PATH = join(__dirname, "../../redis-scripts");
 function loadScripts(client: IORedis.Redis): void {
   const scriptFiles = fs.readdirSync(REDIS_SCRIPTS_DIRECTORY_PATH);
 
-  scriptFiles.forEach((scriptFile) => {
+  for (const scriptFile of scriptFiles) {
     const scriptPath = join(REDIS_SCRIPTS_DIRECTORY_PATH, scriptFile);
-    const scriptSource = fs.readFileSync(scriptPath, "utf-8");
+    const scriptSource = fs.readFileSync(scriptPath, "utf8");
     const scriptName = _.camelCase(scriptFile.split(".")[0]);
 
     client.defineCommand(scriptName, {
       lua: scriptSource,
     });
-  });
+  }
 }
 
 export async function connect(): Promise<void> {

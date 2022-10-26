@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import { hash } from "bcrypt";
 import * as ApeKeysDAL from "../../dal/ape-keys";
 import MonkeyError from "../../utils/error";

@@ -21,7 +21,7 @@ function mergeConfigurations(
   function merge(base: object, source: object): void {
     const commonKeys = _.intersection(_.keys(base), _.keys(source));
 
-    commonKeys.forEach((key) => {
+    for (const key of commonKeys) {
       const baseValue = base[key];
       const sourceValue = source[key];
 
@@ -33,7 +33,7 @@ function mergeConfigurations(
       } else if (identity(baseValue) === identity(sourceValue)) {
         base[key] = sourceValue;
       }
-    });
+    }
   }
 
   merge(baseConfiguration, liveConfiguration);

@@ -12,7 +12,7 @@ import * as RateLimit from "../../middlewares/rate-limit";
 
 const apeKeyNameSchema = joi
   .string()
-  .regex(/^[0-9a-zA-Z_.-]+$/)
+  .regex(/^[\w.-]+$/)
   .max(20)
   .messages({
     "string.pattern.base": "Invalid ApeKey name",

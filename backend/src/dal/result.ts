@@ -14,7 +14,7 @@ export async function addResult(
   let user;
   try {
     user = await getUser(uid, "add result");
-  } catch (e) {
+  } catch {
     user = null;
   }
   if (!user) throw new MonkeyError(404, "User not found", "add result");
@@ -42,11 +42,11 @@ export async function updateTags(
     .findOne({ _id: new ObjectId(resultId), uid });
   if (!result) throw new MonkeyError(404, "Result not found");
   const userTags = await getTags(uid);
-  const userTagIds = userTags.map((tag) => tag._id.toString());
+  const userTagIds = new Set(userTags.map((tag) => tag._id.toString()));
   let validTags = true;
-  tags.forEach((tagId) => {
-    if (!userTagIds.includes(tagId)) validTags = false;
-  });
+  for (const tagId of tags) {
+    if (!userTagIds.has(tagId)) validTags = false;
+  }
   if (!validTags) {
     throw new MonkeyError(422, "One of the tag id's is not valid");
   }
@@ -90,11 +90,9 @@ export async function getResultByTimestamp(
 
 export async function getResults(
   uid: string,
-  start?: number,
-  end?: number
+  start = 0,
+  end = 1000
 ): Promise<MonkeyTypesResult[]> {
-  start = start ?? 0;
-  end = end ?? 1000;
   const results = await db
     .collection<MonkeyTypesResult>("results")
     .find({ uid })

@@ -7,7 +7,7 @@ import jobs from "./jobs";
 import { getLiveConfiguration } from "./init/configuration";
 import { initializeDailyLeaderboardsCache } from "./utils/daily-leaderboards";
 import app from "./app";
-import { Server } from "http";
+import { Server } from "node:http";
 import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import * as RedisClient from "./init/redis";
@@ -48,7 +48,7 @@ async function bootServer(port: number): Promise<Server> {
     initializeDailyLeaderboardsCache(liveConfiguration.dailyLeaderboards);
 
     Logger.info("Starting cron jobs...");
-    jobs.forEach((job) => job.start());
+    for (const job of jobs) job.start();
     Logger.success("Cron jobs started");
 
     recordServerVersion(version);

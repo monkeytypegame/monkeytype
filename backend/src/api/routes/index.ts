@@ -2,7 +2,7 @@ import _ from "lodash";
 import psas from "./psas";
 import publicStats from "./public";
 import users from "./users";
-import { join } from "path";
+import { join } from "node:path";
 import quotes from "./quotes";
 import configs from "./configs";
 import results from "./results";

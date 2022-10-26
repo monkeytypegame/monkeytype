@@ -10,7 +10,7 @@ import {
   recordAuthTime,
   recordRequestCountry,
 } from "../utils/prometheus";
-import { performance } from "perf_hooks";
+import { performance } from "node:perf_hooks";
 
 interface RequestAuthenticationOptions {
   isPublic?: boolean;
@@ -126,10 +126,12 @@ async function authenticateWithAuthHeader(
   const normalizedAuthScheme = authScheme.trim();
 
   switch (normalizedAuthScheme) {
-    case "Bearer":
+    case "Bearer": {
       return await authenticateWithBearerToken(token, options);
-    case "ApeKey":
+    }
+    case "ApeKey": {
       return await authenticateWithApeKey(token, configuration, options);
+    }
   }
 
   throw new MonkeyError(

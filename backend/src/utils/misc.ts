@@ -31,7 +31,7 @@ export function kogasa(cov: number): number {
 export function identity(value: any): string {
   return Object.prototype.toString
     .call(value)
-    .replace(/^\[object\s+([a-z]+)\]$/i, "$1")
+    .replace(/^\[object\s+([a-z]+)]$/i, "$1")
     .toLowerCase();
 }
 
@@ -81,7 +81,7 @@ export function padNumbers(
   );
 }
 
-export const MILLISECONDS_IN_DAY = 86400000;
+export const MILLISECONDS_IN_DAY = 86_400_000;
 
 export function getStartOfDayTimestamp(timestamp: number): number {
   return timestamp - (timestamp % MILLISECONDS_IN_DAY);
@@ -101,7 +101,7 @@ export function kogascore(wpm: number, acc: number, timestamp: number): number {
   const normalizedWpm = Math.floor(wpm * 100);
   const normalizedAcc = Math.floor(acc * 100);
 
-  const padAmount = 100000;
+  const padAmount = 100_000;
   const firstPart = (padAmount + normalizedWpm) * padAmount;
   const secondPart = (firstPart + normalizedAcc) * padAmount;
 
@@ -121,7 +121,7 @@ export function flattenObjectDeep(
   const result: Record<string, any> = {};
   const keys = Object.keys(obj);
 
-  keys.forEach((key) => {
+  for (const key of keys) {
     const value = obj[key];
 
     const newPrefix = prefix.length > 0 ? `${prefix}.${key}` : key;
@@ -134,13 +134,13 @@ export function flattenObjectDeep(
         result[newPrefix] = value;
       }
 
-      flattenedKeys.forEach((flattenedKey) => {
+      for (const flattenedKey of flattenedKeys) {
         result[`${newPrefix}.${flattenedKey}`] = flattened[flattenedKey];
-      });
+      }
     } else {
       result[newPrefix] = value;
     }
-  });
+  }
 
   return result;
 }
@@ -195,11 +195,9 @@ export function mapRange(
     ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
 
   if (clamp) {
-    if (outMin < outMax) {
-      return Math.min(Math.max(result, outMin), outMax);
-    } else {
-      return Math.max(Math.min(result, outMin), outMax);
-    }
+    return outMin < outMax
+      ? Math.min(Math.max(result, outMin), outMax)
+      : Math.max(Math.min(result, outMin), outMax);
   }
 
   return result;

@@ -1,8 +1,8 @@
 import simpleGit from "simple-git";
 import { ObjectId } from "mongodb";
 import stringSimilarity from "string-similarity";
-import path from "path";
-import fs from "fs";
+import path from "node:path";
+import fs from "node:fs";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 
@@ -11,7 +11,7 @@ const PATH_TO_REPO = "../../../../monkeytype-new-quotes";
 let git;
 try {
   git = simpleGit(path.join(__dirname, PATH_TO_REPO));
-} catch (e) {
+} catch {
   git = undefined;
 }
 
@@ -80,6 +80,7 @@ export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
   }
   return await db
     .collection<MonkeyTypes.NewQuote>("new-quotes")
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive, need to wait for unicorn plugin update
     .find(where)
     .sort({ timestamp: 1 })
     .limit(10)
@@ -118,8 +119,8 @@ export async function approve(
   }
   const language = targetQuote.language;
   const quote: Quote = {
-    text: editQuote ? editQuote : targetQuote.text,
-    source: editSource ? editSource : targetQuote.source,
+    text: editQuote ?? targetQuote.text,
+    source: editSource ?? targetQuote.source,
     length: targetQuote.text.length,
     approvedBy: name,
   };
