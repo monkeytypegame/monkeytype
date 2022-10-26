@@ -711,16 +711,16 @@ function fillContent(): void {
   for (let i = 0; i < keys.length; i++) {
     const bucket = parseInt(keys[i]);
     labels.push(`${bucket} - ${bucket + 9}`);
+    histogramChartDataBucketed.push({
+      x: bucket,
+      y: histogramChartData[bucket],
+    });
     if (bucket + 10 != parseInt(keys[i + 1])) {
       for (let j = bucket + 10; j < parseInt(keys[i + 1]); j += 10) {
         histogramChartDataBucketed.push({ x: j, y: 0 });
         labels.push(`${j} - ${j + 9}`);
       }
     }
-    histogramChartDataBucketed.push({
-      x: bucket,
-      y: histogramChartData[bucket],
-    });
   }
 
   ChartController.accountHistogram.data.labels = labels;
