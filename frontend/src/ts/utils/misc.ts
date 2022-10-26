@@ -187,7 +187,7 @@ let fontsList: MonkeyTypes.FontObject[] | undefined;
 export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
   if (!fontsList) {
     let list = await cachedFetchJson<MonkeyTypes.FontObject[]>(
-      "/./font/_list.json"
+      "/./fonts/_list.json"
     );
     list = list.sort(function (
       a: MonkeyTypes.FontObject,
