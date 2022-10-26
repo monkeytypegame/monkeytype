@@ -217,6 +217,24 @@ export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
   }
 }
 
+export async function getSupportersList(): Promise<string[]> {
+  try {
+    const data = await cachedFetchJson<string[]>("/./about/supporters.json");
+    return data;
+  } catch (e) {
+    throw new Error("Supporters list JSON fetch failed");
+  }
+}
+
+export async function getContributorsList(): Promise<string[]> {
+  try {
+    const data = await cachedFetchJson<string[]>("/./about/contributors.json");
+    return data;
+  } catch (e) {
+    throw new Error("Contributors list JSON fetch failed");
+  }
+}
+
 function hexToHSL(hex: string): {
   hue: number;
   sat: number;
@@ -281,30 +299,6 @@ export function isColorLight(hex: string): boolean {
 export function isColorDark(hex: string): boolean {
   const hsl = hexToHSL(hex);
   return hsl.lgt < 50;
-}
-
-let supportersList: string[] = [];
-export async function getSupportersList(): Promise<string[]> {
-  if (supportersList.length === 0) {
-    return $.getJSON("/./about/supporters.json", function (data) {
-      supportersList = data;
-      return supportersList;
-    });
-  } else {
-    return supportersList;
-  }
-}
-
-let contributorsList: string[] = [];
-export async function getContributorsList(): Promise<string[]> {
-  if (contributorsList.length === 0) {
-    return $.getJSON("/./about/contributors.json", function (data) {
-      contributorsList = data;
-      return contributorsList;
-    });
-  } else {
-    return contributorsList;
-  }
 }
 
 export function smooth(
