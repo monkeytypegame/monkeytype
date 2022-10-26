@@ -206,6 +206,17 @@ export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
   }
 }
 
+export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
+  try {
+    const data = await cachedFetchJson<MonkeyTypes.Challenge[]>(
+      "/./challenges/_list.json"
+    );
+    return data;
+  } catch (e) {
+    throw new Error("Challenge list JSON fetch failed");
+  }
+}
+
 function hexToHSL(hex: string): {
   hue: number;
   sat: number;
@@ -293,18 +304,6 @@ export async function getContributorsList(): Promise<string[]> {
     });
   } else {
     return contributorsList;
-  }
-}
-
-let challengeList: MonkeyTypes.Challenge[] = [];
-export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
-  if (challengeList.length === 0) {
-    return $.getJSON("/./challenges/_list.json", function (data) {
-      challengeList = data;
-      return challengeList;
-    });
-  } else {
-    return challengeList;
   }
 }
 
