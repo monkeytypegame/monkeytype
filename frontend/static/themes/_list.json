@@ -794,4 +794,9 @@
     "bgColor": "#fdf0d5",
     "mainColor": "#892948"
   }
+  ,{
+    "name": "asy",
+    "bgColor": "#C69C72",
+    "mainColor": "#FFADAD"
+  }
 ]
