@@ -6,7 +6,7 @@
   "scripts": {
     "prepare": "husky install",
     "pre-commit": "pretty-quick --staged && npm run lint",
-    "lint": "cd backend && eslint \"**/*.ts\" --fix && cd ../frontend && eslint \"**/*.ts\"",
+    "lint": "cd backend && eslint \"**/*.ts\" && cd ../frontend && eslint \"**/*.ts\"",
     "install-all": "sh ./bin/install.sh",
     "install-windows": ".\\bin\\install.cmd",
     "docker": "cd backend && docker-compose up",
