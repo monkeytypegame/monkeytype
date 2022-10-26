@@ -878,7 +878,7 @@ function fillContent(): void {
 
   let averageAcc: number | string = totalAcc;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAcc = Misc.roundTo2(averageAcc / testCount).toFixed(2);
+    averageAcc = Math.floor(averageAcc / testCount).toFixed(2);
   } else {
     averageAcc = Math.round(averageAcc / testCount);
   }
@@ -887,7 +887,7 @@ function fillContent(): void {
 
   let averageAccLast10: number | string = totalAcc10;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAccLast10 = Misc.roundTo2(averageAccLast10 / last10).toFixed(2);
+    averageAccLast10 = Math.floor(averageAccLast10 / last10).toFixed(2);
   } else {
     averageAccLast10 = Math.round(averageAccLast10 / last10);
   }

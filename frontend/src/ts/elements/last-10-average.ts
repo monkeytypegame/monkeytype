@@ -18,12 +18,10 @@ export async function update(): Promise<void> {
       Config.difficulty,
       Config.lazyMode
     )
-  )
-    .map(Misc.roundTo2)
-    .map((num) => (Config.alwaysShowDecimalPlaces ? Math.round(num) : num));
+  ).map(Misc.roundTo2);
 
-  averageWPM = wpm;
-  averageAcc = acc;
+  averageWPM = Config.alwaysShowDecimalPlaces ? wpm : Math.round(wpm);
+  averageAcc = Config.alwaysShowDecimalPlaces ? acc : Math.floor(acc);
 }
 
 export function getWPM(): number {
