@@ -352,7 +352,7 @@ if (Auth && ConnectionState.get()) {
   });
 }
 
-export function signIn(): void {
+export async function signIn(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
     return;
@@ -375,29 +375,27 @@ export function signIn(): void {
     ? browserLocalPersistence
     : browserSessionPersistence;
 
-  setPersistence(Auth, persistence).then(async function () {
-    if (Auth === undefined) return; //todo convert this function to async and remove this line
-    return signInWithEmailAndPassword(Auth, email, password)
-      .then(async (e) => {
-        await loadUser(e.user);
-      })
-      .catch(function (error) {
-        let message = error.message;
-        if (error.code === "auth/wrong-password") {
-          message = "Incorrect password";
-        } else if (error.code === "auth/user-not-found") {
-          message = "User not found";
-        } else if (error.code === "auth/invalid-email") {
-          message =
-            "Invalid email format (make sure you are using your email to login - not your username)";
-        }
-        Notifications.add(message, -1);
-        LoginPage.hidePreloader();
-        LoginPage.enableInputs();
-        LoginPage.enableSignInButton();
-        LoginPage.updateSignupButton();
-      });
-  });
+  await setPersistence(Auth, persistence);
+  return signInWithEmailAndPassword(Auth, email, password)
+    .then(async (e) => {
+      await loadUser(e.user);
+    })
+    .catch(function (error) {
+      let message = error.message;
+      if (error.code === "auth/wrong-password") {
+        message = "Incorrect password";
+      } else if (error.code === "auth/user-not-found") {
+        message = "User not found";
+      } else if (error.code === "auth/invalid-email") {
+        message =
+          "Invalid email format (make sure you are using your email to login - not your username)";
+      }
+      Notifications.add(message, -1);
+      LoginPage.hidePreloader();
+      LoginPage.enableInputs();
+      LoginPage.enableSignInButton();
+      LoginPage.updateSignupButton();
+    });
 }
 
 export async function forgotPassword(email: any): Promise<void> {
