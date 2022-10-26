@@ -129,9 +129,15 @@ Misc.getFunboxList()
     );
   });
 
-Misc.getFontsList().then((fonts) => {
-  updateFontFamilyCommands(fonts);
-});
+Misc.getFontsList()
+  .then((fonts) => {
+    updateFontFamilyCommands(fonts);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update fonts commands")
+    );
+  });
 
 Misc.getThemesList()
   .then((themes) => {

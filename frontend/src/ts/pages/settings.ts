@@ -552,30 +552,37 @@ export async function fillSettingsPage(): Promise<void> {
 
   let isCustomFont = true;
   const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
-  Misc.getFontsList().then((fonts) => {
-    fonts.forEach((font) => {
-      if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsEl.append(
-        `<div class="button${
-          Config.fontFamily === font.name ? " active" : ""
-        }" style="font-family:${
-          font.display !== undefined ? font.display : font.name
-        }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
+  Misc.getFontsList()
+    .then((fonts) => {
+      fonts.forEach((font) => {
+        if (Config.fontFamily === font.name) isCustomFont = false;
+        fontsEl.append(
+          `<div class="button${
+            Config.fontFamily === font.name ? " active" : ""
+          }" style="font-family:${
+            font.display !== undefined ? font.display : font.name
+          }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
         onclick="this.blur();">${
           font.display !== undefined ? font.display : font.name
         }</div>`
+        );
+      });
+
+      fontsEl.append(
+        isCustomFont
+          ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+              /_/g,
+              " "
+            )})</div>`
+          : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
+      );
+    })
+    .catch((e) => {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to update fonts settings buttons"),
+        -1
       );
     });
-
-    fontsEl.append(
-      isCustomFont
-        ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
-            /_/g,
-            " "
-          )})</div>`
-        : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
-    );
-  });
 
   $(".pageSettings .section.customBackgroundSize input").val(
     Config.customBackground

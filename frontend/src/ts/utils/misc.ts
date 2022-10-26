@@ -183,6 +183,29 @@ export async function getFunbox(
   });
 }
 
+let fontsList: MonkeyTypes.FontObject[] | undefined;
+export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
+  if (!fontsList) {
+    let list = await cachedFetchJson<MonkeyTypes.FontObject[]>(
+      "/./font/_list.json"
+    );
+    list = list.sort(function (
+      a: MonkeyTypes.FontObject,
+      b: MonkeyTypes.FontObject
+    ) {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+    fontsList = list;
+    return fontsList;
+  } else {
+    return fontsList;
+  }
+}
+
 function hexToHSL(hex: string): {
   hue: number;
   sat: number;
@@ -247,27 +270,6 @@ export function isColorLight(hex: string): boolean {
 export function isColorDark(hex: string): boolean {
   const hsl = hexToHSL(hex);
   return hsl.lgt < 50;
-}
-
-let fontsList: MonkeyTypes.FontObject[] = [];
-export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
-  if (fontsList.length === 0) {
-    return $.getJSON("/./fonts/_list.json", function (data) {
-      fontsList = data.sort(function (
-        a: MonkeyTypes.FontObject,
-        b: MonkeyTypes.FontObject
-      ) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      return fontsList;
-    });
-  } else {
-    return fontsList;
-  }
 }
 
 let supportersList: string[] = [];
