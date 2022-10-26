@@ -174,8 +174,6 @@ export let show = (): void => {
   themeChosen = false;
 
   //take last element of array
-  const list = CommandlineLists.current;
-  console.log(list);
   if (!$(".page.pageLoading").hasClass("hidden")) return;
   Focus.set(false);
   $("#commandLine").removeClass("hidden");
