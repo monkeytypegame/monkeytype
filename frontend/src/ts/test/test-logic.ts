@@ -1636,11 +1636,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
-    if (TestInput.bailout) {
+    if (TestInput.bailout || TestInput.input.length < TestWords.words.length) {
       // They bailed out
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) +
-        TestInput.input.getHistory().length;
+        TestInput.input.getHistory().length -
+        1;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
       Notifications.add("Long custom text progress saved", 1, 5);
 

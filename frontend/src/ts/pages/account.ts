@@ -711,16 +711,16 @@ function fillContent(): void {
   for (let i = 0; i < keys.length; i++) {
     const bucket = parseInt(keys[i]);
     labels.push(`${bucket} - ${bucket + 9}`);
-    if (bucket + 10 != parseInt(keys[i + 1])) {
-      for (let j = bucket + 10; j < parseInt(keys[i + 1]); j += 10) {
-        histogramChartDataBucketed.push({ x: i, y: 0 });
-        labels.push(`${j} - ${j + 9}`);
-      }
-    }
     histogramChartDataBucketed.push({
       x: bucket,
       y: histogramChartData[bucket],
     });
+    if (bucket + 10 != parseInt(keys[i + 1])) {
+      for (let j = bucket + 10; j < parseInt(keys[i + 1]); j += 10) {
+        histogramChartDataBucketed.push({ x: j, y: 0 });
+        labels.push(`${j} - ${j + 9}`);
+      }
+    }
   }
 
   ChartController.accountHistogram.data.labels = labels;
@@ -878,7 +878,7 @@ function fillContent(): void {
 
   let averageAcc: number | string = totalAcc;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAcc = Misc.roundTo2(averageAcc / testCount).toFixed(2);
+    averageAcc = Math.floor(averageAcc / testCount).toFixed(2);
   } else {
     averageAcc = Math.round(averageAcc / testCount);
   }
@@ -887,7 +887,7 @@ function fillContent(): void {
 
   let averageAccLast10: number | string = totalAcc10;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAccLast10 = Misc.roundTo2(averageAccLast10 / last10).toFixed(2);
+    averageAccLast10 = Math.floor(averageAccLast10 / last10).toFixed(2);
   } else {
     averageAccLast10 = Math.round(averageAccLast10 / last10);
   }
