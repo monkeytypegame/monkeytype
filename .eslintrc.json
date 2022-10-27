@@ -66,7 +66,8 @@
     "unicorn/prefer-number-properties": "off",
     "unicorn/prefer-ternary": ["error", "only-single-line"],
     "unicorn/prefer-switch": "off",
-    "unicorn/no-null": "off"
+    "unicorn/no-null": "off",
+    "unicorn/filename-case": "off"
     // "@typescript-eslint/no-floating-promises": "error" // consider adding these
     // "@typescript-eslint/strict-boolean-expressions": "warn",
   },
