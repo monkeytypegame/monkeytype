@@ -47,18 +47,32 @@ $(document).ready(() => {
   //   );
   // }
 
-  if (!window.localStorage.getItem("merchbannerclosed2")) {
+  // if (!window.localStorage.getItem("merchbannerclosed2")) {
+  //   Notifications.addBanner(
+  //     `Three new merch designs, available at <a target="_blank" href="https://www.monkeytype.store/unisex-men-s-t-shirts/">monkeytype.store</a>`,
+  //     1,
+  //     "images/cutoutbanner.png",
+  //     false,
+  //     () => {
+  //       window.localStorage.setItem("merchbannerclosed2", "true");
+  //     },
+  //     true
+  //   );
+  // }
+
+  if (!window.localStorage.getItem("merchbannerclosed3")) {
     Notifications.addBanner(
-      `Three new merch designs, available at <a target="_blank" href="https://www.monkeytype.store/unisex-men-s-t-shirts/">monkeytype.store</a>`,
+      `Limited Monkey Things merch - <a target="_blank" href="https://www.monkeytype.store/listing/monkey-things?product=387/">monkeytype.store</a>`,
       1,
-      "images/cutoutbanner.png",
+      "images/monkeythings2.png",
       false,
       () => {
-        window.localStorage.setItem("merchbannerclosed2", "true");
+        window.localStorage.setItem("merchbannerclosed3", "true");
       },
       true
     );
   }
+
   $("#centerContent")
     .css("opacity", "0")
     .removeClass("hidden")
