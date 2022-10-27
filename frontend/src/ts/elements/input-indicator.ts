@@ -30,8 +30,7 @@ export class InputIndicator {
         data-option-id="${optionId}"
         
         ${
-          //todo: find a good value for this
-          (option.message?.length ?? 0) > 20
+          (option.message?.length ?? 0) > 27
             ? `data-balloon-length="large"`
             : ""
         }
