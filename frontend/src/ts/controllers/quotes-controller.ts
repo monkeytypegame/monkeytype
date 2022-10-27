@@ -63,7 +63,7 @@ class QuotesController {
         };
 
         // Transform JSON Quote schema to MonkeyTypes Quote schema
-        data.quotes.forEach((quote: Quote) => {
+        for (const quote of data.quotes) {
           const monkeyTypeQuote: MonkeyTypes.Quote = {
             text: quote.text,
             source: quote.source,
@@ -74,7 +74,7 @@ class QuotesController {
           };
 
           this.quoteCollection.quotes.push(monkeyTypeQuote);
-        });
+        }
 
         for (const [groupIndex, quoteGroup] of data.groups.entries()) {
           const lower = quoteGroup[0];
@@ -118,9 +118,11 @@ class QuotesController {
       if (group < 0) {
         continue;
       }
-      if (this.quoteCollection.groups[group]) {for (const quote of this.quoteCollection.groups[group]) {
-        this.quoteQueue.push(quote);
-      }}
+      if (this.quoteCollection.groups[group]) {
+        for (const quote of this.quoteCollection.groups[group]) {
+          this.quoteQueue.push(quote);
+        }
+      }
     }
 
     shuffle(this.quoteQueue);

@@ -339,7 +339,10 @@ export async function screenshot(): Promise<void> {
               })
               .catch((error) => {
                 Notifications.add(
-                  Misc.createErrorMessage(error, "Error saving image to clipboard"),
+                  Misc.createErrorMessage(
+                    error,
+                    "Error saving image to clipboard"
+                  ),
                   -1
                 );
                 revertScreenshot();
@@ -355,7 +358,10 @@ export async function screenshot(): Promise<void> {
       });
     });
   } catch (error) {
-    Notifications.add(Misc.createErrorMessage(error, "Error creating image"), -1);
+    Notifications.add(
+      Misc.createErrorMessage(error, "Error creating image"),
+      -1
+    );
     revertScreenshot();
   }
   setTimeout(() => {
@@ -425,8 +431,8 @@ export function updateWordElement(showError = !Config.blindMode): void {
       wordHighlightClassString = "correct";
     }
 
-    for (let [i, letter] of input.entries()) {
-      const charCorrect = currentWord[i] == letter;
+    for (const i of [...input].keys()) {
+      const charCorrect = currentWord[i] == input[i];
 
       let correctClass = "correct";
       if (Config.highlightMode == "off") {
@@ -482,28 +488,31 @@ export function updateWordElement(showError = !Config.blindMode): void {
         }
       } else if (currentLetter === undefined) {
         if (!Config.hideExtraLetters) {
-          if (letter == " " || letter == "\t" || letter == "\n") {
-            letter = "_";
+          let letterString = input[i];
+          if (input[i] == " " || input[i] == "\t" || input[i] == "\n") {
+            letterString = "_";
           }
           ret += `<letter class="${
             Config.highlightMode == "word"
               ? wordHighlightClassString
               : "incorrect"
-          } extra ${tabChar}${nlChar}">${letter}</letter>`;
+          } extra ${tabChar}${nlChar}">${letterString}</letter>`;
         }
       } else {
+        let letterString = currentLetter;
+
+        if (Config.indicateTypos === "replace") {
+          letterString = input[i] == " " ? "_" : input[i];
+        }
+
         ret +=
           `<letter class="${
             Config.highlightMode == "word"
               ? wordHighlightClassString
               : "incorrect"
           } ${tabChar}${nlChar}">` +
-          (Config.indicateTypos === "replace"
-            ? (letter == " "
-              ? "_"
-              : letter)
-            : currentLetter) +
-          (Config.indicateTypos === "below" ? `<hint>${letter}</hint>` : "") +
+          letterString +
+          (Config.indicateTypos === "below" ? `<hint>${input[i]}</hint>` : "") +
           "</letter>";
       }
     }
@@ -577,14 +586,14 @@ export function scrollTape(): void {
   }
   let currentWordWidth = 0;
   if (Config.tapeMode === "letter" && TestInput.input.current.length > 0) {
-      for (let i = 0; i < TestInput.input.current.length; i++) {
-        const words = document.querySelectorAll("#words .word");
-        currentWordWidth +=
-          $(
-            words[currentWordElementIndex].querySelectorAll("letter")[i]
-          ).outerWidth(true) ?? 0;
-      }
+    for (let i = 0; i < TestInput.input.current.length; i++) {
+      const words = document.querySelectorAll("#words .word");
+      currentWordWidth +=
+        $(
+          words[currentWordElementIndex].querySelectorAll("letter")[i]
+        ).outerWidth(true) ?? 0;
     }
+  }
   const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
   if (Config.smoothLineScroll) {
     $("#words")
@@ -732,7 +741,7 @@ async function loadWordsHistory(): Promise<boolean> {
       ) {
         const correctedChar = !containsKorean
           ? TestInput.corrected.getHistory(i)
-          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
+          : Hangul.assemble([...TestInput.corrected.getHistory(i)]);
         wordEl = `<div class='word' burst="${
           TestInput.burstHistory[i]
         }" input="${correctedChar
@@ -764,11 +773,15 @@ async function loadWordsHistory(): Promise<boolean> {
             wordstats.missed++;
           }
         }
-        if ((wordstats.incorrect !== 0 || Config.mode !== "time") && Config.mode != "zen" && input !== word) {
-            wordEl = `<div class='word error' burst="${
-              TestInput.burstHistory[i]
-            }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
-          }
+        if (
+          (wordstats.incorrect !== 0 || Config.mode !== "time") &&
+          Config.mode != "zen" &&
+          input !== word
+        ) {
+          wordEl = `<div class='word error' burst="${
+            TestInput.burstHistory[i]
+          }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
+        }
       } else {
         if (Config.mode != "zen" && input !== word) {
           wordEl = `<div class='word error' burst="${
@@ -777,27 +790,23 @@ async function loadWordsHistory(): Promise<boolean> {
         }
       }
 
-      let loop;
-      if (Config.mode == "zen" || input.length > word.length) {
-        //input is longer - extra characters possible (loop over input)
-        loop = input.length;
-      } else {
-        //input is shorter or equal (loop over word list)
-        loop = word.length;
-      }
+      const loop =
+        Config.mode == "zen" || input.length > word.length
+          ? input.length //input is longer - extra characters possible (loop over input)
+          : word.length; //input is shorter or equal (loop over word list)
       for (let c = 0; c < loop; c++) {
         let correctedChar;
         try {
           correctedChar = !containsKorean
             ? TestInput.corrected.getHistory(i)[c]
-            : Hangul.assemble(TestInput.corrected.getHistory(i).split(""))[c];
+            : Hangul.assemble([...TestInput.corrected.getHistory(i)])[c];
         } catch {
           correctedChar = undefined;
         }
         let extraCorrected = "";
         const historyWord: string = !containsKorean
           ? TestInput.corrected.getHistory(i)
-          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
+          : Hangul.assemble([...TestInput.corrected.getHistory(i)]);
         if (
           c + 1 === loop &&
           historyWord !== undefined &&

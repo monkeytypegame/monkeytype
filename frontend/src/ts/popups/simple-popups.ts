@@ -203,6 +203,7 @@ class SimplePopup {
   }
 
   show(parameters: string[] = []): void {
+    // eslint-disable-next-line unicorn/no-this-assignment
     activePopup = this;
     this.parameters = parameters;
     this.beforeInitFn(this);
@@ -296,7 +297,7 @@ list["updateEmail"] = new SimplePopup(
         Notifications.add("Emails don't match", 0);
         return;
       }
-      if (user.providerData.find((p) => p?.providerId === "password")) {
+      if (user.providerData.some((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           password
@@ -331,7 +332,7 @@ list["updateEmail"] = new SimplePopup(
   (thisPopup) => {
     const user = Auth?.currentUser;
     if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!user.providerData.some((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -359,7 +360,7 @@ list["removeGoogleAuth"] = new SimplePopup(
     try {
       const user = Auth?.currentUser;
       if (!user) return;
-      if (user.providerData.find((p) => p?.providerId === "password")) {
+      if (user.providerData.some((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           password
@@ -392,7 +393,7 @@ list["removeGoogleAuth"] = new SimplePopup(
   (thisPopup) => {
     const user = Auth?.currentUser;
     if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!user.providerData.some((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -427,7 +428,7 @@ list["updateName"] = new SimplePopup(
       const snapshot = DB.getSnapshot();
       if (!user || !snapshot) return;
 
-      if (user.providerData.find((p) => p?.providerId === "password")) {
+      if (user.providerData.some((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           pass
@@ -478,7 +479,7 @@ list["updateName"] = new SimplePopup(
     const user = Auth?.currentUser;
     const snapshot = DB.getSnapshot();
     if (!user || !snapshot) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!user.providerData.some((p) => p?.providerId === "password")) {
       thisPopup.inputs[0].hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
@@ -559,7 +560,7 @@ list["updatePassword"] = new SimplePopup(
   (thisPopup) => {
     const user = Auth?.currentUser;
     if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!user.providerData.some((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -636,7 +637,7 @@ list["deleteAccount"] = new SimplePopup(
     try {
       const user = Auth?.currentUser;
       if (!user) return;
-      if (user.providerData.find((p) => p?.providerId === "password")) {
+      if (user.providerData.some((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           password
@@ -690,7 +691,7 @@ list["deleteAccount"] = new SimplePopup(
   (thisPopup) => {
     const user = Auth?.currentUser;
     if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!user.providerData.some((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
     }
@@ -717,7 +718,7 @@ list["resetAccount"] = new SimplePopup(
     try {
       const user = Auth?.currentUser;
       if (!user) return;
-      if (user.providerData.find((p) => p?.providerId === "password")) {
+      if (user.providerData.some((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           password
@@ -757,7 +758,7 @@ list["resetAccount"] = new SimplePopup(
   (thisPopup) => {
     const user = Auth?.currentUser;
     if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!user.providerData.some((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -850,7 +851,7 @@ list["resetPersonalBests"] = new SimplePopup(
       const user = Auth?.currentUser;
       const snapshot = DB.getSnapshot();
       if (!user || !snapshot) return;
-      if (user.providerData.find((p) => p?.providerId === "password")) {
+      if (user.providerData.some((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
           password
@@ -886,7 +887,7 @@ list["resetPersonalBests"] = new SimplePopup(
   (thisPopup) => {
     const user = Auth?.currentUser;
     if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!user.providerData.some((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }

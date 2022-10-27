@@ -125,9 +125,9 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to edit preset: " + response.message, -1);
     } else {
       Notifications.add("Preset updated", 1);
-      const preset: MonkeyTypes.Preset = snapshotPresets.find(
+      const preset = snapshotPresets.find(
         (preset: MonkeyTypes.Preset) => preset._id === presetId
-      );
+      ) as MonkeyTypes.Preset;
       preset.name = presetName;
       if (updateConfig) {
         preset.config = configChanges;
@@ -140,11 +140,11 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to remove preset: " + response.message, -1);
     } else {
       Notifications.add("Preset removed", 1);
-      snapshotPresets.forEach((preset: MonkeyTypes.Preset, index: number) => {
+      for (const [index, preset] of snapshotPresets.entries()) {
         if (preset._id === presetId) {
           snapshotPresets.splice(index, 1);
         }
-      });
+      }
     }
   }
 

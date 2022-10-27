@@ -119,8 +119,7 @@ function hideLoader(lb: number): void {
 }
 
 function updateFooter(lb: LbKey): void {
-  let side;
-  side = lb === 15 ? "left" : "right";
+  const side = lb === 15 ? "left" : "right";
 
   if (!Auth?.currentUser) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
@@ -164,7 +163,7 @@ function updateFooter(lb: LbKey): void {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
     <td>${entry.rank}</td>
-    <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
+    <td><span class="top">You</span>${toppercent || ""}</td>
     <td class="alignRight">${(Config.alwaysShowCPM
       ? entry.wpm * 5
       : entry.wpm
@@ -187,8 +186,7 @@ function updateFooter(lb: LbKey): void {
 function checkLbMemory(lb: LbKey): void {
   if (currentTimeRange === "daily") return;
 
-  let side;
-  side = lb === 15 ? "left" : "right";
+  const side = lb === 15 ? "left" : "right";
 
   const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"] ?? 0;
 
@@ -227,8 +225,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     return;
   }
 
-  let side;
-  side = lb === 15 ? "left" : "right";
+  const side = lb === 15 ? "left" : "right";
 
   if (currentData[lb].length === 0) {
     $(`#leaderboardsWrapper table.${side} tbody`).html(
@@ -260,15 +257,14 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     );
   });
 
-  const avatarUrls = (await Promise.allSettled(avatarUrlPromises)).map(
-    (promise) => {
-      if (promise.status === "fulfilled") {
-        return promise.value;
-      }
-
-      return null;
+  const allPromises = await Promise.allSettled(avatarUrlPromises);
+  const avatarUrls = allPromises.map((promise) => {
+    if (promise.status === "fulfilled") {
+      return promise.value;
     }
-  );
+
+    return null;
+  });
 
   let a = currentData[lb].length - leaderboardSingleLimit;
   let b = currentData[lb].length;
@@ -460,13 +456,13 @@ async function update(): Promise<void> {
 
   const leaderboardKeys: LbKey[] = [15, 60];
 
-  leaderboardKeys.forEach((leaderboardTime: LbKey) => {
+  for (const leaderboardTime of leaderboardKeys) {
     hideLoader(leaderboardTime);
     clearBody(leaderboardTime);
     updateFooter(leaderboardTime);
     checkLbMemory(leaderboardTime);
     fillTable(leaderboardTime);
-  });
+  }
 
   $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
   $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");

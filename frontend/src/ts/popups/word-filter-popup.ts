@@ -45,10 +45,8 @@ async function filter(language: string): Promise<string[]> {
   const languageWordList = await Misc.getLanguage(language);
   const maxLengthInput = $("#wordFilterPopup .wordMaxInput").val() as string;
   const minLengthInput = $("#wordFilterPopup .wordMinInput").val() as string;
-  let maxLength;
-  let minLength;
-  maxLength = maxLengthInput == "" ? 999 : parseInt(maxLengthInput);
-  minLength = minLengthInput == "" ? 1 : parseInt(minLengthInput);
+  const maxLength = maxLengthInput == "" ? 999 : parseInt(maxLengthInput);
+  const minLength = minLengthInput == "" ? 1 : parseInt(minLengthInput);
   for (let i = 0; i < languageWordList.words.length; i++) {
     const word = languageWordList.words[i];
     const test1 = regincl.test(word);

@@ -264,8 +264,8 @@ export async function findCurrentGroup(
   const groups = await getLanguageGroups();
   for (const group of groups) {
     if (retgroup === undefined && group.languages.includes(language)) {
-        retgroup = group;
-      }
+      retgroup = group;
+    }
   }
   return retgroup;
 }
@@ -322,9 +322,7 @@ export function stdDev(array: number[]): number {
 
 export function mean(array: number[]): number {
   try {
-    return (
-      array.reduce((previous, current) => (current += previous)) / array.length
-    );
+    return array.reduce((total, value) => total + value) / array.length;
   } catch {
     return 0;
   }
@@ -455,7 +453,7 @@ export function getGibberish(): string {
   const randLen = randomIntFromRange(1, 7);
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    ret += String.fromCharCode(97 + randomIntFromRange(0, 25));
+    ret += String.fromCodePoint(97 + randomIntFromRange(0, 25));
   }
   return ret;
 }
@@ -543,8 +541,8 @@ export function getNumbers(len: number): string {
   const randLen = randomIntFromRange(1, len);
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    let randomNum;
-    randomNum = i === 0 ? randomIntFromRange(1, 9) : randomIntFromRange(0, 9);
+    const randomNum =
+      i === 0 ? randomIntFromRange(1, 9) : randomIntFromRange(0, 9);
     ret += randomNum.toString();
   }
   return ret;
@@ -613,7 +611,7 @@ export function getASCII(): string {
   let ret = "";
   for (let i = 0; i < randLen; i++) {
     const ran = 33 + randomIntFromRange(0, 93);
-    ret += String.fromCharCode(ran);
+    ret += String.fromCodePoint(ran);
   }
   return ret;
 }
@@ -661,12 +659,10 @@ export function findGetParameter(
     search = getOverride;
   }
 
-  for (const item of search
-    .slice(1)
-    .split("&")) {
-      tmp = item.split("=");
-      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-    }
+  for (const item of search.slice(1).split("&")) {
+    tmp = item.split("=");
+    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+  }
   return result;
 }
 
@@ -682,12 +678,10 @@ export function checkIfGetParameterExists(
     search = getOverride;
   }
 
-  for (const item of search
-    .slice(1)
-    .split("&")) {
-      tmp = item.split("=");
-      if (tmp[0] === parameterName) result = true;
-    }
+  for (const item of search.slice(1).split("&")) {
+    tmp = item.split("=");
+    if (tmp[0] === parameterName) result = true;
+  }
   return result;
 }
 
@@ -889,7 +883,9 @@ export function clearTimeouts(timeouts: (number | NodeJS.Timeout)[]): void {
 //https://stackoverflow.com/questions/1431094/how-do-i-replace-a-character-at-a-particular-index-in-javascript
 export function setCharAt(str: string, index: number, chr: string): string {
   if (index > str.length - 1) return str;
-  return str.slice(0, Math.max(0, index)) + chr + str.slice(Math.max(0, index + 1));
+  return (
+    str.slice(0, Math.max(0, index)) + chr + str.slice(Math.max(0, index + 1))
+  );
 }
 
 //https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
@@ -908,6 +904,7 @@ export function convertRGBtoHEX(rgb: string): string | undefined {
   );
   if (match === null) return;
   if (match.length < 3) return;
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   function hexCode(i: string): string {
     // Take the last 2 characters and convert
     // them to Hexadecimal.
@@ -1223,7 +1220,7 @@ export async function sleep(ms: number): Promise<void> {
 export function isPasswordStrong(password: string): boolean {
   const hasCapital = !!/[A-Z]/.test(password);
   const hasNumber = !!/\d/.test(password);
-  const hasSpecial = !!/[!"#$%&'()*+,./:;<=>?@[\\\]^_{|}\-]/.test(password);
+  const hasSpecial = !!/[!"#$%&'()*+,./:;<=>?@[\\\]^_{|}-]/.test(password);
   const isLong = password.length >= 8;
   return hasCapital && hasNumber && hasSpecial && isLong;
 }

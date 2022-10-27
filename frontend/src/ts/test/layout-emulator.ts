@@ -175,11 +175,13 @@ export async function getCharFromEvent(
 
   const layoutKeys = layout.keys;
 
-  const layoutMap = layoutKeys["row1"]
-    .concat(layoutKeys["row2"])
-    .concat(layoutKeys["row3"])
-    .concat(layoutKeys["row4"])
-    .concat(layoutKeys["row5"]);
+  const layoutMap = [
+    ...layoutKeys["row1"],
+    ...layoutKeys["row2"],
+    ...layoutKeys["row3"],
+    ...layoutKeys["row4"],
+    ...layoutKeys["row5"],
+  ];
 
   let mapIndex = null;
   for (const [i, keyEventCode] of keyEventCodes.entries()) {
@@ -193,5 +195,5 @@ export async function getCharFromEvent(
   const newKeyPreview = layoutMap[mapIndex][0];
   const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
   const char = layoutMap[mapIndex][shift];
-  return char ? char : event.key;
+  return char || event.key;
 }

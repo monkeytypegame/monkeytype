@@ -11,11 +11,11 @@ export async function setActiveGroup(
     currentGroup = await Misc.findCurrentGroup(Config.language);
   } else {
     const groups: MonkeyTypes.LanguageGroup[] = await Misc.getLanguageGroups();
-    groups.forEach((g: MonkeyTypes.LanguageGroup) => {
+    for (const g of groups) {
       if (g.name === groupName) {
         currentGroup = g;
       }
-    });
+    }
   }
 
   $(`.pageSettings .section.languageGroups .button`).removeClass("active");
@@ -29,13 +29,13 @@ export async function setActiveGroup(
   const langElement: JQuery<HTMLElement> = $(
     ".pageSettings .section.language .buttons"
   ).empty();
-  currentGroup.languages.forEach((langName: string) => {
+  for (const langName of currentGroup.languages) {
     langElement.append(
       `<div class="language button" language='${langName}'>
         ${langName.replace(/_/g, " ")}
       </div>`
     );
-  });
+  }
 
   if (clicked) {
     $($(`.pageSettings .section.language .buttons .button`)[0]).addClass(

@@ -21,23 +21,24 @@ function update(mode: MonkeyTypes.Mode): void {
   if (allmode2 === undefined) return;
 
   const list: PersonalBest[] = [];
-  for (const key of (Object.keys(allmode2) as MonkeyTypes.Mode2<MonkeyTypes.Mode>[])) {
-      let pbs = allmode2[key];
-      pbs = pbs.sort(function (a, b) {
-        return b.wpm - a.wpm;
-        // if (a.difficulty === b.difficulty) {
-        //   return (a.language < b.language ? -1 : 1);
-        // }
-        // return (a.difficulty < b.difficulty ? -1 : 1)
-      });
-      for (const pb of pbs) {
-        pb.mode2 = key;
-        list.push(pb);
-      }
+  for (const key of Object.keys(
+    allmode2
+  ) as MonkeyTypes.Mode2<MonkeyTypes.Mode>[]) {
+    let pbs = allmode2[key];
+    pbs = pbs.sort(function (a, b) {
+      return b.wpm - a.wpm;
+      // if (a.difficulty === b.difficulty) {
+      //   return (a.language < b.language ? -1 : 1);
+      // }
+      // return (a.difficulty < b.difficulty ? -1 : 1)
+    });
+    for (const pb of pbs) {
+      pb.mode2 = key;
+      list.push(pb);
     }
-  
+  }
 
-  let mode2memory: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+  let mode2memory: MonkeyTypes.Mode2<MonkeyTypes.Mode> | undefined;
 
   for (const pb of list) {
     let dateText = `-<br><span class="sub">-</span>`;
@@ -58,7 +59,7 @@ function update(mode: MonkeyTypes.Mode): void {
           <span class="sub">${pb.acc ? pb.acc + "%" : "-"}</span>
         </td>
         <td>
-          ${pb.raw ? pb.raw : "-"}
+          ${pb.raw || "-"}
           <br />
           <span class="sub">${
             pb.consistency ? pb.consistency + "%" : "-"

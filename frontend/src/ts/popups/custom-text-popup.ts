@@ -65,8 +65,9 @@ export function show(): void {
 }
 
 $(`${popup} .delimiterCheck input`).on("change", () => {
-  let delimiter;
-  delimiter = $(`${popup} .delimiterCheck input`).prop("checked") ? "|" : " ";
+  const delimiter = $(`${popup} .delimiterCheck input`).prop("checked")
+    ? "|"
+    : " ";
   if (
     $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
   ) {

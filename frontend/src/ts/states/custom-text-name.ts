@@ -9,10 +9,7 @@ export function isCustomTextLong(): boolean | undefined {
   return isLong;
 }
 
-export function setCustomTextName(
-  newName: string,
-  long: boolean | undefined
-): void {
+export function setCustomTextName(newName: string, long?: boolean): void {
   customTestName = newName;
   isLong = long;
 }

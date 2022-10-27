@@ -398,37 +398,41 @@ export function restart(options = {} as RestartOptions): void {
     event?.preventDefault();
     return;
   }
-  if (ActivePage.get() == "test" && !TestUI.resultVisible && !ManualRestart.get()) {
-      if (
-        TestWords.hasTab &&
-        !options.event?.shiftKey &&
-        Config.quickRestart !== "esc"
-      ) {
-        return;
-      }
-      if (Config.mode !== "zen") event?.preventDefault();
-      if (
-        !Misc.canQuickRestart(
-          Config.mode,
-          Config.words,
-          Config.time,
-          CustomText,
-          CustomTextState.isCustomTextLong() ?? false
-        )
-      ) {
-        let message = "Use your mouse to confirm.";
-        if (Config.quickRestart === "tab") {
-          message = "Press shift + tab or use your mouse to confirm.";
-        } else if (Config.quickRestart === "esc") {
-          message = "Press shift + escape or use your mouse to confirm.";
-        }
-        Notifications.add("Quick restart disabled. " + message, 0, 3);
-        return;
-      }
-      // }else{
-      //   return;
-      // }
+  if (
+    ActivePage.get() == "test" &&
+    !TestUI.resultVisible &&
+    !ManualRestart.get()
+  ) {
+    if (
+      TestWords.hasTab &&
+      !options.event?.shiftKey &&
+      Config.quickRestart !== "esc"
+    ) {
+      return;
     }
+    if (Config.mode !== "zen") event?.preventDefault();
+    if (
+      !Misc.canQuickRestart(
+        Config.mode,
+        Config.words,
+        Config.time,
+        CustomText,
+        CustomTextState.isCustomTextLong() ?? false
+      )
+    ) {
+      let message = "Use your mouse to confirm.";
+      if (Config.quickRestart === "tab") {
+        message = "Press shift + tab or use your mouse to confirm.";
+      } else if (Config.quickRestart === "esc") {
+        message = "Press shift + escape or use your mouse to confirm.";
+      }
+      Notifications.add("Quick restart disabled. " + message, 0, 3);
+      return;
+    }
+    // }else{
+    //   return;
+    // }
+  }
   if (TestActive.get()) {
     if (
       Config.repeatQuotes === "typing" &&
@@ -459,7 +463,7 @@ export function restart(options = {} as RestartOptions): void {
   }
 
   if (Config.language.startsWith("korean")) {
-    koInputVisual.innerText = " ";
+    koInputVisual.textContent = " ";
     Config.mode !== "zen"
       ? $("#koInputVisualContainer").show()
       : $("#koInputVisualContainer").hide();
@@ -522,14 +526,7 @@ export function restart(options = {} as RestartOptions): void {
   TestUI.reset();
 
   $("#timerNumber").css("opacity", 0);
-  let el = null;
-  if (TestUI.resultVisible) {
-    //results are being displayed
-    el = $("#result");
-  } else {
-    //words are being displayed
-    el = $("#typingTest");
-  }
+  const el = TestUI.resultVisible ? $("#result") : $("#typingTest");
   if (TestUI.resultVisible) {
     if (
       Config.randomTheme !== "off" &&
@@ -589,13 +586,14 @@ export function restart(options = {} as RestartOptions): void {
       ) {
         const toPush = [];
         if (Config.funbox === "plus_one") {
-          toPush.push(TestWords.words.get(0));
-          toPush.push(TestWords.words.get(1));
+          toPush.push(TestWords.words.get(0), TestWords.words.get(1));
         }
         if (Config.funbox === "plus_two") {
-          toPush.push(TestWords.words.get(0));
-          toPush.push(TestWords.words.get(1));
-          toPush.push(TestWords.words.get(2));
+          toPush.push(
+            TestWords.words.get(0),
+            TestWords.words.get(1),
+            TestWords.words.get(2)
+          );
         }
         TestWords.words.reset();
         for (const word of toPush) TestWords.words.push(word);
@@ -618,7 +616,7 @@ export function restart(options = {} as RestartOptions): void {
           Keymap.highlightKey(
             TestWords.words
               .getCurrent()
-              .substring(
+              .slice(
                 TestInput.input.current.length,
                 TestInput.input.current.length + 1
               )
@@ -689,7 +687,7 @@ export function restart(options = {} as RestartOptions): void {
         Keymap.highlightKey(
           TestWords.words
             .getCurrent()
-            .substring(
+            .slice(
               TestInput.input.current.length,
               TestInput.input.current.length + 1
             )
@@ -732,8 +730,8 @@ export function restart(options = {} as RestartOptions): void {
 function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
   if (Config.funbox === "rAnDoMcAsE") {
     let randomcaseword = "";
-    for (const [i, element] of word.entries()) {
-      randomcaseword += i % 2 != 0 ? element.toUpperCase() : element;
+    for (const [i, letter] of [...word].entries()) {
+      randomcaseword += i % 2 != 0 ? letter.toUpperCase() : letter;
     }
     word = randomcaseword;
   } else if (Config.funbox === "capitals") {
@@ -811,9 +809,7 @@ async function getNextWord(
         (Config.mode !== "custom" &&
           !Config.punctuation &&
           /["'+,./:;<=>?[\\\]_{|}-]/i.test(randomWord)) ||
-        (Config.mode !== "custom" &&
-          !Config.numbers &&
-          /\d/i.test(randomWord)))
+        (Config.mode !== "custom" && !Config.numbers && /\d/i.test(randomWord)))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();
@@ -850,14 +846,14 @@ async function getNextWord(
     );
   }
   if (Config.numbers && Math.random() < 0.1) {
-      randomWord = Misc.getNumbers(4);
+    randomWord = Misc.getNumbers(4);
 
-      if (Config.language.startsWith("kurdish")) {
-        randomWord = Misc.convertNumberToArabic(randomWord);
-      } else if (Config.language.startsWith("nepali")) {
-        randomWord = Misc.convertNumberToNepali(randomWord);
-      }
+    if (Config.language.startsWith("kurdish")) {
+      randomWord = Misc.convertNumberToArabic(randomWord);
+    } else if (Config.language.startsWith("nepali")) {
+      randomWord = Misc.convertNumberToNepali(randomWord);
     }
+  }
 
   return randomWord;
 }
@@ -1182,7 +1178,7 @@ export async function init(): Promise<void> {
     Keymap.highlightKey(
       TestWords.words
         .getCurrent()
-        .substring(
+        .slice(
           TestInput.input.current.length,
           TestInput.input.current.length + 1
         )
@@ -1299,7 +1295,7 @@ const retrySaving: RetrySaving = {
 };
 
 export async function retrySavingResult(): Promise<void> {
-  const { completedEvent } = retrySaving;
+  const { completedEvent, canRetry } = retrySaving;
 
   if (completedEvent === null) {
     Notifications.add(
@@ -1311,7 +1307,7 @@ export async function retrySavingResult(): Promise<void> {
     return;
   }
 
-  if (!retrySaving.canRetry) {
+  if (!canRetry) {
     return;
   }
 
@@ -1401,10 +1397,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
       ? []
       : [...TestInput.keypressTimings.spacing.array];
   if (keyConsistencyArray.length > 0) {
-    keyConsistencyArray = keyConsistencyArray.slice(
-      0,
-      - 1
-    );
+    keyConsistencyArray = keyConsistencyArray.slice(0, -1);
   }
   let keyConsistency = Misc.roundTo2(
     Misc.kogasa(
@@ -1471,11 +1464,14 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   //tags
   const activeTagsIds: string[] = [];
   try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        activeTagsIds.push(tag._id);
+    const snapshot = DB.getSnapshot();
+    if (snapshot?.tags) {
+      for (const tag of snapshot.tags) {
+        if (tag.active === true) {
+          activeTagsIds.push(tag._id);
+        }
       }
-    });
+    }
   } catch {}
   completedEvent.tags = activeTagsIds;
 

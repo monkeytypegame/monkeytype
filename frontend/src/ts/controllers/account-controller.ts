@@ -159,7 +159,9 @@ export async function getDataAndInit(): Promise<boolean> {
         try {
           if (key !== "resultFilters") {
             if (Array.isArray(Config[key])) {
-              for (const [index, arrval] of (Config[key] as string[]).entries()) {
+              for (const [index, arrval] of (
+                Config[key] as string[]
+              ).entries()) {
                 const arrayValue = (
                   snapshot?.config?.[key] as
                     | string[]
@@ -210,9 +212,12 @@ export async function getDataAndInit(): Promise<boolean> {
     console.log("config changed before db");
     AccountButton.loading(false);
   }
-  if ((Config.paceCaret === "pb" || Config.paceCaret === "average") && !TestActive.get()) {
-      PaceCaret.init();
-    }
+  if (
+    (Config.paceCaret === "pb" || Config.paceCaret === "average") &&
+    !TestActive.get()
+  ) {
+    PaceCaret.init();
+  }
   AccountButton.loading(false);
   ResultFilters.updateTags();
   updateTagsCommands();
@@ -508,13 +513,16 @@ export async function addPasswordAuth(
   const user = Auth.currentUser;
   if (user === null) return;
   if (
-    user.providerData.find((provider) => provider.providerId === "google.com")
+    user.providerData.some((provider) => provider.providerId === "google.com")
   ) {
     try {
       await reauthenticateWithPopup(user, gmailProvider);
     } catch (error) {
       Loader.hide();
-      const message = Misc.createErrorMessage(error, "Failed to reauthenticate");
+      const message = Misc.createErrorMessage(
+        error,
+        "Failed to reauthenticate"
+      );
       return Notifications.add(message, -1);
     }
   }
@@ -596,7 +604,7 @@ async function signUp(): Promise<void> {
   }
 
   if (
-    !/^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z\-]+\.)+[A-Za-z]{2,}))$/.test(
+    !/^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(
       email
     )
   ) {

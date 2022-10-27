@@ -411,11 +411,11 @@ export async function fillSettingsPage(): Promise<void> {
   const languageGroups = await Misc.getLanguageGroups();
   for (const group of languageGroups) {
     let langComboBox = `<optgroup label="${group.name}">`;
-    group.languages.forEach((language: string) => {
+    for (const language of group.languages) {
       langComboBox += `<option value="${language}">
         ${language.replace(/_/g, " ")}
       </option>`;
-    });
+    }
     langComboBox += `</optgroup>`;
     languageEl.append(langComboBox);
   }
@@ -642,17 +642,19 @@ function setActiveFunboxButton(): void {
 function refreshTagsSettingsSection(): void {
   if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      // let tagPbString = "No PB found";
-      // if (tag.pb != undefined && tag.pb > 0) {
-      //   tagPbString = `PB: ${tag.pb}`;
-      // }
-      tagsEl.append(`
+    const snapshot = DB.getSnapshot();
+    if (snapshot?.tags) {
+      for (const tag of snapshot.tags) {
+        // let tagPbString = "No PB found";
+        // if (tag.pb != undefined && tag.pb > 0) {
+        //   tagPbString = `PB: ${tag.pb}`;
+        // }
+        tagsEl.append(`
 
       <div class="buttons tag" id="${tag._id}">
         <div class="button tagButton ${tag.active ? "active" : ""}" active="${
-        tag.active
-      }">
+          tag.active
+        }">
           <div class="title">${tag.display}</div>
         </div>
         <div class="clearPbButton button">
@@ -667,7 +669,8 @@ function refreshTagsSettingsSection(): void {
       </div>
 
       `);
-    });
+      }
+    }
     $(".pageSettings .section.tags").removeClass("hidden");
   } else {
     $(".pageSettings .section.tags").addClass("hidden");
@@ -677,8 +680,10 @@ function refreshTagsSettingsSection(): void {
 function refreshPresetsSettingsSection(): void {
   if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.Preset) => {
-      presetsEl.append(`
+    const snapshot = DB.getSnapshot();
+    if (snapshot?.presets) {
+      for (const preset of snapshot.presets) {
+        presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
           <div class="title">${preset.display}</div>
@@ -692,7 +697,8 @@ function refreshPresetsSettingsSection(): void {
       </div>
       
       `);
-    });
+      }
+    }
     $(".pageSettings .section.presets").removeClass("hidden");
   } else {
     $(".pageSettings .section.presets").addClass("hidden");
@@ -1012,7 +1018,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
 );
 
 $(".quickNav .links a").on("click", (e) => {
-  const settingsGroup = e.target.innerText;
+  const settingsGroup = e.target.textContent as string;
   const isOpen = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
     "slideup"
   );

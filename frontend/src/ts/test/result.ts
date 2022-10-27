@@ -86,7 +86,8 @@ async function updateGraph(): Promise<void> {
   maxChartVal = Math.max(Math.max(...chartData2), Math.max(...chartData1));
   if (!Config.startGraphsAtZero) {
     const minChartVal = Math.min(
-      Math.min(...chartData2), Math.min(...chartData1)
+      Math.min(...chartData2),
+      Math.min(...chartData1)
     );
     resultScaleOptions["wpm"].min = minChartVal;
     resultScaleOptions["raw"].min = minChartVal;
@@ -400,15 +401,20 @@ export async function updateCrown(): Promise<void> {
   );
 }
 
-function updateTags(dontSave: boolean): void {
+async function updateTags(dontSave: boolean): Promise<void> {
   const activeTags: MonkeyTypes.Tag[] = [];
-  const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
+
+  const snapshot = DB.getSnapshot();
+
+  const userTagsCount = snapshot?.tags?.length ?? 0;
   try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        activeTags.push(tag);
+    if (snapshot?.tags) {
+      for (const tag of snapshot.tags) {
+        if (tag.active === true) {
+          activeTags.push(tag);
+        }
       }
-    });
+    }
   } catch {}
 
   if (userTagsCount === 0) {
@@ -430,7 +436,7 @@ function updateTags(dontSave: boolean): void {
 
   let annotationSide = "start";
   let labelAdjust = 15;
-  activeTags.forEach(async (tag) => {
+  for (const tag of activeTags) {
     const tpb = await DB.getLocalTagPB(
       tag._id,
       Config.mode,
@@ -507,7 +513,7 @@ function updateTags(dontSave: boolean): void {
         }
       }
     }
-  });
+  }
 }
 
 function updateTestType(randomQuote: MonkeyTypes.Quote): void {
@@ -520,8 +526,8 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   } else if (Config.mode === "words") {
     testType += " " + Config.words;
   } else if (Config.mode === "quote" && randomQuote.group !== undefined) {
-      testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
-    }
+    testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
+  }
   if (
     Config.mode != "custom" &&
     Config.funbox !== "gibberish" &&
@@ -694,7 +700,7 @@ export async function update(
   updateQuoteFavorite(randomQuote);
   await updateGraph();
   await updateGraphPBLine();
-  updateTags(dontSave);
+  await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)

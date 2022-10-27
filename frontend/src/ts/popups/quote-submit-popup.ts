@@ -50,7 +50,7 @@ async function submitQuote(): Promise<void> {
 }
 
 // @ts-ignore
-// eslint-disable-next-line
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function show(noAnim = false): Promise<void> {
   Notifications.add(
     "Quote submission is disabled temporarily due to a large submission queue.",

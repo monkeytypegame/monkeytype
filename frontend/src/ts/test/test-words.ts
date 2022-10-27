@@ -13,7 +13,9 @@ class Words {
     if (i === undefined) {
       return this.list;
     } else {
-      return raw ? this.list[i]?.replace(/[!",.:?\-]/g, "")?.toLowerCase() : this.list[i];
+      return raw
+        ? this.list[i]?.replace(/[!",.:?-]/g, "")?.toLowerCase()
+        : this.list[i];
     }
   }
   getCurrent(): string {

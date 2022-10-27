@@ -33,23 +33,25 @@ export function update(): void {
 
   if (!snapshot) return;
 
-  if (DB.getSnapshot()?.customThemes.length === 0) {
+  if (snapshot?.customThemes.length === 0) {
     return;
   }
-  for (const theme of DB.getSnapshot()?.customThemes) {
-    subgroup.list.push({
-      id: "setCustomThemeId" + theme._id,
-      display: theme.name,
-      configValue: theme._id,
-      hover: (): void => {
-        ThemeController.preview(theme._id, true);
-      },
-      exec: (): void => {
-        // UpdateConfig.setCustomThemeId(theme._id);
-        UpdateConfig.setCustomTheme(true);
-        ThemeController.set(theme._id, true);
-      },
-    });
+  if (snapshot?.customThemes) {
+    for (const theme of snapshot.customThemes) {
+      subgroup.list.push({
+        id: "setCustomThemeId" + theme._id,
+        display: theme.name,
+        configValue: theme._id,
+        hover: (): void => {
+          ThemeController.preview(theme._id, true);
+        },
+        exec: (): void => {
+          // UpdateConfig.setCustomThemeId(theme._id);
+          UpdateConfig.setCustomTheme(true);
+          ThemeController.set(theme._id, true);
+        },
+      });
+    }
   }
 }
 

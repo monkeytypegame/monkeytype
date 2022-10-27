@@ -50,13 +50,13 @@ function initializeReplayPrompt(): void {
       wordCount++;
     }
   }
-  for (let [i, item] of wordsList.entries()) {
+  for (const [i, item] of wordsList.entries()) {
     if (i > wordCount) continue;
     const x = document.createElement("div");
     x.className = "word";
-    for (i = 0; i < item.length; i++) {
+    for (const element of item) {
       const letter = document.createElement("letter");
-      letter.innerHTML = item[i];
+      letter.innerHTML = element;
       x.append(letter);
     }
     replayWordsElement.append(x);

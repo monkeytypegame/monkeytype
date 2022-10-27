@@ -14,8 +14,7 @@ export async function getList(): Promise<string[]> {
 export async function check(word: string): Promise<boolean> {
   const list = await getList();
   if (
-    list.find((a) => word.match(new RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))) ===
-    undefined
+    !list.some((a) => word.match(new RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi")))
   ) {
     return false;
   }

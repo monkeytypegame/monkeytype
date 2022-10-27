@@ -138,8 +138,8 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     setPunctuation(false, true);
     setNumbers(false, true);
   } else if (config.mode == "zen" && config.paceCaret != "off") {
-      Notifications.add(`Pace caret will not work with zen mode.`, 0);
-    }
+    Notifications.add(`Pace caret will not work with zen mode.`, 0);
+  }
   saveToLocalStorage("mode", nosave);
   ConfigEvent.dispatch("mode", config.mode, nosave, previous);
 
@@ -225,7 +225,7 @@ export function setFavThemes(themes: string[], nosave?: boolean): boolean {
 export function setFunbox(funbox: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
 
-  const val = funbox ? funbox : "none";
+  const val = funbox || "none";
   config.funbox = val;
   saveToLocalStorage("funbox", nosave);
   ConfigEvent.dispatch("funbox", config.funbox);
@@ -351,9 +351,9 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete" && val == "pb" && !Auth?.currentUser) {
-      Notifications.add("PB pace caret is unavailable without an account", 0);
-      return false;
-    }
+    Notifications.add("PB pace caret is unavailable without an account", 0);
+    return false;
+  }
   // if (config.mode === "zen" && val != "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
@@ -1695,13 +1695,15 @@ export function apply(
 ): void {
   if (!configToApply) return;
   const configObj = configToApply as MonkeyTypes.Config;
-  for (const configKey of (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[])) {
-      if (configObj[configKey] === undefined) {
-        const newValue = DefaultConfig[configKey];
-        (configObj[configKey] as typeof newValue) = newValue;
-      }
+  for (const configKey of Object.keys(
+    DefaultConfig
+  ) as (keyof MonkeyTypes.Config)[]) {
+    if (configObj[configKey] === undefined) {
+      const newValue = DefaultConfig[configKey];
+      (configObj[configKey] as typeof newValue) = newValue;
     }
-  
+  }
+
   if (configObj !== undefined && configObj !== null) {
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
@@ -1837,12 +1839,13 @@ export function loadFromLocalStorage(): void {
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
-  for (const key of (Object.keys(config) as (keyof MonkeyTypes.Config)[])
-    .filter((key) => {
-      return config[key] != DefaultConfig[key];
-    })) {
-      (configChanges[key] as typeof config[typeof key]) = config[key];
-    }
+  for (const key of (
+    Object.keys(config) as (keyof MonkeyTypes.Config)[]
+  ).filter((key) => {
+    return config[key] != DefaultConfig[key];
+  })) {
+    (configChanges[key] as typeof config[typeof key]) = config[key];
+  }
   return configChanges;
 }
 

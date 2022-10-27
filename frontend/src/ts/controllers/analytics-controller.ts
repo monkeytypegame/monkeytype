@@ -21,15 +21,14 @@ export async function log(
 }
 
 const lsString = localStorage.getItem("acceptedCookies");
-let acceptedCookies: {
+const acceptedCookies: {
   security: boolean;
   analytics: boolean;
-} | null;
-acceptedCookies = lsString ? JSON.parse(lsString) : null;
+} | null = lsString ? JSON.parse(lsString) : null;
 
 if (acceptedCookies !== null && acceptedCookies["analytics"] === true) {
-    activateAnalytics();
-  }
+  activateAnalytics();
+}
 
 export function activateAnalytics(): void {
   try {

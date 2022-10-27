@@ -17,7 +17,7 @@ type PossibleTypeAsync = "layoutfluid";
 export function isConfigKeyValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
   if (name.length > 30) return false;
-  return /^[\w#+.\-]+$/.test(name);
+  return /^[\w#+.-]+$/.test(name);
 }
 
 function invalid(key: string, val: unknown, customMessage?: string): void {
@@ -48,8 +48,7 @@ export function isConfigValueValid(
   let isValid = false;
 
   // might be used in the future
-  // eslint-disable-next-line
-  let customMessage: string | undefined = undefined;
+  let customMessage: string | undefined;
 
   for (const possibleType of possibleTypes) {
     switch (possibleType) {
@@ -93,7 +92,9 @@ export function isConfigValueValid(
       }
 
       default: {
-        if (isArray(possibleType) && possibleType.includes(<never>val)) isValid = true;
+        if (isArray(possibleType) && possibleType.includes(<never>val)) {
+          isValid = true;
+        }
         break;
       }
     }

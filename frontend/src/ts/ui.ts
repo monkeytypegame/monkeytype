@@ -39,9 +39,9 @@ export function updateKeytips(): void {
 }
 
 if (window.location.hostname === "localhost") {
-  window.onerror = function (error): void {
+  window.addEventListener("error", (error) => {
     Notifications.add(error.toString(), -1);
-  };
+  });
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   $("body").append(

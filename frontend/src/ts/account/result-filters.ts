@@ -130,16 +130,19 @@ export async function updateFilterPresets(): Promise<void> {
     // show region
     $(".pageAccount .presetFilterButtons").show();
 
-    // add button for each filter
-    for (const filter of DB.getSnapshot()?.filterPresets) {
-      $(".pageAccount .group.presetFilterButtons .filterBtns").append(
-        `<div class="filterPresets">
-          <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
-          <div class="button delete-filter-preset" data-id="${filter._id}">
-            <i class="fas fa-fw fa-trash"></i>
-          </div>
-        </div>`
-      );
+    const snapshot = DB.getSnapshot();
+    if (snapshot?.filterPresets) {
+      // add button for each filter
+      for (const filter of snapshot.filterPresets) {
+        $(".pageAccount .group.presetFilterButtons .filterBtns").append(
+          `<div class="filterPresets">
+            <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
+            <div class="button delete-filter-preset" data-id="${filter._id}">
+              <i class="fas fa-fw fa-trash"></i>
+            </div>
+          </div>`
+        );
+      }
     }
   } else {
     $(".pageAccount .presetFilterButtons").hide();
@@ -287,7 +290,7 @@ type AboveChartDisplay = MonkeyTypes.PartialRecord<
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
+  for (const group of Object.keys(getFilters()) as MonkeyTypes.Group[]) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       continue;
@@ -297,7 +300,9 @@ export function updateActive(): void {
       all: true,
       array: [],
     };
-    for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
+    for (const filter of Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+      typeof group
+    >[]) {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
       if (groupAboveChartDisplay === undefined) continue;
@@ -434,10 +439,11 @@ export function toggle<G extends MonkeyTypes.Group>(
 
   try {
     if (group === "date") {
-      for (const date of (Object.keys(getGroup("date")) as MonkeyTypes.Filter<"date">[])) {
-          filters["date"][date] = false;
-        }
-      
+      for (const date of Object.keys(
+        getGroup("date")
+      ) as MonkeyTypes.Filter<"date">[]) {
+        filters["date"][date] = false;
+      }
     }
     filters[group][filter] = !filters[group][
       filter
@@ -469,11 +475,15 @@ export function updateTags(): void {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
-    if (snapshot?.tags) {for (const tag of snapshot?.tags) {
-      $(
-        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag._id}">${tag.display}</div>`);
-    }}
+    if (snapshot?.tags) {
+      for (const tag of snapshot.tags) {
+        $(
+          ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+        ).append(
+          `<div class="button" filter="${tag._id}">${tag.display}</div>`
+        );
+      }
+    }
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
       "hidden"
@@ -489,13 +499,15 @@ $(
     .attr("group") as MonkeyTypes.Group;
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
-    for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
+    for (const group of Object.keys(getFilters()) as MonkeyTypes.Group[]) {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
         continue;
       }
 
-      for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
+      for (const filter of Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+        typeof group
+      >[]) {
         if (group === "date") {
           // TODO figure out why "filter" is never
           // @ts-ignore
@@ -508,14 +520,16 @@ $(
     }
     filters["date"]["all"] = true;
   } else if ($(e.target).hasClass("noFilters")) {
-    for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
+    for (const group of Object.keys(getFilters()) as MonkeyTypes.Group[]) {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
         continue;
       }
 
       if (group !== "date") {
-        for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
+        for (const filter of Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+          typeof group
+        >[]) {
           // TODO figure out why "filter" is never
           // @ts-ignore
           filters[group][filter] = false;
@@ -524,7 +538,9 @@ $(
     }
   } else if ($(e.target).hasClass("button")) {
     if (e.shiftKey) {
-      for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
+      for (const filter of Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+        typeof group
+      >[]) {
         // TODO figure out why "filter" is never
         // @ts-ignore
         filters[group][filter] = false;
@@ -545,13 +561,15 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
-  for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
+  for (const group of Object.keys(getFilters()) as MonkeyTypes.Group[]) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       continue;
     }
 
-    for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
+    for (const filter of Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+      typeof group
+    >[]) {
       if (group === "date") {
         // TODO figure out why "filter" is never
         // @ts-ignore
@@ -572,13 +590,15 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
-  for (const group of (Object.keys(getFilters()) as MonkeyTypes.Group[])) {
+  for (const group of Object.keys(getFilters()) as MonkeyTypes.Group[]) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       continue;
     }
 
-    for (const filter of (Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[])) {
+    for (const filter of Object.keys(getGroup(group)) as MonkeyTypes.Filter<
+      typeof group
+    >[]) {
       // TODO figure out why "filter" is never
       // @ts-ignore
       filters[group][filter] = false;
@@ -643,12 +663,15 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
 
   filters["tags"]["none"] = true;
 
-  DB.getSnapshot()?.tags?.forEach((tag) => {
-    if (tag.active === true) {
-      filters["tags"]["none"] = false;
-      filters["tags"][tag._id] = true;
+  const snapshot = DB.getSnapshot();
+  if (snapshot?.tags) {
+    for (const tag of snapshot.tags) {
+      if (tag.active === true) {
+        filters["tags"]["none"] = false;
+        filters["tags"][tag._id] = true;
+      }
     }
-  });
+  }
 
   filters["date"]["all"] = true;
   updateActive();

@@ -106,12 +106,15 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to edit tag: " + response.message, -1);
     } else {
       Notifications.add("Tag updated", 1);
-      DB.getSnapshot()?.tags?.forEach((tag) => {
-        if (tag._id === tagId) {
-          tag.name = tagName;
-          tag.display = propTagName;
+      const snapshot = DB.getSnapshot();
+      if (snapshot?.tags) {
+        for (const tag of snapshot.tags) {
+          if (tag._id === tagId) {
+            tag.name = tagName;
+            tag.display = propTagName;
+          }
         }
-      });
+      }
       ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
@@ -123,11 +126,14 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to remove tag: " + response.message, -1);
     } else {
       Notifications.add("Tag removed", 1);
-      DB.getSnapshot()?.tags?.forEach((tag, index: number) => {
-        if (tag._id === tagId) {
-          DB.getSnapshot()?.tags?.splice(index, 1);
+      const snapshot = DB.getSnapshot();
+      if (snapshot?.tags) {
+        for (const [index, tag] of snapshot.tags.entries()) {
+          if (tag._id === tagId) {
+            DB.getSnapshot()?.tags?.splice(index, 1);
+          }
         }
-      });
+      }
       ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
@@ -139,17 +145,20 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to clear tag pb: " + response.message, -1);
     } else {
       Notifications.add("Tag PB cleared", 1);
-      DB.getSnapshot()?.tags?.forEach((tag) => {
-        if (tag._id === tagId) {
-          tag.personalBests = {
-            time: {},
-            words: {},
-            custom: { custom: [] },
-            zen: { zen: [] },
-            quote: { custom: [] },
-          };
+      const snapshot = DB.getSnapshot();
+      if (snapshot?.tags) {
+        for (const tag of snapshot.tags) {
+          if (tag._id === tagId) {
+            tag.personalBests = {
+              time: {},
+              words: {},
+              custom: { custom: [] },
+              zen: { zen: [] },
+              quote: { custom: [] },
+            };
+          }
         }
-      });
+      }
       ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();

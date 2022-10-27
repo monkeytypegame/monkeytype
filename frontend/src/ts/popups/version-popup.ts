@@ -9,7 +9,7 @@ export function show(): void {
   `);
   getReleasesFromGitHub().then((releases) => {
     $("#versionHistory").html(`<div class="releases"></div`);
-    releases.forEach((release: MonkeyTypes.GithubRelease) => {
+    for (const release of releases) {
       if (!release.draft && !release.prerelease) {
         $("#versionHistory .releases").append(`
         <div class="release">
@@ -22,7 +22,7 @@ export function show(): void {
         </div>
       `);
       }
-    });
+    }
   });
   $("#versionHistoryWrapper")
     .css("opacity", 0)

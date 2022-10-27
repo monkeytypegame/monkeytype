@@ -62,43 +62,51 @@ function update(): void {
     },
   });
 
-  DB.getSnapshot()?.tags?.forEach((tag) => {
-    let dis = tag.display;
+  if (snapshot?.tags) {
+    for (const tag of snapshot.tags) {
+      let dis = tag.display;
 
-    dis = tag.active === true ? '<i class="fas fa-fw fa-check"></i>' + dis : '<i class="fas fa-fw"></i>' + dis;
+      dis =
+        tag.active === true
+          ? '<i class="fas fa-fw fa-check"></i>' + dis
+          : '<i class="fas fa-fw"></i>' + dis;
 
-    subgroup.list.push({
-      id: "toggleTag" + tag._id,
-      noIcon: true,
-      display: dis,
-      sticky: true,
-      exec: (): void => {
-        TagController.toggle(tag._id);
-        ModesNotice.update();
-
-        if (Config.paceCaret === "average") {
-          PaceCaret.init();
+      subgroup.list.push({
+        id: "toggleTag" + tag._id,
+        noIcon: true,
+        display: dis,
+        sticky: true,
+        exec: (): void => {
+          TagController.toggle(tag._id);
           ModesNotice.update();
-        }
 
-        let txt = tag.display;
+          if (Config.paceCaret === "average") {
+            PaceCaret.init();
+            ModesNotice.update();
+          }
 
-        txt = tag.active === true ? '<i class="fas fa-fw fa-check"></i>' + txt : '<i class="fas fa-fw"></i>' + txt;
-        if ($("#commandLine").hasClass("allCommands")) {
-          $(
-            `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
-          ).html(
-            `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
-              txt
-          );
-        } else {
-          $(
-            `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
-          ).html(txt);
-        }
-      },
-    });
-  });
+          let txt = tag.display;
+
+          txt =
+            tag.active === true
+              ? '<i class="fas fa-fw fa-check"></i>' + txt
+              : '<i class="fas fa-fw"></i>' + txt;
+          if ($("#commandLine").hasClass("allCommands")) {
+            $(
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
+            ).html(
+              `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
+                txt
+            );
+          } else {
+            $(
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
+            ).html(txt);
+          }
+        },
+      });
+    }
+  }
   subgroup.list.push({
     id: "createTag",
     display: "Create tag",

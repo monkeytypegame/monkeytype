@@ -63,35 +63,30 @@ async function buildKeymapStrings(): Promise<void> {
     keymapStrings.right = null;
   } else {
     keymapStrings.left = layoutKeysEntries
-      .map(([rowName, row]) =>
-        row
-          // includes "6" and "y" (buttons on qwerty) into the left hand
-          .slice(
-            0,
-            ["row1", "row2"].includes(rowName)
-              ? (rowName === "row1"
-                ? 7
-                : 6)
-              : 5
-          )
-          .map((key) => key.split(""))
-      )
+      .map(([rowName, row]) => {
+        let sliceEnd = 5;
+        // includes "6" and "y" (buttons on qwerty) into the left hand
+        if (["row1", "row2"].includes(rowName)) {
+          sliceEnd = rowName === "row1" ? 7 : 6;
+        }
+        return row.slice(0, sliceEnd).map((key) => [...key]);
+      })
       .flat(2);
 
     keymapStrings.right = layoutKeysEntries
-      .map(([rowName, row]) =>
-        row
-          // includes "b" (buttons on qwerty) into the right hand
-          .slice(
-            ["row1", "row4"].includes(rowName)
-              ? (rowName === "row1"
-                ? 6
-                : 4)
-              : 5
-          )
-          .map((key) => key.split(""))
-      )
+      .map(([rowName, row]) => {
+        let sliceStart = 5;
+        // includes "b" (buttons on qwerty) into the right hand
+        if (["row1", "row4"].includes(rowName)) {
+          sliceStart = rowName === "row1" ? 6 : 4;
+        }
+
+        return row.slice(sliceStart).map((key) => [...key]);
+      })
       .flat(2);
+
+    console.log(keymapStrings.left);
+    console.log(keymapStrings.right);
   }
 }
 
@@ -186,10 +181,7 @@ export async function isUsingOppositeShift(
   if (!leftState && !rightState) return null;
 
   if (Config.oppositeShiftMode === "on") {
-    if (
-      !rightSideKeys.has(event.code) &&
-      !leftSideKeys.has(event.code)
-    ) {
+    if (!rightSideKeys.has(event.code) && !leftSideKeys.has(event.code)) {
       return null;
     }
 

@@ -30,7 +30,7 @@ function update(): void {
   const snapshot = DB.getSnapshot();
   subgroup.list = [];
   if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
-  snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
+  for (const preset of snapshot.presets) {
     const dis = preset.display;
 
     subgroup.list.push({
@@ -44,7 +44,7 @@ function update(): void {
         ModesNotice.update();
       },
     });
-  });
+  }
   subgroup.list.push({
     id: "createPreset",
     display: "Create preset",

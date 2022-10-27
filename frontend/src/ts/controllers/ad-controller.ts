@@ -283,6 +283,7 @@ $(document).ready(() => {
   updateBreakpoint(true);
 });
 
+// eslint-disable-next-line unicorn/prefer-add-event-listener
 window.onerror = function (error): void {
   if (typeof error === "string" && error.slice(0, 6) === "EG APS") {
     $("#ad-result-wrapper .iconAndText").addClass("withLeft");

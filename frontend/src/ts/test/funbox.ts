@@ -126,26 +126,31 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  if ((await Misc.getCurrentLanguage(Config.language)).ligatures && (funbox == "choo_choo" || funbox == "earthquake")) {
-      Notifications.add(
-        "Current language does not support this funbox mode",
-        0
-      );
-      UpdateConfig.setFunbox("none", true);
-      await clear();
-      return;
-    }
-  if (funbox !== "none" && (Config.mode === "zen" || Config.mode == "quote") && funboxInfo?.affectsWordGeneration === true) {
-      Notifications.add(
-        `${Misc.capitalizeFirstLetterOfEachWord(
-          Config.mode
-        )} mode does not support the ${funbox} funbox`,
-        0
-      );
-      UpdateConfig.setFunbox("none", true);
-      await clear();
-      return;
-    }
+  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  if (
+    currentLanguage.ligatures &&
+    (funbox == "choo_choo" || funbox == "earthquake")
+  ) {
+    Notifications.add("Current language does not support this funbox mode", 0);
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return;
+  }
+  if (
+    funbox !== "none" &&
+    (Config.mode === "zen" || Config.mode == "quote") &&
+    funboxInfo?.affectsWordGeneration === true
+  ) {
+    Notifications.add(
+      `${Misc.capitalizeFirstLetterOfEachWord(
+        Config.mode
+      )} mode does not support the ${funbox} funbox`,
+      0
+    );
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return;
+  }
   // if (funbox === "none") {
 
   reset();
@@ -159,7 +164,8 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     (funbox !== "none" && mode === null)
   ) {
     const list = await Misc.getFunboxList();
-    mode = list.find((f) => f.name === funbox).type;
+    const funboxInfo = list.find((f) => f.name === funbox);
+    mode = !funboxInfo ? null : funboxInfo.type;
   }
 
   ManualRestart.set();
@@ -225,7 +231,8 @@ export async function rememberSettings(): Promise<void> {
     (funbox !== "none" && mode === null)
   ) {
     const list = await Misc.getFunboxList();
-    mode = list.find((f) => f.name === funbox).type;
+    const funboxInfo = list.find((f) => f.name === funbox);
+    mode = !funboxInfo ? null : funboxInfo.type;
   }
   if (mode === "style") {
     if (funbox === "simon_says") {

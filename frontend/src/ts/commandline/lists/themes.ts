@@ -20,7 +20,7 @@ const commands: MonkeyTypes.Command[] = [
 function update(themes: MonkeyTypes.Theme[]): void {
   subgroup.list = [];
   if (Config.favThemes.length > 0) {
-    Config.favThemes.forEach((theme: string) => {
+    for (const theme of Config.favThemes) {
       subgroup.list.push({
         id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme),
         display: theme.replace(/_/g, " "),
@@ -32,7 +32,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
           UpdateConfig.setTheme(theme);
         },
       });
-    });
+    }
   }
   for (const theme of themes) {
     if ((Config.favThemes as string[]).includes(theme.name)) continue;

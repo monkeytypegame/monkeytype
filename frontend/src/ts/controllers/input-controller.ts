@@ -256,8 +256,10 @@ function handleSpace(): void {
     Replay.addReplayEvent("submitErrorWord");
   }
 
-  let wordLength: number;
-  wordLength = Config.mode === "zen" ? TestInput.input.current.length : TestWords.words.getCurrent().length;
+  const wordLength =
+    Config.mode === "zen"
+      ? TestInput.input.current.length
+      : TestWords.words.getCurrent().length;
 
   const flex: number = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
   if (
@@ -482,7 +484,7 @@ function handleChar(
     // input history: ['프'], input:ㄹ, expected :프ㄹ, result: 플
     const realInput: string = (realInputValue ?? "").slice(1);
     resultingWord = realInput;
-    koInputVisual.innerText = resultingWord.slice(-1);
+    koInputVisual.textContent = resultingWord.slice(-1);
   }
 
   // If a trailing composed char is used, ignore it when counting accuracy
@@ -673,7 +675,9 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     // set textarea value to: text before caret + tab + text after caret
     area.value =
-      area.value.slice(0, Math.max(0, start)) + "\t" + area.value.slice(Math.max(0, end));
+      area.value.slice(0, Math.max(0, start)) +
+      "\t" +
+      area.value.slice(Math.max(0, end));
 
     // put caret at right position again
     area.selectionStart = area.selectionEnd = start + 1;
@@ -987,11 +991,9 @@ $("#wordsInput").on("input", (event) => {
 
   if (
     (Config.layout == "default" || Config.layout == "korean") &&
-    /[\uAC00-\uD7AF]|[\u1100-\u11FF]|[\u3130-\u318F]|[\uA960-\uA97F]|[\uD7B0-\uD7FF]/g
-      .test(
-        (event.target as HTMLInputElement).value
-      .normalize()
-      )
+    /[\uAC00-\uD7AF]|[\u1100-\u11FF]|[\u3130-\u318F]|[\uA960-\uA97F]|[\uD7B0-\uD7FF]/g.test(
+      (event.target as HTMLInputElement).value.normalize()
+    )
   ) {
     TestInput.input.setKoreanStatus(true);
   }
@@ -1015,14 +1017,16 @@ $("#wordsInput").on("input", (event) => {
   //inputs: ㄱ, 가, 갇, 가다
   //what it actually reads: ㄱ, 가, 갇, , 가, 가다
   //this skips this part (, , 가,)
-  if (containsKorean && !isBackspace && (
-      isKoCompiling ||
+  if (
+    containsKorean &&
+    !isBackspace &&
+    (isKoCompiling ||
       (realInputValue.slice(1).length < TestInput.input.current.length &&
-        Hangul.disassemble(TestInput.input.current.slice(-1)).length > 1)
-    )) {
-      isKoCompiling = !isKoCompiling;
-      return;
-    }
+        Hangul.disassemble(TestInput.input.current.slice(-1)).length > 1))
+  ) {
+    isKoCompiling = !isKoCompiling;
+    return;
+  }
 
   // input will be modified even with the preventDefault() in
   // beforeinput/keydown if it's part of a compose sequence. this undoes
@@ -1047,7 +1051,7 @@ $("#wordsInput").on("input", (event) => {
         .slice(1);
 
       TestInput.input.current = realInput;
-      koInputVisual.innerText = realInput.slice(-1);
+      koInputVisual.textContent = realInput.slice(-1);
     }
 
     TestUI.updateWordElement();

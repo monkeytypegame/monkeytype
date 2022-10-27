@@ -38,11 +38,14 @@ function hide(): void {
 
 export function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
-  DB.getSnapshot()?.tags?.forEach((tag) => {
-    $("#resultEditTagsPanel .buttons").append(
-      `<div class="button tag" tagid="${tag._id}">${tag.display}</div>`
-    );
-  });
+  const snapshot = DB.getSnapshot();
+  if (snapshot?.tags) {
+    for (const tag of snapshot.tags) {
+      $("#resultEditTagsPanel .buttons").append(
+        `<div class="button tag" tagid="${tag._id}">${tag.display}</div>`
+      );
+    }
+  }
 }
 
 function updateActiveButtons(active: string[]): void {
@@ -138,29 +141,32 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
 
   const responseTagPbs = response.data.tagPbs;
 
+  const snapshot = DB.getSnapshot();
+
   Notifications.add("Tags updated", 1, 2);
-  DB.getSnapshot()?.results?.forEach(
-    (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
+  if (snapshot?.results) {
+    for (const result of snapshot.results) {
       if (result._id === resultId) {
         result.tags = newTags;
       }
     }
-  );
+  }
 
   const tagNames: string[] = [];
 
   if (newTags.length > 0) {
     for (const tag of newTags) {
-      DB.getSnapshot()?.tags?.forEach((snaptag) => {
-        if (tag === snaptag._id) {
-          tagNames.push(snaptag.display);
+      if (snapshot?.tags) {
+        for (const snaptag of snapshot.tags) {
+          if (tag === snaptag._id) {
+            tagNames.push(snaptag.display);
+          }
         }
-      });
+      }
     }
   }
 
-  let restags;
-  restags = newTags === undefined ? "[]" : JSON.stringify(newTags);
+  const restags = newTags === undefined ? "[]" : JSON.stringify(newTags);
 
   $(`.pageAccount #resultEditTags[resultid='${resultId}']`).attr(
     "tags",
@@ -205,7 +211,9 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
 
     for (const [index, tag] of newTags.entries()) {
       if (checked.includes(tag)) continue;
-      html += responseTagPbs.includes(tag) ? `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>` : `<div tagid="${tag}">${tagNames[index]}</div>`;
+      html += responseTagPbs.includes(tag)
+        ? `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`
+        : `<div tagid="${tag}">${tagNames[index]}</div>`;
     }
 
     // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));

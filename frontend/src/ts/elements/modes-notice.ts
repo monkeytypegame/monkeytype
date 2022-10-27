@@ -117,18 +117,14 @@ export async function update(): Promise<void> {
     try {
       speed = ` (${Math.round(PaceCaret.settings?.wpm ?? 0)} wpm)`;
     } catch {}
+
+    let string = "custom";
+    if (["average", "pb", "last", "daily"].includes(Config.paceCaret)) {
+      string = Config.paceCaret;
+    }
+
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
-        Config.paceCaret === "average"
-          ? "average"
-          : (Config.paceCaret === "pb"
-          ? "pb"
-          : Config.paceCaret === "last"
-          ? "last"
-          : Config.paceCaret === "daily"
-          ? "daily"
-          : "custom")
-      } pace${speed}</div>`
+      `<div class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${string} pace${speed}</div>`
     );
   }
 
@@ -142,11 +138,12 @@ export async function update(): Promise<void> {
     }
 
     if (Auth?.currentUser && avgWPM > 0) {
-      const avgWPMText = ["wpm", "both"].includes(Config.showAverage)
-        ? (Config.alwaysShowCPM
+      let avgWPMText = "";
+      if (["wpm", "both"].includes(Config.showAverage)) {
+        avgWPMText = Config.alwaysShowCPM
           ? `${Math.round(avgWPM * 5)} cpm`
-          : `${avgWPM} wpm`)
-        : "";
+          : `${avgWPM} wpm`;
+      }
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
         ? `${avgAcc}% acc`
@@ -225,11 +222,14 @@ export async function update(): Promise<void> {
 
   let tagsString = "";
   try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        tagsString += tag.display + ", ";
+    const snapshot = DB.getSnapshot();
+    if (snapshot?.tags) {
+      for (const tag of snapshot.tags) {
+        if (tag.active === true) {
+          tagsString += tag.display + ", ";
+        }
       }
-    });
+    }
 
     if (tagsString !== "") {
       $(".pageTest #testModesNotice").append(

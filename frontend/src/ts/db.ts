@@ -12,9 +12,7 @@ export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(
-  newSnapshot: MonkeyTypes.Snapshot | undefined
-): void {
+export function setSnapshot(newSnapshot?: MonkeyTypes.Snapshot): void {
   try {
     delete newSnapshot?.banned;
   } catch {}
@@ -168,9 +166,11 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading presets...");
     snap.presets = presetsData;
 
-    if (snap.presets) {for (const preset of snap.presets) {
-      preset.display = preset.name.replaceAll("_", " ");
-    }}
+    if (snap.presets) {
+      for (const preset of snap.presets) {
+        preset.display = preset.name.replaceAll("_", " ");
+      }
+    }
 
     snap.presets = snap.presets?.sort((a, b) => {
       if (a.name > b.name) {
@@ -334,19 +334,22 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   function cont(): number {
     let topWpm = 0;
 
-    if (dbSnapshot?.results) {for (const result of dbSnapshot?.results) {
-      if (
-        result.mode == mode &&
-        result.mode2 == mode2 &&
-        result.punctuation == punctuation &&
-        result.language == language &&
-        result.difficulty == difficulty &&
-        (result.lazyMode === lazyMode ||
-          (result.lazyMode === undefined && lazyMode === false))
-       && result.wpm > topWpm) {
+    if (dbSnapshot?.results) {
+      for (const result of dbSnapshot.results) {
+        if (
+          result.mode == mode &&
+          result.mode2 == mode2 &&
+          result.punctuation == punctuation &&
+          result.language == language &&
+          result.difficulty == difficulty &&
+          (result.lazyMode === lazyMode ||
+            (result.lazyMode === undefined && lazyMode === false)) &&
+          result.wpm > topWpm
+        ) {
           topWpm = result.wpm;
         }
-    }}
+      }
+    }
     return topWpm;
   }
 
@@ -369,11 +372,13 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
 
   function cont(): [number, number] {
     const activeTagIds: string[] = [];
-    if (snapshot?.tags) {for (const tag of snapshot?.tags) {
-      if (tag.active === true) {
-        activeTagIds.push(tag._id);
+    if (snapshot?.tags) {
+      for (const tag of snapshot.tags) {
+        if (tag.active === true) {
+          activeTagIds.push(tag._id);
+        }
       }
-    }}
+    }
 
     let wpmSum = 0;
     let accSum = 0;
@@ -447,11 +452,13 @@ export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
 
   function cont(): number {
     const activeTagIds: string[] = [];
-    if (snapshot?.tags) {for (const tag of snapshot?.tags) {
-      if (tag.active === true) {
-        activeTagIds.push(tag._id);
+    if (snapshot?.tags) {
+      for (const tag of snapshot.tags) {
+        if (tag.active === true) {
+          activeTagIds.push(tag._id);
+        }
       }
-    }}
+    }
 
     let bestWpm = 0;
 
@@ -510,9 +517,9 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
     try {
       if (!dbSnapshot?.personalBests) return ret;
 
-      for (const pb of (dbSnapshot.personalBests[mode][
-          mode2
-        ] as unknown as MonkeyTypes.PersonalBest[])) {
+      for (const pb of dbSnapshot.personalBests[mode][
+        mode2
+      ] as unknown as MonkeyTypes.PersonalBest[]) {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
@@ -577,9 +584,9 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
         [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
     }
 
-    for (const pb of (dbSnapshot.personalBests[mode][
-        mode2
-      ] as unknown as MonkeyTypes.PersonalBest[])) {
+    for (const pb of dbSnapshot.personalBests[mode][
+      mode2
+    ] as unknown as MonkeyTypes.PersonalBest[]) {
       if (
         pb.punctuation == punctuation &&
         pb.difficulty == difficulty &&
@@ -710,9 +717,9 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
         filteredtag.personalBests[mode][mode2] =
           [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
       }
-      for (const pb of (filteredtag.personalBests[mode][
-          mode2
-        ] as unknown as MonkeyTypes.PersonalBest[])) {
+      for (const pb of filteredtag.personalBests[mode][
+        mode2
+      ] as unknown as MonkeyTypes.PersonalBest[]) {
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&

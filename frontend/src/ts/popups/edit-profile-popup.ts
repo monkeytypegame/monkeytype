@@ -66,7 +66,7 @@ function hydrateInputs(): void {
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
 
-  badges?.forEach((badge: MonkeyTypes.Badge) => {
+  for (const badge of badges) {
     if (badge.selected) {
       currentSelectedBadgeId = badge.id;
     }
@@ -76,7 +76,7 @@ function hydrateInputs(): void {
       badge.selected ? "selected" : ""
     }" selection-id=${badge.id}>${badgeOption}</div>`;
     badgeIdsSelect.append(badgeWrapper);
-  });
+  }
 
   badgeIdsSelect.prepend(
     `<div class="badgeSelectionItem ${
@@ -136,11 +136,13 @@ async function updateProfile(): Promise<void> {
   }
 
   snapshot.details = updates;
-  for (const badge of snapshot.inventory?.badges) {
-    if (badge.id === currentSelectedBadgeId) {
-      badge.selected = true;
-    } else {
-      delete badge.selected;
+  if (snapshot?.inventory?.badges) {
+    for (const badge of snapshot.inventory.badges) {
+      if (badge.id === currentSelectedBadgeId) {
+        badge.selected = true;
+      } else {
+        delete badge.selected;
+      }
     }
   }
 

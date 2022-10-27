@@ -32,8 +32,8 @@ export function hide(): void {
           mailIdsToDelete: mailToDelete.length > 0 ? mailToDelete : undefined,
         })
         .then(async (updateResponse) => {
-          const {status} = await updateResponse;
-          const {message} = await updateResponse;
+          const { status } = await updateResponse;
+          const { message } = await updateResponse;
           if (status !== 200) {
             Notifications.add(`Failed to update inbox: ${message}`, -1);
             return;
@@ -42,10 +42,7 @@ export function hide(): void {
               .filter((ie) => {
                 return ie.rewards.length > 0 && mailToMarkRead.includes(ie.id);
               })
-              .map((ie) => ie.rewards)
-              .reduce(function (a, b) {
-                return a.concat(b);
-              }, []);
+              .flatMap((ie) => ie.rewards);
 
             for (const r of rewardsClaimed) {
               if (r.type === "xp") {

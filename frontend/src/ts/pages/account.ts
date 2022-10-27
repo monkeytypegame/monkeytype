@@ -32,8 +32,10 @@ let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
   if (!filteredResults || filteredResults.length === 0) return;
-  let newVisibleLines;
-  newVisibleLines = lineIndex && lineIndex > visibleTableLines ? Math.ceil(lineIndex / 10) * 10 : visibleTableLines + 10;
+  const newVisibleLines =
+    lineIndex && lineIndex > visibleTableLines
+      ? Math.ceil(lineIndex / 10) * 10
+      : visibleTableLines + 10;
   for (let i = visibleTableLines; i < newVisibleLines; i++) {
     const result = filteredResults[i];
     if (!result) continue;
@@ -102,22 +104,27 @@ function loadMoreLines(lineIndex?: number): void {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       for (const tag of result.tags) {
-        DB.getSnapshot()?.tags?.forEach((snaptag) => {
-          if (tag === snaptag._id) {
-            tagNames += snaptag.display + ", ";
+        const snapshot = DB.getSnapshot();
+        if (snapshot?.tags) {
+          for (const snaptag of snapshot.tags) {
+            if (tag === snaptag._id) {
+              tagNames += snaptag.display + ", ";
+            }
           }
-        });
+        }
       }
       tagNames = tagNames.slice(0, Math.max(0, tagNames.length - 2));
     }
-
-    let restags;
-    restags = result.tags === undefined ? "[]" : JSON.stringify(result.tags);
+    const restags =
+      result.tags === undefined ? "[]" : JSON.stringify(result.tags);
 
     let tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="no tags" data-balloon-pos="up" style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
 
     if (tagNames !== "") {
-      tagIcons = result.tags !== undefined && result.tags.length > 1 ? `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>` : `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
+      tagIcons =
+        result.tags !== undefined && result.tags.length > 1
+          ? `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`
+          : `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
     }
 
     let consistency = "-";
@@ -130,7 +137,9 @@ function loadMoreLines(lineIndex?: number): void {
     pb = pb ? '<i class="fas fa-fw fa-crown"></i>' : "";
 
     let charStats = "-";
-    charStats = result.charStats ? result.charStats.join("/") : result.correctChars + "/" + result.incorrectChars + "/-/-";
+    charStats = result.charStats
+      ? result.charStats.join("/")
+      : result.correctChars + "/" + result.incorrectChars + "/-/-";
 
     const date = new Date(result.timestamp);
     $(".pageAccount .history table tbody").append(`
@@ -279,8 +288,8 @@ function fillContent(): void {
 
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
-  DB.getSnapshot()?.results?.forEach(
-    (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
+  if (snapshot?.results) {
+    for (const result of snapshot.results) {
       // totalSeconds += tt;
 
       //apply filters
@@ -291,7 +300,7 @@ function fillContent(): void {
           if (filterDebug) {
             console.log(`skipping result due to pb filter`, result);
           }
-          return;
+          continue;
         }
 
         let resdiff = result.difficulty;
@@ -302,13 +311,13 @@ function fillContent(): void {
           if (filterDebug) {
             console.log(`skipping result due to difficulty filter`, result);
           }
-          return;
+          continue;
         }
         if (!ResultFilters.getFilter("mode", result.mode)) {
           if (filterDebug) {
             console.log(`skipping result due to mode filter`, result);
           }
-          return;
+          continue;
         }
 
         if (result.mode == "time") {
@@ -320,7 +329,7 @@ function fillContent(): void {
             if (filterDebug) {
               console.log(`skipping result due to time filter`, result);
             }
-            return;
+            continue;
           }
         } else if (result.mode == "words") {
           let wordfilter: MonkeyTypes.Mode2Custom<"words"> = "custom";
@@ -333,7 +342,7 @@ function fillContent(): void {
             if (filterDebug) {
               console.log(`skipping result due to word filter`, result);
             }
-            return;
+            continue;
           }
         }
 
@@ -355,7 +364,7 @@ function fillContent(): void {
             if (filterDebug) {
               console.log(`skipping result due to quoteLength filter`, result);
             }
-            return;
+            continue;
           }
         }
 
@@ -374,7 +383,7 @@ function fillContent(): void {
           if (filterDebug) {
             console.log(`skipping result due to language filter`, result);
           }
-          return;
+          continue;
         }
 
         let puncfilter: MonkeyTypes.Filter<"punctuation"> = "off";
@@ -385,7 +394,7 @@ function fillContent(): void {
           if (filterDebug) {
             console.log(`skipping result due to punctuation filter`, result);
           }
-          return;
+          continue;
         }
 
         let numfilter: MonkeyTypes.Filter<"numbers"> = "off";
@@ -396,7 +405,7 @@ function fillContent(): void {
           if (filterDebug) {
             console.log(`skipping result due to numbers filter`, result);
           }
-          return;
+          continue;
         }
 
         if (result.funbox === "none" || result.funbox === undefined) {
@@ -404,14 +413,14 @@ function fillContent(): void {
             if (filterDebug) {
               console.log(`skipping result due to funbox filter`, result);
             }
-            return;
+            continue;
           }
         } else {
           if (!ResultFilters.getFilter("funbox", result.funbox)) {
             if (filterDebug) {
               console.log(`skipping result due to funbox filter`, result);
             }
-            return;
+            continue;
           }
         }
 
@@ -427,7 +436,7 @@ function fillContent(): void {
           //tags exist
           const validTags = DB.getSnapshot()?.tags?.map((t) => t._id);
 
-          if (validTags === undefined) return;
+          if (validTags === undefined) continue;
 
           for (const tag of result.tags) {
             //check if i even need to check tags anymore
@@ -447,7 +456,7 @@ function fillContent(): void {
           if (filterDebug) {
             console.log(`skipping result due to tag filter`, result);
           }
-          return;
+          continue;
         }
 
         const timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
@@ -472,7 +481,7 @@ function fillContent(): void {
           if (filterDebug) {
             console.log(`skipping result due to date filter`, result);
           }
-          return;
+          continue;
         }
 
         filteredResults.push(result);
@@ -631,7 +640,7 @@ function fillContent(): void {
 
       totalWpm += result.wpm;
     }
-  );
+  }
 
   if (Config.alwaysShowCPM) {
     $(".pageAccount .group.history table thead tr td:nth-child(2)").text("cpm");
@@ -673,7 +682,9 @@ function fillContent(): void {
     ChartController.accountActivity.options as ScaleChartOptions<"bar" | "line">
   ).scales;
 
-  accountActivityScaleOptions["avgWpm"].title.text = Config.alwaysShowCPM ? "Average Cpm" : "Average Wpm";
+  accountActivityScaleOptions["avgWpm"].title.text = Config.alwaysShowCPM
+    ? "Average Cpm"
+    : "Average Wpm";
 
   ChartController.accountActivity.data.datasets[0].data =
     activityChartData_time;
@@ -707,7 +718,9 @@ function fillContent(): void {
     ChartController.accountHistory.options as ScaleChartOptions<"line">
   ).scales;
 
-  accountHistoryScaleOptions["wpm"].title.text = Config.alwaysShowCPM ? "Characters per Minute" : "Words per Minute";
+  accountHistoryScaleOptions["wpm"].title.text = Config.alwaysShowCPM
+    ? "Characters per Minute"
+    : "Words per Minute";
 
   ChartController.accountHistory.data.datasets[0].data = chartData;
   ChartController.accountHistory.data.datasets[1].data = accChartData;
@@ -720,7 +733,9 @@ function fillContent(): void {
   accountHistoryScaleOptions["wpm"].max =
     Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
-  accountHistoryScaleOptions["wpm"].min = !Config.startGraphsAtZero ? Math.floor(minWpmChartVal) : 0;
+  accountHistoryScaleOptions["wpm"].min = !Config.startGraphsAtZero
+    ? Math.floor(minWpmChartVal)
+    : 0;
 
   if (!chartData || chartData.length === 0) {
     $(".pageAccount .group.noDataError").removeClass("hidden");
@@ -750,7 +765,9 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     highestSpeed = topWpm * 5;
   }
-  highestSpeed = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(highestSpeed).toFixed(2) : Math.round(highestSpeed);
+  highestSpeed = Config.alwaysShowDecimalPlaces
+    ? Misc.roundTo2(highestSpeed).toFixed(2)
+    : Math.round(highestSpeed);
 
   $(".pageAccount .highestWpm .title").text(`highest ${wpmCpm}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
@@ -759,7 +776,9 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     averageSpeed = totalWpm * 5;
   }
-  averageSpeed = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(averageSpeed / testCount).toFixed(2) : Math.round(averageSpeed / testCount);
+  averageSpeed = Config.alwaysShowDecimalPlaces
+    ? Misc.roundTo2(averageSpeed / testCount).toFixed(2)
+    : Math.round(averageSpeed / testCount);
 
   $(".pageAccount .averageWpm .title").text(`average ${wpmCpm}`);
   $(".pageAccount .averageWpm .val").text(averageSpeed);
@@ -768,7 +787,9 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     averageSpeedLast10 = wpmLast10total * 5;
   }
-  averageSpeedLast10 = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2) : Math.round(averageSpeedLast10 / last10);
+  averageSpeedLast10 = Config.alwaysShowDecimalPlaces
+    ? Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2)
+    : Math.round(averageSpeedLast10 / last10);
 
   $(".pageAccount .averageWpm10 .title").text(
     `average ${wpmCpm} (last 10 tests)`
@@ -779,7 +800,9 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     highestRawSpeed = rawWpm.max * 5;
   }
-  highestRawSpeed = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(highestRawSpeed).toFixed(2) : Math.round(highestRawSpeed);
+  highestRawSpeed = Config.alwaysShowDecimalPlaces
+    ? Misc.roundTo2(highestRawSpeed).toFixed(2)
+    : Math.round(highestRawSpeed);
 
   $(".pageAccount .highestRaw .title").text(`highest raw ${wpmCpm}`);
   $(".pageAccount .highestRaw .val").text(highestRawSpeed);
@@ -788,7 +811,9 @@ function fillContent(): void {
   if (Config.alwaysShowCPM) {
     averageRawSpeed = rawWpm.total * 5;
   }
-  averageRawSpeed = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2) : Math.round(averageRawSpeed / rawWpm.count);
+  averageRawSpeed = Config.alwaysShowDecimalPlaces
+    ? Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2)
+    : Math.round(averageRawSpeed / rawWpm.count);
 
   $(".pageAccount .averageRaw .title").text(`average raw ${wpmCpm}`);
   $(".pageAccount .averageRaw .val").text(averageRawSpeed);
@@ -816,17 +841,23 @@ function fillContent(): void {
   $(".pageAccount .testsTaken .val").text(testCount);
 
   let highestAcc: string | number = topAcc;
-  highestAcc = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(highestAcc).toFixed(2) : Math.round(highestAcc);
+  highestAcc = Config.alwaysShowDecimalPlaces
+    ? Misc.roundTo2(highestAcc).toFixed(2)
+    : Math.round(highestAcc);
 
   $(".pageAccount .highestAcc .val").text(highestAcc + "%");
 
   let averageAcc: number | string = totalAcc;
-  averageAcc = Config.alwaysShowDecimalPlaces ? Math.floor(averageAcc / testCount).toFixed(2) : Math.round(averageAcc / testCount);
+  averageAcc = Config.alwaysShowDecimalPlaces
+    ? Math.floor(averageAcc / testCount).toFixed(2)
+    : Math.round(averageAcc / testCount);
 
   $(".pageAccount .avgAcc .val").text(averageAcc + "%");
 
   let averageAccLast10: number | string = totalAcc10;
-  averageAccLast10 = Config.alwaysShowDecimalPlaces ? Math.floor(averageAccLast10 / last10).toFixed(2) : Math.round(averageAccLast10 / last10);
+  averageAccLast10 = Config.alwaysShowDecimalPlaces
+    ? Math.floor(averageAccLast10 / last10).toFixed(2)
+    : Math.round(averageAccLast10 / last10);
 
   $(".pageAccount .avgAcc10 .val").text(averageAccLast10 + "%");
 
@@ -835,12 +866,16 @@ function fillContent(): void {
     $(".pageAccount .avgCons10 .val").text("-");
   } else {
     let highestCons: number | string = topCons;
-    highestCons = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(highestCons).toFixed(2) : Math.round(highestCons);
+    highestCons = Config.alwaysShowDecimalPlaces
+      ? Misc.roundTo2(highestCons).toFixed(2)
+      : Math.round(highestCons);
 
     $(".pageAccount .highestCons .val").text(highestCons + "%");
 
     let averageCons: number | string = totalCons;
-    averageCons = Config.alwaysShowDecimalPlaces ? Misc.roundTo2(averageCons / consCount).toFixed(2) : Math.round(averageCons / consCount);
+    averageCons = Config.alwaysShowDecimalPlaces
+      ? Misc.roundTo2(averageCons / consCount).toFixed(2)
+      : Math.round(averageCons / consCount);
 
     $(".pageAccount .avgCons .val").text(averageCons + "%");
 

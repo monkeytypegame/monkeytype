@@ -128,7 +128,7 @@ export function getStats(): DebugStats {
     ret.keySpacingStats = {
       average:
         (TestInput.keypressTimings.spacing.array as number[]).reduce(
-          (previous, current) => (current += previous)
+          (total, element) => total + element
         ) / TestInput.keypressTimings.spacing.array.length,
       sd: Misc.stdDev(TestInput.keypressTimings.spacing.array as number[]),
     };
@@ -139,7 +139,7 @@ export function getStats(): DebugStats {
     ret.keyDurationStats = {
       average:
         (TestInput.keypressTimings.duration.array as number[]).reduce(
-          (previous, current) => (current += previous)
+          (total, element) => total + element
         ) / TestInput.keypressTimings.duration.array.length,
       sd: Misc.stdDev(TestInput.keypressTimings.duration.array as number[]),
     };
@@ -187,11 +187,14 @@ export function setInvalid(): void {
 export function calculateTestSeconds(now?: number): number {
   if (now === undefined) {
     const endAfkSeconds = (end - TestInput.lastKeypress) / 1000;
-    return (Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7 ? (TestInput.lastKeypress - start) / 1000 : (end - start) / 1000;
+    return (Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7
+      ? (TestInput.lastKeypress - start) / 1000
+      : (end - start) / 1000;
   } else {
     return (now - start) / 1000;
   }
 }
+
 let avg = 0;
 export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   const start = performance.now();
@@ -206,15 +209,19 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
 
   //check input history
   for (let i = 0; i < TestInput.input.history.length; i++) {
-    const word: string = !containsKorean
-      ? //english
-        (Config.mode == "zen"
-        ? (TestInput.input.getHistory(i) as string)
-        : TestWords.words.get(i))
-      : //korean
-      (Config.mode == "zen"
-      ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
-      : Hangul.disassemble(TestWords.words.get(i)).join(""));
+    let word: string;
+
+    if (containsKorean) {
+      word =
+        Config.mode == "zen"
+          ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
+          : Hangul.disassemble(TestWords.words.get(i)).join("");
+    } else {
+      word =
+        Config.mode == "zen"
+          ? (TestInput.input.getHistory(i) as string)
+          : TestWords.words.get(i);
+    }
 
     const historyWord: string = !containsKorean
       ? (TestInput.input.getHistory(i) as string)
@@ -236,19 +243,24 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
       : Hangul.disassemble(TestInput.input.getHistory(i) as string).length;
   }
   if (currTestInput !== "") {
-    const word =
-      Config.mode == "zen"
-        ? currTestInput
-        : (!containsKorean
+    let word;
+
+    if (Config.mode == "zen") {
+      word = currTestInput;
+    } else {
+      word = !containsKorean
         ? TestWords.words.getCurrent()
-        : Hangul.disassemble(TestWords.words.getCurrent() ?? ""));
+        : Hangul.disassemble(TestWords.words.getCurrent() ?? "");
+    }
+
     //check whats currently typed
     const toAdd = {
       correct: 0,
       incorrect: 0,
       missed: 0,
     };
-    for (const [c, element] of word.entries()) {
+
+    for (const [c, element] of [...word].entries()) {
       if (c < currTestInput.length) {
         //on char that still has a word list pair
         if (currTestInput[c] === element) {
@@ -299,7 +311,10 @@ export function setStart(s: number): void {
 export function calculateAfkSeconds(testSeconds: number): number {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
-    extraAfk = Config.mode === "time" ? Math.round(testSeconds) - TestInput.keypressPerSecond.length : Math.ceil(testSeconds) - TestInput.keypressPerSecond.length;
+    extraAfk =
+      Config.mode === "time"
+        ? Math.round(testSeconds) - TestInput.keypressPerSecond.length
+        : Math.ceil(testSeconds) - TestInput.keypressPerSecond.length;
     if (extraAfk < 0) extraAfk = 0;
     // console.log("-- extra afk debug");
     // console.log("should be " + Math.ceil(testSeconds));
@@ -360,16 +375,19 @@ function countChars(): CharCount {
   let correctspaces = 0;
   for (let i = 0; i < TestInput.input.history.length; i++) {
     const containsKorean = TestInput.input.getKoreanStatus();
-    const word: string = !containsKorean
-      ? //english
-        (Config.mode == "zen"
-        ? (TestInput.input.getHistory(i) as string)
-        : TestWords.words.get(i))
-      : //korean
-      (Config.mode == "zen"
-      ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
-      : Hangul.disassemble(TestWords.words.get(i)).join(""));
 
+    let word;
+    if (containsKorean) {
+      word =
+        Config.mode == "zen"
+          ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
+          : Hangul.disassemble(TestWords.words.get(i)).join("");
+    } else {
+      word =
+        Config.mode == "zen"
+          ? (TestInput.input.getHistory(i) as string)
+          : TestWords.words.get(i);
+    }
     if (TestInput.input.getHistory(i) === "") {
       //last word that was not started
       continue;
@@ -390,7 +408,7 @@ function countChars(): CharCount {
       }
     } else if (historyWord.length >= word.length) {
       //too many chars
-      for (const [c, element] of historyWord.entries()) {
+      for (const [c, element] of [...historyWord].entries()) {
         if (c < word.length) {
           //on char that still has a word list pair
           if (element == word[c]) {
@@ -410,7 +428,7 @@ function countChars(): CharCount {
         incorrect: 0,
         missed: 0,
       };
-      for (const [c, element] of word.entries()) {
+      for (const [c, element] of [...word].entries()) {
         if (c < historyWord.length) {
           //on char that still has a word list pair
           if (historyWord[c] == element) {
