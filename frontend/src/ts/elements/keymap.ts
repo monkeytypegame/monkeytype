@@ -129,121 +129,119 @@ export async function refresh(
 
     let keymapElement = "";
 
-    for (const [index, row] of (Object.keys(lts.keys) as (keyof MonkeyTypes.Keys)[]).entries()) {
-        let rowKeys = lts.keys[row];
-        if (
-          row === "row1" &&
-          (isMatrix || Config.keymapStyle === "staggered")
-        ) {
-          rowKeys = rowKeys.slice(1);
-        }
-        let rowElement = "";
-        if (row === "row1" && !showTopRow) {
-          continue;
-        }
+    for (const [index, row] of (
+      Object.keys(lts.keys) as (keyof MonkeyTypes.Keys)[]
+    ).entries()) {
+      let rowKeys = lts.keys[row];
+      if (row === "row1" && (isMatrix || Config.keymapStyle === "staggered")) {
+        rowKeys = rowKeys.slice(1);
+      }
+      let rowElement = "";
+      if (row === "row1" && !showTopRow) {
+        continue;
+      }
 
-        if ((row === "row2" || row === "row3" || row === "row4") && !isMatrix) {
-          rowElement += "<div></div>";
-        }
+      if ((row === "row2" || row === "row3" || row === "row4") && !isMatrix) {
+        rowElement += "<div></div>";
+      }
 
-        if (row === "row4" && lts.type !== "iso" && !isMatrix) {
-          rowElement += "<div></div>";
-        }
+      if (row === "row4" && lts.type !== "iso" && !isMatrix) {
+        rowElement += "<div></div>";
+      }
 
-        if (row === "row5") {
-          const layoutDisplay = layoutString.replace(/_/g, " ");
+      if (row === "row5") {
+        const layoutDisplay = layoutString.replace(/_/g, " ");
+        let letterStyle = "";
+        if (Config.keymapLegendStyle === "blank") {
+          letterStyle = `style="display: none;"`;
+        }
+        rowElement += "<div></div>";
+        rowElement += `<div class="keymapKey keySpace">
+          <div class="letter" ${letterStyle}>${layoutDisplay}</div>
+        </div>`;
+        rowElement += `<div class="keymapSplitSpacer"></div>`;
+        rowElement += `<div class="keymapKey keySplitSpace">
+          <div class="letter"></div>
+        </div>`;
+      } else {
+        for (const [i, key] of rowKeys.entries()) {
+          if (row === "row2" && i === 12) continue;
+          if (
+            (Config.keymapStyle === "matrix" ||
+              Config.keymapStyle === "split_matrix") &&
+            i >= 10
+          ) {
+            continue;
+          }
+          const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
+          let keyDisplay = key[0];
           let letterStyle = "";
           if (Config.keymapLegendStyle === "blank") {
             letterStyle = `style="display: none;"`;
+          } else if (Config.keymapLegendStyle === "uppercase") {
+            keyDisplay = keyDisplay.toUpperCase();
           }
-          rowElement += "<div></div>";
-          rowElement += `<div class="keymapKey keySpace">
-          <div class="letter" ${letterStyle}>${layoutDisplay}</div>
-        </div>`;
-          rowElement += `<div class="keymapSplitSpacer"></div>`;
-          rowElement += `<div class="keymapKey keySplitSpace">
-          <div class="letter"></div>
-        </div>`;
-        } else {
-          for (const [i, key] of rowKeys.entries()) {
-            if (row === "row2" && i === 12) continue;
-            if (
-              (Config.keymapStyle === "matrix" ||
-                Config.keymapStyle === "split_matrix") &&
-              i >= 10
-            ) {
-              continue;
-            }
-            const bump = row === "row3" && (i === 3 || i === 6) ? true : false;
-            let keyDisplay = key[0];
-            let letterStyle = "";
-            if (Config.keymapLegendStyle === "blank") {
-              letterStyle = `style="display: none;"`;
-            } else if (Config.keymapLegendStyle === "uppercase") {
-              keyDisplay = keyDisplay.toUpperCase();
-            }
-            let hide = "";
-            if (
-              row === "row1" &&
-              i === 0 &&
-              !isMatrix &&
-              Config.keymapStyle !== "staggered"
-            ) {
-              hide = ` invisible`;
-            }
+          let hide = "";
+          if (
+            row === "row1" &&
+            i === 0 &&
+            !isMatrix &&
+            Config.keymapStyle !== "staggered"
+          ) {
+            hide = ` invisible`;
+          }
 
-            const keyElement = `<div class="keymapKey${hide}" data-key="${key.replace(
-              '"',
-              "&quot;"
-            )}">
+          const keyElement = `<div class="keymapKey${hide}" data-key="${key.replace(
+            '"',
+            "&quot;"
+          )}">
               <span class="letter" ${letterStyle}>${keyDisplay}</span>
               ${bump ? "<div class='bump'></div>" : ""}
           </div>`;
 
-            let splitSpacer = "";
+          let splitSpacer = "";
+          if (
+            Config.keymapStyle === "split" ||
+            Config.keymapStyle === "split_matrix" ||
+            Config.keymapStyle === "alice"
+          ) {
             if (
-              Config.keymapStyle === "split" ||
-              Config.keymapStyle === "split_matrix" ||
-              Config.keymapStyle === "alice"
+              row === "row4" &&
+              (Config.keymapStyle === "split" ||
+                Config.keymapStyle === "alice") &&
+              lts.type === "iso"
             ) {
-              if (
-                row === "row4" &&
-                (Config.keymapStyle === "split" ||
-                  Config.keymapStyle === "alice") &&
-                lts.type === "iso"
-              ) {
-                if (i === 6) {
-                  splitSpacer += `<div class="keymapSplitSpacer"></div>`;
-                }
-              } else if (
-                row === "row1" &&
-                (Config.keymapStyle === "split" ||
-                  Config.keymapStyle === "alice")
-              ) {
-                if (i === 7) {
-                  splitSpacer += `<div class="keymapSplitSpacer"></div>`;
-                }
-              } else {
-                if (i === 5) {
-                  splitSpacer += `<div class="keymapSplitSpacer"></div>`;
-                }
+              if (i === 6) {
+                splitSpacer += `<div class="keymapSplitSpacer"></div>`;
+              }
+            } else if (
+              row === "row1" &&
+              (Config.keymapStyle === "split" || Config.keymapStyle === "alice")
+            ) {
+              if (i === 7) {
+                splitSpacer += `<div class="keymapSplitSpacer"></div>`;
+              }
+            } else {
+              if (i === 5) {
+                splitSpacer += `<div class="keymapSplitSpacer"></div>`;
               }
             }
-
-            if (Config.keymapStyle === "alice" && row === "row4" && (
-                (lts.type === "iso" && i === 6) ||
-                (lts.type !== "iso" && i === 5)
-              )) {
-                splitSpacer += `<div class="extraKey"><span class="letter"></span></div>`;
-              }
-
-            rowElement += splitSpacer + keyElement;
           }
-        }
 
-        keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+          if (
+            Config.keymapStyle === "alice" &&
+            row === "row4" &&
+            ((lts.type === "iso" && i === 6) || (lts.type !== "iso" && i === 5))
+          ) {
+            splitSpacer += `<div class="extraKey"><span class="letter"></span></div>`;
+          }
+
+          rowElement += splitSpacer + keyElement;
+        }
       }
-    
+
+      keymapElement += `<div class="row r${index + 1}">${rowElement}</div>`;
+    }
 
     $("#keymap").html(keymapElement);
 
@@ -256,7 +254,8 @@ export async function refresh(
   } catch (error) {
     if (error instanceof Error) {
       console.log(
-        "something went wrong when changing layout, resettings: " + error.message
+        "something went wrong when changing layout, resettings: " +
+          error.message
       );
       // UpdateConfig.setKeymapLayout("qwerty", true);
     }

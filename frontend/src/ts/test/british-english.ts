@@ -24,9 +24,10 @@ export async function replace(word: string): Promise<string> {
         (_, $1, $2, $3) =>
           $1 +
           ($2.charAt(0) === $2.charAt(0).toUpperCase()
-            ? ($2 === $2.toUpperCase()
+            ? // eslint-disable-next-line unicorn/no-nested-ternary
+              $2 === $2.toUpperCase()
               ? replacement[1].toUpperCase()
-              : capitalizeFirstLetterOfEachWord(replacement[1]))
+              : capitalizeFirstLetterOfEachWord(replacement[1])
             : replacement[1]) +
           $3
       )

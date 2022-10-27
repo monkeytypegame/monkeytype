@@ -8,19 +8,21 @@ export function apply(_id: string): void {
   // console.log(DB.getSnapshot().presets);
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
-  if (snapshot.presets) {for (const preset of snapshot.presets) {
-    if (preset._id == _id) {
-      UpdateConfig.apply(preset.config);
-      TagController.clear(true);
-      if (preset.config.tags) {
-        for (const tagid of preset.config.tags) {
-          TagController.set(tagid, true, false);
+  if (snapshot.presets) {
+    for (const preset of snapshot.presets) {
+      if (preset._id == _id) {
+        UpdateConfig.apply(preset.config);
+        TagController.clear(true);
+        if (preset.config.tags) {
+          for (const tagid of preset.config.tags) {
+            TagController.set(tagid, true, false);
+          }
+          TagController.saveActiveToLocalStorage();
         }
-        TagController.saveActiveToLocalStorage();
+        TestLogic.restart();
+        Notifications.add("Preset applied", 1, 2);
+        UpdateConfig.saveFullConfigToLocalStorage();
       }
-      TestLogic.restart();
-      Notifications.add("Preset applied", 1, 2);
-      UpdateConfig.saveFullConfigToLocalStorage();
     }
-  }}
+  }
 }

@@ -27,7 +27,13 @@
   },
   {
     "name": "french",
-    "languages": ["french", "french_1k", "french_2k", "french_10k", "french_600k"]
+    "languages": [
+      "french",
+      "french_1k",
+      "french_2k",
+      "french_10k",
+      "french_600k"
+    ]
   },
   {
     "name": "german",
@@ -434,5 +440,4 @@
     "name": "kyrgyz",
     "languages": ["kyrgyz"]
   }
-  
 ]

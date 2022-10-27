@@ -67,9 +67,9 @@ function applyQuoteLengthFilter(
     return quotes;
   }
 
-  const quoteLengthFilter = new Set(quoteLengthFilterValue.map((filterValue) =>
-    parseInt(filterValue, 10)
-  ));
+  const quoteLengthFilter = new Set(
+    quoteLengthFilterValue.map((filterValue) => parseInt(filterValue, 10))
+  );
   const filteredQuotes = quotes.filter((quote) =>
     quoteLengthFilter.has(quote.group)
   );

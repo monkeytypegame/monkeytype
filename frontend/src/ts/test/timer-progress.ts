@@ -29,16 +29,16 @@ export function show(): void {
         125
       );
   } else if ((Config.mode == "zen" || Config.timerStyle === "mini") && op > 0) {
-      $("#miniTimerAndLiveWpm .time")
-        .stop(true, true)
-        .removeClass("hidden")
-        .animate(
-          {
-            opacity: op,
-          },
-          125
-        );
-    }
+    $("#miniTimerAndLiveWpm .time")
+      .stop(true, true)
+      .removeClass("hidden")
+      .animate(
+        {
+          opacity: op,
+        },
+        125
+      );
+  }
 }
 
 export function hide(): void {
@@ -140,7 +140,9 @@ export function update(): void {
       outof = Config.words;
     }
     if (Config.mode === "custom") {
-      outof = CustomText.isWordRandom ? CustomText.word : CustomText.text.length;
+      outof = CustomText.isWordRandom
+        ? CustomText.word
+        : CustomText.text.length;
     }
     if (Config.mode === "quote") {
       outof = TestWords.randomQuote?.textSplit?.length ?? 1;

@@ -298,7 +298,7 @@ export function updateExtras(
     ).addClass("active");
   } else if (key == "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
-    for (const ql of (value as MonkeyTypes.QuoteLength[])) {
+    for (const ql of value as MonkeyTypes.QuoteLength[]) {
       $(
         "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
       ).addClass("active");

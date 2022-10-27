@@ -97,7 +97,8 @@ export async function loadStyle(name: string): Promise<void> {
       $("#keymap .keymapKey").stop(true, true).removeAttr("style");
       resolve();
     });
-    link.href = name === "custom" ? `/./themes/serika_dark.css` : `/./themes/${name}.css`;
+    link.href =
+      name === "custom" ? `/./themes/serika_dark.css` : `/./themes/${name}.css`;
 
     if (!headScript) {
       document.head.append(link);

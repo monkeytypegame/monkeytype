@@ -143,27 +143,26 @@ function checkIfFailed(
 
 function checkIfTimeIsUp(): void {
   if (timerDebug) console.time("times up check");
-  if ((
-    Config.mode == "time" ||
-    (Config.mode === "custom" && CustomText.isTimeRandom)
-  ) && (
-      (Time.get() >= Config.time &&
-        Config.time !== 0 &&
-        Config.mode === "time") ||
+  if (
+    (Config.mode == "time" ||
+      (Config.mode === "custom" && CustomText.isTimeRandom)) &&
+    ((Time.get() >= Config.time &&
+      Config.time !== 0 &&
+      Config.mode === "time") ||
       (Time.get() >= CustomText.time &&
         CustomText.time !== 0 &&
-        Config.mode === "custom")
-    )) {
-      //times up
-      if (timer !== null) clearTimeout(timer);
-      Caret.hide();
-      TestInput.input.pushHistory();
-      TestInput.corrected.pushHistory();
-      SlowTimer.clear();
-      slowTimerCount = 0;
-      TimerEvent.dispatch("finish");
-      return;
-    }
+        Config.mode === "custom"))
+  ) {
+    //times up
+    if (timer !== null) clearTimeout(timer);
+    Caret.hide();
+    TestInput.input.pushHistory();
+    TestInput.corrected.pushHistory();
+    SlowTimer.clear();
+    slowTimerCount = 0;
+    TimerEvent.dispatch("finish");
+    return;
+  }
   if (timerDebug) console.timeEnd("times up check");
 }
 

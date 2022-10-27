@@ -49,7 +49,9 @@ function showFound(): void {
     if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
       let icon = obj.icon ?? "fa-chevron-right";
       const faIcon = icon.startsWith("fa-");
-      icon = !faIcon ? `<div class="textIcon">${icon}</div>` : `<i class="fas fa-fw ${icon}"></i>`;
+      icon = !faIcon
+        ? `<div class="textIcon">${icon}</div>`
+        : `<i class="fas fa-fw ${icon}"></i>`;
       if (list.configKey) {
         if (
           (obj.configValueMode &&
@@ -287,24 +289,28 @@ function addChildCommands(
     const command = commandItem as MonkeyTypes.Command;
     if (command.beforeSubgroup) command.beforeSubgroup();
     try {
-      if ((
-        (commandItem as MonkeyTypes.Command)
-          ?.subgroup as MonkeyTypes.CommandsSubgroup
-      ).list) {for (const cmd of (
-        (commandItem as MonkeyTypes.Command)
-          ?.subgroup as MonkeyTypes.CommandsSubgroup
-      ).list) {
-        (commandItem as MonkeyTypes.CommandsSubgroup).configKey = (
+      if (
+        (
           (commandItem as MonkeyTypes.Command)
-            .subgroup as MonkeyTypes.CommandsSubgroup
-        ).configKey;
-        addChildCommands(
-          unifiedCommands,
-          cmd,
-          commandItemDisplay,
-          commandItem as MonkeyTypes.CommandsSubgroup
-        );
-      }}
+            ?.subgroup as MonkeyTypes.CommandsSubgroup
+        ).list
+      ) {
+        for (const cmd of (
+          (commandItem as MonkeyTypes.Command)
+            ?.subgroup as MonkeyTypes.CommandsSubgroup
+        ).list) {
+          (commandItem as MonkeyTypes.CommandsSubgroup).configKey = (
+            (commandItem as MonkeyTypes.Command)
+              .subgroup as MonkeyTypes.CommandsSubgroup
+          ).configKey;
+          addChildCommands(
+            unifiedCommands,
+            cmd,
+            commandItemDisplay,
+            commandItem as MonkeyTypes.CommandsSubgroup
+          );
+        }
+      }
       // commandItem.exec();
       // const currentCommandsIndex = CommandlineLists.current.length - 1;
       // CommandlineLists.current[currentCommandsIndex].list.forEach((cmd) => {
@@ -341,8 +347,9 @@ function generateSingleListOfCommands(): {
   show = (): void => {
     //
   };
-  for (const c of CommandlineLists.commands.list) addChildCommands(allCommands, c)
-  ;
+  for (const c of CommandlineLists.commands.list) {
+    addChildCommands(allCommands, c);
+  }
   show = oldShowCommandLine;
   return {
     title: "All Commands",
@@ -720,17 +727,20 @@ $(".pageTest").on("click", "#testModesNotice .textButton", (event) => {
 $("#bottom").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
-      if (Auth?.currentUser && (DB.getSnapshot()?.customThemes.length ?? 0) < 1) {
-          Notifications.add("No custom themes!", 0);
-          UpdateConfig.setCustomTheme(false);
-          // UpdateConfig.setCustomThemeId("");
-          return;
-        }
-        // if (!DB.getCustomThemeById(Config.customThemeId)) {
-        //   // Turn on the first custom theme
-        //   const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
-        //   UpdateConfig.setCustomThemeId(firstCustomThemeId);
-        // }
+      if (
+        Auth?.currentUser &&
+        (DB.getSnapshot()?.customThemes.length ?? 0) < 1
+      ) {
+        Notifications.add("No custom themes!", 0);
+        UpdateConfig.setCustomTheme(false);
+        // UpdateConfig.setCustomThemeId("");
+        return;
+      }
+      // if (!DB.getCustomThemeById(Config.customThemeId)) {
+      //   // Turn on the first custom theme
+      //   const firstCustomThemeId = DB.getSnapshot().customThemes[0]._id;
+      //   UpdateConfig.setCustomThemeId(firstCustomThemeId);
+      // }
       UpdateConfig.setCustomTheme(true);
     } else UpdateConfig.setCustomTheme(false);
   } else {

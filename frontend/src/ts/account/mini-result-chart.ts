@@ -32,12 +32,8 @@ export function updateData(data: MonkeyTypes.ChartData): void {
   ChartController.miniResult.data.datasets[1].data = data.raw;
   ChartController.miniResult.data.datasets[2].data = data.err;
 
-  const maxChartVal = Math.max(
-    Math.max(...data.wpm), Math.max(...data.raw)
-  );
-  const minChartVal = Math.min(
-    Math.min(...data.wpm), Math.min(...data.raw)
-  );
+  const maxChartVal = Math.max(Math.max(...data.wpm), Math.max(...data.raw));
+  const minChartVal = Math.min(Math.min(...data.wpm), Math.min(...data.raw));
   miniResultScaleOptions["wpm"].max = Math.round(maxChartVal);
   miniResultScaleOptions["raw"].max = Math.round(maxChartVal);
 

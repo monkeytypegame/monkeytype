@@ -52,7 +52,9 @@ type CustomTextObject = Record<string, string>;
 type CustomTextLongObject = Record<string, { text: string; progress: number }>;
 
 export function getCustomText(name: string, long = false): string[] {
-  return long ? getCustomTextLongObject()[name]["text"].split(/ +/) : getCustomTextObject()[name].split(/ +/);
+  return long
+    ? getCustomTextLongObject()[name]["text"].split(/ +/)
+    : getCustomTextObject()[name].split(/ +/);
 }
 
 export function setCustomText(
@@ -129,5 +131,7 @@ function getCustomTextLongObject(): CustomTextLongObject {
 }
 
 export function getCustomTextNames(long = false): string[] {
-  return long ? Object.keys(getCustomTextLongObject()) : Object.keys(getCustomTextObject());
+  return long
+    ? Object.keys(getCustomTextLongObject())
+    : Object.keys(getCustomTextObject());
 }

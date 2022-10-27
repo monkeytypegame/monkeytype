@@ -56,10 +56,13 @@ export function verify(
                 requirementsMet = false;
                 failReasons.push(`WPM not ${requirementValue["exact"]}`);
               }
-            } else if (wpmMode == "min" && result.wpm < requirementValue["min"]) {
-                requirementsMet = false;
-                failReasons.push(`WPM below ${requirementValue["min"]}`);
-              }
+            } else if (
+              wpmMode == "min" &&
+              result.wpm < requirementValue["min"]
+            ) {
+              requirementsMet = false;
+              failReasons.push(`WPM below ${requirementValue["min"]}`);
+            }
           } else if (requirementType == "acc") {
             const accMode = Object.keys(requirementValue)[0];
             if (accMode == "exact") {
@@ -67,24 +70,30 @@ export function verify(
                 requirementsMet = false;
                 failReasons.push(`Accuracy not ${requirementValue["exact"]}`);
               }
-            } else if (accMode == "min" && result.acc < requirementValue["min"]) {
-                requirementsMet = false;
-                failReasons.push(`Accuracy below ${requirementValue["min"]}`);
-              }
+            } else if (
+              accMode == "min" &&
+              result.acc < requirementValue["min"]
+            ) {
+              requirementsMet = false;
+              failReasons.push(`Accuracy below ${requirementValue["min"]}`);
+            }
           } else if (requirementType == "afk") {
             const afkMode = Object.keys(requirementValue)[0];
             if (afkMode == "max" && Math.round(afk) > requirementValue["max"]) {
-                requirementsMet = false;
-                failReasons.push(
-                  `AFK percentage above ${requirementValue["max"]}`
-                );
-              }
+              requirementsMet = false;
+              failReasons.push(
+                `AFK percentage above ${requirementValue["max"]}`
+              );
+            }
           } else if (requirementType == "time") {
             const timeMode = Object.keys(requirementValue)[0];
-            if (timeMode == "min" && Math.round(result.testDuration) < requirementValue["min"]) {
-                requirementsMet = false;
-                failReasons.push(`Test time below ${requirementValue["min"]}`);
-              }
+            if (
+              timeMode == "min" &&
+              Math.round(result.testDuration) < requirementValue["min"]
+            ) {
+              requirementsMet = false;
+              failReasons.push(`Test time below ${requirementValue["min"]}`);
+            }
           } else if (requirementType == "funbox") {
             const funboxMode = requirementValue["exact"];
             if (funboxMode != result.funbox) {
@@ -93,18 +102,22 @@ export function verify(
             }
           } else if (requirementType == "raw") {
             const rawMode = Object.keys(requirementValue)[0];
-            if (rawMode == "exact" && Math.round(result.rawWpm) != requirementValue["exact"]) {
-                requirementsMet = false;
-                failReasons.push(`Raw WPM not ${requirementValue["exact"]}`);
-              }
+            if (
+              rawMode == "exact" &&
+              Math.round(result.rawWpm) != requirementValue["exact"]
+            ) {
+              requirementsMet = false;
+              failReasons.push(`Raw WPM not ${requirementValue["exact"]}`);
+            }
           } else if (requirementType == "con") {
             const conMode = Object.keys(requirementValue)[0];
-            if (conMode == "exact" && Math.round(result.consistency) != requirementValue["exact"]) {
-                requirementsMet = false;
-                failReasons.push(
-                  `Consistency not ${requirementValue["exact"]}`
-                );
-              }
+            if (
+              conMode == "exact" &&
+              Math.round(result.consistency) != requirementValue["exact"]
+            ) {
+              requirementsMet = false;
+              failReasons.push(`Consistency not ${requirementValue["exact"]}`);
+            }
           } else if (requirementType == "config") {
             for (const configKey in requirementValue) {
               const configValue = requirementValue[configKey];
@@ -146,7 +159,9 @@ export function verify(
   } catch (error) {
     console.error(error);
     Notifications.add(
-      `Something went wrong when verifying challenge: ${(error as Error).message}`,
+      `Something went wrong when verifying challenge: ${
+        (error as Error).message
+      }`,
       0
     );
     return null;
@@ -232,16 +247,16 @@ export async function setup(challengeName: string): Promise<boolean> {
         );
       }
     } else if (challenge.type === "special" && challenge.name === "semimak") {
-        // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
-        UpdateConfig.setMode("time", true);
-        UpdateConfig.setTimeConfig(120, true);
-        UpdateConfig.setLanguage("english_10k", true);
-        UpdateConfig.setPunctuation(true, true);
-        UpdateConfig.setStopOnError("word", true);
-        UpdateConfig.setLayout("semimak", true);
-        UpdateConfig.setKeymapLayout("overrideSync", true);
-        UpdateConfig.setKeymapMode("static", true);
-      }
+      // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
+      UpdateConfig.setMode("time", true);
+      UpdateConfig.setTimeConfig(120, true);
+      UpdateConfig.setLanguage("english_10k", true);
+      UpdateConfig.setPunctuation(true, true);
+      UpdateConfig.setStopOnError("word", true);
+      UpdateConfig.setLayout("semimak", true);
+      UpdateConfig.setKeymapLayout("overrideSync", true);
+      UpdateConfig.setKeymapMode("static", true);
+    }
     ManualRestart.set();
     notitext = challenge.message;
     $("#top .config").removeClass("hidden");

@@ -232,11 +232,14 @@ export async function addPower(good = true, extra = false): Promise<void> {
     i > 0;
     i--
   ) {
-    const color = ["2", "4"].includes(Config.monkeyPowerLevel)
-      ? randomColor()
-      : (good
-      ? await ThemeColors.get("caret")
-      : await ThemeColors.get("error"));
+    let color;
+    if (["2", "4"].includes(Config.monkeyPowerLevel)) {
+      color = randomColor();
+    } else {
+      color = good
+        ? await ThemeColors.get("caret")
+        : await ThemeColors.get("error");
+    }
     ctx.particles.push(
       createParticle(...(coords as [x: number, y: number]), color)
     );

@@ -35,19 +35,23 @@ export function addAllFromToday(): void {
   if (!snapshot) return;
   const results = snapshot.results;
 
-  if (results) {for (const result of results) {
-    const resultDate = new Date(result.timestamp);
-    resultDate.setSeconds(0);
-    resultDate.setMinutes(0);
-    resultDate.setHours(0);
-    resultDate.setMilliseconds(0);
-    const resultDateMS = resultDate.getTime();
+  if (results) {
+    for (const result of results) {
+      const resultDate = new Date(result.timestamp);
+      resultDate.setSeconds(0);
+      resultDate.setMinutes(0);
+      resultDate.setHours(0);
+      resultDate.setMilliseconds(0);
+      const resultDateMS = resultDate.getTime();
 
-    if (resultDateMS >= todayDateMS) {
-      seconds +=
-        result.testDuration + result.incompleteTestSeconds - result.afkDuration;
+      if (resultDateMS >= todayDateMS) {
+        seconds +=
+          result.testDuration +
+          result.incompleteTestSeconds -
+          result.afkDuration;
+      }
     }
-  }}
+  }
 
   addedAllToday = true;
 }
