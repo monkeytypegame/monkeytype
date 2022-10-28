@@ -12,7 +12,7 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
-import { ActiveFunboxes } from "./test/funbox";
+import { getFunboxListSync } from "./utils/misc";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -127,16 +127,23 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
   }
 
   if (mode !== "words") {
-    const funbox = ActiveFunboxes().find((f) => f.mode == "words");
-    if (funbox) {
-      Notifications.add(
-        `${funbox.name.replace(
-          /_/g,
-          " "
-        )} funbox can only be used with words mode.`,
-        0
+    const list = getFunboxListSync();
+    if (list) {
+      const funbox = list.find(
+        (f) => f.mode == "words" && config.funbox.split("#").includes(f.name)
       );
-      return false;
+      if (funbox) {
+        Notifications.add(
+          `${funbox.name.replace(
+            /_/g,
+            " "
+          )} funbox can only be used with words mode.`,
+          0
+        );
+        return false;
+      }
+    } else {
+      Notifications.add("Funbox list not loaded", 0);
     }
   }
   const previous = config.mode;
@@ -853,9 +860,23 @@ export function setHighlightMode(
   }
 
   if (mode === "word") {
-    if (ActiveFunboxes().find((f) => f.blockWordHighlight)) {
-      Notifications.add("Can't use word highlight with this funbox", 0);
-      return false;
+    const list = getFunboxListSync();
+    if (list) {
+      const funbox = list.find(
+        (f) => f.blockWordHighlight && config.funbox.split("#").includes(f.name)
+      );
+      if (funbox) {
+        Notifications.add(
+          `Can't use word highlight with ${funbox.name.replace(
+            /_/g,
+            " "
+          )} funbox`,
+          0
+        );
+        return false;
+      }
+    } else {
+      // Notifications.add("Funbox list not loaded", 0);
     }
   }
 

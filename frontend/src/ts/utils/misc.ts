@@ -128,6 +128,14 @@ export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
   }
 }
 
+export function getFunboxListSync(): MonkeyTypes.FunboxObject[] | undefined {
+  if (funboxList.length === 0) {
+    return undefined;
+  } else {
+    return funboxList;
+  }
+}
+
 export async function getFunbox(
   funbox: string
 ): Promise<MonkeyTypes.FunboxObject | undefined> {

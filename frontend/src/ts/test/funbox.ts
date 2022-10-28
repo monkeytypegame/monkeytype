@@ -741,6 +741,11 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   let fb: MonkeyTypes.FunboxObject[] = [];
+  fb = fb.concat(
+    ActiveFunboxes().filter(
+      (f) => f.mode !== undefined && f.mode !== Config.mode
+    )
+  );
   if (Config.mode === "zen") {
     fb = fb.concat(
       ActiveFunboxes().filter(
@@ -790,6 +795,17 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       );
       if (Config.mode === "time") UpdateConfig.setTimeConfig(15, true);
       if (Config.mode === "words") UpdateConfig.setWordCount(10, true);
+    }
+  }
+
+  if (Config.highlightMode === "word") {
+    const fb = ActiveFunboxes().filter((f) => f.blockWordHighlight);
+    if (fb.length > 0) {
+      Notifications.add(
+        `Can't use word highlight with ${fb[0].name.replace(/_/g, " ")} funbox`,
+        0
+      );
+      UpdateConfig.setHighlightMode("letter");
     }
   }
 
