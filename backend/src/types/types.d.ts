@@ -483,6 +483,7 @@ declare namespace MonkeyTypes {
     unspeakable?: boolean;
     changesLayout?: boolean;
     ignoresLayout?: boolean;
+    usesLayout?: boolean;
     getWord?: boolean;
     punctuateWord?: boolean;
     withWords?: boolean;

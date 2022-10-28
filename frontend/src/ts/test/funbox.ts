@@ -30,6 +30,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Type what simon says.",
     changesWordsVisibility: true,
     blockWordHighlight: true,
+    usesLayout: true,
     applyCSS(): void {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
     },
@@ -93,6 +94,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Eurobeat Intensifies...",
     blockWordHighlight: true,
     ignoresLanguage: true,
+    ignoresLayout: true,
     nospace: true,
     noPunctuation: true,
     noNumbers: true,
@@ -655,6 +657,9 @@ export function checkFunbox(funbox?: string): boolean {
     ).length != Config.funbox.split("#").length ||
     checkingFunbox.filter((f) => f.getWord || f.pullSection || f.withWords)
       .length > 1 ||
+    checkingFunbox.filter(
+      (f) => f.changesLayout || f.ignoresLayout || f.usesLayout
+    ).length > 1 ||
     checkingFunbox.filter((f) => f.applyCSS).length > 1 ||
     checkingFunbox.filter((f) => f.punctuateWord).length > 1 ||
     checkingFunbox.filter((f) => f.isCharCorrect).length > 1 ||
@@ -670,9 +675,7 @@ export function checkFunbox(funbox?: string): boolean {
     (checkingFunbox.filter((f) => f.speaks).length > 0 &&
       checkingFunbox.filter((f) => f.unspeakable).length > 0) ||
     (checkingFunbox.filter((f) => f.speaks).length > 0 &&
-      checkingFunbox.filter((f) => f.ignoresLanguage).length > 0) ||
-    (checkingFunbox.filter((f) => f.changesLayout).length > 0 &&
-      checkingFunbox.filter((f) => f.ignoresLayout).length > 0)
+      checkingFunbox.filter((f) => f.ignoresLanguage).length > 0)
   );
 }
 

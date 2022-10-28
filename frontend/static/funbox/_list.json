@@ -14,6 +14,7 @@
     "info": "Type what simon says.",
     "changesWordsVisibility": true,
     "blockWordHighlight": true,
+    "usesLayout": true,
     "applyCSS": true,
     "applyConfig": true,
     "rememberSettings": true
@@ -46,6 +47,7 @@
     "info": "Eurobeat Intensifies...",
     "blockWordHighlight": true,
     "ignoresLanguage": true,
+    "ignoresLayout": true,
     "nospace": true,
     "noPunctuation": true,
     "noNumbers": true,

@@ -212,6 +212,7 @@ declare namespace MonkeyTypes {
     unspeakable?: boolean;
     changesLayout?: boolean;
     ignoresLayout?: boolean;
+    usesLayout?: boolean;
     getWord?: (wordset?: Misc.Wordset) => string;
     punctuateWord?: (word: string) => string;
     withWords?: (words?: string[]) => Promise<Misc.Wordset>;
