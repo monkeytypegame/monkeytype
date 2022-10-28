@@ -13,6 +13,7 @@ const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "simon_says",
     info: "Type what simon says.",
     changesWordsVisibility: true,
+    blockWordHighlight: true,
     applyCSS: true,
     applyConfig: true,
     rememberSettings: true,
