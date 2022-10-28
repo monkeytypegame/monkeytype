@@ -45,3 +45,16 @@ export function withApeRateLimiter(
     return defaultRateLimiter(req, res, next);
   };
 }
+
+export function withCustomApeRateLimiter(
+  customRateLimiter: RateLimitRequestHandler,
+  defaultRateLimiter: RateLimitRequestHandler
+): RequestHandler {
+  return (req: MonkeyTypes.Request, res: Response, next: NextFunction) => {
+    if (req.ctx.decodedToken.type === "ApeKey") {
+      return customRateLimiter(req, res, next);
+    }
+
+    return defaultRateLimiter(req, res, next);
+  };
+}
