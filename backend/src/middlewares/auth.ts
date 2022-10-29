@@ -9,7 +9,7 @@ import {
   incrementAuth,
   recordAuthTime,
   recordRequestCountry,
-  recordRequestForUid,
+  // recordRequestForUid,
 } from "../utils/prometheus";
 import { performance } from "perf_hooks";
 
@@ -95,9 +95,9 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
       recordRequestCountry(country, req as MonkeyTypes.Request);
     }
 
-    if (req.method !== "OPTIONS" && req?.ctx?.decodedToken?.uid) {
-      recordRequestForUid(req.ctx.decodedToken.uid);
-    }
+    // if (req.method !== "OPTIONS" && req?.ctx?.decodedToken?.uid) {
+    //   recordRequestForUid(req.ctx.decodedToken.uid);
+    // }
 
     next();
   };
