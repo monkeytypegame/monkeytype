@@ -382,7 +382,7 @@ function restoreOldCommandLine(sshow = true): void {
   if (sshow) show();
 }
 
-$("#commandLine input").on("input", () => {
+$("#commandLine input").on("input", (e) => {
   commandLineMouseMode = false;
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeMouse"
