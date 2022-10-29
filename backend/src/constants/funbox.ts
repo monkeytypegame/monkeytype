@@ -216,6 +216,18 @@ const Funboxes: MonkeyTypes.FunboxObject[] = [
     unspeakable: true,
     withWords: true,
   },
+  {
+    name: "IP",
+    alias: "network",
+    info: "For sysadmins with long beard.",
+    noNumbers: true,
+    ignoresLanguage: true,
+    noLetters: true,
+    ignoresLayout: true,
+    getWord: true,
+    punctuateWord: true,
+    rememberSettings: true,
+  },
 ];
 
 export default Funboxes;

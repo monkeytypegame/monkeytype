@@ -215,6 +215,18 @@
     "info": "Nonsense words that look like the current language.",
     "unspeakable": true,
     "withWords": true
+  },
+  {
+    "name": "IP",
+    "alias": "network",
+    "info": "For sysadmins with long beard.",
+    "noNumbers": true,
+    "ignoresLanguage": true,
+    "noLetters": true,
+    "ignoresLayout": true,
+    "getWord": true,
+    "punctuateWord": true,
+    "rememberSettings": true
   }
 ]
 
