@@ -27,7 +27,7 @@
   },
   {
     "name": "french",
-    "languages": ["french", "french_1k", "french_2k", "french_10k"]
+    "languages": ["french", "french_1k", "french_2k", "french_10k", "french_600k"]
   },
   {
     "name": "german",
