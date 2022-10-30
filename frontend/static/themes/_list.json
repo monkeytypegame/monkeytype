@@ -794,4 +794,9 @@
     "bgColor": "#fdf0d5",
     "mainColor": "#892948"
   }
+  ,{
+    "name": "valo",
+    "bgColor": "#101923",
+    "mainColor": "#ff4654"
+  }
 ]
