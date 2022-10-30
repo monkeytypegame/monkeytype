@@ -129,10 +129,10 @@ export async function getDataAndInit(): Promise<boolean> {
       // filters = defaultResultFilters;
       ResultFilters.load();
     })
-    .catch((e) => {
+    .catch((error) => {
       console.log(
         Misc.createErrorMessage(
-          e,
+          error,
           "Something went wrong while loading the filters"
         )
       );
@@ -389,8 +389,8 @@ export async function signIn(): Promise<void> {
 
   await setPersistence(Auth, persistence);
   return signInWithEmailAndPassword(Auth, email, password)
-    .then(async (e) => {
-      await loadUser(e.user);
+    .then(async (signInResult) => {
+      await loadUser(signInResult.user);
     })
     .catch(function (error) {
       let message = error.message;

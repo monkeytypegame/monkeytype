@@ -202,9 +202,9 @@ async function changeThemeList(): Promise<void> {
   let themes;
   try {
     themes = await Misc.getThemesList();
-  } catch (e) {
+  } catch (error) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update random theme list")
+      Misc.createErrorMessage(error, "Failed to update random theme list")
     );
     return;
   }

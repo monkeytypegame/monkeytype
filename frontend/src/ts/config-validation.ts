@@ -125,9 +125,9 @@ export async function isConfigValueValidAsync(
 
         try {
           await Misc.getLayoutsList();
-        } catch (e) {
+        } catch (error) {
           customMessage = Misc.createErrorMessage(
-            e,
+            error,
             "Failed to validate layoutfluid value"
           );
           break;

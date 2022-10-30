@@ -137,30 +137,24 @@ function buildPbHtml(
     }
 
     let wpmString: number | string = pbData.wpm * multiplier;
-    if (Config.alwaysShowDecimalPlaces) {
-      wpmString = Misc.roundTo2(wpmString).toFixed(2);
-    } else {
-      wpmString = Math.round(wpmString);
-    }
+    wpmString = Config.alwaysShowDecimalPlaces
+      ? Misc.roundTo2(wpmString).toFixed(2)
+      : Math.round(wpmString);
     wpmString += ` ${wpmCpm}`;
 
     let rawString: number | string = pbData.raw * multiplier;
-    if (Config.alwaysShowDecimalPlaces) {
-      rawString = Misc.roundTo2(rawString).toFixed(2);
-    } else {
-      rawString = Math.round(rawString);
-    }
+    rawString = Config.alwaysShowDecimalPlaces
+      ? Misc.roundTo2(rawString).toFixed(2)
+      : Math.round(rawString);
     rawString += ` raw`;
 
     let accString: number | string = pbData.acc;
     if (accString === undefined) {
       accString = "-";
     } else {
-      if (Config.alwaysShowDecimalPlaces) {
-        accString = Misc.roundTo2(accString).toFixed(2);
-      } else {
-        accString = Math.round(accString);
-      }
+      accString = Config.alwaysShowDecimalPlaces
+        ? Misc.roundTo2(accString).toFixed(2)
+        : Math.round(accString);
     }
     accString += ` acc`;
 
@@ -168,11 +162,9 @@ function buildPbHtml(
     if (conString === undefined) {
       conString = "-";
     } else {
-      if (Config.alwaysShowDecimalPlaces) {
-        conString = Misc.roundTo2(conString).toFixed(2);
-      } else {
-        conString = Math.round(conString);
-      }
+      conString = Config.alwaysShowDecimalPlaces
+        ? Misc.roundTo2(conString).toFixed(2)
+        : Math.round(conString);
     }
     conString += ` con`;
 

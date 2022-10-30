@@ -107,9 +107,9 @@ export async function refresh(
     let layouts;
     try {
       layouts = await Misc.getLayoutsList();
-    } catch (e) {
+    } catch (error) {
       Notifications.add(
-        Misc.createErrorMessage(e, "Failed to refresh keymap"),
+        Misc.createErrorMessage(error, "Failed to refresh keymap"),
         -1
       );
       return;

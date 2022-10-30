@@ -99,9 +99,9 @@ async function fill(): Promise<void> {
   let supporters: string[];
   try {
     supporters = await Misc.getSupportersList();
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to get supporters"),
+      Misc.createErrorMessage(error, "Failed to get supporters"),
       -1
     );
     supporters = [];
@@ -110,9 +110,9 @@ async function fill(): Promise<void> {
   let contributors: string[];
   try {
     contributors = await Misc.getContributorsList();
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to get contributors"),
+      Misc.createErrorMessage(error, "Failed to get contributors"),
       -1
     );
     contributors = [];

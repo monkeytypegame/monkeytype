@@ -176,8 +176,8 @@ export async function setup(challengeName: string): Promise<boolean> {
   let list;
   try {
     list = await Misc.getChallengeList();
-  } catch (e) {
-    const message = Misc.createErrorMessage(e, "Failed to setup challenge");
+  } catch (error) {
+    const message = Misc.createErrorMessage(error, "Failed to setup challenge");
     Notifications.add(message, -1);
     ManualRestart.set();
     setTimeout(() => {

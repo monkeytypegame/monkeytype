@@ -3,24 +3,24 @@ import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
+function emulatedLayoutShouldShiftKey(
+  event: JQuery.KeyDownEvent,
+  newKeyPreview: string
+): boolean {
+  if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
+  return event.shiftKey;
+}
+
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
 ): Promise<string | null> {
-  function emulatedLayoutShouldShiftKey(
-    event: JQuery.KeyDownEvent,
-    newKeyPreview: string
-  ): boolean {
-    if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
-    return event.shiftKey;
-  }
-
   let layout;
 
   try {
     layout = await Misc.getLayout(Config.layout);
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to emulate event"),
+      Misc.createErrorMessage(error, "Failed to emulate event"),
       -1
     );
     return event.key;

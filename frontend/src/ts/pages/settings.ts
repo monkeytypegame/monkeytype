@@ -412,10 +412,10 @@ export async function fillSettingsPage(): Promise<void> {
   let languageGroups;
   try {
     languageGroups = await Misc.getLanguageGroups();
-  } catch (e) {
+  } catch (error) {
     console.error(
       Misc.createErrorMessage(
-        e,
+        error,
         "Failed to initialize settings language picker"
       )
     );
@@ -445,8 +445,8 @@ export async function fillSettingsPage(): Promise<void> {
   let layoutsList;
   try {
     layoutsList = await Misc.getLayoutsList();
-  } catch (e) {
-    console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
+  } catch (error) {
+    console.error(Misc.createErrorMessage(error, "Failed to refresh keymap"));
   }
 
   if (layoutsList) {
@@ -480,9 +480,12 @@ export async function fillSettingsPage(): Promise<void> {
   let themes;
   try {
     themes = await Misc.getThemesList();
-  } catch (e) {
+  } catch (error) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
+      Misc.createErrorMessage(
+        error,
+        "Failed to load themes into dropdown boxes"
+      )
     );
   }
 
@@ -544,9 +547,12 @@ export async function fillSettingsPage(): Promise<void> {
         }
       }
     })
-    .catch((e) => {
+    .catch((error) => {
       Notifications.add(
-        Misc.createErrorMessage(e, "Failed to update funbox settings buttons"),
+        Misc.createErrorMessage(
+          error,
+          "Failed to update funbox settings buttons"
+        ),
         -1
       );
     });
@@ -577,9 +583,12 @@ export async function fillSettingsPage(): Promise<void> {
           : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
       );
     })
-    .catch((e) => {
+    .catch((error) => {
       Notifications.add(
-        Misc.createErrorMessage(e, "Failed to update fonts settings buttons"),
+        Misc.createErrorMessage(
+          error,
+          "Failed to update fonts settings buttons"
+        ),
         -1
       );
     });

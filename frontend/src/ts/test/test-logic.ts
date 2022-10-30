@@ -883,9 +883,9 @@ export async function init(): Promise<void> {
   let language;
   try {
     language = await Misc.getLanguage(Config.language);
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to load language"),
+      Misc.createErrorMessage(error, "Failed to load language"),
       -1
     );
   }
@@ -897,9 +897,9 @@ export async function init(): Promise<void> {
     UpdateConfig.setLanguage("english");
     try {
       language = await Misc.getLanguage(Config.language);
-    } catch (e) {
+    } catch (error) {
       Notifications.add(
-        Misc.createErrorMessage(e, "Failed to load language"),
+        Misc.createErrorMessage(error, "Failed to load language"),
         -1
       );
       return;
@@ -910,9 +910,9 @@ export async function init(): Promise<void> {
     let group;
     try {
       group = await Misc.findCurrentGroup(Config.language);
-    } catch (e) {
+    } catch (error) {
       console.error(
-        Misc.createErrorMessage(e, "Failed to find current language group")
+        Misc.createErrorMessage(error, "Failed to find current language group")
       );
       return;
     }

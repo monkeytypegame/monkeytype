@@ -53,9 +53,9 @@ async function buildKeymapStrings(): Promise<void> {
   let layout;
   try {
     layout = await Misc.getLayout(Config.keymapLayout);
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to track shift state"),
+      Misc.createErrorMessage(error, "Failed to track shift state"),
       -1
     );
     return;

@@ -72,9 +72,9 @@ export async function getSection(language: string): Promise<Section> {
   let currentLanguageGroup;
   try {
     currentLanguageGroup = await Misc.findCurrentGroup(language);
-  } catch (e) {
+  } catch (error) {
     console.error(
-      Misc.createErrorMessage(e, "Failed to find current language group")
+      Misc.createErrorMessage(error, "Failed to find current language group")
     );
   }
 

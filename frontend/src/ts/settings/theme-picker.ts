@@ -161,9 +161,9 @@ export async function refreshButtons(): Promise<void> {
     let themes;
     try {
       themes = await Misc.getSortedThemesList();
-    } catch (e) {
+    } catch (error) {
       Notifications.add(
-        Misc.createErrorMessage(e, "Failed to refresh theme buttons"),
+        Misc.createErrorMessage(error, "Failed to refresh theme buttons"),
         -1
       );
       return;

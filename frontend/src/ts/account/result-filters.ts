@@ -699,9 +699,9 @@ export async function appendButtons(): Promise<void> {
         );
       }
     })
-    .catch((e) => {
+    .catch((error) => {
       console.error(
-        Misc.createErrorMessage(e, "Failed to append language buttons")
+        Misc.createErrorMessage(error, "Failed to append language buttons")
       );
     });
 
@@ -721,9 +721,9 @@ export async function appendButtons(): Promise<void> {
         );
       }
     })
-    .catch((e) => {
+    .catch((error) => {
       console.error(
-        Misc.createErrorMessage(e, "Failed to append funbox buttons")
+        Misc.createErrorMessage(error, "Failed to append funbox buttons")
       );
     });
 }

@@ -9,9 +9,9 @@ async function fetchJson<T>(url: string): Promise<T> {
     } else {
       throw new Error(`${res.status} ${res.statusText}`);
     }
-  } catch (e) {
-    console.error("Error fetching JSON: " + url, e);
-    throw e;
+  } catch (error) {
+    console.error("Error fetching JSON: " + url, error);
+    throw error;
   }
 }
 
@@ -23,7 +23,7 @@ export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
       "/./layouts/_list.json"
     );
     return layoutsList;
-  } catch (e) {
+  } catch {
     throw new Error("Layouts JSON fetch failed");
   }
 }
@@ -91,7 +91,7 @@ export async function getLanguageList(): Promise<string[]> {
       "/./languages/_list.json"
     );
     return languageList;
-  } catch (e) {
+  } catch {
     throw new Error("Language list JSON fetch failed");
   }
 }
@@ -104,7 +104,7 @@ export async function getLanguageGroups(): Promise<
       MonkeyTypes.LanguageGroup[]
     >("/./languages/_groups.json");
     return languageGroupList;
-  } catch (e) {
+  } catch {
     throw new Error("Language groups JSON fetch failed");
   }
 }
@@ -141,13 +141,11 @@ export async function findCurrentGroup(
 ): Promise<MonkeyTypes.LanguageGroup | undefined> {
   let retgroup: MonkeyTypes.LanguageGroup | undefined;
   const groups = await getLanguageGroups();
-  groups.forEach((group) => {
-    if (retgroup === undefined) {
-      if (group.languages.includes(language)) {
-        retgroup = group;
-      }
+  for (const group of groups) {
+    if (retgroup === undefined && group.languages.includes(language)) {
+      retgroup = group;
     }
-  });
+  }
   return retgroup;
 }
 
@@ -212,7 +210,7 @@ export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
       "/./challenges/_list.json"
     );
     return data;
-  } catch (e) {
+  } catch {
     throw new Error("Challenge list JSON fetch failed");
   }
 }
@@ -221,7 +219,7 @@ export async function getSupportersList(): Promise<string[]> {
   try {
     const data = await cachedFetchJson<string[]>("/./about/supporters.json");
     return data;
-  } catch (e) {
+  } catch {
     throw new Error("Supporters list JSON fetch failed");
   }
 }
@@ -230,7 +228,7 @@ export async function getContributorsList(): Promise<string[]> {
   try {
     const data = await cachedFetchJson<string[]>("/./about/contributors.json");
     return data;
-  } catch (e) {
+  } catch {
     throw new Error("Contributors list JSON fetch failed");
   }
 }

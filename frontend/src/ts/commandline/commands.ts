@@ -103,9 +103,9 @@ Misc.getLayoutsList()
     updateLayoutsCommands(layouts);
     updateKeymapLayoutsCommands(layouts);
   })
-  .catch((e) => {
+  .catch((error) => {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update layouts commands")
+      Misc.createErrorMessage(error, "Failed to update layouts commands")
     );
   });
 
@@ -113,9 +113,9 @@ Misc.getLanguageList()
   .then((languages) => {
     updateLanguagesCommands(languages);
   })
-  .catch((e) => {
+  .catch((error) => {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update language commands")
+      Misc.createErrorMessage(error, "Failed to update language commands")
     );
   });
 
@@ -123,9 +123,9 @@ Misc.getFunboxList()
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
   })
-  .catch((e) => {
+  .catch((error) => {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update funbox commands")
+      Misc.createErrorMessage(error, "Failed to update funbox commands")
     );
   });
 
@@ -133,9 +133,9 @@ Misc.getFontsList()
   .then((fonts) => {
     updateFontFamilyCommands(fonts);
   })
-  .catch((e) => {
+  .catch((error) => {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update fonts commands")
+      Misc.createErrorMessage(error, "Failed to update fonts commands")
     );
   });
 
@@ -143,9 +143,9 @@ Misc.getThemesList()
   .then((themes) => {
     updateThemesCommands(themes);
   })
-  .catch((e) => {
+  .catch((error) => {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update themes commands")
+      Misc.createErrorMessage(error, "Failed to update themes commands")
     );
   });
 
@@ -153,9 +153,9 @@ Misc.getChallengeList()
   .then((challenges) => {
     updateLoadChallengeCommands(challenges);
   })
-  .catch((e) => {
+  .catch((error) => {
     console.error(
-      Misc.createErrorMessage(e, "Failed to update challenges commands")
+      Misc.createErrorMessage(error, "Failed to update challenges commands")
     );
   });
 

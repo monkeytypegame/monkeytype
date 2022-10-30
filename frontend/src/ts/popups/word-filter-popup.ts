@@ -7,26 +7,21 @@ let initialised = false;
 async function init(): Promise<void> {
   if (!initialised) {
     $("#wordFilterPopup .languageInput").empty();
-<<<<<<< HEAD
-    const LanguageList = await Misc.getLanguageList();
-    for (const language of LanguageList) {
-=======
 
     let LanguageList;
     try {
       LanguageList = await Misc.getLanguageList();
-    } catch (e) {
+    } catch (error) {
       console.error(
         Misc.createErrorMessage(
-          e,
+          error,
           "Failed to initialise word filter popup language list"
         )
       );
       return;
     }
 
-    LanguageList.forEach((language) => {
->>>>>>> master
+    for (const language of LanguageList) {
       let prettyLang = language;
       prettyLang = prettyLang.replace("_", " ");
       $("#wordFilterPopup .languageInput").append(`
@@ -65,9 +60,9 @@ async function filter(language: string): Promise<string[]> {
   let languageWordList;
   try {
     languageWordList = await Misc.getLanguage(language);
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to filter language words"),
+      Misc.createErrorMessage(error, "Failed to filter language words"),
       -1
     );
     return [];

@@ -123,9 +123,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   let funboxInfo;
   try {
     funboxInfo = await Misc.getFunbox(funbox);
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to activate funbox"),
+      Misc.createErrorMessage(error, "Failed to activate funbox"),
       -1
     );
     UpdateConfig.setFunbox("none", true);
@@ -140,9 +140,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   let language;
   try {
     language = await Misc.getCurrentLanguage(Config.language);
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to activate funbox"),
+      Misc.createErrorMessage(error, "Failed to activate funbox"),
       -1
     );
     UpdateConfig.setFunbox("none", true);
@@ -186,9 +186,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     let list;
     try {
       list = await Misc.getFunboxList();
-    } catch (e) {
+    } catch (error) {
       Notifications.add(
-        Misc.createErrorMessage(e, "Failed to activate funbox"),
+        Misc.createErrorMessage(error, "Failed to activate funbox"),
         -1
       );
       await clear();
@@ -263,9 +263,9 @@ export async function rememberSettings(): Promise<void> {
     let list;
     try {
       list = await Misc.getFunboxList();
-    } catch (e) {
+    } catch (error) {
       Notifications.add(
-        Misc.createErrorMessage(e, "Failed to remember setting"),
+        Misc.createErrorMessage(error, "Failed to remember setting"),
         -1
       );
       await clear();
