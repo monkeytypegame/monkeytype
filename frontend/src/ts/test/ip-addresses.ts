@@ -1,4 +1,4 @@
-import { randomElementFromArray, randomIntFromRange } from "../utils/misc";
+import { randomIntFromRange } from "../utils/misc";
 
 function getRandomIPvXaddress(
   bits: number,
@@ -29,8 +29,8 @@ function getIPCidr(
   for (let i = 0; i < parts; i++) {
     bitsLeft -= b;
     if (bitsLeft < 0) {
-      if (-bitsLeft <= maskSize) {
-        addr[i] &= (2 ** (b - 1) - 1) & (2 ** maskSize);
+      if (-bitsLeft <= b) {
+        addr[i] &= (2 ** b - 1) ^ (2 ** -bitsLeft - 1);
       } else {
         addr[i] = 0;
       }
@@ -43,16 +43,17 @@ function getIPCidr(
   );
 }
 
-export function getRandomIPaddress(): string {
-  return randomElementFromArray([
-    getRandomIPvXaddress(32, 4, 10, "."),
-    getRandomIPvXaddress(128, 8, 16, ":"),
-  ]);
+export function getRandomIPv4address(): string {
+  return getRandomIPvXaddress(32, 4, 10, ".");
+}
+
+export function getRandomIPv6address(): string {
+  return getRandomIPvXaddress(128, 8, 16, ":");
 }
 
 export function addressToCIDR(addr: string): string {
   if (addr.includes(":")) {
-    return getIPCidr(128, 8, 17, ":", addr, randomIntFromRange(16, 32) * 4);
+    return getIPCidr(128, 8, 16, ":", addr, randomIntFromRange(16, 32) * 4);
   } else {
     return getIPCidr(32, 4, 10, ".", addr, randomIntFromRange(8, 32));
   }

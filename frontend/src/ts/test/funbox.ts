@@ -548,7 +548,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     },
   },
   {
-    name: "IP",
+    name: "IPv4",
     alias: "network",
     info: "For sysadmins with long beard.",
     noNumbers: true,
@@ -556,7 +556,29 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     noLetters: true,
     ignoresLayout: true,
     getWord(): string {
-      return IPGenerator.getRandomIPaddress();
+      return IPGenerator.getRandomIPv4address();
+    },
+    punctuateWord(word: string): string {
+      let w = word;
+      if (Math.random() < 0.25) {
+        w = IPGenerator.addressToCIDR(word);
+      }
+      return w;
+    },
+    rememberSettings(): void {
+      rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
+    },
+  },
+  {
+    name: "IPv6",
+    alias: "network",
+    info: "For sysadmins with long beard.",
+    noNumbers: true,
+    ignoresLanguage: true,
+    noLetters: true,
+    ignoresLayout: true,
+    getWord(): string {
+      return IPGenerator.getRandomIPv6address();
     },
     punctuateWord(word: string): string {
       let w = word;
@@ -565,7 +587,6 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
       }
       // Compress
       if (w.includes(":")) {
-        console.log(w + " yes");
         w = w
           .replace(/\b(?:0+:){2,}/, "::")
           .split(":")
