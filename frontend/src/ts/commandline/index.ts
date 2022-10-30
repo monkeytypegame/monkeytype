@@ -377,21 +377,11 @@ function restoreOldCommandLine(sshow = true): void {
   if (sshow) show();
 }
 
-$("#commandLine input").keyup((e) => {
+$("#commandLine input").on("input", () => {
   commandLineMouseMode = false;
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeMouse"
   );
-  if (
-    e.key === "ArrowUp" ||
-    e.key === "ArrowDown" ||
-    e.key === "Enter" ||
-    e.key === "Tab" ||
-    e.code == "AltLeft" ||
-    (e.key.length > 1 && e.key !== "Backspace" && e.key !== "Delete")
-  ) {
-    return;
-  }
   updateSuggested();
 });
 
