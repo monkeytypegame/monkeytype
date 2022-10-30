@@ -98,30 +98,66 @@ import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 
-Misc.getLayoutsList().then((layouts) => {
-  updateLayoutsCommands(layouts);
-  updateKeymapLayoutsCommands(layouts);
-});
+Misc.getLayoutsList()
+  .then((layouts) => {
+    updateLayoutsCommands(layouts);
+    updateKeymapLayoutsCommands(layouts);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update layouts commands")
+    );
+  });
 
-Misc.getLanguageList().then((languages) => {
-  updateLanguagesCommands(languages);
-});
+Misc.getLanguageList()
+  .then((languages) => {
+    updateLanguagesCommands(languages);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update language commands")
+    );
+  });
 
-Misc.getFunboxList().then((funboxes) => {
-  updateFunboxCommands(funboxes);
-});
+Misc.getFunboxList()
+  .then((funboxes) => {
+    updateFunboxCommands(funboxes);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update funbox commands")
+    );
+  });
 
-Misc.getFontsList().then((fonts) => {
-  updateFontFamilyCommands(fonts);
-});
+Misc.getFontsList()
+  .then((fonts) => {
+    updateFontFamilyCommands(fonts);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update fonts commands")
+    );
+  });
 
-Misc.getThemesList().then((themes) => {
-  updateThemesCommands(themes);
-});
+Misc.getThemesList()
+  .then((themes) => {
+    updateThemesCommands(themes);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update themes commands")
+    );
+  });
 
-Misc.getChallengeList().then((challenges) => {
-  updateLoadChallengeCommands(challenges);
-});
+Misc.getChallengeList()
+  .then((challenges) => {
+    updateLoadChallengeCommands(challenges);
+  })
+  .catch((e) => {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update challenges commands")
+    );
+  });
 
 export const commands: MonkeyTypes.CommandsSubgroup = {
   title: "",

@@ -1,13 +1,32 @@
 import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
+import * as Notifications from "../elements/notifications";
 
 let initialised = false;
 
 async function init(): Promise<void> {
   if (!initialised) {
     $("#wordFilterPopup .languageInput").empty();
+<<<<<<< HEAD
     const LanguageList = await Misc.getLanguageList();
     for (const language of LanguageList) {
+=======
+
+    let LanguageList;
+    try {
+      LanguageList = await Misc.getLanguageList();
+    } catch (e) {
+      console.error(
+        Misc.createErrorMessage(
+          e,
+          "Failed to initialise word filter popup language list"
+        )
+      );
+      return;
+    }
+
+    LanguageList.forEach((language) => {
+>>>>>>> master
       let prettyLang = language;
       prettyLang = prettyLang.replace("_", " ");
       $("#wordFilterPopup .languageInput").append(`
@@ -42,7 +61,18 @@ async function filter(language: string): Promise<string[]> {
   filterout = filterout.replace(/\s+/gi, "|");
   const regexcl = new RegExp(filterout, "i");
   const filteredWords = [];
-  const languageWordList = await Misc.getLanguage(language);
+
+  let languageWordList;
+  try {
+    languageWordList = await Misc.getLanguage(language);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to filter language words"),
+      -1
+    );
+    return [];
+  }
+
   const maxLengthInput = $("#wordFilterPopup .wordMaxInput").val() as string;
   const minLengthInput = $("#wordFilterPopup .wordMinInput").val() as string;
   const maxLength = maxLengthInput == "" ? 999 : parseInt(maxLengthInput);

@@ -241,6 +241,14 @@ export const resultsGet = rateLimit({
   handler: customHandler,
 });
 
+// Results Routing
+export const resultsGet_ape = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const resultsAdd = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
