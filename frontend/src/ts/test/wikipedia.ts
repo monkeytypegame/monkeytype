@@ -60,7 +60,16 @@ export async function getSection(language: string): Promise<Section> {
 
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
-  const currentLanguageGroup = await Misc.findCurrentGroup(language);
+
+  let currentLanguageGroup;
+  try {
+    currentLanguageGroup = await Misc.findCurrentGroup(language);
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to find current language group")
+    );
+  }
+
   if (currentLanguageGroup !== undefined) {
     urlTLD = await getTLD(currentLanguageGroup);
   }

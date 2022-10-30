@@ -408,17 +408,31 @@ export async function fillSettingsPage(): Promise<void> {
 
   // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
-  const languageGroups = await Misc.getLanguageGroups();
-  languageGroups.forEach((group) => {
-    let langComboBox = `<optgroup label="${group.name}">`;
-    group.languages.forEach((language: string) => {
-      langComboBox += `<option value="${language}">
+
+  let languageGroups;
+  try {
+    languageGroups = await Misc.getLanguageGroups();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(
+        e,
+        "Failed to initialize settings language picker"
+      )
+    );
+  }
+
+  if (languageGroups) {
+    languageGroups.forEach((group) => {
+      let langComboBox = `<optgroup label="${group.name}">`;
+      group.languages.forEach((language: string) => {
+        langComboBox += `<option value="${language}">
         ${language.replace(/_/g, " ")}
       </option>`;
+      });
+      langComboBox += `</optgroup>`;
+      languageEl.append(langComboBox);
     });
-    langComboBox += `</optgroup>`;
-    languageEl.append(langComboBox);
-  });
+  }
   languageEl.select2({
     width: "100%",
   });
@@ -427,18 +441,28 @@ export async function fillSettingsPage(): Promise<void> {
   layoutEl.append(`<option value='default'>off</option>`);
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
-    if (layout.toString() !== "korean") {
-      layoutEl.append(
-        `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-      );
-    }
-    if (layout.toString() != "default") {
-      keymapEl.append(
-        `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-      );
-    }
-  });
+
+  let layoutsList;
+  try {
+    layoutsList = await Misc.getLayoutsList();
+  } catch (e) {
+    console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
+  }
+
+  if (layoutsList) {
+    Object.keys(layoutsList).forEach((layout) => {
+      if (layout.toString() !== "korean") {
+        layoutEl.append(
+          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
+        );
+      }
+      if (layout.toString() != "default") {
+        keymapEl.append(
+          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
+        );
+      }
+    });
+  }
   layoutEl.select2({
     width: "100%",
   });
@@ -452,13 +476,31 @@ export async function fillSettingsPage(): Promise<void> {
   const themeEl2 = $(
     ".pageSettings .section.autoSwitchThemeInputs select.dark"
   ).empty();
-  for (const theme of await Misc.getThemesList()) {
-    themeEl1.append(
-      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
+
+  let themes;
+  try {
+    themes = await Misc.getThemesList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
     );
-    themeEl2.append(
-      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
-    );
+  }
+
+  if (themes) {
+    for (const theme of themes) {
+      themeEl1.append(
+        `<option value='${theme.name}'>${theme.name.replace(
+          /_/g,
+          " "
+        )}</option>`
+      );
+      themeEl2.append(
+        `<option value='${theme.name}'>${theme.name.replace(
+          /_/g,
+          " "
+        )}</option>`
+      );
+    }
   }
   themeEl1.select2({
     width: "100%",
@@ -476,57 +518,71 @@ export async function fillSettingsPage(): Promise<void> {
 
   const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
-  Misc.getFunboxList().then((funboxModes) => {
-    funboxModes.forEach((funbox) => {
-      if (funbox.name === "mirror") {
-        funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }" style="transform:scaleX(-1);">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`
-        );
-      } else {
-        funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }">${funbox.name.replace(/_/g, " ")}</div>`
-        );
-      }
-    });
-  });
-
-  let isCustomFont = true;
-  const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
-  Misc.getFontsList().then((fonts) => {
-    fonts.forEach((font) => {
-      if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsEl.append(
-        `<div class="button${
-          Config.fontFamily === font.name ? " active" : ""
-        }" style="font-family:${
-          font.display !== undefined ? font.display : font.name
-        }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
-        onclick="this.blur();">${
-          font.display !== undefined ? font.display : font.name
-        }</div>`
+  Misc.getFunboxList()
+    .then((funboxModes) => {
+      funboxModes.forEach((funbox) => {
+        if (funbox.name === "mirror") {
+          funboxEl.append(
+            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
+              funbox.info
+            }" data-balloon-pos="up" data-balloon-length="fit" type="${
+              funbox.type
+            }" style="transform:scaleX(-1);">${funbox.name.replace(
+              /_/g,
+              " "
+            )}</div>`
+          );
+        } else {
+          funboxEl.append(
+            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
+              funbox.info
+            }" data-balloon-pos="up" data-balloon-length="fit" type="${
+              funbox.type
+            }">${funbox.name.replace(/_/g, " ")}</div>`
+          );
+        }
+      });
+    })
+    .catch((e) => {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to update funbox settings buttons"),
+        -1
       );
     });
 
-    fontsEl.append(
-      isCustomFont
-        ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
-            /_/g,
-            " "
-          )})</div>`
-        : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
-    );
-  });
+  let isCustomFont = true;
+  const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
+  Misc.getFontsList()
+    .then((fonts) => {
+      fonts.forEach((font) => {
+        if (Config.fontFamily === font.name) isCustomFont = false;
+        fontsEl.append(
+          `<div class="button${
+            Config.fontFamily === font.name ? " active" : ""
+          }" style="font-family:${
+            font.display !== undefined ? font.display : font.name
+          }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
+        onclick="this.blur();">${
+          font.display !== undefined ? font.display : font.name
+        }</div>`
+        );
+      });
+
+      fontsEl.append(
+        isCustomFont
+          ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+              /_/g,
+              " "
+            )})</div>`
+          : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
+      );
+    })
+    .catch((e) => {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to update fonts settings buttons"),
+        -1
+      );
+    });
 
   $(".pageSettings .section.customBackgroundSize input").val(
     Config.customBackground

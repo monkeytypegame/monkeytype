@@ -2,7 +2,6 @@ import * as ThemeController from "../controllers/theme-controller";
 import Config, * as UpdateConfig from "../config";
 import * as Focus from "../test/focus";
 import * as CommandlineLists from "./commands";
-import * as Misc from "./../utils/misc";
 import * as TestUI from "../test/test-ui";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
@@ -14,7 +13,6 @@ import { Auth } from "../firebase";
 import { isAnyPopupVisible } from "../utils/misc";
 import { update as updateCustomThemesList } from "./lists/custom-themes-list";
 import { update as updateTagsCommands } from "./lists/tags";
-import { update as updateThemesCommands } from "./lists/themes";
 
 let commandLineMouseMode = false;
 let themeChosen = false;
@@ -191,9 +189,6 @@ export let show = (): void => {
       );
   }
   $("#commandLine input").val("");
-  Misc.getThemesList().then((themes) => {
-    updateThemesCommands(themes);
-  });
   updateSuggested();
   $("#commandLine input").trigger("focus");
 };

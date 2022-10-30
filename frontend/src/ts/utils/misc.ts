@@ -1,5 +1,240 @@
 import * as Loader from "../elements/loader";
 
+async function fetchJson<T>(url: string): Promise<T> {
+  try {
+    if (!url) throw new Error("No URL");
+    const res = await fetch(url);
+    if (res.ok) {
+      return await res.json();
+    } else {
+      throw new Error(`${res.status} ${res.statusText}`);
+    }
+  } catch (e) {
+    console.error("Error fetching JSON: " + url, e);
+    throw e;
+  }
+}
+
+export const cachedFetchJson = memoizeAsync(fetchJson);
+
+export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
+  try {
+    const layoutsList = await cachedFetchJson<MonkeyTypes.Layouts>(
+      "/./layouts/_list.json"
+    );
+    return layoutsList;
+  } catch (e) {
+    throw new Error("Layouts JSON fetch failed");
+  }
+}
+
+/**
+ * @throws {Error} If layout list or layout doesnt exist.
+ */
+export async function getLayout(
+  layoutName: string
+): Promise<MonkeyTypes.Layout> {
+  const layouts = await getLayoutsList();
+  const layout = layouts[layoutName];
+  if (layout === undefined) {
+    throw new Error(`Layout ${layoutName} is undefined`);
+  }
+  return layout;
+}
+
+let themesList: MonkeyTypes.Theme[] | undefined;
+export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
+  if (!themesList) {
+    let themes = await cachedFetchJson<MonkeyTypes.Theme[]>(
+      "/./themes/_list.json"
+    );
+
+    themes = themes.sort(function (a: MonkeyTypes.Theme, b: MonkeyTypes.Theme) {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+    themesList = themes;
+    return themesList;
+  } else {
+    return themesList;
+  }
+}
+
+let sortedThemesList: MonkeyTypes.Theme[] | undefined;
+export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
+  if (!sortedThemesList) {
+    if (!themesList) {
+      await getThemesList();
+    }
+    if (!themesList) {
+      throw new Error("Themes list is undefined");
+    }
+    let sorted = [...themesList];
+    sorted = sorted.sort((a, b) => {
+      const b1 = hexToHSL(a.bgColor);
+      const b2 = hexToHSL(b.bgColor);
+      return b2.lgt - b1.lgt;
+    });
+    sortedThemesList = sorted;
+    return sortedThemesList;
+  } else {
+    return sortedThemesList;
+  }
+}
+
+export async function getLanguageList(): Promise<string[]> {
+  try {
+    const languageList = await cachedFetchJson<string[]>(
+      "/./languages/_list.json"
+    );
+    return languageList;
+  } catch (e) {
+    throw new Error("Language list JSON fetch failed");
+  }
+}
+
+export async function getLanguageGroups(): Promise<
+  MonkeyTypes.LanguageGroup[]
+> {
+  try {
+    const languageGroupList = await cachedFetchJson<
+      MonkeyTypes.LanguageGroup[]
+    >("/./languages/_groups.json");
+    return languageGroupList;
+  } catch (e) {
+    throw new Error("Language groups JSON fetch failed");
+  }
+}
+
+let currentLanguage: MonkeyTypes.LanguageObject;
+export async function getLanguage(
+  lang: string
+): Promise<MonkeyTypes.LanguageObject> {
+  // try {
+  if (currentLanguage == undefined || currentLanguage.name !== lang) {
+    currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
+      `/./languages/${lang}.json`
+    );
+  }
+  return currentLanguage;
+  // } catch (e) {
+  //   console.error(`error getting language`);
+  //   console.error(e);
+  //   currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
+  //     `/./language/english.json`
+  //   );
+  //   return currentLanguage;
+  // }
+}
+
+export async function getCurrentLanguage(
+  languageName: string
+): Promise<MonkeyTypes.LanguageObject> {
+  return await getLanguage(languageName);
+}
+
+export async function findCurrentGroup(
+  language: string
+): Promise<MonkeyTypes.LanguageGroup | undefined> {
+  let retgroup: MonkeyTypes.LanguageGroup | undefined;
+  const groups = await getLanguageGroups();
+  groups.forEach((group) => {
+    if (retgroup === undefined) {
+      if (group.languages.includes(language)) {
+        retgroup = group;
+      }
+    }
+  });
+  return retgroup;
+}
+
+let funboxList: MonkeyTypes.FunboxObject[] | undefined;
+export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
+  if (!funboxList) {
+    let list = await cachedFetchJson<MonkeyTypes.FunboxObject[]>(
+      "/./funbox/_list.json"
+    );
+    list = list.sort(function (
+      a: MonkeyTypes.FunboxObject,
+      b: MonkeyTypes.FunboxObject
+    ) {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+    funboxList = list;
+    return funboxList;
+  } else {
+    return funboxList;
+  }
+}
+
+export async function getFunbox(
+  funbox: string
+): Promise<MonkeyTypes.FunboxObject | undefined> {
+  const list: MonkeyTypes.FunboxObject[] = await getFunboxList();
+  return list.find(function (element) {
+    return element.name == funbox;
+  });
+}
+
+let fontsList: MonkeyTypes.FontObject[] | undefined;
+export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
+  if (!fontsList) {
+    let list = await cachedFetchJson<MonkeyTypes.FontObject[]>(
+      "/./fonts/_list.json"
+    );
+    list = list.sort(function (
+      a: MonkeyTypes.FontObject,
+      b: MonkeyTypes.FontObject
+    ) {
+      const nameA = a.name.toLowerCase();
+      const nameB = b.name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    });
+    fontsList = list;
+    return fontsList;
+  } else {
+    return fontsList;
+  }
+}
+
+export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
+  try {
+    const data = await cachedFetchJson<MonkeyTypes.Challenge[]>(
+      "/./challenges/_list.json"
+    );
+    return data;
+  } catch (e) {
+    throw new Error("Challenge list JSON fetch failed");
+  }
+}
+
+export async function getSupportersList(): Promise<string[]> {
+  try {
+    const data = await cachedFetchJson<string[]>("/./about/supporters.json");
+    return data;
+  } catch (e) {
+    throw new Error("Supporters list JSON fetch failed");
+  }
+}
+
+export async function getContributorsList(): Promise<string[]> {
+  try {
+    const data = await cachedFetchJson<string[]>("/./about/contributors.json");
+    return data;
+  } catch (e) {
+    throw new Error("Contributors list JSON fetch failed");
+  }
+}
+
 function hexToHSL(hex: string): {
   hue: number;
   sat: number;
@@ -64,224 +299,6 @@ export function isColorLight(hex: string): boolean {
 export function isColorDark(hex: string): boolean {
   const hsl = hexToHSL(hex);
   return hsl.lgt < 50;
-}
-
-let themesList: MonkeyTypes.Theme[] = [];
-export async function getThemesList(): Promise<MonkeyTypes.Theme[]> {
-  if (themesList.length == 0) {
-    return $.getJSON("/./themes/_list.json", function (data) {
-      const list = data.sort(function (
-        a: MonkeyTypes.Theme,
-        b: MonkeyTypes.Theme
-      ) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      themesList = list;
-      return themesList;
-    });
-  } else {
-    return themesList;
-  }
-}
-
-let sortedThemesList: MonkeyTypes.Theme[] = [];
-export async function getSortedThemesList(): Promise<MonkeyTypes.Theme[]> {
-  if (sortedThemesList.length === 0) {
-    if (themesList.length === 0) {
-      await getThemesList();
-    }
-    let sorted = [...themesList];
-    sorted = sorted.sort((a, b) => {
-      const b1 = hexToHSL(a.bgColor);
-      const b2 = hexToHSL(b.bgColor);
-      return b2.lgt - b1.lgt;
-    });
-    sortedThemesList = sorted;
-    return sortedThemesList;
-  } else {
-    return sortedThemesList;
-  }
-}
-
-let funboxList: MonkeyTypes.FunboxObject[] = [];
-export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
-  if (funboxList.length === 0) {
-    return $.getJSON("/./funbox/_list.json", function (data) {
-      funboxList = data.sort(function (
-        a: MonkeyTypes.FunboxObject,
-        b: MonkeyTypes.FunboxObject
-      ) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      return funboxList;
-    });
-  } else {
-    return funboxList;
-  }
-}
-
-export async function getFunbox(
-  funbox: string
-): Promise<MonkeyTypes.FunboxObject | undefined> {
-  const list: MonkeyTypes.FunboxObject[] = await getFunboxList();
-  return list.find(function (element) {
-    return element.name == funbox;
-  });
-}
-
-let layoutsList: MonkeyTypes.Layouts = {};
-export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
-  if (Object.keys(layoutsList).length === 0) {
-    return $.getJSON("/./layouts/_list.json", function (data) {
-      layoutsList = data;
-      return layoutsList;
-    });
-  } else {
-    return layoutsList;
-  }
-}
-
-export async function getLayout(
-  layoutName: string
-): Promise<MonkeyTypes.Layout> {
-  if (Object.keys(layoutsList).length === 0) {
-    await getLayoutsList();
-  }
-  return layoutsList[layoutName];
-}
-
-let fontsList: MonkeyTypes.FontObject[] = [];
-export async function getFontsList(): Promise<MonkeyTypes.FontObject[]> {
-  if (fontsList.length === 0) {
-    return $.getJSON("/./fonts/_list.json", function (data) {
-      fontsList = data.sort(function (
-        a: MonkeyTypes.FontObject,
-        b: MonkeyTypes.FontObject
-      ) {
-        const nameA = a.name.toLowerCase();
-        const nameB = b.name.toLowerCase();
-        if (nameA < nameB) return -1;
-        if (nameA > nameB) return 1;
-        return 0;
-      });
-      return fontsList;
-    });
-  } else {
-    return fontsList;
-  }
-}
-
-let supportersList: string[] = [];
-export async function getSupportersList(): Promise<string[]> {
-  if (supportersList.length === 0) {
-    return $.getJSON("/./about/supporters.json", function (data) {
-      supportersList = data;
-      return supportersList;
-    });
-  } else {
-    return supportersList;
-  }
-}
-
-let contributorsList: string[] = [];
-export async function getContributorsList(): Promise<string[]> {
-  if (contributorsList.length === 0) {
-    return $.getJSON("/./about/contributors.json", function (data) {
-      contributorsList = data;
-      return contributorsList;
-    });
-  } else {
-    return contributorsList;
-  }
-}
-
-let languageList: string[] = [];
-export async function getLanguageList(): Promise<string[]> {
-  if (languageList.length === 0) {
-    return $.getJSON("/./languages/_list.json", function (data) {
-      languageList = data;
-      return languageList;
-    });
-  } else {
-    return languageList;
-  }
-}
-
-let languageGroupList: MonkeyTypes.LanguageGroup[] = [];
-export async function getLanguageGroups(): Promise<
-  MonkeyTypes.LanguageGroup[]
-> {
-  if (languageGroupList.length === 0) {
-    return $.getJSON("/./languages/_groups.json", function (data) {
-      languageGroupList = data;
-      return languageGroupList;
-    });
-  } else {
-    return languageGroupList;
-  }
-}
-
-let currentLanguage: MonkeyTypes.LanguageObject;
-export async function getLanguage(
-  lang: string
-): Promise<MonkeyTypes.LanguageObject> {
-  try {
-    if (currentLanguage == undefined || currentLanguage.name !== lang) {
-      console.log("getting language json");
-      await $.getJSON(`/./languages/${lang}.json`, function (data) {
-        currentLanguage = data;
-      });
-    }
-    return currentLanguage;
-  } catch (e) {
-    console.error(`error getting language`);
-    console.error(e);
-    await $.getJSON(`/./languages/english.json`, function (data) {
-      currentLanguage = data;
-    });
-    return currentLanguage;
-  }
-}
-
-export async function getCurrentLanguage(
-  languageName: string
-): Promise<MonkeyTypes.LanguageObject> {
-  return await getLanguage(languageName);
-}
-
-export async function findCurrentGroup(
-  language: string
-): Promise<MonkeyTypes.LanguageGroup | undefined> {
-  let retgroup: MonkeyTypes.LanguageGroup | undefined;
-  const groups = await getLanguageGroups();
-  groups.forEach((group) => {
-    if (retgroup === undefined) {
-      if (group.languages.includes(language)) {
-        retgroup = group;
-      }
-    }
-  });
-  return retgroup;
-}
-
-let challengeList: MonkeyTypes.Challenge[] = [];
-export async function getChallengeList(): Promise<MonkeyTypes.Challenge[]> {
-  if (challengeList.length === 0) {
-    return $.getJSON("/./challenges/_list.json", function (data) {
-      challengeList = data;
-      return challengeList;
-    });
-  } else {
-    return challengeList;
-  }
 }
 
 export function smooth(
@@ -1242,6 +1259,30 @@ export function abbreviateNumber(num: number, decimalPoints = 1): string {
 
 export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function memoizeAsync<T extends (...args: any) => Promise<any>>(
+  fn: T,
+  getKey?: (...args: Parameters<T>) => any
+): T {
+  const cache = new Map<any, Promise<ReturnType<T>>>();
+
+  return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
+    const key = getKey ? getKey.apply(args) : args[0];
+
+    if (cache.has(key)) {
+      const ret = await cache.get(key);
+      if (ret !== undefined) {
+        return ret as ReturnType<T>;
+      }
+    }
+
+    // eslint-disable-next-line prefer-spread
+    const result = fn.apply(null, args);
+    cache.set(key, result);
+
+    return result;
+  }) as T;
 }
 
 export function isPasswordStrong(password: string): boolean {

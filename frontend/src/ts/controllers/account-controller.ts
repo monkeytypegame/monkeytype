@@ -117,17 +117,26 @@ export async function getDataAndInit(): Promise<boolean> {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
-    const [languages, funboxes] = values;
-    languages.forEach((language) => {
-      ResultFilters.defaultResultFilters.language[language] = true;
+  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()])
+    .then((values) => {
+      const [languages, funboxes] = values;
+      languages.forEach((language) => {
+        ResultFilters.defaultResultFilters.language[language] = true;
+      });
+      funboxes.forEach((funbox) => {
+        ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
+      });
+      // filters = defaultResultFilters;
+      ResultFilters.load();
+    })
+    .catch((e) => {
+      console.log(
+        Misc.createErrorMessage(
+          e,
+          "Something went wrong while loading the filters"
+        )
+      );
     });
-    funboxes.forEach((funbox) => {
-      ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
-    });
-    // filters = defaultResultFilters;
-    ResultFilters.load();
-  });
 
   if (snapshot.needsToChangeName) {
     Notifications.addBanner(
