@@ -179,6 +179,10 @@
     "name": "norwegian",
     "languages": ["norwegian", "norwegian_1k", "norwegian_5k", "norwegian_10k"]
   },
+   {
+    "name": "norwegian_nynorsk",
+    "languages": ["norwegian_nynorsk"]
+  },
   {
     "name": "hebrew",
     "languages": ["hebrew", "hebrew_1k", "hebrew_5k", "hebrew_10k"]
