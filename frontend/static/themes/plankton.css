@@ -1,0 +1,16 @@
+:root { --bg-color:#404f44; 
+       --main-color:#46aba5; 
+       --caret-color:#374f4d; 
+       --sub-color:#626269; 
+       --sub-alt-color:#0f363b; 
+       --text-color:#dde2df; 
+       --error-color:#a2a362; 
+       --error-extra-color:#8a7b48; 
+       --colorful-error-color:#7d663f; 
+       --colorful-error-extra-color:#332425;
+}
+,{
+    "name": "plankton",
+    "bgColor": "#404f44",
+    "mainColor": "#46aba5"
+}
