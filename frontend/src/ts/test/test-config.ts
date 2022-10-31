@@ -1,3 +1,4 @@
+import { Auth } from "../firebase";
 import * as ConfigEvent from "../observables/config-event";
 // import * as Misc from "../utils/misc";
 
@@ -24,6 +25,8 @@ export async function update(
   if (previous === current) return;
   $("#testConfig .mode .textButton").removeClass("active");
   $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
+
+  if (!Auth?.currentUser) hideFavoriteQuoteLength();
 
   // if (current == "time") {
   //   $("#testConfig .punctuationMode").removeClass("hidden");
@@ -319,11 +322,11 @@ export function updateExtras(
 }
 
 export function showFavoriteQuoteLength(): void {
-  $("#top .desktopConfig .group.quoteLength .favorite").removeClass("hidden");
+  $("#testConfig .quoteLength .favorite").removeClass("hidden");
 }
 
 export function hideFavoriteQuoteLength(): void {
-  $("#top .desktopConfig .group.quoteLength .favorite").addClass("hidden");
+  $("#testConfig .quoteLength .favorite").addClass("hidden");
 }
 
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
