@@ -191,29 +191,24 @@ declare namespace MonkeyTypes {
     display?: string;
   }
 
-  interface FunboxObject {
-    name: string;
-    info: string;
-    canGetPB?: boolean;
-    alias?: string;
-    ignoresLanguage?: boolean;
-    noLigatures?: boolean;
-    noLetters?: boolean;
-    changesCapitalisation?: boolean;
-    mode?: MonkeyTypes.Mode;
-    blockWordHighlight?: boolean;
-    nospace?: boolean;
-    noPunctuation?: boolean;
-    noNumbers?: boolean;
-    symmetricChars?: boolean;
-    conflictsWithSymmetricChars?: boolean;
-    toPushCount?: number;
-    changesWordsVisibility?: boolean;
-    speaks?: boolean;
-    unspeakable?: boolean;
-    changesLayout?: boolean;
-    ignoresLayout?: boolean;
-    usesLayout?: boolean;
+  type FunboxProperty =
+    | "symmetricChars"
+    | "conflictsWithSymmetricChars"
+    | "changesWordsVisibility"
+    | "speaks"
+    | "unspeakable"
+    | "changesLayout"
+    | "ignoresLayout"
+    | "usesLayout"
+    | "ignoresLanguage"
+    | "noLigatures"
+    | "noLetters"
+    | "changesCapitalisation"
+    | "blockWordHighlight"
+    | "nospace"
+    | `toPush:${number}`;
+
+  interface FunboxFunctions {
     getWord?: (wordset?: Misc.Wordset) => string;
     punctuateWord?: (word: string) => string;
     withWords?: (words?: string[]) => Promise<Misc.Wordset>;
@@ -236,6 +231,20 @@ declare namespace MonkeyTypes {
     start?: () => void;
     restart?: () => void;
     getWordHtml?: (char: string, letterTag?: boolean) => string;
+  }
+
+  interface FunboxObject {
+    name: string;
+    info: string;
+    canGetPB?: boolean;
+    alias?: string;
+    mode?: MonkeyTypes.Mode;
+    blockedModes?: {
+      punctuation?: boolean;
+      numbers?: boolean;
+    };
+    properties?: FunboxProperty[];
+    functions?: FunboxFunctions;
   }
 
   interface CustomText {

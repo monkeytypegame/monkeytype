@@ -122,7 +122,7 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (ActiveFunboxes().find((f) => f.nospace)) {
+  if (ActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -149,8 +149,8 @@ function handleSpace(): void {
   const currentWord: string = TestWords.words.getCurrent();
 
   for (const f of ActiveFunboxes()) {
-    if (f.handleSpace) {
-      f.handleSpace();
+    if (f.functions?.handleSpace) {
+      f.functions.handleSpace();
     }
   }
   Settings.groups["layout"]?.updateInput();
@@ -161,7 +161,9 @@ function handleSpace(): void {
   LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
-  const nospace = ActiveFunboxes().find((f) => f.nospace) !== undefined;
+  const nospace =
+    ActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -341,9 +343,10 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     }
   }
 
-  const funbox = ActiveFunboxes().find((f) => f.isCharCorrect);
-  if (funbox?.isCharCorrect) return funbox.isCharCorrect(char, originalChar);
-
+  const funbox = ActiveFunboxes().find((f) => f.functions?.isCharCorrect);
+  if (funbox?.functions?.isCharCorrect) {
+    return funbox.functions.isCharCorrect(char, originalChar);
+  }
   if (
     (char === "’" || char === "‘" || char === "'") &&
     (originalChar === "’" || originalChar === "‘" || originalChar === "'")
@@ -389,10 +392,12 @@ function handleChar(
   }
 
   for (const f of ActiveFunboxes()) {
-    if (f.handleChar) char = f.handleChar(char);
+    if (f.functions?.handleChar) char = f.functions.handleChar(char);
   }
 
-  const nospace = ActiveFunboxes().find((f) => f.nospace) !== undefined;
+  const nospace =
+    ActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -887,9 +892,9 @@ $(document).keydown(async (event) => {
       (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
 
-  const funbox = ActiveFunboxes().find((f) => f.preventDefaultEvent);
-  if (funbox?.preventDefaultEvent) {
-    if (await funbox.preventDefaultEvent(event)) {
+  const funbox = ActiveFunboxes().find((f) => f.functions?.preventDefaultEvent);
+  if (funbox?.functions?.preventDefaultEvent) {
+    if (await funbox.functions.preventDefaultEvent(event)) {
       event.preventDefault();
       handleChar(event.key, TestInput.input.current.length);
       updateUI();

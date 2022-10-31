@@ -103,8 +103,8 @@ async function updateGraph(): Promise<void> {
     let content = "";
     for (const f of ActiveFunboxes()) {
       content += f.name;
-      if (f.getResultContent) {
-        content += "(" + f.getResultContent() + ")";
+      if (f.functions?.getResultContent) {
+        content += "(" + f.functions.getResultContent() + ")";
       }
       content += " ";
     }
@@ -531,7 +531,8 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     }
   }
   const ignoresLanguage =
-    ActiveFunboxes().find((f) => f.ignoresLanguage) !== undefined;
+    ActiveFunboxes().find((f) => f.properties?.includes("ignoresLanguage")) !==
+    undefined;
   if (Config.mode != "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }

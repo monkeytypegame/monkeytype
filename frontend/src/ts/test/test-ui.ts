@@ -105,12 +105,10 @@ export function updateActiveElement(backspace?: boolean): void {
 function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
-  const funbox = ActiveFunboxes().filter((f) => f.getWordHtml);
+  const funbox = ActiveFunboxes().find((f) => f.functions?.getWordHtml);
   for (let c = 0; c < word.length; c++) {
-    if (funbox.length > 0) {
-      for (const f of funbox) {
-        if (f.getWordHtml) retval += f.getWordHtml(word.charAt(c), true);
-      }
+    if (funbox?.functions?.getWordHtml) {
+      retval += funbox.functions.getWordHtml(word.charAt(c), true);
     } else if (word.charAt(c) === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
     } else if (word.charAt(c) === "\n") {
@@ -418,6 +416,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
       wordHighlightClassString = "correct";
     }
 
+    const funbox = ActiveFunboxes().find((f) => f.functions?.getWordHtml);
     for (let i = 0; i < input.length; i++) {
       const charCorrect = currentWord[i] == input[i];
 
@@ -429,13 +428,10 @@ export function updateWordElement(showError = !Config.blindMode): void {
       let currentLetter = currentWord[i];
       let tabChar = "";
       let nlChar = "";
-      const funbox = ActiveFunboxes().find((f) => f.getWordHtml);
-      if (funbox) {
-        let cl = "";
-        if (funbox.getWordHtml) cl = funbox.getWordHtml(currentLetter);
+      if (funbox?.functions?.getWordHtml) {
+        const cl = funbox.functions.getWordHtml(currentLetter);
         if (cl != "") {
           currentLetter = cl;
-          break;
         }
       } else if (currentLetter === "\t") {
         tabChar = "tabChar";
@@ -497,10 +493,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
       }
     }
 
-    const funbox = ActiveFunboxes().find((f) => f.getWordHtml);
     for (let i = input.length; i < currentWord.length; i++) {
-      if (funbox) {
-        if (funbox.getWordHtml) ret += funbox.getWordHtml(currentWord[i], true);
+      if (funbox?.functions?.getWordHtml) {
+        ret += funbox.functions.getWordHtml(currentWord[i], true);
       } else if (currentWord[i] === "\t") {
         ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (currentWord[i] === "\n") {

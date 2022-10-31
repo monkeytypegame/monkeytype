@@ -90,9 +90,10 @@ export async function punctuateWord(
 
   const lastChar = Misc.getLastChar(previousWord);
 
-  const funbox = ActiveFunboxes().find((f) => f.punctuateWord);
-  if (funbox?.punctuateWord) return funbox.punctuateWord(word);
-
+  const funbox = ActiveFunboxes().find((f) => f.functions?.punctuateWord);
+  if (funbox?.functions?.punctuateWord) {
+    return funbox.functions.punctuateWord(word);
+  }
   if (
     currentLanguage != "code" &&
     currentLanguage != "georgian" &&
@@ -330,7 +331,7 @@ export function startTest(): boolean {
   Monkey.show();
 
   for (const f of ActiveFunboxes()) {
-    if (f.start) f.start();
+    if (f.functions?.start) f.functions.start();
   }
 
   try {
@@ -550,18 +551,21 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      if (ActiveFunboxes().find((f) => f.noPunctuation)) {
+      if (ActiveFunboxes().find((f) => f.blockedModes?.punctuation)) {
         UpdateConfig.setPunctuation(false, true);
       }
-      if (ActiveFunboxes().find((f) => f.noNumbers)) {
+      if (ActiveFunboxes().find((f) => f.blockedModes?.numbers)) {
         UpdateConfig.setNumbers(false, true);
       }
 
       if (options.withSameWordset) {
-        const funbox = ActiveFunboxes().find((f) => f.toPushCount);
-        if (funbox?.toPushCount) {
+        const funboxToPush = ActiveFunboxes()
+          .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+          ?.properties?.find((fp) => fp.startsWith("toPush:"));
+        if (funboxToPush) {
+          const toPushCount = +funboxToPush.split(":")[1];
           const toPush = [];
-          for (let i = 0; i < funbox.toPushCount; i++) {
+          for (let i = 0; i < toPushCount; i++) {
             toPush.push(TestWords.words.get(i));
           }
           TestWords.words.reset();
@@ -619,7 +623,7 @@ export function restart(options = {} as RestartOptions): void {
       (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
       for (const f of ActiveFunboxes()) {
-        if (f.restart) f.restart();
+        if (f.functions?.restart) f.functions.restart();
       }
 
       if (Config.showAverage !== "off") {
@@ -671,15 +675,17 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
-  const wordFunbox = ActiveFunboxes().find((f) => f.getWord);
-  if (wordFunbox?.getWord) word = wordFunbox.getWord(wordset);
+  const wordFunbox = ActiveFunboxes().find((f) => f.functions?.getWord);
+  if (wordFunbox?.functions?.getWord) {
+    word = wordFunbox.functions.getWord(wordset);
+  }
   return word;
 }
 
 function applyFunboxesToWord(word: string): string {
   for (const f of ActiveFunboxes()) {
-    if (f.alterText) {
-      word = f.alterText(word);
+    if (f.functions?.alterText) {
+      word = f.functions.alterText(word);
     }
   }
   return word;
@@ -869,9 +875,11 @@ export async function init(): Promise<void> {
 
   let wordsBound = 100;
 
-  const funbox = ActiveFunboxes().find((f) => f.toPushCount);
-  if (funbox?.toPushCount) {
-    wordsBound = funbox.toPushCount;
+  const funboxToPush = ActiveFunboxes()
+    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+  if (funboxToPush) {
+    wordsBound = +funboxToPush.split(":")[1];
     if (Config.mode === "words" && Config.words < wordsBound) {
       wordsBound = Config.words;
     }
@@ -940,13 +948,17 @@ export async function init(): Promise<void> {
     const wordset = await Wordset.withWords(wordList);
     let wordCount = 0;
 
-    const sectionFunbox = ActiveFunboxes().find((f) => f.pullSection);
-    if (sectionFunbox?.pullSection) {
+    const sectionFunbox = ActiveFunboxes().find(
+      (f) => f.functions?.pullSection
+    );
+    if (sectionFunbox?.functions?.pullSection) {
       while (
         (Config.mode == "words" && Config.words >= wordCount) ||
         (Config.mode === "time" && wordCount < 100)
       ) {
-        const section = await sectionFunbox.pullSection(Config.language);
+        const section = await sectionFunbox.functions.pullSection(
+          Config.language
+        );
 
         if (section === false) {
           Notifications.add(
@@ -1147,8 +1159,11 @@ export async function init(): Promise<void> {
 
 export async function addWord(): Promise<void> {
   let bound = 100;
-  const funbox = ActiveFunboxes().find((f) => f.toPushCount);
-  if (funbox?.toPushCount) bound = funbox.toPushCount - 1;
+  const funboxToPush = ActiveFunboxes()
+    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+  const toPushCount: string | undefined = funboxToPush?.split(":")[1];
+  if (toPushCount) bound = +toPushCount - 1;
   if (
     TestWords.words.length - TestInput.input.history.length > bound ||
     (Config.mode === "words" &&
@@ -1168,10 +1183,12 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  const sectionFunbox = ActiveFunboxes().find((f) => f.pullSection);
-  if (sectionFunbox?.pullSection) {
+  const sectionFunbox = ActiveFunboxes().find((f) => f.functions?.pullSection);
+  if (sectionFunbox?.functions?.pullSection) {
     if (TestWords.words.length - TestWords.words.currentIndex < 20) {
-      const section = await sectionFunbox.pullSection(Config.language);
+      const section = await sectionFunbox.functions.pullSection(
+        Config.language
+      );
 
       if (section === false) {
         Notifications.add(

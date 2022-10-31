@@ -143,7 +143,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
         return false;
       }
     } else {
-      Notifications.add("Funbox list not loaded", 0);
+      // Notifications.add("Funbox list not loaded", 0);
     }
   }
   const previous = config.mode;
@@ -863,7 +863,9 @@ export function setHighlightMode(
     const list = getFunboxListSync();
     if (list) {
       const funbox = list.find(
-        (f) => f.blockWordHighlight && config.funbox.split("#").includes(f.name)
+        (f) =>
+          f.properties?.includes("blockWordHighlight") &&
+          config.funbox.split("#").includes(f.name)
       );
       if (funbox) {
         Notifications.add(

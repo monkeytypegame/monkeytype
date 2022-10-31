@@ -274,7 +274,7 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
       correctWordChars += toAdd.correct;
     }
   }
-  if (ActiveFunboxes().find((f) => f.nospace)) {
+  if (ActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
     spaces = 0;
   }
   chars += currTestInput.length;
@@ -445,7 +445,7 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  if (ActiveFunboxes().find((f) => f.nospace)) {
+  if (ActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
     spaces = 0;
     correctspaces = 0;
   }
