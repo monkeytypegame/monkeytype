@@ -768,7 +768,7 @@ export function toggleFunbox(funbox: string): boolean {
     funbox == "none" ||
     (!checkFunbox(funbox) && !Config.funbox.split("#").includes(funbox))
   ) {
-    setFunbox("none");
+    Notifications.add(`Can not apply the ${funbox} funbox`, 0);
     return true;
   }
   loadMemory();
