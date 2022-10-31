@@ -211,9 +211,10 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
 
     if (
-      funbox === "read_ahead" ||
-      funbox === "read_ahead_easy" ||
-      funbox === "read_ahead_hard"
+      (funbox === "read_ahead" ||
+        funbox === "read_ahead_easy" ||
+        funbox === "read_ahead_hard") &&
+      Config.highlightMode === "word"
     ) {
       UpdateConfig.setHighlightMode("letter", true);
     }
