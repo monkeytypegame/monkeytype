@@ -542,7 +542,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Nonsense words that look like the current language.",
     unspeakable: true,
     async withWords(words?: string[]): Promise<Misc.Wordset> {
-      if (words !== undefined) return new Misc.PseudolangWordGenerator(words);
+      if (words !== undefined) return new PseudolangWordGenerator(words);
       return new Misc.Wordset([]);
     },
   },
@@ -556,6 +556,84 @@ export const ActiveFunboxes = (): MonkeyTypes.FunboxObject[] => {
   }
   return funboxes;
 };
+
+const prefixSize = 2;
+
+class CharDistribution {
+  public chars: { [char: string]: number };
+  public count: number;
+  constructor() {
+    this.chars = {};
+    this.count = 0;
+  }
+
+  public addChar(char: string): void {
+    this.count++;
+    if (char in this.chars) {
+      this.chars[char]++;
+    } else {
+      this.chars[char] = 1;
+    }
+  }
+
+  public randomChar(): string {
+    const randomIndex = Misc.randomIntFromRange(0, this.count - 1);
+    let runningCount = 0;
+    for (const [char, charCount] of Object.entries(this.chars)) {
+      runningCount += charCount;
+      if (runningCount > randomIndex) {
+        return char;
+      }
+    }
+
+    return Object.keys(this.chars)[0];
+  }
+}
+
+class PseudolangWordGenerator extends Misc.Wordset {
+  public ngrams: { [prefix: string]: CharDistribution } = {};
+  constructor(words: string[]) {
+    super(words);
+    // Can generate an unbounded number of words in theory.
+    this.length = Infinity;
+
+    for (let word of words) {
+      // Mark the end of each word with a space.
+      word += " ";
+      let prefix = "";
+      for (const c of word) {
+        // Add `c` to the distribution of chars that can come after `prefix`.
+        if (!(prefix in this.ngrams)) {
+          this.ngrams[prefix] = new CharDistribution();
+        }
+        this.ngrams[prefix].addChar(c);
+        prefix = (prefix + c).substr(-prefixSize);
+      }
+    }
+  }
+
+  public override randomWord(): string {
+    let word = "";
+    for (;;) {
+      const prefix = word.substr(-prefixSize);
+      const charDistribution = this.ngrams[prefix];
+      if (!charDistribution) {
+        // This shouldn't happen if this.ngrams is complete. If it does
+        // somehow, start generating a new word.
+        word = "";
+        continue;
+      }
+      // Pick a random char from the distribution that comes after `prefix`.
+      const nextChar = charDistribution.randomChar();
+      if (nextChar == " ") {
+        // A space marks the end of the word, so stop generating and return.
+        break;
+      }
+      word += nextChar;
+    }
+    return word;
+  }
+}
 
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
@@ -719,19 +797,35 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
   if (!checkFunbox()) {
-    funbox = "none";
-    setFunbox(funbox);
+    Notifications.add(
+      Misc.createErrorMessage(undefined, "Failed to activate funbox"),
+      -1
+    );
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return false;
   }
 
-  // if (funbox === "none") {
   reset();
   $("#wordsWrapper").removeClass("hidden");
-  // }
-
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
+
+  let language;
+  try {
+    language = await Misc.getCurrentLanguage(Config.language);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to activate funbox"),
+      -1
+    );
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return false;
+  }
+
+  if (language.ligatures) {
     if (ActiveFunboxes().find((f) => f.noLigatures)) {
       Notifications.add(
         "Current language does not support this funbox mode",
@@ -741,44 +835,6 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       await clear();
       return;
     }
-  }
-
-  let fb: MonkeyTypes.FunboxObject[] = [];
-  fb = fb.concat(
-    ActiveFunboxes().filter(
-      (f) => f.mode !== undefined && f.mode !== Config.mode
-    )
-  );
-  if (Config.mode === "zen") {
-    fb = fb.concat(
-      ActiveFunboxes().filter(
-        (f) =>
-          f.getWord ||
-          f.pullSection ||
-          f.alterText ||
-          f.withWords ||
-          f.changesCapitalisation ||
-          f.nospace ||
-          f.toPushCount ||
-          f.changesWordsVisibility ||
-          f.speaks ||
-          f.changesLayout
-      )
-    );
-  }
-  if (Config.mode === "quote") {
-    fb = fb.concat(
-      ActiveFunboxes().filter((f) => f.getWord || f.pullSection || f.withWords)
-    );
-  }
-  if (fb.length > 0) {
-    Notifications.add(
-      `${Misc.capitalizeFirstLetterOfEachWord(
-        Config.mode
-      )} mode does not support the ${fb[0].name.replace(/_/g, " ")} funbox`,
-      0
-    );
-    UpdateConfig.setMode("time", true);
   }
 
   if (
