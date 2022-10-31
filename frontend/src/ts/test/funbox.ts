@@ -108,8 +108,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
       "symmetricChars",
     ],
     blockedModes: {
-      punctuation: true,
-      numbers: true,
+      punctuation: false,
+      numbers: false,
     },
     functions: {
       getWord(): string {
@@ -396,8 +396,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Where was the ampersand again?. Only ASCII characters.",
     properties: ["ignoresLanguage", "noLetters", "unspeakable"],
     blockedModes: {
-      punctuation: true,
-      numbers: true,
+      punctuation: false,
+      numbers: false,
     },
     functions: {
       getWord(): string {
@@ -410,8 +410,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "!@#$%^&*. Only special characters.",
     properties: ["ignoresLanguage", "noLetters", "unspeakable"],
     blockedModes: {
-      punctuation: true,
-      numbers: true,
+      punctuation: false,
+      numbers: false,
     },
     functions: {
       getWord(): string {
@@ -552,8 +552,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "poetry",
     info: "Practice typing some beautiful prose.",
     blockedModes: {
-      punctuation: true,
-      numbers: true,
+      punctuation: false,
+      numbers: false,
     },
     functions: {
       async pullSection(): Promise<Misc.Section | false> {
@@ -565,8 +565,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "wikipedia",
     info: "Practice typing wikipedia sections.",
     blockedModes: {
-      punctuation: true,
-      numbers: true,
+      punctuation: false,
+      numbers: false,
     },
     functions: {
       async pullSection(lang?: string): Promise<Misc.Section | false> {

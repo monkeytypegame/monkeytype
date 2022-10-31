@@ -79,8 +79,8 @@
       "symmetricChars"
     ],
     "blockedModes": {
-      "punctuation": true,
-      "numbers": true
+      "punctuation": false,
+      "numbers": false
     },
     "functions": {
       "getWord": true,
@@ -190,8 +190,8 @@
       "unspeakable"
     ],
     "blockedModes": {
-      "punctuation": true,
-      "numbers": true
+      "punctuation": false,
+      "numbers": false
     },
     "functions": {
       "getWord": true
@@ -207,8 +207,8 @@
       "unspeakable"
     ],
     "blockedModes": {
-      "punctuation": true,
-      "numbers": true
+      "punctuation": false,
+      "numbers": false
     },
     "functions": {
       "getWord": true
@@ -307,8 +307,8 @@
     "info": "Practice typing some beautiful prose.",
     "canGetPB": false,
     "blockedModes": {
-      "punctuation": true,
-      "numbers": true
+      "punctuation": false,
+      "numbers": false
     },
     "functions": {
       "pullSection": true
@@ -319,8 +319,8 @@
     "info": "Practice typing wikipedia sections.",
     "canGetPB": false,
     "blockedModes": {
-      "punctuation": true,
-      "numbers": true
+      "punctuation": false,
+      "numbers": false
     },
     "functions": {
       "pullSection": true
