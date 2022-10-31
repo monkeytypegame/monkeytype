@@ -1,7 +1,6 @@
 {
   "name": "norwegian nynorsk",
   "leftToRight": true,
-  "bcp47": "no-nn",
   "noLazyMode": true,
   "words": [
     "i",
