@@ -2,7 +2,6 @@
   font-size: 1rem;
   line-height: 1rem;
   justify-self: end;
-  // background: var(--sub-color);
   color: var(--sub-color);
   width: fit-content;
   width: -moz-fit-content;
@@ -77,7 +76,6 @@
   }
 
   .miniResultChartWrapper {
-    // pointer-events: none;
     z-index: 999;
     display: none;
     height: 15rem;
@@ -86,7 +84,6 @@
     position: absolute;
     border-radius: var(--roundness);
     padding: 1rem;
-    // box-shadow: 0 0 1rem rgba(0, 0, 0, 0.25);
   }
 
   .miniResultChartBg {
@@ -125,8 +122,6 @@
   .group {
     &.noDataError {
       margin: 20rem 0;
-      // height: 30rem;
-      // line-height: 30rem;
       text-align: center;
     }
 
