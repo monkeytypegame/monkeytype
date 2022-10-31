@@ -1,4 +1,3 @@
-import { Auth } from "../firebase";
 import * as ConfigEvent from "../observables/config-event";
 // import * as Misc from "../utils/misc";
 
@@ -25,8 +24,6 @@ export async function update(
   if (previous === current) return;
   $("#testConfig .mode .textButton").removeClass("active");
   $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
-
-  if (!Auth?.currentUser) hideFavoriteQuoteLength();
 
   // if (current == "time") {
   //   $("#testConfig .punctuationMode").removeClass("hidden");
