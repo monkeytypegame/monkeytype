@@ -24,6 +24,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
       subgroup.list.push({
         id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme),
         display: theme.replace(/_/g, " "),
+        configValue: theme,
         hover: (): void => {
           // previewTheme(theme);
           ThemeController.preview(theme, false);
@@ -39,6 +40,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
     subgroup.list.push({
       id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
       display: theme.name.replace(/_/g, " "),
+      configValue: theme.name,
       hover: (): void => {
         // previewTheme(theme.name);
         ThemeController.preview(theme.name, false);
