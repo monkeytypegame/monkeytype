@@ -429,15 +429,13 @@ export function updateWordElement(showError = !Config.blindMode): void {
       let currentLetter = currentWord[i];
       let tabChar = "";
       let nlChar = "";
-      const funbox = ActiveFunboxes().filter((f) => f.getWordHtml);
-      if (funbox.length > 0) {
+      const funbox = ActiveFunboxes().find((f) => f.getWordHtml);
+      if (funbox) {
         let cl = "";
-        for (const f of funbox) {
-          if (f.getWordHtml) cl = f.getWordHtml(currentLetter);
-          if (cl != "") {
-            currentLetter = cl;
-            break;
-          }
+        if (funbox.getWordHtml) cl = funbox.getWordHtml(currentLetter);
+        if (cl != "") {
+          currentLetter = cl;
+          break;
         }
       } else if (currentLetter === "\t") {
         tabChar = "tabChar";
@@ -499,12 +497,10 @@ export function updateWordElement(showError = !Config.blindMode): void {
       }
     }
 
-    const funbox = ActiveFunboxes().filter((f) => f.getWordHtml);
+    const funbox = ActiveFunboxes().find((f) => f.getWordHtml);
     for (let i = input.length; i < currentWord.length; i++) {
-      if (funbox.length > 0) {
-        for (const f of funbox) {
-          if (f.getWordHtml) ret += f.getWordHtml(currentWord[i], true);
-        }
+      if (funbox) {
+        if (funbox.getWordHtml) ret += funbox.getWordHtml(currentWord[i], true);
       } else if (currentWord[i] === "\t") {
         ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (currentWord[i] === "\n") {
