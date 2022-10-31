@@ -27,18 +27,21 @@
   },
   {
     "name": "french",
-    "languages": ["french", "french_1k", "french_2k", "french_10k", "french_600k"]
+    "languages": [
+      "french",
+      "french_1k",
+      "french_2k",
+      "french_10k",
+      "french_600k"
+    ]
   },
   {
     "name": "german",
-    "languages": [
-      "german",
-      "german_1k",
-      "german_10k",
-      "german_250k",
-      "swiss_german",
-      "swiss_german_1k"
-    ]
+    "languages": ["german", "german_1k", "german_10k", "german_250k"]
+  },
+  {
+    "name": "swiss_german",
+    "languages": ["swiss_german", "swiss_german_1k"]
   },
   {
     "name": "portuguese",
@@ -179,7 +182,7 @@
     "name": "norwegian",
     "languages": ["norwegian", "norwegian_1k", "norwegian_5k", "norwegian_10k"]
   },
-   {
+  {
     "name": "norwegian_nynorsk",
     "languages": ["norwegian_nynorsk"]
   },
@@ -221,7 +224,13 @@
   },
   {
     "name": "persian",
-    "languages": ["persian", "persian_1k", "persian_5k", "persian_20k", "persian_romanized"]
+    "languages": [
+      "persian",
+      "persian_1k",
+      "persian_5k",
+      "persian_20k",
+      "persian_romanized"
+    ]
   },
   {
     "name": "kazakh",
@@ -438,5 +447,4 @@
     "name": "kyrgyz",
     "languages": ["kyrgyz"]
   }
-  
 ]
