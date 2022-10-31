@@ -204,7 +204,6 @@ declare namespace MonkeyTypes {
     | "noLigatures"
     | "noLetters"
     | "changesCapitalisation"
-    | "blockWordHighlight"
     | "nospace"
     | `toPush:${number}`;
 
@@ -233,16 +232,21 @@ declare namespace MonkeyTypes {
     getWordHtml?: (char: string, letterTag?: boolean) => string;
   }
 
+  interface FunboxForcedConfig {
+    punctuation?: boolean;
+    numbers?: boolean;
+    highlightMode?: string;
+    words?: number;
+    time?: number;
+  }
+
   interface FunboxObject {
     name: string;
     info: string;
     canGetPB?: boolean;
     alias?: string;
     mode?: MonkeyTypes.Mode;
-    blockedModes?: {
-      punctuation?: boolean;
-      numbers?: boolean;
-    };
+    forcedConfig?: MonkeyTypes.FunboxForcedConfig;
     properties?: FunboxProperty[];
     functions?: FunboxFunctions;
   }

@@ -21,9 +21,11 @@
     "canGetPB": true,
     "properties": [
       "changesWordsVisibility",
-      "blockWordHighlight",
       "usesLayout"
     ],
+    "forcedConfig": {
+      "highlightMode": "!word"
+    },
     "functions": {
       "applyCSS": true,
       "applyConfig": true,
@@ -43,10 +45,12 @@
     "info": "Listen closely.",
     "canGetPB": true,
     "properties": [
-      "blockWordHighlight",
       "changesWordsVisibility",
       "speaks"
     ],
+    "forcedConfig": {
+      "highlightMode": "!word"
+    },
     "functions": {
       "applyCSS": true,
       "applyConfig": true,
@@ -78,9 +82,10 @@
       "noLetters",
       "symmetricChars"
     ],
-    "blockedModes": {
+    "forcedConfig": {
       "punctuation": false,
-      "numbers": false
+      "numbers": false,
+      "highlightMode": "!word"
     },
     "functions": {
       "getWord": true,
@@ -170,7 +175,7 @@
       "noLetters",
       "ignoresLayout"
     ],
-    "blockedModes": {
+    "forcedConfig": {
       "numbers": true
     },
     "functions": {
@@ -189,7 +194,7 @@
       "noLetters",
       "unspeakable"
     ],
-    "blockedModes": {
+    "forcedConfig": {
       "punctuation": false,
       "numbers": false
     },
@@ -206,7 +211,7 @@
       "noLetters",
       "unspeakable"
     ],
-    "blockedModes": {
+    "forcedConfig": {
       "punctuation": false,
       "numbers": false
     },
@@ -237,9 +242,11 @@
     "info": "Only the current word is invisible.",
     "canGetPB": true,
     "properties": [
-      "blockWordHighlight",
       "changesWordsVisibility"
     ],
+    "forcedConfig": {
+      "highlightMode": "!word"
+    },
     "functions": {
       "applyCSS": true,
       "applyConfig": true,
@@ -251,9 +258,11 @@
     "info": "Current and the next word are invisible!",
     "canGetPB": true,
     "properties": [
-      "blockWordHighlight",
       "changesWordsVisibility"
     ],
+    "forcedConfig": {
+      "highlightMode": "!word"
+    },
     "functions": {
       "applyCSS": true,
       "applyConfig": true,
@@ -265,9 +274,11 @@
     "info": "Current and the next two words are invisible!",
     "canGetPB": true,
     "properties": [
-      "blockWordHighlight",
       "changesWordsVisibility"
     ],
+    "forcedConfig": {
+      "highlightMode": "!word"
+    },
     "functions": {
       "applyCSS": true,
       "applyConfig": true,
@@ -294,9 +305,11 @@
     "info": "Whoneedsspacesanyway?",
     "canGetPB": false,
     "properties": [
-      "blockWordHighlight",
       "nospace"
     ],
+    "forcedConfig": {
+      "highlightMode": "!word"
+    },
     "functions": {
       "applyConfig": true,
       "rememberSettings": true
@@ -306,7 +319,7 @@
     "name": "poetry",
     "info": "Practice typing some beautiful prose.",
     "canGetPB": false,
-    "blockedModes": {
+    "forcedConfig": {
       "punctuation": false,
       "numbers": false
     },
@@ -318,7 +331,7 @@
     "name": "wikipedia",
     "info": "Practice typing wikipedia sections.",
     "canGetPB": false,
-    "blockedModes": {
+    "forcedConfig": {
       "punctuation": false,
       "numbers": false
     },

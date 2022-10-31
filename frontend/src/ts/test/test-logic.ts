@@ -552,19 +552,19 @@ export function restart(options = {} as RestartOptions): void {
       await Funbox.rememberSettings();
 
       const FunboxPunctuation = ActiveFunboxes().find(
-        (f) => f.blockedModes?.punctuation !== undefined
+        (f) => f.forcedConfig?.punctuation !== undefined
       );
-      if (FunboxPunctuation?.blockedModes?.punctuation) {
+      if (FunboxPunctuation?.forcedConfig?.punctuation) {
         UpdateConfig.setPunctuation(
-          FunboxPunctuation.blockedModes.punctuation,
+          FunboxPunctuation.forcedConfig.punctuation,
           true
         );
       }
       const FunboxNumbers = ActiveFunboxes().find(
-        (f) => f.blockedModes?.numbers !== undefined
+        (f) => f.forcedConfig?.numbers !== undefined
       );
-      if (FunboxNumbers?.blockedModes?.numbers) {
-        UpdateConfig.setNumbers(FunboxNumbers.blockedModes.numbers, true);
+      if (FunboxNumbers?.forcedConfig?.numbers) {
+        UpdateConfig.setNumbers(FunboxNumbers.forcedConfig.numbers, true);
       }
 
       if (options.withSameWordset) {

@@ -68,6 +68,7 @@ function validateOthers() {
           alias: { type: "string" },
           mode: { type: "MonkeyTypes.Mode" },
           properties: { type: "MonkeyTypes.FunboxProperty[]" },
+          forcedConfigs: { type: "MonkeyTypes.FunboxForcedConfig" },
           functions: {
             getWord: { type: "boolean" },
             punctuateWord: { type: "boolean" },

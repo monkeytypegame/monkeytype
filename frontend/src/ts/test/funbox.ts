@@ -32,7 +32,10 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "simon_says",
     info: "Type what simon says.",
-    properties: ["changesWordsVisibility", "blockWordHighlight", "usesLayout"],
+    properties: ["changesWordsVisibility", "usesLayout"],
+    forcedConfig: {
+      highlightMode: "!word",
+    },
     functions: {
       applyCSS(): void {
         $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
@@ -61,7 +64,10 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "tts",
     info: "Listen closely.",
-    properties: ["blockWordHighlight", "changesWordsVisibility", "speaks"],
+    properties: ["changesWordsVisibility", "speaks"],
+    forcedConfig: {
+      highlightMode: "!word",
+    },
     functions: {
       applyCSS(): void {
         $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
@@ -100,16 +106,16 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "arrows",
     info: "Eurobeat Intensifies...",
     properties: [
-      "blockWordHighlight",
       "ignoresLanguage",
       "ignoresLayout",
       "nospace",
       "noLetters",
       "symmetricChars",
     ],
-    blockedModes: {
+    forcedConfig: {
       punctuation: false,
       numbers: false,
+      highlightMode: "!word",
     },
     functions: {
       getWord(): string {
@@ -344,7 +350,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     alias: "numbers",
     info: "A special mode for accountants.",
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
-    blockedModes: {
+    forcedConfig: {
       numbers: true,
     },
     functions: {
@@ -395,7 +401,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "ascii",
     info: "Where was the ampersand again?. Only ASCII characters.",
     properties: ["ignoresLanguage", "noLetters", "unspeakable"],
-    blockedModes: {
+    forcedConfig: {
       punctuation: false,
       numbers: false,
     },
@@ -409,7 +415,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "specials",
     info: "!@#$%^&*. Only special characters.",
     properties: ["ignoresLanguage", "noLetters", "unspeakable"],
-    blockedModes: {
+    forcedConfig: {
       punctuation: false,
       numbers: false,
     },
@@ -423,16 +429,27 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "plus_one",
     info: "React quickly! Only one future word is visible.",
     properties: ["changesWordsVisibility", "toPush:2"],
+    forcedConfig: {
+      words: 1,
+      time: 1,
+    },
   },
   {
     name: "plus_two",
     info: "Only two future words are visible.",
     properties: ["changesWordsVisibility", "toPush:3"],
+    forcedConfig: {
+      words: 1,
+      time: 1,
+    },
   },
   {
     name: "read_ahead_easy",
     info: "Only the current word is invisible.",
-    properties: ["blockWordHighlight", "changesWordsVisibility"],
+    properties: ["changesWordsVisibility"],
+    forcedConfig: {
+      highlightMode: "!word",
+    },
     functions: {
       applyCSS(): void {
         $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
@@ -452,7 +469,10 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "read_ahead",
     info: "Current and the next word are invisible!",
-    properties: ["blockWordHighlight", "changesWordsVisibility"],
+    properties: ["changesWordsVisibility"],
+    forcedConfig: {
+      highlightMode: "!word",
+    },
     functions: {
       applyCSS(): void {
         $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
@@ -472,7 +492,10 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "read_ahead_hard",
     info: "Current and the next two words are invisible!",
-    properties: ["blockWordHighlight", "changesWordsVisibility"],
+    properties: ["changesWordsVisibility"],
+    forcedConfig: {
+      highlightMode: "!word",
+    },
     functions: {
       applyCSS(): void {
         $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
@@ -494,6 +517,9 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Test your memory. Remember the words and type them blind.",
     mode: "words",
     properties: ["changesWordsVisibility"],
+    forcedConfig: {
+      words: 1,
+    },
     functions: {
       applyConfig(): void {
         $("#wordsWrapper").addClass("hidden");
@@ -533,7 +559,10 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "nospace",
     info: "Whoneedsspacesanyway?",
-    properties: ["blockWordHighlight", "nospace"],
+    properties: ["nospace"],
+    forcedConfig: {
+      highlightMode: "!word",
+    },
     functions: {
       applyConfig(): void {
         $("#words").addClass("nospace");
@@ -551,9 +580,11 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "poetry",
     info: "Practice typing some beautiful prose.",
-    blockedModes: {
+    forcedConfig: {
       punctuation: false,
       numbers: false,
+      words: 1,
+      time: 1,
     },
     functions: {
       async pullSection(): Promise<Misc.Section | false> {
@@ -564,9 +595,11 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "wikipedia",
     info: "Practice typing wikipedia sections.",
-    blockedModes: {
+    forcedConfig: {
       punctuation: false,
       numbers: false,
+      words: 1,
+      time: 1,
     },
     functions: {
       async pullSection(lang?: string): Promise<Misc.Section | false> {
@@ -909,14 +942,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
   }
 
-  if (
-    (Config.time === 0 && Config.mode === "time") ||
-    (Config.words === 0 && Config.mode === "words")
-  ) {
+  if (Config.time === 0 && Config.mode === "time") {
     const fb = ActiveFunboxes().filter(
-      (f) =>
-        f.functions?.pullSection ||
-        f.properties?.find((fp) => fp.startsWith("toPush:"))
+      (f) => (f.forcedConfig?.time as number) > 0
     );
     if (fb.length > 0) {
       Notifications.add(
@@ -929,13 +957,30 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         0
       );
       if (Config.mode === "time") UpdateConfig.setTimeConfig(15, true);
+    }
+  }
+
+  if (Config.words === 0 && Config.mode === "words") {
+    const fb = ActiveFunboxes().filter(
+      (f) => (f.forcedConfig?.words as number) > 0
+    );
+    if (fb.length > 0) {
+      Notifications.add(
+        `${Misc.capitalizeFirstLetterOfEachWord(
+          Config.mode
+        )} mode with value 0 does not support the ${fb[0].name.replace(
+          /_/g,
+          " "
+        )} funbox`,
+        0
+      );
       if (Config.mode === "words") UpdateConfig.setWordCount(10, true);
     }
   }
 
   if (Config.highlightMode === "word") {
     const fb = ActiveFunboxes().filter((f) =>
-      f.properties?.includes("blockWordHighlight")
+      f.forcedConfig?.highlightMode?.includes("!word")
     );
     if (fb.length > 0) {
       Notifications.add(
