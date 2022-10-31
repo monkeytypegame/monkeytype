@@ -835,11 +835,12 @@ export function setFunbox(funbox: string): boolean {
 }
 
 export function toggleFunbox(funbox: string): boolean {
-  if (
-    funbox == "none" ||
-    (!checkFunbox(funbox) && !Config.funbox.split("#").includes(funbox))
-  ) {
-    Notifications.add(`Can not apply the ${funbox} funbox`, 0);
+  if (funbox == "none") setFunbox("none");
+  if (!checkFunbox(funbox) && !Config.funbox.split("#").includes(funbox)) {
+    Notifications.add(
+      `Can not apply the ${funbox.replace(/_/g, " ")} funbox`,
+      0
+    );
     return true;
   }
   loadMemory();
@@ -942,6 +943,19 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         0
       );
       UpdateConfig.setHighlightMode("letter");
+    }
+  }
+
+  const funboxMode = ActiveFunboxes().find((f) => f.mode);
+  if (funboxMode?.mode) {
+    if (Config.mode !== funboxMode.mode) {
+      Notifications.add(
+        `${Misc.capitalizeFirstLetterOfEachWord(
+          funboxMode.name.replace(/_/g, " ")
+        )} funbox can only be used with ${funboxMode.mode} mode.`,
+        0
+      );
+      UpdateConfig.setMode(funboxMode.mode, false);
     }
   }
 

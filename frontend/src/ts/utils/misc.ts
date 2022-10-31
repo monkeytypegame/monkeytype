@@ -174,10 +174,6 @@ export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
   }
 }
 
-export function getFunboxListSync(): MonkeyTypes.FunboxObject[] | undefined {
-  return funboxList;
-}
-
 export async function getFunbox(
   funbox: string
 ): Promise<MonkeyTypes.FunboxObject | undefined> {
