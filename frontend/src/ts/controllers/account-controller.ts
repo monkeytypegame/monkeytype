@@ -563,7 +563,9 @@ export function signOut(): void {
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
-      hideFavoriteQuoteLength();
+      setTimeout(() => {
+        hideFavoriteQuoteLength();
+      }, 125);
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);
