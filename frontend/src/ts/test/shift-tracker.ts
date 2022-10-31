@@ -51,9 +51,14 @@ function dynamicKeymapLegendStyle(uppercase: boolean): void {
 async function buildKeymapStrings(): Promise<void> {
   if (keymapStrings.keymap === Config.keymapLayout) return;
 
+  const layoutName =
+    Config.keymapLayout === "overrideSync"
+      ? Config.layout
+      : Config.keymapLayout;
+
   let layout;
   try {
-    layout = await Misc.getLayout(Config.keymapLayout);
+    layout = await Misc.getLayout(layoutName);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to track shift state"),
@@ -194,7 +199,12 @@ export async function isUsingOppositeShift(
 ): Promise<boolean | null> {
   if (!leftState && !rightState) return null;
 
-  if (Config.oppositeShiftMode === "on") {
+  if (
+    Config.oppositeShiftMode === "on" ||
+    (Config.oppositeShiftMode === "keymap" &&
+      Config.keymapLayout === "overrideSync" &&
+      Config.layout === "default")
+  ) {
     if (
       !rightSideKeys.includes(event.code) &&
       !leftSideKeys.includes(event.code)
