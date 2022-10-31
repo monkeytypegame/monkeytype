@@ -350,23 +350,7 @@ async function canGetPb(
   const funboxes = Funboxes.filter(
     (f) => funbox?.split("#").find((F) => F === f.name) !== undefined
   );
-  if (
-    funboxes.filter(
-      (f) =>
-        f.alterText ||
-        f.changesCapitalisation ||
-        f.getWord ||
-        f.handleChar ||
-        f.handleKeydown ||
-        f.handleSpace ||
-        f.ignoresLanguage ||
-        f.isCharCorrect ||
-        f.preventDefaultEvent ||
-        f.pullSection ||
-        f.punctuateWord ||
-        f.withWords
-    ).length > 0
-  ) {
+  if (funboxes.filter((f) => f.canGetPB) !== undefined) {
     return false;
   }
   return true;

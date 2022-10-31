@@ -64,6 +64,7 @@ function validateOthers() {
         properties: {
           name: { type: "string" },
           info: { type: "string" },
+          canGetPB: { type: "boolean" },
           alias: { type: "string" },
           ignoresLanguage: { type: "boolean" },
           noLigatures: { type: "boolean" },
@@ -102,7 +103,7 @@ function validateOthers() {
           restart: { type: "boolean" },
           getWordHtml: { type: "boolean" },
         },
-        required: ["name", "info"],
+        required: ["name", "info", "canGetPB"],
       },
     };
     const funboxValidator = JSONValidator.validate(funboxData, funboxSchema);

@@ -507,23 +507,7 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
   const funboxes = (await getFunboxList()).filter(
     (f) => funbox.split("#").find((F) => F === f.name) !== undefined
   );
-  if (
-    funboxes.filter(
-      (f) =>
-        f.alterText ||
-        f.changesCapitalisation ||
-        f.getWord ||
-        f.handleChar ||
-        f.handleKeydown ||
-        f.handleSpace ||
-        f.ignoresLanguage ||
-        f.isCharCorrect ||
-        f.preventDefaultEvent ||
-        f.pullSection ||
-        f.punctuateWord ||
-        f.withWords
-    ).length > 0
-  ) {
+  if (funboxes.find((f) => f.canGetPB) !== undefined) {
     return 0;
   }
 

@@ -2,16 +2,19 @@
   {
     "name": "nausea",
     "info": "I think I'm gonna be sick.",
+    "canGetPB": true,
     "applyCSS": true
   },
   {
     "name": "round_round_baby",
     "info": "...right round, like a record baby. Right, round round round.",
+    "canGetPB": true,
     "applyCSS": true
   },
   {
     "name": "simon_says",
     "info": "Type what simon says.",
+    "canGetPB": true,
     "changesWordsVisibility": true,
     "blockWordHighlight": true,
     "usesLayout": true,
@@ -22,11 +25,13 @@
   {
     "name": "mirror",
     "info": "Everything is mirrored!",
+    "canGetPB": true,
     "applyCSS": true
   },
   {
     "name": "tts",
     "info": "Listen closely.",
+    "canGetPB": true,
     "blockWordHighlight": true,
     "changesWordsVisibility": true,
     "speaks": true,
@@ -38,6 +43,7 @@
   {
     "name": "choo_choo",
     "info": "All the letters are spinning!",
+    "canGetPB": true,
     "noLigatures": true,
     "conflictsWithSymmetricChars": true,
     "applyCSS": true
@@ -45,6 +51,7 @@
   {
     "name": "arrows",
     "info": "Eurobeat Intensifies...",
+    "canGetPB": false,
     "blockWordHighlight": true,
     "ignoresLanguage": true,
     "ignoresLayout": true,
@@ -64,18 +71,21 @@
   {
     "name": "rAnDoMcAsE",
     "info": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    "canGetPB": false,
     "changesCapitalisation": true,
     "alterText": true
   },
   {
     "name": "capitals",
     "info": "Capitalize Every Word.",
+    "canGetPB": false,
     "changesCapitalisation": true,
     "alterText": true
   },
   {
     "name": "layoutfluid",
     "info": "Switch between layouts specified below proportionately to the length of the test.",
+    "canGetPB": true,
     "changesLayout": true,
     "applyConfig": true,
     "rememberSettings": true,
@@ -86,17 +96,20 @@
   {
     "name": "earthquake",
     "info": "Everybody get down! The words are shaking!",
+    "canGetPB": true,
     "noLigatures": true,
     "applyCSS": true
   },
   {
     "name": "space_balls",
     "info": "In a galaxy far far away.",
+    "canGetPB": true,
     "applyCSS": true
   },
   {
     "name": "gibberish",
     "info": "Anvbuefl dizzs eoos alsb?",
+    "canGetPB": false,
     "ignoresLanguage": true,
     "unspeakable": true,
     "getWord": true
@@ -105,6 +118,7 @@
     "name": "58008",
     "alias": "numbers",
     "info": "A special mode for accountants.",
+    "canGetPB": false,
     "noNumbers": true,
     "ignoresLanguage": true,
     "noLetters": true,
@@ -117,6 +131,7 @@
   {
     "name": "ascii",
     "info": "Where was the ampersand again?. Only ASCII characters.",
+    "canGetPB": false,
     "ignoresLanguage": true,
     "noPunctuation": true,
     "noNumbers": true,
@@ -127,6 +142,7 @@
   {
     "name": "specials",
     "info": "!@#$%^&*. Only special characters.",
+    "canGetPB": false,
     "ignoresLanguage": true,
     "noPunctuation": true,
     "noNumbers": true,
@@ -137,18 +153,21 @@
   {
     "name": "plus_one",
     "info": "React quickly! Only one future word is visible.",
+    "canGetPB": true,
     "toPushCount": 2,
     "changesWordsVisibility": true
   },
   {
     "name": "plus_two",
     "info": "Only two future words are visible.",
+    "canGetPB": true,
     "toPushCount": 3,
     "changesWordsVisibility": true
   },
   {
     "name": "read_ahead_easy",
     "info": "Only the current word is invisible.",
+    "canGetPB": true,
     "blockWordHighlight": true,
     "changesWordsVisibility": true,
     "applyCSS": true,
@@ -158,6 +177,7 @@
   {
     "name": "read_ahead",
     "info": "Current and the next word are invisible!",
+    "canGetPB": true,
     "blockWordHighlight": true,
     "changesWordsVisibility": true,
     "applyCSS": true,
@@ -167,6 +187,7 @@
   {
     "name": "read_ahead_hard",
     "info": "Current and the next two words are invisible!",
+    "canGetPB": true,
     "blockWordHighlight": true,
     "changesWordsVisibility": true,
     "applyCSS": true,
@@ -176,6 +197,7 @@
   {
     "name": "memory",
     "info": "Test your memory. Remember the words and type them blind.",
+    "canGetPB": true,
     "mode": "words",
     "changesWordsVisibility": true,
     "applyConfig": true,
@@ -186,6 +208,7 @@
   {
     "name": "nospace",
     "info": "Whoneedsspacesanyway?",
+    "canGetPB": false,
     "blockWordHighlight": true,
     "nospace": true,
     "applyConfig": true,
@@ -194,6 +217,7 @@
   {
     "name": "poetry",
     "info": "Practice typing some beautiful prose.",
+    "canGetPB": false,
     "noPunctuation": true,
     "noNumbers": true,
     "pullSection": true
@@ -201,6 +225,7 @@
   {
     "name": "wikipedia",
     "info": "Practice typing wikipedia sections.",
+    "canGetPB": false,
     "noPunctuation": true,
     "noNumbers": true,
     "pullSection": true
@@ -208,11 +233,13 @@
   {
     "name": "weakspot",
     "info": "Focus on slow and mistyped letters.",
+    "canGetPB": false,
     "getWord": true
   },
   {
     "name": "pseudolang",
     "info": "Nonsense words that look like the current language.",
+    "canGetPB": false,
     "unspeakable": true,
     "withWords": true
   }
