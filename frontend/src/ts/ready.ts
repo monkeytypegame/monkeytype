@@ -9,6 +9,8 @@ import * as CookiePopup from "./popups/cookie-popup";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
 import { Workbox } from "workbox-window";
+//@ts-ignore
+import Konami from "konami";
 
 ManualRestart.set();
 UpdateConfig.loadFromLocalStorage();
@@ -80,6 +82,8 @@ $(document).ready(() => {
     .animate({ opacity: 1 }, 250);
   if (ConnectionState.get()) PSA.show();
   MonkeyPower.init();
+
+  new Konami("https://keymash.io/");
 });
 
 if ("serviceWorker" in navigator) {

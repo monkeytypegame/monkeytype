@@ -117,17 +117,26 @@ export async function getDataAndInit(): Promise<boolean> {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
-    const [languages, funboxes] = values;
-    languages.forEach((language) => {
-      ResultFilters.defaultResultFilters.language[language] = true;
+  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()])
+    .then((values) => {
+      const [languages, funboxes] = values;
+      languages.forEach((language) => {
+        ResultFilters.defaultResultFilters.language[language] = true;
+      });
+      funboxes.forEach((funbox) => {
+        ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
+      });
+      // filters = defaultResultFilters;
+      ResultFilters.load();
+    })
+    .catch((e) => {
+      console.log(
+        Misc.createErrorMessage(
+          e,
+          "Something went wrong while loading the filters"
+        )
+      );
     });
-    funboxes.forEach((funbox) => {
-      ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
-    });
-    // filters = defaultResultFilters;
-    ResultFilters.load();
-  });
 
   if (snapshot.needsToChangeName) {
     Notifications.addBanner(
@@ -554,7 +563,9 @@ export function signOut(): void {
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
-      hideFavoriteQuoteLength();
+      setTimeout(() => {
+        hideFavoriteQuoteLength();
+      }, 125);
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);
