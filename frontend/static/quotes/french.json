@@ -751,41 +751,41 @@
       "length": 164,
       "id": 124
     },
-	{
+    {
       "text": "La nature n'a pas fait chacun de nous semblable à chacun, mais différent d'aptitudes, et propre à telle ou telle fonction.",
       "source": "La République de Platon",
       "length": 122,
       "id": 125
     },
-	{
+    {
       "text": "Aucune des choses humaines ne mérite d'être prise avec grand sérieux.",
       "source": "La République de Platon",
       "length": 69,
       "id": 126
     },
-	{
+    {
       "text": "Les vrais philosophes se gardent de toutes les passions du corps, leur résistent et ne s'y abandonnent pas.",
       "source": "Phédon, 82b de Platon",
       "length": 107,
       "id": 127
     },
-	{
+    {
       "text": "Quelques-uns appellent le corps le tombeau de l'âme où elle serait présentement ensevelie.",
       "source": "Cratyle de Platon",
       "length": 90,
       "id": 128
     },
-  {
-    "text": "Elle suivit les cours d'une école de dactylographie. Devant les pupitres d'école, des filles de tout âge chuchotaient tandis qu'une femme assise à une table lisait à voix haute ...",
-    "source": "Les Destinées Sentimentales (1934-1936) de Jacques Chardonne",
-    "length": 180,
-    "id": 129
-  },
-  {
-    "text": "Une dactylo est une personne dont la force de frappe ne représente pas toujours pour son patron une force de dissuasion.",
-    "source": "Dictionnaire français-rosse de Noctuel",
-    "length": 120,
-    "id": 130
-  }
+    {
+      "text": "Elle suivit les cours d'une école de dactylographie. Devant les pupitres d'école, des filles de tout âge chuchotaient tandis qu'une femme assise à une table lisait à voix haute ...",
+      "source": "Les Destinées Sentimentales (1934-1936) de Jacques Chardonne",
+      "length": 180,
+      "id": 129
+    },
+    {
+      "text": "Une dactylo est une personne dont la force de frappe ne représente pas toujours pour son patron une force de dissuasion.",
+      "source": "Dictionnaire français-rosse de Noctuel",
+      "length": 120,
+      "id": 130
+    }
   ]
 }
