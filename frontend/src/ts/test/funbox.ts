@@ -74,7 +74,6 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
       },
       applyConfig(): void {
         UpdateConfig.setKeymapMode("off", true);
-        UpdateConfig.setHighlightMode("letter", true);
       },
       rememberSettings(): void {
         rememberSetting(
@@ -123,7 +122,6 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
       },
       applyConfig(): void {
         $("#words").addClass("arrows");
-        UpdateConfig.setHighlightMode("letter", true);
       },
       rememberSettings(): void {
         rememberSetting(
@@ -454,9 +452,6 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
       applyCSS(): void {
         $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
       },
-      applyConfig(): void {
-        UpdateConfig.setHighlightMode("letter", true);
-      },
       rememberSettings(): void {
         rememberSetting(
           "highlightMode",
@@ -476,9 +471,6 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     functions: {
       applyCSS(): void {
         $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
-      },
-      applyConfig(): void {
-        UpdateConfig.setHighlightMode("letter", true);
       },
       rememberSettings(): void {
         rememberSetting(
@@ -500,9 +492,6 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
       applyCSS(): void {
         $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
       },
-      applyConfig(): void {
-        UpdateConfig.setHighlightMode("letter", true);
-      },
       rememberSettings(): void {
         rememberSetting(
           "highlightMode",
@@ -515,7 +504,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "memory",
     info: "Test your memory. Remember the words and type them blind.",
-    mode: "words",
+    mode: ["words", "quote", "custom"],
     properties: ["changesWordsVisibility"],
     forcedConfig: {
       words: "Finite",
@@ -523,7 +512,6 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     functions: {
       applyConfig(): void {
         $("#wordsWrapper").addClass("hidden");
-        UpdateConfig.setMode("words", true);
         UpdateConfig.setShowAllLines(true, true);
         if (Config.keymapMode === "next") {
           UpdateConfig.setKeymapMode("react", true);
@@ -566,7 +554,6 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     functions: {
       applyConfig(): void {
         $("#words").addClass("nospace");
-        UpdateConfig.setHighlightMode("letter", true);
       },
       rememberSettings(): void {
         rememberSetting(
@@ -985,20 +972,20 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         `Can't use word highlight with ${fb[0].name.replace(/_/g, " ")} funbox`,
         0
       );
-      UpdateConfig.setHighlightMode("letter");
+      UpdateConfig.setHighlightMode("letter", true);
     }
   }
 
   const funboxMode = ActiveFunboxes().find((f) => f.mode);
   if (funboxMode?.mode) {
-    if (Config.mode !== funboxMode.mode) {
+    if (!funboxMode.mode.includes(Config.mode)) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
           funboxMode.name.replace(/_/g, " ")
-        )} funbox can only be used with ${funboxMode.mode} mode.`,
+        )} funbox can not be used with ${Config.mode} mode.`,
         0
       );
-      UpdateConfig.setMode(funboxMode.mode, false);
+      UpdateConfig.setMode(funboxMode.mode[0], true);
     }
   }
 

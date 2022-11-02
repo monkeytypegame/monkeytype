@@ -247,7 +247,7 @@ declare namespace MonkeyTypes {
     info: string;
     canGetPB?: boolean;
     alias?: string;
-    mode?: MonkeyTypes.Mode;
+    mode?: MonkeyTypes.Mode[];
     forcedConfig?: MonkeyTypes.FunboxForcedConfig;
     properties?: FunboxProperty[];
     functions?: FunboxFunctions;

@@ -66,7 +66,7 @@ function validateOthers() {
           info: { type: "string" },
           canGetPB: { type: "boolean" },
           alias: { type: "string" },
-          mode: { type: "MonkeyTypes.Mode" },
+          mode: { type: "MonkeyTypes.Mode[]" },
           properties: { type: "MonkeyTypes.FunboxProperty[]" },
           forcedConfigs: { type: "MonkeyTypes.FunboxForcedConfig" },
           functions: {

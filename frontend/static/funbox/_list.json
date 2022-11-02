@@ -257,7 +257,6 @@
     },
     "functions": {
       "applyCSS": true,
-      "applyConfig": true,
       "rememberSettings": true
     }
   },
@@ -273,7 +272,6 @@
     },
     "functions": {
       "applyCSS": true,
-      "applyConfig": true,
       "rememberSettings": true
     }
   },
@@ -289,7 +287,6 @@
     },
     "functions": {
       "applyCSS": true,
-      "applyConfig": true,
       "rememberSettings": true
     }
   },
