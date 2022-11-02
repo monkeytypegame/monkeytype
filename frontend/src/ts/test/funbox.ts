@@ -904,6 +904,80 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
 
+  let fb: MonkeyTypes.FunboxObject[] = [];
+  fb = fb.concat(
+    ActiveFunboxes().filter(
+      (f) => f.mode !== undefined && !f.mode.includes(Config.mode)
+    )
+  );
+  if (Config.mode === "zen") {
+    fb = fb.concat(
+      ActiveFunboxes().filter(
+        (f) =>
+          f.functions?.getWord ||
+          f.functions?.pullSection ||
+          f.functions?.alterText ||
+          f.functions?.withWords ||
+          f.properties?.includes("changesCapitalisation") ||
+          f.properties?.includes("nospace") ||
+          f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+          f.properties?.includes("changesWordsVisibility") ||
+          f.properties?.includes("speaks") ||
+          f.properties?.includes("changesLayout")
+      )
+    );
+  }
+  if (Config.mode === "quote" || Config.mode == "custom") {
+    fb = fb.concat(
+      ActiveFunboxes().filter(
+        (f) =>
+          f.functions?.getWord ||
+          f.functions?.pullSection ||
+          f.functions?.withWords
+      )
+    );
+  }
+  if (fb.length > 0) {
+    Notifications.add(
+      `${Misc.capitalizeFirstLetterOfEachWord(
+        Config.mode
+      )} mode does not support the ${fb[0].name.replace(/_/g, " ")} funbox`,
+      0
+    );
+    let modes = [] as MonkeyTypes.Mode[];
+    for (const f of ActiveFunboxes()) {
+      if (f.mode) modes = modes.concat(f.mode);
+    }
+    if (modes.length > 0) {
+      modes = modes.filter((m) => {
+        for (const f of ActiveFunboxes()) {
+          if (f.mode) {
+            if (!f.mode.includes(m)) {
+              return false;
+            }
+          }
+        }
+        return true;
+      });
+      if (modes.length > 0) {
+        UpdateConfig.setMode(modes[0], true);
+      } else {
+        Notifications.add(
+          Misc.createErrorMessage(
+            undefined,
+            "Conflicting funboxes. Please open an issue"
+          ),
+          -1
+        );
+        UpdateConfig.setFunbox("none", true);
+        await clear();
+        return false;
+      }
+    } else {
+      UpdateConfig.setMode("time", true);
+    }
+  }
+
   let language;
   try {
     language = await Misc.getCurrentLanguage(Config.language);
@@ -973,19 +1047,6 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         0
       );
       UpdateConfig.setHighlightMode("letter", true);
-    }
-  }
-
-  const funboxMode = ActiveFunboxes().find((f) => f.mode);
-  if (funboxMode?.mode) {
-    if (!funboxMode.mode.includes(Config.mode)) {
-      Notifications.add(
-        `${Misc.capitalizeFirstLetterOfEachWord(
-          funboxMode.name.replace(/_/g, " ")
-        )} funbox can not be used with ${Config.mode} mode.`,
-        0
-      );
-      UpdateConfig.setMode(funboxMode.mode[0], true);
     }
   }
 
