@@ -226,7 +226,11 @@
     "properties": [
       "toPush2",
       "changesWordsVisibility"
-    ]
+    ],
+    "forcedConfig": {
+      "words": "Finite",
+      "time": "Finite"
+    }
   },
   {
     "name": "plus_two",
@@ -235,7 +239,11 @@
     "properties": [
       "toPush3",
       "changesWordsVisibility"
-    ]
+    ],
+    "forcedConfig": {
+      "words": "Finite",
+      "time": "Finite"
+    }
   },
   {
     "name": "read_ahead_easy",
@@ -293,6 +301,9 @@
     "properties": [
       "changesWordsVisibility"
     ],
+    "forcedConfig": {
+      "words": "Finite"
+    },
     "functions": {
       "applyConfig": true,
       "rememberSettings": true,
@@ -321,7 +332,9 @@
     "canGetPB": false,
     "forcedConfig": {
       "punctuation": false,
-      "numbers": false
+      "numbers": false,
+      "words": "Finite",
+      "time": "Finite"
     },
     "functions": {
       "pullSection": true
@@ -333,7 +346,9 @@
     "canGetPB": false,
     "forcedConfig": {
       "punctuation": false,
-      "numbers": false
+      "numbers": false,
+      "words": "Finite",
+      "time": "Finite"
     },
     "functions": {
       "pullSection": true

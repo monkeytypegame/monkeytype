@@ -430,8 +430,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "React quickly! Only one future word is visible.",
     properties: ["changesWordsVisibility", "toPush:2"],
     forcedConfig: {
-      words: 1,
-      time: 1,
+      words: "Finite",
+      time: "Finite",
     },
   },
   {
@@ -439,8 +439,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Only two future words are visible.",
     properties: ["changesWordsVisibility", "toPush:3"],
     forcedConfig: {
-      words: 1,
-      time: 1,
+      words: "Finite",
+      time: "Finite",
     },
   },
   {
@@ -518,7 +518,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     mode: "words",
     properties: ["changesWordsVisibility"],
     forcedConfig: {
-      words: 1,
+      words: "Finite",
     },
     functions: {
       applyConfig(): void {
@@ -583,8 +583,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     forcedConfig: {
       punctuation: false,
       numbers: false,
-      words: 1,
-      time: 1,
+      words: "Finite",
+      time: "Finite",
     },
     functions: {
       async pullSection(): Promise<Misc.Section | false> {
@@ -598,8 +598,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     forcedConfig: {
       punctuation: false,
       numbers: false,
-      words: 1,
-      time: 1,
+      words: "Finite",
+      time: "Finite",
     },
     functions: {
       async pullSection(lang?: string): Promise<Misc.Section | false> {
@@ -943,9 +943,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (Config.time === 0 && Config.mode === "time") {
-    const fb = ActiveFunboxes().filter(
-      (f) => (f.forcedConfig?.time as number) > 0
-    );
+    const fb = ActiveFunboxes().filter((f) => f.forcedConfig?.time == "Finite");
     if (fb.length > 0) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
@@ -962,7 +960,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   if (Config.words === 0 && Config.mode === "words") {
     const fb = ActiveFunboxes().filter(
-      (f) => (f.forcedConfig?.words as number) > 0
+      (f) => f.forcedConfig?.words == "Finite"
     );
     if (fb.length > 0) {
       Notifications.add(

@@ -207,6 +207,8 @@ declare namespace MonkeyTypes {
     | "nospace"
     | `toPush:${number}`;
 
+  type FunboxModeDuration = "Finite" | "Infinite";
+
   interface FunboxFunctions {
     getWord?: (wordset?: Misc.Wordset) => string;
     punctuateWord?: (word: string) => string;
@@ -236,8 +238,8 @@ declare namespace MonkeyTypes {
     punctuation?: boolean;
     numbers?: boolean;
     highlightMode?: string;
-    words?: number;
-    time?: number;
+    words?: FunboxModeDuration;
+    time?: FunboxModeDuration;
   }
 
   interface FunboxObject {
