@@ -234,7 +234,7 @@
   },
   {
     "name": "kazakh",
-    "languages": ["kazakh"]
+    "languages": ["kazakh", "kazakh_1k"]
   },
   {
     "name": "vietnamese",
