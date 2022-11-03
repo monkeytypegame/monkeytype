@@ -97,6 +97,16 @@ export async function loadStyle(name: string): Promise<void> {
       $("#keymap .keymapKey").stop(true, true).removeAttr("style");
       resolve();
     };
+    link.onerror = (): void => {
+      Loader.hide();
+      Notifications.add("Failed to load theme", 0);
+      $("#currentTheme").remove();
+      $("#nextTheme").attr("id", "currentTheme");
+      loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
+      loadStyleLoaderTimeouts = [];
+      $("#keymap .keymapKey").stop(true, true).removeAttr("style");
+      resolve();
+    };
     if (name === "custom") {
       link.href = `/./themes/serika_dark.css`;
     } else {
