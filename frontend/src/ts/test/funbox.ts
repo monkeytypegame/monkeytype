@@ -778,7 +778,7 @@ export function toggleScript(...params: string[]): void {
   });
 }
 
-export function checkFunbox(funbox?: string): boolean {
+export function isFunboxCompatible(funbox?: string): boolean {
   if (funbox === "none" || Config.funbox === "none") return true;
   let checkingFunbox = ActiveFunboxes();
   if (funbox !== undefined) {
@@ -844,7 +844,10 @@ export function setFunbox(funbox: string): boolean {
 
 export function toggleFunbox(funbox: string): boolean {
   if (funbox == "none") setFunbox("none");
-  if (!checkFunbox(funbox) && !Config.funbox.split("#").includes(funbox)) {
+  if (
+    !isFunboxCompatible(funbox) &&
+    !Config.funbox.split("#").includes(funbox)
+  ) {
     Notifications.add(
       `Can not apply the ${funbox.replace(/_/g, " ")} funbox`,
       0
@@ -876,7 +879,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
-  if (!checkFunbox()) {
+  if (!isFunboxCompatible()) {
     Notifications.add(
       Misc.createErrorMessage(undefined, "Failed to activate funbox"),
       -1

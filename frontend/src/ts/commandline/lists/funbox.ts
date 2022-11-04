@@ -47,7 +47,7 @@ function update(funboxes: MonkeyTypes.FunboxObject[]): void {
         id: "changeFunbox" + funbox.name,
         noIcon: true,
         display: dis,
-        // visible: Funbox.checkFunbox(funbox.name, funbox.type),
+        // visible: Funbox.isFunboxCompatible(funbox.name, funbox.type),
         sticky: true,
         alias: funbox.alias,
         configValue: funbox.name,
@@ -56,7 +56,7 @@ function update(funboxes: MonkeyTypes.FunboxObject[]): void {
           TestLogic.restart();
 
           for (let i = 0; i < funboxes.length; i++) {
-            // subgroup.list[i].visible = Funbox.checkFunbox(funboxes[i].name, funboxes[i].type);
+            // subgroup.list[i].visible = Funbox.isFunboxCompatible(funboxes[i].name, funboxes[i].type);
 
             let txt = funboxes[i].name.replace(/_/g, " ");
             if (Config.funbox.includes(funboxes[i].name)) {
