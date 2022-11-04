@@ -27,17 +27,29 @@
     "@types/select2": "4.0.55",
     "@types/throttle-debounce": "2.1.0",
     "@types/tinycolor2": "1.4.3",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
     "buffer": "6.0.3",
     "circular-dependency-plugin": "5.2.2",
     "concurrently": "7.4.0",
     "copy-webpack-plugin": "10.2.4",
     "css-loader": "6.7.1",
     "css-minimizer-webpack-plugin": "3.4.1",
+    "eslint": "^8.8.0",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-require-path-exists": "^1.1.9",
     "eslint-webpack-plugin": "3.1.1",
     "extra-watch-webpack-plugin": "1.0.3",
+<<<<<<< Updated upstream
     "grecaptcha": "1.0.3",
     "gulp": "4.0.2",
     "gulp-eslint-new": "1.4.2",
+=======
+    "grecaptcha": "^1.0.0",
+    "gulp": "^4.0.2",
+    "gulp-eslint-new": "^1.7.0",
+>>>>>>> Stashed changes
     "html-minimizer-webpack-plugin": "3.5.0",
     "html-webpack-plugin": "5.5.0",
     "json-minimizer-webpack-plugin": "3.3.0",
@@ -45,10 +57,14 @@
     "mini-css-extract-plugin": "2.6.0",
     "sass": "1.49.9",
     "sass-loader": "12.6.0",
+<<<<<<< Updated upstream
     "serve": "13.0.2",
+=======
+    "serve": "^6.5.8",
+>>>>>>> Stashed changes
     "stream-browserify": "3.0.0",
     "string-replace-loader": "3.1.0",
-    "ts-loader": "9.2.6",
+    "ts-loader": "^9.4.1",
     "webpack": "5.72.0",
     "webpack-bundle-analyzer": "4.5.0",
     "webpack-cli": "4.9.2",
@@ -66,16 +82,24 @@
     "crypto-browserify": "3.12.0",
     "damerau-levenshtein": "1.0.8",
     "date-fns": "2.28.0",
-    "firebase": "9.12.1",
+    "firebase": "^9.12.1",
+    "gulp-eslint7": "^0.3.2",
     "hangul-js": "0.2.6",
     "howler": "2.2.3",
     "html2canvas": "1.4.1",
+<<<<<<< Updated upstream
     "konami": "1.6.3",
+=======
+    "json-schema": "^0.4.0",
+>>>>>>> Stashed changes
     "lz-ts": "1.1.2",
     "object-hash": "3.0.0",
     "remove-files-webpack-plugin": "1.5.0",
     "stemmer": "2.0.0",
     "throttle-debounce": "3.0.1",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.8.4",
     "workbox-window": "6.5.4"
   }
 }

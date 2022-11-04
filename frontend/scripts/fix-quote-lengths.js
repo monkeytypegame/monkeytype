@@ -1,5 +1,6 @@
 const fs = require("fs");
 const V = require("jsonschema").Validator;
+//const V = require('json-schema/lib/validate').validate;
 const JSONValidator = new V();
 
 function escapeRegExp(str) {
