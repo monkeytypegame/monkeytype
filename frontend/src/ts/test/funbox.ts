@@ -131,43 +131,31 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
         );
       },
       handleChar(char: string): string {
-        if (char === Config.arrowKeys[0] || char === "ArrowLeft") {
+        if (char === "a" || char === "ArrowLeft") {
           return "←";
         }
-        if (char === Config.arrowKeys[1] || char === "ArrowDown") {
+        if (char === "s" || char === "ArrowDown") {
           return "↓";
         }
-        if (char === Config.arrowKeys[2] || char === "ArrowUp") {
+        if (char === "w" || char === "ArrowUp") {
           return "↑";
         }
-        if (char === Config.arrowKeys[3] || char === "ArrowRight") {
+        if (char === "d" || char === "ArrowRight") {
           return "→";
         }
         return char;
       },
       isCharCorrect(char: string, originalChar: string): boolean {
-        if (
-          (char === Config.arrowKeys[0] || char === "ArrowLeft") &&
-          originalChar === "←"
-        ) {
+        if ((char === "a" || char === "ArrowLeft") && originalChar === "←") {
           return true;
         }
-        if (
-          (char === Config.arrowKeys[1] || char === "ArrowDown") &&
-          originalChar === "↓"
-        ) {
+        if ((char === "s" || char === "ArrowDown") && originalChar === "↓") {
           return true;
         }
-        if (
-          (char === Config.arrowKeys[2] || char === "ArrowUp") &&
-          originalChar === "↑"
-        ) {
+        if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
           return true;
         }
-        if (
-          (char === Config.arrowKeys[3] || char === "ArrowRight") &&
-          originalChar === "→"
-        ) {
+        if ((char === "d" || char === "ArrowRight") && originalChar === "→") {
           return true;
         }
         return false;

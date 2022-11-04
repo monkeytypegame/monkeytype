@@ -153,8 +153,6 @@ declare namespace MonkeyTypes {
 
   type CustomLayoutFluid = `${string}#${string}#${string}`;
 
-  type ArrowKeys = `${string}`;
-
   type CustomLayoutFluidSpaces =
     | CustomLayoutFluid
     | `${string} ${string} ${string}`;
@@ -468,7 +466,6 @@ declare namespace MonkeyTypes {
     customBackgroundSize: CustomBackgroundSize;
     customBackgroundFilter: CustomBackgroundFilter;
     customLayoutfluid: CustomLayoutFluid;
-    arrowKeys: ArrowKeys;
     monkeyPowerLevel: MonkeyPowerLevel;
     minBurst: MinimumBurst;
     minBurstCustomSpeed: number;
