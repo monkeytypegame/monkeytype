@@ -342,9 +342,7 @@ export async function updateLbMemory(
   );
 }
 
-async function canGetPb(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
-): Promise<boolean> {
+function canGetPb(result: MonkeyTypes.Result<MonkeyTypes.Mode>): boolean {
   const funbox = result.funbox;
 
   const funboxes = Funboxes.filter(
@@ -363,7 +361,7 @@ export async function checkIfPb(
 ): Promise<boolean> {
   const { mode } = result;
 
-  if (!(await canGetPb(result))) return false;
+  if (!canGetPb(result)) return false;
 
   if (mode === "quote") {
     return false;
@@ -410,7 +408,7 @@ export async function checkIfTagPb(
   }
 
   const { mode, tags: resultTags } = result;
-  if (!(await canGetPb(result))) return [];
+  if (!canGetPb(result)) return [];
 
   if (mode === "quote") {
     return [];
