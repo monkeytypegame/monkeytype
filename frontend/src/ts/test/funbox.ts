@@ -796,34 +796,37 @@ export function isFunboxCompatible(funbox?: string): boolean {
         f.functions?.pullSection ||
         f.functions?.withWords
     ).length > 1 ||
-    checkingFunbox.filter((f) =>
-      f.properties?.find(
-        (fp) =>
-          fp == "changesLayout" || fp == "ignoresLayout" || fp == "usesLayout"
-      )
-    ).length > 1 ||
+    (checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "changesLayout")
+    ).length > 0 &&
+      checkingFunbox.filter((f) =>
+        f.properties?.find((fp) => fp == "ignoresLayout" || fp == "usesLayout")
+      ).length > 0) ||
     checkingFunbox.filter((f) =>
       f.properties?.find((fp) => fp == "nospace" || fp.startsWith("toPush"))
     ).length > 1 ||
     checkingFunbox.filter((f) =>
       f.properties?.find((fp) => fp == "changesWordsVisibility")
     ).length > 1 ||
-    checkingFunbox.filter((f) =>
-      f.properties?.find(
-        (fp) => fp == "noLetters" || fp == "changesCapitalisation"
-      )
-    ).length > 1 ||
-    checkingFunbox.filter((f) =>
-      f.properties?.find(
-        (fp) => fp == "conflictsWithSymmetricChars" || fp == "symmetricChars"
-      )
-    ).length > 1 ||
+    (checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "noLetters"))
+      .length > 0 &&
+      checkingFunbox.filter((f) =>
+        f.properties?.find((fp) => fp == "changesCapitalisation")
+      ).length > 0) ||
+    (checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "conflictsWithSymmetricChars")
+    ).length > 0 &&
+      checkingFunbox.filter((f) =>
+        f.properties?.find((fp) => fp == "symmetricChars")
+      ).length > 0) ||
     checkingFunbox.filter((f) =>
       f.properties?.find((fp) => fp == "speaks" || fp == "unspeakable")
     ).length > 1 ||
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "speaks" || fp == "ignoresLanguage")
-    ).length > 1 ||
+    (checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "speaks"))
+      .length > 0 &&
+      checkingFunbox.filter((f) =>
+        f.properties?.find((fp) => fp == "ignoresLanguage")
+      ).length > 0) ||
     checkingFunbox.filter(
       (f) =>
         f.properties?.find((fp) => fp.startsWith("toPush:")) ||
