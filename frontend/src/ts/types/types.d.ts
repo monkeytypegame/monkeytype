@@ -141,14 +141,6 @@ declare namespace MonkeyTypes {
 
   type MinimumBurst = "off" | "fixed" | "flex";
 
-  type FunboxObjectType =
-    | "script"
-    | "style"
-    | "wordlist"
-    | "modificator"
-    | "quote"
-    | "minigame";
-
   type IndicateTypos = "off" | "below" | "replace";
 
   type CustomLayoutFluid = `${string}#${string}#${string}`;
