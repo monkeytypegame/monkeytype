@@ -94,7 +94,15 @@
   },
   {
     "name": "polish",
-    "languages": ["polish", "polish_2k", "polish_200k"]
+    "languages": [
+      "polish",
+      "polish_2k",
+      "polish_5k",
+      "polish_10k",
+      "polish_20k",
+      "polish_40k",
+      "polish_200k"
+    ]
   },
   {
     "name": "czech",
