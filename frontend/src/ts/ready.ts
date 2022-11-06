@@ -36,18 +36,18 @@ $(document).ready(() => {
   if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
     $("#restartTestButton").addClass("hidden");
   }
-  // if (!window.localStorage.getItem("merchbannerclosed")) {
-  //   Notifications.addBanner(
-  //     `Check out our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
-  //     1,
-  //     "images/merchdropwebsite2.png",
-  //     false,
-  //     () => {
-  //       window.localStorage.setItem("merchbannerclosed", "true");
-  //     },
-  //     true
-  //   );
-  // }
+  if (!window.localStorage.getItem("merchbannerclosed")) {
+    Notifications.addBanner(
+      `Check out our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
+      1,
+      "images/merch.png",
+      false,
+      () => {
+        window.localStorage.setItem("merchbannerclosed", "true");
+      },
+      true
+    );
+  }
 
   // if (!window.localStorage.getItem("merchbannerclosed2")) {
   //   Notifications.addBanner(
@@ -61,19 +61,6 @@ $(document).ready(() => {
   //     true
   //   );
   // }
-
-  if (!window.localStorage.getItem("merchbannerclosed3")) {
-    Notifications.addBanner(
-      `Limited Monkey Things merch - <a target="_blank" href="https://www.monkeytype.store/listing/monkey-things?product=387/">monkeytype.store</a>`,
-      1,
-      "images/monkeythings2.png",
-      false,
-      () => {
-        window.localStorage.setItem("merchbannerclosed3", "true");
-      },
-      true
-    );
-  }
 
   $("#centerContent")
     .css("opacity", "0")
