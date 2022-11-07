@@ -525,7 +525,7 @@ export async function fillSettingsPage(): Promise<void> {
           funboxEl.append(
             `<div class="funbox button" funbox='${funbox.name}' aria-label="${
               funbox.info
-            }" style="transform:scaleX(-1);">${funbox.name.replace(
+            }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
               /_/g,
               " "
             )}</div>`
@@ -534,7 +534,10 @@ export async function fillSettingsPage(): Promise<void> {
           funboxEl.append(
             `<div class="funbox button" funbox='${funbox.name}' aria-label="${
               funbox.info
-            }">${funbox.name.replace(/_/g, " ")}</div>`
+            }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
+              /_/g,
+              " "
+            )}</div>`
           );
         }
       });
