@@ -22,7 +22,7 @@ export async function update(
   const details = $(`.page${elementClass} .profile .details`);
 
   // ============================================================================
-  // DO FREAKING NOT USE .HTML HERE - USER INPUT!!!!!!
+  // DO FREAKING NOT USE .HTML OR .APPEND HERE - USER INPUT!!!!!!
   // ============================================================================
 
   const banned = profile.banned === true;
@@ -162,7 +162,11 @@ export async function update(
 
       if (website) {
         socialsEl.append(
-          `<a href='${website}' target="_blank" aria-label="${websiteName}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+          `<a href='${Misc.escapeHTML(
+            website
+          )}' target="_blank" aria-label="${Misc.escapeHTML(
+            websiteName ?? ""
+          )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
         );
       }
     }
