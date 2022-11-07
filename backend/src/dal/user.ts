@@ -342,31 +342,13 @@ export async function updateLbMemory(
   );
 }
 
-async function canGetPb(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
-): Promise<boolean> {
+function canGetPb(result: MonkeyTypes.Result<MonkeyTypes.Mode>): boolean {
   const funbox = result.funbox;
 
   const funboxes = Funboxes.filter(
     (f) => funbox?.split("#").find((F) => F === f.name) !== undefined
   );
-  if (
-    funboxes.filter(
-      (f) =>
-        f.alterText ||
-        f.changesCapitalisation ||
-        f.getWord ||
-        f.handleChar ||
-        f.handleKeydown ||
-        f.handleSpace ||
-        f.ignoresLanguage ||
-        f.isCharCorrect ||
-        f.preventDefaultEvent ||
-        f.pullSection ||
-        f.punctuateWord ||
-        f.withWords
-    ).length > 0
-  ) {
+  if (funboxes.filter((f) => f.canGetPB) !== undefined) {
     return false;
   }
   return true;
@@ -379,7 +361,7 @@ export async function checkIfPb(
 ): Promise<boolean> {
   const { mode } = result;
 
-  if (!(await canGetPb(result))) return false;
+  if (!canGetPb(result)) return false;
 
   if (mode === "quote") {
     return false;
@@ -426,7 +408,7 @@ export async function checkIfTagPb(
   }
 
   const { mode, tags: resultTags } = result;
-  if (!(await canGetPb(result))) return [];
+  if (!canGetPb(result)) return [];
 
   if (mode === "quote") {
     return [];

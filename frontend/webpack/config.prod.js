@@ -87,6 +87,43 @@ const PRODUCTION_CONFIG = {
         /\.DS_Store/,
         /\.map$/,
         /^manifest.*\.js$/,
+        /languages\/.*\.json/,
+        /quotes\/.*\.json/,
+        /themes\/.*\.css/,
+        /challenges\/.*\.txt/,
+        /sound\/.*\.wav/,
+        /images\/.*\.(png|jpg)/,
+        /webfonts\/.+/,
+      ],
+      runtimeCaching: [
+        {
+          urlPattern: /languages\/.*\.json/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /quotes\/.*\.json/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /themes\/.*\.css/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /challenges\/.*\.txt/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /sound\/.*\.wav/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /images\/.*\.(png|jpg)/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /webfonts\/.+/,
+          handler: "CacheFirst",
+        },
       ],
     }),
   ],

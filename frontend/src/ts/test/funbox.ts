@@ -15,588 +15,649 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "nausea",
     info: "I think I'm gonna be sick.",
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/nausea.css`);
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/nausea.css`);
+      },
     },
   },
   {
     name: "round_round_baby",
     info: "...right round, like a record baby. Right, round round round.",
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/round_round_baby.css`);
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/round_round_baby.css`);
+      },
     },
   },
   {
     name: "simon_says",
     info: "Type what simon says.",
-    changesWordsVisibility: true,
-    blockWordHighlight: true,
-    usesLayout: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+    properties: ["changesWordsVisibility", "usesLayout"],
+    forcedConfig: {
+      highlightMode: "!word",
     },
-    applyConfig(): void {
-      UpdateConfig.setKeymapMode("next", true);
-    },
-    rememberSettings(): void {
-      rememberSetting(
-        "keymapMode",
-        Config.keymapMode,
-        UpdateConfig.setKeymapMode
-      );
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+      },
+      applyConfig(): void {
+        UpdateConfig.setKeymapMode("next", true);
+      },
+      rememberSettings(): void {
+        rememberSetting(
+          "keymapMode",
+          Config.keymapMode,
+          UpdateConfig.setKeymapMode
+        );
+      },
     },
   },
   {
     name: "mirror",
     info: "Everything is mirrored!",
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/mirror.css`);
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/mirror.css`);
+      },
     },
   },
   {
     name: "tts",
     info: "Listen closely.",
-    blockWordHighlight: true,
-    changesWordsVisibility: true,
-    speaks: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+    properties: ["changesWordsVisibility", "speaks"],
+    forcedConfig: {
+      highlightMode: "!word",
     },
-    applyConfig(): void {
-      UpdateConfig.setKeymapMode("off", true);
-      UpdateConfig.setHighlightMode("letter", true);
-    },
-    rememberSettings(): void {
-      rememberSetting(
-        "keymapMode",
-        Config.keymapMode,
-        UpdateConfig.setKeymapMode
-      );
-    },
-    toggleScript(params: string[]): void {
-      if (window.speechSynthesis == undefined) {
-        Notifications.add("Failed to load text-to-speech script", -1);
-        return;
-      }
-      TTS.speak(params[0]);
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+      },
+      applyConfig(): void {
+        UpdateConfig.setKeymapMode("off", true);
+      },
+      rememberSettings(): void {
+        rememberSetting(
+          "keymapMode",
+          Config.keymapMode,
+          UpdateConfig.setKeymapMode
+        );
+      },
+      toggleScript(params: string[]): void {
+        if (window.speechSynthesis == undefined) {
+          Notifications.add("Failed to load text-to-speech script", -1);
+          return;
+        }
+        TTS.speak(params[0]);
+      },
     },
   },
   {
     name: "choo_choo",
     info: "All the letters are spinning!",
-    noLigatures: true,
-    conflictsWithSymmetricChars: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
+    properties: ["noLigatures", "conflictsWithSymmetricChars"],
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
+      },
     },
   },
   {
     name: "arrows",
     info: "Eurobeat Intensifies...",
-    blockWordHighlight: true,
-    ignoresLanguage: true,
-    ignoresLayout: true,
-    nospace: true,
-    noPunctuation: true,
-    noNumbers: true,
-    noLetters: true,
-    symmetricChars: true,
-    getWord(): string {
-      return Misc.getArrows();
+    properties: [
+      "ignoresLanguage",
+      "ignoresLayout",
+      "nospace",
+      "noLetters",
+      "symmetricChars",
+    ],
+    forcedConfig: {
+      punctuation: false,
+      numbers: false,
+      highlightMode: "!word",
     },
-    applyConfig(): void {
-      $("#words").addClass("arrows");
-      UpdateConfig.setHighlightMode("letter", true);
-    },
-    rememberSettings(): void {
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
-    },
-    handleChar(char: string): string {
-      if (char === Config.arrowKeys[0] || char === "ArrowLeft") {
-        return "←";
-      }
-      if (char === Config.arrowKeys[1] || char === "ArrowDown") {
-        return "↓";
-      }
-      if (char === Config.arrowKeys[2] || char === "ArrowUp") {
-        return "↑";
-      }
-      if (char === Config.arrowKeys[3] || char === "ArrowRight") {
-        return "→";
-      }
-      return char;
-    },
-    isCharCorrect(char: string, originalChar: string): boolean {
-      if (
-        (char === Config.arrowKeys[0] || char === "ArrowLeft") &&
-        originalChar === "←"
-      ) {
-        return true;
-      }
-      if (
-        (char === Config.arrowKeys[1] || char === "ArrowDown") &&
-        originalChar === "↓"
-      ) {
-        return true;
-      }
-      if (
-        (char === Config.arrowKeys[2] || char === "ArrowUp") &&
-        originalChar === "↑"
-      ) {
-        return true;
-      }
-      if (
-        (char === Config.arrowKeys[3] || char === "ArrowRight") &&
-        originalChar === "→"
-      ) {
-        return true;
-      }
-      return false;
-    },
-    async preventDefaultEvent(
-      event: JQuery.KeyDownEvent<Document, null, Document, Document>
-    ): Promise<boolean> {
-      // TODO What's better?
-      // return /Arrow/i.test(event.key);
-      return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
-        event.key
-      );
-    },
-    getWordHtml(char: string, letterTag?: boolean): string {
-      let retval = "";
-      if (char === "↑") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-up"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "↓") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-down"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "←") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-left"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      if (char === "→") {
-        if (letterTag) retval += `<letter>`;
-        retval += `<i class="fas fa-arrow-right"></i>`;
-        if (letterTag) retval += `</letter>`;
-      }
-      return retval;
+    functions: {
+      getWord(): string {
+        return Misc.getArrows();
+      },
+      applyConfig(): void {
+        $("#words").addClass("arrows");
+      },
+      rememberSettings(): void {
+        rememberSetting(
+          "highlightMode",
+          Config.highlightMode,
+          UpdateConfig.setHighlightMode
+        );
+      },
+      handleChar(char: string): string {
+        if (char === "a" || char === "ArrowLeft") {
+          return "←";
+        }
+        if (char === "s" || char === "ArrowDown") {
+          return "↓";
+        }
+        if (char === "w" || char === "ArrowUp") {
+          return "↑";
+        }
+        if (char === "d" || char === "ArrowRight") {
+          return "→";
+        }
+        return char;
+      },
+      isCharCorrect(char: string, originalChar: string): boolean {
+        if ((char === "a" || char === "ArrowLeft") && originalChar === "←") {
+          return true;
+        }
+        if ((char === "s" || char === "ArrowDown") && originalChar === "↓") {
+          return true;
+        }
+        if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
+          return true;
+        }
+        if ((char === "d" || char === "ArrowRight") && originalChar === "→") {
+          return true;
+        }
+        return false;
+      },
+      async preventDefaultEvent(
+        event: JQuery.KeyDownEvent<Document, null, Document, Document>
+      ): Promise<boolean> {
+        // TODO What's better?
+        // return /Arrow/i.test(event.key);
+        return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
+          event.key
+        );
+      },
+      getWordHtml(char: string, letterTag?: boolean): string {
+        let retval = "";
+        if (char === "↑") {
+          if (letterTag) retval += `<letter>`;
+          retval += `<i class="fas fa-arrow-up"></i>`;
+          if (letterTag) retval += `</letter>`;
+        }
+        if (char === "↓") {
+          if (letterTag) retval += `<letter>`;
+          retval += `<i class="fas fa-arrow-down"></i>`;
+          if (letterTag) retval += `</letter>`;
+        }
+        if (char === "←") {
+          if (letterTag) retval += `<letter>`;
+          retval += `<i class="fas fa-arrow-left"></i>`;
+          if (letterTag) retval += `</letter>`;
+        }
+        if (char === "→") {
+          if (letterTag) retval += `<letter>`;
+          retval += `<i class="fas fa-arrow-right"></i>`;
+          if (letterTag) retval += `</letter>`;
+        }
+        return retval;
+      },
     },
   },
   {
     name: "rAnDoMcAsE",
     info: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
-    changesCapitalisation: true,
-    alterText(word: string): string {
-      let randomcaseword = word[0];
-      for (let i = 1; i < word.length; i++) {
-        if (randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase()) {
-          randomcaseword += word[i].toLowerCase();
-        } else {
-          randomcaseword += word[i].toUpperCase();
+    properties: ["changesCapitalisation"],
+    functions: {
+      alterText(word: string): string {
+        let randomcaseword = word[0];
+        for (let i = 1; i < word.length; i++) {
+          if (randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase()) {
+            randomcaseword += word[i].toLowerCase();
+          } else {
+            randomcaseword += word[i].toUpperCase();
+          }
         }
-      }
-      return randomcaseword;
+        return randomcaseword;
+      },
     },
   },
   {
     name: "capitals",
     info: "Capitalize Every Word.",
-    changesCapitalisation: true,
-    alterText(word: string): string {
-      return Misc.capitalizeFirstLetterOfEachWord(word);
+    properties: ["changesCapitalisation"],
+    functions: {
+      alterText(word: string): string {
+        return Misc.capitalizeFirstLetterOfEachWord(word);
+      },
     },
   },
   {
     name: "layoutfluid",
     info: "Switch between layouts specified below proportionately to the length of the test.",
-    changesLayout: true,
-    applyConfig(): void {
-      UpdateConfig.setLayout(
-        Config.customLayoutfluid.split("#")[0]
-          ? Config.customLayoutfluid.split("#")[0]
-          : "qwerty",
-        true
-      );
-      UpdateConfig.setKeymapLayout(
-        Config.customLayoutfluid.split("#")[0]
-          ? Config.customLayoutfluid.split("#")[0]
-          : "qwerty",
-        true
-      );
-    },
-    rememberSettings(): void {
-      rememberSetting(
-        "keymapMode",
-        Config.keymapMode,
-        UpdateConfig.setKeymapMode
-      );
-      rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
-      rememberSetting(
-        "keymapLayout",
-        Config.keymapLayout,
-        UpdateConfig.setKeymapLayout
-      );
-    },
-    handleSpace(): void {
-      if (Config.mode !== "time") {
-        // here I need to check if Config.customLayoutFluid exists because of my
-        // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
-        const layouts: string[] = Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("#")
-          : ["qwerty", "dvorak", "colemak"];
-        let index = 0;
-        const outOf: number = TestWords.words.length;
-        index = Math.floor(
-          (TestInput.input.history.length + 1) / (outOf / layouts.length)
+    properties: ["changesLayout"],
+    functions: {
+      applyConfig(): void {
+        UpdateConfig.setLayout(
+          Config.customLayoutfluid.split("#")[0]
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty",
+          true
         );
-        if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
-          Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
+        UpdateConfig.setKeymapLayout(
+          Config.customLayoutfluid.split("#")[0]
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty",
+          true
+        );
+      },
+      rememberSettings(): void {
+        rememberSetting(
+          "keymapMode",
+          Config.keymapMode,
+          UpdateConfig.setKeymapMode
+        );
+        rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
+        rememberSetting(
+          "keymapLayout",
+          Config.keymapLayout,
+          UpdateConfig.setKeymapLayout
+        );
+      },
+      handleSpace(): void {
+        if (Config.mode !== "time") {
+          // here I need to check if Config.customLayoutFluid exists because of my
+          // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
+          const layouts: string[] = Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")
+            : ["qwerty", "dvorak", "colemak"];
+          let index = 0;
+          const outOf: number = TestWords.words.length;
+          index = Math.floor(
+            (TestInput.input.history.length + 1) / (outOf / layouts.length)
+          );
+          if (
+            Config.layout !== layouts[index] &&
+            layouts[index] !== undefined
+          ) {
+            Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
+          }
+          if (layouts[index]) {
+            UpdateConfig.setLayout(layouts[index]);
+            UpdateConfig.setKeymapLayout(layouts[index]);
+          }
+          Keymap.highlightKey(
+            TestWords.words
+              .getCurrent()
+              .charAt(TestInput.input.current.length)
+              .toString()
+          );
         }
-        if (layouts[index]) {
-          UpdateConfig.setLayout(layouts[index]);
-          UpdateConfig.setKeymapLayout(layouts[index]);
-        }
+      },
+      getResultContent(): string {
+        return Config.customLayoutfluid.replace(/#/g, " ");
+      },
+      restart(): void {
+        if (this.applyConfig) this.applyConfig();
         Keymap.highlightKey(
           TestWords.words
             .getCurrent()
-            .charAt(TestInput.input.current.length)
+            .substring(
+              TestInput.input.current.length,
+              TestInput.input.current.length + 1
+            )
             .toString()
         );
-      }
-    },
-    getResultContent(): string {
-      return Config.customLayoutfluid.replace(/#/g, " ");
-    },
-    restart(): void {
-      if (this.applyConfig) this.applyConfig();
-      Keymap.highlightKey(
-        TestWords.words
-          .getCurrent()
-          .substring(
-            TestInput.input.current.length,
-            TestInput.input.current.length + 1
-          )
-          .toString()
-      );
+      },
     },
   },
   {
     name: "earthquake",
     info: "Everybody get down! The words are shaking!",
-    noLigatures: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
+    properties: ["noLigatures"],
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
+      },
     },
   },
   {
     name: "space_balls",
     info: "In a galaxy far far away.",
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
+      },
     },
   },
   {
     name: "gibberish",
     info: "Anvbuefl dizzs eoos alsb?",
-    ignoresLanguage: true,
-    unspeakable: true,
-    getWord(): string {
-      return Misc.getGibberish();
+    properties: ["ignoresLanguage", "unspeakable"],
+    functions: {
+      getWord(): string {
+        return Misc.getGibberish();
+      },
     },
   },
   {
     name: "58008",
     alias: "numbers",
     info: "A special mode for accountants.",
-    noNumbers: true,
-    ignoresLanguage: true,
-    noLetters: true,
-    ignoresLayout: true,
-    getWord(): string {
-      let num = Misc.getNumbers(7);
-      if (Config.language.startsWith("kurdish")) {
-        num = Misc.convertNumberToArabic(num);
-      } else if (Config.language.startsWith("nepali")) {
-        num = Misc.convertNumberToNepali(num);
-      }
-      return num;
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    forcedConfig: {
+      numbers: true,
     },
-    punctuateWord(word: string): string {
-      if (word.length > 3) {
-        if (Math.random() < 0.5) {
-          word = Misc.setCharAt(
-            word,
-            Misc.randomIntFromRange(1, word.length - 2),
-            "."
-          );
+    functions: {
+      getWord(): string {
+        let num = Misc.getNumbers(7);
+        if (Config.language.startsWith("kurdish")) {
+          num = Misc.convertNumberToArabic(num);
+        } else if (Config.language.startsWith("nepali")) {
+          num = Misc.convertNumberToNepali(num);
         }
-        if (Math.random() < 0.75) {
-          const index = Misc.randomIntFromRange(1, word.length - 2);
-          if (
-            word[index - 1] !== "." &&
-            word[index + 1] !== "." &&
-            word[index + 1] !== "0"
-          ) {
-            const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
-            word = Misc.setCharAt(word, index, special);
+        return num;
+      },
+      punctuateWord(word: string): string {
+        if (word.length > 3) {
+          if (Math.random() < 0.5) {
+            word = Misc.setCharAt(
+              word,
+              Misc.randomIntFromRange(1, word.length - 2),
+              "."
+            );
+          }
+          if (Math.random() < 0.75) {
+            const index = Misc.randomIntFromRange(1, word.length - 2);
+            if (
+              word[index - 1] !== "." &&
+              word[index + 1] !== "." &&
+              word[index + 1] !== "0"
+            ) {
+              const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
+              word = Misc.setCharAt(word, index, special);
+            }
           }
         }
-      }
-      return word;
-    },
-    rememberSettings(): void {
-      rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
-    },
-    handleChar(char: string): string {
-      if (char === "\n") {
-        return " ";
-      }
-      return char;
+        return word;
+      },
+      rememberSettings(): void {
+        rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
+      },
+      handleChar(char: string): string {
+        if (char === "\n") {
+          return " ";
+        }
+        return char;
+      },
     },
   },
   {
     name: "ascii",
     info: "Where was the ampersand again?. Only ASCII characters.",
-    ignoresLanguage: true,
-    noPunctuation: true,
-    noNumbers: true,
-    noLetters: true,
-    unspeakable: true,
-    getWord(): string {
-      return Misc.getASCII();
+    properties: ["ignoresLanguage", "noLetters", "unspeakable"],
+    forcedConfig: {
+      punctuation: false,
+      numbers: false,
+    },
+    functions: {
+      getWord(): string {
+        return Misc.getASCII();
+      },
     },
   },
   {
     name: "specials",
     info: "!@#$%^&*. Only special characters.",
-    ignoresLanguage: true,
-    noPunctuation: true,
-    noNumbers: true,
-    noLetters: true,
-    unspeakable: true,
-    getWord(): string {
-      return Misc.getSpecials();
+    properties: ["ignoresLanguage", "noLetters", "unspeakable"],
+    forcedConfig: {
+      punctuation: false,
+      numbers: false,
+    },
+    functions: {
+      getWord(): string {
+        return Misc.getSpecials();
+      },
     },
   },
   {
     name: "plus_one",
     info: "React quickly! Only one future word is visible.",
-    toPushCount: 2,
-    changesWordsVisibility: true,
+    properties: ["changesWordsVisibility", "toPush:2"],
+    forcedConfig: {
+      words: "Finite",
+      time: "Finite",
+    },
   },
   {
     name: "plus_two",
     info: "Only two future words are visible.",
-    toPushCount: 3,
-    changesWordsVisibility: true,
+    properties: ["changesWordsVisibility", "toPush:3"],
+    forcedConfig: {
+      words: "Finite",
+      time: "Finite",
+    },
   },
   {
     name: "read_ahead_easy",
     info: "Only the current word is invisible.",
-    blockWordHighlight: true,
-    changesWordsVisibility: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
+    properties: ["changesWordsVisibility"],
+    forcedConfig: {
+      highlightMode: "!word",
     },
-    applyConfig(): void {
-      UpdateConfig.setHighlightMode("letter", true);
-    },
-    rememberSettings(): void {
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
+      },
+      rememberSettings(): void {
+        rememberSetting(
+          "highlightMode",
+          Config.highlightMode,
+          UpdateConfig.setHighlightMode
+        );
+      },
     },
   },
   {
     name: "read_ahead",
     info: "Current and the next word are invisible!",
-    blockWordHighlight: true,
-    changesWordsVisibility: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
+    properties: ["changesWordsVisibility"],
+    forcedConfig: {
+      highlightMode: "!word",
     },
-    applyConfig(): void {
-      UpdateConfig.setHighlightMode("letter", true);
-    },
-    rememberSettings(): void {
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
+      },
+      rememberSettings(): void {
+        rememberSetting(
+          "highlightMode",
+          Config.highlightMode,
+          UpdateConfig.setHighlightMode
+        );
+      },
     },
   },
   {
     name: "read_ahead_hard",
     info: "Current and the next two words are invisible!",
-    blockWordHighlight: true,
-    changesWordsVisibility: true,
-    applyCSS(): void {
-      $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
+    properties: ["changesWordsVisibility"],
+    forcedConfig: {
+      highlightMode: "!word",
     },
-    applyConfig(): void {
-      UpdateConfig.setHighlightMode("letter", true);
-    },
-    rememberSettings(): void {
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
+    functions: {
+      applyCSS(): void {
+        $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
+      },
+      rememberSettings(): void {
+        rememberSetting(
+          "highlightMode",
+          Config.highlightMode,
+          UpdateConfig.setHighlightMode
+        );
+      },
     },
   },
   {
     name: "memory",
     info: "Test your memory. Remember the words and type them blind.",
-    mode: "words",
-    changesWordsVisibility: true,
-    applyConfig(): void {
-      $("#wordsWrapper").addClass("hidden");
-      if (this.mode) UpdateConfig.setMode(this.mode, true);
-      UpdateConfig.setShowAllLines(true, true);
-      if (Config.keymapMode === "next") {
-        UpdateConfig.setKeymapMode("react", true);
-      }
+    mode: ["words", "quote", "custom"],
+    properties: ["changesWordsVisibility"],
+    forcedConfig: {
+      words: "Finite",
     },
-    rememberSettings(): void {
-      rememberSetting("mode", Config.mode, UpdateConfig.setMode);
-      rememberSetting(
-        "showAllLines",
-        Config.showAllLines,
-        UpdateConfig.setShowAllLines
-      );
-      if (Config.keymapMode === "next") {
+    functions: {
+      applyConfig(): void {
+        $("#wordsWrapper").addClass("hidden");
+        UpdateConfig.setShowAllLines(true, true);
+        if (Config.keymapMode === "next") {
+          UpdateConfig.setKeymapMode("react", true);
+        }
+      },
+      rememberSettings(): void {
+        rememberSetting("mode", Config.mode, UpdateConfig.setMode);
         rememberSetting(
-          "keymapMode",
-          Config.keymapMode,
-          UpdateConfig.setKeymapMode
+          "showAllLines",
+          Config.showAllLines,
+          UpdateConfig.setShowAllLines
         );
-      }
-    },
-    start(): void {
-      resetMemoryTimer();
-      $("#wordsWrapper").addClass("hidden");
-    },
-    restart(): void {
-      startMemoryTimer();
-      if (Config.keymapMode === "next") {
-        UpdateConfig.setKeymapMode("react");
-      }
+        if (Config.keymapMode === "next") {
+          rememberSetting(
+            "keymapMode",
+            Config.keymapMode,
+            UpdateConfig.setKeymapMode
+          );
+        }
+      },
+      start(): void {
+        resetMemoryTimer();
+        $("#wordsWrapper").addClass("hidden");
+      },
+      restart(): void {
+        startMemoryTimer();
+        if (Config.keymapMode === "next") {
+          UpdateConfig.setKeymapMode("react");
+        }
+      },
     },
   },
   {
     name: "nospace",
     info: "Whoneedsspacesanyway?",
-    blockWordHighlight: true,
-    nospace: true,
-    applyConfig(): void {
-      $("#words").addClass("nospace");
-      UpdateConfig.setHighlightMode("letter", true);
+    properties: ["nospace"],
+    forcedConfig: {
+      highlightMode: "!word",
     },
-    rememberSettings(): void {
-      rememberSetting(
-        "highlightMode",
-        Config.highlightMode,
-        UpdateConfig.setHighlightMode
-      );
+    functions: {
+      applyConfig(): void {
+        $("#words").addClass("nospace");
+      },
+      rememberSettings(): void {
+        rememberSetting(
+          "highlightMode",
+          Config.highlightMode,
+          UpdateConfig.setHighlightMode
+        );
+      },
     },
   },
   {
     name: "poetry",
     info: "Practice typing some beautiful prose.",
-    noPunctuation: true,
-    noNumbers: true,
-    async pullSection(): Promise<Misc.Section | false> {
-      return getPoem();
+    forcedConfig: {
+      punctuation: false,
+      numbers: false,
+      words: "Finite",
+      time: "Finite",
+    },
+    functions: {
+      async pullSection(): Promise<Misc.Section | false> {
+        return getPoem();
+      },
     },
   },
   {
     name: "wikipedia",
     info: "Practice typing wikipedia sections.",
-    noPunctuation: true,
-    noNumbers: true,
-    async pullSection(lang?: string): Promise<Misc.Section | false> {
-      return getSection(lang ? lang : "english");
+    forcedConfig: {
+      punctuation: false,
+      numbers: false,
+      words: "Finite",
+      time: "Finite",
+    },
+    functions: {
+      async pullSection(lang?: string): Promise<Misc.Section | false> {
+        return getSection(lang ? lang : "english");
+      },
     },
   },
   {
     name: "weakspot",
     info: "Focus on slow and mistyped letters.",
-    getWord(wordset?: Misc.Wordset): string {
-      if (wordset !== undefined) return WeakSpot.getWord(wordset);
-      else return "";
+    functions: {
+      getWord(wordset?: Misc.Wordset): string {
+        if (wordset !== undefined) return WeakSpot.getWord(wordset);
+        else return "";
+      },
     },
   },
   {
     name: "pseudolang",
     info: "Nonsense words that look like the current language.",
-    unspeakable: true,
-    async withWords(words?: string[]): Promise<Misc.Wordset> {
-      if (words !== undefined) return new Misc.PseudolangWordGenerator(words);
-      return new Misc.Wordset([]);
+    properties: ["unspeakable"],
+    functions: {
+      async withWords(words?: string[]): Promise<Misc.Wordset> {
+        if (words !== undefined) return new PseudolangWordGenerator(words);
+        return new Misc.Wordset([]);
+      },
     },
   },
   {
     name: "IPv4",
     alias: "network",
     info: "For sysadmins with long beard.",
-    noNumbers: true,
-    ignoresLanguage: true,
-    noLetters: true,
-    ignoresLayout: true,
-    getWord(): string {
-      return IPGenerator.getRandomIPv4address();
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    forcedConfig: {
+      numbers: true,
     },
-    punctuateWord(word: string): string {
-      let w = word;
-      if (Math.random() < 0.25) {
-        w = IPGenerator.addressToCIDR(word);
-      }
-      return w;
-    },
-    rememberSettings(): void {
-      rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
+    functions: {
+      getWord(): string {
+        return IPGenerator.getRandomIPv4address();
+      },
+      punctuateWord(word: string): string {
+        let w = word;
+        if (Math.random() < 0.25) {
+          w = IPGenerator.addressToCIDR(word);
+        }
+        return w;
+      },
+      rememberSettings(): void {
+        rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
+      },
     },
   },
   {
     name: "IPv6",
     alias: "network",
     info: "For sysadmins with long beard.",
-    noNumbers: true,
-    ignoresLanguage: true,
-    noLetters: true,
-    ignoresLayout: true,
-    getWord(): string {
-      return IPGenerator.getRandomIPv6address();
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    forcedConfig: {
+      numbers: true,
     },
-    punctuateWord(word: string): string {
-      let w = word;
-      if (Math.random() < 0.25) {
-        w = IPGenerator.addressToCIDR(word);
-      }
-      // Compress
-      if (w.includes(":")) {
-        w = w
-          .replace(/\b(?:0+:){2,}/, "::")
-          .split(":")
-          .map((a) => a.replace(/\b0+/g, ""))
-          .join(":");
-      }
-      return w;
-    },
-    rememberSettings(): void {
-      rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
+    functions: {
+      getWord(): string {
+        return IPGenerator.getRandomIPv6address();
+      },
+      punctuateWord(word: string): string {
+        let w = word;
+        if (Math.random() < 0.25) {
+          w = IPGenerator.addressToCIDR(word);
+        }
+        // Compress
+        if (w.includes(":")) {
+          w = w
+            .replace(/\b(?:0+:){2,}/, "::")
+            .split(":")
+            .map((a) => a.replace(/\b0+/g, ""))
+            .join(":");
+        }
+        return w;
+      },
+      rememberSettings(): void {
+        rememberSetting("numbers", Config.numbers, UpdateConfig.setNumbers);
+      },
     },
   },
 ];
@@ -609,6 +670,84 @@ export const ActiveFunboxes = (): MonkeyTypes.FunboxObject[] => {
   }
   return funboxes;
 };
+
+const prefixSize = 2;
+
+class CharDistribution {
+  public chars: { [char: string]: number };
+  public count: number;
+  constructor() {
+    this.chars = {};
+    this.count = 0;
+  }
+
+  public addChar(char: string): void {
+    this.count++;
+    if (char in this.chars) {
+      this.chars[char]++;
+    } else {
+      this.chars[char] = 1;
+    }
+  }
+
+  public randomChar(): string {
+    const randomIndex = Misc.randomIntFromRange(0, this.count - 1);
+    let runningCount = 0;
+    for (const [char, charCount] of Object.entries(this.chars)) {
+      runningCount += charCount;
+      if (runningCount > randomIndex) {
+        return char;
+      }
+    }
+
+    return Object.keys(this.chars)[0];
+  }
+}
+
+class PseudolangWordGenerator extends Misc.Wordset {
+  public ngrams: { [prefix: string]: CharDistribution } = {};
+  constructor(words: string[]) {
+    super(words);
+    // Can generate an unbounded number of words in theory.
+    this.length = Infinity;
+
+    for (let word of words) {
+      // Mark the end of each word with a space.
+      word += " ";
+      let prefix = "";
+      for (const c of word) {
+        // Add `c` to the distribution of chars that can come after `prefix`.
+        if (!(prefix in this.ngrams)) {
+          this.ngrams[prefix] = new CharDistribution();
+        }
+        this.ngrams[prefix].addChar(c);
+        prefix = (prefix + c).substr(-prefixSize);
+      }
+    }
+  }
+
+  public override randomWord(): string {
+    let word = "";
+    for (;;) {
+      const prefix = word.substr(-prefixSize);
+      const charDistribution = this.ngrams[prefix];
+      if (!charDistribution) {
+        // This shouldn't happen if this.ngrams is complete. If it does
+        // somehow, start generating a new word.
+        word = "";
+        continue;
+      }
+      // Pick a random char from the distribution that comes after `prefix`.
+      const nextChar = charDistribution.randomChar();
+      if (nextChar == " ") {
+        // A space marks the end of the word, so stop generating and return.
+        break;
+      }
+      word += nextChar;
+    }
+    return word;
+  }
+}
 
 let memoryTimer: number | null = null;
 let memoryInterval: NodeJS.Timeout | null = null;
@@ -692,11 +831,11 @@ export function reset(): void {
 
 export function toggleScript(...params: string[]): void {
   ActiveFunboxes().forEach((funbox) => {
-    if (funbox.toggleScript) funbox.toggleScript(params);
+    if (funbox.functions?.toggleScript) funbox.functions.toggleScript(params);
   });
 }
 
-export function checkFunbox(funbox?: string): boolean {
+export function isFunboxCompatible(funbox?: string): boolean {
   if (funbox === "none" || Config.funbox === "none") return true;
   let checkingFunbox = ActiveFunboxes();
   if (funbox !== undefined) {
@@ -708,27 +847,52 @@ export function checkFunbox(funbox?: string): boolean {
     Funboxes.filter(
       (f) => Config.funbox.split("#").find((cf) => cf == f.name) !== undefined
     ).length != Config.funbox.split("#").length ||
-    checkingFunbox.filter((f) => f.getWord || f.pullSection || f.withWords)
-      .length > 1 ||
     checkingFunbox.filter(
-      (f) => f.changesLayout || f.ignoresLayout || f.usesLayout
+      (f) =>
+        f.functions?.getWord ||
+        f.functions?.pullSection ||
+        f.functions?.withWords
     ).length > 1 ||
-    checkingFunbox.filter((f) => f.applyCSS).length > 1 ||
-    checkingFunbox.filter((f) => f.punctuateWord).length > 1 ||
-    checkingFunbox.filter((f) => f.isCharCorrect).length > 1 ||
-    checkingFunbox.filter((f) => f.nospace).length > 1 ||
-    checkingFunbox.filter((f) => f.toPushCount).length > 1 ||
-    checkingFunbox.filter((f) => f.changesWordsVisibility).length > 1 ||
-    (checkingFunbox.filter((f) => f.noLetters).length > 0 &&
-      checkingFunbox.filter((f) => f.changesCapitalisation).length > 0) ||
-    (checkingFunbox.filter((f) => f.conflictsWithSymmetricChars).length > 0 &&
-      checkingFunbox.filter((f) => f.symmetricChars).length > 0) ||
-    (checkingFunbox.filter((f) => f.toPushCount).length > 0 &&
-      checkingFunbox.filter((f) => f.pullSection).length > 0) ||
-    (checkingFunbox.filter((f) => f.speaks).length > 0 &&
-      checkingFunbox.filter((f) => f.unspeakable).length > 0) ||
-    (checkingFunbox.filter((f) => f.speaks).length > 0 &&
-      checkingFunbox.filter((f) => f.ignoresLanguage).length > 0)
+    (checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "changesLayout")
+    ).length > 0 &&
+      checkingFunbox.filter((f) =>
+        f.properties?.find((fp) => fp == "ignoresLayout" || fp == "usesLayout")
+      ).length > 0) ||
+    checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "nospace" || fp.startsWith("toPush"))
+    ).length > 1 ||
+    checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "changesWordsVisibility")
+    ).length > 1 ||
+    (checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "noLetters"))
+      .length > 0 &&
+      checkingFunbox.filter((f) =>
+        f.properties?.find((fp) => fp == "changesCapitalisation")
+      ).length > 0) ||
+    (checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "conflictsWithSymmetricChars")
+    ).length > 0 &&
+      checkingFunbox.filter((f) =>
+        f.properties?.find((fp) => fp == "symmetricChars")
+      ).length > 0) ||
+    checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "speaks" || fp == "unspeakable")
+    ).length > 1 ||
+    (checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "speaks"))
+      .length > 0 &&
+      checkingFunbox.filter((f) =>
+        f.properties?.find((fp) => fp == "ignoresLanguage")
+      ).length > 0) ||
+    checkingFunbox.filter(
+      (f) =>
+        f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+        f.functions?.pullSection
+    ).length > 1 ||
+    checkingFunbox.filter((f) => f.functions?.applyCSS).length > 1 ||
+    checkingFunbox.filter((f) => f.functions?.punctuateWord).length > 1 ||
+    checkingFunbox.filter((f) => f.functions?.isCharCorrect).length > 1 ||
+    checkingFunbox.filter((f) => f.functions?.getWordHtml).length > 1
   );
 }
 
@@ -739,11 +903,15 @@ export function setFunbox(funbox: string): boolean {
 }
 
 export function toggleFunbox(funbox: string): boolean {
+  if (funbox == "none") setFunbox("none");
   if (
-    funbox == "none" ||
-    (!checkFunbox(funbox) && !Config.funbox.split("#").includes(funbox))
+    !isFunboxCompatible(funbox) &&
+    !Config.funbox.split("#").includes(funbox)
   ) {
-    setFunbox("none");
+    Notifications.add(
+      `Can not apply the ${funbox.replace(/_/g, " ")} funbox`,
+      0
+    );
     return true;
   }
   loadMemory();
@@ -756,8 +924,8 @@ export async function clear(): Promise<boolean> {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  reset();
   $("#wordsWrapper").removeClass("hidden");
+  reset();
   ManualRestart.set();
   return true;
 }
@@ -771,21 +939,111 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
-  if (!checkFunbox()) {
-    funbox = "none";
-    setFunbox(funbox);
+  if (!isFunboxCompatible()) {
+    Notifications.add(
+      Misc.createErrorMessage(undefined, "Failed to activate funbox"),
+      -1
+    );
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return false;
   }
 
-  // if (funbox === "none") {
   reset();
   $("#wordsWrapper").removeClass("hidden");
-  // }
-
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  if ((await Misc.getCurrentLanguage(Config.language)).ligatures) {
-    if (ActiveFunboxes().find((f) => f.noLigatures)) {
+
+  let fb: MonkeyTypes.FunboxObject[] = [];
+  fb = fb.concat(
+    ActiveFunboxes().filter(
+      (f) => f.mode !== undefined && !f.mode.includes(Config.mode)
+    )
+  );
+  if (Config.mode === "zen") {
+    fb = fb.concat(
+      ActiveFunboxes().filter(
+        (f) =>
+          f.functions?.getWord ||
+          f.functions?.pullSection ||
+          f.functions?.alterText ||
+          f.functions?.withWords ||
+          f.properties?.includes("changesCapitalisation") ||
+          f.properties?.includes("nospace") ||
+          f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+          f.properties?.includes("changesWordsVisibility") ||
+          f.properties?.includes("speaks") ||
+          f.properties?.includes("changesLayout")
+      )
+    );
+  }
+  if (Config.mode === "quote" || Config.mode == "custom") {
+    fb = fb.concat(
+      ActiveFunboxes().filter(
+        (f) =>
+          f.functions?.getWord ||
+          f.functions?.pullSection ||
+          f.functions?.withWords
+      )
+    );
+  }
+  if (fb.length > 0) {
+    Notifications.add(
+      `${Misc.capitalizeFirstLetterOfEachWord(
+        Config.mode
+      )} mode does not support the ${fb[0].name.replace(/_/g, " ")} funbox`,
+      0
+    );
+    let modes = [] as MonkeyTypes.Mode[];
+    for (const f of ActiveFunboxes()) {
+      if (f.mode) modes = modes.concat(f.mode);
+    }
+    if (modes.length > 0) {
+      modes = modes.filter((m) => {
+        for (const f of ActiveFunboxes()) {
+          if (f.mode) {
+            if (!f.mode.includes(m)) {
+              return false;
+            }
+          }
+        }
+        return true;
+      });
+      if (modes.length > 0) {
+        UpdateConfig.setMode(modes[0], true);
+      } else {
+        Notifications.add(
+          Misc.createErrorMessage(
+            undefined,
+            "Conflicting funboxes. Please open an issue"
+          ),
+          -1
+        );
+        UpdateConfig.setFunbox("none", true);
+        await clear();
+        return false;
+      }
+    } else {
+      UpdateConfig.setMode("time", true);
+    }
+  }
+
+  let language;
+  try {
+    language = await Misc.getCurrentLanguage(Config.language);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to activate funbox"),
+      -1
+    );
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return false;
+  }
+
+  if (language.ligatures) {
+    if (ActiveFunboxes().find((f) => f.properties?.includes("noLigatures"))) {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
@@ -796,49 +1054,8 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
   }
 
-  let fb: MonkeyTypes.FunboxObject[] = [];
-  fb = fb.concat(
-    ActiveFunboxes().filter(
-      (f) => f.mode !== undefined && f.mode !== Config.mode
-    )
-  );
-  if (Config.mode === "zen") {
-    fb = fb.concat(
-      ActiveFunboxes().filter(
-        (f) =>
-          f.getWord ||
-          f.pullSection ||
-          f.alterText ||
-          f.withWords ||
-          f.changesCapitalisation ||
-          f.nospace ||
-          f.toPushCount ||
-          f.changesWordsVisibility ||
-          f.speaks ||
-          f.changesLayout
-      )
-    );
-  }
-  if (Config.mode === "quote") {
-    fb = fb.concat(
-      ActiveFunboxes().filter((f) => f.getWord || f.pullSection || f.withWords)
-    );
-  }
-  if (fb.length > 0) {
-    Notifications.add(
-      `${Misc.capitalizeFirstLetterOfEachWord(
-        Config.mode
-      )} mode does not support the ${fb[0].name.replace(/_/g, " ")} funbox`,
-      0
-    );
-    UpdateConfig.setMode("time", true);
-  }
-
-  if (
-    (Config.time === 0 && Config.mode === "time") ||
-    (Config.words === 0 && Config.mode === "words")
-  ) {
-    const fb = ActiveFunboxes().filter((f) => f.pullSection || f.toPushCount);
+  if (Config.time === 0 && Config.mode === "time") {
+    const fb = ActiveFunboxes().filter((f) => f.forcedConfig?.time == "Finite");
     if (fb.length > 0) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
@@ -850,25 +1067,44 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         0
       );
       if (Config.mode === "time") UpdateConfig.setTimeConfig(15, true);
+    }
+  }
+
+  if (Config.words === 0 && Config.mode === "words") {
+    const fb = ActiveFunboxes().filter(
+      (f) => f.forcedConfig?.words == "Finite"
+    );
+    if (fb.length > 0) {
+      Notifications.add(
+        `${Misc.capitalizeFirstLetterOfEachWord(
+          Config.mode
+        )} mode with value 0 does not support the ${fb[0].name.replace(
+          /_/g,
+          " "
+        )} funbox`,
+        0
+      );
       if (Config.mode === "words") UpdateConfig.setWordCount(10, true);
     }
   }
 
   if (Config.highlightMode === "word") {
-    const fb = ActiveFunboxes().filter((f) => f.blockWordHighlight);
+    const fb = ActiveFunboxes().filter((f) =>
+      f.forcedConfig?.highlightMode?.includes("!word")
+    );
     if (fb.length > 0) {
       Notifications.add(
         `Can't use word highlight with ${fb[0].name.replace(/_/g, " ")} funbox`,
         0
       );
-      UpdateConfig.setHighlightMode("letter");
+      UpdateConfig.setHighlightMode("letter", true);
     }
   }
 
   ManualRestart.set();
   ActiveFunboxes().forEach(async (funbox) => {
-    if (funbox.applyCSS) funbox.applyCSS();
-    if (funbox.applyConfig) funbox.applyConfig();
+    if (funbox.functions?.applyCSS) funbox.functions.applyCSS();
+    if (funbox.functions?.applyConfig) funbox.functions.applyConfig();
   });
   // ModesNotice.update();
   return true;
@@ -876,6 +1112,6 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
 export async function rememberSettings(): Promise<void> {
   ActiveFunboxes().forEach(async (funbox) => {
-    if (funbox.rememberSettings) funbox.rememberSettings();
+    if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
   });
 }

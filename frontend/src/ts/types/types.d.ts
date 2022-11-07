@@ -141,19 +141,9 @@ declare namespace MonkeyTypes {
 
   type MinimumBurst = "off" | "fixed" | "flex";
 
-  type FunboxObjectType =
-    | "script"
-    | "style"
-    | "wordlist"
-    | "modificator"
-    | "quote"
-    | "minigame";
-
   type IndicateTypos = "off" | "below" | "replace";
 
   type CustomLayoutFluid = `${string}#${string}#${string}`;
-
-  type ArrowKeys = `${string}`;
 
   type CustomLayoutFluidSpaces =
     | CustomLayoutFluid
@@ -191,28 +181,25 @@ declare namespace MonkeyTypes {
     display?: string;
   }
 
-  interface FunboxObject {
-    name: string;
-    info: string;
-    alias?: string;
-    ignoresLanguage?: boolean;
-    noLigatures?: boolean;
-    noLetters?: boolean;
-    changesCapitalisation?: boolean;
-    mode?: MonkeyTypes.Mode;
-    blockWordHighlight?: boolean;
-    nospace?: boolean;
-    noPunctuation?: boolean;
-    noNumbers?: boolean;
-    symmetricChars?: boolean;
-    conflictsWithSymmetricChars?: boolean;
-    toPushCount?: number;
-    changesWordsVisibility?: boolean;
-    speaks?: boolean;
-    unspeakable?: boolean;
-    changesLayout?: boolean;
-    ignoresLayout?: boolean;
-    usesLayout?: boolean;
+  type FunboxProperty =
+    | "symmetricChars"
+    | "conflictsWithSymmetricChars"
+    | "changesWordsVisibility"
+    | "speaks"
+    | "unspeakable"
+    | "changesLayout"
+    | "ignoresLayout"
+    | "usesLayout"
+    | "ignoresLanguage"
+    | "noLigatures"
+    | "noLetters"
+    | "changesCapitalisation"
+    | "nospace"
+    | `toPush:${number}`;
+
+  type FunboxModeDuration = "Finite" | "Infinite";
+
+  interface FunboxFunctions {
     getWord?: (wordset?: Misc.Wordset) => string;
     punctuateWord?: (word: string) => string;
     withWords?: (words?: string[]) => Promise<Misc.Wordset>;
@@ -235,6 +222,25 @@ declare namespace MonkeyTypes {
     start?: () => void;
     restart?: () => void;
     getWordHtml?: (char: string, letterTag?: boolean) => string;
+  }
+
+  interface FunboxForcedConfig {
+    punctuation?: boolean;
+    numbers?: boolean;
+    highlightMode?: string;
+    words?: FunboxModeDuration;
+    time?: FunboxModeDuration;
+  }
+
+  interface FunboxObject {
+    name: string;
+    info: string;
+    canGetPB?: boolean;
+    alias?: string;
+    mode?: MonkeyTypes.Mode[];
+    forcedConfig?: MonkeyTypes.FunboxForcedConfig;
+    properties?: FunboxProperty[];
+    functions?: FunboxFunctions;
   }
 
   interface CustomText {
@@ -452,7 +458,6 @@ declare namespace MonkeyTypes {
     customBackgroundSize: CustomBackgroundSize;
     customBackgroundFilter: CustomBackgroundFilter;
     customLayoutfluid: CustomLayoutFluid;
-    arrowKeys: ArrowKeys;
     monkeyPowerLevel: MonkeyPowerLevel;
     minBurst: MinimumBurst;
     minBurstCustomSpeed: number;

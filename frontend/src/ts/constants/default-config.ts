@@ -89,7 +89,6 @@ export default <MonkeyTypes.Config>{
   customBackgroundSize: "cover",
   customBackgroundFilter: [0, 1, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
-  arrowKeys: "aswd",
   monkeyPowerLevel: "off",
   minBurst: "off",
   minBurstCustomSpeed: 100,

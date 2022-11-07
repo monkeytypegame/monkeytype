@@ -12,7 +12,6 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
-import { getFunboxListSync } from "./utils/misc";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -126,26 +125,6 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     return false;
   }
 
-  if (mode !== "words") {
-    const list = getFunboxListSync();
-    if (list) {
-      const funbox = list.find(
-        (f) => f.mode == "words" && config.funbox.split("#").includes(f.name)
-      );
-      if (funbox) {
-        Notifications.add(
-          `${funbox.name.replace(
-            /_/g,
-            " "
-          )} funbox can only be used with words mode.`,
-          0
-        );
-        return false;
-      }
-    } else {
-      Notifications.add("Funbox list not loaded", 0);
-    }
-  }
   const previous = config.mode;
   config.mode = mode;
   if (config.mode == "custom") {
@@ -857,27 +836,6 @@ export function setHighlightMode(
     !isConfigValueValid("highlight mode", mode, [["off", "letter", "word"]])
   ) {
     return false;
-  }
-
-  if (mode === "word") {
-    const list = getFunboxListSync();
-    if (list) {
-      const funbox = list.find(
-        (f) => f.blockWordHighlight && config.funbox.split("#").includes(f.name)
-      );
-      if (funbox) {
-        Notifications.add(
-          `Can't use word highlight with ${funbox.name.replace(
-            /_/g,
-            " "
-          )} funbox`,
-          0
-        );
-        return false;
-      }
-    } else {
-      // Notifications.add("Funbox list not loaded", 0);
-    }
   }
 
   config.highlightMode = mode;
