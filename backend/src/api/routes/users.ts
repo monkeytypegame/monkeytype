@@ -462,8 +462,8 @@ router.patch(
       keyboard: profileDetailsBase.max(75),
       selectedBadgeId: joi.number(),
       socialProfiles: joi.object({
-        twitter: profileDetailsBase.max(20),
-        github: profileDetailsBase.max(39),
+        twitter: profileDetailsBase.alphanum().max(20),
+        github: profileDetailsBase.alphanum().max(39),
         website: profileDetailsBase
           .uri({
             scheme: "https",
