@@ -144,7 +144,7 @@ class Notification {
     } else if (this.type === "banner") {
       let leftside = `<div class="icon lefticon">${icon}</div>`;
 
-      if (/^images\/.*/.test(this.customIcon as string)) {
+      if (/images\/.*/.test(this.customIcon as string)) {
         leftside = `<div class="image" style="background-image: url(${this.customIcon})"></div>`;
       }
 
