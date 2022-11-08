@@ -1,13 +1,12 @@
 import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
 import { updateUserEmail } from "../utils/auth";
-import { checkAndUpdatePb } from "../utils/pb";
+import { canGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
-import Funboxes from "../constants/funbox";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -340,18 +339,6 @@ export async function updateLbMemory(
       $set: { lbMemory: user.lbMemory },
     }
   );
-}
-
-function canGetPb(result: MonkeyTypes.Result<MonkeyTypes.Mode>): boolean {
-  const funbox = result.funbox;
-
-  const funboxes = Funboxes.filter(
-    (f) => funbox?.split("#").find((F) => F === f.name) !== undefined
-  );
-  if (funboxes.filter((f) => f.canGetPB) !== undefined) {
-    return false;
-  }
-  return true;
 }
 
 export async function checkIfPb(
