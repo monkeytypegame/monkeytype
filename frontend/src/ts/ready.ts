@@ -40,7 +40,7 @@ $(document).ready(() => {
     Notifications.addBanner(
       `Check out our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
       1,
-      "images/merch.png",
+      "./images/merch2.png",
       false,
       () => {
         window.localStorage.setItem("merchbannerclosed", "true");
