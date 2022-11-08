@@ -10,6 +10,7 @@ function update(mode: MonkeyTypes.Mode): void {
   $($("#pbTablesPopup table thead tr td")[0]).text(mode);
 
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
 
   const allmode2 = (
     snapshot.personalBests === undefined
@@ -53,7 +54,7 @@ function update(mode: MonkeyTypes.Mode): void {
       <tr>
         <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>
         <td>
-          ${pb.wpm}
+          ${pb.wpm.toFixed(2)}
           <br />
           <span class="sub">${pb.acc ? pb.acc + "%" : "-"}</span>
         </td>
@@ -113,14 +114,10 @@ $("#pbTablesPopupWrapper").on("click", (e) => {
   }
 });
 
-$(document).on("click", ".pageAccount .profile .pbsTime .showAllButton", () => {
+$(".pageAccount .profile").on("click", ".pbsTime .showAllButton", () => {
   show("time");
 });
 
-$(document).on(
-  "click",
-  ".pageAccount .profile .pbsWords .showAllButton",
-  () => {
-    show("words");
-  }
-);
+$(".pageAccount .profile").on("click", ".pbsWords .showAllButton", () => {
+  show("words");
+});

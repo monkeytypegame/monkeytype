@@ -62,7 +62,7 @@ export function isConfigValueValid(
         break;
 
       case "number":
-        if (typeof val === "number") isValid = true;
+        if (typeof val === "number" && !isNaN(val)) isValid = true;
         break;
 
       case "numberArray":
@@ -116,9 +116,19 @@ export async function isConfigValueValidAsync(
 
         if (layoutNames.length < 2 || layoutNames.length > 5) break;
 
+        try {
+          await Misc.getLayoutsList();
+        } catch (e) {
+          customMessage = Misc.createErrorMessage(
+            e,
+            "Failed to validate layoutfluid value"
+          );
+          break;
+        }
+
         // convert the layout names to layouts
         const layouts = await Promise.all(
-          layoutNames.map((layoutName) => Misc.getLayout(layoutName))
+          layoutNames.map(async (layoutName) => Misc.getLayout(layoutName))
         );
 
         // check if all layouts exist

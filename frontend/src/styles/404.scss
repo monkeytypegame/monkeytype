@@ -1,6 +1,8 @@
 .page404 {
   display: grid;
   justify-content: center;
+  height: 100%;
+  align-content: center;
   .content {
     justify-items: center;
     display: grid;
@@ -9,7 +11,7 @@
     text-align: center;
     .image {
       width: 300px;
-      background-image: url("./../images/monkeymeme.png");
+      background-image: url("./../images/monkeymeme.jpg");
       aspect-ratio: 1210/800;
       background-size: contain;
     }

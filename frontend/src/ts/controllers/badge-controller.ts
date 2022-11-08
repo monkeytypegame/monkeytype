@@ -87,6 +87,14 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     color: "var(--text-color)",
     background: "var(--sub-color)",
   },
+  12: {
+    id: 12,
+    name: "Contributor",
+    description: "Contributed to the site",
+    icon: "fa-hands-helping",
+    color: "var(--text-color)",
+    background: "var(--sub-color)",
+  },
 };
 
 export function getHTMLById(
@@ -119,4 +127,8 @@ export function getHTMLById(
   return `<div class="badge" ${balloon} style="${style}">${
     badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
   }${noText ? "" : `<div class="text">${badge.name}</div>`}</div>`;
+}
+
+export function getById(id: number): MonkeyTypes.UserBadge {
+  return badges[id];
 }

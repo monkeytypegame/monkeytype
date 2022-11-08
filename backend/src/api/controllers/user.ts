@@ -11,12 +11,36 @@ import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
 import { deleteConfig } from "../../dal/config";
+import { verify } from "../../utils/captcha";
+import * as LeaderboardsDAL from "../../dal/leaderboards";
+import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
+
+async function verifyCaptcha(captcha: string): Promise<void> {
+  if (!(await verify(captcha))) {
+    throw new MonkeyError(422, "Captcha check failed");
+  }
+}
 
 export async function createNewUser(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { name } = req.body;
+  const { name, captcha } = req.body;
   const { email, uid } = req.ctx.decodedToken;
+
+  try {
+    await verifyCaptcha(captcha);
+  } catch (e) {
+    try {
+      await admin.auth().deleteUser(uid);
+    } catch (e) {
+      // user might be deleted on the frontend
+    }
+    throw e;
+  }
+
+  if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
+    throw new MonkeyError(400, "Invalid domain");
+  }
 
   const available = await UserDAL.isNameAvailable(name);
   if (!available) {
@@ -35,7 +59,17 @@ export async function deleteUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "delete user");
-  await UserDAL.deleteUser(uid);
+  await Promise.all([
+    UserDAL.deleteUser(uid),
+    deleteAllApeKeys(uid),
+    deleteAllPresets(uid),
+    deleteConfig(uid),
+    purgeUserFromDailyLeaderboards(
+      uid,
+      req.ctx.configuration.dailyLeaderboards
+    ),
+  ]);
+
   Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User deleted");
@@ -53,6 +87,10 @@ export async function resetUser(
     deleteAllPresets(uid),
     deleteAllResults(uid),
     deleteConfig(uid),
+    purgeUserFromDailyLeaderboards(
+      uid,
+      req.ctx.configuration.dailyLeaderboards
+    ),
   ]);
   Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
@@ -82,6 +120,10 @@ export async function clearPb(
   const { uid } = req.ctx.decodedToken;
 
   await UserDAL.clearPb(uid);
+  await purgeUserFromDailyLeaderboards(
+    uid,
+    req.ctx.configuration.dailyLeaderboards
+  );
   Logger.logToDb("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
@@ -117,6 +159,19 @@ export async function updateEmail(
   return new MonkeyResponse("Email updated");
 }
 
+function getRelevantUserInfo(
+  user: MonkeyTypes.User
+): Partial<MonkeyTypes.User> {
+  return _.omit(user, [
+    "bananas",
+    "lbPersonalBests",
+    "quoteMod",
+    "inbox",
+    "nameHistory",
+    "lastNameChange",
+  ]);
+}
+
 export async function getUser(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -142,7 +197,17 @@ export async function getUser(
   const agentLog = buildAgentLog(req);
   Logger.logToDb("user_data_requested", agentLog, uid);
 
-  return new MonkeyResponse("User data retrieved", userInfo);
+  let inboxUnreadSize = 0;
+  if (req.ctx.configuration.users.inbox.enabled) {
+    inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+  }
+
+  const userData = {
+    ...getRelevantUserInfo(userInfo),
+    inboxUnreadSize: inboxUnreadSize,
+  };
+
+  return new MonkeyResponse("User data retrieved", userData);
 }
 
 export async function linkDiscord(
@@ -402,7 +467,14 @@ export async function removeFavoriteQuote(
 export async function getProfile(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { uid } = req.params;
+  const { uidOrName } = req.params;
+
+  const { isUid } = req.query;
+
+  const user =
+    isUid !== undefined
+      ? await UserDAL.getUser(uidOrName, "get user profile")
+      : await UserDAL.getUserByName(uidOrName, "get user profile");
 
   const {
     name,
@@ -417,7 +489,8 @@ export async function getProfile(
     discordId,
     discordAvatar,
     xp,
-  } = await UserDAL.getUser(uid, "get user profile");
+    streak,
+  } = user;
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
   const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
@@ -442,16 +515,52 @@ export async function getProfile(
     discordId,
     discordAvatar,
     xp,
+    streak: streak?.length ?? 0,
+    maxStreak: streak?.maxLength ?? 0,
   };
 
   if (banned) {
     return new MonkeyResponse("Profile retrived: banned user", baseProfile);
   }
 
+  const allTime15English = await LeaderboardsDAL.getRank(
+    "time",
+    "15",
+    "english",
+    user.uid
+  );
+
+  const allTime60English = await LeaderboardsDAL.getRank(
+    "time",
+    "60",
+    "english",
+    user.uid
+  );
+
+  const allTime15EnglishRank = allTime15English
+    ? allTime15English.rank
+    : undefined;
+  const allTime60EnglishRank = allTime60English
+    ? allTime60English.rank
+    : undefined;
+
+  const alltimelbs = {
+    time: {
+      "15": {
+        english: allTime15EnglishRank,
+      },
+      "60": {
+        english: allTime60EnglishRank,
+      },
+    },
+  };
+
   const profileData = {
     ...baseProfile,
     inventory,
     details: profileDetails,
+    allTimeLbs: alltimelbs,
+    uid: user.uid,
   };
 
   return new MonkeyResponse("Profile retrieved", profileData);
@@ -486,4 +595,28 @@ export async function updateProfile(
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);
 
   return new MonkeyResponse("Profile updated");
+}
+
+export async function getInbox(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const inbox = await UserDAL.getInbox(uid);
+
+  return new MonkeyResponse("Inbox retrieved", {
+    inbox,
+    maxMail: req.ctx.configuration.users.inbox.maxMail,
+  });
+}
+
+export async function updateInbox(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { mailIdsToMarkRead, mailIdsToDelete } = req.body;
+
+  await UserDAL.updateInbox(uid, mailIdsToMarkRead, mailIdsToDelete);
+
+  return new MonkeyResponse("Inbox updated");
 }

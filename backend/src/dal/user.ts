@@ -4,9 +4,9 @@ import { updateUserEmail } from "../utils/auth";
 import { checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
-import { Collection, ObjectId, WithId, Long } from "mongodb";
+import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
-import { flattenObjectDeep } from "../utils/misc";
+import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -70,6 +70,11 @@ export async function resetUser(uid: string): Promise<void> {
         customThemes: [],
         tags: [],
         xp: 0,
+        streak: {
+          length: 0,
+          lastResultTimestamp: 0,
+          maxLength: 0,
+        },
       },
       $unset: {
         discordAvatar: "",
@@ -131,16 +136,6 @@ export async function clearPb(uid: string): Promise<void> {
   );
 }
 
-export async function isNameAvailable(name: string): Promise<boolean> {
-  const nameDocs = await getUsersCollection()
-    .find({ name })
-    .collation({ locale: "en", strength: 1 })
-    .limit(1)
-    .toArray();
-
-  return nameDocs.length === 0;
-}
-
 export async function updateQuoteRatings(
   uid: string,
   quoteRatings: MonkeyTypes.UserQuoteRatings
@@ -166,6 +161,29 @@ export async function getUser(
   stack: string
 ): Promise<MonkeyTypes.User> {
   const user = await getUsersCollection().findOne({ uid });
+  if (!user) throw new MonkeyError(404, "User not found", stack);
+  return user;
+}
+
+async function findByName(name: string): Promise<MonkeyTypes.User | undefined> {
+  return (
+    await getUsersCollection()
+      .find({ name })
+      .collation({ locale: "en", strength: 1 })
+      .limit(1)
+      .toArray()
+  )[0];
+}
+
+export async function isNameAvailable(name: string): Promise<boolean> {
+  return (await findByName(name)) === undefined;
+}
+
+export async function getUserByName(
+  name: string,
+  stack: string
+): Promise<MonkeyTypes.User> {
+  const user = await findByName(name);
   if (!user) throw new MonkeyError(404, "User not found", stack);
   return user;
 }
@@ -379,8 +397,12 @@ export async function checkIfTagPb(
   }
 
   const { mode, tags: resultTags, funbox } = result;
-
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+  if (
+    funbox !== undefined &&
+    funbox !== "none" &&
+    funbox !== "plus_one" &&
+    funbox !== "plus_two"
+  ) {
     return [];
   }
 
@@ -399,7 +421,7 @@ export async function checkIfTagPb(
 
   const ret: string[] = [];
 
-  tagsToCheck.forEach(async (tag) => {
+  for (const tag of tagsToCheck) {
     const tagPbs: MonkeyTypes.PersonalBests = tag.personalBests ?? {
       time: {},
       words: {},
@@ -416,7 +438,7 @@ export async function checkIfTagPb(
         { $set: { "tags.$.personalBests": tagpb.personalBests } }
       );
     }
-  });
+  }
 
   return ret;
 }
@@ -498,6 +520,7 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
 }
 
 export async function incrementXp(uid: string, xp: number): Promise<void> {
+  if (isNaN(xp)) xp = 0;
   await getUsersCollection().updateOne({ uid }, { $inc: { xp: new Long(xp) } });
 }
 
@@ -680,10 +703,12 @@ export async function recordAutoBanEvent(
   uid: string,
   maxCount: number,
   maxHours: number
-): Promise<void> {
+): Promise<boolean> {
   const user = await getUser(uid, "record auto ban event");
 
-  if (user.banned) return;
+  let ret = false;
+
+  if (user.banned) return ret;
 
   const autoBanTimestamps = user.autoBanTimestamps ?? [];
 
@@ -703,10 +728,12 @@ export async function recordAutoBanEvent(
   };
   if (recentAutoBanTimestamps.length > maxCount) {
     updateObj.banned = true;
+    ret = true;
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
   Logger.logToDb("user_auto_banned", { autoBanTimestamps }, uid);
+  return ret;
 }
 
 export async function updateProfile(
@@ -720,15 +747,194 @@ export async function updateProfile(
       value === undefined || (_.isPlainObject(value) && _.isEmpty(value))
   );
 
+  const updates = {
+    $set: {
+      ...profileUpdates,
+      inventory,
+    },
+  };
+  if (inventory === undefined) delete updates.$set.inventory;
+
+  await getUsersCollection().updateOne(
+    {
+      uid,
+    },
+    updates
+  );
+}
+
+export async function getInbox(
+  uid: string
+): Promise<MonkeyTypes.User["inbox"]> {
+  const user = await getUser(uid, "get inventory");
+  return user.inbox ?? [];
+}
+
+interface AddToInboxBulkEntry {
+  uid: string;
+  mail: MonkeyTypes.MonkeyMail[];
+}
+
+export async function addToInboxBulk(
+  entries: AddToInboxBulkEntry[],
+  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+): Promise<void> {
+  const { enabled, maxMail } = inboxConfig;
+
+  if (!enabled) {
+    return;
+  }
+
+  const bulk = getUsersCollection().initializeUnorderedBulkOp();
+
+  entries.forEach((entry) => {
+    bulk.find({ uid: entry.uid }).updateOne({
+      $push: {
+        inbox: {
+          $each: entry.mail,
+          $position: 0, // Prepends to the inbox
+          $slice: maxMail, // Keeps inbox size to maxInboxSize, maxMail the oldest
+        },
+      },
+    });
+  });
+
+  await bulk.execute();
+}
+
+export async function addToInbox(
+  uid: string,
+  mail: MonkeyTypes.MonkeyMail[],
+  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+): Promise<void> {
+  const { enabled, maxMail } = inboxConfig;
+
+  if (!enabled) {
+    return;
+  }
+
   await getUsersCollection().updateOne(
     {
       uid,
     },
     {
-      $set: {
-        ...profileUpdates,
-        inventory,
+      $push: {
+        inbox: {
+          $each: mail,
+          $position: 0, // Prepends to the inbox
+          $slice: maxMail, // Keeps inbox size to maxMail, discarding the oldest
+        },
       },
     }
   );
+}
+
+function buildRewardUpdates(
+  rewards: MonkeyTypes.AllRewards[],
+  inventoryIsNull = false
+): UpdateFilter<WithId<MonkeyTypes.User>> {
+  let totalXp = 0;
+  const newBadges: MonkeyTypes.Badge[] = [];
+
+  rewards.forEach((reward) => {
+    if (reward.type === "xp") {
+      totalXp += isNaN(reward.item) ? 0 : reward.item;
+    } else if (reward.type === "badge") {
+      const item = _.omit(reward.item, "selected");
+      newBadges.push(item);
+    }
+  });
+
+  const baseUpdate = {
+    $inc: {
+      xp: _.isNumber(totalXp) ? totalXp : 0,
+    },
+  };
+
+  if (inventoryIsNull) {
+    return {
+      ...baseUpdate,
+      $set: {
+        inventory: {
+          badges: newBadges,
+        },
+      },
+    };
+  } else {
+    return {
+      ...baseUpdate,
+      $push: {
+        "inventory.badges": { $each: newBadges },
+      },
+    };
+  }
+}
+
+export async function updateInbox(
+  uid: string,
+  mailToRead: string[],
+  mailToDelete: string[]
+): Promise<void> {
+  const user = await getUser(uid, "update inbox");
+
+  const inbox = user.inbox ?? [];
+
+  const mailToReadSet = new Set(mailToRead);
+  const mailToDeleteSet = new Set(mailToDelete);
+
+  const allRewards: MonkeyTypes.AllRewards[] = [];
+
+  const newInbox = inbox
+    .filter((mail) => {
+      const { id, rewards } = mail;
+
+      if (mailToReadSet.has(id) && !mail.read) {
+        mail.read = true;
+        if (rewards.length > 0) {
+          allRewards.push(...rewards);
+          mail.rewards = [];
+        }
+      }
+
+      return !mailToDeleteSet.has(id);
+    })
+    .sort((a, b) => b.timestamp - a.timestamp);
+
+  const baseUpdate = {
+    $set: {
+      inbox: newInbox,
+    },
+  };
+  const rewardUpdates = buildRewardUpdates(allRewards, user.inventory === null);
+  const mergedUpdates = _.merge(baseUpdate, rewardUpdates);
+
+  await getUsersCollection().updateOne({ uid }, mergedUpdates);
+}
+
+export async function updateStreak(
+  uid: string,
+  timestamp: number
+): Promise<number> {
+  const user = await getUser(uid, "calculate streak");
+  const streak: MonkeyTypes.UserStreak = {
+    lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
+    length: user.streak?.length ?? 0,
+    maxLength: user.streak?.maxLength ?? 0,
+  };
+
+  if (isYesterday(streak.lastResultTimestamp)) {
+    streak.length += 1;
+  } else if (!isToday(streak.lastResultTimestamp)) {
+    Logger.logToDb("streak_lost", { streak }, uid);
+    streak.length = 1;
+  }
+
+  if (streak.length > streak.maxLength) {
+    streak.maxLength = streak.length;
+  }
+
+  streak.lastResultTimestamp = timestamp;
+  await getUsersCollection().updateOne({ uid }, { $set: { streak } });
+
+  return streak.length;
 }

@@ -7,12 +7,14 @@
   top: 0;
   z-index: 1000;
   display: grid;
-  justify-content: center;
+  justify-items: center;
   align-items: start;
-  padding: 5rem 0;
+  padding: 5rem 2rem;
+  grid-template-columns: 1fr;
 
   #commandInput {
-    width: 700px;
+    max-width: 700px;
+    width: 100%;
     background: var(--bg-color);
     border-radius: var(--roundness);
 
@@ -37,7 +39,8 @@
   }
 
   #commandLine {
-    width: 700px;
+    max-width: 700px;
+    width: 100%;
     background: var(--bg-color);
     border-radius: var(--roundness);
 

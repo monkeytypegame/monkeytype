@@ -12,8 +12,10 @@ import * as Misc from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
+import * as Hangul from "hangul-js";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
+import { skipXpBreakdown } from "../elements/account-button";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -161,6 +163,10 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
+  updateWordsHeight();
+}
+
+export function updateWordsHeight(): void {
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
     $(<Element>document.querySelector(".word")).outerHeight(true)
@@ -246,6 +252,7 @@ export async function screenshot(): Promise<void> {
   }
 
   function revertScreenshot(): void {
+    // $("#testConfig").removeClass("invisible");
     $("#ad-result-wrapper").removeClass("hidden");
     $("#ad-result-small-wrapper").removeClass("hidden");
     $("#notificationCenter").removeClass("hidden");
@@ -257,7 +264,7 @@ export async function screenshot(): Promise<void> {
     $("#nocss").removeClass("hidden");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
-    if (Auth.currentUser == null) {
+    if (!Auth?.currentUser) {
       $(".pageTest .loginTip").removeClass("hidden");
     }
   }
@@ -272,24 +279,16 @@ export async function screenshot(): Promise<void> {
   $(".pageTest .ssWatermark").text(
     format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
   );
-  if (Auth.currentUser != null) {
+  if (Auth?.currentUser) {
     $(".pageTest .ssWatermark").text(
-      DB.getSnapshot().name +
+      DB.getSnapshot()?.name +
         " | " +
         format(dateNow, "dd MMM yyyy HH:mm") +
         " | monkeytype.com  "
     );
   }
   $(".pageTest .buttons").addClass("hidden");
-  const src = $("#middle");
-  const sourceX = src.position().left; /*X position from div#target*/
-  const sourceY = src.position().top; /*Y position from div#target*/
-  const sourceWidth = <number>(
-    src.outerWidth(true)
-  ); /*clientWidth/offsetWidth from div#target*/
-  const sourceHeight = <number>(
-    src.outerHeight(true)
-  ); /*clientHeight/offsetHeight from div#target*/
+  // $("#testConfig").addClass("invisible");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
@@ -298,9 +297,19 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-wrapper").addClass("hidden");
   $("#ad-result-small-wrapper").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+
+  const src = $("#result");
+  const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
+  const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
+  const sourceWidth = <number>(
+    src.outerWidth(true)
+  ); /*clientWidth/offsetWidth from div#target*/
+  const sourceHeight = <number>(
+    src.outerHeight(true)
+  ); /*clientHeight/offsetHeight from div#target*/
   try {
-    const paddingX = 50;
-    const paddingY = 25;
+    const paddingX = Misc.convertRemToPixels(2);
+    const paddingY = Misc.convertRemToPixels(2);
     html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
@@ -359,7 +368,6 @@ export function updateWordElement(showError = !Config.blindMode): void {
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
-
   let ret = "";
 
   let newlineafter = false;
@@ -378,19 +386,41 @@ export function updateWordElement(showError = !Config.blindMode): void {
   } else {
     let correctSoFar = false;
 
-    // slice earlier if input has trailing compose characters
-    const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
-      ? input.search(Misc.trailingComposeChars)
-      : input.length;
-    if (
-      input.search(Misc.trailingComposeChars) < currentWord.length &&
-      currentWord.slice(0, inputWithoutComposeLength) ===
-        input.slice(0, inputWithoutComposeLength)
-    ) {
-      correctSoFar = true;
+    const containsKorean = TestInput.input.getKoreanStatus();
+
+    if (!containsKorean) {
+      // slice earlier if input has trailing compose characters
+      const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
+        ? input.search(Misc.trailingComposeChars)
+        : input.length;
+      if (
+        input.search(Misc.trailingComposeChars) < currentWord.length &&
+        currentWord.slice(0, inputWithoutComposeLength) ===
+          input.slice(0, inputWithoutComposeLength)
+      ) {
+        correctSoFar = true;
+      }
+    } else {
+      // slice earlier if input has trailing compose characters
+      const koCurrentWord: string = Hangul.disassemble(currentWord).join("");
+      const koInput: string = Hangul.disassemble(input).join("");
+      const inputWithoutComposeLength: number = Misc.trailingComposeChars.test(
+        input
+      )
+        ? input.search(Misc.trailingComposeChars)
+        : koInput.length;
+      if (
+        input.search(Misc.trailingComposeChars) <
+          Hangul.d(koCurrentWord).length &&
+        koCurrentWord.slice(0, inputWithoutComposeLength) ===
+          koInput.slice(0, inputWithoutComposeLength)
+      ) {
+        correctSoFar = true;
+      }
     }
 
     let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
+
     if (Config.blindMode) {
       wordHighlightClassString = "correct";
     }
@@ -436,7 +466,8 @@ export function updateWordElement(showError = !Config.blindMode): void {
       } else if (
         currentLetter !== undefined &&
         CompositionState.getComposing() &&
-        i >= CompositionState.getStartPos()
+        i >= CompositionState.getStartPos() &&
+        !(containsKorean && !correctSoFar)
       ) {
         ret += `<letter class="${
           Config.highlightMode == "word" ? wordHighlightClassString : ""
@@ -508,9 +539,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
 
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
       if (input.length > currentWord.length && !Config.blindMode) {
-        $(wordAtIndex).addClass("error");
+        wordAtIndex.classList.add("error");
       } else if (input.length == currentWord.length) {
-        $(wordAtIndex).removeClass("error");
+        wordAtIndex.classList.remove("error");
       }
     }
   }
@@ -572,6 +603,8 @@ export function scrollTape(): void {
   }
 }
 
+let currentLinesAnimating = 0;
+
 export function lineJump(currentTop: number): void {
   //last word of the line
   if (
@@ -597,29 +630,41 @@ export function lineJump(currentTop: number): void {
     );
     if (Config.smoothLineScroll && toHide.length > 0) {
       lineTransition = true;
-      $("#words").prepend(
-        `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
-      );
-      $("#words .smoothScroller").animate(
-        {
-          height: 0,
-        },
-        SlowTimer.get() ? 0 : 125,
-        () => {
-          $("#words .smoothScroller").remove();
-        }
-      );
-      $("#paceCaret").animate(
-        {
-          top:
-            (<HTMLElement>document.querySelector("#paceCaret"))?.offsetTop -
-            wordHeight,
-        },
-        SlowTimer.get() ? 0 : 125
-      );
+      const smoothScroller = $("#words .smoothScroller");
+      if (smoothScroller.length === 0) {
+        $("#words").prepend(
+          `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
+        );
+      } else {
+        smoothScroller.css(
+          "height",
+          `${(smoothScroller.outerHeight(true) ?? 0) + wordHeight}px`
+        );
+      }
+      $("#words .smoothScroller")
+        .stop(true, false)
+        .animate(
+          {
+            height: 0,
+          },
+          SlowTimer.get() ? 0 : 125,
+          () => {
+            $("#words .smoothScroller").remove();
+          }
+        );
+      $("#paceCaret")
+        .stop(true, false)
+        .animate(
+          {
+            top:
+              (<HTMLElement>document.querySelector("#paceCaret"))?.offsetTop -
+              wordHeight,
+          },
+          SlowTimer.get() ? 0 : 125
+        );
 
       const newCss: { [key: string]: string } = {
-        marginTop: `-${wordHeight}px`,
+        marginTop: `-${wordHeight * (currentLinesAnimating + 1)}px`,
       };
 
       if (Config.tapeMode !== "off") {
@@ -629,15 +674,20 @@ export function lineJump(currentTop: number): void {
         const newMargin = wordsWrapperWidth / 2;
         newCss["marginLeft"] = `${newMargin}px`;
       }
-      $("#words").animate(newCss, SlowTimer.get() ? 0 : 125, () => {
-        activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
-          .offsetTop;
+      currentLinesAnimating++;
+      $("#words")
+        .stop(true, false)
+        .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
+          currentLinesAnimating = 0;
+          activeWordTop = (<HTMLElement>(
+            document.querySelector("#words .active")
+          )).offsetTop;
 
-        currentWordElementIndex -= toHide.length;
-        lineTransition = false;
-        toHide.forEach((el) => el.remove());
-        $("#words").css("marginTop", "0");
-      });
+          currentWordElementIndex -= toHide.length;
+          lineTransition = false;
+          toHide.forEach((el) => el.remove());
+          $("#words").css("marginTop", "0");
+        });
     } else {
       toHide.forEach((el) => el.remove());
       currentWordElementIndex -= toHide.length;
@@ -669,6 +719,13 @@ async function loadWordsHistory(): Promise<boolean> {
   for (let i = 0; i < TestInput.input.history.length + 2; i++) {
     const input = <string>TestInput.input.getHistory(i);
     const word = TestWords.words.get(i);
+    const containsKorean =
+      input?.match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      ) ||
+      word?.match(
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+      );
     let wordEl = "";
     try {
       if (input === "") throw new Error("empty input word");
@@ -676,10 +733,12 @@ async function loadWordsHistory(): Promise<boolean> {
         TestInput.corrected.getHistory(i) !== undefined &&
         TestInput.corrected.getHistory(i) !== ""
       ) {
+        const correctedChar = !containsKorean
+          ? TestInput.corrected.getHistory(i)
+          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
         wordEl = `<div class='word' burst="${
           TestInput.burstHistory[i]
-        }" input="${TestInput.corrected
-          .getHistory(i)
+        }" input="${correctedChar
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
@@ -731,19 +790,23 @@ async function loadWordsHistory(): Promise<boolean> {
         //input is shorter or equal (loop over word list)
         loop = word.length;
       }
-
       for (let c = 0; c < loop; c++) {
         let correctedChar;
         try {
-          correctedChar = TestInput.corrected.getHistory(i)[c];
+          correctedChar = !containsKorean
+            ? TestInput.corrected.getHistory(i)[c]
+            : Hangul.assemble(TestInput.corrected.getHistory(i).split(""))[c];
         } catch (e) {
           correctedChar = undefined;
         }
         let extraCorrected = "";
+        const historyWord: string = !containsKorean
+          ? TestInput.corrected.getHistory(i)
+          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
         if (
           c + 1 === loop &&
-          TestInput.corrected.getHistory(i) !== undefined &&
-          TestInput.corrected.getHistory(i).length > input.length
+          historyWord !== undefined &&
+          historyWord.length > input.length
         ) {
           extraCorrected = "extraCorrected";
         }
@@ -897,11 +960,16 @@ export function applyBurstHeatmap(): void {
     });
 
     $("#resultWordsHistory .words .word").each((_, word) => {
-      const wordBurstVal = parseInt(<string>$(word).attr("burst"));
       let cls = "";
-      steps.forEach((step) => {
-        if (wordBurstVal > step.val) cls = step.class;
-      });
+      const wordBurstAttr = $(word).attr("burst");
+      if (wordBurstAttr === undefined) {
+        cls = "unreached";
+      } else {
+        const wordBurstVal = parseInt(<string>wordBurstAttr);
+        steps.forEach((step) => {
+          if (wordBurstVal >= step.val) cls = step.class;
+        });
+      }
       $(word).addClass(cls);
     });
   } else {
@@ -911,6 +979,7 @@ export function applyBurstHeatmap(): void {
     $("#resultWordsHistory .words .word").removeClass("heatmap2");
     $("#resultWordsHistory .words .word").removeClass("heatmap3");
     $("#resultWordsHistory .words .word").removeClass("heatmap4");
+    $("#resultWordsHistory .words .word").removeClass("unreached");
   }
 }
 
@@ -919,7 +988,7 @@ export function highlightBadWord(index: number, showError: boolean): void {
   $($("#words .word")[index]).addClass("error");
 }
 
-$(document.body).on("click", "#saveScreenshotButton", () => {
+$(".pageTest").on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
@@ -927,10 +996,6 @@ $("#saveScreenshotButton").on("keypress", (e) => {
   if (e.key === "Enter") {
     screenshot();
   }
-});
-
-$(document).on("click", "#testModesNotice .textButton.blind", () => {
-  UpdateConfig.setBlindMode(!Config.blindMode);
 });
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
@@ -954,15 +1019,15 @@ $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
 });
 
-$(document).on("mouseleave", "#resultWordsHistory .words .word", () => {
+$(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
   $(".wordInputAfter").remove();
 });
 
-$("#wpmChart").on("mouseleave", () => {
+$(".pageTest #result #wpmChart").on("mouseleave", () => {
   $(".wordInputAfter").remove();
 });
 
-$(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
+$(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
   if (resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
@@ -1007,10 +1072,16 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#showWordHistoryButton", () => {
+$(".pageTest").on("click", "#showWordHistoryButton", () => {
   toggleResultWords();
 });
 
 $("#wordsWrapper").on("click", () => {
   focusWords();
+});
+
+$(document).on("keypress", () => {
+  if (resultVisible) {
+    skipXpBreakdown();
+  }
 });

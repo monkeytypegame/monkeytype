@@ -9,7 +9,8 @@
       "english_25k",
       "english_450k",
       "english_commonly_misspelled",
-      "english_contractions"
+      "english_contractions",
+      "english_doubleletter"
     ]
   },
   {
@@ -17,23 +18,30 @@
     "languages": ["spanish", "spanish_1k", "spanish_10k"]
   },
   {
+    "name": "lorem_ipsum",
+    "languages": ["lorem_ipsum"]
+  },
+  {
     "name": "nepali",
     "languages": ["nepali", "nepali_1k"]
   },
   {
     "name": "french",
-    "languages": ["french", "french_1k", "french_2k", "french_10k"]
+    "languages": [
+      "french",
+      "french_1k",
+      "french_2k",
+      "french_10k",
+      "french_600k"
+    ]
   },
   {
     "name": "german",
-    "languages": [
-      "german",
-      "german_1k",
-      "german_10k",
-      "german_250k",
-      "swiss_german",
-      "swiss_german_1k"
-    ]
+    "languages": ["german", "german_1k", "german_10k", "german_250k"]
+  },
+  {
+    "name": "swiss_german",
+    "languages": ["swiss_german", "swiss_german_1k"]
   },
   {
     "name": "portuguese",
@@ -54,6 +62,10 @@
     ]
   },
   {
+    "name": "friulian",
+    "languages": ["friulian"]
+  },
+  {
     "name": "latin",
     "languages": ["latin"]
   },
@@ -64,6 +76,10 @@
   {
     "name": "mongolian",
     "languages": ["mongolian", "mongolian_10k"]
+  },
+  {
+    "name": "korean",
+    "languages": ["korean", "korean_1k", "korean_5k"]
   },
   {
     "name": "russian",
@@ -78,7 +94,15 @@
   },
   {
     "name": "polish",
-    "languages": ["polish", "polish_2k", "polish_200k"]
+    "languages": [
+      "polish",
+      "polish_2k",
+      "polish_5k",
+      "polish_10k",
+      "polish_20k",
+      "polish_40k",
+      "polish_200k"
+    ]
   },
   {
     "name": "czech",
@@ -90,7 +114,13 @@
   },
   {
     "name": "ukrainian",
-    "languages": ["ukrainian", "ukrainian_1k", "ukrainian_10k", "ukrainian_50k"]
+    "languages": [
+      "ukrainian",
+      "ukrainian_1k",
+      "ukrainian_10k",
+      "ukrainian_50k",
+      "ukrainian_endings"
+    ]
   },
   {
     "name": "lithuanian",
@@ -110,7 +140,7 @@
   },
   {
     "name": "greek",
-    "languages": ["greek"]
+    "languages": ["greek", "greek_1k", "greek_5k", "greek_10k", "greek_25k"]
   },
   {
     "name": "turkish",
@@ -154,11 +184,15 @@
   },
   {
     "name": "hungarian",
-    "languages": ["hungarian", "hungarian_2.5k"]
+    "languages": ["hungarian", "hungarian_2k"]
   },
   {
     "name": "norwegian",
     "languages": ["norwegian", "norwegian_1k", "norwegian_5k", "norwegian_10k"]
+  },
+  {
+    "name": "norwegian_nynorsk",
+    "languages": ["norwegian_nynorsk"]
   },
   {
     "name": "hebrew",
@@ -189,16 +223,26 @@
     "languages": ["estonian", "estonian_1k", "estonian_10k"]
   },
   {
+    "name": "udmurt",
+    "languages": ["udmurt"]
+  },
+  {
     "name": "welsh",
     "languages": ["welsh", "welsh_1k"]
   },
   {
     "name": "persian",
-    "languages": ["persian", "persian_1k", "persian_5k"]
+    "languages": [
+      "persian",
+      "persian_1k",
+      "persian_5k",
+      "persian_20k",
+      "persian_romanized"
+    ]
   },
   {
     "name": "kazakh",
-    "languages": ["kazakh"]
+    "languages": ["kazakh", "kazakh_1k"]
   },
   {
     "name": "vietnamese",
@@ -289,16 +333,24 @@
     "languages": ["armenian_western", "armenian_western_1k"]
   },
   {
+    "name": "myanmar",
+    "languages": ["myanmar_burmese"]
+  },
+  {
     "name": "japanese",
     "languages": ["japanese_hiragana", "japanese_katakana"]
   },
   {
     "name": "hindi",
-    "languages": ["hindi", "hindi_1k"]
+    "languages": ["hindi", "hindi_1k", "hinglish"]
   },
   {
     "name": "sanskrit",
     "languages": ["sanskrit"]
+  },
+  {
+    "name": "santali",
+    "languages": ["santali"]
   },
   {
     "name": "macedonian",
@@ -362,6 +414,7 @@
       "code_swift",
       "code_scala",
       "code_bash",
+      "code_powershell",
       "code_lua",
       "code_luau",
       "code_matlab",
@@ -369,8 +422,11 @@
       "code_perl",
       "code_php",
       "code_vim",
+      "code_vimscript",
       "code_opencl",
-      "code_visual_basic"
+      "code_visual_basic",
+      "code_arduino",
+      "code_systemverilog"
     ]
   },
   {
@@ -394,5 +450,9 @@
   {
     "name": "wordle",
     "languages": ["wordle", "wordle_1k"]
+  },
+  {
+    "name": "kyrgyz",
+    "languages": ["kyrgyz"]
   }
 ]

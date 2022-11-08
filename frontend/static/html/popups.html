@@ -1,3 +1,54 @@
+<div id="registerCaptchaPopupWrapper" class="popupWrapper hidden">
+  <div id="registerCaptchaPopup">
+    <div class="g-recaptcha"></div>
+  </div>
+</div>
+
+<div id="alertsPopupWrapper" class="popupWrapper hidden">
+  <div id="alertsPopup">
+    <div class="button mobileClose">
+      <i class="fas fa-times"></i>
+      Close
+    </div>
+    <div class="scrollWrapper">
+      <div class="accountAlerts">
+        <div class="title">
+          <div class="left">
+            <i class="fas fa-inbox"></i>
+            Inbox
+          </div>
+          <div class="right"></div>
+        </div>
+        <div class="button claimAll hidden">
+          <i class="fas fa-fw fa-gift"></i>
+          Claim all
+        </div>
+        <div class="button deleteAll hidden">
+          <i class="fas fa-fw fa-trash"></i>
+          Delete all
+        </div>
+        <div class="list"><div class="nothing">Nothing to show</div></div>
+      </div>
+      <div class="separator accountSeparator"></div>
+      <div class="psas">
+        <div class="title">
+          <i class="fas fa-bullhorn"></i>
+          Announcements
+        </div>
+        <div class="list"><div class="nothing">Nothing to show</div></div>
+      </div>
+      <div class="separator"></div>
+      <div class="notificationHistory">
+        <div class="title">
+          <i class="fas fa-comment-alt"></i>
+          Notifications
+        </div>
+        <div class="list"><div class="nothing">Nothing to show</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="simplePopupWrapper" class="popupWrapper hidden">
   <div id="simplePopup" popupId=""></div>
 </div>
@@ -23,9 +74,8 @@
       </div>
       <div class="buttons">
         <div class="button active acceptAll">Accept all</div>
-        <div class="button openSettings">
-          <i class="fas far fa-cog"></i>
-        </div>
+        <div class="button rejectAll">Reject all</div>
+        <div class="button openSettings">More options</div>
       </div>
     </div>
     <div class="settings hidden">
@@ -388,9 +438,18 @@
       <div class="title">saved texts</div>
       <div class="buttons"></div>
     </div>
-    <textarea class="textarea" placeholder="Custom text"></textarea>
+    <div class="textAreaWrapper" style="position: relative">
+      <div class="longCustomTextWarning">
+        <div class="textAndButton">
+          A long custom text is currently loaded. Editing the text will disable
+          progress tracking.
+          <div class="button">Got it</div>
+        </div>
+      </div>
+      <textarea class="textarea" placeholder="Custom text"></textarea>
+    </div>
     <div class="inputs">
-      <label class="checkbox">
+      <label class="checkbox randomWordsCheckbox">
         <input type="checkbox" />
         <div class="customTextCheckbox">
           <div class="check">
@@ -402,9 +461,9 @@
           Randomize the above words, and control how many words are generated.
         </span>
       </label>
-      <div class="randomInputFields hidden">
+      <div class="randomInputFields disabled">
         <label class="wordcount">
-          Word count
+          Words
           <input type="number" value="" min="1" max="10000" />
         </label>
         <div style="color: var(--sub-color)">or</div>
@@ -438,6 +497,25 @@
           randomize groups of words.
         </span>
       </label>
+      <label class="checkbox replaceNewlineWithSpace">
+        <input type="checkbox" />
+        <div class="customTextCheckbox">
+          <div class="check">
+            <i class="fas fa-fw fa-check"></i>
+          </div>
+        </div>
+        Replace new lines with spaces
+        <span>
+          Replace all new line characters with spaces. Can automatically adds
+          periods to the end of lines if you wish.
+        </span>
+      </label>
+      <div class="replaceNewLinesButtons">
+        <div class="buttonGroup">
+          <div class="button active noPeriods">no periods</div>
+          <div class="button periods">periods</div>
+        </div>
+      </div>
     </div>
     <div class="button apply">ok</div>
   </div>
@@ -446,6 +524,31 @@
   <div id="savedTextsPopup">
     <div class="title">Saved texts</div>
     <div class="list"></div>
+    <div class="title">Saved long texts</div>
+    <div class="listLong"></div>
+  </div>
+</div>
+<div id="saveCustomTextPopupWrapper" class="popupWrapper hidden">
+  <div id="saveCustomTextPopup">
+    <div class="title">Save custom text</div>
+    <input class="textName" type="text" placeholder="name" />
+    <div>
+      <label class="checkbox">
+        <input type="checkbox" class="isLongText" />
+        <div class="customTextCheckbox">
+          <div class="check">
+            <i class="fas fa-fw fa-check"></i>
+          </div>
+        </div>
+        Long text (book mode)
+        <span>
+          Disables editing this text but allows you to save progress by pressing
+          shift + enter or bailing out. You can then load this text again to
+          continue where you left off.
+        </span>
+      </label>
+    </div>
+    <div class="button save">save</div>
   </div>
 </div>
 <div id="wordFilterPopupWrapper" class="popupWrapper hidden">
@@ -486,6 +589,7 @@
     <div class="title">Account name</div>
     <div class="text">You need to choose a username before continuing</div>
     <input type="text" placeholder="username" />
+    <div class="captcha"></div>
     <div class="button disabled">Sign up</div>
   </div>
 </div>
@@ -686,7 +790,7 @@
       <div class="subTitle">Next update in: --:--</div>
       <div class="textButton showYesterdayButton hidden">
         <i class="fas fa-calendar-day"></i>
-        Show Yesterday
+        <div class="text">Show yesterday</div>
       </div>
       <div class="buttons">
         <div class="buttonGroup timeRange">
@@ -787,21 +891,7 @@
   </div>
 </div>
 <div id="versionHistoryWrapper" class="popupWrapper hidden">
-  <div id="versionHistory">
-    <!-- <div class="tip">Click anywhere to dismiss</div> -->
-    <div class="releases">
-      <div class="release">
-        <div class="title">v1</div>
-        <div class="date">010101</div>
-        <div class="body">test</div>
-      </div>
-      <div class="release">
-        <div class="title">v2</div>
-        <div class="date">010101</div>
-        <div class="body">test</div>
-      </div>
-    </div>
-  </div>
+  <div id="versionHistory"></div>
 </div>
 <div id="supportMeWrapper" class="popupWrapper hidden">
   <div id="supportMe">
@@ -854,19 +944,6 @@
       >
         <div class="icon"><i class="fas fa-fw fa-tshirt"></i></div>
         <div class="text">Buy Merch</div>
-      </a>
-      <a
-        class="button"
-        href="https://monkeytype.com/das"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <div class="icon"><i class="fas fa-fw fa-keyboard"></i></div>
-        <div class="text">
-          Buy
-          <br />
-          a DAS Keyboard
-        </div>
       </a>
     </div>
   </div>

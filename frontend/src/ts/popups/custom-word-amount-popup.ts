@@ -35,7 +35,7 @@ export function hide(): void {
 function apply(): void {
   const val = parseInt($("#customWordAmountPopup input").val() as string);
 
-  if (val !== null && !isNaN(val) && val >= 0) {
+  if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
     UpdateConfig.setWordCount(val as MonkeyTypes.WordsModes);
     ManualRestart.set();
     TestLogic.restart();
@@ -71,7 +71,7 @@ $("#customWordAmountPopup .button").on("click", () => {
   apply();
 });
 
-$(document).on("click", "#top .config .wordCount .textButton", (e) => {
+$("#testConfig").on("click", ".wordCount .textButton", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
   if (wrd == "custom") {
     show();

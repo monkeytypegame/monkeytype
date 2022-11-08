@@ -35,6 +35,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     Notifications.add(response.message, 1);
 
     const snapshot = DB.getSnapshot();
+    if (!snapshot) return;
 
     const { discordId, discordAvatar } = response.data;
     if (discordId) {

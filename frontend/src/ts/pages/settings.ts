@@ -408,40 +408,63 @@ export async function fillSettingsPage(): Promise<void> {
 
   // Language Selection Combobox
   const languageEl = $(".pageSettings .section.language select").empty();
-  const languageGroups = await Misc.getLanguageGroups();
-  languageGroups.forEach((group) => {
-    let langComboBox = `<optgroup label="${group.name}">`;
-    group.languages.forEach((language: string) => {
-      langComboBox += `<option value="${language}">
+
+  let languageGroups;
+  try {
+    languageGroups = await Misc.getLanguageGroups();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(
+        e,
+        "Failed to initialize settings language picker"
+      )
+    );
+  }
+
+  if (languageGroups) {
+    languageGroups.forEach((group) => {
+      let langComboBox = `<optgroup label="${group.name}">`;
+      group.languages.forEach((language: string) => {
+        langComboBox += `<option value="${language}">
         ${language.replace(/_/g, " ")}
       </option>`;
+      });
+      langComboBox += `</optgroup>`;
+      languageEl.append(langComboBox);
     });
-    langComboBox += `</optgroup>`;
-    languageEl.append(langComboBox);
-  });
+  }
   languageEl.select2({
     width: "100%",
   });
 
   const layoutEl = $(".pageSettings .section.layout select").empty();
   layoutEl.append(`<option value='default'>off</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
-    layoutEl.append(
-      `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-    );
-  });
-  layoutEl.select2({
-    width: "100%",
-  });
-
   const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
   keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
-  Object.keys(await Misc.getLayoutsList()).forEach((layout) => {
-    if (layout.toString() != "default") {
-      keymapEl.append(
-        `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-      );
-    }
+
+  let layoutsList;
+  try {
+    layoutsList = await Misc.getLayoutsList();
+  } catch (e) {
+    console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
+  }
+
+  if (layoutsList) {
+    Object.keys(layoutsList).forEach((layout) => {
+      if (layout.toString() !== "korean") {
+        layoutEl.append(
+          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
+        );
+      }
+      if (layout.toString() != "default") {
+        keymapEl.append(
+          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
+        );
+      }
+    });
+  }
+  layoutEl.select2({
+    width: "100%",
   });
   keymapEl.select2({
     width: "100%",
@@ -453,13 +476,31 @@ export async function fillSettingsPage(): Promise<void> {
   const themeEl2 = $(
     ".pageSettings .section.autoSwitchThemeInputs select.dark"
   ).empty();
-  for (const theme of await Misc.getThemesList()) {
-    themeEl1.append(
-      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
+
+  let themes;
+  try {
+    themes = await Misc.getThemesList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to load themes into dropdown boxes")
     );
-    themeEl2.append(
-      `<option value='${theme.name}'>${theme.name.replace(/_/g, " ")}</option>`
-    );
+  }
+
+  if (themes) {
+    for (const theme of themes) {
+      themeEl1.append(
+        `<option value='${theme.name}'>${theme.name.replace(
+          /_/g,
+          " "
+        )}</option>`
+      );
+      themeEl2.append(
+        `<option value='${theme.name}'>${theme.name.replace(
+          /_/g,
+          " "
+        )}</option>`
+      );
+    }
   }
   themeEl1.select2({
     width: "100%",
@@ -477,61 +518,77 @@ export async function fillSettingsPage(): Promise<void> {
 
   const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
-  Misc.getFunboxList().then((funboxModes) => {
-    funboxModes.forEach((funbox) => {
-      if (funbox.name === "mirror") {
-        funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }" style="transform:scaleX(-1);">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`
-        );
-      } else {
-        funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" type="${
-            funbox.type
-          }">${funbox.name.replace(/_/g, " ")}</div>`
-        );
-      }
-    });
-  });
-
-  let isCustomFont = true;
-  const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
-  Misc.getFontsList().then((fonts) => {
-    fonts.forEach((font) => {
-      if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsEl.append(
-        `<div class="button${
-          Config.fontFamily === font.name ? " active" : ""
-        }" style="font-family:${
-          font.display !== undefined ? font.display : font.name
-        }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
-        onclick="this.blur();">${
-          font.display !== undefined ? font.display : font.name
-        }</div>`
+  Misc.getFunboxList()
+    .then((funboxModes) => {
+      funboxModes.forEach((funbox) => {
+        if (funbox.name === "mirror") {
+          funboxEl.append(
+            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
+              funbox.info
+            }" data-balloon-pos="up" data-balloon-length="fit" type="${
+              funbox.type
+            }" style="transform:scaleX(-1);">${funbox.name.replace(
+              /_/g,
+              " "
+            )}</div>`
+          );
+        } else {
+          funboxEl.append(
+            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
+              funbox.info
+            }" data-balloon-pos="up" data-balloon-length="fit" type="${
+              funbox.type
+            }">${funbox.name.replace(/_/g, " ")}</div>`
+          );
+        }
+      });
+    })
+    .catch((e) => {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to update funbox settings buttons"),
+        -1
       );
     });
 
-    fontsEl.append(
-      isCustomFont
-        ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
-            /_/g,
-            " "
-          )})</div>`
-        : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
-    );
-  });
+  let isCustomFont = true;
+  const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
+  Misc.getFontsList()
+    .then((fonts) => {
+      fonts.forEach((font) => {
+        if (Config.fontFamily === font.name) isCustomFont = false;
+        fontsEl.append(
+          `<div class="button${
+            Config.fontFamily === font.name ? " active" : ""
+          }" style="font-family:${
+            font.display !== undefined ? font.display : font.name
+          }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
+        onclick="this.blur();">${
+          font.display !== undefined ? font.display : font.name
+        }</div>`
+        );
+      });
+
+      fontsEl.append(
+        isCustomFont
+          ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+              /_/g,
+              " "
+            )})</div>`
+          : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
+      );
+    })
+    .catch((e) => {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to update fonts settings buttons"),
+        -1
+      );
+    });
 
   $(".pageSettings .section.customBackgroundSize input").val(
     Config.customBackground
   );
+
+  $(".pageSettings .section.fontSize input").val(Config.fontSize);
 
   $(".pageSettings .section.customLayoutfluid input").val(
     Config.customLayoutfluid.replace(/#/g, " ")
@@ -561,13 +618,13 @@ export function hideAccountSection(): void {
 
 export function updateDiscordSection(): void {
   //no code and no discord
-  if (Auth.currentUser == null) {
+  if (Auth?.currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
-    if (DB.getSnapshot() == null) return;
+    if (!DB.getSnapshot()) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
-    if (DB.getSnapshot().discordId == undefined) {
+    if (DB.getSnapshot()?.discordId == undefined) {
       //show button
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
@@ -588,7 +645,7 @@ export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings .button").addClass("hidden");
   $(".pageSettings .section.googleAuthSettings .button").addClass("hidden");
 
-  const user = Auth.currentUser;
+  const user = Auth?.currentUser;
   if (!user) return;
 
   const passwordProvider = user.providerData.find(
@@ -639,9 +696,9 @@ function setActiveFunboxButton(): void {
 }
 
 function refreshTagsSettingsSection(): void {
-  if (Auth.currentUser !== null && DB.getSnapshot() !== null) {
+  if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    DB.getSnapshot().tags?.forEach((tag) => {
+    DB.getSnapshot()?.tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
       // if (tag.pb != undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
@@ -674,9 +731,9 @@ function refreshTagsSettingsSection(): void {
 }
 
 function refreshPresetsSettingsSection(): void {
-  if (Auth.currentUser !== null && DB.getSnapshot() !== null) {
+  if (Auth?.currentUser && DB.getSnapshot() !== null) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
-    DB.getSnapshot().presets?.forEach((preset: MonkeyTypes.Preset) => {
+    DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
       <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
@@ -788,9 +845,9 @@ function toggleSettingsGroup(groupName: string): void {
   }
 }
 
-$(document).on(
+$(".pageSettings .section.paceCaret").on(
   "focusout",
-  ".pageSettings .section.paceCaret input.customPaceCaretSpeed",
+  "input.customPaceCaretSpeed",
   () => {
     UpdateConfig.setPaceCaretCustomSpeed(
       parseInt(
@@ -802,7 +859,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", ".pageSettings .section.paceCaret .button.save", () => {
+$(".pageSettings .section.paceCaret").on("click", ".button.save", () => {
   UpdateConfig.setPaceCaretCustomSpeed(
     parseInt(
       $(
@@ -812,9 +869,9 @@ $(document).on("click", ".pageSettings .section.paceCaret .button.save", () => {
   );
 });
 
-$(document).on(
+$(".pageSettings .section.minWpm").on(
   "focusout",
-  ".pageSettings .section.minWpm input.customMinWpmSpeed",
+  "input.customMinWpmSpeed",
   () => {
     UpdateConfig.setMinWpmCustomSpeed(
       parseInt(
@@ -826,7 +883,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", ".pageSettings .section.minWpm .button.save", () => {
+$(".pageSettings .section.minWpm").on("click", ".button.save", () => {
   UpdateConfig.setMinWpmCustomSpeed(
     parseInt(
       $(".pageSettings .section.minWpm input.customMinWpmSpeed").val() as string
@@ -834,19 +891,7 @@ $(document).on("click", ".pageSettings .section.minWpm .button.save", () => {
   );
 });
 
-$(document).on(
-  "focusout",
-  ".pageSettings .section.minAcc input.customMinAcc",
-  () => {
-    UpdateConfig.setMinAccCustom(
-      parseInt(
-        $(".pageSettings .section.minAcc input.customMinAcc").val() as string
-      )
-    );
-  }
-);
-
-$(document).on("click", ".pageSettings .section.minAcc .button.save", () => {
+$(".pageSettings .section.minAcc").on("focusout", "input.customMinAcc", () => {
   UpdateConfig.setMinAccCustom(
     parseInt(
       $(".pageSettings .section.minAcc input.customMinAcc").val() as string
@@ -854,9 +899,17 @@ $(document).on("click", ".pageSettings .section.minAcc .button.save", () => {
   );
 });
 
-$(document).on(
+$(".pageSettings .section.minAcc").on("click", ".button.save", () => {
+  UpdateConfig.setMinAccCustom(
+    parseInt(
+      $(".pageSettings .section.minAcc input.customMinAcc").val() as string
+    )
+  );
+});
+
+$(".pageSettings .section.minBurst").on(
   "focusout",
-  ".pageSettings .section.minBurst input.customMinBurst",
+  "input.customMinBurst",
   () => {
     UpdateConfig.setMinBurstCustomSpeed(
       parseInt(
@@ -868,7 +921,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
+$(".pageSettings .section.minBurst").on("click", ".button.save", () => {
   UpdateConfig.setMinBurstCustomSpeed(
     parseInt(
       $(".pageSettings .section.minBurst input.customMinBurst").val() as string
@@ -876,19 +929,8 @@ $(document).on("click", ".pageSettings .section.minBurst .button.save", () => {
   );
 });
 
-// Commented because started using combo-box for choosing languages instead of grouped buttons
-// languages
-// $(document).on(
-//   "click",
-//   ".pageSettings .section.languageGroups .button",
-//   (e) => {
-//     const group = $(e.currentTarget).attr("group");
-//     LanguagePicker.setActiveGroup(group, true);
-//   }
-// );
-
 //funbox
-$(document).on("click", ".pageSettings .section.funbox .button", (e) => {
+$(".pageSettings .section.funbox").on("click", ".button", (e) => {
   const funbox = <string>$(e.currentTarget).attr("funbox");
   const type = <MonkeyTypes.FunboxObjectType>$(e.currentTarget).attr("type");
   Funbox.setFunbox(funbox, type);
@@ -896,9 +938,9 @@ $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
 });
 
 //tags
-$(document).on(
+$(".pageSettings .section.tags").on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .tagButton",
+  ".tagsList .tag .tagButton",
   (e) => {
     const target = e.currentTarget;
     const tagid = $(target).parent(".tag").attr("id") as string;
@@ -907,9 +949,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageSettings .section.presets").on(
   "click",
-  ".pageSettings .section.presets .presetsList .preset .presetButton",
+  ".presetsList .preset .presetButton",
   (e) => {
     const target = e.currentTarget;
     const presetid = $(target).parent(".preset").attr("id") as string;
@@ -968,6 +1010,32 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   }
 );
 
+$(".pageSettings .section.fontSize .inputAndButton .save").on("click", () => {
+  const didConfigSave = UpdateConfig.setFontSize(
+    parseFloat(
+      $(".pageSettings .section.fontSize .inputAndButton input").val() as string
+    )
+  );
+  if (didConfigSave) {
+    Notifications.add("Saved", 1, 1);
+  }
+});
+
+$(".pageSettings .section.fontSize .inputAndButton input").keypress((e) => {
+  if (e.key === "Enter") {
+    const didConfigSave = UpdateConfig.setFontSize(
+      parseFloat(
+        $(
+          ".pageSettings .section.fontSize .inputAndButton input"
+        ).val() as string
+      )
+    );
+    if (didConfigSave === true) {
+      Notifications.add("Saved", 1, 1);
+    }
+  }
+});
+
 $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
   () => {
@@ -1012,9 +1080,9 @@ $(".pageSettings .section.updateCookiePreferences .button").on("click", () => {
   CookiePopup.showSettings();
 });
 
-$(document).on(
+$(".pageSettings .section.autoSwitchThemeInputs").on(
   "change",
-  `.pageSettings .section.autoSwitchThemeInputs select.light`,
+  `select.light`,
   (e) => {
     const target = $(e.currentTarget);
     if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
@@ -1024,9 +1092,9 @@ $(document).on(
   }
 );
 
-$(document).on(
+$(".pageSettings .section.autoSwitchThemeInputs").on(
   "change",
-  `.pageSettings .section.autoSwitchThemeInputs select.dark`,
+  `select.dark`,
   (e) => {
     const target = $(e.currentTarget);
     if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {

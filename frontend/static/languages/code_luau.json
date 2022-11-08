@@ -57,7 +57,7 @@
 
     "wait",
     "delay",
-    "elapsedime",
+    "elapsedTime",
     "debuggermanager",
     "pluginmanager",
     "printidentity",
@@ -68,6 +68,16 @@
     "time",
     "usersettings",
     "version",
-    "warn"
+    "warn",
+
+    "bit32",
+    "coroutine",
+    "debug",
+    "math",
+    "os",
+    "string",
+    "table",
+    "task",
+    "utf8"
   ]
 }

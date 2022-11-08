@@ -1,3 +1,4 @@
+import _ from "lodash";
 import MonkeyError from "../utils/error";
 import { Response, NextFunction } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
@@ -34,12 +35,12 @@ const ONE_HOUR_MS = 1000 * ONE_HOUR_SECONDS;
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
   windowMs: ONE_HOUR_MS,
-  max: 2000 * REQUEST_MULTIPLIER,
+  max: 1000 * REQUEST_MULTIPLIER,
   keyGenerator: getKey,
   handler: (_req, _res, _next, _options): void => {
     throw new MonkeyError(
       429,
-      "Maximum API request limit reached. Please try again later."
+      "Maximum API request (root) limit reached. Please try again later."
     );
   },
 });
@@ -55,7 +56,7 @@ export async function badAuthRateLimiterHandler(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  if (!req.ctx.configuration.rateLimiting.badAuthentication.enabled) {
+  if (!_.get(req, "ctx.configuration.rateLimiting.badAuthentication.enabled")) {
     return next();
   }
 
@@ -81,8 +82,11 @@ export async function incrementBadAuth(
   res: Response,
   status: number
 ): Promise<void> {
-  const { enabled, penalty, flaggedStatusCodes } =
-    req.ctx.configuration.rateLimiting.badAuthentication;
+  const { enabled, penalty, flaggedStatusCodes } = _.get(
+    req,
+    "ctx.configuration.rateLimiting.badAuthentication",
+    {}
+  );
 
   if (!enabled || !flaggedStatusCodes.includes(status)) {
     return;
@@ -221,10 +225,26 @@ export const psaGet = rateLimit({
   handler: customHandler,
 });
 
+// get public speed stats
+export const publicStatsGet = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 // Results Routing
 export const resultsGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+// Results Routing
+export const resultsGet_ape = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -274,8 +294,8 @@ export const userGet = rateLimit({
 
 export const userSignup = rateLimit({
   windowMs: 24 * ONE_HOUR_MS, // 1 day
-  max: 3 * REQUEST_MULTIPLIER,
-  keyGenerator: getKeyWithUid,
+  max: 2 * REQUEST_MULTIPLIER,
+  keyGenerator: getKey,
   handler: customHandler,
 });
 
@@ -429,6 +449,20 @@ export const userProfileGet = rateLimit({
 });
 
 export const userProfileUpdate = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userMailGet = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userMailUpdate = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,

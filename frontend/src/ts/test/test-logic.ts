@@ -6,6 +6,7 @@ import * as Misc from "../utils/misc";
 import QuotesController from "../controllers/quotes-controller";
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
+import * as CustomTextState from "../states/custom-text-name";
 import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
@@ -54,8 +55,11 @@ import objectHash from "object-hash";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
+import * as TestConfig from "./test-config";
+import * as ConnectionState from "../states/connection";
 
 let failReason = "";
+const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 export let notSignedInLastResult: MonkeyTypes.Result<MonkeyTypes.Mode> | null =
   null;
@@ -112,9 +116,10 @@ export async function punctuateWord(
   } else {
     if (
       currentLanguage != "code" &&
+      currentLanguage != "georgian" &&
       (index == 0 || shouldCapitalize(lastChar))
     ) {
-      //always capitalise the first word or if there was a dot unless using a code alphabet
+      //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
       word = Misc.capitalizeFirstLetterOfEachWord(word);
 
@@ -149,6 +154,8 @@ export async function punctuateWord(
         if (rand <= 0.8) {
           if (currentLanguage == "kurdish") {
             word += ".";
+          } else if (currentLanguage === "nepali") {
+            word += "।";
           } else {
             word += ".";
           }
@@ -257,8 +264,50 @@ export async function punctuateWord(
       }
     } else if (Math.random() < 0.25 && currentLanguage == "code") {
       const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
+      const specialsC = [
+        "{",
+        "}",
+        "[",
+        "]",
+        "(",
+        ")",
+        ";",
+        "=",
+        "+",
+        "%",
+        "/",
+        "/*",
+        "*/",
+        "//",
+        "!=",
+        "==",
+        "<=",
+        ">=",
+        "||",
+        "&&",
+        "<<",
+        ">>",
+        "%=",
+        "&=",
+        "*=",
+        "++",
+        "+=",
+        "--",
+        "-=",
+        "/=",
+        "^=",
+        "|=",
+      ];
 
-      word = Misc.randomElementFromArray(specials);
+      if (
+        (Config.language.startsWith("code_c") &&
+          !Config.language.startsWith("code_css")) ||
+        Config.language.startsWith("code_arduino")
+      ) {
+        word = Misc.randomElementFromArray(specialsC);
+      } else {
+        word = Misc.randomElementFromArray(specials);
+      }
     } else if (
       Math.random() < 0.5 &&
       currentLanguage === "english" &&
@@ -282,11 +331,12 @@ export function startTest(): boolean {
     UpdateConfig.setChangedBeforeDb(true);
   }
 
-  if (Auth.currentUser !== null) {
+  if (Auth?.currentUser) {
     AnalyticsController.log("testStarted");
   } else {
     AnalyticsController.log("testStartedNoLogin");
   }
+
   TestActive.set(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
@@ -363,7 +413,8 @@ export function restart(options = {} as RestartOptions): void {
           Config.mode,
           Config.words,
           Config.time,
-          CustomText
+          CustomText,
+          CustomTextState.isCustomTextLong() ?? false
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -384,7 +435,7 @@ export function restart(options = {} as RestartOptions): void {
     if (
       Config.repeatQuotes === "typing" &&
       Config.mode === "quote" &&
-      Config.language.replace(/_\d*k$/g, "") === TestWords.randomQuote.language
+      Config.language.startsWith(TestWords.randomQuote.language)
     ) {
       options.withSameWordset = true;
     }
@@ -392,29 +443,30 @@ export function restart(options = {} as RestartOptions): void {
       options.withSameWordset = true;
     }
 
-    TestInput.pushKeypressesToHistory();
-    const testSeconds = TestStats.calculateTestSeconds(performance.now());
-    const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-    // incompleteTestSeconds += ;
-    let tt = testSeconds - afkseconds;
-    if (tt < 0) tt = 0;
-    // console.log(
-    //   `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
-    // );
-    TestStats.incrementIncompleteSeconds(tt);
-    TestStats.incrementRestartCount();
-    // if (tt > 600) {
-    //   Notifications.add(
-    //     `Your time typing just increased by ${Misc.roundTo2(
-    //       tt / 60
-    //     )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
-    //     -1
-    //   );
-    // }
+    if (TestState.savingEnabled) {
+      TestInput.pushKeypressesToHistory();
+      const testSeconds = TestStats.calculateTestSeconds(performance.now());
+      const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
+      let tt = Misc.roundTo2(testSeconds - afkseconds);
+      if (tt < 0) tt = 0;
+      TestStats.incrementIncompleteSeconds(tt);
+      TestStats.incrementRestartCount();
+      const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+      TestStats.pushIncompleteTest(acc, tt);
+    }
   }
 
   if (Config.mode == "zen") {
     $("#words").empty();
+  }
+
+  if (Config.language.startsWith("korean")) {
+    koInputVisual.innerText = " ";
+    Config.mode !== "zen"
+      ? $("#koInputVisualContainer").show()
+      : $("#koInputVisualContainer").hide();
+  } else {
+    $("#koInputVisualContainer").hide();
   }
 
   if (
@@ -438,6 +490,9 @@ export function restart(options = {} as RestartOptions): void {
     repeatWithPace = true;
   }
 
+  $("#words").stop(true, true);
+  $("#words .smoothScroller").stop(true, true).remove();
+
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
@@ -455,6 +510,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.setBailout(false);
   PaceCaret.reset();
   Monkey.hide();
+  TestInput.input.setKoreanStatus(false);
 
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
@@ -484,6 +540,7 @@ export function restart(options = {} as RestartOptions): void {
     ) {
       ThemeController.randomizeTheme();
     }
+    AccountButton.skipXpBreakdown();
   }
   TestUI.setResultVisible(false);
   PageTransition.set(true);
@@ -498,6 +555,7 @@ export function restart(options = {} as RestartOptions): void {
         AdController.updateTestPageAds(false);
         Focus.set(false);
       }
+      TestConfig.show();
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
@@ -601,7 +659,11 @@ export function restart(options = {} as RestartOptions): void {
         }
       }
 
-      if (Config.showAverage !== "off") Last10Average.update();
+      if (Config.showAverage !== "off") {
+        Last10Average.update().then(() => {
+          ModesNotice.update();
+        });
+      }
 
       const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";
@@ -643,6 +705,7 @@ export function restart(options = {} as RestartOptions): void {
       });
       // resetPaceCaret();
       ModesNotice.update();
+      ManualRestart.reset();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -662,8 +725,6 @@ export function restart(options = {} as RestartOptions): void {
             }
             // ChartController.result.update();
             PageTransition.set(false);
-            // console.log(TestStats.incompleteSeconds);
-            // console.log(TestStats.restartCount);
           }
         );
     }
@@ -689,8 +750,10 @@ function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
     word = Misc.getArrows();
   } else if (Config.funbox === "58008") {
     word = Misc.getNumbers(7);
-    if (Config.language.split("_")[0] === "kurdish") {
-      word = Misc.convertNumberToArabicIndic(word);
+    if (Config.language.startsWith("kurdish")) {
+      word = Misc.convertNumberToArabic(word);
+    } else if (Config.language.startsWith("nepali")) {
+      word = Misc.convertNumberToNepali(word);
     }
   } else if (Config.funbox === "specials") {
     word = Misc.getSpecials();
@@ -753,7 +816,10 @@ async function getNextWord(
           randomWord == "I") ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
-          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)))
+          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
+        (Config.mode !== "custom" &&
+          !Config.numbers &&
+          /[0-9]/i.test(randomWord)))
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord();
@@ -764,11 +830,22 @@ async function getNextWord(
     randomWord = wordset.randomWord();
   }
 
+  if (
+    Config.mode !== "custom" &&
+    Config.mode !== "quote" &&
+    /[A-Z]/.test(randomWord) &&
+    !Config.punctuation &&
+    !Config.language.startsWith("german") &&
+    !Config.language.startsWith("swiss_german")
+  ) {
+    randomWord = randomWord.toLowerCase();
+  }
+
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/^ | $/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = await applyBritishEnglishToWord(randomWord);
   randomWord = applyFunboxesToWord(randomWord, wordset);
+  randomWord = await applyBritishEnglishToWord(randomWord);
 
   if (Config.punctuation) {
     randomWord = await punctuateWord(
@@ -782,8 +859,10 @@ async function getNextWord(
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
 
-      if (Config.language.split("_")[0] === "kurdish") {
-        randomWord = Misc.convertNumberToArabicIndic(randomWord);
+      if (Config.language.startsWith("kurdish")) {
+        randomWord = Misc.convertNumberToArabic(randomWord);
+      } else if (Config.language.startsWith("nepali")) {
+        randomWord = Misc.convertNumberToNepali(randomWord);
       }
     }
   }
@@ -810,18 +889,48 @@ export async function init(): Promise<void> {
     await Funbox.activate();
   }
 
-  if (Config.quoteLength.includes(-3) && !Auth.currentUser) {
+  if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
     UpdateConfig.setQuoteLength(-1);
   }
-
-  let language = await Misc.getLanguage(Config.language);
+  let language;
+  try {
+    language = await Misc.getLanguage(Config.language);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to load language"),
+      -1
+    );
+  }
   if (language && language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
   }
 
   if (!language) {
     UpdateConfig.setLanguage("english");
-    language = await Misc.getLanguage(Config.language);
+    try {
+      language = await Misc.getLanguage(Config.language);
+    } catch (e) {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to load language"),
+        -1
+      );
+      return;
+    }
+  }
+
+  if (Config.mode === "quote") {
+    let group;
+    try {
+      group = await Misc.findCurrentGroup(Config.language);
+    } catch (e) {
+      console.error(
+        Misc.createErrorMessage(e, "Failed to find current language group")
+      );
+      return;
+    }
+    if (group && group.name !== "code" && group.name !== Config.language) {
+      UpdateConfig.setLanguage(group.name);
+    }
   }
 
   if (Config.lazyMode === true && language.noLazyMode) {
@@ -837,7 +946,17 @@ export async function init(): Promise<void> {
   }
 
   let wordsBound = 100;
-  if (Config.showAllLines) {
+  if (Config.funbox === "plus_one") {
+    wordsBound = 2;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+  } else if (Config.funbox === "plus_two") {
+    wordsBound = 3;
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+  } else if (Config.showAllLines) {
     if (Config.mode === "quote") {
       wordsBound = 100;
     } else if (Config.mode === "custom") {
@@ -889,18 +1008,6 @@ export async function init(): Promise<void> {
   if (Config.mode === "words" && Config.words === 0) {
     wordsBound = 100;
   }
-  if (Config.funbox === "plus_one") {
-    wordsBound = 2;
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-  }
-  if (Config.funbox === "plus_two") {
-    wordsBound = 3;
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-  }
 
   if (
     Config.mode == "time" ||
@@ -929,7 +1036,18 @@ export async function init(): Promise<void> {
             ? await Wikipedia.getSection(Config.language)
             : await Poetry.getPoem();
 
+        if (Config.funbox == "poetry" && section === false) {
+          Notifications.add(
+            "Error while getting poetry. Please try again later",
+            -1
+          );
+          UpdateConfig.setFunbox("none");
+          restart();
+          return;
+        }
+
         if (section === undefined) continue;
+        if (section === false) continue;
 
         for (const word of section.words) {
           if (wordCount >= Config.words && Config.mode == "words") {
@@ -980,18 +1098,24 @@ export async function init(): Promise<void> {
       }
     }
   } else if (Config.mode === "quote") {
+    const languageToGet = Config.language.startsWith("swiss_german")
+      ? "german"
+      : Config.language;
+
     const quotesCollection = await QuotesController.getQuotes(
-      Config.language,
+      languageToGet,
       Config.quoteLength
     );
 
     if (quotesCollection.length === 0) {
       TestUI.setTestRestarting(false);
       Notifications.add(
-        `No ${Config.language.replace(/_\d*k$/g, "")} quotes found`,
+        `No ${Config.language
+          .replace(/_\d*k$/g, "")
+          .replace(/_/g, " ")} quotes found`,
         0
       );
-      if (Auth.currentUser) {
+      if (Auth?.currentUser) {
         QuoteSubmitPopup.show(false);
       }
       UpdateConfig.setMode("words");
@@ -1053,11 +1177,7 @@ export async function init(): Promise<void> {
 
     if (w === undefined) return;
 
-    if (Config.showAllLines) {
-      wordsBound = w.length;
-    } else {
-      wordsBound = Math.min(wordsBound, w.length);
-    }
+    wordsBound = Math.min(wordsBound, w.length);
 
     for (let i = 0; i < wordsBound; i++) {
       if (/\t/g.test(w[i])) {
@@ -1065,8 +1185,12 @@ export async function init(): Promise<void> {
       }
 
       w[i] = applyLazyModeToWord(w[i], language);
-      w[i] = await applyBritishEnglishToWord(w[i]);
       w[i] = applyFunboxesToWord(w[i]);
+      w[i] = await applyBritishEnglishToWord(w[i]);
+
+      if (Config.language === "swiss_german") {
+        w[i] = w[i].replace(/ß/g, "ss");
+      }
 
       TestWords.words.push(w[i]);
     }
@@ -1138,7 +1262,19 @@ export async function addWord(): Promise<void> {
           ? await Wikipedia.getSection(Config.language)
           : await Poetry.getPoem();
 
+      if (Config.funbox == "poetry" && section === false) {
+        Notifications.add(
+          "Error while getting poetry. Please try again later",
+          -1
+        );
+        UpdateConfig.setFunbox("none");
+        restart();
+        return;
+      }
+
       if (section === undefined) return;
+      if (section === false) return;
+
       let wordCount = 0;
       for (const word of section.words) {
         if (wordCount >= Config.words && Config.mode == "words") {
@@ -1225,62 +1361,7 @@ export async function retrySavingResult(): Promise<void> {
 
   Notifications.add("Retrying to save...");
 
-  const response = await Ape.results.save(completedEvent);
-
-  AccountButton.loading(false);
-  Result.hideCrown();
-
-  if (response.status !== 200) {
-    retrySaving.canRetry = true;
-    $("#retrySavingResultButton").removeClass("hidden");
-    return Notifications.add("Result not saved. " + response.message, -1);
-  }
-
-  if (response.data.xp) {
-    const snapxp = DB.getSnapshot().xp;
-    AccountButton.updateXpBar(
-      snapxp,
-      response.data.xp,
-      response.data.dailyXpBonus
-    );
-    DB.addXp(response.data.xp);
-  }
-
-  completedEvent._id = response.data.insertedId;
-  if (response.data.isPb) {
-    completedEvent.isPb = true;
-  }
-
-  DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats(
-    TestStats.restartCount + 1,
-    completedEvent.testDuration +
-      completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration
-  );
-
-  AnalyticsController.log("testCompleted");
-
-  if (response.data.isPb) {
-    //new pb
-    Result.showCrown();
-    Result.updateCrown();
-    DB.saveLocalPB(
-      Config.mode,
-      completedEvent.mode2,
-      Config.punctuation,
-      Config.language,
-      Config.difficulty,
-      Config.lazyMode,
-      completedEvent.wpm,
-      completedEvent.acc,
-      completedEvent.rawWpm,
-      completedEvent.consistency
-    );
-  }
-
-  $("#retrySavingResultButton").addClass("hidden");
-  Notifications.add("Result saved", 1);
+  saveResult(completedEvent, true);
 }
 
 function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
@@ -1299,6 +1380,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     timestamp: Date.now(),
     language: Config.language,
     restartCount: TestStats.restartCount,
+    incompleteTests: TestStats.incompleteTests,
     incompleteTestSeconds:
       TestStats.incompleteSeconds < 0
         ? 0
@@ -1384,13 +1466,15 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const stddev2 = Misc.stdDev(smoothedraw);
   const avg2 = Misc.mean(smoothedraw);
   const smoothConsistency = Misc.roundTo2(Misc.kogasa(stddev2 / avg2));
-  completedEvent.smoothConsistency = smoothConsistency;
+  completedEvent.smoothConsistency = isNaN(smoothConsistency)
+    ? 0
+    : smoothConsistency;
 
   //wpm consistency
   const stddev3 = Misc.stdDev(completedEvent.chartData.wpm ?? []);
   const avg3 = Misc.mean(completedEvent.chartData.wpm ?? []);
   const wpmConsistency = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
-  completedEvent.wpmConsistency = wpmConsistency;
+  completedEvent.wpmConsistency = isNaN(wpmConsistency) ? 0 : wpmConsistency;
 
   completedEvent.testDuration = parseFloat(stats.time.toString());
   completedEvent.afkDuration = TestStats.calculateAfkSeconds(
@@ -1426,7 +1510,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   //tags
   const activeTagsIds: string[] = [];
   try {
-    DB.getSnapshot().tags?.forEach((tag) => {
+    DB.getSnapshot()?.tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTagsIds.push(tag._id);
       }
@@ -1480,7 +1564,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const completedEvent = buildCompletedEvent(difficultyFailed);
 
   function countUndefined(input: unknown): number {
-    if (typeof input === "undefined") {
+    if (typeof input === "number") {
+      return isNaN(input) ? 1 : 0;
+    } else if (typeof input === "undefined") {
       return 1;
     } else if (typeof input === "object" && input !== null) {
       return Object.values(input).reduce(
@@ -1492,13 +1578,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
     }
   }
 
+  let dontSave = false;
+
   if (countUndefined(completedEvent) > 0) {
     console.log(completedEvent);
     Notifications.add(
-      "Failed to save result: One of the result fields is undefined. Please report this",
+      "Failed to build result object: One of the fields is undefined or NaN",
       -1
     );
-    return;
+    dontSave = true;
   }
 
   ///////// completed event ready
@@ -1509,7 +1597,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (TestInput.bailout) afkDetected = false;
 
   let tooShort = false;
-  let dontSave = false;
   //fail checks
   if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, 1);
@@ -1554,6 +1641,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
+  } else if (completedEvent.rawWpm < 0 || completedEvent.rawWpm > 350) {
+    Notifications.add("Test invalid - raw", 0);
+    TestStats.setInvalid();
+    dontSave = true;
   } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
@@ -1561,6 +1652,40 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   // test is valid
+
+  if (TestState.isRepeated) {
+    const testSeconds = completedEvent.testDuration;
+    const afkseconds = completedEvent.afkDuration;
+    let tt = Misc.roundTo2(testSeconds - afkseconds);
+    if (tt < 0) tt = 0;
+    const acc = completedEvent.acc;
+    TestStats.incrementIncompleteSeconds(tt);
+    TestStats.pushIncompleteTest(acc, tt);
+  }
+
+  const customTextName = CustomTextState.getCustomTextName();
+  const isLong = CustomTextState.isCustomTextLong();
+  if (Config.mode === "custom" && customTextName !== "" && isLong) {
+    // Let's update the custom text progress
+    if (TestInput.bailout || TestInput.input.length < TestWords.words.length) {
+      // They bailed out
+      const newProgress =
+        CustomText.getCustomTextLongProgress(customTextName) +
+        TestInput.input.getHistory().length -
+        1;
+      CustomText.setCustomTextLongProgress(customTextName, newProgress);
+      Notifications.add("Long custom text progress saved", 1, 5);
+
+      let newText = CustomText.getCustomText(customTextName, true);
+      newText = newText.slice(newProgress);
+      CustomText.setText(newText);
+    } else {
+      // They finished the test
+      CustomText.setCustomTextLongProgress(customTextName, 0);
+      CustomText.setText(CustomText.getCustomText(customTextName, true));
+      Notifications.add("Long custom text completed", 1, 5);
+    }
+  }
 
   if (!dontSave) {
     TodayTracker.addSeconds(
@@ -1573,7 +1698,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Result.updateTodayTracker();
   }
 
-  if (Auth.currentUser == null) {
+  if (!Auth?.currentUser) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
     $(".pageTest #result #reportQuoteButton").addClass("hidden");
     AnalyticsController.log("testCompletedNoLogin");
@@ -1582,6 +1707,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   } else {
     $(".pageTest #result #reportQuoteButton").removeClass("hidden");
   }
+
+  $("#result .stats .dailyLeaderboard").addClass("hidden");
 
   TestStats.setLastResult(completedEvent);
 
@@ -1622,59 +1749,103 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.resetIncomplete();
   }
 
-  completedEvent.uid = Auth.currentUser?.uid as string;
+  completedEvent.uid = Auth?.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.randomQuote);
 
   AccountButton.loading(true);
-  completedEvent.challenge = ChallengeContoller.verify(completedEvent);
+  if (completedEvent.bailedOut !== true) {
+    completedEvent.challenge = ChallengeContoller.verify(completedEvent);
+  }
+
   if (completedEvent.challenge === null) delete completedEvent?.challenge;
 
   completedEvent.hash = objectHash(completedEvent);
 
+  saveResult(completedEvent, false);
+}
+
+async function saveResult(
+  completedEvent: CompletedEvent,
+  isRetrying: boolean
+): Promise<void> {
+  if (!TestState.savingEnabled) {
+    Notifications.add("Result not saved: disabled by user", -1, 3, "Notice");
+    AccountButton.loading(false);
+    return;
+  }
+
+  if (!ConnectionState.get()) {
+    Notifications.add("Result not saved: offline", -1, 2, "Notice");
+    AccountButton.loading(false);
+    retrySaving.canRetry = true;
+    $("#retrySavingResultButton").removeClass("hidden");
+    if (!isRetrying) {
+      retrySaving.completedEvent = completedEvent;
+    }
+    return;
+  }
+
   const response = await Ape.results.save(completedEvent);
 
   AccountButton.loading(false);
+  Result.hideCrown();
 
   if (response.status !== 200) {
-    console.log("Error saving result", completedEvent);
-    $("#retrySavingResultButton").removeClass("hidden");
-    if (response.message === "Incorrect result hash") {
-      console.log(completedEvent);
+    //only allow retry if status is not in this list
+    if (![460, 461, 463, 464, 465].includes(response.status)) {
+      retrySaving.canRetry = true;
+      $("#retrySavingResultButton").removeClass("hidden");
+      if (!isRetrying) {
+        retrySaving.completedEvent = completedEvent;
+      }
     }
-    retrySaving.completedEvent = completedEvent;
-    retrySaving.canRetry = true;
+    console.log("Error saving result", completedEvent);
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
-  if (response.data.xp) {
-    const snapxp = DB.getSnapshot().xp;
+  $("#result .stats .tags .editTagsButton").attr(
+    "result-id",
+    response.data.insertedId
+  );
+  $("#result .stats .tags .editTagsButton").removeClass("invisible");
+
+  if (response?.data?.xp) {
+    const snapxp = DB.getSnapshot()?.xp ?? 0;
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
-      response.data.dailyXpBonus
+      response.data.xpBreakdown
     );
     DB.addXp(response.data.xp);
   }
 
-  Result.hideCrown();
-
-  completedEvent._id = response.data.insertedId;
-  if (response.data.isPb) {
-    completedEvent.isPb = true;
+  if (response?.data?.streak) {
+    DB.setStreak(response.data.streak);
   }
 
-  DB.saveLocalResult(completedEvent);
-  DB.updateLocalStats(
-    TestStats.restartCount + 1,
-    completedEvent.testDuration +
-      completedEvent.incompleteTestSeconds -
-      completedEvent.afkDuration
-  );
+  if (response?.data?.insertedId) {
+    completedEvent._id = response.data.insertedId;
+    if (response?.data?.isPb) {
+      completedEvent.isPb = true;
+    }
+    DB.saveLocalResult(completedEvent);
+    DB.updateLocalStats(
+      TestStats.restartCount + 1,
+      completedEvent.testDuration +
+        completedEvent.incompleteTestSeconds -
+        completedEvent.afkDuration
+    );
+  }
 
   AnalyticsController.log("testCompleted");
 
-  if (response.data.isPb) {
+  if (response?.data?.isPb) {
     //new pb
+    if (
+      DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
+    ) {
+      Result.showConfetti();
+    }
     Result.showCrown();
     Result.updateCrown();
     DB.saveLocalPB(
@@ -1691,18 +1862,42 @@ export async function finish(difficultyFailed = false): Promise<void> {
     );
   }
 
-  if (response.data.dailyLeaderboardRank) {
-    Notifications.add(
-      `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
-        Misc.getPositionString(response.data.dailyLeaderboardRank),
-      1,
-      10,
-      "Daily Leaderboard",
-      "list-ol"
+  // if (response.data.dailyLeaderboardRank) {
+  //   Notifications.add(
+  //     `New ${completedEvent.language} ${completedEvent.mode} ${completedEvent.mode2} rank: ` +
+  //       Misc.getPositionString(response.data.dailyLeaderboardRank),
+  //     1,
+  //     10,
+  //     "Daily Leaderboard",
+  //     "list-ol"
+  //   );
+  // }
+
+  if (!response?.data?.dailyLeaderboardRank) {
+    $("#result .stats .dailyLeaderboard").addClass("hidden");
+  } else {
+    $("#result .stats .dailyLeaderboard")
+      .css({
+        maxWidth: "13rem",
+        opacity: 0,
+      })
+      .removeClass("hidden")
+      .animate(
+        {
+          // maxWidth: "10rem",
+          opacity: 1,
+        },
+        500
+      );
+    $("#result .stats .dailyLeaderboard .bottom").html(
+      Misc.getPositionString(response.data.dailyLeaderboardRank)
     );
   }
 
   $("#retrySavingResultButton").addClass("hidden");
+  if (isRetrying) {
+    Notifications.add("Result saved", 1);
+  }
 }
 
 export function fail(reason: string): void {
@@ -1711,15 +1906,18 @@ export function fail(reason: string): void {
   // corrected.pushHistory();
   TestInput.pushKeypressesToHistory();
   finish(true);
+  if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
-  let tt = testSeconds - afkseconds;
+  let tt = Misc.roundTo2(testSeconds - afkseconds);
   if (tt < 0) tt = 0;
   TestStats.incrementIncompleteSeconds(tt);
   TestStats.incrementRestartCount();
+  const acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  TestStats.pushIncompleteTest(acc, tt);
 }
 
-$(document).on("click", "#testModesNotice .textButton.restart", () => {
+$(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
   restart();
 });
 
@@ -1729,7 +1927,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#restartTestButton", () => {
+$(".pageTest").on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
@@ -1745,7 +1943,7 @@ $(document.body).on("click", "#restartTestButton", () => {
   }
 });
 
-$(document.body).on("click", "#retrySavingResultButton", retrySavingResult);
+$(".pageTest").on("click", "#retrySavingResultButton", retrySavingResult);
 
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.key === "Enter") {
@@ -1753,12 +1951,12 @@ $(document).on("keypress", "#nextTestButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#nextTestButton", () => {
+$(".pageTest").on("click", "#nextTestButton", () => {
   ManualRestart.set();
   restart();
 });
 
-$(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
+$(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
   if (Config.mode == "zen") {
     Notifications.add("Repeat test disabled in zen mode");
     return;
@@ -1781,7 +1979,17 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
   }
 });
 
-$(document).on("click", "#top .config .wordCount .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
+  if (TestUI.testRestarting) return;
+  if ($(e.currentTarget).hasClass("active")) return;
+  const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
+  if (mode === undefined) return;
+  UpdateConfig.setMode(mode);
+  ManualRestart.set();
+  restart();
+});
+
+$(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
   if (wrd != "custom") {
@@ -1791,7 +1999,7 @@ $(document).on("click", "#top .config .wordCount .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .time .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
   if (mode != "custom") {
@@ -1801,7 +2009,7 @@ $(document).on("click", "#top .config .time .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .quoteLength .textButton", (e) => {
+$(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
@@ -1816,26 +2024,16 @@ $(document).on("click", "#top .config .quoteLength .textButton", (e) => {
   }
 });
 
-$(document).on("click", "#top .config .punctuationMode .textButton", () => {
+$(".pageTest").on("click", "#testConfig .punctuationMode.textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setPunctuation(!Config.punctuation);
   ManualRestart.set();
   restart();
 });
 
-$(document).on("click", "#top .config .numbersMode .textButton", () => {
+$(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   if (TestUI.testRestarting) return;
   UpdateConfig.setNumbers(!Config.numbers);
-  ManualRestart.set();
-  restart();
-});
-
-$(document).on("click", "#top .config .mode .textButton", (e) => {
-  if (TestUI.testRestarting) return;
-  if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
-  if (mode === undefined) return;
-  UpdateConfig.setMode(mode);
   ManualRestart.set();
   restart();
 });
@@ -1864,7 +2062,7 @@ $("#practiseWordsPopup .button.both").on("click", () => {
   });
 });
 
-$(document).on(
+$("#popups").on(
   "click",
   "#quoteSearchPopup #quoteSearchResults .searchResult",
   (e) => {
@@ -1880,7 +2078,7 @@ $(document).on(
   }
 );
 
-$(document).on("click", "#top #menu #startTestButton, #top .logo", () => {
+$("#top").on("click", "#menu #startTestButton, .logo", () => {
   if (ActivePage.get() === "test") restart();
 });
 

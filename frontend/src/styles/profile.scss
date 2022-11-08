@@ -1,4 +1,30 @@
+.pageProfileSearch {
+  align-content: center;
+  height: 100%;
+  display: grid;
+  .search {
+    justify-self: center;
+    max-width: 400px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    font-size: 1.25rem;
+    .title {
+      font-size: 1.25em;
+      grid-column: span 2;
+      color: var(--sub-color);
+    }
+    .button {
+      height: auto;
+    }
+  }
+}
+
 .pageProfile {
+  align-content: center;
+  height: 100%;
+  display: grid;
   .preloader {
     position: absolute;
     z-index: 1;
@@ -11,6 +37,21 @@
     transform: translate(-50%, -50%);
     color: var(--main-color);
   }
+  .error {
+    position: absolute;
+    z-index: 1;
+    font-size: 2rem;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--error-color);
+    .message {
+      display: inline;
+    }
+  }
 }
 
 .profile {
@@ -21,6 +62,7 @@
   grid-template-rows: auto 1fr;
   grid-template-areas:
     "info info"
+    "leaderboards leaderboards"
     "pbsTime pbsWords";
 
   .pbsWords {
@@ -37,8 +79,9 @@
 
   .pbsWords,
   .pbsTime,
-  .details {
-    user-select: none;
+  .details,
+  .leaderboardsPositions {
+    // user-select: none;
     background: var(--sub-alt-color);
     padding: 1rem;
     border-radius: var(--roundness);
@@ -78,6 +121,43 @@
     .editProfileButton {
       font-size: 0.9rem;
     }
+  }
+
+  .leaderboardsPositions {
+    grid-area: leaderboards;
+    display: grid;
+    gap: 1rem;
+    align-items: center;
+    grid-template-areas: "title t15 t60";
+    grid-template-columns: unset;
+    justify-items: center;
+    .title {
+      color: var(--sub-color);
+      text-align: center;
+      grid-area: title;
+    }
+    .group {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      .testType {
+        color: var(--sub-color);
+      }
+      .pos {
+        font-size: 2rem;
+      }
+      &.t15 {
+        grid-area: t15;
+      }
+      &.t60 {
+        grid-area: t60;
+      }
+    }
+  }
+
+  .pbsWords,
+  .pbsTime {
     .group {
       justify-self: center;
       display: grid;
@@ -292,8 +372,14 @@
         font-size: 0.7em;
         line-height: 0.7rem;
       }
+      .streak {
+        color: var(--sub-color);
+        font-size: 0.7em;
+        line-height: 0.7rem;
+      }
       .badge,
-      .joined {
+      .joined,
+      .streak {
         margin-top: 0.35rem;
       }
       .levelAndBar {
@@ -378,6 +464,11 @@
       .value {
         font-size: 1.5rem;
         line-height: 1.3rem;
+      }
+    }
+    .socials {
+      .value {
+        margin-top: 0.05rem;
       }
     }
     .title {

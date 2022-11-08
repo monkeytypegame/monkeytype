@@ -155,3 +155,52 @@ export function sanitizeString(str: string | undefined): string | undefined {
     .trim()
     .replace(/\s{3,}/g, "  ");
 }
+
+const suffixes = ["th", "st", "nd", "rd"];
+
+export function getOrdinalNumberString(number: number): string {
+  const lastTwo = number % 100;
+  const suffix =
+    suffixes[(lastTwo - 20) % 10] || suffixes[lastTwo] || suffixes[0];
+  return `${number}${suffix}`;
+}
+
+export function isYesterday(timestamp: number): boolean {
+  const yesterday = getStartOfDayTimestamp(Date.now() - MILLISECONDS_IN_DAY);
+  const date = getStartOfDayTimestamp(timestamp);
+
+  return yesterday === date;
+}
+
+export function isToday(timestamp: number): boolean {
+  const today = getStartOfDayTimestamp(Date.now());
+  const date = getStartOfDayTimestamp(timestamp);
+
+  return today === date;
+}
+
+export function mapRange(
+  value: number,
+  inMin: number,
+  inMax: number,
+  outMin: number,
+  outMax: number,
+  clamp = false
+): number {
+  if (inMin === inMax) {
+    return outMin;
+  }
+
+  const result =
+    ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+
+  if (clamp) {
+    if (outMin < outMax) {
+      return Math.min(Math.max(result, outMin), outMax);
+    } else {
+      return Math.max(Math.min(result, outMin), outMax);
+    }
+  }
+
+  return result;
+}

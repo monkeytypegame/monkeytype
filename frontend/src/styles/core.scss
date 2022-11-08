@@ -28,6 +28,14 @@
     url("../webfonts/Boon-400.otf") format("opentype");
 }
 
+@font-face {
+  font-family: "Open Dyslexic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/OpenDyslexic.otf") format("opentype");
+}
+
 :root {
   --roundness: 0.5rem;
   --font: "Roboto Mono", "Vazirmatn";
@@ -40,6 +48,11 @@
   color: var(--sub-color);
   opacity: 1;
   /* Firefox */
+}
+
+::selection {
+  background-color: var(--main-color);
+  color: var(--sub-alt-color);
 }
 
 #app {
@@ -84,7 +97,7 @@ a {
   }
 }
 
-a[data-link] * {
+a[router-link] * {
   pointer-events: none;
 }
 
@@ -208,8 +221,9 @@ key {
 }
 
 .pageLoading {
+  height: 100%;
   display: grid;
-  justify-content: center;
+  align-items: center;
 }
 
 .pageLoading,
@@ -292,7 +306,7 @@ key {
   color: var(--text-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;
-  padding: 0.5rem;
+  padding: 0.5em;
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
   text-align: center;
@@ -301,11 +315,11 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1.25rem;
+  line-height: 1.25em;
   appearance: none;
   border: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1em;
 
   &.active {
     background: var(--main-color);
@@ -351,7 +365,7 @@ key {
   color: var(--sub-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;
-  padding: 0.5rem;
+  padding: 0.5em;
   border-radius: var(--roundness);
   text-align: center;
   user-select: none;
@@ -359,16 +373,16 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1.25rem;
+  line-height: 1.25em;
   appearance: none;
   border: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1em;
   width: max-content;
   width: -moz-max-content;
   display: grid;
   grid-auto-flow: column;
-  gap: 0.25rem;
+  gap: 0.25em;
   text-decoration: none;
 
   .fas,
@@ -440,15 +454,15 @@ key {
   }
   position: relative;
   .statusIndicator {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.25em;
+    height: 2.25em;
     position: absolute;
     right: 0;
     top: 0;
     /* background: red; */
     display: grid;
-    grid-template-columns: 2.25rem;
-    grid-template-rows: 2.25rem;
+    grid-template-columns: 2.25em;
+    grid-template-rows: 2.25em;
     place-items: center center;
     cursor: pointer;
 
@@ -470,13 +484,15 @@ key {
 
 .configureAPI.button {
   position: fixed;
-  left: 2rem;
-  bottom: 2rem;
+  left: 0;
+  top: 10rem;
   display: grid;
   grid-auto-flow: column;
   gap: 0.5rem;
   text-decoration: none;
   z-index: 999999999;
+  border-radius: 0 1rem 1rem 0;
+  padding: 1rem;
 }
 
 .avatar {
@@ -511,4 +527,19 @@ key {
     margin-bottom: 0.15rem;
     margin-right: 0.3rem;
   }
+}
+
+.notificationBubble {
+  position: absolute;
+  background: var(--main-color);
+  width: 1em;
+  height: 1em;
+  font-size: 0.5em;
+  line-height: 2em;
+  color: transparent;
+  border-radius: 100rem;
+  right: 0.5em;
+  top: 0.5em;
+  box-shadow: 0 0 0 0.5em var(--bg-color);
+  transition: 0.125s;
 }

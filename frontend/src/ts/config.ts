@@ -96,11 +96,6 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
     numb = false;
   }
   config.numbers = numb;
-  if (!config.numbers) {
-    $("#top .config .numbersMode .textButton").removeClass("active");
-  } else {
-    $("#top .config .numbersMode .textButton").addClass("active");
-  }
   saveToLocalStorage("numbers", nosave);
   ConfigEvent.dispatch("numbers", config.numbers);
 
@@ -115,11 +110,6 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
     punc = false;
   }
   config.punctuation = punc;
-  if (!config.punctuation) {
-    $("#top .config .punctuationMode .textButton").removeClass("active");
-  } else {
-    $("#top .config .punctuationMode .textButton").addClass("active");
-  }
   saveToLocalStorage("punctuation", nosave);
   ConfigEvent.dispatch("punctuation", config.punctuation);
 
@@ -176,7 +166,7 @@ export function setPlaySoundOnClick(
 ): boolean {
   if (
     !isConfigValueValid("play sound on click", val, [
-      ["off", "1", "2", "3", "4", "5", "6", "7"],
+      ["off", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
     ])
   ) {
     return false;
@@ -356,14 +346,14 @@ export function setPaceCaret(
 ): boolean {
   if (
     !isConfigValueValid("pace caret", val, [
-      ["custom", "off", "average", "pb", "last"],
+      ["custom", "off", "average", "pb", "last", "daily"],
     ])
   ) {
     return false;
   }
 
   if (document.readyState === "complete") {
-    if (val == "pb" && Auth.currentUser === null) {
+    if (val == "pb" && !Auth?.currentUser) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
@@ -982,15 +972,8 @@ export function setTimeConfig(
 
   const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
 
-  $("#top .config .time .textButton").removeClass("active");
-
-  const timeCustom = ![15, 30, 60, 120].includes(newTime) ? "custom" : newTime;
-
   config.time = newTime;
 
-  $("#top .config .time .textButton[timeConfig='" + timeCustom + "']").addClass(
-    "active"
-  );
   saveToLocalStorage("time", nosave);
   ConfigEvent.dispatch("time", config.time);
 
@@ -1035,12 +1018,6 @@ export function setQuoteLength(
     }
   }
   // if (!nosave) setMode("quote", nosave);
-  $("#top .config .quoteLength .textButton").removeClass("active");
-  config.quoteLength.forEach((ql) => {
-    $(
-      "#top .config .quoteLength .textButton[quoteLength='" + ql + "']"
-    ).addClass("active");
-  });
   saveToLocalStorage("quoteLength", nosave);
   ConfigEvent.dispatch("quoteLength", config.quoteLength);
 
@@ -1056,17 +1033,8 @@ export function setWordCount(
   const newWordCount =
     wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
 
-  $("#top .config .wordCount .textButton").removeClass("active");
-
-  const wordCustom = ![10, 25, 50, 100, 200].includes(newWordCount)
-    ? "custom"
-    : newWordCount;
-
   config.words = newWordCount;
 
-  $(
-    "#top .config .wordCount .textButton[wordCount='" + wordCustom + "']"
-  ).addClass("active");
   saveToLocalStorage("words", nosave);
   ConfigEvent.dispatch("words", config.words);
 
@@ -1337,12 +1305,12 @@ export function setRandomTheme(
   }
 
   if (val === "custom") {
-    if (Auth.currentUser === null) {
+    if (!Auth?.currentUser) {
       config.randomTheme = val;
       return false;
     }
     if (!DB.getSnapshot()) return true;
-    if (DB.getSnapshot().customThemes.length === 0) {
+    if (DB.getSnapshot()?.customThemes.length === 0) {
       Notifications.add("You need to create a custom theme first", 0);
       config.randomTheme = "off";
       return false;
@@ -1564,60 +1532,44 @@ export function setLayout(layout: string, nosave?: boolean): boolean {
 //   return true;
 // }
 
-export function setFontSize(
-  fontSize: MonkeyTypes.FontSize,
-  nosave?: boolean
-): boolean {
+export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   if (
-    !isConfigValueValid("font size", fontSize, [
-      ["1", "125", "15", "2", "3", "4"],
-    ])
+    typeof fontSize === "string" &&
+    ["1", "125", "15", "2", "3", "4"].includes(fontSize)
   ) {
+    if (fontSize === "125") {
+      fontSize = 1.25;
+    } else if (fontSize === "15") {
+      fontSize = 1.5;
+    } else {
+      fontSize = parseInt(fontSize);
+    }
+  }
+
+  if (!isConfigValueValid("font size", fontSize, ["number"])) {
     return false;
   }
 
-  config.fontSize = fontSize;
-  $("#words").removeClass("size125");
-  $("#caret, #paceCaret").removeClass("size125");
-  $("#words").removeClass("size15");
-  $("#caret, #paceCaret").removeClass("size15");
-  $("#words").removeClass("size2");
-  $("#caret, #paceCaret").removeClass("size2");
-  $("#words").removeClass("size3");
-  $("#caret, #paceCaret").removeClass("size3");
-  $("#words").removeClass("size35");
-  $("#caret, #paceCaret").removeClass("size35");
-  $("#words").removeClass("size4");
-  $("#caret, #paceCaret").removeClass("size4");
-
-  $("#miniTimerAndLiveWpm").removeClass("size125");
-  $("#miniTimerAndLiveWpm").removeClass("size15");
-  $("#miniTimerAndLiveWpm").removeClass("size2");
-  $("#miniTimerAndLiveWpm").removeClass("size3");
-  $("#miniTimerAndLiveWpm").removeClass("size35");
-  $("#miniTimerAndLiveWpm").removeClass("size4");
-
-  if (fontSize == "125") {
-    $("#words").addClass("size125");
-    $("#caret, #paceCaret").addClass("size125");
-    $("#miniTimerAndLiveWpm").addClass("size125");
-  } else if (fontSize == "15") {
-    $("#words").addClass("size15");
-    $("#caret, #paceCaret").addClass("size15");
-    $("#miniTimerAndLiveWpm").addClass("size15");
-  } else if (fontSize == "2") {
-    $("#words").addClass("size2");
-    $("#caret, #paceCaret").addClass("size2");
-    $("#miniTimerAndLiveWpm").addClass("size2");
-  } else if (fontSize == "3") {
-    $("#words").addClass("size3");
-    $("#caret, #paceCaret").addClass("size3");
-    $("#miniTimerAndLiveWpm").addClass("size3");
-  } else if (fontSize == "4") {
-    $("#words").addClass("size4");
-    $("#caret, #paceCaret").addClass("size4");
-    $("#miniTimerAndLiveWpm").addClass("size4");
+  if (fontSize < 0) {
+    fontSize = 1;
   }
+
+  // i dont know why the above check is not enough
+  // some people are getting font size 15 when it should be converted to 1.5
+  // after converting from the string to float system
+
+  // keeping this in for now, if you want a big font go 14.9 or something
+  if (fontSize == 15) {
+    fontSize = 1.5;
+  }
+
+  config.fontSize = fontSize;
+
+  $("#words, #caret, #paceCaret, #miniTimerAndLiveWpm").css(
+    "fontSize",
+    fontSize + "rem"
+  );
+
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize);
 

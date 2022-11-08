@@ -7,10 +7,11 @@ import {
   updateTypingStats,
   recordAutoBanEvent,
 } from "../../dal/user";
-import * as PublicStatsDAL from "../../dal/public-stats";
+import * as PublicDAL from "../../dal/public";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
+  mapRange,
   roundTo2,
   stdDev,
 } from "../../utils/misc";
@@ -34,6 +35,7 @@ import * as George from "../../tasks/george";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
+import { buildMonkeyMail } from "../../utils/monkey-mail";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -84,7 +86,29 @@ export async function updateTags(
   const { tagIds, resultId } = req.body;
 
   await ResultDAL.updateTags(uid, resultId, tagIds);
-  return new MonkeyResponse("Result tags updated");
+  const result = await ResultDAL.getResult(uid, resultId);
+
+  if (!result.difficulty) {
+    result.difficulty = "normal";
+  }
+  if (!result.language) {
+    result.language = "english";
+  }
+  if (!result.funbox) {
+    result.funbox = "none";
+  }
+  if (!result.lazyMode) {
+    result.lazyMode = false;
+  }
+  if (!result.punctuation) {
+    result.punctuation = false;
+  }
+
+  const user = await getUser(uid, "update tags");
+  const tagPbs = await checkIfTagPb(uid, user, result);
+  return new MonkeyResponse("Result tags updated", {
+    tagPbs,
+  });
 }
 
 interface AddResultData {
@@ -94,6 +118,8 @@ interface AddResultData {
   dailyLeaderboardRank?: number;
   xp: number;
   dailyXpBonus: boolean;
+  xpBreakdown: Record<string, number>;
+  streak: number;
 }
 
 export async function addResult(
@@ -247,11 +273,18 @@ export async function addResult(
         //autoban
         const autoBanConfig = req.ctx.configuration.users.autoBan;
         if (autoBanConfig.enabled) {
-          await recordAutoBanEvent(
+          const didUserGetBanned = await recordAutoBanEvent(
             uid,
             autoBanConfig.maxCount,
             autoBanConfig.maxHours
           );
+          if (didUserGetBanned) {
+            const mail = buildMonkeyMail({
+              subject: "Banned",
+              body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
+            });
+            UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+          }
         }
         const status = MonkeyStatusCodes.BOT_DETECTED;
         throw new MonkeyError(status.code, "Possible bot detected");
@@ -318,7 +351,7 @@ export async function addResult(
   }
   tt = result.testDuration + result.incompleteTestSeconds - afk;
   updateTypingStats(uid, result.restartCount, tt);
-  PublicStatsDAL.updateStats(result.restartCount, tt);
+  PublicDAL.updateStats(result.restartCount, tt);
 
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
   const dailyLeaderboard = getDailyLeaderboard(
@@ -359,11 +392,14 @@ export async function addResult(
     );
   }
 
+  const streak = await UserDAL.updateStreak(uid, result.timestamp);
+
   const xpGained = await calculateXp(
     result,
     req.ctx.configuration.users.xp,
     uid,
-    user.xp ?? 0
+    user.xp ?? 0,
+    streak
   );
 
   if (result.bailedOut === false) delete result.bailedOut;
@@ -400,6 +436,8 @@ export async function addResult(
     insertedId: addedResult.insertedId,
     xp: xpGained.xp,
     dailyXpBonus: xpGained.dailyBonus ?? false,
+    xpBreakdown: xpGained.breakdown ?? {},
+    streak,
   };
 
   if (dailyLeaderboardRank !== -1) {
@@ -413,19 +451,22 @@ export async function addResult(
 interface XpResult {
   xp: number;
   dailyBonus?: boolean;
+  breakdown?: Record<string, number>;
 }
 
 async function calculateXp(
   result,
   xpConfiguration: MonkeyTypes.Configuration["users"]["xp"],
   uid: string,
-  currentTotalXp: number
+  currentTotalXp: number,
+  streak: number
 ): Promise<XpResult> {
   const {
     mode,
     acc,
     testDuration,
     incompleteTestSeconds,
+    incompleteTests,
     afkDuration,
     charStats,
     punctuation,
@@ -441,35 +482,73 @@ async function calculateXp(
     };
   }
 
-  const seconds = testDuration - afkDuration;
+  const breakdown: Record<string, number> = {};
+
+  const baseXp = Math.round((testDuration - afkDuration) * 2);
+  breakdown["base"] = baseXp;
 
   let modifier = 1;
 
   const correctedEverything = charStats
-    .slice(2)
+    .slice(1)
     .every((charStat: number) => charStat === 0);
 
   if (acc === 100) {
     modifier += 0.5;
+    breakdown["100%"] = Math.round(baseXp * 0.5);
   } else if (correctedEverything) {
     // corrected everything bonus
     modifier += 0.25;
+    breakdown["corrected"] = Math.round(baseXp * 0.25);
   }
 
   if (mode === "quote") {
     // real sentences bonus
     modifier += 0.5;
+    breakdown["quote"] = Math.round(baseXp * 0.5);
   } else {
     // punctuation bonus
     if (punctuation) {
       modifier += 0.4;
+      breakdown["punctuation"] = Math.round(baseXp * 0.4);
     }
     if (numbers) {
       modifier += 0.1;
+      breakdown["numbers"] = Math.round(baseXp * 0.1);
     }
   }
 
-  const incompleteXp = Math.round(incompleteTestSeconds);
+  if (xpConfiguration.streak.enabled) {
+    const streakModifier = parseFloat(
+      mapRange(
+        streak,
+        0,
+        xpConfiguration.streak.maxStreakDays,
+        0,
+        xpConfiguration.streak.maxStreakMultiplier,
+        true
+      ).toFixed(1)
+    );
+
+    if (streakModifier > 0) {
+      modifier += streakModifier;
+      breakdown["streak"] = Math.round(baseXp * streakModifier);
+    }
+  }
+
+  let incompleteXp = 0;
+  if (incompleteTests && incompleteTests.length > 0) {
+    incompleteTests.forEach((it: { acc: number; seconds: number }) => {
+      let modifier = (it.acc - 50) / 50;
+      if (modifier < 0) modifier = 0;
+      incompleteXp += Math.round(it.seconds * modifier);
+    });
+    breakdown["incomplete"] = incompleteXp;
+  } else if (incompleteTestSeconds && incompleteTestSeconds > 0) {
+    incompleteXp = Math.round(incompleteTestSeconds);
+    breakdown["incomplete"] = incompleteXp;
+  }
+
   const accuracyModifier = (acc - 50) / 50;
 
   let dailyBonus = 0;
@@ -491,18 +570,31 @@ async function calculateXp(
         Math.min(maxDailyBonus, proportionalXp),
         minDailyBonus
       );
+      breakdown["daily"] = dailyBonus;
     }
   }
 
-  const baseXp = Math.round(
-    seconds * 2 * modifier * accuracyModifier + incompleteXp
-  );
-  const totalXp = baseXp * gainMultiplier + dailyBonus;
+  const xpWithModifiers = Math.round(baseXp * modifier);
+
+  const xpAfterAccuracy = Math.round(xpWithModifiers * accuracyModifier);
+  breakdown["accPenalty"] = xpWithModifiers - xpAfterAccuracy;
+
+  const totalXp =
+    Math.round((xpAfterAccuracy + incompleteXp) * gainMultiplier) + dailyBonus;
+
+  if (gainMultiplier > 1) {
+    // breakdown.push([
+    //   "configMultiplier",
+    //   Math.round((xpAfterAccuracy + incompleteXp) * (gainMultiplier - 1)),
+    // ]);
+    breakdown["configMultiplier"] = gainMultiplier;
+  }
 
   const isAwardingDailyBonus = dailyBonus > 0;
 
   return {
     xp: totalXp,
     dailyBonus: isAwardingDailyBonus,
+    breakdown,
   };
 }

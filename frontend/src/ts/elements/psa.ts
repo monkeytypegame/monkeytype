@@ -2,6 +2,7 @@ import Ape from "../ape";
 import { secondsToString } from "../utils/misc";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
+import * as Alerts from "./alerts";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
@@ -32,7 +33,7 @@ async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
         "Looks like the server is experiencing maintenance or some unexpected down time.<br>Check the <a target= '_blank' href='https://monkeytype.instatus.com/'>status page</a> or <a target= '_blank' href='https://twitter.com/monkeytypegame'>Twitter</a> for more information.",
         -1,
         "exclamation-triangle",
-        true,
+        false,
         undefined,
         true
       );
@@ -64,10 +65,6 @@ export async function show(): Promise<void> {
   }
   const localmemory = getMemory();
   latest.forEach((psa) => {
-    if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false) {
-      return;
-    }
-
     if (psa.date) {
       const dateObj = new Date(psa.date);
       const diff = psa.date - Date.now();
@@ -88,6 +85,12 @@ export async function show(): Promise<void> {
         "{date}",
         format(dateObj, "dd MMM yyyy HH:mm")
       );
+    }
+
+    Alerts.addPSA(psa.message, psa.level ?? -1);
+
+    if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false) {
+      return;
     }
 
     Notifications.addBanner(

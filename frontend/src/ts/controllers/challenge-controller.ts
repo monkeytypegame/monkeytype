@@ -7,6 +7,7 @@ import Config, * as UpdateConfig from "../config";
 import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestState from "../test/test-state";
+import * as Loader from "../elements/loader";
 
 let challengeLoading = false;
 
@@ -169,7 +170,20 @@ export async function setup(challengeName: string): Promise<boolean> {
 
   UpdateConfig.setFunbox("none");
 
-  const list = await Misc.getChallengeList();
+  let list;
+  try {
+    list = await Misc.getChallengeList();
+  } catch (e) {
+    const message = Misc.createErrorMessage(e, "Failed to setup challenge");
+    Notifications.add(message, -1);
+    ManualRestart.set();
+    setTimeout(() => {
+      $("#top .config").removeClass("hidden");
+      $(".page.pageTest").removeClass("hidden");
+    }, 250);
+    return false;
+  }
+
   const challenge = list.filter((c) => c.name === challengeName)[0];
   let notitext;
   try {
@@ -204,7 +218,9 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "script") {
+      Loader.show();
       const response = await fetch("/challenges/" + challenge.parameters[0]);
+      Loader.hide();
       const scriptdata = await response.text();
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");

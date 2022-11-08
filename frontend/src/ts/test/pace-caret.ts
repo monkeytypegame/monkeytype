@@ -75,6 +75,16 @@ export async function init(): Promise<void> {
       Config.lazyMode
     );
     wpm = Math.round(wpm);
+  } else if (Config.paceCaret === "daily") {
+    wpm = await DB.getUserDailyBest(
+      Config.mode,
+      mode2,
+      Config.punctuation,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode
+    );
+    wpm = Math.round(wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
   } else if (Config.paceCaret === "last" || TestState.isPaceRepeat == true) {
@@ -184,7 +194,9 @@ export function update(expectedStepEnd: number): void {
         throw ``;
       }
 
-      newTop = currentLetter.offsetTop - currentLetterHeight / 5;
+      newTop =
+        currentLetter.offsetTop -
+        Config.fontSize * Misc.convertRemToPixels(1) * 0.1;
       newLeft;
       if (settings.currentLetterIndex === -1) {
         newLeft = currentLetter.offsetLeft;

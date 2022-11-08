@@ -4,6 +4,7 @@ const RemovePlugin = require("remove-files-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
+const WorkboxPlugin = require("workbox-webpack-plugin");
 
 const BASE_CONFIG = require("./config.base");
 
@@ -72,6 +73,58 @@ const PRODUCTION_CONFIG = {
       after: {
         include: [resolve(__dirname, "../public/html")],
       },
+    }),
+    new WorkboxPlugin.GenerateSW({
+      // these options encourage the ServiceWorkers to get in there fast
+      // and not allow any straggling "old" SWs to hang around
+      clientsClaim: true,
+      skipWaiting: false,
+      //include the generated css and js files
+      maximumFileSizeToCacheInBytes: 11000000,
+      exclude: [
+        /html\/.*\.html/,
+        /LICENSE\.txt/,
+        /\.DS_Store/,
+        /\.map$/,
+        /^manifest.*\.js$/,
+        /languages\/.*\.json/,
+        /quotes\/.*\.json/,
+        /themes\/.*\.css/,
+        /challenges\/.*\.txt/,
+        /sound\/.*\.wav/,
+        /images\/.*\.(png|jpg)/,
+        /webfonts\/.+/,
+      ],
+      runtimeCaching: [
+        {
+          urlPattern: /languages\/.*\.json/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /quotes\/.*\.json/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /themes\/.*\.css/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /challenges\/.*\.txt/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /sound\/.*\.wav/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /images\/.*\.(png|jpg)/,
+          handler: "StaleWhileRevalidate",
+        },
+        {
+          urlPattern: /webfonts\/.+/,
+          handler: "CacheFirst",
+        },
+      ],
     }),
   ],
 };

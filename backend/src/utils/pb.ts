@@ -50,6 +50,15 @@ function matchesPersonalBest(
   result: Result,
   personalBest: MonkeyTypes.PersonalBest
 ): boolean {
+  if (
+    result.difficulty === undefined ||
+    result.language === undefined ||
+    result.punctuation === undefined ||
+    result.lazyMode === undefined
+  ) {
+    throw new Error("Missing result data (matchesPersonalBest)");
+  }
+
   const sameLazyMode =
     result.lazyMode === personalBest.lazyMode ||
     (!result.lazyMode && !personalBest.lazyMode);
@@ -64,16 +73,29 @@ function updatePersonalBest(
   personalBest: MonkeyTypes.PersonalBest,
   result: Result
 ): boolean {
-  if (personalBest.wpm > result.wpm) {
+  if (personalBest.wpm >= result.wpm) {
     return false;
   }
 
-  personalBest.acc = result.acc;
-  personalBest.consistency = result.consistency;
+  if (
+    result.difficulty === undefined ||
+    result.language === undefined ||
+    result.punctuation === undefined ||
+    result.lazyMode === undefined ||
+    result.acc === undefined ||
+    result.consistency === undefined ||
+    result.rawWpm === undefined ||
+    result.wpm === undefined
+  ) {
+    throw new Error("Missing result data (updatePersonalBest)");
+  }
+
   personalBest.difficulty = result.difficulty;
   personalBest.language = result.language;
-  personalBest.punctuation = result.punctuation ?? false;
-  personalBest.lazyMode = result.lazyMode ?? false;
+  personalBest.punctuation = result.punctuation;
+  personalBest.lazyMode = result.lazyMode;
+  personalBest.acc = result.acc;
+  personalBest.consistency = result.consistency;
   personalBest.raw = result.rawWpm;
   personalBest.wpm = result.wpm;
   personalBest.timestamp = Date.now();
@@ -82,13 +104,25 @@ function updatePersonalBest(
 }
 
 function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
+  if (
+    result.difficulty === undefined ||
+    result.language === undefined ||
+    result.punctuation === undefined ||
+    result.lazyMode === undefined ||
+    result.acc === undefined ||
+    result.consistency === undefined ||
+    result.rawWpm === undefined ||
+    result.wpm === undefined
+  ) {
+    throw new Error("Missing result data (buildPersonalBest)");
+  }
   return {
     acc: result.acc,
     consistency: result.consistency,
     difficulty: result.difficulty,
-    lazyMode: result.lazyMode ?? false,
+    lazyMode: result.lazyMode,
     language: result.language,
-    punctuation: result.punctuation ?? false,
+    punctuation: result.punctuation,
     raw: result.rawWpm,
     wpm: result.wpm,
     timestamp: Date.now(),

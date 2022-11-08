@@ -35,7 +35,10 @@ const CONFIG_SCHEMA = joi.object({
   mode: joi.string().valid("time", "words", "quote", "zen", "custom"),
   quoteLength: joi.array().items(joi.number()),
   language: joi.string(),
-  fontSize: joi.string().valid("1", "125", "15", "2", "3", "4"),
+  fontSize: joi.alternatives().try(
+    joi.string().valid("1", "125", "15", "2", "3", "4"), //remove after a week
+    joi.number().min(0)
+  ),
   freedomMode: joi.boolean(),
   difficulty: joi.string().valid("normal", "expert", "master"),
   blindMode: joi.boolean(),
@@ -72,11 +75,15 @@ const CONFIG_SCHEMA = joi.object({
   singleListCommandLine: joi.string().valid("manual", "on"),
   capsLockWarning: joi.boolean(),
   playSoundOnError: joi.boolean(),
-  playSoundOnClick: joi.string().valid("off", ..._.range(1, 8).map(_.toString)),
+  playSoundOnClick: joi
+    .string()
+    .valid("off", ..._.range(1, 12).map(_.toString)),
   soundVolume: joi.string().valid("0.1", "0.5", "1.0"),
   startGraphsAtZero: joi.boolean(),
   showOutOfFocusWarning: joi.boolean(),
-  paceCaret: joi.string().valid("off", "average", "pb", "last", "custom"),
+  paceCaret: joi
+    .string()
+    .valid("off", "average", "pb", "last", "daily", "custom"),
   paceCaretCustomSpeed: joi.number().min(0),
   repeatedPace: joi.boolean(),
   pageWidth: joi.string().valid("100", "125", "150", "200", "max"),

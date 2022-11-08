@@ -29,6 +29,7 @@ declare namespace MonkeyTypes {
       };
     };
     users: {
+      signUp: boolean;
       autoBan: {
         enabled: boolean;
         maxCount: number;
@@ -45,6 +46,15 @@ declare namespace MonkeyTypes {
         gainMultiplier: number;
         maxDailyBonus: number;
         minDailyBonus: number;
+        streak: {
+          enabled: boolean;
+          maxStreakDays: number;
+          maxStreakMultiplier: number;
+        };
+      };
+      inbox: {
+        enabled: boolean;
+        maxMail: number;
       };
     };
     apeKeys: {
@@ -68,7 +78,15 @@ declare namespace MonkeyTypes {
       validModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
+      xpRewardBrackets: RewardBracket[];
     };
+  }
+
+  interface RewardBracket {
+    minRank: number;
+    maxRank: number;
+    minReward: number;
+    maxReward: number;
   }
 
   interface DecodedToken {
@@ -96,6 +114,32 @@ declare namespace MonkeyTypes {
       github?: string;
       website?: string;
     };
+  }
+
+  interface Reward<T> {
+    type: string;
+    item: T;
+  }
+
+  interface XpReward extends Reward<number> {
+    type: "xp";
+    item: number;
+  }
+
+  interface BadgeReward extends Reward<Badge> {
+    type: "badge";
+    item: Badge;
+  }
+
+  type AllRewards = XpReward | BadgeReward;
+
+  interface MonkeyMail {
+    id: string;
+    subject: string;
+    body: string;
+    timestamp: number;
+    read: boolean;
+    rewards: AllRewards[];
   }
 
   interface User {
@@ -128,6 +172,14 @@ declare namespace MonkeyTypes {
     profileDetails?: UserProfileDetails;
     inventory?: UserInventory;
     xp?: number;
+    inbox?: MonkeyMail[];
+    streak?: UserStreak;
+  }
+
+  interface UserStreak {
+    lastResultTimestamp: number;
+    length: number;
+    maxLength: number;
   }
 
   interface UserInventory {
@@ -307,6 +359,11 @@ declare namespace MonkeyTypes {
     sd: number;
   }
 
+  interface IncompleteTest {
+    acc: number;
+    seconds: number;
+  }
+
   interface Result<M extends Mode> {
     _id: ObjectId;
     wpm: number;
@@ -321,6 +378,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
     restartCount: number;
     incompleteTestSeconds: number;
+    incompleteTests: IncompleteTest[];
     testDuration: number;
     afkDuration: number;
     tags: string[];
@@ -387,6 +445,12 @@ declare namespace MonkeyTypes {
     testsStarted: number;
     timeTyping: number;
     type: string;
+  }
+
+  interface PublicSpeedStats {
+    _id: string;
+    type: "speedStats";
+    [language_mode_mode2: string]: Record<string, number>;
   }
 
   interface QuoteRating {
