@@ -14,13 +14,12 @@ export function canGetPb(
 ): boolean {
   const funbox = result.funbox;
 
-  const funboxes = Funboxes.filter(
-    (f) => funbox?.split("#").find((F) => F === f.name) !== undefined
-  );
-  if (funboxes.filter((f) => f.canGetPB) !== undefined) {
-    return false;
-  }
-  return true;
+  //filter the Funboxes object to only include the funbox name that matches the funbox array split by #
+  const funboxes = Funboxes.filter((fb) => {
+    return funbox?.split("#").includes(fb.name);
+  });
+
+  return funboxes.every((f) => f.canGetPB);
 }
 
 export function checkAndUpdatePb(
