@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -35647,6 +35659,13 @@
       "length": 1660,
       "approvedBy": "ze_or",
       "id": 6275
+    },
+    {
+      "text": "Come on, you know how this works. You fail and then you try something else. And you fail again and again, and you fail a thousand times, and you keep trying because maybe the 1,001st idea might work. Now, I’m gonna go and try to find our 1,001st idea.",
+      "source": "The Good Place",
+      "length": 251,
+      "approvedBy": "Smithster",
+      "id": 6276
     }
   ]
 }
