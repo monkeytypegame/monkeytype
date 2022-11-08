@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -35933,13 +35921,6 @@
       "length": 232,
       "approvedBy": "Smithster",
       "id": 6321
-    },
-    {
-      "text": "Stay gold, Ponyboy. Stay gold",
-      "source": "The Outsiders",
-      "length": 171,
-      "approvedBy": "Smithster",
-      "id": 6322
     },
     {
       "text": "The dark side of the Force is a pathway to many abilities some consider to be unnatural.",
