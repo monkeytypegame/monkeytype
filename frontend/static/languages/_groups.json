@@ -37,14 +37,11 @@
   },
   {
     "name": "german",
-    "languages": [
-      "german",
-      "german_1k",
-      "german_10k",
-      "german_250k",
-      "swiss_german",
-      "swiss_german_1k"
-    ]
+    "languages": ["german", "german_1k", "german_10k", "german_250k"]
+  },
+  {
+    "name": "swiss_german",
+    "languages": ["swiss_german", "swiss_german_1k"]
   },
   {
     "name": "portuguese",
@@ -97,7 +94,15 @@
   },
   {
     "name": "polish",
-    "languages": ["polish", "polish_2k", "polish_200k"]
+    "languages": [
+      "polish",
+      "polish_2k",
+      "polish_5k",
+      "polish_10k",
+      "polish_20k",
+      "polish_40k",
+      "polish_200k"
+    ]
   },
   {
     "name": "czech",
@@ -186,6 +191,10 @@
     "languages": ["norwegian", "norwegian_1k", "norwegian_5k", "norwegian_10k"]
   },
   {
+    "name": "norwegian_nynorsk",
+    "languages": ["norwegian_nynorsk"]
+  },
+  {
     "name": "hebrew",
     "languages": ["hebrew", "hebrew_1k", "hebrew_5k", "hebrew_10k"]
   },
@@ -223,11 +232,17 @@
   },
   {
     "name": "persian",
-    "languages": ["persian", "persian_1k", "persian_5k", "persian_20k"]
+    "languages": [
+      "persian",
+      "persian_1k",
+      "persian_5k",
+      "persian_20k",
+      "persian_romanized"
+    ]
   },
   {
     "name": "kazakh",
-    "languages": ["kazakh"]
+    "languages": ["kazakh", "kazakh_1k"]
   },
   {
     "name": "vietnamese",
@@ -378,6 +393,9 @@
     "name": "code",
     "languages": [
       "code_python",
+      "code_python_1k",
+      "code_python_2k",
+      "code_python_5k",
       "code_c",
       "code_csharp",
       "code_c++",

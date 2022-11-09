@@ -763,7 +763,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 }
 
 $(document).keydown(async (event) => {
-  if (ActivePage.get() == "loading") return event.preventDefault();
+  if (ActivePage.get() == "loading") return;
 
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");

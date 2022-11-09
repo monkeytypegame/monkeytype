@@ -319,11 +319,11 @@ export function updateExtras(
 }
 
 export function showFavoriteQuoteLength(): void {
-  $("#top .desktopConfig .group.quoteLength .favorite").removeClass("hidden");
+  $("#testConfig .quoteLength .favorite").removeClass("hidden");
 }
 
 export function hideFavoriteQuoteLength(): void {
-  $("#top .desktopConfig .group.quoteLength .favorite").addClass("hidden");
+  $("#testConfig .quoteLength .favorite").addClass("hidden");
 }
 
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {

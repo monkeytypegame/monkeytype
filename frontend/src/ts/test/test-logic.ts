@@ -1086,8 +1086,12 @@ export async function init(): Promise<void> {
       }
     }
   } else if (Config.mode === "quote") {
+    const languageToGet = Config.language.startsWith("swiss_german")
+      ? "german"
+      : Config.language;
+
     const quotesCollection = await QuotesController.getQuotes(
-      Config.language,
+      languageToGet,
       Config.quoteLength
     );
 
@@ -1171,6 +1175,10 @@ export async function init(): Promise<void> {
       w[i] = applyLazyModeToWord(w[i], language);
       w[i] = applyFunboxesToWord(w[i]);
       w[i] = await applyBritishEnglishToWord(w[i]);
+
+      if (Config.language === "swiss_german") {
+        w[i] = w[i].replace(/ß/g, "ss");
+      }
 
       TestWords.words.push(w[i]);
     }
