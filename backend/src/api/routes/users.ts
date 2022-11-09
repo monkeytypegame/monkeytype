@@ -343,6 +343,14 @@ const requireDiscordIntegrationEnabled = validateConfiguration({
   invalidMessage: "Discord integration is not available at this time",
 });
 
+router.get(
+  "/discord/oauth",
+  requireDiscordIntegrationEnabled,
+  authenticateRequest(),
+  RateLimit.userDiscordLink,
+  asyncHandler(UserController.getOauthLink)
+);
+
 router.post(
   "/discord/link",
   requireDiscordIntegrationEnabled,
@@ -352,6 +360,7 @@ router.post(
     body: {
       tokenType: joi.string().required(),
       accessToken: joi.string().required(),
+      state: joi.string().length(20).required(),
     },
   }),
   asyncHandler(UserController.linkDiscord)

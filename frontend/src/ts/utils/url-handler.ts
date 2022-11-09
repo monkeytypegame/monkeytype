@@ -19,10 +19,10 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     history.replaceState(null, "", "/");
     const accessToken = fragment.get("access_token") as string;
     const tokenType = fragment.get("token_type") as string;
+    const state = fragment.get("state") as string;
 
     Loader.show();
-
-    const response = await Ape.users.linkDiscord(tokenType, accessToken);
+    const response = await Ape.users.linkDiscord(tokenType, accessToken, state);
     Loader.hide();
 
     if (response.status !== 200) {
