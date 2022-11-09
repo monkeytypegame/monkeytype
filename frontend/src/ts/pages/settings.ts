@@ -15,6 +15,7 @@ import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { Auth } from "../firebase";
+import Ape from "../ape";
 
 interface SettingsGroups {
   [key: string]: SettingsGroup;
@@ -1101,6 +1102,15 @@ $(".pageSettings .section.autoSwitchThemeInputs").on(
       return;
     }
     UpdateConfig.setThemeDark(target.val() as string);
+  }
+);
+
+$(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
+  "click",
+  () => {
+    Ape.users.getOauthLink().then((res) => {
+      window.open(res.data.url, "_self");
+    });
   }
 );
 

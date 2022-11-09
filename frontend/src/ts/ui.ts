@@ -47,16 +47,6 @@ if (window.location.hostname === "localhost") {
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
   );
-  $(".pageSettings .discordIntegration .buttons a").attr(
-    "href",
-    "https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fverify&response_type=token&scope=identify"
-  );
-  $(
-    ".pageSettings .discordIntegration .info #discordButtonGroup #updateDiscordAvatarButton"
-  ).attr(
-    "href",
-    "https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fverify&response_type=token&scope=identify"
-  );
 }
 
 //stop space scrolling
