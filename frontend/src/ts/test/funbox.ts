@@ -850,6 +850,17 @@ export function isFunboxCompatible(funbox?: string): boolean {
     checkingFunbox.filter((f) => f.functions?.isCharCorrect).length <= 1;
   const oneCharReplacerMax =
     checkingFunbox.filter((f) => f.functions?.getWordHtml).length <= 1;
+  let allowedModes: MonkeyTypes.Mode[] | undefined;
+  for (const f of ActiveFunboxes()) {
+    if (f.mode) {
+      if (allowedModes) {
+        allowedModes = allowedModes.filter((m) => f.mode?.includes(m));
+      } else {
+        allowedModes = f.mode;
+      }
+    }
+  }
+  const noModesConflicts = allowedModes?.length !== 0;
 
   return (
     allFunboxesAreValid &&
@@ -865,7 +876,8 @@ export function isFunboxCompatible(funbox?: string): boolean {
     oneApplyCSSMax &&
     onePunctuateWordMax &&
     oneCharCheckerMax &&
-    oneCharReplacerMax
+    oneCharReplacerMax &&
+    noModesConflicts
   );
 }
 
@@ -968,35 +980,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       )} mode does not support the ${fb[0].name.replace(/_/g, " ")} funbox`,
       0
     );
-    let modes = [] as MonkeyTypes.Mode[];
-    for (const f of ActiveFunboxes()) {
-      if (f.mode) modes = modes.concat(f.mode);
-    }
-    if (modes.length > 0) {
-      modes = modes.filter((m) => {
-        for (const f of ActiveFunboxes()) {
-          if (f.mode) {
-            if (!f.mode.includes(m)) {
-              return false;
-            }
-          }
-        }
-        return true;
-      });
-      if (modes.length > 0) {
-        UpdateConfig.setMode(modes[0], true);
-      } else {
-        Notifications.add(
-          Misc.createErrorMessage(
-            undefined,
-            "Conflicting funboxes. Please open an issue"
-          ),
-          -1
-        );
-        UpdateConfig.setFunbox("none", true);
-        await clear();
-        return false;
-      }
+    const mode = fb.find((f) => f.mode)?.mode;
+    if (mode) {
+      UpdateConfig.setMode(mode[0], true);
     } else {
       UpdateConfig.setMode("time", true);
     }
