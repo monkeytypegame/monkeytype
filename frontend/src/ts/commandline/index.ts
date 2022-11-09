@@ -387,7 +387,7 @@ $("#commandLine input").on("input", () => {
 
 $(document).ready(() => {
   $(document).on("keydown", (event) => {
-    if (PageTransition.get()) return event.preventDefault();
+    if (PageTransition.get()) return;
     // opens command line if escape or ctrl/cmd + shift + p
     if (
       ((event.key === "Escape" && Config.quickRestart !== "esc") ||
