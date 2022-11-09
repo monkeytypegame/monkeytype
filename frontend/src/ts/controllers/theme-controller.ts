@@ -88,7 +88,7 @@ export async function loadStyle(name: string): Promise<void> {
     link.type = "text/css";
     link.rel = "stylesheet";
     link.id = "nextTheme";
-    link.onload = (): void => {
+    link.addEventListener("load", (): void => {
       Loader.hide();
       $("#currentTheme").remove();
       $("#nextTheme").attr("id", "currentTheme");
@@ -96,8 +96,8 @@ export async function loadStyle(name: string): Promise<void> {
       loadStyleLoaderTimeouts = [];
       $("#keymap .keymapKey").stop(true, true).removeAttr("style");
       resolve();
-    };
-    link.onerror = (): void => {
+    });
+    link.addEventListener("onerror", (): void => {
       Loader.hide();
       Notifications.add("Failed to load theme", 0);
       $("#currentTheme").remove();
@@ -106,7 +106,7 @@ export async function loadStyle(name: string): Promise<void> {
       loadStyleLoaderTimeouts = [];
       $("#keymap .keymapKey").stop(true, true).removeAttr("style");
       resolve();
-    };
+    });
     link.href =
       name === "custom" ? `/./themes/serika_dark.css` : `/./themes/${name}.css`;
 
