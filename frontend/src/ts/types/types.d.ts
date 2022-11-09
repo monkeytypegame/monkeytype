@@ -227,7 +227,7 @@ declare namespace MonkeyTypes {
   interface FunboxForcedConfig {
     punctuation?: boolean;
     numbers?: boolean;
-    highlightMode?: string;
+    highlightMode?: `${"" | "!"}${HighlightMode}#${"" | "!"}${HighlightMode}`;
     words?: FunboxModeDuration;
     time?: FunboxModeDuration;
   }
