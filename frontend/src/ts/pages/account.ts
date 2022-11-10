@@ -275,6 +275,8 @@ function fillContent(): void {
     max: 0,
   };
 
+  let totalEstimatedWords = 0;
+
   // let totalSeconds = 0;
   totalSecondsFiltered = 0;
 
@@ -519,6 +521,10 @@ function fillContent(): void {
       //filters done
       //=======================================
 
+      totalEstimatedWords += Math.round(
+        (result.wpm / 60) * result.testDuration
+      );
+
       const resultDate = new Date(result.timestamp);
       resultDate.setSeconds(0);
       resultDate.setMinutes(0);
@@ -670,6 +676,8 @@ function fillContent(): void {
 
   loadMoreLines();
   ////////
+
+  console.log(totalEstimatedWords);
 
   const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
   const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
@@ -968,6 +976,8 @@ function fillContent(): void {
       )
     } ${Config.alwaysShowCPM ? "cpm" : "wpm"}.`
   );
+
+  $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   applyHistorySmoothing();
   ChartController.accountActivity.updateColors();
