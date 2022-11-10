@@ -1,3 +1,5 @@
+type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
+
 declare namespace MonkeyTypes {
   type Difficulty = "normal" | "expert" | "master";
 
@@ -227,7 +229,7 @@ declare namespace MonkeyTypes {
   interface FunboxForcedConfig {
     punctuation?: boolean;
     numbers?: boolean;
-    highlightMode?: `${"" | "!"}${HighlightMode}`;
+    highlightMode?: typesSeparatedWithHash<HighlightMode>;
     words?: FunboxModeDuration;
     time?: FunboxModeDuration;
   }

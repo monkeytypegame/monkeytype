@@ -34,7 +34,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Type what simon says.",
     properties: ["changesWordsVisibility", "usesLayout"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: "off#letter",
     },
     functions: {
       applyCSS(): void {
@@ -66,7 +66,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Listen closely.",
     properties: ["changesWordsVisibility", "speaks"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: "off#letter",
     },
     functions: {
       applyCSS(): void {
@@ -114,7 +114,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     forcedConfig: {
       punctuation: false,
       numbers: false,
-      highlightMode: "!word",
+      highlightMode: "off#letter",
     },
     functions: {
       getWord(): string {
@@ -227,6 +227,10 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "layoutfluid",
     info: "Switch between layouts specified below proportionately to the length of the test.",
     properties: ["changesLayout"],
+    forcedConfig: {
+      time: "Finite",
+      words: "Finite",
+    },
     functions: {
       applyConfig(): void {
         UpdateConfig.setLayout(
@@ -434,7 +438,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Only the current word is invisible.",
     properties: ["changesWordsVisibility"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: "off#letter",
     },
     functions: {
       applyCSS(): void {
@@ -454,7 +458,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Current and the next word are invisible!",
     properties: ["changesWordsVisibility"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: "off#letter",
     },
     functions: {
       applyCSS(): void {
@@ -474,7 +478,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Current and the next two words are invisible!",
     properties: ["changesWordsVisibility"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: "off#letter",
     },
     functions: {
       applyCSS(): void {
@@ -537,7 +541,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Whoneedsspacesanyway?",
     properties: ["nospace"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: "off#letter",
     },
     functions: {
       applyConfig(): void {
@@ -778,6 +782,31 @@ export function toggleScript(...params: string[]): void {
   });
 }
 
+function getFunboxHighlightModes(
+  funboxes: MonkeyTypes.FunboxObject[]
+): MonkeyTypes.HighlightMode[] | undefined {
+  let allowedHighlightModes: string | undefined;
+  for (const f of funboxes) {
+    if (f.forcedConfig?.highlightMode) {
+      if (allowedHighlightModes) {
+        allowedHighlightModes = f.forcedConfig.highlightMode
+          .split("#")
+          .filter((m: MonkeyTypes.HighlightMode) =>
+            allowedHighlightModes?.split("#").includes(m)
+          )
+          .join("#");
+      } else {
+        allowedHighlightModes = f.forcedConfig.highlightMode;
+      }
+    }
+  }
+  return allowedHighlightModes
+    ? ((allowedHighlightModes == ""
+        ? []
+        : allowedHighlightModes.split("#")) as MonkeyTypes.HighlightMode[])
+    : undefined;
+}
+
 export function isFunboxCompatible(funbox?: string): boolean {
   if (funbox === "none" || Config.funbox === "none") return true;
   let checkingFunbox = ActiveFunboxes();
@@ -851,7 +880,7 @@ export function isFunboxCompatible(funbox?: string): boolean {
   const oneCharReplacerMax =
     checkingFunbox.filter((f) => f.functions?.getWordHtml).length <= 1;
   let allowedModes: MonkeyTypes.Mode[] | undefined;
-  for (const f of ActiveFunboxes()) {
+  for (const f of checkingFunbox) {
     if (f.mode) {
       if (allowedModes) {
         allowedModes = allowedModes.filter((m) => f.mode?.includes(m));
@@ -861,6 +890,59 @@ export function isFunboxCompatible(funbox?: string): boolean {
     }
   }
   const noModesConflicts = allowedModes?.length !== 0;
+  const allowedConfig = {} as MonkeyTypes.FunboxForcedConfig;
+  let noConfigConflicts = true;
+  for (const f of checkingFunbox) {
+    if (f.forcedConfig) {
+      // Check time
+      if (allowedConfig.time) {
+        if (f.forcedConfig.time) {
+          if (allowedConfig.time != f.forcedConfig.time) {
+            noConfigConflicts = false;
+            break;
+          }
+        }
+      } else {
+        allowedConfig.time = f.forcedConfig.time;
+      }
+      // Check words
+      if (allowedConfig.words) {
+        if (f.forcedConfig.words) {
+          if (allowedConfig.words != f.forcedConfig.words) {
+            noConfigConflicts = false;
+            break;
+          }
+        }
+      } else {
+        allowedConfig.words = f.forcedConfig.words;
+      }
+      // Check numbers
+      if (allowedConfig.numbers) {
+        if (f.forcedConfig.numbers) {
+          if (allowedConfig.numbers != f.forcedConfig.numbers) {
+            noConfigConflicts = false;
+            break;
+          }
+        }
+      } else {
+        allowedConfig.numbers = f.forcedConfig.numbers;
+      }
+      // Check punctuation
+      if (allowedConfig.punctuation) {
+        if (f.forcedConfig.punctuation) {
+          if (allowedConfig.punctuation != f.forcedConfig.punctuation) {
+            noConfigConflicts = false;
+            break;
+          }
+        }
+      } else {
+        allowedConfig.punctuation = f.forcedConfig.punctuation;
+      }
+    }
+  }
+  // Check highlightMode
+  const noHighlightModeConflicts =
+    getFunboxHighlightModes(checkingFunbox)?.length !== 0;
 
   return (
     allFunboxesAreValid &&
@@ -877,7 +959,9 @@ export function isFunboxCompatible(funbox?: string): boolean {
     onePunctuateWordMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
-    noModesConflicts
+    noModesConflicts &&
+    noConfigConflicts &&
+    noHighlightModeConflicts
   );
 }
 
@@ -1025,7 +1109,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         )} funbox`,
         0
       );
-      if (Config.mode === "time") UpdateConfig.setTimeConfig(15, true);
+      UpdateConfig.setTimeConfig(15, true);
     }
   }
 
@@ -1043,20 +1127,25 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         )} funbox`,
         0
       );
-      if (Config.mode === "words") UpdateConfig.setWordCount(10, true);
+      UpdateConfig.setWordCount(10, true);
     }
   }
 
-  if (Config.highlightMode === "word") {
-    const fb = ActiveFunboxes().filter((f) =>
-      f.forcedConfig?.highlightMode?.includes("!word")
-    );
-    if (fb.length > 0) {
+  const modes = getFunboxHighlightModes(ActiveFunboxes());
+  if (modes) {
+    if (!modes.includes(Config.highlightMode)) {
       Notifications.add(
-        `Can't use word highlight with ${fb[0].name.replace(/_/g, " ")} funbox`,
+        `Can't use ${Config.highlightMode} highlight with ${ActiveFunboxes()
+          .find(
+            (f) =>
+              f.forcedConfig?.highlightMode
+                ?.split("#")
+                .includes(Config.highlightMode) === false
+          )
+          ?.name.replace(/_/g, " ")} funbox`,
         0
       );
-      UpdateConfig.setHighlightMode("letter", true);
+      UpdateConfig.setHighlightMode(modes[0], true);
     }
   }
 
