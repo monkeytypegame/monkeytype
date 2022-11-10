@@ -802,8 +802,8 @@ function getFunboxHighlightModes(
   }
   return allowedHighlightModes
     ? ((allowedHighlightModes == ""
-        ? []
-        : allowedHighlightModes.split("#")) as MonkeyTypes.HighlightMode[])
+      ? []
+      : allowedHighlightModes.split("#")) as MonkeyTypes.HighlightMode[])
     : undefined;
 }
 
@@ -895,8 +895,8 @@ export function isFunboxCompatible(funbox?: string): boolean {
   for (const f of checkingFunbox) {
     if (f.forcedConfig) {
       // Check time
-      if (allowedConfig.time) {
-        if (f.forcedConfig.time) {
+      if (allowedConfig.time !== undefined) {
+        if (f.forcedConfig.time !== undefined) {
           if (allowedConfig.time != f.forcedConfig.time) {
             noConfigConflicts = false;
             break;
@@ -906,8 +906,8 @@ export function isFunboxCompatible(funbox?: string): boolean {
         allowedConfig.time = f.forcedConfig.time;
       }
       // Check words
-      if (allowedConfig.words) {
-        if (f.forcedConfig.words) {
+      if (allowedConfig.words !== undefined) {
+        if (f.forcedConfig.words !== undefined) {
           if (allowedConfig.words != f.forcedConfig.words) {
             noConfigConflicts = false;
             break;
@@ -917,8 +917,8 @@ export function isFunboxCompatible(funbox?: string): boolean {
         allowedConfig.words = f.forcedConfig.words;
       }
       // Check numbers
-      if (allowedConfig.numbers) {
-        if (f.forcedConfig.numbers) {
+      if (allowedConfig.numbers !== undefined) {
+        if (f.forcedConfig.numbers !== undefined) {
           if (allowedConfig.numbers != f.forcedConfig.numbers) {
             noConfigConflicts = false;
             break;
@@ -928,8 +928,8 @@ export function isFunboxCompatible(funbox?: string): boolean {
         allowedConfig.numbers = f.forcedConfig.numbers;
       }
       // Check punctuation
-      if (allowedConfig.punctuation) {
-        if (f.forcedConfig.punctuation) {
+      if (allowedConfig.punctuation !== undefined) {
+        if (f.forcedConfig.punctuation !== undefined) {
           if (allowedConfig.punctuation != f.forcedConfig.punctuation) {
             noConfigConflicts = false;
             break;
