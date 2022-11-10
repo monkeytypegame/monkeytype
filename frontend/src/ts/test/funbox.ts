@@ -802,8 +802,8 @@ function getFunboxHighlightModes(
   }
   return allowedHighlightModes
     ? ((allowedHighlightModes == ""
-      ? []
-      : allowedHighlightModes.split("#")) as MonkeyTypes.HighlightMode[])
+        ? []
+        : allowedHighlightModes.split("#")) as MonkeyTypes.HighlightMode[])
     : undefined;
 }
 
