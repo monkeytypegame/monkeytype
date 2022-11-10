@@ -3,6 +3,7 @@ import * as Notifications from "../elements/notifications";
 import * as Misc from "../utils/misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
+import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
 import * as Keymap from "../elements/keymap";
 import * as TTS from "./tts";
@@ -999,6 +1000,26 @@ export async function clear(): Promise<boolean> {
   return true;
 }
 
+function isHighlightModeAllowed(): void {
+  const modes = getFunboxHighlightModes(ActiveFunboxes());
+  if (modes) {
+    if (!modes.includes(Config.highlightMode)) {
+      Notifications.add(
+        `Can't use ${Config.highlightMode} highlight with ${ActiveFunboxes()
+          .find(
+            (f) =>
+              f.forcedConfig?.highlightMode
+                ?.split("#")
+                .includes(Config.highlightMode) === false
+          )
+          ?.name.replace(/_/g, " ")} funbox`,
+        0
+      );
+      UpdateConfig.setHighlightMode(modes[0], true);
+    }
+  }
+}
+
 export async function activate(funbox?: string): Promise<boolean | undefined> {
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
@@ -1131,23 +1152,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
   }
 
-  const modes = getFunboxHighlightModes(ActiveFunboxes());
-  if (modes) {
-    if (!modes.includes(Config.highlightMode)) {
-      Notifications.add(
-        `Can't use ${Config.highlightMode} highlight with ${ActiveFunboxes()
-          .find(
-            (f) =>
-              f.forcedConfig?.highlightMode
-                ?.split("#")
-                .includes(Config.highlightMode) === false
-          )
-          ?.name.replace(/_/g, " ")} funbox`,
-        0
-      );
-      UpdateConfig.setHighlightMode(modes[0], true);
-    }
-  }
+  isHighlightModeAllowed();
 
   ManualRestart.set();
   ActiveFunboxes().forEach(async (funbox) => {
@@ -1163,3 +1168,10 @@ export async function rememberSettings(): Promise<void> {
     if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
   });
 }
+
+// Check if highlight mode is allowed
+ConfigEvent.subscribe((eventKey) => {
+  if (eventKey == "highlightMode") {
+    isHighlightModeAllowed();
+  }
+});
