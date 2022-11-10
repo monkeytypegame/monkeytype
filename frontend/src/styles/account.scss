@@ -120,6 +120,15 @@
   }
 
   .group {
+    &.estimatedWordsTyped {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .title {
+        margin-right: 1rem;
+      }
+    }
+
     &.noDataError {
       margin: 20rem 0;
       text-align: center;
