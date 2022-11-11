@@ -608,6 +608,14 @@ async function signUp(): Promise<void> {
     return;
   }
 
+  if (password.length > 25) {
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
+    Notifications.add("Password is too long", 0);
+    return;
+  }
+
   if (
     !email.match(
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
