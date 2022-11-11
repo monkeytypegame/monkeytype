@@ -105,7 +105,7 @@ Follow these steps if you want to work on anything involving the database/accoun
   - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
   Now you are ready to build and run Monkeytype. 
   
-If you are using Docker:
+### Using Docker:
 
 - Frontend:
   ```
@@ -117,7 +117,7 @@ If you are using Docker:
   cd backend && docker-compose up
   ```
 
-If you are **_not_** using Docker:
+### **_Without_** Docker:
 
 - Frontend and backend
   ```
