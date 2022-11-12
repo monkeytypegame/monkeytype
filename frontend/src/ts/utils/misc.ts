@@ -1324,3 +1324,12 @@ export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
 export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
+
+export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
+  let t;
+  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
+  const filtered = a.filter(function (e) {
+    return b.indexOf(e) > -1;
+  });
+  return removeDuplicates ? [...new Set(filtered)] : filtered;
+}
