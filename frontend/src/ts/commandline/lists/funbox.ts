@@ -1,5 +1,6 @@
 import * as Funbox from "../../test/funbox";
 import * as TestLogic from "../../test/test-logic";
+import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
@@ -53,6 +54,7 @@ function update(funboxes: MonkeyTypes.FunboxObject[]): void {
         configValue: funbox.name,
         exec: (): void => {
           Funbox.toggleFunbox(funbox.name);
+          ManualRestart.set();
           TestLogic.restart();
 
           for (let i = 0; i < funboxes.length; i++) {
