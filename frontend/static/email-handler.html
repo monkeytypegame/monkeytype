@@ -196,9 +196,9 @@
             `<i class="fas fa-fw fa-check"></i>`
           );
           $("#middle .preloader .text").text(
-            `Your email address has been verified.`
+            `Your email address has been verified`
           );
-          $("#middle .preloader .subText").text(`You can now close this tab.`);
+          $("#middle .preloader .subText").text(`You can now close this tab`);
         })
         .catch((error) => {
           $("#middle .preloader .icon").html(
@@ -260,10 +260,10 @@
                 `<i class="fas fa-fw fa-check"></i>`
               );
               $("#middle .preloader .text").text(
-                `Your password has been changed.`
+                `Your password has been changed`
               );
               $("#middle .preloader .subText").text(
-                `You can now close this tab.`
+                `You can now close this tab`
               );
 
               firebase
@@ -288,6 +288,72 @@
 
           // Invalid or expired action code. Ask user to try to reset the password
           // again.
+        });
+    }
+
+    function handleRecoverEmail(auth, actionCode, lang) {
+      // Localize the UI to the selected language as determined by the lang
+      // parameter.
+      var restoredEmail = null;
+      // Confirm the action code is valid.
+      firebase
+        .auth()
+        .checkActionCode(actionCode)
+        .then((info) => {
+          // Get the restored email address.
+          restoredEmail = info["data"]["email"];
+
+          // Revert to the old email.
+          return auth.applyActionCode(actionCode);
+        })
+        .then(() => {
+          $("#middle .preloader .icon").html(
+            `<i class="fas fa-fw fa-check"></i>`
+          );
+          $("#middle .preloader .text").text(
+            `Your account email was reverted.`
+          );
+          $("#middle .preloader .subText").text(``);
+
+          $("#middle .preloader").append(`
+          <br>
+          In case you believe your account was compromised, please request a password reset email:
+          `);
+          $("#middle .preloader").append(`
+          <br>
+          <div class="button" onclick="sendPasswordResetEmail(${restoredEmail})">Send Password Reset Email</div>
+          `);
+
+          // Account email reverted to restoredEmail
+
+          // TODO: Display a confirmation message to the user.
+
+          // You might also want to give the user the option to reset their password
+          // in case the account was compromised:
+        })
+        .catch((error) => {
+          $("#middle .preloader .icon").html(
+            `<i class="fas fa-fw fa-times"></i>`
+          );
+          $("#middle .preloader .text").text(error.message);
+        });
+    }
+
+    function sendPasswordResetEmail(email) {
+      auth
+        .sendPasswordResetEmail(email)
+        .then(() => {
+          $("#middle .preloader .icon").html(
+            `<i class="fas fa-fw fa-check"></i>`
+          );
+          $("#middle .preloader .text").text(`Password reset email sent`);
+          $("#middle .preloader .subText").text(`Please check your inbox`);
+        })
+        .catch((error) => {
+          $("#middle .preloader .icon").html(
+            `<i class="fas fa-fw fa-times"></i>`
+          );
+          $("#middle .preloader .text").text(error.message);
         });
     }
 
