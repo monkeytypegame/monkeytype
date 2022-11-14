@@ -504,10 +504,11 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
   lazyMode: boolean,
   funbox: string
 ): Promise<number> {
-  const funboxes = (await getFunboxList()).filter(
-    (f) => funbox.split("#").find((F) => F === f.name) !== undefined
-  );
-  if (funboxes.find((f) => f.canGetPB) !== undefined) {
+  const funboxes = (await getFunboxList()).filter((fb) => {
+    return funbox?.split("#").includes(fb.name);
+  });
+
+  if (!funboxes.every((f) => f.canGetPB)) {
     return 0;
   }
 

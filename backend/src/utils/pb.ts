@@ -1,4 +1,5 @@
 import _ from "lodash";
+import Funboxes from "../constants/funbox";
 
 interface CheckAndUpdatePbResult {
   isPb: boolean;
@@ -7,6 +8,19 @@ interface CheckAndUpdatePbResult {
 }
 
 type Result = MonkeyTypes.Result<MonkeyTypes.Mode>;
+
+export function canGetPb(
+  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+): boolean {
+  const funbox = result.funbox;
+
+  //filter the Funboxes object to only include the funbox name that matches the funbox array split by #
+  const funboxes = Funboxes.filter((fb) => {
+    return funbox?.split("#").includes(fb.name);
+  });
+
+  return funboxes.every((f) => f.canGetPB);
+}
 
 export function checkAndUpdatePb(
   userPersonalBests: MonkeyTypes.PersonalBests,

@@ -3,6 +3,7 @@ import * as Notifications from "../elements/notifications";
 import * as Misc from "../utils/misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
+import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
 import * as Keymap from "../elements/keymap";
 import * as TTS from "./tts";
@@ -35,7 +36,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Type what simon says.",
     properties: ["changesWordsVisibility", "usesLayout"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: ["letter", "off"],
     },
     functions: {
       applyCSS(): void {
@@ -67,7 +68,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Listen closely.",
     properties: ["changesWordsVisibility", "speaks"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: ["letter", "off"],
     },
     functions: {
       applyCSS(): void {
@@ -113,9 +114,9 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
       "symmetricChars",
     ],
     forcedConfig: {
-      punctuation: false,
-      numbers: false,
-      highlightMode: "!word",
+      punctuation: [false],
+      numbers: [false],
+      highlightMode: ["letter", "off"],
     },
     functions: {
       getWord(): string {
@@ -227,7 +228,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "layoutfluid",
     info: "Switch between layouts specified below proportionately to the length of the test.",
-    properties: ["changesLayout"],
+    properties: ["changesLayout", "noInfiniteDuration"],
     functions: {
       applyConfig(): void {
         UpdateConfig.setLayout(
@@ -338,7 +339,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "A special mode for accountants.",
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
     forcedConfig: {
-      numbers: true,
+      numbers: [false],
     },
     functions: {
       getWord(): string {
@@ -389,8 +390,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Where was the ampersand again?. Only ASCII characters.",
     properties: ["ignoresLanguage", "noLetters", "unspeakable"],
     forcedConfig: {
-      punctuation: false,
-      numbers: false,
+      punctuation: [false],
+      numbers: [false],
     },
     functions: {
       getWord(): string {
@@ -403,8 +404,8 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "!@#$%^&*. Only special characters.",
     properties: ["ignoresLanguage", "noLetters", "unspeakable"],
     forcedConfig: {
-      punctuation: false,
-      numbers: false,
+      punctuation: [false],
+      numbers: [false],
     },
     functions: {
       getWord(): string {
@@ -415,27 +416,19 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "plus_one",
     info: "React quickly! Only one future word is visible.",
-    properties: ["changesWordsVisibility", "toPush:2"],
-    forcedConfig: {
-      words: "Finite",
-      time: "Finite",
-    },
+    properties: ["changesWordsVisibility", "toPush:2", "noInfiniteDuration"],
   },
   {
     name: "plus_two",
     info: "Only two future words are visible.",
-    properties: ["changesWordsVisibility", "toPush:3"],
-    forcedConfig: {
-      words: "Finite",
-      time: "Finite",
-    },
+    properties: ["changesWordsVisibility", "toPush:3", "noInfiniteDuration"],
   },
   {
     name: "read_ahead_easy",
     info: "Only the current word is invisible.",
     properties: ["changesWordsVisibility"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: ["letter", "off"],
     },
     functions: {
       applyCSS(): void {
@@ -455,7 +448,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Current and the next word are invisible!",
     properties: ["changesWordsVisibility"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: ["letter", "off"],
     },
     functions: {
       applyCSS(): void {
@@ -475,7 +468,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Current and the next two words are invisible!",
     properties: ["changesWordsVisibility"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: ["letter", "off"],
     },
     functions: {
       applyCSS(): void {
@@ -494,10 +487,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     name: "memory",
     info: "Test your memory. Remember the words and type them blind.",
     mode: ["words", "quote", "custom"],
-    properties: ["changesWordsVisibility"],
-    forcedConfig: {
-      words: "Finite",
-    },
+    properties: ["changesWordsVisibility", "noInfiniteDuration"],
     functions: {
       applyConfig(): void {
         $("#wordsWrapper").addClass("hidden");
@@ -538,7 +528,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "Whoneedsspacesanyway?",
     properties: ["nospace"],
     forcedConfig: {
-      highlightMode: "!word",
+      highlightMode: ["letter", "off"],
     },
     functions: {
       applyConfig(): void {
@@ -556,11 +546,10 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "poetry",
     info: "Practice typing some beautiful prose.",
+    properties: ["noInfiniteDuration"],
     forcedConfig: {
-      punctuation: false,
-      numbers: false,
-      words: "Finite",
-      time: "Finite",
+      punctuation: [false],
+      numbers: [false],
     },
     functions: {
       async pullSection(): Promise<Misc.Section | false> {
@@ -571,11 +560,10 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "wikipedia",
     info: "Practice typing wikipedia sections.",
+    properties: ["noInfiniteDuration"],
     forcedConfig: {
-      punctuation: false,
-      numbers: false,
-      words: "Finite",
-      time: "Finite",
+      punctuation: [false],
+      numbers: [false],
     },
     functions: {
       async pullSection(lang?: string): Promise<Misc.Section | false> {
@@ -843,56 +831,117 @@ export function isFunboxCompatible(funbox?: string): boolean {
       Funboxes.filter((f) => f.name == funbox)
     );
   }
-  return !(
+
+  const allFunboxesAreValid =
     Funboxes.filter(
       (f) => Config.funbox.split("#").find((cf) => cf == f.name) !== undefined
-    ).length != Config.funbox.split("#").length ||
+    ).length == Config.funbox.split("#").length;
+  const oneWordModifierMax =
     checkingFunbox.filter(
       (f) =>
         f.functions?.getWord ||
         f.functions?.pullSection ||
         f.functions?.withWords
-    ).length > 1 ||
-    (checkingFunbox.filter((f) =>
+    ).length <= 1;
+  const layoutUsability =
+    checkingFunbox.filter((f) =>
       f.properties?.find((fp) => fp == "changesLayout")
-    ).length > 0 &&
-      checkingFunbox.filter((f) =>
-        f.properties?.find((fp) => fp == "ignoresLayout" || fp == "usesLayout")
-      ).length > 0) ||
+    ).length == 0 ||
+    checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "ignoresLayout" || fp == "usesLayout")
+    ).length == 0;
+  const oneNospaceOrToPushMax =
     checkingFunbox.filter((f) =>
       f.properties?.find((fp) => fp == "nospace" || fp.startsWith("toPush"))
-    ).length > 1 ||
+    ).length <= 1;
+  const oneChangesWordsVisibilityMax =
     checkingFunbox.filter((f) =>
       f.properties?.find((fp) => fp == "changesWordsVisibility")
-    ).length > 1 ||
-    (checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "noLetters"))
-      .length > 0 &&
-      checkingFunbox.filter((f) =>
-        f.properties?.find((fp) => fp == "changesCapitalisation")
-      ).length > 0) ||
-    (checkingFunbox.filter((f) =>
+    ).length <= 1;
+  const capitalisationChangePosibility =
+    checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "noLetters"))
+      .length == 0 ||
+    checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "changesCapitalisation")
+    ).length == 0;
+  const noConflictsWithSymmetricChars =
+    checkingFunbox.filter((f) =>
       f.properties?.find((fp) => fp == "conflictsWithSymmetricChars")
-    ).length > 0 &&
-      checkingFunbox.filter((f) =>
-        f.properties?.find((fp) => fp == "symmetricChars")
-      ).length > 0) ||
+    ).length == 0 ||
+    checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "symmetricChars")
+    ).length == 0;
+  const canSpeak =
     checkingFunbox.filter((f) =>
       f.properties?.find((fp) => fp == "speaks" || fp == "unspeakable")
-    ).length > 1 ||
-    (checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "speaks"))
-      .length > 0 &&
-      checkingFunbox.filter((f) =>
-        f.properties?.find((fp) => fp == "ignoresLanguage")
-      ).length > 0) ||
+    ).length <= 1;
+  const hasLanguageToSpeak =
+    checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "speaks"))
+      .length == 0 ||
+    checkingFunbox.filter((f) =>
+      f.properties?.find((fp) => fp == "ignoresLanguage")
+    ).length == 0;
+  const oneToPushOrPullSectionMax =
     checkingFunbox.filter(
       (f) =>
         f.properties?.find((fp) => fp.startsWith("toPush:")) ||
         f.functions?.pullSection
-    ).length > 1 ||
-    checkingFunbox.filter((f) => f.functions?.applyCSS).length > 1 ||
-    checkingFunbox.filter((f) => f.functions?.punctuateWord).length > 1 ||
-    checkingFunbox.filter((f) => f.functions?.isCharCorrect).length > 1 ||
-    checkingFunbox.filter((f) => f.functions?.getWordHtml).length > 1
+    ).length <= 1;
+  const oneApplyCSSMax =
+    checkingFunbox.filter((f) => f.functions?.applyCSS).length <= 1;
+  const onePunctuateWordMax =
+    checkingFunbox.filter((f) => f.functions?.punctuateWord).length <= 1;
+  const oneCharCheckerMax =
+    checkingFunbox.filter((f) => f.functions?.isCharCorrect).length <= 1;
+  const oneCharReplacerMax =
+    checkingFunbox.filter((f) => f.functions?.getWordHtml).length <= 1;
+  let allowedModes: MonkeyTypes.Mode[] | undefined;
+  for (const f of checkingFunbox) {
+    if (f.mode) {
+      if (allowedModes) {
+        allowedModes = allowedModes.filter((m) => f.mode?.includes(m));
+      } else {
+        allowedModes = f.mode;
+      }
+    }
+  }
+  const noModesConflicts = allowedModes?.length !== 0;
+  const allowedConfig = {} as MonkeyTypes.FunboxForcedConfig;
+  let noConfigConflicts = true;
+  for (const f of checkingFunbox) {
+    if (!f.forcedConfig) continue;
+    for (const key in f.forcedConfig) {
+      if (allowedConfig[key]) {
+        if (
+          Misc.intersect(allowedConfig[key], f.forcedConfig[key], true)
+            .length === 0
+        ) {
+          noConfigConflicts = false;
+          break;
+        }
+      } else {
+        allowedConfig[key] = f.forcedConfig[key];
+      }
+    }
+  }
+
+  return (
+    allFunboxesAreValid &&
+    oneWordModifierMax &&
+    layoutUsability &&
+    oneNospaceOrToPushMax &&
+    oneChangesWordsVisibilityMax &&
+    capitalisationChangePosibility &&
+    noConflictsWithSymmetricChars &&
+    canSpeak &&
+    hasLanguageToSpeak &&
+    oneToPushOrPullSectionMax &&
+    oneApplyCSSMax &&
+    onePunctuateWordMax &&
+    oneCharCheckerMax &&
+    oneCharReplacerMax &&
+    noModesConflicts &&
+    noConfigConflicts
   );
 }
 
@@ -928,6 +977,38 @@ export async function clear(): Promise<boolean> {
   reset();
   ManualRestart.set();
   return true;
+}
+
+function checkActiveFunboxesForcedConfigs(
+  configKey?: string,
+  configValue?: MonkeyTypes.ConfigValues
+): void {
+  if (configKey === undefined || configValue === undefined) {
+    for (const [key, value] of Object.entries(Config)) {
+      checkActiveFunboxesForcedConfigs(key, value);
+    }
+  } else {
+    for (const activeFunbox of ActiveFunboxes()) {
+      const forcedConfigValues = activeFunbox.forcedConfig?.[configKey];
+      if (forcedConfigValues && !forcedConfigValues.includes(configValue)) {
+        Notifications.add(
+          `The ${activeFunbox.name} funbox does not allow ${configKey}: ${configValue}`,
+          0
+        );
+        if (configKey == "highlightMode") {
+          UpdateConfig.setHighlightMode(
+            forcedConfigValues[0] as MonkeyTypes.HighlightMode
+          );
+        }
+        if (configKey == "punctuation") {
+          UpdateConfig.setPunctuation(forcedConfigValues[0] as boolean);
+        }
+        if (configKey == "numbers") {
+          UpdateConfig.setNumbers(forcedConfigValues[0] as boolean);
+        }
+      }
+    }
+  }
 }
 
 export async function activate(funbox?: string): Promise<boolean | undefined> {
@@ -995,35 +1076,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       )} mode does not support the ${fb[0].name.replace(/_/g, " ")} funbox`,
       0
     );
-    let modes = [] as MonkeyTypes.Mode[];
-    for (const f of ActiveFunboxes()) {
-      if (f.mode) modes = modes.concat(f.mode);
-    }
-    if (modes.length > 0) {
-      modes = modes.filter((m) => {
-        for (const f of ActiveFunboxes()) {
-          if (f.mode) {
-            if (!f.mode.includes(m)) {
-              return false;
-            }
-          }
-        }
-        return true;
-      });
-      if (modes.length > 0) {
-        UpdateConfig.setMode(modes[0], true);
-      } else {
-        Notifications.add(
-          Misc.createErrorMessage(
-            undefined,
-            "Conflicting funboxes. Please open an issue"
-          ),
-          -1
-        );
-        UpdateConfig.setFunbox("none", true);
-        await clear();
-        return false;
-      }
+    const mode = fb.find((f) => f.mode)?.mode;
+    if (mode) {
+      UpdateConfig.setMode(mode[0], true);
     } else {
       UpdateConfig.setMode("time", true);
     }
@@ -1055,7 +1110,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (Config.time === 0 && Config.mode === "time") {
-    const fb = ActiveFunboxes().filter((f) => f.forcedConfig?.time == "Finite");
+    const fb = ActiveFunboxes().filter((f) =>
+      f.properties?.includes("noInfiniteDuration")
+    );
     if (fb.length > 0) {
       Notifications.add(
         `${Misc.capitalizeFirstLetterOfEachWord(
@@ -1066,13 +1123,13 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         )} funbox`,
         0
       );
-      if (Config.mode === "time") UpdateConfig.setTimeConfig(15, true);
+      UpdateConfig.setTimeConfig(15, true);
     }
   }
 
   if (Config.words === 0 && Config.mode === "words") {
-    const fb = ActiveFunboxes().filter(
-      (f) => f.forcedConfig?.words == "Finite"
+    const fb = ActiveFunboxes().filter((f) =>
+      f.properties?.includes("noInfiniteDuration")
     );
     if (fb.length > 0) {
       Notifications.add(
@@ -1084,22 +1141,11 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         )} funbox`,
         0
       );
-      if (Config.mode === "words") UpdateConfig.setWordCount(10, true);
+      UpdateConfig.setWordCount(10, true);
     }
   }
 
-  if (Config.highlightMode === "word") {
-    const fb = ActiveFunboxes().filter((f) =>
-      f.forcedConfig?.highlightMode?.includes("!word")
-    );
-    if (fb.length > 0) {
-      Notifications.add(
-        `Can't use word highlight with ${fb[0].name.replace(/_/g, " ")} funbox`,
-        0
-      );
-      UpdateConfig.setHighlightMode("letter", true);
-    }
-  }
+  checkActiveFunboxesForcedConfigs();
 
   ManualRestart.set();
   ActiveFunboxes().forEach(async (funbox) => {
@@ -1115,3 +1161,8 @@ export async function rememberSettings(): Promise<void> {
     if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
   });
 }
+
+ConfigEvent.subscribe((eventKey, configValue) => {
+  if (eventKey === "saveToLocalStorage") return;
+  checkActiveFunboxesForcedConfigs(eventKey, configValue);
+});

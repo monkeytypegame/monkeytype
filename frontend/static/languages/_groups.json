@@ -393,6 +393,9 @@
     "name": "code",
     "languages": [
       "code_python",
+      "code_python_1k",
+      "code_python_2k",
+      "code_python_5k",
       "code_c",
       "code_csharp",
       "code_c++",

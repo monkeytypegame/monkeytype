@@ -122,6 +122,9 @@ Misc.getLanguageList()
 Misc.getFunboxList()
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
+    FunboxCommands[0].beforeSubgroup = (): void => {
+      updateFunboxCommands(funboxes);
+    };
   })
   .catch((e) => {
     console.error(

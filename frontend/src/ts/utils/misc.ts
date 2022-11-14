@@ -893,8 +893,8 @@ export function canQuickRestart(
   CustomText: MonkeyTypes.CustomText,
   customTextIsLong: boolean
 ): boolean {
-  const wordsLong = mode === "words" && words >= 1000;
-  const timeLong = mode === "time" && time >= 900;
+  const wordsLong = mode === "words" && (words >= 1000 || words === 0);
+  const timeLong = mode === "time" && (time >= 900 || time === 0);
   const customTextLong = mode === "custom" && customTextIsLong == true;
   const customTextRandomWordsLong =
     mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
@@ -1323,4 +1323,13 @@ export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
 
 export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+
+export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
+  let t;
+  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
+  const filtered = a.filter(function (e) {
+    return b.indexOf(e) > -1;
+  });
+  return removeDuplicates ? [...new Set(filtered)] : filtered;
 }

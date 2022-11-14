@@ -53,13 +53,7 @@
         give you a role.
       </div>
       <div class="buttons">
-        <a
-          class="button"
-          href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
-          style="text-decoration: none"
-        >
-          Link with Discord
-        </a>
+        <div class="button getLinkAndGoToOauth">Link with Discord</div>
       </div>
       <div class="info hidden">
         <div>
@@ -67,14 +61,13 @@
           Your accounts are linked!
         </div>
         <div id="discordButtonGroup">
-          <a
+          <div
             id="updateDiscordAvatarButton"
-            href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
-            class="textButton"
+            class="textButton getLinkAndGoToOauth"
           >
             <i class="fas fa-sync-alt" aria-hidden="true"></i>
             Update avatar
-          </a>
+          </div>
           <div id="unlinkDiscordButton" class="textButton">
             <i class="fas fa-unlink" aria-hidden="true"></i>
             Unlink

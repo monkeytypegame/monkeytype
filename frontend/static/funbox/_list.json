@@ -126,6 +126,10 @@
     "properties": [
       "changesLayout"
     ],
+    "forcedConfig": {
+      "time": "Finite",
+      "words": "Finite"
+    },
     "functions": {
       "applyConfig": true,
       "rememberSettings": true,

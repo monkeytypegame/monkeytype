@@ -68,13 +68,21 @@ const usernameValidation = joi
   .string()
   .required()
   .custom((value, helpers) => {
-    return isUsernameValid(value)
-      ? value
-      : helpers.error("string.pattern.base");
+    if (containsProfanity(value)) {
+      return helpers.error("string.profanity");
+    }
+
+    if (!isUsernameValid(value)) {
+      return helpers.error("string.pattern.base");
+    }
+
+    return value;
   })
   .messages({
+    "string.profanity":
+      "The username contains profanity. If you believe this is a mistake, please contact us ",
     "string.pattern.base":
-      "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ . and -",
+      "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ . and - ",
   });
 
 const languageSchema = joi.string().min(1).required();
@@ -335,6 +343,14 @@ const requireDiscordIntegrationEnabled = validateConfiguration({
   invalidMessage: "Discord integration is not available at this time",
 });
 
+router.get(
+  "/discord/oauth",
+  requireDiscordIntegrationEnabled,
+  authenticateRequest(),
+  RateLimit.userDiscordLink,
+  asyncHandler(UserController.getOauthLink)
+);
+
 router.post(
   "/discord/link",
   requireDiscordIntegrationEnabled,
@@ -344,6 +360,7 @@ router.post(
     body: {
       tokenType: joi.string().required(),
       accessToken: joi.string().required(),
+      state: joi.string().length(20).required(),
     },
   }),
   asyncHandler(UserController.linkDiscord)
@@ -462,8 +479,8 @@ router.patch(
       keyboard: profileDetailsBase.max(75),
       selectedBadgeId: joi.number(),
       socialProfiles: joi.object({
-        twitter: profileDetailsBase.max(20),
-        github: profileDetailsBase.max(39),
+        twitter: profileDetailsBase.regex(/^[0-9a-zA-Z_.-]+$/).max(20),
+        github: profileDetailsBase.regex(/^[0-9a-zA-Z_.-]+$/).max(39),
         website: profileDetailsBase
           .uri({
             scheme: "https",

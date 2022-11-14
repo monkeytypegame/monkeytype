@@ -7,6 +7,7 @@ import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import { escapeHTML } from "../utils/misc";
 
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 let maxMail = 0;
@@ -255,7 +256,7 @@ export function addPSA(message: string, level: number): void {
     <div class="item">
     <div class="indicator ${levelClass}"></div>
     <div class="body">
-      ${message}
+      ${escapeHTML(message)}
     </div>
   </div>
   `);
@@ -289,7 +290,7 @@ function addNotification(
     <div class="indicator ${levelClass}"></div>
     <div class="title">${title}</div>
     <div class="body">
-      ${message}
+      ${escapeHTML(message)}
     </div>
   </div>
   `);

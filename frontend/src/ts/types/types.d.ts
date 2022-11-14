@@ -1,3 +1,5 @@
+type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
+
 declare namespace MonkeyTypes {
   type Difficulty = "normal" | "expert" | "master";
 
@@ -195,9 +197,8 @@ declare namespace MonkeyTypes {
     | "noLetters"
     | "changesCapitalisation"
     | "nospace"
-    | `toPush:${number}`;
-
-  type FunboxModeDuration = "Finite" | "Infinite";
+    | `toPush:${number}`
+    | "noInfiniteDuration";
 
   interface FunboxFunctions {
     getWord?: (wordset?: Misc.Wordset) => string;
@@ -225,11 +226,12 @@ declare namespace MonkeyTypes {
   }
 
   interface FunboxForcedConfig {
-    punctuation?: boolean;
-    numbers?: boolean;
-    highlightMode?: string;
-    words?: FunboxModeDuration;
-    time?: FunboxModeDuration;
+    [key: string]: ConfigValues[];
+    // punctuation?: boolean;
+    // numbers?: boolean;
+    // highlightMode?: typesSeparatedWithHash<HighlightMode>;
+    // words?: FunboxModeDuration;
+    // time?: FunboxModeDuration;
   }
 
   interface FunboxObject {

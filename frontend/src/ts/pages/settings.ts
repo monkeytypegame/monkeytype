@@ -15,6 +15,7 @@ import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { Auth } from "../firebase";
+import Ape from "../ape";
 
 interface SettingsGroups {
   [key: string]: SettingsGroup;
@@ -525,7 +526,7 @@ export async function fillSettingsPage(): Promise<void> {
           funboxEl.append(
             `<div class="funbox button" funbox='${funbox.name}' aria-label="${
               funbox.info
-            }" style="transform:scaleX(-1);">${funbox.name.replace(
+            }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
               /_/g,
               " "
             )}</div>`
@@ -534,7 +535,10 @@ export async function fillSettingsPage(): Promise<void> {
           funboxEl.append(
             `<div class="funbox button" funbox='${funbox.name}' aria-label="${
               funbox.info
-            }">${funbox.name.replace(/_/g, " ")}</div>`
+            }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
+              /_/g,
+              " "
+            )}</div>`
           );
         }
       });
@@ -1111,6 +1115,15 @@ $(".pageSettings .section.autoSwitchThemeInputs").on(
       return;
     }
     UpdateConfig.setThemeDark(target.val() as string);
+  }
+);
+
+$(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
+  "click",
+  () => {
+    Ape.users.getOauthLink().then((res) => {
+      window.open(res.data.url, "_self");
+    });
   }
 );
 
