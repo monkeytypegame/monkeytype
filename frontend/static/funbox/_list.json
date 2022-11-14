@@ -24,7 +24,10 @@
       "usesLayout"
     ],
     "forcedConfig": {
-      "highlightMode": "!word"
+      "highlightMode": [
+        "letter",
+        "off"
+      ]
     },
     "functions": {
       "applyCSS": true,
@@ -49,7 +52,10 @@
       "speaks"
     ],
     "forcedConfig": {
-      "highlightMode": "!word"
+      "highlightMode": [
+        "letter",
+        "off"
+      ]
     },
     "functions": {
       "applyCSS": true,
@@ -83,9 +89,16 @@
       "symmetricChars"
     ],
     "forcedConfig": {
-      "punctuation": false,
-      "numbers": false,
-      "highlightMode": "!word"
+      "punctuation": [
+        false
+      ],
+      "numbers": [
+        false
+      ],
+      "highlightMode": [
+        "letter",
+        "off"
+      ]
     },
     "functions": {
       "getWord": true,
@@ -124,12 +137,9 @@
     "info": "Switch between layouts specified below proportionately to the length of the test.",
     "canGetPB": true,
     "properties": [
-      "changesLayout"
+      "changesLayout",
+      "noInfiniteDuration"
     ],
-    "forcedConfig": {
-      "time": "Finite",
-      "words": "Finite"
-    },
     "functions": {
       "applyConfig": true,
       "rememberSettings": true,
@@ -180,7 +190,9 @@
       "ignoresLayout"
     ],
     "forcedConfig": {
-      "numbers": true
+      "numbers": [
+        false
+      ]
     },
     "functions": {
       "getWord": true,
@@ -199,8 +211,12 @@
       "unspeakable"
     ],
     "forcedConfig": {
-      "punctuation": false,
-      "numbers": false
+      "punctuation": [
+        false
+      ],
+      "numbers": [
+        false
+      ]
     },
     "functions": {
       "getWord": true
@@ -216,8 +232,12 @@
       "unspeakable"
     ],
     "forcedConfig": {
-      "punctuation": false,
-      "numbers": false
+      "punctuation": [
+        false
+      ],
+      "numbers": [
+        false
+      ]
     },
     "functions": {
       "getWord": true
@@ -229,12 +249,9 @@
     "canGetPB": true,
     "properties": [
       "toPush2",
-      "changesWordsVisibility"
-    ],
-    "forcedConfig": {
-      "words": "Finite",
-      "time": "Finite"
-    }
+      "changesWordsVisibility",
+      "noInfiniteDuration"
+    ]
   },
   {
     "name": "plus_two",
@@ -242,12 +259,9 @@
     "canGetPB": true,
     "properties": [
       "toPush3",
-      "changesWordsVisibility"
-    ],
-    "forcedConfig": {
-      "words": "Finite",
-      "time": "Finite"
-    }
+      "changesWordsVisibility",
+      "noInfiniteDuration"
+    ]
   },
   {
     "name": "read_ahead_easy",
@@ -257,7 +271,10 @@
       "changesWordsVisibility"
     ],
     "forcedConfig": {
-      "highlightMode": "!word"
+      "highlightMode": [
+        "letter",
+        "off"
+      ]
     },
     "functions": {
       "applyCSS": true,
@@ -272,7 +289,10 @@
       "changesWordsVisibility"
     ],
     "forcedConfig": {
-      "highlightMode": "!word"
+      "highlightMode": [
+        "letter",
+        "off"
+      ]
     },
     "functions": {
       "applyCSS": true,
@@ -287,7 +307,10 @@
       "changesWordsVisibility"
     ],
     "forcedConfig": {
-      "highlightMode": "!word"
+      "highlightMode": [
+        "letter",
+        "off"
+      ]
     },
     "functions": {
       "applyCSS": true,
@@ -300,11 +323,9 @@
     "canGetPB": true,
     "mode": "words",
     "properties": [
-      "changesWordsVisibility"
+      "changesWordsVisibility",
+      "noInfiniteDuration"
     ],
-    "forcedConfig": {
-      "words": "Finite"
-    },
     "functions": {
       "applyConfig": true,
       "rememberSettings": true,
@@ -320,7 +341,10 @@
       "nospace"
     ],
     "forcedConfig": {
-      "highlightMode": "!word"
+      "highlightMode": [
+        "letter",
+        "off"
+      ]
     },
     "functions": {
       "applyConfig": true,
@@ -331,11 +355,16 @@
     "name": "poetry",
     "info": "Practice typing some beautiful prose.",
     "canGetPB": false,
+    "properties": [
+      "noInfiniteDuration"
+    ],
     "forcedConfig": {
-      "punctuation": false,
-      "numbers": false,
-      "words": "Finite",
-      "time": "Finite"
+      "punctuation": [
+        false
+      ],
+      "numbers": [
+        false
+      ]
     },
     "functions": {
       "pullSection": true
@@ -345,11 +374,16 @@
     "name": "wikipedia",
     "info": "Practice typing wikipedia sections.",
     "canGetPB": false,
+    "properties": [
+      "noInfiniteDuration"
+    ],
     "forcedConfig": {
-      "punctuation": false,
-      "numbers": false,
-      "words": "Finite",
-      "time": "Finite"
+      "punctuation": [
+        false
+      ],
+      "numbers": [
+        false
+      ]
     },
     "functions": {
       "pullSection": true
