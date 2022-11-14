@@ -418,7 +418,9 @@
       "noLetters"
     ],
     "forcedConfig": {
-      "numbers": true
+      "numbers": [
+        false
+      ]
     },
     "functions": {
       "getWord": true,
@@ -436,7 +438,9 @@
       "noLetters"
     ],
     "forcedConfig": {
-      "numbers": true
+      "numbers": [
+        false
+      ]
     },
     "functions": {
       "getWord": true,

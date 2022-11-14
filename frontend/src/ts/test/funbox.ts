@@ -598,7 +598,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "For sysadmins with long beard.",
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
     forcedConfig: {
-      numbers: true,
+      numbers: [false],
     },
     functions: {
       getWord(): string {
@@ -622,7 +622,7 @@ export const Funboxes: MonkeyTypes.FunboxObject[] = [
     info: "For sysadmins with long beard.",
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
     forcedConfig: {
-      numbers: true,
+      numbers: [false],
     },
     functions: {
       getWord(): string {
