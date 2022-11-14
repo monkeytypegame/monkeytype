@@ -873,22 +873,22 @@ $(document).keydown(async (event) => {
   }
 
   if (event.key === "Enter") {
-    if (event.shiftKey && Config.mode == "zen") {
-      TestLogic.finish();
-    } else if (
-      event.shiftKey &&
-      ((Config.mode == "time" && Config.time === 0) ||
-        (Config.mode == "words" && Config.words === 0))
-    ) {
-      TestInput.setBailout(true);
-      TestLogic.finish();
-    } else if (
-      event.shiftKey &&
-      Config.mode == "custom" &&
-      CustomTextState.isCustomTextLong() === true
-    ) {
-      TestInput.setBailout(true);
-      TestLogic.finish();
+    if (event.shiftKey) {
+      if (Config.mode == "zen") {
+        TestLogic.finish();
+      } else if (
+        (Config.mode == "time" && Config.time === 0) ||
+        (Config.mode == "words" && Config.words === 0)
+      ) {
+        TestInput.setBailout(true);
+        TestLogic.finish();
+      } else if (
+        Config.mode == "custom" &&
+        CustomTextState.isCustomTextLong() === true
+      ) {
+        TestInput.setBailout(true);
+        TestLogic.finish();
+      }
     } else {
       handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
