@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -36061,6 +36073,13 @@
       "length": 96,
       "approvedBy": "Smithster",
       "id": 6342
+    },
+    {
+      "text": "And as the flames climbed high into the night, To light the sacrificial rite, I saw Satan laughing with delight, The day the music died.",
+      "source": "Don McLean, American Pie ",
+      "length": 135,
+      "approvedBy": "Smithster",
+      "id": 6343
     }
   ]
 }
