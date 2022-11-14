@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -36077,7 +36065,7 @@
     {
       "text": "And as the flames climbed high into the night, To light the sacrificial rite, I saw Satan laughing with delight, The day the music died.",
       "source": "Don McLean, American Pie ",
-      "length": 135,
+      "length": 136,
       "approvedBy": "Smithster",
       "id": 6343
     },
@@ -36098,14 +36086,14 @@
     {
       "text": "I’m worried to death because I haven’t been able to see you doing well. You said we live in different worlds. But is that true? We have different colored skin and eyes. We were born in different countries. But we’re friends. Isn’t that what counts? I’m really glad I came to America. I met lots of people. And more than anything, I met you. You asked me over and over if you scared me. But I never feared you, not once. What’s more is you’re hurt much more than me. I couldn’t help feeling that way. Funny, huh? You’re way smarter, bigger, and stronger than me. But I always felt like I had to protect you. I wonder what it is I wanted to protect you from. I wanted to protect you from fate. The fate that tries to carry you away, drifting further and further. You told me once about a leopard you read in a book. How you believed that leopard knew that it couldn’t go back. And I said you weren’t a leopard, that you could change your destiny. You’re not alone. I’m by your side. My soul is always with you.",
       "source": "Banana Fish - Eiji",
-      "length": 1041,
+      "length": 1008,
       "approvedBy": "Smithster",
       "id": 6346
     },
     {
       "text": "Be like water making its way through cracks. Do not be assertive, but adjust to the object, and you shall find a way around or through it. If nothing within you stays rigid, outward things will disclose themselves. Empty your mind, be formless, shapeless, like water. If you put water into a cup, it becomes the cup. You put water into a bottle and it becomes the bottle. You put it in a teapot it becomes the teapot. Now, water can flow or it can crash. Be water, my friend.",
       "source": "Bruce Lee",
-      "length": 477,
+      "length": 475,
       "approvedBy": "Smithster",
       "id": 6347
     },
@@ -36126,7 +36114,7 @@
     {
       "text": "My old friend - the panda will never fulfill his destiny nor yours, until you let go of the illusion of control... Yes! Look at this tree, Shifu. I cannot make it blossom when it suits me, nor make it bear fruit before its time!",
       "source": "Kung Fu Panda - Master Oogway",
-      "length": 229,
+      "length": 228,
       "approvedBy": "Smithster",
       "id": 6350
     },
@@ -36168,7 +36156,7 @@
     {
       "text": "When I look back on my life, It's not that I don't want to see things exactly as they happened. It's just that I prefer to remember them in an artistic way and truthfully the lie of it all is much more honest because I invented it.",
       "source": "Lady Gaga, Prelude Pathetique (Marry the Night)",
-      "length": 228,
+      "length": 231,
       "approvedBy": "Smithster",
       "id": 6356
     },
@@ -36182,7 +36170,7 @@
     {
       "text": "I stopped for a second. If you remember everything, I wanted to say, and if you are really like me, then before you leave tomorrow, or when you’re just ready to shut the door of the taxi and have already said goodbye to everyone else and there’s not a thing left to say in this life, then, just this once, turn to me, even in jest, or as an afterthought, which would have meant everything to me when we were together, and, as you did back then, look me in the face, hold my gaze, and call me by your name.",
       "source": "Call Me By Your Name",
-      "length": 504,
+      "length": 505,
       "approvedBy": "Smithster",
       "id": 6358
     },
@@ -36196,7 +36184,7 @@
     {
       "text": "I'd rather have loyalty than love, 'cause love really don't mean jack. See love is just a feeling you can love somebody and still stab them in they back. It don't take much to love, you can love somebody just by being attached. See loyalty is a action, you can love or hate me and still have my back.",
       "source": "21 Savage, Ball w/o You",
-      "length": 301,
+      "length": 300,
       "approvedBy": "Smithster",
       "id": 6360
     },
@@ -36217,7 +36205,7 @@
     {
       "text": "When people are protecting something truly precious to them, they can truly become as strong as they need to be.",
       "source": "Haku, Naruto",
-      "length": 113,
+      "length": 112,
       "approvedBy": "Smithster",
       "id": 6363
     },
@@ -36238,7 +36226,7 @@
     {
       "text": "I have often wondered how it is that every man loves himself more than all the rest of men, but yet sets less value on his own opinion of himself than on the opinion of others.",
       "source": "Marcus Aurelius",
-      "length": 177,
+      "length": 176,
       "approvedBy": "Smithster",
       "id": 6366
     },
@@ -36259,7 +36247,7 @@
     {
       "text": "It makes me so mad! We build your houses, your castles. We pave your roads, and still you walk all over us. Do you ever say thank you? No! Well, you're not going to wipe your feet on me! I think I'll crush you just for fun! Do you have a problem with that?",
       "source": "Whomp King, Super Mario Galaxy 2",
-      "length": 257,
+      "length": 256,
       "approvedBy": "Smithster",
       "id": 6369
     },
@@ -36287,7 +36275,7 @@
     {
       "text": "It's supercalifragilisticexpialidocious, even though the sound of it is something quite atrocious. If you say it loud enough, you'll always sound precocious Supercalifragilisticexpialidocious.",
       "source": "Mary Poppins",
-      "length": 189,
+      "length": 192,
       "approvedBy": "Smithster",
       "id": 6373
     },
@@ -36322,7 +36310,7 @@
     {
       "text": "Just because people do horrible things it doesn't always mean they're horrible people.",
       "source": "Grey's Anatomy",
-      "length": 87,
+      "length": 86,
       "approvedBy": "Smithster",
       "id": 6378
     },
@@ -36357,7 +36345,7 @@
     {
       "text": "Doublethink means the power of holding two contradictory beliefs in one's mind simultaneously, and accepting both of them.",
       "source": "George Orwell, 1984",
-      "length": 124,
+      "length": 122,
       "approvedBy": "Smithster",
       "id": 6383
     },
@@ -36385,7 +36373,7 @@
     {
       "text": "You know, it's funny; when you look at someone through rose colored glasses, all the red flags just look like flags.",
       "source": "Bojack Horseman",
-      "length": 105,
+      "length": 116,
       "approvedBy": "Smithster",
       "id": 6387
     },
@@ -36399,7 +36387,7 @@
     {
       "text": "I'm going to this right, show you I'm not movin'! Wherever you go I won't far to follow.",
       "source": "Waitress, Never Ever Getting Rid of Me",
-      "length": 89,
+      "length": 88,
       "approvedBy": "Smithster",
       "id": 6389
     },
@@ -36455,7 +36443,7 @@
     {
       "text": "If your parents never had children, chances are you won't either.",
       "source": "Dick Cavett",
-      "length": 78,
+      "length": 65,
       "approvedBy": "Smithster",
       "id": 6397
     },
@@ -36497,7 +36485,7 @@
     {
       "text": "“I will take responsibility for what I have done,” Dalinar whispered. “If I must fall, I will rise each time a better man.”",
       "source": "Oathbringer, The Stormlight Archive, written by Brandon Sanderson",
-      "length": 124,
+      "length": 123,
       "approvedBy": "Smithster",
       "id": 6403
     },
@@ -36518,7 +36506,7 @@
     {
       "text": "So, you have a different way of doing things, a different way of seeing things. That might make you weird, but it also makes you awesome. Don't you see? Because us weirdos have to stick together.",
       "source": "The Owl House",
-      "length": 152,
+      "length": 195,
       "approvedBy": "Smithster",
       "id": 6406
     },
@@ -36553,14 +36541,14 @@
     {
       "text": "There is... another of me? How many times did I get ripped apart? How many times did I die?",
       "source": "Omen - Valorant",
-      "length": 90,
+      "length": 91,
       "approvedBy": "Smithster",
       "id": 6411
     },
     {
       "text": "I will get inside their inventor's head. Even brilliant minds will break to madness.",
       "source": "Omen - Valorant",
-      "length": 83,
+      "length": 84,
       "approvedBy": "Smithster",
       "id": 6412
     },
@@ -36658,7 +36646,7 @@
     {
       "text": "Here’s the thing about mistakes: Sometimes, even when you know something’s a mistake, you gotta make it anyway.",
       "source": "How I met your mother",
-      "length": 110,
+      "length": 111,
       "approvedBy": "Smithster",
       "id": 6426
     },
@@ -36784,21 +36772,21 @@
     {
       "text": "When he talks to Marianne he has a sense of total privacy between them. He could tell her anything about himself, even weird things, and she would never repeat them, he knows that. Being alone with her is like opening a door away from normal life and then closing it behind him.",
       "source": "Normal People, Sally Rooney",
-      "length": 277,
+      "length": 278,
       "approvedBy": "Smithster",
       "id": 6444
     },
     {
       "text": "Marianne lived a drastically free life, he could see that. He was trapped by various considerations. He cared what people thought of him. He even cared what Marianne thought, that was obvious now.",
       "source": "Normal People, Sally Rooney",
-      "length": 195,
+      "length": 196,
       "approvedBy": "Smithster",
       "id": 6445
     },
     {
       "text": "Nobody, even in the provinces, should ever be allowed to ask an intelligent question about pure mathematics across a dinner table. A question of this kind is quite as bad as inquiring suddenly about the state of a man's soul.",
       "source": "Oscar Wilde",
-      "length": 224,
+      "length": 225,
       "approvedBy": "Smithster",
       "id": 6446
     },
