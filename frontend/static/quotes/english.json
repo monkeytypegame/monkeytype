@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -36061,6 +36073,741 @@
       "length": 96,
       "approvedBy": "Smithster",
       "id": 6342
+    },
+    {
+      "text": "And as the flames climbed high into the night, To light the sacrificial rite, I saw Satan laughing with delight, The day the music died.",
+      "source": "Don McLean, American Pie ",
+      "length": 135,
+      "approvedBy": "Smithster",
+      "id": 6343
+    },
+    {
+      "text": "Hello and goodbye Do you think I'm dying? Do you think I'm going somewhere else this time? Do you remember the day we pretended to be every star in the sky?",
+      "source": "Might quit - Bill Wurtz",
+      "length": 156,
+      "approvedBy": "Smithster",
+      "id": 6344
+    },
+    {
+      "text": "I went down to the mall Then they closed down the mall Guess they don't want me going to the mall 'Cause I'm just too small (too small for the mall) Then I built some trains And I'm traveling somewhere new. It's a wonderful world, but still no you, It's a wonderful world for two, Singin' la de da de da de da de day oh\n",
+      "source": "La de da de da de da de day oh - Bill Wurtz",
+      "length": 320,
+      "approvedBy": "Smithster",
+      "id": 6345
+    },
+    {
+      "text": "I’m worried to death because I haven’t been able to see you doing well. You said we live in different worlds. But is that true? We have different colored skin and eyes. We were born in different countries. But we’re friends. Isn’t that what counts? I’m really glad I came to America. I met lots of people. And more than anything, I met you. You asked me over and over if you scared me. But I never feared you, not once. What’s more is you’re hurt much more than me. I couldn’t help feeling that way. Funny, huh? You’re way smarter, bigger, and stronger than me. But I always felt like I had to protect you. I wonder what it is I wanted to protect you from. I wanted to protect you from fate. The fate that tries to carry you away, drifting further and further. You told me once about a leopard you read in a book. How you believed that leopard knew that it couldn’t go back. And I said you weren’t a leopard, that you could change your destiny. You’re not alone. I’m by your side. My soul is always with you.",
+      "source": "Banana Fish - Eiji",
+      "length": 1041,
+      "approvedBy": "Smithster",
+      "id": 6346
+    },
+    {
+      "text": "Be like water making its way through cracks. Do not be assertive, but adjust to the object, and you shall find a way around or through it. If nothing within you stays rigid, outward things will disclose themselves. Empty your mind, be formless, shapeless, like water. If you put water into a cup, it becomes the cup. You put water into a bottle and it becomes the bottle. You put it in a teapot it becomes the teapot. Now, water can flow or it can crash. Be water, my friend.",
+      "source": "Bruce Lee",
+      "length": 477,
+      "approvedBy": "Smithster",
+      "id": 6347
+    },
+    {
+      "text": "We are forlorn like children, and experienced like old men, we are crude sorrowful and superficial - I believe we are lost.",
+      "source": "All Quiet on The Western Front ",
+      "length": 123,
+      "approvedBy": "Smithster",
+      "id": 6348
+    },
+    {
+      "text": "In Exchange For Power, Maybe I’ve Lost Something That Is Essential To Being Human.",
+      "source": "One Punch Man, Saitama",
+      "length": 82,
+      "approvedBy": "Smithster",
+      "id": 6349
+    },
+    {
+      "text": "My old friend - the panda will never fulfill his destiny nor yours, until you let go of the illusion of control... Yes! Look at this tree, Shifu. I cannot make it blossom when it suits me, nor make it bear fruit before its time!",
+      "source": "Kung Fu Panda - Master Oogway",
+      "length": 229,
+      "approvedBy": "Smithster",
+      "id": 6350
+    },
+    {
+      "text": "Once I realized the problem was not you but within me. I found inner peace and was able to harness the flow of the universe!",
+      "source": "Kung Fu Panda 2 - Master Shifu",
+      "length": 124,
+      "approvedBy": "Smithster",
+      "id": 6351
+    },
+    {
+      "text": "I don't like sand. It's coarse and rough and irritating and it gets everywhere.",
+      "source": "Anakin Skywalker, Star Wars: Episode II - Attack of the Clones",
+      "length": 79,
+      "approvedBy": "Smithster",
+      "id": 6352
+    },
+    {
+      "text": "It was impossible to expect a moral awakening from humankind itself, just like it was impossible to expect humans to lift off the earth by pulling up on their own hair. To achieve moral awakening required a force outside the human race.",
+      "source": "The Three-Body Problem, Liu Cixin",
+      "length": 236,
+      "approvedBy": "Smithster",
+      "id": 6353
+    },
+    {
+      "text": "This Thing, It Grabs Hold Of Us Again At The Wrong Place, At The Wrong Time, And We're Dead.",
+      "source": "Ennis Del Mar, Brokeback Mountain",
+      "length": 92,
+      "approvedBy": "Smithster",
+      "id": 6354
+    },
+    {
+      "text": "You know friend, this is a goddam bitch of an unsatisfactory situation.",
+      "source": "Brokeback Mountain",
+      "length": 71,
+      "approvedBy": "Smithster",
+      "id": 6355
+    },
+    {
+      "text": "When I look back on my life, It's not that I don't want to see things exactly as they happened. It's just that I prefer to remember them in an artistic way and truthfully the lie of it all is much more honest because I invented it.",
+      "source": "Lady Gaga, Prelude Pathetique (Marry the Night)",
+      "length": 228,
+      "approvedBy": "Smithster",
+      "id": 6356
+    },
+    {
+      "text": "I don't care if you're movin' slow or fast, as long as it's my direction.\n",
+      "source": "Brokeback Mountain",
+      "length": 74,
+      "approvedBy": "Smithster",
+      "id": 6357
+    },
+    {
+      "text": "I stopped for a second. If you remember everything, I wanted to say, and if you are really like me, then before you leave tomorrow, or when you’re just ready to shut the door of the taxi and have already said goodbye to everyone else and there’s not a thing left to say in this life, then, just this once, turn to me, even in jest, or as an afterthought, which would have meant everything to me when we were together, and, as you did back then, look me in the face, hold my gaze, and call me by your name.",
+      "source": "Call Me By Your Name",
+      "length": 504,
+      "approvedBy": "Smithster",
+      "id": 6358
+    },
+    {
+      "text": "He came. He left. Nothing else had changed. I had not changed. The world hadn't changed. Yet nothing would be the same. All that remains is dreammaking and strange remembrance.",
+      "source": "Call Me By Your Name",
+      "length": 176,
+      "approvedBy": "Smithster",
+      "id": 6359
+    },
+    {
+      "text": "I'd rather have loyalty than love, 'cause love really don't mean jack. See love is just a feeling you can love somebody and still stab them in they back. It don't take much to love, you can love somebody just by being attached. See loyalty is a action, you can love or hate me and still have my back.",
+      "source": "21 Savage, Ball w/o You",
+      "length": 301,
+      "approvedBy": "Smithster",
+      "id": 6360
+    },
+    {
+      "text": "Something deep inside of these bones an emptiness began to grow.",
+      "source": "Jack's Lament, The Nightmare Before Christmas",
+      "length": 64,
+      "approvedBy": "Smithster",
+      "id": 6361
+    },
+    {
+      "text": "Is there a problem with Earth's gravitational pull in the future? Why is everything so heavy?",
+      "source": "Back to the Future",
+      "length": 93,
+      "approvedBy": "Smithster",
+      "id": 6362
+    },
+    {
+      "text": "When people are protecting something truly precious to them, they can truly become as strong as they need to be.",
+      "source": "Haku, Naruto",
+      "length": 113,
+      "approvedBy": "Smithster",
+      "id": 6363
+    },
+    {
+      "text": "...Or we can blaze! Become legends in our own time, strike fear in the heart of mediocre talent everywhere! We can scald dogs, put records out of reach! Make the stands gasp as we blow into an unearthly kick from three hundred yards out! We can become God's own messengers delivering the dreaded scrolls! We can race dark Satan himself till he wheezes fiery cinders down the back straightaway....They'll speak our names in hushed tones, 'those guys are animals' they'll say! We can lay it on the line, bust a gut, show them a clean pair of heels. We can sprint the turn on a spring breeze and feel the winter leave our feet! We can, by God, let our demons loose and just wail on!",
+      "source": "Once a Runner, John L. Parker Jr.",
+      "length": 679,
+      "approvedBy": "Smithster",
+      "id": 6364
+    },
+    {
+      "text": "If you want to be the best, you have to be willing to do what others are not willing to do.",
+      "source": "Micheal Phelps",
+      "length": 91,
+      "approvedBy": "Smithster",
+      "id": 6365
+    },
+    {
+      "text": "I have often wondered how it is that every man loves himself more than all the rest of men, but yet sets less value on his own opinion of himself than on the opinion of others.",
+      "source": "Marcus Aurelius",
+      "length": 177,
+      "approvedBy": "Smithster",
+      "id": 6366
+    },
+    {
+      "text": "There's no such thing as winning or losing. There's won and there's lost. There is victory and there's defeat. There are absolutes. Everything in between is still left to fight for. The enemy will only have won when there is no one left to fight against him. Until then, there is only struggle, because that's what tides do - they turn.",
+      "source": "Skulduggery Pleasant",
+      "length": 336,
+      "approvedBy": "Smithster",
+      "id": 6367
+    },
+    {
+      "text": "Please, hurry, leave me, I can't breathe. Please don't say you love me.",
+      "source": "First Love / Late Spring by Mitski",
+      "length": 71,
+      "approvedBy": "Smithster",
+      "id": 6368
+    },
+    {
+      "text": "It makes me so mad! We build your houses, your castles. We pave your roads, and still you walk all over us. Do you ever say thank you? No! Well, you're not going to wipe your feet on me! I think I'll crush you just for fun! Do you have a problem with that?",
+      "source": "Whomp King, Super Mario Galaxy 2",
+      "length": 257,
+      "approvedBy": "Smithster",
+      "id": 6369
+    },
+    {
+      "text": "Remember, remember, the Fifth of November, the Gunpowder Treason and Plot. I know of no reason why the Gunpowder Treason should ever be forgot.",
+      "source": "V for Vendetta",
+      "length": 143,
+      "approvedBy": "Smithster",
+      "id": 6370
+    },
+    {
+      "text": "I don't know, maybe it's not great progress compared to other people, but I'm happy with my progress. And you know what? Quite frankly, that's all that matters. If you spend too much time worrying about, you know, other people's progress and how it matches up to yours then... I don't know, you might forget what really matters, and that's your progress, you know?",
+      "source": "Gawr Gura",
+      "length": 364,
+      "approvedBy": "Smithster",
+      "id": 6371
+    },
+    {
+      "text": "One night, in the year 1713 I dreamed I had made a pact with the devil for my soul. Everything went as I wished: my new servant anticipated my every desire. Among other things, I gave him my violin to see if he could play. How great was my astonishment on hearing a sonata so wonderful and so beautiful, played with such great art and intelligence, as I had never even conceived in my boldest flights of fantasy. I felt enraptured, transported, enchanted: my breath failed me, and I awoke. I immediately grasped my violin in order to retain, in part at least, the impression of my dream. In vain! The music which I at this time composed is indeed the best that I ever wrote, and I still call it the Devil's Trill, but the difference between it and that which so moved me is so great that I would have destroyed my instrument and have said farewell to music forever if it had been possible for me to live without the enjoyment it affords me.",
+      "source": "Giuseppe Tartini",
+      "length": 940,
+      "approvedBy": "Smithster",
+      "id": 6372
+    },
+    {
+      "text": "It's supercalifragilisticexpialidocious, even though the sound of it is something quite atrocious. If you say it loud enough, you'll always sound precocious Supercalifragilisticexpialidocious.",
+      "source": "Mary Poppins",
+      "length": 189,
+      "approvedBy": "Smithster",
+      "id": 6373
+    },
+    {
+      "text": "Ruben, as you know, everybody here shares in the belief that being deaf is not a handicap; not something to fix. It's pretty important around here. All these kids, all of us, need to be reminded of it, everyday. And my house is a house built on that belief. And built on trust. And when that trust is violated, things happen. And I can't have that. There are too many others to consider. And so, in your current state, at this time, I'm gonna have to ask you to pack up your bags today, and find another place to be, Ruben. Cool.",
+      "source": "Sound of Metal",
+      "length": 529,
+      "approvedBy": "Smithster",
+      "id": 6374
+    },
+    {
+      "text": "At the bus stop, crushing rocks. They all stare at me, I don't care at all. Everywhere I go, they look at me wrong. Everyday go the same, got to stay strong. ",
+      "source": "Ecco2K, Peroxide",
+      "length": 158,
+      "approvedBy": "Smithster",
+      "id": 6375
+    },
+    {
+      "text": "Meaningless, huh? What do you know of meaningless? Spend most of your life ruled by another! Watch your race dwindle to a handful! And then, tell me what has more meaning than your own strength! I have in me the blood of a Saiyan prince. He is nothing but a joke! Yet I've had to watch him surpass me in strength, my destiny thrown to the wayside! He's... he's even saved my life like I were a helpless child. He has stolen my honor, and his debts... must be paid!",
+      "source": "Vegeta, Dragon Ball Z",
+      "length": 464,
+      "approvedBy": "Smithster",
+      "id": 6376
+    },
+    {
+      "text": "Oh! One arrives. Far it walks to find me. Did it seek my aid? Or did the path carry it by chance to so pertinent a place? It is true. True, that you were awaited. No. Perhaps that is inaccurate. True one like you was awaited. I have a gift, held long for one of your kind. Half of a whole. When united, great power is granted, and on the path ahead, great power it will need.",
+      "source": "Hollow Knight",
+      "length": 375,
+      "approvedBy": "Smithster",
+      "id": 6377
+    },
+    {
+      "text": "Just because people do horrible things it doesn't always mean they're horrible people.",
+      "source": "Grey's Anatomy",
+      "length": 87,
+      "approvedBy": "Smithster",
+      "id": 6378
+    },
+    {
+      "text": "Do you know what my favorite thing to do is in Minecrap? I love building bricks with Minecrap. Building bricks with Minecrap is the best thing and the most amount of fun you can have while playing an app.",
+      "source": "Mike Matei, Oney Plays",
+      "length": 204,
+      "approvedBy": "Smithster",
+      "id": 6379
+    },
+    {
+      "text": "If you are interested in stories with happy endings, you would be better off reading some other book. In this book, not only is there no happy endings, there is no happy beginning and very few happy things in the middle.",
+      "source": "A Series of Unfortunate Events: The Bad Beginning",
+      "length": 220,
+      "approvedBy": "Smithster",
+      "id": 6380
+    },
+    {
+      "text": "It is a beautiful day outside. Birds are singing, flowers are blooming... On days like these, kids like you... should be burning in hell.",
+      "source": "Undertale",
+      "length": 137,
+      "approvedBy": "Smithster",
+      "id": 6381
+    },
+    {
+      "text": "It seems after all I couldn't be anything more than a simple puppet. But you three... You're strong. With a power like that... Maybe you three can break your own strings. Let me become your strength.",
+      "source": "Deltarune",
+      "length": 199,
+      "approvedBy": "Smithster",
+      "id": 6382
+    },
+    {
+      "text": "Doublethink means the power of holding two contradictory beliefs in one's mind simultaneously, and accepting both of them.",
+      "source": "George Orwell, 1984",
+      "length": 124,
+      "approvedBy": "Smithster",
+      "id": 6383
+    },
+    {
+      "text": "Dude, Benson would've snapped his crank if we'd just upped and left work. You gotta be responsible sometimes.",
+      "source": "Mordecai, Regular Show",
+      "length": 109,
+      "approvedBy": "Smithster",
+      "id": 6384
+    },
+    {
+      "text": "How much wood would a woodchuck chuck if a woodchuck could chuck wood?",
+      "source": "Traditional American Tongue-twister",
+      "length": 70,
+      "approvedBy": "Smithster",
+      "id": 6385
+    },
+    {
+      "text": "I don’t know what to tell you. I’m happy for the first time in my life and I’m not gonna feel bad about it. It takes a long time to realise how truly miserable you are and even longer to see it doesn’t have to be that way. Only after you give up everything can you begin to find a way to be happy.",
+      "source": "Bojack Horsemen",
+      "length": 297,
+      "approvedBy": "Smithster",
+      "id": 6386
+    },
+    {
+      "text": "You know, it's funny; when you look at someone through rose colored glasses, all the red flags just look like flags.",
+      "source": "Bojack Horseman",
+      "length": 105,
+      "approvedBy": "Smithster",
+      "id": 6387
+    },
+    {
+      "text": "You could just write your own rules. You know, write something that's as interesting as you are.",
+      "source": "La La Land",
+      "length": 96,
+      "approvedBy": "Smithster",
+      "id": 6388
+    },
+    {
+      "text": "I'm going to this right, show you I'm not movin'! Wherever you go I won't far to follow.",
+      "source": "Waitress, Never Ever Getting Rid of Me",
+      "length": 89,
+      "approvedBy": "Smithster",
+      "id": 6389
+    },
+    {
+      "text": "People shouldn't be afraid of their government. Governments should be afraid of their people.",
+      "source": "V for Vendetta",
+      "length": 93,
+      "approvedBy": "Smithster",
+      "id": 6390
+    },
+    {
+      "text": "Behind this mask there is more than just flesh. Beneath this mask there is an idea... and ideas are bulletproof.",
+      "source": "V for Vendetta",
+      "length": 112,
+      "approvedBy": "Smithster",
+      "id": 6391
+    },
+    {
+      "text": "\nWe're all going to die, all of us; what a circus! That alone should make us love each other, but it doesn't. We are terrorized and flattened by trivialities. We are eaten up by nothing.",
+      "source": "Charles Bukowski",
+      "length": 186,
+      "approvedBy": "Smithster",
+      "id": 6392
+    },
+    {
+      "text": "Censorship is the tool of those who have the need to hide actualities from themselves and from others. Their fear is only their inability to face what is real, and I can't vent any anger against them; I only feel this appalling sadness. Somewhere in their upbringing, they were shielded against the total facts of our existence.",
+      "source": "Charles Bukowski",
+      "length": 328,
+      "approvedBy": "Smithster",
+      "id": 6393
+    },
+    {
+      "text": "Did you know that the word 'trauma' comes from the Greek for 'wound'? Hm? And what is the German word for 'dream'? Traum. Ein Traum. Wounds can create monsters, and you, you are wounded, Marshal. And wouldn't you agree, when you see a monster, you... you must stop it?",
+      "source": "Jeremiah Naehring, Shutter Island (Movie)",
+      "length": 268,
+      "approvedBy": "Smithster",
+      "id": 6394
+    },
+    {
+      "text": "After she tried to kill herself the first time, Dolores told me she... she had an insect living inside her brain. She could feel it clicking across her skull, just... pulling the wires, just for fun. She told me that. She told me that but I didn't listen. I loved her so much.",
+      "source": "Teddy Daniels, Shutter Island (movie)",
+      "length": 276,
+      "approvedBy": "Smithster",
+      "id": 6395
+    },
+    {
+      "text": "Daisy, Daisy, give me your answer do. I'm half crazy all for the love of you. It won't be a stylish marriage, I can't afford a carriage. But you'll look sweet upon the seat of a bicycle built for two.",
+      "source": "Daisy Bell (Bicycle Built for Two), Harry Dacre",
+      "length": 200,
+      "approvedBy": "Smithster",
+      "id": 6396
+    },
+    {
+      "text": "If your parents never had children, chances are you won't either.",
+      "source": "Dick Cavett",
+      "length": 78,
+      "approvedBy": "Smithster",
+      "id": 6397
+    },
+    {
+      "text": "My momma always said, \"Life was like a box of chocolates. You never know what you're gonna get.\"",
+      "source": "Forrest Gump",
+      "length": 96,
+      "approvedBy": "Smithster",
+      "id": 6398
+    },
+    {
+      "text": "Anyway, like I was sayin', shrimp is the fruit of the sea. You can barbecue it, boil it, broil it, bake it, saute it. Dey's uh, shrimp-kabobs, shrimp creole, shrimp gumbo. Pan-fried, deep-fried, stir-fried. There's pineapple shrimp, lemon shrimp, coconut shrimp, pepper shrimp, shrimp soup, shrimp stew, shrimp salad, shrimp and potatoes, shrimp burger, shrimp sandwich. That- that's about it.",
+      "source": "Forrest gump",
+      "length": 393,
+      "approvedBy": "Smithster",
+      "id": 6399
+    },
+    {
+      "text": "You don't listen, do you? I don't think you ever really hear me. You just ask the same questions every week. \"How's your job?\" \"Are you having any negative thoughts?\" All I have are negative thoughts.",
+      "source": "Joker",
+      "length": 200,
+      "approvedBy": "Smithster",
+      "id": 6400
+    },
+    {
+      "text": "That's what the Emperor said. A man steals something, he's brought in before the Emperor, he throws himself down on the ground. He begs for his life, he knows he's going to die. And the Emperor... pardons him. This worthless man, he lets him go.",
+      "source": "Schindler's List",
+      "length": 245,
+      "approvedBy": "Smithster",
+      "id": 6401
+    },
+    {
+      "text": "My father was fond of saying you need three things in life - a good doctor, a forgiving priest, and a clever accountant. The first two, I've never had much use for.",
+      "source": "Schindler's List",
+      "length": 164,
+      "approvedBy": "Smithster",
+      "id": 6402
+    },
+    {
+      "text": "“I will take responsibility for what I have done,” Dalinar whispered. “If I must fall, I will rise each time a better man.”",
+      "source": "Oathbringer, The Stormlight Archive, written by Brandon Sanderson",
+      "length": 124,
+      "approvedBy": "Smithster",
+      "id": 6403
+    },
+    {
+      "text": "So don't tell me I would be safer with somebody else, because the truth is I would just be more scared.\n\n",
+      "source": "Ellie, The Last Of Us",
+      "length": 105,
+      "approvedBy": "Smithster",
+      "id": 6404
+    },
+    {
+      "text": "In this place you could not feel anything, except pain and the foreknowledge of pain.",
+      "source": "1984, George Orwell",
+      "length": 85,
+      "approvedBy": "Smithster",
+      "id": 6405
+    },
+    {
+      "text": "So, you have a different way of doing things, a different way of seeing things. That might make you weird, but it also makes you awesome. Don't you see? Because us weirdos have to stick together.",
+      "source": "The Owl House",
+      "length": 152,
+      "approvedBy": "Smithster",
+      "id": 6406
+    },
+    {
+      "text": "You are seeing the movements created by your abilities, but you will never arrive at the truth that's going to happen. None who stand before me shall ever get there, regardless of their abilities. This is the power of Gold Experience Requiem!",
+      "source": "Jojo's Bizarre Adventure",
+      "length": 242,
+      "approvedBy": "Smithster",
+      "id": 6407
+    },
+    {
+      "text": "Suddenly I knew that the sound was not in my ears, it was not just inside my head. At that moment I must have become quite white. I talked still faster and louder. And the sound, too, became louder. It was a quick, low, soft sound, like the sound of a clock heard through a wall, a sound I knew well. Louder it became, and louder.",
+      "source": "The Tell-Tale Heart",
+      "length": 330,
+      "approvedBy": "Smithster",
+      "id": 6408
+    },
+    {
+      "text": "Men only think about the past right before their death, as if they were searching frantically for proof that they were alive.",
+      "source": "Cowboy Bebop",
+      "length": 125,
+      "approvedBy": "Smithster",
+      "id": 6409
+    },
+    {
+      "text": "They often say that humans can't live alone, but you can live pretty long by yourself. Instead of feeling alone in a group, it's better to be alone in your solitude.",
+      "source": "Cowboy Bebop",
+      "length": 165,
+      "approvedBy": "Smithster",
+      "id": 6410
+    },
+    {
+      "text": "There is... another of me? How many times did I get ripped apart? How many times did I die?",
+      "source": "Omen - Valorant",
+      "length": 90,
+      "approvedBy": "Smithster",
+      "id": 6411
+    },
+    {
+      "text": "I will get inside their inventor's head. Even brilliant minds will break to madness.",
+      "source": "Omen - Valorant",
+      "length": 83,
+      "approvedBy": "Smithster",
+      "id": 6412
+    },
+    {
+      "text": "For if Jack Buggit could escape from the pickle jar, if a bird with a broken neck could fly away, what else might be possible? Water may be older than light, diamonds crack in hot goat's blood, mountaintops give off cold fire, forests appear in mid-ocean, it may happen that a crab is caught with the shadow of a hand on its back, that the wind be imprisoned in a bit of knotted string. And it may be that love sometimes occurs without pain or misery.",
+      "source": "The Shipping News",
+      "length": 451,
+      "approvedBy": "Smithster",
+      "id": 6413
+    },
+    {
+      "text": "I knew that if I'd never gone to Forks, I wouldn't be facing death now. But, terrified as I was, I couldn't bring myself to regret the decision. When life offers you a dream so far beyond any of your expectations, it's not reasonable to grieve when it comes to an end.",
+      "source": "Twilight",
+      "length": 268,
+      "approvedBy": "Smithster",
+      "id": 6414
+    },
+    {
+      "text": "Letting the days go by, let the water hold me down. Letting the days go by, water flowing underground. Into the blue again, after the money's gone. Once in a lifetime, water flowing underground.",
+      "source": "Once in a Lifetime, Talking Heads",
+      "length": 194,
+      "approvedBy": "Smithster",
+      "id": 6415
+    },
+    {
+      "text": "If I had to choose between the world and Sonic, I would choose Sonic!",
+      "source": "Amy Rose, Sonic",
+      "length": 69,
+      "approvedBy": "Smithster",
+      "id": 6416
+    },
+    {
+      "text": "Well, maybe I don't need your money. Wait, wait, I said maybe!",
+      "source": "Friends",
+      "length": 62,
+      "approvedBy": "Smithster",
+      "id": 6417
+    },
+    {
+      "text": "Dude.. where’s your suit? Just once, when I say 'suit up' I wish you’d put on a suit.",
+      "source": "How I met your mother",
+      "length": 85,
+      "approvedBy": "Smithster",
+      "id": 6418
+    },
+    {
+      "text": "A lie is just a great story that someone ruined with the truth.",
+      "source": "How I met your mother",
+      "length": 63,
+      "approvedBy": "Smithster",
+      "id": 6419
+    },
+    {
+      "text": "You see, kids, right from the moment I met your mom I knew, I have to love this woman as much as I can, and as long as I can, and I can never stop loving her, not even for a second.",
+      "source": "How I met your mother",
+      "length": 181,
+      "approvedBy": "Smithster",
+      "id": 6420
+    },
+    {
+      "text": "A word of advice: Play along. The more you fight it, the worse it’s gonna get.",
+      "source": "How I met your mother",
+      "length": 78,
+      "approvedBy": "Smithster",
+      "id": 6421
+    },
+    {
+      "text": "Sometimes things have to fall apart to make way for better things.",
+      "source": "How I met your mother",
+      "length": 66,
+      "approvedBy": "Smithster",
+      "id": 6422
+    },
+    {
+      "text": "It’s only once you’ve stopped that you realize how hard it is to start again.",
+      "source": "How I met your mother",
+      "length": 77,
+      "approvedBy": "Smithster",
+      "id": 6423
+    },
+    {
+      "text": "We’re going to get older, whether we like it or not, so the only question is whether we get on with our lives or desperately cling to the past.",
+      "source": "How I met your mother",
+      "length": 143,
+      "approvedBy": "Smithster",
+      "id": 6424
+    },
+    {
+      "text": "Never underestimate the power of destiny. Because when you least expect it, the littlest thing can cause a ripple effect that changes your life.",
+      "source": "How I met your mother",
+      "length": 144,
+      "approvedBy": "Smithster",
+      "id": 6425
+    },
+    {
+      "text": "Here’s the thing about mistakes: Sometimes, even when you know something’s a mistake, you gotta make it anyway.",
+      "source": "How I met your mother",
+      "length": 110,
+      "approvedBy": "Smithster",
+      "id": 6426
+    },
+    {
+      "text": "You see, the universe has a plan kids, and that plan is always in motion.",
+      "source": "How I met your mother",
+      "length": 73,
+      "approvedBy": "Smithster",
+      "id": 6427
+    },
+    {
+      "text": "Sometimes our best decisions are the ones that don't make sense at all.",
+      "source": "How I met your mother",
+      "length": 71,
+      "approvedBy": "Smithster",
+      "id": 6428
+    },
+    {
+      "text": "If you keep giving up on people so quickly, you’re gonna miss out on something great.",
+      "source": "How I met your mother",
+      "length": 85,
+      "approvedBy": "Smithster",
+      "id": 6429
+    },
+    {
+      "text": "I get recognized one time, and I start thinking I’m Julia Roberts. I’m no VIP; I’m not even an IP; I’m just a lonely little P sitting out here in the gutter.",
+      "source": "How I met your mother",
+      "length": 157,
+      "approvedBy": "Smithster",
+      "id": 6430
+    },
+    {
+      "text": "Destined? Aren’t you tired of waiting for destiny, Ted? Isn’t it time to make your own destiny?",
+      "source": "How I met your mother",
+      "length": 95,
+      "approvedBy": "Smithster",
+      "id": 6431
+    },
+    {
+      "text": "I don’t know where I’m gonna be in five years. I don’t wanna know. I want my life to be an adventure.",
+      "source": "How I met your mother",
+      "length": 101,
+      "approvedBy": "Smithster",
+      "id": 6432
+    },
+    {
+      "text": "It’s just, eventually we’re all gonna move on. It’s called growing up.",
+      "source": "How I met your mother",
+      "length": 70,
+      "approvedBy": "Smithster",
+      "id": 6433
+    },
+    {
+      "text": "You can’t just skip ahead to where you think your life should be.",
+      "source": "How I met your mother",
+      "length": 65,
+      "approvedBy": "Smithster",
+      "id": 6434
+    },
+    {
+      "text": "The three-day rule is a childish, manipulative mind game. But yeah, you wait three days.",
+      "source": "How I met your mother",
+      "length": 88,
+      "approvedBy": "Smithster",
+      "id": 6435
+    },
+    {
+      "text": "Think of me as Yoda. Only instead of being little and green, I wear suits and I'm awesome. I'm your bro. I'm Broda.",
+      "source": "How I met your mother",
+      "length": 115,
+      "approvedBy": "Smithster",
+      "id": 6436
+    },
+    {
+      "text": "Quotes are for dumb people who can't think of something intelligent to say on their own.",
+      "source": "Bo Burnham",
+      "length": 88,
+      "approvedBy": "Smithster",
+      "id": 6437
+    },
+    {
+      "text": "When life give you lemons... you probably just found lemons.",
+      "source": "Bo Burnham",
+      "length": 60,
+      "approvedBy": "Smithster",
+      "id": 6438
+    },
+    {
+      "text": "There's a metal train that a mile long and at the very back end a lightning bolt struck her. How long til it reaches and kills the driver, provided that he's a good conductor?",
+      "source": "Bo Burnham",
+      "length": 175,
+      "approvedBy": "Smithster",
+      "id": 6439
+    },
+    {
+      "text": "The problem for us, as viewers, is that we want famous people who are passionate about the things they're famous for, because that makes them worthy of the attention. But I think many of those famous people just want to be famous.",
+      "source": "Bo Burnham",
+      "length": 230,
+      "approvedBy": "Smithster",
+      "id": 6440
+    },
+    {
+      "text": "What has just appeared is Team Plasma's castle. The king's words will resound from the heights to all below. You must come to the castle, as well. Everything will be decided there. Whether Pokemon will be liberated from people, or whether Pokemon and people will live together… We will see whose belief is stronger... And our result will change the world.",
+      "source": "Pokemon Black & White",
+      "length": 355,
+      "approvedBy": "Smithster",
+      "id": 6441
+    },
+    {
+      "text": "Love can never die, not completely. There were too many romantics, too many poets, too many places where lovers could meet and wishes could be shared.",
+      "source": "Great Goddesses, Nikita Gill",
+      "length": 150,
+      "approvedBy": "Smithster",
+      "id": 6442
+    },
+    {
+      "text": "This is what youth is. The sheer belief that you will be able to keep every promise you made to someone else. That you will be able to love someone into a forever when you do not even understand what forever means.",
+      "source": "Fierce Fairytales, Nikita Gill",
+      "length": 214,
+      "approvedBy": "Smithster",
+      "id": 6443
+    },
+    {
+      "text": "When he talks to Marianne he has a sense of total privacy between them. He could tell her anything about himself, even weird things, and she would never repeat them, he knows that. Being alone with her is like opening a door away from normal life and then closing it behind him.",
+      "source": "Normal People, Sally Rooney",
+      "length": 277,
+      "approvedBy": "Smithster",
+      "id": 6444
+    },
+    {
+      "text": "Marianne lived a drastically free life, he could see that. He was trapped by various considerations. He cared what people thought of him. He even cared what Marianne thought, that was obvious now.",
+      "source": "Normal People, Sally Rooney",
+      "length": 195,
+      "approvedBy": "Smithster",
+      "id": 6445
+    },
+    {
+      "text": "Nobody, even in the provinces, should ever be allowed to ask an intelligent question about pure mathematics across a dinner table. A question of this kind is quite as bad as inquiring suddenly about the state of a man's soul.",
+      "source": "Oscar Wilde",
+      "length": 224,
+      "approvedBy": "Smithster",
+      "id": 6446
+    },
+    {
+      "text": "Education is an admirable thing. But it is well to remember from time to time that nothing that is worth knowing can be taught.",
+      "source": "Oscar Wilde",
+      "length": 127,
+      "approvedBy": "Smithster",
+      "id": 6447
     }
   ]
 }
