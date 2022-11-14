@@ -877,14 +877,13 @@ $(document).keydown(async (event) => {
       if (Config.mode == "zen") {
         TestLogic.finish();
       } else if (
-        (Config.mode == "time" && Config.time === 0) ||
-        (Config.mode == "words" && Config.words === 0)
-      ) {
-        TestInput.setBailout(true);
-        TestLogic.finish();
-      } else if (
-        Config.mode == "custom" &&
-        CustomTextState.isCustomTextLong() === true
+        !Misc.canQuickRestart(
+          Config.mode,
+          Config.words,
+          Config.time,
+          CustomText,
+          CustomTextState.isCustomTextLong() ?? false
+        )
       ) {
         TestInput.setBailout(true);
         TestLogic.finish();
