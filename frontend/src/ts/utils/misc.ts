@@ -893,8 +893,8 @@ export function canQuickRestart(
   CustomText: MonkeyTypes.CustomText,
   customTextIsLong: boolean
 ): boolean {
-  const wordsLong = mode === "words" && words >= 1000;
-  const timeLong = mode === "time" && time >= 900;
+  const wordsLong = mode === "words" && (words >= 1000 || words === 0);
+  const timeLong = mode === "time" && (time >= 900 || time === 0);
   const customTextLong = mode === "custom" && customTextIsLong == true;
   const customTextRandomWordsLong =
     mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
@@ -1299,4 +1299,10 @@ export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
 
 export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
+}
+
+export function htmlToText(html: string): string {
+  const el = document.createElement("div");
+  el.innerHTML = html;
+  return el.textContent || el.innerText || "";
 }
