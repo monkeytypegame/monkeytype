@@ -794,4 +794,9 @@
     "bgColor": "#fdf0d5",
     "mainColor": "#892948"
   }
+  ,{
+    "name": "rex",
+    "bgColor": "#040404",
+    "mainColor": "#40575e"
+  }
 ]
