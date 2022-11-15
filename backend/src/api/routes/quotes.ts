@@ -56,8 +56,8 @@ router.post(
   validateRequest({
     body: {
       quoteId: joi.string().required(),
-      editText: joi.string().regex(/^\w+$/).allow(null),
-      editSource: joi.string().regex(/^\w+$/).allow(null),
+      editText: joi.string().allow(null),
+      editSource: joi.string().allow(null),
     },
     validationErrorMessage: "Please fill all the fields",
   }),
