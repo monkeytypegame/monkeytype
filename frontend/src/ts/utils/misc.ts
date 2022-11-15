@@ -1300,3 +1300,9 @@ export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
 export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
   return a.length === b.length && a.every((v, i) => v === b[i]);
 }
+
+export function htmlToText(html: string): string {
+  const el = document.createElement("div");
+  el.innerHTML = html;
+  return el.textContent || el.innerText || "";
+}

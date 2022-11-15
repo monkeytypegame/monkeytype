@@ -105,7 +105,7 @@ export async function getSection(language: string): Promise<Section> {
           sectionText = sectionText.replace(/<\/p><p>+/g, " ");
 
           // Convert HTML to text
-          sectionText = $("<div/>").html(sectionText).text();
+          sectionText = Misc.htmlToText(sectionText);
 
           // Remove reference links
           sectionText = sectionText.replace(/\[\d+\]/gi, "");
