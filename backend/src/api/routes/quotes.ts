@@ -39,8 +39,8 @@ router.post(
   RateLimit.newQuotesAdd,
   validateRequest({
     body: {
-      text: joi.string().min(60).regex(/^\w+$/).required(),
-      source: joi.string().regex(/^\w+$/).required(),
+      text: joi.string().min(60).required(),
+      source: joi.string().required(),
       language: joi.string().regex(/^\w+$/).required(),
       captcha: joi.string().required(),
     },
@@ -56,8 +56,8 @@ router.post(
   validateRequest({
     body: {
       quoteId: joi.string().required(),
-      editText: joi.string().regex(/^\w+$/).allow(null),
-      editSource: joi.string().regex(/^\w+$/).allow(null),
+      editText: joi.string().allow(null),
+      editSource: joi.string().allow(null),
     },
     validationErrorMessage: "Please fill all the fields",
   }),
