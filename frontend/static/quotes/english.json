@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -36796,6 +36808,13 @@
       "length": 127,
       "approvedBy": "Smithster",
       "id": 6447
+    },
+    {
+      "text": "I am not bitter because of what has happened. On the contrary, I am secure in knowing that what we had was real, and I am happy we were able to come together for even a short period of time. And if, in some distant place in the future, we see each other in our new lives, I will smile at you with joy, and remember how we spent a summer beneath the trees, learning from each other and growing in love. And maybe, for a brief moment, you'll feel it too, and you'll smile back, and savor the memories we will always share together. I love you, Allie. Noah. ",
+      "source": "The Notebook by Nicholas Sparks",
+      "length": 555,
+      "approvedBy": "Smithster",
+      "id": 6448
     }
   ]
 }
