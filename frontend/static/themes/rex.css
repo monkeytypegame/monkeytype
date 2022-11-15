@@ -1,0 +1,13 @@
+:root {
+    --bg-color: #040404;
+    --main-color: #40575e;
+    --caret-color: #a3a3a3;
+    --sub-color: #3a5464;
+    --text-color: #3d869b;
+    --error-color: #b45e33;
+    --error-extra-color: #5d2d19;
+    --colorful-error-color: #e26928;
+    --colorful-error-extra-color: #a64217;
+  }
+
+/* your theme has been added to the _list file and the textColor property is the theme's main color */
