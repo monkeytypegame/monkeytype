@@ -1333,3 +1333,9 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   });
   return removeDuplicates ? [...new Set(filtered)] : filtered;
 }
+
+export function htmlToText(html: string): string {
+  const el = document.createElement("div");
+  el.innerHTML = html;
+  return el.textContent || el.innerText || "";
+}
