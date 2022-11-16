@@ -185,7 +185,7 @@ export let show = (): void => {
         {
           opacity: 1,
         },
-        100
+        125
       );
   }
   $("#commandLine input").val("");
@@ -206,8 +206,9 @@ function hide(shouldFocusTestUI = true): void {
       {
         opacity: 0,
       },
-      100,
+      125,
       () => {
+        addCommandlineBackground();
         $("#commandLineWrapper").addClass("hidden");
         $("#commandLine").removeClass("allCommands");
         if (shouldFocusTestUI) {
