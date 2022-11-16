@@ -39,6 +39,20 @@ export function isSingleListCommandLineActive(): boolean {
   return $("#commandLine").hasClass("allCommands");
 }
 
+function removeCommandlineBackground(): void {
+  $("#commandLineWrapper").addClass("noBackground");
+  if (Config.showOutOfFocusWarning) {
+    $("#words").removeClass("blurred");
+  }
+}
+
+function addCommandlineBackground(): void {
+  $("#commandLineWrapper").removeClass("noBackground");
+  if (Config.showOutOfFocusWarning) {
+    $("#words").addClass("blurred");
+  }
+}
+
 function showFound(): void {
   $("#commandLine .suggestions").empty();
   let commandsHTML = "";
@@ -94,6 +108,11 @@ function showFound(): void {
     try {
       $.each(list.list, (_index, obj) => {
         if (obj.found) {
+          if (/changeTheme.+/gi.test(obj.id)) {
+            removeCommandlineBackground();
+          } else {
+            addCommandlineBackground();
+          }
           if (
             (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
             !ThemeController.randomTheme
@@ -492,6 +511,11 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (_index, obj) => {
       if (obj.id == hoverId) {
+        if (/changeTheme.+/gi.test(obj.id)) {
+          removeCommandlineBackground();
+        } else {
+          addCommandlineBackground();
+        }
         if (
           (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
           !ThemeController.randomTheme
@@ -662,6 +686,11 @@ $(document).on("keydown", (e) => {
           CommandlineLists.current[CommandlineLists.current.length - 1];
         $.each(list.list, (_index, obj) => {
           if (obj.id == hoverId) {
+            if (/changeTheme.+/gi.test(obj.id)) {
+              removeCommandlineBackground();
+            } else {
+              addCommandlineBackground();
+            }
             if (
               (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
               !ThemeController.randomTheme
