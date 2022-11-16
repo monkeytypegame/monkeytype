@@ -2,410 +2,137 @@
   {
     "name": "nausea",
     "info": "I think I'm gonna be sick.",
-    "canGetPB": true,
-    "functions": {
-      "applyCSS": true
-    }
+    "canGetPB": true
   },
   {
     "name": "round_round_baby",
     "info": "...right round, like a record baby. Right, round round round.",
-    "canGetPB": true,
-    "functions": {
-      "applyCSS": true
-    }
+    "canGetPB": true
   },
   {
     "name": "simon_says",
     "info": "Type what simon says.",
-    "canGetPB": true,
-    "properties": [
-      "changesWordsVisibility",
-      "usesLayout"
-    ],
-    "forcedConfig": {
-      "highlightMode": [
-        "letter",
-        "off"
-      ]
-    },
-    "functions": {
-      "applyCSS": true,
-      "applyConfig": true,
-      "rememberSettings": true
-    }
+    "canGetPB": true
   },
   {
     "name": "mirror",
     "info": "Everything is mirrored!",
-    "canGetPB": true,
-    "functions": {
-      "applyCSS": true
-    }
+    "canGetPB": true
   },
   {
     "name": "tts",
     "info": "Listen closely.",
-    "canGetPB": true,
-    "properties": [
-      "changesWordsVisibility",
-      "speaks"
-    ],
-    "forcedConfig": {
-      "highlightMode": [
-        "letter",
-        "off"
-      ]
-    },
-    "functions": {
-      "applyCSS": true,
-      "applyConfig": true,
-      "rememberSettings": true,
-      "toggleScript": true
-    }
+    "canGetPB": true
   },
   {
     "name": "choo_choo",
     "info": "All the letters are spinning!",
-    "canGetPB": true,
-    "properties": [
-      "noLigatures",
-      "conflictsWithSymmetricChars"
-    ],
-    "functions": {
-      "applyCSS": true
-    }
+    "canGetPB": true
   },
   {
     "name": "arrows",
     "info": "Eurobeat Intensifies...",
-    "canGetPB": false,
-    "properties": [
-      "blockWordHighlight",
-      "ignoresLanguage",
-      "ignoresLayout",
-      "nospace",
-      "noLetters",
-      "symmetricChars"
-    ],
-    "forcedConfig": {
-      "punctuation": [
-        false
-      ],
-      "numbers": [
-        false
-      ],
-      "highlightMode": [
-        "letter",
-        "off"
-      ]
-    },
-    "functions": {
-      "getWord": true,
-      "applyConfig": true,
-      "rememberSettings": true,
-      "handleChar": true,
-      "isCharCorrect": true,
-      "preventDefaultEvent": true,
-      "getWordHtml": true
-    }
+    "canGetPB": false
   },
   {
     "name": "rAnDoMcAsE",
     "info": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
-    "canGetPB": false,
-    "properties": [
-      "changesCapitalisation"
-    ],
-    "functions": {
-      "alterText": true
-    }
+    "canGetPB": false
   },
   {
     "name": "capitals",
     "info": "Capitalize Every Word.",
-    "canGetPB": false,
-    "properties": [
-      "changesCapitalisation"
-    ],
-    "functions": {
-      "alterText": true
-    }
+    "canGetPB": false
   },
   {
     "name": "layoutfluid",
     "info": "Switch between layouts specified below proportionately to the length of the test.",
-    "canGetPB": true,
-    "properties": [
-      "changesLayout",
-      "noInfiniteDuration"
-    ],
-    "functions": {
-      "applyConfig": true,
-      "rememberSettings": true,
-      "handleSpace": true,
-      "getResultContent": true,
-      "restart": true
-    }
+    "canGetPB": true
   },
   {
     "name": "earthquake",
     "info": "Everybody get down! The words are shaking!",
-    "canGetPB": true,
-    "properties": [
-      "noLigatures"
-    ],
-    "functions": {
-      "applyCSS": true
-    }
+    "canGetPB": true
   },
   {
     "name": "space_balls",
     "info": "In a galaxy far far away.",
-    "canGetPB": true,
-    "functions": {
-      "applyCSS": true
-    }
+    "canGetPB": true
   },
   {
     "name": "gibberish",
     "info": "Anvbuefl dizzs eoos alsb?",
-    "canGetPB": false,
-    "properties": [
-      "ignoresLanguage",
-      "unspeakable"
-    ],
-    "functions": {
-      "getWord": true
-    }
+    "canGetPB": false
   },
   {
     "name": "58008",
     "alias": "numbers",
     "info": "A special mode for accountants.",
-    "canGetPB": false,
-    "properties": [
-      "ignoresLanguage",
-      "noLetters",
-      "ignoresLayout"
-    ],
-    "forcedConfig": {
-      "numbers": [
-        false
-      ]
-    },
-    "functions": {
-      "getWord": true,
-      "punctuateWord": true,
-      "rememberSettings": true,
-      "handleChar": true
-    }
+    "canGetPB": false
   },
   {
     "name": "ascii",
     "info": "Where was the ampersand again?. Only ASCII characters.",
-    "canGetPB": false,
-    "properties": [
-      "ignoresLanguage",
-      "noLetters",
-      "unspeakable"
-    ],
-    "forcedConfig": {
-      "punctuation": [
-        false
-      ],
-      "numbers": [
-        false
-      ]
-    },
-    "functions": {
-      "getWord": true
-    }
+    "canGetPB": false
   },
   {
     "name": "specials",
     "info": "!@#$%^&*. Only special characters.",
-    "canGetPB": false,
-    "properties": [
-      "ignoresLanguage",
-      "noLetters",
-      "unspeakable"
-    ],
-    "forcedConfig": {
-      "punctuation": [
-        false
-      ],
-      "numbers": [
-        false
-      ]
-    },
-    "functions": {
-      "getWord": true
-    }
+    "canGetPB": false
   },
   {
     "name": "plus_one",
     "info": "React quickly! Only one future word is visible.",
-    "canGetPB": true,
-    "properties": [
-      "toPush2",
-      "changesWordsVisibility",
-      "noInfiniteDuration"
-    ]
+    "canGetPB": true
   },
   {
     "name": "plus_two",
     "info": "Only two future words are visible.",
-    "canGetPB": true,
-    "properties": [
-      "toPush3",
-      "changesWordsVisibility",
-      "noInfiniteDuration"
-    ]
+    "canGetPB": true
   },
   {
     "name": "read_ahead_easy",
     "info": "Only the current word is invisible.",
-    "canGetPB": true,
-    "properties": [
-      "changesWordsVisibility"
-    ],
-    "forcedConfig": {
-      "highlightMode": [
-        "letter",
-        "off"
-      ]
-    },
-    "functions": {
-      "applyCSS": true,
-      "rememberSettings": true
-    }
+    "canGetPB": true
   },
   {
     "name": "read_ahead",
     "info": "Current and the next word are invisible!",
-    "canGetPB": true,
-    "properties": [
-      "changesWordsVisibility"
-    ],
-    "forcedConfig": {
-      "highlightMode": [
-        "letter",
-        "off"
-      ]
-    },
-    "functions": {
-      "applyCSS": true,
-      "rememberSettings": true
-    }
+    "canGetPB": true
   },
   {
     "name": "read_ahead_hard",
     "info": "Current and the next two words are invisible!",
-    "canGetPB": true,
-    "properties": [
-      "changesWordsVisibility"
-    ],
-    "forcedConfig": {
-      "highlightMode": [
-        "letter",
-        "off"
-      ]
-    },
-    "functions": {
-      "applyCSS": true,
-      "rememberSettings": true
-    }
+    "canGetPB": true
   },
   {
     "name": "memory",
     "info": "Test your memory. Remember the words and type them blind.",
-    "canGetPB": true,
-    "mode": "words",
-    "properties": [
-      "changesWordsVisibility",
-      "noInfiniteDuration"
-    ],
-    "functions": {
-      "applyConfig": true,
-      "rememberSettings": true,
-      "start": true,
-      "restart": true
-    }
+    "canGetPB": true
   },
   {
     "name": "nospace",
     "info": "Whoneedsspacesanyway?",
-    "canGetPB": false,
-    "properties": [
-      "nospace"
-    ],
-    "forcedConfig": {
-      "highlightMode": [
-        "letter",
-        "off"
-      ]
-    },
-    "functions": {
-      "applyConfig": true,
-      "rememberSettings": true
-    }
+    "canGetPB": false
   },
   {
     "name": "poetry",
     "info": "Practice typing some beautiful prose.",
-    "canGetPB": false,
-    "properties": [
-      "noInfiniteDuration"
-    ],
-    "forcedConfig": {
-      "punctuation": [
-        false
-      ],
-      "numbers": [
-        false
-      ]
-    },
-    "functions": {
-      "pullSection": true
-    }
+    "canGetPB": false
   },
   {
     "name": "wikipedia",
     "info": "Practice typing wikipedia sections.",
-    "canGetPB": false,
-    "properties": [
-      "noInfiniteDuration"
-    ],
-    "forcedConfig": {
-      "punctuation": [
-        false
-      ],
-      "numbers": [
-        false
-      ]
-    },
-    "functions": {
-      "pullSection": true
-    }
+    "canGetPB": false
   },
   {
     "name": "weakspot",
     "info": "Focus on slow and mistyped letters.",
-    "canGetPB": false,
-    "functions": {
-      "getWord": true
-    }
+    "canGetPB": false
   },
   {
     "name": "pseudolang",
     "info": "Nonsense words that look like the current language.",
-    "canGetPB": false,
-    "properties": [
-      "unspeakable"
-    ],
-    "functions": {
-      "withWords": true
-    }
+    "canGetPB": false
   }
 ]
