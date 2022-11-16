@@ -1,10 +1,10 @@
 services:
   monkeytype-frontend:
     container_name: monkeytype-frontend
-    image: node:gallium-bullseye
+    image: node:16.13.2-bullseye
     restart: on-failure
     ports:
       - "3000:3000"
     volumes:
       - ../:/monkeytype
-    entrypoint: 'bash -c "cd /monkeytype && npm run dev-fe"'
+    entrypoint: 'bash -c "cd /monkeytype && npm install && npm run dev-fe"'
