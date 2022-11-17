@@ -162,6 +162,12 @@
       "source": "Community Contribution: Enqueue an Array-based Queue",
       "id": 26,
       "length": 140
+    },
+    {
+      "text": "public static int[] bogoSort(int[] arr) {\n\twhile (!isSorted(arr)) shuffle(arr);\n\treturn arr;\n}\npublic static void shuffle(int[] arr) {\n\tfor (int i = 0; i < arr.length; i++) {\n\t\tswap(arr, i, (int) (Math.random() * i));\n\t}\n}",
+      "source": "Community Contribution: BogoSort",
+      "id": 27,
+      "length": 222
     }
   ]
 }
