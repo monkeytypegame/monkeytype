@@ -1,4 +1,4 @@
-import * as Funbox from "../../test/funbox";
+import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";

@@ -7,7 +7,7 @@ import * as Keymap from "../elements/keymap";
 import * as Misc from "../utils/misc";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
-import * as Funbox from "../test/funbox";
+import * as Funbox from "../test/funbox/funbox";
 import * as Sound from "./sound-controller";
 import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
@@ -28,7 +28,7 @@ import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import { navigate } from "../observables/navigate-event";
-import { ActiveFunboxes } from "../test/funbox";
+import * as FunboxList from "../test/funbox/funbox-list";
 import * as Settings from "../pages/settings";
 
 let dontInsertSpace = false;
@@ -122,7 +122,7 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (ActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
+  if (FunboxList.getActive().find((f) => f.properties?.includes("nospace"))) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -148,7 +148,7 @@ function handleSpace(): void {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const f of ActiveFunboxes()) {
+  for (const f of FunboxList.getActive()) {
     if (f.functions?.handleSpace) {
       f.functions.handleSpace();
     }
@@ -162,7 +162,7 @@ function handleSpace(): void {
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
-    ActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    FunboxList.getActive().find((f) => f.properties?.includes("nospace")) !==
     undefined;
 
   //correct word or in zen mode
@@ -343,7 +343,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     }
   }
 
-  const funbox = ActiveFunboxes().find((f) => f.functions?.isCharCorrect);
+  const funbox = FunboxList.getActive().find((f) => f.functions?.isCharCorrect);
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
@@ -391,12 +391,12 @@ function handleChar(
     return;
   }
 
-  for (const f of ActiveFunboxes()) {
+  for (const f of FunboxList.getActive()) {
     if (f.functions?.handleChar) char = f.functions.handleChar(char);
   }
 
   const nospace =
-    ActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
+    FunboxList.getActive().find((f) => f.properties?.includes("nospace")) !==
     undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
@@ -891,7 +891,9 @@ $(document).keydown(async (event) => {
       (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
 
-  const funbox = ActiveFunboxes().find((f) => f.functions?.preventDefaultEvent);
+  const funbox = FunboxList.getActive().find(
+    (f) => f.functions?.preventDefaultEvent
+  );
   if (funbox?.functions?.preventDefaultEvent) {
     if (await funbox.functions.preventDefaultEvent(event)) {
       event.preventDefault();
