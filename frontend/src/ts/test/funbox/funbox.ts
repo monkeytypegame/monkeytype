@@ -10,6 +10,9 @@ import * as TTSEvent from "../../observables/tts-event";
 import * as KeymapEvent from "../../observables/keymap-event";
 import * as TestWords from "../test-words";
 import * as TestInput from "../test-input";
+import * as WeakSpot from "../weak-spot";
+import { getPoem } from "../poetry";
+import { getSection } from "../wikipedia";
 
 const prefixSize = 2;
 
@@ -318,6 +321,144 @@ FunboxList.setFunboxFunctions("space_balls", {
 FunboxList.setFunboxFunctions("gibberish", {
   getWord(): string {
     return Misc.getGibberish();
+  },
+});
+
+FunboxList.setFunboxFunctions("58008", {
+  getWord(): string {
+    let num = Misc.getNumbers(7);
+    if (Config.language.startsWith("kurdish")) {
+      num = Misc.convertNumberToArabic(num);
+    } else if (Config.language.startsWith("nepali")) {
+      num = Misc.convertNumberToNepali(num);
+    }
+    return num;
+  },
+  punctuateWord(word: string): string {
+    if (word.length > 3) {
+      if (Math.random() < 0.5) {
+        word = Misc.setCharAt(
+          word,
+          Misc.randomIntFromRange(1, word.length - 2),
+          "."
+        );
+      }
+      if (Math.random() < 0.75) {
+        const index = Misc.randomIntFromRange(1, word.length - 2);
+        if (
+          word[index - 1] !== "." &&
+          word[index + 1] !== "." &&
+          word[index + 1] !== "0"
+        ) {
+          const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
+          word = Misc.setCharAt(word, index, special);
+        }
+      }
+    }
+    return word;
+  },
+  rememberSettings(): void {
+    save("numbers", Config.numbers, UpdateConfig.setNumbers);
+  },
+  handleChar(char: string): string {
+    if (char === "\n") {
+      return " ";
+    }
+    return char;
+  },
+});
+
+FunboxList.setFunboxFunctions("ascii", {
+  getWord(): string {
+    return Misc.getASCII();
+  },
+});
+
+FunboxList.setFunboxFunctions("specials", {
+  getWord(): string {
+    return Misc.getSpecials();
+  },
+});
+
+FunboxList.setFunboxFunctions("read_ahead_easy", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
+  },
+  rememberSettings(): void {
+    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+  },
+});
+
+FunboxList.setFunboxFunctions("read_ahead", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
+  },
+  rememberSettings(): void {
+    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+  },
+});
+
+FunboxList.setFunboxFunctions("read_ahead_hard", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
+  },
+  rememberSettings(): void {
+    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+  },
+});
+
+FunboxList.setFunboxFunctions("memory", {
+  applyConfig(): void {
+    $("#wordsWrapper").addClass("hidden");
+    UpdateConfig.setShowAllLines(true, true);
+    if (Config.keymapMode === "next") {
+      UpdateConfig.setKeymapMode("react", true);
+    }
+  },
+  rememberSettings(): void {
+    save("mode", Config.mode, UpdateConfig.setMode);
+    save("showAllLines", Config.showAllLines, UpdateConfig.setShowAllLines);
+    if (Config.keymapMode === "next") {
+      save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+    }
+  },
+  start(): void {
+    MemoryTimer.reset();
+    $("#wordsWrapper").addClass("hidden");
+  },
+  restart(): void {
+    MemoryTimer.start();
+    if (Config.keymapMode === "next") {
+      UpdateConfig.setKeymapMode("react");
+    }
+  },
+});
+
+FunboxList.setFunboxFunctions("nospace", {
+  applyConfig(): void {
+    $("#words").addClass("nospace");
+  },
+  rememberSettings(): void {
+    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+  },
+});
+
+FunboxList.setFunboxFunctions("poetry", {
+  async pullSection(): Promise<Misc.Section | false> {
+    return getPoem();
+  },
+});
+
+FunboxList.setFunboxFunctions("wikipedia", {
+  async pullSection(lang?: string): Promise<Misc.Section | false> {
+    return getSection(lang ? lang : "english");
+  },
+});
+
+FunboxList.setFunboxFunctions("weakspot", {
+  getWord(wordset?: Misc.Wordset): string {
+    if (wordset !== undefined) return WeakSpot.getWord(wordset);
+    else return "";
   },
 });
 
