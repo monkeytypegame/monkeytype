@@ -5,6 +5,39 @@ import Config, * as UpdateConfig from "../../config";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
 import * as FunboxList from "./funbox-list";
+import { save } from "./funbox-memory";
+import * as TTSEvent from "../../observables/tts-event";
+
+FunboxList.setFunboxFunctions("simon_says", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+  },
+  applyConfig(): void {
+    UpdateConfig.setKeymapMode("next", true);
+  },
+  rememberSettings(): void {
+    save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+  },
+});
+
+FunboxList.setFunboxFunctions("tts", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+  },
+  applyConfig(): void {
+    UpdateConfig.setKeymapMode("off", true);
+  },
+  rememberSettings(): void {
+    save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+  },
+  toggleScript(params: string[]): void {
+    if (window.speechSynthesis == undefined) {
+      Notifications.add("Failed to load text-to-speech script", -1);
+      return;
+    }
+    TTSEvent.dispatch(params[0]);
+  },
+});
 
 export function toggleScript(...params: string[]): void {
   FunboxList.get(Config.funbox).forEach((funbox) => {

@@ -1,15 +1,12 @@
+import * as Misc from "../../utils/misc";
 import * as TestInput from "../test-input";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
-import Config, * as UpdateConfig from "../../config";
 import * as Notifications from "../../elements/notifications";
-import * as Misc from "../../utils/misc";
 import * as TestWords from "../test-words";
-import { save } from "./funbox-memory";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as KeymapEvent from "../../observables/keymap-event";
-import * as TTSEvent from "../../observables/tts-event";
 
 const prefixSize = 2;
 
@@ -117,13 +114,13 @@ const list: MonkeyTypes.FunboxObject[] = [
     },
     functions: {
       applyCSS(): void {
-        $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+        //
       },
       applyConfig(): void {
-        UpdateConfig.setKeymapMode("next", true);
+        //
       },
       rememberSettings(): void {
-        save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+        //
       },
     },
   },
@@ -145,517 +142,522 @@ const list: MonkeyTypes.FunboxObject[] = [
     },
     functions: {
       applyCSS(): void {
-        $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+        //
       },
       applyConfig(): void {
-        UpdateConfig.setKeymapMode("off", true);
+        //
       },
       rememberSettings(): void {
-        save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+        //
       },
-      toggleScript(params: string[]): void {
-        if (window.speechSynthesis == undefined) {
-          Notifications.add("Failed to load text-to-speech script", -1);
-          return;
-        }
-        TTSEvent.dispatch(params[0]);
+      toggleScript(): void {
+        //
       },
     },
   },
-  {
-    name: "choo_choo",
-    info: "All the letters are spinning!",
-    properties: ["noLigatures", "conflictsWithSymmetricChars"],
-    functions: {
-      applyCSS(): void {
-        $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
-      },
-    },
-  },
-  {
-    name: "arrows",
-    info: "Eurobeat Intensifies...",
-    properties: [
-      "ignoresLanguage",
-      "ignoresLayout",
-      "nospace",
-      "noLetters",
-      "symmetricChars",
-    ],
-    forcedConfig: {
-      punctuation: [false],
-      numbers: [false],
-      highlightMode: ["letter", "off"],
-    },
-    functions: {
-      getWord(): string {
-        return Misc.getArrows();
-      },
-      applyConfig(): void {
-        $("#words").addClass("arrows");
-      },
-      rememberSettings(): void {
-        save(
-          "highlightMode",
-          Config.highlightMode,
-          UpdateConfig.setHighlightMode
-        );
-      },
-      handleChar(char: string): string {
-        if (char === "a" || char === "ArrowLeft") {
-          return "←";
-        }
-        if (char === "s" || char === "ArrowDown") {
-          return "↓";
-        }
-        if (char === "w" || char === "ArrowUp") {
-          return "↑";
-        }
-        if (char === "d" || char === "ArrowRight") {
-          return "→";
-        }
-        return char;
-      },
-      isCharCorrect(char: string, originalChar: string): boolean {
-        if ((char === "a" || char === "ArrowLeft") && originalChar === "←") {
-          return true;
-        }
-        if ((char === "s" || char === "ArrowDown") && originalChar === "↓") {
-          return true;
-        }
-        if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
-          return true;
-        }
-        if ((char === "d" || char === "ArrowRight") && originalChar === "→") {
-          return true;
-        }
-        return false;
-      },
-      async preventDefaultEvent(
-        event: JQuery.KeyDownEvent<Document, null, Document, Document>
-      ): Promise<boolean> {
-        // TODO What's better?
-        // return /Arrow/i.test(event.key);
-        return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
-          event.key
-        );
-      },
-      getWordHtml(char: string, letterTag?: boolean): string {
-        let retval = "";
-        if (char === "↑") {
-          if (letterTag) retval += `<letter>`;
-          retval += `<i class="fas fa-arrow-up"></i>`;
-          if (letterTag) retval += `</letter>`;
-        }
-        if (char === "↓") {
-          if (letterTag) retval += `<letter>`;
-          retval += `<i class="fas fa-arrow-down"></i>`;
-          if (letterTag) retval += `</letter>`;
-        }
-        if (char === "←") {
-          if (letterTag) retval += `<letter>`;
-          retval += `<i class="fas fa-arrow-left"></i>`;
-          if (letterTag) retval += `</letter>`;
-        }
-        if (char === "→") {
-          if (letterTag) retval += `<letter>`;
-          retval += `<i class="fas fa-arrow-right"></i>`;
-          if (letterTag) retval += `</letter>`;
-        }
-        return retval;
-      },
-    },
-  },
-  {
-    name: "rAnDoMcAsE",
-    info: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
-    properties: ["changesCapitalisation"],
-    functions: {
-      alterText(word: string): string {
-        let randomcaseword = word[0];
-        for (let i = 1; i < word.length; i++) {
-          if (randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase()) {
-            randomcaseword += word[i].toLowerCase();
-          } else {
-            randomcaseword += word[i].toUpperCase();
-          }
-        }
-        return randomcaseword;
-      },
-    },
-  },
-  {
-    name: "capitals",
-    info: "Capitalize Every Word.",
-    properties: ["changesCapitalisation"],
-    functions: {
-      alterText(word: string): string {
-        return Misc.capitalizeFirstLetterOfEachWord(word);
-      },
-    },
-  },
-  {
-    name: "layoutfluid",
-    info: "Switch between layouts specified below proportionately to the length of the test.",
-    properties: ["changesLayout", "noInfiniteDuration"],
-    functions: {
-      applyConfig(): void {
-        UpdateConfig.setLayout(
-          Config.customLayoutfluid.split("#")[0]
-            ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty",
-          true
-        );
-        UpdateConfig.setKeymapLayout(
-          Config.customLayoutfluid.split("#")[0]
-            ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty",
-          true
-        );
-      },
-      rememberSettings(): void {
-        save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
-        save("layout", Config.layout, UpdateConfig.setLayout);
-        save("keymapLayout", Config.keymapLayout, UpdateConfig.setKeymapLayout);
-      },
-      handleSpace(): void {
-        if (Config.mode !== "time") {
-          // here I need to check if Config.customLayoutFluid exists because of my
-          // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
-          const layouts: string[] = Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("#")
-            : ["qwerty", "dvorak", "colemak"];
-          let index = 0;
-          const outOf: number = TestWords.words.length;
-          index = Math.floor(
-            (TestInput.input.history.length + 1) / (outOf / layouts.length)
-          );
-          if (
-            Config.layout !== layouts[index] &&
-            layouts[index] !== undefined
-          ) {
-            Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
-          }
-          if (layouts[index]) {
-            UpdateConfig.setLayout(layouts[index]);
-            UpdateConfig.setKeymapLayout(layouts[index]);
-          }
-          KeymapEvent.highlight(
-            TestWords.words
-              .getCurrent()
-              .charAt(TestInput.input.current.length)
-              .toString()
-          );
-        }
-      },
-      getResultContent(): string {
-        return Config.customLayoutfluid.replace(/#/g, " ");
-      },
-      restart(): void {
-        if (this.applyConfig) this.applyConfig();
-        KeymapEvent.highlight(
-          TestWords.words
-            .getCurrent()
-            .substring(
-              TestInput.input.current.length,
-              TestInput.input.current.length + 1
-            )
-            .toString()
-        );
-      },
-    },
-  },
-  {
-    name: "earthquake",
-    info: "Everybody get down! The words are shaking!",
-    properties: ["noLigatures"],
-    functions: {
-      applyCSS(): void {
-        $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
-      },
-    },
-  },
-  {
-    name: "space_balls",
-    info: "In a galaxy far far away.",
-    functions: {
-      applyCSS(): void {
-        $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
-      },
-    },
-  },
-  {
-    name: "gibberish",
-    info: "Anvbuefl dizzs eoos alsb?",
-    properties: ["ignoresLanguage", "unspeakable"],
-    functions: {
-      getWord(): string {
-        return Misc.getGibberish();
-      },
-    },
-  },
-  {
-    name: "58008",
-    alias: "numbers",
-    info: "A special mode for accountants.",
-    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
-    forcedConfig: {
-      numbers: [false],
-    },
-    functions: {
-      getWord(): string {
-        let num = Misc.getNumbers(7);
-        if (Config.language.startsWith("kurdish")) {
-          num = Misc.convertNumberToArabic(num);
-        } else if (Config.language.startsWith("nepali")) {
-          num = Misc.convertNumberToNepali(num);
-        }
-        return num;
-      },
-      punctuateWord(word: string): string {
-        if (word.length > 3) {
-          if (Math.random() < 0.5) {
-            word = Misc.setCharAt(
-              word,
-              Misc.randomIntFromRange(1, word.length - 2),
-              "."
-            );
-          }
-          if (Math.random() < 0.75) {
-            const index = Misc.randomIntFromRange(1, word.length - 2);
-            if (
-              word[index - 1] !== "." &&
-              word[index + 1] !== "." &&
-              word[index + 1] !== "0"
-            ) {
-              const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
-              word = Misc.setCharAt(word, index, special);
-            }
-          }
-        }
-        return word;
-      },
-      rememberSettings(): void {
-        save("numbers", Config.numbers, UpdateConfig.setNumbers);
-      },
-      handleChar(char: string): string {
-        if (char === "\n") {
-          return " ";
-        }
-        return char;
-      },
-    },
-  },
-  {
-    name: "ascii",
-    info: "Where was the ampersand again?. Only ASCII characters.",
-    properties: ["ignoresLanguage", "noLetters", "unspeakable"],
-    forcedConfig: {
-      punctuation: [false],
-      numbers: [false],
-    },
-    functions: {
-      getWord(): string {
-        return Misc.getASCII();
-      },
-    },
-  },
-  {
-    name: "specials",
-    info: "!@#$%^&*. Only special characters.",
-    properties: ["ignoresLanguage", "noLetters", "unspeakable"],
-    forcedConfig: {
-      punctuation: [false],
-      numbers: [false],
-    },
-    functions: {
-      getWord(): string {
-        return Misc.getSpecials();
-      },
-    },
-  },
-  {
-    name: "plus_one",
-    info: "React quickly! Only one future word is visible.",
-    properties: ["changesWordsVisibility", "toPush:2", "noInfiniteDuration"],
-  },
-  {
-    name: "plus_two",
-    info: "Only two future words are visible.",
-    properties: ["changesWordsVisibility", "toPush:3", "noInfiniteDuration"],
-  },
-  {
-    name: "read_ahead_easy",
-    info: "Only the current word is invisible.",
-    properties: ["changesWordsVisibility"],
-    forcedConfig: {
-      highlightMode: ["letter", "off"],
-    },
-    functions: {
-      applyCSS(): void {
-        $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
-      },
-      rememberSettings(): void {
-        save(
-          "highlightMode",
-          Config.highlightMode,
-          UpdateConfig.setHighlightMode
-        );
-      },
-    },
-  },
-  {
-    name: "read_ahead",
-    info: "Current and the next word are invisible!",
-    properties: ["changesWordsVisibility"],
-    forcedConfig: {
-      highlightMode: ["letter", "off"],
-    },
-    functions: {
-      applyCSS(): void {
-        $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
-      },
-      rememberSettings(): void {
-        save(
-          "highlightMode",
-          Config.highlightMode,
-          UpdateConfig.setHighlightMode
-        );
-      },
-    },
-  },
-  {
-    name: "read_ahead_hard",
-    info: "Current and the next two words are invisible!",
-    properties: ["changesWordsVisibility"],
-    forcedConfig: {
-      highlightMode: ["letter", "off"],
-    },
-    functions: {
-      applyCSS(): void {
-        $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
-      },
-      rememberSettings(): void {
-        save(
-          "highlightMode",
-          Config.highlightMode,
-          UpdateConfig.setHighlightMode
-        );
-      },
-    },
-  },
-  {
-    name: "memory",
-    info: "Test your memory. Remember the words and type them blind.",
-    mode: ["words", "quote", "custom"],
-    properties: ["changesWordsVisibility", "noInfiniteDuration"],
-    functions: {
-      applyConfig(): void {
-        $("#wordsWrapper").addClass("hidden");
-        UpdateConfig.setShowAllLines(true, true);
-        if (Config.keymapMode === "next") {
-          UpdateConfig.setKeymapMode("react", true);
-        }
-      },
-      rememberSettings(): void {
-        save("mode", Config.mode, UpdateConfig.setMode);
-        save("showAllLines", Config.showAllLines, UpdateConfig.setShowAllLines);
-        if (Config.keymapMode === "next") {
-          save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
-        }
-      },
-      start(): void {
-        MemoryTimer.reset();
-        $("#wordsWrapper").addClass("hidden");
-      },
-      restart(): void {
-        MemoryTimer.start();
-        if (Config.keymapMode === "next") {
-          UpdateConfig.setKeymapMode("react");
-        }
-      },
-    },
-  },
-  {
-    name: "nospace",
-    info: "Whoneedsspacesanyway?",
-    properties: ["nospace"],
-    forcedConfig: {
-      highlightMode: ["letter", "off"],
-    },
-    functions: {
-      applyConfig(): void {
-        $("#words").addClass("nospace");
-      },
-      rememberSettings(): void {
-        save(
-          "highlightMode",
-          Config.highlightMode,
-          UpdateConfig.setHighlightMode
-        );
-      },
-    },
-  },
-  {
-    name: "poetry",
-    info: "Practice typing some beautiful prose.",
-    properties: ["noInfiniteDuration"],
-    forcedConfig: {
-      punctuation: [false],
-      numbers: [false],
-    },
-    functions: {
-      async pullSection(): Promise<Misc.Section | false> {
-        return getPoem();
-      },
-    },
-  },
-  {
-    name: "wikipedia",
-    info: "Practice typing wikipedia sections.",
-    properties: ["noInfiniteDuration"],
-    forcedConfig: {
-      punctuation: [false],
-      numbers: [false],
-    },
-    functions: {
-      async pullSection(lang?: string): Promise<Misc.Section | false> {
-        return getSection(lang ? lang : "english");
-      },
-    },
-  },
-  {
-    name: "weakspot",
-    info: "Focus on slow and mistyped letters.",
-    functions: {
-      getWord(wordset?: Misc.Wordset): string {
-        if (wordset !== undefined) return WeakSpot.getWord(wordset);
-        else return "";
-      },
-    },
-  },
-  {
-    name: "pseudolang",
-    info: "Nonsense words that look like the current language.",
-    properties: ["unspeakable"],
-    functions: {
-      async withWords(words?: string[]): Promise<Misc.Wordset> {
-        if (words !== undefined) return new PseudolangWordGenerator(words);
-        return new Misc.Wordset([]);
-      },
-    },
-  },
+  // {
+  //   name: "choo_choo",
+  //   info: "All the letters are spinning!",
+  //   properties: ["noLigatures", "conflictsWithSymmetricChars"],
+  //   functions: {
+  //     applyCSS(): void {
+  //       $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "arrows",
+  //   info: "Eurobeat Intensifies...",
+  //   properties: [
+  //     "ignoresLanguage",
+  //     "ignoresLayout",
+  //     "nospace",
+  //     "noLetters",
+  //     "symmetricChars",
+  //   ],
+  //   forcedConfig: {
+  //     punctuation: [false],
+  //     numbers: [false],
+  //     highlightMode: ["letter", "off"],
+  //   },
+  //   functions: {
+  //     getWord(): string {
+  //       return Misc.getArrows();
+  //     },
+  //     applyConfig(): void {
+  //       $("#words").addClass("arrows");
+  //     },
+  //     rememberSettings(): void {
+  //       save(
+  //         "highlightMode",
+  //         Config.highlightMode,
+  //         UpdateConfig.setHighlightMode
+  //       );
+  //     },
+  //     handleChar(char: string): string {
+  //       if (char === "a" || char === "ArrowLeft") {
+  //         return "←";
+  //       }
+  //       if (char === "s" || char === "ArrowDown") {
+  //         return "↓";
+  //       }
+  //       if (char === "w" || char === "ArrowUp") {
+  //         return "↑";
+  //       }
+  //       if (char === "d" || char === "ArrowRight") {
+  //         return "→";
+  //       }
+  //       return char;
+  //     },
+  //     isCharCorrect(char: string, originalChar: string): boolean {
+  //       if ((char === "a" || char === "ArrowLeft") && originalChar === "←") {
+  //         return true;
+  //       }
+  //       if ((char === "s" || char === "ArrowDown") && originalChar === "↓") {
+  //         return true;
+  //       }
+  //       if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
+  //         return true;
+  //       }
+  //       if ((char === "d" || char === "ArrowRight") && originalChar === "→") {
+  //         return true;
+  //       }
+  //       return false;
+  //     },
+  //     async preventDefaultEvent(
+  //       event: JQuery.KeyDownEvent<Document, null, Document, Document>
+  //     ): Promise<boolean> {
+  //       // TODO What's better?
+  //       // return /Arrow/i.test(event.key);
+  //       return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
+  //         event.key
+  //       );
+  //     },
+  //     getWordHtml(char: string, letterTag?: boolean): string {
+  //       let retval = "";
+  //       if (char === "↑") {
+  //         if (letterTag) retval += `<letter>`;
+  //         retval += `<i class="fas fa-arrow-up"></i>`;
+  //         if (letterTag) retval += `</letter>`;
+  //       }
+  //       if (char === "↓") {
+  //         if (letterTag) retval += `<letter>`;
+  //         retval += `<i class="fas fa-arrow-down"></i>`;
+  //         if (letterTag) retval += `</letter>`;
+  //       }
+  //       if (char === "←") {
+  //         if (letterTag) retval += `<letter>`;
+  //         retval += `<i class="fas fa-arrow-left"></i>`;
+  //         if (letterTag) retval += `</letter>`;
+  //       }
+  //       if (char === "→") {
+  //         if (letterTag) retval += `<letter>`;
+  //         retval += `<i class="fas fa-arrow-right"></i>`;
+  //         if (letterTag) retval += `</letter>`;
+  //       }
+  //       return retval;
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "rAnDoMcAsE",
+  //   info: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+  //   properties: ["changesCapitalisation"],
+  //   functions: {
+  //     alterText(word: string): string {
+  //       let randomcaseword = word[0];
+  //       for (let i = 1; i < word.length; i++) {
+  //         if (randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase()) {
+  //           randomcaseword += word[i].toLowerCase();
+  //         } else {
+  //           randomcaseword += word[i].toUpperCase();
+  //         }
+  //       }
+  //       return randomcaseword;
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "capitals",
+  //   info: "Capitalize Every Word.",
+  //   properties: ["changesCapitalisation"],
+  //   functions: {
+  //     alterText(word: string): string {
+  //       return Misc.capitalizeFirstLetterOfEachWord(word);
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "layoutfluid",
+  //   info: "Switch between layouts specified below proportionately to the length of the test.",
+  //   properties: ["changesLayout", "noInfiniteDuration"],
+  //   functions: {
+  //     applyConfig(): void {
+  //       UpdateConfig.setLayout(
+  //         Config.customLayoutfluid.split("#")[0]
+  //           ? Config.customLayoutfluid.split("#")[0]
+  //           : "qwerty",
+  //         true
+  //       );
+  //       UpdateConfig.setKeymapLayout(
+  //         Config.customLayoutfluid.split("#")[0]
+  //           ? Config.customLayoutfluid.split("#")[0]
+  //           : "qwerty",
+  //         true
+  //       );
+  //     },
+  //     rememberSettings(): void {
+  //       save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+  //       save("layout", Config.layout, UpdateConfig.setLayout);
+  //       save("keymapLayout", Config.keymapLayout, UpdateConfig.setKeymapLayout);
+  //     },
+  //     handleSpace(): void {
+  //       if (Config.mode !== "time") {
+  //         // here I need to check if Config.customLayoutFluid exists because of my
+  //         // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
+  //         const layouts: string[] = Config.customLayoutfluid
+  //           ? Config.customLayoutfluid.split("#")
+  //           : ["qwerty", "dvorak", "colemak"];
+  //         let index = 0;
+  //         const outOf: number = TestWords.words.length;
+  //         index = Math.floor(
+  //           (TestInput.input.history.length + 1) / (outOf / layouts.length)
+  //         );
+  //         if (
+  //           Config.layout !== layouts[index] &&
+  //           layouts[index] !== undefined
+  //         ) {
+  //           Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
+  //         }
+  //         if (layouts[index]) {
+  //           UpdateConfig.setLayout(layouts[index]);
+  //           UpdateConfig.setKeymapLayout(layouts[index]);
+  //         }
+  //         KeymapEvent.highlight(
+  //           TestWords.words
+  //             .getCurrent()
+  //             .charAt(TestInput.input.current.length)
+  //             .toString()
+  //         );
+  //       }
+  //     },
+  //     getResultContent(): string {
+  //       return Config.customLayoutfluid.replace(/#/g, " ");
+  //     },
+  //     restart(): void {
+  //       if (this.applyConfig) this.applyConfig();
+  //       KeymapEvent.highlight(
+  //         TestWords.words
+  //           .getCurrent()
+  //           .substring(
+  //             TestInput.input.current.length,
+  //             TestInput.input.current.length + 1
+  //           )
+  //           .toString()
+  //       );
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "earthquake",
+  //   info: "Everybody get down! The words are shaking!",
+  //   properties: ["noLigatures"],
+  //   functions: {
+  //     applyCSS(): void {
+  //       $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "space_balls",
+  //   info: "In a galaxy far far away.",
+  //   functions: {
+  //     applyCSS(): void {
+  //       $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "gibberish",
+  //   info: "Anvbuefl dizzs eoos alsb?",
+  //   properties: ["ignoresLanguage", "unspeakable"],
+  //   functions: {
+  //     getWord(): string {
+  //       return Misc.getGibberish();
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "58008",
+  //   alias: "numbers",
+  //   info: "A special mode for accountants.",
+  //   properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+  //   forcedConfig: {
+  //     numbers: [false],
+  //   },
+  //   functions: {
+  //     getWord(): string {
+  //       let num = Misc.getNumbers(7);
+  //       if (Config.language.startsWith("kurdish")) {
+  //         num = Misc.convertNumberToArabic(num);
+  //       } else if (Config.language.startsWith("nepali")) {
+  //         num = Misc.convertNumberToNepali(num);
+  //       }
+  //       return num;
+  //     },
+  //     punctuateWord(word: string): string {
+  //       if (word.length > 3) {
+  //         if (Math.random() < 0.5) {
+  //           word = Misc.setCharAt(
+  //             word,
+  //             Misc.randomIntFromRange(1, word.length - 2),
+  //             "."
+  //           );
+  //         }
+  //         if (Math.random() < 0.75) {
+  //           const index = Misc.randomIntFromRange(1, word.length - 2);
+  //           if (
+  //             word[index - 1] !== "." &&
+  //             word[index + 1] !== "." &&
+  //             word[index + 1] !== "0"
+  //           ) {
+  //             const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
+  //             word = Misc.setCharAt(word, index, special);
+  //           }
+  //         }
+  //       }
+  //       return word;
+  //     },
+  //     rememberSettings(): void {
+  //       save("numbers", Config.numbers, UpdateConfig.setNumbers);
+  //     },
+  //     handleChar(char: string): string {
+  //       if (char === "\n") {
+  //         return " ";
+  //       }
+  //       return char;
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "ascii",
+  //   info: "Where was the ampersand again?. Only ASCII characters.",
+  //   properties: ["ignoresLanguage", "noLetters", "unspeakable"],
+  //   forcedConfig: {
+  //     punctuation: [false],
+  //     numbers: [false],
+  //   },
+  //   functions: {
+  //     getWord(): string {
+  //       return Misc.getASCII();
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "specials",
+  //   info: "!@#$%^&*. Only special characters.",
+  //   properties: ["ignoresLanguage", "noLetters", "unspeakable"],
+  //   forcedConfig: {
+  //     punctuation: [false],
+  //     numbers: [false],
+  //   },
+  //   functions: {
+  //     getWord(): string {
+  //       return Misc.getSpecials();
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "plus_one",
+  //   info: "React quickly! Only one future word is visible.",
+  //   properties: ["changesWordsVisibility", "toPush:2", "noInfiniteDuration"],
+  // },
+  // {
+  //   name: "plus_two",
+  //   info: "Only two future words are visible.",
+  //   properties: ["changesWordsVisibility", "toPush:3", "noInfiniteDuration"],
+  // },
+  // {
+  //   name: "read_ahead_easy",
+  //   info: "Only the current word is invisible.",
+  //   properties: ["changesWordsVisibility"],
+  //   forcedConfig: {
+  //     highlightMode: ["letter", "off"],
+  //   },
+  //   functions: {
+  //     applyCSS(): void {
+  //       $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
+  //     },
+  //     rememberSettings(): void {
+  //       save(
+  //         "highlightMode",
+  //         Config.highlightMode,
+  //         UpdateConfig.setHighlightMode
+  //       );
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "read_ahead",
+  //   info: "Current and the next word are invisible!",
+  //   properties: ["changesWordsVisibility"],
+  //   forcedConfig: {
+  //     highlightMode: ["letter", "off"],
+  //   },
+  //   functions: {
+  //     applyCSS(): void {
+  //       $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
+  //     },
+  //     rememberSettings(): void {
+  //       save(
+  //         "highlightMode",
+  //         Config.highlightMode,
+  //         UpdateConfig.setHighlightMode
+  //       );
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "read_ahead_hard",
+  //   info: "Current and the next two words are invisible!",
+  //   properties: ["changesWordsVisibility"],
+  //   forcedConfig: {
+  //     highlightMode: ["letter", "off"],
+  //   },
+  //   functions: {
+  //     applyCSS(): void {
+  //       $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
+  //     },
+  //     rememberSettings(): void {
+  //       save(
+  //         "highlightMode",
+  //         Config.highlightMode,
+  //         UpdateConfig.setHighlightMode
+  //       );
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "memory",
+  //   info: "Test your memory. Remember the words and type them blind.",
+  //   mode: ["words", "quote", "custom"],
+  //   properties: ["changesWordsVisibility", "noInfiniteDuration"],
+  //   functions: {
+  //     applyConfig(): void {
+  //       $("#wordsWrapper").addClass("hidden");
+  //       UpdateConfig.setShowAllLines(true, true);
+  //       if (Config.keymapMode === "next") {
+  //         UpdateConfig.setKeymapMode("react", true);
+  //       }
+  //     },
+  //     rememberSettings(): void {
+  //       save("mode", Config.mode, UpdateConfig.setMode);
+  //       save("showAllLines", Config.showAllLines, UpdateConfig.setShowAllLines);
+  //       if (Config.keymapMode === "next") {
+  //         save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+  //       }
+  //     },
+  //     start(): void {
+  //       MemoryTimer.reset();
+  //       $("#wordsWrapper").addClass("hidden");
+  //     },
+  //     restart(): void {
+  //       MemoryTimer.start();
+  //       if (Config.keymapMode === "next") {
+  //         UpdateConfig.setKeymapMode("react");
+  //       }
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "nospace",
+  //   info: "Whoneedsspacesanyway?",
+  //   properties: ["nospace"],
+  //   forcedConfig: {
+  //     highlightMode: ["letter", "off"],
+  //   },
+  //   functions: {
+  //     applyConfig(): void {
+  //       $("#words").addClass("nospace");
+  //     },
+  //     rememberSettings(): void {
+  //       save(
+  //         "highlightMode",
+  //         Config.highlightMode,
+  //         UpdateConfig.setHighlightMode
+  //       );
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "poetry",
+  //   info: "Practice typing some beautiful prose.",
+  //   properties: ["noInfiniteDuration"],
+  //   forcedConfig: {
+  //     punctuation: [false],
+  //     numbers: [false],
+  //   },
+  //   functions: {
+  //     async pullSection(): Promise<Misc.Section | false> {
+  //       return getPoem();
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "wikipedia",
+  //   info: "Practice typing wikipedia sections.",
+  //   properties: ["noInfiniteDuration"],
+  //   forcedConfig: {
+  //     punctuation: [false],
+  //     numbers: [false],
+  //   },
+  //   functions: {
+  //     async pullSection(lang?: string): Promise<Misc.Section | false> {
+  //       return getSection(lang ? lang : "english");
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "weakspot",
+  //   info: "Focus on slow and mistyped letters.",
+  //   functions: {
+  //     getWord(wordset?: Misc.Wordset): string {
+  //       if (wordset !== undefined) return WeakSpot.getWord(wordset);
+  //       else return "";
+  //     },
+  //   },
+  // },
+  // {
+  //   name: "pseudolang",
+  //   info: "Nonsense words that look like the current language.",
+  //   properties: ["unspeakable"],
+  //   functions: {
+  //     async withWords(words?: string[]): Promise<Misc.Wordset> {
+  //       if (words !== undefined) return new PseudolangWordGenerator(words);
+  //       return new Misc.Wordset([]);
+  //     },
+  //   },
+  // },
 ];
 
 export function getAll(): MonkeyTypes.FunboxObject[] {
   return list;
 }
 
-export function getActive(): MonkeyTypes.FunboxObject[] {
+export function get(config: string): MonkeyTypes.FunboxObject[] {
   const funboxes: MonkeyTypes.FunboxObject[] = [];
-  for (const i of Config.funbox.split("#")) {
+  for (const i of config.split("#")) {
     const f = list.find((f) => f.name === i);
     if (f) funboxes.push(f);
   }
   return funboxes;
+}
+
+export function setFunboxFunctions(
+  name: string,
+  obj: MonkeyTypes.FunboxFunctions
+): void {
+  const fb = list.find((f) => f.name === name);
+  if (!fb) throw new Error(`Funbox ${name} not found.`);
+  fb.functions = obj;
 }
