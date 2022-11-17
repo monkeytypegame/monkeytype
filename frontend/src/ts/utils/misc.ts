@@ -1339,3 +1339,10 @@ export function htmlToText(html: string): string {
   el.innerHTML = html;
   return el.textContent || el.innerText || "";
 }
+
+export function camelCaseToWords(str: string): string {
+  return str
+    .replace(/([A-Z])/g, " $1")
+    .trim()
+    .toLowerCase();
+}
