@@ -32,10 +32,10 @@
       "length": 291
     },
     {
-      "text": "public static void InsertionSort(int[] arr) {\n\tfor (int i = 1; i < arr.Length; i++) {\n\t\tint next = arr[i];\n\t\tint j;\n\t\tfor (j = i - 1; j >= 0 && arr[j] > next; j--) {\n\t\t\tarr[j + 1] = arr[j];\n\t\t}\n\t\tarr[j+1] = next;\n\t}\n}",
+      "text": "public static void InsertionSort(int[] arr) {\n\tfor (int i = 1; i < arr.Length; i++) {\n\t\tint next = arr[i];\n\t\tint j;\n\t\tfor (j = i - 1; j >= 0 && arr[j] > next; j--) {\n\t\t\tarr[j + 1] = arr[j];\n\t\t}\n\t\tarr[j + 1] = next;\n\t}\n}",
       "id": 5,
       "source": "Community Contribution: Insertion Sort",
-      "length": 217
+      "length": 219
     },
     {
       "text": "public static void SelectionSort(int[] arr) {\n\tfor (int last = arr.Length - 1; last > 0; last--) {\n\t\tint largest = last;\n\t\tfor (int i = 0; i < last; i++) {\n\t\t\tif (arr[i] > arr[largest]) {\n\t\t\t\tlargest = i;\n\t\t\t}\n\t\t}\n\t\tint temp = arr[largest];\n\t\tarr[largest] = arr[last];\n\t\tarr[last] = temp;\n\t}\n}",
@@ -44,10 +44,10 @@
       "length": 293
     },
     {
-      "text": "public static void BubbleSort(int[] arr) {\n\tfor (int i = 1; i < arr.Length; i++) {\n\t\tfor (int j = 0; j < arr.Length - i; j++) {\n\t\t\tif (arr[j] > arr[j+1]) {\n\t\t\t\tint temp = arr[j];\n\t\t\t\tarr[j] = arr[j + 1];\n\t\t\t\tarr[j + 1] = temp;\n\t\t\t}\n\t\t}\n\t}\n}",
+      "text": "public static void BubbleSort(int[] arr) {\n\tfor (int i = 1; i < arr.Length; i++) {\n\t\tfor (int j = 0; j < arr.Length - i; j++) {\n\t\t\tif (arr[j] > arr[j + 1]) {\n\t\t\t\tint temp = arr[j];\n\t\t\t\tarr[j] = arr[j + 1];\n\t\t\t\tarr[j + 1] = temp;\n\t\t\t}\n\t\t}\n\t}\n}",
       "id": 7,
       "source": "Community Contribution: Bubble Sort",
-      "length": 240
+      "length": 242
     },
     {
       "text": "public static void MergeSort(int[] arr) {\n\tMergeSort(arr, 0, arr.Length - 1);\n}\npublic static void MergeSort(int[] arr, int leftmost, int rightmost) {\n\tif (leftmost < rightmost) {\n\t\tint mid = (leftmost + rightmost) \/ 2;\n\t\tMergeSort(arr, leftmost, mid);\n\t\tMergeSort(arr, mid + 1, rightmost);\n\t\tMerge(arr, leftmost, mid, rightmost);\n\t}\n}\npublic static void Merge(int[] arr, int leftmost, int mid, int rightmost) {\n\tint[] subArray = new int[rightmost - leftmost + 1];\n\tint left = leftmost;\n\tint right = mid + 1;\n\tint i = 0;\n\twhile (left <= mid && right <= rightmost) {\n\t\tif (arr[left] <= arr[right]) {\n\t\t\tsubArray[i++] = arr[left++];\n\t\t} else {\n\t\t\tsubArray[i++] = arr[right++];\n\t\t}\n\t}\n\twhile (left <= mid) subArray[i++] = arr[left++];\n\twhile (right <= rightmost) subArray[i++] = arr[right++];\n\tfor (int j = 0; j < subArray.Length; j++) {\n\t\tarr[leftmost + j] = subArray[j];\n\t}\n}",
