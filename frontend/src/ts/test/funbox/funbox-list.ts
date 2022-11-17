@@ -1,5 +1,4 @@
 import * as TestInput from "../test-input";
-import * as TTS from "../tts";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
@@ -10,6 +9,7 @@ import * as TestWords from "../test-words";
 import { save } from "./funbox-memory";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as KeymapEvent from "../../observables/keymap-event";
+import * as TTSEvent from "../../observables/tts-event";
 
 const prefixSize = 2;
 
@@ -158,7 +158,7 @@ const list: MonkeyTypes.FunboxObject[] = [
           Notifications.add("Failed to load text-to-speech script", -1);
           return;
         }
-        TTS.speak(params[0]);
+        TTSEvent.dispatch(params[0]);
       },
     },
   },
