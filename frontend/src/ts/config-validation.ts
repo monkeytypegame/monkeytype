@@ -162,21 +162,25 @@ export async function isConfigValueValidAsync(
   return isValid;
 }
 
-function checkFunboxForcedConfigs(key: string, value: string): boolean {
-  if (FunboxList.getActive().length === 0) return true;
+function checkFunboxForcedConfigs(
+  key: string,
+  value: string,
+  funbox: string
+): boolean {
+  if (FunboxList.get(funbox).length === 0) return true;
 
   const forcedConfigs: Record<string, MonkeyTypes.ConfigValues[]> = {};
   // collect all forced configs
-  for (const funbox of FunboxList.getActive()) {
-    if (funbox.forcedConfig) {
+  for (const fb of FunboxList.get(funbox)) {
+    if (fb.forcedConfig) {
       //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
-      for (const key in funbox.forcedConfig) {
+      for (const key in fb.forcedConfig) {
         if (forcedConfigs[key] === undefined) {
-          forcedConfigs[key] = funbox.forcedConfig[key];
+          forcedConfigs[key] = fb.forcedConfig[key];
         } else {
           forcedConfigs[key] = Misc.intersect(
             forcedConfigs[key],
-            funbox.forcedConfig[key]
+            fb.forcedConfig[key]
           );
         }
       }
@@ -193,9 +197,10 @@ function checkFunboxForcedConfigs(key: string, value: string): boolean {
 // if it returns false, show a notification and return false
 export function canSetConfigWithCurrentFunboxes(
   key: string,
-  value: string
+  value: string,
+  funbox: string
 ): boolean {
-  if (checkFunboxForcedConfigs(key, value)) return true;
+  if (checkFunboxForcedConfigs(key, value, funbox)) return true;
   else {
     Notifications.add(
       `You can't set ${Misc.camelCaseToWords(

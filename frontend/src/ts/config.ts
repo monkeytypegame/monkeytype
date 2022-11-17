@@ -839,7 +839,7 @@ export function setHighlightMode(
     return false;
   }
 
-  if (!canSetConfigWithCurrentFunboxes("highlightMode", mode)) {
+  if (!canSetConfigWithCurrentFunboxes("highlightMode", mode, config.funbox)) {
     return false;
   }
 
