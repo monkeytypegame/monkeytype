@@ -126,6 +126,10 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     return false;
   }
 
+  if (!canSetConfigWithCurrentFunboxes("mode", mode, config.funbox)) {
+    return false;
+  }
+
   const previous = config.mode;
   config.mode = mode;
   if (config.mode == "custom") {
