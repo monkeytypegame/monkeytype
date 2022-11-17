@@ -96,6 +96,72 @@
       "id": 15,
       "source": "Community Contribution: Quick Select",
       "length": 738
+    },
+    {
+      "text": "public int indexOf(int elem) {\n\tint index = 0;\n\tfor (Node curr = head; curr != null; curr = curr.getTail()) {\n\t \tif (curr.getElem() == elem) {\n\t\t\treturn index;\n\t\t} else {\n\t\t\tindex++;\n\t\t}\n\t}\n\treturn -1;\n}",
+      "source": "Community Contribution: Get the Index of an Element in a Linked List",
+      "id": 16,
+      "length": 203
+    },
+    {
+      "text": "public void setTail(Node curr, Node next) {\n\tif (curr == null) {\n\t\tnext.setNext(head);\n\t\thead = next;\n\t} else {\n\t\tnext.setNext(curr.getNext());\n\t\tcurr.setNext(next);\n\t}\n\tnumNodes++;\n}",
+      "source": "Community Contribution: Set the Tail of a Linked List",
+      "id": 17,
+      "length": 183
+    },
+    {
+      "text": "public void addAtIndex(int index, int elem) {\n\tif (index < 0 || index > size()) {\n\t\tSystem.out.println(\"index out of bounds\");\n\t}\n\tNode curr = null;\n\tNode newNode = new Node(elem);\n\tif (index != 0) {\n\t\tcurr = getNodeAtIndex(index - 1);\n\t}\n\tsetTail(curr, newNode);\n}",
+      "source": "Community Contribution: Add an Element at an Index in a Linked List",
+      "id": 18,
+      "length": 265
+    },
+    {
+      "text": "public int remove(Node curr) {\n\tint value;\n\tif (curr == null) {\n\t\tvalue = head.getElem();\n\t\thead = head.getNext();\n\t} else {\n\t\tvalue = curr.getNext().getElem();\n\t\tcurr.setNext(curr.getNext().getNext());\n\t}\n\tnumNodes--;\n\treturn value;\n}",
+      "source": "Community Contribution: Remove a Node from a Linked List",
+      "id": 19,
+      "length": 235
+    },
+    {
+      "text": "public int removeAtIndex(int index) {\n\tif (index < 0 || index >= size()) {\n\t\tSystem.out.println(\"index out of bounds or list is empty\");\n\t}\n\tNode curr = null;\n\tint elem = 0;\n\tif (index != 0) {\n\t\tcurr = getNodeAtIndex(index - 1);\t\t\n\t}\n\treturn remove(curr);\n}",
+      "source": "Community Contribution: Remove an Element using its Index in a Linked List",
+      "id": 20,
+      "length": 257
+    },
+    {
+      "text": "public boolean add(int elem) {\n\tif (elems.contains(elem)) {\n\t\treturn false;\n\t}\n\telems.add(elem);\n\treturn true;\n}",
+      "source": "Community Contribution: Add an Element to a ArrayList-based Set",
+      "id": 21,
+      "length": 112
+    },
+    {
+      "text": "public void enlargeArr() {\n\tint newSize = capacity * 2;\n\tint[] newArr = new int[newSize];\n\tfor (int i = 0; i <= topIdx; i++) {\n\t\tnewArr[i] = arr[i];\n\t}\n\tarr = newArr;\n\tcapacity = newSize;\n}",
+      "source": "Community Contribution: Enlarge an Array-based Stack or Queue",
+      "id": 22,
+      "length": 189
+    },
+    {
+      "text": "public Integer pop() {\n\tInteger elem = peek();\n\tif (elem != null) topIdx--;\n\treturn elem;\n}",
+      "source": "Community Contribution: Pop the top element off an Array-based Stack",
+      "id": 23,
+      "length": 91
+    },
+    {
+      "text": "public void push(Integer elem) {\n\tif (top >= capacity - 1) enlargeArr();\n\ttopIdx++;\n\tarr[topIdx] = elem;\n}",
+      "source": "Community Contribution: Push an element onto an Array-based Stack",
+      "id": 24,
+      "length": 106
+    },
+    {
+      "text": "public Integer dequeue() {\n\tif (empty()) return null;\n\tInteger elem = arr[front];\n\tfront = (front + 1) % capacity;\n\treturn elem;\n}",
+      "source": "Community Contribution: Dequeue an Array-based Queue",
+      "id": 25,
+      "length": 130
+    },
+    {
+      "text": "public void enqueue(Integer elem) {\n\tif (((back + 1) % capacity) == front) enlargeArr();\n\tarr[back] = elem;\n\tback = (back + 1) % capacity;\n}",
+      "source": "Community Contribution: Enqueue an Array-based Queue",
+      "id": 26,
+      "length": 140
     }
   ]
 }
