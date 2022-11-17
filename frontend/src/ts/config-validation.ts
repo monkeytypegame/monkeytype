@@ -250,7 +250,9 @@ export function canSetConfigWithCurrentFunboxes(
     Notifications.add(
       `You can't set ${Misc.camelCaseToWords(
         key
-      )} to ${value} with currently active funboxes.`
+      )} to ${value} with currently active funboxes.`,
+      0,
+      5
     );
     return false;
   } else {
