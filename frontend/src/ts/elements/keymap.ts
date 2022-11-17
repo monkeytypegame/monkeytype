@@ -37,7 +37,7 @@ export function highlightKey(currentKey: string): void {
   }
 }
 
-export async function flashKey(key: string, correct: boolean): Promise<void> {
+export async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key == undefined) return;
   //console.log("key", key);
   if (key == " ") {
