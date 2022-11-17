@@ -343,23 +343,13 @@ export function calculateBurst(): number {
 }
 
 export function calculateAccuracy(): number {
-  // const acc =
-  //   (TestInput.accuracy.correct /
-  //     (TestInput.accuracy.correct + TestInput.accuracy.incorrect)) *
-  //   100;
-  // return isNaN(acc) ? 100 : acc;
-
-  // console.log("the current input is  ", TestInput.input.history);
-  // console.log("the current test is   ", TestWords.words.get());
-  const resultInput = TestInput.input.history.join(" ");
-  const resultOutput = TestWords.words.get().join(" ");
+  const resultInputArr = TestInput.input.history;
+  const resultOutputArr = TestWords.words.get();
   let mismatched = 0;
 
-  const minLength = Math.min(resultOutput.length, resultInput.length);
+  const minLength = Math.min(resultOutputArr.length, resultInputArr.length);
   for (let i = 0; i < minLength; i++) {
-    const c1 = resultInput.charAt(i);
-    const c2 = resultOutput.charAt(i);
-    if (c1 !== c2) {
+    if (resultOutputArr[i] !== resultInputArr[i]) {
       mismatched += 1;
     }
   }
