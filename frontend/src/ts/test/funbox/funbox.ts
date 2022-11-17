@@ -216,17 +216,6 @@ export function isFunboxCompatible(funbox?: string): boolean {
     checkingFunbox.filter((f) => f.functions?.isCharCorrect).length <= 1;
   const oneCharReplacerMax =
     checkingFunbox.filter((f) => f.functions?.getWordHtml).length <= 1;
-  let allowedModes: MonkeyTypes.Mode[] | undefined;
-  for (const f of checkingFunbox) {
-    if (f.mode) {
-      if (allowedModes) {
-        allowedModes = allowedModes.filter((m) => f.mode?.includes(m));
-      } else {
-        allowedModes = f.mode;
-      }
-    }
-  }
-  const noModesConflicts = allowedModes?.length !== 0;
   const allowedConfig = {} as MonkeyTypes.FunboxForcedConfig;
   let noConfigConflicts = true;
   for (const f of checkingFunbox) {
@@ -261,7 +250,6 @@ export function isFunboxCompatible(funbox?: string): boolean {
     onePunctuateWordMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
-    noModesConflicts &&
     noConfigConflicts
   );
 }
