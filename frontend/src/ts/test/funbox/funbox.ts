@@ -7,6 +7,87 @@ import * as FunboxMemory from "./funbox-memory";
 import * as FunboxList from "./funbox-list";
 import { save } from "./funbox-memory";
 import * as TTSEvent from "../../observables/tts-event";
+import * as KeymapEvent from "../../observables/keymap-event";
+import * as TestWords from "../test-words";
+import * as TestInput from "../test-input";
+
+const prefixSize = 2;
+
+class CharDistribution {
+  public chars: { [char: string]: number };
+  public count: number;
+  constructor() {
+    this.chars = {};
+    this.count = 0;
+  }
+
+  public addChar(char: string): void {
+    this.count++;
+    if (char in this.chars) {
+      this.chars[char]++;
+    } else {
+      this.chars[char] = 1;
+    }
+  }
+
+  public randomChar(): string {
+    const randomIndex = Misc.randomIntFromRange(0, this.count - 1);
+    let runningCount = 0;
+    for (const [char, charCount] of Object.entries(this.chars)) {
+      runningCount += charCount;
+      if (runningCount > randomIndex) {
+        return char;
+      }
+    }
+
+    return Object.keys(this.chars)[0];
+  }
+}
+
+class PseudolangWordGenerator extends Misc.Wordset {
+  public ngrams: { [prefix: string]: CharDistribution } = {};
+  constructor(words: string[]) {
+    super(words);
+    // Can generate an unbounded number of words in theory.
+    this.length = Infinity;
+
+    for (let word of words) {
+      // Mark the end of each word with a space.
+      word += " ";
+      let prefix = "";
+      for (const c of word) {
+        // Add `c` to the distribution of chars that can come after `prefix`.
+        if (!(prefix in this.ngrams)) {
+          this.ngrams[prefix] = new CharDistribution();
+        }
+        this.ngrams[prefix].addChar(c);
+        prefix = (prefix + c).substr(-prefixSize);
+      }
+    }
+  }
+
+  public override randomWord(): string {
+    let word = "";
+    for (;;) {
+      const prefix = word.substr(-prefixSize);
+      const charDistribution = this.ngrams[prefix];
+      if (!charDistribution) {
+        // This shouldn't happen if this.ngrams is complete. If it does
+        // somehow, start generating a new word.
+        word = "";
+        continue;
+      }
+      // Pick a random char from the distribution that comes after `prefix`.
+      const nextChar = charDistribution.randomChar();
+      if (nextChar == " ") {
+        // A space marks the end of the word, so stop generating and return.
+        break;
+      }
+      word += nextChar;
+    }
+    return word;
+  }
+}
 
 FunboxList.setFunboxFunctions("nausea", {
   applyCSS(): void {
@@ -135,6 +216,115 @@ FunboxList.setFunboxFunctions("arrows", {
       if (letterTag) retval += `</letter>`;
     }
     return retval;
+  },
+});
+
+FunboxList.setFunboxFunctions("rAnDoMcAsE", {
+  alterText(word: string): string {
+    let randomcaseword = word[0];
+    for (let i = 1; i < word.length; i++) {
+      if (randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase()) {
+        randomcaseword += word[i].toLowerCase();
+      } else {
+        randomcaseword += word[i].toUpperCase();
+      }
+    }
+    return randomcaseword;
+  },
+});
+
+FunboxList.setFunboxFunctions("capitals", {
+  alterText(word: string): string {
+    return Misc.capitalizeFirstLetterOfEachWord(word);
+  },
+});
+
+FunboxList.setFunboxFunctions("layoutfluid", {
+  applyConfig(): void {
+    UpdateConfig.setLayout(
+      Config.customLayoutfluid.split("#")[0]
+        ? Config.customLayoutfluid.split("#")[0]
+        : "qwerty",
+      true
+    );
+    UpdateConfig.setKeymapLayout(
+      Config.customLayoutfluid.split("#")[0]
+        ? Config.customLayoutfluid.split("#")[0]
+        : "qwerty",
+      true
+    );
+  },
+  rememberSettings(): void {
+    save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+    save("layout", Config.layout, UpdateConfig.setLayout);
+    save("keymapLayout", Config.keymapLayout, UpdateConfig.setKeymapLayout);
+  },
+  handleSpace(): void {
+    if (Config.mode !== "time") {
+      // here I need to check if Config.customLayoutFluid exists because of my
+      // scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
+      const layouts: string[] = Config.customLayoutfluid
+        ? Config.customLayoutfluid.split("#")
+        : ["qwerty", "dvorak", "colemak"];
+      let index = 0;
+      const outOf: number = TestWords.words.length;
+      index = Math.floor(
+        (TestInput.input.history.length + 1) / (outOf / layouts.length)
+      );
+      if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
+        Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
+      }
+      if (layouts[index]) {
+        UpdateConfig.setLayout(layouts[index]);
+        UpdateConfig.setKeymapLayout(layouts[index]);
+      }
+      KeymapEvent.highlight(
+        TestWords.words
+          .getCurrent()
+          .charAt(TestInput.input.current.length)
+          .toString()
+      );
+    }
+  },
+  getResultContent(): string {
+    return Config.customLayoutfluid.replace(/#/g, " ");
+  },
+  restart(): void {
+    if (this.applyConfig) this.applyConfig();
+    KeymapEvent.highlight(
+      TestWords.words
+        .getCurrent()
+        .substring(
+          TestInput.input.current.length,
+          TestInput.input.current.length + 1
+        )
+        .toString()
+    );
+  },
+});
+
+FunboxList.setFunboxFunctions("earthquake", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
+  },
+});
+
+FunboxList.setFunboxFunctions("space_balls", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
+  },
+});
+
+FunboxList.setFunboxFunctions("gibberish", {
+  getWord(): string {
+    return Misc.getGibberish();
+  },
+});
+
+FunboxList.setFunboxFunctions("pseudolang", {
+  async withWords(words?: string[]): Promise<Misc.Wordset> {
+    if (words !== undefined) return new PseudolangWordGenerator(words);
+    return new Misc.Wordset([]);
   },
 });
 
