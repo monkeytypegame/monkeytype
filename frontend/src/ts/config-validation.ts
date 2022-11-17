@@ -164,7 +164,7 @@ export async function isConfigValueValidAsync(
 
 function checkFunboxForcedConfigs(
   key: string,
-  value: string,
+  value: MonkeyTypes.ConfigValues,
   funbox: string
 ): boolean {
   if (FunboxList.get(funbox).length === 0) return true;
@@ -197,7 +197,7 @@ function checkFunboxForcedConfigs(
 // if it returns false, show a notification and return false
 export function canSetConfigWithCurrentFunboxes(
   key: string,
-  value: string,
+  value: MonkeyTypes.ConfigValues,
   funbox: string
 ): boolean {
   let errorCount = 0;
