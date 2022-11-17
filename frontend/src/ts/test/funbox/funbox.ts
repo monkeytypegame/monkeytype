@@ -345,54 +345,6 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
 
-  let fb: MonkeyTypes.FunboxObject[] = [];
-  fb = fb.concat(
-    FunboxList.get(Config.funbox).filter(
-      (f) => f.mode !== undefined && !f.mode.includes(Config.mode)
-    )
-  );
-  if (Config.mode === "zen") {
-    fb = fb.concat(
-      FunboxList.get(Config.funbox).filter(
-        (f) =>
-          f.functions?.getWord ||
-          f.functions?.pullSection ||
-          f.functions?.alterText ||
-          f.functions?.withWords ||
-          f.properties?.includes("changesCapitalisation") ||
-          f.properties?.includes("nospace") ||
-          f.properties?.find((fp) => fp.startsWith("toPush:")) ||
-          f.properties?.includes("changesWordsVisibility") ||
-          f.properties?.includes("speaks") ||
-          f.properties?.includes("changesLayout")
-      )
-    );
-  }
-  if (Config.mode === "quote" || Config.mode == "custom") {
-    fb = fb.concat(
-      FunboxList.get(Config.funbox).filter(
-        (f) =>
-          f.functions?.getWord ||
-          f.functions?.pullSection ||
-          f.functions?.withWords
-      )
-    );
-  }
-  if (fb.length > 0) {
-    Notifications.add(
-      `${Misc.capitalizeFirstLetterOfEachWord(
-        Config.mode
-      )} mode does not support the ${fb[0].name.replace(/_/g, " ")} funbox`,
-      0
-    );
-    const mode = fb.find((f) => f.mode)?.mode;
-    if (mode) {
-      UpdateConfig.setMode(mode[0], true);
-    } else {
-      UpdateConfig.setMode("time", true);
-    }
-  }
-
   let language;
   try {
     language = await Misc.getCurrentLanguage(Config.language);

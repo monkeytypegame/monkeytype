@@ -200,13 +200,60 @@ export function canSetConfigWithCurrentFunboxes(
   value: string,
   funbox: string
 ): boolean {
-  if (checkFunboxForcedConfigs(key, value, funbox)) return true;
-  else {
+  let errorCount = 0;
+  if (key === "mode") {
+    let fb: MonkeyTypes.FunboxObject[] = [];
+    fb = fb.concat(
+      FunboxList.get(funbox).filter(
+        (f) =>
+          f.forcedConfig?.["mode"] !== undefined &&
+          !f.forcedConfig?.["mode"].includes(value)
+      )
+    );
+    if (value === "zen") {
+      fb = fb.concat(
+        FunboxList.get(funbox).filter(
+          (f) =>
+            f.functions?.getWord ||
+            f.functions?.pullSection ||
+            f.functions?.alterText ||
+            f.functions?.withWords ||
+            f.properties?.includes("changesCapitalisation") ||
+            f.properties?.includes("nospace") ||
+            f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+            f.properties?.includes("changesWordsVisibility") ||
+            f.properties?.includes("speaks") ||
+            f.properties?.includes("changesLayout")
+        )
+      );
+    }
+    if (value === "quote" || value == "custom") {
+      fb = fb.concat(
+        FunboxList.get(funbox).filter(
+          (f) =>
+            f.functions?.getWord ||
+            f.functions?.pullSection ||
+            f.functions?.withWords
+        )
+      );
+    }
+
+    if (fb.length > 0) {
+      errorCount += 1;
+    }
+  }
+  if (!checkFunboxForcedConfigs(key, value, funbox)) {
+    errorCount += 1;
+  }
+
+  if (errorCount > 0) {
     Notifications.add(
       `You can't set ${Misc.camelCaseToWords(
         key
       )} to ${value} with currently active funboxes.`
     );
     return false;
+  } else {
+    return true;
   }
 }
