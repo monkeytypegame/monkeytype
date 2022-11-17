@@ -93,6 +93,10 @@ export async function saveFullConfigToLocalStorage(
 export function setNumbers(numb: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("numbers", numb, ["boolean"])) return false;
 
+  if (!canSetConfigWithCurrentFunboxes("numbers", numb, config.funbox)) {
+    return false;
+  }
+
   if (config.mode === "quote") {
     numb = false;
   }
@@ -106,6 +110,10 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
 //punctuation
 export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("punctuation", punc, ["boolean"])) return false;
+
+  if (!canSetConfigWithCurrentFunboxes("punctuation", punc, config.funbox)) {
+    return false;
+  }
 
   if (config.mode === "quote") {
     punc = false;
