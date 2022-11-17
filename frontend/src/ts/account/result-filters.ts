@@ -676,34 +676,46 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
 });
 
 export async function appendButtons(): Promise<void> {
-  await Misc.getLanguageList().then((languages) => {
-    languages.forEach((language) => {
-      $(
-        ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
-      ).append(
-        `<div class="button" filter="${language}">${language.replace(
-          "_",
-          " "
-        )}</div>`
+  await Misc.getLanguageList()
+    .then((languages) => {
+      languages.forEach((language) => {
+        $(
+          ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+        ).append(
+          `<div class="button" filter="${language}">${language.replace(
+            "_",
+            " "
+          )}</div>`
+        );
+      });
+    })
+    .catch((e) => {
+      console.error(
+        Misc.createErrorMessage(e, "Failed to append language buttons")
       );
     });
-  });
 
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
   ).append(`<div class="button" filter="none">none</div>`);
-  await Misc.getFunboxList().then((funboxModes) => {
-    funboxModes.forEach((funbox) => {
-      $(
-        ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-      ).append(
-        `<div class="button" filter="${funbox.name}">${funbox.name.replace(
-          /_/g,
-          " "
-        )}</div>`
+  await Misc.getFunboxList()
+    .then((funboxModes) => {
+      funboxModes.forEach((funbox) => {
+        $(
+          ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+        ).append(
+          `<div class="button" filter="${funbox.name}">${funbox.name.replace(
+            /_/g,
+            " "
+          )}</div>`
+        );
+      });
+    })
+    .catch((e) => {
+      console.error(
+        Misc.createErrorMessage(e, "Failed to append funbox buttons")
       );
     });
-  });
 }
 
 export function removeButtons(): void {

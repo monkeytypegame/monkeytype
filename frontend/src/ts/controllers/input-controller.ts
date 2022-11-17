@@ -797,7 +797,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 }
 
 $(document).on("keydown", async (event) => {
-  if (ActivePage.get() == "loading") return event.preventDefault();
+  if (ActivePage.get() == "loading") return;
 
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
@@ -960,22 +960,21 @@ $(document).on("keydown", async (event) => {
   }
 
   if (event.key === "Enter") {
-    if (event.shiftKey && Config.mode == "zen") {
-      TestLogic.finish();
-    } else if (
-      event.shiftKey &&
-      ((Config.mode == "time" && Config.time === 0) ||
-        (Config.mode == "words" && Config.words === 0))
-    ) {
-      TestInput.setBailout(true);
-      TestLogic.finish();
-    } else if (
-      event.shiftKey &&
-      Config.mode == "custom" &&
-      CustomTextState.isCustomTextLong() === true
-    ) {
-      TestInput.setBailout(true);
-      TestLogic.finish();
+    if (event.shiftKey) {
+      if (Config.mode == "zen") {
+        TestLogic.finish();
+      } else if (
+        !Misc.canQuickRestart(
+          Config.mode,
+          Config.words,
+          Config.time,
+          CustomText,
+          CustomTextState.isCustomTextLong() ?? false
+        )
+      ) {
+        TestInput.setBailout(true);
+        TestLogic.finish();
+      }
     } else {
       handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);

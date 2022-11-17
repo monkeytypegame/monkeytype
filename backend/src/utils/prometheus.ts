@@ -257,3 +257,13 @@ const tokenCacheLength = new Gauge({
 export function setTokenCacheLength(length: number): void {
   tokenCacheLength.set(length);
 }
+
+const uidRequestCount = new Counter({
+  name: "user_request_count",
+  help: "Request count per uid",
+  labelNames: ["uid"],
+});
+
+export function recordRequestForUid(uid: string): void {
+  uidRequestCount.inc({ uid });
+}

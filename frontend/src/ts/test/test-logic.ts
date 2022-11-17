@@ -911,19 +911,42 @@ export async function init(): Promise<void> {
   if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
     UpdateConfig.setQuoteLength(-1);
   }
-
-  let language = await Misc.getLanguage(Config.language);
+  let language;
+  try {
+    language = await Misc.getLanguage(Config.language);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to load language"),
+      -1
+    );
+  }
   if (language && language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
   }
 
   if (!language) {
     UpdateConfig.setLanguage("english");
-    language = await Misc.getLanguage(Config.language);
+    try {
+      language = await Misc.getLanguage(Config.language);
+    } catch (e) {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to load language"),
+        -1
+      );
+      return;
+    }
   }
 
   if (Config.mode === "quote") {
-    const group = await Misc.findCurrentGroup(Config.language);
+    let group;
+    try {
+      group = await Misc.findCurrentGroup(Config.language);
+    } catch (e) {
+      console.error(
+        Misc.createErrorMessage(e, "Failed to find current language group")
+      );
+      return;
+    }
     if (group && group.name !== "code" && group.name !== Config.language) {
       UpdateConfig.setLanguage(group.name);
     }
@@ -1094,8 +1117,12 @@ export async function init(): Promise<void> {
       }
     }
   } else if (Config.mode === "quote") {
+    const languageToGet = Config.language.startsWith("swiss_german")
+      ? "german"
+      : Config.language;
+
     const quotesCollection = await QuotesController.getQuotes(
-      Config.language,
+      languageToGet,
       Config.quoteLength
     );
 
@@ -1179,6 +1206,10 @@ export async function init(): Promise<void> {
       w[i] = applyLazyModeToWord(w[i], language);
       w[i] = applyFunboxesToWord(w[i]);
       w[i] = await applyBritishEnglishToWord(w[i]);
+
+      if (Config.language === "swiss_german") {
+        w[i] = w[i].replace(/ß/g, "ss");
+      }
 
       TestWords.words.push(w[i]);
     }

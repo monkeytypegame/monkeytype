@@ -7,6 +7,7 @@ import * as Funbox from "../test/funbox";
 import * as TestConfig from "../test/test-config";
 import Page from "./page";
 import { updateTestPageAds } from "../controllers/ad-controller";
+import * as Keymap from "../elements/keymap";
 
 export const page = new Page(
   "test",
@@ -32,6 +33,7 @@ export const page = new Page(
       tribeOverride: options.tribeOverride ?? false,
     });
     Funbox.activate(Config.funbox);
+    Keymap.refresh();
   },
   async () => {
     TestUI.focusWords();

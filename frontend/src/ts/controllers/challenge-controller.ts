@@ -170,7 +170,20 @@ export async function setup(challengeName: string): Promise<boolean> {
 
   UpdateConfig.setFunbox("none");
 
-  const list = await Misc.getChallengeList();
+  let list;
+  try {
+    list = await Misc.getChallengeList();
+  } catch (e) {
+    const message = Misc.createErrorMessage(e, "Failed to setup challenge");
+    Notifications.add(message, -1);
+    ManualRestart.set();
+    setTimeout(() => {
+      $("#top .config").removeClass("hidden");
+      $(".page.pageTest").removeClass("hidden");
+    }, 250);
+    return false;
+  }
+
   const challenge = list.filter((c) => c.name === challengeName)[0];
   let notitext;
   try {

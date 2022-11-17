@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "Documentation for the public endpoints provided by the Monketype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints. Rate limit rates are shared across all ape keys.",
+    "description": "Documentation for the public endpoints provided by the Monketype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints with some endpoints being more strict. Rate limit rates are shared across all ape keys.",
     "version": "1.0.0",
     "title": "Monkeytype API",
     "termsOfService": "https://monkeytype.com/terms-of-service",
@@ -90,6 +90,20 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/Profile"
+            }
+          }
+        }
+      }
+    },
+    "/results": {
+      "get": {
+        "tags": ["results"],
+        "summary": "Gets up to 1000 of the most recent results (endpoint limited to 1 request per hour)",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Results"
             }
           }
         }
@@ -496,6 +510,12 @@
             "example": 1
           }
         }
+      }
+    },
+    "Results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Result"
       }
     },
     "Result": {

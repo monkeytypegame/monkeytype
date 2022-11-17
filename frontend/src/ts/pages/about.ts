@@ -96,8 +96,27 @@ async function getStatsAndHistogramData(): Promise<void> {
 }
 
 async function fill(): Promise<void> {
-  const supporters = await Misc.getSupportersList();
-  const contributors = await Misc.getContributorsList();
+  let supporters: string[];
+  try {
+    supporters = await Misc.getSupportersList();
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to get supporters"),
+      -1
+    );
+    supporters = [];
+  }
+
+  let contributors: string[];
+  try {
+    contributors = await Misc.getContributorsList();
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to get contributors"),
+      -1
+    );
+    contributors = [];
+  }
 
   await getStatsAndHistogramData();
   updateStatsAndHistogram();

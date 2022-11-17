@@ -1,6 +1,7 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
+import * as Notifications from "../elements/notifications";
 
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
@@ -13,7 +14,17 @@ export async function getCharFromEvent(
     return event.shiftKey;
   }
 
-  const layout = await Misc.getLayout(Config.layout);
+  let layout;
+
+  try {
+    layout = await Misc.getLayout(Config.layout);
+  } catch (e) {
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to emulate event"),
+      -1
+    );
+    return event.key;
+  }
 
   let keyEventCodes: string[] = [];
 

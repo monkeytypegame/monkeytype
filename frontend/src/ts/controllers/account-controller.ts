@@ -117,17 +117,26 @@ export async function getDataAndInit(): Promise<boolean> {
 
   ResultFilters.loadTags(snapshot.tags);
 
-  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
-    const [languages, funboxes] = values;
-    languages.forEach((language) => {
-      ResultFilters.defaultResultFilters.language[language] = true;
+  Promise.all([Misc.getLanguageList(), Misc.getFunboxList()])
+    .then((values) => {
+      const [languages, funboxes] = values;
+      languages.forEach((language) => {
+        ResultFilters.defaultResultFilters.language[language] = true;
+      });
+      funboxes.forEach((funbox) => {
+        ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
+      });
+      // filters = defaultResultFilters;
+      ResultFilters.load();
+    })
+    .catch((e) => {
+      console.log(
+        Misc.createErrorMessage(
+          e,
+          "Something went wrong while loading the filters"
+        )
+      );
     });
-    funboxes.forEach((funbox) => {
-      ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
-    });
-    // filters = defaultResultFilters;
-    ResultFilters.load();
-  });
 
   if (snapshot.needsToChangeName) {
     Notifications.addBanner(
@@ -352,7 +361,7 @@ if (Auth && ConnectionState.get()) {
   });
 }
 
-export function signIn(): void {
+export async function signIn(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
     return;
@@ -375,29 +384,27 @@ export function signIn(): void {
     ? browserLocalPersistence
     : browserSessionPersistence;
 
-  setPersistence(Auth, persistence).then(async function () {
-    if (Auth === undefined) return; //todo convert this function to async and remove this line
-    return signInWithEmailAndPassword(Auth, email, password)
-      .then(async (e) => {
-        await loadUser(e.user);
-      })
-      .catch(function (error) {
-        let message = error.message;
-        if (error.code === "auth/wrong-password") {
-          message = "Incorrect password";
-        } else if (error.code === "auth/user-not-found") {
-          message = "User not found";
-        } else if (error.code === "auth/invalid-email") {
-          message =
-            "Invalid email format (make sure you are using your email to login - not your username)";
-        }
-        Notifications.add(message, -1);
-        LoginPage.hidePreloader();
-        LoginPage.enableInputs();
-        LoginPage.enableSignInButton();
-        LoginPage.updateSignupButton();
-      });
-  });
+  await setPersistence(Auth, persistence);
+  return signInWithEmailAndPassword(Auth, email, password)
+    .then(async (e) => {
+      await loadUser(e.user);
+    })
+    .catch(function (error) {
+      let message = error.message;
+      if (error.code === "auth/wrong-password") {
+        message = "Incorrect password";
+      } else if (error.code === "auth/user-not-found") {
+        message = "User not found";
+      } else if (error.code === "auth/invalid-email") {
+        message =
+          "Invalid email format (make sure you are using your email to login - not your username)";
+      }
+      Notifications.add(message, -1);
+      LoginPage.hidePreloader();
+      LoginPage.enableInputs();
+      LoginPage.enableSignInButton();
+      LoginPage.updateSignupButton();
+    });
 }
 
 export async function forgotPassword(email: any): Promise<void> {
@@ -556,7 +563,9 @@ export function signOut(): void {
       $(".pageLogin .button").removeClass("disabled");
       $(".pageLogin input").prop("disabled", false);
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
-      hideFavoriteQuoteLength();
+      setTimeout(() => {
+        hideFavoriteQuoteLength();
+      }, 125);
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);
@@ -596,6 +605,14 @@ async function signUp(): Promise<void> {
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
     Notifications.add("Please fill in all fields", 0);
+    return;
+  }
+
+  if (password.length > 25) {
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.updateSignupButton();
+    Notifications.add("Password is too long", 0);
     return;
   }
 
