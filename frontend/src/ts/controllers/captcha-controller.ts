@@ -1,4 +1,4 @@
-const siteKey = "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj";
+const siteKey = "6LfA-xEjAAAAAHC7XCcNbCOzvRNWtmj1CUsIA7Dt";
 
 const captchas: Record<string, number> = {};
 

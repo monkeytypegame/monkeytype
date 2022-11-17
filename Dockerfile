@@ -4,3 +4,5 @@ WORKDIR /app
 COPY . .
 
 RUN npm run install-all
+
+ENTRYPOINT ["npm", "run", "live"]
