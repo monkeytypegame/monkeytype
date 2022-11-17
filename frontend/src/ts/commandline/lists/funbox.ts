@@ -33,6 +33,17 @@ const commands: MonkeyTypes.Command[] = [
 
 function update(funboxes: MonkeyTypes.FunboxObject[]): void {
   subgroup.list = [];
+  subgroup.list.push({
+    id: "changeFunboxNone",
+    display: "none",
+    configValue: "none",
+    alias: "off",
+    exec: (): void => {
+      if (Funbox.setFunbox("none")) {
+        TestLogic.restart();
+      }
+    },
+  });
   funboxes.forEach((funbox) => {
     let dis;
     if (Config.funbox.includes(funbox.name)) {
