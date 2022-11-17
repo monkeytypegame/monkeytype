@@ -1,0 +1,23 @@
+{
+  "language": "code_csharp",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "string aFriend = \"Bill\";\nConsole.WriteLine($\"Hello {aFriend}\");",
+      "source": "Microsoft Learn - Hello World",
+      "id": 1,
+      "length": 63
+    },
+    {
+      "text": "static int factorial(int n)\n{\n\tint result = 1;\n\tfor (int i = 1; i <= n; i++)\n\t{\n\t\tresult = result * i;\n\t}\n\treturn result;\n}",
+      "id": 2,
+      "source": "Geeks for Geeks - C# Methods",
+      "length": 123
+    }
+  ]
+}
