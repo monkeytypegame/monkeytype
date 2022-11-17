@@ -51,41 +51,38 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
   const themecolors = await ThemeColors.getAll();
 
   try {
+    let css = {
+      color: themecolors.bg,
+      backgroundColor: themecolors.sub,
+      borderColor: themecolors.sub,
+    };
+
     if (correct || Config.blindMode) {
-      $(key)
-        .stop(true, true)
-        .css({
-          color: themecolors.bg,
-          backgroundColor: themecolors.main,
-          borderColor: themecolors.main,
-        })
-        .animate(
-          {
-            color: themecolors.sub,
-            backgroundColor: "transparent",
-            borderColor: themecolors.sub,
-          },
-          SlowTimer.get() ? 0 : 500,
-          "easeOutExpo"
-        );
+      css = {
+        color: themecolors.bg,
+        backgroundColor: themecolors.main,
+        borderColor: themecolors.main,
+      };
     } else {
-      $(key)
-        .stop(true, true)
-        .css({
-          color: themecolors.bg,
-          backgroundColor: themecolors.error,
-          borderColor: themecolors.error,
-        })
-        .animate(
-          {
-            color: themecolors.sub,
-            backgroundColor: "transparent",
-            borderColor: themecolors.sub,
-          },
-          SlowTimer.get() ? 0 : 500,
-          "easeOutExpo"
-        );
+      css = {
+        color: themecolors.bg,
+        backgroundColor: themecolors.error,
+        borderColor: themecolors.error,
+      };
     }
+
+    $(key)
+      .stop(true, true)
+      .css(css)
+      .animate(
+        {
+          color: themecolors.sub,
+          backgroundColor: "transparent",
+          borderColor: themecolors.sub,
+        },
+        SlowTimer.get() ? 0 : 500,
+        "easeOutExpo"
+      );
   } catch (e) {}
 }
 
