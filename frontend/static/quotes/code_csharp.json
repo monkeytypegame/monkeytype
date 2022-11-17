@@ -132,6 +132,12 @@
       "source": "Community Contribution: Enqueue an Array-based Queue",
       "id": 21,
       "length": 146
+    },
+    {
+      "text": "public static int[] BogoSort(int[] arr) {\n\twhile (!IsSorted(arr)) Shuffle(arr);\n\treturn arr;\n}\npublic static void Shuffle(int[] arr) {\n\tRandom r = new Random();\n\tfor (int i = 0; i < arr.Length; i++) {\n\t\tSwap(arr, i, (int) (r.NextDouble() * i));\n\t}\n}",
+      "id": 22,
+      "source": "Community Contribution: BogoSort",
+      "length": 249
     }
   ]
 }
