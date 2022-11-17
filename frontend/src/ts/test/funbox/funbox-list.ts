@@ -1,5 +1,4 @@
 import * as TestInput from "../test-input";
-import * as Keymap from "../../elements/keymap";
 import * as TTS from "../tts";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
@@ -10,6 +9,7 @@ import * as Misc from "../../utils/misc";
 import * as TestWords from "../test-words";
 import { save } from "./funbox-memory";
 import * as MemoryTimer from "./memory-funbox-timer";
+import * as KeymapEvent from "../../observables/keymap-event";
 
 const prefixSize = 2;
 
@@ -340,7 +340,7 @@ const list: MonkeyTypes.FunboxObject[] = [
             UpdateConfig.setLayout(layouts[index]);
             UpdateConfig.setKeymapLayout(layouts[index]);
           }
-          Keymap.highlightKey(
+          KeymapEvent.highlight(
             TestWords.words
               .getCurrent()
               .charAt(TestInput.input.current.length)
@@ -353,7 +353,7 @@ const list: MonkeyTypes.FunboxObject[] = [
       },
       restart(): void {
         if (this.applyConfig) this.applyConfig();
-        Keymap.highlightKey(
+        KeymapEvent.highlight(
           TestWords.words
             .getCurrent()
             .substring(

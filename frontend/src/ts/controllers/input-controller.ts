@@ -3,7 +3,6 @@ import * as TestUI from "../test/test-ui";
 import * as TestStats from "../test/test-stats";
 import * as Monkey from "../test/monkey";
 import Config from "../config";
-import * as Keymap from "../elements/keymap";
 import * as Misc from "../utils/misc";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
@@ -30,6 +29,7 @@ import * as CustomTextState from "../states/custom-text-name";
 import { navigate } from "../observables/navigate-event";
 import * as FunboxList from "../test/funbox/funbox-list";
 import * as Settings from "../pages/settings";
+import * as KeymapEvent from "../observables/keymap-event";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -55,7 +55,7 @@ function updateUI(): void {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     if (!Config.language.startsWith("korean")) {
-      Keymap.highlightKey(
+      KeymapEvent.highlight(
         TestWords.words
           .getCurrent()
           .charAt(TestInput.input.current.length)
@@ -85,13 +85,13 @@ function updateUI(): void {
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 
-          Keymap.highlightKey(koChar);
+          KeymapEvent.highlight(koChar);
         } catch (e) {
-          Keymap.highlightKey("");
+          KeymapEvent.highlight("");
         }
       } else {
         //for new words
-        Keymap.highlightKey(koCurrWord[0][0]);
+        KeymapEvent.highlight(koCurrWord[0][0]);
       }
     }
   }
@@ -290,7 +290,7 @@ function handleSpace(): void {
   } //end of line wrap
 
   if (Config.keymapMode === "react") {
-    Keymap.flashKey(" ", true);
+    KeymapEvent.flash(" ", true);
   }
   if (
     Config.mode === "words" ||
@@ -508,7 +508,7 @@ function handleChar(
 
   //keymap
   if (Config.keymapMode === "react") {
-    Keymap.flashKey(char, thisCharCorrect);
+    KeymapEvent.flash(char, thisCharCorrect);
   }
 
   if (!correctShiftUsed && Config.difficulty != "master") return;
