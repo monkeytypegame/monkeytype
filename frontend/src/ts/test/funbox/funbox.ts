@@ -2,7 +2,6 @@ import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
 import * as ManualRestart from "../manual-restart-tracker";
 import Config, * as UpdateConfig from "../../config";
-import * as ConfigEvent from "../../observables/config-event";
 import * as MemoryTimer from "./memory-funbox-timer";
 import * as FunboxMemory from "./funbox-memory";
 import * as FunboxList from "./funbox-list";
@@ -353,8 +352,3 @@ export async function rememberSettings(): Promise<void> {
     if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
   });
 }
-
-ConfigEvent.subscribe((eventKey, configValue) => {
-  if (eventKey === "saveToLocalStorage") return;
-  checkActiveFunboxesForcedConfigs(eventKey, configValue);
-});

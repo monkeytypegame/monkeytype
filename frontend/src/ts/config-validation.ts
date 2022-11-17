@@ -1,5 +1,6 @@
 import * as Misc from "./utils/misc";
 import * as Notifications from "./elements/notifications";
+import * as FunboxList from "./test/funbox/funbox-list";
 
 type PossibleType =
   | "string"
@@ -159,4 +160,48 @@ export async function isConfigValueValidAsync(
   if (!isValid) invalid(key, val, customMessage);
 
   return isValid;
+}
+
+function checkFunboxForcedConfigs(key: string, value: string): boolean {
+  if (FunboxList.getActive().length === 0) return true;
+
+  const forcedConfigs: Record<string, MonkeyTypes.ConfigValues[]> = {};
+  // collect all forced configs
+  for (const funbox of FunboxList.getActive()) {
+    if (funbox.forcedConfig) {
+      //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
+      for (const key in funbox.forcedConfig) {
+        if (forcedConfigs[key] === undefined) {
+          forcedConfigs[key] = funbox.forcedConfig[key];
+        } else {
+          forcedConfigs[key] = Misc.intersect(
+            forcedConfigs[key],
+            funbox.forcedConfig[key]
+          );
+        }
+      }
+    }
+  }
+
+  //check if the key is in forcedConfigs, if it is check the value, if its not, return true
+  if (forcedConfigs[key] === undefined) return true;
+  else return forcedConfigs[key].includes(<MonkeyTypes.ConfigValues>value);
+}
+
+// function: canSetConfigWithCurrentFunboxes
+// checks using checkFunboxForcedConfigs. if it returns true, return true
+// if it returns false, show a notification and return false
+export function canSetConfigWithCurrentFunboxes(
+  key: string,
+  value: string
+): boolean {
+  if (checkFunboxForcedConfigs(key, value)) return true;
+  else {
+    Notifications.add(
+      `You can't set ${Misc.camelCaseToWords(
+        key
+      )} to ${value} with currently active funboxes.`
+    );
+    return false;
+  }
 }

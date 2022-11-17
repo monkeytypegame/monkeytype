@@ -5,6 +5,7 @@ import {
   isConfigKeyValid,
   isConfigValueValid,
   isConfigValueValidAsync,
+  canSetConfigWithCurrentFunboxes,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
@@ -835,6 +836,10 @@ export function setHighlightMode(
   if (
     !isConfigValueValid("highlight mode", mode, [["off", "letter", "word"]])
   ) {
+    return false;
+  }
+
+  if (!canSetConfigWithCurrentFunboxes("highlightMode", mode)) {
     return false;
   }
 
