@@ -8,6 +8,18 @@ import * as FunboxList from "./funbox-list";
 import { save } from "./funbox-memory";
 import * as TTSEvent from "../../observables/tts-event";
 
+FunboxList.setFunboxFunctions("nausea", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/nausea.css`);
+  },
+});
+
+FunboxList.setFunboxFunctions("round_round_baby", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/round_round_baby.css`);
+  },
+});
+
 FunboxList.setFunboxFunctions("simon_says", {
   applyCSS(): void {
     $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
@@ -17,6 +29,12 @@ FunboxList.setFunboxFunctions("simon_says", {
   },
   rememberSettings(): void {
     save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
+  },
+});
+
+FunboxList.setFunboxFunctions("mirror", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/mirror.css`);
   },
 });
 
@@ -36,6 +54,87 @@ FunboxList.setFunboxFunctions("tts", {
       return;
     }
     TTSEvent.dispatch(params[0]);
+  },
+});
+
+FunboxList.setFunboxFunctions("choo_choo", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
+  },
+});
+
+FunboxList.setFunboxFunctions("arrows", {
+  getWord(): string {
+    return Misc.getArrows();
+  },
+  applyConfig(): void {
+    $("#words").addClass("arrows");
+  },
+  rememberSettings(): void {
+    save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
+  },
+  handleChar(char: string): string {
+    if (char === "a" || char === "ArrowLeft") {
+      return "←";
+    }
+    if (char === "s" || char === "ArrowDown") {
+      return "↓";
+    }
+    if (char === "w" || char === "ArrowUp") {
+      return "↑";
+    }
+    if (char === "d" || char === "ArrowRight") {
+      return "→";
+    }
+    return char;
+  },
+  isCharCorrect(char: string, originalChar: string): boolean {
+    if ((char === "a" || char === "ArrowLeft") && originalChar === "←") {
+      return true;
+    }
+    if ((char === "s" || char === "ArrowDown") && originalChar === "↓") {
+      return true;
+    }
+    if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
+      return true;
+    }
+    if ((char === "d" || char === "ArrowRight") && originalChar === "→") {
+      return true;
+    }
+    return false;
+  },
+  async preventDefaultEvent(
+    event: JQuery.KeyDownEvent<Document, null, Document, Document>
+  ): Promise<boolean> {
+    // TODO What's better?
+    // return /Arrow/i.test(event.key);
+    return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
+      event.key
+    );
+  },
+  getWordHtml(char: string, letterTag?: boolean): string {
+    let retval = "";
+    if (char === "↑") {
+      if (letterTag) retval += `<letter>`;
+      retval += `<i class="fas fa-arrow-up"></i>`;
+      if (letterTag) retval += `</letter>`;
+    }
+    if (char === "↓") {
+      if (letterTag) retval += `<letter>`;
+      retval += `<i class="fas fa-arrow-down"></i>`;
+      if (letterTag) retval += `</letter>`;
+    }
+    if (char === "←") {
+      if (letterTag) retval += `<letter>`;
+      retval += `<i class="fas fa-arrow-left"></i>`;
+      if (letterTag) retval += `</letter>`;
+    }
+    if (char === "→") {
+      if (letterTag) retval += `<letter>`;
+      retval += `<i class="fas fa-arrow-right"></i>`;
+      if (letterTag) retval += `</letter>`;
+    }
+    return retval;
   },
 });
 
