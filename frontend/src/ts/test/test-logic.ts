@@ -816,6 +816,7 @@ async function getNextWord(
           randomWord == "I") ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
+          !Config.language.startsWith("code") &&
           /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
         (Config.mode !== "custom" &&
           !Config.numbers &&
@@ -836,7 +837,8 @@ async function getNextWord(
     /[A-Z]/.test(randomWord) &&
     !Config.punctuation &&
     !Config.language.startsWith("german") &&
-    !Config.language.startsWith("swiss_german")
+    !Config.language.startsWith("swiss_german") &&
+    !Config.language.startsWith("code")
   ) {
     randomWord = randomWord.toLowerCase();
   }
