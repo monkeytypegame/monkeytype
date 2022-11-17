@@ -41,7 +41,7 @@ router.post(
     body: {
       text: joi.string().min(60).required(),
       source: joi.string().required(),
-      language: joi.string().required(),
+      language: joi.string().regex(/^\w+$/).required(),
       captcha: joi.string().required(),
     },
     validationErrorMessage: "Please fill all the fields",
@@ -85,7 +85,7 @@ router.get(
   validateRequest({
     query: {
       quoteId: joi.string().regex(/^\d+$/).required(),
-      language: joi.string().required(),
+      language: joi.string().regex(/^\w+$/).required(),
     },
   }),
   asyncHandler(QuoteController.getRating)
@@ -99,7 +99,7 @@ router.post(
     body: {
       quoteId: joi.number().required(),
       rating: joi.number().min(1).max(5).required(),
-      language: joi.string().required(),
+      language: joi.string().regex(/^\w+$/).required(),
     },
   }),
   asyncHandler(QuoteController.submitRating)
@@ -118,7 +118,7 @@ router.post(
   validateRequest({
     body: {
       quoteId: joi.string().required(),
-      quoteLanguage: joi.string().required(),
+      quoteLanguage: joi.string().regex(/^\w+$/).required(),
       reason: joi
         .string()
         .valid(
@@ -128,7 +128,7 @@ router.post(
           "Incorrect source"
         )
         .required(),
-      comment: joi.string().allow("").max(250).required(),
+      comment: joi.string().allow("").regex(/^\w+$/).max(250).required(),
       captcha: joi.string().required(),
     },
   }),

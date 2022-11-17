@@ -39,6 +39,20 @@ export function isSingleListCommandLineActive(): boolean {
   return $("#commandLine").hasClass("allCommands");
 }
 
+function removeCommandlineBackground(): void {
+  $("#commandLineWrapper").addClass("noBackground");
+  if (Config.showOutOfFocusWarning) {
+    $("#words").removeClass("blurred");
+  }
+}
+
+function addCommandlineBackground(): void {
+  $("#commandLineWrapper").removeClass("noBackground");
+  if (Config.showOutOfFocusWarning) {
+    $("#words").addClass("blurred");
+  }
+}
+
 function showFound(): void {
   $("#commandLine .suggestions").empty();
   let commandsHTML = "";
@@ -92,6 +106,11 @@ function showFound(): void {
     try {
       $.each(list.list, (_index, obj) => {
         if (obj.found) {
+          if (/changeTheme.+/gi.test(obj.id)) {
+            removeCommandlineBackground();
+          } else {
+            addCommandlineBackground();
+          }
           if (
             (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
             !ThemeController.randomTheme
@@ -179,7 +198,7 @@ export let show = (): void => {
         {
           opacity: 1,
         },
-        100
+        125
       );
   }
   $("#commandLine input").val("");
@@ -200,8 +219,9 @@ function hide(shouldFocusTestUI = true): void {
       {
         opacity: 0,
       },
-      100,
+      125,
       () => {
+        addCommandlineBackground();
         $("#commandLineWrapper").addClass("hidden");
         $("#commandLine").removeClass("allCommands");
         if (shouldFocusTestUI) {
@@ -490,6 +510,11 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (_index, obj) => {
       if (obj.id == hoverId) {
+        if (/changeTheme.+/gi.test(obj.id)) {
+          removeCommandlineBackground();
+        } else {
+          addCommandlineBackground();
+        }
         if (
           (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
           !ThemeController.randomTheme
@@ -660,6 +685,11 @@ $(document).on("keydown", (e) => {
           CommandlineLists.current[CommandlineLists.current.length - 1];
         $.each(list.list, (_index, obj) => {
           if (obj.id == hoverId) {
+            if (/changeTheme.+/gi.test(obj.id)) {
+              removeCommandlineBackground();
+            } else {
+              addCommandlineBackground();
+            }
             if (
               (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
               !ThemeController.randomTheme

@@ -3,7 +3,7 @@ import * as UserDAL from "../../dal/user";
 import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
-import { getDiscordUser } from "../../utils/discord";
+import * as DiscordUtils from "../../utils/discord";
 import { buildAgentLog, sanitizeString } from "../../utils/misc";
 import * as George from "../../tasks/george";
 import admin from "firebase-admin";
@@ -14,6 +14,8 @@ import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
+import { randomBytes } from "crypto";
+import * as RedisClient from "../../init/redis";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -210,21 +212,52 @@ export async function getUser(
   return new MonkeyResponse("User data retrieved", userData);
 }
 
+export async function getOauthLink(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const connection = RedisClient.getConnection();
+  if (!connection) {
+    throw new MonkeyError(500, "Redis connection not found");
+  }
+
+  const { uid } = req.ctx.decodedToken;
+  const token = randomBytes(10).toString("hex");
+
+  //add the token uid pair to reids
+  await connection.setex(`discordoauth:${uid}`, 60, token);
+
+  //build the url
+  const url = DiscordUtils.getOauthLink();
+
+  //return
+  return new MonkeyResponse("Discord oauth link generated", {
+    url: `${url}&state=${token}`,
+  });
+}
+
 export async function linkDiscord(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
+  const connection = RedisClient.getConnection();
+  if (!connection) {
+    throw new MonkeyError(500, "Redis connection not found");
+  }
   const { uid } = req.ctx.decodedToken;
-  const { tokenType, accessToken } = req.body;
+  const { tokenType, accessToken, state } = req.body;
+
+  const redisToken = await connection.getdel(`discordoauth:${uid}`);
+
+  if (!redisToken || redisToken !== state) {
+    throw new MonkeyError(403, "Invalid user token");
+  }
 
   const userInfo = await UserDAL.getUser(uid, "link discord");
   if (userInfo.banned) {
     throw new MonkeyError(403, "Banned accounts cannot link with Discord");
   }
 
-  const { id: discordId, avatar: discordAvatar } = await getDiscordUser(
-    tokenType,
-    accessToken
-  );
+  const { id: discordId, avatar: discordAvatar } =
+    await DiscordUtils.getDiscordUser(tokenType, accessToken);
 
   if (userInfo.discordId) {
     await UserDAL.linkDiscord(uid, userInfo.discordId, discordAvatar);
