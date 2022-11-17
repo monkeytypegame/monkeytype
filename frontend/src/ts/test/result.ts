@@ -101,7 +101,7 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = "";
-    for (const f of FunboxList.getActive()) {
+    for (const f of FunboxList.get(Config.funbox)) {
       content += f.name;
       if (f.functions?.getResultContent) {
         content += "(" + f.functions.getResultContent() + ")";
@@ -531,7 +531,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     }
   }
   const ignoresLanguage =
-    FunboxList.getActive().find((f) =>
+    FunboxList.get(Config.funbox).find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode != "custom" && !ignoresLanguage) {

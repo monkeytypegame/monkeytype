@@ -92,7 +92,9 @@ export async function punctuateWord(
 
   const lastChar = Misc.getLastChar(previousWord);
 
-  const funbox = FunboxList.getActive().find((f) => f.functions?.punctuateWord);
+  const funbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.punctuateWord
+  );
   if (funbox?.functions?.punctuateWord) {
     return funbox.functions.punctuateWord(word);
   }
@@ -332,7 +334,7 @@ export function startTest(): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const f of FunboxList.getActive()) {
+  for (const f of FunboxList.get(Config.funbox)) {
     if (f.functions?.start) f.functions.start();
   }
 
@@ -553,7 +555,7 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      const FunboxPunctuation = FunboxList.getActive().find(
+      const FunboxPunctuation = FunboxList.get(Config.funbox).find(
         (f) => f.forcedConfig?.["punctuation"] !== undefined
       );
       if (FunboxPunctuation?.forcedConfig?.["punctuation"]) {
@@ -562,7 +564,7 @@ export function restart(options = {} as RestartOptions): void {
           true
         );
       }
-      const FunboxNumbers = FunboxList.getActive().find(
+      const FunboxNumbers = FunboxList.get(Config.funbox).find(
         (f) => f.forcedConfig?.["numbers"] !== undefined
       );
       if (FunboxNumbers?.forcedConfig?.["numbers"]) {
@@ -573,7 +575,7 @@ export function restart(options = {} as RestartOptions): void {
       }
 
       if (options.withSameWordset) {
-        const funboxToPush = FunboxList.getActive()
+        const funboxToPush = FunboxList.get(Config.funbox)
           .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
           ?.properties?.find((fp) => fp.startsWith("toPush:"));
         if (funboxToPush) {
@@ -636,7 +638,7 @@ export function restart(options = {} as RestartOptions): void {
       (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
       (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
-      for (const f of FunboxList.getActive()) {
+      for (const f of FunboxList.get(Config.funbox)) {
         if (f.functions?.restart) f.functions.restart();
       }
 
@@ -689,7 +691,9 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
-  const wordFunbox = FunboxList.getActive().find((f) => f.functions?.getWord);
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWord
+  );
   if (wordFunbox?.functions?.getWord) {
     word = wordFunbox.functions.getWord(wordset);
   }
@@ -697,7 +701,7 @@ function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
 }
 
 function applyFunboxesToWord(word: string): string {
-  for (const f of FunboxList.getActive()) {
+  for (const f of FunboxList.get(Config.funbox)) {
     if (f.functions?.alterText) {
       word = f.functions.alterText(word);
     }
@@ -889,7 +893,7 @@ export async function init(): Promise<void> {
 
   let wordsBound = 100;
 
-  const funboxToPush = FunboxList.getActive()
+  const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   if (funboxToPush) {
@@ -962,7 +966,7 @@ export async function init(): Promise<void> {
     const wordset = await Wordset.withWords(wordList);
     let wordCount = 0;
 
-    const sectionFunbox = FunboxList.getActive().find(
+    const sectionFunbox = FunboxList.get(Config.funbox).find(
       (f) => f.functions?.pullSection
     );
     if (sectionFunbox?.functions?.pullSection) {
@@ -1173,7 +1177,7 @@ export async function init(): Promise<void> {
 
 export async function addWord(): Promise<void> {
   let bound = 100;
-  const funboxToPush = FunboxList.getActive()
+  const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   const toPushCount: string | undefined = funboxToPush?.split(":")[1];
@@ -1197,7 +1201,7 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  const sectionFunbox = FunboxList.getActive().find(
+  const sectionFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.pullSection
   );
   if (sectionFunbox?.functions?.pullSection) {

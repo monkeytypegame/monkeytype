@@ -7,14 +7,14 @@ import * as FunboxMemory from "./funbox-memory";
 import * as FunboxList from "./funbox-list";
 
 export function toggleScript(...params: string[]): void {
-  FunboxList.getActive().forEach((funbox) => {
+  FunboxList.get(Config.funbox).forEach((funbox) => {
     if (funbox.functions?.toggleScript) funbox.functions.toggleScript(params);
   });
 }
 
 export function isFunboxCompatible(funbox?: string): boolean {
   if (funbox === "none" || Config.funbox === "none") return true;
-  let checkingFunbox = FunboxList.getActive();
+  let checkingFunbox = FunboxList.get(Config.funbox);
   if (funbox !== undefined) {
     checkingFunbox = checkingFunbox.concat(
       FunboxList.getAll().filter((f) => f.name == funbox)
@@ -22,7 +22,7 @@ export function isFunboxCompatible(funbox?: string): boolean {
   }
 
   const allFunboxesAreValid =
-    FunboxList.getActive().filter(
+    FunboxList.get(Config.funbox).filter(
       (f) => Config.funbox.split("#").find((cf) => cf == f.name) !== undefined
     ).length == Config.funbox.split("#").length;
   const oneWordModifierMax =
@@ -177,7 +177,7 @@ function checkActiveFunboxesForcedConfigs(
       checkActiveFunboxesForcedConfigs(key, value);
     }
   } else {
-    for (const activeFunbox of FunboxList.getActive()) {
+    for (const activeFunbox of FunboxList.get(Config.funbox)) {
       const forcedConfigValues = activeFunbox.forcedConfig?.[configKey];
       if (forcedConfigValues && !forcedConfigValues.includes(configValue)) {
         Notifications.add(
@@ -227,13 +227,13 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   let fb: MonkeyTypes.FunboxObject[] = [];
   fb = fb.concat(
-    FunboxList.getActive().filter(
+    FunboxList.get(Config.funbox).filter(
       (f) => f.mode !== undefined && !f.mode.includes(Config.mode)
     )
   );
   if (Config.mode === "zen") {
     fb = fb.concat(
-      FunboxList.getActive().filter(
+      FunboxList.get(Config.funbox).filter(
         (f) =>
           f.functions?.getWord ||
           f.functions?.pullSection ||
@@ -250,7 +250,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
   if (Config.mode === "quote" || Config.mode == "custom") {
     fb = fb.concat(
-      FunboxList.getActive().filter(
+      FunboxList.get(Config.funbox).filter(
         (f) =>
           f.functions?.getWord ||
           f.functions?.pullSection ||
@@ -288,7 +288,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   if (language.ligatures) {
     if (
-      FunboxList.getActive().find((f) => f.properties?.includes("noLigatures"))
+      FunboxList.get(Config.funbox).find((f) =>
+        f.properties?.includes("noLigatures")
+      )
     ) {
       Notifications.add(
         "Current language does not support this funbox mode",
@@ -301,7 +303,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (Config.time === 0 && Config.mode === "time") {
-    const fb = FunboxList.getActive().filter((f) =>
+    const fb = FunboxList.get(Config.funbox).filter((f) =>
       f.properties?.includes("noInfiniteDuration")
     );
     if (fb.length > 0) {
@@ -319,7 +321,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   if (Config.words === 0 && Config.mode === "words") {
-    const fb = FunboxList.getActive().filter((f) =>
+    const fb = FunboxList.get(Config.funbox).filter((f) =>
       f.properties?.includes("noInfiniteDuration")
     );
     if (fb.length > 0) {
@@ -339,7 +341,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   checkActiveFunboxesForcedConfigs();
 
   ManualRestart.set();
-  FunboxList.getActive().forEach(async (funbox) => {
+  FunboxList.get(Config.funbox).forEach(async (funbox) => {
     if (funbox.functions?.applyCSS) funbox.functions.applyCSS();
     if (funbox.functions?.applyConfig) funbox.functions.applyConfig();
   });
@@ -348,7 +350,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 }
 
 export async function rememberSettings(): Promise<void> {
-  FunboxList.getActive().forEach(async (funbox) => {
+  FunboxList.get(Config.funbox).forEach(async (funbox) => {
     if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
   });
 }
