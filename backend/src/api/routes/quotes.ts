@@ -128,7 +128,12 @@ router.post(
           "Incorrect source"
         )
         .required(),
-      comment: joi.string().allow("").max(250).required(),
+      comment: joi
+        .string()
+        .allow("")
+        .regex(/^([.]|[^/<>])+$/)
+        .max(250)
+        .required(),
       captcha: joi.string().required(),
     },
   }),
