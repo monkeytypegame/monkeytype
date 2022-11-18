@@ -343,10 +343,20 @@ export function calculateBurst(): number {
 }
 
 export function calculateAccuracy(): number {
-  const acc =
-    (TestInput.accuracy.correct /
-      (TestInput.accuracy.correct + TestInput.accuracy.incorrect)) *
-    100;
+  const resultInputArr = TestInput.input.history;
+  const resultOutputArr = TestWords.words.get();
+  let mismatched = 0;
+
+  const minLength = Math.min(resultOutputArr.length, resultInputArr.length);
+  for (let i = 0; i < minLength; i++) {
+    if (resultOutputArr[i] !== resultInputArr[i]) {
+      mismatched += 1;
+    }
+  }
+
+  const acc = ((minLength - mismatched) / minLength) * 100;
+  console.log(mismatched);
+  console.log("the accuracy is ", acc);
   return isNaN(acc) ? 100 : acc;
 }
 

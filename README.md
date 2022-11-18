@@ -5,6 +5,13 @@
 ![SASS](https://img.shields.io/badge/SASS-hotpink.svg?style=for-the-badge&logo=SASS&logoColor=white)
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 
+# This is a fork/clone of monkeytype. The main things we are trying to achieve here are
+
+1. Leaderboard with no anti-cheat module. We want to allow keyboards other than QWERTY like charachorder vs stenograph to make it to leader boards to see how fast they can be
+2. Simpler Accuracy algorithm that only compares input and output of test, instead of looking at everything users have entered
+
+# Below here are the original monkeytype
+
 # About
 
 Monkeytype is a minimalistic and customizable typing test. It features many test modes, an account system to save your typing speed history, and user-configurable features such as themes, sounds, a smooth caret, and more. Monkeytype attempts to emulate the experience of natural typing during a typing test, by unobtrusively presenting the text prompts and displaying typed characters in-place, providing straightforward, real-time feedback on typos, speed, and accuracy.

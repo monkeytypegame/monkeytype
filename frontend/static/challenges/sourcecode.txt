@@ -4319,7 +4319,7 @@ backend/anticheat
         <select name="language" id="submitQuoteLanguage"></select>
         <div
           class="g-recaptcha"
-          data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+          data-sitekey="6LfA-xEjAAAAAHC7XCcNbCOzvRNWtmj1CUsIA7Dt"
         ></div>
         <div id="submitQuoteButton" class="button">Submit</div>
       </div>
@@ -12981,7 +12981,7 @@ self.addEventListener("fetch", async (event) => {
   if (
     [
       "localhost:5005",
-      "api.monkeytype.com",
+      "api.charatyping.com",
       "api.github.com",
       "www.google-analytics.com",
     ].includes(host) ||
@@ -20707,7 +20707,7 @@ let baseURL;
 if (window.location.hostname === "localhost") {
   baseURL = "http://localhost:5005" + apiPath;
 } else {
-  baseURL = "https://api.monkeytype.com" + apiPath;
+  baseURL = "https://api.charatyping.com" + apiPath;
 }
 
 const axiosInstance = axios.create({

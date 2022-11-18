@@ -2,7 +2,7 @@ import endpoints from "./endpoints";
 import { buildHttpClient } from "./adapters/axios-adapter";
 
 const DEV_SERVER_HOST = "http://localhost:5005";
-const PROD_SERVER_HOST = "https://api.monkeytype.com";
+const PROD_SERVER_HOST = "https://api.charatyping.com";
 
 const API_PATH = "";
 const BASE_URL =
