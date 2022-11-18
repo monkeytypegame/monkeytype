@@ -36,18 +36,6 @@ $(document).ready(() => {
   if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
     $("#restartTestButton").addClass("hidden");
   }
-  if (!window.localStorage.getItem("merchbannerclosed")) {
-    Notifications.addBanner(
-      `Check out our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
-      1,
-      "./images/merch2.png",
-      false,
-      () => {
-        window.localStorage.setItem("merchbannerclosed", "true");
-      },
-      true
-    );
-  }
 
   // if (!window.localStorage.getItem("merchbannerclosed2")) {
   //   Notifications.addBanner(
