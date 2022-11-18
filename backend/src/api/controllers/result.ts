@@ -37,21 +37,21 @@ import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 
-try {
-  if (anticheatImplemented() === false) throw new Error("undefined");
-  Logger.success("Anticheat module loaded");
-} catch (e) {
-  if (process.env.MODE === "dev") {
-    Logger.warning(
-      "No anticheat module found. Continuing in dev mode, results will not be validated."
-    );
-  } else {
-    Logger.error(
-      "No anticheat module found. To continue in dev mode, add MODE=dev to your .env file in the backend directory"
-    );
-    process.exit(1);
-  }
-}
+// try {
+//   if (anticheatImplemented() === false) throw new Error("undefined");
+//   Logger.success("Anticheat module loaded");
+// } catch (e) {
+//   if (process.env.MODE === "dev") {
+//     Logger.warning(
+//       "No anticheat module found. Continuing in dev mode, results will not be validated."
+//     );
+//   } else {
+//     Logger.error(
+//       "No anticheat module found. To continue in dev mode, add MODE=dev to your .env file in the backend directory"
+//     );
+//     process.exit(1);
+//   }
+// }
 
 export async function getResults(
   req: MonkeyTypes.Request
