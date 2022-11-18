@@ -34,7 +34,7 @@
     {
       "text": "public enum OperatingSystem {\n\tOSX, Windows, LINUX;\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase OSX: return \"Mac OS\",\n\t\t\tcase WINDOWS: return \"Windows\";\n\t\t\tcase LINUX: return \"Linux\";\n\t\t}\n\t}\n}",
       "id": 5,
-      "source": "Community contribution",
+      "source": "Detect OS",
       "length": 201
     },
     {
@@ -46,8 +46,128 @@
     {
       "text": "public enum Wood {\n\tINDIAN_ROSEWOOD, BRAZILIAN_ROSEWOOD, MAHOGANY,\n\tMAPLE, COCOBOLO, CEDAR, ADIRONDACK, ALDER, SITKA;\n\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase INDIAN_ROSEWOOD: return \"Indian Rosewood\";\n\t\t\tcase BRAZILIAN_ROSEWOOD: return \"Brazilian Rosewood\";\n\t\t\tcase MAHOGANY: return \"Mahogany\";\n\t\t\tcase MAPLE: return \"Maple\";\n\t\t\tcase COCOBOLO: return \"Cocobolo\";\n\t\t\tcase CEDAR: return \"Cedar\";\n\t\t\tcase ADIRONDACK: return \"Adirondack\";\n\t\t\tcase ALDER: return \"Alder\";\n\t\t\tcase SITKA: return \"Sitka\";\n\t\t\tdefault: return \"Any\";\n\t\t}\n\t}\n}",
       "id": 7,
-      "source": "Head First Objiect-Oriented Analysis and Design",
+      "source": "Head First Object-Oriented Analysis and Design",
       "length": 545
+    },
+    {
+      "text": "public static int fibonacci(int n) {\n\tif (n <= 2) {\n\t\treturn 1;\n\t} else {\n\t\treturn fibonacci(n - 1) + fibonacci(n - 2);\n}",
+      "id": 8,
+      "source": "Find the nth Fibonacci Number Recursively",
+      "length": 121
+    },
+    {
+      "text": "public static int binarySearch(int[] arr, int x) {\n\tint low = 0;\n\tint mid = 0;\n\tint high = arr.length - 1;\n\twhile (low <= high) {\n\t\tmid = (low + high) / 2;\n\t\tif (x == arr[mid]) {\n\t\t\treturn mid;\n\t\t} else if (x > arr[mid]) {\n\t\t\tlow = mid + 1;\n\t\t} else {\n\t\t\thigh = mid - 1;\n\t\t}\n\t}\n\treturn -1;\n}",
+      "id": 9,
+      "source": "Binary Search",
+      "length": 291
+    },
+    {
+      "text": "public static void insertionSort(int[] arr) {\n\tfor (int i = 1; i < arr.length; i++) {\n\t\tint next = arr[i];\n\t\tint j;\n\t\tfor (j = i - 1; j >= 0 && arr[j] > next; j--) {\n\t\t\tarr[j + 1] = arr[j];\n\t\t}\n\t\tarr[j + 1] = next;\n\t}\n}",
+      "id": 10,
+      "source": "Insertion Sort",
+      "length": 219
+    },
+    {
+      "text": "public static void selectionSort(int[] arr) {\n\tfor (int last = arr.length - 1; last > 0; last--) {\n\t\tint largest = last;\n\t\tfor (int i = 0; i < last; i++) {\n\t\t\tif (arr[i] > arr[largest]) {\n\t\t\t\tlargest = i;\n\t\t\t}\n\t\t}\n\t\tint temp = arr[largest];\n\t\tarr[largest] = arr[last];\n\t\tarr[last] = temp;\n\t}\n}",
+      "id": 11,
+      "source": "Selection Sort",
+      "length": 293
+    },
+    {
+      "text": "public static void bubbleSort(int[] arr) {\n\tfor (int i = 1; i < arr.length; i++) {\n\t\tfor (int j = 0; j < arr.length - i; j++) {\n\t\t\tif (arr[j] > arr[j + 1]) {\n\t\t\t\tint temp = arr[j];\n\t\t\t\tarr[j] = arr[j + 1];\n\t\t\t\tarr[j + 1] = temp;\n\t\t\t}\n\t\t}\n\t}\n}",
+      "id": 12,
+      "source": "Bubble Sort",
+      "length": 242
+    },
+    {
+      "text": "public static void mergeSort(int[] arr) {\n\tmergeSort(arr, 0, arr.length - 1);\n}\npublic static void mergeSort(int[] arr, int leftmost, int rightmost) {\n\tif (leftmost < rightmost) {\n\t\tint mid = (leftmost + rightmost) \/ 2;\n\t\tmergeSort(arr, leftmost, mid);\n\t\tmergeSort(arr, mid + 1, rightmost);\n\t\tmerge(arr, leftmost, mid, rightmost);\n\t}\n}\npublic static void merge(int[] arr, int leftmost, int mid, int rightmost) {\n\tint[] subArray = new int[rightmost - leftmost + 1];\n\tint left = leftmost;\n\tint right = mid + 1;\n\tint i = 0;\n\twhile (left <= mid && right <= rightmost) {\n\t\tif (arr[left] <= arr[right]) {\n\t\t\tsubArray[i++] = arr[left++];\n\t\t} else {\n\t\t\tsubArray[i++] = arr[right++];\n\t\t}\n\t}\n\twhile (left <= mid) subArray[i++] = arr[left++];\n\twhile (right <= rightmost) subArray[i++] = arr[right++];\n\tfor (int j = 0; j < subArray.length; j++) {\n\t\tarr[leftmost + j] = subArray[j];\n\t}\n}",
+      "id": 13,
+      "source": "Merge Sort",
+      "length": 874
+    },
+    {
+      "text": "public static void quickSort(int[] arr) {\n\tquickSort(arr, 0, arr.length - 1);\n}\npublic static void quickSort(int[] arr, int i, int j) {\n\tif (i < j) {\n\t\tint pivotIdx = partition(arr, i, j);\n\t\tquickSort(arr, i, pivotIdx - 1);\n\t\tquickSort(arr, pivotIdx + 1, j);\n\t}\n}\npublic static void swap(int[] arr, int i, int j) {\n\tint temp = arr[i];\n\tarr[i] = arr[j];\n\tarr[j] = temp;\n}\npublic static int partition(int[] arr, int i, int j) {\n\tint pivot = arr[i];\n\tint m = i;\n\tfor (int k = i + 1; k <= j; k++) {\n\t\tif (arr[k] < pivot) {\n\t\t\tm++;\n\t\t\tswap(arr, k, m);\n\t\t}\n\t}\n\tswap(arr, i, m);\n\treturn m;\n}",
+      "id": 14,
+      "source": "Quick Sort",
+      "length": 584
+    },
+    {
+      "text": "public static int quickSelect(int[] arr, int target) {\n\treturn quickSelect(arr, target, 0, arr.length - 1);\n}\npublic static int quickSelect(int[] arr, int target, int i, int j) {\n\tint pivotIdx = partition(arr, i, j);\n\tif (pivotIdx == target) {\n\t\treturn arr[target];\n\t} else if (target < pivotIdx) {\n\t\treturn quickSelect(arr, target, i, pivotIdx - 1);\n\t} else {\n\t\treturn quickSelect(arr, target, pivotIdx + 1, j);\n\t}\n}\npublic static void swap(int[] arr, int i, int j) {\n\tint temp = arr[i];\n\tarr[i] = arr[j];\n\tarr[j] = temp;\n}\npublic static int partition(int[] arr, int i, int j) {\n\tint pivot = arr[i];\n\tint m = i;\n\tfor (int k = i + 1; k <= j; k++) {\n\t\tif (arr[k] < pivot) {\n\t\t\tm++;\n\t\t\tswap(arr, k, m);\n\t\t}\n\t}\n\tswap(arr, i, m);\n\treturn m;\n}",
+      "id": 15,
+      "source": "Quick Select",
+      "length": 738
+    },
+    {
+      "text": "public int indexOf(int elem) {\n\tint index = 0;\n\tfor (Node curr = head; curr != null; curr = curr.getTail()) {\n\t \tif (curr.getElem() == elem) {\n\t\t\treturn index;\n\t\t} else {\n\t\t\tindex++;\n\t\t}\n\t}\n\treturn -1;\n}",
+      "source": "Get the Index of an Element in a Linked List",
+      "id": 16,
+      "length": 203
+    },
+    {
+      "text": "public void setTail(Node curr, Node next) {\n\tif (curr == null) {\n\t\tnext.setNext(head);\n\t\thead = next;\n\t} else {\n\t\tnext.setNext(curr.getNext());\n\t\tcurr.setNext(next);\n\t}\n\tnumNodes++;\n}",
+      "source": "Set the Tail of a Linked List",
+      "id": 17,
+      "length": 183
+    },
+    {
+      "text": "public void addAtIndex(int index, int elem) {\n\tif (index < 0 || index > size()) {\n\t\tSystem.out.println(\"index out of bounds\");\n\t}\n\tNode curr = null;\n\tNode newNode = new Node(elem);\n\tif (index != 0) {\n\t\tcurr = getNodeAtIndex(index - 1);\n\t}\n\tsetTail(curr, newNode);\n}",
+      "source": "Add an Element at an Index in a Linked List",
+      "id": 18,
+      "length": 265
+    },
+    {
+      "text": "public int remove(Node curr) {\n\tint value;\n\tif (curr == null) {\n\t\tvalue = head.getElem();\n\t\thead = head.getNext();\n\t} else {\n\t\tvalue = curr.getNext().getElem();\n\t\tcurr.setNext(curr.getNext().getNext());\n\t}\n\tnumNodes--;\n\treturn value;\n}",
+      "source": "Remove a Node from a Linked List",
+      "id": 19,
+      "length": 235
+    },
+    {
+      "text": "public int removeAtIndex(int index) {\n\tif (index < 0 || index >= size()) {\n\t\tSystem.out.println(\"index out of bounds or list is empty\");\n\t}\n\tNode curr = null;\n\tint elem = 0;\n\tif (index != 0) {\n\t\tcurr = getNodeAtIndex(index - 1);\t\t\n\t}\n\treturn remove(curr);\n}",
+      "source": "Remove an Element using its Index in a Linked List",
+      "id": 20,
+      "length": 257
+    },
+    {
+      "text": "public boolean add(int elem) {\n\tif (elems.contains(elem)) {\n\t\treturn false;\n\t}\n\telems.add(elem);\n\treturn true;\n}",
+      "source": "Add an Element to a ArrayList-based Set",
+      "id": 21,
+      "length": 112
+    },
+    {
+      "text": "public void enlargeArr() {\n\tint newSize = capacity * 2;\n\tint[] newArr = new int[newSize];\n\tfor (int i = 0; i <= topIdx; i++) {\n\t\tnewArr[i] = arr[i];\n\t}\n\tarr = newArr;\n\tcapacity = newSize;\n}",
+      "source": "Enlarge an Array-based Stack or Queue",
+      "id": 22,
+      "length": 189
+    },
+    {
+      "text": "public Integer pop() {\n\tInteger elem = peek();\n\tif (elem != null) topIdx--;\n\treturn elem;\n}",
+      "source": "Pop the top element off an Array-based Stack",
+      "id": 23,
+      "length": 91
+    },
+    {
+      "text": "public void push(Integer elem) {\n\tif (top >= capacity - 1) enlargeArr();\n\ttopIdx++;\n\tarr[topIdx] = elem;\n}",
+      "source": "Push an element onto an Array-based Stack",
+      "id": 24,
+      "length": 106
+    },
+    {
+      "text": "public Integer dequeue() {\n\tif (empty()) return null;\n\tInteger elem = arr[front];\n\tfront = (front + 1) % capacity;\n\treturn elem;\n}",
+      "source": "Dequeue an Array-based Queue",
+      "id": 25,
+      "length": 130
+    },
+    {
+      "text": "public void enqueue(Integer elem) {\n\tif (((back + 1) % capacity) == front) enlargeArr();\n\tarr[back] = elem;\n\tback = (back + 1) % capacity;\n}",
+      "source": "Enqueue an Array-based Queue",
+      "id": 26,
+      "length": 140
+    },
+    {
+      "text": "public static int[] bogoSort(int[] arr) {\n\twhile (!isSorted(arr)) shuffle(arr);\n\treturn arr;\n}\npublic static void shuffle(int[] arr) {\n\tfor (int i = 0; i < arr.length; i++) {\n\t\tswap(arr, i, (int) (Math.random() * i));\n\t}\n}",
+      "source": "BogoSort",
+      "id": 27,
+      "length": 222
     }
   ]
 }
