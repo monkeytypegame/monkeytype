@@ -29,6 +29,22 @@
 }
 
 @font-face {
+  font-family: "Sono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Sono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Hack";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Hack-Regular.ttf") format("truetype");
+}
+
+@font-face {
   font-family: "Open Dyslexic";
   font-style: normal;
   font-weight: 400;
