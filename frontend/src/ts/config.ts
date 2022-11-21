@@ -6,6 +6,7 @@ import {
   isConfigValueValid,
   isConfigValueValidAsync,
   canSetConfigWithCurrentFunboxes,
+  canSetFunboxWithConfig,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
@@ -236,6 +237,8 @@ export function setFavThemes(themes: string[], nosave?: boolean): boolean {
 export function setFunbox(funbox: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
 
+  if (!canSetFunboxWithConfig(funbox, config)) return false;
+
   const val = funbox ? funbox : "none";
   config.funbox = val;
   saveToLocalStorage("funbox", nosave);
@@ -249,6 +252,8 @@ export function toggleFunbox(
   nosave?: boolean
 ): number | boolean {
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
+
+  if (!canSetFunboxWithConfig(funbox, config)) return false;
 
   let r;
 

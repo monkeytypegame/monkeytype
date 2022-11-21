@@ -198,7 +198,8 @@ function checkFunboxForcedConfigs(
 export function canSetConfigWithCurrentFunboxes(
   key: string,
   value: MonkeyTypes.ConfigValues,
-  funbox: string
+  funbox: string,
+  noNotification = false
 ): boolean {
   let errorCount = 0;
   if (key === "mode") {
@@ -247,10 +248,50 @@ export function canSetConfigWithCurrentFunboxes(
   }
 
   if (errorCount > 0) {
+    if (!noNotification) {
+      Notifications.add(
+        `You can't set ${Misc.camelCaseToWords(
+          key
+        )} to ${value} with currently active funboxes.`,
+        0,
+        5
+      );
+    }
+    return false;
+  } else {
+    return true;
+  }
+}
+
+export function canSetFunboxWithConfig(
+  funbox: string,
+  config: MonkeyTypes.Config
+): boolean {
+  let funboxToCheck = config.funbox;
+  if (funboxToCheck === "none") {
+    funboxToCheck = funbox;
+  } else {
+    funboxToCheck += "#" + funbox;
+  }
+  let errorCount = 0;
+  for (const [configKey, configValue] of Object.entries(config)) {
+    if (
+      !canSetConfigWithCurrentFunboxes(
+        configKey,
+        configValue,
+        funboxToCheck,
+        true
+      )
+    ) {
+      errorCount += 1;
+    }
+  }
+  if (errorCount > 0) {
     Notifications.add(
-      `You can't set ${Misc.camelCaseToWords(
-        key
-      )} to ${value} with currently active funboxes.`,
+      `You can't enable ${funbox.replace(
+        /_/g,
+        " "
+      )} with currently active config.`,
       0,
       5
     );
