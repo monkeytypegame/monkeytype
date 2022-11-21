@@ -13,6 +13,7 @@ import * as TestInput from "../test-input";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
+import { areFunboxesCompatible } from "./funbox-validation";
 
 const prefixSize = 2;
 
@@ -475,116 +476,6 @@ export function toggleScript(...params: string[]): void {
   });
 }
 
-export function isFunboxCompatible(funbox?: string): boolean {
-  if (funbox === "none" || Config.funbox === "none") return true;
-  let checkingFunbox = FunboxList.get(Config.funbox);
-  if (funbox !== undefined) {
-    checkingFunbox = checkingFunbox.concat(
-      FunboxList.getAll().filter((f) => f.name == funbox)
-    );
-  }
-
-  const allFunboxesAreValid =
-    FunboxList.get(Config.funbox).filter(
-      (f) => Config.funbox.split("#").find((cf) => cf == f.name) !== undefined
-    ).length == Config.funbox.split("#").length;
-  const oneWordModifierMax =
-    checkingFunbox.filter(
-      (f) =>
-        f.functions?.getWord ||
-        f.functions?.pullSection ||
-        f.functions?.withWords
-    ).length <= 1;
-  const layoutUsability =
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "changesLayout")
-    ).length == 0 ||
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "ignoresLayout" || fp == "usesLayout")
-    ).length == 0;
-  const oneNospaceOrToPushMax =
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "nospace" || fp.startsWith("toPush"))
-    ).length <= 1;
-  const oneChangesWordsVisibilityMax =
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "changesWordsVisibility")
-    ).length <= 1;
-  const capitalisationChangePosibility =
-    checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "noLetters"))
-      .length == 0 ||
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "changesCapitalisation")
-    ).length == 0;
-  const noConflictsWithSymmetricChars =
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "conflictsWithSymmetricChars")
-    ).length == 0 ||
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "symmetricChars")
-    ).length == 0;
-  const canSpeak =
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "speaks" || fp == "unspeakable")
-    ).length <= 1;
-  const hasLanguageToSpeak =
-    checkingFunbox.filter((f) => f.properties?.find((fp) => fp == "speaks"))
-      .length == 0 ||
-    checkingFunbox.filter((f) =>
-      f.properties?.find((fp) => fp == "ignoresLanguage")
-    ).length == 0;
-  const oneToPushOrPullSectionMax =
-    checkingFunbox.filter(
-      (f) =>
-        f.properties?.find((fp) => fp.startsWith("toPush:")) ||
-        f.functions?.pullSection
-    ).length <= 1;
-  const oneApplyCSSMax =
-    checkingFunbox.filter((f) => f.functions?.applyCSS).length <= 1;
-  const onePunctuateWordMax =
-    checkingFunbox.filter((f) => f.functions?.punctuateWord).length <= 1;
-  const oneCharCheckerMax =
-    checkingFunbox.filter((f) => f.functions?.isCharCorrect).length <= 1;
-  const oneCharReplacerMax =
-    checkingFunbox.filter((f) => f.functions?.getWordHtml).length <= 1;
-  const allowedConfig = {} as MonkeyTypes.FunboxForcedConfig;
-  let noConfigConflicts = true;
-  for (const f of checkingFunbox) {
-    if (!f.forcedConfig) continue;
-    for (const key in f.forcedConfig) {
-      if (allowedConfig[key]) {
-        if (
-          Misc.intersect(allowedConfig[key], f.forcedConfig[key], true)
-            .length === 0
-        ) {
-          noConfigConflicts = false;
-          break;
-        }
-      } else {
-        allowedConfig[key] = f.forcedConfig[key];
-      }
-    }
-  }
-
-  return (
-    allFunboxesAreValid &&
-    oneWordModifierMax &&
-    layoutUsability &&
-    oneNospaceOrToPushMax &&
-    oneChangesWordsVisibilityMax &&
-    capitalisationChangePosibility &&
-    noConflictsWithSymmetricChars &&
-    canSpeak &&
-    hasLanguageToSpeak &&
-    oneToPushOrPullSectionMax &&
-    oneApplyCSSMax &&
-    onePunctuateWordMax &&
-    oneCharCheckerMax &&
-    oneCharReplacerMax &&
-    noConfigConflicts
-  );
-}
-
 export function setFunbox(funbox: string): boolean {
   FunboxMemory.load();
   UpdateConfig.setFunbox(funbox, false);
@@ -594,11 +485,13 @@ export function setFunbox(funbox: string): boolean {
 export function toggleFunbox(funbox: string): boolean {
   if (funbox == "none") setFunbox("none");
   if (
-    !isFunboxCompatible(funbox) &&
+    !areFunboxesCompatible(Config.funbox, funbox) &&
     !Config.funbox.split("#").includes(funbox)
   ) {
     Notifications.add(
-      `Can not apply the ${funbox.replace(/_/g, " ")} funbox`,
+      `${Misc.capitalizeFirstLetter(
+        funbox.replace(/_/g, " ")
+      )} funbox is not compatible with the current funbox selection`,
       0
     );
     return true;
@@ -660,7 +553,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   // The configuration might be edited with dev tools,
   // so we need to double check its validity
-  if (!isFunboxCompatible()) {
+  if (!areFunboxesCompatible(Config.funbox)) {
     Notifications.add(
       Misc.createErrorMessage(
         undefined,
