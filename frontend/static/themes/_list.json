@@ -793,5 +793,10 @@
     "name": "cheesecake",
     "bgColor": "#fdf0d5",
     "mainColor": "#892948"
+  },
+  {
+    "name": "earthsong",
+    "bgColor": "#292521",
+    "mainColor": "#509452"
   }
 ]
