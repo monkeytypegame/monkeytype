@@ -403,6 +403,10 @@ export function capitalizeFirstLetterOfEachWord(str: string): string {
     .join(" ");
 }
 
+export function capitalizeFirstLetter(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export function isASCIILetter(c: string): boolean {
   return c.length === 1 && /[a-z]/i.test(c);
 }
