@@ -1,4 +1,5 @@
-@media only screen and (max-width: 1450px) {
+//1450px
+@media only screen and (max-width: 90.625rem) {
   #leaderboardsWrapper #leaderboards {
     .mainTitle {
       font-size: 2rem;
@@ -30,7 +31,8 @@
   }
 }
 
-@media only screen and (max-width: 1330px) {
+//1330px
+@media only screen and (max-width: 83.125rem) {
   .ad.ad-v {
     display: none;
   }
@@ -46,7 +48,8 @@
   }
 }
 
-@media only screen and (max-width: 1250px) {
+//1250px
+@media only screen and (max-width: 78.125rem) {
   #leaderboardsWrapper #leaderboards {
     .tables table {
       tr td:nth-child(5) {
@@ -59,7 +62,8 @@
   }
 }
 
-@media only screen and (max-width: 1050px) {
+//1050px
+@media only screen and (max-width: 65.625rem) {
   .profile .pbsWords,
   .profile .pbsTime {
     font-size: 0.8rem;
@@ -136,7 +140,8 @@
   }
 }
 
-@media only screen and (max-width: 1000px) {
+//1000px
+@media only screen and (max-width: 62.5rem) {
   #quoteRatePopup {
     width: 90vw !important;
   }
@@ -158,7 +163,8 @@
   }
 }
 
-@media only screen and (max-width: 900px) {
+//900px
+@media only screen and (max-width: 56.25rem) {
   #customTextPopupWrapper #customTextPopup {
     grid-template-areas:
       "topButtons topButtons topButtons"
@@ -318,7 +324,8 @@
   }
 }
 
-@media only screen and (max-width: 800px) {
+//800px
+@media only screen and (max-width: 50rem) {
   #testConfig {
     .spacer {
       display: none;
@@ -446,7 +453,8 @@
   }
 }
 
-@media only screen and (max-width: 750px) {
+//750px
+@media only screen and (max-width: 46.875rem) {
   #leaderboardsWrapper #leaderboards {
     .tables table {
       tr td:nth-child(5) {
@@ -470,7 +478,8 @@
   }
 }
 
-@media only screen and (max-width: 700px) {
+//700px
+@media only screen and (max-width: 43.75rem) {
   .pageAccount .presetFilterButtons .buttons {
     grid-template-columns: 1fr;
   }
@@ -512,7 +521,8 @@
   }
 }
 
-@media only screen and (max-width: 650px) {
+//650px
+@media only screen and (max-width: 40.625rem) {
   #leaderboardsWrapper #leaderboards {
     width: 85vw;
     .tables .rightTableWrapper,
@@ -663,7 +673,8 @@
   }
 }
 
-@media only screen and (max-width: 600px) {
+//600px
+@media only screen and (max-width: 37.5rem) {
   .pageAbout .section .supporters,
   .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr;
@@ -711,7 +722,8 @@
   }
 }
 
-@media only screen and (max-width: 550px) {
+//550px
+@media only screen and (max-width: 34.375rem) {
   #commandLineWrapper {
     padding: 5rem 1rem;
   }
@@ -904,7 +916,8 @@
   }
 }
 
-@media only screen and (max-width: 450px) {
+//450px
+@media only screen and (max-width: 28.125rem) {
   #testConfig {
     display: none;
   }
@@ -923,7 +936,8 @@
   }
 }
 
-@media only screen and (max-width: 400px) {
+//400px
+@media only screen and (max-width: 25rem) {
   #top .config {
     grid-gap: 0.25rem;
     .group .buttons {
@@ -981,7 +995,8 @@
   }
 }
 
-@media only screen and (max-width: 350px) {
+//350px
+@media only screen and (max-width: 21.875rem) {
   .ad.ad-h-s {
     display: none;
   }
@@ -1005,7 +1020,8 @@
   }
 }
 
-@media (pointer: coarse) and (max-width: 800px) {
+//800px
+@media (pointer: coarse) and (max-width: 50rem) {
   #testConfig {
     display: none;
   }
