@@ -79,7 +79,7 @@ function update(funboxes: MonkeyTypes.FunboxObject[]): void {
             $(
               `#commandLine .suggestions .entry[command='changeFunbox${funboxes[i].name}']`
             ).html(
-              `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
+              `<div class="icon"><i class="fas fa-fw fa-gamepad"></i></div><div>Funbox  > ` +
                 txt
             );
           } else {
