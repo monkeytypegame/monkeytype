@@ -5,8 +5,6 @@ import {
   isConfigKeyValid,
   isConfigValueValid,
   isConfigValueValidAsync,
-  canSetConfigWithCurrentFunboxes,
-  canSetFunboxWithConfig,
 } from "./config-validation";
 import * as ConfigEvent from "./observables/config-event";
 import DefaultConfig from "./constants/default-config";
@@ -14,6 +12,10 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
+import {
+  canSetConfigWithCurrentFunboxes,
+  canSetFunboxWithConfig,
+} from "./test/funbox/funbox-validation";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -1005,6 +1007,10 @@ export function setTimeConfig(
 ): boolean {
   if (!isConfigValueValid("time", time, ["number"])) return false;
 
+  if (!canSetConfigWithCurrentFunboxes("words", time, config.funbox)) {
+    return false;
+  }
+
   const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
 
   config.time = newTime;
@@ -1064,6 +1070,10 @@ export function setWordCount(
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("words", wordCount, ["number"])) return false;
+
+  if (!canSetConfigWithCurrentFunboxes("words", wordCount, config.funbox)) {
+    return false;
+  }
 
   const newWordCount =
     wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
