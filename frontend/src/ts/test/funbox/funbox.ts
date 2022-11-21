@@ -662,7 +662,13 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   // so we need to double check its validity
   if (!isFunboxCompatible()) {
     Notifications.add(
-      Misc.createErrorMessage(undefined, "Failed to activate funbox"),
+      Misc.createErrorMessage(
+        undefined,
+        `Failed to activate funbox: funboxes ${Config.funbox.replace(
+          /_/g,
+          " "
+        )} are not compatible`
+      ),
       -1
     );
     UpdateConfig.setFunbox("none", true);
