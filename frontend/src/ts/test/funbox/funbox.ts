@@ -711,42 +711,6 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
   }
 
-  if (Config.time === 0 && Config.mode === "time") {
-    const fb = FunboxList.get(Config.funbox).filter((f) =>
-      f.properties?.includes("noInfiniteDuration")
-    );
-    if (fb.length > 0) {
-      Notifications.add(
-        `${Misc.capitalizeFirstLetterOfEachWord(
-          Config.mode
-        )} mode with value 0 does not support the ${fb[0].name.replace(
-          /_/g,
-          " "
-        )} funbox`,
-        0
-      );
-      UpdateConfig.setTimeConfig(15, true);
-    }
-  }
-
-  if (Config.words === 0 && Config.mode === "words") {
-    const fb = FunboxList.get(Config.funbox).filter((f) =>
-      f.properties?.includes("noInfiniteDuration")
-    );
-    if (fb.length > 0) {
-      Notifications.add(
-        `${Misc.capitalizeFirstLetterOfEachWord(
-          Config.mode
-        )} mode with value 0 does not support the ${fb[0].name.replace(
-          /_/g,
-          " "
-        )} funbox`,
-        0
-      );
-      UpdateConfig.setWordCount(10, true);
-    }
-  }
-
   checkActiveFunboxesForcedConfigs();
 
   ManualRestart.set();
