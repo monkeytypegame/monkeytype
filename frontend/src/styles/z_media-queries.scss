@@ -311,6 +311,11 @@
       }
     }
   }
+  .pageSettings .settingsGroup.quickNav .links {
+    grid-auto-flow: unset;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-items: center;
+  }
 }
 
 @media only screen and (max-width: 800px) {
@@ -380,11 +385,6 @@
         }
       }
     }
-  }
-  .pageSettings .settingsGroup.quickNav .links {
-    grid-auto-flow: unset;
-    grid-template-columns: 1fr 1fr 1fr;
-    justify-items: center;
   }
   #centerContent {
     // #top {
