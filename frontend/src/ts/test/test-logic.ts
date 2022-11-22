@@ -555,25 +555,6 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      const FunboxPunctuation = FunboxList.get(Config.funbox).find(
-        (f) => f.forcedConfig?.["punctuation"] !== undefined
-      );
-      if (FunboxPunctuation?.forcedConfig?.["punctuation"]) {
-        UpdateConfig.setPunctuation(
-          FunboxPunctuation.forcedConfig["punctuation"][0] as boolean,
-          true
-        );
-      }
-      const FunboxNumbers = FunboxList.get(Config.funbox).find(
-        (f) => f.forcedConfig?.["numbers"] !== undefined
-      );
-      if (FunboxNumbers?.forcedConfig?.["numbers"]) {
-        UpdateConfig.setNumbers(
-          FunboxNumbers.forcedConfig["numbers"][0] as boolean,
-          true
-        );
-      }
-
       if (options.withSameWordset) {
         const funboxToPush = FunboxList.get(Config.funbox)
           .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
