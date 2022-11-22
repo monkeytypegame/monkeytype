@@ -6,13 +6,13 @@ import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
 
 type TierPlacement = {
-  value: number|'-';
+  value: number | "-";
   unit: string;
-}
+};
 
 type TierList = {
   [key: string]: number;
-}
+};
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -37,8 +37,12 @@ function updateStatsAndHistogram(): void {
   const secondsRounded = Math.round(typingStatsResponseData.timeTyping);
 
   const timeTypingDuration = getTimeWithAppropriateUnits(secondsRounded);
-  const testStartedCount = getAppropriateSizeAndSuffixForNumber(typingStatsResponseData.testsStarted);
-  const testCompleteCount = getAppropriateSizeAndSuffixForNumber(typingStatsResponseData.testsCompleted);
+  const testStartedCount = getAppropriateSizeAndSuffixForNumber(
+    typingStatsResponseData.testsStarted
+  );
+  const testCompleteCount = getAppropriateSizeAndSuffixForNumber(
+    typingStatsResponseData.testsCompleted
+  );
 
   $(".pageAbout #totalTimeTypingStat .val").text(
     timeTypingDuration.value.toString() ?? ""
@@ -57,7 +61,9 @@ function updateStatsAndHistogram(): void {
   );
 
   $(".pageAbout #totalCompletedTestsStat .val").text(testCompleteCount.value);
-  $(".pageAbout #totalCompletedTestsStat .valSmall").text(testCompleteCount.unit);
+  $(".pageAbout #totalCompletedTestsStat .valSmall").text(
+    testCompleteCount.unit
+  );
   $(".pageAbout #totalCompletedTestsStat").attr(
     "aria-label",
     `${testCompleteCount.value} ${testCompleteCount.unit}`
@@ -193,29 +199,29 @@ function findTierInList(value: number, list: TierList): TierPlacement {
   }
 
   return {
-    value: '-',
-    unit: '-',
+    value: "-",
+    unit: "-",
   };
 }
 
-function getTimeWithAppropriateUnits(timeInSeconds: number) {
+function getTimeWithAppropriateUnits(timeInSeconds: number): TierPlacement {
   const timeDictionary: TierList = {
-    'years': 29030400,
-    'months': 2419200,
-    'days': 86400,
-    'hours': 3600,
-    'minutes': 60,
-    'minute': timeInSeconds,
+    years: 29030400,
+    months: 2419200,
+    days: 86400,
+    hours: 3600,
+    minutes: 60,
+    minute: timeInSeconds,
   };
   return findTierInList(timeInSeconds, timeDictionary);
 }
 
-function getAppropriateSizeAndSuffixForNumber(num: number) {
+function getAppropriateSizeAndSuffixForNumber(num: number): TierPlacement {
   const SIPrefixDictionary: TierList = {
-    'million': 1_000_000,
-    'thousand': 1_000,
-    'hundred': 100,
-    '': 1,
+    million: 1_000_000,
+    thousand: 1_000,
+    hundred: 100,
+    "": 1,
   };
   return findTierInList(num, SIPrefixDictionary);
 }
