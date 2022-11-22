@@ -4,7 +4,6 @@ import Ape from "../ape";
 import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
-import intervalToDuration from "date-fns/intervalToDuration";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -28,36 +27,31 @@ function updateStatsAndHistogram(): void {
 
   const secondsRounded = Math.round(typingStatsResponseData.timeTyping);
 
-  const timeTypingDuration = intervalToDuration({
-    start: 0,
-    end: secondsRounded * 1000,
-  });
+  const timeTypingDuration = getTimeWithAppropriateUnits(secondsRounded);
+  const testStartedCount = getAppropriateSizeAndSuffixForNumber(typingStatsResponseData.testsStarted);
+  const testCompleteCount = getAppropriateSizeAndSuffixForNumber(typingStatsResponseData.testsCompleted);
 
   $(".pageAbout #totalTimeTypingStat .val").text(
-    timeTypingDuration.years?.toString() ?? ""
+    timeTypingDuration.time?.toString() ?? ""
   );
-  $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
+  $(".pageAbout #totalTimeTypingStat .valSmall").text(timeTypingDuration.unit);
   $(".pageAbout #totalTimeTypingStat").attr(
     "aria-label",
-    Math.round(secondsRounded / 3600) + " hours"
+    timeTypingDuration.unit + " hours"
   );
 
-  $(".pageAbout #totalStartedTestsStat .val").text(
-    Math.round(typingStatsResponseData.testsStarted / 1000000)
-  );
-  $(".pageAbout #totalStartedTestsStat .valSmall").text("million");
+  $(".pageAbout #totalStartedTestsStat .val").text(testStartedCount.num);
+  $(".pageAbout #totalStartedTestsStat .valSmall").text(testStartedCount.suffix);
   $(".pageAbout #totalStartedTestsStat").attr(
     "aria-label",
-    typingStatsResponseData.testsStarted + " tests"
+    testStartedCount.num + " tests"
   );
 
-  $(".pageAbout #totalCompletedTestsStat .val").text(
-    Math.round(typingStatsResponseData.testsCompleted / 1000000)
-  );
+  $(".pageAbout #totalCompletedTestsStat .val").text(testCompleteCount.num);
   $(".pageAbout #totalCompletedTestsStat .valSmall").text("million");
   $(".pageAbout #totalCompletedTestsStat").attr(
     "aria-label",
-    typingStatsResponseData.testsCompleted + " tests"
+    testCompleteCount.suffix + " tests"
   );
 }
 
@@ -177,4 +171,62 @@ function getHistogramDataBucketed(data: Record<string, number>): {
     }
   }
   return { data: histogramChartDataBucketed, labels };
+}
+
+function getTimeWithAppropriateUnits(timeInSeconds: number) {
+  if (timeInSeconds < 60) {
+    return {
+      time: 1,
+      unit: 'minute',
+    };
+  } else if (timeInSeconds < 3600) {
+    return {
+      time: timeInSeconds / 60,
+      unit: 'minutes',
+    };
+  } else if (timeInSeconds < 86400) {
+    return {
+      time: timeInSeconds / 3600,
+      unit: 'hours',
+    };
+  } else if (timeInSeconds < 2419200) {
+    return {
+      time: timeInSeconds / 86400,
+      unit: 'days',
+    };
+  } else if (timeInSeconds < 29030400) {
+    return {
+      time: timeInSeconds / 2419200,
+      unit: 'months',
+    }
+  } else {
+    return {
+      time: timeInSeconds / 29030400,
+      unit: 'years',
+    };
+  }
+}
+
+function getAppropriateSizeAndSuffixForNumber(num: number) {
+  if (num < 100) {
+    return {
+      num,
+      suffix: '',
+    };
+  } else if (num < 1_000) {
+    return {
+      num: num / 100,
+      suffix: 'hundred',
+    };
+  } else if (num < 1_000_000) {
+    return {
+      num: num / 1_000,
+      suffix: 'thousand',
+    };
+  } else {
+    return {
+      num: num / 1_000_000,
+      suffix: 'million',
+    };
+  }
 }
