@@ -5,6 +5,15 @@ import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
 
+type TierPlacement = {
+  value: number|'-';
+  unit: string;
+}
+
+type TierList = {
+  [key: string]: number;
+}
+
 function reset(): void {
   $(".pageAbout .contributors").empty();
   $(".pageAbout .supporters").empty();
@@ -32,26 +41,26 @@ function updateStatsAndHistogram(): void {
   const testCompleteCount = getAppropriateSizeAndSuffixForNumber(typingStatsResponseData.testsCompleted);
 
   $(".pageAbout #totalTimeTypingStat .val").text(
-    timeTypingDuration.time?.toString() ?? ""
+    timeTypingDuration.value.toString() ?? ""
   );
   $(".pageAbout #totalTimeTypingStat .valSmall").text(timeTypingDuration.unit);
   $(".pageAbout #totalTimeTypingStat").attr(
     "aria-label",
-    timeTypingDuration.unit + " hours"
+    `${timeTypingDuration.value} ${timeTypingDuration.unit}`
   );
 
-  $(".pageAbout #totalStartedTestsStat .val").text(testStartedCount.num);
-  $(".pageAbout #totalStartedTestsStat .valSmall").text(testStartedCount.suffix);
+  $(".pageAbout #totalStartedTestsStat .val").text(testStartedCount.value);
+  $(".pageAbout #totalStartedTestsStat .valSmall").text(testStartedCount.unit);
   $(".pageAbout #totalStartedTestsStat").attr(
     "aria-label",
-    testStartedCount.num + " tests"
+    `${testStartedCount.value} ${testStartedCount.unit}`
   );
 
-  $(".pageAbout #totalCompletedTestsStat .val").text(testCompleteCount.num);
-  $(".pageAbout #totalCompletedTestsStat .valSmall").text("million");
+  $(".pageAbout #totalCompletedTestsStat .val").text(testCompleteCount.value);
+  $(".pageAbout #totalCompletedTestsStat .valSmall").text(testCompleteCount.unit);
   $(".pageAbout #totalCompletedTestsStat").attr(
     "aria-label",
-    testCompleteCount.suffix + " tests"
+    `${testCompleteCount.value} ${testCompleteCount.unit}`
   );
 }
 
@@ -173,60 +182,40 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   return { data: histogramChartDataBucketed, labels };
 }
 
-function getTimeWithAppropriateUnits(timeInSeconds: number) {
-  if (timeInSeconds < 60) {
-    return {
-      time: 1,
-      unit: 'minute',
-    };
-  } else if (timeInSeconds < 3600) {
-    return {
-      time: timeInSeconds / 60,
-      unit: 'minutes',
-    };
-  } else if (timeInSeconds < 86400) {
-    return {
-      time: timeInSeconds / 3600,
-      unit: 'hours',
-    };
-  } else if (timeInSeconds < 2419200) {
-    return {
-      time: timeInSeconds / 86400,
-      unit: 'days',
-    };
-  } else if (timeInSeconds < 29030400) {
-    return {
-      time: timeInSeconds / 2419200,
-      unit: 'months',
+function findTierInList(value: number, list: TierList): TierPlacement {
+  for (const [unit, condition] of Object.entries(list)) {
+    if (value >= condition) {
+      return {
+        value: Math.round(value / condition),
+        unit,
+      };
     }
-  } else {
-    return {
-      time: timeInSeconds / 29030400,
-      unit: 'years',
-    };
   }
+
+  return {
+    value: '-',
+    unit: '-',
+  };
+}
+
+function getTimeWithAppropriateUnits(timeInSeconds: number) {
+  const timeDictionary: TierList = {
+    'years': 29030400,
+    'months': 2419200,
+    'days': 86400,
+    'hours': 3600,
+    'minutes': 60,
+    'minute': timeInSeconds,
+  };
+  return findTierInList(timeInSeconds, timeDictionary);
 }
 
 function getAppropriateSizeAndSuffixForNumber(num: number) {
-  if (num < 100) {
-    return {
-      num,
-      suffix: '',
-    };
-  } else if (num < 1_000) {
-    return {
-      num: num / 100,
-      suffix: 'hundred',
-    };
-  } else if (num < 1_000_000) {
-    return {
-      num: num / 1_000,
-      suffix: 'thousand',
-    };
-  } else {
-    return {
-      num: num / 1_000_000,
-      suffix: 'million',
-    };
-  }
+  const SIPrefixDictionary: TierList = {
+    'million': 1_000_000,
+    'thousand': 1_000,
+    'hundred': 100,
+    '': 1,
+  };
+  return findTierInList(num, SIPrefixDictionary);
 }
