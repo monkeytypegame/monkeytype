@@ -39,6 +39,7 @@ function update(funboxes: MonkeyTypes.FunboxObject[]): void {
     configValue: "none",
     alias: "off",
     exec: (): void => {
+      ManualRestart.set();
       if (Funbox.setFunbox("none")) {
         TestLogic.restart();
       }
