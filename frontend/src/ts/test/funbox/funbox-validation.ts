@@ -6,30 +6,60 @@ function checkFunboxForcedConfigs(
   key: string,
   value: MonkeyTypes.ConfigValues,
   funbox: string
-): boolean {
-  if (FunboxList.get(funbox).length === 0) return true;
+): {
+  result: boolean;
+  forcedConfigs?: Array<MonkeyTypes.ConfigValues>;
+} {
+  if (FunboxList.get(funbox).length === 0) return { result: true };
 
-  const forcedConfigs: Record<string, MonkeyTypes.ConfigValues[]> = {};
-  // collect all forced configs
-  for (const fb of FunboxList.get(funbox)) {
-    if (fb.forcedConfig) {
-      //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
-      for (const key in fb.forcedConfig) {
-        if (forcedConfigs[key] === undefined) {
-          forcedConfigs[key] = fb.forcedConfig[key];
-        } else {
-          forcedConfigs[key] = Misc.intersect(
-            forcedConfigs[key],
-            fb.forcedConfig[key]
-          );
+  if (key === "words" || key === "time") {
+    if (value == 0) {
+      if (funbox === "nospace") {
+        console.log("break");
+      }
+      const fb = FunboxList.get(funbox).filter((f) =>
+        f.properties?.includes("noInfiniteDuration")
+      );
+      if (fb.length > 0) {
+        return {
+          result: false,
+          forcedConfigs: [key === "words" ? "10" : "15"],
+        };
+      } else {
+        return { result: true };
+      }
+    } else {
+      return { result: true };
+    }
+  } else {
+    const forcedConfigs: Record<string, MonkeyTypes.ConfigValues[]> = {};
+    // collect all forced configs
+    for (const fb of FunboxList.get(funbox)) {
+      if (fb.forcedConfig) {
+        //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
+        for (const key in fb.forcedConfig) {
+          if (forcedConfigs[key] === undefined) {
+            forcedConfigs[key] = fb.forcedConfig[key];
+          } else {
+            forcedConfigs[key] = Misc.intersect(
+              forcedConfigs[key],
+              fb.forcedConfig[key]
+            );
+          }
         }
       }
     }
-  }
 
-  //check if the key is in forcedConfigs, if it is check the value, if its not, return true
-  if (forcedConfigs[key] === undefined) return true;
-  else return forcedConfigs[key].includes(<MonkeyTypes.ConfigValues>value);
+    //check if the key is in forcedConfigs, if it is check the value, if its not, return true
+    if (forcedConfigs[key] === undefined) {
+      return { result: true };
+    } else {
+      return {
+        result: forcedConfigs[key].includes(<MonkeyTypes.ConfigValues>value),
+        forcedConfigs: forcedConfigs[key],
+      };
+    }
+  }
 }
 
 // function: canSetConfigWithCurrentFunboxes
@@ -83,11 +113,8 @@ export function canSetConfigWithCurrentFunboxes(
       errorCount += 1;
     }
   }
-  if ((key === "words" && value == 0) || (key === "time" && value == 0)) {
-    const fb = FunboxList.get(funbox).filter((f) =>
-      f.properties?.includes("noInfiniteDuration")
-    );
-    if (fb.length > 0) {
+  if (key === "words" || key === "time") {
+    if (!checkFunboxForcedConfigs(key, value, funbox).result) {
       if (!noNotification) {
         Notifications.add("Active funboxes do not support infinite tests", 0);
         return false;
@@ -95,8 +122,7 @@ export function canSetConfigWithCurrentFunboxes(
         errorCount += 1;
       }
     }
-  }
-  if (!checkFunboxForcedConfigs(key, value, funbox)) {
+  } else if (!checkFunboxForcedConfigs(key, value, funbox).result) {
     errorCount += 1;
   }
 
