@@ -13,7 +13,10 @@ import * as TestInput from "../test-input";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
-import { areFunboxesCompatible } from "./funbox-validation";
+import {
+  areFunboxesCompatible,
+  canSetFunboxWithConfig,
+} from "./funbox-validation";
 
 const prefixSize = 2;
 
@@ -512,38 +515,6 @@ export async function clear(): Promise<boolean> {
   return true;
 }
 
-function checkActiveFunboxesForcedConfigs(
-  configKey?: string,
-  configValue?: MonkeyTypes.ConfigValues
-): void {
-  if (configKey === undefined || configValue === undefined) {
-    for (const [key, value] of Object.entries(Config)) {
-      checkActiveFunboxesForcedConfigs(key, value);
-    }
-  } else {
-    for (const activeFunbox of FunboxList.get(Config.funbox)) {
-      const forcedConfigValues = activeFunbox.forcedConfig?.[configKey];
-      if (forcedConfigValues && !forcedConfigValues.includes(configValue)) {
-        Notifications.add(
-          `The ${activeFunbox.name} funbox does not allow ${configKey}: ${configValue}`,
-          0
-        );
-        if (configKey == "highlightMode") {
-          UpdateConfig.setHighlightMode(
-            forcedConfigValues[0] as MonkeyTypes.HighlightMode
-          );
-        }
-        if (configKey == "punctuation") {
-          UpdateConfig.setPunctuation(forcedConfigValues[0] as boolean);
-        }
-        if (configKey == "numbers") {
-          UpdateConfig.setNumbers(forcedConfigValues[0] as boolean);
-        }
-      }
-    }
-  }
-}
-
 export async function activate(funbox?: string): Promise<boolean | undefined> {
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
@@ -604,7 +575,31 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
   }
 
-  checkActiveFunboxesForcedConfigs();
+  // checkActiveFunboxesForcedConfigs();
+
+  // let configErrors = 0;
+  // for (const [key, value] of Object.entries(Config)) {
+  //   const check = checkFunboxForcedConfigs(key, value, Config.funbox);
+  //   if (check.result === false) {
+  //     configErrors = 1;
+  //     break;
+  //   }
+  // }
+  // if (configErrors > 0) {
+  //   Notifications.add(
+  //     "Current config is incompatible with active funboxes",
+  //     0
+  //   );
+  //   UpdateConfig.setFunbox("none", true);
+  //   await clear();
+  //   return;
+  // }
+
+  if (!canSetFunboxWithConfig(Config.funbox, Config)) {
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return;
+  }
 
   ManualRestart.set();
   FunboxList.get(Config.funbox).forEach(async (funbox) => {

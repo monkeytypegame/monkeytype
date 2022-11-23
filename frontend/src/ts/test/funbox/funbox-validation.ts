@@ -2,7 +2,7 @@ import * as FunboxList from "./funbox-list";
 import * as Notifications from "../../elements/notifications";
 import * as Misc from "../../utils/misc";
 
-function checkFunboxForcedConfigs(
+export function checkFunboxForcedConfigs(
   key: string,
   value: MonkeyTypes.ConfigValues,
   funbox: string
