@@ -36,6 +36,7 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
+import FunboxConstants from "../../constants/funbox";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -471,9 +472,10 @@ async function calculateXp(
     charStats,
     punctuation,
     numbers,
+    funbox,
   } = result;
 
-  const { enabled, gainMultiplier, maxDailyBonus, minDailyBonus } =
+  const { enabled, gainMultiplier, maxDailyBonus, minDailyBonus, funboxBonus } =
     xpConfiguration;
 
   if (mode === "zen" || !enabled) {
@@ -515,6 +517,23 @@ async function calculateXp(
     if (numbers) {
       modifier += 0.1;
       breakdown["numbers"] = Math.round(baseXp * 0.1);
+    }
+  }
+
+  console.log(funboxBonus);
+  console.log(funbox);
+  if (funboxBonus > 0) {
+    let funboxModifier = 0;
+    for (const fb of funbox.split("#")) {
+      const funbox = FunboxConstants.find((f) => f.name === fb);
+      const modifier = (funbox?.difficultyLevel ?? 0) * funboxBonus;
+      if (modifier > 0) {
+        funboxModifier += modifier;
+      }
+    }
+    if (funboxModifier > 0) {
+      modifier += funboxModifier;
+      breakdown["funbox"] = Math.round(baseXp * funboxModifier);
     }
   }
 
