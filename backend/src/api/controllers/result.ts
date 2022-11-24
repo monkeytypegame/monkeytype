@@ -36,7 +36,7 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import { getWeeklySeason } from "../../services/weekly-seasons";
+import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -117,7 +117,7 @@ interface AddResultData {
   tagPbs: any[];
   insertedId: ObjectId;
   dailyLeaderboardRank?: number;
-  weeklySeasonRank?: number;
+  weeklyXpLeaderboardRank?: number;
   xp: number;
   dailyXpBonus: boolean;
   xpBreakdown: Record<string, number>;
@@ -404,26 +404,35 @@ export async function addResult(
     streak
   );
 
-  const weeklySeasonConfig = req.ctx.configuration.seasons.weekly;
-  let weeklySeasonRank = -1;
-  const eligibleForSeason =
+  const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
+  let weeklyXpLeaderboardRank = -1;
+  const eligibleForWeeklyXpLeaderboard =
     !user.banned &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
-  const weeklySeason = getWeeklySeason(weeklySeasonConfig);
-  if (eligibleForSeason && xpGained.xp > 0 && weeklySeason) {
-    weeklySeasonRank = await weeklySeason.addResult(weeklySeasonConfig, {
-      entry: {
-        uid,
-        name: user.name,
-        discordAvatar: user.discordAvatar,
-        discordId: user.discordId,
-        badgeId: selectedBadgeId,
-        lastActivityTimestamp: Date.now(),
-      },
-      xpGained: xpGained.xp,
-      timeTypedSeconds: totalDurationTypedSeconds,
-    });
+  const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
+    weeklyXpLeaderboardConfig
+  );
+  if (
+    eligibleForWeeklyXpLeaderboard &&
+    xpGained.xp > 0 &&
+    weeklyXpLeaderboard
+  ) {
+    weeklyXpLeaderboardRank = await weeklyXpLeaderboard.addResult(
+      weeklyXpLeaderboardConfig,
+      {
+        entry: {
+          uid,
+          name: user.name,
+          discordAvatar: user.discordAvatar,
+          discordId: user.discordId,
+          badgeId: selectedBadgeId,
+          lastActivityTimestamp: Date.now(),
+        },
+        xpGained: xpGained.xp,
+        timeTypedSeconds: totalDurationTypedSeconds,
+      }
+    );
   }
 
   if (result.bailedOut === false) delete result.bailedOut;
@@ -468,8 +477,8 @@ export async function addResult(
     data.dailyLeaderboardRank = dailyLeaderboardRank;
   }
 
-  if (weeklySeasonRank !== -1) {
-    data.weeklySeasonRank = weeklySeasonRank;
+  if (weeklyXpLeaderboardRank !== -1) {
+    data.weeklyXpLeaderboardRank = weeklyXpLeaderboardRank;
   }
 
   incrementResult(result);

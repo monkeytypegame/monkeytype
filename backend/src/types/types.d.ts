@@ -80,8 +80,8 @@ declare namespace MonkeyTypes {
       topResultsToAnnounce: number;
       xpRewardBrackets: RewardBracket[];
     };
-    seasons: {
-      weekly: {
+    leaderboards: {
+      weeklyXp: {
         enabled: boolean;
         expirationTimeInDays: number;
         xpRewardBrackets: RewardBracket[];

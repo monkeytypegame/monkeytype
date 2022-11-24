@@ -75,8 +75,8 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
     xpRewardBrackets: [],
   },
-  seasons: {
-    weekly: {
+  leaderboards: {
+    weeklyXp: {
       enabled: false,
       expirationTimeInDays: 0, // This should atleast be 15
       xpRewardBrackets: [],
@@ -434,13 +434,13 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
         },
       },
     },
-    seasons: {
+    leaderboards: {
       type: "object",
-      label: "Seasons",
+      label: "Leaderboards",
       fields: {
-        weekly: {
+        weeklyXp: {
           type: "object",
-          label: "Weekly",
+          label: "Weekly XP",
           fields: {
             enabled: {
               type: "boolean",

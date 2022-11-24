@@ -4,13 +4,13 @@ import * as Configuration from "../../../src/init/configuration";
 
 const mockApp = request(app);
 
-describe("season controller test", () => {
-  it("GET /seasons/weekly", async () => {
+describe("leaderboards controller test", () => {
+  it("GET /leaderboards/xp/weekly", async () => {
     const configSpy = jest
       .spyOn(Configuration, "getCachedConfiguration")
       .mockResolvedValue({
-        seasons: {
-          weekly: {
+        leaderboards: {
+          weeklyXp: {
             enabled: true,
             expirationTimeInDays: 15,
             xpRewardBrackets: [],
@@ -19,14 +19,14 @@ describe("season controller test", () => {
       } as any);
 
     const response = await mockApp
-      .get("/seasons/weekly")
+      .get("/leaderboards/xp/weekly")
       .set({
         Accept: "application/json",
       })
       .expect(200);
 
     expect(response.body).toEqual({
-      message: "Weekly season retrieved",
+      message: "Weekly xp leaderboard retrieved",
       data: [],
     });
 

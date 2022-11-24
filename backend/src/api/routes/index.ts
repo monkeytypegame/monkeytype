@@ -8,7 +8,6 @@ import configs from "./configs";
 import results from "./results";
 import presets from "./presets";
 import apeKeys from "./ape-keys";
-import seasons from "./seasons";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
@@ -38,7 +37,6 @@ const API_ROUTE_MAP = {
   "/leaderboards": leaderboards,
   "/quotes": quotes,
   "/ape-keys": apeKeys,
-  "/seasons": seasons,
 };
 
 function addApiRoutes(app: Application): void {
