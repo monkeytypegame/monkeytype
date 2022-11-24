@@ -106,7 +106,7 @@ function showFound(): void {
     try {
       $.each(list.list, (_index, obj) => {
         if (obj.found) {
-          if (/changeTheme.+/gi.test(obj.id)) {
+          if (/changetheme.+/gi.test(obj.id)) {
             removeCommandlineBackground();
           } else {
             addCommandlineBackground();
@@ -510,7 +510,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (_index, obj) => {
       if (obj.id == hoverId) {
-        if (/changeTheme.+/gi.test(obj.id)) {
+        if (/changetheme.+/gi.test(obj.id)) {
           removeCommandlineBackground();
         } else {
           addCommandlineBackground();
@@ -685,7 +685,7 @@ $(document).on("keydown", (e) => {
           CommandlineLists.current[CommandlineLists.current.length - 1];
         $.each(list.list, (_index, obj) => {
           if (obj.id == hoverId) {
-            if (/changeTheme.+/gi.test(obj.id)) {
+            if (/changetheme.+/gi.test(obj.id)) {
               removeCommandlineBackground();
             } else {
               addCommandlineBackground();

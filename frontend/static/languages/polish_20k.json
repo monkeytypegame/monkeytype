@@ -1,6 +1,7 @@
 {
   "name": "polish_20k",
   "leftToRight": true,
+  "_comment": "Based on 'Otwarty słownik frekwencyjny leksemów V.06.2009' by Jerzy Kazojć. Retrieved November 02, 2022 from https://web.archive.org/web/20091116122442/http://www.open-dictionaries.com/slownikfrleks.pdf",
   "bcp47": "pl-PL",
   "words": [
     "a",

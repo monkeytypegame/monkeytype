@@ -1277,5 +1277,6 @@ export function areSortedArraysEqual(a: unknown[], b: unknown[]): boolean {
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
+  // eslint-disable-next-line unicorn/prefer-dom-node-text-content
   return el.textContent || el.innerText || "";
 }

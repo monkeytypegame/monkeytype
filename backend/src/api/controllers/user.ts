@@ -14,7 +14,7 @@ import { deleteConfig } from "../../dal/config";
 import { verify } from "../../utils/captcha";
 import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import * as RedisClient from "../../init/redis";
 
 async function verifyCaptcha(captcha: string): Promise<void> {

@@ -50,7 +50,7 @@ Make sure the name you put matches the name of the file you created (without the
 
 ### Committing Themes
 
-Once you have created your theme(s), you now need to create a pull request to the main Monkeytype repository. Go to the branch where you created your languages on GitHub. Then make sure your branch is up to date. Once it is up to date, click "contribute".
+Once you have created your theme(s), you now need to create a pull request to the main Monkeytype repository. Go to the branch where you created your new theme on GitHub. Then make sure your branch is up to date. Once it is up to date, click "contribute".
 
 Update branch:
 <img width="1552" alt="Screenshot showing how to update the fork to match the main Monkeytype repository" src="https://user-images.githubusercontent.com/83455454/149186547-5b9fe4fd-b944-4eed-a959-db43f96198bf.png">
