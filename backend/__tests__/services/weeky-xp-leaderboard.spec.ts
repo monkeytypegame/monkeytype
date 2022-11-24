@@ -8,12 +8,18 @@ const weeklyXpLeaderboardConfig = {
 
 describe("Weekly Xp Leaderboard", () => {
   it("should properly consider config", () => {
-    const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(weeklyXpLeaderboardConfig);
-    expect(weeklyXpLeaderboard).toBeInstanceOf(WeeklyXpLeaderboard.WeeklyXpLeaderboard);
+    const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
+      weeklyXpLeaderboardConfig
+    );
+    expect(weeklyXpLeaderboard).toBeInstanceOf(
+      WeeklyXpLeaderboard.WeeklyXpLeaderboard
+    );
 
     weeklyXpLeaderboardConfig.enabled = false;
 
-    const weeklyXpLeaderboardNull = WeeklyXpLeaderboard.get(weeklyXpLeaderboardConfig);
+    const weeklyXpLeaderboardNull = WeeklyXpLeaderboard.get(
+      weeklyXpLeaderboardConfig
+    );
     expect(weeklyXpLeaderboardNull).toBeNull();
   });
 

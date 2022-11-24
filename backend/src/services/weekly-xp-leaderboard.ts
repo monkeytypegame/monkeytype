@@ -23,7 +23,8 @@ interface AddResultOpts {
   timeTypedSeconds: number;
 }
 
-const weeklyXpLeaderboardLeaderboardNamespace = "monkeytypes:weekly-xp-leaderboard";
+const weeklyXpLeaderboardLeaderboardNamespace =
+  "monkeytypes:weekly-xp-leaderboard";
 const scoresNamespace = `${weeklyXpLeaderboardLeaderboardNamespace}:scores`;
 const resultsNamespace = `${weeklyXpLeaderboardLeaderboardNamespace}:results`;
 
@@ -67,18 +68,26 @@ export class WeeklyXpLeaderboard {
       return -1;
     }
 
-    const { currentWeekTimestamp, weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
-      this.getThisWeeksXpLeaderboardKeys();
+    const {
+      currentWeekTimestamp,
+      weeklyXpLeaderboardScoresKey,
+      weeklyXpLeaderboardResultsKey,
+    } = this.getThisWeeksXpLeaderboardKeys();
 
     const { expirationTimeInDays } = weeklyXpLeaderboardConfig;
     const weeklyXpLeaderboardExpirationDurationInMilliseconds =
       expirationTimeInDays * 24 * 60 * 60 * 1000;
 
     const weeklyXpLeaderboardExpirationTimeInSeconds = Math.floor(
-      (currentWeekTimestamp + weeklyXpLeaderboardExpirationDurationInMilliseconds) / 1000
+      (currentWeekTimestamp +
+        weeklyXpLeaderboardExpirationDurationInMilliseconds) /
+        1000
     );
 
-    const currentEntry = await connection.hget(weeklyXpLeaderboardResultsKey, entry.uid);
+    const currentEntry = await connection.hget(
+      weeklyXpLeaderboardResultsKey,
+      entry.uid
+    );
     const totalTimeTypedSeconds =
       timeTypedSeconds +
       ((currentEntry && JSON.parse(currentEntry)?.timeTypedSeconds) || 0);
@@ -107,7 +116,8 @@ export class WeeklyXpLeaderboard {
       return [];
     }
 
-    const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } = this.getThisWeeksXpLeaderboardKeys();
+    const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
+      this.getThisWeeksXpLeaderboardKeys();
 
     // @ts-ignore
     const [results, scores]: string[][] = await connection.getResults(
@@ -139,7 +149,8 @@ export class WeeklyXpLeaderboard {
       return null;
     }
 
-    const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } = this.getThisWeeksXpLeaderboardKeys();
+    const { weeklyXpLeaderboardScoresKey, weeklyXpLeaderboardResultsKey } =
+      this.getThisWeeksXpLeaderboardKeys();
 
     connection.set;
 
