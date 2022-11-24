@@ -87,6 +87,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
 interface BaseSchema {
   type: string;
   label?: string;
+  hint?: string;
 }
 
 interface NumberSchema extends BaseSchema {
@@ -401,6 +402,7 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
           type: "number",
           label: "Top Results To Announce",
           min: 1,
+          hint: "This should atleast be 1. Setting to zero is very bad.",
         },
         xpRewardBrackets: {
           type: "array",
@@ -450,6 +452,7 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
               type: "number",
               label: "Expiration time in days",
               min: 0,
+              hint: "This should atleast be 15, to allow for past week queries.",
             },
             xpRewardBrackets: {
               type: "array",
