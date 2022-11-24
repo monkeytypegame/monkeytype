@@ -55,6 +55,9 @@ export function checkFunboxForcedConfigs(
     if (forcedConfigs[key] === undefined) {
       return { result: true };
     } else {
+      if (forcedConfigs[key].length === 0) {
+        throw new Error("No intersection of forced configs");
+      }
       return {
         result: forcedConfigs[key].includes(<MonkeyTypes.ConfigValues>value),
         forcedConfigs: forcedConfigs[key],
