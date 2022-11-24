@@ -137,10 +137,12 @@ const Funboxes: MonkeyTypes.FunboxObject[] = [
   {
     name: "IPv4",
     canGetPB: false,
+    difficultyLevel: 1,
   },
   {
     name: "IPv6",
     canGetPB: false,
+    difficultyLevel: 1,
   },
 ];
 
