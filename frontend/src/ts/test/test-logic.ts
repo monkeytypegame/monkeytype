@@ -11,7 +11,7 @@ import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
 import * as Focus from "./focus";
-import * as Funbox from "./funbox";
+import * as Funbox from "./funbox/funbox";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
 import * as PaceCaret from "./pace-caret";
@@ -54,7 +54,9 @@ import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
-import { ActiveFunboxes } from "./funbox";
+import * as FunboxList from "./funbox/funbox-list";
+import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
+import * as KeymapEvent from "../observables/keymap-event";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -90,7 +92,9 @@ export async function punctuateWord(
 
   const lastChar = Misc.getLastChar(previousWord);
 
-  const funbox = ActiveFunboxes().find((f) => f.functions?.punctuateWord);
+  const funbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.punctuateWord
+  );
   if (funbox?.functions?.punctuateWord) {
     return funbox.functions.punctuateWord(word);
   }
@@ -330,7 +334,7 @@ export function startTest(): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  for (const f of ActiveFunboxes()) {
+  for (const f of FunboxList.get(Config.funbox)) {
     if (f.functions?.start) f.functions.start();
   }
 
@@ -492,7 +496,7 @@ export function restart(options = {} as RestartOptions): void {
 
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
-  Funbox.resetMemoryTimer();
+  MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
   if (ActivePage.get() == "test" && window.scrollY > 0) {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -551,27 +555,8 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      const FunboxPunctuation = ActiveFunboxes().find(
-        (f) => f.forcedConfig?.["punctuation"] !== undefined
-      );
-      if (FunboxPunctuation?.forcedConfig?.["punctuation"]) {
-        UpdateConfig.setPunctuation(
-          FunboxPunctuation.forcedConfig["punctuation"][0] as boolean,
-          true
-        );
-      }
-      const FunboxNumbers = ActiveFunboxes().find(
-        (f) => f.forcedConfig?.["numbers"] !== undefined
-      );
-      if (FunboxNumbers?.forcedConfig?.["numbers"]) {
-        UpdateConfig.setNumbers(
-          FunboxNumbers.forcedConfig["numbers"][0] as boolean,
-          true
-        );
-      }
-
       if (options.withSameWordset) {
-        const funboxToPush = ActiveFunboxes()
+        const funboxToPush = FunboxList.get(Config.funbox)
           .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
           ?.properties?.find((fp) => fp.startsWith("toPush:"));
         if (funboxToPush) {
@@ -599,7 +584,7 @@ export function restart(options = {} as RestartOptions): void {
         TestInput.input.reset();
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
-          Keymap.highlightKey(
+          KeymapEvent.highlight(
             TestWords.words
               .getCurrent()
               .substring(
@@ -634,7 +619,7 @@ export function restart(options = {} as RestartOptions): void {
       (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
       (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
-      for (const f of ActiveFunboxes()) {
+      for (const f of FunboxList.get(Config.funbox)) {
         if (f.functions?.restart) f.functions.restart();
       }
 
@@ -687,7 +672,9 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
-  const wordFunbox = ActiveFunboxes().find((f) => f.functions?.getWord);
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWord
+  );
   if (wordFunbox?.functions?.getWord) {
     word = wordFunbox.functions.getWord(wordset);
   }
@@ -695,7 +682,7 @@ function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
 }
 
 function applyFunboxesToWord(word: string): string {
-  for (const f of ActiveFunboxes()) {
+  for (const f of FunboxList.get(Config.funbox)) {
     if (f.functions?.alterText) {
       word = f.functions.alterText(word);
     }
@@ -754,6 +741,7 @@ async function getNextWord(
           randomWord == "I") ||
         (Config.mode !== "custom" &&
           !Config.punctuation &&
+          !Config.language.startsWith("code") &&
           /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
         (Config.mode !== "custom" &&
           !Config.numbers &&
@@ -774,7 +762,8 @@ async function getNextWord(
     /[A-Z]/.test(randomWord) &&
     !Config.punctuation &&
     !Config.language.startsWith("german") &&
-    !Config.language.startsWith("swiss_german")
+    !Config.language.startsWith("swiss_german") &&
+    !Config.language.startsWith("code")
   ) {
     randomWord = randomWord.toLowerCase();
   }
@@ -887,7 +876,7 @@ export async function init(): Promise<void> {
 
   let wordsBound = 100;
 
-  const funboxToPush = ActiveFunboxes()
+  const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   if (funboxToPush) {
@@ -960,7 +949,7 @@ export async function init(): Promise<void> {
     const wordset = await Wordset.withWords(wordList);
     let wordCount = 0;
 
-    const sectionFunbox = ActiveFunboxes().find(
+    const sectionFunbox = FunboxList.get(Config.funbox).find(
       (f) => f.functions?.pullSection
     );
     if (sectionFunbox?.functions?.pullSection) {
@@ -1155,7 +1144,7 @@ export async function init(): Promise<void> {
   // } else {
   TestUI.showWords();
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    Keymap.highlightKey(
+    KeymapEvent.highlight(
       TestWords.words
         .getCurrent()
         .substring(
@@ -1171,7 +1160,7 @@ export async function init(): Promise<void> {
 
 export async function addWord(): Promise<void> {
   let bound = 100;
-  const funboxToPush = ActiveFunboxes()
+  const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   const toPushCount: string | undefined = funboxToPush?.split(":")[1];
@@ -1195,7 +1184,9 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  const sectionFunbox = ActiveFunboxes().find((f) => f.functions?.pullSection);
+  const sectionFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.pullSection
+  );
   if (sectionFunbox?.functions?.pullSection) {
     if (TestWords.words.length - TestWords.words.currentIndex < 20) {
       const section = await sectionFunbox.functions.pullSection(

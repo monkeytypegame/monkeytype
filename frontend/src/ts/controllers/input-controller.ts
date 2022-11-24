@@ -3,11 +3,10 @@ import * as TestUI from "../test/test-ui";
 import * as TestStats from "../test/test-stats";
 import * as Monkey from "../test/monkey";
 import Config from "../config";
-import * as Keymap from "../elements/keymap";
 import * as Misc from "../utils/misc";
 import * as LiveAcc from "../test/live-acc";
 import * as LiveBurst from "../test/live-burst";
-import * as Funbox from "../test/funbox";
+import * as Funbox from "../test/funbox/funbox";
 import * as Sound from "./sound-controller";
 import * as Caret from "../test/caret";
 import * as ManualRestart from "../test/manual-restart-tracker";
@@ -28,8 +27,9 @@ import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import { navigate } from "../observables/navigate-event";
-import { ActiveFunboxes } from "../test/funbox";
+import * as FunboxList from "../test/funbox/funbox-list";
 import * as Settings from "../pages/settings";
+import * as KeymapEvent from "../observables/keymap-event";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -55,7 +55,7 @@ function updateUI(): void {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     if (!Config.language.startsWith("korean")) {
-      Keymap.highlightKey(
+      KeymapEvent.highlight(
         TestWords.words
           .getCurrent()
           .charAt(TestInput.input.current.length)
@@ -85,13 +85,13 @@ function updateUI(): void {
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 
-          Keymap.highlightKey(koChar);
+          KeymapEvent.highlight(koChar);
         } catch (e) {
-          Keymap.highlightKey("");
+          KeymapEvent.highlight("");
         }
       } else {
         //for new words
-        Keymap.highlightKey(koCurrWord[0][0]);
+        KeymapEvent.highlight(koCurrWord[0][0]);
       }
     }
   }
@@ -122,7 +122,9 @@ function backspaceToPrevious(): void {
 
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
-  if (ActiveFunboxes().find((f) => f.properties?.includes("nospace"))) {
+  if (
+    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
+  ) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
   }
@@ -148,7 +150,7 @@ function handleSpace(): void {
 
   const currentWord: string = TestWords.words.getCurrent();
 
-  for (const f of ActiveFunboxes()) {
+  for (const f of FunboxList.get(Config.funbox)) {
     if (f.functions?.handleSpace) {
       f.functions.handleSpace();
     }
@@ -162,8 +164,9 @@ function handleSpace(): void {
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
-    ActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+    FunboxList.get(Config.funbox).find((f) =>
+      f.properties?.includes("nospace")
+    ) !== undefined;
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -290,7 +293,7 @@ function handleSpace(): void {
   } //end of line wrap
 
   if (Config.keymapMode === "react") {
-    Keymap.flashKey(" ", true);
+    KeymapEvent.flash(" ", true);
   }
   if (
     Config.mode === "words" ||
@@ -343,7 +346,9 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     }
   }
 
-  const funbox = ActiveFunboxes().find((f) => f.functions?.isCharCorrect);
+  const funbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.isCharCorrect
+  );
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
@@ -391,13 +396,14 @@ function handleChar(
     return;
   }
 
-  for (const f of ActiveFunboxes()) {
+  for (const f of FunboxList.get(Config.funbox)) {
     if (f.functions?.handleChar) char = f.functions.handleChar(char);
   }
 
   const nospace =
-    ActiveFunboxes().find((f) => f.properties?.includes("nospace")) !==
-    undefined;
+    FunboxList.get(Config.funbox).find((f) =>
+      f.properties?.includes("nospace")
+    ) !== undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -508,7 +514,7 @@ function handleChar(
 
   //keymap
   if (Config.keymapMode === "react") {
-    Keymap.flashKey(char, thisCharCorrect);
+    KeymapEvent.flash(char, thisCharCorrect);
   }
 
   if (!correctShiftUsed && Config.difficulty != "master") return;
@@ -867,6 +873,9 @@ $(document).keydown(async (event) => {
     } else {
       handleChar("\n", TestInput.input.current.length);
       setWordsInput(" " + TestInput.input.current);
+      if (Config.tapeMode !== "off") {
+        TestUI.scrollTape();
+      }
     }
   }
 
@@ -891,7 +900,9 @@ $(document).keydown(async (event) => {
       (await ShiftTracker.isUsingOppositeShift(event)) !== false;
   }
 
-  const funbox = ActiveFunboxes().find((f) => f.functions?.preventDefaultEvent);
+  const funbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.preventDefaultEvent
+  );
   if (funbox?.functions?.preventDefaultEvent) {
     if (await funbox.functions.preventDefaultEvent(event)) {
       event.preventDefault();

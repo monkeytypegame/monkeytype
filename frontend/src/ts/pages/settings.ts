@@ -3,7 +3,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as DB from "../db";
-import { isFunboxCompatible, toggleFunbox } from "../test/funbox";
+import { toggleFunbox } from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
@@ -16,6 +16,7 @@ import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { Auth } from "../firebase";
 import Ape from "../ape";
+import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 
 interface SettingsGroups {
   [key: string]: SettingsGroup;
@@ -694,7 +695,7 @@ function setActiveFunboxButton(): void {
   Misc.getFunboxList().then((funboxModes) => {
     funboxModes.forEach((funbox) => {
       if (
-        !isFunboxCompatible(funbox.name) &&
+        !areFunboxesCompatible(Config.funbox, funbox.name) &&
         !Config.funbox.split("#").includes(funbox.name)
       ) {
         $(

@@ -1,4 +1,4 @@
-import * as Funbox from "../../test/funbox";
+import * as Funbox from "../../test/funbox/funbox";
 import * as TestLogic from "../../test/test-logic";
 import * as ManualRestart from "../../test/manual-restart-tracker";
 import Config from "../../config";
@@ -33,6 +33,18 @@ const commands: MonkeyTypes.Command[] = [
 
 function update(funboxes: MonkeyTypes.FunboxObject[]): void {
   subgroup.list = [];
+  subgroup.list.push({
+    id: "changeFunboxNone",
+    display: "none",
+    configValue: "none",
+    alias: "off",
+    exec: (): void => {
+      ManualRestart.set();
+      if (Funbox.setFunbox("none")) {
+        TestLogic.restart();
+      }
+    },
+  });
   funboxes.forEach((funbox) => {
     let dis;
     if (Config.funbox.includes(funbox.name)) {
@@ -68,7 +80,7 @@ function update(funboxes: MonkeyTypes.FunboxObject[]): void {
             $(
               `#commandLine .suggestions .entry[command='changeFunbox${funboxes[i].name}']`
             ).html(
-              `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
+              `<div class="icon"><i class="fas fa-fw fa-gamepad"></i></div><div>Funbox  > ` +
                 txt
             );
           } else {

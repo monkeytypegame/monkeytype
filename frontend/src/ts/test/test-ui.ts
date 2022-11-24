@@ -16,7 +16,7 @@ import * as Hangul from "hangul-js";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
-import { ActiveFunboxes } from "./funbox";
+import * as FunboxList from "./funbox/funbox-list";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -105,7 +105,9 @@ export function updateActiveElement(backspace?: boolean): void {
 function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
-  const funbox = ActiveFunboxes().find((f) => f.functions?.getWordHtml);
+  const funbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWordHtml
+  );
   for (let c = 0; c < word.length; c++) {
     if (funbox?.functions?.getWordHtml) {
       retval += funbox.functions.getWordHtml(word.charAt(c), true);
@@ -416,7 +418,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
       wordHighlightClassString = "correct";
     }
 
-    const funbox = ActiveFunboxes().find((f) => f.functions?.getWordHtml);
+    const funbox = FunboxList.get(Config.funbox).find(
+      (f) => f.functions?.getWordHtml
+    );
     for (let i = 0; i < input.length; i++) {
       const charCorrect = currentWord[i] == input[i];
 

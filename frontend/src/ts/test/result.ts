@@ -19,7 +19,7 @@ import * as TestConfig from "./test-config";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 import * as SlowTimer from "../states/slow-timer";
-import { ActiveFunboxes } from "./funbox";
+import * as FunboxList from "./funbox/funbox-list";
 
 // eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
@@ -101,7 +101,7 @@ async function updateGraph(): Promise<void> {
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = "";
-    for (const f of ActiveFunboxes()) {
+    for (const f of FunboxList.get(Config.funbox)) {
       content += f.name;
       if (f.functions?.getResultContent) {
         content += "(" + f.functions.getResultContent() + ")";
@@ -531,8 +531,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     }
   }
   const ignoresLanguage =
-    ActiveFunboxes().find((f) => f.properties?.includes("ignoresLanguage")) !==
-    undefined;
+    FunboxList.get(Config.funbox).find((f) =>
+      f.properties?.includes("ignoresLanguage")
+    ) !== undefined;
   if (Config.mode != "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }

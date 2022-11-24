@@ -403,6 +403,10 @@ export function capitalizeFirstLetterOfEachWord(str: string): string {
     .join(" ");
 }
 
+export function capitalizeFirstLetter(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export function isASCIILetter(c: string): boolean {
   return c.length === 1 && /[a-z]/i.test(c);
 }
@@ -1332,4 +1336,17 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
     return b.indexOf(e) > -1;
   });
   return removeDuplicates ? [...new Set(filtered)] : filtered;
+}
+
+export function htmlToText(html: string): string {
+  const el = document.createElement("div");
+  el.innerHTML = html;
+  return el.textContent || el.innerText || "";
+}
+
+export function camelCaseToWords(str: string): string {
+  return str
+    .replace(/([A-Z])/g, " $1")
+    .trim()
+    .toLowerCase();
 }

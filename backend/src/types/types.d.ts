@@ -43,6 +43,7 @@ declare namespace MonkeyTypes {
       };
       xp: {
         enabled: boolean;
+        funboxBonus: number;
         gainMultiplier: number;
         maxDailyBonus: number;
         minDailyBonus: number;
@@ -465,5 +466,6 @@ declare namespace MonkeyTypes {
   interface FunboxObject {
     name: string;
     canGetPB: boolean;
+    difficultyLevel: number;
   }
 }

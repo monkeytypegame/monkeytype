@@ -12,6 +12,7 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
+import { canSetConfigWithCurrentFunboxes } from "./test/funbox/funbox-validation";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -92,6 +93,10 @@ export async function saveFullConfigToLocalStorage(
 export function setNumbers(numb: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("numbers", numb, ["boolean"])) return false;
 
+  if (!canSetConfigWithCurrentFunboxes("numbers", numb, config.funbox)) {
+    return false;
+  }
+
   if (config.mode === "quote") {
     numb = false;
   }
@@ -105,6 +110,10 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
 //punctuation
 export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("punctuation", punc, ["boolean"])) return false;
+
+  if (!canSetConfigWithCurrentFunboxes("punctuation", punc, config.funbox)) {
+    return false;
+  }
 
   if (config.mode === "quote") {
     punc = false;
@@ -122,6 +131,10 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
       ["time", "words", "quote", "zen", "custom"],
     ])
   ) {
+    return false;
+  }
+
+  if (!canSetConfigWithCurrentFunboxes("mode", mode, config.funbox)) {
     return false;
   }
 
@@ -838,6 +851,10 @@ export function setHighlightMode(
     return false;
   }
 
+  if (!canSetConfigWithCurrentFunboxes("highlightMode", mode, config.funbox)) {
+    return false;
+  }
+
   config.highlightMode = mode;
   saveToLocalStorage("highlightMode", nosave);
   ConfigEvent.dispatch("highlightMode", config.highlightMode);
@@ -983,6 +1000,10 @@ export function setTimeConfig(
 ): boolean {
   if (!isConfigValueValid("time", time, ["number"])) return false;
 
+  if (!canSetConfigWithCurrentFunboxes("words", time, config.funbox)) {
+    return false;
+  }
+
   const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
 
   config.time = newTime;
@@ -1042,6 +1063,10 @@ export function setWordCount(
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("words", wordCount, ["number"])) return false;
+
+  if (!canSetConfigWithCurrentFunboxes("words", wordCount, config.funbox)) {
+    return false;
+  }
 
   const newWordCount =
     wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
