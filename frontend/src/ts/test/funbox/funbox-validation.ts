@@ -43,7 +43,8 @@ export function checkFunboxForcedConfigs(
           } else {
             forcedConfigs[key] = Misc.intersect(
               forcedConfigs[key],
-              fb.forcedConfig[key]
+              fb.forcedConfig[key],
+              true
             );
           }
         }
