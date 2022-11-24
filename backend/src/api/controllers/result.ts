@@ -520,8 +520,6 @@ async function calculateXp(
     }
   }
 
-  console.log(funboxBonus);
-  console.log(funbox);
   if (funboxBonus > 0) {
     let funboxModifier = 0;
     for (const fb of funbox.split("#")) {
