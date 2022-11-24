@@ -15,7 +15,7 @@ import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
 import {
   areFunboxesCompatible,
-  canSetFunboxWithConfig,
+  checkFunboxForcedConfigs,
 } from "./funbox-validation";
 
 const prefixSize = 2;
@@ -575,27 +575,56 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     }
   }
 
-  // checkActiveFunboxesForcedConfigs();
+  let canSetSoFar = true;
 
-  // let configErrors = 0;
-  // for (const [key, value] of Object.entries(Config)) {
-  //   const check = checkFunboxForcedConfigs(key, value, Config.funbox);
-  //   if (check.result === false) {
-  //     configErrors = 1;
-  //     break;
-  //   }
-  // }
-  // if (configErrors > 0) {
-  //   Notifications.add(
-  //     "Current config is incompatible with active funboxes",
-  //     0
-  //   );
-  //   UpdateConfig.setFunbox("none", true);
-  //   await clear();
-  //   return;
-  // }
+  for (const [configKey, configValue] of Object.entries(Config)) {
+    const check = checkFunboxForcedConfigs(
+      configKey,
+      configValue,
+      Config.funbox
+    );
+    if (check.result === true) continue;
+    if (check.result === false) {
+      if (check.forcedConfigs && check.forcedConfigs.length > 0) {
+        if (configKey === "mode") {
+          UpdateConfig.setMode(check.forcedConfigs[0] as MonkeyTypes.Mode);
+        }
+        if (configKey === "words") {
+          UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
+        }
+        if (configKey === "time") {
+          UpdateConfig.setTimeConfig(check.forcedConfigs[0] as number);
+        }
+        if (configKey === "punctuation") {
+          UpdateConfig.setPunctuation(check.forcedConfigs[0] as boolean);
+        }
+        if (configKey === "numbers") {
+          UpdateConfig.setNumbers(check.forcedConfigs[0] as boolean);
+        }
+        if (configKey === "highlightMode") {
+          UpdateConfig.setHighlightMode(
+            check.forcedConfigs[0] as MonkeyTypes.HighlightMode
+          );
+        }
+      } else {
+        canSetSoFar = false;
+        break;
+      }
+    }
+  }
 
-  if (!canSetFunboxWithConfig(Config.funbox, Config)) {
+  if (!canSetSoFar) {
+    if (Config.funbox.includes("#")) {
+      Notifications.add(
+        `Failed to activate funboxes ${Config.funbox}: no intersecting forced configs. Disabling funbox`,
+        -1
+      );
+    } else {
+      Notifications.add(
+        `Failed to activate funbox ${Config.funbox}: no forced configs. Disabling funbox`,
+        -1
+      );
+    }
     UpdateConfig.setFunbox("none", true);
     await clear();
     return;
