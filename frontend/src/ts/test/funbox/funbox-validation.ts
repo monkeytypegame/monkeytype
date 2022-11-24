@@ -23,7 +23,7 @@ export function checkFunboxForcedConfigs(
       if (fb.length > 0) {
         return {
           result: false,
-          forcedConfigs: [key === "words" ? "10" : "15"],
+          forcedConfigs: [key === "words" ? 10 : 15],
         };
       } else {
         return { result: true };
