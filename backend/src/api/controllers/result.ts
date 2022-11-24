@@ -346,14 +346,15 @@ export async function addResult(
     delete result.challenge;
   }
 
-  let tt = 0;
+  let totalDurationTypedSeconds = 0;
   let afk = result.afkDuration;
   if (afk == undefined) {
     afk = 0;
   }
-  tt = result.testDuration + result.incompleteTestSeconds - afk;
-  updateTypingStats(uid, result.restartCount, tt);
-  PublicDAL.updateStats(result.restartCount, tt);
+  totalDurationTypedSeconds =
+    result.testDuration + result.incompleteTestSeconds - afk;
+  updateTypingStats(uid, result.restartCount, totalDurationTypedSeconds);
+  PublicDAL.updateStats(result.restartCount, totalDurationTypedSeconds);
 
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
   const dailyLeaderboard = getDailyLeaderboard(
@@ -411,17 +412,18 @@ export async function addResult(
 
   const weeklySeason = getWeeklySeason(weeklySeasonConfig);
   if (eligibleForSeason && xpGained.xp > 0 && weeklySeason) {
-    weeklySeasonRank = await weeklySeason.addResult(
-      {
+    weeklySeasonRank = await weeklySeason.addResult(weeklySeasonConfig, {
+      entry: {
         uid,
         name: user.name,
         discordAvatar: user.discordAvatar,
         discordId: user.discordId,
         badgeId: selectedBadgeId,
+        lastActivityTimestamp: Date.now(),
       },
-      xpGained.xp,
-      weeklySeasonConfig
-    );
+      xpGained: xpGained.xp,
+      timeTypedSeconds: totalDurationTypedSeconds,
+    });
   }
 
   if (result.bailedOut === false) delete result.bailedOut;

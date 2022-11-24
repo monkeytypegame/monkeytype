@@ -1,15 +1,26 @@
 import * as RedisClient from "../init/redis";
 import { getCurrentWeekTimestamp } from "../utils/misc";
 
-interface WeeklySeasonEntry {
+interface InternalWeeklySeasonEntry {
   uid: string;
   name: string;
-  totalXp?: number;
-  rank?: number;
-  count?: number;
   discordAvatar?: string;
   discordId?: string;
   badgeId?: number;
+  lastActivityTimestamp: number;
+}
+
+interface WeeklySeasonEntry extends InternalWeeklySeasonEntry {
+  totalXp: number;
+  rank: number;
+  count?: number;
+  timeTypedSeconds: number;
+}
+
+interface AddResultOpts {
+  entry: InternalWeeklySeasonEntry;
+  xpGained: number;
+  timeTypedSeconds: number;
 }
 
 const weeklySeasonLeaderboardNamespace = "monkeytypes:weekly-season";
@@ -46,10 +57,11 @@ export class WeeklySeason {
   }
 
   public async addResult(
-    entry: WeeklySeasonEntry,
-    xpGained: number,
-    weeklySeasonConfig: MonkeyTypes.Configuration["seasons"]["weekly"]
+    weeklySeasonConfig: MonkeyTypes.Configuration["seasons"]["weekly"],
+    opts: AddResultOpts
   ): Promise<number> {
+    const { entry, xpGained, timeTypedSeconds } = opts;
+
     const connection = RedisClient.getConnection();
     if (!connection || !weeklySeasonConfig.enabled) {
       return -1;
@@ -66,15 +78,20 @@ export class WeeklySeason {
       (currentWeekTimestamp + seasonExpirationDurationInMilliseconds) / 1000
     );
 
+    const currentEntry = await connection.hget(seasonResultsKey, entry.uid);
+    const totalTimeTypedSeconds =
+      timeTypedSeconds +
+      ((currentEntry && JSON.parse(currentEntry)?.timeTypedSeconds) || 0);
+
     // @ts-ignore
-    const rank = await connection.addSeasonResult(
+    const rank: number = await connection.addSeasonResult(
       2,
       seasonScoresKey,
       seasonResultsKey,
       seasonExpirationTimeInSeconds,
       entry.uid,
       xpGained,
-      JSON.stringify(entry)
+      JSON.stringify({ ...entry, timeTypedSeconds: totalTimeTypedSeconds })
     );
 
     return rank + 1;
@@ -123,6 +140,8 @@ export class WeeklySeason {
     }
 
     const { seasonScoresKey, seasonResultsKey } = this.getThisWeeksSeasonKeys();
+
+    connection.set;
 
     const [[, rank], [, totalXp], [, count], [, result]] = await connection
       .multi()
