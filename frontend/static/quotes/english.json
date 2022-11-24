@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -36796,6 +36808,258 @@
       "length": 127,
       "approvedBy": "Smithster",
       "id": 6447
+    },
+    {
+      "text": "I am not bitter because of what has happened. On the contrary, I am secure in knowing that what we had was real, and I am happy we were able to come together for even a short period of time. And if, in some distant place in the future, we see each other in our new lives, I will smile at you with joy, and remember how we spent a summer beneath the trees, learning from each other and growing in love. And maybe, for a brief moment, you'll feel it too, and you'll smile back, and savor the memories we will always share together. I love you, Allie. Noah. ",
+      "source": "The Notebook by Nicholas Sparks",
+      "length": 555,
+      "approvedBy": "Smithster",
+      "id": 6448
+    },
+    {
+      "text": "Why, you stuck-up, half-witted, scruffy-looking nerf herder!",
+      "source": "Leia Organa, Star Wars",
+      "length": 60,
+      "approvedBy": "Smithster",
+      "id": 6449
+    },
+    {
+      "text": "Fear is the path to dark side. Fear leads to anger; anger leads to hate; hate leads to suffering. I sense much fear in you.",
+      "source": "Yoda, Star Wars",
+      "length": 123,
+      "approvedBy": "Smithster",
+      "id": 6450
+    },
+    {
+      "text": "When I was younger I saw my daddy cry and curse at the wind. He broke his own heart and I watched as he tried to reassemble it. And my momma swore that she would never let herself forget and that was the day that I promised I'd never sing of love if it does not exist.",
+      "source": "The Only Exception - Paramore",
+      "length": 268,
+      "approvedBy": "Smithster",
+      "id": 6451
+    },
+    {
+      "text": "Maybe I know somewhere deep in my soul that love never lasts and we've got to find other ways to make it alone or keep a straight face.",
+      "source": "The Only Exception - Paramore",
+      "length": 135,
+      "approvedBy": "Smithster",
+      "id": 6452
+    },
+    {
+      "text": "You were all the things I thought I knew and I thought we could be.",
+      "source": "My Happy Ending - Avril Lavigne",
+      "length": 67,
+      "approvedBy": "Smithster",
+      "id": 6453
+    },
+    {
+      "text": "You've got your dumb friends, I know what they say. They tell you I'm difficult but so are they. But they don't know me, do they even know you?",
+      "source": "My Happy Ending - Avril Lavigne",
+      "length": 143,
+      "approvedBy": "Smithster",
+      "id": 6454
+    },
+    {
+      "text": "You're saying I'm the one but it's your actions that speak louder.",
+      "source": "I Love You So - The Walters",
+      "length": 66,
+      "approvedBy": "Smithster",
+      "id": 6455
+    },
+    {
+      "text": "I'm gonna pack my things and leave you behind. This feeling's old and I know that I've made up my mind. I hope you feel what I felt when you shattered my soul 'cause you were cruel and I'm a fool so please let me go.",
+      "source": "I Love You So - The Walters",
+      "length": 216,
+      "approvedBy": "Smithster",
+      "id": 6456
+    },
+    {
+      "text": "Since you've gone I've been lost without a trace. I dream at night I can only see your face. I look around but it's you I can't replace. I feel so cold and I long for your embrace. I keep crying baby, baby, please.",
+      "source": "Every Breath You Take - The Police",
+      "length": 214,
+      "approvedBy": "Smithster",
+      "id": 6457
+    },
+    {
+      "text": "Don't bother looking down, we're not going that way. At least I know I am here to stay.",
+      "source": "We Fell in Love in October - girl in red",
+      "length": 87,
+      "approvedBy": "Smithster",
+      "id": 6458
+    },
+    {
+      "text": "But when I'm older, I'll be so much stronger, I'll stay up for longer.",
+      "source": "Meet Me At Our Spot",
+      "length": 70,
+      "approvedBy": "Smithster",
+      "id": 6459
+    },
+    {
+      "text": "And you think that I can't see what kind of man that you are if you're a man at all.",
+      "source": "Decode - Paramore",
+      "length": 84,
+      "approvedBy": "Smithster",
+      "id": 6460
+    },
+    {
+      "text": "Second chances, they don't ever matter, people never change. Once a whore, you're nothing more, I'm sorry, that'll never change.",
+      "source": "Misery Business - Paramore",
+      "length": 128,
+      "approvedBy": "Smithster",
+      "id": 6461
+    },
+    {
+      "text": "By exchanging notes, you get to know one another, to understand one another. As if your souls were connected and your hearts were overlapping. It's a conversation through instruments. A miracle that creates harmony. In that moment, music transcends words.",
+      "source": "Your Lie In April",
+      "length": 255,
+      "approvedBy": "Smithster",
+      "id": 6462
+    },
+    {
+      "text": "Setbacks are inevitable to superstars. Adversity is what separates the good from the great. After all, stars can only shine during the night.",
+      "source": "Your Lie In April",
+      "length": 141,
+      "approvedBy": "Smithster",
+      "id": 6463
+    },
+    {
+      "text": "When you say you \"can't hear the sound\", doesn't it really mean you \"aren't restrained by the sound\"? Rather than the sound you hear with your ears, an image inside you is boiling up from the depths of yourself and taking over without you even knowing. The sound inside, the landscape in your heart, your wishes, a sound loaded with your thoughts; didn’t you feel it, even for a moment? \"Not being able to hear the sound.\" That is a gift.",
+      "source": "Your Lie In April",
+      "length": 438,
+      "approvedBy": "Smithster",
+      "id": 6464
+    },
+    {
+      "text": "Even though I'm bitter over losing, even though I'm depressed, even though my ankle hurts, and my eyes are smeared with tears... even though I've never felt worse... I wonder why the stars are sparkling like this.",
+      "source": "Your Lie in April",
+      "length": 213,
+      "approvedBy": "Smithster",
+      "id": 6465
+    },
+    {
+      "text": "Maybe there's only a dark road ahead. But you still have to believe and keep going. Believe that the stars will light your path, even a little bit. Come on... Let's go on a journey!",
+      "source": "Your Lie In April",
+      "length": 181,
+      "approvedBy": "Smithster",
+      "id": 6466
+    },
+    {
+      "text": "Pirates are evil? The Marines are righteous? These terms have always changed throughout the course of history! Kids who have never seen peace and kids who have never seen war have different values! Those who stand at the top determine what's wrong and what's right! This very place is neutral ground! Justice will prevail, you say? But of course it will! Whoever wins this war becomes justice!",
+      "source": "One Piece",
+      "length": 393,
+      "approvedBy": "Smithster",
+      "id": 6467
+    },
+    {
+      "text": "When you decided to go to the sea, it was your own decision. Whatever happens to you on the sea, it depends on what you’ve done!",
+      "source": "One Piece",
+      "length": 128,
+      "approvedBy": "Smithster",
+      "id": 6468
+    },
+    {
+      "text": "I came in here to figure out if you were a fraud or if you were a monster.",
+      "source": "Patrick Jane, The Mentalist",
+      "length": 74,
+      "approvedBy": "Smithster",
+      "id": 6469
+    },
+    {
+      "text": "What do you know of death? Have you ever died? You think death will preserve your cause forever?",
+      "source": "One Piece",
+      "length": 96,
+      "approvedBy": "Smithster",
+      "id": 6470
+    },
+    {
+      "text": "Don't ever, for any reason, do anything, to anyone, for any reason, ever, no matter what, no matter where, or who, or who you are with, or where you are going, or where you've been, ever, for any reason whatsoever.",
+      "source": "The Office",
+      "length": 214,
+      "approvedBy": "Smithster",
+      "id": 6471
+    },
+    {
+      "text": "I'm going to give you some advice. Never play foosball with a woman who's raised three brothers. It's exhausting.",
+      "source": "Patrick Jane, The Mentalist",
+      "length": 113,
+      "approvedBy": "Smithster",
+      "id": 6472
+    },
+    {
+      "text": "You're still in love with her. But instead of telling her, you bought her a plant.",
+      "source": "Kimball Cho, The Mentalist",
+      "length": 82,
+      "approvedBy": "Smithster",
+      "id": 6473
+    },
+    {
+      "text": "It's not just allies who support each other. From your enemies, you learn so much and gain so much. Until the day you meet again... Just knowing they exist helps you to withstand the loneliness. Those who compete, even if they're enemies, help each other out.",
+      "source": "Your Lie In April",
+      "length": 257,
+      "approvedBy": "Smithster",
+      "id": 6474
+    },
+    {
+      "text": "You know, I discovered something. Everyone has something... Something deep inside their hearts. For some, it might have been enmity. For others, admiration. Wishes, a craving for the spotlight, feelings that one wants to deliver, feelings for one's mother. Everyone was supported by their own feelings. I realize now that, perhaps, no one can stand alone on stage.",
+      "source": "Your Lie In April",
+      "length": 362,
+      "approvedBy": "Smithster",
+      "id": 6475
+    },
+    {
+      "text": "Spring will be here soon. Spring, the season I met you, is coming. A Spring without you... is coming.",
+      "source": "Your Lie In April",
+      "length": 98,
+      "approvedBy": "Smithster",
+      "id": 6476
+    },
+    {
+      "text": "Doesn't matter who you're born to... Everyone's still a child of the sea!",
+      "source": "One Piece",
+      "length": 72,
+      "approvedBy": "Smithster",
+      "id": 6477
+    },
+    {
+      "text": "It’s okay to lose your way... just don’t lose sight of what you have decided.",
+      "source": "One Piece",
+      "length": 75,
+      "approvedBy": "Smithster",
+      "id": 6478
+    },
+    {
+      "text": "It's funny how I'm only your brother when you think I messed up.",
+      "source": "Jimmy Lisbon, The Mentalist",
+      "length": 65,
+      "approvedBy": "Smithster",
+      "id": 6479
+    },
+    {
+      "text": "Everybody dies. Very few people ever feel truly sorry for the bad things they've done.",
+      "source": "Patrick Jane, The Mentalist",
+      "length": 87,
+      "approvedBy": "Smithster",
+      "id": 6480
+    },
+    {
+      "text": "What was I thinking? I was thinking, uh... Love is strange, and I was thinking about a sandwich.",
+      "source": "Patrick Jane, The Mentalist",
+      "length": 97,
+      "approvedBy": "Smithster",
+      "id": 6481
+    },
+    {
+      "text": "I've dreamt in my life dreams that have stayed with me ever after, and changed my ideas: they've gone through and through me, like wine through water, and altered the colour of my mind.",
+      "source": "Wuthering Heights by Emily Bronte",
+      "length": 184,
+      "approvedBy": "Smithster",
+      "id": 6482
+    },
+    {
+      "text": "You booked the night train for a reason, so you could sit there in this hurt. Bustling crowds or silent sleepers, you're not sure which is worse. Because I dropped your hand while dancing, left you out there standing, crestfallen on the landing: champagne problems.",
+      "source": "Champagne Problems, Taylor Swift",
+      "length": 265,
+      "approvedBy": "Smithster",
+      "id": 6483
     }
   ]
 }
