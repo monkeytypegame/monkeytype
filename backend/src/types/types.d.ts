@@ -465,5 +465,6 @@ declare namespace MonkeyTypes {
   interface FunboxObject {
     name: string;
     canGetPB: boolean;
+    difficultyLevel: number;
   }
 }
