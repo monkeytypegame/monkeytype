@@ -12,10 +12,7 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
-import {
-  canSetConfigWithCurrentFunboxes,
-  canSetFunboxWithConfig,
-} from "./test/funbox/funbox-validation";
+import { canSetConfigWithCurrentFunboxes } from "./test/funbox/funbox-validation";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -239,8 +236,6 @@ export function setFavThemes(themes: string[], nosave?: boolean): boolean {
 export function setFunbox(funbox: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
 
-  if (!canSetFunboxWithConfig(funbox, config)) return false;
-
   const val = funbox ? funbox : "none";
   config.funbox = val;
   saveToLocalStorage("funbox", nosave);
@@ -254,8 +249,6 @@ export function toggleFunbox(
   nosave?: boolean
 ): number | boolean {
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
-
-  if (!canSetFunboxWithConfig(funbox, config)) return false;
 
   let r;
 
