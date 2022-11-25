@@ -237,7 +237,7 @@ declare namespace MonkeyTypes {
   interface FunboxObject {
     name: string;
     info: string;
-    canGetPB?: boolean;
+    canGetPb?: boolean;
     alias?: string;
     forcedConfig?: MonkeyTypes.FunboxForcedConfig;
     properties?: FunboxProperty[];

@@ -508,7 +508,7 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
     return funbox?.split("#").includes(fb.name);
   });
 
-  if (!funboxes.every((f) => f.canGetPB)) {
+  if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
 

@@ -19,7 +19,7 @@ export function canGetPb(
     return funbox?.split("#").includes(fb.name);
   });
 
-  return funboxes.every((f) => f.canGetPB);
+  return funboxes.every((f) => f.canGetPb);
 }
 
 export function checkAndUpdatePb(

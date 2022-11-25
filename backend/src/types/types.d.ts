@@ -465,7 +465,7 @@ declare namespace MonkeyTypes {
 
   interface FunboxMetadata {
     name: string;
-    canGetPB: boolean;
+    canGetPb: boolean;
     difficultyLevel: number;
   }
 }

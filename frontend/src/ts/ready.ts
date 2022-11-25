@@ -36,9 +36,9 @@ $(document).ready(() => {
   if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
     $("#restartTestButton").addClass("hidden");
   }
-  if (!window.localStorage.getItem("merchbannerclosed")) {
+  if (!window.localStorage.getItem("blackfridaybanner2020")) {
     Notifications.addBanner(
-      `Check out our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
+      `20% off with the code CYBER20! <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
       1,
       "./images/merch2.png",
       false,

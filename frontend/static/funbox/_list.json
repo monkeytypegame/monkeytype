@@ -2,137 +2,137 @@
   {
     "name": "nausea",
     "info": "I think I'm gonna be sick.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "round_round_baby",
     "info": "...right round, like a record baby. Right, round round round.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "simon_says",
     "info": "Type what simon says.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "mirror",
     "info": "Everything is mirrored!",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "tts",
     "info": "Listen closely.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "choo_choo",
     "info": "All the letters are spinning!",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "arrows",
     "info": "Eurobeat Intensifies...",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "rAnDoMcAsE",
     "info": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "capitals",
     "info": "Capitalize Every Word.",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "layoutfluid",
     "info": "Switch between layouts specified below proportionately to the length of the test.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "earthquake",
     "info": "Everybody get down! The words are shaking!",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "space_balls",
     "info": "In a galaxy far far away.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "gibberish",
     "info": "Anvbuefl dizzs eoos alsb?",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "58008",
     "alias": "numbers",
     "info": "A special mode for accountants.",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "ascii",
     "info": "Where was the ampersand again?. Only ASCII characters.",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "specials",
     "info": "!@#$%^&*. Only special characters.",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "plus_one",
     "info": "React quickly! Only one future word is visible.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "plus_two",
     "info": "Only two future words are visible.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "read_ahead_easy",
     "info": "Only the current word is invisible.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "read_ahead",
     "info": "Current and the next word are invisible!",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "read_ahead_hard",
     "info": "Current and the next two words are invisible!",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "memory",
     "info": "Test your memory. Remember the words and type them blind.",
-    "canGetPB": true
+    "canGetPb": true
   },
   {
     "name": "nospace",
     "info": "Whoneedsspacesanyway?",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "poetry",
     "info": "Practice typing some beautiful prose.",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "wikipedia",
     "info": "Practice typing wikipedia sections.",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "weakspot",
     "info": "Focus on slow and mistyped letters.",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "pseudolang",
     "info": "Nonsense words that look like the current language.",
-    "canGetPB": false
+    "canGetPb": false
   }
 ]
