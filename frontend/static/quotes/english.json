@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -36994,63 +36982,63 @@
     {
       "text": "It's not just allies who support each other. From your enemies, you learn so much and gain so much. Until the day you meet again... Just knowing they exist helps you to withstand the loneliness. Those who compete, even if they're enemies, help each other out.",
       "source": "Your Lie In April",
-      "length": 257,
+      "length": 259,
       "approvedBy": "Smithster",
       "id": 6474
     },
     {
       "text": "You know, I discovered something. Everyone has something... Something deep inside their hearts. For some, it might have been enmity. For others, admiration. Wishes, a craving for the spotlight, feelings that one wants to deliver, feelings for one's mother. Everyone was supported by their own feelings. I realize now that, perhaps, no one can stand alone on stage.",
       "source": "Your Lie In April",
-      "length": 362,
+      "length": 364,
       "approvedBy": "Smithster",
       "id": 6475
     },
     {
       "text": "Spring will be here soon. Spring, the season I met you, is coming. A Spring without you... is coming.",
       "source": "Your Lie In April",
-      "length": 98,
+      "length": 101,
       "approvedBy": "Smithster",
       "id": 6476
     },
     {
       "text": "Doesn't matter who you're born to... Everyone's still a child of the sea!",
       "source": "One Piece",
-      "length": 72,
+      "length": 73,
       "approvedBy": "Smithster",
       "id": 6477
     },
     {
       "text": "It’s okay to lose your way... just don’t lose sight of what you have decided.",
       "source": "One Piece",
-      "length": 75,
+      "length": 77,
       "approvedBy": "Smithster",
       "id": 6478
     },
     {
       "text": "It's funny how I'm only your brother when you think I messed up.",
       "source": "Jimmy Lisbon, The Mentalist",
-      "length": 65,
+      "length": 64,
       "approvedBy": "Smithster",
       "id": 6479
     },
     {
       "text": "Everybody dies. Very few people ever feel truly sorry for the bad things they've done.",
       "source": "Patrick Jane, The Mentalist",
-      "length": 87,
+      "length": 86,
       "approvedBy": "Smithster",
       "id": 6480
     },
     {
       "text": "What was I thinking? I was thinking, uh... Love is strange, and I was thinking about a sandwich.",
       "source": "Patrick Jane, The Mentalist",
-      "length": 97,
+      "length": 96,
       "approvedBy": "Smithster",
       "id": 6481
     },
     {
       "text": "I've dreamt in my life dreams that have stayed with me ever after, and changed my ideas: they've gone through and through me, like wine through water, and altered the colour of my mind.",
       "source": "Wuthering Heights by Emily Bronte",
-      "length": 184,
+      "length": 185,
       "approvedBy": "Smithster",
       "id": 6482
     },
