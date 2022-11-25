@@ -1,5 +1,5 @@
 import _ from "lodash";
-import Funboxes from "../constants/funbox";
+import FunboxesMetadata from "../constants/funbox";
 
 interface CheckAndUpdatePbResult {
   isPb: boolean;
@@ -15,7 +15,7 @@ export function canGetPb(
   const funbox = result.funbox;
 
   //filter the Funboxes object to only include the funbox name that matches the funbox array split by #
-  const funboxes = Funboxes.filter((fb) => {
+  const funboxes = FunboxesMetadata.filter((fb) => {
     return funbox?.split("#").includes(fb.name);
   });
 

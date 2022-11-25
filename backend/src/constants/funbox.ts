@@ -1,4 +1,4 @@
-const Funboxes: MonkeyTypes.FunboxObject[] = [
+const Funboxes: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "nausea",
     canGetPB: true,

@@ -463,7 +463,7 @@ declare namespace MonkeyTypes {
     totalRating: number;
   }
 
-  interface FunboxObject {
+  interface FunboxMetadata {
     name: string;
     canGetPB: boolean;
     difficultyLevel: number;
