@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -37048,6 +37060,13 @@
       "length": 265,
       "approvedBy": "Smithster",
       "id": 6483
+    },
+    {
+      "text": "Adjectives on a typewriter he moves his words like a prizefighter, the frenzied pace of the mind inside the cell.",
+      "source": "CAKE - Shadow Stabbing",
+      "length": 113,
+      "approvedBy": "Smithster",
+      "id": 6484
     }
   ]
 }
