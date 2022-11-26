@@ -37,6 +37,7 @@ import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
 import FunboxesMetadata from "../../constants/funbox";
+import _ from "lodash";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -526,15 +527,11 @@ async function calculateXp(
   }
 
   if (funboxBonusConfiguration > 0) {
-    let funboxModifier = 0;
-    for (const fb of funbox.split("#")) {
-      const funbox = FunboxesMetadata.find((f) => f.name === fb);
+    const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
+      const funbox = FunboxesMetadata[funboxName as string];
       const difficultyLevel = funbox?.difficultyLevel ?? 0;
-      const modifier = difficultyLevel * funboxBonusConfiguration;
-      if (modifier > 0) {
-        funboxModifier += modifier;
-      }
-    }
+      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+    });
     if (funboxModifier > 0) {
       modifier += funboxModifier;
       breakdown["funbox"] = Math.round(baseXp * funboxModifier);

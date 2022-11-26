@@ -13,12 +13,9 @@ export function canFunboxGetPb(
   result: MonkeyTypes.Result<MonkeyTypes.Mode>
 ): boolean {
   const funbox = result.funbox;
+  if (!funbox || funbox === "none") return true;
 
-  //filter the Funboxes object to only include the funbox name that matches the funbox array split by #
-  const funboxes = FunboxesMetadata.filter((fb) => {
-    return funbox?.split("#").includes(fb.name);
-  });
-
+  const funboxes = funbox.split("#").map((f) => FunboxesMetadata[f]);
   return funboxes.every((f) => f.canGetPb);
 }
 
