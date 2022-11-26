@@ -9,7 +9,7 @@ interface CheckAndUpdatePbResult {
 
 type Result = MonkeyTypes.Result<MonkeyTypes.Mode>;
 
-export function canGetPb(
+export function canFunboxGetPb(
   result: MonkeyTypes.Result<MonkeyTypes.Mode>
 ): boolean {
   const funbox = result.funbox;
