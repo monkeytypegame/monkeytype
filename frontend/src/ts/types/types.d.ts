@@ -234,7 +234,7 @@ declare namespace MonkeyTypes {
     // time?: FunboxModeDuration;
   }
 
-  interface FunboxObject {
+  interface FunboxMetadata {
     name: string;
     info: string;
     canGetPb?: boolean;
