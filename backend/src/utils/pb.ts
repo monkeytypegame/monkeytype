@@ -15,8 +15,9 @@ export function canFunboxGetPb(
   const funbox = result.funbox;
   if (!funbox || funbox === "none") return true;
 
-  const funboxes = funbox.split("#").map((f) => FunboxesMetadata[f]);
-  return funboxes.every((f) => f.canGetPb);
+  return funbox
+    .split("#")
+    .every((funboxName) => FunboxesMetadata[funboxName]?.canGetPb === true);
 }
 
 export function checkAndUpdatePb(
