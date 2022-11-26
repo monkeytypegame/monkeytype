@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -37106,7 +37094,7 @@
     {
       "text": "You, with your words like knives and swords and weapons that you use against me. You, with your voice like nails on a chalkboard calling me out when I needed. You, picking on the weaker man. And you could take me down, with just a single blow. What you don't know, what you don't know. Someday, I'll be living in a big old city, and all you're ever gonna be is mean.",
       "source": "Mean - Taylor Swift",
-      "length": 367,
+      "length": 366,
       "approvedBy": "Smithster",
       "id": 6490
     },
@@ -37127,7 +37115,7 @@
     {
       "text": "There's things I want to say to you, but I'll just let you live. Like if you hold me without hurting me, you'll be the first who ever did.",
       "source": "Cinnamon Girl, Lana Del Rey",
-      "length": 139,
+      "length": 138,
       "approvedBy": "Smithster",
       "id": 6493
     },
@@ -37141,7 +37129,7 @@
     {
       "text": "Hard work will always beat talent when talent does not work hard.",
       "source": "Tim Notke",
-      "length": 66,
+      "length": 65,
       "approvedBy": "Smithster",
       "id": 6495
     },
@@ -37176,14 +37164,14 @@
     {
       "text": "If you don’t like your destiny, don’t accept it. Instead have the courage to change it the way you want it to be.",
       "source": "Naruto Uzumaki",
-      "length": 115,
+      "length": 113,
       "approvedBy": "Smithster",
       "id": 6500
     },
     {
       "text": "Granger? Granger? Can you possibly be related to Hector Dagworth-Granger, who founded the Most Extraordinary Society of Potioneers?",
       "source": "Harry Potter And The Half-Blood Prince",
-      "length": 133,
+      "length": 131,
       "approvedBy": "Smithster",
       "id": 6501
     },
@@ -37267,7 +37255,7 @@
     {
       "text": "I thought I felt your shape but I was wrong. Really all I felt was falsely strong.",
       "source": "I Felt Your Shape",
-      "length": 81,
+      "length": 82,
       "approvedBy": "Smithster",
       "id": 6513
     },
@@ -37302,21 +37290,21 @@
     {
       "text": "To be, or not to be? That is the question: Whether 'tis nobler in the mind to suffer The slings and arrows of outrageous fortune, or to take arms against a sea of troubles, and, by opposing, end them?",
       "source": "Hamlet",
-      "length": 202,
+      "length": 200,
       "approvedBy": "Smithster",
       "id": 6518
     },
     {
       "text": "Wake up to reality! Nothing ever goes as planned in this accursed world. The longer you live, the more you realize that the only things that truly exist in this reality are merely pain. suffering and futility. Listen, everywhere you look in this world, wherever there is light, there will always be shadows to be found as well. As long as there is a concept of victors, the vanquished will also exist. The selfish intent of wanting to preserve peace initiates war. And hatred is born in order to protect love. There are nexuses causal relationships that cannot be separated.",
       "source": "Madara Uchiha - Naruto Shippuden",
-      "length": 575,
+      "length": 574,
       "approvedBy": "Smithster",
       "id": 6519
     },
     {
       "text": "You ruined me. You left me to suffer at the hands of a father who valued only strength. You lied to me, to hide your own transgressions because of your own fear! My whole life I sought the approval I was denied by the man I thought was my father. You turned me into the weakling he hated!... Look at me! You rant and you rage about the monster I have become, but you mother, you are the author of everything I am.",
       "source": "The Vampire Diaries",
-      "length": 415,
+      "length": 413,
       "approvedBy": "Smithster",
       "id": 6520
     },
@@ -37449,35 +37437,35 @@
     {
       "text": "I'm running out of time. I'm running of light. I'm running just to keep myself from bleeding out. I'm falling out of touch. 'Cause I hate myself too much. No I can't, I was never meant to. I never loved myself like I loved you.",
       "source": "I never loved myself like I loved you - Dead Poet Society",
-      "length": 228,
+      "length": 227,
       "approvedBy": "Smithster",
       "id": 6539
     },
     {
       "text": "If you don't share someone's pain, you can never understand them.",
       "source": "Naruto",
-      "length": 66,
+      "length": 65,
       "approvedBy": "Smithster",
       "id": 6540
     },
     {
       "text": "The concept of hope is nothing more than giving up. A word that holds no true meaning.",
       "source": "Naruto",
-      "length": 87,
+      "length": 86,
       "approvedBy": "Smithster",
       "id": 6541
     },
     {
       "text": "You never know the biggest day of your life is going to be the biggest. The days you think are going to be the big ones, they are never as big as you make them out to be in your head. It's the regular days, the ones that start out normal. Those are the days that end up the biggest.",
       "source": "Izzie - Grey's anatomy",
-      "length": 283,
+      "length": 282,
       "approvedBy": "Smithster",
       "id": 6542
     },
     {
       "text": "Kris, Get the Banana. potassium. Kris, you missed the Banana.",
       "source": "Queen - Deltarune chapter 2",
-      "length": 60,
+      "length": 61,
       "approvedBy": "Smithster",
       "id": 6543
     },
@@ -37512,7 +37500,7 @@
     {
       "text": "All's well that ends well to end up with you. Swear to be over-dramatic and true to my lover. And you'll save all your dirtiest jokes for me. And at every table, I'll save you a seat.",
       "source": "Lover",
-      "length": 182,
+      "length": 183,
       "approvedBy": "Smithster",
       "id": 6548
     },
@@ -37540,7 +37528,7 @@
     {
       "text": "Existence is chaos. Nothing makes any sense, so we try to make some sense of it.",
       "source": "Loki",
-      "length": 81,
+      "length": 80,
       "approvedBy": "Smithster",
       "id": 6552
     },
@@ -37582,7 +37570,7 @@
     {
       "text": "But I hate that it seems you were never enough. We were broken and bleeding but never gave up. And I hate that I made you the enemy. And I hate that your heart was the casualty. Now I hate that I need you.",
       "source": "Motionless in White - Another Life",
-      "length": 206,
+      "length": 205,
       "approvedBy": "Smithster",
       "id": 6558
     },
@@ -37610,7 +37598,7 @@
     {
       "text": "Look at that subtle off-white coloring, the tasteful thickness of it. Oh my God. It even has a watermark.",
       "source": "Patrick Bateman, American Psycho",
-      "length": 106,
+      "length": 105,
       "approvedBy": "Smithster",
       "id": 6562
     },
@@ -37701,7 +37689,7 @@
     {
       "text": "Victorious warriors win first and then go to war, while defeated warriors go to war first and then seek to win.",
       "source": "Sun tzu",
-      "length": 113,
+      "length": 111,
       "approvedBy": "Smithster",
       "id": 6575
     },
@@ -37785,7 +37773,7 @@
     {
       "text": "War has changed. It's no longer about nations, ideologies, or ethnicity. It's an endless series of proxy battles, fought by mercenaries and machines. War - and it's consumption of life - has become a well-oiled machine. War has changed. ID-tagged soldiers carry ID-tagged weapons, use ID-tagged gear. Nanomachines inside their bodies enhance and regulate their abilities. Genetic control, information control, emotion control, battlefield control... everything is monitored and kept under control. War... has changed. The age of deterrence has become the age of control, all in the name of averting catastrophe from weapons of mass destruction, and he who controls the battlefield, controls history. War... has changed. When the battlefield is under total control, war becomes routine.",
       "source": "Metal Gear Solid 4",
-      "length": 779,
+      "length": 785,
       "approvedBy": "Smithster",
       "id": 6587
     },
@@ -37813,7 +37801,7 @@
     {
       "text": "In the future... if by some miracle you ever find yourself in the position to fall in love again... fall in love with me.",
       "source": "It Ends With Us",
-      "length": 119,
+      "length": 121,
       "approvedBy": "Smithster",
       "id": 6591
     },
@@ -37953,7 +37941,7 @@
     {
       "text": "Life is not about how you survive the storm, it's about how you dance in the rain.",
       "source": "The Paramour (Book 1) ",
-      "length": 81,
+      "length": 82,
       "approvedBy": "Smithster",
       "id": 6611
     },
@@ -37974,7 +37962,7 @@
     {
       "text": "She could be up or she could be down, but I'm not around to see.",
       "source": "Not Around by Nova",
-      "length": 66,
+      "length": 64,
       "approvedBy": "Smithster",
       "id": 6614
     },
@@ -38009,7 +37997,7 @@
     {
       "text": "I like what's best for me, but if I can't have that... then no one can!",
       "source": "Lighting in the sun",
-      "length": 70,
+      "length": 71,
       "approvedBy": "Smithster",
       "id": 6619
     },
@@ -38086,7 +38074,7 @@
     {
       "text": "Studies show owning a ladder is more dangerous than a loaded gun. That's why I own ten guns, just in case some fool tries to sneak in here with a ladder.",
       "source": "Gravity Falls",
-      "length": 152,
+      "length": 153,
       "approvedBy": "Smithster",
       "id": 6630
     },
@@ -38128,7 +38116,7 @@
     {
       "text": "Prince Zuko, you must look within yourself, and only then, can you save yourself from your other self.",
       "source": "Avatar: The Last Airbender (2006)",
-      "length": 103,
+      "length": 102,
       "approvedBy": "Smithster",
       "id": 6636
     },
@@ -38352,7 +38340,7 @@
     {
       "text": "A hot desert storm eddied around him and rushed to me, making my skin contract, and my pores slam shut... His hair was the color of burning embers and his eyes pierced.",
       "source": "Maya Angelou",
-      "length": 172,
+      "length": 168,
       "approvedBy": "Smithster",
       "id": 6668
     },
@@ -38366,7 +38354,7 @@
     {
       "text": "A king without greed is even worse than a figurehead! Saber, you said you would martyr yourself for your ideals. In life, you must have been a pure saint. A proud and noble figure, certainly. But who can truly admire the martyr's thorny path? Who dreams of such an ending? A king. The king must be greedier than any other. He must laugh more loudly and rage for longer. He must exemplify the extreme of all things, good and evil. That is why his retainers envy and adore him. And why the flames of aspiration, to be as the king is, can burn within his people. Proud king of chivalry, the righteousness and ideals you bore may indeed have saved your nation once. However, I'm certain you know what became of those who were saved, but left to themselves.",
       "source": "Fate/Zero",
-      "length": 754,
+      "length": 752,
       "approvedBy": "Smithster",
       "id": 6670
     },
@@ -38380,7 +38368,7 @@
     {
       "text": "Fear is the path to the dark side. Fear leads to anger. Anger leads to hate. Hate leads to suffering.",
       "source": "Yoda, Star wars",
-      "length": 100,
+      "length": 101,
       "approvedBy": "Smithster",
       "id": 6672
     },
@@ -38401,7 +38389,7 @@
     {
       "text": "I am neither, sire, and I assure you that my activities are purely recreational in nature. Furthermore, I would never imagine to transgress the terms upon which we agreed. I am available, at your leisure and by your grace, to discuss this matter further should you wish to repeat your ridiculous accusations in person. That said, I'm pleased you enjoyed the tomatoes. All the best wishes and encouragement. Adrian Veidt.",
       "source": "Watchmen (2019)",
-      "length": 421,
+      "length": 420,
       "approvedBy": "Smithster",
       "id": 6675
     },
