@@ -475,8 +475,13 @@ async function calculateXp(
     funbox,
   } = result;
 
-  const { enabled, gainMultiplier, maxDailyBonus, minDailyBonus, funboxBonus } =
-    xpConfiguration;
+  const {
+    enabled,
+    gainMultiplier,
+    maxDailyBonus,
+    minDailyBonus,
+    funboxBonus: funboxBonusConfiguration,
+  } = xpConfiguration;
 
   if (mode === "zen" || !enabled) {
     return {
@@ -520,11 +525,12 @@ async function calculateXp(
     }
   }
 
-  if (funboxBonus > 0) {
+  if (funboxBonusConfiguration > 0) {
     let funboxModifier = 0;
     for (const fb of funbox.split("#")) {
       const funbox = FunboxesMetadata.find((f) => f.name === fb);
-      const modifier = (funbox?.difficultyLevel ?? 0) * funboxBonus;
+      const difficultyLevel = funbox?.difficultyLevel ?? 0;
+      const modifier = difficultyLevel * funboxBonusConfiguration;
       if (modifier > 0) {
         funboxModifier += modifier;
       }
