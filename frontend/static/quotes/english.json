@@ -38383,6 +38383,13 @@
       "length": 100,
       "approvedBy": "Smithster",
       "id": 6672
+    },
+    {
+      "text": "I do not imagine that many of the Turing lecturers who will follow me will be\npeople who were acquainted with Alan Turing. The work on computable numbers,\nfor which he is famous, was published in 1936 before digital computers existed. Later\nhe became one of the first of a distinguished succession of able mathematicians who\nhave made contributions to the computer field. He was a colorful figure in the early\ndays of digital computer development in England, and I would find it difficult to\nspeak of that period without making some references to him.",
+      "source": "Maurice V. Wilkes, Computers Then and Now",
+      "length": 551,
+      "approvedBy": "Smithster",
+      "id": 6673
     }
   ]
 }
