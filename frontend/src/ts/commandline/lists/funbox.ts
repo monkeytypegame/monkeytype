@@ -32,7 +32,6 @@ const commands: MonkeyTypes.Command[] = [
 ];
 
 function update(funboxes: MonkeyTypes.FunboxMetadata[]): void {
-  console.log("updating");
   subgroup.list = [];
   subgroup.list.push({
     id: "changeFunboxNone",
