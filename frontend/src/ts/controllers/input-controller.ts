@@ -30,6 +30,7 @@ import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import { navigate } from "../observables/navigate-event";
+import { IgnoredKeys } from "../constants/ignored-keys";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -765,6 +766,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 $(document).keydown(async (event) => {
   if (ActivePage.get() == "loading") return;
 
+  if (IgnoredKeys.includes(event.key)) return;
+
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
@@ -960,6 +963,8 @@ $("#wordsInput").keyup((event) => {
     event.preventDefault();
     return;
   }
+
+  if (IgnoredKeys.includes(event.key)) return;
 
   if (TestUI.resultVisible) return;
   const now: number = performance.now();
