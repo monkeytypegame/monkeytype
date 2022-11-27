@@ -152,7 +152,7 @@ function getWeeklyXpLeaderboardWithError(
     customTimestamp
   );
   if (!weeklyXpLeaderboard) {
-    throw new MonkeyError(404, "There is xp leaderboard for this week.");
+    throw new MonkeyError(404, "XP leaderboard for this week not found.");
   }
 
   return weeklyXpLeaderboard;
