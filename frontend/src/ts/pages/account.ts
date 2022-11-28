@@ -668,8 +668,6 @@ function fillContent(): void {
   loadMoreLines();
   ////////
 
-  console.log(totalEstimatedWords);
-
   const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
   const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
   const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
