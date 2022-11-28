@@ -242,7 +242,7 @@ export const resultsGet = rateLimit({
 });
 
 // Results Routing
-export const resultsGet_ape = rateLimit({
+export const resultsGetApe = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,

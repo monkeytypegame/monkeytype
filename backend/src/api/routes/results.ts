@@ -9,10 +9,7 @@ import * as RateLimit from "../../middlewares/rate-limit";
 import { Router } from "express";
 import { authenticateRequest } from "../../middlewares/auth";
 import joi from "joi";
-import {
-  withApeRateLimiter,
-  withCustomApeRateLimiter,
-} from "../../middlewares/ape-rate-limit";
+import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
 
 const router = Router();
 
@@ -21,7 +18,7 @@ router.get(
   authenticateRequest({
     acceptApeKeys: true,
   }),
-  withCustomApeRateLimiter(RateLimit.resultsGet_ape, RateLimit.resultsGet),
+  withApeRateLimiter(RateLimit.resultsGet, RateLimit.resultsGetApe),
   asyncHandler(ResultController.getResults)
 );
 
