@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "pre-commit": "pretty-quick --staged && npm run lint",
+    "pre-commit": "pretty-quick --staged",
     "lint": "cd backend && eslint \"**/*.ts\" && cd ../frontend && eslint \"**/*.ts\"",
     "install-all": "sh ./bin/install.sh",
     "install-windows": ".\\bin\\install.cmd",
