@@ -1673,8 +1673,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       // They bailed out
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) +
-        TestInput.input.getHistory().length -
-        1;
+        TestInput.input.getHistory().length;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
       Notifications.add("Long custom text progress saved", 1, 5);
 
