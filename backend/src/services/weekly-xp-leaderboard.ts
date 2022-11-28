@@ -24,7 +24,7 @@ interface AddResultOpts {
 }
 
 const weeklyXpLeaderboardLeaderboardNamespace =
-  "monkeytypes:weekly-xp-leaderboard";
+  "monkeytype:weekly-xp-leaderboard";
 const scoresNamespace = `${weeklyXpLeaderboardLeaderboardNamespace}:scores`;
 const resultsNamespace = `${weeklyXpLeaderboardLeaderboardNamespace}:results`;
 
