@@ -204,3 +204,17 @@ export function mapRange(
 
   return result;
 }
+
+export function getStartOfWeekTimestamp(timestamp: number): number {
+  const date = new Date(timestamp);
+
+  const monday = date.getDate() - (date.getDay() || 7) + 1;
+  date.setDate(monday);
+
+  return getStartOfDayTimestamp(date.getTime());
+}
+
+export function getCurrentWeekTimestamp(): number {
+  const currentTime = Date.now();
+  return getStartOfWeekTimestamp(currentTime);
+}

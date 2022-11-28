@@ -108,12 +108,13 @@ export class DailyLeaderboard {
       this.getTodaysLeaderboardKeys();
 
     // @ts-ignore
-    const results: string[] = await connection.getResults(
+    const [results]: string[][] = await connection.getResults(
       2,
       leaderboardScoresKey,
       leaderboardResultsKey,
       minRank,
-      maxRank
+      maxRank,
+      "false"
     );
 
     const resultsWithRanks: DailyLeaderboardEntry[] = results.map(

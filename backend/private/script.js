@@ -1,10 +1,24 @@
 let state = {};
 let schema = {};
 
-const buildLabel = (elementType, text) => {
+const buildLabel = (elementType, text, hintText) => {
   const labelElement = document.createElement("label");
   labelElement.innerHTML = text;
   labelElement.style.fontWeight = elementType === "group" ? "bold" : "lighter";
+
+  if (hintText) {
+    const hintElement = document.createElement("span");
+    hintElement.classList.add("tooltip");
+    hintElement.innerHTML = " ⓘ";
+
+    const hintTextElement = document.createElement("span");
+    hintTextElement.classList.add("tooltip-text");
+    hintTextElement.innerHTML = hintText;
+
+    hintElement.appendChild(hintTextElement);
+
+    labelElement.appendChild(hintElement);
+  }
 
   return labelElement;
 };
@@ -132,10 +146,10 @@ const render = (state, schema) => {
     const parent = document.createElement("div");
     parent.classList.add("form-element");
 
-    const { type, label, fields, items } = schema;
+    const { type, label, hint, fields, items } = schema;
 
     if (label) {
-      parent.appendChild(buildLabel(type, label));
+      parent.appendChild(buildLabel(type, label, hint));
     }
 
     parent.id = path;
