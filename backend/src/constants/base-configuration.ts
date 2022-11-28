@@ -75,11 +75,19 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
     xpRewardBrackets: [],
   },
+  leaderboards: {
+    weeklyXp: {
+      enabled: false,
+      expirationTimeInDays: 0, // This should atleast be 15
+      xpRewardBrackets: [],
+    },
+  },
 };
 
 interface BaseSchema {
   type: string;
   label?: string;
+  hint?: string;
 }
 
 interface NumberSchema extends BaseSchema {
@@ -394,6 +402,7 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
           type: "number",
           label: "Top Results To Announce",
           min: 1,
+          hint: "This should atleast be 1. Setting to zero is very bad.",
         },
         xpRewardBrackets: {
           type: "array",
@@ -421,6 +430,58 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
                 type: "number",
                 label: "Max Reward",
                 min: 0,
+              },
+            },
+          },
+        },
+      },
+    },
+    leaderboards: {
+      type: "object",
+      label: "Leaderboards",
+      fields: {
+        weeklyXp: {
+          type: "object",
+          label: "Weekly XP",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            expirationTimeInDays: {
+              type: "number",
+              label: "Expiration time in days",
+              min: 0,
+              hint: "This should atleast be 15, to allow for past week queries.",
+            },
+            xpRewardBrackets: {
+              type: "array",
+              label: "XP Reward Brackets",
+              items: {
+                type: "object",
+                label: "Bracket",
+                fields: {
+                  minRank: {
+                    type: "number",
+                    label: "Min Rank",
+                    min: 1,
+                  },
+                  maxRank: {
+                    type: "number",
+                    label: "Max Rank",
+                    min: 1,
+                  },
+                  minReward: {
+                    type: "number",
+                    label: "Min Reward",
+                    min: 0,
+                  },
+                  maxReward: {
+                    type: "number",
+                    label: "Max Reward",
+                    min: 0,
+                  },
+                },
               },
             },
           },
