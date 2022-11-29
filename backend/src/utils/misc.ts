@@ -206,7 +206,7 @@ export function mapRange(
 }
 
 export function getStartOfWeekTimestamp(timestamp: number): number {
-  const date = new Date(timestamp);
+  const date = new Date(getStartOfDayTimestamp(timestamp));
 
   const monday = date.getDate() - (date.getDay() || 7) + 1;
   date.setDate(monday);
