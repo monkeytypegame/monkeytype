@@ -18,7 +18,7 @@ interface DailyLeaderboardEntry {
   badgeId?: number;
 }
 
-const dailyLeaderboardNamespace = "monkeytypes:dailyleaderboard";
+const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
 const resultsNamespace = `${dailyLeaderboardNamespace}:results`;
 
