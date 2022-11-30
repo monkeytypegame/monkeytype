@@ -89,6 +89,24 @@ function update(funboxes: MonkeyTypes.FunboxMetadata[]): void {
             ).html(txt);
           }
         }
+        if (funboxes.length > 0) {
+          const noneTxt =
+            Config.funbox === "none"
+              ? `<i class="fas fa-fw fa-check"></i>none`
+              : `<i class="fas fa-fw"></i>none`;
+          if ($("#commandLine").hasClass("allCommands")) {
+            $(
+              `#commandLine .suggestions .entry[command='changeFunboxNone']`
+            ).html(
+              `<div class="icon"><i class="fas fa-fw fa-gamepad"></i></div><div>Funbox  > ` +
+                noneTxt
+            );
+          } else {
+            $(
+              `#commandLine .suggestions .entry[command='changeFunboxNone']`
+            ).html(noneTxt);
+          }
+        }
       },
     });
   });
