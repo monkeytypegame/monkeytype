@@ -184,7 +184,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "IPv4",
     alias: "network",
-    info: "For sysadmins with long beard.",
+    info: "For sysadmins.",
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
     forcedConfig: {
       numbers: [false],
@@ -193,7 +193,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "IPv6",
     alias: "network",
-    info: "For sysadmins with long beard.",
+    info: "For sysadmins with a long beard.",
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
     forcedConfig: {
       numbers: [false],
