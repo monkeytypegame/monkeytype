@@ -2018,6 +2018,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     if (eventKey === "showAllLines" && !nosave) restart();
     if (eventKey === "keymapMode" && !nosave) restart();
     if (eventKey === "tapeMode" && !nosave) restart();
+    if (
+      eventKey === "customLayoutFluid" &&
+      Config.funbox.includes("layoutfluid")
+    ) {
+      restart();
+    }
   }
   if (eventKey === "lazyMode" && eventValue === false && !nosave) {
     rememberLazyMode = false;
