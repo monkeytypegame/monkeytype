@@ -139,12 +139,12 @@
     "name": "IPv4",
     "alias": "network",
     "info": "For sysadmins with long beard.",
-    "canGetPB": false
+    "canGetPb": false
   },
   {
     "name": "IPv6",
     "alias": "network",
     "info": "For sysadmins with long beard.",
-    "canGetPB": false
+    "canGetPb": false
   }
 ]
