@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -38407,7 +38419,6 @@
       "approvedBy": "Smithster",
       "id": 6677
     },
-
     {
       "text": "I am Keqing, Yuheng of the Liyue Qixing. We live in an era of change, as the old order that has existed for a thousand years is about to be rewritten. Join me. Let us bear witness to this historical moment together.",
       "source": "Genshin Impact",
@@ -38497,6 +38508,13 @@
       "source": "Genshin Impact",
       "length": 248,
       "id": 6692
+    },
+    {
+      "text": "Let your plans be dark and impenetrable as night, and when you move, fall like a thunderbolt.",
+      "source": "Sun Tzu, The Art of War",
+      "length": 93,
+      "approvedBy": "Smithster",
+      "id": 6693
     }
   ]
 }
