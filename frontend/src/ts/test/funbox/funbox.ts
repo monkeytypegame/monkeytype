@@ -13,6 +13,7 @@ import * as TestInput from "../test-input";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
+import * as IPGenerator from "../ip-addresses";
 import {
   areFunboxesCompatible,
   checkFunboxForcedConfigs,
@@ -470,6 +471,46 @@ FunboxList.setFunboxFunctions("pseudolang", {
   async withWords(words?: string[]): Promise<Misc.Wordset> {
     if (words !== undefined) return new PseudolangWordGenerator(words);
     return new Misc.Wordset([]);
+  },
+});
+
+FunboxList.setFunboxFunctions("IPv4", {
+  getWord(): string {
+    return IPGenerator.getRandomIPv4address();
+  },
+  punctuateWord(word: string): string {
+    let w = word;
+    if (Math.random() < 0.25) {
+      w = IPGenerator.addressToCIDR(word);
+    }
+    return w;
+  },
+  rememberSettings(): void {
+    save("numbers", Config.numbers, UpdateConfig.setNumbers);
+  },
+});
+
+FunboxList.setFunboxFunctions("IPv6", {
+  getWord(): string {
+    return IPGenerator.getRandomIPv6address();
+  },
+  punctuateWord(word: string): string {
+    let w = word;
+    if (Math.random() < 0.25) {
+      w = IPGenerator.addressToCIDR(word);
+    }
+    // Compress
+    if (w.includes(":")) {
+      w = w
+        .replace(/\b(?:0+:){2,}/, "::")
+        .split(":")
+        .map((a) => a.replace(/\b0+/g, ""))
+        .join(":");
+    }
+    return w;
+  },
+  rememberSettings(): void {
+    save("numbers", Config.numbers, UpdateConfig.setNumbers);
   },
 });
 

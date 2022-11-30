@@ -181,6 +181,24 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     info: "Nonsense words that look like the current language.",
     properties: ["unspeakable"],
   },
+  {
+    name: "IPv4",
+    alias: "network",
+    info: "For sysadmins.",
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    forcedConfig: {
+      numbers: [false],
+    },
+  },
+  {
+    name: "IPv6",
+    alias: "network",
+    info: "For sysadmins with a long beard.",
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    forcedConfig: {
+      numbers: [false],
+    },
+  },
 ];
 
 export function getAll(): MonkeyTypes.FunboxMetadata[] {

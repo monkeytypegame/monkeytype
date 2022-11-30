@@ -107,6 +107,14 @@ const Funboxes: Record<string, MonkeyTypes.FunboxMetadata> = {
     canGetPb: false,
     difficultyLevel: 0,
   },
+  IPv4: {
+    canGetPb: false,
+    difficultyLevel: 1,
+  },
+  IPv6: {
+    canGetPb: false,
+    difficultyLevel: 1,
+  },
 };
 
 export default Funboxes;
