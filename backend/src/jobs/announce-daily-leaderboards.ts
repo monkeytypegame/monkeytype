@@ -7,7 +7,7 @@ import {
 } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { DailyLeaderboard } from "../utils/daily-leaderboards";
-import { announceDailyLeaderboardTopResults } from "../tasks/george";
+import GeorgeQueue from "../queues/george-queue";
 import { addToInboxBulk } from "../dal/user";
 import { buildMonkeyMail } from "../utils/monkey-mail";
 
@@ -105,7 +105,7 @@ async function announceDailyLeaderboard(
   );
 
   const leaderboardId = `${mode} ${mode2} ${language}`;
-  await announceDailyLeaderboardTopResults(
+  await GeorgeQueue.announceDailyLeaderboardTopResults(
     leaderboardId,
     yesterday,
     topResults
