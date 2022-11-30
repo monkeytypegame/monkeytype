@@ -1,148 +1,138 @@
 [
   {
     "name": "nausea",
-    "type": "style",
-    "info": "I think I'm gonna be sick."
+    "info": "I think I'm gonna be sick.",
+    "canGetPb": true
   },
   {
     "name": "round_round_baby",
-    "type": "style",
-    "info": "...right round, like a record baby. Right, round round round."
+    "info": "...right round, like a record baby. Right, round round round.",
+    "canGetPb": true
   },
   {
     "name": "simon_says",
-    "type": "style",
-    "info": "Type what simon says."
+    "info": "Type what simon says.",
+    "canGetPb": true
   },
   {
     "name": "mirror",
-    "type": "style",
-    "info": "Everything is mirrored!"
+    "info": "Everything is mirrored!",
+    "canGetPb": true
   },
   {
     "name": "tts",
-    "type": "script",
-    "info": "Listen closely."
+    "info": "Listen closely.",
+    "canGetPb": true
   },
   {
     "name": "choo_choo",
-    "type": "style",
-    "info": "All the letters are spinning!"
+    "info": "All the letters are spinning!",
+    "canGetPb": true
   },
   {
     "name": "arrows",
-    "type": "script",
-    "affectsWordGeneration": true,
-    "info": "Eurobeat Intensifies..."
+    "info": "Eurobeat Intensifies...",
+    "canGetPb": false
   },
   {
     "name": "rAnDoMcAsE",
-    "type": "script",
-    "info": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is."
+    "info": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
+    "canGetPb": false
   },
   {
     "name": "capitals",
-    "type": "script",
-    "info": "Capitalize Every Word."
+    "info": "Capitalize Every Word.",
+    "canGetPb": false
   },
   {
     "name": "layoutfluid",
-    "type": "script",
-    "info": "Switch between layouts specified below proportionately to the length of the test."
+    "info": "Switch between layouts specified below proportionately to the length of the test.",
+    "canGetPb": true
   },
   {
     "name": "earthquake",
-    "type": "style",
-    "info": "Everybody get down! The words are shaking!"
+    "info": "Everybody get down! The words are shaking!",
+    "canGetPb": true
   },
   {
     "name": "space_balls",
-    "type": "style",
-    "info": "In a galaxy far far away."
+    "info": "In a galaxy far far away.",
+    "canGetPb": true
   },
   {
     "name": "gibberish",
-    "type": "script",
-    "affectsWordGeneration": true,
-    "info": "Anvbuefl dizzs eoos alsb?"
+    "info": "Anvbuefl dizzs eoos alsb?",
+    "canGetPb": false
   },
   {
     "name": "58008",
-    "type": "script",
     "alias": "numbers",
-    "affectsWordGeneration": true,
-    "info": "A special mode for accountants."
+    "info": "A special mode for accountants.",
+    "canGetPb": false
   },
   {
     "name": "ascii",
-    "type": "script",
-    "affectsWordGeneration": true,
-    "info": "Where was the ampersand again?. Only ASCII characters."
+    "info": "Where was the ampersand again?. Only ASCII characters.",
+    "canGetPb": false
   },
   {
     "name": "specials",
-    "type": "script",
-    "affectsWordGeneration": true,
-    "info": "!@#$%^&*. Only special characters."
+    "info": "!@#$%^&*. Only special characters.",
+    "canGetPb": false
   },
   {
     "name": "plus_one",
-    "type": "script",
-    "info": "React quickly! Only one future word is visible."
+    "info": "React quickly! Only one future word is visible.",
+    "canGetPb": true
   },
   {
     "name": "plus_two",
-    "type": "script",
-    "info": "Only two future words are visible."
+    "info": "Only two future words are visible.",
+    "canGetPb": true
   },
   {
     "name": "read_ahead_easy",
-    "type": "style",
-    "info": "Only the current word is invisible."
+    "info": "Only the current word is invisible.",
+    "canGetPb": true
   },
   {
     "name": "read_ahead",
-    "type": "style",
-    "info": "Current and the next word are invisible!"
+    "info": "Current and the next word are invisible!",
+    "canGetPb": true
   },
   {
     "name": "read_ahead_hard",
-    "type": "style",
-    "info": "Current and the next two words are invisible!"
+    "info": "Current and the next two words are invisible!",
+    "canGetPb": true
   },
   {
     "name": "memory",
-    "type": "script",
-    "info": "Test your memory. Remember the words and type them blind."
+    "info": "Test your memory. Remember the words and type them blind.",
+    "canGetPb": true
   },
   {
     "name": "nospace",
-    "type": "script",
-    "info": "Whoneedsspacesanyway?"
+    "info": "Whoneedsspacesanyway?",
+    "canGetPb": false
   },
   {
     "name": "poetry",
-    "type": "script",
-    "affectsWordGeneration": true,
-    "info": "Practice typing some beautiful prose."
+    "info": "Practice typing some beautiful prose.",
+    "canGetPb": false
   },
   {
     "name": "wikipedia",
-    "type": "script",
-    "affectsWordGeneration": true,
-    "info": "Practice typing wikipedia sections."
+    "info": "Practice typing wikipedia sections.",
+    "canGetPb": false
   },
   {
     "name": "weakspot",
-    "type": "script",
-    "affectsWordGeneration": true,
-    "info": "Focus on slow and mistyped letters."
+    "info": "Focus on slow and mistyped letters.",
+    "canGetPb": false
   },
   {
     "name": "pseudolang",
-    "type": "script",
-    "affectsWordGeneration": true,
-    "info": "Nonsense words that look like the current language."
+    "info": "Nonsense words that look like the current language.",
+    "canGetPb": false
   }
 ]
-

@@ -5,6 +5,7 @@ import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
+import { getFunboxList } from "./utils/misc";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -511,7 +512,11 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
   lazyMode: boolean,
   funbox: string
 ): Promise<number> {
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+  const funboxes = (await getFunboxList()).filter((fb) => {
+    return funbox?.split("#").includes(fb.name);
+  });
+
+  if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
 

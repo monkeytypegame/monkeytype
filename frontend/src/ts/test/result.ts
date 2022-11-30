@@ -19,6 +19,7 @@ import * as TestConfig from "./test-config";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 import * as SlowTimer from "../states/slow-timer";
+import * as FunboxList from "./funbox/funbox-list";
 
 // eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
@@ -99,10 +100,15 @@ async function updateGraph(): Promise<void> {
 
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
-    let content = Config.funbox;
-    if (Config.funbox === "layoutfluid") {
-      content += " " + Config.customLayoutfluid.replace(/#/g, " ");
+    let content = "";
+    for (const f of FunboxList.get(Config.funbox)) {
+      content += f.name;
+      if (f.functions?.getResultContent) {
+        content += "(" + f.functions.getResultContent() + ")";
+      }
+      content += " ";
     }
+    content = content.trimEnd();
     resultAnnotation.push({
       display: true,
       id: "funbox-label",
@@ -524,12 +530,11 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
-  if (
-    Config.mode != "custom" &&
-    Config.funbox !== "gibberish" &&
-    Config.funbox !== "ascii" &&
-    Config.funbox !== "58008"
-  ) {
+  const ignoresLanguage =
+    FunboxList.get(Config.funbox).find((f) =>
+      f.properties?.includes("ignoresLanguage")
+    ) !== undefined;
+  if (Config.mode != "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }
   if (Config.punctuation) {
@@ -545,7 +550,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     testType += "<br>lazy";
   }
   if (Config.funbox !== "none") {
-    testType += "<br>" + Config.funbox.replace(/_/g, " ");
+    testType += "<br>" + Config.funbox.replace(/_/g, " ").replace(/#/g, ", ");
   }
   if (Config.difficulty == "expert") {
     testType += "<br>expert";

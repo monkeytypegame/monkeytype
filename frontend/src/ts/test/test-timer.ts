@@ -83,7 +83,10 @@ function calculateAcc(): number {
 
 function layoutfluid(): void {
   if (timerDebug) console.time("layoutfluid");
-  if (Config.funbox === "layoutfluid" && Config.mode === "time") {
+  if (
+    Config.funbox.split("#").includes("layoutfluid") &&
+    Config.mode === "time"
+  ) {
     const layouts = Config.customLayoutfluid
       ? Config.customLayoutfluid.split("#")
       : ["qwerty", "dvorak", "colemak"];

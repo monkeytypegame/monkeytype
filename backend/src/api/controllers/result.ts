@@ -36,6 +36,8 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
+import FunboxesMetadata from "../../constants/funbox";
+import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 
 try {
@@ -509,10 +511,16 @@ async function calculateXp(
     charStats,
     punctuation,
     numbers,
+    funbox,
   } = result;
 
-  const { enabled, gainMultiplier, maxDailyBonus, minDailyBonus } =
-    xpConfiguration;
+  const {
+    enabled,
+    gainMultiplier,
+    maxDailyBonus,
+    minDailyBonus,
+    funboxBonus: funboxBonusConfiguration,
+  } = xpConfiguration;
 
   if (mode === "zen" || !enabled) {
     return {
@@ -553,6 +561,18 @@ async function calculateXp(
     if (numbers) {
       modifier += 0.1;
       breakdown["numbers"] = Math.round(baseXp * 0.1);
+    }
+  }
+
+  if (funboxBonusConfiguration > 0) {
+    const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
+      const funbox = FunboxesMetadata[funboxName as string];
+      const difficultyLevel = funbox?.difficultyLevel ?? 0;
+      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+    });
+    if (funboxModifier > 0) {
+      modifier += funboxModifier;
+      breakdown["funbox"] = Math.round(baseXp * funboxModifier);
     }
   }
 

@@ -2,12 +2,13 @@ import Config from "../config";
 import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import * as ConfigEvent from "../observables/config-event";
+import * as KeymapEvent from "../observables/keymap-event";
 import * as Misc from "../utils/misc";
 import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
 
-export function highlightKey(currentKey: string): void {
+function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
   try {
@@ -37,7 +38,7 @@ export function highlightKey(currentKey: string): void {
   }
 }
 
-export async function flashKey(key: string, correct: boolean): Promise<void> {
+async function flashKey(key: string, correct?: boolean): Promise<void> {
   if (key == undefined) return;
   //console.log("key", key);
   if (key == " ") {
@@ -51,41 +52,38 @@ export async function flashKey(key: string, correct: boolean): Promise<void> {
   const themecolors = await ThemeColors.getAll();
 
   try {
+    let css = {
+      color: themecolors.bg,
+      backgroundColor: themecolors.sub,
+      borderColor: themecolors.sub,
+    };
+
     if (correct || Config.blindMode) {
-      $(key)
-        .stop(true, true)
-        .css({
-          color: themecolors.bg,
-          backgroundColor: themecolors.main,
-          borderColor: themecolors.main,
-        })
-        .animate(
-          {
-            color: themecolors.sub,
-            backgroundColor: "transparent",
-            borderColor: themecolors.sub,
-          },
-          SlowTimer.get() ? 0 : 500,
-          "easeOutExpo"
-        );
+      css = {
+        color: themecolors.bg,
+        backgroundColor: themecolors.main,
+        borderColor: themecolors.main,
+      };
     } else {
-      $(key)
-        .stop(true, true)
-        .css({
-          color: themecolors.bg,
-          backgroundColor: themecolors.error,
-          borderColor: themecolors.error,
-        })
-        .animate(
-          {
-            color: themecolors.sub,
-            backgroundColor: "transparent",
-            borderColor: themecolors.sub,
-          },
-          SlowTimer.get() ? 0 : 500,
-          "easeOutExpo"
-        );
+      css = {
+        color: themecolors.bg,
+        backgroundColor: themecolors.error,
+        borderColor: themecolors.error,
+      };
     }
+
+    $(key)
+      .stop(true, true)
+      .css(css)
+      .animate(
+        {
+          color: themecolors.sub,
+          backgroundColor: "transparent",
+          borderColor: themecolors.sub,
+        },
+        SlowTimer.get() ? 0 : 500,
+        "easeOutExpo"
+      );
   } catch (e) {}
 }
 
@@ -289,5 +287,14 @@ ConfigEvent.subscribe((eventKey) => {
     eventKey === "keymapMode"
   ) {
     refresh();
+  }
+});
+
+KeymapEvent.subscribe((mode, key, correct) => {
+  if (mode === "highlight") {
+    highlightKey(key);
+  }
+  if (mode === "flash") {
+    flashKey(key, correct);
   }
 });

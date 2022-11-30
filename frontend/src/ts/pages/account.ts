@@ -88,10 +88,12 @@ function loadMoreLines(lineIndex?: number): void {
     }
 
     if (result.funbox !== "none" && result.funbox !== undefined) {
-      icons += `<span aria-label="${result.funbox.replace(
-        /_/g,
-        " "
-      )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
+      icons += `<span aria-label="${result.funbox
+        .replace(/_/g, " ")
+        .replace(
+          /#/g,
+          ", "
+        )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
     }
 
     if (result.chartData === undefined) {
@@ -429,7 +431,14 @@ function fillContent(): void {
             return;
           }
         } else {
-          if (!ResultFilters.getFilter("funbox", result.funbox)) {
+          let counter = 0;
+          for (const f of result.funbox.split("#")) {
+            if (ResultFilters.getFilter("funbox", f)) {
+              counter++;
+              break;
+            }
+          }
+          if (counter == 0) {
             if (filterDebug) {
               console.log(`skipping result due to funbox filter`, result);
             }
