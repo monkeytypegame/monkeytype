@@ -90,7 +90,6 @@ import KeymapLayoutsCommands, {
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
-import * as TestLogic from "../test/test-logic";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as Settings from "../pages/settings";
@@ -122,9 +121,11 @@ Misc.getLanguageList()
 Misc.getFunboxList()
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
-    FunboxCommands[0].beforeSubgroup = (): void => {
-      updateFunboxCommands(funboxes);
-    };
+    if (FunboxCommands[0].subgroup) {
+      FunboxCommands[0].subgroup.beforeList = (): void => {
+        updateFunboxCommands(funboxes);
+      };
+    }
   })
   .catch((e) => {
     console.error(
@@ -234,9 +235,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );
-        if (Config.funbox.split("#").includes("layoutfluid")) {
-          TestLogic.restart();
-        }
       },
     },
 

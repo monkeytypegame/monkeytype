@@ -37,13 +37,15 @@ function hide(full = false): void {
 
 function save(): boolean {
   const name = $("#saveCustomTextPopupWrapper .textName").val() as string;
-  const text = ($(`#customTextPopup textarea`).val() as string).normalize();
   const checkbox = $("#saveCustomTextPopupWrapper .isLongText").prop("checked");
+  let text = ($(`#customTextPopup textarea`).val() as string).normalize();
 
   if (!name) {
     Notifications.add("Custom text needs a name", 0);
     return false;
   }
+
+  text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
 
   CustomText.setCustomText(name, text, checkbox);
   CustomTextState.setCustomTextName(name, checkbox);

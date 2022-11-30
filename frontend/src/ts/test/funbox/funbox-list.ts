@@ -1,4 +1,4 @@
-const list: MonkeyTypes.FunboxObject[] = [
+const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "nausea",
     info: "I think I'm gonna be sick.",
@@ -201,12 +201,12 @@ const list: MonkeyTypes.FunboxObject[] = [
   },
 ];
 
-export function getAll(): MonkeyTypes.FunboxObject[] {
+export function getAll(): MonkeyTypes.FunboxMetadata[] {
   return list;
 }
 
-export function get(config: string): MonkeyTypes.FunboxObject[] {
-  const funboxes: MonkeyTypes.FunboxObject[] = [];
+export function get(config: string): MonkeyTypes.FunboxMetadata[] {
+  const funboxes: MonkeyTypes.FunboxMetadata[] = [];
   for (const i of config.split("#")) {
     const f = list.find((f) => f.name === i);
     if (f) funboxes.push(f);

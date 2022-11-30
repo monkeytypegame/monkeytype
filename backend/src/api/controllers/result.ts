@@ -36,7 +36,9 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import FunboxConstants from "../../constants/funbox";
+import FunboxesMetadata from "../../constants/funbox";
+import _ from "lodash";
+import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -117,6 +119,7 @@ interface AddResultData {
   tagPbs: any[];
   insertedId: ObjectId;
   dailyLeaderboardRank?: number;
+  weeklyXpLeaderboardRank?: number;
   xp: number;
   dailyXpBonus: boolean;
   xpBreakdown: Record<string, number>;
@@ -345,14 +348,15 @@ export async function addResult(
     delete result.challenge;
   }
 
-  let tt = 0;
+  let totalDurationTypedSeconds = 0;
   let afk = result.afkDuration;
   if (afk == undefined) {
     afk = 0;
   }
-  tt = result.testDuration + result.incompleteTestSeconds - afk;
-  updateTypingStats(uid, result.restartCount, tt);
-  PublicDAL.updateStats(result.restartCount, tt);
+  totalDurationTypedSeconds =
+    result.testDuration + result.incompleteTestSeconds - afk;
+  updateTypingStats(uid, result.restartCount, totalDurationTypedSeconds);
+  PublicDAL.updateStats(result.restartCount, totalDurationTypedSeconds);
 
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
   const dailyLeaderboard = getDailyLeaderboard(
@@ -371,10 +375,9 @@ export async function addResult(
     !user.banned &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
-  if (dailyLeaderboard && validResultCriteria) {
-    //get the selected badge id
-    const badgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
+  const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
 
+  if (dailyLeaderboard && validResultCriteria) {
     incrementDailyLeaderboard(result.mode, result.mode2, result.language);
     dailyLeaderboardRank = await dailyLeaderboard.addResult(
       {
@@ -387,7 +390,7 @@ export async function addResult(
         uid,
         discordAvatar: user.discordAvatar,
         discordId: user.discordId,
-        badgeId,
+        badgeId: selectedBadgeId,
       },
       dailyLeaderboardsConfig
     );
@@ -402,6 +405,37 @@ export async function addResult(
     user.xp ?? 0,
     streak
   );
+
+  const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
+  let weeklyXpLeaderboardRank = -1;
+  const eligibleForWeeklyXpLeaderboard =
+    !user.banned &&
+    (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
+
+  const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
+    weeklyXpLeaderboardConfig
+  );
+  if (
+    eligibleForWeeklyXpLeaderboard &&
+    xpGained.xp > 0 &&
+    weeklyXpLeaderboard
+  ) {
+    weeklyXpLeaderboardRank = await weeklyXpLeaderboard.addResult(
+      weeklyXpLeaderboardConfig,
+      {
+        entry: {
+          uid,
+          name: user.name,
+          discordAvatar: user.discordAvatar,
+          discordId: user.discordId,
+          badgeId: selectedBadgeId,
+          lastActivityTimestamp: Date.now(),
+        },
+        xpGained: xpGained.xp,
+        timeTypedSeconds: totalDurationTypedSeconds,
+      }
+    );
+  }
 
   if (result.bailedOut === false) delete result.bailedOut;
   if (result.blindMode === false) delete result.blindMode;
@@ -444,6 +478,11 @@ export async function addResult(
   if (dailyLeaderboardRank !== -1) {
     data.dailyLeaderboardRank = dailyLeaderboardRank;
   }
+
+  if (weeklyXpLeaderboardRank !== -1) {
+    data.weeklyXpLeaderboardRank = weeklyXpLeaderboardRank;
+  }
+
   incrementResult(result);
 
   return new MonkeyResponse("Result saved", data);
@@ -475,8 +514,13 @@ async function calculateXp(
     funbox,
   } = result;
 
-  const { enabled, gainMultiplier, maxDailyBonus, minDailyBonus, funboxBonus } =
-    xpConfiguration;
+  const {
+    enabled,
+    gainMultiplier,
+    maxDailyBonus,
+    minDailyBonus,
+    funboxBonus: funboxBonusConfiguration,
+  } = xpConfiguration;
 
   if (mode === "zen" || !enabled) {
     return {
@@ -520,17 +564,12 @@ async function calculateXp(
     }
   }
 
-  console.log(funboxBonus);
-  console.log(funbox);
-  if (funboxBonus > 0) {
-    let funboxModifier = 0;
-    for (const fb of funbox.split("#")) {
-      const funbox = FunboxConstants.find((f) => f.name === fb);
-      const modifier = (funbox?.difficultyLevel ?? 0) * funboxBonus;
-      if (modifier > 0) {
-        funboxModifier += modifier;
-      }
-    }
+  if (funboxBonusConfiguration > 0) {
+    const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
+      const funbox = FunboxesMetadata[funboxName as string];
+      const difficultyLevel = funbox?.difficultyLevel ?? 0;
+      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+    });
     if (funboxModifier > 0) {
       modifier += funboxModifier;
       breakdown["funbox"] = Math.round(baseXp * funboxModifier);

@@ -31,7 +31,7 @@ const commands: MonkeyTypes.Command[] = [
   },
 ];
 
-function update(funboxes: MonkeyTypes.FunboxObject[]): void {
+function update(funboxes: MonkeyTypes.FunboxMetadata[]): void {
   subgroup.list = [];
   subgroup.list.push({
     id: "changeFunboxNone",
@@ -87,6 +87,24 @@ function update(funboxes: MonkeyTypes.FunboxObject[]): void {
             $(
               `#commandLine .suggestions .entry[command='changeFunbox${funboxes[i].name}']`
             ).html(txt);
+          }
+        }
+        if (funboxes.length > 0) {
+          const noneTxt =
+            Config.funbox === "none"
+              ? `<i class="fas fa-fw fa-check"></i>none`
+              : `<i class="fas fa-fw"></i>none`;
+          if ($("#commandLine").hasClass("allCommands")) {
+            $(
+              `#commandLine .suggestions .entry[command='changeFunboxNone']`
+            ).html(
+              `<div class="icon"><i class="fas fa-fw fa-gamepad"></i></div><div>Funbox  > ` +
+                noneTxt
+            );
+          } else {
+            $(
+              `#commandLine .suggestions .entry[command='changeFunboxNone']`
+            ).html(noneTxt);
           }
         }
       },

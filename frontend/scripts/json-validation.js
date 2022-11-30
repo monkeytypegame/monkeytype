@@ -64,10 +64,10 @@ function validateOthers() {
         properties: {
           name: { type: "string" },
           info: { type: "string" },
-          canGetPB: { type: "boolean" },
+          canGetPb: { type: "boolean" },
           alias: { type: "string" },
         },
-        required: ["name", "info", "canGetPB"],
+        required: ["name", "info", "canGetPb"],
       },
     };
     const funboxValidator = JSONValidator.validate(funboxData, funboxSchema);

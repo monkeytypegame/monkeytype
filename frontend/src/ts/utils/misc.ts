@@ -151,15 +151,15 @@ export async function findCurrentGroup(
   return retgroup;
 }
 
-let funboxList: MonkeyTypes.FunboxObject[] | undefined;
-export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
+let funboxList: MonkeyTypes.FunboxMetadata[] | undefined;
+export async function getFunboxList(): Promise<MonkeyTypes.FunboxMetadata[]> {
   if (!funboxList) {
-    let list = await cachedFetchJson<MonkeyTypes.FunboxObject[]>(
+    let list = await cachedFetchJson<MonkeyTypes.FunboxMetadata[]>(
       "/./funbox/_list.json"
     );
     list = list.sort(function (
-      a: MonkeyTypes.FunboxObject,
-      b: MonkeyTypes.FunboxObject
+      a: MonkeyTypes.FunboxMetadata,
+      b: MonkeyTypes.FunboxMetadata
     ) {
       const nameA = a.name.toLowerCase();
       const nameB = b.name.toLowerCase();
@@ -176,8 +176,8 @@ export async function getFunboxList(): Promise<MonkeyTypes.FunboxObject[]> {
 
 export async function getFunbox(
   funbox: string
-): Promise<MonkeyTypes.FunboxObject | undefined> {
-  const list: MonkeyTypes.FunboxObject[] = await getFunboxList();
+): Promise<MonkeyTypes.FunboxMetadata | undefined> {
+  const list: MonkeyTypes.FunboxMetadata[] = await getFunboxList();
   return list.find(function (element) {
     return element.name == funbox;
   });

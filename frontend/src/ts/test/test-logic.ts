@@ -1600,8 +1600,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       // They bailed out
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) +
-        TestInput.input.getHistory().length -
-        1;
+        TestInput.input.getHistory().length;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
       Notifications.add("Long custom text progress saved", 1, 5);
 
@@ -2019,6 +2018,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     if (eventKey === "showAllLines" && !nosave) restart();
     if (eventKey === "keymapMode" && !nosave) restart();
     if (eventKey === "tapeMode" && !nosave) restart();
+    if (
+      eventKey === "customLayoutFluid" &&
+      Config.funbox.includes("layoutfluid")
+    ) {
+      restart();
+    }
   }
   if (eventKey === "lazyMode" && eventValue === false && !nosave) {
     rememberLazyMode = false;

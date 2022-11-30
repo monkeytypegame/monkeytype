@@ -677,8 +677,6 @@ function fillContent(): void {
   loadMoreLines();
   ////////
 
-  console.log(totalEstimatedWords);
-
   const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
   const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
   const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
@@ -1205,9 +1203,9 @@ $(".pageAccount .group.history").on(
   }
 );
 
-$(".pageAccount .group.topFilters").on(
+$(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "click",
-  ".button, .pageAccount .filterButtons .button",
+  ".button",
   () => {
     setTimeout(() => {
       update();

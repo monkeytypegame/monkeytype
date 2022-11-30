@@ -234,10 +234,10 @@ declare namespace MonkeyTypes {
     // time?: FunboxModeDuration;
   }
 
-  interface FunboxObject {
+  interface FunboxMetadata {
     name: string;
     info: string;
-    canGetPB?: boolean;
+    canGetPb?: boolean;
     alias?: string;
     forcedConfig?: MonkeyTypes.FunboxForcedConfig;
     properties?: FunboxProperty[];
@@ -739,7 +739,6 @@ declare namespace MonkeyTypes {
     exec?: (input?: string) => void;
     hover?: () => void;
     available?: () => void;
-    beforeSubgroup?: () => void;
     shouldFocusTestUI?: boolean;
   }
 
@@ -747,6 +746,7 @@ declare namespace MonkeyTypes {
     title: string;
     configKey?: keyof Config;
     list: Command[];
+    beforeList?: () => void;
   }
 
   interface Theme {

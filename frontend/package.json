@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "live": "npm run build-live && cd public && npx serve -p 5000",
+    "live": "npm run build-live && cd public && npx serve -p 3000",
     "audit": "npx webpack --config ./webpack/config.audit.js",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
     "build": "npx gulp build",

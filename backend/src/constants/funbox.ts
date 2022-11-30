@@ -1,149 +1,120 @@
-const Funboxes: MonkeyTypes.FunboxObject[] = [
-  {
-    name: "nausea",
-    canGetPB: true,
+const Funboxes: Record<string, MonkeyTypes.FunboxMetadata> = {
+  nausea: {
+    canGetPb: true,
     difficultyLevel: 2,
   },
-  {
-    name: "round_round_baby",
-    canGetPB: true,
+  round_round_baby: {
+    canGetPb: true,
     difficultyLevel: 3,
   },
-  {
-    name: "simon_says",
-    canGetPB: true,
+  simon_says: {
+    canGetPb: true,
     difficultyLevel: 1,
   },
-  {
-    name: "mirror",
-    canGetPB: true,
+  mirror: {
+    canGetPb: true,
     difficultyLevel: 3,
   },
-  {
-    name: "tts",
-    canGetPB: true,
+  tts: {
+    canGetPb: true,
     difficultyLevel: 1,
   },
-  {
-    name: "choo_choo",
-    canGetPB: true,
+  choo_choo: {
+    canGetPb: true,
     difficultyLevel: 2,
   },
-  {
-    name: "arrows",
-    canGetPB: false,
+  arrows: {
+    canGetPb: false,
     difficultyLevel: 1,
   },
-  {
-    name: "rAnDoMcAsE",
-    canGetPB: false,
+  rAnDoMcAsE: {
+    canGetPb: false,
     difficultyLevel: 2,
   },
-  {
-    name: "capitals",
-    canGetPB: false,
+  capitals: {
+    canGetPb: false,
     difficultyLevel: 1,
   },
-  {
-    name: "layoutfluid",
-    canGetPB: true,
+  layoutfluid: {
+    canGetPb: true,
     difficultyLevel: 1,
   },
-  {
-    name: "earthquake",
-    canGetPB: true,
+  earthquake: {
+    canGetPb: true,
     difficultyLevel: 1,
   },
-  {
-    name: "space_balls",
-    canGetPB: true,
+  space_balls: {
+    canGetPb: true,
     difficultyLevel: 0,
   },
-  {
-    name: "gibberish",
-    canGetPB: false,
+  gibberish: {
+    canGetPb: false,
     difficultyLevel: 1,
   },
-  {
-    name: "58008",
-    canGetPB: false,
+  "58008": {
+    canGetPb: false,
     difficultyLevel: 1,
   },
-  {
-    name: "ascii",
-    canGetPB: false,
+  ascii: {
+    canGetPb: false,
     difficultyLevel: 1,
   },
-  {
-    name: "specials",
-    canGetPB: false,
+  specials: {
+    canGetPb: false,
     difficultyLevel: 1,
   },
-  {
-    name: "plus_one",
-    canGetPB: true,
+  plus_one: {
+    canGetPb: true,
     difficultyLevel: 0,
   },
-  {
-    name: "plus_two",
-    canGetPB: true,
+  plus_two: {
+    canGetPb: true,
     difficultyLevel: 0,
   },
-  {
-    name: "read_ahead_easy",
-    canGetPB: true,
+  read_ahead_easy: {
+    canGetPb: true,
     difficultyLevel: 1,
   },
-  {
-    name: "read_ahead",
-    canGetPB: true,
+  read_ahead: {
+    canGetPb: true,
     difficultyLevel: 2,
   },
-  {
-    name: "read_ahead_hard",
-    canGetPB: true,
+  read_ahead_hard: {
+    canGetPb: true,
     difficultyLevel: 3,
   },
-  {
-    name: "memory",
-    canGetPB: true,
+  memory: {
+    canGetPb: true,
     difficultyLevel: 3,
   },
-  {
-    name: "nospace",
-    canGetPB: false,
+  nospace: {
+    canGetPb: false,
     difficultyLevel: 0,
   },
-  {
-    name: "poetry",
-    canGetPB: false,
+  poetry: {
+    canGetPb: false,
     difficultyLevel: 0,
   },
-  {
-    name: "wikipedia",
-    canGetPB: false,
+  wikipedia: {
+    canGetPb: false,
     difficultyLevel: 0,
   },
-  {
-    name: "weakspot",
-    canGetPB: false,
+  weakspot: {
+    canGetPb: false,
     difficultyLevel: 0,
   },
-  {
-    name: "pseudolang",
-    canGetPB: false,
+  pseudolang: {
+    canGetPb: false,
     difficultyLevel: 0,
   },
-  {
-    name: "IPv4",
-    canGetPB: false,
+  IPv4: {
+    canGetPb: false,
     difficultyLevel: 1,
   },
-  {
-    name: "IPv6",
-    canGetPB: false,
+  IPv6: {
+    canGetPb: false,
     difficultyLevel: 1,
   },
-];
+};
 
 export default Funboxes;

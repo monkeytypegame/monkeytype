@@ -16,6 +16,10 @@ export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
 export function setSnapshot(
   newSnapshot: MonkeyTypes.Snapshot | undefined
 ): void {
+  const originalBanned = dbSnapshot?.banned;
+  const originalVerified = dbSnapshot?.verified;
+
+  //not allowing user to override these values i guess?
   try {
     delete newSnapshot?.banned;
   } catch {}
@@ -23,6 +27,10 @@ export function setSnapshot(
     delete newSnapshot?.verified;
   } catch {}
   dbSnapshot = newSnapshot;
+  if (dbSnapshot) {
+    dbSnapshot.banned = originalBanned;
+    dbSnapshot.verified = originalVerified;
+  }
 }
 
 export async function initSnapshot(): Promise<
@@ -508,7 +516,7 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
     return funbox?.split("#").includes(fb.name);
   });
 
-  if (!funboxes.every((f) => f.canGetPB)) {
+  if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
 

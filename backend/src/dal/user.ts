@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
 import { updateUserEmail } from "../utils/auth";
-import { canGetPb, checkAndUpdatePb } from "../utils/pb";
+import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
@@ -348,7 +348,7 @@ export async function checkIfPb(
 ): Promise<boolean> {
   const { mode } = result;
 
-  if (!canGetPb(result)) return false;
+  if (!canFunboxGetPb(result)) return false;
 
   if (mode === "quote") {
     return false;
@@ -395,7 +395,7 @@ export async function checkIfTagPb(
   }
 
   const { mode, tags: resultTags } = result;
-  if (!canGetPb(result)) return [];
+  if (!canFunboxGetPb(result)) return [];
 
   if (mode === "quote") {
     return [];

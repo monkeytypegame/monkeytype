@@ -6,6 +6,7 @@ import * as ThemeController from "../../controllers/theme-controller";
 export const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Custom themes list...",
   // configKey: "customThemeId",
+  beforeList: (): void => update(),
   list: [],
 };
 
@@ -15,7 +16,6 @@ const commands: MonkeyTypes.Command[] = [
     display: "Custom themes...",
     icon: "fa-palette",
     subgroup,
-    beforeSubgroup: (): void => update(),
     available: (): boolean => {
       return !!Auth?.currentUser;
     },

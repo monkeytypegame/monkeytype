@@ -77,7 +77,7 @@ export function canSetConfigWithCurrentFunboxes(
 ): boolean {
   let errorCount = 0;
   if (key === "mode") {
-    let fb: MonkeyTypes.FunboxObject[] = [];
+    let fb: MonkeyTypes.FunboxMetadata[] = [];
     fb = fb.concat(
       FunboxList.get(funbox).filter(
         (f) =>

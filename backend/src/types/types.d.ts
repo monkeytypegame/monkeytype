@@ -81,6 +81,13 @@ declare namespace MonkeyTypes {
       topResultsToAnnounce: number;
       xpRewardBrackets: RewardBracket[];
     };
+    leaderboards: {
+      weeklyXp: {
+        enabled: boolean;
+        expirationTimeInDays: number;
+        xpRewardBrackets: RewardBracket[];
+      };
+    };
   }
 
   interface RewardBracket {
@@ -463,9 +470,8 @@ declare namespace MonkeyTypes {
     totalRating: number;
   }
 
-  interface FunboxObject {
-    name: string;
-    canGetPB: boolean;
+  interface FunboxMetadata {
+    canGetPb: boolean;
     difficultyLevel: number;
   }
 }
