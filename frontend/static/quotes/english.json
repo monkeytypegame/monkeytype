@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -38407,7 +38419,6 @@
       "approvedBy": "Smithster",
       "id": 6677
     },
-
     {
       "text": "I am Keqing, Yuheng of the Liyue Qixing. We live in an era of change, as the old order that has existed for a thousand years is about to be rewritten. Join me. Let us bear witness to this historical moment together.",
       "source": "Genshin Impact",
@@ -38497,6 +38508,370 @@
       "source": "Genshin Impact",
       "length": 248,
       "id": 6692
+    },
+    {
+      "text": "Let your plans be dark and impenetrable as night, and when you move, fall like a thunderbolt.",
+      "source": "Sun Tzu, The Art of War",
+      "length": 93,
+      "approvedBy": "Smithster",
+      "id": 6693
+    },
+    {
+      "text": "All warfare is based on deception. Hence, when we are able to attack, we must seem unable; when using our forces, we must appear inactive; when we are near, we must make the enemy believe we are far away; when far away, we must make him believe we are near.",
+      "source": "Sun Tzu, The Art of War",
+      "length": 257,
+      "approvedBy": "Smithster",
+      "id": 6694
+    },
+    {
+      "text": "You have to believe in the long-term plan you have but you need the short-term goals to motivate and inspire you.",
+      "source": "Roger Federer",
+      "length": 113,
+      "approvedBy": "Smithster",
+      "id": 6695
+    },
+    {
+      "text": "You truly are the lowest scum in history. You can’t pay back what you owe with money.",
+      "source": "JoJo's Bizarre Adventure: Stardust Crusaders",
+      "length": 85,
+      "approvedBy": "Smithster",
+      "id": 6696
+    },
+    {
+      "text": "Impossible? We did a lot of impossible things on this journey. I’m tired of hearing that things are impossible or useless. Those words mean nothing to us.",
+      "source": "JoJo's Bizarre Adventure: Stardust Crusaders",
+      "length": 154,
+      "approvedBy": "Smithster",
+      "id": 6697
+    },
+    {
+      "text": "Nice watch. Too bad you won't be able to tell the time after I break it. Break your face, that is.",
+      "source": "JoJo's Bizarre Adventure: Diamond Is Unbreakable",
+      "length": 98,
+      "approvedBy": "Smithster",
+      "id": 6698
+    },
+    {
+      "text": "JoJo, being a human means having limits. I've learned something... The more carefully you scheme, the more unexpected events come along. As long as you're human... I reject my humanity, Jojo!",
+      "source": "JoJo's Bizarre Adventure: Phantom Blood",
+      "length": 191,
+      "approvedBy": "Smithster",
+      "id": 6699
+    },
+    {
+      "text": "Oh no. I'm on the outside looking in, I never said what I really meant. I wasn't made to be medicine for you, it's true. You can't seem to make up your mind, when I told you I did with mine. You won't know if you never try, It's true.",
+      "source": "Dayglow, Medicine",
+      "length": 234,
+      "approvedBy": "Smithster",
+      "id": 6700
+    },
+    {
+      "text": "Wake up to reality! Nothing ever goes as planned in this world. The longer you live, the more you realize that in this reality, only pain, suffering, and futility exist.\n\n- Madara Uchiha",
+      "source": "Naruto ",
+      "length": 188,
+      "approvedBy": "Smithster",
+      "id": 6701
+    },
+    {
+      "text": "Everything is simply a shape, a form, an identifier to let others recognize me as me. But then, what am I? Is this me? My true self? My fake self? What is it that I am? Nobody understands me!",
+      "source": "Neon Genesis Evangelion",
+      "length": 193,
+      "approvedBy": "Smithster",
+      "id": 6702
+    },
+    {
+      "text": "In every heart, there is a room, a sanctuary safe and strong; to heal the wounds from lovers past, until a new one comes along.",
+      "source": "Billy Joel - And so it goes",
+      "length": 127,
+      "approvedBy": "Smithster",
+      "id": 6703
+    },
+    {
+      "text": "It's about drive, it's about power, we stay hungry, we devour. Put in the work, put in the hours and take whats ours. Black and Samoan in my veins, my culture banging with Strange. I changed the game so what's my name?",
+      "source": "Face Off",
+      "length": 218,
+      "approvedBy": "Smithster",
+      "id": 6704
+    },
+    {
+      "text": "No, I mean it. You've got a nice place. It's not every man that can live off the land, you know. You do your own thing in your own time. You should be proud.",
+      "source": "Easy Rider",
+      "length": 157,
+      "approvedBy": "Smithster",
+      "id": 6705
+    },
+    {
+      "text": "It is easy to see things in retrospect. But I was ignorant then of everything but my own happiness, and I don’t know what else to say except that life itself seemed very magical in those days: a web of symbol, coincidence, premonition, omen. Everything, somehow, fit together; some sly and benevolent Providence was revealing itself by degrees and I felt myself trembling on the brink of a fabulous discovery, as though any morning it was all going to come together–my future, my past, the whole of my life–and I was going to sit up in bed like a thunderbolt and say oh! oh! oh!",
+      "source": "The Secret History",
+      "length": 578,
+      "approvedBy": "Smithster",
+      "id": 6706
+    },
+    {
+      "text": "Which is better - to have rules and agree, or to hunt and kill? ",
+      "source": "Lord of the Flies",
+      "length": 64,
+      "approvedBy": "Smithster",
+      "id": 6707
+    },
+    {
+      "text": "Burning is the right way to paint it. You feel yourself getting so hot, day after day. Hotter and hotter. It gets to be too much. Even for stars. At some point they fizzle out or explode. Cease to be. But if you're looking up at the sky, you don't see it that way. You think those stars are still there. Some aren't. Some are already gone. Long gone. I guess, now, so am I.",
+      "source": "Dear Evan Hansen by Val Emmich",
+      "length": 373,
+      "approvedBy": "Smithster",
+      "id": 6708
+    },
+    {
+      "text": "And now let us believe in a long year that is given to us; new, untouched, and full of things that have never been.",
+      "source": "Rainier Maria Rilke",
+      "length": 115,
+      "approvedBy": "Smithster",
+      "id": 6709
+    },
+    {
+      "text": "This life is mine alone. So I have stopped asking people for directions to places they have never been.",
+      "source": "Untamed by Glennon Doyle",
+      "length": 103,
+      "approvedBy": "Smithster",
+      "id": 6710
+    },
+    {
+      "text": "Falling in love is like holding a candle. Initially it lightens up the world around you. Then it starts melting and hurts you. Finally, it goes out and everything is darker than ever, and all you are left with is the burn.",
+      "source": "If It's Not Love, Syed Arshad",
+      "length": 222,
+      "approvedBy": "Smithster",
+      "id": 6711
+    },
+    {
+      "text": "We are alone. Such is the curse of humanity, being surrounded by others always masking themselves while all of us feel isolated, separated from everyone else. Our sense of uniqueness and ego will always keep us this way, and it will take more than a revolution to end it. For now, we are alone.",
+      "source": "Alice Chary Garza",
+      "length": 294,
+      "approvedBy": "Smithster",
+      "id": 6712
+    },
+    {
+      "text": "Mental pain is less dramatic than physical pain, but it is more common and also more hard to bear. The frequent attempt to conceal mental pain increases the burden: it is easier to say \"My tooth is aching\" than to say \"My heart is broken.\"",
+      "source": "C.S. Lewis",
+      "length": 239,
+      "approvedBy": "Smithster",
+      "id": 6713
+    },
+    {
+      "text": "There are many types of monsters in this world. Monsters who will not show themselves, and who cause trouble. Monsters who abduct children. Monsters who devour dreams; monsters who suck blood, and monsters who always tell lies.",
+      "source": "Death note ",
+      "length": 227,
+      "approvedBy": "Smithster",
+      "id": 6714
+    },
+    {
+      "text": "He came. He left. Nothing else had changed. I had not changed. The world hadn't changed. Yet nothing would be the same. All that remains is dreammaking and strange remembrance.",
+      "source": "Call Me by Your Name",
+      "length": 176,
+      "approvedBy": "Smithster",
+      "id": 6715
+    },
+    {
+      "text": "Although Ganon is gone for now, there is still so much more for us to do, and so many painful memories that we must bear.",
+      "source": "Zelda - The Legend of Zelda: Breath of the Wild",
+      "length": 122,
+      "approvedBy": "Smithster",
+      "id": 6716
+    },
+    {
+      "text": "Link... You are the light. Our light... That must shine upon Hyrule once again. Now go.",
+      "source": "Zelda - The Legend of Zelda: Breath of the Wild",
+      "length": 85,
+      "approvedBy": "Smithster",
+      "id": 6717
+    },
+    {
+      "text": "Link... You may not be at a point where you have fully recovered your power or all of your memories, but courage need not be remembered, for it is never forgotten.",
+      "source": "Zelda - The Legend of Zelda: Breath of the Wild",
+      "length": 163,
+      "approvedBy": "Smithster",
+      "id": 6718
+    },
+    {
+      "text": "I've missed more than 9000 shots in my career. I've lost almost 300 games. 26 times, I've been trusted to take the game winning shot and missed. I've failed over and over and over again in my life. And that is why I succeed.",
+      "source": "Michael Jordan",
+      "length": 224,
+      "approvedBy": "Smithster",
+      "id": 6719
+    },
+    {
+      "text": "And those are the words of a gentleman? From the first moment I met you, your arrogance and conceit, your selfish disdain for the feelings of others, made me realize you were the last man in the world I could ever be prevailed upon to marry.",
+      "source": "Pride and Prejudice",
+      "length": 241,
+      "approvedBy": "Smithster",
+      "id": 6720
+    },
+    {
+      "text": "It's a beautiful day outside. Birds are singing, flowers are blooming. On days like these, kids like you... Should be burning in Hell.",
+      "source": "Undertale",
+      "length": 134,
+      "approvedBy": "Smithster",
+      "id": 6721
+    },
+    {
+      "text": "Time makes us sentimental. Perhaps, in the end, it is because of time that we suffer.",
+      "source": "Call Me by Your Name",
+      "length": 85,
+      "approvedBy": "Smithster",
+      "id": 6722
+    },
+    {
+      "text": "Now's my chance... I'm going to get stronger...and accept who I am... Strong enough so that when someone says \"even though you're a boy\" I'll be okay. I'll get better! Maybe talking to Mondo about it will help give me some courage...",
+      "source": "Danganronpa: Trigger Happy Havoc",
+      "length": 233,
+      "approvedBy": "Smithster",
+      "id": 6723
+    },
+    {
+      "text": "...I want to change. I wrapped myself in lies. I'm weak. I want to destroy that version of me forever! I have to change. I don't want to be weak anymore. You're so strong, it can't hurt you, right? Whatever secret Monokuma might tell us...",
+      "source": "Danganronpa: Trigger Happy Havoc",
+      "length": 239,
+      "approvedBy": "Smithster",
+      "id": 6724
+    },
+    {
+      "text": "Now it's time for our wrap up. Let's give it everything we've got. Ready? Begin! Artificial amateurs aren't at all amazing. Analytically, I assault, animate things. Broken barriers bounded by the bomb beat. Buildings are broken, basically I'm bombarding. Casually create catastrophes, casualties. Canceling cats got their canopies collapsing. Detonate a dime of dank daily doin' dough. Demonstrations, Don Dada on the down low. Eatin' other editors with each and every energetic. Epileptic episode, elevated etiquette. Furious fat fabulous fantastic. Flurries of funk felt feeding the fanatics. Gift got great global goods gone glorious. Gettin' Godly in his game with the goriest. Hit 'em high, hella hype, historical. Hey holocaust hints hear 'em holler at your homeboy. Imitators idolize, I intimidate. In a instant, I'll rise in a irate state. Juiced on my jams like jheri curls, jockin' joints. Justly, it's just me, writin' my journals. Kindly I'm kindling all kinds of ink on. Karate kick type Brits in my kingdom. Let me live a long life, lyrically lessons is. Learned lame louses just lose to my livery. My mind makes marvelous moves, masses. Marvel and move, many mock what I've mastered. Nap knowin' I'm nice naturally. Knack, never lack, make noise nationally. Operation, opposition, off, not optional. Out of sight, out of mind, wide beaming opticals. Perfected poem, powerful punchlines. Pummeling petty powder puffs in my prime. Quite quaint quotes keep quiet it's Quannum. Quarrelers ain't got a quarter of what we got, uh. Really raw raps, risin' up rapidly. Riding the rushing radioactivity. Super scientifical sound search sought. Silencing super fire saps that are soft. Tales ten times talented, they're too tough. Take that, challengers, get a tune up. Universal, unique untouched. Unadulterated, the raw uncut. Verb vice Lord victorious valid. Violate vibes that are vain make 'em vanished. Why I'm all well, would a wise wordsmith. Just weaving up words weeded up, on my work shift. Xerox, my X-ray-diation holes extra large. X-height letters and xylophone tones. Yellow back, yak mouth, young ones yaws. Yesterday's lawn yards sell our yawn. Zig zag zombies, zoomin' to the zenith. Zero in zen thoughts, over zealous rhyme Zea-lots. Good, can you say it faster?",
+      "source": "Alphabet Aerobics",
+      "length": 2286,
+      "approvedBy": "Smithster",
+      "id": 6725
+    },
+    {
+      "text": "Dreams make good stories, but everything important happens when we're awake.",
+      "source": "Dune",
+      "length": 76,
+      "approvedBy": "Smithster",
+      "id": 6726
+    },
+    {
+      "text": "Insanity is doing the same thing over and over again and expecting different results.",
+      "source": "Albert Einstein",
+      "length": 85,
+      "approvedBy": "Smithster",
+      "id": 6727
+    },
+    {
+      "text": "And where there was that memory... others came rising like ghostly tendrils out of some part of her mind that existed beyond the purely physical, somewhere that the rejuvenations and edits of the ship's medical suite could never reach. The holm, where her soul originated from, occupying the non-realm outside spacetime; both separate but still existing within the overall cosmos. Together, the two intersected, a contact which created the miracle that was the mind, animating flesh, delivering purpose to otherwise insensate clusters of mere organic chemistry.",
+      "source": "Light Chaser",
+      "length": 561,
+      "approvedBy": "Smithster",
+      "id": 6728
+    },
+    {
+      "text": "Time has not stood still. It has washed over me, washed me away, as if I'm nothing more than a woman of sand, left by a careless child too near the water. I have been obliterated for her. I am only a shadow now, far back behind the glib shiny surface of this photograph. A shadow of a shadow, as dead mothers become. You can see it in her eyes: I am not there.",
+      "source": "The Handmaid's Tale",
+      "length": 360,
+      "approvedBy": "Smithster",
+      "id": 6729
+    },
+    {
+      "text": "A person who thinks all the time has nothing to think about except thoughts. So, he loses touch with reality and lives in a world of illusions.",
+      "source": "Alan Watts",
+      "length": 143,
+      "approvedBy": "Smithster",
+      "id": 6730
+    },
+    {
+      "text": "The trick, William Potter, is not minding that it hurts.    ",
+      "source": "Lawrence of Arabia",
+      "length": 60,
+      "approvedBy": "Smithster",
+      "id": 6731
+    },
+    {
+      "text": "The violent passion that soaked his heart brought him almost to the verge of collapse. He judged that victory had yielded him nothing if it had not given him her as a prize.",
+      "source": "Book III of Gesta Danorum",
+      "length": 174,
+      "approvedBy": "Smithster",
+      "id": 6732
+    },
+    {
+      "text": "You cannot change your future, but you can change your habits, and surely your habits can change your future.",
+      "source": "Dr. APJ Abdul Kalam, Wings of Fire",
+      "length": 111,
+      "approvedBy": "Smithster",
+      "id": 6733
+    },
+    {
+      "text": "There are no more barriers to cross. All I have in common with the uncontrollable and the insane, the vicious and the evil, all the mayhem I have caused and my utter indifference toward it, I have now surpassed. My pain is constant and sharp, and I do not hope for a better world for anyone. In fact, I want my pain to be inflicted on others. I want no one to escape. But even after admitting this, there is no catharsis. My punishment continues to elude me, and I gain no deeper knowledge of myself. No new knowledge can be extracted from my telling. This confession has meant nothing.",
+      "source": "American Psycho",
+      "length": 586,
+      "approvedBy": "Smithster",
+      "id": 6734
+    },
+    {
+      "text": "I live in the American Gardens building on West 81st Street, on the 11th floor. My name is Patrick Bateman. I'm 27 years old. I believe in taking care of myself, in a balanced diet, in a rigorous exercise routine. In the morning if my face is a little puffy, I'll put on an ice pack while doing my stomach crunches. I can do a 1,000 now. After I remove the ice pack, I use a deep pore cleanser lotion. In the shower, I use a water-activated gel cleanser... then a honey-almond body scrub, and on the face, an exfoliating gel scrub. Then I apply an herb mint facial mask, which I leave on for ten minutes while I prepare the rest of my routine. I always use an aftershave lotion with little or no alcohol, because alcohol dries your face out and makes you look older. Then moisturizer, then an anti-aging eye balm, followed by a final moisturizing protective lotion. There is an idea of a Patrick Bateman. Some kind of abstraction. But there is no real me, only an entity, something illusory, and though I can hide my cold gaze and you can shake my hand and feel flesh gripping yours, and maybe you can even sense our lifestyles are probably comparable, I simply am not there.",
+      "source": "American Psycho",
+      "length": 1176,
+      "approvedBy": "Smithster",
+      "id": 6735
+    },
+    {
+      "text": "\"And my eyes! I see through hourglass pupils and therefore I see time-as it affects all things. Even as I look at you now, Tanis,\" the mage whispered, \"I see you dying, slowly, by inches. And so I see every living thing.\"",
+      "source": "Dragons of Autumn Twilight",
+      "length": 220,
+      "approvedBy": "Smithster",
+      "id": 6736
+    },
+    {
+      "text": "People think dreams aren't real just because they aren't made of matter, of particles. Dreams are real. But they are made of viewpoints, of images, of memories and puns and lost hopes.",
+      "source": "The Sandman",
+      "length": 184,
+      "approvedBy": "Smithster",
+      "id": 6737
+    },
+    {
+      "text": "Things need not have happened to be true. Tales and dreams are the shadow-truths that will endure when mere facts are dust and ashes, and forgot.",
+      "source": "The Sandman",
+      "length": 145,
+      "approvedBy": "Smithster",
+      "id": 6738
+    },
+    {
+      "text": "I move from dreamer to dreamer, from dream to dream, hunting for what I need. Slipping and sliding and flickering through the dreams; and the dreamer will wake, and wonder why this dream seemed different, wonder how real their lives can truly be.",
+      "source": "The Sandman",
+      "length": 246,
+      "approvedBy": "Smithster",
+      "id": 6739
+    },
+    {
+      "text": "One thing I've learned. You can know anything. It's all there. You just have to find it.",
+      "source": "The Sandman",
+      "length": 88,
+      "approvedBy": "Smithster",
+      "id": 6740
+    },
+    {
+      "text": "What power would Hell have if those here imprisoned were not able to dream of Heaven?",
+      "source": "The Sandman",
+      "length": 85,
+      "approvedBy": "Smithster",
+      "id": 6741
+    },
+    {
+      "text": "Words can never fully say what we want them to say, for they fumble, stammer, and break the best porcelain. The best one can hope for is to find along the way someone to share the path, content to walk in silence, for the heart communes best when it does not try to speak.",
+      "source": "Dragons of a Lost Star",
+      "length": 272,
+      "approvedBy": "Smithster",
+      "id": 6742
+    },
+    {
+      "text": "It is sometimes a mistake to climb; it is always a mistake never even to make the attempt. But is it really so bad, to fail? If you do not climb, you will not fall. This is true. But is it that hard to fail, that hard to fall? Sometimes you wake, and sometimes, yes, you die.",
+      "source": "The Sandman",
+      "length": 275,
+      "approvedBy": "Smithster",
+      "id": 6743
+    },
+    {
+      "text": "I like the stars. It's the illusion of permanence, I think. I mean, they're always flaring up and caving in and going out. But from here, I can pretend... I can pretend that things last.",
+      "source": "The Sandman",
+      "length": 186,
+      "approvedBy": "Smithster",
+      "id": 6744
     }
   ]
 }
