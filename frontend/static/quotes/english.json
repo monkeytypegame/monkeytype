@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -38568,14 +38556,14 @@
     {
       "text": "Wake up to reality! Nothing ever goes as planned in this world. The longer you live, the more you realize that in this reality, only pain, suffering, and futility exist.\n\n- Madara Uchiha",
       "source": "Naruto ",
-      "length": 188,
+      "length": 186,
       "approvedBy": "Smithster",
       "id": 6701
     },
     {
       "text": "Everything is simply a shape, a form, an identifier to let others recognize me as me. But then, what am I? Is this me? My true self? My fake self? What is it that I am? Nobody understands me!",
       "source": "Neon Genesis Evangelion",
-      "length": 193,
+      "length": 191,
       "approvedBy": "Smithster",
       "id": 6702
     },
@@ -38673,14 +38661,14 @@
     {
       "text": "Although Ganon is gone for now, there is still so much more for us to do, and so many painful memories that we must bear.",
       "source": "Zelda - The Legend of Zelda: Breath of the Wild",
-      "length": 122,
+      "length": 121,
       "approvedBy": "Smithster",
       "id": 6716
     },
     {
       "text": "Link... You are the light. Our light... That must shine upon Hyrule once again. Now go.",
       "source": "Zelda - The Legend of Zelda: Breath of the Wild",
-      "length": 85,
+      "length": 87,
       "approvedBy": "Smithster",
       "id": 6717
     },
@@ -38785,14 +38773,14 @@
     {
       "text": "The violent passion that soaked his heart brought him almost to the verge of collapse. He judged that victory had yielded him nothing if it had not given him her as a prize.",
       "source": "Book III of Gesta Danorum",
-      "length": 174,
+      "length": 173,
       "approvedBy": "Smithster",
       "id": 6732
     },
     {
       "text": "You cannot change your future, but you can change your habits, and surely your habits can change your future.",
       "source": "Dr. APJ Abdul Kalam, Wings of Fire",
-      "length": 111,
+      "length": 109,
       "approvedBy": "Smithster",
       "id": 6733
     },
@@ -38806,14 +38794,14 @@
     {
       "text": "I live in the American Gardens building on West 81st Street, on the 11th floor. My name is Patrick Bateman. I'm 27 years old. I believe in taking care of myself, in a balanced diet, in a rigorous exercise routine. In the morning if my face is a little puffy, I'll put on an ice pack while doing my stomach crunches. I can do a 1,000 now. After I remove the ice pack, I use a deep pore cleanser lotion. In the shower, I use a water-activated gel cleanser... then a honey-almond body scrub, and on the face, an exfoliating gel scrub. Then I apply an herb mint facial mask, which I leave on for ten minutes while I prepare the rest of my routine. I always use an aftershave lotion with little or no alcohol, because alcohol dries your face out and makes you look older. Then moisturizer, then an anti-aging eye balm, followed by a final moisturizing protective lotion. There is an idea of a Patrick Bateman. Some kind of abstraction. But there is no real me, only an entity, something illusory, and though I can hide my cold gaze and you can shake my hand and feel flesh gripping yours, and maybe you can even sense our lifestyles are probably comparable, I simply am not there.",
       "source": "American Psycho",
-      "length": 1176,
+      "length": 1175,
       "approvedBy": "Smithster",
       "id": 6735
     },
     {
       "text": "\"And my eyes! I see through hourglass pupils and therefore I see time-as it affects all things. Even as I look at you now, Tanis,\" the mage whispered, \"I see you dying, slowly, by inches. And so I see every living thing.\"",
       "source": "Dragons of Autumn Twilight",
-      "length": 220,
+      "length": 221,
       "approvedBy": "Smithster",
       "id": 6736
     },
