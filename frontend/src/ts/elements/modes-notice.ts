@@ -182,10 +182,9 @@ export async function update(): Promise<void> {
 
   if (Config.funbox !== "none") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox.replace(
-        /_/g,
-        " "
-      )}</div>`
+      `<div class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox
+        .replace(/_/g, " ")
+        .replace(/#/g, ", ")}</div>`
     );
   }
 

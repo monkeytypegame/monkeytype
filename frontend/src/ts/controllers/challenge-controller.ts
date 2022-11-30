@@ -2,7 +2,7 @@ import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as CustomText from "../test/custom-text";
-import * as Funbox from "../test/funbox";
+import * as Funbox from "../test/funbox/funbox";
 import Config, * as UpdateConfig from "../config";
 import * as TestUI from "../test/test-ui";
 import * as ConfigEvent from "../observables/config-event";
@@ -94,10 +94,29 @@ export function verify(
               }
             }
           } else if (requirementType == "funbox") {
-            const funboxMode = requirementValue["exact"];
+            const funboxMode = requirementValue["exact"]
+              .toString()
+              .split("#")
+              .sort()
+              .join("#");
             if (funboxMode != result.funbox) {
               requirementsMet = false;
-              failReasons.push(`${funboxMode} funbox not active`);
+              for (const f of funboxMode.split("#")) {
+                if (
+                  result.funbox?.split("#").find((rf) => rf == f) == undefined
+                ) {
+                  failReasons.push(`${f} funbox not active`);
+                }
+              }
+              if (result.funbox?.split("#")) {
+                for (const f of result.funbox.split("#")) {
+                  if (
+                    funboxMode.split("#").find((rf) => rf == f) == undefined
+                  ) {
+                    failReasons.push(`${f} funbox active`);
+                  }
+                }
+              }
             }
           } else if (requirementType == "raw") {
             const rawMode = Object.keys(requirementValue)[0];

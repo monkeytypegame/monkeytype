@@ -55,6 +55,37 @@
     box-sizing: border-box;
   "
 >
+  <style>
+    .noCssReinstallServiceWorker {
+      margin-top: 1rem;
+      padding: 1rem;
+      display: inline-block;
+      border-radius: 1rem;
+      background: #2c2e31;
+      transition: 0.125s;
+    }
+    .noCssReinstallServiceWorker:hover {
+      background: #d1d0c5;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+    }
+    .noCssReinstallServiceWorker:active {
+      background: #646669;
+    }
+  </style>
+  <script>
+    function reinstallServiceWorker() {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+      setTimeout(function () {
+        window.location.reload();
+      }, 500);
+    }
+  </script>
   <div
     style="
       display: grid;
@@ -77,6 +108,7 @@
             border-radius: 1rem;
             background: #2c2e31;
             margin-top: 1rem;
+            margin-bottom: 1rem;
           "
         >
           Ctrl
@@ -114,6 +146,15 @@
         >
           R
         </span>
+      </span>
+      <br />
+      You could also try to reinstall the service worker:
+      <br />
+      <span
+        class="noCssReinstallServiceWorker"
+        onclick="reinstallServiceWorker()"
+      >
+        Reinstall
       </span>
     </span>
     <span>

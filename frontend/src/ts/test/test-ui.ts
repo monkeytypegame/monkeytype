@@ -16,6 +16,7 @@ import * as Hangul from "hangul-js";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
+import * as FunboxList from "./funbox/funbox-list";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -104,20 +105,12 @@ export function updateActiveElement(backspace?: boolean): void {
 function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
+  const funbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWordHtml
+  );
   for (let c = 0; c < word.length; c++) {
-    if (Config.funbox === "arrows") {
-      if (word.charAt(c) === "↑") {
-        retval += `<letter><i class="fas fa-arrow-up"></i></letter>`;
-      }
-      if (word.charAt(c) === "↓") {
-        retval += `<letter><i class="fas fa-arrow-down"></i></letter>`;
-      }
-      if (word.charAt(c) === "←") {
-        retval += `<letter><i class="fas fa-arrow-left"></i></letter>`;
-      }
-      if (word.charAt(c) === "→") {
-        retval += `<letter><i class="fas fa-arrow-right"></i></letter>`;
-      }
+    if (funbox?.functions?.getWordHtml) {
+      retval += funbox.functions.getWordHtml(word.charAt(c), true);
     } else if (word.charAt(c) === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
     } else if (word.charAt(c) === "\n") {
@@ -425,6 +418,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
       wordHighlightClassString = "correct";
     }
 
+    const funbox = FunboxList.get(Config.funbox).find(
+      (f) => f.functions?.getWordHtml
+    );
     for (let i = 0; i < input.length; i++) {
       const charCorrect = currentWord[i] == input[i];
 
@@ -436,18 +432,10 @@ export function updateWordElement(showError = !Config.blindMode): void {
       let currentLetter = currentWord[i];
       let tabChar = "";
       let nlChar = "";
-      if (Config.funbox === "arrows") {
-        if (currentLetter === "↑") {
-          currentLetter = `<i class="fas fa-arrow-up"></i>`;
-        }
-        if (currentLetter === "↓") {
-          currentLetter = `<i class="fas fa-arrow-down"></i>`;
-        }
-        if (currentLetter === "←") {
-          currentLetter = `<i class="fas fa-arrow-left"></i>`;
-        }
-        if (currentLetter === "→") {
-          currentLetter = `<i class="fas fa-arrow-right"></i>`;
+      if (funbox?.functions?.getWordHtml) {
+        const cl = funbox.functions.getWordHtml(currentLetter);
+        if (cl != "") {
+          currentLetter = cl;
         }
       } else if (currentLetter === "\t") {
         tabChar = "tabChar";
@@ -510,19 +498,8 @@ export function updateWordElement(showError = !Config.blindMode): void {
     }
 
     for (let i = input.length; i < currentWord.length; i++) {
-      if (Config.funbox === "arrows") {
-        if (currentWord[i] === "↑") {
-          ret += `<letter><i class="fas fa-arrow-up"></i></letter>`;
-        }
-        if (currentWord[i] === "↓") {
-          ret += `<letter><i class="fas fa-arrow-down"></i></letter>`;
-        }
-        if (currentWord[i] === "←") {
-          ret += `<letter><i class="fas fa-arrow-left"></i></letter>`;
-        }
-        if (currentWord[i] === "→") {
-          ret += `<letter><i class="fas fa-arrow-right"></i></letter>`;
-        }
+      if (funbox?.functions?.getWordHtml) {
+        ret += funbox.functions.getWordHtml(currentWord[i], true);
       } else if (currentWord[i] === "\t") {
         ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (currentWord[i] === "\n") {

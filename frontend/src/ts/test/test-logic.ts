@@ -11,7 +11,7 @@ import * as TestStats from "./test-stats";
 import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
 import * as Focus from "./focus";
-import * as Funbox from "./funbox";
+import * as Funbox from "./funbox/funbox";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
 import * as PaceCaret from "./pace-caret";
@@ -28,10 +28,7 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
-import * as Poetry from "./poetry";
-import * as Wikipedia from "./wikipedia";
 import * as TodayTracker from "./today-tracker";
-import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
@@ -57,6 +54,9 @@ import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
+import * as FunboxList from "./funbox/funbox-list";
+import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
+import * as KeymapEvent from "../observables/keymap-event";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -92,229 +92,212 @@ export async function punctuateWord(
 
   const lastChar = Misc.getLastChar(previousWord);
 
-  if (Config.funbox === "58008") {
-    if (currentWord.length > 3) {
-      if (Math.random() < 0.5) {
-        word = Misc.setCharAt(
-          word,
-          Misc.randomIntFromRange(1, word.length - 2),
-          "."
-        );
+  const funbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.punctuateWord
+  );
+  if (funbox?.functions?.punctuateWord) {
+    return funbox.functions.punctuateWord(word);
+  }
+  if (
+    currentLanguage != "code" &&
+    currentLanguage != "georgian" &&
+    (index == 0 || shouldCapitalize(lastChar))
+  ) {
+    //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
+
+    word = Misc.capitalizeFirstLetterOfEachWord(word);
+
+    if (currentLanguage == "turkish") {
+      word = word.replace(/I/g, "İ");
+    }
+
+    if (currentLanguage == "spanish" || currentLanguage == "catalan") {
+      const rand = Math.random();
+      if (rand > 0.9) {
+        word = "¿" + word;
+        spanishSentenceTracker = "?";
+      } else if (rand > 0.8) {
+        word = "¡" + word;
+        spanishSentenceTracker = "!";
       }
-      if (Math.random() < 0.75) {
-        const index = Misc.randomIntFromRange(1, word.length - 2);
-        if (
-          word[index - 1] !== "." &&
-          word[index + 1] !== "." &&
-          word[index + 1] !== "0"
+    }
+  } else if (
+    (Math.random() < 0.1 &&
+      lastChar != "." &&
+      lastChar != "," &&
+      index != maxindex - 2) ||
+    index == maxindex - 1
+  ) {
+    if (currentLanguage == "spanish" || currentLanguage == "catalan") {
+      if (spanishSentenceTracker == "?" || spanishSentenceTracker == "!") {
+        word += spanishSentenceTracker;
+        spanishSentenceTracker = "";
+      }
+    } else {
+      const rand = Math.random();
+      if (rand <= 0.8) {
+        if (currentLanguage == "kurdish") {
+          word += ".";
+        } else if (currentLanguage === "nepali") {
+          word += "।";
+        } else {
+          word += ".";
+        }
+      } else if (rand > 0.8 && rand < 0.9) {
+        if (currentLanguage == "french") {
+          word = "?";
+        } else if (
+          currentLanguage == "arabic" ||
+          currentLanguage == "persian" ||
+          currentLanguage == "urdu" ||
+          currentLanguage == "kurdish"
         ) {
-          const special = Misc.randomElementFromArray(["/", "*", "-", "+"]);
-          word = Misc.setCharAt(word, index, special);
+          word += "؟";
+        } else if (currentLanguage == "greek") {
+          word += ";";
+        } else {
+          word += "?";
+        }
+      } else {
+        if (currentLanguage == "french") {
+          word = "!";
+        } else {
+          word += "!";
         }
       }
     }
-  } else {
-    if (
-      currentLanguage != "code" &&
-      currentLanguage != "georgian" &&
-      (index == 0 || shouldCapitalize(lastChar))
-    ) {
-      //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
-
-      word = Misc.capitalizeFirstLetterOfEachWord(word);
-
-      if (currentLanguage == "turkish") {
-        word = word.replace(/I/g, "İ");
-      }
-
-      if (currentLanguage == "spanish" || currentLanguage == "catalan") {
-        const rand = Math.random();
-        if (rand > 0.9) {
-          word = "¿" + word;
-          spanishSentenceTracker = "?";
-        } else if (rand > 0.8) {
-          word = "¡" + word;
-          spanishSentenceTracker = "!";
-        }
-      }
-    } else if (
-      (Math.random() < 0.1 &&
-        lastChar != "." &&
-        lastChar != "," &&
-        index != maxindex - 2) ||
-      index == maxindex - 1
-    ) {
-      if (currentLanguage == "spanish" || currentLanguage == "catalan") {
-        if (spanishSentenceTracker == "?" || spanishSentenceTracker == "!") {
-          word += spanishSentenceTracker;
-          spanishSentenceTracker = "";
-        }
-      } else {
-        const rand = Math.random();
-        if (rand <= 0.8) {
-          if (currentLanguage == "kurdish") {
-            word += ".";
-          } else if (currentLanguage === "nepali") {
-            word += "।";
-          } else {
-            word += ".";
-          }
-        } else if (rand > 0.8 && rand < 0.9) {
-          if (currentLanguage == "french") {
-            word = "?";
-          } else if (
-            currentLanguage == "arabic" ||
-            currentLanguage == "persian" ||
-            currentLanguage == "urdu" ||
-            currentLanguage == "kurdish"
-          ) {
-            word += "؟";
-          } else if (currentLanguage == "greek") {
-            word += ";";
-          } else {
-            word += "?";
-          }
-        } else {
-          if (currentLanguage == "french") {
-            word = "!";
-          } else {
-            word += "!";
-          }
-        }
-      }
-    } else if (
-      Math.random() < 0.01 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      currentLanguage !== "russian"
-    ) {
-      word = `"${word}"`;
-    } else if (
-      Math.random() < 0.011 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      currentLanguage !== "russian" &&
-      currentLanguage !== "ukrainian"
-    ) {
-      word = `'${word}'`;
-    } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
-      if (currentLanguage == "code") {
-        const r = Math.random();
-        if (r < 0.25) {
-          word = `(${word})`;
-        } else if (r < 0.5) {
-          word = `{${word}}`;
-        } else if (r < 0.75) {
-          word = `[${word}]`;
-        } else {
-          word = `<${word}>`;
-        }
-      } else {
+  } else if (
+    Math.random() < 0.01 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    currentLanguage !== "russian"
+  ) {
+    word = `"${word}"`;
+  } else if (
+    Math.random() < 0.011 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    currentLanguage !== "russian" &&
+    currentLanguage !== "ukrainian"
+  ) {
+    word = `'${word}'`;
+  } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
+    if (currentLanguage == "code") {
+      const r = Math.random();
+      if (r < 0.25) {
         word = `(${word})`;
-      }
-    } else if (
-      Math.random() < 0.013 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      lastChar != ";" &&
-      lastChar != "؛" &&
-      lastChar != ":"
-    ) {
-      if (currentLanguage == "french") {
-        word = ":";
-      } else if (currentLanguage == "greek") {
-        word = "·";
+      } else if (r < 0.5) {
+        word = `{${word}}`;
+      } else if (r < 0.75) {
+        word = `[${word}]`;
       } else {
-        word += ":";
+        word = `<${word}>`;
       }
-    } else if (
-      Math.random() < 0.014 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      previousWord != "-"
-    ) {
-      word = "-";
-    } else if (
-      Math.random() < 0.015 &&
-      lastChar != "," &&
-      lastChar != "." &&
-      lastChar != ";" &&
-      lastChar != "؛" &&
-      lastChar != ":"
-    ) {
-      if (currentLanguage == "french") {
-        word = ";";
-      } else if (currentLanguage == "greek") {
-        word = "·";
-      } else if (currentLanguage == "arabic" || currentLanguage == "kurdish") {
-        word += "؛";
-      } else {
-        word += ";";
-      }
-    } else if (Math.random() < 0.2 && lastChar != ",") {
-      if (
-        currentLanguage == "arabic" ||
-        currentLanguage == "urdu" ||
-        currentLanguage == "persian" ||
-        currentLanguage == "kurdish"
-      ) {
-        word += "،";
-      } else {
-        word += ",";
-      }
-    } else if (Math.random() < 0.25 && currentLanguage == "code") {
-      const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
-      const specialsC = [
-        "{",
-        "}",
-        "[",
-        "]",
-        "(",
-        ")",
-        ";",
-        "=",
-        "+",
-        "%",
-        "/",
-        "/*",
-        "*/",
-        "//",
-        "!=",
-        "==",
-        "<=",
-        ">=",
-        "||",
-        "&&",
-        "<<",
-        ">>",
-        "%=",
-        "&=",
-        "*=",
-        "++",
-        "+=",
-        "--",
-        "-=",
-        "/=",
-        "^=",
-        "|=",
-      ];
-
-      if (
-        (Config.language.startsWith("code_c") &&
-          !Config.language.startsWith("code_css")) ||
-        Config.language.startsWith("code_arduino")
-      ) {
-        word = Misc.randomElementFromArray(specialsC);
-      } else {
-        word = Misc.randomElementFromArray(specials);
-      }
-    } else if (
-      Math.random() < 0.5 &&
-      currentLanguage === "english" &&
-      (await EnglishPunctuation.check(word))
-    ) {
-      word = await applyEnglishPunctuationToWord(word);
+    } else {
+      word = `(${word})`;
     }
+  } else if (
+    Math.random() < 0.013 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    lastChar != ";" &&
+    lastChar != "؛" &&
+    lastChar != ":"
+  ) {
+    if (currentLanguage == "french") {
+      word = ":";
+    } else if (currentLanguage == "greek") {
+      word = "·";
+    } else {
+      word += ":";
+    }
+  } else if (
+    Math.random() < 0.014 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    previousWord != "-"
+  ) {
+    word = "-";
+  } else if (
+    Math.random() < 0.015 &&
+    lastChar != "," &&
+    lastChar != "." &&
+    lastChar != ";" &&
+    lastChar != "؛" &&
+    lastChar != ":"
+  ) {
+    if (currentLanguage == "french") {
+      word = ";";
+    } else if (currentLanguage == "greek") {
+      word = "·";
+    } else if (currentLanguage == "arabic" || currentLanguage == "kurdish") {
+      word += "؛";
+    } else {
+      word += ";";
+    }
+  } else if (Math.random() < 0.2 && lastChar != ",") {
+    if (
+      currentLanguage == "arabic" ||
+      currentLanguage == "urdu" ||
+      currentLanguage == "persian" ||
+      currentLanguage == "kurdish"
+    ) {
+      word += "،";
+    } else {
+      word += ",";
+    }
+  } else if (Math.random() < 0.25 && currentLanguage == "code") {
+    const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
+    const specialsC = [
+      "{",
+      "}",
+      "[",
+      "]",
+      "(",
+      ")",
+      ";",
+      "=",
+      "+",
+      "%",
+      "/",
+      "/*",
+      "*/",
+      "//",
+      "!=",
+      "==",
+      "<=",
+      ">=",
+      "||",
+      "&&",
+      "<<",
+      ">>",
+      "%=",
+      "&=",
+      "*=",
+      "++",
+      "+=",
+      "--",
+      "-=",
+      "/=",
+      "^=",
+      "|=",
+    ];
+
+    if (
+      (Config.language.startsWith("code_c") &&
+        !Config.language.startsWith("code_css")) ||
+      Config.language.startsWith("code_arduino")
+    ) {
+      word = Misc.randomElementFromArray(specialsC);
+    } else {
+      word = Misc.randomElementFromArray(specials);
+    }
+  } else if (
+    Math.random() < 0.5 &&
+    currentLanguage === "english" &&
+    (await EnglishPunctuation.check(word))
+  ) {
+    word = await applyEnglishPunctuationToWord(word);
   }
   return word;
 }
@@ -351,9 +334,8 @@ export function startTest(): boolean {
   TestTimer.clear();
   Monkey.show();
 
-  if (Config.funbox === "memory") {
-    Funbox.resetMemoryTimer();
-    $("#wordsWrapper").addClass("hidden");
+  for (const f of FunboxList.get(Config.funbox)) {
+    if (f.functions?.start) f.functions.start();
   }
 
   try {
@@ -514,7 +496,7 @@ export function restart(options = {} as RestartOptions): void {
 
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
-  Funbox.resetMemoryTimer();
+  MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
   if (ActivePage.get() == "test" && window.scrollY > 0) {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -573,34 +555,19 @@ export function restart(options = {} as RestartOptions): void {
 
       await Funbox.rememberSettings();
 
-      if (Config.funbox === "arrows") {
-        UpdateConfig.setPunctuation(false, true);
-        UpdateConfig.setNumbers(false, true);
-      } else if (Config.funbox === "58008") {
-        UpdateConfig.setNumbers(false, true);
-      } else if (Config.funbox === "specials") {
-        UpdateConfig.setPunctuation(false, true);
-        UpdateConfig.setNumbers(false, true);
-      } else if (Config.funbox === "ascii") {
-        UpdateConfig.setPunctuation(false, true);
-        UpdateConfig.setNumbers(false, true);
-      }
-      if (
-        options.withSameWordset &&
-        (Config.funbox === "plus_one" || Config.funbox === "plus_two")
-      ) {
-        const toPush = [];
-        if (Config.funbox === "plus_one") {
-          toPush.push(TestWords.words.get(0));
-          toPush.push(TestWords.words.get(1));
+      if (options.withSameWordset) {
+        const funboxToPush = FunboxList.get(Config.funbox)
+          .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+          ?.properties?.find((fp) => fp.startsWith("toPush:"));
+        if (funboxToPush) {
+          const toPushCount = +funboxToPush.split(":")[1];
+          const toPush = [];
+          for (let i = 0; i < toPushCount; i++) {
+            toPush.push(TestWords.words.get(i));
+          }
+          TestWords.words.reset();
+          toPush.forEach((word) => TestWords.words.push(word));
         }
-        if (Config.funbox === "plus_two") {
-          toPush.push(TestWords.words.get(0));
-          toPush.push(TestWords.words.get(1));
-          toPush.push(TestWords.words.get(2));
-        }
-        TestWords.words.reset();
-        toPush.forEach((word) => TestWords.words.push(word));
       }
       if (!options.withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
@@ -617,7 +584,7 @@ export function restart(options = {} as RestartOptions): void {
         TestInput.input.reset();
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
-          Keymap.highlightKey(
+          KeymapEvent.highlight(
             TestWords.words
               .getCurrent()
               .substring(
@@ -652,11 +619,8 @@ export function restart(options = {} as RestartOptions): void {
       (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
       (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
-      if (Config.funbox === "memory") {
-        Funbox.startMemoryTimer();
-        if (Config.keymapMode === "next") {
-          UpdateConfig.setKeymapMode("react");
-        }
+      for (const f of FunboxList.get(Config.funbox)) {
+        if (f.functions?.restart) f.functions.restart();
       }
 
       if (Config.showAverage !== "off") {
@@ -668,36 +632,12 @@ export function restart(options = {} as RestartOptions): void {
       const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
       let fbtext = "";
       if (Config.funbox !== "none") {
-        fbtext = " " + Config.funbox;
+        fbtext = " " + Config.funbox.split("#").join(" ");
       }
       $(".pageTest #premidTestMode").text(
         `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
       );
       $(".pageTest #premidSecondsLeft").text(Config.time);
-
-      if (Config.funbox === "layoutfluid") {
-        UpdateConfig.setLayout(
-          Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty",
-          true
-        );
-        UpdateConfig.setKeymapLayout(
-          Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty",
-          true
-        );
-        Keymap.highlightKey(
-          TestWords.words
-            .getCurrent()
-            .substring(
-              TestInput.input.current.length,
-              TestInput.input.current.length + 1
-            )
-            .toString()
-        );
-      }
 
       $("#result").addClass("hidden");
       $("#testModesNotice").removeClass("hidden").css({
@@ -731,36 +671,21 @@ export function restart(options = {} as RestartOptions): void {
   );
 }
 
-function applyFunboxesToWord(word: string, wordset?: Wordset.Wordset): string {
-  if (Config.funbox === "rAnDoMcAsE") {
-    let randomcaseword = "";
-    for (let i = 0; i < word.length; i++) {
-      if (i % 2 != 0) {
-        randomcaseword += word[i].toUpperCase();
-      } else {
-        randomcaseword += word[i];
-      }
+function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWord
+  );
+  if (wordFunbox?.functions?.getWord) {
+    word = wordFunbox.functions.getWord(wordset);
+  }
+  return word;
+}
+
+function applyFunboxesToWord(word: string): string {
+  for (const f of FunboxList.get(Config.funbox)) {
+    if (f.functions?.alterText) {
+      word = f.functions.alterText(word);
     }
-    word = randomcaseword;
-  } else if (Config.funbox === "capitals") {
-    word = Misc.capitalizeFirstLetterOfEachWord(word);
-  } else if (Config.funbox === "gibberish") {
-    word = Misc.getGibberish();
-  } else if (Config.funbox === "arrows") {
-    word = Misc.getArrows();
-  } else if (Config.funbox === "58008") {
-    word = Misc.getNumbers(7);
-    if (Config.language.startsWith("kurdish")) {
-      word = Misc.convertNumberToArabic(word);
-    } else if (Config.language.startsWith("nepali")) {
-      word = Misc.convertNumberToNepali(word);
-    }
-  } else if (Config.funbox === "specials") {
-    word = Misc.getSpecials();
-  } else if (Config.funbox === "ascii") {
-    word = Misc.getASCII();
-  } else if (wordset !== undefined && Config.funbox === "weakspot") {
-    word = WeakSpot.getWord(wordset);
   }
   return word;
 }
@@ -783,7 +708,7 @@ function applyLazyModeToWord(
 }
 
 async function getNextWord(
-  wordset: Wordset.Wordset,
+  wordset: Misc.Wordset,
   language: MonkeyTypes.LanguageObject,
   wordsBound: number
 ): Promise<string> {
@@ -846,7 +771,7 @@ async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/^ | $/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = applyFunboxesToWord(randomWord, wordset);
+  randomWord = getFunboxWord(randomWord, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
   if (Config.punctuation) {
@@ -868,6 +793,8 @@ async function getNextWord(
       }
     }
   }
+
+  randomWord = applyFunboxesToWord(randomWord);
 
   return randomWord;
 }
@@ -948,13 +875,12 @@ export async function init(): Promise<void> {
   }
 
   let wordsBound = 100;
-  if (Config.funbox === "plus_one") {
-    wordsBound = 2;
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-  } else if (Config.funbox === "plus_two") {
-    wordsBound = 3;
+
+  const funboxToPush = FunboxList.get(Config.funbox)
+    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+  if (funboxToPush) {
+    wordsBound = +funboxToPush.split(":")[1];
     if (Config.mode === "words" && Config.words < wordsBound) {
       wordsBound = Config.words;
     }
@@ -1020,36 +946,32 @@ export async function init(): Promise<void> {
     if (Config.mode == "custom") {
       wordList = CustomText.text;
     }
-    const wordset = Wordset.withWords(wordList, Config.funbox);
+    const wordset = await Wordset.withWords(wordList);
+    let wordCount = 0;
 
-    if (
-      (Config.funbox == "wikipedia" || Config.funbox == "poetry") &&
-      Config.mode != "custom"
-    ) {
-      let wordCount = 0;
-
-      // If mode is words, get as many sections as you need until the wordCount is fullfilled
+    const sectionFunbox = FunboxList.get(Config.funbox).find(
+      (f) => f.functions?.pullSection
+    );
+    if (sectionFunbox?.functions?.pullSection) {
       while (
         (Config.mode == "words" && Config.words >= wordCount) ||
         (Config.mode === "time" && wordCount < 100)
       ) {
-        const section =
-          Config.funbox == "wikipedia"
-            ? await Wikipedia.getSection(Config.language)
-            : await Poetry.getPoem();
+        const section = await sectionFunbox.functions.pullSection(
+          Config.language
+        );
 
-        if (Config.funbox == "poetry" && section === false) {
+        if (section === false) {
           Notifications.add(
-            "Error while getting poetry. Please try again later",
+            "Error while getting section. Please try again later",
             -1
           );
-          UpdateConfig.setFunbox("none");
+          UpdateConfig.toggleFunbox(sectionFunbox.name);
           restart();
           return;
         }
 
         if (section === undefined) continue;
-        if (section === false) continue;
 
         for (const word of section.words) {
           if (wordCount >= Config.words && Config.mode == "words") {
@@ -1060,7 +982,9 @@ export async function init(): Promise<void> {
           TestWords.words.push(word);
         }
       }
-    } else {
+    }
+
+    if (wordCount == 0) {
       for (let i = 0; i < wordsBound; i++) {
         const randomWord = await getNextWord(wordset, language, wordsBound);
 
@@ -1220,7 +1144,7 @@ export async function init(): Promise<void> {
   // } else {
   TestUI.showWords();
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    Keymap.highlightKey(
+    KeymapEvent.highlight(
       TestWords.words
         .getCurrent()
         .substring(
@@ -1236,8 +1160,11 @@ export async function init(): Promise<void> {
 
 export async function addWord(): Promise<void> {
   let bound = 100;
-  if (Config.funbox === "plus_one") bound = 1;
-  if (Config.funbox === "plus_two") bound = 2;
+  const funboxToPush = FunboxList.get(Config.funbox)
+    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+  const toPushCount: string | undefined = funboxToPush?.split(":")[1];
+  if (toPushCount) bound = +toPushCount - 1;
   if (
     TestWords.words.length - TestInput.input.history.length > bound ||
     (Config.mode === "words" &&
@@ -1257,25 +1184,26 @@ export async function addWord(): Promise<void> {
     return;
   }
 
-  if (Config.funbox === "wikipedia" || Config.funbox == "poetry") {
+  const sectionFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.pullSection
+  );
+  if (sectionFunbox?.functions?.pullSection) {
     if (TestWords.words.length - TestWords.words.currentIndex < 20) {
-      const section =
-        Config.funbox == "wikipedia"
-          ? await Wikipedia.getSection(Config.language)
-          : await Poetry.getPoem();
+      const section = await sectionFunbox.functions.pullSection(
+        Config.language
+      );
 
-      if (Config.funbox == "poetry" && section === false) {
+      if (section === false) {
         Notifications.add(
-          "Error while getting poetry. Please try again later",
+          "Error while getting section. Please try again later",
           -1
         );
-        UpdateConfig.setFunbox("none");
+        UpdateConfig.toggleFunbox(sectionFunbox.name);
         restart();
         return;
       }
 
       if (section === undefined) return;
-      if (section === false) return;
 
       let wordCount = 0;
       for (const word of section.words) {
@@ -1286,8 +1214,6 @@ export async function addWord(): Promise<void> {
         TestWords.words.push(word);
         TestUI.addWord(word);
       }
-    } else {
-      return;
     }
   }
 
@@ -1299,7 +1225,7 @@ export async function addWord(): Promise<void> {
           ...(await Misc.getCurrentLanguage(Config.language)),
           words: CustomText.text,
         };
-  const wordset = Wordset.withWords(language.words, Config.funbox);
+  const wordset = await Wordset.withWords(language.words);
 
   const randomWord = await getNextWord(wordset, language, bound);
 
@@ -1551,6 +1477,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestTimer.clear();
   Funbox.clear();
   Monkey.hide();
+  ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
@@ -2091,6 +2018,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     if (eventKey === "showAllLines" && !nosave) restart();
     if (eventKey === "keymapMode" && !nosave) restart();
     if (eventKey === "tapeMode" && !nosave) restart();
+    if (
+      eventKey === "customLayoutFluid" &&
+      Config.funbox.includes("layoutfluid")
+    ) {
+      restart();
+    }
   }
   if (eventKey === "lazyMode" && eventValue === false && !nosave) {
     rememberLazyMode = false;
