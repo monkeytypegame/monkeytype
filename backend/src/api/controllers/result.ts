@@ -31,7 +31,7 @@ import {
   incrementResult,
   incrementDailyLeaderboard,
 } from "../../utils/prometheus";
-import * as George from "../../tasks/george";
+import GeorgeQueue from "../../queues/george-queue";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
@@ -334,7 +334,7 @@ export async function addResult(
   if (result.mode === "time" && String(result.mode2) === "60") {
     incrementBananas(uid, result.wpm);
     if (isPb && user.discordId) {
-      George.updateDiscordRole(user.discordId, result.wpm);
+      GeorgeQueue.updateDiscordRole(user.discordId, result.wpm);
     }
   }
 
@@ -343,7 +343,7 @@ export async function addResult(
     AutoRoleList.includes(result.challenge) &&
     user.discordId
   ) {
-    George.awardChallenge(user.discordId, result.challenge);
+    GeorgeQueue.awardChallenge(user.discordId, result.challenge);
   } else {
     delete result.challenge;
   }
