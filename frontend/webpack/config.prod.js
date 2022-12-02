@@ -82,48 +82,78 @@ const PRODUCTION_CONFIG = {
       //include the generated css and js files
       maximumFileSizeToCacheInBytes: 11000000,
       exclude: [
-        /html\/.*\.html/,
-        /LICENSE\.txt/,
-        /\.DS_Store/,
-        /\.map$/,
-        /^manifest.*\.js$/,
-        /languages\/.*\.json/,
-        /quotes\/.*\.json/,
-        /themes\/.*\.css/,
-        /challenges\/.*\.txt/,
-        /sound\/.*\.wav/,
-        /images\/.*\.(png|jpg)/,
-        /webfonts\/.+/,
+        // /html\/.*\.html/,
+        // /LICENSE\.txt/,
+        // /\.DS_Store/,
+        // /\.map$/,
+        // /^manifest.*\.js$/,
+        // /languages\/.*\.json/,
+        // /quotes\/.*\.json/,
+        // /themes\/.*\.css/,
+        // /challenges\/.*\.txt/,
+        // /sound\/.*\.wav/,
+        // /images\/.*\.(png|jpg)/,
+        // /webfonts\/.+/,
+        /./,
       ],
       runtimeCaching: [
+        // {
+        //   urlPattern: /.+\.(jpg|jpeg|gif|png|svg)/,
+        //   handler: "CacheFirst",
+        // },
+        // {
+        //   urlPattern: /.+\.(eot|otf|ttf|ttc|woff|woff2)/,
+        //   handler: "CacheFirst",
+        // },
+        // // {
+        // //   urlPattern: /.+\.(json|wav|txt|css)/,
+        // //   handler: "NetworkFirst",
+        // // },
+        // {
+        //   urlPattern: /.+\.min\.(js|css)/,
+        //   handler: "CacheFirst",
+        // },
+        // {
+        //   urlPattern: /.+\..{8}\.(js|css)/,
+        //   handler: "CacheFirst",
+        // },
         {
-          urlPattern: /languages\/.*\.json/,
-          handler: "StaleWhileRevalidate",
+          urlPattern: /.+/,
+          handler: "NetworkFirst",
         },
-        {
-          urlPattern: /quotes\/.*\.json/,
-          handler: "StaleWhileRevalidate",
-        },
-        {
-          urlPattern: /themes\/.*\.css/,
-          handler: "StaleWhileRevalidate",
-        },
-        {
-          urlPattern: /challenges\/.*\.txt/,
-          handler: "StaleWhileRevalidate",
-        },
-        {
-          urlPattern: /sound\/.*\.wav/,
-          handler: "StaleWhileRevalidate",
-        },
-        {
-          urlPattern: /images\/.*\.(png|jpg)/,
-          handler: "StaleWhileRevalidate",
-        },
-        {
-          urlPattern: /webfonts\/.+/,
-          handler: "CacheFirst",
-        },
+
+        // {
+        //   urlPattern: /languages\/.*/,
+        //   handler: "StaleWhileRevalidate",
+        // },
+        // {
+        //   urlPattern: /quotes\/.*/,
+        //   handler: "StaleWhileRevalidate",
+        // },
+        // {
+        //   urlPattern: /themes\/.*/,
+        //   handler: "StaleWhileRevalidate",
+        // },
+        // {
+        //   urlPattern: /challenges\/.*/,
+        //   handler: "StaleWhileRevalidate",
+        // },
+        // {
+        //   urlPattern: /layouts\/.*/,
+        //   handler: "StaleWhileRevalidate",
+        // },
+        // {
+        //   urlPattern: /sound\/.*\.wav/,
+        //   handler: "StaleWhileRevalidate",
+        // },
+        // {
+        //   urlPattern: /images\/.*\.(png|jpg)/,
+        //   handler: "StaleWhileRevalidate",
+        // },
+        // {
+        //   urlPattern: /webfonts\/.+/,
+        //   handler: "CacheFirst",
+        // },
       ],
     }),
   ],
