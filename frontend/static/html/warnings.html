@@ -80,6 +80,11 @@
         for (let registration of registrations) {
           registration.unregister();
         }
+        caches.keys().then((cacheNames) => {
+          for (let cacheName of cacheNames) {
+            caches.delete(cacheName);
+          }
+        });
       });
       setTimeout(function () {
         window.location.reload();
