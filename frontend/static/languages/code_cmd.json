@@ -1,0 +1,29 @@
+{
+  "name": "code_cmd",
+  "leftToRight": true,
+  "noLazyMode": true,
+  "words": [
+"dir",
+"color"
+"robocopy"
+"takeown"
+"icalcs"
+"copy"
+"xcopy"
+"sc"
+"schtasks"
+    "ren"
+    "rename"
+    "print"
+    "pushd"
+    "cd"
+    "chkdisk"
+    "diskpart"
+    "wmic"
+    "taskkill"
+    "tasklist"
+    "doskey"
+    "exit"
+    
+  ]
+}
