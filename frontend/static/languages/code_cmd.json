@@ -27,6 +27,17 @@
     "goto"
     "find"
     "findstr"
-    
+    "ver"
+    "verify"
+  "systeminfo"
+    "md"
+    "mkdir"
+    "cls"
+    "if"
+    "label"
+    "break"
+    "call"
+    "dir"
+    "rmdir"
   ]
 }
