@@ -798,5 +798,10 @@
     "name": "earthsong",
     "bgColor": "#292521",
     "mainColor": "#509452"
+  },
+  {
+    "name": "peter_griffin",
+    "bgColor": "#ffffff",
+    "mainColor": "#fab5a6"
   }
 ]
