@@ -24,6 +24,9 @@
     "tasklist"
     "doskey"
     "exit"
+    "goto"
+    "find"
+    "findstr"
     
   ]
 }
