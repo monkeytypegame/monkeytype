@@ -14,7 +14,6 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -28,9 +27,10 @@ jobs:
         run: exit 1
 
   build:
+    name: build
     needs: [pre-build]
     runs-on: ubuntu-latest
-    if: needs.pre-build.steps.filter.outputs.changes != '[]'
+    if: needs.pre-build.outputs.changes != '[]'
     steps:
       - uses: actions/checkout@v2
       - name: Set up Node.js
