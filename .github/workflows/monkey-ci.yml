@@ -9,6 +9,10 @@ on:
   push:
     branches: [master]
 
+concurrency:
+  group: group-${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   pre-ci:
     name: pre-ci
@@ -16,28 +20,15 @@ jobs:
     outputs:
       should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
       should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
-      assets-any-json: ${{ steps.export-changes.outputs.any-json }}
-      assets-language-json: ${{ steps.export-changes.outputs.language-json }}
-      assets-quotes-json: ${{ steps.export-changes.outputs.quotes-json }}
-      assets-other-json: ${{ steps.export-changes.outputs.other-json }}
+      assets-json: ${{ steps.export-changes.outputs.any-json }}
 
     steps:
       - uses: dorny/paths-filter@v2
         id: filter
         with:
           filters: |
-            any-json:
+            json:
               - 'frontend/**/*.json'
-            language-json:
-              - 'frontend/static/languages/*.json'
-            quotes-json:
-              - 'frontend/static/quotes/*.json'
-            other-json:
-              - 'frontend/static/funbox/*.json'
-              - 'frontend/static/fonts/*.json'
-              - 'frontend/static/themes/*.json'
-              - 'frontend/static/challenges/*.json'
-              - 'frontend/static/layouts/*.json'
             be-src:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
             fe-src:
@@ -54,10 +45,7 @@ jobs:
         run: |
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
-          echo "assets-any-json=${{ steps.filter.outputs.any-json }}" >> $GITHUB_OUTPUT
-          echo "assets-language-json=${{ steps.filter.outputs.language-json }}" >> $GITHUB_OUTPUT
-          echo "assets-quotes-json=${{ steps.filter.outputs.quotes-json }}" >> $GITHUB_OUTPUT
-          echo "assets-other-json=${{ steps.filter.outputs.other-json }}" >> $GITHUB_OUTPUT
+          echo "assets-json=${{ steps.filter.outputs.assets-json }}" >> $GITHUB_OUTPUT
 
   ci-be:
     name: ci-be
@@ -118,15 +106,28 @@ jobs:
     name: ci-assets
     needs: [pre-ci]
     runs-on: ubuntu-latest
-    # if: needs.pre-ci.outputs.assets-any-json == 'true'
+    if: needs.pre-ci.outputs.assets-any-json == 'true'
     steps:
       - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            language-json:
+              - 'frontend/static/languages/*.json'
+            quotes-json:
+              - 'frontend/static/quotes/*.json'
+            other-json:
+              - 'frontend/static/funbox/*.json'
+              - 'frontend/static/fonts/*.json'
+              - 'frontend/static/themes/*.json'
+              - 'frontend/static/challenges/*.json'
+              - 'frontend/static/layouts/*.json'
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - name: log
-        run: echo "${{ toJSON(needs.pre-ci) }}"
+
       - name: Install dependencies
         run: npm ci & cd frontend && npm ci
 
@@ -134,13 +135,13 @@ jobs:
         run: npm run pr-check-lint-json
 
       - name: Validate languages JSON
-        if: needs.pre-ci.outputs.assets-language-json == 'true'
+        if: steps.filter.outputs.language-json == 'true'
         run: npm run pr-check-language-json
 
       - name: Validate quotes JSON
-        if: needs.pre-ci.outputs.assets-quotes-json == 'true'
+        if: steps.filter.outputs.quotes-json == 'true'
         run: npm run pr-check-quote-json
 
       - name: Validate other JSON
-        if: needs.pre-ci.outputs.assets-other-json == 'true'
+        if: steps.filter.outputs.other-json == 'true'
         run: npm run pr-check-other-json
