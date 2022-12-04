@@ -22,7 +22,7 @@ function getDateVersion(): string {
 
 function getVersion(): string {
   if (process.env.MODE === "dev") {
-    return "DEVELOPMENT-VERSION-2";
+    return "DEVELOPMENT-VERSION";
   }
 
   if (existsSync(SERVER_VERSION_FILE_PATH)) {
