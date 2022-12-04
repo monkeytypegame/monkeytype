@@ -80,7 +80,7 @@ jobs:
           node-version: "16.13.2"
 
       - name: Install dependencies
-        run: cd backend && npm ci
+        run: npm ci & cd backend && npm ci
 
       - name: Check pretty
         run: npm run pretty-code-be
@@ -107,7 +107,7 @@ jobs:
         run: mv ./firebase-config-example.ts ./firebase-config-live.ts
 
       - name: Install dependencies
-        run: cd frontend && npm ci
+        run: npm ci & cd frontend && npm ci
 
       - name: Check pretty
         run: npm run pretty-code-fe
@@ -122,9 +122,12 @@ jobs:
     name: ci-assets
     needs: [pre-ci]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets-any-json == 'true'
+    if: needs.pre-ci.outputs.assets.any-json == 'true'
     steps:
     - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm ci & cd frontend && npm ci
 
     - name: Lint JSON
       run: npm run pr-check-lint-json
