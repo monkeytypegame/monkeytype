@@ -11,7 +11,7 @@ jobs:
     name: pre-build
     runs-on: ubuntu-latest
     outputs:
-       should-build: ${{ steps.filter.outputs.should-build }}
+       should-build: ${{ steps.export-changes.outputs.should-build }}
     steps:
       - uses: dorny/paths-filter@v2
         id: filter
@@ -21,17 +21,20 @@ jobs:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
             anti-cheat:
               - 'backend/**/anticheat/**'
+
       - name: Check Anti-cheat
         if: steps.filter.outputs.anti-cheat == 'true'
         run: exit 1
+
       - name: Export changes
+        id: export-changes
         run: echo "should-build=${{steps.filter.outputs.be-src}}" >> $GITHUB_OUTPUT
 
   build:
     name: build
     needs: [pre-build]
     runs-on: ubuntu-latest
-      # if: needs.pre-build.outputs.should-build == true
+    # if: needs.pre-build.outputs.should-build == true
     steps:
       - name: log
         run: echo "${{ toJSON(needs.pre-build) }}"
