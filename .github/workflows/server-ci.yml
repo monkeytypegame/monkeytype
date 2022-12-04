@@ -1,3 +1,5 @@
+name: Server CI
+
 on:
   pull_request:
     branches: [master, dev]
@@ -5,7 +7,8 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  pre-build:
+    name: pre-build
     permissions:
       checks: write
       pull-requests: write
@@ -20,31 +23,31 @@ jobs:
               - 'backend/**/*.{ts,js,json,lua,css,html}'
             anti-cheat:
               - 'backend/**/anticheat/**'
-      
-      - name: Check for changes
-        if: steps.filter.outputs.changes == '[]'
-        run: exit 0
-
       - name: Check Anti-cheat
         if: steps.filter.outputs.anti-cheat == 'true'
         run: exit 1
-      
+
+  build:
+    needs: [pre-build]
+    runs-on: ubuntu-latest
+    if: needs.pre-build.steps.filter.outputs.changes == '[]'
+    steps:
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
           node-version: "16.13.2"
 
-      - name: Install global dependencies
+      - name: Install dependencies
         run: npm ci & cd backend && npm ci
-      
+
       - name: Check pretty
         run: npm run pretty-code-be
-      
+
       - name: Check lint
         run: npm run lint-be
 
       - name: Build
         run: npm run pr-check-build-be
-      
+
       - name: Test
         run: npm run test-be
