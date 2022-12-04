@@ -19,6 +19,7 @@ jobs:
        fixtures-other-json: ${{ steps.export-changes.outputs.other-json }}
 
     steps:
+      - uses: actions/checkout@v2
       - uses: dorny/paths-filter@v2
         id: filter
         with:
