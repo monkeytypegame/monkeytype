@@ -13,10 +13,10 @@ jobs:
     outputs:
        should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
        should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
-       fixtures-any-json: ${{ steps.export-changes.outputs.any-json }}
-       fixtures-language-json: ${{ steps.export-changes.outputs.language-json }}
-       fixtures-quotes-json: ${{ steps.export-changes.outputs.quotes-json }}
-       fixtures-other-json: ${{ steps.export-changes.outputs.other-json }}
+       assets-any-json: ${{ steps.export-changes.outputs.any-json }}
+       assets-language-json: ${{ steps.export-changes.outputs.language-json }}
+       assets-quotes-json: ${{ steps.export-changes.outputs.quotes-json }}
+       assets-other-json: ${{ steps.export-changes.outputs.other-json }}
 
     steps:
       - uses: actions/checkout@v2
@@ -52,11 +52,10 @@ jobs:
         run: |
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
-          echo "fixtures-any-json=${{ steps.filter.outputs.any-json }}" >> $GITHUB_OUTPUT
-          echo "fixtures-language-json=${{ steps.filter.outputs.language-json }}" >> $GITHUB_OUTPUT
-          echo "fixtures-quotes-json=${{ steps.filter.outputs.quotes-json }}" >> $GITHUB_OUTPUT
-          echo "fixtures-other-json=${{ steps.filter.outputs.other-json }}" >> $GITHUB_OUTPUT
-
+          echo "assets-any-json=${{ steps.filter.outputs.any-json }}" >> $GITHUB_OUTPUT
+          echo "assets-language-json=${{ steps.filter.outputs.language-json }}" >> $GITHUB_OUTPUT
+          echo "assets-quotes-json=${{ steps.filter.outputs.quotes-json }}" >> $GITHUB_OUTPUT
+          echo "assets-other-json=${{ steps.filter.outputs.other-json }}" >> $GITHUB_OUTPUT
 
       - name: Set up Node.js
         if: steps.filter.outputs.changes != '[]'
@@ -119,11 +118,11 @@ jobs:
       - name: Build
         run: npm run pr-check-ts
   
-  ci-fixtures:
-    name: ci-fixtures
+  ci-assets:
+    name: ci-assets
     needs: [pre-ci]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.fixtures-any-json == 'true'
+    if: needs.pre-ci.outputs.assets-any-json == 'true'
     steps:
     - uses: actions/checkout@v2
 
@@ -131,13 +130,13 @@ jobs:
       run: npm run pr-check-lint-json
 
     - name: Validate languages JSON
-      if: needs.pre-ci.outputs.fixtures-language-json == 'true'
+      if: needs.pre-ci.outputs.assets-language-json == 'true'
       run: npm run pr-check-language-json
 
     - name: Validate quotes JSON
-      if: needs.pre-ci.outputs.fixtures-quotes-json == 'true'
+      if: needs.pre-ci.outputs.assets-quotes-json == 'true'
       run: npm run pr-check-quote-json
 
     - name: Validate other JSON
-      if: needs.pre-ci.outputs.fixtures-other-json == 'true'
+      if: needs.pre-ci.outputs.assets-other-json == 'true'
       run: npm run pr-check-other-json

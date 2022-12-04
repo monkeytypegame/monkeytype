@@ -43,6 +43,8 @@ export async function withRetry(
       return await retry(data, completeOpts);
     }
 
+    console.log('yo');
+
     return data;
   };
 
