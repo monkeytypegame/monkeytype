@@ -55,7 +55,7 @@ jobs:
           echo "fixtures-any-json=${{ steps.filter.outputs.any-json }}" >> $GITHUB_OUTPUT
           echo "fixtures-language-json=${{ steps.filter.outputs.language-json }}" >> $GITHUB_OUTPUT
           echo "fixtures-quotes-json=${{ steps.filter.outputs.quotes-json }}" >> $GITHUB_OUTPUT
-          echo "fixtures-other-json=${{ steps.filters.outputs.other-json }}" >> $GITHUB_OUTPUT
+          echo "fixtures-other-json=${{ steps.filter.outputs.other-json }}" >> $GITHUB_OUTPUT
 
 
       - name: Set up Node.js
