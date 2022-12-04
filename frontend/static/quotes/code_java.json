@@ -122,10 +122,10 @@
       "length": 235
     },
     {
-      "text": "public int removeAtIndex(int index) {\n\tif (index < 0 || index >= size()) {\n\t\tSystem.out.println(\"index out of bounds or list is empty\");\n\t}\n\tNode curr = null;\n\tint elem = 0;\n\tif (index != 0) {\n\t\tcurr = getNodeAtIndex(index - 1);\t\t\n\t}\n\treturn remove(curr);\n}",
+      "text": "public int removeAtIndex(int index) {\n\tif (index < 0 || index >= size()) {\n\t\tSystem.out.println(\"index out of bounds or list is empty\");\n\t}\n\tNode curr = null;\n\tint elem = 0;\n\tif (index != 0) {\n\t\tcurr = getNodeAtIndex(index - 1);\n\t}\n\treturn remove(curr);\n}",
       "source": "Remove an Element using its Index in a Linked List",
       "id": 20,
-      "length": 257
+      "length": 255
     },
     {
       "text": "public boolean add(int elem) {\n\tif (elems.contains(elem)) {\n\t\treturn false;\n\t}\n\telems.add(elem);\n\treturn true;\n}",
