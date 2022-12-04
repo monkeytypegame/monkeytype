@@ -9,9 +9,6 @@ on:
 jobs:
   pre-build:
     name: pre-build
-    permissions:
-      checks: write
-      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v2
@@ -32,6 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-build.outputs.changes != '[]'
     steps:
+      - name: log
+        run: echo ${{ needs.pre-build.outputs }}
+
       - uses: actions/checkout@v2
       - name: Set up Node.js
         uses: actions/setup-node@v1
