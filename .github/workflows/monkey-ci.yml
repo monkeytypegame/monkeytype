@@ -20,7 +20,7 @@ jobs:
     outputs:
       should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
       should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
-      assets-json: ${{ steps.export-changes.outputs.any-json }}
+      assets-json: ${{ steps.export-changes.outputs.assets-json }}
 
     steps:
       - uses: dorny/paths-filter@v2
@@ -45,7 +45,7 @@ jobs:
         run: |
           echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
           echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
-          echo "assets-json=${{ steps.filter.outputs.assets-json }}" >> $GITHUB_OUTPUT
+          echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
 
   ci-be:
     name: ci-be
@@ -106,7 +106,7 @@ jobs:
     name: ci-assets
     needs: [pre-ci]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets-any-json == 'true'
+    if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
       - uses: actions/checkout@v2
       - uses: dorny/paths-filter@v2
