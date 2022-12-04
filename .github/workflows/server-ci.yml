@@ -30,7 +30,7 @@ jobs:
     if: needs.pre-build.outputs.changes != '[]'
     steps:
       - name: log
-        run: echo ${{ toJSON(needs.pre-build.outputs.changes) }}
+        run: echo ${{ toJSON(needs.pre-build) }}
 
       - uses: actions/checkout@v2
       - name: Set up Node.js
