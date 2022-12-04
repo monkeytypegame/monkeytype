@@ -15,7 +15,7 @@ const wait = async (delay: number): Promise<number> =>
 const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
   shouldRetry: (statusCode: number): boolean =>
     statusCode >= 500 && statusCode !== 503,
-  retryAttempts: 3,
+  retryAttempts: 4,
   retryDelayMs: 3000,
 };
 
@@ -42,8 +42,6 @@ export async function withRetry(
       --completeOpts.retryAttempts;
       return await retry(data, completeOpts);
     }
-
-    console.log('yo');
 
     return data;
   };
