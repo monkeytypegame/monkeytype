@@ -25,13 +25,15 @@ jobs:
         if: steps.filter.outputs.anti-cheat == 'true'
         run: exit 1
       - name: Export changes
-        run: echo "should-build=${{steps.filter.outputs.be-src}}" >> $GITHUB_OUTPUT
+        run: |
+          echo "should-build=${{steps.filter.outputs.be-src}}" >> $GITHUB_OUTPUT
+          echo "${{ toJSON() }}"
 
   build:
     name: build
     needs: [pre-build]
     runs-on: ubuntu-latest
-    if: needs.pre-build.outputs.should-build == true
+    # if: needs.pre-build.outputs.should-build == true
     steps:
       - name: log
         run: echo ${{ toJSON(needs.pre-build) }}
