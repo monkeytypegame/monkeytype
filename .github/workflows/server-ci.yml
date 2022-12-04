@@ -25,18 +25,16 @@ jobs:
         if: steps.filter.outputs.anti-cheat == 'true'
         run: exit 1
       - name: Export changes
-        run: |
-          echo "should-build=${{steps.filter.outputs.be-src}}" >> $GITHUB_OUTPUT
-          echo "${{ toJSON() }}"
+        run: echo "should-build=${{steps.filter.outputs.be-src}}" >> $GITHUB_OUTPUT
 
   build:
     name: build
     needs: [pre-build]
     runs-on: ubuntu-latest
-    # if: needs.pre-build.outputs.should-build == true
+      # if: needs.pre-build.outputs.should-build == true
     steps:
       - name: log
-        run: echo ${{ toJSON(needs.pre-build) }}
+        run: echo "${{ toJSON(needs.pre-build) }}"
 
       - uses: actions/checkout@v2
       - name: Set up Node.js
