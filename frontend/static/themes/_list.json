@@ -813,5 +813,15 @@
     "name": "tokyo_night",
     "bgColor": "#1a1b26",
     "mainColor": "#c0caf5"
+  },
+  {
+    "name": "sunset",
+    "bgColor": "#08183a",
+    "mainColor": "#ffe373"
+  },
+  {
+    "name": "ube",
+    "bgColor": "#32283e",
+    "mainColor": "#c8c8c8"
   }
 ]
