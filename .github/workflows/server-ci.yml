@@ -34,11 +34,8 @@ jobs:
     name: build
     needs: [pre-build]
     runs-on: ubuntu-latest
-    # if: needs.pre-build.outputs.should-build == true
+    if: needs.pre-build.outputs.should-build == true
     steps:
-      - name: log
-        run: echo "${{ toJSON(needs.pre-build) }}"
-
       - uses: actions/checkout@v2
       - name: Set up Node.js
         uses: actions/setup-node@v1
