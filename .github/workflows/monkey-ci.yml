@@ -5,7 +5,7 @@ env:
 
 on:
   pull_request:
-    branches: [master, dev]
+    branches: [master]
   push:
     branches: [master]
 
@@ -118,14 +118,15 @@ jobs:
     name: ci-assets
     needs: [pre-ci]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets-any-json == 'true'
+    # if: needs.pre-ci.outputs.assets-any-json == 'true'
     steps:
       - uses: actions/checkout@v2
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
           node-version: ${{ env.NODE_VERSION }}
-
+      - name: log
+        run: echo "${{ toJSON(needs.pre-ci) }}"
       - name: Install dependencies
         run: npm ci & cd frontend && npm ci
 
