@@ -30,7 +30,7 @@ jobs:
   build:
     needs: [pre-build]
     runs-on: ubuntu-latest
-    if: needs.pre-build.steps.filter.outputs.changes == '[]'
+    if: needs.pre-build.steps.filter.outputs.changes != '[]'
     steps:
       - name: Set up Node.js
         uses: actions/setup-node@v1
