@@ -34,7 +34,7 @@ jobs:
     name: build
     needs: [pre-build]
     runs-on: ubuntu-latest
-    if: needs.pre-build.outputs.should-build == true
+    if: needs.pre-build.outputs.should-build == 'true'
     steps:
       - uses: actions/checkout@v2
       - name: Set up Node.js
