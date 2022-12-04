@@ -41,6 +41,7 @@
     "html-minimizer-webpack-plugin": "3.5.0",
     "html-webpack-plugin": "5.5.0",
     "json-minimizer-webpack-plugin": "3.3.0",
+    "jsonschema": "1.4.0",
     "madge": "5.0.1",
     "mini-css-extract-plugin": "2.6.0",
     "sass": "1.49.9",
