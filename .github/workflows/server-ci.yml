@@ -1,0 +1,50 @@
+on:
+  pull_request:
+    branches: [master, dev]
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    permissions:
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            be-src:
+              - 'backend/**/*.{ts,js,json,lua,css,html}'
+            anti-cheat:
+              - 'backend/**/anticheat/**'
+      
+      - name: Check for changes
+        if: steps.filter.outputs.changes == '[]'
+        run: exit 0
+
+      - name: Check Anti-cheat
+        if: steps.filter.outputs.anti-cheat == 'true'
+        run: exit 1
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.13.2"
+
+      - name: Install global dependencies
+        run: npm ci & cd backend && npm ci
+      
+      - name: Check pretty
+        run: npm run pretty-code-be
+      
+      - name: Check lint
+        run: npm run lint-be
+
+      - name: Build
+        run: npm run pr-check-build-be
+      
+      - name: Test
+        run: npm run test-be
