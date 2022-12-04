@@ -1,5 +1,8 @@
 name: Monkey CI
 
+env:
+  NODE_VERSION: "16.13.2"
+
 on:
   pull_request:
     branches: [master, dev]
@@ -11,12 +14,12 @@ jobs:
     name: pre-ci
     runs-on: ubuntu-latest
     outputs:
-       should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
-       should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
-       assets-any-json: ${{ steps.export-changes.outputs.any-json }}
-       assets-language-json: ${{ steps.export-changes.outputs.language-json }}
-       assets-quotes-json: ${{ steps.export-changes.outputs.quotes-json }}
-       assets-other-json: ${{ steps.export-changes.outputs.other-json }}
+      should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
+      should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
+      assets-any-json: ${{ steps.export-changes.outputs.any-json }}
+      assets-language-json: ${{ steps.export-changes.outputs.language-json }}
+      assets-quotes-json: ${{ steps.export-changes.outputs.quotes-json }}
+      assets-other-json: ${{ steps.export-changes.outputs.other-json }}
 
     steps:
       - uses: actions/checkout@v2
@@ -57,16 +60,6 @@ jobs:
           echo "assets-quotes-json=${{ steps.filter.outputs.quotes-json }}" >> $GITHUB_OUTPUT
           echo "assets-other-json=${{ steps.filter.outputs.other-json }}" >> $GITHUB_OUTPUT
 
-      - name: Set up Node.js
-        if: steps.filter.outputs.changes != '[]'
-        uses: actions/setup-node@v1
-        with:
-          node-version: "16.13.2"
-
-      - name: Install global dependencies
-        if: steps.filter.outputs.changes != '[]'
-        run: npm ci
-
   ci-be:
     name: ci-be
     needs: [pre-ci]
@@ -77,7 +70,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "16.13.2"
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
         run: npm ci & cd backend && npm ci
@@ -101,6 +94,10 @@ jobs:
     if: needs.pre-ci.outputs.should-build-fe == 'true'
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
@@ -114,32 +111,36 @@ jobs:
 
       - name: Check lint
         run: npm run lint-fe
-      
+
       - name: Build
         run: npm run pr-check-ts
-  
+
   ci-assets:
     name: ci-assets
     needs: [pre-ci]
     runs-on: ubuntu-latest
-    if: needs.pre-ci.outputs.assets.any-json == 'true'
+    if: needs.pre-ci.outputs.assets-any-json == 'true'
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
-    - name: Install dependencies
-      run: npm ci & cd frontend && npm ci
+      - name: Install dependencies
+        run: npm ci & cd frontend && npm ci
 
-    - name: Lint JSON
-      run: npm run pr-check-lint-json
+      - name: Lint JSON
+        run: npm run pr-check-lint-json
 
-    - name: Validate languages JSON
-      if: needs.pre-ci.outputs.assets-language-json == 'true'
-      run: npm run pr-check-language-json
+      - name: Validate languages JSON
+        if: needs.pre-ci.outputs.assets-language-json == 'true'
+        run: npm run pr-check-language-json
 
-    - name: Validate quotes JSON
-      if: needs.pre-ci.outputs.assets-quotes-json == 'true'
-      run: npm run pr-check-quote-json
+      - name: Validate quotes JSON
+        if: needs.pre-ci.outputs.assets-quotes-json == 'true'
+        run: npm run pr-check-quote-json
 
-    - name: Validate other JSON
-      if: needs.pre-ci.outputs.assets-other-json == 'true'
-      run: npm run pr-check-other-json
+      - name: Validate other JSON
+        if: needs.pre-ci.outputs.assets-other-json == 'true'
+        run: npm run pr-check-other-json
