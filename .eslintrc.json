@@ -58,18 +58,14 @@
       }
     ],
     "no-duplicate-imports": ["error"],
-    "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-var-requires": "off",
     "unicorn/prevent-abbreviations": "off",
     "unicorn/prefer-top-level-await": "off",
     "unicorn/prefer-number-properties": "off",
     "unicorn/prefer-ternary": ["error", "only-single-line"],
     "unicorn/prefer-switch": "off",
     "unicorn/no-null": "off",
-    "unicorn/filename-case": "off"
-    // "@typescript-eslint/no-floating-promises": "error" // consider adding these
-    // "@typescript-eslint/strict-boolean-expressions": "warn",
+    "unicorn/filename-case": "off",
+    "unicorn/template-indent": "off"
   },
   "overrides": [
     {
@@ -86,7 +82,6 @@
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "error",
-        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
           "error",
           { "argsIgnorePattern": "^(_|e|event)", "varsIgnorePattern": "^_" }
@@ -100,6 +95,9 @@
           }
         ],
         "@typescript-eslint/promise-function-async": "warn"
+        // "@typescript-eslint/no-floating-promises": "error" // consider adding these
+        // "@typescript-eslint/strict-boolean-expressions": "error" // this is a pain
+        // "@typescript-eslint/no-unnecessary-condition": "error"
       },
       "parserOptions": {
         "ecmaVersion": 12,
