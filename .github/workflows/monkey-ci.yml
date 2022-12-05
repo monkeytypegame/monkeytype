@@ -1,0 +1,147 @@
+name: Monkey CI
+
+env:
+  NODE_VERSION: "16.13.2"
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+concurrency:
+  group: group-${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  pre-ci:
+    name: pre-ci
+    runs-on: ubuntu-latest
+    outputs:
+      should-build-be: ${{ steps.export-changes.outputs.should-build-be }}
+      should-build-fe: ${{ steps.export-changes.outputs.should-build-fe }}
+      assets-json: ${{ steps.export-changes.outputs.assets-json }}
+
+    steps:
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            json:
+              - 'frontend/**/*.json'
+            be-src:
+              - 'backend/**/*.{ts,js,json,lua,css,html}'
+            fe-src:
+              - 'frontend/**/*.{ts,scss}'
+            anti-cheat:
+              - 'backend/**/anticheat/**'
+
+      - name: Check Anti-cheat
+        if: steps.filter.outputs.anti-cheat == 'true'
+        run: exit 1
+
+      - name: Export changes
+        id: export-changes
+        run: |
+          echo "should-build-be=${{ steps.filter.outputs.be-src }}" >> $GITHUB_OUTPUT
+          echo "should-build-fe=${{ steps.filter.outputs.fe-src }}" >> $GITHUB_OUTPUT
+          echo "assets-json=${{ steps.filter.outputs.json }}" >> $GITHUB_OUTPUT
+
+  ci-be:
+    name: ci-be
+    needs: [pre-ci]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-be == 'true'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci & cd backend && npm ci
+
+      - name: Check pretty
+        run: npm run pretty-code-be
+
+      - name: Check lint
+        run: npm run lint-be
+
+      - name: Build
+        run: npm run pr-check-build-be
+
+      - name: Test
+        run: npm run test-be
+
+  ci-fe:
+    name: ci-fe
+    needs: [pre-ci]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.should-build-fe == 'true'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Create stub firebase config
+        working-directory: ./frontend/src/ts/constants
+        run: mv ./firebase-config-example.ts ./firebase-config-live.ts
+
+      - name: Install dependencies
+        run: npm ci & cd frontend && npm ci
+
+      - name: Check pretty
+        run: npm run pretty-code-fe
+
+      - name: Check lint
+        run: npm run lint-fe
+
+      - name: Build
+        run: npm run pr-check-ts
+
+  ci-assets:
+    name: ci-assets
+    needs: [pre-ci]
+    runs-on: ubuntu-latest
+    if: needs.pre-ci.outputs.assets-json == 'true'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            language-json:
+              - 'frontend/static/languages/*.json'
+            quotes-json:
+              - 'frontend/static/quotes/*.json'
+            other-json:
+              - 'frontend/static/funbox/*.json'
+              - 'frontend/static/fonts/*.json'
+              - 'frontend/static/themes/*.json'
+              - 'frontend/static/challenges/*.json'
+              - 'frontend/static/layouts/*.json'
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci & cd frontend && npm ci
+
+      - name: Lint JSON
+        run: npm run pr-check-lint-json
+
+      - name: Validate languages JSON
+        if: steps.filter.outputs.language-json == 'true'
+        run: npm run pr-check-language-json
+
+      - name: Validate quotes JSON
+        if: steps.filter.outputs.quotes-json == 'true'
+        run: npm run pr-check-quote-json
+
+      - name: Validate other JSON
+        if: steps.filter.outputs.other-json == 'true'
+        run: npm run pr-check-other-json
