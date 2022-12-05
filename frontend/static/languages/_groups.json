@@ -431,7 +431,8 @@
       "code_arduino",
       "code_systemverilog",
       "code_elixir",
-      "code_zig"
+      "code_zig",
+      "code_gdscript"
     ]
   },
   {
