@@ -123,8 +123,6 @@ jobs:
               - 'frontend/static/themes/*.json'
               - 'frontend/static/challenges/*.json'
               - 'frontend/static/layouts/*.json'
-      - name: test failure
-        run: exit 1
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
