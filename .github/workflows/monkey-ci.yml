@@ -163,5 +163,5 @@ jobs:
               issue_number: ${{ github.event.number }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Continuous integeration check(s) failed. Please review the failing check's logs and make the necessary changes. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+              body: 'Continuous integeration check(s) failed. Please review the failing check\'s logs and make the necessary changes. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
             })
