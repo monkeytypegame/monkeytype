@@ -123,6 +123,8 @@ jobs:
               - 'frontend/static/themes/*.json'
               - 'frontend/static/challenges/*.json'
               - 'frontend/static/layouts/*.json'
+      - name: test failure
+        run: exit 1
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
@@ -150,7 +152,7 @@ jobs:
     name: on-failure
     runs-on: ubuntu-latest
     needs: [ci-be, ci-fe, ci-assets]
-    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
       - name: Comment on PR
         uses: actions/github-script@v5
@@ -161,5 +163,5 @@ jobs:
               issue_number: ${{ github.event.number }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'The PR check action failed. Please review the logs and make the necessary changes.'
+              body: 'Continuous integeration check(s) failed. Please review the failing check's logs and make the necessary changes. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
             })
