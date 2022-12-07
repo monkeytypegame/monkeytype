@@ -60,8 +60,8 @@ export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const timestamp = req.query.onOrAfterTimestamp as string;
-  const results = await ResultDAL.getResults(uid, timestamp);
+  const timestamp = (req.query.onOrAfterTimestamp as unknown as number) ?? -1;
+  const results = await ResultDAL.getResults(uid, timestamp * 1000);
   return new MonkeyResponse("Results retrieved", results);
 }
 

@@ -103,7 +103,7 @@
           {
             "name": "onOrAfterTimestamp",
             "in": "query",
-            "description": "Get all results after unix timestamp",
+            "description": "Get all results on or after a Unix timestamp",
             "required": false,
             "type": "number"
           }
