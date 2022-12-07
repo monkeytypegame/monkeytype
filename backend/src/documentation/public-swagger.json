@@ -99,6 +99,15 @@
       "get": {
         "tags": ["results"],
         "summary": "Gets up to 1000 of the most recent results (endpoint limited to 1 request per hour)",
+        "parameters": [
+          {
+            "name": "onOrAfterTimestamp",
+            "in": "query",
+            "description": "Get all results after unix timestamp",
+            "required": false,
+            "type": "number"
+          }
+        ],
         "responses": {
           "200": {
             "description": "",

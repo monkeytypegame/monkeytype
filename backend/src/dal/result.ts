@@ -90,14 +90,19 @@ export async function getResultByTimestamp(
 
 export async function getResults(
   uid: string,
+  timestamp?: string | number,
   start?: number,
   end?: number
 ): Promise<MonkeyTypesResult[]> {
+  timestamp = Number(timestamp) * 1000 ?? -1;
+  if (timestamp == null || Number.isNaN(timestamp)) {
+    timestamp = -1;
+  }
   start = start ?? 0;
   end = end ?? 1000;
   const results = await db
     .collection<MonkeyTypesResult>("results")
-    .find({ uid })
+    .find({ uid, timestamp: { $gt: timestamp } })
     .sort({ timestamp: -1 })
     .skip(start)
     .limit(end)
