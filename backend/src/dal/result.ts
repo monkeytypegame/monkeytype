@@ -98,7 +98,8 @@ export async function getResults(
   uid: string,
   opts: GetResultsOpts
 ): Promise<MonkeyTypesResult[]> {
-  let { start, end, timestamp } = opts;
+  const { timestamp } = opts;
+  let { start, end } = opts;
   start = start ?? 0;
   end = end ?? 1000;
   const results = await db
