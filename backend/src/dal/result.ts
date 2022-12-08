@@ -98,10 +98,7 @@ export async function getResults(
   uid: string,
   opts?: GetResultsOpts
 ): Promise<MonkeyTypesResult[]> {
-  const { onOrAfterTimestamp } = opts ?? {};
-  let { start, end } = opts ?? {};
-  start = start ?? 0;
-  end = end ?? 1000;
+  const { onOrAfterTimestamp, start, end } = opts ?? {};
   const results = await db
     .collection<MonkeyTypesResult>("results")
     .find({
@@ -112,8 +109,8 @@ export async function getResults(
         }),
     })
     .sort({ timestamp: -1 })
-    .skip(start)
-    .limit(end)
+    .skip(start ?? 0)
+    .limit(end ?? 1000)
     .toArray(); // this needs to be changed to later take patreon into consideration
   if (!results) throw new MonkeyError(404, "Result not found");
   return results;
