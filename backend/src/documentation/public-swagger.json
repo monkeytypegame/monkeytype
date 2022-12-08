@@ -103,7 +103,7 @@
           {
             "name": "onOrAfterTimestamp",
             "in": "query",
-            "description": "Get all results on or after a Unix timestamp in milliseconds. Must be within the last 3 years. (i.e., 1670454228000)",
+            "description": "Get all results on or after a Unix timestamp in milliseconds. Must be no later than Thu May 14 2020 04:00:00 GMT+0000 (i.e., 1670454228000)",
             "required": false,
             "type": "number"
           }
