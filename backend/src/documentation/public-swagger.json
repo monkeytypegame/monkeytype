@@ -103,7 +103,7 @@
           {
             "name": "onOrAfterTimestamp",
             "in": "query",
-            "description": "Get results on or after a Unix timestamp in milliseconds. Must be no later than Thu May 14 2020 04:00:00 GMT+0000 (i.e., 1670454228000)",
+            "description": "Get results on or after a Unix timestamp in milliseconds. Must be no later than Thu May 14 2020 04:00:00 GMT+0000 (i.e., 1670454228000). If omitted, defaults to the most recent results.",
             "required": false,
             "type": "number"
           }
