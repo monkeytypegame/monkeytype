@@ -98,7 +98,7 @@ export async function getResults(
   uid: string,
   opts?: GetResultsOpts
 ): Promise<MonkeyTypesResult[]> {
-  const { onOrAfterTimestamp, start, end } = opts ?? {};
+  const { onOrAfterTimestamp, start, end } = opts;
   const results = await db
     .collection<MonkeyTypesResult>("results")
     .find({
