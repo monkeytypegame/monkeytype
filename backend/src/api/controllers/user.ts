@@ -5,7 +5,7 @@ import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import { buildAgentLog, sanitizeString } from "../../utils/misc";
-import * as George from "../../tasks/george";
+import GeorgeQueue from "../../queues/george-queue";
 import admin from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
@@ -285,7 +285,7 @@ export async function linkDiscord(
 
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
-  George.linkDiscord(discordId, uid);
+  GeorgeQueue.linkDiscord(discordId, uid);
   Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", {
@@ -304,7 +304,7 @@ export async function unlinkDiscord(
     throw new MonkeyError(404, "User does not have a linked Discord account");
   }
 
-  George.unlinkDiscord(userInfo.discordId, uid);
+  GeorgeQueue.unlinkDiscord(userInfo.discordId, uid);
   await UserDAL.unlinkDiscord(uid);
   Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
 

@@ -1,11 +1,11 @@
-import Config from "../config";
 import * as TestStats from "../test/test-stats";
 import * as TestUI from "../test/test-ui";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
-import * as Funbox from "../test/funbox";
+import * as Funbox from "../test/funbox/funbox";
 import Page from "./page";
 import { updateTestPageAds } from "../controllers/ad-controller";
+import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
 
 export const page = new Page(
@@ -15,6 +15,7 @@ export const page = new Page(
   async () => {
     TestLogic.restart();
     Funbox.clear();
+    ModesNotice.update();
     $("#wordsInput").focusout();
   },
   async () => {
@@ -27,7 +28,7 @@ export const page = new Page(
     TestLogic.restart({
       noAnim: true,
     });
-    Funbox.activate(Config.funbox);
+    Funbox.activate();
     Keymap.refresh();
   },
   async () => {

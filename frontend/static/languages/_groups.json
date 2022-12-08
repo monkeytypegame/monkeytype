@@ -407,6 +407,7 @@
       "code_julia",
       "code_haskell",
       "code_html",
+      "code_nim",
       "code_pascal",
       "code_java",
       "code_kotlin",
@@ -430,7 +431,10 @@
       "code_visual_basic",
       "code_arduino",
       "code_systemverilog",
-      "code_elixir"
+      "code_elixir",
+      "code_zig",
+      "code_gdscript",
+      "code_assembly"
     ]
   },
   {

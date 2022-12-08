@@ -137,6 +137,9 @@ function updateSuggested(): void {
     .split(" ")
     .filter((s, i) => s || i == 0); //remove empty entries after first
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
+
+  if (list.beforeList) list.beforeList();
+
   if (
     inputVal[0] === "" &&
     Config.singleListCommandLine === "on" &&
@@ -252,8 +255,8 @@ function trigger(command: string): void {
         showInput(obj.id, escaped, obj.defaultValue ? obj.defaultValue() : "");
       } else if (obj.subgroup) {
         subgroup = true;
-        if (obj.beforeSubgroup) {
-          obj.beforeSubgroup();
+        if (obj.subgroup.beforeList) {
+          obj.subgroup.beforeList();
         }
         CommandlineLists.current.push(
           obj.subgroup as MonkeyTypes.CommandsSubgroup
@@ -302,7 +305,7 @@ function addChildCommands(
   }
   if ((commandItem as MonkeyTypes.Command).subgroup) {
     const command = commandItem as MonkeyTypes.Command;
-    if (command.beforeSubgroup) command.beforeSubgroup();
+    if (command.subgroup?.beforeList) command.subgroup.beforeList();
     try {
       if (
         (

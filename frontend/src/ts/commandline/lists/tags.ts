@@ -9,6 +9,9 @@ import { Auth } from "../../firebase";
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change tags...",
   list: [],
+  beforeList: (): void => {
+    update();
+  },
 };
 
 const commands: MonkeyTypes.Command[] = [
@@ -18,9 +21,6 @@ const commands: MonkeyTypes.Command[] = [
     display: "Tags...",
     icon: "fa-tag",
     subgroup,
-    beforeSubgroup: (): void => {
-      update();
-    },
     available: (): boolean => {
       return !!Auth?.currentUser;
     },

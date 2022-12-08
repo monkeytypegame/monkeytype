@@ -86,10 +86,12 @@ function loadMoreLines(lineIndex?: number): void {
     }
 
     if (result.funbox !== "none" && result.funbox !== undefined) {
-      icons += `<span aria-label="${result.funbox.replace(
-        /_/g,
-        " "
-      )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
+      icons += `<span aria-label="${result.funbox
+        .replace(/_/g, " ")
+        .replace(
+          /#/g,
+          ", "
+        )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
     }
 
     if (result.chartData === undefined) {
@@ -418,7 +420,14 @@ function fillContent(): void {
             continue;
           }
         } else {
-          if (!ResultFilters.getFilter("funbox", result.funbox)) {
+          let counter = 0;
+          for (const f of result.funbox.split("#")) {
+            if (ResultFilters.getFilter("funbox", f)) {
+              counter++;
+              break;
+            }
+          }
+          if (counter == 0) {
             if (filterDebug) {
               console.log(`skipping result due to funbox filter`, result);
             }
@@ -656,8 +665,6 @@ function fillContent(): void {
 
   loadMoreLines();
   ////////
-
-  console.log(totalEstimatedWords);
 
   const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
   const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
@@ -1159,9 +1166,9 @@ $(".pageAccount .group.history").on(
   }
 );
 
-$(".pageAccount .group.topFilters").on(
+$(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "click",
-  ".button, .pageAccount .filterButtons .button",
+  ".button",
   () => {
     setTimeout(() => {
       update();

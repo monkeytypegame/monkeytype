@@ -475,7 +475,7 @@ router.patch(
   RateLimit.userProfileUpdate,
   validateRequest({
     body: {
-      bio: profileDetailsBase.max(150),
+      bio: profileDetailsBase.max(250),
       keyboard: profileDetailsBase.max(75),
       selectedBadgeId: joi.number(),
       socialProfiles: joi.object({

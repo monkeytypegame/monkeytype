@@ -98,7 +98,16 @@
     "/results": {
       "get": {
         "tags": ["results"],
-        "summary": "Gets up to 1000 of the most recent results (endpoint limited to 1 request per hour)",
+        "summary": "Gets up to 1000 results (endpoint limited to 1 request per hour)",
+        "parameters": [
+          {
+            "name": "onOrAfterTimestamp",
+            "in": "query",
+            "description": "Get results on or after a Unix timestamp in milliseconds. Must be no earlier than Thu May 14 2020 04:00:00 GMT+0000 (i.e., 1670454228000). If omitted, defaults to the most recent results.",
+            "required": false,
+            "type": "number"
+          }
+        ],
         "responses": {
           "200": {
             "description": "",

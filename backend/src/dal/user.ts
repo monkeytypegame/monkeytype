@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
 import { updateUserEmail } from "../utils/auth";
-import { checkAndUpdatePb } from "../utils/pb";
+import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
@@ -344,11 +344,9 @@ export async function checkIfPb(
   user: MonkeyTypes.User,
   result: MonkeyTypes.Result<MonkeyTypes.Mode>
 ): Promise<boolean> {
-  const { mode, funbox } = result;
+  const { mode } = result;
 
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
-    return false;
-  }
+  if (!canFunboxGetPb(result)) return false;
 
   if (mode === "quote") {
     return false;
@@ -394,15 +392,8 @@ export async function checkIfTagPb(
     return [];
   }
 
-  const { mode, tags: resultTags, funbox } = result;
-  if (
-    funbox !== undefined &&
-    funbox !== "none" &&
-    funbox !== "plus_one" &&
-    funbox !== "plus_two"
-  ) {
-    return [];
-  }
+  const { mode, tags: resultTags } = result;
+  if (!canFunboxGetPb(result)) return [];
 
   if (mode === "quote") {
     return [];

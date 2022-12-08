@@ -73,6 +73,18 @@ export function showSettings(): void {
   $("#cookiePopup .settings").removeClass("hidden");
 }
 
+function verifyVisible(): void {
+  if (!visible) return;
+  if (
+    $("#cookiePopupWrapper")[0] === undefined ||
+    $("#cookiePopupWrapper").is(":visible") === false ||
+    $("#cookiePopupWrapper").outerHeight(true) === 0
+  ) {
+    //removed by cookie popup blocking extension
+    visible = false;
+  }
+}
+
 $("#cookiePopup .acceptAll").on("click", () => {
   const accepted = {
     security: true,
@@ -111,6 +123,7 @@ $("#cookiePopup .openSettings").on("click", () => {
 });
 
 $(document).on("keypress", (e) => {
+  verifyVisible();
   if (visible) {
     e.preventDefault();
   }

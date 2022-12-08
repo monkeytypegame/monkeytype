@@ -78,4 +78,40 @@ router.get(
   asyncHandler(LeaderboardController.getDailyLeaderboardRank)
 );
 
+const BASE_XP_LEADERBOARD_VALIDATION_SCHEMA = {
+  skip: joi.number().min(0),
+  limit: joi.number().min(0).max(50),
+};
+
+const WEEKLY_XP_LEADERBOARD_VALIDATION_SCHEMA = {
+  ...BASE_XP_LEADERBOARD_VALIDATION_SCHEMA,
+  weeksBefore: joi.number().min(1).max(1),
+};
+
+const requireWeeklyXpLeaderboardEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.leaderboards.weeklyXp.enabled;
+  },
+  invalidMessage: "Weekly XP leaderboards are not available at this time.",
+});
+
+router.get(
+  "/xp/weekly",
+  requireWeeklyXpLeaderboardEnabled,
+  authenticateRequest({ isPublic: true }),
+  withApeRateLimiter(RateLimit.leaderboardsGet),
+  validateRequest({
+    query: WEEKLY_XP_LEADERBOARD_VALIDATION_SCHEMA,
+  }),
+  asyncHandler(LeaderboardController.getWeeklyXpLeaderboardResults)
+);
+
+router.get(
+  "/xp/weekly/rank",
+  requireWeeklyXpLeaderboardEnabled,
+  authenticateRequest(),
+  withApeRateLimiter(RateLimit.leaderboardsGet),
+  asyncHandler(LeaderboardController.getWeeklyXpLeaderboardRank)
+);
+
 export default router;
