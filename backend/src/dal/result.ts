@@ -7,12 +7,6 @@ import { getUser, getTags } from "./user";
 
 type MonkeyTypesResult = MonkeyTypes.Result<MonkeyTypes.Mode>;
 
-interface GetResultsOpts {
-  onOrAfterTimestamp?: number;
-  start?: number;
-  end?: number;
-}
-
 export async function addResult(
   uid: string,
   result: MonkeyTypesResult
@@ -92,6 +86,12 @@ export async function getResultByTimestamp(
   return await db
     .collection<MonkeyTypesResult>("results")
     .findOne({ uid, timestamp });
+}
+
+interface GetResultsOpts {
+  onOrAfterTimestamp?: number;
+  start?: number;
+  end?: number;
 }
 
 export async function getResults(
