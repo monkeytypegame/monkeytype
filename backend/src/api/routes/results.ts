@@ -21,7 +21,11 @@ router.get(
   withApeRateLimiter(RateLimit.resultsGet, RateLimit.resultsGetApe),
   validateRequest({
     query: {
-      onOrAfterTimestamp: joi.number(),
+      onOrAfterTimestamp: joi
+        .number()
+        .integer()
+        // 3 years
+        .greater(Math.floor(Date.now()) - 94608000000),
     },
   }),
   asyncHandler(ResultController.getResults)

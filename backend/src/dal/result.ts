@@ -98,7 +98,10 @@ export async function getResults(
   end = end ?? 1000;
   const results = await db
     .collection<MonkeyTypesResult>("results")
-    .find({ uid, timestamp: { $gte: timestamp } })
+    .find({
+      uid,
+      ...(!_.isNaN(timestamp) && { timestamp: { $gte: timestamp } }),
+    })
     .sort({ timestamp: -1 })
     .skip(start)
     .limit(end)
