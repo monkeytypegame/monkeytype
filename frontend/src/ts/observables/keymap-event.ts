@@ -11,23 +11,23 @@ export function subscribe(fn: SubscribeFunction): void {
 }
 
 export async function flash(key: string, correct?: boolean): Promise<void> {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn("flash", key, correct);
-    } catch (e) {
+    } catch (error) {
       console.error("Keymap flash event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }
 
 export async function highlight(key: string): Promise<void> {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn("highlight", key);
-    } catch (e) {
+    } catch (error) {
       console.error("Keymap highlight event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }

@@ -561,7 +561,7 @@ export function restart(options = {} as RestartOptions): void {
             toPush.push(TestWords.words.get(i));
           }
           TestWords.words.reset();
-          toPush.forEach((word) => TestWords.words.push(word));
+          for (const word of toPush) TestWords.words.push(word);
         }
       }
       if (!options.withSameWordset && !shouldQuoteRepeat) {
@@ -1178,33 +1178,32 @@ export async function addWord(): Promise<void> {
   const sectionFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.pullSection
   );
-  if (sectionFunbox?.functions?.pullSection) {
-    if (TestWords.words.length - TestWords.words.currentIndex < 20) {
-      const section = await sectionFunbox.functions.pullSection(
-        Config.language
+  if (
+    sectionFunbox?.functions?.pullSection &&
+    TestWords.words.length - TestWords.words.currentIndex < 20
+  ) {
+    const section = await sectionFunbox.functions.pullSection(Config.language);
+
+    if (section === false) {
+      Notifications.add(
+        "Error while getting section. Please try again later",
+        -1
       );
+      UpdateConfig.toggleFunbox(sectionFunbox.name);
+      restart();
+      return;
+    }
 
-      if (section === false) {
-        Notifications.add(
-          "Error while getting section. Please try again later",
-          -1
-        );
-        UpdateConfig.toggleFunbox(sectionFunbox.name);
-        restart();
-        return;
+    if (section === undefined) return;
+
+    let wordCount = 0;
+    for (const word of section.words) {
+      if (wordCount >= Config.words && Config.mode == "words") {
+        break;
       }
-
-      if (section === undefined) return;
-
-      let wordCount = 0;
-      for (const word of section.words) {
-        if (wordCount >= Config.words && Config.mode == "words") {
-          break;
-        }
-        wordCount++;
-        TestWords.words.push(word);
-        TestUI.addWord(word);
-      }
+      wordCount++;
+      TestWords.words.push(word);
+      TestUI.addWord(word);
     }
   }
 

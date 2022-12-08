@@ -69,7 +69,7 @@ class PseudolangWordGenerator extends Misc.Wordset {
           this.ngrams[prefix] = new CharDistribution();
         }
         this.ngrams[prefix].addChar(c);
-        prefix = (prefix + c).substr(-prefixSize);
+        prefix = (prefix + c).slice(-prefixSize);
       }
     }
   }
@@ -77,7 +77,7 @@ class PseudolangWordGenerator extends Misc.Wordset {
   public override randomWord(): string {
     let word = "";
     for (;;) {
-      const prefix = word.substr(-prefixSize);
+      const prefix = word.slice(-prefixSize);
       const charDistribution = this.ngrams[prefix];
       if (!charDistribution) {
         // This shouldn't happen if this.ngrams is complete. If it does
@@ -231,11 +231,11 @@ FunboxList.setFunboxFunctions("rAnDoMcAsE", {
   alterText(word: string): string {
     let randomcaseword = word[0];
     for (let i = 1; i < word.length; i++) {
-      if (randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase()) {
-        randomcaseword += word[i].toLowerCase();
-      } else {
-        randomcaseword += word[i].toUpperCase();
-      }
+      const caseCheck =
+        randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase();
+      randomcaseword += caseCheck
+        ? word[i].toLowerCase()
+        : word[i].toUpperCase();
     }
     return randomcaseword;
   },
@@ -250,15 +250,11 @@ FunboxList.setFunboxFunctions("capitals", {
 FunboxList.setFunboxFunctions("layoutfluid", {
   applyConfig(): void {
     UpdateConfig.setLayout(
-      Config.customLayoutfluid.split("#")[0]
-        ? Config.customLayoutfluid.split("#")[0]
-        : "qwerty",
+      Config.customLayoutfluid.split("#")[0] ?? "qwerty",
       true
     );
     UpdateConfig.setKeymapLayout(
-      Config.customLayoutfluid.split("#")[0]
-        ? Config.customLayoutfluid.split("#")[0]
-        : "qwerty",
+      Config.customLayoutfluid.split("#")[0] ?? "qwerty",
       true
     );
   },
@@ -302,7 +298,7 @@ FunboxList.setFunboxFunctions("layoutfluid", {
     KeymapEvent.highlight(
       TestWords.words
         .getCurrent()
-        .substring(
+        .slice(
           TestInput.input.current.length,
           TestInput.input.current.length + 1
         )
@@ -456,14 +452,13 @@ FunboxList.setFunboxFunctions("poetry", {
 
 FunboxList.setFunboxFunctions("wikipedia", {
   async pullSection(lang?: string): Promise<Misc.Section | false> {
-    return getSection(lang ? lang : "english");
+    return getSection(lang ?? "english");
   },
 });
 
 FunboxList.setFunboxFunctions("weakspot", {
   getWord(wordset?: Misc.Wordset): string {
-    if (wordset !== undefined) return WeakSpot.getWord(wordset);
-    else return "";
+    return wordset !== undefined ? WeakSpot.getWord(wordset) : "";
   },
 });
 
@@ -515,9 +510,9 @@ FunboxList.setFunboxFunctions("IPv6", {
 });
 
 export function toggleScript(...params: string[]): void {
-  FunboxList.get(Config.funbox).forEach((funbox) => {
+  for (const funbox of FunboxList.get(Config.funbox)) {
     if (funbox.functions?.toggleScript) funbox.functions.toggleScript(params);
-  });
+  }
 }
 
 export function setFunbox(funbox: string): boolean {
@@ -590,9 +585,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   let language;
   try {
     language = await Misc.getCurrentLanguage(Config.language);
-  } catch (e) {
+  } catch (error) {
     Notifications.add(
-      Misc.createErrorMessage(e, "Failed to activate funbox"),
+      Misc.createErrorMessage(error, "Failed to activate funbox"),
       -1
     );
     UpdateConfig.setFunbox("none", true);
@@ -600,20 +595,16 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     return false;
   }
 
-  if (language.ligatures) {
-    if (
-      FunboxList.get(Config.funbox).find((f) =>
-        f.properties?.includes("noLigatures")
-      )
-    ) {
-      Notifications.add(
-        "Current language does not support this funbox mode",
-        0
-      );
-      UpdateConfig.setFunbox("none", true);
-      await clear();
-      return;
-    }
+  if (
+    language.ligatures &&
+    FunboxList.get(Config.funbox).some((f) =>
+      f.properties?.includes("noLigatures")
+    )
+  ) {
+    Notifications.add("Current language does not support this funbox mode", 0);
+    UpdateConfig.setFunbox("none", true);
+    await clear();
+    return;
   }
 
   let canSetSoFar = true;
@@ -672,16 +663,17 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   ManualRestart.set();
-  FunboxList.get(Config.funbox).forEach(async (funbox) => {
+
+  for (const funbox of FunboxList.get(Config.funbox)) {
     if (funbox.functions?.applyCSS) funbox.functions.applyCSS();
     if (funbox.functions?.applyConfig) funbox.functions.applyConfig();
-  });
+  }
   // ModesNotice.update();
   return true;
 }
 
 export async function rememberSettings(): Promise<void> {
-  FunboxList.get(Config.funbox).forEach(async (funbox) => {
+  for (const funbox of FunboxList.get(Config.funbox)) {
     if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
-  });
+  }
 }

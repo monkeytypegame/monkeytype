@@ -517,7 +517,8 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
   lazyMode: boolean,
   funbox: string
 ): Promise<number> {
-  const funboxes = (await getFunboxList()).filter((fb) => {
+  const funboxList = await getFunboxList();
+  const funboxes = funboxList.filter((fb) => {
     return funbox?.split("#").includes(fb.name);
   });
 

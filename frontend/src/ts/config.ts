@@ -259,11 +259,7 @@ export function toggleFunbox(
   } else {
     r = funboxArray.indexOf(funbox);
     funboxArray.splice(r, 1);
-    if (funboxArray.length == 0) {
-      config.funbox = "none";
-    } else {
-      config.funbox = funboxArray.join("#");
-    }
+    config.funbox = funboxArray.length === 0 ? "none" : funboxArray.join("#");
     r = -r - 1;
   }
   saveToLocalStorage("funbox", nosave);

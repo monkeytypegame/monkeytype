@@ -52,9 +52,7 @@ export function getRandomIPv6address(): string {
 }
 
 export function addressToCIDR(addr: string): string {
-  if (addr.includes(":")) {
-    return getIPCidr(128, 8, 16, ":", addr, randomIntFromRange(16, 32) * 4);
-  } else {
-    return getIPCidr(32, 4, 10, ".", addr, randomIntFromRange(8, 32));
-  }
+  return addr.includes(":")
+    ? getIPCidr(128, 8, 16, ":", addr, randomIntFromRange(16, 32) * 4)
+    : getIPCidr(32, 4, 10, ".", addr, randomIntFromRange(8, 32));
 }

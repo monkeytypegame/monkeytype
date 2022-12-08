@@ -124,7 +124,7 @@ function backspaceToPrevious(): void {
   TestInput.input.current = TestInput.input.popHistory();
   TestInput.corrected.popHistory();
   if (
-    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
+    FunboxList.get(Config.funbox).some((f) => f.properties?.includes("nospace"))
   ) {
     TestInput.input.current = TestInput.input.current.slice(0, -1);
     setWordsInput(" " + TestInput.input.current + " ");
@@ -164,10 +164,9 @@ function handleSpace(): void {
   LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
-  const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+  const nospace = FunboxList.get(Config.funbox).some((f) =>
+    f.properties?.includes("nospace")
+  );
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
@@ -399,10 +398,9 @@ function handleChar(
     if (f.functions?.handleChar) char = f.functions.handleChar(char);
   }
 
-  const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
-    ) !== undefined;
+  const nospace = FunboxList.get(Config.funbox).some((f) =>
+    f.properties?.includes("nospace")
+  );
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
     if (nospace) return;
@@ -906,15 +904,16 @@ $(document).keydown(async (event) => {
   const funbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.preventDefaultEvent
   );
-  if (funbox?.functions?.preventDefaultEvent) {
-    if (await funbox.functions.preventDefaultEvent(event)) {
-      event.preventDefault();
-      handleChar(event.key, TestInput.input.current.length);
-      updateUI();
-      setWordsInput(" " + TestInput.input.current);
-      if (Config.tapeMode !== "off") {
-        TestUI.scrollTape();
-      }
+  if (
+    funbox?.functions?.preventDefaultEvent &&
+    (await funbox.functions.preventDefaultEvent(event))
+  ) {
+    event.preventDefault();
+    handleChar(event.key, TestInput.input.current.length);
+    updateUI();
+    setWordsInput(" " + TestInput.input.current);
+    if (Config.tapeMode !== "off") {
+      TestUI.scrollTape();
     }
   }
 

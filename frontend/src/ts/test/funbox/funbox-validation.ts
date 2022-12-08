@@ -78,16 +78,18 @@ export function canSetConfigWithCurrentFunboxes(
   let errorCount = 0;
   if (key === "mode") {
     let fb: MonkeyTypes.FunboxMetadata[] = [];
-    fb = fb.concat(
-      FunboxList.get(funbox).filter(
+    fb = [
+      ...fb,
+      ...FunboxList.get(funbox).filter(
         (f) =>
           f.forcedConfig?.["mode"] !== undefined &&
           !f.forcedConfig?.["mode"].includes(value)
-      )
-    );
+      ),
+    ];
     if (value === "zen") {
-      fb = fb.concat(
-        FunboxList.get(funbox).filter(
+      fb = [
+        ...fb,
+        ...FunboxList.get(funbox).filter(
           (f) =>
             f.functions?.getWord ||
             f.functions?.pullSection ||
@@ -99,18 +101,19 @@ export function canSetConfigWithCurrentFunboxes(
             f.properties?.includes("changesWordsVisibility") ||
             f.properties?.includes("speaks") ||
             f.properties?.includes("changesLayout")
-        )
-      );
+        ),
+      ];
     }
     if (value === "quote" || value == "custom") {
-      fb = fb.concat(
-        FunboxList.get(funbox).filter(
+      fb = [
+        ...fb,
+        ...FunboxList.get(funbox).filter(
           (f) =>
             f.functions?.getWord ||
             f.functions?.pullSection ||
             f.functions?.withWords
-        )
-      );
+        ),
+      ];
     }
 
     if (fb.length > 0) {
@@ -191,14 +194,15 @@ export function areFunboxesCompatible(
   if (withFunbox === "none" || funboxes === "none") return true;
   let funboxesToCheck = FunboxList.get(funboxes);
   if (withFunbox !== undefined) {
-    funboxesToCheck = funboxesToCheck.concat(
-      FunboxList.getAll().filter((f) => f.name == withFunbox)
-    );
+    funboxesToCheck = [
+      ...funboxesToCheck,
+      ...FunboxList.getAll().filter((f) => f.name == withFunbox),
+    ];
   }
 
   const allFunboxesAreValid =
-    FunboxList.get(funboxes).filter(
-      (f) => funboxes.split("#").find((cf) => cf == f.name) !== undefined
+    FunboxList.get(funboxes).filter((f) =>
+      funboxes.split("#").some((cf) => cf == f.name)
     ).length == funboxes.split("#").length;
   const oneWordModifierMax =
     funboxesToCheck.filter(
@@ -210,10 +214,10 @@ export function areFunboxesCompatible(
   const layoutUsability =
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp == "changesLayout")
-    ).length == 0 ||
+    ).length === 0 ||
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp == "ignoresLayout" || fp == "usesLayout")
-    ).length == 0;
+    ).length === 0;
   const oneNospaceOrToPushMax =
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp == "nospace" || fp.startsWith("toPush"))
@@ -224,27 +228,27 @@ export function areFunboxesCompatible(
     ).length <= 1;
   const capitalisationChangePosibility =
     funboxesToCheck.filter((f) => f.properties?.find((fp) => fp == "noLetters"))
-      .length == 0 ||
+      .length === 0 ||
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp == "changesCapitalisation")
-    ).length == 0;
+    ).length === 0;
   const noConflictsWithSymmetricChars =
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp == "conflictsWithSymmetricChars")
-    ).length == 0 ||
+    ).length === 0 ||
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp == "symmetricChars")
-    ).length == 0;
+    ).length === 0;
   const canSpeak =
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp == "speaks" || fp == "unspeakable")
     ).length <= 1;
   const hasLanguageToSpeak =
     funboxesToCheck.filter((f) => f.properties?.find((fp) => fp == "speaks"))
-      .length == 0 ||
+      .length === 0 ||
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp == "ignoresLanguage")
-    ).length == 0;
+    ).length === 0;
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>

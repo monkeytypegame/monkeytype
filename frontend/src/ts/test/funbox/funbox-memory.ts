@@ -16,8 +16,8 @@ export function save(
 }
 
 export function load(): void {
-  Object.keys(settingsMemory).forEach((setting) => {
+  for (const setting of Object.keys(settingsMemory)) {
     settingsMemory[setting].setFunction(settingsMemory[setting].value, true);
-  });
+  }
   settingsMemory = {};
 }

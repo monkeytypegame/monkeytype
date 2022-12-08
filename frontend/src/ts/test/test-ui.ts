@@ -427,8 +427,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
     const funbox = FunboxList.get(Config.funbox).find(
       (f) => f.functions?.getWordHtml
     );
-    for (let i = 0; i < input.length; i++) {
-      const charCorrect = currentWord[i] == input[i];
+    for (const [i, letter] of [...input].entries()) {
+      let letterString = letter;
+      const charCorrect = currentWord[i] == letterString;
 
       let correctClass = "correct";
       if (Config.highlightMode == "off") {
@@ -476,8 +477,11 @@ export function updateWordElement(showError = !Config.blindMode): void {
         }
       } else if (currentLetter === undefined) {
         if (!Config.hideExtraLetters) {
-          let letterString = input[i];
-          if (input[i] == " " || input[i] == "\t" || input[i] == "\n") {
+          if (
+            letterString == " " ||
+            letterString == "\t" ||
+            letterString == "\n"
+          ) {
             letterString = "_";
           }
           ret += `<letter class="${
@@ -490,7 +494,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
         let letterString = currentLetter;
 
         if (Config.indicateTypos === "replace") {
-          letterString = input[i] == " " ? "_" : input[i];
+          letterString = letterString == " " ? "_" : letterString;
         }
 
         ret +=
@@ -500,7 +504,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
               : "incorrect"
           } ${tabChar}${nlChar}">` +
           letterString +
-          (Config.indicateTypos === "below" ? `<hint>${input[i]}</hint>` : "") +
+          (Config.indicateTypos === "below"
+            ? `<hint>${letterString}</hint>`
+            : "") +
           "</letter>";
       }
     }

@@ -534,10 +534,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   } else if (Config.mode === "quote" && randomQuote.group !== undefined) {
     testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
   }
-  const ignoresLanguage =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("ignoresLanguage")
-    ) !== undefined;
+  const ignoresLanguage = FunboxList.get(Config.funbox).some((f) =>
+    f.properties?.includes("ignoresLanguage")
+  );
   if (Config.mode != "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }

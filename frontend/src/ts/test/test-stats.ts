@@ -283,7 +283,7 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
     }
   }
   if (
-    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
+    FunboxList.get(Config.funbox).some((f) => f.properties?.includes("nospace"))
   ) {
     spaces = 0;
   }
@@ -458,7 +458,7 @@ function countChars(): CharCount {
     }
   }
   if (
-    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
+    FunboxList.get(Config.funbox).some((f) => f.properties?.includes("nospace"))
   ) {
     spaces = 0;
     correctspaces = 0;

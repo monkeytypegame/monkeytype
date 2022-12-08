@@ -111,9 +111,7 @@ export function verify(
               }
               if (result.funbox?.split("#")) {
                 for (const f of result.funbox.split("#")) {
-                  if (
-                    funboxMode.split("#").find((rf) => rf == f) == undefined
-                  ) {
+                  if (!funboxMode.split("#").some((rf) => rf == f)) {
                     failReasons.push(`${f} funbox active`);
                   }
                 }

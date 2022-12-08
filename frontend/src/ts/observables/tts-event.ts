@@ -7,12 +7,12 @@ export function subscribe(fn: SubscribeFunction): void {
 }
 
 export async function dispatch(text: string): Promise<void> {
-  subscribers.forEach((fn) => {
+  for (const fn of subscribers) {
     try {
       fn(text);
-    } catch (e) {
+    } catch (error) {
       console.error("TTS event subscriber threw an error");
-      console.error(e);
+      console.error(error);
     }
-  });
+  }
 }
