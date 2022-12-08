@@ -8,7 +8,7 @@ import { getUser, getTags } from "./user";
 type MonkeyTypesResult = MonkeyTypes.Result<MonkeyTypes.Mode>;
 
 interface GetResultsOpts {
-  timestamp?: number;
+  onOrAfterTimestamp?: number;
   start?: number;
   end?: number;
 }
@@ -96,18 +96,20 @@ export async function getResultByTimestamp(
 
 export async function getResults(
   uid: string,
-  opts: GetResultsOpts
+  opts?: GetResultsOpts
 ): Promise<MonkeyTypesResult[]> {
-  const { timestamp } = opts;
-  let { start, end } = opts;
+  const { onOrAfterTimestamp } = opts ?? {};
+  let { start, end } = opts ?? {};
   start = start ?? 0;
   end = end ?? 1000;
   const results = await db
     .collection<MonkeyTypesResult>("results")
     .find({
       uid,
-      ...(!_.isNil(timestamp) &&
-        !_.isNaN(timestamp) && { timestamp: { $gte: timestamp } }),
+      ...(!_.isNil(onOrAfterTimestamp) &&
+        !_.isNaN(onOrAfterTimestamp) && {
+          timestamp: { $gte: onOrAfterTimestamp },
+        }),
     })
     .sort({ timestamp: -1 })
     .skip(start)
