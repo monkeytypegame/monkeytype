@@ -220,6 +220,7 @@
   ,"code_python_5k"
   ,"code_fsharp"
   ,"code_c"
+  ,"code_cmd"
   ,"code_csharp"
   ,"code_css"
   ,"code_c++"
@@ -230,6 +231,7 @@
   ,"code_julia"
   ,"code_haskell"
   ,"code_html"
+  ,"code_nim"
   ,"code_pascal"
   ,"code_java"
   ,"code_kotlin"
@@ -255,4 +257,6 @@
   ,"code_systemverilog"
   ,"code_elixir"
   ,"code_zig"
+  ,"code_gdscript"
+  ,"code_assembly"
 ]

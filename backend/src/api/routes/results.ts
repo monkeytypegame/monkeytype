@@ -19,6 +19,11 @@ router.get(
     acceptApeKeys: true,
   }),
   withApeRateLimiter(RateLimit.resultsGet, RateLimit.resultsGetApe),
+  validateRequest({
+    query: {
+      onOrAfterTimestamp: joi.number().integer().min(1589428800000),
+    },
+  }),
   asyncHandler(ResultController.getResults)
 );
 

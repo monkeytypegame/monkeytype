@@ -397,6 +397,7 @@
       "code_python_2k",
       "code_python_5k",
       "code_c",
+      "code_cmd",
       "code_csharp",
       "code_c++",
       "code_dart",
@@ -407,6 +408,7 @@
       "code_julia",
       "code_haskell",
       "code_html",
+      "code_nim",
       "code_pascal",
       "code_java",
       "code_kotlin",
@@ -431,7 +433,9 @@
       "code_arduino",
       "code_systemverilog",
       "code_elixir",
-      "code_zig"
+      "code_zig",
+      "code_gdscript",
+      "code_assembly"
     ]
   },
   {
