@@ -218,11 +218,15 @@ function rerender() {
 }
 
 window.onload = async () => {
-  const schemaResponse = await fetch("/configuration/schema");
-  const dataResponse = await fetch("/configuration");
+  const [schemaResponse, dataResponse] = await Promise.all([
+    fetch("/configuration/schema"),
+    fetch("/configuration"),
+  ]);
 
-  const schemaResponseJson = await schemaResponse.json();
-  const dataResponseJson = await dataResponse.json();
+  const [schemaResponseJson, dataResponseJson] = await Promise.all([
+    schemaResponse.json(),
+    dataResponse.json(),
+  ]);
 
   const { data: formSchema } = schemaResponseJson;
   const { data: initialData } = dataResponseJson;

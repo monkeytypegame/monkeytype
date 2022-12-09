@@ -81,6 +81,7 @@ const PRODUCTION_CONFIG = {
       skipWaiting: false,
       //include the generated css and js files
       maximumFileSizeToCacheInBytes: 11000000,
+      cleanupOutdatedCaches: true,
       exclude: [
         // /html\/.*\.html/,
         // /LICENSE\.txt/,
@@ -118,8 +119,9 @@ const PRODUCTION_CONFIG = {
         //   handler: "CacheFirst",
         // },
         {
-          urlPattern: /.+/,
+          urlPattern: /\/\/monkeytype.com.+/,
           handler: "NetworkFirst",
+          options: {},
         },
 
         // {
