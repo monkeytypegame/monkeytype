@@ -43,7 +43,7 @@ async function errorHandlingMiddleware(
       try {
         await Logger.logToDb(
           "system_error",
-          `${monkeyResponse.status} ${error.message} ${error.stack}`,
+          `${monkeyResponse.status} ${errorId} ${error.message} ${error.stack}`,
           uid
         );
         await db.collection<any>("errors").insertOne({
