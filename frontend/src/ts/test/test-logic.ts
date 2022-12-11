@@ -1775,7 +1775,7 @@ async function saveResult(
       Result.showConfetti();
     }
     Result.showCrown();
-    Result.updateCrown();
+    await Result.updateCrown();
     DB.saveLocalPB(
       Config.mode,
       completedEvent.mode2,
