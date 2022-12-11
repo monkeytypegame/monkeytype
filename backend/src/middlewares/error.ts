@@ -63,6 +63,10 @@ async function errorHandlingMiddleware(
       Logger.error(`Error: ${error.message} Stack: ${error.stack}`);
     }
 
+    if (monkeyResponse.status < 500) {
+      delete monkeyResponse.data["errorId"];
+    }
+
     return handleMonkeyResponse(monkeyResponse, res);
   } catch (e) {
     Logger.error("Error handling middleware failed.");
