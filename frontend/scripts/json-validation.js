@@ -63,11 +63,11 @@ function validateOthers() {
         type: "object",
         properties: {
           name: { type: "string" },
-          type: { type: "string" },
           info: { type: "string" },
-          affectsWordGeneration: { type: "boolean" },
+          canGetPb: { type: "boolean" },
+          alias: { type: "string" },
         },
-        required: ["name", "type", "info"],
+        required: ["name", "info", "canGetPb"],
       },
     };
     const funboxValidator = JSONValidator.validate(funboxData, funboxSchema);

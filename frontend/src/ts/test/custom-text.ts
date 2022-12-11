@@ -19,6 +19,14 @@ export function setText(txt: string[]): void {
   text = txt;
 }
 
+export function getText(): string {
+  return text.join(" ");
+}
+
+export function getTextArray(): string[] {
+  return text;
+}
+
 export function setIsWordRandom(val: boolean): void {
   isWordRandom = val;
 }
@@ -41,33 +49,93 @@ export function setDelimiter(val: string): void {
 
 type CustomTextObject = Record<string, string>;
 
-export function getCustomText(name: string): string[] {
-  const customText = getCustomTextObject();
+type CustomTextLongObject = Record<string, { text: string; progress: number }>;
 
-  return customText[name].split(/ +/);
+export function getCustomText(name: string, long = false): string[] {
+  if (long) {
+    return getCustomTextLongObject()[name]["text"].split(/ +/);
+  } else {
+    return getCustomTextObject()[name].split(/ +/);
+  }
 }
 
-export function setCustomText(name: string, text: string | string[]): void {
-  const customText = getCustomTextObject();
+export function setCustomText(
+  name: string,
+  text: string | string[],
+  long = false
+): void {
+  if (long) {
+    const customText = getCustomTextLongObject();
 
-  if (typeof text === "string") customText[name] = text;
-  else customText[name] = text.join(" ");
+    customText[name] = {
+      text: "",
+      progress: 0,
+    };
 
-  window.localStorage.setItem("customText", JSON.stringify(customText));
+    if (typeof text === "string") {
+      customText[name]["text"] = text;
+    } else {
+      customText[name]["text"] = text.join(" ");
+    }
+
+    window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+  } else {
+    const customText = getCustomTextObject();
+
+    if (typeof text === "string") {
+      customText[name] = text;
+    } else {
+      customText[name] = text.join(" ");
+    }
+
+    window.localStorage.setItem("customText", JSON.stringify(customText));
+  }
 }
 
-export function deleteCustomText(name: string): void {
-  const customText = getCustomTextObject();
+export function deleteCustomText(name: string, long = false): void {
+  const customText = long ? getCustomTextLongObject() : getCustomTextObject();
 
   if (customText[name]) delete customText[name];
 
-  window.localStorage.setItem("customText", JSON.stringify(customText));
+  if (long) {
+    window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+  } else {
+    window.localStorage.setItem("customText", JSON.stringify(customText));
+  }
+}
+
+export function getCustomTextLongProgress(name: string): number {
+  const customText = getCustomTextLongObject();
+
+  return customText[name]["progress"] ?? 0;
+}
+
+export function setCustomTextLongProgress(
+  name: string,
+  progress: number
+): void {
+  const customTextProgress = getCustomTextLongObject();
+
+  customTextProgress[name]["progress"] = progress;
+
+  window.localStorage.setItem(
+    "customTextLong",
+    JSON.stringify(customTextProgress)
+  );
 }
 
 function getCustomTextObject(): CustomTextObject {
   return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
 }
 
-export function getCustomTextNames(): string[] {
-  return Object.keys(getCustomTextObject());
+function getCustomTextLongObject(): CustomTextLongObject {
+  return JSON.parse(window.localStorage.getItem("customTextLong") ?? "{}");
+}
+
+export function getCustomTextNames(long = false): string[] {
+  if (long) {
+    return Object.keys(getCustomTextLongObject());
+  } else {
+    return Object.keys(getCustomTextObject());
+  }
 }

@@ -16,6 +16,7 @@ import * as Hangul from "hangul-js";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
+import * as FunboxList from "./funbox/funbox-list";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -104,20 +105,12 @@ export function updateActiveElement(backspace?: boolean): void {
 function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
+  const funbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWordHtml
+  );
   for (let c = 0; c < word.length; c++) {
-    if (Config.funbox === "arrows") {
-      if (word.charAt(c) === "↑") {
-        retval += `<letter><i class="fas fa-arrow-up"></i></letter>`;
-      }
-      if (word.charAt(c) === "↓") {
-        retval += `<letter><i class="fas fa-arrow-down"></i></letter>`;
-      }
-      if (word.charAt(c) === "←") {
-        retval += `<letter><i class="fas fa-arrow-left"></i></letter>`;
-      }
-      if (word.charAt(c) === "→") {
-        retval += `<letter><i class="fas fa-arrow-right"></i></letter>`;
-      }
+    if (funbox?.functions?.getWordHtml) {
+      retval += funbox.functions.getWordHtml(word.charAt(c), true);
     } else if (word.charAt(c) === "\t") {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
     } else if (word.charAt(c) === "\n") {
@@ -264,7 +257,7 @@ export async function screenshot(): Promise<void> {
     $("#nocss").removeClass("hidden");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
-    if (Auth.currentUser == null) {
+    if (!Auth?.currentUser) {
       $(".pageTest .loginTip").removeClass("hidden");
     }
   }
@@ -279,9 +272,9 @@ export async function screenshot(): Promise<void> {
   $(".pageTest .ssWatermark").text(
     format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
   );
-  if (Auth.currentUser != null) {
+  if (Auth?.currentUser) {
     $(".pageTest .ssWatermark").text(
-      DB.getSnapshot().name +
+      DB.getSnapshot()?.name +
         " | " +
         format(dateNow, "dd MMM yyyy HH:mm") +
         " | monkeytype.com  "
@@ -425,6 +418,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
       wordHighlightClassString = "correct";
     }
 
+    const funbox = FunboxList.get(Config.funbox).find(
+      (f) => f.functions?.getWordHtml
+    );
     for (let i = 0; i < input.length; i++) {
       const charCorrect = currentWord[i] == input[i];
 
@@ -436,18 +432,10 @@ export function updateWordElement(showError = !Config.blindMode): void {
       let currentLetter = currentWord[i];
       let tabChar = "";
       let nlChar = "";
-      if (Config.funbox === "arrows") {
-        if (currentLetter === "↑") {
-          currentLetter = `<i class="fas fa-arrow-up"></i>`;
-        }
-        if (currentLetter === "↓") {
-          currentLetter = `<i class="fas fa-arrow-down"></i>`;
-        }
-        if (currentLetter === "←") {
-          currentLetter = `<i class="fas fa-arrow-left"></i>`;
-        }
-        if (currentLetter === "→") {
-          currentLetter = `<i class="fas fa-arrow-right"></i>`;
+      if (funbox?.functions?.getWordHtml) {
+        const cl = funbox.functions.getWordHtml(currentLetter);
+        if (cl != "") {
+          currentLetter = cl;
         }
       } else if (currentLetter === "\t") {
         tabChar = "tabChar";
@@ -510,19 +498,8 @@ export function updateWordElement(showError = !Config.blindMode): void {
     }
 
     for (let i = input.length; i < currentWord.length; i++) {
-      if (Config.funbox === "arrows") {
-        if (currentWord[i] === "↑") {
-          ret += `<letter><i class="fas fa-arrow-up"></i></letter>`;
-        }
-        if (currentWord[i] === "↓") {
-          ret += `<letter><i class="fas fa-arrow-down"></i></letter>`;
-        }
-        if (currentWord[i] === "←") {
-          ret += `<letter><i class="fas fa-arrow-left"></i></letter>`;
-        }
-        if (currentWord[i] === "→") {
-          ret += `<letter><i class="fas fa-arrow-right"></i></letter>`;
-        }
+      if (funbox?.functions?.getWordHtml) {
+        ret += funbox.functions.getWordHtml(currentWord[i], true);
       } else if (currentWord[i] === "\t") {
         ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (currentWord[i] === "\n") {
@@ -539,9 +516,9 @@ export function updateWordElement(showError = !Config.blindMode): void {
 
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
       if (input.length > currentWord.length && !Config.blindMode) {
-        $(wordAtIndex).addClass("error");
+        wordAtIndex.classList.add("error");
       } else if (input.length == currentWord.length) {
-        $(wordAtIndex).removeClass("error");
+        wordAtIndex.classList.remove("error");
       }
     }
   }
@@ -603,6 +580,8 @@ export function scrollTape(): void {
   }
 }
 
+let currentLinesAnimating = 0;
+
 export function lineJump(currentTop: number): void {
   //last word of the line
   if (
@@ -628,29 +607,41 @@ export function lineJump(currentTop: number): void {
     );
     if (Config.smoothLineScroll && toHide.length > 0) {
       lineTransition = true;
-      $("#words").prepend(
-        `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
-      );
-      $("#words .smoothScroller").animate(
-        {
-          height: 0,
-        },
-        SlowTimer.get() ? 0 : 125,
-        () => {
-          $("#words .smoothScroller").remove();
-        }
-      );
-      $("#paceCaret").animate(
-        {
-          top:
-            (<HTMLElement>document.querySelector("#paceCaret"))?.offsetTop -
-            wordHeight,
-        },
-        SlowTimer.get() ? 0 : 125
-      );
+      const smoothScroller = $("#words .smoothScroller");
+      if (smoothScroller.length === 0) {
+        $("#words").prepend(
+          `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
+        );
+      } else {
+        smoothScroller.css(
+          "height",
+          `${(smoothScroller.outerHeight(true) ?? 0) + wordHeight}px`
+        );
+      }
+      $("#words .smoothScroller")
+        .stop(true, false)
+        .animate(
+          {
+            height: 0,
+          },
+          SlowTimer.get() ? 0 : 125,
+          () => {
+            $("#words .smoothScroller").remove();
+          }
+        );
+      $("#paceCaret")
+        .stop(true, false)
+        .animate(
+          {
+            top:
+              (<HTMLElement>document.querySelector("#paceCaret"))?.offsetTop -
+              wordHeight,
+          },
+          SlowTimer.get() ? 0 : 125
+        );
 
       const newCss: { [key: string]: string } = {
-        marginTop: `-${wordHeight}px`,
+        marginTop: `-${wordHeight * (currentLinesAnimating + 1)}px`,
       };
 
       if (Config.tapeMode !== "off") {
@@ -660,15 +651,20 @@ export function lineJump(currentTop: number): void {
         const newMargin = wordsWrapperWidth / 2;
         newCss["marginLeft"] = `${newMargin}px`;
       }
-      $("#words").animate(newCss, SlowTimer.get() ? 0 : 125, () => {
-        activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
-          .offsetTop;
+      currentLinesAnimating++;
+      $("#words")
+        .stop(true, false)
+        .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
+          currentLinesAnimating = 0;
+          activeWordTop = (<HTMLElement>(
+            document.querySelector("#words .active")
+          )).offsetTop;
 
-        currentWordElementIndex -= toHide.length;
-        lineTransition = false;
-        toHide.forEach((el) => el.remove());
-        $("#words").css("marginTop", "0");
-      });
+          currentWordElementIndex -= toHide.length;
+          lineTransition = false;
+          toHide.forEach((el) => el.remove());
+          $("#words").css("marginTop", "0");
+        });
     } else {
       toHide.forEach((el) => el.remove());
       currentWordElementIndex -= toHide.length;
@@ -941,11 +937,16 @@ export function applyBurstHeatmap(): void {
     });
 
     $("#resultWordsHistory .words .word").each((_, word) => {
-      const wordBurstVal = parseInt(<string>$(word).attr("burst"));
       let cls = "";
-      steps.forEach((step) => {
-        if (wordBurstVal > step.val) cls = step.class;
-      });
+      const wordBurstAttr = $(word).attr("burst");
+      if (wordBurstAttr === undefined) {
+        cls = "unreached";
+      } else {
+        const wordBurstVal = parseInt(<string>wordBurstAttr);
+        steps.forEach((step) => {
+          if (wordBurstVal >= step.val) cls = step.class;
+        });
+      }
       $(word).addClass(cls);
     });
   } else {
@@ -955,6 +956,7 @@ export function applyBurstHeatmap(): void {
     $("#resultWordsHistory .words .word").removeClass("heatmap2");
     $("#resultWordsHistory .words .word").removeClass("heatmap3");
     $("#resultWordsHistory .words .word").removeClass("heatmap4");
+    $("#resultWordsHistory .words .word").removeClass("unreached");
   }
 }
 
@@ -963,7 +965,7 @@ export function highlightBadWord(index: number, showError: boolean): void {
   $($("#words .word")[index]).addClass("error");
 }
 
-$(document.body).on("click", "#saveScreenshotButton", () => {
+$(".pageTest").on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
@@ -971,10 +973,6 @@ $("#saveScreenshotButton").on("keypress", (e) => {
   if (e.key === "Enter") {
     screenshot();
   }
-});
-
-$(document).on("click", "#testModesNotice .textButton.blind", () => {
-  UpdateConfig.setBlindMode(!Config.blindMode);
 });
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
@@ -998,15 +996,15 @@ $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
 });
 
-$(document).on("mouseleave", "#resultWordsHistory .words .word", () => {
+$(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
   $(".wordInputAfter").remove();
 });
 
-$("#wpmChart").on("mouseleave", () => {
+$(".pageTest #result #wpmChart").on("mouseleave", () => {
   $(".wordInputAfter").remove();
 });
 
-$(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
+$(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
   if (resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
@@ -1051,7 +1049,7 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#showWordHistoryButton", () => {
+$(".pageTest").on("click", "#showWordHistoryButton", () => {
   toggleResultWords();
 });
 

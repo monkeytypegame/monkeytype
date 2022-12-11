@@ -18,6 +18,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Lalezar:wght@300;400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@300;400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@300;400;700&display=swap");
 
 @font-face {
   font-family: "Boon";
@@ -26,6 +28,14 @@
   font-display: block;
   src: url("../webfonts/Boon-400.ttf") format("truetype"),
     url("../webfonts/Boon-400.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Open Dyslexic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/OpenDyslexic.otf") format("opentype");
 }
 
 :root {
@@ -298,7 +308,7 @@ key {
   color: var(--text-color);
   cursor: pointer;
   transition: background 0.125s, color 0.125s;
-  padding: 0.5rem;
+  padding: 0.5em;
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
   text-align: center;
@@ -307,11 +317,11 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
-  line-height: 1.25rem;
+  line-height: 1.25em;
   appearance: none;
   border: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1em;
 
   &.active {
     background: var(--main-color);
@@ -446,15 +456,15 @@ key {
   }
   position: relative;
   .statusIndicator {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.25em;
+    height: 2.25em;
     position: absolute;
     right: 0;
     top: 0;
     /* background: red; */
     display: grid;
-    grid-template-columns: 2.25rem;
-    grid-template-rows: 2.25rem;
+    grid-template-columns: 2.25em;
+    grid-template-rows: 2.25em;
     place-items: center center;
     cursor: pointer;
 
@@ -532,6 +542,6 @@ key {
   border-radius: 100rem;
   right: 0.5em;
   top: 0.5em;
-  outline: 0.5em solid var(--bg-color);
+  box-shadow: 0 0 0 0.5em var(--bg-color);
   transition: 0.125s;
 }

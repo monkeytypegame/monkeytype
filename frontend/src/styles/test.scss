@@ -34,6 +34,10 @@
 .pageTest {
   position: relative;
 
+  #typingTest {
+    position: relative;
+  }
+
   .ssWatermark {
     font-size: 1.25rem;
     color: var(--sub-color);
@@ -423,7 +427,7 @@
   top: -2.5rem;
 
   &.focus {
-    top: 0rem;
+    // top: 0rem;
   }
 
   i {
@@ -446,6 +450,12 @@
   // "buttons buttons"
   // "login login"
   // "ssw ssw";
+
+  .editTagsButton {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding-bottom: 0;
+  }
 
   &:focus {
     outline: none;
@@ -539,6 +549,9 @@
         }
         letter.incorrect.extra {
           color: var(--error-extra-color);
+        }
+        &.unreached letter {
+          filter: opacity(0.2);
         }
         &.heatmap0 letter {
           color: var(--colorful-error-color);
@@ -930,6 +943,10 @@
   display: none;
   height: max-content;
   margin-bottom: 1rem;
+  transition: 0.125s;
+  &.focus {
+    opacity: 0;
+  }
 }
 
 #testConfig {
@@ -1091,6 +1108,9 @@
 
     .textButton {
       margin: 0 0.5rem;
+      &.noInteraction {
+        pointer-events: none;
+      }
     }
 
     .fas {

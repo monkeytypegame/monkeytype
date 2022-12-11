@@ -31,8 +31,9 @@ export function addAllFromToday(): void {
   const todayDateMS = todayDate.getTime();
 
   seconds = 0;
-
-  const results = DB.getSnapshot().results;
+  const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
+  const results = snapshot.results;
 
   results?.forEach((result) => {
     const resultDate = new Date(result.timestamp);

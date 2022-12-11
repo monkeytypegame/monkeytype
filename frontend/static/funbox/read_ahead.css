@@ -1,4 +1,23 @@
 #words .word.active:nth-of-type(n + 2),
 #words .word.active:nth-of-type(n + 2) + .word {
   color: transparent;
+  animation: none;
+}
+
+#words.flipped .word.active:nth-of-type(n + 2),
+#words.flipped .word.active:nth-of-type(n + 2) + .word {
+  color: transparent;
+  animation: none;
+}
+
+#words.colorfulMode .word.active:nth-of-type(n + 2),
+#words.colorfulMode .word.active:nth-of-type(n + 2) + .word {
+  color: transparent;
+  animation: none;
+}
+
+#words.flipped.colorfulMode .word.active:nth-of-type(n + 2),
+#words.flipped.colorfulMode .word.active:nth-of-type(n + 2) + .word {
+  color: transparent;
+  animation: none;
 }

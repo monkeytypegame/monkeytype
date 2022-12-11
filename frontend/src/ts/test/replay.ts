@@ -315,7 +315,7 @@ $(document).on("keypress", "#watchReplayButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#watchReplayButton", () => {
+$(".pageTest").on("click", "#watchReplayButton", () => {
   toggleReplayDisplay();
 });
 

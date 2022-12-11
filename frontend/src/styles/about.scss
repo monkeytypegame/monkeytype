@@ -62,6 +62,44 @@
       margin: 0;
       padding: 0;
       color: var(--text-color);
+      &.small {
+        font-size: 0.75em;
+        color: var(--sub-color);
+        text-align: right;
+      }
     }
+  }
+
+  .triplegroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    justify-items: center;
+    margin-top: 1rem;
+  }
+  .group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    .label {
+      color: var(--sub-color);
+    }
+    .val {
+      font-size: 3rem;
+      line-height: 3.5rem;
+    }
+    .valSmall {
+      font-size: 1.5rem;
+      line-height: 1.5rem;
+    }
+  }
+
+  .chart canvas {
+    width: 100% !important;
+  }
+  .chart {
+    margin-top: 1rem;
+    position: relative;
   }
 }

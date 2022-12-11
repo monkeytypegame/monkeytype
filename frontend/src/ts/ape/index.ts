@@ -20,6 +20,7 @@ const Ape = {
   quotes: new endpoints.Quotes(httpClient),
   leaderboards: new endpoints.Leaderboards(httpClient),
   presets: new endpoints.Presets(httpClient),
+  publicStats: new endpoints.Public(httpClient),
   apeKeys: new endpoints.ApeKeys(httpClient),
 };
 

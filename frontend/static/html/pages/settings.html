@@ -53,13 +53,7 @@
         give you a role.
       </div>
       <div class="buttons">
-        <a
-          class="button"
-          href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
-          style="text-decoration: none"
-        >
-          Link with Discord
-        </a>
+        <div class="button getLinkAndGoToOauth">Link with Discord</div>
       </div>
       <div class="info hidden">
         <div>
@@ -67,14 +61,13 @@
           Your accounts are linked!
         </div>
         <div id="discordButtonGroup">
-          <a
+          <div
             id="updateDiscordAvatarButton"
-            href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
-            class="textButton"
+            class="textButton getLinkAndGoToOauth"
           >
             <i class="fas fa-sync-alt" aria-hidden="true"></i>
             Update avatar
-          </a>
+          </div>
           <div id="unlinkDiscordButton" class="textButton">
             <i class="fas fa-unlink" aria-hidden="true"></i>
             Unlink
@@ -894,6 +887,38 @@
         >
           hitmarker
         </div>
+        <div
+          class="button"
+          playSoundOnClick="8"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          sine
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="9"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          sawtooth
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="10"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          square
+        </div>
+        <div
+          class="button"
+          playSoundOnClick="11"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          triangle
+        </div>
       </div>
     </div>
     <div class="section playSoundOnError">
@@ -1003,7 +1028,8 @@
       <h1>pace caret</h1>
       <div class="text">
         Displays a second caret that moves at constant speed. The 'average'
-        option averages the speed of last 10 results.
+        option averages the speed of last 10 results. The 'daily' option takes
+        the highest speed of the last 24 hours.
       </div>
       <div>
         <div class="inputAndButton">
@@ -1052,6 +1078,14 @@
             onclick="this.blur();"
           >
             last
+          </div>
+          <div
+            class="button"
+            paceCaret="daily"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            daily
           </div>
           <div
             class="button"
@@ -2379,13 +2413,13 @@
     <div class="section apeKeys needsAccount hidden">
       <h1>ape keys</h1>
       <div class="text">
-        Generate Ape Keys to access certain API endpoints. Documentation is
-        available
-        <span style="display: inline-flex; margin-right: 0.5rem">
+        Generate Ape Keys to access certain API endpoints
+        <span style="display: inline-flex">
+          (
           <a href="https://api.monkeytype.com/documentation" target="_blank">
-            here
+            documentation
           </a>
-          .
+          ).&nbsp;
         </span>
         More endpoints will be added in the future.
       </div>

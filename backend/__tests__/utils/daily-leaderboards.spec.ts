@@ -21,8 +21,6 @@ const dailyLeaderboardsConfig = {
   ],
   dailyLeaderboardCacheSize: 3,
   topResultsToAnnounce: 3,
-  maxXpReward: 0,
-  minXpReward: 0,
   xpRewardBrackets: [],
 };
 

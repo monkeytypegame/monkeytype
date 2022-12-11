@@ -4,6 +4,7 @@ import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
+import { setCustomTextName } from "../states/custom-text-name";
 
 interface Before {
   mode: MonkeyTypes.Mode | null;
@@ -96,6 +97,8 @@ export function init(missed: boolean, slow: boolean): void {
   );
   CustomText.setTime(-1);
 
+  setCustomTextName("practise", undefined);
+
   before.mode = mode;
   before.punctuation = punctuation;
   before.numbers = numbers;
@@ -176,7 +179,7 @@ $(document).on("keypress", "#practiseWordsButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#practiseWordsButton", () => {
+$(".pageTest").on("click", "#practiseWordsButton", () => {
   showPopup();
 });
 

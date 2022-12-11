@@ -9,15 +9,20 @@ import * as ActivePage from "../states/active-page";
 
 type ProfileViewPaths = "profile" | "account";
 
+interface ProfileData extends MonkeyTypes.Snapshot {
+  allTimeLbs: MonkeyTypes.LeaderboardMemory;
+}
+
 export async function update(
   where: ProfileViewPaths,
-  profile: Partial<MonkeyTypes.Snapshot>
+  profile: Partial<ProfileData>
 ): Promise<void> {
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
+  const profileElement = $(`.page${elementClass} .profile`);
   const details = $(`.page${elementClass} .profile .details`);
 
   // ============================================================================
-  // DO FREAKING NOT USE .HTML HERE - USER INPUT!!!!!!
+  // DO FREAKING NOT USE .HTML OR .APPEND HERE - USER INPUT!!!!!!
   // ============================================================================
 
   const banned = profile.banned === true;
@@ -130,14 +135,22 @@ export async function update(
       const git = profile.details?.socialProfiles.github;
       if (git) {
         socialsEl.append(
-          `<a href='https://github.com/${git}/' target="_blank" aria-label="${git}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
+          `<a href='https://github.com/${Misc.escapeHTML(
+            git
+          )}/' target="_blank" aria-label="${Misc.escapeHTML(
+            git
+          )}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
         );
       }
 
       const twitter = profile.details?.socialProfiles.twitter;
       if (twitter) {
         socialsEl.append(
-          `<a href='https://twitter.com/${twitter}' target="_blank" aria-label="${twitter}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
+          `<a href='https://twitter.com/${Misc.escapeHTML(
+            twitter
+          )}' target="_blank" aria-label="${Misc.escapeHTML(
+            twitter
+          )}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
         );
       }
 
@@ -149,7 +162,11 @@ export async function update(
 
       if (website) {
         socialsEl.append(
-          `<a href='${website}' target="_blank" aria-label="${websiteName}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+          `<a href='${Misc.escapeHTML(
+            website
+          )}' target="_blank" aria-label="${Misc.escapeHTML(
+            websiteName ?? ""
+          )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
         );
       }
     }
@@ -180,6 +197,32 @@ export async function update(
       "aria-label",
       `${Misc.abbreviateNumber(xpForLevel - xpToDisplay)} xp until next level`
     );
+
+  //lbs
+
+  if (banned) {
+    profileElement.find(".leaderboardsPositions").addClass("hidden");
+  } else {
+    profileElement.find(".leaderboardsPositions").removeClass("hidden");
+
+    const lbPos = where === "profile" ? profile.allTimeLbs : profile.lbMemory;
+
+    const t15 = lbPos?.time?.[15]?.["english"];
+    const t60 = lbPos?.time?.[60]?.["english"];
+
+    if (!t15 && !t60) {
+      profileElement.find(".leaderboardsPositions").addClass("hidden");
+    } else {
+      const t15string = t15 ? Misc.getPositionString(t15) : "-";
+      profileElement
+        .find(".leaderboardsPositions .group.t15 .pos")
+        .text(t15string);
+      const t60string = t60 ? Misc.getPositionString(t60) : "-";
+      profileElement
+        .find(".leaderboardsPositions .group.t60 .pos")
+        .text(t60string);
+    }
+  }
 
   //structure
 
@@ -252,8 +295,10 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
 }
 
 $(".details .editProfileButton").on("click", () => {
+  const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   EditProfilePopup.show(() => {
-    update("account", DB.getSnapshot());
+    update("account", snapshot);
   });
 });
 

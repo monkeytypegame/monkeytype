@@ -12,6 +12,7 @@ import * as LoginPage from "../pages/login";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as AccountController from "../controllers/account-controller";
 import * as TestLogic from "../test/test-logic";
+import * as CaptchaController from "../controllers/captcha-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
@@ -21,6 +22,11 @@ let signedInUser: UserCredential | undefined = undefined;
 
 export function show(credential: UserCredential): void {
   if ($("#googleSignUpPopupWrapper").hasClass("hidden")) {
+    CaptchaController.reset("googleSignUpPopup");
+    CaptchaController.render(
+      $("#googleSignUpPopupWrapper .captcha")[0],
+      "googleSignUpPopup"
+    );
     enableInput();
     disableButton();
     signedInUser = credential;
@@ -64,19 +70,27 @@ export async function hide(): Promise<void> {
 
 async function apply(): Promise<void> {
   if ($("#googleSignUpPopup .button").hasClass("disabled")) return;
-  disableInput();
-  disableButton();
+
   if (!signedInUser) {
     return Notifications.add(
       "Missing user credential. Please close the popup and try again.",
       -1
     );
   }
+
+  const captcha = CaptchaController.getResponse("googleSignUpPopup");
+  if (!captcha) {
+    return Notifications.add("Please complete the captcha", -1);
+  }
+
+  disableInput();
+  disableButton();
+
   Loader.show();
   const name = $("#googleSignUpPopup input").val() as string;
   try {
     if (name.length === 0) throw new Error("Name cannot be empty");
-    const response = await Ape.users.create(name);
+    const response = await Ape.users.create(name, captcha);
     if (response.status !== 200) {
       throw response;
     }
@@ -118,6 +132,8 @@ async function apply(): Promise<void> {
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
+    LoginPage.enableSignInButton();
+    LoginPage.enableSignUpButton();
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
       await signedInUser.user.delete();

@@ -29,6 +29,7 @@ declare namespace MonkeyTypes {
       };
     };
     users: {
+      signUp: boolean;
       autoBan: {
         enabled: boolean;
         maxCount: number;
@@ -42,6 +43,7 @@ declare namespace MonkeyTypes {
       };
       xp: {
         enabled: boolean;
+        funboxBonus: number;
         gainMultiplier: number;
         maxDailyBonus: number;
         minDailyBonus: number;
@@ -78,6 +80,13 @@ declare namespace MonkeyTypes {
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
       xpRewardBrackets: RewardBracket[];
+    };
+    leaderboards: {
+      weeklyXp: {
+        enabled: boolean;
+        expirationTimeInDays: number;
+        xpRewardBrackets: RewardBracket[];
+      };
     };
   }
 
@@ -358,6 +367,11 @@ declare namespace MonkeyTypes {
     sd: number;
   }
 
+  interface IncompleteTest {
+    acc: number;
+    seconds: number;
+  }
+
   interface Result<M extends Mode> {
     _id: ObjectId;
     wpm: number;
@@ -372,6 +386,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
     restartCount: number;
     incompleteTestSeconds: number;
+    incompleteTests: IncompleteTest[];
     testDuration: number;
     afkDuration: number;
     tags: string[];
@@ -440,6 +455,12 @@ declare namespace MonkeyTypes {
     type: string;
   }
 
+  interface PublicSpeedStats {
+    _id: string;
+    type: "speedStats";
+    [language_mode_mode2: string]: Record<string, number>;
+  }
+
   interface QuoteRating {
     _id: string;
     average: number;
@@ -447,5 +468,10 @@ declare namespace MonkeyTypes {
     quoteId: number;
     ratings: number;
     totalRating: number;
+  }
+
+  interface FunboxMetadata {
+    canGetPb: boolean;
+    difficultyLevel: number;
   }
 }

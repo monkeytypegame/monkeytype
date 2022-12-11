@@ -7,36 +7,27 @@ import * as Notifications from "./elements/notifications";
 import * as Focus from "./test/focus";
 import * as CookiePopup from "./popups/cookie-popup";
 import * as PSA from "./elements/psa";
-import { CLIENT_VERSION } from "./version";
+import * as ConnectionState from "./states/connection";
+import { Workbox } from "workbox-window";
+//@ts-ignore
+import Konami from "konami";
 
 ManualRestart.set();
 UpdateConfig.loadFromLocalStorage();
 
 if (window.location.hostname === "localhost") {
   $("#bottom .version .text").text("localhost");
-  $("#bottom .version").css("opacity", 1);
+  $("#bottom #versionGroup").removeClass("hidden");
   $("body").prepend(
     `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
-  Misc.getReleasesFromGitHub().then((v) => {
-    NewVersionNotification.show(v[0].name);
+  Misc.getLatestReleaseFromGitHub().then((v) => {
+    $("#bottom .version .text").text(v);
+    $("#bottom #versionGroup").removeClass("hidden");
+    NewVersionNotification.show(v);
   });
 }
-
-$("#nocss .requestedStylesheets").html(
-  "Requested stylesheets:<br>" +
-    (
-      [
-        ...document.querySelectorAll("link[rel=stylesheet"),
-      ] as HTMLAnchorElement[]
-    )
-      .map((l) => l.href)
-      .filter((l) => /\/css\//gi.test(l))
-      .join("<br>") +
-    "<br><br>Client version:<br>" +
-    CLIENT_VERSION
-);
 
 Focus.set(true, true);
 $(document).ready(() => {
@@ -45,36 +36,98 @@ $(document).ready(() => {
   if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
     $("#restartTestButton").addClass("hidden");
   }
-  // if (!window.localStorage.getItem("merchbannerclosed")) {
+  if (!window.localStorage.getItem("merchbannerclosed")) {
+    Notifications.addBanner(
+      `Check out our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
+      1,
+      "./images/merch2.png",
+      false,
+      () => {
+        window.localStorage.setItem("merchbannerclosed", "true");
+      },
+      true
+    );
+  }
+
+  // if (!window.localStorage.getItem("merchbannerclosed2")) {
   //   Notifications.addBanner(
-  //     `Check out our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
+  //     `Three new merch designs, available at <a target="_blank" href="https://www.monkeytype.store/unisex-men-s-t-shirts/">monkeytype.store</a>`,
   //     1,
-  //     "images/merchdropwebsite2.png",
+  //     "images/cutoutbanner.png",
   //     false,
   //     () => {
-  //       window.localStorage.setItem("merchbannerclosed", "true");
+  //       window.localStorage.setItem("merchbannerclosed2", "true");
   //     },
   //     true
   //   );
   // }
 
-  if (!window.localStorage.getItem("merchbannerclosed2")) {
-    Notifications.addBanner(
-      `Three new merch designs, available at <a target="_blank" href="https://www.monkeytype.store/unisex-men-s-t-shirts/">monkeytype.store</a>`,
-      1,
-      "images/cutoutbanner.png",
-      false,
-      () => {
-        window.localStorage.setItem("merchbannerclosed2", "true");
-      },
-      true
-    );
-  }
   $("#centerContent")
     .css("opacity", "0")
     .removeClass("hidden")
     .stop(true, true)
     .animate({ opacity: 1 }, 250);
-  PSA.show();
+  if (ConnectionState.get()) PSA.show();
   MonkeyPower.init();
+
+  new Konami("https://keymash.io/");
 });
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    // disabling service workers on localhost - they dont really work well with local development
+    // and cause issues with hot reloading
+    if (window.location.hostname === "localhost") {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (const registration of registrations) {
+          // if (registration.scope !== "https://monkeytype.com/")
+          registration.unregister();
+        }
+      });
+    } else {
+      const wb = new Workbox("/service-worker.js");
+
+      let updateBannerId: number;
+
+      // Add an event listener to detect when the registered
+      // service worker has installed but is waiting to activate.
+      wb.addEventListener("waiting", (event) => {
+        // set up a listener that will show a banner as soon as
+        // the previously waiting service worker has taken control.
+        wb.addEventListener("controlling", (event2) => {
+          if (
+            (event.isUpdate || event2.isUpdate) &&
+            updateBannerId === undefined
+          ) {
+            updateBannerId = Notifications.addBanner(
+              "Update ready - please refresh",
+              1,
+              "gift",
+              true
+            );
+          }
+        });
+
+        wb.messageSkipWaiting();
+      });
+
+      wb.register()
+        .then((registration) => {
+          // if (registration?.waiting) {
+          //   //@ts-ignore
+          //   registration?.onupdatefound = (): void => {
+          //     Notifications.add("Downloading update...", 1, 0, "Update");
+          //   };
+          // }
+          console.log("Service worker registration succeeded:", registration);
+
+          setInterval(() => {
+            wb.update(); //check for updates every 15 minutes
+          }, 900000);
+        })
+        .catch((e) => {
+          console.log("Service worker registration failed:", e);
+        });
+    }
+  });
+}

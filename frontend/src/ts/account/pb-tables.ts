@@ -1,5 +1,6 @@
 import Config from "../config";
 import format from "date-fns/format";
+import * as Misc from "../utils/misc";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
@@ -127,12 +128,53 @@ function buildPbHtml(
   let dateText = "";
   const multiplier = Config.alwaysShowCPM ? 5 : 1;
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
+  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
   try {
     pbData = pbs[mode][mode2].sort((a, b) => b.wpm - a.wpm)[0];
     const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText = format(date, "dd MMM yyyy");
     }
+
+    let wpmString: number | string = pbData.wpm * multiplier;
+    if (Config.alwaysShowDecimalPlaces) {
+      wpmString = Misc.roundTo2(wpmString).toFixed(2);
+    } else {
+      wpmString = Math.round(wpmString);
+    }
+    wpmString += ` ${wpmCpm}`;
+
+    let rawString: number | string = pbData.raw * multiplier;
+    if (Config.alwaysShowDecimalPlaces) {
+      rawString = Misc.roundTo2(rawString).toFixed(2);
+    } else {
+      rawString = Math.round(rawString);
+    }
+    rawString += ` raw`;
+
+    let accString: number | string = pbData.acc;
+    if (accString === undefined) {
+      accString = "-";
+    } else {
+      if (Config.alwaysShowDecimalPlaces) {
+        accString = Misc.roundTo2(accString).toFixed(2);
+      } else {
+        accString = Math.round(accString);
+      }
+    }
+    accString += ` acc`;
+
+    let conString: number | string = pbData.consistency;
+    if (conString === undefined) {
+      conString = "-";
+    } else {
+      if (Config.alwaysShowDecimalPlaces) {
+        conString = Misc.roundTo2(conString).toFixed(2);
+      } else {
+        conString = Math.round(conString);
+      }
+    }
+    conString += ` con`;
 
     retval = `<div class="quick">
       <div class="test">${modeString}</div>
@@ -143,14 +185,10 @@ function buildPbHtml(
     </div>
     <div class="fullTest">
       <div>${modeString}</div>
-      <div>${Math.round(pbData.wpm * multiplier)} ${
-      Config.alwaysShowCPM ? "cpm" : "wpm"
-    }</div>
-      <div>${Math.round(pbData.raw * multiplier)} raw</div>
-      <div>${pbData.acc === undefined ? "-" : Math.floor(pbData.acc)} acc</div>
-      <div>${
-        pbData.consistency === undefined ? "-" : Math.floor(pbData.consistency)
-      } con</div>
+      <div>${wpmString}</div>
+      <div>${rawString}</div>
+      <div>${accString}</div>
+      <div>${conString}</div>
       <div>${dateText}</div>
     </div>`;
   } catch (e) {

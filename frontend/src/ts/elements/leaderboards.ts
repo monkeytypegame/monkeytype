@@ -7,6 +7,7 @@ import format from "date-fns/format";
 import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
+import * as ConnectionState from "../states/connection";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
@@ -125,7 +126,7 @@ function updateFooter(lb: LbKey): void {
     side = "right";
   }
 
-  if (!Auth.currentUser) {
+  if (!Auth?.currentUser) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;"></>
@@ -136,7 +137,7 @@ function updateFooter(lb: LbKey): void {
 
   if (
     window.location.hostname !== "localhost" &&
-    (DB.getSnapshot().typingStats?.timeTyping ?? 0) < 7200
+    (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 7200
   ) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
@@ -255,10 +256,11 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
 
   const snap = DB.getSnapshot();
 
-  const avatarUrlPromises = currentData[lb].map((entry) => {
+  const avatarUrlPromises = currentData[lb].map(async (entry) => {
     const isCurrentUser =
-      Auth.currentUser &&
-      entry.uid === Auth.currentUser.uid &&
+      Auth?.currentUser &&
+      entry.uid === Auth?.currentUser.uid &&
+      snap &&
       snap.discordAvatar &&
       snap.discordId;
 
@@ -322,9 +324,9 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     }</td>
     <td>
     <div class="avatarNameBadge">${avatar}
-      <a href="${location.origin}/profile/${entry.uid}" class="entryName" uid=${
+      <a href="${location.origin}/profile/${
       entry.uid
-    } router-link>${entry.name}</a>
+    }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>
@@ -429,7 +431,7 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
-  const leaderboardRequests = timeModes.map((mode2) => {
+  const leaderboardRequests = timeModes.map(async (mode2) => {
     return Ape.leaderboards.get({
       language: currentLanguage,
       mode: "time",
@@ -438,9 +440,9 @@ async function update(): Promise<void> {
     });
   });
 
-  if (Auth.currentUser) {
+  if (Auth?.currentUser) {
     leaderboardRequests.push(
-      ...timeModes.map((mode2) => {
+      ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
           language: currentLanguage,
           mode: "time",
@@ -572,8 +574,12 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 }
 
 export function show(): void {
+  if (!ConnectionState.get()) {
+    Notifications.add("You can't view leaderboards while offline", 0);
+    return;
+  }
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
-    if (Auth.currentUser) {
+    if (Auth?.currentUser) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
       );
@@ -807,11 +813,10 @@ $(document).on("keydown", (event) => {
   }
 });
 
-$(document).on("click", "#top #menu .textButton", (e) => {
+$("#top #menu").on("click", ".textButton", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
     show();
   }
-  return false;
 });
 
 $(document).on("keypress", "#top #menu .textButton", (e) => {

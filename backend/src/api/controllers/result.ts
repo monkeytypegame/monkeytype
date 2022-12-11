@@ -7,7 +7,7 @@ import {
   updateTypingStats,
   recordAutoBanEvent,
 } from "../../dal/user";
-import * as PublicStatsDAL from "../../dal/public-stats";
+import * as PublicDAL from "../../dal/public";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
@@ -31,12 +31,14 @@ import {
   incrementResult,
   incrementDailyLeaderboard,
 } from "../../utils/prometheus";
-import * as George from "../../tasks/george";
+import GeorgeQueue from "../../queues/george-queue";
 import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import { updateStreak } from "../../dal/user";
+import FunboxesMetadata from "../../constants/funbox";
+import _ from "lodash";
+import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -58,7 +60,13 @@ export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const results = await ResultDAL.getResults(uid);
+  const onOrAfterTimestamp = parseInt(
+    req.query.onOrAfterTimestamp as string,
+    10
+  );
+  const results = await ResultDAL.getResults(uid, {
+    onOrAfterTimestamp,
+  });
   return new MonkeyResponse("Results retrieved", results);
 }
 
@@ -87,7 +95,29 @@ export async function updateTags(
   const { tagIds, resultId } = req.body;
 
   await ResultDAL.updateTags(uid, resultId, tagIds);
-  return new MonkeyResponse("Result tags updated");
+  const result = await ResultDAL.getResult(uid, resultId);
+
+  if (!result.difficulty) {
+    result.difficulty = "normal";
+  }
+  if (!result.language) {
+    result.language = "english";
+  }
+  if (!result.funbox) {
+    result.funbox = "none";
+  }
+  if (!result.lazyMode) {
+    result.lazyMode = false;
+  }
+  if (!result.punctuation) {
+    result.punctuation = false;
+  }
+
+  const user = await getUser(uid, "update tags");
+  const tagPbs = await checkIfTagPb(uid, user, result);
+  return new MonkeyResponse("Result tags updated", {
+    tagPbs,
+  });
 }
 
 interface AddResultData {
@@ -95,6 +125,7 @@ interface AddResultData {
   tagPbs: any[];
   insertedId: ObjectId;
   dailyLeaderboardRank?: number;
+  weeklyXpLeaderboardRank?: number;
   xp: number;
   dailyXpBonus: boolean;
   xpBreakdown: Record<string, number>;
@@ -309,7 +340,7 @@ export async function addResult(
   if (result.mode === "time" && String(result.mode2) === "60") {
     incrementBananas(uid, result.wpm);
     if (isPb && user.discordId) {
-      George.updateDiscordRole(user.discordId, result.wpm);
+      GeorgeQueue.updateDiscordRole(user.discordId, result.wpm);
     }
   }
 
@@ -318,19 +349,20 @@ export async function addResult(
     AutoRoleList.includes(result.challenge) &&
     user.discordId
   ) {
-    George.awardChallenge(user.discordId, result.challenge);
+    GeorgeQueue.awardChallenge(user.discordId, result.challenge);
   } else {
     delete result.challenge;
   }
 
-  let tt = 0;
+  let totalDurationTypedSeconds = 0;
   let afk = result.afkDuration;
   if (afk == undefined) {
     afk = 0;
   }
-  tt = result.testDuration + result.incompleteTestSeconds - afk;
-  updateTypingStats(uid, result.restartCount, tt);
-  PublicStatsDAL.updateStats(result.restartCount, tt);
+  totalDurationTypedSeconds =
+    result.testDuration + result.incompleteTestSeconds - afk;
+  updateTypingStats(uid, result.restartCount, totalDurationTypedSeconds);
+  PublicDAL.updateStats(result.restartCount, totalDurationTypedSeconds);
 
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
   const dailyLeaderboard = getDailyLeaderboard(
@@ -349,10 +381,9 @@ export async function addResult(
     !user.banned &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
-  if (dailyLeaderboard && validResultCriteria) {
-    //get the selected badge id
-    const badgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
+  const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
 
+  if (dailyLeaderboard && validResultCriteria) {
     incrementDailyLeaderboard(result.mode, result.mode2, result.language);
     dailyLeaderboardRank = await dailyLeaderboard.addResult(
       {
@@ -365,13 +396,13 @@ export async function addResult(
         uid,
         discordAvatar: user.discordAvatar,
         discordId: user.discordId,
-        badgeId,
+        badgeId: selectedBadgeId,
       },
       dailyLeaderboardsConfig
     );
   }
 
-  const streak = await updateStreak(uid, result.timestamp);
+  const streak = await UserDAL.updateStreak(uid, result.timestamp);
 
   const xpGained = await calculateXp(
     result,
@@ -380,6 +411,37 @@ export async function addResult(
     user.xp ?? 0,
     streak
   );
+
+  const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
+  let weeklyXpLeaderboardRank = -1;
+  const eligibleForWeeklyXpLeaderboard =
+    !user.banned &&
+    (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
+
+  const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
+    weeklyXpLeaderboardConfig
+  );
+  if (
+    eligibleForWeeklyXpLeaderboard &&
+    xpGained.xp > 0 &&
+    weeklyXpLeaderboard
+  ) {
+    weeklyXpLeaderboardRank = await weeklyXpLeaderboard.addResult(
+      weeklyXpLeaderboardConfig,
+      {
+        entry: {
+          uid,
+          name: user.name,
+          discordAvatar: user.discordAvatar,
+          discordId: user.discordId,
+          badgeId: selectedBadgeId,
+          lastActivityTimestamp: Date.now(),
+        },
+        xpGained: xpGained.xp,
+        timeTypedSeconds: totalDurationTypedSeconds,
+      }
+    );
+  }
 
   if (result.bailedOut === false) delete result.bailedOut;
   if (result.blindMode === false) delete result.blindMode;
@@ -422,6 +484,11 @@ export async function addResult(
   if (dailyLeaderboardRank !== -1) {
     data.dailyLeaderboardRank = dailyLeaderboardRank;
   }
+
+  if (weeklyXpLeaderboardRank !== -1) {
+    data.weeklyXpLeaderboardRank = weeklyXpLeaderboardRank;
+  }
+
   incrementResult(result);
 
   return new MonkeyResponse("Result saved", data);
@@ -445,14 +512,21 @@ async function calculateXp(
     acc,
     testDuration,
     incompleteTestSeconds,
+    incompleteTests,
     afkDuration,
     charStats,
     punctuation,
     numbers,
+    funbox,
   } = result;
 
-  const { enabled, gainMultiplier, maxDailyBonus, minDailyBonus } =
-    xpConfiguration;
+  const {
+    enabled,
+    gainMultiplier,
+    maxDailyBonus,
+    minDailyBonus,
+    funboxBonus: funboxBonusConfiguration,
+  } = xpConfiguration;
 
   if (mode === "zen" || !enabled) {
     return {
@@ -496,6 +570,18 @@ async function calculateXp(
     }
   }
 
+  if (funboxBonusConfiguration > 0) {
+    const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
+      const funbox = FunboxesMetadata[funboxName as string];
+      const difficultyLevel = funbox?.difficultyLevel ?? 0;
+      return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
+    });
+    if (funboxModifier > 0) {
+      modifier += funboxModifier;
+      breakdown["funbox"] = Math.round(baseXp * funboxModifier);
+    }
+  }
+
   if (xpConfiguration.streak.enabled) {
     const streakModifier = parseFloat(
       mapRange(
@@ -514,8 +600,18 @@ async function calculateXp(
     }
   }
 
-  const incompleteXp = Math.round(incompleteTestSeconds);
-  breakdown["incomplete"] = incompleteXp;
+  let incompleteXp = 0;
+  if (incompleteTests && incompleteTests.length > 0) {
+    incompleteTests.forEach((it: { acc: number; seconds: number }) => {
+      let modifier = (it.acc - 50) / 50;
+      if (modifier < 0) modifier = 0;
+      incompleteXp += Math.round(it.seconds * modifier);
+    });
+    breakdown["incomplete"] = incompleteXp;
+  } else if (incompleteTestSeconds && incompleteTestSeconds > 0) {
+    incompleteXp = Math.round(incompleteTestSeconds);
+    breakdown["incomplete"] = incompleteXp;
+  }
 
   const accuracyModifier = (acc - 50) / 50;
 

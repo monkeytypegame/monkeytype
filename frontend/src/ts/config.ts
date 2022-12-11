@@ -12,6 +12,7 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
+import { canSetConfigWithCurrentFunboxes } from "./test/funbox/funbox-validation";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -92,6 +93,10 @@ export async function saveFullConfigToLocalStorage(
 export function setNumbers(numb: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("numbers", numb, ["boolean"])) return false;
 
+  if (!canSetConfigWithCurrentFunboxes("numbers", numb, config.funbox)) {
+    return false;
+  }
+
   if (config.mode === "quote") {
     numb = false;
   }
@@ -105,6 +110,10 @@ export function setNumbers(numb: boolean, nosave?: boolean): boolean {
 //punctuation
 export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("punctuation", punc, ["boolean"])) return false;
+
+  if (!canSetConfigWithCurrentFunboxes("punctuation", punc, config.funbox)) {
+    return false;
+  }
 
   if (config.mode === "quote") {
     punc = false;
@@ -125,10 +134,10 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     return false;
   }
 
-  if (mode !== "words" && config.funbox === "memory") {
-    Notifications.add("Memory funbox can only be used with words mode.", 0);
+  if (!canSetConfigWithCurrentFunboxes("mode", mode, config.funbox)) {
     return false;
   }
+
   const previous = config.mode;
   config.mode = mode;
   if (config.mode == "custom") {
@@ -166,7 +175,7 @@ export function setPlaySoundOnClick(
 ): boolean {
   if (
     !isConfigValueValid("play sound on click", val, [
-      ["off", "1", "2", "3", "4", "5", "6", "7"],
+      ["off", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
     ])
   ) {
     return false;
@@ -233,6 +242,36 @@ export function setFunbox(funbox: string, nosave?: boolean): boolean {
   ConfigEvent.dispatch("funbox", config.funbox);
 
   return true;
+}
+
+export function toggleFunbox(
+  funbox: string,
+  nosave?: boolean
+): number | boolean {
+  if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
+
+  let r;
+
+  const funboxArray = config.funbox.split("#");
+  if (funboxArray[0] == "none") funboxArray.splice(0, 1);
+  if (!funboxArray.includes(funbox)) {
+    funboxArray.push(funbox);
+    config.funbox = funboxArray.sort().join("#");
+    r = funboxArray.indexOf(funbox);
+  } else {
+    r = funboxArray.indexOf(funbox);
+    funboxArray.splice(r, 1);
+    if (funboxArray.length == 0) {
+      config.funbox = "none";
+    } else {
+      config.funbox = funboxArray.join("#");
+    }
+    r = -r - 1;
+  }
+  saveToLocalStorage("funbox", nosave);
+  ConfigEvent.dispatch("funbox", config.funbox);
+
+  return r;
 }
 
 export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
@@ -346,14 +385,14 @@ export function setPaceCaret(
 ): boolean {
   if (
     !isConfigValueValid("pace caret", val, [
-      ["custom", "off", "average", "pb", "last"],
+      ["custom", "off", "average", "pb", "last", "daily"],
     ])
   ) {
     return false;
   }
 
   if (document.readyState === "complete") {
-    if (val == "pb" && Auth.currentUser === null) {
+    if (val == "pb" && !Auth?.currentUser) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
@@ -812,16 +851,7 @@ export function setHighlightMode(
     return false;
   }
 
-  if (
-    mode === "word" &&
-    (config.funbox === "nospace" ||
-      config.funbox === "read_ahead" ||
-      config.funbox === "read_ahead_easy" ||
-      config.funbox === "read_ahead_hard" ||
-      config.funbox === "tts" ||
-      config.funbox === "arrows")
-  ) {
-    Notifications.add("Can't use word highlight with this funbox", 0);
+  if (!canSetConfigWithCurrentFunboxes("highlightMode", mode, config.funbox)) {
     return false;
   }
 
@@ -970,6 +1000,10 @@ export function setTimeConfig(
 ): boolean {
   if (!isConfigValueValid("time", time, ["number"])) return false;
 
+  if (!canSetConfigWithCurrentFunboxes("words", time, config.funbox)) {
+    return false;
+  }
+
   const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
 
   config.time = newTime;
@@ -1029,6 +1063,10 @@ export function setWordCount(
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("words", wordCount, ["number"])) return false;
+
+  if (!canSetConfigWithCurrentFunboxes("words", wordCount, config.funbox)) {
+    return false;
+  }
 
   const newWordCount =
     wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
@@ -1305,12 +1343,12 @@ export function setRandomTheme(
   }
 
   if (val === "custom") {
-    if (Auth.currentUser === null) {
+    if (!Auth?.currentUser) {
       config.randomTheme = val;
       return false;
     }
     if (!DB.getSnapshot()) return true;
-    if (DB.getSnapshot().customThemes.length === 0) {
+    if (DB.getSnapshot()?.customThemes.length === 0) {
       Notifications.add("You need to create a custom theme first", 0);
       config.randomTheme = "off";
       return false;
@@ -1552,6 +1590,15 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   if (fontSize < 0) {
     fontSize = 1;
+  }
+
+  // i dont know why the above check is not enough
+  // some people are getting font size 15 when it should be converted to 1.5
+  // after converting from the string to float system
+
+  // keeping this in for now, if you want a big font go 14.9 or something
+  if (fontSize == 15) {
+    fontSize = 1.5;
   }
 
   config.fontSize = fontSize;

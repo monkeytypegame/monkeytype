@@ -9,7 +9,7 @@ export function clear(): void {
 
 export function update(): void {
   const snapshot = DB.getSnapshot();
-
+  if (!snapshot) return;
   if (snapshot.typingStats !== undefined) {
     // let th = Math.floor(DB.getSnapshot().typingStats.time / 3600);
     // let tm = Math.floor((DB.getSnapshot().typingStats.time % 3600) / 60);

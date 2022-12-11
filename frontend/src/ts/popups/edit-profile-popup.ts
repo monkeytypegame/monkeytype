@@ -3,10 +3,15 @@ import { getHTMLById } from "../controllers/badge-controller";
 import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import * as ConnectionState from "../states/connection";
 
 let callbackFuncOnHide: (() => void) | null = null;
 
 export function show(callbackOnHide: () => void): void {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   if ($("#editProfilePopupWrapper").hasClass("hidden")) {
     callbackFuncOnHide = callbackOnHide;
 
@@ -49,6 +54,7 @@ let currentSelectedBadgeId = -1;
 
 function hydrateInputs(): void {
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   const badges = snapshot.inventory?.badges ?? [];
   const { bio, keyboard, socialProfiles } = snapshot.details ?? {};
   currentSelectedBadgeId = -1;
@@ -113,6 +119,8 @@ function buildUpdatesFromInputs(): MonkeyTypes.UserDetails {
 }
 
 async function updateProfile(): Promise<void> {
+  const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   const updates = buildUpdatesFromInputs();
 
   Loader.show();
@@ -127,7 +135,6 @@ async function updateProfile(): Promise<void> {
     return;
   }
 
-  const snapshot = DB.getSnapshot();
   snapshot.details = updates;
   snapshot.inventory?.badges.forEach((badge) => {
     if (badge.id === currentSelectedBadgeId) {

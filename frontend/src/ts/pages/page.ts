@@ -1,10 +1,15 @@
+interface Options {
+  params?: Record<string, string>;
+  data?: any;
+}
+
 export default class Page {
   public name: string;
   public element: JQuery;
   public pathname: string;
   public beforeHide: () => Promise<void>;
   public afterHide: () => Promise<void>;
-  public beforeShow: (params?: { [key: string]: string }) => Promise<void>;
+  public beforeShow: (options: Options) => Promise<void>;
   public afterShow: () => Promise<void>;
   constructor(
     name: string,
@@ -12,7 +17,7 @@ export default class Page {
     pathname: string,
     beforeHide: () => Promise<void>,
     afterHide: () => Promise<void>,
-    beforeShow: (params?: { [key: string]: string }) => Promise<void>,
+    beforeShow: (options: Options) => Promise<void>,
     afterShow: () => Promise<void>
   ) {
     this.name = name;

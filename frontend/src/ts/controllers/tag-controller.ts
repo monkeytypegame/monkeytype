@@ -5,7 +5,7 @@ export function saveActiveToLocalStorage(): void {
   const tags: string[] = [];
 
   try {
-    DB.getSnapshot().tags?.forEach((tag) => {
+    DB.getSnapshot()?.tags?.forEach((tag) => {
       if (tag.active === true) {
         tags.push(tag._id);
       }
@@ -16,6 +16,7 @@ export function saveActiveToLocalStorage(): void {
 
 export function clear(nosave = false): void {
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
 
   snapshot.tags = snapshot.tags?.map((tag) => {
     tag.active = false;
@@ -30,6 +31,7 @@ export function clear(nosave = false): void {
 
 export function set(tagid: string, state: boolean, nosave = false): void {
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
 
   snapshot.tags = snapshot.tags?.map((tag) => {
     if (tag._id === tagid) {
@@ -45,7 +47,7 @@ export function set(tagid: string, state: boolean, nosave = false): void {
 }
 
 export function toggle(tagid: string, nosave = false): void {
-  DB.getSnapshot().tags?.forEach((tag) => {
+  DB.getSnapshot()?.tags?.forEach((tag) => {
     if (tag._id === tagid) {
       if (tag.active === undefined) {
         tag.active = true;

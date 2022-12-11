@@ -11,7 +11,7 @@
   --colorful-error-extra-color: #3f887c;
 }
 
-@keyframes rgb {
+@keyframes trance {
   0% {
     color: #e51376;
   }
@@ -23,7 +23,7 @@
   }
 }
 
-@keyframes rgb-bg {
+@keyframes trance-bg {
   0% {
     background: #e51376;
   }
@@ -40,7 +40,7 @@
 .pageSettings .section .buttons .button.active,
 .pageSettings .section.languages .buttons .language.active,
 .pageAccount .group.filterButtons .buttons .button.active {
-  animation: rgb-bg 5s linear infinite;
+  animation: trance-bg 5s linear infinite;
 }
 
 #top.focus .button.discord::after,
@@ -55,7 +55,7 @@
 #top .config .group .buttons .textButton:hover,
 a:hover,
 #words.flipped .word {
-  animation: rgb 5s linear infinite;
+  animation: trance 5s linear infinite;
 }
 
 #words.flipped .word letter.correct {
@@ -63,5 +63,5 @@ a:hover,
 }
 
 #words:not(.flipped) .word letter.correct {
-  animation: rgb 5s linear infinite;
+  animation: trance 5s linear infinite;
 }

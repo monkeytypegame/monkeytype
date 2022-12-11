@@ -110,7 +110,7 @@ export async function refreshButtons(): Promise<void> {
     ).empty();
     const addButton = $(".pageSettings .section.themes .addCustomThemeButton");
 
-    if (Auth.currentUser === null) {
+    if (!Auth?.currentUser) {
       $(
         ".pageSettings .section.themes .customThemeEdit .saveCustomThemeButton"
       ).text("save");
@@ -123,7 +123,7 @@ export async function refreshButtons(): Promise<void> {
 
     addButton.removeClass("hidden");
 
-    const customThemes = DB.getSnapshot().customThemes;
+    const customThemes = DB.getSnapshot()?.customThemes ?? [];
 
     customThemes.forEach((customTheme) => {
       // const activeTheme =
@@ -158,7 +158,17 @@ export async function refreshButtons(): Promise<void> {
       activeThemeName = ThemeController.randomTheme as string;
     }
 
-    const themes = await Misc.getSortedThemesList();
+    let themes;
+    try {
+      themes = await Misc.getSortedThemesList();
+    } catch (e) {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to refresh theme buttons"),
+        -1
+      );
+      return;
+    }
+
     //first show favourites
     if (Config.favThemes.length > 0) {
       favThemesEl.css({ paddingBottom: "1rem" });
@@ -288,35 +298,27 @@ $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
 });
 
 // Handle click on custom theme button
-$(document).on(
-  "click",
-  ".pageSettings .section.themes .customTheme.button",
-  (e) => {
-    // Do not apply if user wanted to delete it
-    if ($(e.target).hasClass("delButton")) return;
-    if ($(e.target).hasClass("editButton")) return;
-    const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
-    ThemeController.set(customThemeId, true);
-  }
-);
+$(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
+  // Do not apply if user wanted to delete it
+  if ($(e.target).hasClass("delButton")) return;
+  if ($(e.target).hasClass("editButton")) return;
+  const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
+  ThemeController.set(customThemeId, true);
+});
 
 // Handle click on favorite preset theme button
-$(document).on(
-  "click",
-  ".pageSettings .section.themes .theme .favButton",
-  (e) => {
-    const theme = $(e.currentTarget).parents(".theme.button").attr("theme");
-    if (theme !== undefined) toggleFavourite(theme);
-    else {
-      console.error(
-        "Could not find the theme attribute attached to the button clicked!"
-      );
-    }
+$(".pageSettings").on("click", ".section.themes .theme .favButton", (e) => {
+  const theme = $(e.currentTarget).parents(".theme.button").attr("theme");
+  if (theme !== undefined) toggleFavourite(theme);
+  else {
+    console.error(
+      "Could not find the theme attribute attached to the button clicked!"
+    );
   }
-);
+});
 
 // Handle click on preset theme button
-$(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
+$(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
     UpdateConfig.setTheme(theme);
@@ -430,7 +432,7 @@ $("#shareCustomThemeButton").on("click", () => {
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
   saveCustomThemeColors();
-  if (Auth.currentUser) {
+  if (Auth?.currentUser) {
     const newCustomTheme = {
       name: "custom",
       colors: Config.customThemeColors,

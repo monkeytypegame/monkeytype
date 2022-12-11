@@ -21,7 +21,7 @@
     },
     {
       "text": "Je suis malade, comme quand ma mère sortait le soir, et qu'elle me laissait seul avec, mon désespoir.",
-      "source": "Lara Fabian - Je suis malade.",
+      "source": "Serge Lama - Je suis malade.",
       "length": 101,
       "id": 3
     },
@@ -296,7 +296,7 @@
       "id": 48
     },
     {
-      "text": "Mais il est notoire que la mémoire des anciens est capricieuse. A travers leurs souvenirs, leur lointaine enfance est le jouet d'étranges déformations.",
+      "text": "Mais il est notoire que la mémoire des anciens est capricieuse. À travers leurs souvenirs, leur lointaine enfance est le jouet d'étranges déformations.",
       "source": "Brian Aldiss - Croisière sans escale",
       "length": 151,
       "id": 49
@@ -680,10 +680,112 @@
       "id": 112
     },
     {
-      "text": "Il est écrit dans les tablettes de Skélos que seul un Gnome des Forêts du Nord unijambiste dansant à la pleine lune au milieu des douze statuettes enroulées dans du jambon ouvrira la porte de Zaral Bak et permettra l’accomplissement de la prophétie.",
+      "text": "Il est écrit dans les tablettes de Skélos que seul un Gnome des Forêts du Nord unijambiste dansant à la pleine lune au milieu des douze statuettes enroulées dans du jambon ouvrira la porte de Zaral Bak et permettra l'accomplissement de la prophétie.",
       "source": "Le ranger - Le Donjon de Naheulbeuk S1E1",
       "length": 249,
       "id": 113
+    },
+    {
+      "text": "L'année 1866 fut marquée par un événement bizarre, un phénomène inexpliqué et inexplicable que personne n'a sans doute oublié. Sans parler des rumeurs qui agitaient les populations des ports et surexcitaient l'esprit public à l'intérieur des continents, les gens de mer furent particulièrement émus. Les négociants, armateurs, capitaines de navires, skippers et masters de l'Europe et de l'Amérique, officiers des marines militaires de tous pays, et, après eux, les gouvernements des divers États des deux continents, se préoccupèrent de ce fait au plus haut point.",
+      "source": "Jules Verne - Vingt mille lieues sous les mers",
+      "length": 565,
+      "id": 114
+    },
+    {
+      "text": "Il y avait une grande affluence d'auditeurs, le 14 janvier 1862, à la séance de la Société royale géographique de Londres, Waterloo place, 3. Le président, Sir Francis M..., faisait à ses honorables collègues une importante communication dans un discours fréquemment interrompu par les applaudissements.",
+      "source": "Jules Verne - Cinq semainer en ballon",
+      "length": 303,
+      "id": 115
+    },
+    {
+      "text": "Le 18 mars 1867, j'arrivais à Liverpool. Le Great Eastern devait partir quelques jours après pour New York, et je venais prendre passage à son bord. Voyage d'amateur, rien de plus. Une traversée de l'Atlantique sur ce gigantesque bateau me tentait. Par occasion, je comptais visiter le North-Amérique, mais accessoirement. Le Great Eastern d'abord. Le pays célébré par Cooper ensuite. En effet, ce steamship est un chef-d'œuvre de construction navale.",
+      "source": "Jules Verne - Une ville flotante",
+      "length": 451,
+      "id": 116
+    },
+    {
+      "text": "Tu es assis et tu ne veux qu'attendre, attendre seulement jusqu'à ce qu'il n'y ait plus rien à attendre: que vienne la nuit, que sonnent les heures, que les jours s'en aillent, que les souvenirs s'estompent.",
+      "source": "Un homme qui dort (1967) de Georges Perec",
+      "length": 207,
+      "id": 117
+    },
+    {
+      "text": "Les plantes par exemple, qui n'ont pas de mains, et pas d'oreilles, elles sentent les choses, les vibrations, elles sont plus aware que les autres species.",
+      "source": "Citations cultes de JCVD de Jean-Claude Van Damme",
+      "length": 155,
+      "id": 118
+    },
+    {
+      "text": "Vivre, c'est passer d'un espace à un autre en essayant le plus possible de ne pas se cogner.",
+      "source": "Espèces d'espaces (1974) de Georges Perec",
+      "length": 92,
+      "id": 119
+    },
+    {
+      "text": "Ta chambre est la plus belle des iles désertes, et Paris est un désert que nul n’a jamais traversé. Tu n’as besoin de rien d’autre que de ce calme, de ce sommeil, que de ce silence, que de cette torpeur. Que les jours commencent et que les jours finissent, que le temps s’écoule, que ta bouche se ferme, que les muscles de ta nuque, de ta machoire, de ton menton, se relachent tout à fait, que seuls les soulèvements de ta cage thoracique, les battements de ton coeur témoignent encore de ta patiente survie.",
+      "source": "Un homme qui dort de Georges Perec",
+      "length": 508,
+      "id": 120
+    },
+    {
+      "text": "La loi est implacable, mais la loi est imprévisible. Nul n'est censé l'ignorer, mais nul ne peut la connaître.",
+      "source": "W. ou le Souvenir d'enfance (1975) de Georges Perec",
+      "length": 110,
+      "id": 121
+    },
+    {
+      "text": "Tu as tout à apprendre, tout ce qui ne s'apprend pas: la solitude, l'indifférence, la patience, le silence.",
+      "source": "Un homme qui dort de Georges Perec",
+      "length": 107,
+      "id": 122
+    },
+    {
+      "text": "Tu peux être Dieu des chiens, Dieu des chats, Dieu des pauvres, il te suffit d'une laisse, d'un peu de mou, de quelque fortune, mais tu ne seras jamais maître de l'arbre. Tu ne pourras jamais que vouloir devenir arbre à ton tour.",
+      "source": "Un homme qui dort de Georges Perec",
+      "length": 229,
+      "id": 123
+    },
+    {
+      "text": "Même quand je marcherais par la vallée de l'ombre de la mort, je ne craindrai aucun mal; car tu es avec moi: ta houlette et ton bâton, ce sont eux qui me consolent.",
+      "source": "Psaume 23:4 Bible Darby",
+      "length": 164,
+      "id": 124
+    },
+    {
+      "text": "La nature n'a pas fait chacun de nous semblable à chacun, mais différent d'aptitudes, et propre à telle ou telle fonction.",
+      "source": "La République de Platon",
+      "length": 122,
+      "id": 125
+    },
+    {
+      "text": "Aucune des choses humaines ne mérite d'être prise avec grand sérieux.",
+      "source": "La République de Platon",
+      "length": 69,
+      "id": 126
+    },
+    {
+      "text": "Les vrais philosophes se gardent de toutes les passions du corps, leur résistent et ne s'y abandonnent pas.",
+      "source": "Phédon, 82b de Platon",
+      "length": 107,
+      "id": 127
+    },
+    {
+      "text": "Quelques-uns appellent le corps le tombeau de l'âme où elle serait présentement ensevelie.",
+      "source": "Cratyle de Platon",
+      "length": 90,
+      "id": 128
+    },
+    {
+      "text": "Elle suivit les cours d'une école de dactylographie. Devant les pupitres d'école, des filles de tout âge chuchotaient tandis qu'une femme assise à une table lisait à voix haute ...",
+      "source": "Les Destinées Sentimentales (1934-1936) de Jacques Chardonne",
+      "length": 180,
+      "id": 129
+    },
+    {
+      "text": "Une dactylo est une personne dont la force de frappe ne représente pas toujours pour son patron une force de dissuasion.",
+      "source": "Dictionnaire français-rosse de Noctuel",
+      "length": 120,
+      "id": 130
     }
   ]
 }

@@ -35,9 +35,9 @@ export default class SettingsGroup {
     this.updateInput();
 
     if (this.mode === "select") {
-      $(document).on(
+      $(".pageSettings").on(
         "change",
-        `.pageSettings .section.${this.configName} select`,
+        `.section.${this.configName} select`,
         (e) => {
           const target = $(e.currentTarget);
           if (
@@ -50,9 +50,9 @@ export default class SettingsGroup {
         }
       );
     } else if (this.mode === "button") {
-      $(document).on(
+      $(".pageSettings").on(
         "click",
-        `.pageSettings .section.${this.configName} .button`,
+        `.section.${this.configName} .button`,
         (e) => {
           const target = $(e.currentTarget);
           if (

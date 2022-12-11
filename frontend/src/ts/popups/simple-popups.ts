@@ -8,11 +8,11 @@ import * as Settings from "../pages/settings";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as ThemePicker from "../settings/theme-picker";
 import * as CustomText from "../test/custom-text";
-import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
 import { Auth } from "../firebase";
+import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
@@ -20,6 +20,8 @@ import {
   unlink,
   updatePassword,
 } from "firebase/auth";
+import { isPasswordStrong } from "../utils/misc";
+import * as CustomTextState from "../states/custom-text-name";
 
 interface Input {
   placeholder?: string;
@@ -252,12 +254,12 @@ $("#simplePopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$(document).on("click", "#simplePopupWrapper .button", () => {
+$("#popups").on("click", "#simplePopupWrapper .button", () => {
   const id = $("#simplePopup").attr("popupId") ?? "";
   list[id].exec();
 });
 
-$(document).on("keyup", "#simplePopupWrapper input", (e) => {
+$("#popups").on("keyup", "#simplePopupWrapper input", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
     const id = $("#simplePopup").attr("popupId") ?? "";
@@ -288,8 +290,8 @@ list["updateEmail"] = new SimplePopup(
   "Update",
   async (_thisPopup, password, email, emailConfirm) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (email !== emailConfirm) {
         Notifications.add("Emails don't match", 0);
         return;
@@ -327,8 +329,8 @@ list["updateEmail"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -355,8 +357,8 @@ list["removeGoogleAuth"] = new SimplePopup(
   "Remove",
   async (_thisPopup, password) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -388,8 +390,8 @@ list["removeGoogleAuth"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -421,8 +423,9 @@ list["updateName"] = new SimplePopup(
   "Update",
   async (_thisPopup, pass, newName) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      const snapshot = DB.getSnapshot();
+      if (!user || !snapshot) return;
 
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
@@ -454,9 +457,9 @@ list["updateName"] = new SimplePopup(
       }
 
       Notifications.add("Name updated", 1);
-      DB.getSnapshot().name = newName;
+      snapshot.name = newName;
       $("#menu .textButton.account .text").text(newName);
-      if (DB.getSnapshot().needsToChangeName) {
+      if (snapshot.needsToChangeName) {
         setTimeout(() => {
           location.reload();
         }, 3000);
@@ -472,13 +475,13 @@ list["updateName"] = new SimplePopup(
     Loader.hide();
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    const snapshot = DB.getSnapshot();
+    if (!user || !snapshot) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs[0].hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
-    const snapshot = DB.getSnapshot();
     if (snapshot.needsToChangeName === true) {
       thisPopup.text =
         "We've recently identified several issues that allowed users to register with names that were already taken. Accounts which signed up earliest get to keep the duplicated name, and others are forced to change. Unique names are essential for smooth operation of upcoming features like public profiles, multiplayer, and more. Sorry for the inconvenience.";
@@ -514,14 +517,25 @@ list["updatePassword"] = new SimplePopup(
   "Update",
   async (_thisPopup, previousPass, newPass, newPassConfirm) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       const credential = EmailAuthProvider.credential(
         user.email as string,
         previousPass
       );
       if (newPass !== newPassConfirm) {
         Notifications.add("New passwords don't match", 0);
+        return;
+      }
+      if (
+        window.location.hostname !== "localhost" &&
+        !isPasswordStrong(newPass)
+      ) {
+        Notifications.add(
+          "New password must contain at least one capital letter, number, a special character and at least 8 characters long",
+          0,
+          4
+        );
         return;
       }
       Loader.show();
@@ -543,8 +557,8 @@ list["updatePassword"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
@@ -619,10 +633,9 @@ list["deleteAccount"] = new SimplePopup(
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
   async (_thisPopup, password: string) => {
-    //
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -657,7 +670,7 @@ list["deleteAccount"] = new SimplePopup(
       }
 
       Notifications.add("Deleting login information...", 0);
-      await Auth.currentUser?.delete();
+      await Auth?.currentUser?.delete();
 
       Notifications.add("Goodbye", 1, 5);
 
@@ -675,9 +688,8 @@ list["deleteAccount"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
-
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
@@ -702,10 +714,9 @@ list["resetAccount"] = new SimplePopup(
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Reset",
   async (_thisPopup, password: string) => {
-    //
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      if (!user) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -744,9 +755,8 @@ list["resetAccount"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
-
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
@@ -777,7 +787,7 @@ list["clearTagPb"] = new SimplePopup(
     }
 
     if (response.data.resultCode === 1) {
-      const tag = DB.getSnapshot().tags?.filter((t) => t._id === tagId)[0];
+      const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
 
       if (tag === undefined) return;
       tag.personalBests = {
@@ -837,8 +847,9 @@ list["resetPersonalBests"] = new SimplePopup(
   "Reset",
   async (_thisPopup, password: string) => {
     try {
-      const user = Auth.currentUser;
-      if (user === null) return;
+      const user = Auth?.currentUser;
+      const snapshot = DB.getSnapshot();
+      if (!user || !snapshot) return;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -860,7 +871,7 @@ list["resetPersonalBests"] = new SimplePopup(
       }
 
       Notifications.add("Personal bests have been reset", 1);
-      DB.getSnapshot().personalBests = {
+      snapshot.personalBests = {
         time: {},
         words: {},
         zen: { zen: [] },
@@ -873,9 +884,8 @@ list["resetPersonalBests"] = new SimplePopup(
     }
   },
   (thisPopup) => {
-    const user = Auth.currentUser;
-    if (user === null) return;
-
+    const user = Auth?.currentUser;
+    if (!user) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
@@ -915,6 +925,8 @@ list["unlinkDiscord"] = new SimplePopup(
   "Are you sure you want to unlink your Discord account?",
   "Unlink",
   async () => {
+    const snap = DB.getSnapshot();
+    if (!snap) return;
     Loader.show();
     const response = await Ape.users.unlinkDiscord();
     Loader.hide();
@@ -927,7 +939,6 @@ list["unlinkDiscord"] = new SimplePopup(
     }
 
     Notifications.add("Accounts unlinked", 1);
-    const snap = DB.getSnapshot();
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
     AccountButton.update();
@@ -1069,32 +1080,6 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
-list["saveCustomText"] = new SimplePopup(
-  "saveCustomText",
-  "text",
-  "Save custom text",
-  [
-    {
-      placeholder: "Name",
-      initVal: "",
-    },
-  ],
-  "",
-  "Save",
-  (_thisPopup, input) => {
-    const text = ($(`#customTextPopup textarea`).val() as string).normalize();
-    CustomText.setCustomText(input, text);
-    Notifications.add("Custom text saved", 1);
-    CustomTextPopup.show();
-  },
-  () => {
-    //
-  },
-  () => {
-    //
-  }
-);
-
 list["deleteCustomText"] = new SimplePopup(
   "deleteCustomText",
   "text",
@@ -1105,10 +1090,55 @@ list["deleteCustomText"] = new SimplePopup(
   (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0]);
     Notifications.add("Custom text deleted", 1);
+    CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show();
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+list["deleteCustomTextLong"] = new SimplePopup(
+  "deleteCustomTextLong",
+  "text",
+  "Delete custom text",
+  [],
+  "Are you sure?",
+  "Delete",
+  (_thisPopup) => {
+    CustomText.deleteCustomText(_thisPopup.parameters[0], true);
+    Notifications.add("Custom text deleted", 1);
+    CustomTextState.setCustomTextName("", undefined);
+    SavedTextsPopup.show();
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
+  },
+  () => {
+    //
+  }
+);
+
+list["resetProgressCustomTextLong"] = new SimplePopup(
+  "resetProgressCustomTextLong",
+  "text",
+  "Reset progress for custom text",
+  [],
+  "Are you sure?",
+  "Reset",
+  (_thisPopup) => {
+    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
+    Notifications.add("Custom text progress reset", 1);
+    SavedTextsPopup.show();
+    $(`#customTextPopupWrapper textarea`).val(
+      CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
+    );
+  },
+  (_thisPopup) => {
+    _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
   },
   () => {
     //
@@ -1135,6 +1165,7 @@ list["updateCustomTheme"] = new SimplePopup(
   "Update",
   async (_thisPopup, name, updateColors) => {
     const snapshot = DB.getSnapshot();
+    if (!snapshot) return;
 
     const customTheme = snapshot.customThemes.find(
       (t) => t._id === _thisPopup.parameters[0]
@@ -1170,6 +1201,7 @@ list["updateCustomTheme"] = new SimplePopup(
   },
   (_thisPopup) => {
     const snapshot = DB.getSnapshot();
+    if (!snapshot) return;
 
     const customTheme = snapshot.customThemes.find(
       (t) => t._id === _thisPopup.parameters[0]
@@ -1207,79 +1239,131 @@ list["deleteCustomTheme"] = new SimplePopup(
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     list["unlinkDiscord"].show();
   }
 );
 
 $(".pageSettings #removeGoogleAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["removeGoogleAuth"].show();
 });
 
 $("#resetSettingsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetSettings"].show();
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetPersonalBests"].show();
 });
 
 $(".pageSettings #updateAccountName").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateName"].show();
 });
 
-$(document).on("click", "#bannerCenter .banner .text .openNameChange", () => {
+$("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateName"].show();
 });
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["addPasswordAuth"].show();
 });
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updateEmail"].show();
 });
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["updatePassword"].show();
 });
 
 $(".pageSettings #deleteAccount").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["deleteAccount"].show();
 });
 
 $(".pageSettings #resetAccount").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["resetAccount"].show();
 });
 
 $("#apeKeysPopup .generateApeKey").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   list["generateApeKey"].show();
 });
 
-$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
-  list["saveCustomText"].show();
-});
-
-$(document).on(
+$(".pageSettings").on(
   "click",
-  ".pageSettings .section.themes .customTheme .delButton",
+  ".section.themes .customTheme .delButton",
   (e) => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     list["deleteCustomTheme"].show([customThemeId]);
   }
 );
 
-$(document).on(
+$(".pageSettings").on(
   "click",
-  ".pageSettings .section.themes .customTheme .editButton",
+  ".section.themes .customTheme .editButton",
   (e) => {
+    if (!ConnectionState.get()) {
+      Notifications.add("You are offline", 0, 2);
+      return;
+    }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
     list["updateCustomTheme"].show([customThemeId]);
   }
 );
 
-$(document).on(
+$("#popups").on(
   "click",
   `#savedTextsPopupWrapper .list .savedText .button.delete`,
   (e) => {
@@ -1288,23 +1372,45 @@ $(document).on(
   }
 );
 
-$(document).on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
+$("#popups").on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["deleteCustomTextLong"].show([name]);
+  }
+);
+
+$("#popups").on(
+  "click",
+  `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
+  (e) => {
+    const name = $(e.target).siblings(".button.name").text();
+    list["resetProgressCustomTextLong"].show([name]);
+  }
+);
+
+$("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   list["deleteApeKey"].show([keyId]);
 });
 
-$(document).on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
+$("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   list["editApeKey"].show([keyId]);
 });
 
-$(document).on(
-  "click",
-  ".pageSettings .section.fontFamily .button.custom",
-  () => {
-    list["applyCustomFont"].show([]);
-  }
-);
+$(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
+  list["applyCustomFont"].show([]);
+});
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && !$("#simplePopupWrapper").hasClass("hidden")) {

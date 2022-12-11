@@ -75,6 +75,16 @@ export async function init(): Promise<void> {
       Config.lazyMode
     );
     wpm = Math.round(wpm);
+  } else if (Config.paceCaret === "daily") {
+    wpm = await DB.getUserDailyBest(
+      Config.mode,
+      mode2,
+      Config.punctuation,
+      Config.language,
+      Config.difficulty,
+      Config.lazyMode
+    );
+    wpm = Math.round(wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
   } else if (Config.paceCaret === "last" || TestState.isPaceRepeat == true) {

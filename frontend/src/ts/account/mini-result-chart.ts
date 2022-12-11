@@ -52,6 +52,6 @@ export function updateData(data: MonkeyTypes.ChartData): void {
   ChartController.miniResult.updateColors();
 }
 
-$(document).on("click", ".pageAccount .miniResultChartBg", () => {
+$(".pageAccount").on("click", ".miniResultChartBg", () => {
   hide();
 });

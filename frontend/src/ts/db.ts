@@ -4,21 +4,33 @@ import * as LoadingPage from "./pages/loading";
 import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
+import * as ConnectionState from "./states/connection";
+import { getFunboxList } from "./utils/misc";
 
-let dbSnapshot: MonkeyTypes.Snapshot;
+let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
-export function getSnapshot(): MonkeyTypes.Snapshot {
+export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
   return dbSnapshot;
 }
 
-export function setSnapshot(newSnapshot: MonkeyTypes.Snapshot): void {
+export function setSnapshot(
+  newSnapshot: MonkeyTypes.Snapshot | undefined
+): void {
+  const originalBanned = dbSnapshot?.banned;
+  const originalVerified = dbSnapshot?.verified;
+
+  //not allowing user to override these values i guess?
   try {
-    delete newSnapshot.banned;
+    delete newSnapshot?.banned;
   } catch {}
   try {
-    delete newSnapshot.verified;
+    delete newSnapshot?.verified;
   } catch {}
   dbSnapshot = newSnapshot;
+  if (dbSnapshot) {
+    dbSnapshot.banned = originalBanned;
+    dbSnapshot.verified = originalVerified;
+  }
 }
 
 export async function initSnapshot(): Promise<
@@ -27,20 +39,22 @@ export async function initSnapshot(): Promise<
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = defaultSnap;
   try {
-    if (Auth.currentUser == null) return false;
+    if (!Auth?.currentUser) return false;
     // if (ActivePage.get() == "loading") {
     //   LoadingPage.updateBar(22.5);
     // } else {
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    const [userResponse, configResponse, tagsResponse, presetsResponse] =
-      await Promise.all([
-        Ape.users.getData(),
-        Ape.configs.get(),
-        Ape.users.getTags(),
-        Ape.presets.get(),
-      ]);
+
+    //getData recreates the user if it doesnt exist - thats why it needs to be called first, by itself
+    const userResponse = await Ape.users.getData();
+
+    const [configResponse, tagsResponse, presetsResponse] = await Promise.all([
+      Ape.configs.get(),
+      Ape.users.getTags(),
+      Ape.presets.get(),
+    ]);
 
     if (userResponse.status !== 200) {
       throw {
@@ -188,9 +202,14 @@ export async function initSnapshot(): Promise<
 }
 
 export async function getUserResults(): Promise<boolean> {
-  const user = Auth.currentUser;
-  if (user == null) return false;
-  if (dbSnapshot === null) return false;
+  const user = Auth?.currentUser;
+  if (!user) return false;
+  if (!dbSnapshot) return false;
+
+  if (!ConnectionState.get()) {
+    return false;
+  }
+
   if (dbSnapshot.results !== undefined) {
     return true;
   } else {
@@ -232,13 +251,13 @@ export async function getUserResults(): Promise<boolean> {
 export function getCustomThemeById(
   themeID: string
 ): MonkeyTypes.CustomTheme | undefined {
-  return dbSnapshot.customThemes.find((t) => t._id === themeID);
+  return dbSnapshot?.customThemes.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
   theme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
-  if (dbSnapshot === null) return false;
+  if (!dbSnapshot) return false;
 
   if (dbSnapshot.customThemes.length >= 10) {
     Notifications.add("Too many custom themes!", 0);
@@ -264,9 +283,9 @@ export async function editCustomTheme(
   themeId: string,
   newTheme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
-  const user = Auth.currentUser;
-  if (user === null) return false;
-  if (dbSnapshot === null) return false;
+  const user = Auth?.currentUser;
+  if (!user) return false;
+  if (!dbSnapshot) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
   if (!customTheme) {
@@ -295,9 +314,9 @@ export async function editCustomTheme(
 }
 
 export async function deleteCustomTheme(themeId: string): Promise<boolean> {
-  const user = Auth.currentUser;
-  if (user === null) return false;
-  if (dbSnapshot === null) return false;
+  const user = Auth?.currentUser;
+  if (!user) return false;
+  if (!dbSnapshot) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
   if (!customTheme) return false;
@@ -326,7 +345,7 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
   function cont(): number {
     let topWpm = 0;
 
-    dbSnapshot.results?.forEach((result) => {
+    dbSnapshot?.results?.forEach((result) => {
       if (
         result.mode == mode &&
         result.mode2 == mode2 &&
@@ -344,8 +363,7 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
     return topWpm;
   }
 
-  const retval =
-    dbSnapshot === null || dbSnapshot.results === undefined ? 0 : cont();
+  const retval = !dbSnapshot || dbSnapshot.results === undefined ? 0 : cont();
 
   return retval;
 }
@@ -364,7 +382,7 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
 
   function cont(): [number, number] {
     const activeTagIds: string[] = [];
-    snapshot.tags?.forEach((tag) => {
+    snapshot?.tags?.forEach((tag) => {
       if (tag.active === true) {
         activeTagIds.push(tag._id);
       }
@@ -377,7 +395,7 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
     let count = 0;
     let last10Count = 0;
 
-    if (snapshot.results !== undefined) {
+    if (snapshot?.results !== undefined) {
       for (const result of snapshot.results) {
         if (
           result.mode === mode &&
@@ -428,6 +446,65 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
   return retval;
 }
 
+export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
+  mode: M,
+  mode2: MonkeyTypes.Mode2<M>,
+  punctuation: boolean,
+  language: string,
+  difficulty: MonkeyTypes.Difficulty,
+  lazyMode: boolean
+): Promise<number> {
+  const snapshot = getSnapshot();
+
+  if (!snapshot) return 0;
+
+  function cont(): number {
+    const activeTagIds: string[] = [];
+    snapshot?.tags?.forEach((tag) => {
+      if (tag.active === true) {
+        activeTagIds.push(tag._id);
+      }
+    });
+
+    let bestWpm = 0;
+
+    if (snapshot?.results !== undefined) {
+      for (const result of snapshot.results) {
+        if (
+          result.mode === mode &&
+          result.punctuation === punctuation &&
+          result.language === language &&
+          result.difficulty === difficulty &&
+          (result.lazyMode === lazyMode ||
+            (result.lazyMode === undefined && lazyMode === false)) &&
+          (activeTagIds.length === 0 ||
+            activeTagIds.some((tagId) => result.tags.includes(tagId)))
+        ) {
+          if (result.timestamp < Date.now() - 86400000) {
+            continue;
+          }
+
+          // Continue if the mode2 doesn't match and it's not a quote
+          if (result.mode2 !== mode2 && mode !== "quote") {
+            continue;
+          }
+
+          if (result.wpm > bestWpm) {
+            bestWpm = result.wpm;
+          }
+        }
+      }
+    }
+
+    return bestWpm;
+  }
+
+  const retval: number =
+    snapshot === null || (await getUserResults()) === null ? 0 : cont();
+
+  return retval;
+}
+
 export async function getLocalPB<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
@@ -437,14 +514,18 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
   lazyMode: boolean,
   funbox: string
 ): Promise<number> {
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+  const funboxes = (await getFunboxList()).filter((fb) => {
+    return funbox?.split("#").includes(fb.name);
+  });
+
+  if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
 
   function cont(): number {
     let ret = 0;
     try {
-      if (!dbSnapshot.personalBests) return ret;
+      if (!dbSnapshot?.personalBests) return ret;
 
       (
         dbSnapshot.personalBests[mode][
@@ -486,7 +567,9 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
   consistency: number
 ): Promise<void> {
   if (mode == "quote") return;
+  if (!dbSnapshot) return;
   function cont(): void {
+    if (!dbSnapshot) return;
     let found = false;
     if (dbSnapshot.personalBests === undefined) {
       dbSnapshot.personalBests = {
@@ -571,7 +654,7 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
   function cont(): number {
     let ret = 0;
 
-    const filteredtag = (getSnapshot().tags ?? []).filter(
+    const filteredtag = (getSnapshot()?.tags ?? []).filter(
       (t) => t._id === tagId
     )[0];
 
@@ -628,7 +711,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
 ): Promise<number | undefined> {
   if (mode == "quote") return;
   function cont(): void {
-    const filteredtag = dbSnapshot.tags?.filter(
+    const filteredtag = dbSnapshot?.tags?.filter(
       (t) => t._id === tagId
     )[0] as MonkeyTypes.Tag;
 
@@ -733,13 +816,12 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
   rank: number,
   api = false
 ): Promise<void> {
-  //could dbSnapshot just be used here instead of getSnapshot()
-
   if (mode === "time") {
     const timeMode = mode as "time";
     const timeMode2 = mode2 as 15 | 60;
 
     const snapshot = getSnapshot();
+    if (!snapshot) return;
     if (snapshot.lbMemory === undefined) {
       snapshot.lbMemory = { time: { 15: { english: 0 }, 60: { english: 0 } } };
     }
@@ -762,7 +844,7 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
 }
 
 export async function saveConfig(config: MonkeyTypes.Config): Promise<void> {
-  if (Auth.currentUser !== null) {
+  if (Auth?.currentUser) {
     const response = await Ape.configs.save(config);
     if (response.status !== 200) {
       Notifications.add("Failed to save config: " + response.message, -1);
@@ -774,6 +856,7 @@ export function saveLocalResult(
   result: MonkeyTypes.Result<MonkeyTypes.Mode>
 ): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
 
   if (snapshot !== null && snapshot.results !== undefined) {
     snapshot.results.unshift(result);
@@ -784,6 +867,7 @@ export function saveLocalResult(
 
 export function updateLocalStats(started: number, time: number): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
   if (snapshot.typingStats === undefined) {
     snapshot.typingStats = {} as MonkeyTypes.TypingStats;
   }
@@ -810,6 +894,8 @@ export function updateLocalStats(started: number, time: number): void {
 
 export function addXp(xp: number): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
+
   if (snapshot.xp === undefined) {
     snapshot.xp = 0;
   }
@@ -819,6 +905,8 @@ export function addXp(xp: number): void {
 
 export function addBadge(badge: MonkeyTypes.Badge): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
+
   if (snapshot.inventory === undefined) {
     snapshot.inventory = {
       badges: [],
@@ -830,6 +918,8 @@ export function addBadge(badge: MonkeyTypes.Badge): void {
 
 export function setStreak(streak: number): void {
   const snapshot = getSnapshot();
+  if (!snapshot) return;
+
   snapshot.streak = streak;
 
   if (snapshot.streak > snapshot.maxStreak) {

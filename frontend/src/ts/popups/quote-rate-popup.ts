@@ -165,6 +165,7 @@ async function submit(): Promise<void> {
   }
 
   const snapshot = DB.getSnapshot();
+  if (!snapshot) return;
   const quoteRatings = snapshot.quoteRatings ?? {};
 
   if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {

@@ -1,6 +1,11 @@
-import { Analytics as AnalyticsType, getAnalytics } from "firebase/analytics";
-import { logEvent, setAnalyticsCollectionEnabled } from "firebase/analytics";
+import {
+  Analytics as AnalyticsType,
+  getAnalytics,
+  logEvent,
+  setAnalyticsCollectionEnabled,
+} from "firebase/analytics";
 import { app as firebaseApp } from "../firebase";
+import { createErrorMessage } from "../utils/misc";
 
 export let Analytics: AnalyticsType;
 
@@ -33,9 +38,10 @@ if (acceptedCookies !== null) {
 }
 
 export function activateAnalytics(): void {
-  Analytics = getAnalytics(firebaseApp);
-  setAnalyticsCollectionEnabled(Analytics, true);
-  $("body").append(`
+  try {
+    Analytics = getAnalytics(firebaseApp);
+    setAnalyticsCollectionEnabled(Analytics, true);
+    $("body").append(`
     <script
     async
     src="https://www.googletagmanager.com/gtag/js?id=UA-165993088-1"
@@ -49,4 +55,7 @@ export function activateAnalytics(): void {
 
     gtag("config", "UA-165993088-1");
   </script>`);
+  } catch (e) {
+    console.error(createErrorMessage(e, "Failed to activate analytics"));
+  }
 }

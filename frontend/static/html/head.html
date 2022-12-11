@@ -62,15 +62,6 @@
     content="https://monkeytype.com/images/mtsocial.png"
   />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="darkreader-lock"></meta>
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function (registrations) {
-        for (let registration of registrations) {
-          // if (registration.scope !== "https://monkeytype.com/")
-          registration.unregister();
-        }
-      });
-    }
-  </script>
+  <meta name="darkreader-lock" />
+  <meta http-equiv="Cache-Control" content="no-store" />
 </head>

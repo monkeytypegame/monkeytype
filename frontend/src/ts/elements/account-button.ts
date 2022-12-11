@@ -100,7 +100,7 @@ export async function update(
   discordId?: string,
   discordAvatar?: string
 ): Promise<void> {
-  if (Auth.currentUser != null) {
+  if (Auth?.currentUser) {
     if (xp !== undefined) {
       $("#top #menu .level").text(Math.floor(Misc.getLevel(xp)));
       $("#top #menu .bar").css({
@@ -159,8 +159,11 @@ export async function updateXpBar(
   const startingLevel = Misc.getLevel(currentXp);
   const endingLevel = Misc.getLevel(currentXp + addedXp);
 
+  const snapshot = getSnapshot();
+  if (!snapshot) return;
+
   if (skipBreakdown) {
-    $("#menu .level").text(Math.floor(Misc.getLevel(getSnapshot().xp)));
+    $("#menu .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
     $("#menu .xpBar")
       .stop(true, true)
       .css("opacity", 1)
@@ -175,7 +178,7 @@ export async function updateXpBar(
 
   await Promise.all([xpBarPromise, xpBreakdownPromise]);
   await Misc.sleep(2000);
-  $("#menu .level").text(Math.floor(Misc.getLevel(getSnapshot().xp)));
+  $("#menu .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
   $("#menu .xpBar")
     .stop(true, true)
     .css("opacity", 1)
@@ -286,6 +289,14 @@ async function animateXpBreakdown(
       await append(`numbers +${breakdown["numbers"]}`);
       total += breakdown["numbers"];
     }
+  }
+
+  if (skipBreakdown) return;
+
+  if (breakdown["funbox"]) {
+    await Misc.sleep(delay);
+    await append(`funbox +${breakdown["funbox"]}`);
+    total += breakdown["funbox"];
   }
 
   if (skipBreakdown) return;
@@ -461,6 +472,9 @@ async function flashLevel(): Promise<void> {
         },
         duration: 2000,
         easing: "easeOutCubic",
+        complete: () => {
+          barEl.css("background-color", "");
+        },
       }
     );
 }

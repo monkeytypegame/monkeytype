@@ -2,4 +2,26 @@
 #words .word.active:nth-of-type(n + 2) + .word,
 #words .word.active:nth-of-type(n + 2) + .word + .word {
   color: transparent;
+  animation: none;
+}
+
+#words.flipped .word.active:nth-of-type(n + 2),
+#words.flipped .word.active:nth-of-type(n + 2) + .word,
+#words.flipped .word.active:nth-of-type(n + 2) + .word + .word {
+  color: transparent;
+  animation: none;
+}
+
+#words.colorfulMode .word.active:nth-of-type(n + 2),
+#words.colorfulMode .word.active:nth-of-type(n + 2) + .word,
+#words.colorfulMode .word.active:nth-of-type(n + 2) + .word + .word {
+  color: transparent;
+  animation: none;
+}
+
+#words.colorfulMode.flipped .word.active:nth-of-type(n + 2),
+#words.colorfulMode.flipped .word.active:nth-of-type(n + 2) + .word,
+#words.colorfulMode.flipped .word.active:nth-of-type(n + 2) + .word + .word {
+  color: transparent;
+  animation: none;
 }

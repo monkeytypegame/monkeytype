@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { isUsernameValid } from "../utils/validation";
 import { updateUserEmail } from "../utils/auth";
-import { checkAndUpdatePb } from "../utils/pb";
+import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
@@ -136,16 +136,6 @@ export async function clearPb(uid: string): Promise<void> {
   );
 }
 
-export async function isNameAvailable(name: string): Promise<boolean> {
-  const nameDocs = await getUsersCollection()
-    .find({ name })
-    .collation({ locale: "en", strength: 1 })
-    .limit(1)
-    .toArray();
-
-  return nameDocs.length === 0;
-}
-
 export async function updateQuoteRatings(
   uid: string,
   quoteRatings: MonkeyTypes.UserQuoteRatings
@@ -171,6 +161,29 @@ export async function getUser(
   stack: string
 ): Promise<MonkeyTypes.User> {
   const user = await getUsersCollection().findOne({ uid });
+  if (!user) throw new MonkeyError(404, "User not found", stack);
+  return user;
+}
+
+async function findByName(name: string): Promise<MonkeyTypes.User | undefined> {
+  return (
+    await getUsersCollection()
+      .find({ name })
+      .collation({ locale: "en", strength: 1 })
+      .limit(1)
+      .toArray()
+  )[0];
+}
+
+export async function isNameAvailable(name: string): Promise<boolean> {
+  return (await findByName(name)) === undefined;
+}
+
+export async function getUserByName(
+  name: string,
+  stack: string
+): Promise<MonkeyTypes.User> {
+  const user = await findByName(name);
   if (!user) throw new MonkeyError(404, "User not found", stack);
   return user;
 }
@@ -333,11 +346,9 @@ export async function checkIfPb(
   user: MonkeyTypes.User,
   result: MonkeyTypes.Result<MonkeyTypes.Mode>
 ): Promise<boolean> {
-  const { mode, funbox } = result;
+  const { mode } = result;
 
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
-    return false;
-  }
+  if (!canFunboxGetPb(result)) return false;
 
   if (mode === "quote") {
     return false;
@@ -383,11 +394,8 @@ export async function checkIfTagPb(
     return [];
   }
 
-  const { mode, tags: resultTags, funbox } = result;
-
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
-    return [];
-  }
+  const { mode, tags: resultTags } = result;
+  if (!canFunboxGetPb(result)) return [];
 
   if (mode === "quote") {
     return [];
@@ -404,7 +412,7 @@ export async function checkIfTagPb(
 
   const ret: string[] = [];
 
-  tagsToCheck.forEach(async (tag) => {
+  for (const tag of tagsToCheck) {
     const tagPbs: MonkeyTypes.PersonalBests = tag.personalBests ?? {
       time: {},
       words: {},
@@ -421,7 +429,7 @@ export async function checkIfTagPb(
         { $set: { "tags.$.personalBests": tagpb.personalBests } }
       );
     }
-  });
+  }
 
   return ret;
 }
@@ -902,12 +910,13 @@ export async function updateStreak(
   const streak: MonkeyTypes.UserStreak = {
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
-    maxLength: user.streak?.length ?? 0,
+    maxLength: user.streak?.maxLength ?? 0,
   };
 
   if (isYesterday(streak.lastResultTimestamp)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp)) {
+    Logger.logToDb("streak_lost", { streak }, uid);
     streak.length = 1;
   }
 

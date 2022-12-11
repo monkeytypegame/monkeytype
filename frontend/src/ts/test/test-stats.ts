@@ -3,6 +3,7 @@ import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
+import * as FunboxList from "./funbox/funbox-list";
 
 interface CharCount {
   spaces: number;
@@ -160,6 +161,8 @@ export function restart(): void {
 export let restartCount = 0;
 export let incompleteSeconds = 0;
 
+export let incompleteTests: MonkeyTypes.IncompleteTest[] = [];
+
 export function incrementRestartCount(): void {
   restartCount++;
 }
@@ -168,9 +171,14 @@ export function incrementIncompleteSeconds(val: number): void {
   incompleteSeconds += val;
 }
 
+export function pushIncompleteTest(acc: number, seconds: number): void {
+  incompleteTests.push({ acc, seconds });
+}
+
 export function resetIncomplete(): void {
   restartCount = 0;
   incompleteSeconds = 0;
+  incompleteTests = [];
 }
 
 export function setInvalid(): void {
@@ -266,7 +274,9 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
       correctWordChars += toAdd.correct;
     }
   }
-  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
+  if (
+    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
+  ) {
     spaces = 0;
   }
   chars += currTestInput.length;
@@ -437,7 +447,9 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
+  if (
+    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
+  ) {
     spaces = 0;
     correctspaces = 0;
   }

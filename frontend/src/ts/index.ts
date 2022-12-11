@@ -18,11 +18,11 @@ import "./test/caps-warning";
 import "./popups/support-popup";
 import "./popups/contact-popup";
 import "./popups/version-popup";
-import "./popups/video-ad-popup";
 import "./popups/edit-preset-popup";
 import "./popups/simple-popups";
 import "./controllers/input-controller";
 import "./ready";
+import "./controllers/route-controller";
 import "./pages/about";
 import "./popups/pb-tables-popup";
 import "./elements/scroll-to-top";
@@ -31,7 +31,11 @@ import "./popups/edit-tags-popup";
 import "./popups/google-sign-up-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
+import "./commandline/index";
+import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
+import "./states/connection";
+import "./test/tts";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 

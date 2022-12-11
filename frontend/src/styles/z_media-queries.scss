@@ -1,4 +1,5 @@
-@media only screen and (max-width: 1450px) {
+//1450px
+@media only screen and (max-width: 90.625rem) {
   #leaderboardsWrapper #leaderboards {
     .mainTitle {
       font-size: 2rem;
@@ -30,16 +31,25 @@
   }
 }
 
-@media only screen and (max-width: 1330px) {
+//1330px
+@media only screen and (max-width: 83.125rem) {
   .ad.ad-v {
     display: none;
   }
   #app {
     grid-template-columns: auto;
   }
+  #customTextPopupWrapper {
+    padding: 2rem;
+    #customTextPopup {
+      grid-template-columns: 1fr 1fr 2fr;
+      width: 100%;
+    }
+  }
 }
 
-@media only screen and (max-width: 1250px) {
+//1250px
+@media only screen and (max-width: 78.125rem) {
   #leaderboardsWrapper #leaderboards {
     .tables table {
       tr td:nth-child(5) {
@@ -52,7 +62,8 @@
   }
 }
 
-@media only screen and (max-width: 1050px) {
+//1050px
+@media only screen and (max-width: 65.625rem) {
   .profile .pbsWords,
   .profile .pbsTime {
     font-size: 0.8rem;
@@ -81,13 +92,6 @@
           line-height: 3rem !important;
         }
       }
-    }
-  }
-  #customTextPopup {
-    width: 80vw !important;
-
-    .wordfilter.button {
-      width: 50% !important;
     }
   }
   #leaderboardsWrapper {
@@ -136,7 +140,8 @@
   }
 }
 
-@media only screen and (max-width: 1000px) {
+//1000px
+@media only screen and (max-width: 62.5rem) {
   #quoteRatePopup {
     width: 90vw !important;
   }
@@ -158,7 +163,15 @@
   }
 }
 
-@media only screen and (max-width: 900px) {
+//900px
+@media only screen and (max-width: 56.25rem) {
+  #customTextPopupWrapper #customTextPopup {
+    grid-template-areas:
+      "topButtons topButtons topButtons"
+      "textArea textArea textArea"
+      "checkboxes checkboxes checkboxes"
+      "ok ok ok";
+  }
   #testConfig {
     .mode,
     .time,
@@ -197,6 +210,7 @@
     grid-template-rows: auto auto auto;
     grid-template-areas:
       "info"
+      "leaderboards"
       "pbsTime"
       "pbsWords";
     .details.soc {
@@ -246,6 +260,9 @@
         //   display: none;
         // }
       }
+    }
+    .leaderboardsPositions {
+      grid-template-areas: "title title" "t15 t60";
     }
   }
   #leaderboards {
@@ -300,9 +317,15 @@
       }
     }
   }
+  .pageSettings .settingsGroup.quickNav .links {
+    grid-auto-flow: unset;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-items: center;
+  }
 }
 
-@media only screen and (max-width: 800px) {
+//800px
+@media only screen and (max-width: 50rem) {
   #testConfig {
     .spacer {
       display: none;
@@ -370,11 +393,6 @@
       }
     }
   }
-  .pageSettings .settingsGroup.quickNav .links {
-    grid-auto-flow: unset;
-    grid-template-columns: 1fr 1fr 1fr;
-    justify-items: center;
-  }
   #centerContent {
     // #top {
     //   grid-template-areas:
@@ -402,14 +420,16 @@
     grid-template-columns: 1fr;
   }
 
-  .pageAbout .section {
-    .contributors,
-    .supporters {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-    .contactButtons,
-    .supportButtons {
-      grid-template-columns: 1fr 1fr;
+  .pageAbout {
+    .section {
+      .contributors,
+      .supporters {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .contactButtons,
+      .supportButtons {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   }
 
@@ -426,9 +446,15 @@
     .section.themes .tabContent.customTheme {
     }
   }
+  #customTextPopupWrapper #customTextPopup {
+    .buttonsTop {
+      grid-template-columns: 1fr;
+    }
+  }
 }
 
-@media only screen and (max-width: 750px) {
+//750px
+@media only screen and (max-width: 46.875rem) {
   #leaderboardsWrapper #leaderboards {
     .tables table {
       tr td:nth-child(5) {
@@ -436,9 +462,24 @@
       }
     }
   }
+  .pageAbout {
+    .triplegroup {
+      grid-template-columns: 1fr;
+      .group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 0rem 1rem;
+        .label {
+          grid-column: span 2;
+        }
+      }
+    }
+  }
 }
 
-@media only screen and (max-width: 700px) {
+//700px
+@media only screen and (max-width: 43.75rem) {
   .pageAccount .presetFilterButtons .buttons {
     grid-template-columns: 1fr;
   }
@@ -467,6 +508,12 @@
         }
       }
     }
+    .group.estimatedWordsTyped {
+      flex-direction: column;
+      .title {
+        margin-right: unset;
+      }
+    }
   }
   .badge::after,
   .badge::before {
@@ -474,7 +521,8 @@
   }
 }
 
-@media only screen and (max-width: 650px) {
+//650px
+@media only screen and (max-width: 40.625rem) {
   #leaderboardsWrapper #leaderboards {
     width: 85vw;
     .tables .rightTableWrapper,
@@ -498,6 +546,7 @@
     grid-template-rows: auto auto auto;
     grid-template-areas:
       "info"
+      "leaderboards"
       "pbsTime"
       "pbsWords";
     .details.none {
@@ -624,7 +673,8 @@
   }
 }
 
-@media only screen and (max-width: 600px) {
+//600px
+@media only screen and (max-width: 37.5rem) {
   .pageAbout .section .supporters,
   .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr;
@@ -656,20 +706,6 @@
   #leaderboardsWrapper #leaderboards .leaderboardsTop .buttonGroup {
     grid-auto-flow: row;
   }
-  #customTextPopupWrapper {
-    #customTextPopup {
-      .wordfilter.button {
-        width: 100% !important;
-        justify-self: auto;
-      }
-
-      .inputs {
-        display: flex !important;
-        flex-direction: column;
-        justify-content: flex-start;
-      }
-    }
-  }
 
   .pageAccount {
     .group.history {
@@ -686,7 +722,8 @@
   }
 }
 
-@media only screen and (max-width: 550px) {
+//550px
+@media only screen and (max-width: 34.375rem) {
   #commandLineWrapper {
     padding: 5rem 1rem;
   }
@@ -722,6 +759,9 @@
       .typingStats {
         grid-template-columns: 1fr;
       }
+    }
+    .leaderboardsPositions {
+      grid-template-areas: "title" "t15" "t60";
     }
   }
   #testModesNotice {
@@ -876,7 +916,8 @@
   }
 }
 
-@media only screen and (max-width: 450px) {
+//450px
+@media only screen and (max-width: 28.125rem) {
   #testConfig {
     display: none;
   }
@@ -895,7 +936,8 @@
   }
 }
 
-@media only screen and (max-width: 400px) {
+//400px
+@media only screen and (max-width: 25rem) {
   #top .config {
     grid-gap: 0.25rem;
     .group .buttons {
@@ -953,7 +995,8 @@
   }
 }
 
-@media only screen and (max-width: 350px) {
+//350px
+@media only screen and (max-width: 21.875rem) {
   .ad.ad-h-s {
     display: none;
   }
@@ -977,13 +1020,18 @@
   }
 }
 
-@media (pointer: coarse) and (max-width: 800px) {
+//800px
+@media (pointer: coarse) and (max-width: 50rem) {
   #testConfig {
     display: none;
   }
 
   #mobileTestConfig {
     display: block;
+  }
+
+  #restartTestButton {
+    display: block !important;
   }
 }
 

@@ -11,11 +11,13 @@ import { Server } from "http";
 import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import * as RedisClient from "./init/redis";
-import { initJobQueue } from "./tasks/george";
+import queues from "./queues";
 import Logger from "./utils/logger";
 
 async function bootServer(port: number): Promise<Server> {
   try {
+    Logger.info(`Starting server version ${version}`);
+    Logger.info(`Starting server in ${process.env.MODE} mode`);
     Logger.info(`Connecting to database ${process.env.DB_NAME}...`);
     await db.connect();
     Logger.success("Connected to database");
@@ -39,7 +41,9 @@ async function bootServer(port: number): Promise<Server> {
       Logger.success("Connected to redis");
 
       Logger.info("Initializing task queues...");
-      initJobQueue(RedisClient.getConnection());
+      queues.forEach((queue) => {
+        queue.init(RedisClient.getConnection());
+      });
       Logger.success("Task queues initialized");
     }
 

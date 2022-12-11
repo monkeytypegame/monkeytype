@@ -37,6 +37,11 @@ export async function add(
     timestamp: Date.now(),
     approved: false,
   };
+
+  if (!/^\w+$/.test(language)) {
+    throw new MonkeyError(500, `Invalid language name`, language);
+  }
+
   //check for duplicate first
   const fileDir = path.join(
     __dirname,
@@ -75,6 +80,11 @@ export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
   } = {
     approved: false,
   };
+
+  if (!/^\w+$/.test(language)) {
+    throw new MonkeyError(500, `Invalid language name`, language);
+  }
+
   if (language !== "all") {
     where.language = language;
   }
@@ -124,6 +134,11 @@ export async function approve(
     approvedBy: name,
   };
   let message = "";
+
+  if (!/^\w+$/.test(language)) {
+    throw new MonkeyError(500, `Invalid language name`, language);
+  }
+
   const fileDir = path.join(
     __dirname,
     `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`

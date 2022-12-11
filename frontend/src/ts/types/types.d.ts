@@ -1,3 +1,5 @@
+type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
+
 declare namespace MonkeyTypes {
   type Difficulty = "normal" | "expert" | "master";
 
@@ -87,12 +89,28 @@ declare namespace MonkeyTypes {
     5 = typewriter
     6 = osu
     7 = hitmarker
+    8 = sine
+    9 = sawtooth
+    10 = square
+    11 = triangle
   */
-  type PlaySoundOnClick = "off" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
+  type PlaySoundOnClick =
+    | "off"
+    | "1"
+    | "2"
+    | "3"
+    | "4"
+    | "5"
+    | "6"
+    | "7"
+    | "8"
+    | "9"
+    | "10"
+    | "11";
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
-  type PaceCaret = "off" | "average" | "pb" | "last" | "custom";
+  type PaceCaret = "off" | "average" | "pb" | "last" | "custom" | "daily";
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
@@ -124,8 +142,6 @@ declare namespace MonkeyTypes {
   type MonkeyPowerLevel = "off" | "1" | "2" | "3" | "4";
 
   type MinimumBurst = "off" | "fixed" | "flex";
-
-  type FunboxObjectType = "script" | "style";
 
   type IndicateTypos = "off" | "below" | "replace";
 
@@ -162,12 +178,70 @@ declare namespace MonkeyTypes {
     amount?: number;
   }
 
-  interface FunboxObject {
+  interface FontObject {
     name: string;
-    type: FunboxObjectType;
+    display?: string;
+  }
+
+  type FunboxProperty =
+    | "symmetricChars"
+    | "conflictsWithSymmetricChars"
+    | "changesWordsVisibility"
+    | "speaks"
+    | "unspeakable"
+    | "changesLayout"
+    | "ignoresLayout"
+    | "usesLayout"
+    | "ignoresLanguage"
+    | "noLigatures"
+    | "noLetters"
+    | "changesCapitalisation"
+    | "nospace"
+    | `toPush:${number}`
+    | "noInfiniteDuration";
+
+  interface FunboxFunctions {
+    getWord?: (wordset?: Misc.Wordset) => string;
+    punctuateWord?: (word: string) => string;
+    withWords?: (words?: string[]) => Promise<Misc.Wordset>;
+    alterText?: (word: string) => string;
+    applyCSS?: () => void;
+    applyConfig?: () => void;
+    rememberSettings?: () => void;
+    toggleScript?: (params: string[]) => void;
+    pullSection?: (language?: string) => Promise<Misc.Section | false>;
+    handleSpace?: () => void;
+    handleChar?: (char: string) => string;
+    isCharCorrect?: (char: string, originalChar: string) => boolean;
+    preventDefaultEvent?: (
+      event: JQuery.KeyDownEvent<Document, null, Document, Document>
+    ) => Promise<boolean>;
+    handleKeydown?: (
+      event: JQuery.KeyDownEvent<Document, null, Document, Document>
+    ) => Promise<void>;
+    getResultContent?: () => string;
+    start?: () => void;
+    restart?: () => void;
+    getWordHtml?: (char: string, letterTag?: boolean) => string;
+  }
+
+  interface FunboxForcedConfig {
+    [key: string]: ConfigValues[];
+    // punctuation?: boolean;
+    // numbers?: boolean;
+    // highlightMode?: typesSeparatedWithHash<HighlightMode>;
+    // words?: FunboxModeDuration;
+    // time?: FunboxModeDuration;
+  }
+
+  interface FunboxMetadata {
+    name: string;
     info: string;
+    canGetPb?: boolean;
     alias?: string;
-    affectsWordGeneration?: boolean;
+    forcedConfig?: MonkeyTypes.FunboxForcedConfig;
+    properties?: FunboxProperty[];
+    functions?: FunboxFunctions;
   }
 
   interface CustomText {
@@ -252,6 +326,11 @@ declare namespace MonkeyTypes {
     sd: number;
   }
 
+  interface IncompleteTest {
+    acc: number;
+    seconds: number;
+  }
+
   interface Result<M extends Mode> {
     _id: string;
     wpm: number;
@@ -266,6 +345,7 @@ declare namespace MonkeyTypes {
     timestamp: number;
     restartCount: number;
     incompleteTestSeconds: number;
+    incompleteTests: IncompleteTest[];
     testDuration: number;
     afkDuration: number;
     tags: string[];
@@ -507,6 +587,10 @@ declare namespace MonkeyTypes {
   interface ResultFilters {
     _id: string;
     name: string;
+    pb: {
+      no: boolean;
+      yes: boolean;
+    };
     difficulty: {
       normal: boolean;
       expert: boolean;
@@ -578,7 +662,7 @@ declare namespace MonkeyTypes {
   }
 
   interface Global {
-    snapshot(): Snapshot;
+    snapshot(): Snapshot | undefined;
     config: Config;
     toggleFilterDebug(): void;
     glarsesMode(): void;
@@ -641,7 +725,7 @@ declare namespace MonkeyTypes {
   interface Command {
     id: string;
     display: string;
-    subgroup?: CommandsGroup | boolean;
+    subgroup?: CommandsSubgroup;
     found?: boolean;
     icon?: string;
     noIcon?: boolean;
@@ -649,20 +733,26 @@ declare namespace MonkeyTypes {
     alias?: string;
     input?: boolean;
     visible?: boolean;
-    defaultValue?: string;
+    defaultValue?: () => string;
     configValue?: string | number | boolean | number[];
     configValueMode?: string;
     exec?: (input?: string) => void;
     hover?: () => void;
     available?: () => void;
-    beforeSubgroup?: () => void;
     shouldFocusTestUI?: boolean;
   }
 
-  interface CommandsGroup {
+  interface CommandsSubgroup {
     title: string;
     configKey?: keyof Config;
     list: Command[];
+    beforeList?: () => void;
+  }
+
+  interface Theme {
+    name: string;
+    bgColor: string;
+    mainColor: string;
   }
 
   interface Quote {
