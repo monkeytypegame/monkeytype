@@ -460,12 +460,14 @@ const profileDetailsBase = joi
   .string()
   .allow("")
   .custom((value, helpers) => {
-    return containsProfanity(value)
-      ? helpers.error("string.pattern.base")
-      : value;
+    if (containsProfanity(value)) {
+      return helpers.error("string.profanity");
+    }
+
+    return value;
   })
   .messages({
-    "string.pattern.base": "Profanity detected. Please remove it.",
+    "string.profanity": "Profanity detected. Please remove it.",
   });
 
 router.patch(

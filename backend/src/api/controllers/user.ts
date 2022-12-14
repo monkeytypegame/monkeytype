@@ -184,16 +184,28 @@ export async function getUser(
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
     if (e.status === 404) {
-      await admin.auth().deleteUser(uid);
-      throw new MonkeyError(
-        404,
-        "User not found. Please try to sign up again.",
-        "get user",
-        uid
-      );
+      let user;
+      try {
+        user = await admin.auth().getUser(uid);
+        //exists, recreate in db
+        await UserDAL.addUser(user.displayName, user.email, uid);
+        userInfo = await UserDAL.getUser(uid, "get user (recreated)");
+      } catch (e) {
+        if (e.code === "auth/user-not-found") {
+          //doesnt exist
+          throw new MonkeyError(
+            404,
+            "User not found in the database or authentication system. Please try to sign up again.",
+            "get user",
+            uid
+          );
+        } else {
+          throw e;
+        }
+      }
+    } else {
+      throw e;
     }
-
-    throw e;
   }
 
   const agentLog = buildAgentLog(req);
