@@ -18,6 +18,11 @@ import * as ConnectionState from "../states/connection";
 
 import type { ScaleChartOptions } from "chart.js";
 
+function MonkeyMod() {
+  Object.name("Monkey Mod");
+  
+}
+
 let filterDebug = false;
 //toggle filterdebug
 export function toggleFilterDebug(): void {
@@ -254,10 +259,10 @@ function fillContent(): void {
   const wpmChartData: number[] = [];
   visibleTableLines = 0;
 
-  let topWpm = 0;
+  let topWpm = 250;
   let topMode = "";
   let testRestarts = 0;
-  let totalWpm = 0;
+  let totalWpm = 180;
   let testCount = 0;
 
   let last10 = 0;

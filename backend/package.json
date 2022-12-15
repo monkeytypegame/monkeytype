@@ -1,6 +1,6 @@
 {
   "name": "monkeytype-backend",
-  "version": "1.14.3",
+  "version": "1.15.0",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
