@@ -798,5 +798,10 @@
     "name": "earthsong",
     "bgColor": "#292521",
     "mainColor": "#509452"
+  },
+  {
+    "name": "ayu_dark",
+    "bgColor": "#0D1017",
+    "mainColor": "#AAD94C"
   }
 ]
