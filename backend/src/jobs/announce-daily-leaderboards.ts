@@ -61,7 +61,7 @@ async function announceDailyLeaderboard(
 
     allResults.forEach((entry) => {
       const rank = entry.rank ?? maxResults;
-      const wpm = entry.wpm;
+      const wpm = Math.round(entry.wpm);
 
       const placementString = getOrdinalNumberString(rank);
 
