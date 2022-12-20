@@ -1,0 +1,17 @@
+{
+  "language": "latin",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Veni, vidi, vici.",
+      "source": "Julius Caesar",
+      "length": 17,
+      "id": 1
+    }
+  ]
+}
