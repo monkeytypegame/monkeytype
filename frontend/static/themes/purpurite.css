@@ -1,0 +1,24 @@
+:root {
+  --bg-color: #1F2533;
+  --main-color: #9999ff;
+  --caret-color: #9999ff;
+  --sub-color: #CCDDFF;
+  --sub-alt-color: #3D4B66;
+  --text-color: #9999ff;
+  --error-color: #FF6666;
+  --error-extra-color: #FF6666;
+  --colorful-error-color: #FF6666;
+  --colorful-error-extra-color: #FF6666;
+}
+
+#menu .textButton {
+  color: #99ffdd;
+}
+
+#bottom .leftright div {
+  color: #99ffdd;
+}
+
+#bottom .leftright i {
+  color: #99ffdd;
+}
