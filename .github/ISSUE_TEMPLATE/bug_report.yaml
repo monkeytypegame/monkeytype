@@ -71,7 +71,7 @@ body:
     validations:
       required: false
 
-  - type: textarea
+  - type: input
     attributes:
       label: Account config
       description: If your issue only happens when logged in, please provide your config. To export your config, go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
