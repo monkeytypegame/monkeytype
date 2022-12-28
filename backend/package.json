@@ -39,7 +39,7 @@
     "rate-limiter-flexible": "2.3.7",
     "simple-git": "3.15.0",
     "string-similarity": "4.0.4",
-    "swagger-stats": "0.99.2",
+    "swagger-stats": "0.99.4",
     "swagger-ui-express": "4.3.0",
     "ua-parser-js": "0.7.28",
     "uuid": "8.3.2",
