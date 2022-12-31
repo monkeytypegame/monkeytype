@@ -733,6 +733,7 @@ declare namespace MonkeyTypes {
     alias?: string;
     input?: boolean;
     visible?: boolean;
+    customStyle?: string;
     defaultValue?: () => string;
     configValue?: string | number | boolean | number[];
     configValueMode?: string;
