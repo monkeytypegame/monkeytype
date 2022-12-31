@@ -4,6 +4,8 @@ env:
   NODE_VERSION: "16.13.2"
 
 permissions:
+  contents: read
+  issues: write
   pull-requests: write
 
 on:
@@ -151,6 +153,7 @@ jobs:
         run: npm run pr-check-other-json
 
   on-failure:
+    permissions: write-all
     name: on-failure
     runs-on: ubuntu-latest
     needs: [ci-be, ci-fe, ci-assets]
