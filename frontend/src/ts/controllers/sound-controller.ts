@@ -5,6 +5,7 @@ import { createErrorMessage, randomElementFromArray } from "../utils/misc";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
+import { current } from "../commandline/commands";
 
 interface ClickSounds {
   [key: string]: {
@@ -239,6 +240,7 @@ export function previewClick(val: string): void {
 let currentCode = "KeyA";
 
 $(document).on("keydown", (event) => {
+  console.log(event.code || "KeyA");
   currentCode = event.code || "KeyA";
 });
 
@@ -306,6 +308,7 @@ const codeToNote: Record<string, GetNoteFrequencyCallback> = {
   BracketLeft: bindToNote(notes.F, 2),
   Equal: bindToNote(notes.Gb, 2),
   BracketRight: bindToNote(notes.G, 2),
+  KeyK: bindToNote(notes.Ab, 1),
 };
 
 type DynamicClickSounds = Extract<
@@ -345,6 +348,7 @@ export function playNote(
   codeOverride?: string,
   oscillatorTypeOverride?: SupportedOscillatorTypes
 ): void {
+  console.log("poo");
   if (audioCtx === undefined) {
     initAudioContext();
   }
@@ -357,6 +361,9 @@ export function playNote(
 
   const baseOctave = 3;
   const octave = baseOctave + (leftState || rightState || capsState ? 1 : 0);
+  console.log(currentCode);
+  console.log(codeToNote[currentCode]);
+
   const currentFrequency = codeToNote[currentCode](octave);
 
   const oscillatorNode = audioCtx.createOscillator();
@@ -373,6 +380,9 @@ export function playNote(
   gainNode.connect(audioCtx.destination);
 
   oscillatorNode.frequency.value = currentFrequency;
+
+  console.log(currentFrequency);
+
   oscillatorNode.start(audioCtx.currentTime);
   oscillatorNode.stop(audioCtx.currentTime + 0.15);
 }
