@@ -306,7 +306,7 @@ const codeToNote: Record<string, GetNoteFrequencyCallback> = {
   BracketLeft: bindToNote(notes.F, 2),
   Equal: bindToNote(notes.Gb, 2),
   BracketRight: bindToNote(notes.G, 2),
-  KeyK: bindToNote(notes.Ab, 1)
+  KeyK: bindToNote(notes.Ab, 1),
 };
 
 type DynamicClickSounds = Extract<
