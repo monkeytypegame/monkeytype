@@ -799,4 +799,9 @@
     "bgColor": "#292521",
     "mainColor": "#509452"
   }
+  ,{
+    "name": "twilight",
+    "bgColor": "#1f172a",
+    "mainColor": "#ac8cff"
+  }
 ]
