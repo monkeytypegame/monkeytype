@@ -803,5 +803,10 @@
     "name":"deepsea_dark",
     "bgColor":"#0A2647",
     "mainColor":"#2C74B3"
+  },
+  {
+    "name":"deepsea_light",
+    "bgColor":"#2F8F9D",
+    "mainColor":"#7ebab5"
   }
 ]
