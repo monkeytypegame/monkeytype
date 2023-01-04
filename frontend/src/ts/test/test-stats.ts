@@ -113,7 +113,7 @@ export function getStats(): DebugStats {
     start,
     end,
     wpmHistory: TestInput.wpmHistory,
-    rawHistory: TestInput.wpmHistory,
+    rawHistory: TestInput.rawHistory,
     burstHistory: TestInput.burstHistory,
     keypressPerSecond: TestInput.keypressPerSecond,
     currentKeypress: TestInput.currentKeypress,
