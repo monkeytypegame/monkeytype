@@ -123,6 +123,16 @@
     ]
   },
   {
+    "name": "ukrainian_latynka",
+    "languages": [
+      "ukrainian_latynka",
+      "ukrainian_latynka_1k",
+      "ukrainian_latynka_10k",
+      "ukrainian_latynka_50k",
+      "ukrainian_latynka_endings"
+    ]
+  },
+  {
     "name": "lithuanian",
     "languages": ["lithuanian", "lithuanian_1k", "lithuanian_3k"]
   },
