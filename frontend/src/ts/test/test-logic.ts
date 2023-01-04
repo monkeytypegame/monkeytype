@@ -1638,7 +1638,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(completedEvent);
+  TestStats.setLastResult(JSON.parse(JSON.stringify(completedEvent)));
 
   await Result.update(
     completedEvent,
