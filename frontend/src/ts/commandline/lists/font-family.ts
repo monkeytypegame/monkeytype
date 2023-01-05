@@ -22,6 +22,7 @@ function update(fonts: MonkeyTypes.FontObject[]): void {
       id: "changeFont" + font.name.replace(/ /g, "_"),
       display: font.display !== undefined ? font.display : font.name,
       configValue: configVal,
+      customStyle: `font-family: ${font.name}`,
       hover: (): void => {
         UpdateConfig.previewFontFamily(font.name);
       },

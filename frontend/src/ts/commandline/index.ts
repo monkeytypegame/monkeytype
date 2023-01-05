@@ -90,7 +90,12 @@ function showFound(): void {
       if (obj.noIcon && !isSingleListCommandLineActive()) {
         iconHTML = "";
       }
-      commandsHTML += `<div class="entry" command="${obj.id}">${iconHTML}<div>${obj.display}</div></div>`;
+      let customStyle = "";
+      if (obj.customStyle && !isSingleListCommandLineActive()) {
+        customStyle = obj.customStyle;
+      }
+
+      commandsHTML += `<div class="entry" command="${obj.id}" style="${customStyle}">${iconHTML}<div>${obj.display}</div></div>`;
     }
   });
   $("#commandLine .suggestions").html(commandsHTML);
@@ -306,9 +311,14 @@ function addChildCommands(
   }
 
   if (parentCommandDisplay) {
+    if (commandItem.customStyle) {
+      commandItemDisplay = `<span style="${commandItem.customStyle}"> ${commandItemDisplay} </span>`;
+    }
+
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
   }
+
   if ((commandItem as MonkeyTypes.Command).subgroup) {
     const command = commandItem as MonkeyTypes.Command;
     if (command.subgroup?.beforeList) command.subgroup.beforeList();
@@ -351,6 +361,8 @@ function addChildCommands(
       //@ts-ignore
       tempCommandItem.available = parentCommand.available;
     }
+
+    console.log(tempCommandItem);
     unifiedCommands.push(tempCommandItem);
   }
 }

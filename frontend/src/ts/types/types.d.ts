@@ -746,6 +746,7 @@ declare namespace MonkeyTypes {
   interface CommandsSubgroup {
     title: string;
     configKey?: keyof Config;
+    customStyle?: string;
     list: Command[];
     beforeList?: () => void;
   }
