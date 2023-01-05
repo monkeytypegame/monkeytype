@@ -31,7 +31,7 @@ import * as FunboxList from "../test/funbox/funbox-list";
 import * as Settings from "../pages/settings";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
-import { sleep } from "../utils/misc";
+import { ModifierKeys } from "../constants/modifier-keys";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -758,7 +758,6 @@ $(document).keydown(async (event) => {
 
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
-  const restartTestFocused: boolean = $("#restartTestButton").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
@@ -773,14 +772,11 @@ $(document).keydown(async (event) => {
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
-  // when restart is focused apply very small debounce
-  if (restartTestFocused) {
-    if (!["Enter", "Tab"].includes(event.key)) {
-      await sleep(200);
-    }
-  }
-
-  if (allowTyping && !wordsFocused && event.key !== "Enter") {
+  if (
+    allowTyping &&
+    !wordsFocused &&
+    !["Enter", ...ModifierKeys].includes(event.key)
+  ) {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning) {
       event.preventDefault();
