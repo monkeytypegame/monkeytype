@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { replaceHomoglyphs } from "../constants/homoglyphs";
 import { profanities, regexProfanities } from "../constants/profanities";
 import { matchesAPattern, sanitizeString } from "./misc";
 
@@ -35,7 +36,7 @@ export function containsProfanity(text: string): boolean {
     .toLowerCase()
     .split(/[.,"/#!?$%^&*;:{}=\-_`~()\s\n]+/g)
     .map((str) => {
-      return sanitizeString(str) ?? "";
+      return replaceHomoglyphs(sanitizeString(str) ?? "");
     });
 
   const hasProfanity = regexProfanities.some((profanity) => {
