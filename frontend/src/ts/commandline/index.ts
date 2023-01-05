@@ -314,11 +314,9 @@ function addChildCommands(
     if (commandItem.customStyle) {
       commandItemDisplay = `<span style="${commandItem.customStyle}"> ${commandItemDisplay} </span>`;
     }
-
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
   }
-
   if ((commandItem as MonkeyTypes.Command).subgroup) {
     const command = commandItem as MonkeyTypes.Command;
     if (command.subgroup?.beforeList) command.subgroup.beforeList();
@@ -361,8 +359,6 @@ function addChildCommands(
       //@ts-ignore
       tempCommandItem.available = parentCommand.available;
     }
-
-    console.log(tempCommandItem);
     unifiedCommands.push(tempCommandItem);
   }
 }
