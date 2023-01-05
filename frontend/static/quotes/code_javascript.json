@@ -146,9 +146,9 @@
       "id": 23
     },
     {
-      "text": "export default function unzip(array) {\n  var length = array && max(array, getLength).length || 0;\n  var result = Array(length);\n\n  for (var index = 0; index < length; index++) {\n    result[index] = pluck(array, index);\n  }\n  return result;\n}",
+      "text": "export default function unzip(array) {\n\tvar length = array && max(array, getLength).length || 0;\n\tvar result = Array(length);\n\n\tfor (var index = 0; index < length; index++) {\n\t\tresult[index] = pluck(array, index);\n\t}\n\treturn result;\n}",
       "source": "Underscore - unzip sourcecode",
-      "length": 241,
+      "length": 234,
       "id": 24
     },
     {

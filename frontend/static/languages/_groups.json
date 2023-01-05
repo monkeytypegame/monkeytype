@@ -123,6 +123,16 @@
     ]
   },
   {
+    "name": "ukrainian_latynka",
+    "languages": [
+      "ukrainian_latynka",
+      "ukrainian_latynka_1k",
+      "ukrainian_latynka_10k",
+      "ukrainian_latynka_50k",
+      "ukrainian_latynka_endings"
+    ]
+  },
+  {
     "name": "lithuanian",
     "languages": ["lithuanian", "lithuanian_1k", "lithuanian_3k"]
   },
@@ -415,12 +425,14 @@
       "code_rust",
       "code_ruby",
       "code_r",
+      "code_r_2k",
       "code_swift",
       "code_scala",
       "code_bash",
       "code_powershell",
       "code_lua",
       "code_luau",
+      "code_latex",
       "code_matlab",
       "code_sql",
       "code_perl",

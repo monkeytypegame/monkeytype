@@ -54,7 +54,6 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  ChartController.result.data.labels = labels;
   resultScaleOptions["wpm"].title.text = Config.alwaysShowCPM
     ? "Character per Minute"
     : "Words per Minute";
@@ -62,23 +61,30 @@ async function updateGraph(): Promise<void> {
     ? TestInput.wpmHistory.map((a) => a * 5)
     : TestInput.wpmHistory;
 
-  let chartData2: number[];
-
   if (result.chartData === "toolong") return;
 
-  if (useUnsmoothedRaw) {
-    chartData2 =
-      (Config.alwaysShowCPM
-        ? result.chartData.unsmoothedRaw?.map((a) => a * 5)
-        : result.chartData.unsmoothedRaw) ?? [];
-  } else {
-    chartData2 = Config.alwaysShowCPM
-      ? result.chartData.raw.map((a) => a * 5)
-      : result.chartData.raw;
+  const chartData2 = Config.alwaysShowCPM
+    ? result.chartData.raw.map((a) => a * 5)
+    : result.chartData.raw;
+
+  if (
+    Config.mode !== "time" &&
+    TestStats.lastSecondNotRound &&
+    result.testDuration % 1 < 0.5
+  ) {
+    labels.pop();
+    chartData1.pop();
+    chartData2.pop();
   }
 
+  let smoothedRawData = chartData2;
+  if (!useUnsmoothedRaw) {
+    smoothedRawData = Misc.smooth(smoothedRawData, 1);
+  }
+
+  ChartController.result.data.labels = labels;
   ChartController.result.data.datasets[0].data = chartData1;
-  ChartController.result.data.datasets[1].data = chartData2;
+  ChartController.result.data.datasets[1].data = smoothedRawData;
 
   ChartController.result.data.datasets[0].label = Config.alwaysShowCPM
     ? "cpm"
