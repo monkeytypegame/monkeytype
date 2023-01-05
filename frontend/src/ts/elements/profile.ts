@@ -41,6 +41,8 @@ export async function update(
       details.find(".placeholderAvatar").addClass("hidden");
       details.find(".avatar").css("background-image", `url(${avatarUrl})`);
     }
+  } else {
+    details.find(".avatar").removeAttr("style");
   }
 
   if (profile.inventory?.badges && !banned) {
