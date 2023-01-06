@@ -312,7 +312,7 @@ function addChildCommands(
 
   if (parentCommandDisplay) {
     if (commandItem.customStyle) {
-      commandItemDisplay = `<span style="${commandItem.customStyle}"> ${commandItemDisplay} </span>`;
+      commandItemDisplay = `<span style="${commandItem.customStyle}">${commandItemDisplay}</span>`;
     }
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
