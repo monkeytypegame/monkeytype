@@ -19,38 +19,39 @@ const commands: MonkeyTypes.Command[] = [
 
 function update(themes: MonkeyTypes.Theme[]): void {
   subgroup.list = [];
-  if (Config.favThemes.length > 0) {
-    Config.favThemes.forEach((theme: string) => {
-      subgroup.list.push({
-        id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme),
-        display: theme.replace(/_/g, " "),
-        configValue: theme,
+  let favs: MonkeyTypes.Command[] = [];
+  themes.forEach((theme) => {
+    if ((Config.favThemes as string[]).includes(theme.name)) {
+      favs.push({
+        id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
+        display: theme.name.replace(/_/g, " "),
+        configValue: theme.name,
+        customStyle: `color:${theme.mainColor};background:${theme.bgColor}`,
         hover: (): void => {
-          // previewTheme(theme);
-          ThemeController.preview(theme, false);
+          // previewTheme(theme.name);
+          ThemeController.preview(theme.name, false);
         },
         exec: (): void => {
-          UpdateConfig.setTheme(theme);
+          UpdateConfig.setTheme(theme.name);
         },
       });
-    });
-  }
-  themes.forEach((theme) => {
-    if ((Config.favThemes as string[]).includes(theme.name)) return;
-    subgroup.list.push({
-      id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
-      display: theme.name.replace(/_/g, " "),
-      configValue: theme.name,
-      customStyle: `color:${theme.mainColor};background:${theme.bgColor}`,
-      hover: (): void => {
-        // previewTheme(theme.name);
-        ThemeController.preview(theme.name, false);
-      },
-      exec: (): void => {
-        UpdateConfig.setTheme(theme.name);
-      },
-    });
+    } else {
+      subgroup.list.push({
+        id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
+        display: theme.name.replace(/_/g, " "),
+        configValue: theme.name,
+        customStyle: `color:${theme.mainColor};background:${theme.bgColor}`,
+        hover: (): void => {
+          // previewTheme(theme.name);
+          ThemeController.preview(theme.name, false);
+        },
+        exec: (): void => {
+          UpdateConfig.setTheme(theme.name);
+        },
+      });
+    }
   });
+  subgroup.list = [...favs, ...subgroup.list];
 }
 
 export default commands;
