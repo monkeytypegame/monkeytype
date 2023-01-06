@@ -19,7 +19,7 @@ const commands: MonkeyTypes.Command[] = [
 
 function update(themes: MonkeyTypes.Theme[]): void {
   subgroup.list = [];
-  let favs: MonkeyTypes.Command[] = [];
+  const favs: MonkeyTypes.Command[] = [];
   themes.forEach((theme) => {
     if ((Config.favThemes as string[]).includes(theme.name)) {
       favs.push({
