@@ -31,6 +31,7 @@ import * as FunboxList from "../test/funbox/funbox-list";
 import * as Settings from "../pages/settings";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
+import { ModifierKeys } from "../constants/modifier-keys";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -771,7 +772,11 @@ $(document).keydown(async (event) => {
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
-  if (allowTyping && !wordsFocused && event.key !== "Enter") {
+  if (
+    allowTyping &&
+    !wordsFocused &&
+    !["Enter", ...ModifierKeys].includes(event.key)
+  ) {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning) {
       event.preventDefault();
