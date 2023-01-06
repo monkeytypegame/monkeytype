@@ -41,11 +41,7 @@
   },
   {
     "name": "swiss_german",
-    "languages": ["swiss_german", "swiss_german_1k"]
-  },
-  {
-    "name": "swiss_german",
-    "languages": ["swiss_german", "swiss_german_2k"]
+    "languages": ["swiss_german", "swiss_german_1k", "swiss_german_2k]
   },
   {
     "name": "portuguese",
