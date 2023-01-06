@@ -117,8 +117,8 @@
         }
 
         &.activeMouse {
-          color: var(--bg-color);
-          background: var(--text-color);
+          color: var(--bg-color) !important;
+          background: var(--text-color) !important;
           cursor: pointer;
         }
 
