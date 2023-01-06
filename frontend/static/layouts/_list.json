@@ -131,7 +131,7 @@
       "row5": [" "]
   }
   },
-  "swiss_ch_de_qwertz":{
+  "swiss_german":{
     "keymapShowTopRow": false,
     "type": "iso",
     "keys": {
@@ -142,7 +142,7 @@
       "row5": [" "]
     }
   },
-  "swiss_ch_fr_qwertz":{
+  "swiss_french":{
     "keymapShowTopRow": false,
     "type": "iso",
     "keys": {
