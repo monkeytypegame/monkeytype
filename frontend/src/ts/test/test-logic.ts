@@ -1245,7 +1245,6 @@ interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
   keySpacing: number[] | "toolong";
   keyDuration: number[] | "toolong";
   customText: MonkeyTypes.CustomText;
-  smoothConsistency: number;
   wpmConsistency: number;
   lang: string;
   challenge?: string | null;
@@ -1360,6 +1359,22 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const rawPerSecond = TestInput.keypressPerSecond.map((f) =>
     Math.round((f.count / 5) * 60)
   );
+
+  //adjust last second if last second is not round
+  // if (TestStats.lastSecondNotRound && stats.time % 1 >= 0.1) {
+  if (
+    Config.mode !== "time" &&
+    TestStats.lastSecondNotRound &&
+    stats.time % 1 >= 0.5
+  ) {
+    const timescale = 1 / (stats.time % 1);
+
+    //multiply last element of rawBefore by scale, and round it
+    rawPerSecond[rawPerSecond.length - 1] = Math.round(
+      rawPerSecond[rawPerSecond.length - 1] * timescale
+    );
+  }
+
   const stddev = Misc.stdDev(rawPerSecond);
   const avg = Misc.mean(rawPerSecond);
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
@@ -1386,17 +1401,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   }
   completedEvent.keyConsistency = keyConsistency;
   completedEvent.consistency = consistency;
-  const smoothedraw = Misc.smooth(rawPerSecond, 1);
-  completedEvent.chartData.raw = smoothedraw;
-  completedEvent.chartData.unsmoothedRaw = rawPerSecond;
-
-  //smoothed consistency
-  const stddev2 = Misc.stdDev(smoothedraw);
-  const avg2 = Misc.mean(smoothedraw);
-  const smoothConsistency = Misc.roundTo2(Misc.kogasa(stddev2 / avg2));
-  completedEvent.smoothConsistency = isNaN(smoothConsistency)
-    ? 0
-    : smoothConsistency;
+  completedEvent.chartData.raw = rawPerSecond;
 
   //wpm consistency
   const stddev3 = Misc.stdDev(completedEvent.chartData.wpm ?? []);
@@ -1638,7 +1643,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
-  TestStats.setLastResult(completedEvent);
+  TestStats.setLastResult(JSON.parse(JSON.stringify(completedEvent)));
 
   await Result.update(
     completedEvent,

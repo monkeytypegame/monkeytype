@@ -41,7 +41,7 @@
   },
   {
     "name": "swiss_german",
-    "languages": ["swiss_german", "swiss_german_1k"]
+    "languages": ["swiss_german", "swiss_german_1k", "swiss_german_2k"]
   },
   {
     "name": "portuguese",
@@ -425,12 +425,14 @@
       "code_rust",
       "code_ruby",
       "code_r",
+      "code_r_2k",
       "code_swift",
       "code_scala",
       "code_bash",
       "code_powershell",
       "code_lua",
       "code_luau",
+      "code_latex",
       "code_matlab",
       "code_sql",
       "code_perl",

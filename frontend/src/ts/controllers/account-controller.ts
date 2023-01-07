@@ -380,6 +380,15 @@ export async function signIn(): Promise<void> {
   const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
   const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
+  if (email === "" || password === "") {
+    Notifications.add("Please fill in all fields", 0);
+    LoginPage.hidePreloader();
+    LoginPage.enableInputs();
+    LoginPage.enableSignUpButton();
+    LoginPage.enableSignInButton();
+    return;
+  }
+
   const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
     ? browserLocalPersistence
     : browserSessionPersistence;

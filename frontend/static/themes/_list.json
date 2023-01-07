@@ -798,5 +798,10 @@
     "name": "earthsong",
     "bgColor": "#292521",
     "mainColor": "#509452"
+  },
+  {
+    "name": "purpurite",
+    "bgColor": "#1F2533",
+    "mainColor": "#9999FF"
   }
 ]
