@@ -59,7 +59,7 @@ const RESULT_SCHEMA = joi
     quoteLength: joi.number(),
     rawWpm: joi.number().required(),
     restartCount: joi.number().required(),
-    smoothConsistency: joi.number().required(),
+    smoothConsistency: joi.number().optional(), // to be removed
     tags: joi.array().items(joi.string()).required(),
     testDuration: joi.number().required().min(1),
     timestamp: joi.date().timestamp().required(),
