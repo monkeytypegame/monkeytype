@@ -505,9 +505,11 @@
   ["color", "colour"],
   ["tire", "tyre"],
   ["gray", "grey"],
+  ["grays", "greys"],
   ["theater", "theatre"],
   ["center", "centre"],
   ["realize", "realise"],
+  ["realization", "realisation"],
   ["license", "licence"],
   ["mom", "mum"],
   ["favor", "favour"],
@@ -588,5 +590,8 @@
   ["civilize", "civilise"],
   ["civilized", "civilised"],
   ["civilization", "civilisation"],
-  ["parlor", "parlour"]
+  ["parlor", "parlour"],
+  ["tranquilize", "tranquilise"],
+  ["tranquillized", "tranquillised"],
+  ["tranquillization", "tranquillisation"]
 ]

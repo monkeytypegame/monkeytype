@@ -41,7 +41,7 @@
   },
   {
     "name": "swiss_german",
-    "languages": ["swiss_german", "swiss_german_1k"]
+    "languages": ["swiss_german", "swiss_german_1k", "swiss_german_2k"]
   },
   {
     "name": "portuguese",
@@ -120,6 +120,16 @@
       "ukrainian_10k",
       "ukrainian_50k",
       "ukrainian_endings"
+    ]
+  },
+  {
+    "name": "ukrainian_latynka",
+    "languages": [
+      "ukrainian_latynka",
+      "ukrainian_latynka_1k",
+      "ukrainian_latynka_10k",
+      "ukrainian_latynka_50k",
+      "ukrainian_latynka_endings"
     ]
   },
   {
@@ -415,12 +425,14 @@
       "code_rust",
       "code_ruby",
       "code_r",
+      "code_r_2k",
       "code_swift",
       "code_scala",
       "code_bash",
       "code_powershell",
       "code_lua",
       "code_luau",
+      "code_latex",
       "code_matlab",
       "code_sql",
       "code_perl",
