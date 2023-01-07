@@ -57,15 +57,19 @@ async function updateGraph(): Promise<void> {
   resultScaleOptions["wpm"].title.text = Config.alwaysShowCPM
     ? "Character per Minute"
     : "Words per Minute";
-  const chartData1 = Config.alwaysShowCPM
-    ? TestInput.wpmHistory.map((a) => a * 5)
-    : TestInput.wpmHistory;
+  const chartData1 = [
+    ...(Config.alwaysShowCPM
+      ? TestInput.wpmHistory.map((a) => a * 5)
+      : TestInput.wpmHistory),
+  ];
 
   if (result.chartData === "toolong") return;
 
-  const chartData2 = Config.alwaysShowCPM
-    ? result.chartData.raw.map((a) => a * 5)
-    : result.chartData.raw;
+  const chartData2 = [
+    ...(Config.alwaysShowCPM
+      ? result.chartData.raw.map((a) => a * 5)
+      : result.chartData.raw),
+  ];
 
   if (
     Config.mode !== "time" &&
@@ -676,7 +680,7 @@ export async function update(
     ChartController.result.options as ScaleChartOptions<"line" | "scatter">
   ).scales;
   resultAnnotation = [];
-  result = res;
+  result = Object.assign({}, res);
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")
