@@ -91,7 +91,7 @@ function showFound(): void {
         iconHTML = "";
       }
       let customStyle = "";
-      if (obj.customStyle && !isSingleListCommandLineActive()) {
+      if (obj.customStyle) {
         customStyle = obj.customStyle;
       }
 
@@ -311,9 +311,6 @@ function addChildCommands(
   }
 
   if (parentCommandDisplay) {
-    if (commandItem.customStyle) {
-      commandItemDisplay = `<span style="${commandItem.customStyle}">${commandItemDisplay}</span>`;
-    }
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
   }
