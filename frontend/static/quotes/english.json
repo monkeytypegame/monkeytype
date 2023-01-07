@@ -21,7 +21,7 @@
     },
     {
       "text": "Don't it make you sad to know that life is more than who you are?",
-      "source": "Name",
+      "source": "Goo Goo Dolls - Name",
       "length": 65,
       "id": 3
     },
@@ -273,7 +273,7 @@
     },
     {
       "text": "When we remember we only get a version of the last time we remember it.",
-      "source": "Chlorine",
+      "source": "Trophy Eyes - Chlorine",
       "id": 45,
       "length": 71
     },
@@ -6872,7 +6872,7 @@
       "length": 184
     },
     {
-      "text": "You once told me you never lied to me and you never will. So I need to know something: The first time Kramer and I went after you for the Degas, how did you switch the paintings?",
+      "text": "You once told me you never lied to me and you never will. So I need to know something: the first time Kramer and I went after you for the Degas, how did you switch the paintings?",
       "source": "White Collar",
       "id": 1168,
       "length": 178
@@ -7134,12 +7134,6 @@
       "source": "One Word",
       "id": 1212,
       "length": 113
-    },
-    {
-      "text": "Love in the nineties is paranoid. On sunny beaches, take your chances looking for girls who are boys who like boys to be girls who do boys like they're girls who do girls like they're boys. Always should be someone you really love.",
-      "source": "Boys and Girls",
-      "id": 1213,
-      "length": 231
     },
     {
       "text": "I can't make you love me if you don't. You can't make your heart feel something it won't. Here in the dark, in these final hours, I will lay down my heart, and I'll feel the power.",
@@ -9104,7 +9098,7 @@
       "length": 186
     },
     {
-      "text": "I think you're gonna find - when all this stuff is over and done - I think you're gonna find yourself one smiling guy. Thing is Butch, right now you got ability. But painful as it may be, ability don't last. Now that's a hard fact of life, but it's a fact of life you're gonna have to get realistic about.",
+      "text": "I think you're gonna find - when all this stuff is over and done - I think you're gonna find yourself one smiling guy. Thing is, Butch, right now you got ability. But painful as it may be, ability don't last. Now that's a hard fact of life, but it's a fact of life you're gonna have to get realistic about.",
       "source": "Pulp Fiction",
       "id": 1550,
       "length": 305
@@ -13238,12 +13232,6 @@
       "length": 332
     },
     {
-      "text": "If the cause of death is written within 40 seconds of writing the person's name, it will happen. If the cause of death is not specified, the person will simply die of a heart attack. After writing the cause of death, details of death should be written in the next 6 minutes and 40 seconds.",
-      "source": "Death Note",
-      "id": 2261,
-      "length": 289
-    },
-    {
       "text": "You move like I want to. To see like your eyes do.",
       "source": "Digital Bath",
       "id": 2262,
@@ -14906,12 +14894,6 @@
       "length": 77
     },
     {
-      "text": "Have you heard the story of the guy who decided not to die? He figured living was just easier than falling really high. His son heard about it later, thought, \"Maybe that is why I'm enamored with the thought of seeing angels in the sky that are singing.\" And they're singing, saying, \"Everything's all right.\" I haven't heard that on Earth, so maybe I will find a place to sleep; just a comfortable place to lay my head.",
-      "source": "Sorry, My Dear",
-      "id": 2549,
-      "length": 420
-    },
-    {
       "text": "Through these fields of destruction, baptisms of fire, I've witnessed your suffering as the battle raged higher. And though they did hurt me so bad in the fear and alarm you did not desert me, my brothers in arms.",
       "source": "Brothers in Arms",
       "id": 2551,
@@ -15864,12 +15846,6 @@
       "source": "The Shawshank Redemption",
       "id": 2715,
       "length": 189
-    },
-    {
-      "text": "To devise is the work of the master, to execute the act of the servant.",
-      "source": "The Notebooks of Leonardo",
-      "id": 2716,
-      "length": 71
     },
     {
       "text": "A few light taps upon the pane made him turn to the window. It had begun to snow again. He watched sleepily the flakes, silver and dark, falling obliquely against the lamplight. The time had come for him to set out on his journey westward.",
@@ -17642,7 +17618,7 @@
       "length": 353
     },
     {
-      "text": "The big question for the future of humanity is whether that filter lies behind us - in the evolution of intelligence, for instance - or ahead of us: Perhaps any sufficiently technologically advanced species will eventually destroy itself through war or pollution. Alternatively, it might be that space and time are simply too big. Maybe the universe is full of voices that we will never hear because they are too far away or too long ago.",
+      "text": "The big question for the future of humanity is whether that filter lies behind us - in the evolution of intelligence, for instance - or ahead of us: perhaps any sufficiently technologically advanced species will eventually destroy itself through war or pollution. Alternatively, it might be that space and time are simply too big. Maybe the universe is full of voices that we will never hear because they are too far away or too long ago.",
       "source": "Our Quest for Meaning in the Heavens - The Wall Street Journal",
       "id": 3025,
       "length": 438
@@ -25826,7 +25802,7 @@
       "length": 368
     },
     {
-      "text": "What distinguished Ellington from most of his contemporaries was that he set himself the goal of expanding the time frame of the jazz piece, stretching it well beyond the limits of the 78-rpm side and into the realm of the large-scale classical work.",
+      "text": "What distinguished Ellington from most of his contemporaries was that he set himself the goal of expanding the time frame of the jazz piece, stretching it well beyond the limits of the 78 bpm side and into the realm of the large-scale classical work.",
       "source": "The Rest is Noise: Listening to Music in the Twentieth Century",
       "id": 4434,
       "length": 250
@@ -26436,12 +26412,6 @@
       "source": "Star Wars: Episode II -- Attack of the Clones",
       "id": 4541,
       "length": 130
-    },
-    {
-      "text": "Listen, Morty, I hate to break it to you but what people call \"love\" is just a chemical reaction that compels animals to breed. It hits hard, Morty, then it slowly fades, leaving you stranded in a failing marriage. I did it. Your parents are gonna do it. Break the cycle, Morty. Rise above. Focus on science.",
-      "source": "Rick and Morty",
-      "id": 4542,
-      "length": 308
     },
     {
       "text": "I believe in angels, something good in everything I see. When I know the time is right for me I'll cross the stream.",
@@ -28560,12 +28530,6 @@
       "source": "When Love Arrives",
       "id": 4910,
       "length": 286
-    },
-    {
-      "text": "People want to like who they're voting for. People thought Al Gore was a big stiff until he stuck his tongue down Tipper's throat. They put George W. in office because he and Laura seemed like a fun couple to have a beer with. People have to want to invite you in for dinner. Right now, you and your wife are standing in their doorway, three feet apart, not looking at each other, letting in the cold air. That's why you lost Iowa. It's why you'll lose New Hampshire.",
-      "source": "Scandal",
-      "id": 4911,
-      "length": 467
     },
     {
       "text": "Moreover, Lincoln possessed an uncanny understanding of his shifting moods, a profound self-awareness that enabled him to find constructive ways to alleviate sadness and stress. Indeed, when he is compared with his colleagues, it is clear that he possessed the most even-tempered disposition of them all.",
@@ -30824,7 +30788,7 @@
       "id": 5309
     },
     {
-      "text": "Lamp oil, rope, bombs, you want it? It's yours, my friend, as long as you have enough rubies. Sorry Link, I can't give credit. Come back when you're a little... hmm richer!",
+      "text": "Lamp oil, rope, bombs, you want it? It's yours, my friend, as long as you have enough rupees. Sorry Link, I can't give credit. Come back when you're a little... hmm richer!",
       "source": "Morshu, Link: The Faces of Evil",
       "length": 172,
       "id": 5310
@@ -30999,7 +30963,7 @@
     },
     {
       "text": "One of the reasons why we crave love, and seek it so desperately, is that love is the only cure for loneliness, and shame, and sorrow. But some feelings sink so deep into the heart that only loneliness can help you find them again. Some truths about yourself are so painful that only shame can help you live with them. And some things are just so sad that only your soul can do the crying for you.",
-      "source": "George Orwell, Animal Farm",
+      "source": "Gregory David Roberts, Shantaram",
       "length": 397,
       "id": 5347
     },
@@ -32000,12 +31964,6 @@
       "id": 5543
     },
     {
-      "text": "Hey look, buddy, I'm an Engineer. That means I solve problems. Not problems like \"What is beauty?\", because that would fall within the purview of your conundrums of philosophy. I solve practical problems. Fr'instance, How am I going to stop some big mean mother hubbard from tearing me a structurally superfluous new behind? The answer: use a gun, and if that don't work, use more gun. Like this heavy caliber, tripod-mounted, little ol' number designed by me, built by me, and you'd best hope... not pointed at you.",
-      "source": "Team Fortess 2, Meet the Engineer",
-      "length": 516,
-      "id": 5544
-    },
-    {
       "text": "I am Heavy Weapons guy, and this is my weapon. She weighs one hundred fifty kilograms and fires two hundred dollar, custom-tooled cartridges at ten thousand rounds per minute. It costs four hundred thousand dollars to fire this weapon, for twelve seconds.",
       "source": "Team Fortess 2, Meet the Heavy",
       "length": 255,
@@ -32286,12 +32244,6 @@
       "source": "Mark Twain",
       "length": 74,
       "id": 5605
-    },
-    {
-      "text": "The fool doth think he is wise, but the wise man knows himself to be a fool.",
-      "source": "William Shakespeare, As You Like It",
-      "length": 76,
-      "id": 5606
     },
     {
       "text": "I am enough of an artist to draw freely upon my imagination. Imagination is more important than knowledge. Knowledge is limited. Imagination encircles the world.",
@@ -33788,7 +33740,7 @@
       "id": 5870
     },
     {
-      "text": "In many ways, the work of a critic is easy. We risk very little, yet enjoy a position over those who offer up their work and their selves to our judgment. We thrive on negative criticism, which is fun to write and to read. But the bitter truth we critics must face, is that in the grand scheme of things, the average piece of junk is probably more meaningful than our criticism designating it so. But there are times when a critic truly risks something, and that is in the discovery and defense of the *new*. The world is often unkind to new talent, new creations. The new needs friends. Last night, I experienced something new: an extraordinary meal from a singularly unexpected source. To say that both the meal and its maker have challenged my preconceptions about fine cooking is a gross understatement. They have rocked me to my core. In the past, I have made no secret of my disdain for Chef Gusteau's famous motto, \"Anyone can cook\". But I realize, only now do I truly understand what he meant. Not everyone can become a great artist; but a great artist can come from anywhere. It is difficult to imagine more humble origins than those of the genius now cooking at Gusteau's, who is, in this critic's opinion, nothing less than the finest chef in France. I will be returning to Gusteau's soon, hungry for more.",
+      "text": "In many ways, the work of a critic is easy. We risk very little, yet enjoy a position over those who offer up their work and their selves to our judgment. We thrive on negative criticism, which is fun to write and to read. But the bitter truth we critics must face, is that in the grand scheme of things, the average piece of junk is probably more meaningful than our criticism designating it so. But there are times when a critic truly risks something, and that is in the discovery and defense of the new. The world is often unkind to new talent, new creations. The new needs friends. Last night, I experienced something new: an extraordinary meal from a singularly unexpected source. To say that both the meal and its maker have challenged my preconceptions about fine cooking is a gross understatement. They have rocked me to my core. In the past, I have made no secret of my disdain for Chef Gusteau's famous motto, \"Anyone can cook\". But I realize, only now do I truly understand what he meant. Not everyone can become a great artist; but a great artist can come from anywhere. It is difficult to imagine more humble origins than those of the genius now cooking at Gusteau's, who is, in this critic's opinion, nothing less than the finest chef in France. I will be returning to Gusteau's soon, hungry for more.",
       "source": "Ratatouille",
       "length": 1317,
       "id": 5871
@@ -33938,7 +33890,7 @@
       "id": 5897
     },
     {
-      "text": "My grandfather picks up quartz and valuable onyx jewels. Send 60 dozen quart jars and 12 black pens.",
+      "text": "My grandfather picks up quartz and valuable onyx jewels. Send 60 dozen quart jars and 12 black pans.",
       "source": "2020 AP Exams",
       "length": 100,
       "id": 5898
@@ -34232,12 +34184,6 @@
       "source": "The Office",
       "length": 379,
       "id": 5947
-    },
-    {
-      "text": "Hey! I wanna say something. I've been trying to be more honest lately, and I just wanna say a few things. I did the coal walk! Just, I did it. Michael, you couldn't even do that. Maybe I should be your boss. Wow I feel really good right now. [pause] Why didn't any of you come to my art show? I invited all of you. That really sucked. It's like sometimes some of you act like I don't even exist. Jim, I called off my wedding because of you. And now we're not even friends. And things are just like weird between us. And that sucks. And I miss you. You were my best friend before you went to Stanford. And I really miss you. I shouldn't have been with Roy, and there were a lot of reasons to call off my wedding. But the truth is, I didn't care about any of those reasons until I met you. And now you're with someone else. And that's fine. It's, whatever, it's not what I'm- I'm not- Okay my feet really hurt. The thing that I'm just trying to say to you, Jim, and to everyone else in the circle, I guess, is that I miss having fun with you. Just you, not everyone in the circle. Okay. I am gonna go walk in the water now. Yep. It's a good day.",
-      "source": "Pam Beesly - The Office (US)",
-      "length": 1143,
-      "id": 5948
     },
     {
       "text": "I was going to quit, but Jan offered me a three-month, paid vacation and a company car. All I had to do was sign something saying I won't sue. Gil and I are going to Europe. Kids, sometimes it pays to be gay.",
@@ -35006,7 +34952,7 @@
       "id": 6183
     },
     {
-      "text": "Let's say, \"sunshine for everyone,\" but as far as I can remember we've been migratory animals, living under changing weather. Someday, we'll forsee obstacles through the blizzard, through the blizzard.",
+      "text": "Let's say, \"sunshine for everyone,\" but as far as I can remember we've been migratory animals, living under changing weather. Someday, we'll foresee obstacles through the blizzard, through the blizzard.",
       "source": "Syd Matters - Obstacles",
       "length": 201,
       "id": 6184
@@ -35084,7 +35030,7 @@
       "id": 6196
     },
     {
-      "text": "Humans preferred their museums to be indoors. This initially seemed baffling to monsters (especially given the amount of dusting we avoid by keeping objects outside!). Experts have recently suggested that keeping objects indoors may have been part of Englandland's efforts to hide and store museums' collections of stolen property.",
+      "text": "Humans preferred their museums to be indoors. This initially seemed baffling to monsters (especially given the amount of dusting we avoid by keeping objects outside!). Experts have recently suggested that keeping objects indoors may have been part of England's efforts to hide and store museums' collections of stolen property.",
       "source": "A Monster's Expedition",
       "length": 331,
       "id": 6197
@@ -35402,7 +35348,7 @@
       "id": 6250
     },
     {
-      "text": "Whether or not you can never become great at something, you can always become better at it. Don’t ever forget that! And don’t say “I’ll never be good”. You can become better! And one day you’ll wake up and you’ll find out how good you actually became.",
+      "text": "Whether or not you can never become great at something, you can always become better at it. Don’t ever forget that! And don’t say “I’ll never be good.” You can become better! And one day you’ll wake up and you’ll find out how good you actually became.",
       "source": "Neil deGrasse Tyson",
       "length": 251,
       "id": 6251
@@ -35438,7 +35384,7 @@
       "id": 6256
     },
     {
-      "text": "What is it about society that disappoints you so much? Oh, I don't know. Is it that we collectively thought Steve Jobs was a great man, even when we knew he made billions off the backs of children? Or maybe it's that it feels like all our heroes are counterfeit. The world itself's just one big hoax. Spamming each other with our burning commentary, masquerading as insight. Our social media faking as intimacy. Or is it that we voted for this? Not with our rigged elections, but with our things. Our property. Our money. I not saying anything new. We all know why we do this. Not because Hunger Games books makes us happy. But because we wanna be sedated. Because it's painful not to pretend. Because we're cowards. F... society.",
+      "text": "What is it about society that disappoints you so much? Oh, I don't know. Is it that we collectively thought Steve Jobs was a great man, even when we knew he made billions off the backs of children? Or maybe it's that it feels like all our heroes are counterfeit. The world itself's just one big hoax. Spamming each other with our burning commentary, masquerading as insight. Our social media faking as intimacy. Or is it that we voted for this? Not with our rigged elections, but with our things. Our property. Our money. I'm not saying anything new. We all know why we do this. Not because Hunger Games books makes us happy. But because we wanna be sedated. Because it's painful not to pretend. Because we're cowards. F... society.",
       "source": "Mr. Robot",
       "length": 730,
       "id": 6257
@@ -35938,7 +35884,7 @@
       "id": 6331
     },
     {
-      "text": "Maybe you went too far. Maybe you didn't go far enough. Maybe you did it just right. The point is that while you were doing it, you heard a voice telling you that disciplining him would prevent him from repeating the offense, a voice that sounded like reason, and there was a reason to it, as the most compelling lies are comprised almost entirely of the truth. But that's what it does. Cloaks itself in whatever it must to move you to action. And the more you deny its presence, the more powerful it gets, and the more likely it is to consume you entirely without you ever knowing it was there. Now, if you and are to lead these men together, you must learn to know its presence well so that you may you use it rather than it using you.",
+      "text": "Maybe you went too far. Maybe you didn't go far enough. Maybe you did it just right. The point is that while you were doing it, you heard a voice telling you that disciplining him would prevent him from repeating the offense, a voice that sounded like reason, and there was a reason to it, as the most compelling lies are comprised almost entirely of the truth. But that's what it does. Cloaks itself in whatever it must to move you to action. And the more you deny its presence, the more powerful it gets, and the more likely it is to consume you entirely without you ever knowing it was there. Now, if you and I are to lead these men together, you must learn to know its presence well so that you may use it rather than it using you.",
       "source": "Black Sails",
       "length": 737,
       "approvedBy": "Smithster",
@@ -36022,7 +35968,7 @@
       "id": 6343
     },
     {
-      "text": "Hello and goodbye Do you think I'm dying? Do you think I'm going somewhere else this time? Do you remember the day we pretended to be every star in the sky?",
+      "text": "Hello and goodbye. Do you think I'm dying? Do you think I'm going somewhere else this time? Do you remember the day we pretended to be every star in the sky?",
       "source": "Might quit - Bill Wurtz",
       "length": 156,
       "approvedBy": "Smithster",
@@ -36057,7 +36003,7 @@
       "id": 6348
     },
     {
-      "text": "In Exchange For Power, Maybe I’ve Lost Something That Is Essential To Being Human.",
+      "text": "In exchange for power, maybe I’ve lost something that is essential to being human.",
       "source": "One Punch Man, Saitama",
       "length": 82,
       "approvedBy": "Smithster",
@@ -36097,13 +36043,6 @@
       "length": 92,
       "approvedBy": "Smithster",
       "id": 6354
-    },
-    {
-      "text": "You know friend, this is a goddam bitch of an unsatisfactory situation.",
-      "source": "Brokeback Mountain",
-      "length": 71,
-      "approvedBy": "Smithster",
-      "id": 6355
     },
     {
       "text": "When I look back on my life, It's not that I don't want to see things exactly as they happened. It's just that I prefer to remember them in an artistic way and truthfully the lie of it all is much more honest because I invented it.",
@@ -36680,18 +36619,11 @@
       "id": 6437
     },
     {
-      "text": "When life give you lemons... you probably just found lemons.",
+      "text": "When life gives you lemons... you probably just found lemons.",
       "source": "Bo Burnham",
       "length": 60,
       "approvedBy": "Smithster",
       "id": 6438
-    },
-    {
-      "text": "There's a metal train that a mile long and at the very back end a lightning bolt struck her. How long til it reaches and kills the driver, provided that he's a good conductor?",
-      "source": "Bo Burnham",
-      "length": 175,
-      "approvedBy": "Smithster",
-      "id": 6439
     },
     {
       "text": "The problem for us, as viewers, is that we want famous people who are passionate about the things they're famous for, because that makes them worthy of the attention. But I think many of those famous people just want to be famous.",
@@ -37310,7 +37242,7 @@
       "id": 6528
     },
     {
-      "text": "There are many types of monsters in this world, monsters who will not show themselves and who cause trouble. Monsters who abduct children, monsters who devour dreams, monsters who suck blood, and monsters who always tell lies. Lying monsters are a real nuisance. They are much more cunning than other monsters. They pose as humans, even though they have no understanding of the human heart. They eat, even though they've never experienced hunger. They study even though the have no interest in academics. They seek friendship even though they do not know how to love. If I were to encounter such a monster, I would likely be eaten by it because, in truth, I am that monster.",
+      "text": "There are many types of monsters in this world, monsters who will not show themselves and who cause trouble. Monsters who abduct children, monsters who devour dreams, monsters who suck blood, and monsters who always tell lies. Lying monsters are a real nuisance. They are much more cunning than other monsters. They pose as humans, even though they have no understanding of the human heart. They eat, even though they've never experienced hunger. They study even though they have no interest in academics. They seek friendship even though they do not know how to love. If I were to encounter such a monster, I would likely be eaten by it because, in truth, I am that monster.",
       "source": "Death Note",
       "length": 674,
       "approvedBy": "Smithster",
@@ -37695,7 +37627,7 @@
       "id": 6583
     },
     {
-      "text": "If you think reality is just living comfortably and following your on whims, can you seriously dare to call yourself a soldier?",
+      "text": "If you think reality is just living comfortably and following your own whims, can you seriously dare to call yourself a soldier?",
       "source": "Attack on Titan",
       "length": 127,
       "approvedBy": "Smithster",
@@ -37779,7 +37711,7 @@
       "id": 6595
     },
     {
-      "text": "Please be advised that a noticeable taste of blood is not part of any test protocol but is an unintended side effect of the Aperture Science Material Emancipation Grill, which may, in semi- rare cases, emancipate dental fillings, crowns, tooth enamel, and teeth.",
+      "text": "Please be advised that a noticeable taste of blood is not part of any test protocol but is an unintended side effect of the Aperture Science Material Emancipation Grill, which may, in semi-rare cases, emancipate dental fillings, crowns, tooth enamel, and teeth.",
       "source": "GLaDOS, Portal",
       "length": 262,
       "approvedBy": "Smithster",
@@ -37868,13 +37800,6 @@
       "length": 283,
       "approvedBy": "Smithster",
       "id": 6608
-    },
-    {
-      "text": "My mama always said, life is like a box of chocolates. You never know what you're gonna get.",
-      "source": "Forrest Gump",
-      "length": 92,
-      "approvedBy": "Smithster",
-      "id": 6609
     },
     {
       "text": "I’m a camp manager. I don’t have a list of rules because I’m trying to ruin your fun. I have a list because I’m trying to help you from coming back to camp and finding your tent collapsed and full of rainwater and having no dry clothes or nowhere to sleep. I’m trying to keep you from spending half a day setting up tents because you didn’t plan where everything would go in advance. And I’m trying to keep you from doing small, simple things that could result in a horrific and most assuredly agonizing demise.",
@@ -38031,7 +37956,7 @@
       "id": 6631
     },
     {
-      "text": "I don't know how to tell you, but I love you. I'm not good with words, but I'm talking. I'm not good at talking, but I talk to you. I'm not good at being myself, but I am around you. I'm not good a being loved, but you love me too. I don't know how to tell you, but I love you.",
+      "text": "I don't know how to tell you, but I love you. I'm not good with words, but I'm talking. I'm not good at talking, but I talk to you. I'm not good at being myself, but I am around you. I'm not good at being loved, but you love me too. I don't know how to tell you, but I love you.",
       "source": "Matthew D. Thomason ",
       "length": 277,
       "approvedBy": "Smithster",
@@ -38143,7 +38068,7 @@
       "id": 6647
     },
     {
-      "text": "Spread love wherever you go. Let no one ever come to you without leaving happer.",
+      "text": "Spread love wherever you go. Let no one ever come to you without leaving happier.",
       "source": "Mother Teresa",
       "length": 80,
       "approvedBy": "Smithster",
@@ -38316,13 +38241,6 @@
       "length": 101,
       "approvedBy": "Smithster",
       "id": 6672
-    },
-    {
-      "text": "I do not imagine that many of the Turing lecturers who will follow me will be\npeople who were acquainted with Alan Turing. The work on computable numbers,\nfor which he is famous, was published in 1936 before digital computers existed. Later\nhe became one of the first of a distinguished succession of able mathematicians who\nhave made contributions to the computer field. He was a colorful figure in the early\ndays of digital computer development in England, and I would find it difficult to\nspeak of that period without making some references to him.",
-      "source": "Maurice V. Wilkes, Computers Then and Now",
-      "length": 551,
-      "approvedBy": "Smithster",
-      "id": 6673
     },
     {
       "text": "I wasn't supposed to come back after Christmas vacation on account of I was flunking four subjects and not applying myself and all.",
@@ -38499,8 +38417,8 @@
       "id": 6700
     },
     {
-      "text": "Wake up to reality! Nothing ever goes as planned in this world. The longer you live, the more you realize that in this reality, only pain, suffering, and futility exist.\n\n- Madara Uchiha",
-      "source": "Naruto ",
+      "text": "Wake up to reality! Nothing ever goes as planned in this world. The longer you live, the more you realize that in this reality, only pain, suffering, and futility exist.",
+      "source": "Naruto",
       "length": 186,
       "approvedBy": "Smithster",
       "id": 6701
