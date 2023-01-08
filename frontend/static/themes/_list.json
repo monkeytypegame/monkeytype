@@ -804,4 +804,9 @@
     "bgColor": "#1F2533",
     "mainColor": "#9999FF"
   }
+  ,{
+    "name": "vibe",
+    "bgColor": "#2c2f33",
+    "mainColor": "#cd5b61"
+  }
 ]
