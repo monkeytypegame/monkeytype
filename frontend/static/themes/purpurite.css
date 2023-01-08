@@ -1,14 +1,14 @@
 :root {
-  --bg-color: #1F2533;
+  --bg-color: #1f2533;
   --main-color: #9999ff;
   --caret-color: #9999ff;
-  --sub-color: #CCDDFF;
-  --sub-alt-color: #3D4B66;
+  --sub-color: #ccddff;
+  --sub-alt-color: #3d4b66;
   --text-color: #9999ff;
-  --error-color: #FF6666;
-  --error-extra-color: #FF6666;
-  --colorful-error-color: #FF6666;
-  --colorful-error-extra-color: #FF6666;
+  --error-color: #ff6666;
+  --error-extra-color: #ff6666;
+  --colorful-error-color: #ff6666;
+  --colorful-error-extra-color: #ff6666;
 }
 
 #menu .textButton {
