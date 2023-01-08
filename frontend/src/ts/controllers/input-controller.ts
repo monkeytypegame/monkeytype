@@ -1053,7 +1053,7 @@ $("#wordsInput").on("input", (event) => {
     TestUI.updateWordElement();
     Caret.updatePosition();
     if (!CompositionState.getComposing()) {
-      Replay.addReplayEvent("setLetterIndex", currTestInput.length);
+      Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
     }
   } else if (inputValue !== currTestInput) {
     let diffStart = 0;
