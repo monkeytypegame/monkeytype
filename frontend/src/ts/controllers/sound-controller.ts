@@ -374,7 +374,8 @@ export function playNote(
 
   oscillatorNode.frequency.value = currentFrequency;
   oscillatorNode.start(audioCtx.currentTime);
-  oscillatorNode.stop(audioCtx.currentTime + 0.15);
+  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.15); //remove click sound
+  oscillatorNode.stop(audioCtx.currentTime + 0.5);
 }
 
 export function playClick(): void {
