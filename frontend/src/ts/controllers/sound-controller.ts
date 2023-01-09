@@ -367,6 +367,7 @@ export function playNote(
     clickSoundIdsToOscillatorType[
       Config.playSoundOnClick as DynamicClickSounds
     ];
+
   gainNode.gain.value = parseFloat(Config.soundVolume) / 10;
 
   oscillatorNode.connect(gainNode);
@@ -374,7 +375,8 @@ export function playNote(
 
   oscillatorNode.frequency.value = currentFrequency;
   oscillatorNode.start(audioCtx.currentTime);
-  oscillatorNode.stop(audioCtx.currentTime + 0.15);
+  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.15); //reduce pop sound
+  oscillatorNode.stop(audioCtx.currentTime + 1);
 }
 
 export function playClick(): void {
