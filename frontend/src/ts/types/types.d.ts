@@ -741,12 +741,12 @@ declare namespace MonkeyTypes {
     hover?: () => void;
     available?: () => void;
     shouldFocusTestUI?: boolean;
+    customData?: Record<string, string>;
   }
 
   interface CommandsSubgroup {
     title: string;
     configKey?: keyof Config;
-    customStyle?: string;
     list: Command[];
     beforeList?: () => void;
   }

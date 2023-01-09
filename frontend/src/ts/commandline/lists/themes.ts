@@ -26,7 +26,11 @@ function update(themes: MonkeyTypes.Theme[]): void {
         id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
         display: theme.name.replace(/_/g, " "),
         configValue: theme.name,
-        customStyle: `color:${theme.mainColor};background:${theme.bgColor}`,
+        // customStyle: `color:${theme.mainColor};background:${theme.bgColor};`,
+        customData: {
+          mainColor: theme.mainColor,
+          bgColor: theme.bgColor,
+        },
         hover: (): void => {
           // previewTheme(theme.name);
           ThemeController.preview(theme.name, false);
@@ -40,7 +44,11 @@ function update(themes: MonkeyTypes.Theme[]): void {
         id: "changeTheme" + capitalizeFirstLetterOfEachWord(theme.name),
         display: theme.name.replace(/_/g, " "),
         configValue: theme.name,
-        customStyle: `color:${theme.mainColor};background:${theme.bgColor}`,
+        // customStyle: `color:${theme.mainColor};background:${theme.bgColor}`,
+        customData: {
+          mainColor: theme.mainColor,
+          bgColor: theme.bgColor,
+        },
         hover: (): void => {
           // previewTheme(theme.name);
           ThemeController.preview(theme.name, false);

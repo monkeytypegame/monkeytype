@@ -132,6 +132,21 @@
         //   background: var(--sub-color);
         //   cursor: pointer;
         // }
+
+        &.withThemeBubbles {
+          grid-template-columns: auto 1fr auto;
+          .themeBubbles {
+            display: grid;
+            grid-auto-flow: column;
+            gap: 0.5em;
+            border-radius: 1em;
+            .themeBubble {
+              width: 1em;
+              height: 1em;
+              border-radius: 100%;
+            }
+          }
+        }
       }
     }
   }
