@@ -1,0 +1,23 @@
+{
+  "language": "latin",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Bibant, quoniam edere nollent!",
+      "source": "Publius Claudius Pulcher",
+      "length": 30,
+      "id": 1
+    },
+    {
+      "text": "Hei mihi! Quod nullis amor est medicabilis herbis.",
+      "source": "Ovid"
+      "length": 50,
+      "id": 2
+    }
+  ]
+}
