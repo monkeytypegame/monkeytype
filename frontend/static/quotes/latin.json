@@ -1,0 +1,35 @@
+{
+  "language": "latin",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Cuiusvis hominis est errare; nullius nisi insipientis, in errore perseverare.",
+      "source": "Cicero",
+      "length": 77,
+      "id": 1
+    },
+    {
+      "text": "Equo ne credite, Teucri. Quidquid id est, timeo Danaos et dona ferentes.",
+      "source": "Virgil",
+      "length": 72,
+      "id": 2
+    },
+    {
+      "text": "Donec eris felix, multos numerabis amicos: Tempora si fuerint nubila, solus eris.",
+      "source": "Ovid",
+      "length": 81,
+      "id": 3
+    },
+    {
+      "text": "Inde ferunt, totidem qui vivere debeat annos, corpore de patrio parvum phoenica renasci.",
+      "source": "Ovid",
+      "length": 88,
+      "id": 4
+    }
+  ]
+}
