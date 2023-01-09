@@ -242,7 +242,7 @@ $(document).on("keydown", (event) => {
   currentCode = event.code || "KeyA";
 });
 
-const notes = {
+const notes: Record<string, Array<number>> = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
   Db: [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92],
   D: [18.35, 36.71, 73.42, 146.83, 293.66, 587.33, 1174.66, 2349.32, 4698.64],
@@ -269,43 +269,43 @@ function bindToNote(
 }
 
 const codeToNote: Record<string, GetNoteFrequencyCallback> = {
-  KeyZ: bindToNote(notes.C),
-  KeyS: bindToNote(notes.Db),
-  KeyX: bindToNote(notes.D),
-  KeyD: bindToNote(notes.Eb),
-  KeyC: bindToNote(notes.E),
-  KeyV: bindToNote(notes.F),
-  KeyG: bindToNote(notes.Gb),
-  KeyB: bindToNote(notes.G),
-  KeyH: bindToNote(notes.Ab),
-  KeyN: bindToNote(notes.A),
-  KeyJ: bindToNote(notes.Bb),
-  KeyM: bindToNote(notes.B),
-  Comma: bindToNote(notes.C, 1),
-  KeyL: bindToNote(notes.Db, 1),
-  Period: bindToNote(notes.D, 1),
-  Semicolon: bindToNote(notes.Eb, 1),
-  Slash: bindToNote(notes.E, 1),
-  KeyQ: bindToNote(notes.C, 1),
-  Digit2: bindToNote(notes.Db, 1),
-  KeyW: bindToNote(notes.D, 1),
-  Digit3: bindToNote(notes.Eb, 1),
-  KeyE: bindToNote(notes.E, 1),
-  KeyR: bindToNote(notes.F, 1),
-  Digit5: bindToNote(notes.Gb, 1),
-  KeyT: bindToNote(notes.G, 1),
-  Digit6: bindToNote(notes.Ab, 1),
-  KeyY: bindToNote(notes.A, 1),
-  Digit7: bindToNote(notes.Bb, 1),
-  KeyU: bindToNote(notes.B, 1),
-  KeyI: bindToNote(notes.C, 2),
-  Digit9: bindToNote(notes.Db, 2),
-  KeyO: bindToNote(notes.D, 2),
-  Digit0: bindToNote(notes.Eb, 2),
-  KeyP: bindToNote(notes.E, 2),
-  BracketLeft: bindToNote(notes.F, 2),
-  Equal: bindToNote(notes.Gb, 2),
-  BracketRight: bindToNote(notes.G, 2),
+  KeyZ: bindToNote(notes["C"]),
+  KeyS: bindToNote(notes["Db"]),
+  KeyX: bindToNote(notes["D"]),
+  KeyD: bindToNote(notes["Eb"]),
+  KeyC: bindToNote(notes["E"]),
+  KeyV: bindToNote(notes["F"]),
+  KeyG: bindToNote(notes["Gb"]),
+  KeyB: bindToNote(notes["G"]),
+  KeyH: bindToNote(notes["Ab"]),
+  KeyN: bindToNote(notes["A"]),
+  KeyJ: bindToNote(notes["Bb"]),
+  KeyM: bindToNote(notes["B"]),
+  Comma: bindToNote(notes["C"], 1),
+  KeyL: bindToNote(notes["Db"], 1),
+  Period: bindToNote(notes["D"], 1),
+  Semicolon: bindToNote(notes["Eb"], 1),
+  Slash: bindToNote(notes["E"], 1),
+  KeyQ: bindToNote(notes["C"], 1),
+  Digit2: bindToNote(notes["Db"], 1),
+  KeyW: bindToNote(notes["D"], 1),
+  Digit3: bindToNote(notes["Eb"], 1),
+  KeyE: bindToNote(notes["E"], 1),
+  KeyR: bindToNote(notes["F"], 1),
+  Digit5: bindToNote(notes["Gb"], 1),
+  KeyT: bindToNote(notes["G"], 1),
+  Digit6: bindToNote(notes["Ab"], 1),
+  KeyY: bindToNote(notes["A"], 1),
+  Digit7: bindToNote(notes["Bb"], 1),
+  KeyU: bindToNote(notes["B"], 1),
+  KeyI: bindToNote(notes["C"], 2),
+  Digit9: bindToNote(notes["Db"], 2),
+  KeyO: bindToNote(notes["D"], 2),
+  Digit0: bindToNote(notes["Eb"], 2),
+  KeyP: bindToNote(notes["E"], 2),
+  BracketLeft: bindToNote(notes["F"], 2),
+  Equal: bindToNote(notes["Gb"], 2),
+  BracketRight: bindToNote(notes["G"], 2),
 };
 
 type DynamicClickSounds = Extract<
@@ -341,6 +341,54 @@ function initAudioContext(): void {
   }
 }
 
+let scales: Record<string, string[]> = {
+  pentatonic: ["C", "D", "E", "G", "A"],
+  blues: ["C", "D", "E", "G"],
+};
+
+export function playPentatonic(
+  position: number,
+  octave: number,
+  direction: number
+) {
+  if (audioCtx === undefined) {
+    initAudioContext();
+  }
+  if (!audioCtx) return;
+
+  let randNote: number = Math.floor(
+    Math.random() * scales["pentatonic"].length
+  );
+
+  if (Math.random() < 0.1) {
+    octave += direction;
+  }
+
+  if (octave >= 6) {
+    direction = -1;
+  }
+  if (octave <= 4) {
+    direction = 1;
+  }
+
+  const currentFrequency = notes[scales["pentatonic"][randNote]][octave];
+
+  const oscillatorNode = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+
+  oscillatorNode.type = "sine";
+  gainNode.gain.value = parseFloat(Config.soundVolume) / 10;
+  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime + 0, 0.4);
+
+  oscillatorNode.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  oscillatorNode.frequency.value = currentFrequency;
+
+  oscillatorNode.start(audioCtx.currentTime);
+  oscillatorNode.stop(audioCtx.currentTime + 0.5);
+}
+
 export function playNote(
   codeOverride?: string,
   oscillatorTypeOverride?: SupportedOscillatorTypes
@@ -367,10 +415,12 @@ export function playNote(
     clickSoundIdsToOscillatorType[
       Config.playSoundOnClick as DynamicClickSounds
     ];
+
   gainNode.gain.value = parseFloat(Config.soundVolume) / 10;
 
   oscillatorNode.connect(gainNode);
   gainNode.connect(audioCtx.destination);
+  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime + 0, 0.15);
 
   oscillatorNode.frequency.value = currentFrequency;
   oscillatorNode.start(audioCtx.currentTime);
@@ -378,8 +428,19 @@ export function playNote(
   oscillatorNode.stop(audioCtx.currentTime + 0.5);
 }
 
+let scalePosition = 0;
+let scaleOctave = 0;
+let scaleDirection = 0;
+
 export function playClick(): void {
   if (Config.playSoundOnClick === "off") return;
+
+  // if (true) {
+  //   //Config.playSoundOnClick === "pentatonic") {
+  //   playPentatonic(scalePosition, scaleOctave, scaleDirection);
+  //   return;
+  // }
+
   if (Config.playSoundOnClick in clickSoundIdsToOscillatorType) {
     playNote();
     return;
