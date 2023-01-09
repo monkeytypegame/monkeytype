@@ -16,6 +16,9 @@ import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
 import { randomBytes } from "crypto";
 import * as RedisClient from "../../init/redis";
+import { v4 as uuidv4 } from "uuid";
+import { ObjectId } from "mongodb";
+import * as ReportDAL from "../../dal/report";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -664,4 +667,32 @@ export async function updateInbox(
   await UserDAL.updateInbox(uid, mailIdsToMarkRead, mailIdsToDelete);
 
   return new MonkeyResponse("Inbox updated");
+}
+
+export async function reportUser(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const {
+    reporting: { maxReports, contentReportLimit },
+  } = req.ctx.configuration.quotes;
+
+  const { uid: uidToReport, reason, comment, captcha } = req.body;
+
+  await verifyCaptcha(captcha);
+
+  const newReport: MonkeyTypes.Report = {
+    _id: new ObjectId(),
+    id: uuidv4(),
+    type: "user",
+    timestamp: new Date().getTime(),
+    uid,
+    contentId: `${uidToReport}`,
+    reason,
+    comment,
+  };
+
+  await ReportDAL.createReport(newReport, maxReports, contentReportLimit);
+
+  return new MonkeyResponse("User reported");
 }

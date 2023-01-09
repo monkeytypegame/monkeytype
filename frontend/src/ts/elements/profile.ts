@@ -11,6 +11,7 @@ type ProfileViewPaths = "profile" | "account";
 
 interface ProfileData extends MonkeyTypes.Snapshot {
   allTimeLbs: MonkeyTypes.LeaderboardMemory;
+  uid: string;
 }
 
 export async function update(
@@ -20,6 +21,9 @@ export async function update(
   const elementClass = where.charAt(0).toUpperCase() + where.slice(1);
   const profileElement = $(`.page${elementClass} .profile`);
   const details = $(`.page${elementClass} .profile .details`);
+
+  profileElement.attr("uid", profile.uid ?? "");
+  profileElement.attr("name", profile.name ?? "");
 
   // ============================================================================
   // DO FREAKING NOT USE .HTML OR .APPEND HERE - USER INPUT!!!!!!
