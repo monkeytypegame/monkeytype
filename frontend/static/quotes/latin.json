@@ -15,19 +15,19 @@
     },
     {
       "text": "Equo ne credite, Teucri. Quidquid id est, timeo Danaos et dona ferentes.",
-      "source": "Virgil"
+      "source": "Virgil",
       "length": 72,
       "id": 2
     },
     {
-      "text": "Donec eris felix, multos numerabis amicos: Tempora si fuerint nubila, solus eris."
-      "source": "Ovid"
+      "text": "Donec eris felix, multos numerabis amicos: Tempora si fuerint nubila, solus eris.",
+      "source": "Ovid",
       "length": 81,
       "id": 3
     },
     {
-      "text": "Inde ferunt, totidem qui vivere debeat annos, corpore de patrio parvum phoenica renasci."
-      "source": "Ovid"
+      "text": "Inde ferunt, totidem qui vivere debeat annos, corpore de patrio parvum phoenica renasci.",
+      "source": "Ovid",
       "length": 88,
       "id": 4
     }
