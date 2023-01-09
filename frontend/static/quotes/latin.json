@@ -30,6 +30,12 @@
       "source": "Ovid",
       "length": 88,
       "id": 4
+    },
+    {
+      "text": "In verbis etiam tenuis cautusque serendis dixeris egregie, notum si callida verbum reddiderit iunctura novum.",
+      "source": "Horace",
+      "length": 109,
+      "id": 5
     }
   ]
 }

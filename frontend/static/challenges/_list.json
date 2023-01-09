@@ -266,6 +266,21 @@
     }
   }
   ,{
+    "name": "beepBoop",
+    "display": "Beep Boop",
+    "type": "script",
+    "parameters": ["beepboop.txt",null,null],
+    "message": "Mininum 45 WPM and 100% accuracy required.",
+    "requirements": {
+      "wpm": {
+        "min": 45
+      },
+      "acc": {
+        "min": 100
+      }
+    }
+  }
+  ,{
     "name": "whosYourDaddy",
     "display": "Who's your daddy?",
     "type": "script",
