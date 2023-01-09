@@ -432,7 +432,7 @@ declare namespace MonkeyTypes {
     level?: number;
   }
 
-  type ReportTypes = "quote";
+  type ReportTypes = "quote" | "user";
 
   interface Report {
     _id: ObjectId;

@@ -4,6 +4,7 @@ import * as Profile from "../elements/profile";
 import * as PbTables from "../account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
+import * as UserReportPopup from "../popups/user-report-popup";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");
@@ -63,6 +64,15 @@ function reset(): void {
         <div class="socials big hidden">
           <div class="title">socials</div>
           <div class="value">-</div>
+        </div>
+        <div class="buttonGroup">
+          <div
+            class="userReportButton button"
+            data-balloon-pos="left"
+            aria-label="Report user"
+          >
+            <i class="fas fa-flag"></i>
+          </div>
         </div>
       </div>
       <div class="leaderboardsPositions">
@@ -180,6 +190,13 @@ async function update(options: UpdateOptions): Promise<void> {
     Notifications.add("Missing update parameter!", -1);
   }
 }
+
+$(".page.pageProfile").on("click", ".profile .userReportButton", () => {
+  const uid = $(".page.pageProfile .profile").attr("uid") ?? "";
+  const name = $(".page.pageProfile .profile").attr("name") ?? "";
+
+  UserReportPopup.show({ uid, name });
+});
 
 export const page = new Page(
   "profile",
