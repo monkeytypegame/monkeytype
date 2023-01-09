@@ -99,12 +99,12 @@ body::before {
 
 .word:not(.active) letter.correct,
 .word:not(.active) letter.incorrect {
-  animation: toDust 300ms ease-out 0ms 1 forwards;
+  animation: toDust 200ms ease-out 0ms 1 forwards;
 }
 
 .word:not(.active) letter.correct::after,
 .word:not(.active) letter.incorrect::after {
-  animation: fadeIn 200ms ease-in 100ms 1 forwards;
+  animation: fadeIn 100ms ease-in 100ms 1 forwards;
 }
 
 .word letter {
