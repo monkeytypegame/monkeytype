@@ -1,5 +1,10 @@
 [
   {
+    "name" : "dark_note",
+    "bgColor": "linear-gradient(to bottom, #1f1f1f 0% 19%, rgba(67, 70, 83, 0.4) 19% 21%, #1f1f1f 21% 70%, rgba(67, 70, 83, 0.4) 70% 72%, #1f1f1f 72% 100%)",
+    "mainColor": "#f2c17b"
+  },
+  {
     "name" : "viridescent",
     "bgColor": "#2C3333",
     "mainColor": "#95d5b2"
