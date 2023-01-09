@@ -736,6 +736,36 @@
     <div class="button submit">Report</div>
   </div>
 </div>
+<div id="userReportPopupWrapper" class="popupWrapper hidden">
+  <div id="userReportPopup" mode="">
+    <div class="title">Report a User</div>
+    <div class="text">
+      Please report users responsibly. Please add comments in English only.
+      Misuse may result in you losing access to this feature.
+    </div>
+    <label>user</label>
+    <div class="user"></div>
+    <label>reason</label>
+    <select name="report-reason" class="reason">
+      <option value="Inappropriate name">Inappropriate name</option>
+      <option value="Inappropriate bio">Inappropriate bio</option>
+      <option value="Inappropriate social links">
+        Inappropriate social links
+      </option>
+      <option value="Suspected cheating">Suspected cheating</option>
+    </select>
+    <label>comment</label>
+    <div style="position: relative">
+      <textarea class="comment" type="text" autocomplete="off"></textarea>
+      <div class="characterCount">-</div>
+    </div>
+    <div
+      class="g-recaptcha"
+      data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+    ></div>
+    <div class="button submit">Report</div>
+  </div>
+</div>
 <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
   <div id="quoteApprovePopup" mode="">
     <div class="top">
