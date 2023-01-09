@@ -84,11 +84,54 @@ body::before {
   text-decoration-thickness: 2px;
 }
 
-.word:not(.active) letter.correct,
-.word:not(.active) letter.incorrect {
-  animation: diminish 400ms ease-in-out 0ms 1 forwards;
+/* transform already typed letters into appropriately colored dots */
+
+/* setting variables to the appropriate colors */
+#wordsWrapper {
+  --c-dot: var(--text-color);
+  --c-dot--error: var(--error-color);
 }
 
+.colorfulMode {
+  --c-dot: var(--main-color);
+  --c-dot--error: var(--colorful-error-color);
+}
+
+.word:not(.active) letter.correct,
+.word:not(.active) letter.incorrect {
+  animation: toDust 300ms ease-out 200ms 1 forwards;
+}
+
+.word:not(.active) letter.correct::after,
+.word:not(.active) letter.incorrect::after {
+  animation: fadeIn 100ms ease-in 350ms 1 forwards;
+}
+
+.word letter {
+  position: relative;
+}
+
+.word letter::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.word letter.correct::after {
+  background: var(--c-dot);
+}
+
+.word letter.incorrect::after {
+  background: var(--c-dot--error);
+}
+
+/* hide hint during dot transformation */
 hint {
   transition: 300ms ease opacity;
   opacity: 1;
@@ -98,21 +141,36 @@ hint {
   opacity: 0;
 }
 
-@keyframes diminish {
+@keyframes fadeIn {
   0% {
-    transform: scale(1);
-    opacity: 1;
+    opacity: 0;
   }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.9;
-  }
-  60% {
-    transform: scale(1);
-    opacity: 0.7;
+  75% {
+    opacity: 0.4;
   }
   100% {
-    transform: scale(0.9);
-    opacity: 0.4;
+    opacity: 1;
+  }
+}
+
+@keyframes toDust {
+  0% {
+    transform: scale(1);
+    color: var(--current-color);
+  }
+  10% {
+    transform: scale(1.3);
+  }
+  15% {
+    transform: scale(0.8);
+    color: var(--c-dot);
+  }
+  80% {
+    transform: scale(0.5);
+    color: var(--c-dot);
+  }
+  100% {
+    transform: scale(0.4);
+    color: transparent;
   }
 }
