@@ -90,7 +90,22 @@ function showFound(): void {
       if (obj.noIcon && !isSingleListCommandLineActive()) {
         iconHTML = "";
       }
-      commandsHTML += `<div class="entry" command="${obj.id}">${iconHTML}<div>${obj.display}</div></div>`;
+      let customStyle = "";
+      if (obj.customStyle) {
+        customStyle = obj.customStyle;
+      }
+
+      if (obj.id.startsWith("changeTheme") && obj.customData) {
+        commandsHTML += `<div class="entry withThemeBubbles" command="${obj.id}" style="${customStyle}">
+        ${iconHTML}<div>${obj.display}</div>
+        <div class="themeBubbles">
+          <div class="themeBubble" style="background: ${obj.customData["bgColor"]}"></div>
+          <div class="themeBubble" style="background: ${obj.customData["mainColor"]}"></div>
+        </div>
+        </div>`;
+      } else {
+        commandsHTML += `<div class="entry" command="${obj.id}" style="${customStyle}">${iconHTML}<div>${obj.display}</div></div>`;
+      }
     }
   });
   $("#commandLine .suggestions").html(commandsHTML);
