@@ -1131,6 +1131,60 @@
   }
 }
 
+#userReportPopupWrapper {
+  #userReportPopup {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    grid-template-rows: auto auto auto auto auto auto auto auto auto;
+    height: auto;
+    max-height: 40rem;
+    overflow-y: scroll;
+    width: calc(100% - 4rem);
+    margin-left: 2rem;
+    max-width: 800px;
+
+    label {
+      color: var(--sub-color);
+      margin-bottom: -1rem;
+    }
+
+    .text {
+      // color: var(--sub-color);
+    }
+
+    .user {
+      font-size: 1.5rem;
+    }
+
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+
+    textarea {
+      resize: vertical;
+      width: 100%;
+      padding: 10px;
+      line-height: 1.2rem;
+      min-height: 5rem;
+    }
+
+    .characterCount {
+      position: absolute;
+      top: -1.25rem;
+      right: 0.25rem;
+      color: var(--sub-color);
+      user-select: none;
+      &.red {
+        color: var(--error-color);
+      }
+    }
+  }
+}
+
 #resultEditTagsPanelWrapper {
   #resultEditTagsPanel {
     background: var(--bg-color);

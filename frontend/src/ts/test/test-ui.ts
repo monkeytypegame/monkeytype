@@ -173,8 +173,12 @@ export function updateWordsHeight(): void {
     !(CustomText.isWordRandom && CustomText.word == 0) &&
     !CustomText.isTimeRandom
   ) {
-    $("#words").css("height", "auto");
-    $("#wordsWrapper").css("height", "auto");
+    $("#words")
+      .css("height", "auto")
+      .css("overflow", "hidden")
+      .css("width", "100%")
+      .css("margin-left", "unset");
+    $("#wordsWrapper").css("height", "auto").css("overflow", "hidden");
 
     let nh = wordHeight * 3;
 

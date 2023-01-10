@@ -105,6 +105,10 @@ router.post(
   asyncHandler(QuoteController.submitRating)
 );
 
+const withCustomMessages = joi.string().messages({
+  "string.pattern.base": "Invalid parameter format",
+});
+
 router.post(
   "/report",
   validateConfiguration({
@@ -117,8 +121,8 @@ router.post(
   RateLimit.quoteReportSubmit,
   validateRequest({
     body: {
-      quoteId: joi.string().required(),
-      quoteLanguage: joi.string().regex(/^\w+$/).required(),
+      quoteId: withCustomMessages.regex(/\d+/).required(),
+      quoteLanguage: withCustomMessages.regex(/^\w+$/).required(),
       reason: joi
         .string()
         .valid(
@@ -128,13 +132,12 @@ router.post(
           "Incorrect source"
         )
         .required(),
-      comment: joi
-        .string()
+      comment: withCustomMessages
         .allow("")
         .regex(/^([.]|[^/<>])+$/)
         .max(250)
         .required(),
-      captcha: joi.string().required(),
+      captcha: withCustomMessages.regex(/[\w-_]+/).required(),
     },
   }),
   checkUserPermissions({
