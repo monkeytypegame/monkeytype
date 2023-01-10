@@ -97,13 +97,13 @@ body::before {
   --c-dot--error: var(--colorful-error-color);
 }
 
-.word:not(.active) letter.correct,
-.word:not(.active) letter.incorrect {
+#wordsWrapper .word:not(.active) letter.correct,
+#wordsWrapper .word:not(.active) letter.incorrect {
   animation: toDust 200ms ease-out 0ms 1 forwards;
 }
 
-.word:not(.active) letter.correct::after,
-.word:not(.active) letter.incorrect::after {
+#wordsWrapper .word:not(.active) letter.correct::after,
+#wordsWrapper .word:not(.active) letter.incorrect::after {
   animation: fadeIn 100ms ease-in 100ms 1 forwards;
 }
 
@@ -111,7 +111,7 @@ body::before {
   position: relative;
 }
 
-.word letter::after {
+#wordsWrapper .word letter::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -123,11 +123,11 @@ body::before {
   opacity: 0;
 }
 
-.word letter.correct::after {
+#wordsWrapper .word letter.correct::after {
   background: var(--c-dot);
 }
 
-.word letter.incorrect::after {
+#wordsWrapper .word letter.incorrect::after {
   background: var(--c-dot--error);
 }
 
@@ -137,7 +137,7 @@ hint {
   opacity: 1;
 }
 
-.word:not(.active) letter.incorrect hint {
+#wordsWrapper .word:not(.active) letter.incorrect hint {
   opacity: 0;
 }
 
