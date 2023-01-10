@@ -474,5 +474,8 @@
   {
     "name": "kyrgyz",
     "languages": ["kyrgyz"]
+  },
+  {"name": "yiddish",
+   "languages": ["yiddish']
   }
 ]
