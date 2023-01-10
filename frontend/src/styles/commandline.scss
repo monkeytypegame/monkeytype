@@ -117,14 +117,14 @@
         }
 
         &.activeMouse {
-          color: var(--bg-color);
-          background: var(--text-color);
+          color: var(--bg-color) !important;
+          background: var(--text-color) !important;
           cursor: pointer;
         }
 
         &.activeKeyboard {
-          color: var(--bg-color);
-          background: var(--text-color);
+          color: var(--bg-color) !important;
+          background: var(--text-color) !important;
         }
 
         // &:hover {
@@ -132,6 +132,21 @@
         //   background: var(--sub-color);
         //   cursor: pointer;
         // }
+
+        &.withThemeBubbles {
+          grid-template-columns: auto 1fr auto;
+          .themeBubbles {
+            display: grid;
+            grid-auto-flow: column;
+            gap: 0.5em;
+            border-radius: 1em;
+            .themeBubble {
+              width: 1em;
+              height: 1em;
+              border-radius: 100%;
+            }
+          }
+        }
       }
     }
   }
