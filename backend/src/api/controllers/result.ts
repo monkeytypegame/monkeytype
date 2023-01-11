@@ -412,6 +412,18 @@ export async function addResult(
     streak
   );
 
+  if (xpGained.xp < 0) {
+    throw new MonkeyError(
+      500,
+      "Calculated XP is negative",
+      JSON.stringify({
+        xpGained,
+        result,
+      }),
+      uid
+    );
+  }
+
   const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
   let weeklyXpLeaderboardRank = -1;
   const eligibleForWeeklyXpLeaderboard =
