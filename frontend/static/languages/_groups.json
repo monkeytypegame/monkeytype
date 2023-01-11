@@ -425,8 +425,9 @@
     "name": "kyrgyz",
     "languages": ["kyrgyz"]
   },
-  {"name": "yiddish",
-   "languages": ["yiddish"]
+  {
+    "name": "yiddish",
+    "languages": ["yiddish"]
   },
   {
     "name": "code",
