@@ -194,7 +194,7 @@ FunboxList.setFunboxFunctions("arrows", {
     return false;
   },
   async preventDefaultEvent(
-    event: JQuery.KeyDownEvent<Document, null, Document, Document>
+    event: JQuery.KeyDownEvent<Document, null | undefined, Document, Document>
   ): Promise<boolean> {
     // TODO What's better?
     // return /Arrow/i.test(event.key);
@@ -524,7 +524,7 @@ export function toggleScript(...params: string[]): void {
 export function setFunbox(funbox: string, tribeOverride = false): boolean {
   if (!TribeConfig.canChange(tribeOverride)) return false;
   FunboxMemory.load();
-  UpdateConfig.setFunbox(funbox, false);
+  UpdateConfig.setFunbox(funbox, false, tribeOverride);
   if (funbox === "none") FunboxMemory.load();
   if (!tribeOverride) TribeConfig.sync();
   return true;

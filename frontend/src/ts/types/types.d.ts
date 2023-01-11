@@ -214,10 +214,10 @@ declare namespace MonkeyTypes {
     handleChar?: (char: string) => string;
     isCharCorrect?: (char: string, originalChar: string) => boolean;
     preventDefaultEvent?: (
-      event: JQuery.KeyDownEvent<Document, null, Document, Document>
+      event: JQuery.KeyDownEvent<Document, null | undefined, Document, Document>
     ) => Promise<boolean>;
     handleKeydown?: (
-      event: JQuery.KeyDownEvent<Document, null, Document, Document>
+      event: JQuery.KeyDownEvent<Document, null | undefined, Document, Document>
     ) => Promise<void>;
     getResultContent?: () => string;
     start?: () => void;

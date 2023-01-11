@@ -1,5 +1,5 @@
 import Config, * as UpdateConfig from "../config";
-import * as Funbox from "../test/funbox";
+import * as Funbox from "../test/funbox/funbox";
 // import * as Notifications from "./notifications";
 import * as CustomText from "../test/custom-text";
 
@@ -86,7 +86,7 @@ export function apply(config: TribeTypes.RoomConfig): void {
   UpdateConfig.setLanguage(config.language, true, true);
   UpdateConfig.setPunctuation(config.punctuation, true, true);
   UpdateConfig.setNumbers(config.numbers, true, true);
-  Funbox.setFunbox(config.funbox, null, true);
+  Funbox.setFunbox(config.funbox, true);
   UpdateConfig.setLazyMode(config.lazyMode, true, true);
   UpdateConfig.setStopOnError(
     config.stopOnError as MonkeyTypes.StopOnError,
