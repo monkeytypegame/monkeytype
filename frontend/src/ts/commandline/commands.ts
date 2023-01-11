@@ -143,7 +143,7 @@ Misc.getFontsList()
     );
   });
 
-Misc.getSortedThemesList()
+Misc.getThemesList()
   .then((themes) => {
     updateThemesCommands(themes);
   })
