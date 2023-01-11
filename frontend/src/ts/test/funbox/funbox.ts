@@ -18,6 +18,7 @@ import {
   areFunboxesCompatible,
   checkFunboxForcedConfigs,
 } from "./funbox-validation";
+import * as TribeConfig from "../../tribe/tribe-config";
 
 const prefixSize = 2;
 
@@ -520,9 +521,12 @@ export function toggleScript(...params: string[]): void {
   });
 }
 
-export function setFunbox(funbox: string): boolean {
+export function setFunbox(funbox: string, tribeOverride = false): boolean {
+  if (!TribeConfig.canChange(tribeOverride)) return false;
   FunboxMemory.load();
   UpdateConfig.setFunbox(funbox, false);
+  if (funbox === "none") FunboxMemory.load();
+  if (!tribeOverride) TribeConfig.sync();
   return true;
 }
 
