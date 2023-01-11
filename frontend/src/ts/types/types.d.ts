@@ -755,6 +755,8 @@ declare namespace MonkeyTypes {
     name: string;
     bgColor: string;
     mainColor: string;
+    subColor: string;
+    textColor: string;
   }
 
   interface Quote {

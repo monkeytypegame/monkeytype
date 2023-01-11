@@ -30,6 +30,8 @@ function update(themes: MonkeyTypes.Theme[]): void {
         customData: {
           mainColor: theme.mainColor,
           bgColor: theme.bgColor,
+          subColor: theme.subColor,
+          textColor: theme.textColor,
         },
         hover: (): void => {
           // previewTheme(theme.name);
@@ -48,6 +50,8 @@ function update(themes: MonkeyTypes.Theme[]): void {
         customData: {
           mainColor: theme.mainColor,
           bgColor: theme.bgColor,
+          subColor: theme.subColor,
+          textColor: theme.textColor,
         },
         hover: (): void => {
           // previewTheme(theme.name);
