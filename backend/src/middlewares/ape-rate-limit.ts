@@ -35,24 +35,13 @@ const apeRateLimiter = rateLimit({
 });
 
 export function withApeRateLimiter(
-  defaultRateLimiter: RateLimitRequestHandler
+  defaultRateLimiter: RateLimitRequestHandler,
+  apeRateLimiterOverride?: RateLimitRequestHandler
 ): RequestHandler {
   return (req: MonkeyTypes.Request, res: Response, next: NextFunction) => {
     if (req.ctx.decodedToken.type === "ApeKey") {
-      return apeRateLimiter(req, res, next);
-    }
-
-    return defaultRateLimiter(req, res, next);
-  };
-}
-
-export function withCustomApeRateLimiter(
-  customRateLimiter: RateLimitRequestHandler,
-  defaultRateLimiter: RateLimitRequestHandler
-): RequestHandler {
-  return (req: MonkeyTypes.Request, res: Response, next: NextFunction) => {
-    if (req.ctx.decodedToken.type === "ApeKey") {
-      return customRateLimiter(req, res, next);
+      const rateLimiter = apeRateLimiterOverride ?? apeRateLimiter;
+      return rateLimiter(req, res, next);
     }
 
     return defaultRateLimiter(req, res, next);

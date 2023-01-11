@@ -3,7 +3,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as DB from "../db";
-import * as Funbox from "../test/funbox";
+import { toggleFunbox } from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
@@ -16,6 +16,7 @@ import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { Auth } from "../firebase";
 import Ape from "../ape";
+import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 
 interface SettingsGroups {
   [key: string]: SettingsGroup;
@@ -526,9 +527,7 @@ export async function fillSettingsPage(): Promise<void> {
           funboxEl.append(
             `<div class="funbox button" funbox='${funbox.name}' aria-label="${
               funbox.info
-            }" data-balloon-pos="up" data-balloon-length="fit" type="${
-              funbox.type
-            }" style="transform:scaleX(-1);">${funbox.name.replace(
+            }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
               /_/g,
               " "
             )}</div>`
@@ -537,9 +536,10 @@ export async function fillSettingsPage(): Promise<void> {
           funboxEl.append(
             `<div class="funbox button" funbox='${funbox.name}' aria-label="${
               funbox.info
-            }" data-balloon-pos="up" data-balloon-length="fit" type="${
-              funbox.type
-            }">${funbox.name.replace(/_/g, " ")}</div>`
+            }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
+              /_/g,
+              " "
+            )}</div>`
           );
         }
       });
@@ -691,9 +691,24 @@ export function updateAuthSections(): void {
 
 function setActiveFunboxButton(): void {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
-  $(
-    `.pageSettings .section.funbox .button[funbox='${Config.funbox}']`
-  ).addClass("active");
+  $(`.pageSettings .section.funbox .button`).removeClass("disabled");
+  Misc.getFunboxList().then((funboxModes) => {
+    funboxModes.forEach((funbox) => {
+      if (
+        !areFunboxesCompatible(Config.funbox, funbox.name) &&
+        !Config.funbox.split("#").includes(funbox.name)
+      ) {
+        $(
+          `.pageSettings .section.funbox .button[funbox='${funbox.name}']`
+        ).addClass("disabled");
+      }
+    });
+  });
+  Config.funbox.split("#").forEach((funbox) => {
+    $(`.pageSettings .section.funbox .button[funbox='${funbox}']`).addClass(
+      "active"
+    );
+  });
 }
 
 function refreshTagsSettingsSection(): void {
@@ -933,8 +948,7 @@ $(".pageSettings .section.minBurst").on("click", ".button.save", () => {
 //funbox
 $(".pageSettings .section.funbox").on("click", ".button", (e) => {
   const funbox = <string>$(e.currentTarget).attr("funbox");
-  const type = <MonkeyTypes.FunboxObjectType>$(e.currentTarget).attr("type");
-  Funbox.setFunbox(funbox, type);
+  toggleFunbox(funbox);
   setActiveFunboxButton();
 });
 

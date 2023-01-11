@@ -165,14 +165,14 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
     }
 
     AnalyticsController.log("changedTheme", { theme: themeName });
-    if (!isPreview) {
-      ThemeColors.getAll().then((colors) => {
-        $(".keymapKey").attr("style", "");
-        ChartController.updateAllChartColors();
-        updateFavicon(128, 32);
-        $("#metaThemeColor").attr("content", colors.bg);
-      });
-    }
+    // if (!isPreview) {
+    ThemeColors.getAll().then((colors) => {
+      $(".keymapKey").attr("style", "");
+      ChartController.updateAllChartColors();
+      updateFavicon(128, 32);
+      $("#metaThemeColor").attr("content", colors.bg);
+    });
+    // }
     $(".current-theme .text").text(
       isCustom ? "custom" : themeName.replace(/_/g, " ")
     );
@@ -188,7 +188,7 @@ export function preview(
 }
 
 const debouncedPreview = debounce(
-  100,
+  250,
   (themeIdenfitier, isCustom, randomTheme) => {
     isPreviewingTheme = true;
     apply(themeIdenfitier, isCustom, !randomTheme);

@@ -19,6 +19,7 @@ import * as TestConfig from "./test-config";
 import { Chart } from "chart.js";
 import { Auth } from "../firebase";
 import * as SlowTimer from "../states/slow-timer";
+import * as FunboxList from "./funbox/funbox-list";
 import Ape from "../ape";
 import * as Tribe from "../tribe/tribe";
 import * as TribeResults from "../tribe/tribe-results";
@@ -59,31 +60,41 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  ChartController.result.data.labels = labels;
   resultScaleOptions["wpm"].title.text = Config.alwaysShowCPM
     ? "Character per Minute"
     : "Words per Minute";
-  const chartData1 = Config.alwaysShowCPM
-    ? TestInput.wpmHistory.map((a) => a * 5)
-    : TestInput.wpmHistory;
-
-  let chartData2: number[];
+  const chartData1 = [
+    ...(Config.alwaysShowCPM
+      ? TestInput.wpmHistory.map((a) => a * 5)
+      : TestInput.wpmHistory),
+  ];
 
   if (result.chartData === "toolong") return;
 
-  if (useUnsmoothedRaw) {
-    chartData2 =
-      (Config.alwaysShowCPM
-        ? result.chartData.unsmoothedRaw?.map((a) => a * 5)
-        : result.chartData.unsmoothedRaw) ?? [];
-  } else {
-    chartData2 = Config.alwaysShowCPM
+  const chartData2 = [
+    ...(Config.alwaysShowCPM
       ? result.chartData.raw.map((a) => a * 5)
-      : result.chartData.raw;
+      : result.chartData.raw),
+  ];
+
+  if (
+    Config.mode !== "time" &&
+    TestStats.lastSecondNotRound &&
+    result.testDuration % 1 < 0.5
+  ) {
+    labels.pop();
+    chartData1.pop();
+    chartData2.pop();
   }
 
+  let smoothedRawData = chartData2;
+  if (!useUnsmoothedRaw) {
+    smoothedRawData = Misc.smooth(smoothedRawData, 1);
+  }
+
+  ChartController.result.data.labels = labels;
   ChartController.result.data.datasets[0].data = chartData1;
-  ChartController.result.data.datasets[1].data = chartData2;
+  ChartController.result.data.datasets[1].data = smoothedRawData;
 
   ChartController.result.data.datasets[0].label = Config.alwaysShowCPM
     ? "cpm"
@@ -105,10 +116,15 @@ async function updateGraph(): Promise<void> {
 
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
-    let content = Config.funbox;
-    if (Config.funbox === "layoutfluid") {
-      content += " " + Config.customLayoutfluid.replace(/#/g, " ");
+    let content = "";
+    for (const f of FunboxList.get(Config.funbox)) {
+      content += f.name;
+      if (f.functions?.getResultContent) {
+        content += "(" + f.functions.getResultContent() + ")";
+      }
+      content += " ";
     }
+    content = content.trimEnd();
     resultAnnotation.push({
       display: true,
       id: "funbox-label",
@@ -530,12 +546,11 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
-  if (
-    Config.mode != "custom" &&
-    Config.funbox !== "gibberish" &&
-    Config.funbox !== "ascii" &&
-    Config.funbox !== "58008"
-  ) {
+  const ignoresLanguage =
+    FunboxList.get(Config.funbox).find((f) =>
+      f.properties?.includes("ignoresLanguage")
+    ) !== undefined;
+  if (Config.mode != "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }
   if (Config.punctuation) {
@@ -551,7 +566,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     testType += "<br>lazy";
   }
   if (Config.funbox !== "none") {
-    testType += "<br>" + Config.funbox.replace(/_/g, " ");
+    testType += "<br>" + Config.funbox.replace(/_/g, " ").replace(/#/g, ", ");
   }
   if (Config.difficulty == "expert") {
     testType += "<br>expert";
@@ -671,7 +686,7 @@ export async function update(
     ChartController.result.options as ScaleChartOptions<"line" | "scatter">
   ).scales;
   resultAnnotation = [];
-  result = res;
+  result = Object.assign({}, res);
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")

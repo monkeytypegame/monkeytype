@@ -1,6 +1,7 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as ConfigEvent from "../observables/config-event";
+import * as TTSEvent from "../observables/tts-event";
 
 let voice: SpeechSynthesisUtterance | undefined;
 
@@ -38,5 +39,11 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
       init();
     }
   }
-  if (eventKey === "language" && Config.funbox === "tts") setLanguage();
+  if (eventKey === "language" && Config.funbox.split("#").includes("tts")) {
+    setLanguage();
+  }
+});
+
+TTSEvent.subscribe((text) => {
+  speak(text);
 });

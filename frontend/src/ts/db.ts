@@ -5,6 +5,7 @@ import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
+import { getFunboxList } from "./utils/misc";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -15,6 +16,10 @@ export function getSnapshot(): MonkeyTypes.Snapshot | undefined {
 export function setSnapshot(
   newSnapshot: MonkeyTypes.Snapshot | undefined
 ): void {
+  const originalBanned = dbSnapshot?.banned;
+  const originalVerified = dbSnapshot?.verified;
+
+  //not allowing user to override these values i guess?
   try {
     delete newSnapshot?.banned;
   } catch {}
@@ -22,6 +27,10 @@ export function setSnapshot(
     delete newSnapshot?.verified;
   } catch {}
   dbSnapshot = newSnapshot;
+  if (dbSnapshot) {
+    dbSnapshot.banned = originalBanned;
+    dbSnapshot.verified = originalVerified;
+  }
 }
 
 export async function initSnapshot(): Promise<
@@ -37,13 +46,15 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    const [userResponse, configResponse, tagsResponse, presetsResponse] =
-      await Promise.all([
-        Ape.users.getData(),
-        Ape.configs.get(),
-        Ape.users.getTags(),
-        Ape.presets.get(),
-      ]);
+
+    //getData recreates the user if it doesnt exist - thats why it needs to be called first, by itself
+    const userResponse = await Ape.users.getData();
+
+    const [configResponse, tagsResponse, presetsResponse] = await Promise.all([
+      Ape.configs.get(),
+      Ape.users.getTags(),
+      Ape.presets.get(),
+    ]);
 
     if (userResponse.status !== 200) {
       throw {
@@ -503,7 +514,11 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
   lazyMode: boolean,
   funbox: string
 ): Promise<number> {
-  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+  const funboxes = (await getFunboxList()).filter((fb) => {
+    return funbox?.split("#").includes(fb.name);
+  });
+
+  if (!funboxes.every((f) => f.canGetPb)) {
     return 0;
   }
 

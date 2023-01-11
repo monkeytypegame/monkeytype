@@ -7,7 +7,7 @@ import {
 } from "../utils/misc";
 import { getCachedConfiguration } from "../init/configuration";
 import { DailyLeaderboard } from "../utils/daily-leaderboards";
-import { announceDailyLeaderboardTopResults } from "../tasks/george";
+import GeorgeQueue from "../queues/george-queue";
 import { addToInboxBulk } from "../dal/user";
 import { buildMonkeyMail } from "../utils/monkey-mail";
 
@@ -61,6 +61,7 @@ async function announceDailyLeaderboard(
 
     allResults.forEach((entry) => {
       const rank = entry.rank ?? maxResults;
+      const wpm = Math.round(entry.wpm);
 
       const placementString = getOrdinalNumberString(rank);
 
@@ -81,7 +82,7 @@ async function announceDailyLeaderboard(
 
       const rewardMail = buildMonkeyMail({
         subject: "Daily leaderboard placement",
-        body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
+        body: `Congratulations ${entry.name} on placing ${placementString} with ${wpm} wpm in the ${language} ${mode} ${mode2} daily leaderboard!`,
         rewards: [
           {
             type: "xp",
@@ -105,7 +106,7 @@ async function announceDailyLeaderboard(
   );
 
   const leaderboardId = `${mode} ${mode2} ${language}`;
-  await announceDailyLeaderboardTopResults(
+  await GeorgeQueue.announceDailyLeaderboardTopResults(
     leaderboardId,
     yesterday,
     topResults

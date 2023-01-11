@@ -5,7 +5,7 @@ import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
 import { buildAgentLog, sanitizeString } from "../../utils/misc";
-import * as George from "../../tasks/george";
+import GeorgeQueue from "../../queues/george-queue";
 import admin from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
@@ -16,6 +16,9 @@ import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
 import { randomBytes } from "crypto";
 import * as RedisClient from "../../init/redis";
+import { v4 as uuidv4 } from "uuid";
+import { ObjectId } from "mongodb";
+import * as ReportDAL from "../../dal/report";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -184,16 +187,28 @@ export async function getUser(
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
     if (e.status === 404) {
-      await admin.auth().deleteUser(uid);
-      throw new MonkeyError(
-        404,
-        "User not found. Please try to sign up again.",
-        "get user",
-        uid
-      );
+      let user;
+      try {
+        user = await admin.auth().getUser(uid);
+        //exists, recreate in db
+        await UserDAL.addUser(user.displayName, user.email, uid);
+        userInfo = await UserDAL.getUser(uid, "get user (recreated)");
+      } catch (e) {
+        if (e.code === "auth/user-not-found") {
+          //doesnt exist
+          throw new MonkeyError(
+            404,
+            "User not found in the database or authentication system. Please try to sign up again.",
+            "get user",
+            uid
+          );
+        } else {
+          throw e;
+        }
+      }
+    } else {
+      throw e;
     }
-
-    throw e;
   }
 
   const agentLog = buildAgentLog(req);
@@ -285,7 +300,7 @@ export async function linkDiscord(
 
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
-  George.linkDiscord(discordId, uid);
+  GeorgeQueue.linkDiscord(discordId, uid);
   Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", {
@@ -304,7 +319,7 @@ export async function unlinkDiscord(
     throw new MonkeyError(404, "User does not have a linked Discord account");
   }
 
-  George.unlinkDiscord(userInfo.discordId, uid);
+  GeorgeQueue.unlinkDiscord(userInfo.discordId, uid);
   await UserDAL.unlinkDiscord(uid);
   Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
 
@@ -652,4 +667,32 @@ export async function updateInbox(
   await UserDAL.updateInbox(uid, mailIdsToMarkRead, mailIdsToDelete);
 
   return new MonkeyResponse("Inbox updated");
+}
+
+export async function reportUser(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const {
+    reporting: { maxReports, contentReportLimit },
+  } = req.ctx.configuration.quotes;
+
+  const { uid: uidToReport, reason, comment, captcha } = req.body;
+
+  await verifyCaptcha(captcha);
+
+  const newReport: MonkeyTypes.Report = {
+    _id: new ObjectId(),
+    id: uuidv4(),
+    type: "user",
+    timestamp: new Date().getTime(),
+    uid,
+    contentId: `${uidToReport}`,
+    reason,
+    comment,
+  };
+
+  await ReportDAL.createReport(newReport, maxReports, contentReportLimit);
+
+  return new MonkeyResponse("User reported");
 }

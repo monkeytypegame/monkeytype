@@ -6,6 +6,7 @@ import {
   asyncHandler,
   validateRequest,
   validateConfiguration,
+  checkUserPermissions,
 } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
@@ -460,12 +461,14 @@ const profileDetailsBase = joi
   .string()
   .allow("")
   .custom((value, helpers) => {
-    return containsProfanity(value)
-      ? helpers.error("string.pattern.base")
-      : value;
+    if (containsProfanity(value)) {
+      return helpers.error("string.profanity");
+    }
+
+    return value;
   })
   .messages({
-    "string.pattern.base": "Profanity detected. Please remove it.",
+    "string.profanity": "Profanity detected. Please remove it.",
   });
 
 router.patch(
@@ -475,7 +478,7 @@ router.patch(
   RateLimit.userProfileUpdate,
   validateRequest({
     body: {
-      bio: profileDetailsBase.max(150),
+      bio: profileDetailsBase.max(250),
       keyboard: profileDetailsBase.max(75),
       selectedBadgeId: joi.number(),
       socialProfiles: joi.object({
@@ -526,6 +529,48 @@ router.patch(
     },
   }),
   asyncHandler(UserController.updateInbox)
+);
+
+const withCustomMessages = joi.string().messages({
+  "string.pattern.base": "Invalid parameter format",
+});
+
+router.post(
+  "/report",
+  validateConfiguration({
+    criteria: (configuration) => {
+      return configuration.quotes.reporting.enabled;
+    },
+    invalidMessage: "User reporting is unavailable.",
+  }),
+  authenticateRequest(),
+  RateLimit.quoteReportSubmit,
+  validateRequest({
+    body: {
+      uid: withCustomMessages.regex(/^\w+$/).required(),
+      reason: joi
+        .string()
+        .valid(
+          "Inappropriate name",
+          "Inappropriate bio",
+          "Inappropriate social links",
+          "Suspected cheating"
+        )
+        .required(),
+      comment: withCustomMessages
+        .allow("")
+        .regex(/^([.]|[^/<>])+$/)
+        .max(250)
+        .required(),
+      captcha: withCustomMessages.regex(/[\w-_]+/).required(),
+    },
+  }),
+  checkUserPermissions({
+    criteria: (user) => {
+      return !user.cannotReport;
+    },
+  }),
+  asyncHandler(UserController.reportUser)
 );
 
 export default router;
