@@ -304,6 +304,9 @@
             opacity: 1;
           }
         }
+        .delButton {
+          justify-self: end;
+        }
         &:hover {
           transform: scale(1.1);
           .editButton {
@@ -320,7 +323,7 @@
       .customTheme.button,
       .theme.button {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: 1fr auto 1fr;
         .text {
           color: inherit;
         }
@@ -339,6 +342,11 @@
           }
         }
         &.active {
+          outline-width: 0.2rem !important;
+          transform: scale(1.1);
+          .themeBubbles {
+            opacity: 1;
+          }
           .activeIndicator {
             opacity: 1;
           }
@@ -372,6 +380,28 @@
         margin-top: 0.5rem;
         .button {
           transition: transform 0.125s;
+          &:hover .themeBubbles {
+            opacity: 1;
+          }
+          .themeBubbles {
+            transition: 0.125s;
+            opacity: 0;
+            display: grid;
+            grid-auto-flow: column;
+            gap: 0.5em;
+            border-radius: 1.25em;
+            height: 1em;
+            margin-top: 0.125em;
+            width: max-content;
+            justify-self: end;
+            // background: var(--bg-color);
+            // outline: 0.25rem solid var(--bg-color);
+            .themeBubble {
+              width: 1em;
+              height: 1em;
+              border-radius: 100%;
+            }
+          }
         }
       }
     }
