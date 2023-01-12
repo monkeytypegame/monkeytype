@@ -400,6 +400,36 @@
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
   {
+    "name": "other",
+    "languages": [
+      "lojban_gismu",
+      "lojban_cmavo",
+      "pig_latin",
+      "twitch_emotes",
+      "git"
+    ]
+  },
+  {
+    "name": "amharic",
+    "languages": ["amharic"]
+  },
+  {
+    "name": "oromo",
+    "languages": ["oromo", "oromo_1k", "oromo_5k"]
+  },
+  {
+    "name": "wordle",
+    "languages": ["wordle", "wordle_1k"]
+  },
+  {
+    "name": "kyrgyz",
+    "languages": ["kyrgyz"]
+  },
+  {
+    "name": "yiddish",
+    "languages": ["yiddish"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -448,31 +478,5 @@
       "code_gdscript",
       "code_assembly"
     ]
-  },
-  {
-    "name": "other",
-    "languages": [
-      "lojban_gismu",
-      "lojban_cmavo",
-      "pig_latin",
-      "twitch_emotes",
-      "git"
-    ]
-  },
-  {
-    "name": "amharic",
-    "languages": ["amharic"]
-  },
-  {
-    "name": "oromo",
-    "languages": ["oromo", "oromo_1k", "oromo_5k"]
-  },
-  {
-    "name": "wordle",
-    "languages": ["wordle", "wordle_1k"]
-  },
-  {
-    "name": "kyrgyz",
-    "languages": ["kyrgyz"]
   }
 ]
