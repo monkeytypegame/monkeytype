@@ -9,6 +9,9 @@ import * as WordFilterPopup from "./word-filter-popup";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as SaveCustomTextPopup from "./save-custom-text-popup";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "customTextPopupWrapper";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
@@ -28,6 +31,7 @@ export function updateLongTextWarning(): void {
 }
 
 export function show(): void {
+  Skeleton.append(wrapperId);
   if ($(wrapper).hasClass("hidden")) {
     updateLongTextWarning();
     if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
@@ -99,6 +103,7 @@ export function hide(): void {
         100,
         () => {
           $(wrapper).addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -285,10 +290,12 @@ $(document).on("keydown", (event) => {
   }
 });
 
-$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
+$(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
   SaveCustomTextPopup.show();
 });
 
-$(`#customTextPopup .longCustomTextWarning .button`).on("click", () => {
+$(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
   $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
 });
+
+Skeleton.save(wrapperId);
