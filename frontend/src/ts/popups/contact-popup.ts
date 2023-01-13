@@ -1,21 +1,18 @@
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "contactPopupWrapper";
+
 $(document.body).on(
   "click",
   "#contactPopupButton, #contactPopupButton2",
   () => {
-    $("#contactPopupWrapper")
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 125);
+    show();
   }
 );
 
 $(document.body).on("click", "#contactPopupWrapper", (e) => {
   if ($(e.target).attr("id") === "contactPopupWrapper") {
-    $("#contactPopupWrapper")
-      .css("opacity", 1)
-      .animate({ opacity: 0 }, 125, () => {
-        $("#contactPopupWrapper").addClass("hidden");
-      });
+    hide();
   }
 });
 
@@ -31,10 +28,37 @@ $(document.body).on(
 
 $(document).on("keydown", (e) => {
   if (e.key === "Escape" && !$("#contactPopupWrapper").hasClass("hidden")) {
-    $("#contactPopupWrapper")
-      .css("opacity", 1)
-      .animate({ opacity: 0 }, 125, () => {
-        $("#contactPopupWrapper").addClass("hidden");
-      });
+    hide();
   }
 });
+
+function show(): void {
+  Skeleton.append(wrapperId);
+  if ($("#contactPopupWrapper").hasClass("hidden")) {
+    $("#contactPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100);
+  }
+}
+
+function hide(): void {
+  if (!$("#contactPopupWrapper").hasClass("hidden")) {
+    $("#contactPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        () => {
+          $("#contactPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
+        }
+      );
+  }
+}
+
+Skeleton.save(wrapperId);
