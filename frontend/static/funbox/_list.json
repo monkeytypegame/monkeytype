@@ -19,6 +19,10 @@
     "info": "Everything is mirrored!",
     "canGetPb": true
   },
+  {"name": "upsidedown",
+  "info": "Everything is upside down!",
+  "canGetPb": true
+  },
   {
     "name": "tts",
     "info": "Listen closely.",

@@ -532,7 +532,20 @@ export async function fillSettingsPage(): Promise<void> {
               " "
             )}</div>`
           );
-        } else {
+        } 
+        
+        else if (funbox.name === "upsidedown") {
+          funboxEl.append(
+            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
+              funbox.info
+            }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
+              /_/g,
+              " "
+            )}</div>`
+          );
+        } 
+        
+        else {
           funboxEl.append(
             `<div class="funbox button" funbox='${funbox.name}' aria-label="${
               funbox.info

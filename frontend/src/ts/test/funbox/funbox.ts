@@ -127,6 +127,12 @@ FunboxList.setFunboxFunctions("mirror", {
   },
 });
 
+FunboxList.setFunboxFunctions("upsidedown", {
+  applyCSS(): void {
+    $("#funBoxTheme").attr("href", `funbox/upsidedown.css`);
+  },
+});
+
 FunboxList.setFunboxFunctions("tts", {
   applyCSS(): void {
     $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
