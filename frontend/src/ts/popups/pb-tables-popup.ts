@@ -1,9 +1,13 @@
 import * as DB from "../db";
 import format from "date-fns/format";
+import * as Skeleton from "./skeleton";
 
 interface PersonalBest extends MonkeyTypes.PersonalBest {
   mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
 }
+
+const wrapperId = "pbTablesPopupWrapper";
+Skeleton.save(wrapperId);
 
 function update(mode: MonkeyTypes.Mode): void {
   $("#pbTablesPopup table tbody").empty();
@@ -77,6 +81,7 @@ function update(mode: MonkeyTypes.Mode): void {
 }
 
 function show(mode: MonkeyTypes.Mode): void {
+  Skeleton.append(wrapperId);
   if ($("#pbTablesPopupWrapper").hasClass("hidden")) {
     update(mode);
 
@@ -103,6 +108,7 @@ function hide(): void {
         () => {
           $("#pbTablesPopupWrapper").addClass("hidden");
           $("#pbTablesPopup table tbody").empty();
+          Skeleton.remove(wrapperId);
         }
       );
   }
