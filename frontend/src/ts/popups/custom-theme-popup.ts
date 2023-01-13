@@ -1,4 +1,9 @@
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "customThemeShareWrapper";
+
 export function show(value: string): void {
+  Skeleton.append(wrapperId);
   if ($("#customThemeShareWrapper").hasClass("hidden")) {
     // let save = [];
     // $.each(
@@ -47,6 +52,7 @@ function hide(): void {
         100,
         () => {
           $("#customThemeShareWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -61,3 +67,5 @@ $("#customThemeShareWrapper").on("click", (e) => {
 $("#customThemeShare .button").on("click", () => {
   hide();
 });
+
+Skeleton.save(wrapperId);
