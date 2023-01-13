@@ -7,7 +7,6 @@ interface PersonalBest extends MonkeyTypes.PersonalBest {
 }
 
 const wrapperId = "pbTablesPopupWrapper";
-Skeleton.save(wrapperId);
 
 function update(mode: MonkeyTypes.Mode): void {
   $("#pbTablesPopup table tbody").empty();
@@ -127,3 +126,5 @@ $(".pageAccount .profile").on("click", ".pbsTime .showAllButton", () => {
 $(".pageAccount .profile").on("click", ".pbsWords .showAllButton", () => {
   show("words");
 });
+
+Skeleton.save(wrapperId);
