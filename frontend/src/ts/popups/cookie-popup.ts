@@ -1,6 +1,9 @@
 import { activateAnalytics } from "../controllers/analytics-controller";
 import { focusWords } from "../test/test-ui";
 import * as Notifications from "../elements/notifications";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "cookiePopupWrapper";
 
 let visible = false;
 
@@ -30,6 +33,7 @@ export function check(): void {
 }
 
 export function show(): void {
+  Skeleton.append(wrapperId);
   if ($("#cookiePopupWrapper")[0] === undefined) {
     //removed by cookie popup blocking extension
     visible = false;
@@ -67,6 +71,7 @@ export async function hide(): Promise<void> {
         () => {
           $("#cookiePopupWrapper").addClass("hidden");
           visible = false;
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -147,3 +152,5 @@ $("#cookiePopup .cookie.ads .text-button").on("click", () => {
     );
   }
 });
+
+Skeleton.save(wrapperId);
