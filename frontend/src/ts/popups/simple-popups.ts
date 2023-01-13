@@ -1327,7 +1327,7 @@ $(".pageSettings #resetAccount").on("click", () => {
   list["resetAccount"].show();
 });
 
-$("#apeKeysPopup .generateApeKey").on("click", () => {
+$("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
