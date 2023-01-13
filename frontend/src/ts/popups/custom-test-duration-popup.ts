@@ -2,6 +2,9 @@ import * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "customTestDurationPopupWrapper";
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
@@ -68,6 +71,7 @@ function previewDuration(): void {
 }
 
 export function show(): void {
+  Skeleton.append(wrapperId);
   if ($("#customTestDurationPopupWrapper").hasClass("hidden")) {
     $("#customTestDurationPopupWrapper")
       .stop(true, true)
@@ -93,6 +97,7 @@ export function hide(): void {
         100,
         () => {
           $("#customTestDurationPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -127,7 +132,7 @@ $("#customTestDurationPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#customTestDurationPopup input").keyup((e) => {
+$("#customTestDurationPopupWrapper input").keyup((e) => {
   previewDuration();
 
   if (e.key === "Enter") {
@@ -135,7 +140,7 @@ $("#customTestDurationPopup input").keyup((e) => {
   }
 });
 
-$("#customTestDurationPopup .button").on("click", () => {
+$("#customTestDurationPopupWrapper .button").on("click", () => {
   apply();
 });
 
@@ -155,3 +160,5 @@ $(document).on("keydown", (event) => {
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);
