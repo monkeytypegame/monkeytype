@@ -19,8 +19,8 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     name: "mirror",
     info: "Everything is mirrored!",
   },
-  {   
-    name: "upsidedown",
+  {
+    name: "upside_down",
     info: "Everything is upside down!",
   },
   {

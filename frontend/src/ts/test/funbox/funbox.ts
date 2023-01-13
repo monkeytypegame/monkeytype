@@ -127,9 +127,9 @@ FunboxList.setFunboxFunctions("mirror", {
   },
 });
 
-FunboxList.setFunboxFunctions("upsidedown", {
+FunboxList.setFunboxFunctions("upside_down", {
   applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/upsidedown.css`);
+    $("#funBoxTheme").attr("href", `funbox/upside_down.css`);
   },
 });
 

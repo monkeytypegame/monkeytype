@@ -15,7 +15,7 @@ const Funboxes: Record<string, MonkeyTypes.FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 3,
   },
-  upsidedown: {
+  upside_down: {
     canGetPb: true,
     difficultyLevel: 3,
   },
