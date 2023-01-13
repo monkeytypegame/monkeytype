@@ -3,8 +3,11 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "./skeleton";
 
 let apeKeys: MonkeyTypes.ApeKeys = {};
+
+const wrapperId = "apeKeysPopupWrapper";
 
 async function getData(): Promise<void> {
   Loader.show();
@@ -79,6 +82,7 @@ export function hide(): void {
         100,
         () => {
           $("#apeKeysPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -90,6 +94,7 @@ export async function show(): Promise<void> {
     Notifications.add("You are offline", 0, 2);
     return;
   }
+  Skeleton.append(wrapperId);
   if ($("#apeKeysPopupWrapper").hasClass("hidden")) {
     await getData();
     refreshList();
@@ -141,3 +146,5 @@ $("#popups").on("click", "#apeKeysPopup table .textButton", async (e) => {
     Notifications.add("Key inactive", 1);
   }
 });
+
+Skeleton.save(wrapperId);
