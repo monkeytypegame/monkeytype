@@ -38,8 +38,6 @@ import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
 import "./test/tts";
 
-import * as Skeleton from "./popups/skeleton";
-
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
 const extendedGlobal = global as ExtendedGlobal;
