@@ -2,6 +2,9 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "userReportPopupWrapper";
 
 interface State {
   userUid?: string;
@@ -17,6 +20,7 @@ interface ShowOptions {
 }
 
 export async function show(options: ShowOptions): Promise<void> {
+  Skeleton.append(wrapperId);
   if ($("#userReportPopupWrapper").hasClass("hidden")) {
     CaptchaController.render(
       document.querySelector("#userReportPopup .g-recaptcha") as HTMLElement,
@@ -56,6 +60,7 @@ export async function hide(): Promise<void> {
         () => {
           CaptchaController.reset("userReportPopup");
           $("#userReportPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -109,7 +114,7 @@ $("#userReportPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#userReportPopup .comment").on("input", () => {
+$("#userReportPopupWrapper .comment").on("input", () => {
   setTimeout(() => {
     const len = ($("#userReportPopup .comment").val() as string).length;
     $("#userReportPopup .characterCount").text(len);
@@ -121,6 +126,8 @@ $("#userReportPopup .comment").on("input", () => {
   }, 1);
 });
 
-$("#userReportPopup .submit").on("click", async () => {
+$("#userReportPopupWrapper .submit").on("click", async () => {
   await submitReport();
 });
+
+Skeleton.save(wrapperId);
