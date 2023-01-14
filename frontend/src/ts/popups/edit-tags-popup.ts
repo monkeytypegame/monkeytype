@@ -4,7 +4,6 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
-import * as ResultTagsPopup from "./result-tags-popup";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "./skeleton";
 
@@ -101,7 +100,6 @@ async function apply(): Promise<void> {
         name: response.data.name,
         _id: response.data._id,
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
     }
@@ -118,7 +116,6 @@ async function apply(): Promise<void> {
           tag.display = propTagName;
         }
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
     }
@@ -134,7 +131,6 @@ async function apply(): Promise<void> {
           DB.getSnapshot()?.tags?.splice(index, 1);
         }
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
     }
@@ -156,7 +152,6 @@ async function apply(): Promise<void> {
           };
         }
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
     }

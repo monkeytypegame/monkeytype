@@ -16,7 +16,6 @@ import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
 import * as PaceCaret from "../test/pace-caret";
 import * as TagController from "./tag-controller";
-import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
@@ -228,7 +227,6 @@ export async function getDataAndInit(): Promise<boolean> {
   ResultFilters.updateTags();
   updateTagsCommands();
   TagController.loadActiveFromLocalStorage();
-  ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
   if (window.location.pathname === "/account") {
     LoadingPage.updateBar(90);
