@@ -1,4 +1,7 @@
 import * as CaptchaController from "../controllers/captcha-controller";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "registerCaptchaPopupWrapper";
 
 let resolvePromise: (data?: string) => void;
 
@@ -7,6 +10,7 @@ export let promise: Promise<string | undefined> = new Promise((resolve) => {
 });
 
 export function show(): void {
+  Skeleton.append(wrapperId);
   if ($("#registerCaptchaPopupWrapper").hasClass("hidden")) {
     promise = new Promise((resolve) => {
       resolvePromise = resolve;
@@ -41,6 +45,7 @@ export function hide(resolveToUndefined = false): void {
         100,
         () => {
           $("#registerCaptchaPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -51,3 +56,5 @@ $("#registerCaptchaPopupWrapper").on("click", (e) => {
     hide(true);
   }
 });
+
+Skeleton.save(wrapperId);
