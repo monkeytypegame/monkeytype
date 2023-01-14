@@ -7,7 +7,7 @@ import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
-import { escapeHTML } from "../utils/misc";
+import { escapeHTML, isPopupVisible } from "../utils/misc";
 import * as Skeleton from "../popups/skeleton";
 
 const wrapperId = "alertsPopupWrapper";
@@ -28,7 +28,7 @@ const state: State = {
 };
 
 export function hide(): void {
-  if (!$("#alertsPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     setNotificationBubbleVisible(false);
 
     let mailUpdatedPromiseResolve: (value?: unknown) => void;
@@ -120,7 +120,7 @@ export function hide(): void {
 
 export async function show(): Promise<void> {
   Skeleton.append(wrapperId);
-  if ($("#alertsPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#alertsPopup").css("marginRight", "-10rem").animate(
       {
         marginRight: 0,
@@ -461,7 +461,7 @@ $("#alertsPopupWrapper .accountAlerts .list").on(
 );
 
 $(document).on("keydown", (e) => {
-  if (e.key === "Escape" && !$("#alertsPopupWrapper").hasClass("hidden")) {
+  if (e.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
   }
 });
