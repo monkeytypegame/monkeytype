@@ -1,7 +1,11 @@
 import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "videoAdPopupWrapper";
 
 export async function show(): Promise<void> {
+  Skeleton.append(wrapperId);
   await AdController.checkAdblock();
   if (AdController.adBlock) {
     Notifications.add(
@@ -46,6 +50,7 @@ function hide(): void {
         100,
         () => {
           $("#videoAdPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -67,3 +72,5 @@ export function egVideoListener(options: Record<string, string>): void {
 $(".pageTest #watchVideoAdButton").on("click", () => {
   show();
 });
+
+Skeleton.save(wrapperId);
