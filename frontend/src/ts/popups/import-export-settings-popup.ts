@@ -1,7 +1,12 @@
 import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "settingsImportWrapper";
 
 export function show(mode: string, config?: string): void {
+  Skeleton.append(wrapperId);
+
   if ($("#settingsImportWrapper").hasClass("hidden")) {
     $("#settingsImportWrapper").attr("mode", mode);
 
@@ -32,10 +37,7 @@ function hide(): void {
           JSON.parse($("#settingsImportWrapper input").val() as string)
         );
       } catch (e) {
-        Notifications.add(
-          "An error occured while importing settings: " + e,
-          -1
-        );
+        Notifications.add("Failed to import settings: " + e, -1);
       }
       UpdateConfig.saveFullConfigToLocalStorage();
     }
@@ -44,11 +46,12 @@ function hide(): void {
       .css("opacity", 1)
       .animate({ opacity: 0 }, 100, () => {
         $("#settingsImportWrapper").addClass("hidden");
+        Skeleton.remove(wrapperId);
       });
   }
 }
 
-$("#settingsImport .button").on("click", () => {
+$("#settingsImportWrapper .button").on("click", () => {
   hide();
 });
 
@@ -57,3 +60,5 @@ $("#settingsImportWrapper").on("click", (e) => {
     hide();
   }
 });
+
+Skeleton.save(wrapperId);
