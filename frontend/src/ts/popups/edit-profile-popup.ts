@@ -4,6 +4,9 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "editProfilePopupWrapper";
 
 let callbackFuncOnHide: (() => void) | null = null;
 
@@ -12,6 +15,8 @@ export function show(callbackOnHide: () => void): void {
     Notifications.add("You are offline", 0, 2);
     return;
   }
+  Skeleton.append(wrapperId);
+
   if ($("#editProfilePopupWrapper").hasClass("hidden")) {
     callbackFuncOnHide = callbackOnHide;
 
@@ -38,6 +43,7 @@ export function hide(): void {
         100,
         () => {
           $("#editProfilePopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -155,7 +161,7 @@ $("#editProfilePopupWrapper").on("click", (e) => {
   }
 });
 
-$("#editProfilePopup .edit-profile-submit").on("click", async () => {
+$("#editProfilePopupWrapper .edit-profile-submit").on("click", async () => {
   await updateProfile();
 });
 
@@ -168,3 +174,5 @@ $(document).on("keydown", (event) => {
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);
