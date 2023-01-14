@@ -17,6 +17,9 @@ import { Auth } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "quoteSearchPopupWrapper";
 
 export let selectedId = 1;
 
@@ -186,6 +189,8 @@ async function updateResults(searchText: string): Promise<void> {
 }
 
 export async function show(clearText = true): Promise<void> {
+  Skeleton.append(wrapperId);
+
   if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
     if (clearText) {
       $("#quoteSearchPopup input").val("");
@@ -266,6 +271,7 @@ export function hide(noAnim = false, focusWords = true): void {
             TestUI.focusWords();
             $("#quoteSearchPopup .quoteLengthFilter").val([]);
             $("#quoteSearchPopup .quoteLengthFilter").trigger("change");
+            Skeleton.remove(wrapperId);
           }
         }
       );
@@ -298,12 +304,12 @@ const searchForQuotes = debounce(250, (): void => {
   updateResults(searchText);
 });
 
-$("#quoteSearchPopup .searchBox").on("keyup", (e) => {
+$("#quoteSearchPopupWrapper .searchBox").on("keyup", (e) => {
   if (e.code === "Escape") return;
   searchForQuotes();
 });
 
-$("#quoteSearchPopup .quoteLengthFilter").on("change", searchForQuotes);
+$("#quoteSearchPopupWrapper .quoteLengthFilter").on("change", searchForQuotes);
 
 $("#quoteSearchPopupWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
@@ -416,3 +422,5 @@ $(document).on("keydown", (event) => {
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);
