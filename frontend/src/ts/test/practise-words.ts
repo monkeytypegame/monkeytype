@@ -5,6 +5,9 @@ import * as CustomText from "./custom-text";
 import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
+import * as Skeleton from "../popups/skeleton";
+
+const wrapperId = "practiseWordsPopupWrapper";
 
 interface Before {
   mode: MonkeyTypes.Mode | null;
@@ -18,8 +21,8 @@ export const before: Before = {
   numbers: null,
 };
 
-export function init(missed: boolean, slow: boolean): void {
-  if (Config.mode === "zen") return;
+export function init(missed: boolean, slow: boolean): boolean {
+  if (Config.mode === "zen") return false;
   let limit;
   if ((missed && !slow) || (!missed && slow)) {
     limit = 20;
@@ -42,7 +45,7 @@ export function init(missed: boolean, slow: boolean): void {
 
   if (missed && !slow && sortableMissedWords.length == 0) {
     Notifications.add("You haven't missed any words", 0);
-    return;
+    return false;
   }
 
   let sortableSlowWords: [string, number][] = [];
@@ -65,7 +68,7 @@ export function init(missed: boolean, slow: boolean): void {
 
   if (sortableMissedWords.length == 0 && sortableSlowWords.length == 0) {
     Notifications.add("Could not start a new custom test", 0);
-    return;
+    return false;
   }
 
   const newCustomText: string[] = [];
@@ -102,6 +105,8 @@ export function init(missed: boolean, slow: boolean): void {
   before.mode = mode;
   before.punctuation = punctuation;
   before.numbers = numbers;
+
+  return true;
 }
 
 export function resetBefore(): void {
@@ -111,11 +116,12 @@ export function resetBefore(): void {
 }
 
 export function showPopup(focus = false): void {
+  if (Config.mode === "zen") {
+    Notifications.add("Practice words is unsupported in zen mode", 0);
+    return;
+  }
+  Skeleton.append(wrapperId);
   if ($("#practiseWordsPopupWrapper").hasClass("hidden")) {
-    if (Config.mode === "zen") {
-      Notifications.add("Practice words is unsupported in zen mode", 0);
-      return;
-    }
     $("#practiseWordsPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -141,6 +147,7 @@ export function hidePopup(): void {
         100,
         () => {
           $("#practiseWordsPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -152,13 +159,13 @@ $("#practiseWordsPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#practiseWordsPopup .button").on("keypress", (e) => {
+$("#practiseWordsPopupWrapper .button").on("keypress", (e) => {
   if (e.key === "Enter") {
     $(e.currentTarget).trigger("click");
   }
 });
 
-$("#practiseWordsPopup .button.both").on("focusout", (e) => {
+$("#practiseWordsPopupWrapper .button.both").on("focusout", (e) => {
   e.preventDefault();
   $("#practiseWordsPopup .missed").trigger("focus");
 });
@@ -186,3 +193,5 @@ $(".pageTest").on("click", "#practiseWordsButton", () => {
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "mode") resetBefore();
 });
+
+Skeleton.save(wrapperId);
