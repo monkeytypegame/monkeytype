@@ -131,8 +131,6 @@ export async function refreshButtons(): Promise<void> {
       const bgColor = customTheme.colors[0];
       const mainColor = customTheme.colors[1];
 
-      console.log(customTheme.colors);
-
       customThemesEl.append(
         `<div class="customTheme button" customThemeId='${customTheme._id}' 
         style="color:${mainColor};background:${bgColor}">
