@@ -17,10 +17,15 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import { InputIndicator } from "../elements/input-indicator";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "googleSignUpPopupWrapper";
 
 let signedInUser: UserCredential | undefined = undefined;
 
 export function show(credential: UserCredential): void {
+  Skeleton.append(wrapperId);
+
   if ($("#googleSignUpPopupWrapper").hasClass("hidden")) {
     CaptchaController.reset("googleSignUpPopup");
     CaptchaController.render(
@@ -63,6 +68,7 @@ export async function hide(): Promise<void> {
         100,
         () => {
           $("#googleSignUpPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -218,7 +224,7 @@ const checkNameDebounced = debounce(1000, async () => {
   }
 });
 
-$("#googleSignUpPopup input").on("input", () => {
+$("#googleSignUpPopupWrapper input").on("input", () => {
   setTimeout(() => {
     disableButton();
     const val = $("#googleSignUpPopup input").val() as string;
@@ -231,13 +237,13 @@ $("#googleSignUpPopup input").on("input", () => {
   }, 1);
 });
 
-$("#googleSignUpPopup input").on("keypress", (e) => {
+$("#googleSignUpPopupWrapper input").on("keypress", (e) => {
   if (e.key === "Enter") {
     apply();
   }
 });
 
-$("#googleSignUpPopup .button").on("click", () => {
+$("#googleSignUpPopupWrapper .button").on("click", () => {
   apply();
 });
 
@@ -256,3 +262,5 @@ subscribeToSignUpEvent((signedInUser, isNewUser) => {
     show(signedInUser);
   }
 });
+
+Skeleton.save(wrapperId);
