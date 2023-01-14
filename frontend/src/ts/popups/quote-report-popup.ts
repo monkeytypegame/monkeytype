@@ -5,6 +5,9 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "quoteReportPopupWrapper";
 
 interface State {
   previousPopupShowCallback?: () => void;
@@ -31,6 +34,8 @@ const defaultOptions: Options = {
 };
 
 export async function show(options = defaultOptions): Promise<void> {
+  Skeleton.append(wrapperId);
+
   if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
     CaptchaController.render(
       document.querySelector("#quoteReportPopup .g-recaptcha") as HTMLElement,
@@ -81,6 +86,7 @@ export async function hide(): Promise<void> {
           if (state.previousPopupShowCallback) {
             state.previousPopupShowCallback();
           }
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -141,7 +147,7 @@ $("#quoteReportPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#quoteReportPopup .comment").on("input", () => {
+$("#quoteReportPopupWrapper .comment").on("input", () => {
   setTimeout(() => {
     const len = ($("#quoteReportPopup .comment").val() as string).length;
     $("#quoteReportPopup .characterCount").text(len);
@@ -153,7 +159,7 @@ $("#quoteReportPopup .comment").on("input", () => {
   }, 1);
 });
 
-$("#quoteReportPopup .submit").on("click", async () => {
+$("#quoteReportPopupWrapper .submit").on("click", async () => {
   await submitReport();
 });
 
@@ -163,3 +169,5 @@ $(".pageTest #reportQuoteButton").on("click", async () => {
     noAnim: false,
   });
 });
+
+Skeleton.save(wrapperId);
