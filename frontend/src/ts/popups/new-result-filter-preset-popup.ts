@@ -1,7 +1,13 @@
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "newResultFilterPresetPopupWrapper";
+
 // the function to call after name is inputed by user
 let callbackFunc: ((name: string) => void) | null = null;
 
 export function show(): void {
+  Skeleton.append(wrapperId);
+
   if ($("#newResultFilterPresetPopupWrapper").hasClass("hidden")) {
     $("#newResultFilterPresetPopupWrapper")
       .stop(true, true)
@@ -27,6 +33,7 @@ export function hide(): void {
         100,
         () => {
           $("#newResultFilterPresetPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -46,13 +53,13 @@ $("#newResultFilterPresetPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#newResultFilterPresetPopup input").on("keypress", (e) => {
+$("#newResultFilterPresetPopupWrapper input").on("keypress", (e) => {
   if (e.key === "Enter") {
     apply();
   }
 });
 
-$("#newResultFilterPresetPopup .button").on("click", () => {
+$("#newResultFilterPresetPopupWrapper .button").on("click", () => {
   apply();
 });
 
@@ -74,3 +81,5 @@ $(document).on("keydown", (event) => {
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);
