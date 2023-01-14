@@ -1,3 +1,4 @@
+import { isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "contactPopupWrapper";
@@ -27,14 +28,14 @@ $(document.body).on(
 );
 
 $(document).on("keydown", (e) => {
-  if (e.key === "Escape" && !$("#contactPopupWrapper").hasClass("hidden")) {
+  if (e.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
   }
 });
 
 function show(): void {
   Skeleton.append(wrapperId);
-  if ($("#contactPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#contactPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -44,7 +45,7 @@ function show(): void {
 }
 
 function hide(): void {
-  if (!$("#contactPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#contactPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
