@@ -6,6 +6,9 @@ import * as CustomTestDurationPopup from "./custom-test-duration-popup";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ConfigEvent from "../observables/config-event";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "mobileTestConfigPopupWrapper";
 
 const el = $("#mobileTestConfigPopup");
 
@@ -55,6 +58,8 @@ export function update(): void {
 }
 
 function showPopup(): void {
+  Skeleton.append(wrapperId);
+
   if ($("#mobileTestConfigPopupWrapper").hasClass("hidden")) {
     update();
     $("#mobileTestConfigPopupWrapper")
@@ -77,6 +82,7 @@ function hidePopup(): void {
         100,
         () => {
           $("#mobileTestConfigPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -166,7 +172,7 @@ el.find(".modeGroup .button").on("click", (e) => {
   TestLogic.restart();
 });
 
-$("#mobileTestConfigPopup .button").on("click", () => {
+$("#mobileTestConfigPopupWrapper .button").on("click", () => {
   // hidePopup();
   update();
 });
@@ -174,3 +180,5 @@ $("#mobileTestConfigPopup .button").on("click", () => {
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "mode") update();
 });
+
+Skeleton.save(wrapperId);
