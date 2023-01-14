@@ -6,12 +6,17 @@ import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
 import * as ResultTagsPopup from "./result-tags-popup";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "tagsWrapper";
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
   }
+
+  Skeleton.append(wrapperId);
 
   if (action === "add") {
     $("#tagsWrapper #tagsEdit").attr("action", "add");
@@ -66,6 +71,7 @@ function hide(): void {
         100,
         () => {
           $("#tagsWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -216,3 +222,5 @@ $(".pageSettings .section.tags").on(
     show("remove", tagid, name);
   }
 );
+
+Skeleton.save(wrapperId);
