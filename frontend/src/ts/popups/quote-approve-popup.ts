@@ -2,6 +2,9 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "quoteApprovePopupWrapper";
 
 interface Quote {
   _id: string;
@@ -75,6 +78,8 @@ async function getQuotes(): Promise<void> {
 }
 
 export async function show(noAnim = false): Promise<void> {
+  Skeleton.append(wrapperId);
+
   if ($("#quoteApprovePopupWrapper").hasClass("hidden")) {
     quotes = [];
     getQuotes();
@@ -99,6 +104,7 @@ export function hide(): void {
         () => {
           $("#quoteApprovePopupWrapper").addClass("hidden");
           $("#quoteApprovePopupWrapper .quotes").empty();
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -231,3 +237,5 @@ $(document).on("input", "#quoteApprovePopup .quote .source", async (e) => {
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).addClass("hidden");
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).removeClass("hidden");
 });
+
+Skeleton.save(wrapperId);
