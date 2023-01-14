@@ -10,12 +10,19 @@ import * as PageTransition from "../states/page-transition";
 import * as TestWords from "../test/test-words";
 import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
-import { isAnyPopupVisible } from "../utils/misc";
+import { isAnyPopupVisible, isPopupVisible } from "../utils/misc";
 import { update as updateCustomThemesList } from "./lists/custom-themes-list";
 import { update as updateTagsCommands } from "./lists/tags";
+import * as Skeleton from "../popups/skeleton";
+
+const wrapperId = "commandLineWrapper";
 
 let commandLineMouseMode = false;
 let themeChosen = false;
+
+const state: Record<string, boolean> = {
+  usingSingleList: false,
+};
 
 function showInput(
   command: string,
@@ -36,7 +43,7 @@ function showInput(
 }
 
 export function isSingleListCommandLineActive(): boolean {
-  return $("#commandLine").hasClass("allCommands");
+  return state["usingSingleList"];
 }
 
 function removeCommandlineBackground(): void {
@@ -212,9 +219,15 @@ export let show = (): void => {
   //take last element of array
   if (!$(".page.pageLoading").hasClass("hidden")) return;
   Focus.set(false);
+  Skeleton.append(wrapperId);
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
-  if ($("#commandLineWrapper").hasClass("hidden")) {
+
+  if (state["usingSingleList"]) {
+    $("#commandLine").addClass("allCommands");
+  }
+
+  if (!isPopupVisible(wrapperId)) {
     $("#commandLineWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -249,9 +262,11 @@ function hide(shouldFocusTestUI = true): void {
         addCommandlineBackground();
         $("#commandLineWrapper").addClass("hidden");
         $("#commandLine").removeClass("allCommands");
+        state["usingSingleList"] = false;
         if (shouldFocusTestUI) {
           TestUI.focusWords();
         }
+        Skeleton.remove(wrapperId);
       }
     );
   if (shouldFocusTestUI) {
@@ -398,6 +413,7 @@ function useSingleListCommandLine(sshow = true): void {
   CommandlineLists.setCurrent([allCommands]);
   // }
   if (Config.singleListCommandLine != "manual") {
+    state["usingSingleList"] = true;
     $("#commandLine").addClass("allCommands");
   }
   if (sshow) show();
@@ -405,6 +421,7 @@ function useSingleListCommandLine(sshow = true): void {
 
 function restoreOldCommandLine(sshow = true): void {
   if (isSingleListCommandLineActive()) {
+    state["usingSingleList"] = false;
     $("#commandLine").removeClass("allCommands");
     CommandlineLists.setCurrent(
       CommandlineLists.current.filter((l) => l.title != "All Commands")
@@ -416,7 +433,7 @@ function restoreOldCommandLine(sshow = true): void {
   if (sshow) show();
 }
 
-$("#commandLine input").on("input", () => {
+$("#commandLineWrapper #commandLine input").on("input", () => {
   commandLineMouseMode = false;
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeMouse"
@@ -435,10 +452,11 @@ $(document).ready(() => {
           event.shiftKey) ||
         ((event.key === "Tab" || event.key === "Escape") &&
           Config.quickRestart === "esc")) &&
-      !$("#commandLineWrapper").hasClass("hidden")
+      isPopupVisible(wrapperId)
     ) {
       if (CommandlineLists.current.length > 1) {
         CommandlineLists.current.pop();
+        state["usingSingleList"] = false;
         $("#commandLine").removeClass("allCommands");
         show();
       } else {
@@ -612,7 +630,7 @@ $(document).on("keydown", (e) => {
   // applyCustomThemeColors();
   // previewTheme(Config.theme, false);
   // }
-  if (!$("#commandLineWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#commandLine input").trigger("focus");
     if (e.key == ">" && Config.singleListCommandLine == "manual") {
       if (!isSingleListCommandLineActive()) {
@@ -802,3 +820,5 @@ $(document.body).on("click", "#supportMeWrapper .button.ads", () => {
   CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
   show();
 });
+
+Skeleton.save(wrapperId);

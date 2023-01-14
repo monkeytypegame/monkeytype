@@ -660,7 +660,7 @@ export function restart(options = {} as RestartOptions): void {
             // resetPaceCaret();
             PbCrown.hide();
             TestTimer.clear();
-            if ($("#commandLineWrapper").hasClass("hidden")) {
+            if (!Misc.isPopupVisible("commandLineWrapper")) {
               TestUI.focusWords();
             }
             // ChartController.result.update();
