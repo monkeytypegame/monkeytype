@@ -2,8 +2,12 @@ import * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "customWordAmountPopupWrapper";
 
 export function show(): void {
+  Skeleton.append(wrapperId);
   if ($("#customWordAmountPopupWrapper").hasClass("hidden")) {
     $("#customWordAmountPopupWrapper")
       .stop(true, true)
@@ -27,6 +31,7 @@ export function hide(): void {
         100,
         () => {
           $("#customWordAmountPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -62,13 +67,13 @@ $("#customWordAmountPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#customWordAmountPopup input").on("keypress", (e) => {
+$("#customWordAmountPopupWrapper input").on("keypress", (e) => {
   if (e.key === "Enter") {
     apply();
   }
 });
 
-$("#customWordAmountPopup .button").on("click", () => {
+$("#customWordAmountPopupWrapper .button").on("click", () => {
   apply();
 });
 
@@ -88,3 +93,5 @@ $(document).on("keydown", (event) => {
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);
