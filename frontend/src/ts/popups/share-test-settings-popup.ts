@@ -3,6 +3,9 @@ import { randomQuote } from "../test/test-words";
 import { getMode2 } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "shareTestSettingsPopupWrapper";
 
 function getCheckboxValue(checkbox: string): boolean {
   return $(`#shareTestSettingsPopupWrapper label.${checkbox} input`).prop(
@@ -96,6 +99,7 @@ function updateSubgroups(): void {
 }
 
 export function show(): void {
+  Skeleton.append(wrapperId);
   if ($("#shareTestSettingsPopupWrapper").hasClass("hidden")) {
     updateURL();
     updateSubgroups();
@@ -119,6 +123,7 @@ export async function hide(): Promise<void> {
         100,
         () => {
           $("#shareTestSettingsPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -144,3 +149,5 @@ $(document).on("keydown", (event) => {
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);
