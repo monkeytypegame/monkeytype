@@ -1653,9 +1653,6 @@ export async function setCustomLayoutfluid(
   ) as MonkeyTypes.CustomLayoutFluid;
 
   config.customLayoutfluid = customLayoutfluid;
-  $(".pageSettings .section.customLayoutfluid input").val(
-    customLayoutfluid.replace(/#/g, " ")
-  );
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
 
