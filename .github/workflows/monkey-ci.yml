@@ -66,19 +66,19 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run: npm ci & cd backend && npm ci
+        run: yarn install --immutable & cd backend && yarn install --immutable
 
       - name: Check pretty
-        run: npm run pretty-code-be
+        run: yarn run pretty-code-be
 
       - name: Check lint
-        run: npm run lint-be
+        run: yarn run lint-be
 
       - name: Build
-        run: npm run pr-check-build-be
+        run: yarn run pr-check-build-be
 
       - name: Test
-        run: npm run test-be
+        run: yarn run test-be
 
   ci-fe:
     name: ci-fe
@@ -97,16 +97,16 @@ jobs:
         run: mv ./firebase-config-example.ts ./firebase-config-live.ts
 
       - name: Install dependencies
-        run: npm ci & cd frontend && npm ci
+        run: yarn install --immutable & cd frontend && yarn install --immutable
 
       - name: Check pretty
-        run: npm run pretty-code-fe
+        run: yarn run pretty-code-fe
 
       - name: Check lint
-        run: npm run lint-fe
+        run: yarn run lint-fe
 
       - name: Build
-        run: npm run pr-check-ts
+        run: yarn run pr-check-ts
 
   ci-assets:
     name: ci-assets
@@ -135,22 +135,22 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        run: npm ci & cd frontend && npm ci
+        run: yarn install --immutable & cd frontend && yarn install --immutable
 
       - name: Lint JSON
-        run: npm run pr-check-lint-json
+        run: yarn run pr-check-lint-json
 
       - name: Validate languages JSON
         if: steps.filter.outputs.language-json == 'true'
-        run: npm run pr-check-language-json
+        run: yarn run pr-check-language-json
 
       - name: Validate quotes JSON
         if: steps.filter.outputs.quotes-json == 'true'
-        run: npm run pr-check-quote-json
+        run: yarn run pr-check-quote-json
 
       - name: Validate other JSON
         if: steps.filter.outputs.other-json == 'true'
-        run: npm run pr-check-other-json
+        run: yarn run pr-check-other-json
 
   on-failure:
     permissions: write-all

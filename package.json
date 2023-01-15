@@ -6,20 +6,20 @@
   "scripts": {
     "prepare": "husky install",
     "pre-commit": "pretty-quick --staged",
-    "lint": "npm run lint-be && npm run lint-fe",
+    "lint": "yarn run lint-be && yarn run lint-fe",
     "lint-be": "cd backend && eslint \"**/*.ts\"",
     "lint-fe": "cd frontend && eslint \"**/*.ts\"",
     "install-all": "sh ./bin/install.sh",
     "install-windows": ".\\bin\\install.cmd",
     "docker": "cd backend && docker-compose up",
-    "test-be": "cd backend && npm run test",
-    "dev": "concurrently --kill-others \"npm run dev-fe\" \"npm run dev-be\"",
-    "dev-be": "cd backend && npm run dev",
-    "dev-fe": "cd frontend && npm run dev",
-    "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
-    "audit-fe": "cd frontend && npm run audit",
-    "deploy-live": "cd frontend && npm run deploy-live",
-    "build-fe": "cd ./frontend && npm run build-live",
+    "test-be": "cd backend && yarn run test",
+    "dev": "concurrently --kill-others \"yarn run dev-fe\" \"yarn run dev-be\"",
+    "dev-be": "cd backend && yarn run dev",
+    "dev-fe": "cd frontend && yarn run dev",
+    "live": "concurrently --kill-others \"cd frontend && yarn run live\" \"cd backend && yarn run start\"",
+    "audit-fe": "cd frontend && yarn run audit",
+    "deploy-live": "cd frontend && yarn run deploy-live",
+    "build-fe": "cd ./frontend && yarn run build-live",
     "pretty": "prettier --check \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./frontend/static/**/*.{json,html,css}\"",
     "pretty-code": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\" \"./frontend/**/*.{ts,js}\" \"./frontend/src/**/*.scss\"",
     "pretty-code-be": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\"",
@@ -30,11 +30,12 @@
     "pr-check-language-json": "cd frontend && npx gulp pr-check-language-json",
     "pr-check-other-json": "cd frontend && npx gulp pr-check-other-json",
     "pr-check-ts": "cd frontend && npx gulp pr-check-ts",
-    "pr-check-build-be": "cd backend && npm run build"
+    "pr-check-build-be": "cd backend && yarn run build"
   },
-  "engines": {
-    "npm": "8.1.2"
-  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "5.20.0",
     "@typescript-eslint/parser": "5.20.0",
@@ -46,5 +47,6 @@
     "prettier": "2.5.1",
     "pretty-quick": "3.1.0",
     "typescript": "4.5.5"
-  }
+  },
+  "packageManager": "yarn@3.3.1"
 }

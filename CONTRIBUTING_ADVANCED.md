@@ -100,8 +100,8 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 ## Building and Running Monkeytype
 
-- Run `npm run install-all` in the project root to install all dependencies.
-  - If you are on Windows, use `npm run install-windows`.
+- Run `yarn run install-all` in the project root to install all dependencies.
+  - If you are on Windows, use `yarn run install-windows`.
   - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
   Now you are ready to build and run Monkeytype. 
   
@@ -121,12 +121,12 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 - Frontend and backend
   ```
-  npm run dev
+  yarn run dev
   ```
   
 - Only frontend (if you skipped the Backend section):
   ```
-  npm run dev-fe
+  yarn run dev-fe
   ```
 
 These commands will start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use `Ctrl+C` to stop it.

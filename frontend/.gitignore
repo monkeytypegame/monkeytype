@@ -1,9 +1,3 @@
-lastId.txt
-log_success.txt
-log_failed.txt
-build
-worker.*
-
 # Yarn
 .pnp.*
 .yarn/*

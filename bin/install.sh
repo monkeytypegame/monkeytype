@@ -1,4 +1,3 @@
-npm ci &
-cd ./frontend && npm ci &
-cd ./backend && npm ci &
-wait
+yarn install --immutable;
+cd ./frontend && yarn install --immutable;
+cd ./backend && yarn install --immutable;

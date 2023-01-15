@@ -26,10 +26,10 @@ jobs:
           node-version: "16.13.2"
 
       - name: Install dependencies
-        run: npm i prettier@2.5.1 --save-dev --save-exact
+        run: yarn install -DE prettier@2.5.1
 
       - name: Pretty Check
-        run: npm run pretty-fix
+        run: yarn run pretty-fix
 
       - name: Create commits
         run: |

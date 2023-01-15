@@ -7,13 +7,12 @@
     "build": "tsc --build",
     "watch": "tsc --build --watch",
     "clean": "tsc --build --clean",
-    "start": "npm run build && node ./build/server.js",
+    "start": "yarn run build && node ./build/server.js",
     "test": "jest --verbose --collect-coverage --runInBand",
     "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly"
   },
   "engines": {
-    "node": "16.13.2",
-    "npm": "8.1.2"
+    "node": "16.13.2"
   },
   "dependencies": {
     "bcrypt": "5.0.1",

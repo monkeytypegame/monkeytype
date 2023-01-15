@@ -7,4 +7,4 @@ services:
       - "3000:3000"
     volumes:
       - ../:/monkeytype
-    entrypoint: 'bash -c "cd /monkeytype && npm run dev-fe"'
+    entrypoint: 'bash -c "cd /monkeytype && yarn run dev-fe"'

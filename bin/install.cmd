@@ -1,7 +1,6 @@
-call npm ci
+yarn install --immutable
 cd .\frontend
-call npm ci
+yarn install --immutable
 cd ..\backend
-call npm ci
+yarn install --immutable
 cd ..\
-PAUSE

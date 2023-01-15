@@ -4,17 +4,14 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "live": "npm run build-live && cd public && npx serve -p 3000",
+    "live": "yarn run build-live && cd public && npx serve -p 3000",
     "audit": "npx webpack --config ./webpack/config.audit.js",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
     "build": "npx gulp build",
     "build-live": "export COMMIT_HASH=`git rev-parse --short HEAD` && npx gulp build-production",
     "dev": "concurrently \"webpack serve --config=./webpack/config.dev.js\" \"npx gulp watch\"",
-    "deploy-live": "npm run build-live && firebase deploy -P live --only hosting",
+    "deploy-live": "yarn run build-live && firebase deploy -P live --only hosting",
     "tsc": "tsc"
-  },
-  "engines": {
-    "npm": "8.1.2"
   },
   "devDependencies": {
     "@types/canvas-confetti": "1.4.3",
