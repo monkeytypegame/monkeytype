@@ -254,7 +254,7 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
     ThemeColors.getAll().then((colors) => {
       $(".keymapKey").attr("style", "");
       ChartController.updateAllChartColors();
-      const size = 128;
+      const size = 64;
       updateFavicon(size, size / 4);
       $("#metaThemeColor").attr("content", colors.bg);
     });
