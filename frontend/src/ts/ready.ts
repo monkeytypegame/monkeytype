@@ -16,6 +16,7 @@ ManualRestart.set();
 UpdateConfig.loadFromLocalStorage();
 
 if (window.location.hostname === "localhost") {
+  $("head title").text("localhost");
   $("#bottom .version .text").text("localhost");
   $("#bottom #versionGroup").removeClass("hidden");
   $("body").prepend(
