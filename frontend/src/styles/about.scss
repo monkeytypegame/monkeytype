@@ -14,11 +14,19 @@
     display: grid;
     gap: 0.25rem;
 
-    .title {
+    .bigtitle {
       font-size: 2rem;
       line-height: 2rem;
       color: var(--sub-color);
       margin: 0 0 1rem 0;
+    }
+
+    .title {
+      font-size: 1rem;
+      line-height: 1rem;
+      color: var(--sub-color);
+      margin: 0;
+      font-weight: 300;
     }
 
     .contactButtons,
@@ -48,14 +56,6 @@
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 0.25rem;
       color: var(--text-color);
-    }
-
-    h1 {
-      font-size: 1rem;
-      line-height: 1rem;
-      color: var(--sub-color);
-      margin: 0;
-      font-weight: 300;
     }
 
     p {
