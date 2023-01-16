@@ -1,23 +1,162 @@
-@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Itim:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Coming+Soon:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lalezar:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@300;400;700&display=swap");
+@font-face {
+  font-family: "Source Code Pro";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/SourceCodePro-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/JetBrainsMono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Montserrat-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Roboto-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Titillium Web";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/TitilliumWeb-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Oxygen";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Oxygen-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Itim";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Itim-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Comfortaa";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Comfortaa-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Coming Soon";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/ComingSoon-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/AtkinsonHyperlegible-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Lato";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Lato-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Lalezar";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Lalezar-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Naskh Arabic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/NotoNaskhArabic-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Vazirmatn-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Ubuntu-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Ubuntu Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/UbuntuMono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Inconsolata";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/Inconsolata-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url("../webfonts/IBMPlexSans-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Lexend Deca";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/LexendDeca-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Fira Code";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("../webfonts/FiraCode-Regular.ttf") format("truetype");
+}
 
 @font-face {
   font-family: "Nunito";
