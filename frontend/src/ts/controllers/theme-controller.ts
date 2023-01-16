@@ -45,6 +45,39 @@ async function updateFavicon(size: number, curveSize: number): Promise<void> {
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+    const scale = size / 500;
+    // const moffset = [71 * scale,188 * scale];
+    const currentPos = [0, 0];
+
+    function mRelativeMove(x: number, y: number): void {
+      currentPos[0] += x * scale;
+      currentPos[1] += y * scale;
+      ctx.moveTo(currentPos[0], currentPos[1]);
+    }
+
+    function mRelativeLine(x: number, y: number): void {
+      currentPos[0] += x * scale;
+      currentPos[1] += y * scale;
+      ctx.lineTo(currentPos[0], currentPos[1]);
+    }
+
+    function mRelativeCurve(
+      cpx: number,
+      cpy: number,
+      x: number,
+      y: number
+    ): void {
+      currentPos[0] += x * scale;
+      currentPos[1] += y * scale;
+      ctx.quadraticCurveTo(
+        currentPos[0] + cpx * scale,
+        currentPos[1] + cpy * scale,
+        currentPos[0],
+        currentPos[1]
+      );
+    }
+
     ctx.beginPath();
     ctx.moveTo(0, curveSize);
     //top left
@@ -58,10 +91,62 @@ async function updateFavicon(size: number, curveSize: number): Promise<void> {
     ctx.quadraticCurveTo(0, size, 0, size - curveSize);
     ctx.fillStyle = bgcolor;
     ctx.fill();
-    ctx.font = "900 " + (size / 2) * 1.2 + "px Lexend Deca";
-    ctx.textAlign = "center";
+    // ctx.font = "900 " + (size / 2) * 1.2 + "px Lexend Deca";
+    // ctx.textAlign = "center";
+    // ctx.fillStyle = maincolor;
+    // ctx.fillText("mt", size / 2 + 1, (size / 3) * 2.1);
+
+    ctx.beginPath();
+    mRelativeMove(71, 188);
+    mRelativeLine(0, 166);
+    mRelativeLine(40, 0);
+    mRelativeLine(0, -95);
+
+    mRelativeCurve(-33, 0, 35, -36);
+    mRelativeCurve(0, -27, 27, 30);
+    mRelativeLine(0, 101);
+    mRelativeLine(40, 0);
+    mRelativeLine(0, -90);
+
+    mRelativeCurve(-36, 0, 35, -41);
+    mRelativeCurve(0, -27, 27, 30);
+    mRelativeLine(0, 101);
+    mRelativeLine(40, 0);
+    mRelativeLine(0, -95);
+
+    mRelativeCurve(55, 0, -55, -74);
+    mRelativeCurve(22, -27, -55, 27);
+
+    mRelativeCurve(30, 0, -47, -27);
+    mRelativeCurve(20, -19, -47, 19);
+
+    mRelativeLine(0, -16);
+
     ctx.fillStyle = maincolor;
-    ctx.fillText("mt", size / 2 + 1, (size / 3) * 2.1);
+
+    ctx.fill();
+    ctx.closePath();
+
+    ctx.beginPath();
+    mRelativeMove(256, -40);
+    mRelativeLine(0, 40);
+    mRelativeLine(-36, 0);
+    mRelativeLine(0, 40);
+    mRelativeLine(36, 0);
+
+    mRelativeLine(0, 126);
+    mRelativeLine(40, 0);
+    mRelativeLine(0, -126);
+
+    mRelativeLine(36, 0);
+    mRelativeLine(0, -40);
+    mRelativeLine(-36, 0);
+    mRelativeLine(0, -40);
+
+    ctx.fillStyle = maincolor;
+
+    ctx.fill();
+
     // $("body").prepend(canvas);
     $("#favicon").attr("href", canvas.toDataURL("image/png"));
   }, 125);
@@ -169,7 +254,8 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
     ThemeColors.getAll().then((colors) => {
       $(".keymapKey").attr("style", "");
       ChartController.updateAllChartColors();
-      updateFavicon(128, 32);
+      const size = 128;
+      updateFavicon(size, size / 4);
       $("#metaThemeColor").attr("content", colors.bg);
     });
     // }
