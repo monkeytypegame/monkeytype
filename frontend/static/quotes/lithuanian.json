@@ -1,10 +1,22 @@
 {
   "language": "lithuanian",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -162,6 +174,12 @@
       "source": "Lietuvių liaudies patarlės",
       "length": 60,
       "id": 26
+    },
+    {
+      "text": "Giliai po žeme, oloje, gyveno hobitas. Ne kokioje bjaurioje, purvinoje, drėgnoje skylėje, kur iš sienų kyšo sliekų uodegos ir tvyro pelėsių tvaikas, ir ne sausutėlaičiame smėlėtame urvelyje, kur nėra ant ko atsisėsti nei ko sukrimsti: tai buvo hobito ola, vadinasi, įtaisyta ištaigingai.",
+      "source": "Hobitas, arba ten ir atgal",
+      "length": 287,
+      "id": 27
     }
   ]
 }
