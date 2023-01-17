@@ -16,6 +16,7 @@ ManualRestart.set();
 UpdateConfig.loadFromLocalStorage();
 
 if (window.location.hostname === "localhost") {
+  $("head title").text("localhost");
   $("#bottom .version .text").text("localhost");
   $("#bottom #versionGroup").removeClass("hidden");
   $("body").prepend(
@@ -31,6 +32,10 @@ if (window.location.hostname === "localhost") {
 
 Focus.set(true, true);
 $(document).ready(() => {
+  Misc.loadCSS("/./css/select2.min.css", true);
+  Misc.loadCSS("/./css/balloon.min.css", true);
+  Misc.loadCSS("/./css/fa.min.css", true);
+
   CookiePopup.check();
   $("body").css("transition", "all .25s, transform .05s");
   if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
