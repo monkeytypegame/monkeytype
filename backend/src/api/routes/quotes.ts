@@ -41,7 +41,7 @@ router.post(
     body: {
       text: joi.string().min(60).required(),
       source: joi.string().required(),
-      language: joi.string().(/^[\w +]+$/).required(),
+      language: joi.string().regex(/^[\w +]+$/).required(),
       captcha: joi.string().required(),
     },
     validationErrorMessage: "Please fill all the fields",
