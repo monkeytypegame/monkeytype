@@ -41,7 +41,10 @@ export async function show(options = defaultOptions): Promise<void> {
 
     state.previousPopupShowCallback = previousPopupShowCallback;
 
-    const { quotes } = await QuotesController.getQuotes(Config.language);
+    const language =
+      Config.language === "swiss_german" ? "german" : Config.language;
+
+    const { quotes } = await QuotesController.getQuotes(language);
     state.quoteToReport = quotes.find((quote) => {
       return quote.id === quoteId;
     });
