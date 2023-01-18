@@ -1,6 +1,9 @@
 import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "wordFilterPopupWrapper";
 
 let initialised = false;
 
@@ -33,6 +36,7 @@ async function init(): Promise<void> {
 }
 
 export async function show(): Promise<void> {
+  Skeleton.append(wrapperId);
   await init();
   $("#wordFilterPopupWrapper").removeClass("hidden");
   $("#customTextPopupWrapper").addClass("hidden");
@@ -44,6 +48,7 @@ export async function show(): Promise<void> {
 function hide(): void {
   $("#wordFilterPopupWrapper").addClass("hidden");
   $("#customTextPopupWrapper").removeClass("hidden");
+  Skeleton.remove(wrapperId);
 }
 
 async function filter(language: string): Promise<string[]> {
@@ -128,3 +133,5 @@ $("#wordFilterPopupWrapper .button").on("mousedown", (e) => {
     });
   }, 1);
 });
+
+Skeleton.save(wrapperId);
