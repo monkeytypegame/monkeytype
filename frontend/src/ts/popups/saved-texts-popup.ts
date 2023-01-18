@@ -1,7 +1,11 @@
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "savedTextsPopupWrapper";
 
 export async function show(): Promise<void> {
+  Skeleton.append(wrapperId);
   const names = CustomText.getCustomTextNames();
   const listEl = $(`#savedTextsPopup .list`).empty();
   let list = "";
@@ -62,6 +66,7 @@ function hide(full = false): void {
     }
     $("#customTextPopupWrapper").removeClass("hidden");
   }
+  Skeleton.remove(wrapperId);
 }
 
 function applySaved(name: string, long: boolean): void {
@@ -123,3 +128,5 @@ $("#savedTextsPopupWrapper").on("mousedown", (e) => {
     hide();
   }
 });
+
+Skeleton.save(wrapperId);
