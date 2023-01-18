@@ -1311,7 +1311,7 @@
   },
     "HiYou": {
     "keymapShowTopRow": false,
-    "type": "iso",
+    "type": "ansi",
     "keys": {
       "row1": ["1!", "2@", "3#", "4$", "5%", "6¨", "7&", "8*", "9(", "0)", "[{", "]}"],
       "row2": ["kK", "yY", "oO", "uU", "'\"", "vV", "dD", "lL", "pP", "wW", "/?"],
