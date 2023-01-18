@@ -138,7 +138,7 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#quoteRatePopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

@@ -14,7 +14,7 @@ export function show(): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#customWordAmountPopup input").trigger("focus").trigger("select");
       });
   }
@@ -29,7 +29,7 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#customWordAmountPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

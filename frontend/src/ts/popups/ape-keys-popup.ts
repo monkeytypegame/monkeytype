@@ -80,7 +80,7 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#apeKeysPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);
@@ -107,7 +107,7 @@ export async function show(): Promise<void> {
         {
           opacity: 1,
         },
-        100,
+        125,
         () => {
           $("#apeKeysPopup textarea").trigger("focus").trigger("select");
         }

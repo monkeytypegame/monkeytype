@@ -21,7 +21,7 @@ export function show(mode: string, config?: string): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#settingsImportWrapper input").trigger("focus");
         $("#settingsImportWrapper input").trigger("select");
         $("#settingsImportWrapper input").trigger("focus");
@@ -44,7 +44,7 @@ function hide(): void {
     $("#settingsImportWrapper")
       .stop(true, true)
       .css("opacity", 1)
-      .animate({ opacity: 0 }, 100, () => {
+      .animate({ opacity: 0 }, 125, () => {
         $("#settingsImportWrapper").addClass("hidden");
         Skeleton.remove(wrapperId);
       });

@@ -53,7 +53,7 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#contactPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

@@ -46,7 +46,7 @@ export function show(action: string, id?: string, name?: string): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#presetWrapper #presetEdit input").trigger("focus");
       });
   }
@@ -63,7 +63,7 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#presetWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

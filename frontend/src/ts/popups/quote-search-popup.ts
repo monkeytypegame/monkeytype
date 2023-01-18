@@ -246,7 +246,7 @@ export async function show(clearText = true): Promise<void> {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         if (clearText) {
           $("#quoteSearchPopup input").trigger("focus").trigger("select");
         }
@@ -264,7 +264,7 @@ export function hide(noAnim = false, focusWords = true): void {
         {
           opacity: 0,
         },
-        noAnim ? 0 : 100,
+        noAnim ? 0 : 125,
         () => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
 

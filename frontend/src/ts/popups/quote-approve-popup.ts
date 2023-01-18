@@ -101,7 +101,7 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#quoteApprovePopupWrapper").addClass("hidden");
           $("#quoteApprovePopupWrapper .quotes").empty();

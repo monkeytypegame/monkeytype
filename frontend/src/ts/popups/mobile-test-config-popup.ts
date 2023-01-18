@@ -80,7 +80,7 @@ function hidePopup(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#mobileTestConfigPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

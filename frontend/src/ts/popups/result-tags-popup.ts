@@ -39,7 +39,7 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#resultEditTagsPanelWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

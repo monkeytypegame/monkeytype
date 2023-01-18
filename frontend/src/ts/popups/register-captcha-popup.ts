@@ -43,7 +43,7 @@ export function hide(resolveToUndefined = false): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#registerCaptchaPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

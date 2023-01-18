@@ -120,7 +120,7 @@ export async function hide(): Promise<void> {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#shareTestSettingsPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

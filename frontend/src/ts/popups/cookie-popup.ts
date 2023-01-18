@@ -45,7 +45,7 @@ export function show(): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         if (
           $("#cookiePopupWrapper").is(":visible") === false ||
           $("#cookiePopupWrapper").outerHeight(true) === 0
@@ -68,7 +68,7 @@ export async function hide(): Promise<void> {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#cookiePopupWrapper").addClass("hidden");
           visible = false;

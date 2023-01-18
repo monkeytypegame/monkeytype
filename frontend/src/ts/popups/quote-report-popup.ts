@@ -66,7 +66,7 @@ export async function show(options = defaultOptions): Promise<void> {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
+      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
         $("#quoteReportPopup textarea").trigger("focus").trigger("select");
       });
   }
@@ -83,7 +83,7 @@ export async function hide(): Promise<void> {
         {
           opacity: 0,
         },
-        noAnim ? 0 : 100,
+        noAnim ? 0 : 125,
         () => {
           CaptchaController.reset("quoteReportPopup");
           $("#quoteReportPopupWrapper").addClass("hidden");

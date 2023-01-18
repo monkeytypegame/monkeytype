@@ -32,7 +32,7 @@ export async function show(): Promise<void> {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         //@ts-ignore
         window.dataLayer.push({ event: "EG_Video" });
       });
@@ -48,7 +48,7 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#videoAdPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

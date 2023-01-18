@@ -39,7 +39,7 @@ export function show(credential: UserCredential): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#googleSignUpPopup input").trigger("focus").trigger("select");
       });
   }
@@ -65,7 +65,7 @@ export async function hide(): Promise<void> {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#googleSignUpPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

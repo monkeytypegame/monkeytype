@@ -78,7 +78,7 @@ export function show(): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#customTestDurationPopup input").trigger("focus").trigger("select");
       });
   }
@@ -95,7 +95,7 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#customTestDurationPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);

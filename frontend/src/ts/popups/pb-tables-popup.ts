@@ -104,7 +104,7 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#pbTablesPopupWrapper").addClass("hidden");
           $("#pbTablesPopup table tbody").empty();
