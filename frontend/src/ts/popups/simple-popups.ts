@@ -22,6 +22,9 @@ import {
 } from "firebase/auth";
 import { isPasswordStrong } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "simplePopupWrapper";
 
 interface Input {
   placeholder?: string;
@@ -203,6 +206,7 @@ class SimplePopup {
   }
 
   show(parameters: string[] = []): void {
+    Skeleton.append(wrapperId);
     activePopup = this;
     this.parameters = parameters;
     this.beforeInitFn(this);
@@ -226,6 +230,7 @@ class SimplePopup {
       .removeClass("hidden")
       .animate({ opacity: 0 }, 125, () => {
         this.wrapper.addClass("hidden");
+        Skeleton.remove(wrapperId);
       });
   }
 }
@@ -1418,3 +1423,5 @@ $(document).on("keydown", (event) => {
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);
