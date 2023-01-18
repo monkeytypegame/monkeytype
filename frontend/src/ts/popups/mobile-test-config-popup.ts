@@ -67,7 +67,7 @@ function showPopup(): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100);
+      .animate({ opacity: 1 }, 125);
   }
 }
 

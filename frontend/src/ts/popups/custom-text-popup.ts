@@ -48,7 +48,7 @@ export function show(): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         let newtext = CustomText.text.join(CustomText.delimiter);
         newtext = newtext.replace(/\n /g, "\n");
         $(`${popup} textarea`).val(newtext);
@@ -100,7 +100,7 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $(wrapper).addClass("hidden");
           // Skeleton.remove(wrapperId);
