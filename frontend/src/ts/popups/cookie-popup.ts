@@ -2,6 +2,7 @@ import { activateAnalytics } from "../controllers/analytics-controller";
 import { focusWords } from "../test/test-ui";
 import * as Notifications from "../elements/notifications";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "cookiePopupWrapper";
 
@@ -39,7 +40,7 @@ export function show(): void {
     visible = false;
     return;
   }
-  if ($("#cookiePopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#cookiePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -58,7 +59,7 @@ export function show(): void {
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#cookiePopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     focusWords();
     $("#cookiePopupWrapper")
       .stop(true, true)

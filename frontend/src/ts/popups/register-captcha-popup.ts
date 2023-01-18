@@ -1,4 +1,5 @@
 import * as CaptchaController from "../controllers/captcha-controller";
+import { isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "registerCaptchaPopupWrapper";
@@ -11,7 +12,7 @@ export let promise: Promise<string | undefined> = new Promise((resolve) => {
 
 export function show(): void {
   Skeleton.append(wrapperId);
-  if ($("#registerCaptchaPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     promise = new Promise((resolve) => {
       resolvePromise = resolve;
     });
@@ -33,7 +34,7 @@ export function show(): void {
 }
 
 export function hide(resolveToUndefined = false): void {
-  if (!$("#registerCaptchaPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     if (resolveToUndefined) resolvePromise();
     $("#registerCaptchaPopupWrapper")
       .stop(true, true)

@@ -7,7 +7,7 @@ import {
   getAdditionalUserInfo,
 } from "firebase/auth";
 import Ape from "../ape";
-import { createErrorMessage } from "../utils/misc";
+import { createErrorMessage, isPopupVisible } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as AccountController from "../controllers/account-controller";
@@ -26,7 +26,7 @@ let signedInUser: UserCredential | undefined = undefined;
 export function show(credential: UserCredential): void {
   Skeleton.append(wrapperId);
 
-  if ($("#googleSignUpPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     CaptchaController.reset("googleSignUpPopup");
     CaptchaController.render(
       $("#googleSignUpPopupWrapper .captcha")[0],
@@ -46,7 +46,7 @@ export function show(credential: UserCredential): void {
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#googleSignUpPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     if (signedInUser !== undefined) {
       Notifications.add("Sign up process canceled", 0, 5);
       LoginPage.hidePreloader();
@@ -248,10 +248,7 @@ $("#googleSignUpPopupWrapper .button").on("click", () => {
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#googleSignUpPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }

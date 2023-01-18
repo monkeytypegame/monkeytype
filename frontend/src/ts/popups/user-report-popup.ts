@@ -3,6 +3,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "userReportPopupWrapper";
 
@@ -21,7 +22,7 @@ interface ShowOptions {
 
 export async function show(options: ShowOptions): Promise<void> {
   Skeleton.append(wrapperId);
-  if ($("#userReportPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     CaptchaController.render(
       document.querySelector("#userReportPopup .g-recaptcha") as HTMLElement,
       "userReportPopup"
@@ -48,7 +49,7 @@ export async function show(options: ShowOptions): Promise<void> {
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#userReportPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#userReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)

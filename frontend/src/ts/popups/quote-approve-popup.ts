@@ -3,6 +3,7 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteApprovePopupWrapper";
 
@@ -80,7 +81,7 @@ async function getQuotes(): Promise<void> {
 export async function show(noAnim = false): Promise<void> {
   Skeleton.append(wrapperId);
 
-  if ($("#quoteApprovePopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     quotes = [];
     getQuotes();
     $("#quoteApprovePopupWrapper")
@@ -92,7 +93,7 @@ export async function show(noAnim = false): Promise<void> {
 }
 
 export function hide(): void {
-  if (!$("#quoteApprovePopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#quoteApprovePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)

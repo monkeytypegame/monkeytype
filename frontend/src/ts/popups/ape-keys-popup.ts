@@ -4,6 +4,7 @@ import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 let apeKeys: MonkeyTypes.ApeKeys = {};
 
@@ -71,7 +72,7 @@ function refreshList(): void {
 }
 
 export function hide(): void {
-  if (!$("#apeKeysPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#apeKeysPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -95,7 +96,7 @@ export async function show(): Promise<void> {
     return;
   }
   Skeleton.append(wrapperId);
-  if ($("#apeKeysPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     await getData();
     refreshList();
     $("#apeKeysPopupWrapper")
@@ -144,6 +145,13 @@ $("#popups").on("click", "#apeKeysPopup table .textButton", async (e) => {
     Notifications.add("Key active", 1);
   } else {
     Notifications.add("Key inactive", 1);
+  }
+});
+
+$(document).on("keydown", (event) => {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
+    hide();
+    event.preventDefault();
   }
 });
 

@@ -4,6 +4,7 @@ import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteRatePopupWrapper";
 
@@ -103,7 +104,7 @@ function updateData(): void {
 export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
   Skeleton.append(wrapperId);
 
-  if ($("#quoteRatePopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     if (shouldReset) {
       reset();
     }
@@ -129,7 +130,7 @@ export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
 }
 
 function hide(): void {
-  if (!$("#quoteRatePopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#quoteRatePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)

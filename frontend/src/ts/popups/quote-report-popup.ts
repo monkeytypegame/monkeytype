@@ -6,6 +6,7 @@ import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteReportPopupWrapper";
 
@@ -36,7 +37,7 @@ const defaultOptions: Options = {
 export async function show(options = defaultOptions): Promise<void> {
   Skeleton.append(wrapperId);
 
-  if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     CaptchaController.render(
       document.querySelector("#quoteReportPopup .g-recaptcha") as HTMLElement,
       "quoteReportPopup"
@@ -72,7 +73,7 @@ export async function show(options = defaultOptions): Promise<void> {
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#quoteReportPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     const noAnim = state.previousPopupShowCallback ? true : false;
 
     $("#quoteReportPopupWrapper")

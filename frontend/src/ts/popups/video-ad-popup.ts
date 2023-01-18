@@ -1,6 +1,7 @@
 import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "videoAdPopupWrapper";
 
@@ -26,7 +27,7 @@ export async function show(): Promise<void> {
     return;
   }
 
-  if ($("#videoAdPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#videoAdPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -39,7 +40,7 @@ export async function show(): Promise<void> {
 }
 
 function hide(): void {
-  if (!$("#videoAdPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#videoAdPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)

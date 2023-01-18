@@ -70,7 +70,7 @@ export async function show(noAnim = false): Promise<void> {
   return;
   // Skeleton.append(wrapperId);
 
-  // if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
+  // if (!isPopupVisible(wrapperId)) {
   //   CaptchaController.render(
   //     document.querySelector("#quoteSubmitPopup .g-recaptcha") as HTMLElement,
   //     "submitQuote"
@@ -92,7 +92,7 @@ export async function show(noAnim = false): Promise<void> {
 }
 
 export function hide(): void {
-  if (!$("#quoteSubmitPopupWrapper").hasClass("hidden")) {
+  if (Misc.isPopupVisible(wrapperId)) {
     $("#quoteSubmitPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)

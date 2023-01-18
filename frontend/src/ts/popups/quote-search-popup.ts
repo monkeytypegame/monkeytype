@@ -18,6 +18,7 @@ import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteSearchPopupWrapper";
 
@@ -191,7 +192,7 @@ async function updateResults(searchText: string): Promise<void> {
 export async function show(clearText = true): Promise<void> {
   Skeleton.append(wrapperId);
 
-  if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     if (clearText) {
       $("#quoteSearchPopup input").val("");
     }
@@ -255,7 +256,7 @@ export async function show(clearText = true): Promise<void> {
 }
 
 export function hide(noAnim = false, focusWords = true): void {
-  if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -414,10 +415,7 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#quoteSearchPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }

@@ -1,6 +1,6 @@
 import Config from "../config";
 import { randomQuote } from "../test/test-words";
-import { getMode2 } from "../utils/misc";
+import { getMode2, isPopupVisible } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
 import * as Skeleton from "./skeleton";
@@ -100,7 +100,7 @@ function updateSubgroups(): void {
 
 export function show(): void {
   Skeleton.append(wrapperId);
-  if ($("#shareTestSettingsPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     updateURL();
     updateSubgroups();
     $("#shareTestSettingsPopupWrapper")
@@ -112,7 +112,7 @@ export function show(): void {
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#shareTestSettingsPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#shareTestSettingsPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -141,10 +141,7 @@ $("#shareTestSettingsPopupWrapper").on("mousedown", (e) => {
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#shareTestSettingsPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }

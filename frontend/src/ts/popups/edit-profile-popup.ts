@@ -4,6 +4,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import { isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "editProfilePopupWrapper";
@@ -17,7 +18,7 @@ export function show(callbackOnHide: () => void): void {
   }
   Skeleton.append(wrapperId);
 
-  if ($("#editProfilePopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     callbackFuncOnHide = callbackOnHide;
 
     $("#editProfilePopupWrapper")
@@ -31,7 +32,7 @@ export function show(callbackOnHide: () => void): void {
 }
 
 export function hide(): void {
-  if (!$("#editProfilePopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     callbackFuncOnHide && callbackFuncOnHide();
     $("#editProfilePopupWrapper")
       .stop(true, true)
@@ -166,10 +167,7 @@ $("#editProfilePopupWrapper .edit-profile-submit").on("click", async () => {
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#editProfilePopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }

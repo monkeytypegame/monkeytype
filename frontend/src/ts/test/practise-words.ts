@@ -6,6 +6,7 @@ import * as TestInput from "./test-input";
 import * as ConfigEvent from "../observables/config-event";
 import { setCustomTextName } from "../states/custom-text-name";
 import * as Skeleton from "../popups/skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "practiseWordsPopupWrapper";
 
@@ -121,7 +122,7 @@ export function showPopup(focus = false): void {
     return;
   }
   Skeleton.append(wrapperId);
-  if ($("#practiseWordsPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#practiseWordsPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -136,7 +137,7 @@ export function showPopup(focus = false): void {
 }
 
 export function hidePopup(): void {
-  if (!$("#practiseWordsPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#practiseWordsPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -171,10 +172,7 @@ $("#practiseWordsPopupWrapper .button.both").on("focusout", (e) => {
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#practiseWordsPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hidePopup();
     event.preventDefault();
   }

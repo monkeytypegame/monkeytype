@@ -1,3 +1,4 @@
+import { isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "newResultFilterPresetPopupWrapper";
@@ -8,7 +9,7 @@ let callbackFunc: ((name: string) => void) | null = null;
 export function show(): void {
   Skeleton.append(wrapperId);
 
-  if ($("#newResultFilterPresetPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#newResultFilterPresetPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -22,7 +23,7 @@ export function show(): void {
 }
 
 export function hide(): void {
-  if (!$("#newResultFilterPresetPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#newResultFilterPresetPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -73,10 +74,7 @@ export function showNewResultFilterPresetPopup(
 }
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#newResultFilterPresetPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }

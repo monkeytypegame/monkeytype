@@ -7,6 +7,7 @@ import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ConfigEvent from "../observables/config-event";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "mobileTestConfigPopupWrapper";
 
@@ -60,7 +61,7 @@ export function update(): void {
 function showPopup(): void {
   Skeleton.append(wrapperId);
 
-  if ($("#mobileTestConfigPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     update();
     $("#mobileTestConfigPopupWrapper")
       .stop(true, true)
@@ -71,7 +72,7 @@ function showPopup(): void {
 }
 
 function hidePopup(): void {
-  if (!$("#mobileTestConfigPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#mobileTestConfigPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)

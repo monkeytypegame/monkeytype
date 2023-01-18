@@ -1,6 +1,7 @@
 import * as DB from "../db";
 import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 interface PersonalBest extends MonkeyTypes.PersonalBest {
   mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
@@ -81,7 +82,7 @@ function update(mode: MonkeyTypes.Mode): void {
 
 function show(mode: MonkeyTypes.Mode): void {
   Skeleton.append(wrapperId);
-  if ($("#pbTablesPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     update(mode);
 
     $("#pbTablesPopup .title").text(`All ${mode} personal bests`);
@@ -95,7 +96,7 @@ function show(mode: MonkeyTypes.Mode): void {
 }
 
 function hide(): void {
-  if (!$("#pbTablesPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#pbTablesPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -125,6 +126,13 @@ $(".pageAccount .profile").on("click", ".pbsTime .showAllButton", () => {
 
 $(".pageAccount .profile").on("click", ".pbsWords .showAllButton", () => {
   show("words");
+});
+
+$(document).on("keydown", (event) => {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
+    hide();
+    event.preventDefault();
+  }
 });
 
 Skeleton.save(wrapperId);
