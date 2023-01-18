@@ -184,9 +184,12 @@
       }
       position: relative;
       font-size: 2rem;
-      margin-top: -0.4rem;
       font-family: "Lexend Deca";
       transition: color 0.25s;
+      font-weight: unset;
+      margin-block-start: unset;
+      margin-block-end: unset;
+      margin-top: -0.2em;
     }
     white-space: nowrap;
     user-select: none;

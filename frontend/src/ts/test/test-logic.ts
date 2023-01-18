@@ -862,6 +862,11 @@ export async function init(): Promise<void> {
     }
   }
 
+  if (Config.tapeMode !== "off" && !language.leftToRight) {
+    Notifications.add("This language does not support tape mode.", 0);
+    UpdateConfig.setTapeMode("off");
+  }
+
   if (Config.lazyMode === true && language.noLazyMode) {
     rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0);
