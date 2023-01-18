@@ -3,6 +3,9 @@ import * as Notifications from "../elements/notifications";
 import * as CustomTextState from "../states/custom-text-name";
 import { InputIndicator } from "../elements/input-indicator";
 import { debounce } from "throttle-debounce";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "saveCustomTextPopupWrapper";
 
 const indicator = new InputIndicator($("#saveCustomTextPopup .textName"), {
   available: {
@@ -21,6 +24,7 @@ const indicator = new InputIndicator($("#saveCustomTextPopup .textName"), {
 });
 
 export async function show(): Promise<void> {
+  Skeleton.append(wrapperId);
   $("#saveCustomTextPopupWrapper").removeClass("hidden");
   $("#customTextPopupWrapper").addClass("hidden");
   $("#saveCustomTextPopupWrapper .textName").val("");
@@ -33,6 +37,7 @@ function hide(full = false): void {
   if (!full) {
     $("#customTextPopupWrapper").removeClass("hidden").css("opacity", 1);
   }
+  Skeleton.remove(wrapperId);
 }
 
 function save(): boolean {
@@ -99,3 +104,5 @@ $("#saveCustomTextPopupWrapper .isLongText").on("change", () => {
     updateInputAndButtonDebounced();
   }
 });
+
+Skeleton.save(wrapperId);
