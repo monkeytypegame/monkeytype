@@ -1194,13 +1194,17 @@ export function createErrorMessage(error: unknown, message: string): string {
   return message;
 }
 
-export function isPopupVisible(id: string): boolean {
-  const popup = document.querySelector(`#popups #${id}`);
+export function isElementVisible(query: string): boolean {
+  const popup = document.querySelector(query);
   if (!popup) {
     return false;
   }
   const style = window.getComputedStyle(popup);
   return style.display !== "none";
+}
+
+export function isPopupVisible(popupId: string): boolean {
+  return isElementVisible(`#popups #${popupId}`);
 }
 
 export function isAnyPopupVisible(): boolean {
