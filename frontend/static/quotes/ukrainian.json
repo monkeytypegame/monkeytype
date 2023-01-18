@@ -612,7 +612,6 @@
       "source": "test",
       "length": 4,
       "id": 0
-<<<<<<< HEAD
     },
     {
       "text": "test",
@@ -835,7 +834,6 @@
       "source": "test",
       "length": 4,
       "id": 0
-=======
     },
     {
       "text": "test",
@@ -908,7 +906,6 @@
       "source": "test",
       "length": 4,
       "id": 0
->>>>>>> 1a396116bbd2c197b2a22543f48731b2f71361f6
     }
   ]
 }
