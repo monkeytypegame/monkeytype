@@ -206,9 +206,9 @@
       "id": 33
     },
     {
-      "text": "Бо муж добро мусить чинити, бути щедрим у вотчині на винагороди, аби його люди билися натомість, гриді добрі, коли гряне війна, службу справляли, - славні-бо завше діяння мужеві дають багоденство.",
+      "text": "Бо муж добро мусить чинити, бути щедрим у вотчині на винагороди, аби його люди билися натомість, гриді добрі, коли гряне війна, службу справляли, - славні-бо завше діяння мужеві дають благоденство.",
       "source": "Беовульф (пер. Олени ОʼЛір)",
-      "length": 196,
+      "length": 197,
       "id": 34
     },
     {
@@ -590,9 +590,9 @@
       "id": 97
     },
     {
-      "text": "",
-      "source": "test",
-      "length": 4,
+      "text": "Нейтан: Що ж... Ти знаєш що таке тест Тюрінга? Калеб: Так я знаю що таке тест Тюрінга. Це взаємодія людини і компʼютера. Якщо людина не знає що спілкується з компʼютером, то тест пройдено. Нейтан: І що це нам дає. Калеб: Те що компʼютер має штучний інтелект. Ти розробив щось таке? Нейтан: Навіть побудував. І наступні кілька днів ти будеш людською складовою теста Тюрінга. Калеб: Охрініти! Нейтан: Так! Саме так, Калебе! Отак. Якщо тест буде пройдено, ти станеш центром головної наукової події в історії людства. Калеб: Якщо ти створив таку машину це вже не історія людства, це історія богів!",
+      "source": "Ex Machina",
+      "length": 591,
       "id": 98
     },
     {
@@ -612,6 +612,7 @@
       "source": "test",
       "length": 4,
       "id": 0
+<<<<<<< HEAD
     },
     {
       "text": "test",
@@ -684,6 +685,230 @@
       "source": "test",
       "length": 4,
       "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+=======
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+    },
+    {
+      "text": "test",
+      "source": "test",
+      "length": 4,
+      "id": 0
+>>>>>>> 1a396116bbd2c197b2a22543f48731b2f71361f6
     }
   ]
 }
