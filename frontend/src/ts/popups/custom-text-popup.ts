@@ -141,7 +141,7 @@ $(`${popup} .inputs .replaceNewLinesButtons .button`).on("click", (e) => {
 });
 
 $(`${popup} textarea`).on("keypress", (e) => {
-  if (!$(`${popup} .longCustomTextWarning`).hasClass("hidden")) {
+  if (Misc.isElementVisible(`#customTextPopup.longCustomTextWarning`)) {
     e.preventDefault();
     return;
   }
@@ -283,7 +283,7 @@ $(".pageTest").on("click", "#testConfig .customText .textButton", () => {
 $(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
-    !$("#customTextPopupWrapper").hasClass("hidden")
+    Misc.isElementVisible("#customTextPopupWrapper")
   ) {
     hide();
     event.preventDefault();

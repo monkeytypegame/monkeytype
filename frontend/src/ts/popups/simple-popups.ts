@@ -20,7 +20,7 @@ import {
   unlink,
   updatePassword,
 } from "firebase/auth";
-import { isPasswordStrong } from "../utils/misc";
+import { isElementVisible, isPasswordStrong } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as Skeleton from "./skeleton";
 
@@ -1418,7 +1418,7 @@ $(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
 });
 
 $(document).on("keydown", (event) => {
-  if (event.key === "Escape" && !$("#simplePopupWrapper").hasClass("hidden")) {
+  if (event.key === "Escape" && isElementVisible("#simplePopupWrapper")) {
     hide();
     event.preventDefault();
   }
