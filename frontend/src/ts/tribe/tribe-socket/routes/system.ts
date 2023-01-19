@@ -39,12 +39,22 @@ function connect(callback: () => void): void {
         const matches2 = data.match(/^\d+(?=\[)/g);
         if (matches) {
           const dat = JSON.parse(matches[0]);
-          console.log(
-            "%cTI",
-            "background:red;padding:0 5px;border-radius:10px",
-            matches2[0] ?? "?",
-            dat[0]
-          );
+          if (dat[1]) {
+            console.log(
+              "%cTI",
+              "background:red;padding:0 5px;border-radius:10px",
+              matches2[0] ?? "?",
+              dat[0],
+              dat[1]
+            );
+          } else {
+            console.log(
+              "%cTI",
+              "background:red;padding:0 5px;border-radius:10px",
+              matches2[0] ?? "?",
+              dat[0]
+            );
+          }
         }
       } else {
         console.log(
@@ -63,13 +73,22 @@ function connect(callback: () => void): void {
         const matches2 = data.match(/^\d+(?=\[)/g);
         if (matches) {
           const dat = JSON.parse(matches[0]);
-          console.log(
-            "%cTO",
-            "background:blue;padding:0 5px;border-radius:10px",
-            matches2[0] ?? "?",
-            dat[0],
-            dat[1]
-          );
+          if (dat[1]) {
+            console.log(
+              "%cTO",
+              "background:blue;padding:0 5px;border-radius:10px",
+              matches2[0] ?? "?",
+              dat[0],
+              dat[1]
+            );
+          } else {
+            console.log(
+              "%cTO",
+              "background:blue;padding:0 5px;border-radius:10px",
+              matches2[0] ?? "?",
+              dat[0]
+            );
+          }
         }
       } else {
         console.log(
