@@ -48,7 +48,7 @@ let callbackFuncOnHide: (() => void) | undefined = undefined;
 
 export async function show(
   noAnim = false,
-  callbackOnHide: () => void | undefined
+  callbackOnHide?: () => void
 ): Promise<void> {
   Skeleton.append(wrapperId);
   if (!isPopupVisible(wrapperId)) {
