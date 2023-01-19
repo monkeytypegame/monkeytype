@@ -35,20 +35,47 @@ async function init(): Promise<void> {
   }
 }
 
-export async function show(): Promise<void> {
+let callbackFuncOnHide: (() => void) | undefined = undefined;
+
+export async function show(
+  noAnim = false,
+  callbackOnHide: () => void | undefined
+): Promise<void> {
   Skeleton.append(wrapperId);
-  await init();
-  $("#wordFilterPopupWrapper").removeClass("hidden");
-  $("#customTextPopupWrapper").addClass("hidden");
-  $("#wordFilterPopup .languageInput").select2({
-    width: "100%",
-  });
+  if (!Misc.isPopupVisible(wrapperId)) {
+    await init();
+    callbackFuncOnHide = callbackOnHide;
+    $("#wordFilterPopup .languageInput").select2({
+      width: "100%",
+    });
+
+    $("#wordFilterPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
+        //
+      });
+  }
 }
 
-function hide(): void {
-  $("#wordFilterPopupWrapper").addClass("hidden");
-  $("#customTextPopupWrapper").removeClass("hidden");
-  Skeleton.remove(wrapperId);
+function hide(noAnim = false): void {
+  if (Misc.isPopupVisible(wrapperId)) {
+    $("#wordFilterPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        noAnim ? 0 : 125,
+        () => {
+          $("#wordFilterPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
+          if (callbackFuncOnHide) callbackFuncOnHide();
+        }
+      );
+  }
 }
 
 async function filter(language: string): Promise<string[]> {
@@ -110,12 +137,12 @@ async function apply(set: boolean): Promise<void> {
   $("#customTextPopup textarea").val(
     (_, val) => (set ? "" : val + " ") + customText
   );
-  hide();
+  hide(true);
 }
 
 $("#wordFilterPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "wordFilterPopupWrapper") {
-    hide();
+    hide(true);
   }
 });
 

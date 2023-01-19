@@ -282,7 +282,10 @@ $(document).on("keydown", (event) => {
 });
 
 $("#popups").on("click", `${popup} .wordfilter`, () => {
-  WordFilterPopup.show();
+  hide(true);
+  WordFilterPopup.show(true, () => {
+    show(true);
+  });
 });
 
 $(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
