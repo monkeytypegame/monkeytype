@@ -1141,7 +1141,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
     Notifications.add("Custom text progress reset", 1);
     SavedTextsPopup.show(true);
-    $(`#customTextPopupWrapper textarea`).val(
+    CustomText.setPopupTextareaState(
       CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
     );
   },

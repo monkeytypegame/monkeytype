@@ -68,7 +68,7 @@ function hide(noAnim = false): void {
 function save(): boolean {
   const name = $("#saveCustomTextPopupWrapper .textName").val() as string;
   const checkbox = $("#saveCustomTextPopupWrapper .isLongText").prop("checked");
-  let text = ($(`#customTextPopup textarea`).val() as string).normalize();
+  let text = CustomText.popupTextareaState.normalize();
 
   if (!name) {
     Notifications.add("Custom text needs a name", 0);

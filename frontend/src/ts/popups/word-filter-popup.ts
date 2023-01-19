@@ -134,8 +134,8 @@ async function apply(set: boolean): Promise<void> {
   const filteredWords = await filter(language);
   const customText = filteredWords.join(CustomText.delimiter);
 
-  $("#customTextPopup textarea").val(
-    (_, val) => (set ? "" : val + " ") + customText
+  CustomText.setPopupTextareaState(
+    (set ? "" : CustomText.popupTextareaState + " ") + customText
   );
   hide(true);
 }

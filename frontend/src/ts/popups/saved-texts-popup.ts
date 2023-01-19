@@ -86,7 +86,7 @@ function applySaved(name: string, long: boolean): void {
   if (long) {
     text = text.slice(CustomText.getCustomTextLongProgress(name));
   }
-  $(`#customTextPopupWrapper textarea`).val(text.join(CustomText.delimiter));
+  CustomText.setPopupTextareaState(text.join(CustomText.delimiter));
 }
 
 $("#popups").on(

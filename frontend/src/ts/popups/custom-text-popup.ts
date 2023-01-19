@@ -44,14 +44,13 @@ export function show(noAnim = false): void {
     } else {
       $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
     }
+    $(`${popup} textarea`).val(CustomText.popupTextareaState);
+
     $(wrapper)
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
-        let newtext = CustomText.text.join(CustomText.delimiter);
-        newtext = newtext.replace(/\n /g, "\n");
-        $(`${popup} textarea`).val(newtext);
         $(`${popup} .wordcount input`).val(
           CustomText.word === -1 ? "" : CustomText.word
         );
@@ -106,6 +105,9 @@ export function hide(noAnim = false): void {
         noAnim ? 0 : 125,
         () => {
           $(wrapper).addClass("hidden");
+          CustomText.setPopupTextareaState(
+            CustomText.text.join(CustomText.delimiter)
+          );
           // Skeleton.remove(wrapperId);
         }
       );
@@ -137,6 +139,10 @@ $(`${popup} .replaceNewlineWithSpace input`).on("change", () => {
 $(`${popup} .inputs .replaceNewLinesButtons .button`).on("click", (e) => {
   $(`${popup} .inputs .replaceNewLinesButtons .button`).removeClass("active");
   $(e.target).addClass("active");
+});
+
+$(`${popup} textarea`).on("input", () => {
+  CustomText.setPopupTextareaState($(`${popup} textarea`).val() as string);
 });
 
 $(`${popup} textarea`).on("keypress", (e) => {

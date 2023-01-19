@@ -671,6 +671,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // put caret at right position again
     area.selectionStart = area.selectionEnd = start + 1;
 
+    CustomText.setPopupTextareaState(area.value);
+
     return;
   }
 
