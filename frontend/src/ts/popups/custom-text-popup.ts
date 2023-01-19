@@ -32,7 +32,7 @@ export function updateLongTextWarning(): void {
 
 export function show(): void {
   // Skeleton.append(wrapperId);
-  if ($(wrapper).hasClass("hidden")) {
+  if (!Misc.isElementVisible(wrapper)) {
     updateLongTextWarning();
     if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
@@ -92,7 +92,7 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
 });
 
 export function hide(): void {
-  if (!$(wrapper).hasClass("hidden")) {
+  if (Misc.isElementVisible(wrapper)) {
     $(wrapper)
       .stop(true, true)
       .css("opacity", 1)
