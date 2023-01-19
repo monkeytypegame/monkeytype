@@ -286,7 +286,10 @@ $("#popups").on("click", `${popup} .wordfilter`, () => {
 });
 
 $(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
-  SavedTextsPopup.show();
+  hide(true);
+  SavedTextsPopup.show(true, () => {
+    show(true);
+  });
 });
 
 $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {

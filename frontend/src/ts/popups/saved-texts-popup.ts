@@ -1,6 +1,7 @@
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "savedTextsPopupWrapper";
 
@@ -43,33 +44,41 @@ function fill(): void {
   longListEl.html(longList);
 }
 
-export async function show(): Promise<void> {
+let callbackFuncOnHide: (() => void) | undefined = undefined;
+
+export async function show(
+  noAnim = false,
+  callbackOnHide: () => void | undefined
+): Promise<void> {
   Skeleton.append(wrapperId);
-  fill();
-  $("#savedTextsPopupWrapper").removeClass("hidden");
-  $("#customTextPopupWrapper").addClass("hidden");
+  if (!isPopupVisible(wrapperId)) {
+    callbackFuncOnHide = callbackOnHide;
+    fill();
+    $("#savedTextsPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, noAnim ? 0 : 125);
+  }
 }
 
-function hide(full = false): void {
-  $("#savedTextsPopupWrapper").addClass("hidden");
-  if (!full) {
-    if (CustomTextState.isCustomTextLong() === true) {
-      $(`#customTextPopup .longCustomTextWarning`).removeClass("hidden");
-      $(`#customTextPopup .randomWordsCheckbox input`).prop("checked", false);
-      $(`#customTextPopup .delimiterCheck input`).prop("checked", false);
-      $(`#customTextPopup .typographyCheck`).prop("checked", true);
-      $(`#customTextPopup .replaceNewlineWithSpace input`).prop(
-        "checked",
-        false
+function hide(noAnim = false, noCallback = false): void {
+  if (isPopupVisible(wrapperId)) {
+    $("#savedTextsPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        noAnim ? 0 : 125,
+        () => {
+          $("#savedTextsPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
+          if (callbackFuncOnHide && !noCallback) callbackFuncOnHide();
+        }
       );
-      $(`#customTextPopup .inputs`).addClass("disabled");
-    } else {
-      $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
-      $(`#customTextPopup .inputs`).removeClass("disabled");
-    }
-    $("#customTextPopupWrapper").removeClass("hidden");
   }
-  Skeleton.remove(wrapperId);
 }
 
 function applySaved(name: string, long: boolean): void {
@@ -87,7 +96,7 @@ $("#popups").on(
     const name = $(e.target).text();
     CustomTextState.setCustomTextName(name, false);
     applySaved(name, false);
-    hide();
+    hide(true);
   }
 );
 
@@ -95,7 +104,7 @@ $("#popups").on(
   "click",
   `#savedTextsPopupWrapper .list .savedText .button.delete`,
   () => {
-    hide(true);
+    hide(true, true);
   }
 );
 
@@ -106,7 +115,7 @@ $("#popups").on(
     const name = $(e.target).text();
     CustomTextState.setCustomTextName(name, true);
     applySaved(name, true);
-    hide();
+    hide(true);
   }
 );
 
@@ -114,7 +123,7 @@ $("#popups").on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
   () => {
-    hide(true);
+    hide(true, true);
   }
 );
 
@@ -122,13 +131,13 @@ $("#popups").on(
   "click",
   `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
   () => {
-    hide(true);
+    hide(true, true);
   }
 );
 
 $("#savedTextsPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "savedTextsPopupWrapper") {
-    hide();
+    hide(true);
   }
 });
 
