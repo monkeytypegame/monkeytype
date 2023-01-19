@@ -129,6 +129,7 @@ async function apply(): Promise<void> {
         (preset: MonkeyTypes.Preset) => preset._id === presetId
       )[0];
       preset.name = presetName;
+      preset.display = presetName.replace(/_/g, " ");
       if (updateConfig) {
         preset.config = configChanges;
       }

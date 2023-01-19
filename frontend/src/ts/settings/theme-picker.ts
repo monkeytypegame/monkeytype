@@ -131,6 +131,8 @@ export async function refreshButtons(): Promise<void> {
       const bgColor = customTheme.colors[0];
       const mainColor = customTheme.colors[1];
 
+      console.log(customTheme.colors);
+
       customThemesEl.append(
         `<div class="customTheme button" customThemeId='${customTheme._id}' 
         style="color:${mainColor};background:${bgColor}">
@@ -176,11 +178,28 @@ export async function refreshButtons(): Promise<void> {
         if (Config.favThemes.includes(theme.name)) {
           const activeTheme = activeThemeName === theme.name ? "active" : "";
           favThemesEl.append(
-            `<div class="theme button ${activeTheme}" theme='${theme.name}' 
-            style="color:${theme.mainColor};background:${theme.bgColor}">
-            <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+            `<div class="theme button ${activeTheme}" theme='${
+              theme.name
+            }' style="background: ${theme.bgColor}; color: ${
+              theme.mainColor
+            };outline: 0 solid ${theme.mainColor};">
+            <div class="favButton active"><i class="fas fa-star"></i></div>
             <div class="text">${theme.name.replace(/_/g, " ")}</div>
-            <div class="favButton active"><i class="fas fa-star"></i></div></div>`
+            <div class="themeBubbles" style="background: ${
+              theme["bgColor"]
+            };outline: 0.25rem solid ${theme["bgColor"]};">
+              <div class="themeBubble" style="background: ${
+                theme["mainColor"]
+              }"></div>
+              <div class="themeBubble" style="background: ${
+                theme["subColor"]
+              }"></div>
+              <div class="themeBubble" style="background: ${
+                theme["textColor"]
+              }"></div>
+            </div>
+            </div>
+            `
           );
         }
       });
@@ -197,10 +216,26 @@ export async function refreshButtons(): Promise<void> {
       themesEl.append(
         `<div class="theme button ${activeTheme}" theme='${
           theme.name
-        }' style="color:${theme.mainColor};background:${theme.bgColor}">
-        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+        }' style="background: ${theme.bgColor}; color: ${
+          theme.mainColor
+        };outline: 0 solid ${theme.mainColor};">
+        <div class="favButton"><i class="far fa-star"></i></div>
         <div class="text">${theme.name.replace(/_/g, " ")}</div>
-        <div class="favButton"><i class="far fa-star"></i></div></div>`
+        <div class="themeBubbles" style="background: ${
+          theme["bgColor"]
+        };outline: 0.25rem solid ${theme["bgColor"]};">
+          <div class="themeBubble" style="background: ${
+            theme["mainColor"]
+          }"></div>
+          <div class="themeBubble" style="background: ${
+            theme["subColor"]
+          }"></div>
+          <div class="themeBubble" style="background: ${
+            theme["textColor"]
+          }"></div>
+        </div>
+        </div>
+        `
       );
     });
   }

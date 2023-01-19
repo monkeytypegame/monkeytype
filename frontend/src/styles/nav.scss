@@ -180,13 +180,16 @@
         font-size: 0.65rem;
         line-height: 0.65rem;
         color: var(--sub-color);
-        transition: color 0.25s;
+        transition: color 0.25s, opacity 0.25s;
       }
       position: relative;
       font-size: 2rem;
-      margin-top: -0.4rem;
       font-family: "Lexend Deca";
       transition: color 0.25s;
+      font-weight: unset;
+      margin-block-start: unset;
+      margin-block-end: unset;
+      margin-top: -0.2em;
     }
     white-space: nowrap;
     user-select: none;

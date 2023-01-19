@@ -133,7 +133,7 @@ $(document).on("keypress", (e) => {
   }
 });
 
-$("#cookiePopup .cookie.ads .text-button").on("click", () => {
+$("#cookiePopup .cookie.ads .textButton").on("click", () => {
   try {
     //@ts-ignore
     window.__tcfapi("displayConsentUi", 2, function () {
