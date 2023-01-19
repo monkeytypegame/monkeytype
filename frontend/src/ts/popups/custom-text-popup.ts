@@ -30,7 +30,7 @@ export function updateLongTextWarning(): void {
   }
 }
 
-export function show(): void {
+export function show(noAnim = false): void {
   // Skeleton.append(wrapperId);
   if (!Misc.isElementVisible(wrapper)) {
     updateLongTextWarning();
@@ -48,7 +48,7 @@ export function show(): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 125, () => {
+      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
         let newtext = CustomText.text.join(CustomText.delimiter);
         newtext = newtext.replace(/\n /g, "\n");
         $(`${popup} textarea`).val(newtext);
@@ -61,11 +61,14 @@ export function show(): void {
         $(`${popup} textarea`).trigger("focus");
       });
   }
-  setTimeout(() => {
-    if (!CustomTextState.isCustomTextLong()) {
-      $(`${popup} textarea`).trigger("focus");
-    }
-  }, 150);
+  setTimeout(
+    () => {
+      if (!CustomTextState.isCustomTextLong()) {
+        $(`${popup} textarea`).trigger("focus");
+      }
+    },
+    noAnim ? 10 : 150
+  );
 }
 
 $(`${popup} .delimiterCheck input`).on("change", () => {
@@ -91,7 +94,7 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
   CustomText.setDelimiter(delimiter);
 });
 
-export function hide(): void {
+export function hide(noAnim = false): void {
   if (Misc.isElementVisible(wrapper)) {
     $(wrapper)
       .stop(true, true)
@@ -100,7 +103,7 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        125,
+        noAnim ? 0 : 125,
         () => {
           $(wrapper).addClass("hidden");
           // Skeleton.remove(wrapperId);
@@ -287,7 +290,10 @@ $(document).on("keydown", (event) => {
 });
 
 $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
-  SaveCustomTextPopup.show();
+  hide(true);
+  SaveCustomTextPopup.show(true, () => {
+    show(true);
+  });
 });
 
 $(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
