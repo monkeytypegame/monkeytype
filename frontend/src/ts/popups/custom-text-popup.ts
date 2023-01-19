@@ -165,10 +165,6 @@ $(`${popup} .randomInputFields .time input`).on("keypress", () => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
-$(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
-  SavedTextsPopup.show();
-});
-
 $(`${popup} .buttonsTop .saveCustomText`).on("click", () => {
   hide();
 });
@@ -271,10 +267,6 @@ $("#popups").on("click", `${popup} .button.apply`, () => {
   apply();
 });
 
-$("#popups").on("click", `${popup} .wordfilter`, () => {
-  WordFilterPopup.show();
-});
-
 $(".pageTest").on("click", "#testConfig .customText .textButton", () => {
   show();
 });
@@ -287,6 +279,14 @@ $(document).on("keydown", (event) => {
     hide();
     event.preventDefault();
   }
+});
+
+$("#popups").on("click", `${popup} .wordfilter`, () => {
+  WordFilterPopup.show();
+});
+
+$(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
+  SavedTextsPopup.show();
 });
 
 $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
