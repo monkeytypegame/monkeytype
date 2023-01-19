@@ -4,8 +4,7 @@ import * as Skeleton from "./skeleton";
 
 const wrapperId = "savedTextsPopupWrapper";
 
-export async function show(): Promise<void> {
-  Skeleton.append(wrapperId);
+function fill(): void {
   const names = CustomText.getCustomTextNames();
   const listEl = $(`#savedTextsPopup .list`).empty();
   let list = "";
@@ -42,7 +41,11 @@ export async function show(): Promise<void> {
     }
   }
   longListEl.html(longList);
+}
 
+export async function show(): Promise<void> {
+  Skeleton.append(wrapperId);
+  fill();
   $("#savedTextsPopupWrapper").removeClass("hidden");
   $("#customTextPopupWrapper").addClass("hidden");
 }
