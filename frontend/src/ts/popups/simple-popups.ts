@@ -52,6 +52,7 @@ class SimplePopup {
   beforeInitFn: (thisPopup: SimplePopup) => void;
   beforeShowFn: (thisPopup: SimplePopup) => void;
   canClose: boolean;
+  private noAnimation: boolean;
   constructor(
     id: string,
     type: string,
@@ -80,6 +81,7 @@ class SimplePopup {
     this.beforeInitFn = (thisPopup): void => beforeInitFn(thisPopup);
     this.beforeShowFn = (thisPopup): void => beforeShowFn(thisPopup);
     this.canClose = true;
+    this.noAnimation = false;
   }
   reset(): void {
     this.element.html(`
@@ -208,6 +210,7 @@ class SimplePopup {
   show(parameters: string[] = [], noAnimation = false): void {
     Skeleton.append(wrapperId);
     activePopup = this;
+    this.noAnimation = noAnimation;
     this.parameters = parameters;
     this.beforeInitFn(this);
     this.init();
@@ -228,7 +231,7 @@ class SimplePopup {
       .stop(true, true)
       .css("opacity", 1)
       .removeClass("hidden")
-      .animate({ opacity: 0 }, 125, () => {
+      .animate({ opacity: 0 }, this.noAnimation ? 0 : 125, () => {
         this.wrapper.addClass("hidden");
         Skeleton.remove(wrapperId);
       });
