@@ -10,7 +10,11 @@ import * as PageTransition from "../states/page-transition";
 import * as TestWords from "../test/test-words";
 import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
-import { isAnyPopupVisible, isPopupVisible } from "../utils/misc";
+import {
+  isAnyPopupVisible,
+  isElementVisible,
+  isPopupVisible,
+} from "../utils/misc";
 import { update as updateCustomThemesList } from "./lists/custom-themes-list";
 import { update as updateTagsCommands } from "./lists/tags";
 import * as Skeleton from "../popups/skeleton";
@@ -217,7 +221,7 @@ export let show = (): void => {
   themeChosen = false;
 
   //take last element of array
-  if (!$(".page.pageLoading").hasClass("hidden")) return;
+  if (isElementVisible(".page.pageLoading")) return;
   Focus.set(false);
   Skeleton.append(wrapperId);
   $("#commandLine").removeClass("hidden");
