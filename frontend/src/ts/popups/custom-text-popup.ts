@@ -140,7 +140,7 @@ $(`${popup} .inputs .replaceNewLinesButtons .button`).on("click", (e) => {
 });
 
 $(`${popup} textarea`).on("keypress", (e) => {
-  if (Misc.isElementVisible(`#customTextPopup.longCustomTextWarning`)) {
+  if (Misc.isElementVisible(`#customTextPopup .longCustomTextWarning`)) {
     e.preventDefault();
     return;
   }
