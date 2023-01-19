@@ -109,10 +109,6 @@ export function hide(): void {
   }
 }
 
-export function isVisible(): boolean {
-  return !$(wrapper).hasClass("hidden");
-}
-
 $(wrapper).on("mousedown", (e) => {
   if ($(e.target).attr("id") === "customTextPopupWrapper") {
     hide();
