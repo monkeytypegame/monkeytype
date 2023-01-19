@@ -1,5 +1,6 @@
 import * as Misc from "../utils/misc";
 import Page from "./page";
+import * as Skeleton from "../popups/skeleton";
 
 export function updateBar(percentage: number, fast = false): void {
   const speed = fast ? 100 : 1000;
@@ -46,10 +47,10 @@ export const page = new Page(
     //
   },
   async () => {
-    //
+    Skeleton.remove("pageLoading");
   },
   async () => {
-    //
+    Skeleton.append("pageLoading");
   },
   async () => {
     //
