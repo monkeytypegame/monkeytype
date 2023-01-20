@@ -810,11 +810,6 @@ $("#bottom").on("click", ".leftright .right .current-theme", (e) => {
   }
 });
 
-$(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
-  show();
-});
-
 $(".supportButtons .button.ads").on("click", () => {
   CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
   show();
