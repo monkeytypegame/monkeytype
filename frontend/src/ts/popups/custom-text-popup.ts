@@ -44,6 +44,9 @@ export function show(noAnim = false): void {
     } else {
       $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
     }
+    CustomText.setPopupTextareaState(
+      CustomText.text.join(CustomText.delimiter)
+    );
     $(`${popup} textarea`).val(CustomText.popupTextareaState);
 
     $(wrapper)
@@ -105,9 +108,6 @@ export function hide(noAnim = false): void {
         noAnim ? 0 : 125,
         () => {
           $(wrapper).addClass("hidden");
-          CustomText.setPopupTextareaState(
-            CustomText.text.join(CustomText.delimiter)
-          );
           Skeleton.remove(skeletonId);
         }
       );
