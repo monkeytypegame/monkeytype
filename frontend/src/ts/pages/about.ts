@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
 import intervalToDuration from "date-fns/intervalToDuration";
+import * as Skeleton from "../popups/skeleton";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -133,24 +134,6 @@ async function fill(): Promise<void> {
   });
 }
 
-export const page = new Page(
-  "about",
-  $(".page.pageAbout"),
-  "/about",
-  async () => {
-    //
-  },
-  async () => {
-    reset();
-  },
-  async () => {
-    fill();
-  },
-  async () => {
-    //
-  }
-);
-
 /** Convert histogram data to the format required to draw a bar chart. */
 function getHistogramDataBucketed(data: Record<string, number>): {
   data: { x: number; y: number }[];
@@ -178,3 +161,25 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   }
   return { data: histogramChartDataBucketed, labels };
 }
+
+export const page = new Page(
+  "about",
+  $(".page.pageAbout"),
+  "/about",
+  async () => {
+    //
+  },
+  async () => {
+    reset();
+    Skeleton.remove("pageAbout");
+  },
+  async () => {
+    Skeleton.append("pageAbout", "middle");
+    fill();
+  },
+  async () => {
+    //
+  }
+);
+
+Skeleton.save("pageAbout");
