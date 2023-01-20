@@ -19,6 +19,4 @@ export const page = new Page(
   }
 );
 
-$(() => {
-  Skeleton.save("page404");
-});
+Skeleton.save("page404");
