@@ -24,7 +24,7 @@ $("#supportMeButton").on("click", () => {
   show();
 });
 
-$(".pageAbout").on("click", "#supportMeAboutButton", () => {
+$("#middle").on("click", ".pageAbout #supportMeAboutButton", () => {
   show();
 });
 
