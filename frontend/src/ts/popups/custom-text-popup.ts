@@ -9,9 +9,9 @@ import * as WordFilterPopup from "./word-filter-popup";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as SaveCustomTextPopup from "./save-custom-text-popup";
-// import * as Skeleton from "./skeleton";
+import * as Skeleton from "./skeleton";
 
-// const wrapperId = "customTextPopupWrapper";
+const skeletonId = "customTextPopupWrapper";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
@@ -31,7 +31,7 @@ export function updateLongTextWarning(): void {
 }
 
 export function show(noAnim = false): void {
-  // Skeleton.append(wrapperId);
+  Skeleton.append(skeletonId);
   if (!Misc.isElementVisible(wrapper)) {
     updateLongTextWarning();
     if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
@@ -108,7 +108,7 @@ export function hide(noAnim = false): void {
           CustomText.setPopupTextareaState(
             CustomText.text.join(CustomText.delimiter)
           );
-          // Skeleton.remove(wrapperId);
+          Skeleton.remove(skeletonId);
         }
       );
   }
@@ -312,4 +312,4 @@ $(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
   $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
 });
 
-// Skeleton.save(wrapperId);
+Skeleton.save(skeletonId);
