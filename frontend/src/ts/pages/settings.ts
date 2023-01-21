@@ -410,7 +410,11 @@ export async function fillSettingsPage(): Promise<void> {
   }
 
   // Language Selection Combobox
-  const languageEl = $(".pageSettings .section.language select").empty();
+  const languageEl = document.querySelector(
+    ".pageSettings .section.language select"
+  ) as HTMLSelectElement;
+  languageEl.innerHTML = "";
+  let languageElHTML = "";
 
   let languageGroups;
   try {
@@ -425,7 +429,7 @@ export async function fillSettingsPage(): Promise<void> {
   }
 
   if (languageGroups) {
-    languageGroups.forEach((group) => {
+    for (const group of languageGroups) {
       let langComboBox = `<optgroup label="${group.name}">`;
       group.languages.forEach((language: string) => {
         langComboBox += `<option value="${language}">
@@ -433,17 +437,25 @@ export async function fillSettingsPage(): Promise<void> {
       </option>`;
       });
       langComboBox += `</optgroup>`;
-      languageEl.append(langComboBox);
-    });
+      languageElHTML += langComboBox;
+    }
+    languageEl.innerHTML = languageElHTML;
   }
-  languageEl.select2({
+  $(languageEl).select2({
     width: "100%",
   });
 
-  const layoutEl = $(".pageSettings .section.layout select").empty();
-  layoutEl.append(`<option value='default'>off</option>`);
-  const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
-  keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
+  const layoutEl = document.querySelector(
+    ".pageSettings .section.layout select"
+  ) as HTMLSelectElement;
+  layoutEl.innerHTML = `<option value='default'>off</option>`;
+  let layoutElHTML = "";
+
+  const keymapEl = document.querySelector(
+    ".pageSettings .section.keymapLayout select"
+  ) as HTMLSelectElement;
+  keymapEl.innerHTML = `<option value='overrideSync'>emulator sync</option>`;
+  let keymapElHTML = "";
 
   let layoutsList;
   try {
@@ -453,32 +465,41 @@ export async function fillSettingsPage(): Promise<void> {
   }
 
   if (layoutsList) {
-    Object.keys(layoutsList).forEach((layout) => {
+    for (const layout of Object.keys(layoutsList)) {
       if (layout.toString() !== "korean") {
-        layoutEl.append(
-          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-        );
+        layoutElHTML += `<option value='${layout}'>${layout.replace(
+          /_/g,
+          " "
+        )}</option>`;
       }
       if (layout.toString() != "default") {
-        keymapEl.append(
-          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-        );
+        keymapElHTML += `<option value='${layout}'>${layout.replace(
+          /_/g,
+          " "
+        )}</option>`;
       }
-    });
+    }
+    layoutEl.innerHTML += layoutElHTML;
+    keymapEl.innerHTML += keymapElHTML;
   }
-  layoutEl.select2({
+  $(layoutEl).select2({
     width: "100%",
   });
-  keymapEl.select2({
+  $(keymapEl).select2({
     width: "100%",
   });
 
-  const themeEl1 = $(
+  const themeEl1 = document.querySelector(
     ".pageSettings .section.autoSwitchThemeInputs select.light"
-  ).empty();
-  const themeEl2 = $(
+  ) as HTMLSelectElement;
+  themeEl1.innerHTML = "";
+  let themeEl1HTML = "";
+
+  const themeEl2 = document.querySelector(
     ".pageSettings .section.autoSwitchThemeInputs select.dark"
-  ).empty();
+  ) as HTMLSelectElement;
+  themeEl2.innerHTML = "";
+  let themeEl2HTML = "";
 
   let themes;
   try {
@@ -491,24 +512,22 @@ export async function fillSettingsPage(): Promise<void> {
 
   if (themes) {
     for (const theme of themes) {
-      themeEl1.append(
-        `<option value='${theme.name}'>${theme.name.replace(
-          /_/g,
-          " "
-        )}</option>`
-      );
-      themeEl2.append(
-        `<option value='${theme.name}'>${theme.name.replace(
-          /_/g,
-          " "
-        )}</option>`
-      );
+      themeEl1HTML += `<option value='${theme.name}'>${theme.name.replace(
+        /_/g,
+        " "
+      )}</option>`;
+      themeEl2HTML += `<option value='${theme.name}'>${theme.name.replace(
+        /_/g,
+        " "
+      )}</option>`;
     }
+    themeEl1.innerHTML = themeEl1HTML;
+    themeEl2.innerHTML = themeEl2HTML;
   }
-  themeEl1.select2({
+  $(themeEl1).select2({
     width: "100%",
   });
-  themeEl2.select2({
+  $(themeEl2).select2({
     width: "100%",
   });
 
@@ -519,40 +538,45 @@ export async function fillSettingsPage(): Promise<void> {
     .val(Config.themeDark)
     .trigger("change.select2");
 
-  const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
-  funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
+  const funboxEl = document.querySelector(
+    ".pageSettings .section.funbox .buttons"
+  ) as HTMLDivElement;
+  funboxEl.innerHTML = `<div class="funbox button" funbox='none'>none</div>`;
+  let funboxElHTML = "";
+
   Misc.getFunboxList()
     .then((funboxModes) => {
-      funboxModes.forEach((funbox) => {
+      for (const funbox of funboxModes) {
         if (funbox.name === "mirror") {
-          funboxEl.append(
-            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-              funbox.info
-            }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
-              /_/g,
-              " "
-            )}</div>`
-          );
+          funboxElHTML += `<div class="funbox button" funbox='${
+            funbox.name
+          }' aria-label="${
+            funbox.info
+          }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
+            /_/g,
+            " "
+          )}</div>`;
         } else if (funbox.name === "upside_down") {
-          funboxEl.append(
-            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-              funbox.info
-            }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
-              /_/g,
-              " "
-            )}</div>`
-          );
+          funboxElHTML += `<div class="funbox button" funbox='${
+            funbox.name
+          }' aria-label="${
+            funbox.info
+          }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
+            /_/g,
+            " "
+          )}</div>`;
         } else {
-          funboxEl.append(
-            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-              funbox.info
-            }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
-              /_/g,
-              " "
-            )}</div>`
-          );
+          funboxElHTML += `<div class="funbox button" funbox='${
+            funbox.name
+          }' aria-label="${
+            funbox.info
+          }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
+            /_/g,
+            " "
+          )}</div>`;
         }
-      });
+      }
+      funboxEl.innerHTML = funboxElHTML;
     })
     .catch((e) => {
       Notifications.add(
@@ -562,31 +586,35 @@ export async function fillSettingsPage(): Promise<void> {
     });
 
   let isCustomFont = true;
-  const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
+  const fontsEl = document.querySelector(
+    ".pageSettings .section.fontFamily .buttons"
+  ) as HTMLDivElement;
+  fontsEl.innerHTML = "";
+
+  let fontsElHTML = "";
+
   Misc.getFontsList()
     .then((fonts) => {
-      fonts.forEach((font) => {
+      for (const font of fonts) {
         if (Config.fontFamily === font.name) isCustomFont = false;
-        fontsEl.append(
-          `<div class="button${
-            Config.fontFamily === font.name ? " active" : ""
-          }" style="font-family:${
-            font.display !== undefined ? font.display : font.name
-          }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
+        fontsElHTML += `<div class="button${
+          Config.fontFamily === font.name ? " active" : ""
+        }" style="font-family:${
+          font.display !== undefined ? font.display : font.name
+        }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
         onclick="this.blur();">${
           font.display !== undefined ? font.display : font.name
-        }</div>`
-        );
-      });
+        }</div>`;
+      }
 
-      fontsEl.append(
-        isCustomFont
-          ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
-              /_/g,
-              " "
-            )})</div>`
-          : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
-      );
+      fontsElHTML += isCustomFont
+        ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+            /_/g,
+            " "
+          )})</div>`
+        : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>';
+
+      fontsEl.innerHTML = fontsElHTML;
     })
     .catch((e) => {
       Notifications.add(
@@ -610,9 +638,9 @@ export async function fillSettingsPage(): Promise<void> {
     await initGroups();
     groupsInitialized = true;
   } else {
-    Object.keys(groups).forEach((groupKey) => {
+    for (const groupKey of Object.keys(groups)) {
       groups[groupKey].updateInput();
-    });
+    }
   }
   setEventDisabled(false);
   await ThemePicker.refreshButtons();
@@ -791,9 +819,10 @@ export function showAccountSection(): void {
 }
 
 export function update(): void {
-  Object.keys(groups).forEach((group) => {
+  // Object.keys(groups).forEach((group) => {
+  for (const group of Object.keys(groups)) {
     groups[group].updateInput();
-  });
+  }
 
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
