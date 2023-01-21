@@ -119,8 +119,9 @@ async function fill(): Promise<void> {
     contributors = [];
   }
 
-  await getStatsAndHistogramData();
-  updateStatsAndHistogram();
+  getStatsAndHistogramData().then(() => {
+    updateStatsAndHistogram();
+  });
 
   const supportersEl = document.querySelector(".pageAbout .supporters");
   let supportersHTML = "";
