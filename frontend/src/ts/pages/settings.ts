@@ -820,10 +820,12 @@ export function showAccountSection(): void {
   updateDiscordSection();
 }
 
-export async function update(): Promise<void> {
+export async function update(groupUpdate = true): Promise<void> {
   // Object.keys(groups).forEach((group) => {
-  for (const group of Object.keys(groups)) {
-    groups[group].updateInput();
+  if (groupUpdate) {
+    for (const group of Object.keys(groups)) {
+      groups[group].updateInput();
+    }
   }
 
   refreshTagsSettingsSection();
@@ -1217,7 +1219,7 @@ export const page = new Page(
   async () => {
     Skeleton.append("pageSettings", "middle");
     await fillSettingsPage();
-    await update();
+    await update(false);
   },
   async () => {
     //
