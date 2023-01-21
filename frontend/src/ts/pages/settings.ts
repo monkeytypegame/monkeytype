@@ -544,46 +544,46 @@ export async function fillSettingsPage(): Promise<void> {
   funboxEl.innerHTML = `<div class="funbox button" funbox='none'>none</div>`;
   let funboxElHTML = "";
 
-  Misc.getFunboxList()
-    .then((funboxModes) => {
-      for (const funbox of funboxModes) {
-        if (funbox.name === "mirror") {
-          funboxElHTML += `<div class="funbox button" funbox='${
-            funbox.name
-          }' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`;
-        } else if (funbox.name === "upside_down") {
-          funboxElHTML += `<div class="funbox button" funbox='${
-            funbox.name
-          }' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`;
-        } else {
-          funboxElHTML += `<div class="funbox button" funbox='${
-            funbox.name
-          }' aria-label="${
-            funbox.info
-          }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`;
-        }
+  let funboxList;
+  try {
+    funboxList = await Misc.getFunboxList();
+  } catch (e) {
+    console.error(Misc.createErrorMessage(e, "Failed to get funbox list"));
+  }
+
+  if (funboxList) {
+    for (const funbox of funboxList) {
+      if (funbox.name === "mirror") {
+        funboxElHTML += `<div class="funbox button" funbox='${
+          funbox.name
+        }' aria-label="${
+          funbox.info
+        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
+          /_/g,
+          " "
+        )}</div>`;
+      } else if (funbox.name === "upside_down") {
+        funboxElHTML += `<div class="funbox button" funbox='${
+          funbox.name
+        }' aria-label="${
+          funbox.info
+        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
+          /_/g,
+          " "
+        )}</div>`;
+      } else {
+        funboxElHTML += `<div class="funbox button" funbox='${
+          funbox.name
+        }' aria-label="${
+          funbox.info
+        }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
+          /_/g,
+          " "
+        )}</div>`;
       }
-      funboxEl.innerHTML = funboxElHTML;
-    })
-    .catch((e) => {
-      Notifications.add(
-        Misc.createErrorMessage(e, "Failed to update funbox settings buttons"),
-        -1
-      );
-    });
+    }
+    funboxEl.innerHTML = funboxElHTML;
+  }
 
   let isCustomFont = true;
   const fontsEl = document.querySelector(
@@ -593,35 +593,37 @@ export async function fillSettingsPage(): Promise<void> {
 
   let fontsElHTML = "";
 
-  Misc.getFontsList()
-    .then((fonts) => {
-      for (const font of fonts) {
-        if (Config.fontFamily === font.name) isCustomFont = false;
-        fontsElHTML += `<div class="button${
-          Config.fontFamily === font.name ? " active" : ""
-        }" style="font-family:${
-          font.display !== undefined ? font.display : font.name
-        }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
+  let fontsList;
+  try {
+    fontsList = await Misc.getFontsList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update fonts settings buttons")
+    );
+  }
+
+  if (fontsList) {
+    for (const font of fontsList) {
+      if (Config.fontFamily === font.name) isCustomFont = false;
+      fontsElHTML += `<div class="button${
+        Config.fontFamily === font.name ? " active" : ""
+      }" style="font-family:${
+        font.display !== undefined ? font.display : font.name
+      }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
         onclick="this.blur();">${
           font.display !== undefined ? font.display : font.name
         }</div>`;
-      }
+    }
 
-      fontsElHTML += isCustomFont
-        ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
-            /_/g,
-            " "
-          )})</div>`
-        : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>';
+    fontsElHTML += isCustomFont
+      ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+          /_/g,
+          " "
+        )})</div>`
+      : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>';
 
-      fontsEl.innerHTML = fontsElHTML;
-    })
-    .catch((e) => {
-      Notifications.add(
-        Misc.createErrorMessage(e, "Failed to update fonts settings buttons"),
-        -1
-      );
-    });
+    fontsEl.innerHTML = fontsElHTML;
+  }
 
   $(".pageSettings .section.customBackgroundSize input").val(
     Config.customBackground
@@ -633,16 +635,6 @@ export async function fillSettingsPage(): Promise<void> {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
-  setEventDisabled(true);
-  if (!groupsInitialized) {
-    await initGroups();
-    groupsInitialized = true;
-  } else {
-    for (const groupKey of Object.keys(groups)) {
-      groups[groupKey].updateInput();
-    }
-  }
-  setEventDisabled(false);
   await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;
 }
