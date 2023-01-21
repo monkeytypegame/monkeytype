@@ -19,10 +19,15 @@ export function updateActiveButton(): void {
   ) {
     activeThemeName = ThemeController.randomTheme as string;
   }
-  $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${activeThemeName}]`).addClass(
-    "active"
-  );
+
+  document
+    .querySelector(`.pageSettings .section.themes .theme`)
+    ?.classList.remove("active");
+  document
+    .querySelector(
+      `.pageSettings .section.themes .theme[theme=${activeThemeName}]`
+    )
+    ?.classList.add("active");
 }
 
 function updateColors(
