@@ -142,12 +142,16 @@ export async function refreshButtons(): Promise<void> {
     });
   } else {
     // Update theme buttons
-    const favThemesEl = $(
+    const favThemesEl = document.querySelector(
       ".pageSettings .section.themes .favThemes.buttons"
-    ).empty();
-    const themesEl = $(
+    ) as HTMLElement;
+    favThemesEl.innerHTML = "";
+    let favThemesElHTML = "";
+    const themesEl = document.querySelector(
       ".pageSettings .section.themes .allThemes.buttons"
-    ).empty();
+    ) as HTMLElement;
+    themesEl.innerHTML = "";
+    let themesElHTML = "";
 
     let activeThemeName = Config.theme;
     if (
@@ -171,16 +175,15 @@ export async function refreshButtons(): Promise<void> {
 
     //first show favourites
     if (Config.favThemes.length > 0) {
-      favThemesEl.css({ paddingBottom: "1rem" });
-      themes.forEach((theme) => {
+      favThemesEl.style.paddingBottom = "1rem";
+      for (const theme of themes) {
         if (Config.favThemes.includes(theme.name)) {
           const activeTheme = activeThemeName === theme.name ? "active" : "";
-          favThemesEl.append(
-            `<div class="theme button ${activeTheme}" theme='${
-              theme.name
-            }' style="background: ${theme.bgColor}; color: ${
-              theme.mainColor
-            };outline: 0 solid ${theme.mainColor};">
+          favThemesElHTML += `<div class="theme button ${activeTheme}" theme='${
+            theme.name
+          }' style="background: ${theme.bgColor}; color: ${
+            theme.mainColor
+          };outline: 0 solid ${theme.mainColor};">
             <div class="favButton active"><i class="fas fa-star"></i></div>
             <div class="text">${theme.name.replace(/_/g, " ")}</div>
             <div class="themeBubbles" style="background: ${
@@ -197,26 +200,25 @@ export async function refreshButtons(): Promise<void> {
               }"></div>
             </div>
             </div>
-            `
-          );
+            `;
         }
-      });
+      }
+      favThemesEl.innerHTML = favThemesElHTML;
     } else {
-      favThemesEl.css({ paddingBottom: "0" });
+      favThemesEl.style.paddingBottom = "0";
     }
     //then the rest
-    themes.forEach((theme) => {
+    for (const theme of themes) {
       if (Config.favThemes.includes(theme.name)) {
         return;
       }
 
       const activeTheme = activeThemeName === theme.name ? "active" : "";
-      themesEl.append(
-        `<div class="theme button ${activeTheme}" theme='${
-          theme.name
-        }' style="background: ${theme.bgColor}; color: ${
-          theme.mainColor
-        };outline: 0 solid ${theme.mainColor};">
+      themesElHTML += `<div class="theme button ${activeTheme}" theme='${
+        theme.name
+      }' style="background: ${theme.bgColor}; color: ${
+        theme.mainColor
+      };outline: 0 solid ${theme.mainColor};">
         <div class="favButton"><i class="far fa-star"></i></div>
         <div class="text">${theme.name.replace(/_/g, " ")}</div>
         <div class="themeBubbles" style="background: ${
@@ -233,9 +235,9 @@ export async function refreshButtons(): Promise<void> {
           }"></div>
         </div>
         </div>
-        `
-      );
-    });
+        `;
+    }
+    themesEl.innerHTML = themesElHTML;
   }
   updateActiveButton();
 }
