@@ -544,6 +544,8 @@ export function restart(options = {} as RestartOptions): void {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").val(" ");
       AdController.destroyResult();
+      $("#resultWordsHistory .words").empty();
+      $("#resultReplay #replayWords").empty();
       let shouldQuoteRepeat = false;
       if (
         Config.mode === "quote" &&
