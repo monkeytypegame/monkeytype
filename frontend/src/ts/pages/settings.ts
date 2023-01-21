@@ -635,6 +635,16 @@ export async function fillSettingsPage(): Promise<void> {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
+  setEventDisabled(true);
+  if (!groupsInitialized) {
+    await initGroups();
+    groupsInitialized = true;
+  } else {
+    for (const groupKey of Object.keys(groups)) {
+      groups[groupKey].updateInput();
+    }
+  }
+  setEventDisabled(false);
   await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;
 }
