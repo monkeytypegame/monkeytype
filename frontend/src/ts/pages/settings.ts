@@ -445,6 +445,8 @@ export async function fillSettingsPage(): Promise<void> {
     width: "100%",
   });
 
+  await Misc.sleep(0);
+
   const layoutEl = document.querySelector(
     ".pageSettings .section.layout select"
   ) as HTMLSelectElement;
@@ -489,6 +491,8 @@ export async function fillSettingsPage(): Promise<void> {
     width: "100%",
   });
 
+  await Misc.sleep(0);
+
   const themeEl1 = document.querySelector(
     ".pageSettings .section.autoSwitchThemeInputs select.light"
   ) as HTMLSelectElement;
@@ -530,6 +534,8 @@ export async function fillSettingsPage(): Promise<void> {
   $(themeEl2).select2({
     width: "100%",
   });
+
+  await Misc.sleep(0);
 
   $(`.pageSettings .section.autoSwitchThemeInputs select.light`)
     .val(Config.themeLight)
@@ -584,6 +590,8 @@ export async function fillSettingsPage(): Promise<void> {
     }
     funboxEl.innerHTML = funboxElHTML;
   }
+
+  await Misc.sleep(0);
 
   let isCustomFont = true;
   const fontsEl = document.querySelector(
@@ -646,6 +654,7 @@ export async function fillSettingsPage(): Promise<void> {
     }
   }
   setEventDisabled(false);
+  await Misc.sleep(0);
   await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;
 }
@@ -833,10 +842,11 @@ export async function update(groupUpdate = true): Promise<void> {
   refreshPresetsSettingsSection();
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
-  ThemePicker.updateActiveTab(true);
-  ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   updateAuthSections();
+  await Misc.sleep(0);
+  ThemePicker.updateActiveTab(true);
+  ThemePicker.setCustomInputs(true);
   // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
