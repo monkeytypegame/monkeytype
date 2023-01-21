@@ -122,16 +122,23 @@ async function fill(): Promise<void> {
   await getStatsAndHistogramData();
   updateStatsAndHistogram();
 
-  supporters.forEach((supporter) => {
-    $(".pageAbout .supporters").append(`
-      <div>${supporter}</div>
-    `);
-  });
-  contributors.forEach((contributor) => {
-    $(".pageAbout .contributors").append(`
-      <div>${contributor}</div>
-    `);
-  });
+  const supportersEl = document.querySelector(".pageAbout .supporters");
+  let supportersHTML = "";
+  for (const supporter of supporters) {
+    supportersHTML += `<div>${supporter}</div>`;
+  }
+  if (supportersEl) {
+    supportersEl.innerHTML = supportersHTML;
+  }
+
+  const contributorsEl = document.querySelector(".pageAbout .contributors");
+  let contributorsHTML = "";
+  for (const contributor of contributors) {
+    contributorsHTML += `<div>${contributor}</div>`;
+  }
+  if (contributorsEl) {
+    contributorsEl.innerHTML = contributorsHTML;
+  }
 }
 
 /** Convert histogram data to the format required to draw a bar chart. */
