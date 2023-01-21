@@ -635,6 +635,7 @@ export async function fillSettingsPage(): Promise<void> {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
+  await Misc.sleep(0);
   setEventDisabled(true);
   if (!groupsInitialized) {
     await initGroups();
@@ -1219,6 +1220,7 @@ export const page = new Page(
   async () => {
     Skeleton.append("pageSettings", "middle");
     await fillSettingsPage();
+    await Misc.sleep(0);
     await update(false);
   },
   async () => {
