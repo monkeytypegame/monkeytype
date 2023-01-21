@@ -17,6 +17,7 @@ import Page from "./page";
 import { Auth } from "../firebase";
 import Ape from "../ape";
 import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
+import * as Skeleton from "../popups/skeleton";
 
 interface SettingsGroups {
   [key: string]: SettingsGroup;
@@ -828,6 +829,25 @@ export function update(): void {
   } else {
     $(".pageSettings .section.customBackgroundFilter").addClass("hidden");
   }
+
+  if (Auth?.currentUser) {
+    showAccountSection();
+  } else {
+    hideAccountSection();
+  }
+
+  const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
+    ? "cmd"
+    : "ctrl";
+  if (Config.quickRestart === "esc") {
+    $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (<key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
+  } else {
+    $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (<key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
+  }
 }
 
 function toggleSettingsGroup(groupName: string): void {
@@ -1091,7 +1111,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
   }
 );
 
-$(".quickNav .links a").on("click", (e) => {
+$(".pageSettings .quickNav .links a").on("click", (e) => {
   const settingsGroup = e.target.innerText;
   const isOpen = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
     "slideup"
@@ -1160,9 +1180,11 @@ export const page = new Page(
     //
   },
   async () => {
+    Skeleton.remove("pageSettings");
     reset();
   },
   async () => {
+    Skeleton.append("pageSettings", "middle");
     await fillSettingsPage();
     update();
   },
@@ -1170,3 +1192,7 @@ export const page = new Page(
     //
   }
 );
+
+$(() => {
+  Skeleton.save("pageSettings");
+});
