@@ -5,6 +5,7 @@ import * as PbTables from "../account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
 import * as UserReportPopup from "../popups/user-report-popup";
+import * as Skeleton from "../popups/skeleton";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");
@@ -206,9 +207,11 @@ export const page = new Page(
     //
   },
   async () => {
+    Skeleton.remove("pageProfile");
     reset();
   },
   async (options) => {
+    Skeleton.append("pageProfile", "middle");
     const uidOrName = options?.params?.["uidOrName"];
     if (uidOrName) {
       $(".page.pageProfile .preloader").removeClass("hidden");
@@ -229,3 +232,5 @@ export const page = new Page(
     //
   }
 );
+
+Skeleton.save("pageProfile");
