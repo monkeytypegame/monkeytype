@@ -820,7 +820,7 @@ export function showAccountSection(): void {
   updateDiscordSection();
 }
 
-export function update(): void {
+export async function update(): Promise<void> {
   // Object.keys(groups).forEach((group) => {
   for (const group of Object.keys(groups)) {
     groups[group].updateInput();
@@ -1217,7 +1217,7 @@ export const page = new Page(
   async () => {
     Skeleton.append("pageSettings", "middle");
     await fillSettingsPage();
-    update();
+    await update();
   },
   async () => {
     //
