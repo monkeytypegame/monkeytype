@@ -15,7 +15,7 @@ import * as Misc from "../utils/misc";
 import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
-
+import * as Skeleton from "../popups/skeleton";
 import type { ScaleChartOptions } from "chart.js";
 
 let filterDebug = false;
@@ -1256,8 +1256,10 @@ export const page = new Page(
   async () => {
     reset();
     ResultFilters.removeButtons();
+    Skeleton.remove("pageAccount");
   },
   async () => {
+    Skeleton.append("pageAccount", "middle");
     await ResultFilters.appendButtons();
     ResultFilters.updateActive();
     if (DB.getSnapshot()?.results == undefined) {
@@ -1271,3 +1273,7 @@ export const page = new Page(
     //
   }
 );
+
+$(() => {
+  Skeleton.save("pageAccount");
+});
