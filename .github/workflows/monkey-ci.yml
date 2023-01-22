@@ -3,6 +3,11 @@ name: Monkey CI
 env:
   NODE_VERSION: "16.13.2"
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 on:
   pull_request:
     branches: [master]
@@ -146,3 +151,22 @@ jobs:
       - name: Validate other JSON
         if: steps.filter.outputs.other-json == 'true'
         run: npm run pr-check-other-json
+
+  on-failure:
+    permissions: write-all
+    name: on-failure
+    runs-on: ubuntu-latest
+    needs: [ci-be, ci-fe, ci-assets]
+    if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
+    steps:
+      - name: Comment on PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Continuous integration check(s) failed. Please review the failing check\'s logs and make the necessary changes. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+            })

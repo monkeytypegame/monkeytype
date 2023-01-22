@@ -360,7 +360,6 @@ declare namespace MonkeyTypes {
     wpm: number[];
     raw: number[];
     err: number[];
-    unsmoothedRaw?: number[];
   }
 
   interface KeyStats {
@@ -413,7 +412,6 @@ declare namespace MonkeyTypes {
     keySpacing: number[] | "toolong";
     keyDuration: number[] | "toolong";
     customText: MonkeyTypes.CustomText;
-    smoothConsistency: number;
     wpmConsistency: number;
     lang: string;
     challenge?: string | null;
@@ -435,7 +433,7 @@ declare namespace MonkeyTypes {
     level?: number;
   }
 
-  type ReportTypes = "quote";
+  type ReportTypes = "quote" | "user";
 
   interface Report {
     _id: ObjectId;

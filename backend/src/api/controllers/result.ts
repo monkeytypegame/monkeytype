@@ -60,7 +60,13 @@ export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const results = await ResultDAL.getResults(uid);
+  const onOrAfterTimestamp = parseInt(
+    req.query.onOrAfterTimestamp as string,
+    10
+  );
+  const results = await ResultDAL.getResults(uid, {
+    onOrAfterTimestamp,
+  });
   return new MonkeyResponse("Results retrieved", results);
 }
 
@@ -406,6 +412,18 @@ export async function addResult(
     streak
   );
 
+  if (xpGained.xp < 0) {
+    throw new MonkeyError(
+      500,
+      "Calculated XP is negative",
+      JSON.stringify({
+        xpGained,
+        result,
+      }),
+      uid
+    );
+  }
+
   const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
   let weeklyXpLeaderboardRank = -1;
   const eligibleForWeeklyXpLeaderboard =
@@ -450,6 +468,8 @@ export async function addResult(
   if (result.incompleteTestSeconds === 0) delete result.incompleteTestSeconds;
   if (result.afkDuration === 0) delete result.afkDuration;
   if (result.tags.length === 0) delete result.tags;
+
+  delete result.incompleteTests;
 
   const addedResult = await ResultDAL.addResult(uid, result);
 

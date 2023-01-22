@@ -41,7 +41,7 @@
   },
   {
     "name": "swiss_german",
-    "languages": ["swiss_german", "swiss_german_1k"]
+    "languages": ["swiss_german", "swiss_german_1k", "swiss_german_2k"]
   },
   {
     "name": "portuguese",
@@ -120,6 +120,16 @@
       "ukrainian_10k",
       "ukrainian_50k",
       "ukrainian_endings"
+    ]
+  },
+  {
+    "name": "ukrainian_latynka",
+    "languages": [
+      "ukrainian_latynka",
+      "ukrainian_latynka_1k",
+      "ukrainian_latynka_10k",
+      "ukrainian_latynka_50k",
+      "ukrainian_latynka_endings"
     ]
   },
   {
@@ -362,6 +372,10 @@
     ]
   },
   {
+    "name": "uzbek",
+    "languages": ["uzbek", "uzbek_1k"]
+  },
+  {
     "name": "belarusian",
     "languages": ["belarusian_1k"]
   },
@@ -390,52 +404,6 @@
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
   {
-    "name": "code",
-    "languages": [
-      "code_python",
-      "code_python_1k",
-      "code_python_2k",
-      "code_python_5k",
-      "code_c",
-      "code_csharp",
-      "code_c++",
-      "code_dart",
-      "code_brainfck",
-      "code_fsharp",
-      "code_javascript",
-      "code_javascript_1k",
-      "code_julia",
-      "code_haskell",
-      "code_html",
-      "code_pascal",
-      "code_java",
-      "code_kotlin",
-      "code_go",
-      "code_rust",
-      "code_ruby",
-      "code_r",
-      "code_swift",
-      "code_scala",
-      "code_bash",
-      "code_powershell",
-      "code_lua",
-      "code_luau",
-      "code_matlab",
-      "code_sql",
-      "code_perl",
-      "code_php",
-      "code_vim",
-      "code_vimscript",
-      "code_opencl",
-      "code_visual_basic",
-      "code_arduino",
-      "code_systemverilog",
-      "code_elixir",
-      "code_zig",
-      "code_gdscript"
-    ]
-  },
-  {
     "name": "other",
     "languages": [
       "lojban_gismu",
@@ -460,5 +428,59 @@
   {
     "name": "kyrgyz",
     "languages": ["kyrgyz"]
+  },
+  {
+    "name": "yiddish",
+    "languages": ["yiddish"]
+  },
+  {
+    "name": "code",
+    "languages": [
+      "code_python",
+      "code_python_1k",
+      "code_python_2k",
+      "code_python_5k",
+      "code_c",
+      "code_csharp",
+      "code_c++",
+      "code_dart",
+      "code_brainfck",
+      "code_fsharp",
+      "code_javascript",
+      "code_javascript_1k",
+      "code_julia",
+      "code_haskell",
+      "code_html",
+      "code_nim",
+      "code_pascal",
+      "code_java",
+      "code_kotlin",
+      "code_go",
+      "code_rust",
+      "code_ruby",
+      "code_r",
+      "code_r_2k",
+      "code_swift",
+      "code_scala",
+      "code_bash",
+      "code_powershell",
+      "code_lua",
+      "code_luau",
+      "code_latex",
+      "code_matlab",
+      "code_sql",
+      "code_perl",
+      "code_php",
+      "code_vim",
+      "code_vimscript",
+      "code_opencl",
+      "code_visual_basic",
+      "code_arduino",
+      "code_systemverilog",
+      "code_elixir",
+      "code_zig",
+      "code_gdscript",
+      "code_assembly"
+    ]
   }
 ]

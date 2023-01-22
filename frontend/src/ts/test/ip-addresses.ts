@@ -4,13 +4,19 @@ function getRandomIPvXaddress(
   bits: number,
   parts: number,
   base: number,
+  pad: boolean,
   separator: string
 ): string {
   const addr: string[] = [];
   const b = Math.round(bits / parts);
   for (let i = 0; i < parts; i++) {
     const n = randomIntFromRange(0, 2 ** b - 1);
-    addr.push(n.toString(base));
+    let part = n.toString(base);
+    if (pad) {
+      const width = Math.ceil(b / Math.ceil(Math.log2(base)));
+      part = "0".repeat(Math.max(0, width - part.length)) + part;
+    }
+    addr.push(part);
   }
   return addr.join(separator);
 }
@@ -44,11 +50,11 @@ function getIPCidr(
 }
 
 export function getRandomIPv4address(): string {
-  return getRandomIPvXaddress(32, 4, 10, ".");
+  return getRandomIPvXaddress(32, 4, 10, false, ".");
 }
 
 export function getRandomIPv6address(): string {
-  return getRandomIPvXaddress(128, 8, 16, ":");
+  return getRandomIPvXaddress(128, 8, 16, true, ":");
 }
 
 export function addressToCIDR(addr: string): string {

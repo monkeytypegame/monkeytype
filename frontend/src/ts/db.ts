@@ -46,13 +46,15 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(16);
     // }
     // LoadingPage.updateText("Downloading user...");
-    const [userResponse, configResponse, tagsResponse, presetsResponse] =
-      await Promise.all([
-        Ape.users.getData(),
-        Ape.configs.get(),
-        Ape.users.getTags(),
-        Ape.presets.get(),
-      ]);
+
+    //getData recreates the user if it doesnt exist - thats why it needs to be called first, by itself
+    const userResponse = await Ape.users.getData();
+
+    const [configResponse, tagsResponse, presetsResponse] = await Promise.all([
+      Ape.configs.get(),
+      Ape.users.getTags(),
+      Ape.presets.get(),
+    ]);
 
     if (userResponse.status !== 200) {
       throw {

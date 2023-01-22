@@ -47,6 +47,7 @@ async function handleDailyLeaderboardResults(
 
     allResults.forEach((entry) => {
       const rank = entry.rank ?? maxResults;
+      const wpm = Math.round(entry.wpm);
 
       const placementString = getOrdinalNumberString(rank);
 
@@ -67,7 +68,7 @@ async function handleDailyLeaderboardResults(
 
       const rewardMail = buildMonkeyMail({
         subject: "Daily leaderboard placement",
-        body: `Congratulations ${entry.name} on placing ${placementString} in the ${language} ${mode} ${mode2} daily leaderboard!`,
+        body: `Congratulations ${entry.name} on placing ${placementString} with ${wpm} wpm in the ${language} ${mode} ${mode2} daily leaderboard!`,
         rewards: [
           {
             type: "xp",

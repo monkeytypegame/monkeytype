@@ -43,7 +43,7 @@ async function errorHandlingMiddleware(
       try {
         await Logger.logToDb(
           "system_error",
-          `${monkeyResponse.status} ${error.message} ${error.stack}`,
+          `${monkeyResponse.status} ${errorId} ${error.message} ${error.stack}`,
           uid
         );
         await db.collection<any>("errors").insertOne({
@@ -61,6 +61,10 @@ async function errorHandlingMiddleware(
       }
     } else {
       Logger.error(`Error: ${error.message} Stack: ${error.stack}`);
+    }
+
+    if (monkeyResponse.status < 500) {
+      delete monkeyResponse.data["errorId"];
     }
 
     return handleMonkeyResponse(monkeyResponse, res);

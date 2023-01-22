@@ -121,9 +121,9 @@
             Our advertising partner may use cookies to deliver ads that are more
             relevant to you.
           </div>
-          <a class="text-button">
+          <div class="textButton">
             Click to change your preferences on ad related cookies
-          </a>
+          </div>
         </label>
       </div>
       <div class="button active acceptSelected">Accept selected</div>
@@ -736,6 +736,36 @@
     <div class="button submit">Report</div>
   </div>
 </div>
+<div id="userReportPopupWrapper" class="popupWrapper hidden">
+  <div id="userReportPopup" mode="">
+    <div class="title">Report a User</div>
+    <div class="text">
+      Please report users responsibly. Please add comments in English only.
+      Misuse may result in you losing access to this feature.
+    </div>
+    <label>user</label>
+    <div class="user"></div>
+    <label>reason</label>
+    <select name="report-reason" class="reason">
+      <option value="Inappropriate name">Inappropriate name</option>
+      <option value="Inappropriate bio">Inappropriate bio</option>
+      <option value="Inappropriate social links">
+        Inappropriate social links
+      </option>
+      <option value="Suspected cheating">Suspected cheating</option>
+    </select>
+    <label>comment</label>
+    <div style="position: relative">
+      <textarea class="comment" type="text" autocomplete="off"></textarea>
+      <div class="characterCount">-</div>
+    </div>
+    <div
+      class="g-recaptcha"
+      data-sitekey="6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+    ></div>
+    <div class="button submit">Report</div>
+  </div>
+</div>
 <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
   <div id="quoteApprovePopup" mode="">
     <div class="top">
@@ -966,6 +996,7 @@
         class="button"
         target="_blank"
         href="mailto:jack@monkeytype.com?subject=[Question] "
+        rel="noopener"
       >
         <div class="icon"><i class="fas fa-question-circle"></i></div>
         <div class="textGroup">
@@ -977,6 +1008,7 @@
         class="button"
         target="_blank"
         href="mailto:jack@monkeytype.com?subject=[Feedback] "
+        rel="noopener"
       >
         <div class="icon"><i class="fas fa-comment-dots"></i></div>
         <div class="textGroup">
@@ -988,6 +1020,7 @@
         class="button"
         target="_blank"
         href="mailto:jack@monkeytype.com?subject=[Bug] "
+        rel="noopener"
       >
         <div class="icon"><i class="fas fa-bug"></i></div>
         <div class="textGroup">
@@ -999,6 +1032,7 @@
         class="button"
         target="_blank"
         href="mailto:jack@monkeytype.com?subject=[Account] "
+        rel="noopener"
       >
         <div class="icon"><i class="fas fa-user-circle"></i></div>
         <div class="textGroup">
@@ -1010,6 +1044,7 @@
         class="button"
         target="_blank"
         href="mailto:jack@monkeytype.com?subject=[Business] "
+        rel="noopener"
       >
         <div class="icon"><i class="fas fa-briefcase"></i></div>
         <div class="textGroup">
@@ -1021,6 +1056,7 @@
         class="button"
         target="_blank"
         href="mailto:jack@monkeytype.com?subject=[Other] "
+        rel="noopener"
       >
         <div class="icon"><i class="fas fa-ellipsis-h"></i></div>
         <div class="textGroup">

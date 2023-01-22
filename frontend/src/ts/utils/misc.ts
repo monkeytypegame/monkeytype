@@ -1350,3 +1350,15 @@ export function camelCaseToWords(str: string): string {
     .trim()
     .toLowerCase();
 }
+
+export function loadCSS(href: string, prepend = false): void {
+  const link = document.createElement("link");
+  link.type = "text/css";
+  link.rel = "stylesheet";
+  link.href = href;
+  if (prepend) {
+    document.getElementsByTagName("head")[0].prepend(link);
+  } else {
+    document.getElementsByTagName("head")[0].appendChild(link);
+  }
+}
