@@ -399,9 +399,9 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
             },
           },
         },
-        scheduleResultsModeRules: {
+        scheduleRewardsModeRules: {
           type: "array",
-          label: "Schedule Results Mode Rules",
+          label: "Schedule Rewards Mode Rules",
           items: {
             type: "object",
             label: "Rule",
