@@ -71,7 +71,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     maxResults: 0,
     leaderboardExpirationTimeInDays: 0,
     validModeRules: [],
-    scheduleResultsModeRules: [],
+    scheduleRewardsModeRules: [],
     // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
     dailyLeaderboardCacheSize: 1,
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.

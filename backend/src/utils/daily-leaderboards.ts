@@ -95,7 +95,7 @@ export class DailyLeaderboard {
     if (
       isValidModeRule(
         this.modeRule,
-        dailyLeaderboardsConfig.scheduleResultsModeRules
+        dailyLeaderboardsConfig.scheduleRewardsModeRules
       )
     ) {
       await LaterQueue.scheduleForTomorrow(
