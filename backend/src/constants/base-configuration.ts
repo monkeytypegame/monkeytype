@@ -71,6 +71,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     maxResults: 0,
     leaderboardExpirationTimeInDays: 0,
     validModeRules: [],
+    scheduleRewardsModeRules: [],
     // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
     dailyLeaderboardCacheSize: 1,
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
@@ -379,6 +380,28 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema = {
         validModeRules: {
           type: "array",
           label: "Valid Mode Rules",
+          items: {
+            type: "object",
+            label: "Rule",
+            fields: {
+              language: {
+                type: "string",
+                label: "Language",
+              },
+              mode: {
+                type: "string",
+                label: "Mode",
+              },
+              mode2: {
+                type: "string",
+                label: "Secondary Mode",
+              },
+            },
+          },
+        },
+        scheduleRewardsModeRules: {
+          type: "array",
+          label: "Schedule Rewards Mode Rules",
           items: {
             type: "object",
             label: "Rule",
