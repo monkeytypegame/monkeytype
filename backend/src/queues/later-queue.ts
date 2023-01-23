@@ -52,7 +52,7 @@ class LaterQueue extends MonkeyQueue<LaterTask> {
       delay,
       jobId, // Prevent duplicate jobs
       backoff: 60 * ONE_MINUTE_IN_MILLISECONDS, // Try again every hour on failure
-      attempts: 24,
+      attempts: 23,
     });
 
     this.scheduledJobCache.set(jobId, true);
