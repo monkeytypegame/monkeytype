@@ -1679,13 +1679,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // user is logged in
 
-  if (
-    Config.difficulty == "normal" ||
-    ((Config.difficulty == "master" || Config.difficulty == "expert") &&
-      !difficultyFailed)
-  ) {
-    TestStats.resetIncomplete();
-  }
+  TestStats.resetIncomplete();
 
   completedEvent.uid = Auth?.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.randomQuote);
