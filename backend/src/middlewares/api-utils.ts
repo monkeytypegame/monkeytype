@@ -14,7 +14,7 @@ const emptyMiddleware = (
   _req: MonkeyTypes.Request,
   _res: Response,
   next: NextFunction
-): RequestHandler => next;
+): void => next();
 
 /**
  * This utility checks that the server's configuration matches
