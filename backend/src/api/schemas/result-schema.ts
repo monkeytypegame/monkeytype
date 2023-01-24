@@ -7,19 +7,19 @@ const RESULT_SCHEMA = joi
     bailedOut: joi.boolean().required(),
     blindMode: joi.boolean().required(),
     challenge: joi.string(),
-    charStats: joi.array().items(joi.number()).required(),
+    charStats: joi.array().items(joi.number().min(0)).required(),
     chartData: joi
       .alternatives()
       .try(
         joi.object({
-          wpm: joi.array().items(joi.number()).required(),
-          raw: joi.array().items(joi.number()).required(),
-          err: joi.array().items(joi.number()).required(),
+          wpm: joi.array().items(joi.number().min(0)).required(),
+          raw: joi.array().items(joi.number().min(0)).required(),
+          err: joi.array().items(joi.number().min(0)).required(),
         }),
         joi.string().valid("toolong")
       )
       .required(),
-    consistency: joi.number().max(100).required(),
+    consistency: joi.number().min(0).max(100).required(),
     customText: joi.object({
       textLen: joi.number().required(),
       isWordRandom: joi.boolean().required(),
@@ -30,15 +30,17 @@ const RESULT_SCHEMA = joi
     difficulty: joi.string().valid("normal", "expert", "master").required(),
     funbox: joi.string().required(),
     hash: joi.string().required(),
-    incompleteTestSeconds: joi.number().required(),
-    incompleteTests: joi.array().items(
-      joi.object({
-        acc: joi.number().min(0).max(100).required(),
-        seconds: joi.number().min(0).required(),
-      })
-    ),
-    // .required(), //add required after a few days
-    keyConsistency: joi.number().required(),
+    incompleteTestSeconds: joi.number().min(0).required(),
+    incompleteTests: joi
+      .array()
+      .items(
+        joi.object({
+          acc: joi.number().min(0).max(100).required(),
+          seconds: joi.number().min(0).required(),
+        })
+      )
+      .required(),
+    keyConsistency: joi.number().min(0).required(),
     keyDuration: joi
       .alternatives()
       .try(joi.array().items(joi.number()), joi.string().valid("toolong")),
@@ -65,7 +67,7 @@ const RESULT_SCHEMA = joi
     timestamp: joi.date().timestamp().required(),
     uid: joi.string().required(),
     wpm: joi.number().min(0).max(350).required(),
-    wpmConsistency: joi.number().required(),
+    wpmConsistency: joi.number().min(0).required(),
   })
   .required();
 
