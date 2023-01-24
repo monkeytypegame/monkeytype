@@ -171,6 +171,7 @@ declare namespace MonkeyTypes {
     timeTyping?: number;
     uid: string;
     quoteMod?: boolean;
+    configurationMod?: boolean;
     cannotReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
