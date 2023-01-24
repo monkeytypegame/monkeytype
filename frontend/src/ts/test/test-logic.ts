@@ -997,7 +997,7 @@ export async function init(): Promise<void> {
           TestWords.setHasTab(true);
         }
 
-        const te = randomWord.replace(/\n/g, "\n ").replace(/ $/gm, "");
+        const te = randomWord.replace(/\n/g, "\n ").replace(/ $/g, "");
 
         if (/ +/.test(te)) {
           const randomList = te.split(" ");
