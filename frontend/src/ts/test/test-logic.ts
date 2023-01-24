@@ -769,7 +769,7 @@ async function getNextWord(
   }
 
   randomWord = randomWord.replace(/ +/gm, " ");
-  randomWord = randomWord.replace(/^ | $/gm, "");
+  randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
   randomWord = getFunboxWord(randomWord, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
