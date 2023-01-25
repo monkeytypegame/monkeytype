@@ -1230,7 +1230,6 @@ export const page = new Page(
   async () => {
     Skeleton.append("pageSettings", "middle");
     await fillSettingsPage();
-    await Misc.sleep(0);
     await update(false);
   },
   async () => {
