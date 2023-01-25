@@ -40,10 +40,6 @@ jobs:
           git add .
           git commit -m 'Prettier fix'
 
-      - name: Early Exit
-        if: steps.commits.outputs.status == 'failure'
-        run: exit 0
-
       - name: Create pull request
         uses: peter-evans/create-pull-request@v4
         with:
