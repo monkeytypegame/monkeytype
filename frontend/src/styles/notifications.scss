@@ -13,37 +13,46 @@
   .notif {
     user-select: none;
     .icon {
-      color: var(--bg-color);
-      opacity: 0.5;
+      color: var(--sub-color);
       padding: 1rem 1rem;
       align-items: center;
       display: grid;
-      font-size: 1.25rem;
+      font-size: 1.25em;
     }
     .message {
       padding: 1rem 1rem 1rem 0;
+      color: var(--text-color);
       .title {
-        color: var(--bg-color);
+        color: var(--sub-color);
         font-size: 0.75em;
-        opacity: 0.5;
-        line-height: 0.75rem;
       }
     }
 
     position: relative;
-    background: var(--sub-color);
-    color: var(--bg-color);
+    background: var(--sub-alt-color);
+    color: var(--sub-color);
     display: grid;
     grid-template-columns: min-content auto min-content;
     border-radius: var(--roundness);
-    border-width: 0.25rem;
+    outline-width: 0.25em;
+    outline-style: solid;
+    outline-color: var(--sub-color);
 
     &.bad {
-      background-color: var(--error-color);
+      // background-color: var(--error-color);
+      outline-color: var(--error-color);
+      color: var(--error-color);
+      .icon {
+        color: var(--error-color);
+      }
     }
 
     &.good {
-      background-color: var(--main-color);
+      outline-color: var(--main-color);
+      color: var(--main-color);
+      .icon {
+        color: var(--main-color);
+      }
     }
 
     &:hover {
@@ -64,7 +73,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      color: var(--bg-color);
+      // color: inherit;
       font-size: 2.5rem;
       display: grid;
       /* align-self: center; */
