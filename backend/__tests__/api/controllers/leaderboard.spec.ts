@@ -16,6 +16,9 @@ describe("leaderboards controller test", () => {
             xpRewardBrackets: [],
           },
         },
+        prescence: {
+          enabled: false,
+        },
       } as any);
 
     const response = await mockApp

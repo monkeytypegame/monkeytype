@@ -36,6 +36,9 @@ describe("user controller test", () => {
           profiles: {
             enabled: false,
           },
+          prescence: {
+            enabled: false,
+          },
           xp: {
             enabled: false,
             gainMultiplier: 0,
