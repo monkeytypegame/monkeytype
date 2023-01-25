@@ -44,7 +44,8 @@
     width: 100%;
     background: var(--bg-color);
     border-radius: var(--roundness);
-    outline: 0.25rem solid transparent;
+    // outline: 0.25rem solid transparent;
+    box-shadow: 0 0 0 0.2em transparent;
     transition: outline 0.125s;
 
     .searchicon {
@@ -156,7 +157,8 @@
   &.noBackground {
     background: none;
     #commandLine {
-      outline: 0.25rem solid var(--sub-alt-color);
+      box-shadow: 0 0 0 0.2em var(--sub-alt-color);
+      // outline: 0.25rem solid var(--sub-alt-color);
     }
   }
 }
