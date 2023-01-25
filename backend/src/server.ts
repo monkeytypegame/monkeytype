@@ -12,6 +12,7 @@ import { version } from "./version";
 import { recordServerVersion } from "./utils/prometheus";
 import * as RedisClient from "./init/redis";
 import queues from "./queues";
+import workers from "./workers";
 import Logger from "./utils/logger";
 
 async function bootServer(port: number): Promise<Server> {
@@ -39,12 +40,19 @@ async function bootServer(port: number): Promise<Server> {
 
     if (RedisClient.isConnected()) {
       Logger.success("Connected to redis");
+      const connection = RedisClient.getConnection();
 
-      Logger.info("Initializing task queues...");
+      Logger.info("Initializing queues...");
       queues.forEach((queue) => {
-        queue.init(RedisClient.getConnection());
+        queue.init(connection);
       });
-      Logger.success("Task queues initialized");
+      Logger.success("Queues initialized");
+
+      Logger.info("Initializing workers...");
+      workers.forEach((worker) => {
+        worker(connection).run();
+      });
+      Logger.success("Workers initialized");
     }
 
     initializeDailyLeaderboardsCache(liveConfiguration.dailyLeaderboards);

@@ -1,6 +1,6 @@
 :root {
   --roundness: 0.5rem;
-  --font: "Roboto Mono", "Vazirmatn";
+  --font: "Roboto Mono", "Vazirmatn", sans-serif;
   // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
   font-weight: 400;
@@ -315,7 +315,8 @@ key {
     outline: none;
   }
   &:focus {
-    outline: 2px solid var(--text-color);
+    box-shadow: 0 0 0 0.15em var(--text-color);
+    // outline: 2px solid var(--text-color);
   }
   &:active {
     background: var(--sub-color);
