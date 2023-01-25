@@ -57,6 +57,12 @@ declare namespace MonkeyTypes {
         enabled: boolean;
         maxMail: number;
       };
+      prescence: {
+        enabled: boolean;
+        expirationSeconds: number;
+        syncDelayMs: number;
+        maxLogSize: number;
+      };
     };
     apeKeys: {
       endpointsEnabled: boolean;

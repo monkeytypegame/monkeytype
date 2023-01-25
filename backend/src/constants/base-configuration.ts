@@ -58,6 +58,12 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       enabled: false,
       maxMail: 0,
     },
+    prescence: {
+      enabled: false,
+      expirationSeconds: 0,
+      syncDelayMs: 0,
+      maxLogSize: 0,
+    },
   },
   rateLimiting: {
     badAuthentication: {
@@ -331,6 +337,31 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
               enabled: {
                 type: "boolean",
                 label: "Enabled",
+              },
+            },
+          },
+          prescence: {
+            type: "object",
+            label: "User Prescence",
+            fields: {
+              enabled: {
+                type: "boolean",
+                label: "Enabled",
+              },
+              expirationSeconds: {
+                label: "Prescence expiration",
+                type: "number",
+                min: 0,
+              },
+              syncDelayMs: {
+                label: "Prescence sync interval",
+                type: "number",
+                min: 0,
+              },
+              maxLogSize: {
+                label: "Max prescence log size",
+                type: "number",
+                min: 0,
               },
             },
           },

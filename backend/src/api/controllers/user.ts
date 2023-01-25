@@ -19,6 +19,7 @@ import * as RedisClient from "../../init/redis";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
+import { isPresent } from "../../services/prescence";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -525,6 +526,7 @@ export async function getProfile(
       : await UserDAL.getUserByName(uidOrName, "get user profile");
 
   const {
+    uid,
     name,
     banned,
     inventory,
@@ -571,19 +573,11 @@ export async function getProfile(
     return new MonkeyResponse("Profile retrived: banned user", baseProfile);
   }
 
-  const allTime15English = await LeaderboardsDAL.getRank(
-    "time",
-    "15",
-    "english",
-    user.uid
-  );
-
-  const allTime60English = await LeaderboardsDAL.getRank(
-    "time",
-    "60",
-    "english",
-    user.uid
-  );
+  const [allTime15English, allTime60English, isOnline] = await Promise.all([
+    LeaderboardsDAL.getRank("time", "15", "english", uid),
+    LeaderboardsDAL.getRank("time", "60", "english", uid),
+    isPresent(req.ctx.configuration, uid),
+  ]);
 
   const allTime15EnglishRank = allTime15English
     ? allTime15English.rank
@@ -609,6 +603,7 @@ export async function getProfile(
     details: profileDetails,
     allTimeLbs: alltimelbs,
     uid: user.uid,
+    isOnline,
   };
 
   return new MonkeyResponse("Profile retrieved", profileData);

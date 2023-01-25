@@ -8,6 +8,7 @@ import {
   badAuthRateLimiterHandler,
   rootRateLimiter,
 } from "./middlewares/rate-limit";
+import { getPrescenceMiddleware } from "./services/prescence";
 
 function buildApp(): express.Application {
   const app = express();
@@ -23,6 +24,8 @@ function buildApp(): express.Application {
 
   app.use(badAuthRateLimiterHandler);
   app.use(rootRateLimiter);
+
+  app.use(getPrescenceMiddleware());
 
   addApiRoutes(app);
 
