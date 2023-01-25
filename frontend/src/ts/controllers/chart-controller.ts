@@ -973,6 +973,7 @@ export function setDefaultFontFamily(font: string): void {
 export function updateAllChartColors(): void {
   ThemeColors.update();
   accountHistory.updateColors();
+  accountHistogram.updateColors();
   globalSpeedHistogram.updateColors();
   result.updateColors();
   accountActivity.updateColors();
