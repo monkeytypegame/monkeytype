@@ -315,7 +315,7 @@ key {
     outline: none;
   }
   &:focus {
-    box-shadow: 0 0 0 0.2em var(--text-color);
+    box-shadow: 0 0 0 0.15em var(--text-color);
     // outline: 2px solid var(--text-color);
   }
   &:active {
