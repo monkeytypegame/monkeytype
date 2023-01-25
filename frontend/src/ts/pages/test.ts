@@ -13,6 +13,7 @@ export const page = new Page(
   $(".page.pageTest"),
   "/",
   async () => {
+    ManualRestart.set();
     TestLogic.restart();
     Funbox.clear();
     ModesNotice.update();
