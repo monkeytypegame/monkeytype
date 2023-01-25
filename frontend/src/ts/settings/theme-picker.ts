@@ -173,7 +173,7 @@ export async function refreshButtons(): Promise<void> {
 
     //first show favourites
     if (Config.favThemes.length > 0) {
-      favThemesEl.css({ paddingBottom: "1rem" });
+      favThemesEl.css({ marginBottom: "1rem", marginTop: "1rem" });
       themes.forEach((theme) => {
         if (Config.favThemes.includes(theme.name)) {
           const activeTheme = activeThemeName === theme.name ? "active" : "";
@@ -204,7 +204,7 @@ export async function refreshButtons(): Promise<void> {
         }
       });
     } else {
-      favThemesEl.css({ paddingBottom: "0" });
+      favThemesEl.css({ marginBottom: "0", marginTop: "0" });
     }
     //then the rest
     themes.forEach((theme) => {
