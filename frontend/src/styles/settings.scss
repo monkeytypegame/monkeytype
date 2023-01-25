@@ -13,13 +13,14 @@
     line-height: 2rem;
     cursor: pointer;
     transition: 0.25s;
-
+    display: flex;
+    align-items: baseline;
     &:hover {
       color: var(--text-color);
     }
 
     .fas {
-      margin-left: 0.5rem;
+      margin-right: 0.5em;
 
       &.rotate {
         transform: rotate(-90deg);
@@ -45,9 +46,10 @@
     display: grid;
     // gap: .5rem;
     grid-template-areas:
-      "title title"
+      "title buttons"
       "text buttons";
     grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto 1fr;
     column-gap: 2rem;
     align-items: center;
 
@@ -159,6 +161,22 @@
       margin: 0;
       grid-area: title;
       font-weight: 300;
+      display: flex;
+      align-items: baseline;
+      .fab,
+      .fas,
+      .far {
+        margin-right: 0.5em;
+        margin-bottom: 0.5em;
+      }
+    }
+
+    &.themes .groupTitle {
+      .fab,
+      .fas,
+      .far {
+        margin-bottom: 0;
+      }
     }
 
     p {
@@ -171,6 +189,10 @@
       align-self: normal;
       color: var(--text-color);
       grid-area: text;
+    }
+
+    .inputs {
+      grid-area: buttons;
     }
 
     .buttons {
