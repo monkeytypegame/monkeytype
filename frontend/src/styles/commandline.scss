@@ -90,7 +90,7 @@
         padding: 0.5rem 1rem;
         font-size: 0.75rem;
         line-height: 0.75rem;
-        color: var(--sub-color);
+        color: var(--text-color);
         display: grid;
         grid-template-columns: auto 1fr;
 
@@ -106,10 +106,12 @@
           margin-right: 0.5rem;
           text-align: center;
           width: 1.25em;
+          color: var(--sub-color);
         }
 
         .fas {
           margin-right: 0.5rem;
+          color: var(--sub-color);
         }
 
         &:last-child {
