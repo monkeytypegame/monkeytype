@@ -1,6 +1,7 @@
 import _ from "lodash";
 import LRUCache from "lru-cache";
 import * as RedisClient from "../init/redis";
+import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
 
 interface DailyLeaderboardEntry {
@@ -27,12 +28,16 @@ export class DailyLeaderboard {
   private leaderboardScoresKeyName: string;
   private leaderboardModeKey: string;
   private customTime: number;
+  private modeRule: MonkeyTypes.ValidModeRule;
 
-  constructor(language: string, mode: string, mode2: string, customTime = -1) {
+  constructor(modeRule: MonkeyTypes.ValidModeRule, customTime = -1) {
+    const { language, mode, mode2 } = modeRule;
+
     this.leaderboardModeKey = `${language}:${mode}:${mode2}`;
     this.leaderboardResultsKeyName = `${resultsNamespace}:${this.leaderboardModeKey}`;
     this.leaderboardScoresKeyName = `${scoresNamespace}:${this.leaderboardModeKey}`;
     this.customTime = customTime;
+    this.modeRule = modeRule;
   }
 
   private getTodaysLeaderboardKeys(): {
@@ -86,6 +91,21 @@ export class DailyLeaderboard {
       resultScore,
       JSON.stringify(entry)
     );
+
+    if (
+      isValidModeRule(
+        this.modeRule,
+        dailyLeaderboardsConfig.scheduleRewardsModeRules
+      )
+    ) {
+      await LaterQueue.scheduleForTomorrow(
+        "daily-leaderboard-results",
+        this.leaderboardModeKey,
+        {
+          modeRule: this.modeRule,
+        }
+      );
+    }
 
     if (rank === null) {
       return -1;
@@ -183,6 +203,20 @@ export function initializeDailyLeaderboardsCache(
   });
 }
 
+function isValidModeRule(
+  modeRule: MonkeyTypes.ValidModeRule,
+  modeRules: MonkeyTypes.ValidModeRule[]
+): boolean {
+  const { language, mode, mode2 } = modeRule;
+
+  return modeRules.some((rule) => {
+    const matchesLanguage = matchesAPattern(language, rule.language);
+    const matchesMode = matchesAPattern(mode, rule.mode);
+    const matchesMode2 = matchesAPattern(mode2, rule.mode2);
+    return matchesLanguage && matchesMode && matchesMode2;
+  });
+}
+
 export function getDailyLeaderboard(
   language: string,
   mode: string,
@@ -192,12 +226,8 @@ export function getDailyLeaderboard(
 ): DailyLeaderboard | null {
   const { validModeRules, enabled } = dailyLeaderboardsConfig;
 
-  const isValidMode = validModeRules.some((rule) => {
-    const matchesLanguage = matchesAPattern(language, rule.language);
-    const matchesMode = matchesAPattern(mode, rule.mode);
-    const matchesMode2 = matchesAPattern(mode2, rule.mode2);
-    return matchesLanguage && matchesMode && matchesMode2;
-  });
+  const modeRule = { language, mode, mode2 };
+  const isValidMode = isValidModeRule(modeRule, validModeRules);
 
   if (!enabled || !isValidMode || !DAILY_LEADERBOARDS) {
     return null;
@@ -206,12 +236,7 @@ export function getDailyLeaderboard(
   const key = `${language}:${mode}:${mode2}:${customTimestamp}`;
 
   if (!DAILY_LEADERBOARDS.has(key)) {
-    const dailyLeaderboard = new DailyLeaderboard(
-      language,
-      mode,
-      mode2,
-      customTimestamp
-    );
+    const dailyLeaderboard = new DailyLeaderboard(modeRule, customTimestamp);
     DAILY_LEADERBOARDS.set(key, dailyLeaderboard);
   }
 

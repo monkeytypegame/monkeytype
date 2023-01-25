@@ -10,6 +10,12 @@ interface ValidationOptions<T> {
   invalidMessage?: string;
 }
 
+const emptyMiddleware = (
+  _req: MonkeyTypes.Request,
+  _res: Response,
+  next: NextFunction
+): void => next();
+
 /**
  * This utility checks that the server's configuration matches
  * the criteria.
@@ -140,9 +146,19 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
   };
 }
 
+/**
+ * Uses the middlewares only in production. Otherwise, uses an empty middleware.
+ */
+function useInProduction(middlewares: RequestHandler[]): RequestHandler[] {
+  return middlewares.map((middleware) =>
+    process.env.MODE === "dev" ? emptyMiddleware : middleware
+  );
+}
+
 export {
   validateConfiguration,
   checkUserPermissions,
   asyncHandler,
   validateRequest,
+  useInProduction,
 };
