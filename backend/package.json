@@ -37,7 +37,7 @@
     "path": "0.12.7",
     "prom-client": "14.0.1",
     "rate-limiter-flexible": "2.3.7",
-    "simple-git": "3.15.0",
+    "simple-git": "3.16.0",
     "string-similarity": "4.0.4",
     "swagger-stats": "0.99.4",
     "swagger-ui-express": "4.3.0",

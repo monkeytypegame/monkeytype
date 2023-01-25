@@ -34,13 +34,14 @@
     display: grid;
     grid-template-columns: min-content auto min-content;
     border-radius: var(--roundness);
-    outline-width: 0.25em;
-    outline-style: solid;
-    outline-color: var(--sub-color);
+    // outline-width: 0.25em;
+    // outline-style: solid;
+    // outline-color: var(--sub-color);
+    box-shadow: 0 0 0 0.2em var(--sub-color);
 
     &.bad {
       // background-color: var(--error-color);
-      outline-color: var(--error-color);
+      box-shadow: 0 0 0 0.2em var(--error-color);
       color: var(--error-color);
       .icon {
         color: var(--error-color);
@@ -48,7 +49,7 @@
     }
 
     &.good {
-      outline-color: var(--main-color);
+      box-shadow: 0 0 0 0.2em var(--main-color);
       color: var(--main-color);
       .icon {
         color: var(--main-color);

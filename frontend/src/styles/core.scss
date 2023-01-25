@@ -315,7 +315,8 @@ key {
     outline: none;
   }
   &:focus {
-    outline: 2px solid var(--text-color);
+    box-shadow: 0 0 0 0.2em var(--text-color);
+    // outline: 2px solid var(--text-color);
   }
   &:active {
     background: var(--sub-color);
