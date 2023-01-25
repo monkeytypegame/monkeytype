@@ -389,7 +389,7 @@ describe("Misc Utils", () => {
       },
       {
         seconds: 65,
-        expected: "1 minute",
+        expected: "1.08 minute",
       },
       {
         seconds: misc.HOUR_IN_SECONDS,

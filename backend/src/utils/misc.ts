@@ -266,7 +266,7 @@ export function formatSeconds(
     secondsInUnit = YEAR_IN_SECONDS;
   }
 
-  const normalized = Math.round(seconds / secondsInUnit);
+  const normalized = roundTo2(seconds / secondsInUnit);
 
   return `${normalized} ${unit}${normalized > 1 ? "s" : ""}`;
 }
