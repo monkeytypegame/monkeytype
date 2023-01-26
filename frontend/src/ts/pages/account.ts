@@ -180,12 +180,12 @@ function loadMoreLines(lineIndex?: number): void {
 }
 
 async function updateChartColors(): Promise<void> {
-  await Misc.sleep(0);
-  ChartController.accountHistogram.updateColors();
+  ChartController.accountHistory.updateColors();
   await Misc.sleep(0);
   ChartController.accountActivity.updateColors();
   await Misc.sleep(0);
-  ChartController.accountHistory.updateColors();
+  ChartController.accountHistogram.updateColors();
+  await Misc.sleep(0);
 }
 
 export function reset(): void {
