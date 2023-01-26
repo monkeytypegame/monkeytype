@@ -195,7 +195,6 @@ export function reset(): void {
   ChartController.accountActivity.data.datasets[1].data = [];
   ChartController.accountHistory.data.datasets[0].data = [];
   ChartController.accountHistory.data.datasets[1].data = [];
-  updateChartColors();
 }
 
 let totalSecondsFiltered = 0;
@@ -241,6 +240,7 @@ async function applyHistorySmoothing(): Promise<void> {
   ).val() as string;
   $(".pageAccount .content .below .smoothing .value").text(smoothing);
   smoothHistory(parseInt(smoothing));
+  await Misc.sleep(0);
 }
 
 function fillContent(): void {
@@ -985,7 +985,6 @@ function fillContent(): void {
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   applyHistorySmoothing();
-  updateChartColors();
   LoadingPage.updateBar(100, true);
   Focus.set(false);
   Misc.swapElements(
@@ -1269,12 +1268,14 @@ export const page = new Page(
     Skeleton.append("pageAccount", "middle");
     await ResultFilters.appendButtons();
     ResultFilters.updateActive();
+    await Misc.sleep(0);
     if (DB.getSnapshot()?.results == undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
     }
-    update();
+    await update();
+    updateChartColors();
   },
   async () => {
     //
