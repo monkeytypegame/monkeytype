@@ -43,7 +43,7 @@ router.post(
       source: joi.string().required(),
       language: joi
         .string()
-        .regex(/^[\w +]+$/)
+        .regex(/^[\w+]+$/)
         .required(),
       captcha: joi.string().required(),
     },
@@ -90,7 +90,7 @@ router.get(
       quoteId: joi.string().regex(/^\d+$/).required(),
       language: joi
         .string()
-        .regex(/^[\w +]+$/)
+        .regex(/^[\w+]+$/)
         .required(),
     },
   }),
@@ -107,7 +107,7 @@ router.post(
       rating: joi.number().min(1).max(5).required(),
       language: joi
         .string()
-        .regex(/^[\w +]+$/)
+        .regex(/^[\w+]+$/)
         .required(),
     },
   }),
@@ -131,7 +131,7 @@ router.post(
   validateRequest({
     body: {
       quoteId: withCustomMessages.regex(/\d+/).required(),
-      quoteLanguage: withCustomMessages.regex(/^[\w +]+$/).required(),
+      quoteLanguage: withCustomMessages.regex(/^[\w+]+$/).required(),
       reason: joi
         .string()
         .valid(
