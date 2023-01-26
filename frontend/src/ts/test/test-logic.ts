@@ -769,7 +769,7 @@ async function getNextWord(
   }
 
   randomWord = randomWord.replace(/ +/gm, " ");
-  randomWord = randomWord.replace(/^ | $/gm, "");
+  randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
   randomWord = getFunboxWord(randomWord, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
@@ -997,7 +997,7 @@ export async function init(): Promise<void> {
           TestWords.setHasTab(true);
         }
 
-        const te = randomWord.replace("\n", "\n ").trim();
+        const te = randomWord.replace(/\n/g, "\n ").replace(/ $/g, "");
 
         if (/ +/.test(te)) {
           const randomList = te.split(" ");
@@ -1679,13 +1679,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   // user is logged in
 
-  if (
-    Config.difficulty == "normal" ||
-    ((Config.difficulty == "master" || Config.difficulty == "expert") &&
-      !difficultyFailed)
-  ) {
-    TestStats.resetIncomplete();
-  }
+  TestStats.resetIncomplete();
 
   completedEvent.uid = Auth?.currentUser?.uid as string;
   Result.updateRateQuote(TestWords.randomQuote);

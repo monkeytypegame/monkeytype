@@ -171,7 +171,7 @@ $(`${popup} .buttonsTop .saveCustomText`).on("click", () => {
 
 function apply(): void {
   let text = ($(`${popup} textarea`).val() as string).normalize();
-  text = text.trim();
+  // text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
   text = text.replace(/\\\\n/gm, "\n");

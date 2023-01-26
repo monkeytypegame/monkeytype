@@ -22,6 +22,7 @@ const dailyLeaderboardsConfig = {
   dailyLeaderboardCacheSize: 3,
   topResultsToAnnounce: 3,
   xpRewardBrackets: [],
+  scheduleRewardsModeRules: [],
 };
 
 describe("Daily Leaderboards", () => {
