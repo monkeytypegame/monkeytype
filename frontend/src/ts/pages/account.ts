@@ -783,6 +783,7 @@ function fillContent(): void {
     $(".pageAccount .group.aboveHistory").addClass("hidden");
     $(".pageAccount .group.history").addClass("hidden");
     $(".pageAccount .triplegroup.stats").addClass("hidden");
+    $(".pageAccount .group.estimatedWordsTyped").addClass("hidden");
   } else {
     $(".pageAccount .group.noDataError").addClass("hidden");
     $(".pageAccount .group.chart").removeClass("hidden");
@@ -791,6 +792,7 @@ function fillContent(): void {
     $(".pageAccount .group.aboveHistory").removeClass("hidden");
     $(".pageAccount .group.history").removeClass("hidden");
     $(".pageAccount .triplegroup.stats").removeClass("hidden");
+    $(".pageAccount .group.estimatedWordsTyped").removeClass("hidden");
   }
 
   $(".pageAccount .timeTotalFiltered .val").text(
