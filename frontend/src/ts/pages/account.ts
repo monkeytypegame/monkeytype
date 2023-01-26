@@ -228,7 +228,9 @@ export function smoothHistory(factor: number): void {
   ChartController.accountHistory.data.datasets[1].data = accChartData2;
 
   if (chartData2.length || accChartData2.length) {
+    ChartController.accountHistory.options.animation = false;
     ChartController.accountHistory.update();
+    delete ChartController.accountHistory.options.animation;
   }
 }
 
