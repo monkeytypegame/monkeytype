@@ -234,7 +234,6 @@ export function smoothHistory(factor: number): void {
 }
 
 async function applyHistorySmoothing(): Promise<void> {
-  await Misc.sleep(0);
   const smoothing = $(
     ".pageAccount .content .below .smoothing input"
   ).val() as string;
