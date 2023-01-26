@@ -18,5 +18,5 @@
   "ts-node": {
     "files": true
   },
-  "include": ["./**/*.spec.ts", "../setup-tests.ts"]
+  "include": ["./**/*.spec.ts", "./setup-tests.ts"]
 }
