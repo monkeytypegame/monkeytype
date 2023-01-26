@@ -1275,6 +1275,7 @@ export const page = new Page(
       $(".pageAccount .preloader").removeClass("hidden");
     }
     await update();
+    await Misc.sleep(0);
     updateChartColors();
   },
   async () => {
