@@ -54,7 +54,7 @@
     align-items: center;
 
     .button.danger {
-      box-shadow: 0 0 0 0.2em var(--error-color);
+      box-shadow: 0 0 0 0.15em var(--error-color);
       color: var(--text-color);
       &:hover {
         background: var(--text-color);

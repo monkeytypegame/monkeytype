@@ -2,14 +2,14 @@ import { Collection, Db, MongoClient, WithId } from "mongodb";
 
 process.env.MODE = "dev";
 
-jest.mock("./src/init/db", () => ({
+jest.mock("../src/init/db", () => ({
   __esModule: true,
   getDb: (): Db => db,
   collection: <T>(name: string): Collection<WithId<T>> =>
     db.collection<WithId<T>>(name),
 }));
 
-jest.mock("./src/utils/logger", () => ({
+jest.mock("../src/utils/logger", () => ({
   __esModule: true,
   default: {
     error: console.error,

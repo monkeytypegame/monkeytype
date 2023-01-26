@@ -41,7 +41,10 @@ router.post(
     body: {
       text: joi.string().min(60).required(),
       source: joi.string().required(),
-      language: joi.string().regex(/^\w+$/).required(),
+      language: joi
+        .string()
+        .regex(/^[\w+]+$/)
+        .required(),
       captcha: joi.string().required(),
     },
     validationErrorMessage: "Please fill all the fields",
@@ -85,7 +88,10 @@ router.get(
   validateRequest({
     query: {
       quoteId: joi.string().regex(/^\d+$/).required(),
-      language: joi.string().regex(/^\w+$/).required(),
+      language: joi
+        .string()
+        .regex(/^[\w+]+$/)
+        .required(),
     },
   }),
   asyncHandler(QuoteController.getRating)
@@ -99,7 +105,10 @@ router.post(
     body: {
       quoteId: joi.number().required(),
       rating: joi.number().min(1).max(5).required(),
-      language: joi.string().regex(/^\w+$/).required(),
+      language: joi
+        .string()
+        .regex(/^[\w+]+$/)
+        .required(),
     },
   }),
   asyncHandler(QuoteController.submitRating)
@@ -122,7 +131,7 @@ router.post(
   validateRequest({
     body: {
       quoteId: withCustomMessages.regex(/\d+/).required(),
-      quoteLanguage: withCustomMessages.regex(/^\w+$/).required(),
+      quoteLanguage: withCustomMessages.regex(/^[\w+]+$/).required(),
       reason: joi
         .string()
         .valid(

@@ -97,8 +97,7 @@ select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
   border: none;
-  // outline: 2px solid var(--main-color);
-  box-shadow: 0 0 0 0.2em var(--text-color);
+  outline: 0.15em solid var(--main-color);
   font-family: inherit;
   -webkit-text-fill-color: var(--text-color);
   -webkit-box-shadow: 0 0 0 1000000px var(--sub-alt-color) inset;

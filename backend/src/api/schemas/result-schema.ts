@@ -62,7 +62,10 @@ const RESULT_SCHEMA = joi
     rawWpm: joi.number().required(),
     restartCount: joi.number().required(),
     smoothConsistency: joi.number().optional(), // to be removed
-    tags: joi.array().items(joi.string()).required(),
+    tags: joi
+      .array()
+      .items(joi.string().regex(/^[a-f\d]{24}$/i))
+      .required(),
     testDuration: joi.number().required().min(1),
     timestamp: joi.date().timestamp().required(),
     uid: joi.string().required(),
