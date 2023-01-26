@@ -17,12 +17,6 @@
   "ts-node": {
     "files": true
   },
-  "include": ["./src/**/*"],
-  "exclude": [
-    "node_modules",
-    "build",
-    "worker.js",
-    "setup-tests.ts",
-    "**/*.spec.ts"
-  ]
+  "include": ["./src/**/*", "**/*.spec.ts"],
+  "exclude": ["node_modules", "build", "worker.js", "setup-tests.ts"]
 }
