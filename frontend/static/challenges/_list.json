@@ -390,7 +390,7 @@
     "display": "Look at me. I am the developer now.",
     "autoRole": true,
     "type": "script",
-    "parameters": ["sourcecde.txt",null,null]
+    "parameters": ["sourcecode.txt",null,null]
   }
   ,{
     "name": "beLikeWater",
