@@ -88,11 +88,12 @@ const debouncedEvent = debounce(250, async () => {
     if (Config.tapeMode !== "off") {
       TestUI.scrollTape();
     } else {
-      const currentTop: number = Math.floor(
+      const word =
         document.querySelectorAll<HTMLElement>("#words .word")[
           TestUI.currentWordElementIndex - 1
-        ].offsetTop
-      );
+        ];
+      if (!word) return;
+      const currentTop: number = Math.floor(word.offsetTop);
       TestUI.lineJump(currentTop);
     }
   }
