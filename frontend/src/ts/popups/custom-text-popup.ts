@@ -171,10 +171,6 @@ $(`${popup} .randomInputFields .time input`).on("keypress", () => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
-$(`${popup} .buttonsTop .saveCustomText`).on("click", () => {
-  hide();
-});
-
 function apply(): void {
   let text = ($(`${popup} textarea`).val() as string).normalize();
   // text = text.trim();
