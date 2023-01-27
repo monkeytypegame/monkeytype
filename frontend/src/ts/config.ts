@@ -1611,6 +1611,9 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize);
 
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
   return true;
 }
 

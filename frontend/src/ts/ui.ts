@@ -84,12 +84,17 @@ window.addEventListener("beforeunload", (event) => {
 
 const debouncedEvent = debounce(250, async () => {
   Caret.updatePosition();
-  if (
-    Config.tapeMode !== "off" &&
-    getActivePage() === "test" &&
-    !TestUI.resultVisible
-  ) {
-    TestUI.scrollTape();
+  if (getActivePage() === "test" && !TestUI.resultVisible) {
+    if (Config.tapeMode !== "off") {
+      TestUI.scrollTape();
+    } else {
+      const currentTop: number = Math.floor(
+        document.querySelectorAll<HTMLElement>("#words .word")[
+          TestUI.currentWordElementIndex - 1
+        ].offsetTop
+      );
+      TestUI.lineJump(currentTop);
+    }
   }
   setTimeout(() => {
     Caret.show();
