@@ -44,9 +44,6 @@ export function show(noAnim = false): void {
     } else {
       $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
     }
-    CustomText.setPopupTextareaState(
-      CustomText.text.join(CustomText.delimiter)
-    );
     $(`${popup} textarea`).val(CustomText.popupTextareaState);
 
     $(wrapper)
@@ -96,7 +93,15 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
   CustomText.setDelimiter(delimiter);
 });
 
-export function hide(noAnim = false): void {
+interface HideOptions {
+  noAnim?: boolean | undefined;
+  resetState?: boolean | undefined;
+}
+
+export function hide(options = {} as HideOptions): void {
+  if (options.noAnim === undefined) options.noAnim = false;
+  if (options.resetState === undefined) options.resetState = true;
+
   if (Misc.isElementVisible(wrapper)) {
     $(wrapper)
       .stop(true, true)
@@ -105,8 +110,13 @@ export function hide(noAnim = false): void {
         {
           opacity: 0,
         },
-        noAnim ? 0 : 125,
+        options.noAnim ? 0 : 125,
         () => {
+          if (options.resetState) {
+            CustomText.setPopupTextareaState(
+              CustomText.text.join(CustomText.delimiter)
+            );
+          }
           $(wrapper).addClass("hidden");
           Skeleton.remove(skeletonId);
         }
@@ -284,23 +294,29 @@ $(document).on("keydown", (event) => {
 });
 
 $("#popups").on("click", `${popup} .wordfilter`, () => {
-  hide(true);
+  hide({ noAnim: true });
   WordFilterPopup.show(true, () => {
     show(true);
   });
 });
 
 $(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
-  hide(true);
+  hide({ noAnim: true });
   SavedTextsPopup.show(true, () => {
     show(true);
   });
 });
 
 $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
-  hide(true);
+  console.log(CustomText.popupTextareaState);
+  hide({ noAnim: true, resetState: false });
+  console.log(CustomText.popupTextareaState);
+
   SaveCustomTextPopup.show(true, () => {
+    console.log(CustomText.popupTextareaState);
+
     show(true);
+    console.log(CustomText.popupTextareaState);
   });
 });
 
