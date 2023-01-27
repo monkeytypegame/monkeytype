@@ -308,15 +308,9 @@ $(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
 });
 
 $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
-  console.log(CustomText.popupTextareaState);
   hide({ noAnim: true, resetState: false });
-  console.log(CustomText.popupTextareaState);
-
   SaveCustomTextPopup.show(true, () => {
-    console.log(CustomText.popupTextareaState);
-
     show(true);
-    console.log(CustomText.popupTextareaState);
   });
 });
 
