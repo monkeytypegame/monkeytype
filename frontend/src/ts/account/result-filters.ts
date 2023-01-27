@@ -678,46 +678,50 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
 });
 
 export async function appendButtons(): Promise<void> {
-  await Misc.getLanguageList()
-    .then((languages) => {
-      languages.forEach((language) => {
-        $(
-          ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
-        ).append(
-          `<div class="button" filter="${language}">${language.replace(
-            "_",
-            " "
-          )}</div>`
-        );
-      });
-    })
-    .catch((e) => {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to append language buttons")
-      );
-    });
+  let languageList;
+  try {
+    languageList = await Misc.getLanguageList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to append language buttons")
+    );
+  }
+  if (languageList) {
+    let html = "";
+    for (const language of languageList) {
+      html += `<div class="button" filter="${language}">${language.replace(
+        "_",
+        " "
+      )}</div>`;
+    }
+    const el = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+    );
+    if (el) el.innerHTML = html;
+  }
 
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-  ).append(`<div class="button" filter="none">none</div>`);
-  await Misc.getFunboxList()
-    .then((funboxModes) => {
-      funboxModes.forEach((funbox) => {
-        $(
-          ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-        ).append(
-          `<div class="button" filter="${funbox.name}">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`
-        );
-      });
-    })
-    .catch((e) => {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to append funbox buttons")
-      );
-    });
+  let funboxList;
+  try {
+    funboxList = await Misc.getFunboxList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to append funbox buttons")
+    );
+  }
+  if (funboxList) {
+    let html = "";
+    for (const funbox of funboxList) {
+      html += `<div class="button" filter="${
+        funbox.name
+      }">${funbox.name.replace(/_/g, " ")}</div>`;
+    }
+    const el = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+    );
+    if (el) {
+      el.innerHTML = `<div class="button" filter="none">none</div>` + html;
+    }
+  }
 }
 
 export function removeButtons(): void {

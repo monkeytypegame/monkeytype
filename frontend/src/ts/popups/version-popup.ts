@@ -1,7 +1,11 @@
 import format from "date-fns/format";
 import { getReleasesFromGitHub } from "../utils/misc";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "versionHistoryWrapper";
 
 export function show(): void {
+  Skeleton.append(wrapperId);
   $("#versionHistory").html(`
     <div class="preloader">
       <i class="fas fa-fw fa-spin fa-circle-notch"></i>
@@ -37,6 +41,7 @@ function hide(): void {
     .animate({ opacity: 0 }, 125, () => {
       $("#versionHistoryWrapper").addClass("hidden");
       $("#versionHistory").html("");
+      Skeleton.remove(wrapperId);
     });
 }
 
@@ -64,3 +69,5 @@ $(document).on("keydown", (event) => {
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);

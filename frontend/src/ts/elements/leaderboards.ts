@@ -8,6 +8,9 @@ import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "../popups/skeleton";
+
+const wrapperId = "leaderboardsWrapper";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
@@ -379,6 +382,7 @@ export function hide(): void {
         showingYesterday = false;
         updateYesterdayButton();
         $("#leaderboardsWrapper").addClass("hidden");
+        Skeleton.remove(wrapperId);
       }
     );
 }
@@ -578,6 +582,7 @@ export function show(): void {
     Notifications.add("You can't view leaderboards while offline", 0);
     return;
   }
+  Skeleton.append(wrapperId);
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
     if (Auth?.currentUser) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
@@ -824,3 +829,5 @@ $(document).on("keypress", "#top #menu .textButton", (e) => {
     $(e.currentTarget).trigger("click");
   }
 });
+
+Skeleton.save(wrapperId);

@@ -334,9 +334,9 @@
           color: var(--sub-color);
         }
         .avatar {
-          height: 100%;
+          height: auto;
           aspect-ratio: 1/1;
-          width: auto;
+          width: 100%;
         }
         div {
           grid-row: 1/2;

@@ -4,12 +4,23 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import { areUnsortedArraysEqual } from "../utils/misc";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "resultEditTagsPanelWrapper";
+
+const state: Record<string, string | undefined> = {
+  resultId: undefined,
+  tags: undefined,
+  source: undefined,
+};
 
 function show(): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
   }
+  Skeleton.append(wrapperId);
+  updateButtons();
   if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
     $("#resultEditTagsPanelWrapper")
       .stop(true, true)
@@ -28,15 +39,16 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#resultEditTagsPanelWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
 }
 
-export function updateButtons(): void {
+function updateButtons(): void {
   $("#resultEditTagsPanel .buttons").empty();
   DB.getSnapshot()?.tags?.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
@@ -61,9 +73,9 @@ $(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
   if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
     const resultid = $(f.target).parents("span").attr("resultid") as string;
     const tags = $(f.target).parents("span").attr("tags") as string;
-    $("#resultEditTagsPanel").attr("resultid", resultid);
-    $("#resultEditTagsPanel").attr("tags", tags);
-    $("#resultEditTagsPanel").attr("source", "accountPage");
+    state["resultId"] = resultid;
+    state["tags"] = tags;
+    state["source"] = "accountPage";
     updateActiveButtons(JSON.parse(tags));
     show();
   } else {
@@ -84,11 +96,11 @@ $(".pageTest").on("click", ".tags .editTagsButton", () => {
       "active-tag-ids"
     ) as string;
     const tags = activeTagIds == "" ? [] : activeTagIds.split(",");
-    $("#resultEditTagsPanel").attr("resultid", resultid);
-    $("#resultEditTagsPanel").attr("tags", JSON.stringify(tags));
-    $("#resultEditTagsPanel").attr("source", "resultPage");
-    updateActiveButtons(tags);
+    state["resultId"] = resultid;
+    state["tags"] = JSON.stringify(tags);
+    state["source"] = "resultPage";
     show();
+    updateActiveButtons(tags);
   }
 });
 
@@ -102,9 +114,8 @@ $("#resultEditTagsPanelWrapper").on("click", (e) => {
   }
 });
 
-$("#resultEditTagsPanel .confirmButton").on("click", async () => {
-  const resultId = $("#resultEditTagsPanel").attr("resultid") as string;
-  // let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
+$("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
+  const resultId = state["resultId"] as string;
 
   const newTags: string[] = [];
   $.each($("#resultEditTagsPanel .buttons .button"), (_, obj) => {
@@ -114,9 +125,7 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
     }
   });
 
-  const currentTags = JSON.parse(
-    $("#resultEditTagsPanel").attr("tags") as string
-  );
+  const currentTags = JSON.parse(state["tags"] as string);
 
   if (areUnsortedArraysEqual(currentTags, newTags)) {
     hide();
@@ -170,7 +179,7 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
     "tags",
     restags
   );
-  const source = $("#resultEditTagsPanel").attr("source") as string;
+  const source = state["source"] as string;
 
   if (source === "accountPage") {
     if (newTags.length > 0) {
@@ -193,34 +202,43 @@ $("#resultEditTagsPanel .confirmButton").on("click", async () => {
       );
     }
   } else if (source === "resultPage") {
-    const currentElements = $(`.pageTest #result .tags .bottom div[tagid]`);
+    if (newTags.length == 0) {
+      $(`.pageTest #result .tags .bottom`).html(
+        "<div class='noTags'>no tags</div>"
+      );
+    } else {
+      $(`.pageTest #result .tags .bottom div.noTags`).remove();
+      const currentElements = $(`.pageTest #result .tags .bottom div[tagid]`);
 
-    const checked: string[] = [];
-    currentElements.each((_, element) => {
-      const tagId = $(element).attr("tagid") as string;
-      if (!newTags.includes(tagId)) {
-        $(element).remove();
-      } else {
-        checked.push(tagId);
-      }
-    });
+      const checked: string[] = [];
+      currentElements.each((_, element) => {
+        const tagId = $(element).attr("tagid") as string;
+        if (!newTags.includes(tagId)) {
+          $(element).remove();
+        } else {
+          checked.push(tagId);
+        }
+      });
 
-    let html = "";
+      let html = "";
 
-    newTags.forEach((tag, index) => {
-      if (checked.includes(tag)) return;
-      if (responseTagPbs.includes(tag)) {
-        html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
-      } else {
-        html += `<div tagid="${tag}">${tagNames[index]}</div>`;
-      }
-    });
+      newTags.forEach((tag, index) => {
+        if (checked.includes(tag)) return;
+        if (responseTagPbs.includes(tag)) {
+          html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
+        } else {
+          html += `<div tagid="${tag}">${tagNames[index]}</div>`;
+        }
+      });
 
-    // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
-    $(`.pageTest #result .tags .bottom`).append(html);
-    $(`.pageTest #result .tags .top .editTagsButton`).attr(
-      "active-tag-ids",
-      newTags.join(",")
-    );
+      // $(`.pageTest #result .tags .bottom`).html(tagNames.join("<br>"));
+      $(`.pageTest #result .tags .bottom`).append(html);
+      $(`.pageTest #result .tags .top .editTagsButton`).attr(
+        "active-tag-ids",
+        newTags.join(",")
+      );
+    }
   }
 });
+
+Skeleton.save(wrapperId);

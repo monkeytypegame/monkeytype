@@ -3,6 +3,10 @@ import * as Notifications from "../elements/notifications";
 import * as CustomTextState from "../states/custom-text-name";
 import { InputIndicator } from "../elements/input-indicator";
 import { debounce } from "throttle-debounce";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "saveCustomTextPopupWrapper";
 
 const indicator = new InputIndicator($("#saveCustomTextPopup .textName"), {
   available: {
@@ -20,25 +24,51 @@ const indicator = new InputIndicator($("#saveCustomTextPopup .textName"), {
   },
 });
 
-export async function show(): Promise<void> {
-  $("#saveCustomTextPopupWrapper").removeClass("hidden");
-  $("#customTextPopupWrapper").addClass("hidden");
-  $("#saveCustomTextPopupWrapper .textName").val("");
-  $("#saveCustomTextPopupWrapper .isLongText").prop("checked", false);
-  $("#saveCustomTextPopupWrapper .button.save").addClass("disabled");
+let callbackFuncOnHide: (() => void) | undefined = undefined;
+
+export async function show(
+  noAnim = false,
+  callbackOnHide: () => void | undefined
+): Promise<void> {
+  Skeleton.append(wrapperId);
+  if (!isPopupVisible(wrapperId)) {
+    callbackFuncOnHide = callbackOnHide;
+
+    $("#saveCustomTextPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
+        $("#saveCustomTextPopupWrapper .textName").val("");
+        $("#saveCustomTextPopupWrapper .isLongText").prop("checked", false);
+        $("#saveCustomTextPopupWrapper .button.save").addClass("disabled");
+      });
+  }
 }
 
-function hide(full = false): void {
-  $("#saveCustomTextPopupWrapper").addClass("hidden");
-  if (!full) {
-    $("#customTextPopupWrapper").removeClass("hidden").css("opacity", 1);
+function hide(noAnim = false): void {
+  if (isPopupVisible(wrapperId)) {
+    $("#saveCustomTextPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        noAnim ? 0 : 125,
+        () => {
+          $("#saveCustomTextPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
+          if (callbackFuncOnHide) callbackFuncOnHide();
+        }
+      );
   }
 }
 
 function save(): boolean {
   const name = $("#saveCustomTextPopupWrapper .textName").val() as string;
   const checkbox = $("#saveCustomTextPopupWrapper .isLongText").prop("checked");
-  let text = ($(`#customTextPopup textarea`).val() as string).normalize();
+  let text = CustomText.popupTextareaState.normalize();
 
   if (!name) {
     Notifications.add("Custom text needs a name", 0);
@@ -54,12 +84,12 @@ function save(): boolean {
 }
 
 $("#popups").on("click", `#saveCustomTextPopupWrapper .button.save`, () => {
-  if (save() === true) hide();
+  if (save() === true) hide(true);
 });
 
 $("#saveCustomTextPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "saveCustomTextPopupWrapper") {
-    hide();
+    hide(true);
   }
 });
 
@@ -99,3 +129,5 @@ $("#saveCustomTextPopupWrapper .isLongText").on("change", () => {
     updateInputAndButtonDebounced();
   }
 });
+
+Skeleton.save(wrapperId);

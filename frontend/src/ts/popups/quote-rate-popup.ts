@@ -3,6 +3,10 @@ import * as DB from "../db";
 import * as TestWords from "../test/test-words";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "quoteRatePopupWrapper";
 
 let rating = 0;
 
@@ -98,7 +102,9 @@ function updateData(): void {
 }
 
 export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
-  if ($("#quoteRatePopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+
+  if (!isPopupVisible(wrapperId)) {
     if (shouldReset) {
       reset();
     }
@@ -124,7 +130,7 @@ export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
 }
 
 function hide(): void {
-  if (!$("#quoteRatePopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#quoteRatePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -132,9 +138,10 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#quoteRatePopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -217,25 +224,27 @@ $("#quoteRatePopupWrapper").on("click", (e) => {
   }
 });
 
-$("#quoteRatePopup .stars .star").hover((e) => {
+$("#quoteRatePopupWrapper .stars .star").hover((e) => {
   const ratingHover = parseInt($(e.currentTarget).attr("rating") as string);
   refreshStars(ratingHover);
 });
 
-$("#quoteRatePopup .stars .star").on("click", (e) => {
+$("#quoteRatePopupWrapper .stars .star").on("click", (e) => {
   const ratingHover = parseInt($(e.currentTarget).attr("rating") as string);
   rating = ratingHover;
 });
 
-$("#quoteRatePopup .stars .star").mouseout(() => {
+$("#quoteRatePopupWrapper .stars .star").mouseout(() => {
   $(`#quoteRatePopup .star`).removeClass("active");
   refreshStars();
 });
 
-$("#quoteRatePopup .submitButton").on("click", () => {
+$("#quoteRatePopupWrapper .submitButton").on("click", () => {
   submit();
 });
 
 $(".pageTest #rateQuoteButton").on("click", async () => {
   show(TestWords.randomQuote);
 });
+
+Skeleton.save(wrapperId);

@@ -671,6 +671,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // put caret at right position again
     area.selectionStart = area.selectionEnd = start + 1;
 
+    CustomText.setPopupTextareaState(area.value);
+
     return;
   }
 
@@ -684,7 +686,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   }
 
   const modalVisible: boolean =
-    !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+    Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
   if (Config.quickRestart === "esc") {
     // dont do anything special
@@ -759,7 +761,7 @@ $(document).keydown(async (event) => {
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
-  const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
+  const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
   const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
@@ -791,7 +793,7 @@ $(document).keydown(async (event) => {
   //esc
   if (event.key === "Escape" && Config.quickRestart === "esc") {
     const modalVisible: boolean =
-      !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+      Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
     if (modalVisible) return;
 

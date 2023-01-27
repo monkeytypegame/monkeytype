@@ -1,6 +1,9 @@
 import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "wordFilterPopupWrapper";
 
 let initialised = false;
 
@@ -32,18 +35,47 @@ async function init(): Promise<void> {
   }
 }
 
-export async function show(): Promise<void> {
-  await init();
-  $("#wordFilterPopupWrapper").removeClass("hidden");
-  $("#customTextPopupWrapper").addClass("hidden");
-  $("#wordFilterPopup .languageInput").select2({
-    width: "100%",
-  });
+let callbackFuncOnHide: (() => void) | undefined = undefined;
+
+export async function show(
+  noAnim = false,
+  callbackOnHide: () => void | undefined
+): Promise<void> {
+  Skeleton.append(wrapperId);
+  if (!Misc.isPopupVisible(wrapperId)) {
+    await init();
+    callbackFuncOnHide = callbackOnHide;
+    $("#wordFilterPopup .languageInput").select2({
+      width: "100%",
+    });
+
+    $("#wordFilterPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
+        //
+      });
+  }
 }
 
-function hide(): void {
-  $("#wordFilterPopupWrapper").addClass("hidden");
-  $("#customTextPopupWrapper").removeClass("hidden");
+function hide(noAnim = false): void {
+  if (Misc.isPopupVisible(wrapperId)) {
+    $("#wordFilterPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        noAnim ? 0 : 125,
+        () => {
+          $("#wordFilterPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
+          if (callbackFuncOnHide) callbackFuncOnHide();
+        }
+      );
+  }
 }
 
 async function filter(language: string): Promise<string[]> {
@@ -102,15 +134,15 @@ async function apply(set: boolean): Promise<void> {
   const filteredWords = await filter(language);
   const customText = filteredWords.join(CustomText.delimiter);
 
-  $("#customTextPopup textarea").val(
-    (_, val) => (set ? "" : val + " ") + customText
+  CustomText.setPopupTextareaState(
+    (set ? "" : CustomText.popupTextareaState + " ") + customText
   );
-  hide();
+  hide(true);
 }
 
 $("#wordFilterPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "wordFilterPopupWrapper") {
-    hide();
+    hide(true);
   }
 });
 
@@ -128,3 +160,5 @@ $("#wordFilterPopupWrapper .button").on("mousedown", (e) => {
     });
   }, 1);
 });
+
+Skeleton.save(wrapperId);

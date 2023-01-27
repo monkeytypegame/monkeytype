@@ -544,6 +544,8 @@ export function restart(options = {} as RestartOptions): void {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").val(" ");
       AdController.destroyResult();
+      $("#resultWordsHistory .words").empty();
+      $("#resultReplay #replayWords").empty();
       let shouldQuoteRepeat = false;
       if (
         Config.mode === "quote" &&
@@ -660,7 +662,7 @@ export function restart(options = {} as RestartOptions): void {
             // resetPaceCaret();
             PbCrown.hide();
             TestTimer.clear();
-            if ($("#commandLineWrapper").hasClass("hidden")) {
+            if (!Misc.isPopupVisible("commandLineWrapper")) {
               TestUI.focusWords();
             }
             // ChartController.result.update();
@@ -1970,28 +1972,31 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   restart();
 });
 
-$("#practiseWordsPopup .button.missed").on("click", () => {
-  PractiseWords.hidePopup();
-  PractiseWords.init(true, false);
-  restart({
-    practiseMissed: true,
-  });
+$("#popups").on("click", "#practiseWordsPopup .button.missed", () => {
+  if (PractiseWords.init(true, false)) {
+    PractiseWords.hidePopup();
+    restart({
+      practiseMissed: true,
+    });
+  }
 });
 
-$("#practiseWordsPopup .button.slow").on("click", () => {
-  PractiseWords.hidePopup();
-  PractiseWords.init(false, true);
-  restart({
-    practiseMissed: true,
-  });
+$("#popups").on("click", "#practiseWordsPopup .button.slow", () => {
+  if (PractiseWords.init(false, true)) {
+    PractiseWords.hidePopup();
+    restart({
+      practiseMissed: true,
+    });
+  }
 });
 
-$("#practiseWordsPopup .button.both").on("click", () => {
-  PractiseWords.hidePopup();
-  PractiseWords.init(true, true);
-  restart({
-    practiseMissed: true,
-  });
+$("#popups").on("click", "#practiseWordsPopup .button.both", () => {
+  if (PractiseWords.init(true, true)) {
+    PractiseWords.hidePopup();
+    restart({
+      practiseMissed: true,
+    });
+  }
 });
 
 $("#popups").on(

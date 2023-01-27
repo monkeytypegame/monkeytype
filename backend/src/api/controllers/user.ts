@@ -170,10 +170,10 @@ function getRelevantUserInfo(
   return _.omit(user, [
     "bananas",
     "lbPersonalBests",
-    "quoteMod",
     "inbox",
     "nameHistory",
     "lastNameChange",
+    "_id",
   ]);
 }
 

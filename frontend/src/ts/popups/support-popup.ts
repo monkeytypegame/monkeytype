@@ -1,40 +1,43 @@
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "supportMeWrapper";
+
 function show(): void {
+  Skeleton.append(wrapperId);
+
   $("#supportMeWrapper")
     .css("opacity", 0)
     .removeClass("hidden")
     .animate({ opacity: 1 }, 125);
 }
 
+function hide(): void {
+  $("#supportMeWrapper")
+    .css("opacity", 1)
+    .animate({ opacity: 0 }, 125, () => {
+      $("#supportMeWrapper").addClass("hidden");
+      Skeleton.remove(wrapperId);
+    });
+}
+
 $("#supportMeButton").on("click", () => {
   show();
 });
 
-$(".pageAbout").on("click", "#supportMeAboutButton", () => {
+$("#middle").on("click", ".pageAbout #supportMeAboutButton", () => {
   show();
 });
 
 $("#popups").on("click", "#supportMeWrapper", () => {
-  $("#supportMeWrapper")
-    .css("opacity", 1)
-    .animate({ opacity: 0 }, 125, () => {
-      $("#supportMeWrapper").addClass("hidden");
-    });
+  hide();
 });
 
 $("#popups").on("click", "#supportMeWrapper .button.ads", () => {
-  $("#supportMeWrapper")
-    .css("opacity", 1)
-    .animate({ opacity: 0 }, 125, () => {
-      $("#supportMeWrapper").addClass("hidden");
-    });
+  hide();
 });
 
 $("#popups").on("click", "#supportMeWrapper a.button", () => {
-  $("#supportMeWrapper")
-    .css("opacity", 1)
-    .animate({ opacity: 0 }, 125, () => {
-      $("#supportMeWrapper").addClass("hidden");
-    });
+  hide();
 });
 
 $(document).on("keypress", "#supportMeButton, #supportMeAboutButton", (e) => {
@@ -45,10 +48,8 @@ $(document).on("keypress", "#supportMeButton, #supportMeAboutButton", (e) => {
 
 $(document).on("keydown", (e) => {
   if (e.key === "Escape" && !$("#supportMeWrapper").hasClass("hidden")) {
-    $("#supportMeWrapper")
-      .css("opacity", 1)
-      .animate({ opacity: 0 }, 125, () => {
-        $("#supportMeWrapper").addClass("hidden");
-      });
+    hide();
   }
 });
+
+Skeleton.save(wrapperId);

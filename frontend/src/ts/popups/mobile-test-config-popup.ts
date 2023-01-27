@@ -6,6 +6,10 @@ import * as CustomTestDurationPopup from "./custom-test-duration-popup";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ConfigEvent from "../observables/config-event";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "mobileTestConfigPopupWrapper";
 
 const el = $("#mobileTestConfigPopup");
 
@@ -55,18 +59,20 @@ export function update(): void {
 }
 
 function showPopup(): void {
-  if ($("#mobileTestConfigPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+
+  if (!isPopupVisible(wrapperId)) {
     update();
     $("#mobileTestConfigPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100);
+      .animate({ opacity: 1 }, 125);
   }
 }
 
 function hidePopup(): void {
-  if (!$("#mobileTestConfigPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#mobileTestConfigPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -74,9 +80,10 @@ function hidePopup(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#mobileTestConfigPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -166,7 +173,7 @@ el.find(".modeGroup .button").on("click", (e) => {
   TestLogic.restart();
 });
 
-$("#mobileTestConfigPopup .button").on("click", () => {
+$("#mobileTestConfigPopupWrapper .button").on("click", () => {
   // hidePopup();
   update();
 });
@@ -174,3 +181,5 @@ $("#mobileTestConfigPopup .button").on("click", () => {
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "mode") update();
 });
+
+Skeleton.save(wrapperId);

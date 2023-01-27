@@ -20,8 +20,11 @@ import {
   unlink,
   updatePassword,
 } from "firebase/auth";
-import { isPasswordStrong } from "../utils/misc";
+import { isElementVisible, isPasswordStrong } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "simplePopupWrapper";
 
 interface Input {
   placeholder?: string;
@@ -49,6 +52,7 @@ class SimplePopup {
   beforeInitFn: (thisPopup: SimplePopup) => void;
   beforeShowFn: (thisPopup: SimplePopup) => void;
   canClose: boolean;
+  private noAnimation: boolean;
   constructor(
     id: string,
     type: string,
@@ -77,6 +81,7 @@ class SimplePopup {
     this.beforeInitFn = (thisPopup): void => beforeInitFn(thisPopup);
     this.beforeShowFn = (thisPopup): void => beforeShowFn(thisPopup);
     this.canClose = true;
+    this.noAnimation = false;
   }
   reset(): void {
     this.element.html(`
@@ -202,8 +207,10 @@ class SimplePopup {
     this.hide();
   }
 
-  show(parameters: string[] = []): void {
+  show(parameters: string[] = [], noAnimation = false): void {
+    Skeleton.append(wrapperId);
     activePopup = this;
+    this.noAnimation = noAnimation;
     this.parameters = parameters;
     this.beforeInitFn(this);
     this.init();
@@ -212,7 +219,7 @@ class SimplePopup {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 125, () => {
+      .animate({ opacity: 1 }, noAnimation ? 0 : 125, () => {
         $($("#simplePopup").find("input")[0]).trigger("focus");
       });
   }
@@ -224,8 +231,9 @@ class SimplePopup {
       .stop(true, true)
       .css("opacity", 1)
       .removeClass("hidden")
-      .animate({ opacity: 0 }, 125, () => {
+      .animate({ opacity: 0 }, this.noAnimation ? 0 : 125, () => {
         this.wrapper.addClass("hidden");
+        Skeleton.remove(wrapperId);
       });
   }
 }
@@ -1091,7 +1099,7 @@ list["deleteCustomText"] = new SimplePopup(
     CustomText.deleteCustomText(_thisPopup.parameters[0]);
     Notifications.add("Custom text deleted", 1);
     CustomTextState.setCustomTextName("", undefined);
-    SavedTextsPopup.show();
+    SavedTextsPopup.show(true);
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
@@ -1112,7 +1120,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
     CustomText.deleteCustomText(_thisPopup.parameters[0], true);
     Notifications.add("Custom text deleted", 1);
     CustomTextState.setCustomTextName("", undefined);
-    SavedTextsPopup.show();
+    SavedTextsPopup.show(true);
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
@@ -1132,8 +1140,8 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   (_thisPopup) => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
     Notifications.add("Custom text progress reset", 1);
-    SavedTextsPopup.show();
-    $(`#customTextPopupWrapper textarea`).val(
+    SavedTextsPopup.show(true);
+    CustomText.setPopupTextareaState(
       CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
     );
   },
@@ -1327,7 +1335,7 @@ $(".pageSettings #resetAccount").on("click", () => {
   list["resetAccount"].show();
 });
 
-$("#apeKeysPopup .generateApeKey").on("click", () => {
+$("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
@@ -1368,7 +1376,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .list .savedText .button.delete`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    list["deleteCustomText"].show([name]);
+    list["deleteCustomText"].show([name], true);
   }
 );
 
@@ -1377,7 +1385,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    list["deleteCustomTextLong"].show([name]);
+    list["deleteCustomTextLong"].show([name], true);
   }
 );
 
@@ -1386,7 +1394,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    list["resetProgressCustomTextLong"].show([name]);
+    list["resetProgressCustomTextLong"].show([name], true);
   }
 );
 
@@ -1413,8 +1421,10 @@ $(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
 });
 
 $(document).on("keydown", (event) => {
-  if (event.key === "Escape" && !$("#simplePopupWrapper").hasClass("hidden")) {
+  if (event.key === "Escape" && isElementVisible("#simplePopupWrapper")) {
     hide();
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);

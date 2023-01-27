@@ -1,4 +1,9 @@
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "customThemeShareWrapper";
+
 export function show(value: string): void {
+  Skeleton.append(wrapperId);
   if ($("#customThemeShareWrapper").hasClass("hidden")) {
     // let save = [];
     // $.each(
@@ -13,7 +18,7 @@ export function show(value: string): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#customThemeShare input").trigger("focus");
         $("#customThemeShare input").trigger("select");
         $("#customThemeShare input").trigger("focus");
@@ -44,9 +49,10 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#customThemeShareWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -61,3 +67,5 @@ $("#customThemeShareWrapper").on("click", (e) => {
 $("#customThemeShare .button").on("click", () => {
   hide();
 });
+
+Skeleton.save(wrapperId);

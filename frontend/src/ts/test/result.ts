@@ -433,7 +433,7 @@ function updateTags(dontSave: boolean): void {
     $("#result .stats .tags").removeClass("hidden");
   }
   if (activeTags.length === 0) {
-    $("#result .stats .tags .bottom").text("no tags");
+    $("#result .stats .tags .bottom").html("<div class='noTags'>no tags</div>");
   } else {
     $("#result .stats .tags .bottom").text("");
   }

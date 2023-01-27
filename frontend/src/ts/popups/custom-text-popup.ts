@@ -9,6 +9,9 @@ import * as WordFilterPopup from "./word-filter-popup";
 import * as Notifications from "../elements/notifications";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as SaveCustomTextPopup from "./save-custom-text-popup";
+import * as Skeleton from "./skeleton";
+
+const skeletonId = "customTextPopupWrapper";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
@@ -27,8 +30,9 @@ export function updateLongTextWarning(): void {
   }
 }
 
-export function show(): void {
-  if ($(wrapper).hasClass("hidden")) {
+export function show(noAnim = false): void {
+  Skeleton.append(skeletonId);
+  if (!Misc.isElementVisible(wrapper)) {
     updateLongTextWarning();
     if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
@@ -40,14 +44,16 @@ export function show(): void {
     } else {
       $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
     }
+    CustomText.setPopupTextareaState(
+      CustomText.text.join(CustomText.delimiter)
+    );
+    $(`${popup} textarea`).val(CustomText.popupTextareaState);
+
     $(wrapper)
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
-        let newtext = CustomText.text.join(CustomText.delimiter);
-        newtext = newtext.replace(/\n /g, "\n");
-        $(`${popup} textarea`).val(newtext);
+      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
         $(`${popup} .wordcount input`).val(
           CustomText.word === -1 ? "" : CustomText.word
         );
@@ -57,11 +63,14 @@ export function show(): void {
         $(`${popup} textarea`).trigger("focus");
       });
   }
-  setTimeout(() => {
-    if (!CustomTextState.isCustomTextLong()) {
-      $(`${popup} textarea`).trigger("focus");
-    }
-  }, 150);
+  setTimeout(
+    () => {
+      if (!CustomTextState.isCustomTextLong()) {
+        $(`${popup} textarea`).trigger("focus");
+      }
+    },
+    noAnim ? 10 : 150
+  );
 }
 
 $(`${popup} .delimiterCheck input`).on("change", () => {
@@ -87,8 +96,8 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
   CustomText.setDelimiter(delimiter);
 });
 
-export function hide(): void {
-  if (!$(wrapper).hasClass("hidden")) {
+export function hide(noAnim = false): void {
+  if (Misc.isElementVisible(wrapper)) {
     $(wrapper)
       .stop(true, true)
       .css("opacity", 1)
@@ -96,16 +105,13 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        noAnim ? 0 : 125,
         () => {
           $(wrapper).addClass("hidden");
+          Skeleton.remove(skeletonId);
         }
       );
   }
-}
-
-export function isVisible(): boolean {
-  return !$(wrapper).hasClass("hidden");
 }
 
 $(wrapper).on("mousedown", (e) => {
@@ -135,8 +141,12 @@ $(`${popup} .inputs .replaceNewLinesButtons .button`).on("click", (e) => {
   $(e.target).addClass("active");
 });
 
+$(`${popup} textarea`).on("input", () => {
+  CustomText.setPopupTextareaState($(`${popup} textarea`).val() as string);
+});
+
 $(`${popup} textarea`).on("keypress", (e) => {
-  if (!$(`${popup} .longCustomTextWarning`).hasClass("hidden")) {
+  if (Misc.isElementVisible(`#customTextPopup .longCustomTextWarning`)) {
     e.preventDefault();
     return;
   }
@@ -159,10 +169,6 @@ $(`${popup} .randomInputFields .wordcount input`).on("keypress", () => {
 
 $(`${popup} .randomInputFields .time input`).on("keypress", () => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
-});
-
-$(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
-  SavedTextsPopup.show();
 });
 
 $(`${popup} .buttonsTop .saveCustomText`).on("click", () => {
@@ -267,10 +273,6 @@ $("#popups").on("click", `${popup} .button.apply`, () => {
   apply();
 });
 
-$("#popups").on("click", `${popup} .wordfilter`, () => {
-  WordFilterPopup.show();
-});
-
 $(".pageTest").on("click", "#testConfig .customText .textButton", () => {
   show();
 });
@@ -278,17 +280,36 @@ $(".pageTest").on("click", "#testConfig .customText .textButton", () => {
 $(document).on("keydown", (event) => {
   if (
     event.key === "Escape" &&
-    !$("#customTextPopupWrapper").hasClass("hidden")
+    Misc.isElementVisible("#customTextPopupWrapper")
   ) {
     hide();
     event.preventDefault();
   }
 });
 
-$(`#customTextPopup .buttonsTop .saveCustomText`).on("click", () => {
-  SaveCustomTextPopup.show();
+$("#popups").on("click", `${popup} .wordfilter`, () => {
+  hide(true);
+  WordFilterPopup.show(true, () => {
+    show(true);
+  });
 });
 
-$(`#customTextPopup .longCustomTextWarning .button`).on("click", () => {
+$(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
+  hide(true);
+  SavedTextsPopup.show(true, () => {
+    show(true);
+  });
+});
+
+$(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
+  hide(true);
+  SaveCustomTextPopup.show(true, () => {
+    show(true);
+  });
+});
+
+$(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
   $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
 });
+
+Skeleton.save(skeletonId);

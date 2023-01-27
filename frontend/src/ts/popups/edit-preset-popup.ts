@@ -5,12 +5,16 @@ import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "presetWrapper";
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
   }
+  Skeleton.append(wrapperId);
 
   if (action === "add") {
     $("#presetWrapper #presetEdit").attr("action", "add");
@@ -42,7 +46,7 @@ export function show(action: string, id?: string, name?: string): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#presetWrapper #presetEdit input").trigger("focus");
       });
   }
@@ -59,9 +63,10 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#presetWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -184,3 +189,5 @@ $(".pageSettings .section.presets").on("click", ".removeButton", (e) => {
   const name = $(e.currentTarget).siblings(".button").children(".title").text();
   show("remove", presetid, name);
 });
+
+Skeleton.save(wrapperId);

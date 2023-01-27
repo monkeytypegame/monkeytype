@@ -1194,12 +1194,24 @@ export function createErrorMessage(error: unknown, message: string): string {
   return message;
 }
 
+export function isElementVisible(query: string): boolean {
+  const popup = document.querySelector(query);
+  if (!popup) {
+    return false;
+  }
+  const style = window.getComputedStyle(popup);
+  return style.display !== "none";
+}
+
+export function isPopupVisible(popupId: string): boolean {
+  return isElementVisible(`#popups #${popupId}`);
+}
+
 export function isAnyPopupVisible(): boolean {
   const popups = document.querySelectorAll("#popups .popupWrapper");
   let popupVisible = false;
   for (const popup of popups) {
-    const style = window.getComputedStyle(popup);
-    if (style.display !== "none") {
+    if (isPopupVisible(popup.id)) {
       popupVisible = true;
       break;
     }

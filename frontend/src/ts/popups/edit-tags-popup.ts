@@ -4,14 +4,18 @@ import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
-import * as ResultTagsPopup from "./result-tags-popup";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "tagsWrapper";
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, 2);
     return;
   }
+
+  Skeleton.append(wrapperId);
 
   if (action === "add") {
     $("#tagsWrapper #tagsEdit").attr("action", "add");
@@ -45,7 +49,7 @@ export function show(action: string, id?: string, name?: string): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         console.log("focusing");
         $("#tagsWrapper #tagsEdit input").trigger("focus");
       });
@@ -63,9 +67,10 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#tagsWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -95,7 +100,6 @@ async function apply(): Promise<void> {
         name: response.data.name,
         _id: response.data._id,
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
     }
@@ -112,7 +116,6 @@ async function apply(): Promise<void> {
           tag.display = propTagName;
         }
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
     }
@@ -128,7 +131,6 @@ async function apply(): Promise<void> {
           DB.getSnapshot()?.tags?.splice(index, 1);
         }
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
     }
@@ -150,7 +152,6 @@ async function apply(): Promise<void> {
           };
         }
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
       ResultFilters.updateTags();
     }
@@ -216,3 +217,5 @@ $(".pageSettings .section.tags").on(
     show("remove", tagid, name);
   }
 );
+
+Skeleton.save(wrapperId);
