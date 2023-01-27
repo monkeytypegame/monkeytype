@@ -1,10 +1,11 @@
+import { isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "customThemeShareWrapper";
 
 export function show(value: string): void {
   Skeleton.append(wrapperId);
-  if ($("#customThemeShareWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     // let save = [];
     // $.each(
     //   $(".pageSettings .section.customTheme [type='color']"),
@@ -27,7 +28,7 @@ export function show(value: string): void {
 }
 
 function hide(): void {
-  if (!$("#customThemeShareWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     // try {
     //   UpdateConfig.setCustomThemeColors(
     //     JSON.parse($("#customThemeShareWrapper input").val())

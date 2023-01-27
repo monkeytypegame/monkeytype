@@ -6,6 +6,7 @@ import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "presetWrapper";
 
@@ -41,7 +42,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit label").addClass("hidden");
   }
 
-  if ($("#presetWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#presetWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -53,7 +54,7 @@ export function show(action: string, id?: string, name?: string): void {
 }
 
 function hide(): void {
-  if (!$("#presetWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#presetWrapper #presetEdit").attr("action", "");
     $("#presetWrapper #presetEdit").attr("tagid", "");
     $("#presetWrapper")

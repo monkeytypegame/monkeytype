@@ -3,7 +3,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
-import { areUnsortedArraysEqual } from "../utils/misc";
+import { areUnsortedArraysEqual, isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "resultEditTagsPanelWrapper";
@@ -21,7 +21,7 @@ function show(): void {
   }
   Skeleton.append(wrapperId);
   updateButtons();
-  if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#resultEditTagsPanelWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -31,7 +31,7 @@ function show(): void {
 }
 
 function hide(): void {
-  if (!$("#resultEditTagsPanelWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#resultEditTagsPanelWrapper")
       .stop(true, true)
       .css("opacity", 1)

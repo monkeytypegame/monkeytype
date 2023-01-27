@@ -1,5 +1,5 @@
 import format from "date-fns/format";
-import { getReleasesFromGitHub } from "../utils/misc";
+import { getReleasesFromGitHub, isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "versionHistoryWrapper";
@@ -61,10 +61,7 @@ $("#popups").on("click", "#versionHistoryWrapper", (e) => {
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#versionHistoryWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }

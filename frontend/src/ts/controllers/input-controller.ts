@@ -762,7 +762,7 @@ $(document).keydown(async (event) => {
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
   const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
-  const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
+  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
 

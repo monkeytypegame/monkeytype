@@ -1,5 +1,6 @@
 import * as UpdateConfig from "../config";
 import * as Notifications from "../elements/notifications";
+import { isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "settingsImportWrapper";
@@ -7,7 +8,7 @@ const wrapperId = "settingsImportWrapper";
 export function show(mode: string, config?: string): void {
   Skeleton.append(wrapperId);
 
-  if ($("#settingsImportWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#settingsImportWrapper").attr("mode", mode);
 
     if (mode === "export") {
@@ -30,7 +31,7 @@ export function show(mode: string, config?: string): void {
 }
 
 function hide(): void {
-  if (!$("#settingsImportWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     if ($("#settingsImportWrapper input").val() !== "") {
       try {
         UpdateConfig.apply(

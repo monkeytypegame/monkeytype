@@ -583,7 +583,7 @@ export function show(): void {
     return;
   }
   Skeleton.append(wrapperId);
-  if ($("#leaderboardsWrapper").hasClass("hidden")) {
+  if (!Misc.isPopupVisible("leaderboardsWrapper")) {
     if (Auth?.currentUser) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
@@ -812,7 +812,7 @@ $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
 });
 
 $(document).on("keydown", (event) => {
-  if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
+  if (event.key === "Escape" && Misc.isPopupVisible("leaderboardsWrapper")) {
     hide();
     event.preventDefault();
   }

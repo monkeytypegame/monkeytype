@@ -1,3 +1,4 @@
+import { isPopupVisible } from "../utils/misc";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "supportMeWrapper";
@@ -47,7 +48,7 @@ $(document).on("keypress", "#supportMeButton, #supportMeAboutButton", (e) => {
 });
 
 $(document).on("keydown", (e) => {
-  if (e.key === "Escape" && !$("#supportMeWrapper").hasClass("hidden")) {
+  if (e.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
   }
 });

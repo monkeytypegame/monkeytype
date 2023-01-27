@@ -6,6 +6,7 @@ import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "tagsWrapper";
 
@@ -44,7 +45,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#tagsWrapper #tagsEdit input").addClass("hidden");
   }
 
-  if ($("#tagsWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#tagsWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -57,7 +58,7 @@ export function show(action: string, id?: string, name?: string): void {
 }
 
 function hide(): void {
-  if (!$("#tagsWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#tagsWrapper #tagsEdit").attr("action", "");
     $("#tagsWrapper #tagsEdit").attr("tagid", "");
     $("#tagsWrapper")
