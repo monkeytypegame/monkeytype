@@ -123,11 +123,21 @@
           color: var(--bg-color) !important;
           background: var(--text-color) !important;
           cursor: pointer;
+          .fas,
+          .far,
+          .fab {
+            color: var(--bg-color);
+          }
         }
 
         &.activeKeyboard {
           color: var(--bg-color) !important;
           background: var(--text-color) !important;
+          .fas,
+          .far,
+          .fab {
+            color: var(--bg-color);
+          }
         }
 
         // &:hover {
