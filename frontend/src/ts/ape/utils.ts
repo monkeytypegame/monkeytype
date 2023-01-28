@@ -21,7 +21,7 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
 
 export async function withRetry(
   fn: () => Ape.EndpointData,
-  opts?: RetryOptions
+  opts?: RetryOptions,
 ): Ape.EndpointData {
   const retry = async (
     previousData: Ape.HttpClientResponse,
