@@ -35,4 +35,4 @@ function getVersion(): string {
   return serverVersion;
 }
 
-export const version =  getVersion();
+export const version = getVersion();
