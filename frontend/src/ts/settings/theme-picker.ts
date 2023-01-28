@@ -217,7 +217,7 @@ export async function refreshButtons(): Promise<void> {
     //then the rest
     for (const theme of themes) {
       if (Config.favThemes.includes(theme.name)) {
-        return;
+        continue;
       }
 
       const activeTheme = activeThemeName === theme.name ? "active" : "";
