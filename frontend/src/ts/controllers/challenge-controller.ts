@@ -240,6 +240,9 @@ export async function setup(challengeName: string): Promise<boolean> {
       Loader.show();
       const response = await fetch("/challenges/" + challenge.parameters[0]);
       Loader.hide();
+      if (response.status !== 200) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
       const scriptdata = await response.text();
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
@@ -302,7 +305,10 @@ export async function setup(challengeName: string): Promise<boolean> {
     challengeLoading = false;
     return true;
   } catch (e) {
-    Notifications.add("Something went wrong: " + e, -1);
+    Notifications.add(
+      Misc.createErrorMessage(e, "Failed to load challenge"),
+      -1
+    );
     return false;
   }
 }

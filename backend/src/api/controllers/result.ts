@@ -469,6 +469,8 @@ export async function addResult(
   if (result.afkDuration === 0) delete result.afkDuration;
   if (result.tags.length === 0) delete result.tags;
 
+  delete result.incompleteTests;
+
   const addedResult = await ResultDAL.addResult(uid, result);
 
   await UserDAL.incrementXp(uid, xpGained.xp);

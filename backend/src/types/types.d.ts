@@ -77,6 +77,7 @@ declare namespace MonkeyTypes {
       leaderboardExpirationTimeInDays: number;
       maxResults: number;
       validModeRules: ValidModeRule[];
+      scheduleRewardsModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
       xpRewardBrackets: RewardBracket[];
@@ -170,6 +171,7 @@ declare namespace MonkeyTypes {
     timeTyping?: number;
     uid: string;
     quoteMod?: boolean;
+    configurationMod?: boolean;
     cannotReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;

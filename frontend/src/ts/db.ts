@@ -100,7 +100,7 @@ export async function initSnapshot(): Promise<
       startedTests: userData.startedTests,
       completedTests: userData.completedTests,
     };
-    if (userData.quoteMod === true) snap.quoteMod = true;
+    snap.quoteMod = userData.quoteMod;
     snap.favoriteQuotes = userData.favoriteQuotes ?? {};
     snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.quoteRatings = userData.quoteRatings;
