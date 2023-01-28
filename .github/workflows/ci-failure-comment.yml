@@ -1,4 +1,4 @@
-name: Comment on failed PR
+name: Comment on PR for CI Failure
 permissions:
   pull-requests: write
 
