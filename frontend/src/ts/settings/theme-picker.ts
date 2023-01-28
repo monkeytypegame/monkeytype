@@ -25,7 +25,7 @@ export function updateActiveButton(): void {
     ?.classList.remove("active");
   document
     .querySelector(
-      `.pageSettings .section.themes .theme[theme=${activeThemeName}]`
+      `.pageSettings .section.themes .theme[theme='${activeThemeName}']`
     )
     ?.classList.add("active");
 }
