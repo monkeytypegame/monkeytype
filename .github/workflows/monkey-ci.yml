@@ -159,14 +159,15 @@ jobs:
     needs: [ci-be, ci-fe, ci-assets]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
-      - name: Comment on PR
-        uses: actions/github-script@v6
+      - uses: actions/checkout@v3
+      - name: Save the PR number in an artifact
+        shell: bash
+        env:
+          PR_NUM: ${{ github.event.number }}
+        run: echo $PR_NUM > pr_num.txt
+
+      - name: Upload the PR number
+        uses: actions/upload-artifact@v3
         with:
-          github-token: ${{ secrets.API_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: ${{ github.event.number }},
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Continuous integration check(s) failed. Please review the failing check\'s logs and make the necessary changes. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-            })
+          name: pr_num
+          path: ./pr_num.txt
