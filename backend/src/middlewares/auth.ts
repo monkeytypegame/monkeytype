@@ -186,8 +186,14 @@ async function authenticateWithBearerToken(
       );
     } else if (errorCode?.includes("auth/user-not-found")) {
       throw new MonkeyError(
-        401,
+        404,
         "User not found.",
+        "authenticateWithBearerToken"
+      );
+    } else if (errorCode?.includes("auth/argument-error")) {
+      throw new MonkeyError(
+        400,
+        "Incorrect Bearer token format.",
         "authenticateWithBearerToken"
       );
     } else {
