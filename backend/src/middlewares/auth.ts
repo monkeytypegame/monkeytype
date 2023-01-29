@@ -184,6 +184,12 @@ async function authenticateWithBearerToken(
         "Token revoked. Please login again.",
         "authenticateWithBearerToken"
       );
+    } else if (errorCode?.includes("auth/user-not-found")) {
+      throw new MonkeyError(
+        401,
+        "User not found.",
+        "authenticateWithBearerToken"
+      );
     } else {
       throw error;
     }
