@@ -1,5 +1,4 @@
 import Ape from "../ape";
-import * as ResultFilters from "../account/result-filters";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
@@ -102,7 +101,6 @@ async function apply(): Promise<void> {
         _id: response.data._id,
       });
       Settings.update();
-      ResultFilters.updateTags();
     }
   } else if (action === "edit") {
     const response = await Ape.users.editTag(tagId, tagName);
@@ -118,7 +116,6 @@ async function apply(): Promise<void> {
         }
       });
       Settings.update();
-      ResultFilters.updateTags();
     }
   } else if (action === "remove") {
     const response = await Ape.users.deleteTag(tagId);
@@ -133,7 +130,6 @@ async function apply(): Promise<void> {
         }
       });
       Settings.update();
-      ResultFilters.updateTags();
     }
   } else if (action === "clearPb") {
     const response = await Ape.users.deleteTagPersonalBest(tagId);
@@ -154,7 +150,6 @@ async function apply(): Promise<void> {
         }
       });
       Settings.update();
-      ResultFilters.updateTags();
     }
   }
   Loader.hide();

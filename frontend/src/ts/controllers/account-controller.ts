@@ -224,7 +224,6 @@ export async function getDataAndInit(): Promise<boolean> {
     }
   }
   AccountButton.loading(false);
-  ResultFilters.updateTags();
   updateTagsCommands();
   TagController.loadActiveFromLocalStorage();
   Settings.showAccountSection();

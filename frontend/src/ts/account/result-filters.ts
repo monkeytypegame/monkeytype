@@ -458,32 +458,6 @@ export function toggle<G extends MonkeyTypes.Group>(
   }
 }
 
-export function updateTags(): void {
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-  ).empty();
-
-  const snapshot = DB.getSnapshot();
-
-  if ((snapshot?.tags?.length ?? 0) > 0) {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
-      "hidden"
-    );
-    $(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-    ).append(`<div class="button" filter="none">no tag</div>`);
-    snapshot?.tags?.forEach((tag) => {
-      $(
-        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag._id}">${tag.display}</div>`);
-    });
-  } else {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
-      "hidden"
-    );
-  }
-}
-
 $(
   ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
 ).on("click", ".button", (e) => {
@@ -722,6 +696,28 @@ export async function appendButtons(): Promise<void> {
       el.innerHTML = `<div class="button" filter="none">none</div>` + html;
     }
   }
+
+  const snapshot = DB.getSnapshot();
+
+  if ((snapshot?.tags?.length ?? 0) > 0) {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
+      "hidden"
+    );
+    let html = `<div class="button" filter="none">no tag</div>`;
+    for (const tag of snapshot?.tags ?? []) {
+      html += `<div class="button" filter="${tag._id}">${tag.display}</div>`;
+    }
+    const el = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+    );
+    if (el) {
+      el.innerHTML = html;
+    }
+  } else {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
+      "hidden"
+    );
+  }
 }
 
 export function removeButtons(): void {
@@ -730,6 +726,9 @@ export function removeButtons(): void {
   ).empty();
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+  ).empty();
+  $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
 }
 
