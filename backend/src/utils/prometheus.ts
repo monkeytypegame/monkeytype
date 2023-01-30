@@ -267,3 +267,13 @@ const uidRequestCount = new Counter({
 export function recordRequestForUid(uid: string): void {
   uidRequestCount.inc({ uid });
 }
+
+const collectionSize = new Gauge({
+  name: "db_collection_size",
+  help: "Size of a collection",
+  labelNames: ["collection"],
+});
+
+export function setCollectionSize(collection: string, size: number): void {
+  collectionSize.set({ collection }, size);
+}
