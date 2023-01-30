@@ -106,7 +106,7 @@ export async function load(): Promise<void> {
     });
 
     filters.tags = newTags;
-    await updateFilterPresets();
+    // await updateFilterPresets();
     save();
   } catch {
     console.log("error in loading result filters");
@@ -116,8 +116,14 @@ export async function load(): Promise<void> {
 }
 
 export async function updateFilterPresets(): Promise<void> {
-  // remove all previous filter preset buttons
-  $(".pageAccount .presetFilterButtons .filterBtns").html("");
+  const parent = document.querySelector(".pageAccount .presetFilterButtons");
+  const buttons = document.querySelector(
+    ".pageAccount .presetFilterButtons .filterBtns"
+  );
+
+  if (!parent || !buttons) return;
+
+  buttons.innerHTML = "";
 
   const filterPresets =
     DB.getSnapshot()?.filterPresets.map((filter) => {
@@ -125,24 +131,22 @@ export async function updateFilterPresets(): Promise<void> {
       return filter;
     }) ?? [];
 
-  // if user has filter presets
   if (filterPresets.length > 0) {
-    // show region
-    $(".pageAccount .presetFilterButtons").show();
+    let html = "";
 
-    // add button for each filter
-    DB.getSnapshot()?.filterPresets.forEach((filter) => {
-      $(".pageAccount .group.presetFilterButtons .filterBtns").append(
-        `<div class="filterPresets">
-          <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
-          <div class="button delete-filter-preset" data-id="${filter._id}">
-            <i class="fas fa-fw fa-trash"></i>
-          </div>
-        </div>`
-      );
-    });
+    for (const filter of filterPresets) {
+      html += `<div class="filterPresets">
+      <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
+      <div class="button delete-filter-preset" data-id="${filter._id}">
+        <i class="fas fa-fw fa-trash"></i>
+      </div>
+    </div>`;
+    }
+
+    buttons.innerHTML = html;
+    parent.classList.remove("hidden");
   } else {
-    $(".pageAccount .presetFilterButtons").hide();
+    parent.classList.add("hidden");
   }
 }
 
@@ -718,6 +722,8 @@ export async function appendButtons(): Promise<void> {
       "hidden"
     );
   }
+
+  updateFilterPresets();
 }
 
 export function removeButtons(): void {
