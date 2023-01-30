@@ -20,7 +20,7 @@ import {
   unlink,
   updatePassword,
 } from "firebase/auth";
-import { isElementVisible, isPasswordStrong } from "../utils/misc";
+import { isElementVisible, isLocalhost, isPasswordStrong } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as Skeleton from "./skeleton";
 
@@ -535,10 +535,7 @@ list["updatePassword"] = new SimplePopup(
         Notifications.add("New passwords don't match", 0);
         return;
       }
-      if (
-        window.location.hostname !== "localhost" &&
-        !isPasswordStrong(newPass)
-      ) {
+      if (!isLocalhost() && !isPasswordStrong(newPass)) {
         Notifications.add(
           "New password must contain at least one capital letter, number, a special character and at least 8 characters long",
           0,

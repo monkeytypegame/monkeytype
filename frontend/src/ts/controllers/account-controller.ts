@@ -651,10 +651,7 @@ async function signUp(): Promise<void> {
   }
 
   // Force user to use a capital letter, number, special character when setting up an account and changing password
-  if (
-    window.location.hostname !== "localhost" &&
-    !Misc.isPasswordStrong(password)
-  ) {
+  if (!Misc.isLocalhost() && !Misc.isPasswordStrong(password)) {
     Notifications.add(
       "Password must contain at least one capital letter, number, a special character and at least 8 characters long",
       0,

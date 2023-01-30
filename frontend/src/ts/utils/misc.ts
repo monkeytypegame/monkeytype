@@ -1374,3 +1374,11 @@ export function loadCSS(href: string, prepend = false): void {
     document.getElementsByTagName("head")[0].appendChild(link);
   }
 }
+
+export function isLocalhost(): boolean {
+  return (
+    location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1" ||
+    location.hostname === ""
+  );
+}

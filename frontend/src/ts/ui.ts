@@ -7,6 +7,7 @@ import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
+import { isLocalhost } from "./utils/misc";
 
 export function updateKeytips(): void {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
@@ -38,7 +39,7 @@ export function updateKeytips(): void {
   }
 }
 
-if (window.location.hostname === "localhost") {
+if (isLocalhost()) {
   window.onerror = function (error): void {
     Notifications.add(error.toString(), -1);
   };
