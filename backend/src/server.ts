@@ -14,6 +14,8 @@ import * as RedisClient from "./init/redis";
 import queues from "./queues";
 import workers from "./workers";
 import Logger from "./utils/logger";
+import * as Email from "./utils/email";
+import emailQueue from "./queues/email-queue";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -34,6 +36,9 @@ async function bootServer(port: number): Promise<Server> {
     Logger.info("Fetching live configuration...");
     const liveConfiguration = await getLiveConfiguration();
     Logger.success("Live configuration fetched");
+
+    Logger.info("Initializing email...");
+    await Email.init();
 
     Logger.info("Connecting to redis...");
     await RedisClient.connect();
@@ -66,6 +71,17 @@ async function bootServer(port: number): Promise<Server> {
     Logger.success("Cron jobs started");
 
     recordServerVersion(version);
+    //testing email queue
+    emailQueue.sendVerificationEmail(
+      "themiodec@gmail.com",
+      "Miodec",
+      "https://google.com"
+    );
+    emailQueue.sendVerificationEmail(
+      "themiodec@gmal.com",
+      "Miodec",
+      "https://monkeytype.com"
+    );
   } catch (error) {
     Logger.error("Failed to boot server");
     Logger.error(error);
