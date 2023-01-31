@@ -99,53 +99,10 @@ export async function sendMailUsingTemplate<M extends EmailType>(
 
   recordEmail(templateName, result.accepted.length === 0 ? "fail" : "success");
 
-  if (result.accepted.length === 0) {
-    return {
-      success: false,
-      message: result.response,
-    };
-  } else {
-    return {
-      success: true,
-      message: result.response,
-    };
-  }
-}
-
-export async function sendMail(
-  to: string,
-  subject: string,
-  html: string
-): Promise<MailResult> {
-  if (!isInitialized()) {
-    return {
-      success: false,
-      message: "Email client transport not initialized",
-    };
-  }
-
-  const mailOptions = {
-    from: "Monkeytype <noreply@monkeytype.com>",
-    to,
-    subject,
-    html,
+  return {
+    success: result.accepted.length !== 0,
+    message: result.response,
   };
-
-  const result = await transporter.sendMail(mailOptions);
-
-  recordEmail("-", result.accepted.length === 0 ? "fail" : "success");
-
-  if (result.accepted.length === 0) {
-    return {
-      success: false,
-      message: result.response,
-    };
-  } else {
-    return {
-      success: true,
-      message: result.response,
-    };
-  }
 }
 
 const EMAIL_TEMPLATES_DIRECTORY = join(__dirname, "../../email-templates");
