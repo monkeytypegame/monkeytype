@@ -157,7 +157,7 @@ async function getTemplate(name: string): Promise<string> {
   }
 
   const template = await fs.promises.readFile(
-    EMAIL_TEMPLATES_DIRECTORY + "/" + name,
+    `${EMAIL_TEMPLATES_DIRECTORY}/${name}`,
     "utf-8"
   );
 
