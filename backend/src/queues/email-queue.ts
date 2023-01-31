@@ -37,10 +37,10 @@ class EmailQueue extends MonkeyQueue<EmailTask<EmailType>> {
   async sendVerificationEmail(
     email: string,
     name: string,
-    link: string
+    verificationLink: string
   ): Promise<void> {
     const taskName = "verify";
-    const task = buildTask(taskName, email, { name, link });
+    const task = buildTask(taskName, email, { name, verificationLink });
     await this.add(taskName, task);
   }
 }
