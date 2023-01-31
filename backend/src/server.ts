@@ -14,7 +14,7 @@ import * as RedisClient from "./init/redis";
 import queues from "./queues";
 import workers from "./workers";
 import Logger from "./utils/logger";
-import * as EmailClient from "./utils/email";
+import * as EmailClient from "./init/email-client";
 import emailQueue from "./queues/email-queue";
 
 async function bootServer(port: number): Promise<Server> {

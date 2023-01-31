@@ -3,7 +3,7 @@ import IORedis from "ioredis";
 import { Worker, Job } from "bullmq";
 import Logger from "../utils/logger";
 import EmailQueue, { EmailTask } from "../queues/email-queue";
-import { fillTemplate, sendMail } from "../utils/email";
+import { fillTemplate, sendMail } from "../init/email-client";
 
 async function jobHandler(job: Job): Promise<void> {
   const { type, email, args }: EmailTask = job.data;
