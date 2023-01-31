@@ -13,12 +13,11 @@ export interface EmailTask<M extends EmailType> {
 export type EmailTaskContexts = {
   verify: {
     name: string;
-    link: string;
+    verificationLink: string;
   };
   resetPassword: {
     name: string;
-    link: string;
-    test: string;
+    passwordResetLink: string;
   };
 };
 
