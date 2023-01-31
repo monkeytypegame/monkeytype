@@ -17,7 +17,7 @@ export async function init(): Promise<void> {
     return;
   }
 
-  const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, MODE } = process.env;
+  const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT, MODE } = process.env;
 
   if (!EMAIL_HOST || !EMAIL_USER || !EMAIL_PASS) {
     if (MODE === "dev") {
@@ -29,8 +29,8 @@ export async function init(): Promise<void> {
 
   transporter = nodemailer.createTransport({
     host: EMAIL_HOST,
-    secure: true,
-    port: 465,
+    secure: EMAIL_PORT === "465" ? true : false,
+    port: parseInt(EMAIL_PORT ?? "578"),
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS,
