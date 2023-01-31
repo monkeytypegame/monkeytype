@@ -133,12 +133,10 @@ function getTemplate(name: string): string {
     "utf-8"
   );
 
-  const html = mjml2html(template, {
-    minify: true,
-  });
+  const html = mjml2html(template).html;
 
   cachedTemplates[name] = html;
-  return template;
+  return html;
 }
 
 export function fillTemplate(type: EmailType, data: any[]): string {
