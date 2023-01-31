@@ -89,7 +89,7 @@ interface MailResult {
   message: string;
 }
 
-export async function sendMailUsingTemplate<M extends EmailType>(
+export async function sendEmail<M extends EmailType>(
   templateName: EmailType,
   to: string,
   data: EmailTaskContexts[M]

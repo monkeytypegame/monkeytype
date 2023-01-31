@@ -6,7 +6,7 @@ import EmailQueue, {
   EmailTaskContexts,
   EmailType,
 } from "../queues/email-queue";
-import { sendMailUsingTemplate } from "../init/email-client";
+import { sendEmail } from "../init/email-client";
 
 async function jobHandler(job: Job): Promise<void> {
   const type: EmailType = job.data.type;
@@ -17,7 +17,7 @@ async function jobHandler(job: Job): Promise<void> {
 
   const start = performance.now();
 
-  const result = await sendMailUsingTemplate(type, email, ctx);
+  const result = await sendEmail(type, email, ctx);
 
   if (!result.success) {
     throw new Error(result.message);
