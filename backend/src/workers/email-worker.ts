@@ -12,7 +12,7 @@ async function jobHandler(job: Job): Promise<void> {
   const start = performance.now();
 
   if (type === "verify") {
-    const html = fillTemplate("verify", args);
+    const html = await fillTemplate("verify", args);
     await sendMail(email, "Verify your Monkeytype account", html);
   }
 

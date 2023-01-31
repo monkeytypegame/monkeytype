@@ -120,12 +120,12 @@ const EMAIL_TEMPLATES_DIRECTORY = join(__dirname, "../email-templates");
 
 const cachedTemplates: Record<string, string> = {};
 
-function getTemplate(name: string): string {
+async function getTemplate(name: string): Promise<string> {
   if (cachedTemplates[name]) {
     return cachedTemplates[name];
   }
 
-  const template = fs.readFileSync(
+  const template = await fs.promises.readFile(
     EMAIL_TEMPLATES_DIRECTORY + "/" + name,
     "utf-8"
   );
@@ -136,9 +136,12 @@ function getTemplate(name: string): string {
   return html;
 }
 
-export function fillTemplate(type: EmailType, data: any[]): string {
+export async function fillTemplate(
+  type: EmailType,
+  data: any[]
+): Promise<string> {
   if (type === "verify") {
-    return getTemplate("verification.html")
+    return (await getTemplate("verification.html"))
       .replace(/{{name}}/gim, data[0])
       .replace(/{{link}}/gim, data[1]);
   }
