@@ -2,13 +2,16 @@ import _ from "lodash";
 import IORedis from "ioredis";
 import { Worker, Job } from "bullmq";
 import Logger from "../utils/logger";
-import EmailQueue from "../queues/email-queue";
+import EmailQueue, {
+  EmailTaskContexts,
+  EmailType,
+} from "../queues/email-queue";
 import { sendMailUsingTemplate } from "../init/email-client";
 
 async function jobHandler(job: Job): Promise<void> {
-  const type: MonkeyTypes.EmailType = job.data.type;
+  const type: EmailType = job.data.type;
   const email: string = job.data.email;
-  const ctx: MonkeyTypes.EmailTaskContexts[typeof type] = job.data.ctx;
+  const ctx: EmailTaskContexts[typeof type] = job.data.ctx;
 
   Logger.info(`Starting job: ${type}`);
 

@@ -2,11 +2,31 @@ import { MonkeyQueue } from "./monkey-queue";
 
 const QUEUE_NAME = "email-tasks";
 
+export type EmailType = "verify" | "resetPassword";
+
+export interface EmailTask<M extends EmailType> {
+  type: M;
+  email: string;
+  ctx: EmailTaskContexts[M];
+}
+
+export type EmailTaskContexts = {
+  verify: {
+    name: string;
+    link: string;
+  };
+  resetPassword: {
+    name: string;
+    link: string;
+    test: string;
+  };
+};
+
 function buildTask(
-  taskName: MonkeyTypes.EmailType,
+  taskName: EmailType,
   email: string,
-  taskContext: MonkeyTypes.EmailTaskContexts[MonkeyTypes.EmailType]
-): MonkeyTypes.EmailTask<MonkeyTypes.EmailType> {
+  taskContext: EmailTaskContexts[EmailType]
+): EmailTask<EmailType> {
   return {
     type: taskName,
     email: email,
@@ -14,9 +34,7 @@ function buildTask(
   };
 }
 
-class EmailQueue extends MonkeyQueue<
-  MonkeyTypes.EmailTask<MonkeyTypes.EmailType>
-> {
+class EmailQueue extends MonkeyQueue<EmailTask<EmailType>> {
   async sendVerificationEmail(
     email: string,
     name: string,

@@ -5,6 +5,7 @@ import { join } from "path";
 import mjml2html from "mjml";
 import mustache from "mustache";
 import { recordEmail } from "../utils/prometheus";
+import { EmailTaskContexts, EmailType } from "../queues/email-queue";
 
 let transportInitialized = false;
 let transporter: nodemailer.Transporter;
@@ -72,11 +73,11 @@ interface MailResult {
   message: string;
 }
 
-export async function sendMailUsingTemplate<M extends MonkeyTypes.EmailType>(
-  templateName: MonkeyTypes.EmailType,
+export async function sendMailUsingTemplate<M extends EmailType>(
+  templateName: EmailType,
   to: string,
   subject: string,
-  data: MonkeyTypes.EmailTaskContexts[M]
+  data: EmailTaskContexts[M]
 ): Promise<MailResult> {
   if (!isInitialized()) {
     return {
@@ -167,9 +168,9 @@ async function getTemplate(name: string): Promise<string> {
   return html;
 }
 
-async function fillTemplate<M extends MonkeyTypes.EmailType>(
+async function fillTemplate<M extends EmailType>(
   type: M,
-  data: MonkeyTypes.EmailTaskContexts[M]
+  data: EmailTaskContexts[M]
 ): Promise<string> {
   if (type === "verify") {
     const template = await getTemplate("verification.html");
