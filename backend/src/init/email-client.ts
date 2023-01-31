@@ -147,7 +147,7 @@ export async function sendMail(
   }
 }
 
-const EMAIL_TEMPLATES_DIRECTORY = join(__dirname, "../email-templates");
+const EMAIL_TEMPLATES_DIRECTORY = join(__dirname, "../../email-templates");
 
 const cachedTemplates: Record<string, string> = {};
 
