@@ -2,24 +2,25 @@ import _ from "lodash";
 import IORedis from "ioredis";
 import { Worker, Job } from "bullmq";
 import Logger from "../utils/logger";
-import EmailQueue, { EmailTask } from "../queues/email-queue";
-import { fillTemplate, sendMail } from "../init/email-client";
-import { recordEmail } from "../utils/prometheus";
+import EmailQueue from "../queues/email-queue";
+import { sendMailUsingTemplate } from "../init/email-client";
 
 async function jobHandler(job: Job): Promise<void> {
-  const { type, email, args }: EmailTask = job.data;
+  const type: MonkeyTypes.EmailType = job.data.type;
+  const email: string = job.data.email;
+  const ctx: MonkeyTypes.EmailTaskContexts[typeof type] = job.data.ctx;
+
   Logger.info(`Starting job: ${type}`);
 
   const start = performance.now();
 
   if (type === "verify") {
-    const html = await fillTemplate("verify", args);
-    const result = await sendMail(
+    await sendMailUsingTemplate(
+      type,
       email,
       "Verify your Monkeytype account",
-      html
+      ctx
     );
-    recordEmail(type, result.success ? "success" : "failure");
   }
 
   const elapsed = performance.now() - start;

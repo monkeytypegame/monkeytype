@@ -474,4 +474,24 @@ declare namespace MonkeyTypes {
     canGetPb: boolean;
     difficultyLevel: number;
   }
+
+  type EmailType = "verify" | "resetPassword";
+
+  interface EmailTask<M extends EmailType> {
+    type: M;
+    email: string;
+    ctx: EmailTaskContexts[M];
+  }
+
+  type EmailTaskContexts = {
+    verify: {
+      name: string;
+      link: string;
+    };
+    resetPassword: {
+      name: string;
+      link: string;
+      test: string;
+    };
+  };
 }

@@ -2,9 +2,9 @@ import * as nodemailer from "nodemailer";
 import Logger from "../utils/logger";
 import fs from "fs";
 import { join } from "path";
-import { EmailType } from "../queues/email-queue";
 import mjml2html from "mjml";
 import mustache from "mustache";
+import { recordEmail } from "../utils/prometheus";
 
 let transportInitialized = false;
 let transporter: nodemailer.Transporter;
@@ -70,6 +70,45 @@ interface MailResult {
   message: string;
 }
 
+export async function sendMailUsingTemplate<M extends MonkeyTypes.EmailType>(
+  templateName: MonkeyTypes.EmailType,
+  to: string,
+  subject: string,
+  data: MonkeyTypes.EmailTaskContexts[M]
+): Promise<MailResult> {
+  if (!isInitialized()) {
+    return {
+      success: false,
+      message: "Email client transport not initialized",
+    };
+  }
+
+  const template = await fillTemplate<typeof templateName>(templateName, data);
+
+  const mailOptions = {
+    from: "Monkeytype <noreply@monkeytype.com>",
+    to,
+    subject,
+    template,
+  };
+
+  const result = await transporter.sendMail(mailOptions);
+
+  recordEmail(templateName, result.accepted.length === 0 ? "fail" : "success");
+
+  if (result.accepted.length === 0) {
+    return {
+      success: false,
+      message: result.response,
+    };
+  } else {
+    return {
+      success: true,
+      message: result.response,
+    };
+  }
+}
+
 export async function sendMail(
   to: string,
   subject: string,
@@ -91,18 +130,7 @@ export async function sendMail(
 
   const result = await transporter.sendMail(mailOptions);
 
-  //the response here is this, not sure how to handle..
-  // {
-  //   accepted: [ 'themiodec@gmail.com' ],
-  //   rejected: [],
-  //   ehlo: [ 'AUTH LOGIN PLAIN', 'SIZE 53477376' ],
-  //   envelopeTime: 174,
-  //   messageTime: 200,
-  //   messageSize: 13090,
-  //   response: '250 Message received',
-  //   envelope: { from: 'noreply@monkeytype.com', to: [ 'themiodec@gmail.com' ] },
-  //   messageId: '<075d5d61-7e1e-88fd-39be-9803826196d9@monkeytype.com>'
-  // }
+  recordEmail("-", result.accepted.length === 0 ? "fail" : "success");
 
   if (result.accepted.length === 0) {
     return {
@@ -137,16 +165,13 @@ async function getTemplate(name: string): Promise<string> {
   return html;
 }
 
-export async function fillTemplate(
-  type: EmailType,
-  data: any[]
+async function fillTemplate<M extends MonkeyTypes.EmailType>(
+  type: M,
+  data: MonkeyTypes.EmailTaskContexts[M]
 ): Promise<string> {
   if (type === "verify") {
     const template = await getTemplate("verification.html");
-    return mustache.render(template, {
-      name: data[0],
-      link: data[1],
-    });
+    return mustache.render(template, data);
   }
   return "Unknown email type";
 }

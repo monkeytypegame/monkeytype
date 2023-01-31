@@ -2,34 +2,28 @@ import { MonkeyQueue } from "./monkey-queue";
 
 const QUEUE_NAME = "email-tasks";
 
-export type EmailType = "verify";
-
-export interface EmailTask {
-  type: "verify";
-  email: string;
-  args: any[];
-}
-
 function buildTask(
-  taskName: EmailType,
+  taskName: MonkeyTypes.EmailType,
   email: string,
-  taskArgs: any[]
-): EmailTask {
+  taskContext: MonkeyTypes.EmailTaskContexts[MonkeyTypes.EmailType]
+): MonkeyTypes.EmailTask<MonkeyTypes.EmailType> {
   return {
     type: taskName,
     email: email,
-    args: taskArgs,
+    ctx: taskContext,
   };
 }
 
-class EmailQueue extends MonkeyQueue<EmailTask> {
+class EmailQueue extends MonkeyQueue<
+  MonkeyTypes.EmailTask<MonkeyTypes.EmailType>
+> {
   async sendVerificationEmail(
     email: string,
     name: string,
     link: string
   ): Promise<void> {
     const taskName = "verify";
-    const task = buildTask(taskName, email, [name, link]);
+    const task = buildTask(taskName, email, { name, link });
     await this.add(taskName, task);
   }
 }
