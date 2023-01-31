@@ -7,6 +7,22 @@ import mustache from "mustache";
 import { recordEmail } from "../utils/prometheus";
 import { EmailTaskContexts, EmailType } from "../queues/email-queue";
 
+interface EmailMetadata {
+  subject: string;
+  templateName: string;
+}
+
+const templates: Record<EmailType, EmailMetadata> = {
+  verify: {
+    subject: "Verify your Monkeytype account",
+    templateName: "verification.html",
+  },
+  resetPassword: {
+    subject: "Reset your Monkeytype password",
+    templateName: "reset-password.html",
+  },
+};
+
 let transportInitialized = false;
 let transporter: nodemailer.Transporter;
 
@@ -76,7 +92,6 @@ interface MailResult {
 export async function sendMailUsingTemplate<M extends EmailType>(
   templateName: EmailType,
   to: string,
-  subject: string,
   data: EmailTaskContexts[M]
 ): Promise<MailResult> {
   if (!isInitialized()) {
@@ -91,7 +106,7 @@ export async function sendMailUsingTemplate<M extends EmailType>(
   const mailOptions = {
     from: "Monkeytype <noreply@monkeytype.com>",
     to,
-    subject,
+    subject: templates[templateName].subject,
     html: template,
   };
 
@@ -129,9 +144,6 @@ async function fillTemplate<M extends EmailType>(
   type: M,
   data: EmailTaskContexts[M]
 ): Promise<string> {
-  if (type === "verify") {
-    const template = await getTemplate("verification.html");
-    return mustache.render(template, data);
-  }
-  return "Unknown email type";
+  const template = await getTemplate(templates[type].templateName);
+  return mustache.render(template, data);
 }

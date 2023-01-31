@@ -17,17 +17,10 @@ async function jobHandler(job: Job): Promise<void> {
 
   const start = performance.now();
 
-  if (type === "verify") {
-    const result = await sendMailUsingTemplate(
-      type,
-      email,
-      "Verify your Monkeytype account",
-      ctx
-    );
+  const result = await sendMailUsingTemplate(type, email, ctx);
 
-    if (!result.success) {
-      throw new Error(result.message);
-    }
+  if (!result.success) {
+    throw new Error(result.message);
   }
 
   const elapsed = performance.now() - start;
