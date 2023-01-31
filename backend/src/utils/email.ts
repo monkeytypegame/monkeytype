@@ -88,17 +88,30 @@ export async function sendMail(
     html,
   };
 
-  const [err, info] = await transporter.sendMail(mailOptions);
+  const result = await transporter.sendMail(mailOptions);
 
-  if (err) {
+  //the response here is this, not sure how to handle..
+  // {
+  //   accepted: [ 'themiodec@gmail.com' ],
+  //   rejected: [],
+  //   ehlo: [ 'AUTH LOGIN PLAIN', 'SIZE 53477376' ],
+  //   envelopeTime: 174,
+  //   messageTime: 200,
+  //   messageSize: 13090,
+  //   response: '250 Message received',
+  //   envelope: { from: 'noreply@monkeytype.com', to: [ 'themiodec@gmail.com' ] },
+  //   messageId: '<075d5d61-7e1e-88fd-39be-9803826196d9@monkeytype.com>'
+  // }
+
+  if (result.accepted.length === 0) {
     return {
       success: false,
-      message: err.message,
+      message: result.response,
     };
   } else {
     return {
       success: true,
-      message: info.messageId,
+      message: result.response,
     };
   }
 }
