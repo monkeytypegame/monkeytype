@@ -72,11 +72,13 @@ async function bootServer(port: number): Promise<Server> {
 
     recordServerVersion(version);
     //testing email queue
-    emailQueue.sendVerificationEmail(
-      "phyllis.barrows34@ethereal.email",
-      "Miodec",
-      "https://monkeytype.com"
-    );
+    if (process.env.MAIL_USER) {
+      emailQueue.sendVerificationEmail(
+        process.env.MAIL_USER,
+        "Miodec",
+        "https://monkeytype.com"
+      );
+    }
   } catch (error) {
     Logger.error("Failed to boot server");
     Logger.error(error);
