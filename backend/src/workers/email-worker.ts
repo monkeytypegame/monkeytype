@@ -4,6 +4,7 @@ import { Worker, Job } from "bullmq";
 import Logger from "../utils/logger";
 import EmailQueue, { EmailTask } from "../queues/email-queue";
 import { fillTemplate, sendMail } from "../init/email-client";
+import { recordEmail } from "../utils/prometheus";
 
 async function jobHandler(job: Job): Promise<void> {
   const { type, email, args }: EmailTask = job.data;
@@ -13,7 +14,12 @@ async function jobHandler(job: Job): Promise<void> {
 
   if (type === "verify") {
     const html = await fillTemplate("verify", args);
-    await sendMail(email, "Verify your Monkeytype account", html);
+    const result = await sendMail(
+      email,
+      "Verify your Monkeytype account",
+      html
+    );
+    recordEmail(type, result.success ? "success" : "failure");
   }
 
   const elapsed = performance.now() - start;

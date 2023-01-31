@@ -277,3 +277,13 @@ const collectionSize = new Gauge({
 export function setCollectionSize(collection: string, size: number): void {
   collectionSize.set({ collection }, size);
 }
+
+const emailCount = new Counter({
+  name: "email_count",
+  help: "Emails sent by the server",
+  labelNames: ["type", "status"],
+});
+
+export function recordEmail(type: string, status: string): void {
+  emailCount.inc({ type, status });
+}
