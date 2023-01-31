@@ -1,6 +1,6 @@
 import { MonkeyQueue } from "./monkey-queue";
 
-const QUEUE_NAME = "mail-tasks";
+const QUEUE_NAME = "email-tasks";
 
 export type EmailType = "verify";
 
