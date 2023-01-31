@@ -47,6 +47,7 @@ export async function init(): Promise<void> {
       );
     }
 
+    Logger.success("Email configuration verified");
     transportInitialized = true;
   } catch (error) {
     Logger.error(error.message);
