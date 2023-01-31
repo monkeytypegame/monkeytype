@@ -43,16 +43,20 @@ async function bootServer(port: number): Promise<Server> {
       const connection = RedisClient.getConnection();
 
       Logger.info("Initializing queues...");
+      const queueNames: string[] = [];
       queues.forEach((queue) => {
         queue.init(connection);
+        queueNames.push(queue.queueName);
       });
-      Logger.success("Queues initialized");
+      Logger.success("Queues initialized: " + queueNames.join(", "));
 
       Logger.info("Initializing workers...");
+      const workerNames: string[] = [];
       workers.forEach((worker) => {
         worker(connection).run();
+        workerNames.push(worker.name);
       });
-      Logger.success("Workers initialized");
+      Logger.success("Workers initialized: " + workerNames.join(", "));
     }
 
     initializeDailyLeaderboardsCache(liveConfiguration.dailyLeaderboards);
