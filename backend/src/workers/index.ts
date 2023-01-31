@@ -1,4 +1,4 @@
 import LaterWorker from "./later-worker";
-import Emailer from "./email-worker";
+import EmailWorker from "./email-worker";
 
-export default [LaterWorker, Emailer];
+export default [LaterWorker, EmailWorker];
