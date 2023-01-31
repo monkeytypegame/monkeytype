@@ -4,6 +4,7 @@ import fs from "fs";
 import { join } from "path";
 import { EmailType } from "../queues/email-queue";
 import mjml2html from "mjml";
+import mustache from "mustache";
 
 let transportInitialized = false;
 let transporter: nodemailer.Transporter;
@@ -141,9 +142,11 @@ export async function fillTemplate(
   data: any[]
 ): Promise<string> {
   if (type === "verify") {
-    return (await getTemplate("verification.html"))
-      .replace(/{{name}}/gim, data[0])
-      .replace(/{{link}}/gim, data[1]);
+    const template = await getTemplate("verification.html");
+    return mustache.render(template, {
+      name: data[0],
+      link: data[1],
+    });
   }
   return "Unknown email type";
 }
