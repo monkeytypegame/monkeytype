@@ -30,7 +30,7 @@ export async function init(): Promise<void> {
   transporter = nodemailer.createTransport({
     host: EMAIL_HOST,
     secure: EMAIL_PORT === "465" ? true : false,
-    port: parseInt(EMAIL_PORT ?? "578"),
+    port: parseInt(EMAIL_PORT ?? "578", 10),
     auth: {
       user: EMAIL_USER,
       pass: EMAIL_PASS,
