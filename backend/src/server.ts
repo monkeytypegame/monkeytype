@@ -14,7 +14,7 @@ import * as RedisClient from "./init/redis";
 import queues from "./queues";
 import workers from "./workers";
 import Logger from "./utils/logger";
-import * as Email from "./utils/email";
+import * as EmailClient from "./utils/email";
 import emailQueue from "./queues/email-queue";
 
 async function bootServer(port: number): Promise<Server> {
@@ -38,7 +38,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.success("Live configuration fetched");
 
     Logger.info("Initializing email...");
-    await Email.init();
+    await EmailClient.init();
 
     Logger.info("Connecting to redis...");
     await RedisClient.connect();
