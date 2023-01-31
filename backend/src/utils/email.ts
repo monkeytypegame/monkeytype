@@ -77,7 +77,7 @@ export async function sendMail(
   if (!isInitialized()) {
     return {
       success: false,
-      message: "Email transport not initialized",
+      message: "Email client transport not initialized",
     };
   }
 
