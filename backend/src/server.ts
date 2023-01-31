@@ -74,9 +74,9 @@ async function bootServer(port: number): Promise<Server> {
 
     recordServerVersion(version);
     //testing email queue
-    if (process.env.MAIL_USER) {
+    if (process.env.EMAIL_USER) {
       emailQueue.sendVerificationEmail(
-        process.env.MAIL_USER,
+        process.env.EMAIL_USER,
         "Miodec",
         "https://monkeytype.com"
       );
