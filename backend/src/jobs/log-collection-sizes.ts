@@ -4,17 +4,19 @@ import * as Prometheus from "../utils/prometheus";
 
 const CRON_SCHEDULE = "0 0 * * * *";
 
-function main(): void {
-  Promise.all([
-    set("ape-keys"),
-    set("configs"),
-    set("errors"),
-    set("logs"),
-    set("presets"),
-    set("reports"),
-    set("results"),
-    set("users"),
-  ]);
+const collectionsToLog = [
+  "ape-keys",
+  "configs",
+  "errors",
+  "logs",
+  "presets",
+  "reports",
+  "results",
+  "users",
+];
+
+async function main(): Promise<void> {
+  await Promise.all(collectionsToLog.map(set));
 }
 
 async function set(collection: string): Promise<void> {
