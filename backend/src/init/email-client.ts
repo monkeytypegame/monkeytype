@@ -85,8 +85,6 @@ export async function sendMailUsingTemplate<M extends MonkeyTypes.EmailType>(
 
   const template = await fillTemplate<typeof templateName>(templateName, data);
 
-  console.log(template);
-
   const mailOptions = {
     from: "Monkeytype <noreply@monkeytype.com>",
     to,
