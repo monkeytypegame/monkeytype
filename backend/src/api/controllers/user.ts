@@ -19,6 +19,7 @@ import * as RedisClient from "../../init/redis";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
+import emailQueue from "../../queues/email-queue";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -54,6 +55,9 @@ export async function createNewUser(
 
   await UserDAL.addUser(name, email, uid);
   Logger.logToDb("user_created", `${name} ${email}`, uid);
+
+  const link = await admin.auth().generateEmailVerificationLink(email);
+  await emailQueue.sendVerificationEmail(email, name, link);
 
   return new MonkeyResponse("User created");
 }
