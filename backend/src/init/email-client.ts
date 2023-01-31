@@ -22,10 +22,12 @@ export async function init(): Promise<void> {
 
   if (!EMAIL_HOST || !EMAIL_USER || !EMAIL_PASS) {
     if (MODE === "dev") {
-      Logger.warning("No email configuration provided. Running without email.");
+      Logger.warning(
+        "No email client configuration provided. Running without email."
+      );
       return;
     }
-    throw new Error("No email configuration provided");
+    throw new Error("No email client configuration provided");
   }
 
   transporter = nodemailer.createTransport({
@@ -39,12 +41,12 @@ export async function init(): Promise<void> {
   });
 
   try {
-    Logger.info("Verifying email configuration...");
+    Logger.info("Verifying email client configuration...");
     const result = await transporter.verify();
 
     if (result !== true) {
       throw new Error(
-        `Could not verify email configuration: ` + JSON.stringify(result)
+        `Could not verify email client configuration: ` + JSON.stringify(result)
       );
     }
 
@@ -54,11 +56,11 @@ export async function init(): Promise<void> {
     Logger.error(error.message);
     if (MODE === "dev") {
       Logger.warning(
-        `Failed to verify email configuration. Continuing in dev mode, running without email.`
+        `Failed to verify email client configuration. Continuing in dev mode, running without email.`
       );
     } else {
       Logger.error(
-        "Failed to verify email configuration. Exiting with exit status code 1."
+        "Failed to verify email client configuration. Exiting with exit status code 1."
       );
       process.exit(1);
     }
