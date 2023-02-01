@@ -287,3 +287,17 @@ const emailCount = new Counter({
 export function recordEmail(type: string, status: string): void {
   emailCount.inc({ type, status });
 }
+
+const queueLength = new Gauge({
+  name: "queue_length",
+  help: "Length of the queues",
+  labelNames: ["queueName", "countType"],
+});
+
+export function setQueueLength(
+  queueName: string,
+  countType: string,
+  length: number
+): void {
+  queueLength.set({ queueName, countType }, length);
+}
