@@ -42,11 +42,12 @@ class QuotesController {
 
   async getQuotes(
     language: string,
-    quoteLengths?: number[]
+    quoteLengths?: number[],
+    reshuffle?: boolean
   ): Promise<QuoteCollection> {
     const normalizedLanguage = normalizeLanguage(language);
 
-    if (this.quoteCollection.language !== normalizedLanguage) {
+    if (this.quoteCollection.language !== normalizedLanguage || reshuffle) {
       try {
         const data: QuoteData = await $.getJSON(
           `quotes/${normalizedLanguage}.json`
