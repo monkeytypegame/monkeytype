@@ -26,7 +26,6 @@ import {
   browserSessionPersistence,
   browserLocalPersistence,
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
   setPersistence,
@@ -52,24 +51,24 @@ import * as ConnectionState from "../states/connection";
 export const gmailProvider = new GoogleAuthProvider();
 let canCall = true;
 
-export function sendVerificationEmail(): void {
+export async function sendVerificationEmail(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
+
   Loader.show();
-  const user = Auth.currentUser;
-  if (user === null) return;
-  sendEmailVerification(user)
-    .then(() => {
-      Loader.hide();
-      Notifications.add("Email sent to " + user.email, 4000);
-    })
-    .catch((e) => {
-      Loader.hide();
-      Notifications.add("Error: " + e.message, 3000);
-      console.error(e.message);
-    });
+  const result = await Ape.users.requestVerificationEmail();
+  if (result.status !== 200) {
+    Loader.hide();
+    Notifications.add(
+      "Failed to request verification email: " + result.message,
+      3000
+    );
+  } else {
+    Loader.hide();
+    Notifications.add("Verification email sent", 1, 3);
+  }
 }
 
 export async function getDataAndInit(): Promise<boolean> {
@@ -241,12 +240,6 @@ export async function getDataAndInit(): Promise<boolean> {
 
 export async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
-  $(".pageAccount .content p.accountVerificatinNotice").remove();
-  if (user.emailVerified === false) {
-    $(".pageAccount .content").prepend(
-      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
-    );
-  }
   PageTransition.set(false);
   AccountButton.loading(true);
   if ((await getDataAndInit()) === false) {
@@ -684,7 +677,7 @@ async function signUp(): Promise<void> {
     }
 
     await updateProfile(createdAuthUser.user, { displayName: nname });
-    await sendEmailVerification(createdAuthUser.user);
+    await sendVerificationEmail();
     AllTimeStats.clear();
     $("#menu .textButton.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
