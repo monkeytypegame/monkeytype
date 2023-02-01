@@ -56,10 +56,25 @@ export async function createNewUser(
   await UserDAL.addUser(name, email, uid);
   Logger.logToDb("user_created", `${name} ${email}`, uid);
 
-  const link = await admin.auth().generateEmailVerificationLink(email);
-  await emailQueue.sendVerificationEmail(email, name, link);
-
   return new MonkeyResponse("User created");
+}
+
+export async function requestVerificationEmail(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { email, uid } = req.ctx.decodedToken;
+
+  const userInfo = await UserDAL.getUser(uid, "request verification email");
+
+  const link = await admin.auth().generateEmailVerificationLink(email, {
+    url:
+      process.env.MODE === "dev"
+        ? "http://localhost:3000"
+        : "https://monkeytype.com",
+  });
+  await emailQueue.sendVerificationEmail(email, userInfo.name, link);
+
+  return new MonkeyResponse("Email sent");
 }
 
 export async function deleteUser(

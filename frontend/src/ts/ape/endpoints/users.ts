@@ -241,4 +241,8 @@ export default class Users {
 
     return await this.httpClient.post(`${BASE_PATH}/report`, { payload });
   }
+
+  async requestVerificationEmail(): Ape.EndpointData {
+    return await this.httpClient.get(`${BASE_PATH}/requestVerificationEmail`);
+  }
 }

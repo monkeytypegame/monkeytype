@@ -582,4 +582,11 @@ router.post(
   asyncHandler(UserController.reportUser)
 );
 
+router.get(
+  "/requestVerificationEmail",
+  authenticateRequest(),
+  RateLimit.userRequestVerificationEmail,
+  asyncHandler(UserController.requestVerificationEmail)
+);
+
 export default router;
