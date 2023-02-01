@@ -59,15 +59,15 @@ const PRODUCTION_CONFIG = {
       },
     ],
   },
-  optimization: {
-    minimize: true,
-    minimizer: [
-      `...`,
-      new HtmlMinimizerPlugin(),
-      new JsonMinimizerPlugin(),
-      new CssMinimizerPlugin(),
-    ],
-  },
+  // optimization: {
+  //   minimize: true,
+  //   minimizer: [
+  //     `...`,
+  //     new HtmlMinimizerPlugin(),
+  //     new JsonMinimizerPlugin(),
+  //     new CssMinimizerPlugin(),
+  //   ],
+  // },
   plugins: [
     new RemovePlugin({
       after: {
