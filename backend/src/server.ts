@@ -15,7 +15,6 @@ import queues from "./queues";
 import workers from "./workers";
 import Logger from "./utils/logger";
 import * as EmailClient from "./init/email-client";
-import emailQueue from "./queues/email-queue";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -38,7 +37,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.success("Live configuration fetched");
 
     Logger.info("Initializing email client...");
-    await EmailClient.init();
+    EmailClient.init();
 
     Logger.info("Connecting to redis...");
     await RedisClient.connect();
@@ -75,14 +74,6 @@ async function bootServer(port: number): Promise<Server> {
     Logger.success("Cron jobs started");
 
     recordServerVersion(version);
-    //testing email queue
-    if (process.env.EMAIL_USER) {
-      emailQueue.sendVerificationEmail(
-        process.env.EMAIL_USER,
-        "Miodec",
-        "https://monkeytype.com"
-      );
-    }
   } catch (error) {
     Logger.error("Failed to boot server");
     Logger.error(error);
