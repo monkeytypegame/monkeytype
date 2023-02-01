@@ -71,16 +71,7 @@ export async function init(): Promise<void> {
     transportInitialized = true;
   } catch (error) {
     Logger.error(error.message);
-    if (MODE === "dev") {
-      Logger.warning(
-        `Failed to verify email client configuration. Continuing in dev mode, running without email.`
-      );
-    } else {
-      Logger.error(
-        "Failed to verify email client configuration. Exiting with exit status code 1."
-      );
-      process.exit(1);
-    }
+    Logger.error("Failed to verify email client configuration.");
   }
 }
 
