@@ -2,7 +2,7 @@ import { CronJob } from "cron";
 import * as db from "../init/db";
 import * as Prometheus from "../utils/prometheus";
 
-const CRON_SCHEDULE = "0 0 * * * *";
+const CRON_SCHEDULE = "0 */5 * * * *";
 
 const collectionsToLog = [
   "ape-keys",
