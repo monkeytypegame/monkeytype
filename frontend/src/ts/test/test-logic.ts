@@ -1056,7 +1056,8 @@ export async function init(): Promise<void> {
 
     const quotesCollection = await QuotesController.getQuotes(
       languageToGet,
-      Config.quoteLength
+      Config.quoteLength,
+      Tribe.state >= 5
     );
 
     if (quotesCollection.length === 0) {
