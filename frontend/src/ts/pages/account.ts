@@ -15,7 +15,7 @@ import * as Misc from "../utils/misc";
 import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
-
+import * as Skeleton from "../popups/skeleton";
 import type { ScaleChartOptions } from "chart.js";
 
 let filterDebug = false;
@@ -179,6 +179,15 @@ function loadMoreLines(lineIndex?: number): void {
   }
 }
 
+async function updateChartColors(): Promise<void> {
+  ChartController.accountHistory.updateColors();
+  await Misc.sleep(0);
+  ChartController.accountActivity.updateColors();
+  await Misc.sleep(0);
+  ChartController.accountHistogram.updateColors();
+  await Misc.sleep(0);
+}
+
 export function reset(): void {
   $(".pageAccount .history table tbody").empty();
   ChartController.accountHistogram.data.datasets[0].data = [];
@@ -186,9 +195,6 @@ export function reset(): void {
   ChartController.accountActivity.data.datasets[1].data = [];
   ChartController.accountHistory.data.datasets[0].data = [];
   ChartController.accountHistory.data.datasets[1].data = [];
-  ChartController.accountHistogram.updateColors();
-  ChartController.accountActivity.updateColors();
-  ChartController.accountHistory.updateColors();
 }
 
 let totalSecondsFiltered = 0;
@@ -221,16 +227,19 @@ export function smoothHistory(factor: number): void {
   ChartController.accountHistory.data.datasets[1].data = accChartData2;
 
   if (chartData2.length || accChartData2.length) {
+    ChartController.accountHistory.options.animation = false;
     ChartController.accountHistory.update();
+    delete ChartController.accountHistory.options.animation;
   }
 }
 
-function applyHistorySmoothing(): void {
+async function applyHistorySmoothing(): Promise<void> {
   const smoothing = $(
     ".pageAccount .content .below .smoothing input"
   ).val() as string;
   $(".pageAccount .content .below .smoothing .value").text(smoothing);
   smoothHistory(parseInt(smoothing));
+  await Misc.sleep(0);
 }
 
 function fillContent(): void {
@@ -238,9 +247,6 @@ function fillContent(): void {
   LoadingPage.updateBar(100);
   console.log("updating account page");
   ThemeColors.update();
-  ChartController.accountHistory.updateColors();
-  ChartController.accountActivity.updateColors();
-  ChartController.accountHistogram.updateColors();
   AllTimeStats.update();
 
   const snapshot = DB.getSnapshot();
@@ -777,6 +783,7 @@ function fillContent(): void {
     $(".pageAccount .group.aboveHistory").addClass("hidden");
     $(".pageAccount .group.history").addClass("hidden");
     $(".pageAccount .triplegroup.stats").addClass("hidden");
+    $(".pageAccount .group.estimatedWordsTyped").addClass("hidden");
   } else {
     $(".pageAccount .group.noDataError").addClass("hidden");
     $(".pageAccount .group.chart").removeClass("hidden");
@@ -785,6 +792,7 @@ function fillContent(): void {
     $(".pageAccount .group.aboveHistory").removeClass("hidden");
     $(".pageAccount .group.history").removeClass("hidden");
     $(".pageAccount .triplegroup.stats").removeClass("hidden");
+    $(".pageAccount .group.estimatedWordsTyped").removeClass("hidden");
   }
 
   $(".pageAccount .timeTotalFiltered .val").text(
@@ -978,7 +986,6 @@ function fillContent(): void {
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   applyHistorySmoothing();
-  ChartController.accountActivity.updateColors();
   LoadingPage.updateBar(100, true);
   Focus.set(false);
   Misc.swapElements(
@@ -986,7 +993,6 @@ function fillContent(): void {
     $(".pageAccount .content"),
     250,
     async () => {
-      // Profile.updateNameFontSize("account");
       $(".page.pageAccount").css("height", "unset"); //weird safari fix
     },
     async () => {
@@ -1019,6 +1025,7 @@ export async function update(): Promise<void> {
     LoadingPage.updateBar(90);
     await downloadResults();
     try {
+      await Misc.sleep(0);
       fillContent();
     } catch (e) {
       console.error(e);
@@ -1256,18 +1263,27 @@ export const page = new Page(
   async () => {
     reset();
     ResultFilters.removeButtons();
+    Skeleton.remove("pageAccount");
   },
   async () => {
+    Skeleton.append("pageAccount", "middle");
     await ResultFilters.appendButtons();
     ResultFilters.updateActive();
+    await Misc.sleep(0);
     if (DB.getSnapshot()?.results == undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
     }
-    update();
+    await update();
+    await Misc.sleep(0);
+    updateChartColors();
   },
   async () => {
     //
   }
 );
+
+$(() => {
+  Skeleton.save("pageAccount");
+});

@@ -16,7 +16,6 @@ import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
 import * as PaceCaret from "../test/pace-caret";
 import * as TagController from "./tag-controller";
-import * as ResultTagsPopup from "../popups/result-tags-popup";
 import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
@@ -225,10 +224,8 @@ export async function getDataAndInit(): Promise<boolean> {
     }
   }
   AccountButton.loading(false);
-  ResultFilters.updateTags();
   updateTagsCommands();
   TagController.loadActiveFromLocalStorage();
-  ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
   if (window.location.pathname === "/account") {
     LoadingPage.updateBar(90);
@@ -654,10 +651,7 @@ async function signUp(): Promise<void> {
   }
 
   // Force user to use a capital letter, number, special character when setting up an account and changing password
-  if (
-    window.location.hostname !== "localhost" &&
-    !Misc.isPasswordStrong(password)
-  ) {
+  if (!Misc.isLocalhost() && !Misc.isPasswordStrong(password)) {
     Notifications.add(
       "Password must contain at least one capital letter, number, a special character and at least 8 characters long",
       0,

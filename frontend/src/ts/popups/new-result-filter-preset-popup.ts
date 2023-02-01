@@ -1,13 +1,20 @@
+import { isPopupVisible } from "../utils/misc";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "newResultFilterPresetPopupWrapper";
+
 // the function to call after name is inputed by user
 let callbackFunc: ((name: string) => void) | null = null;
 
 export function show(): void {
-  if ($("#newResultFilterPresetPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+
+  if (!isPopupVisible(wrapperId)) {
     $("#newResultFilterPresetPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#newResultFilterPresetPopup input")
           .trigger("focus")
           .trigger("select");
@@ -16,7 +23,7 @@ export function show(): void {
 }
 
 export function hide(): void {
-  if (!$("#newResultFilterPresetPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#newResultFilterPresetPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -24,9 +31,10 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#newResultFilterPresetPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -46,13 +54,13 @@ $("#newResultFilterPresetPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#newResultFilterPresetPopup input").on("keypress", (e) => {
+$("#newResultFilterPresetPopupWrapper input").on("keypress", (e) => {
   if (e.key === "Enter") {
     apply();
   }
 });
 
-$("#newResultFilterPresetPopup .button").on("click", () => {
+$("#newResultFilterPresetPopupWrapper .button").on("click", () => {
   apply();
 });
 
@@ -66,11 +74,10 @@ export function showNewResultFilterPresetPopup(
 }
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#newResultFilterPresetPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);

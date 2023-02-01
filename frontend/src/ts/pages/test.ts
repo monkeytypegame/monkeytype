@@ -14,6 +14,7 @@ export const page = new Page(
   $(".page.pageTest"),
   "/",
   async (options) => {
+    ManualRestart.set();
     TestLogic.restart({
       tribeOverride: options.tribeOverride ?? false,
     });

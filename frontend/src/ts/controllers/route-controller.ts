@@ -97,6 +97,10 @@ const routes: Route[] = [
         nav("/");
         return;
       }
+      if (Auth.currentUser) {
+        nav("/account");
+        return;
+      }
       PageController.change(PageLogin.page);
     },
   },

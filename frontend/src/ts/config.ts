@@ -1690,6 +1690,9 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize);
 
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
   return true;
 }
 
@@ -1732,9 +1735,6 @@ export async function setCustomLayoutfluid(
   ) as MonkeyTypes.CustomLayoutFluid;
 
   config.customLayoutfluid = customLayoutfluid;
-  $(".pageSettings .section.customLayoutfluid input").val(
-    customLayoutfluid.replace(/#/g, " ")
-  );
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
 

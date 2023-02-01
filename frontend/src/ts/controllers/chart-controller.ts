@@ -867,22 +867,6 @@ export async function updateColors<
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
 
-  if (
-    chart.data.datasets.every(
-      (dataset) =>
-        (
-          dataset.data as unknown as (
-            | MonkeyTypes.HistoryChartData
-            | MonkeyTypes.AccChartData
-            | MonkeyTypes.ActivityChartDataPoint
-            | number
-          )[]
-        ).length === 0
-    )
-  ) {
-    return;
-  }
-
   //@ts-ignore
   chart.data.datasets[0].borderColor = (ctx): string => {
     const isPb = ctx.raw?.["isPb"];
@@ -973,6 +957,7 @@ export function setDefaultFontFamily(font: string): void {
 export function updateAllChartColors(): void {
   ThemeColors.update();
   accountHistory.updateColors();
+  accountHistogram.updateColors();
   globalSpeedHistogram.updateColors();
   result.updateColors();
   accountActivity.updateColors();

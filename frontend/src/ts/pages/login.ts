@@ -3,6 +3,7 @@ import Ape from "../ape";
 import Page from "./page";
 import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
+import * as Skeleton from "../popups/skeleton";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side .button").removeClass("disabled");
@@ -301,12 +302,18 @@ export const page = new Page(
     //
   },
   async () => {
-    //
+    Skeleton.remove("pageLogin");
   },
   async () => {
-    //
+    Skeleton.append("pageLogin", "middle");
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
   },
   async () => {
     //
   }
 );
+
+$(() => {
+  Skeleton.save("pageLogin");
+});

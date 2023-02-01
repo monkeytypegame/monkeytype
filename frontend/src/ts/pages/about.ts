@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
 import intervalToDuration from "date-fns/intervalToDuration";
+import * as Skeleton from "../popups/skeleton";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -118,38 +119,28 @@ async function fill(): Promise<void> {
     contributors = [];
   }
 
-  await getStatsAndHistogramData();
-  updateStatsAndHistogram();
-
-  supporters.forEach((supporter) => {
-    $(".pageAbout .supporters").append(`
-      <div>${supporter}</div>
-    `);
+  getStatsAndHistogramData().then(() => {
+    updateStatsAndHistogram();
   });
-  contributors.forEach((contributor) => {
-    $(".pageAbout .contributors").append(`
-      <div>${contributor}</div>
-    `);
-  });
-}
 
-export const page = new Page(
-  "about",
-  $(".page.pageAbout"),
-  "/about",
-  async () => {
-    //
-  },
-  async () => {
-    reset();
-  },
-  async () => {
-    fill();
-  },
-  async () => {
-    //
+  const supportersEl = document.querySelector(".pageAbout .supporters");
+  let supportersHTML = "";
+  for (const supporter of supporters) {
+    supportersHTML += `<div>${supporter}</div>`;
   }
-);
+  if (supportersEl) {
+    supportersEl.innerHTML = supportersHTML;
+  }
+
+  const contributorsEl = document.querySelector(".pageAbout .contributors");
+  let contributorsHTML = "";
+  for (const contributor of contributors) {
+    contributorsHTML += `<div>${contributor}</div>`;
+  }
+  if (contributorsEl) {
+    contributorsEl.innerHTML = contributorsHTML;
+  }
+}
 
 /** Convert histogram data to the format required to draw a bar chart. */
 function getHistogramDataBucketed(data: Record<string, number>): {
@@ -178,3 +169,25 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   }
   return { data: histogramChartDataBucketed, labels };
 }
+
+export const page = new Page(
+  "about",
+  $(".page.pageAbout"),
+  "/about",
+  async () => {
+    //
+  },
+  async () => {
+    reset();
+    Skeleton.remove("pageAbout");
+  },
+  async () => {
+    Skeleton.append("pageAbout", "middle");
+    fill();
+  },
+  async () => {
+    //
+  }
+);
+
+Skeleton.save("pageAbout");

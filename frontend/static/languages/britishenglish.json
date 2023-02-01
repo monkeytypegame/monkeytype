@@ -594,5 +594,12 @@
   ["parlor", "parlour"],
   ["tranquilize", "tranquilise"],
   ["tranquillized", "tranquillised"],
-  ["tranquillization", "tranquillisation"]
+  ["tranquillization", "tranquillisation"],
+  ["catalog", "catalogue"],
+  ["cataloger", "cataloguer"],
+  ["cataloging", "cataloguing"],
+  ["catalogs", "catalogues"],
+  ["cataloged", "catalogued"],
+  ["uncataloged", "uncatalogued"],
+  ["catalogers", "cataloguers"]
 ]

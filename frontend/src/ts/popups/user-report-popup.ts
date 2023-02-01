@@ -2,6 +2,10 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "userReportPopupWrapper";
 
 interface State {
   userUid?: string;
@@ -17,7 +21,8 @@ interface ShowOptions {
 }
 
 export async function show(options: ShowOptions): Promise<void> {
-  if ($("#userReportPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+  if (!isPopupVisible(wrapperId)) {
     CaptchaController.render(
       document.querySelector("#userReportPopup .g-recaptcha") as HTMLElement,
       "userReportPopup"
@@ -37,14 +42,14 @@ export async function show(options: ShowOptions): Promise<void> {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#userReportPopup textarea").trigger("focus").trigger("select");
       });
   }
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#userReportPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#userReportPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -52,10 +57,11 @@ export async function hide(): Promise<void> {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           CaptchaController.reset("userReportPopup");
           $("#userReportPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -109,7 +115,7 @@ $("#userReportPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#userReportPopup .comment").on("input", () => {
+$("#userReportPopupWrapper .comment").on("input", () => {
   setTimeout(() => {
     const len = ($("#userReportPopup .comment").val() as string).length;
     $("#userReportPopup .characterCount").text(len);
@@ -121,6 +127,8 @@ $("#userReportPopup .comment").on("input", () => {
   }, 1);
 });
 
-$("#userReportPopup .submit").on("click", async () => {
+$("#userReportPopupWrapper .submit").on("click", async () => {
   await submitReport();
 });
+
+Skeleton.save(wrapperId);

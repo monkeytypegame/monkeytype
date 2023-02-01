@@ -1,46 +1,31 @@
 import _ from "lodash";
-import { CronJob } from "cron";
-import {
-  getCurrentDayTimestamp,
-  getOrdinalNumberString,
-  mapRange,
-} from "../utils/misc";
-import { getCachedConfiguration } from "../init/configuration";
-import { DailyLeaderboard } from "../utils/daily-leaderboards";
-import GeorgeQueue from "../queues/george-queue";
+import IORedis from "ioredis";
+import { Worker, Job } from "bullmq";
+import Logger from "../utils/logger";
 import { addToInboxBulk } from "../dal/user";
+import GeorgeQueue from "../queues/george-queue";
 import { buildMonkeyMail } from "../utils/monkey-mail";
+import { DailyLeaderboard } from "../utils/daily-leaderboards";
+import { getCachedConfiguration } from "../init/configuration";
+import { getOrdinalNumberString, mapRange } from "../utils/misc";
+import LaterQueue, { LaterTask } from "../queues/later-queue";
 
-const CRON_SCHEDULE = "1 0 * * *"; // At 00:01.
-const ONE_DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+interface DailyLeaderboardMailContext {
+  yesterdayTimestamp: number;
+  modeRule: MonkeyTypes.ValidModeRule;
+}
 
-const leaderboardsToAnnounce = [
-  {
-    language: "english",
-    mode: "time",
-    mode2: "15",
-  },
-  {
-    language: "english",
-    mode: "time",
-    mode2: "60",
-  },
-];
-
-async function announceDailyLeaderboard(
-  language: string,
-  mode: string,
-  mode2: string,
-  dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"],
-  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+async function handleDailyLeaderboardResults(
+  ctx: DailyLeaderboardMailContext
 ): Promise<void> {
-  const yesterday = getCurrentDayTimestamp() - ONE_DAY_IN_MILLISECONDS;
-  const dailyLeaderboard = new DailyLeaderboard(
-    language,
-    mode,
-    mode2,
-    yesterday
-  );
+  const { yesterdayTimestamp, modeRule } = ctx;
+  const { language, mode, mode2 } = modeRule;
+  const {
+    dailyLeaderboards: dailyLeaderboardsConfig,
+    users: { inbox: inboxConfig },
+  } = await getCachedConfiguration(false);
+
+  const dailyLeaderboard = new DailyLeaderboard(modeRule, yesterdayTimestamp);
 
   const allResults = await dailyLeaderboard.getResults(
     0,
@@ -51,6 +36,7 @@ async function announceDailyLeaderboard(
   if (allResults.length === 0) {
     return;
   }
+
   const { maxResults, xpRewardBrackets } = dailyLeaderboardsConfig;
 
   if (inboxConfig.enabled && xpRewardBrackets.length > 0) {
@@ -108,32 +94,28 @@ async function announceDailyLeaderboard(
   const leaderboardId = `${mode} ${mode2} ${language}`;
   await GeorgeQueue.announceDailyLeaderboardTopResults(
     leaderboardId,
-    yesterday,
+    yesterdayTimestamp,
     topResults
   );
 }
 
-async function announceDailyLeaderboards(): Promise<void> {
-  const {
-    dailyLeaderboards,
-    users: { inbox },
-    maintenance,
-  } = await getCachedConfiguration();
-  if (!dailyLeaderboards.enabled || maintenance) {
-    return;
+async function jobHandler(job: Job): Promise<void> {
+  const { taskName, ctx }: LaterTask = job.data;
+  Logger.info(`Starting job: ${taskName}`);
+
+  const start = performance.now();
+
+  if (taskName === "daily-leaderboard-results") {
+    await handleDailyLeaderboardResults(ctx);
   }
 
-  await Promise.allSettled(
-    leaderboardsToAnnounce.map(async ({ language, mode, mode2 }) => {
-      return announceDailyLeaderboard(
-        language,
-        mode,
-        mode2,
-        dailyLeaderboards,
-        inbox
-      );
-    })
-  );
+  const elapsed = performance.now() - start;
+
+  Logger.success(`Job: ${taskName} - completed in ${elapsed}ms`);
 }
 
-export default new CronJob(CRON_SCHEDULE, announceDailyLeaderboards);
+export default (redisConnection?: IORedis.Redis): Worker =>
+  new Worker(LaterQueue.queueName, jobHandler, {
+    autorun: false,
+    connection: redisConnection,
+  });

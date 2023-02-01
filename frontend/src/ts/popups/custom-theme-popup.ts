@@ -1,5 +1,11 @@
+import { isPopupVisible } from "../utils/misc";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "customThemeShareWrapper";
+
 export function show(value: string): void {
-  if ($("#customThemeShareWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+  if (!isPopupVisible(wrapperId)) {
     // let save = [];
     // $.each(
     //   $(".pageSettings .section.customTheme [type='color']"),
@@ -13,7 +19,7 @@ export function show(value: string): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#customThemeShare input").trigger("focus");
         $("#customThemeShare input").trigger("select");
         $("#customThemeShare input").trigger("focus");
@@ -22,7 +28,7 @@ export function show(value: string): void {
 }
 
 function hide(): void {
-  if (!$("#customThemeShareWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     // try {
     //   UpdateConfig.setCustomThemeColors(
     //     JSON.parse($("#customThemeShareWrapper input").val())
@@ -44,9 +50,10 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#customThemeShareWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -61,3 +68,5 @@ $("#customThemeShareWrapper").on("click", (e) => {
 $("#customThemeShare .button").on("click", () => {
   hide();
 });
+
+Skeleton.save(wrapperId);

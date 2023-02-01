@@ -1,6 +1,10 @@
 import { activateAnalytics } from "../controllers/analytics-controller";
 import { focusWords } from "../test/test-ui";
 import * as Notifications from "../elements/notifications";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "cookiePopupWrapper";
 
 let visible = false;
 
@@ -30,17 +34,18 @@ export function check(): void {
 }
 
 export function show(): void {
+  Skeleton.append(wrapperId);
   if ($("#cookiePopupWrapper")[0] === undefined) {
     //removed by cookie popup blocking extension
     visible = false;
     return;
   }
-  if ($("#cookiePopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#cookiePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         if (
           $("#cookiePopupWrapper").is(":visible") === false ||
           $("#cookiePopupWrapper").outerHeight(true) === 0
@@ -54,7 +59,7 @@ export function show(): void {
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#cookiePopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     focusWords();
     $("#cookiePopupWrapper")
       .stop(true, true)
@@ -63,10 +68,11 @@ export async function hide(): Promise<void> {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#cookiePopupWrapper").addClass("hidden");
           visible = false;
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -147,3 +153,5 @@ $("#cookiePopup .cookie.ads .textButton").on("click", () => {
     );
   }
 });
+
+Skeleton.save(wrapperId);

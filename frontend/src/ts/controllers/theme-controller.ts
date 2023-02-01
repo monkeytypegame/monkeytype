@@ -32,7 +32,7 @@ async function updateFavicon(size: number, curveSize: number): Promise<void> {
     let maincolor, bgcolor;
     bgcolor = await ThemeColors.get("bg");
     maincolor = await ThemeColors.get("main");
-    if (window.location.hostname === "localhost") {
+    if (Misc.isLocalhost()) {
       const swap = maincolor;
       maincolor = bgcolor;
       bgcolor = swap;

@@ -1,7 +1,12 @@
 import * as Notifications from "../elements/notifications";
 import * as AdController from "../controllers/ad-controller";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "videoAdPopupWrapper";
 
 export async function show(): Promise<void> {
+  Skeleton.append(wrapperId);
   await AdController.checkAdblock();
   if (AdController.adBlock) {
     Notifications.add(
@@ -22,12 +27,12 @@ export async function show(): Promise<void> {
     return;
   }
 
-  if ($("#videoAdPopupWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#videoAdPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         //@ts-ignore
         window.dataLayer.push({ event: "EG_Video" });
       });
@@ -35,7 +40,7 @@ export async function show(): Promise<void> {
 }
 
 function hide(): void {
-  if (!$("#videoAdPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#videoAdPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -43,9 +48,10 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#videoAdPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -67,3 +73,5 @@ export function egVideoListener(options: Record<string, string>): void {
 $(".pageTest #watchVideoAdButton").on("click", () => {
   show();
 });
+
+Skeleton.save(wrapperId);
