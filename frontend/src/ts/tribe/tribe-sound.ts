@@ -8,7 +8,7 @@ const sounds: Record<string, Howl> = {
   chat: new Howl({ src: "/sound/tribe-sounds/chat.wav" }),
   chat_mention: new Howl({ src: "/sound/tribe-sounds/chat_mention.wav" }),
   finish: new Howl({ src: "/sound/tribe-sounds/finish.wav" }),
-  finish_win: new Howl({ src: "./sound/tribe-ounds/finish_win.wav" }),
+  finish_win: new Howl({ src: "./sound/tribe-sounds/finish_win.wav" }),
   glow: new Howl({ src: "/sound/tribe-sounds/glow.wav" }),
   cd: new Howl({ src: "/sound/tribe-sounds/cd2.wav" }),
   cd_go: new Howl({ src: "/sound/tribe-sounds/cd_go2.wav" }),
