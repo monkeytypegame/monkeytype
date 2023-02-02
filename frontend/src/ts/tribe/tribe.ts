@@ -56,7 +56,7 @@ export function getStateString(state: number): string {
   return "Unknown state " + state;
 }
 
-export function updateState(newState: number): void {
+function updateState(newState: number): void {
   if (room) room.state = newState;
   state = newState;
   $("#tribeStateDisplay").text(`${state} - ${getStateString(state)}`);
