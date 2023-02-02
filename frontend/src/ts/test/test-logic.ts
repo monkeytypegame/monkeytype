@@ -551,7 +551,11 @@ export function restart(options = {} as RestartOptions): void {
     async () => {
       if (ActivePage.get() == "test") {
         AdController.updateTestPageAds(false);
-        Focus.set(false);
+        if (Tribe.state < 5) {
+          Focus.set(false);
+        } else {
+          Focus.set(true);
+        }
       }
       if (Tribe.state > 5) {
         TestConfig.hide();
