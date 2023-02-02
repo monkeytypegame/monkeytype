@@ -553,7 +553,11 @@ export function restart(options = {} as RestartOptions): void {
         AdController.updateTestPageAds(false);
         Focus.set(false);
       }
-      TestConfig.show();
+      if (Tribe.state > 5) {
+        TestConfig.hide();
+      } else {
+        TestConfig.show();
+      }
       TestUI.focusWords();
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });

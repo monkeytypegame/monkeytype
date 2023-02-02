@@ -8,6 +8,7 @@ import Page from "./page";
 import { updateTestPageAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
+import * as Tribe from "../tribe/tribe";
 
 export const page = new Page(
   "test",
@@ -27,7 +28,11 @@ export const page = new Page(
   },
   async (options) => {
     updateTestPageAds(false);
-    TestConfig.show();
+    if (Tribe.state > 5) {
+      TestConfig.hide();
+    } else {
+      TestConfig.show();
+    }
     TestStats.resetIncomplete();
     ManualRestart.set();
     TestLogic.restart({
