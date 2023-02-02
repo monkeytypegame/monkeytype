@@ -1,7 +1,7 @@
 import Config from "../config";
 import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
-import { createErrorMessage, randomElementFromArray } from "../utils/misc";
+import { createErrorMessage } from "../utils/misc";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
@@ -11,6 +11,12 @@ interface ClickSounds {
     sounds: Howler.Howl[];
     counter: number;
   }[];
+}
+
+interface scaleMeta {
+  octave: number;
+  direction: number;
+  position: number;
 }
 
 let errorSound: Howler.Howl | null = null;
@@ -341,52 +347,56 @@ function initAudioContext(): void {
   }
 }
 
-let scales: Record<string, string[]> = {
-  pentatonic: ["C", "D", "E", "G", "A"],
-  blues: ["C", "D", "E", "G"],
+const scales: Record<string, string[]> = {
+  pentatonic: ["C", "D", "E", "G"],
+  blues: ["C", "Eb", "F", "Gb", "G", "Bb"],
 };
 
-export function playPentatonic(
-  position: number,
-  octave: number,
-  direction: number
-) {
+let preview_position = 0;
+let preview_octave = 0;
+let preview_direction = 0;
+
+export function playPentatonic(scaleMeta: scaleMeta | null = null): void {
+  //store static variable
+
   if (audioCtx === undefined) {
     initAudioContext();
   }
   if (!audioCtx) return;
 
-  let randNote: number = Math.floor(
-    Math.random() * scales["pentatonic"].length
-  );
+  if (!scaleMeta) {
+  } else {
+    const randNote: number = Math.floor(
+      Math.random() * scales["pentatonic"].length
+    );
 
-  if (Math.random() < 0.1) {
-    octave += direction;
+    if (Math.random() < 0.1) {
+      scaleMeta.octave += scaleMeta.direction;
+    }
+
+    if (scaleMeta.octave >= 6) {
+      scaleMeta.direction = -1;
+    }
+    if (scaleMeta.octave <= 4) {
+      scaleMeta.direction = 1;
+    }
+
+    const currentFrequency =
+      notes[scales["pentatonic"][randNote]][scaleMeta.octave];
+
+    console.log(scales["pentatonic"][randNote] + scaleMeta.octave);
+
+    const oscillatorNode = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
   }
-
-  if (octave >= 6) {
-    direction = -1;
-  }
-  if (octave <= 4) {
-    direction = 1;
-  }
-
-  const currentFrequency = notes[scales["pentatonic"][randNote]][octave];
-
-  const oscillatorNode = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-
   oscillatorNode.type = "sine";
   gainNode.gain.value = parseFloat(Config.soundVolume) / 10;
-  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime + 0, 0.4);
-
   oscillatorNode.connect(gainNode);
   gainNode.connect(audioCtx.destination);
-
   oscillatorNode.frequency.value = currentFrequency;
-
   oscillatorNode.start(audioCtx.currentTime);
-  oscillatorNode.stop(audioCtx.currentTime + 0.5);
+  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime + 0, 0.3);
+  oscillatorNode.stop(audioCtx.currentTime + 0.4);
 }
 
 export function playNote(
@@ -403,7 +413,7 @@ export function playNote(
     return;
   }
 
-  const baseOctave = 3;
+  const baseOctave = 5;
   const octave = baseOctave + (leftState || rightState || capsState ? 1 : 0);
   const currentFrequency = codeToNote[currentCode](octave);
 
@@ -419,43 +429,49 @@ export function playNote(
   gainNode.gain.value = parseFloat(Config.soundVolume) / 10;
 
   oscillatorNode.connect(gainNode);
+
   gainNode.connect(audioCtx.destination);
   gainNode.gain.setTargetAtTime(0, audioCtx.currentTime + 0, 0.15);
 
   oscillatorNode.frequency.value = currentFrequency;
   oscillatorNode.start(audioCtx.currentTime);
-  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.15); //remove click sound
-  oscillatorNode.stop(audioCtx.currentTime + 0.5);
+  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.01); //remove click sound
+  oscillatorNode.stop(audioCtx.currentTime + 0.01);
 }
 
-let scalePosition = 0;
-let scaleOctave = 0;
-let scaleDirection = 0;
+let scaleMeta: scaleMeta = {
+  position: 0,
+  octave: 4,
+  direction: 1,
+};
+
+// let scaleDirection = 1;
 
 export function playClick(): void {
   if (Config.playSoundOnClick === "off") return;
 
-  // if (true) {
-  //   //Config.playSoundOnClick === "pentatonic") {
-  //   playPentatonic(scalePosition, scaleOctave, scaleDirection);
-  //   return;
-  // }
+  //cast Config.playSoundOnClick to number
 
-  if (Config.playSoundOnClick in clickSoundIdsToOscillatorType) {
-    playNote();
+  if (parseInt(Config.playSoundOnClick) >= 12) {
+    playPentatonic(scaleMeta);
     return;
   }
 
-  if (clickSounds === null) init();
+  //   if (Config.playSoundOnClick in clickSoundIdsToOscillatorType) {
+  //     playNote();
+  //     return;
+  //   }
 
-  const randomSound = randomElementFromArray(
-    (clickSounds as ClickSounds)[Config.playSoundOnClick]
-  );
+  //   if (clickSounds === null) init();
 
-  randomSound.counter++;
-  if (randomSound.counter === 2) randomSound.counter = 0;
-  randomSound.sounds[randomSound.counter].seek(0);
-  randomSound.sounds[randomSound.counter].play();
+  //   const randomSound = randomElementFromArray(
+  //     (clickSounds as ClickSounds)[Config.playSoundOnClick]
+  //   );
+
+  //   randomSound.counter++;
+  //   if (randomSound.counter === 2) randomSound.counter = 0;
+  //   randomSound.sounds[randomSound.counter].seek(0);
+  //   randomSound.sounds[randomSound.counter].play();
 }
 
 export function playError(): void {

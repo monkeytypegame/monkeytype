@@ -106,7 +106,8 @@ declare namespace MonkeyTypes {
     | "8"
     | "9"
     | "10"
-    | "11";
+    | "11"
+    | "12";
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 

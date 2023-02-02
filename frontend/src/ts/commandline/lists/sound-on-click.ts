@@ -145,6 +145,18 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         SoundController.playNote("KeyQ", "triangle");
       },
     },
+    {
+      id: "setSoundOnClick12",
+      display: "pentatonic",
+      configValue: "12",
+      hover: (): void => {
+        SoundController.playNote("KeyQ", "triangle");
+      },
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnClick("11");
+        SoundController.playNote("KeyQ", "triangle");
+      },
+    },
   ],
 };
 
