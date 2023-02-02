@@ -21,7 +21,9 @@ import * as TestActive from "../states/test-active";
 import { navigate } from "../observables/navigate-event";
 import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
+import { escapeRegExp, escapeHTML } from "../utils/misc";
 
+const defaultName = "Guest";
 let name = "Guest";
 
 export let state = -1;
@@ -239,9 +241,9 @@ $(".tribechangename").on("click", () => {
   }
 });
 
-// socket.on("user_update_name", e => {
-//   name = e.name;
-// })
+TribeSocket.in.user.updateName((e) => {
+  name = e.name;
+});
 
 TribeSocket.in.system.disconnect(() => {
   updateState(-1);
@@ -328,6 +330,7 @@ TribeSocket.in.room.left(() => {
   TribePages.change("menu").then(() => {
     reset();
   });
+  name = defaultName;
 });
 
 TribeSocket.in.room.visibilityChanged((data) => {
