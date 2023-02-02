@@ -382,24 +382,10 @@ TribeSocket.in.room.chattingChanged((data) => {
 
 TribeSocket.in.room.chatMessage((data) => {
   data.message = data.message.trim();
-  let nameregex;
-  if (data.from?.isLeader) {
-    nameregex = new RegExp(
-      ` &#64;${name.replace(/[.()]/g, "\\$&")} |^&#64;${name.replace(
-        /[.()]/g,
-        "\\$&"
-      )}$|ready|&#64;everyone`,
-      "i"
-    );
-  } else {
-    nameregex = new RegExp(
-      ` &#64;${name.replace(/[.()]/g, "\\$&")} |^&#64;${name.replace(
-        /[.()]/g,
-        "\\$&"
-      )}$`,
-      "i"
-    );
-  }
+  const regexString = `&#64;${escapeRegExp(escapeHTML(name))}${
+    data.from?.isLeader ? "|ready|&#64;everyone" : ""
+  }`;
+  const nameregex = new RegExp(regexString, "i");
   if (!data.isSystem && data.from.id != TribeSocket.getId()) {
     if (nameregex.test(data.message)) {
       TribeSound.play("chat_mention");
