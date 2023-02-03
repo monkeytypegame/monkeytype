@@ -186,6 +186,8 @@ export function sync(): void {
         word: CustomText.word,
         time: CustomText.time,
       },
+      isInfiniteTest:
+        (Config.mode == "time" || Config.mode == "words") && mode2 == "0",
     });
     clearTimeout(syncConfigTimeout as NodeJS.Timeout);
     syncConfigTimeout = null;
