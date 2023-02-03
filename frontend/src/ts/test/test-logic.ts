@@ -53,7 +53,6 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import { Auth } from "../firebase";
 import * as AdController from "../controllers/ad-controller";
 import * as TestConfig from "./test-config";
-import * as Tribe from "../tribe/tribe";
 import * as TribeResults from "../tribe/tribe-results";
 import * as TribeDelta from "../tribe/tribe-delta";
 import * as Random from "../utils/random";
