@@ -142,6 +142,15 @@ export function update(): void {
   // }
 }
 
+export function reset(): void {
+  el.text("-");
+  lastDelta = 0;
+  const behindbarel = $("#tribeDeltaBar .behind .bar");
+  const aheadbarel = $("#tribeDeltaBar .ahead .bar");
+  behindbarel.stop(true, true).css("width", 0);
+  aheadbarel.stop(true, true).css("width", 0);
+}
+
 export function show(): void {
   if (!TestActive.get()) return;
   if (TribeState.getState() < 5) return;
