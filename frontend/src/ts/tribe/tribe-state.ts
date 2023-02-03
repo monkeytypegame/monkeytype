@@ -23,3 +23,19 @@ export function getRoom(): TribeTypes.Room | undefined {
 export function getSelf(): TribeTypes.User | undefined {
   return room?.users?.[TribeSocket.getId()];
 }
+
+export function canChangeConfig(override: boolean): boolean {
+  if (getState() <= 1) return true;
+  if (getSelf()?.isLeader) {
+    if (getState() !== 5) return false;
+    //is leader, allow
+    return true;
+  } else {
+    //not leader, check if its being forced by tribe
+    if (override) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}

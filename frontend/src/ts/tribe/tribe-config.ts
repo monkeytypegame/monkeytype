@@ -125,22 +125,6 @@ export function setLoadingIndicator(bool: boolean): void {
   }
 }
 
-export function canChange(override: boolean): boolean {
-  if (TribeState.getState() <= 1) return true;
-  if (TribeState.getSelf()?.isLeader) {
-    if (TribeState.getState() !== 5) return false;
-    //is leader, allow
-    return true;
-  } else {
-    //not leader, check if its being forced by tribe
-    if (override) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
-
 let syncConfigTimeout: NodeJS.Timeout | null = null;
 
 export function sync(): void {
