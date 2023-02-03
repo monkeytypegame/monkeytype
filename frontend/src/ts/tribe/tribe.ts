@@ -21,6 +21,7 @@ import * as TestActive from "../states/test-active";
 import { navigate } from "../observables/navigate-event";
 import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
+import * as ActivePage from "../states/active-page";
 import { escapeRegExp, escapeHTML } from "../utils/misc";
 
 const defaultName = "Guest";
@@ -509,7 +510,7 @@ TribeSocket.in.room.userResult((data) => {
     resolve?.repeated ||
     resolve?.valid === false ||
     resolve?.saved === false ||
-    resolve?.failed === true
+    (resolve?.failed === true && room.config.isInfiniteTest === false)
   ) {
     //todo only one
     TribeBars.fadeUser("test", data.userId);
