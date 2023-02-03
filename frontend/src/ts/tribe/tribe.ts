@@ -519,12 +519,14 @@ TribeSocket.in.room.userResult((data) => {
     resolve?.repeated ||
     resolve?.valid === false ||
     resolve?.saved === false ||
-    (resolve?.failed === true && room.config.isInfiniteTest === false)
+    resolve?.failed === true
   ) {
     //todo only one
     TribeBars.fadeUser("test", data.userId);
     TribeBars.fadeUser("tribe", data.userId);
-    TribeResults.fadeUser("result", data.userId);
+    if (room.config.isInfiniteTest === false) {
+      TribeResults.fadeUser("result", data.userId);
+    }
   } else {
     TribeBars.completeBar("test", data.userId);
     TribeBars.completeBar("tribe", data.userId);
