@@ -1326,7 +1326,13 @@ export async function retrySavingResult(): Promise<void> {
 
   Notifications.add("Retrying to save...");
 
-  saveResult(completedEvent, true);
+  const tribeChartData = {
+    wpm: [...(completedEvent.chartData as MonkeyTypes.ChartData).wpm],
+    raw: [...(completedEvent.chartData as MonkeyTypes.ChartData).raw],
+    err: [...(completedEvent.chartData as MonkeyTypes.ChartData).err],
+  };
+
+  saveResult(completedEvent, tribeChartData, true);
 }
 
 function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
@@ -1744,6 +1750,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     delete completedEvent.chartData.unsmoothedRaw;
   }
 
+  const tribeChartData = {
+    wpm: [...(completedEvent.chartData as MonkeyTypes.ChartData).wpm],
+    raw: [...(completedEvent.chartData as MonkeyTypes.ChartData).raw],
+    err: [...(completedEvent.chartData as MonkeyTypes.ChartData).err],
+  };
+
   if (completedEvent.testDuration > 122) {
     completedEvent.chartData = "toolong";
     completedEvent.keySpacing = "toolong";
@@ -1761,7 +1773,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
       consistency: completedEvent.consistency,
       testDuration: completedEvent.testDuration,
       charStats: completedEvent.charStats,
-      chartData: completedEvent.chartData,
+      chartData: tribeChartData,
       resolve: await testSavePromise,
       duration: completedEvent.testDuration,
     });
@@ -1784,11 +1796,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   completedEvent.hash = objectHash(completedEvent);
 
-  saveResult(completedEvent, false);
+  saveResult(completedEvent, tribeChartData, false);
 }
 
 async function saveResult(
   completedEvent: CompletedEvent,
+  tribeChartData: MonkeyTypes.ChartData,
   isRetrying: boolean
 ): Promise<void> {
   if (!TestState.savingEnabled) {
@@ -1804,7 +1817,7 @@ async function saveResult(
       consistency: completedEvent.consistency,
       testDuration: completedEvent.testDuration,
       charStats: completedEvent.charStats,
-      chartData: completedEvent.chartData,
+      chartData: tribeChartData,
       resolve: await testSavePromise,
       duration: completedEvent.testDuration,
     });
@@ -1824,7 +1837,7 @@ async function saveResult(
       consistency: completedEvent.consistency,
       testDuration: completedEvent.testDuration,
       charStats: completedEvent.charStats,
-      chartData: completedEvent.chartData,
+      chartData: tribeChartData,
       resolve: await testSavePromise,
       duration: completedEvent.testDuration,
     });
@@ -1864,7 +1877,7 @@ async function saveResult(
       consistency: completedEvent.consistency,
       testDuration: completedEvent.testDuration,
       charStats: completedEvent.charStats,
-      chartData: completedEvent.chartData,
+      chartData: tribeChartData,
       resolve: await testSavePromise,
       duration: completedEvent.testDuration,
     });
@@ -1981,7 +1994,7 @@ async function saveResult(
     consistency: completedEvent.consistency,
     testDuration: completedEvent.testDuration,
     charStats: completedEvent.charStats,
-    chartData: completedEvent.chartData,
+    chartData: tribeChartData,
     resolve: await testSavePromise,
     duration: completedEvent.testDuration,
   });

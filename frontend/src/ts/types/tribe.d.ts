@@ -19,7 +19,7 @@ declare namespace TribeTypes {
     consistency: number;
     testDuration: number;
     charStats: number[];
-    chartData: MonkeyTypes.ChartData | "toolong";
+    chartData: MonkeyTypes.ChartData;
     duration: number;
     resolve: ResultResolve;
   }
