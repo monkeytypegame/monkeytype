@@ -449,7 +449,7 @@ TribeSocket.in.room.initRace((data) => {
     tribeOverride: true,
     force: true,
   });
-  TribeCountdown.show();
+  TribeCountdown.show2();
   TribeSound.play("start");
 });
 
@@ -458,7 +458,7 @@ TribeSocket.in.room.stateChanged((data) => {
 });
 
 TribeSocket.in.room.countdown((data) => {
-  TribeCountdown.update(data.time.toString());
+  TribeCountdown.update2(data.time.toString());
   if (data.time <= 3) TribeSound.play("cd");
 });
 
@@ -482,7 +482,7 @@ TribeSocket.in.room.raceStarted(() => {
   updateState(12);
   if (!TribeState.getSelf()?.isTyping) return;
   TribeSound.play("cd_go");
-  TribeCountdown.hide();
+  TribeCountdown.hide2();
   setTimeout(() => {
     if (!TestActive.get()) {
       TimerEvent.dispatch("start");
