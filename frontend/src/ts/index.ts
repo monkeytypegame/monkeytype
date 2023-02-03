@@ -38,6 +38,8 @@ import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
 import "./test/tts";
+import "./popups/tribe-room-code-popup";
+import "./popups/tribe-browse-public-rooms-popup";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
