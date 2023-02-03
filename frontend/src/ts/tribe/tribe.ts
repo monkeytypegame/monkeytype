@@ -600,7 +600,8 @@ TribeSocket.in.room.finalPositions((data) => {
   if (
     data.miniCrowns.wpm === data.miniCrowns.raw &&
     data.miniCrowns.raw === data.miniCrowns.acc &&
-    data.miniCrowns.acc === data.miniCrowns.consistency
+    data.miniCrowns.acc === data.miniCrowns.consistency &&
+    data.miniCrowns.wpm === data.sorted[0]?.id
   ) {
     isGlowing = true;
   }
