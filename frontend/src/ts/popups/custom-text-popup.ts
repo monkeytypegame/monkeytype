@@ -44,6 +44,11 @@ export function show(noAnim = false): void {
     } else {
       $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
     }
+    if ($(`${popup} .delimiterCheck input`).prop("checked")) {
+      $(`${popup} .inputs .delimiterInputFields`).removeClass("disabled");
+    } else {
+      $(`${popup} .inputs .delimiterInputFields`).addClass("disabled");
+    }
     $(`${popup} textarea`).val(CustomText.popupTextareaState);
 
     $(wrapper)
@@ -82,6 +87,9 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
   ) {
     const currentText = $(`${popup} textarea`).val() as string;
     const currentTextSplit = currentText.split(CustomText.delimiter);
+    console.log(currentTextSplit, "split");
+    console.log(CustomText.section, "sectioncount");
+    currentTextSplit.splice(0, CustomText.section);
     let newtext = currentTextSplit.join(delimiter);
     newtext = newtext.replace(/\n /g, "\n");
     $(`${popup} textarea`).val(newtext);
@@ -135,6 +143,14 @@ $(`${popup} .inputs .randomWordsCheckbox input`).on("change", () => {
     $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
   } else {
     $(`${popup} .inputs .randomInputFields`).addClass("disabled");
+  }
+});
+
+$(`${popup} .inputs .delimiterCheck input`).on("change", () => {
+  if ($(`${popup} .delimiterCheck input`).prop("checked")) {
+    $(`${popup} .inputs .delimiterInputFields`).removeClass("disabled");
+  } else {
+    $(`${popup} .inputs .delimiterInputFields`).addClass("disabled");
   }
 });
 
@@ -217,6 +233,9 @@ function apply(): void {
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   CustomText.setText(text.split(CustomText.delimiter));
+  CustomText.setSection(
+    parseInt($(`${popup} .sectioncount input`).val() as string) || -1
+  );
   CustomText.setWord(
     parseInt($(`${popup} .wordcount input`).val() as string) || -1
   );

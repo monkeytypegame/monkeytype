@@ -13,6 +13,7 @@ export let isWordRandom = false;
 export let isTimeRandom = false;
 export let word = -1;
 export let time = -1;
+export let section = -1;
 export let delimiter = " ";
 export let popupTextareaState = "The quick brown fox jumps over the lazy dog";
 
@@ -46,6 +47,10 @@ export function setTime(val: number): void {
 
 export function setWord(val: number): void {
   word = val;
+}
+
+export function setSection(val: number): void {
+  section = val;
 }
 
 export function setDelimiter(val: string): void {
