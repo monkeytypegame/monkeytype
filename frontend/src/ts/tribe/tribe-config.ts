@@ -2,7 +2,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Funbox from "../test/funbox/funbox";
 // import * as Notifications from "./notifications";
 import * as CustomText from "../test/custom-text";
-
+import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
 import * as TribeButtons from "./tribe-buttons";
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
@@ -177,3 +177,7 @@ export function sync(): void {
     syncConfigTimeout = null;
   }, 500);
 }
+
+TribeConfigSyncEvent.subscribe(() => {
+  sync();
+});

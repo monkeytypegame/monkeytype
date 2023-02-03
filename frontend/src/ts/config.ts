@@ -13,7 +13,8 @@ import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
 import { canSetConfigWithCurrentFunboxes } from "./test/funbox/funbox-validation";
-import * as TribeConfig from "./tribe/tribe-config";
+import * as TribeState from "./tribe/tribe-state";
+import * as TribeConfigSyncEvent from "./observables/tribe-config-sync-event";
 
 export let localStorageConfig: MonkeyTypes.Config;
 export let dbConfigLoaded = false;
@@ -101,14 +102,14 @@ export function setNumbers(
   if (!canSetConfigWithCurrentFunboxes("numbers", numb, config.funbox)) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   if (config.mode === "quote") {
     numb = false;
   }
   config.numbers = numb;
   saveToLocalStorage("numbers", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("numbers", config.numbers);
 
   return true;
@@ -125,14 +126,14 @@ export function setPunctuation(
   if (!canSetConfigWithCurrentFunboxes("punctuation", punc, config.funbox)) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   if (config.mode === "quote") {
     punc = false;
   }
   config.punctuation = punc;
   saveToLocalStorage("punctuation", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("punctuation", config.punctuation);
 
   return true;
@@ -150,7 +151,7 @@ export function setMode(
   ) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   if (!canSetConfigWithCurrentFunboxes("mode", mode, config.funbox)) {
     return false;
@@ -170,7 +171,7 @@ export function setMode(
     }
   }
   saveToLocalStorage("mode", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("mode", config.mode, nosave, previous);
 
   return true;
@@ -233,11 +234,11 @@ export function setDifficulty(
   ) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.difficulty = diff;
   saveToLocalStorage("difficulty", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("difficulty", config.difficulty, nosave);
 
   return true;
@@ -261,12 +262,12 @@ export function setFunbox(
   tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   const val = funbox ? funbox : "none";
   config.funbox = val;
   saveToLocalStorage("funbox", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("funbox", config.funbox);
 
   return true;
@@ -350,14 +351,14 @@ export function setStopOnError(
   if (!isConfigValueValid("stop on error", soe, [["off", "word", "letter"]])) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.stopOnError = soe;
   if (config.stopOnError !== "off") {
     config.confidenceMode = "off";
   }
   saveToLocalStorage("stopOnError", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
 
   return true;
@@ -471,11 +472,11 @@ export function setMinWpm(
   tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("min WPM", minwpm, [["off", "custom"]])) return false;
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.minWpm = minwpm;
   saveToLocalStorage("minWpm", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("minWpm", config.minWpm, nosave);
 
   return true;
@@ -489,11 +490,11 @@ export function setMinWpmCustomSpeed(
   if (!isConfigValueValid("min WPM custom speed", val, ["number"])) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.minWpmCustomSpeed = val;
   saveToLocalStorage("minWpmCustomSpeed", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("minWpmCustomSpeed", config.minWpmCustomSpeed);
 
   return true;
@@ -506,11 +507,11 @@ export function setMinAcc(
   tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("min acc", min, [["off", "custom"]])) return false;
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.minAcc = min;
   saveToLocalStorage("minAcc", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("minAcc", config.minAcc, nosave);
 
   return true;
@@ -522,11 +523,11 @@ export function setMinAccCustom(
   tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("min acc custom", val, ["number"])) return false;
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.minAccCustom = val;
   saveToLocalStorage("minAccCustom", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("minAccCustom", config.minAccCustom);
 
   return true;
@@ -541,11 +542,11 @@ export function setMinBurst(
   if (!isConfigValueValid("min burst", min, [["off", "fixed", "flex"]])) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.minBurst = min;
   saveToLocalStorage("minBurst", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("minBurst", config.minBurst, nosave);
 
   return true;
@@ -559,11 +560,11 @@ export function setMinBurstCustomSpeed(
   if (!isConfigValueValid("min burst custom speed", val, ["number"])) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.minBurstCustomSpeed = val;
   saveToLocalStorage("minBurstCustomSpeed", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("minBurstCustomSpeed", config.minBurstCustomSpeed);
 
   return true;
@@ -1062,14 +1063,14 @@ export function setTimeConfig(
   if (!canSetConfigWithCurrentFunboxes("words", time, config.funbox)) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   const newTime = isNaN(time) || time < 0 ? DefaultConfig.time : time;
 
   config.time = newTime;
 
   saveToLocalStorage("time", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("time", config.time);
 
   return true;
@@ -1090,7 +1091,7 @@ export function setQuoteLength(
   ) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   if (Array.isArray(len)) {
     //config load
@@ -1116,7 +1117,7 @@ export function setQuoteLength(
   }
   // if (!nosave) setMode("quote", nosave);
   saveToLocalStorage("quoteLength", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("quoteLength", config.quoteLength);
 
   return true;
@@ -1132,7 +1133,7 @@ export function setWordCount(
   if (!canSetConfigWithCurrentFunboxes("words", wordCount, config.funbox)) {
     return false;
   }
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   const newWordCount =
     wordCount < 0 || wordCount > 100000 ? DefaultConfig.words : wordCount;
@@ -1140,7 +1141,7 @@ export function setWordCount(
   config.words = newWordCount;
 
   saveToLocalStorage("words", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("words", config.words);
 
   return true;
@@ -1448,14 +1449,14 @@ export function setLazyMode(
   tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("lazy mode", val, ["boolean"])) return false;
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   if (!val) {
     val = false;
   }
   config.lazyMode = val;
   saveToLocalStorage("lazyMode", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("lazyMode", config.lazyMode, nosave);
 
   return true;
@@ -1496,12 +1497,12 @@ export function setLanguage(
   tribeOverride = false
 ): boolean {
   if (!isConfigValueValid("language", language, ["string"])) return false;
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.language = language;
   AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("language", config.language);
 
   return true;
