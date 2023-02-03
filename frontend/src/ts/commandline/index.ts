@@ -18,7 +18,7 @@ import {
 import { update as updateCustomThemesList } from "./lists/custom-themes-list";
 import { update as updateTagsCommands } from "./lists/tags";
 import * as Skeleton from "../popups/skeleton";
-import * as Tribe from "../tribe/tribe";
+import * as TribeState from "../tribe/tribe-state";
 
 const wrapperId = "commandLineWrapper";
 
@@ -786,7 +786,7 @@ $(".pageTribe").on(
   "click",
   ".tribePage.lobby .currentConfig .groups .group",
   (e) => {
-    if (Tribe.getSelf()?.isLeader) {
+    if (TribeState.getSelf()?.isLeader) {
       const commands = CommandlineLists.getList(
         $(e.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
       );

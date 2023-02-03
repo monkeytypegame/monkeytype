@@ -1,4 +1,4 @@
-import * as Tribe from "../tribe/tribe";
+import * as TribeState from "../tribe/tribe-state";
 import * as Notifications from "../elements/notifications";
 import tribeSocket from "../tribe/tribe-socket";
 
@@ -11,7 +11,7 @@ export function show(userId: string): void {
   }
   if ($("#tribeUserSettingsPopupWrapper").hasClass("hidden")) {
     $("#tribeUserSettingsPopup .title").text(
-      `User settings (${Tribe?.room?.users[userId].name})`
+      `User settings (${TribeState.getRoom()?.users[userId].name})`
     );
     $("#tribeUserSettingsPopup").attr("userid", userId);
     $("#tribeUserSettingsPopupWrapper")

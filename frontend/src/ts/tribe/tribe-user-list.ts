@@ -1,4 +1,4 @@
-import * as Tribe from "./tribe";
+import * as TribeState from "./tribe-state";
 import * as TribeUserSettingsPopup from "../popups/tribe-user-settings-popup";
 import tribeSocket from "./tribe-socket";
 
@@ -14,7 +14,8 @@ export function reset(page?: string): void {
 }
 
 export function update(page?: string): void {
-  if (!Tribe.room) return;
+  const room = TribeState.getRoom();
+  if (!room) return;
   if (!page) {
     update("lobby");
     update("result");
@@ -23,8 +24,8 @@ export function update(page?: string): void {
   reset(page);
   const usersArray = [];
 
-  for (const userId of Object.keys(Tribe.room.users)) {
-    usersArray.push(Tribe.room.users[userId]);
+  for (const userId of Object.keys(room.users)) {
+    usersArray.push(room.users[userId]);
   }
   const sortedUsers = usersArray.sort(
     (a, b) => (b.points ?? 0) - (a.points ?? 0)
@@ -60,7 +61,7 @@ export function update(page?: string): void {
       ${user.name}
       </div>
       ${
-        Tribe.getSelf()?.isLeader && user.id !== tribeSocket.getId()
+        TribeState.getSelf()?.isLeader && user.id !== tribeSocket.getId()
           ? `<div class='userSettings' userid='` +
             user.id +
             `' ><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`

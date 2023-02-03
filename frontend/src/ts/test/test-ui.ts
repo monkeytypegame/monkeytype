@@ -13,6 +13,7 @@ import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
+import * as TribeState from "../tribe/tribe-state";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
@@ -269,7 +270,7 @@ export async function screenshot(): Promise<void> {
     if (!Auth?.currentUser) {
       $(".pageTest .loginTip").removeClass("hidden");
     }
-    if (Tribe.state > 5) {
+    if (TribeState.getState() > 5) {
       $(".pageTest #result .inviteLink").removeClass("hidden");
     }
   }
@@ -1058,7 +1059,7 @@ $("#wordsInput").on("focusout", () => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.key == "Enter") {
-    if (Tribe.state >= 5) return;
+    if (TribeState.getState() >= 5) return;
     ManualRestart.reset();
     if (
       TestActive.get() &&
@@ -1075,7 +1076,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 });
 
 $(document.body).on("click", "#restartTestButton", () => {
-  if (Tribe.state >= 5) return;
+  if (TribeState.getState() >= 5) return;
   ManualRestart.set();
 
   if (resultCalculating) return;
@@ -1111,7 +1112,7 @@ $(document.body).on("click", "#practiseWordsButton", () => {
 
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.keyCode == 13) {
-    if (Tribe.room) {
+    if (TribeState.getRoom()) {
       Tribe.initRace();
     } else {
       TestLogic.restart();
@@ -1120,7 +1121,7 @@ $(document).on("keypress", "#nextTestButton", (event) => {
 });
 
 $(document.body).on("click", "#nextTestButton", () => {
-  if (Tribe.room) {
+  if (TribeState.getRoom()) {
     Tribe.initRace();
   } else {
     ManualRestart.set();

@@ -17,7 +17,7 @@ import * as TestActive from "../states/test-active";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 import * as TestLogic from "./test-logic";
-import * as Tribe from "../tribe/tribe";
+import * as TribeState from "../tribe/tribe-state";
 import * as TribeBars from "../tribe/tribe-bars";
 
 let slowTimerCount = 0;
@@ -177,7 +177,7 @@ function checkIfTimeIsUp(): void {
 
 function sendTribeProgress(wpm: number, raw: number, acc: number): void {
   if (timerDebug) console.time("tribe progress");
-  if (Tribe.state >= 10 && Tribe.state <= 21) {
+  if (TribeState.getState() >= 10 && TribeState.getState() <= 21) {
     let progress = 0;
     if (Config.mode === "time") {
       progress = 100 - ((Time.get() + 1) / Config.time) * 100;

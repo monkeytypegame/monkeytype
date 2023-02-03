@@ -1,5 +1,5 @@
 import { Chart, ChartConfiguration } from "chart.js";
-import * as Tribe from "./tribe";
+import * as TribeState from "./tribe-state";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Notifications from "../elements/notifications";
 import { createErrorMessage } from "../utils/misc";
@@ -252,8 +252,9 @@ const settings: ChartConfiguration = {
 
 async function fillData(chart: Chart, userId: string): Promise<void> {
   const labels: number[] = [];
-  if (!Tribe.room) return;
-  const result = Tribe.room.users[userId].result;
+  const room = TribeState.getRoom();
+  if (!room) return;
+  const result = room.users[userId].result;
   if (!result) return;
   if (result.chartData === "toolong") return;
   for (let i = 1; i <= result.chartData.wpm.length; i++) {
@@ -293,7 +294,10 @@ export async function drawChart(userId: string): Promise<void> {
       `.pageTest #result #tribeResults table tbody tr#${userId} .minichart canvas`
     )[0] as HTMLCanvasElement;
 
-    if (!Tribe.room || !Tribe.room.users[userId].result) return;
+    const room = TribeState.getRoom();
+    if (!room || !room.users[userId].result) {
+      return;
+    }
 
     const chart = new Chart(
       element,
@@ -317,8 +321,9 @@ export async function drawChart(userId: string): Promise<void> {
 }
 
 export async function drawAllCharts(): Promise<void> {
-  if (!Tribe.room) return;
-  const list = Object.keys(Tribe.room.users);
+  const room = TribeState.getRoom();
+  if (!room) return;
+  const list = Object.keys(room.users);
   for (let i = 0; i < list.length; i++) {
     const userId = list[i];
     if (!charts[userId]) {
@@ -328,12 +333,13 @@ export async function drawAllCharts(): Promise<void> {
 }
 
 export async function updateChartMaxValues(): Promise<void> {
-  if (!Tribe.room) return;
+  const room = TribeState.getRoom();
+  if (!room) return;
   let maxWpm = 0;
   let maxRaw = 0;
 
-  for (const userId of Object.keys(Tribe.room.users)) {
-    const result = Tribe.room.users[userId].result;
+  for (const userId of Object.keys(room.users)) {
+    const result = room.users[userId].result;
     if (!result) continue;
     if (result.chartData === "toolong") return;
     const maxUserWpm = Math.max(maxWpm, Math.max(...result.chartData.wpm));
@@ -347,7 +353,7 @@ export async function updateChartMaxValues(): Promise<void> {
   }
   const chartmaxval = Math.max(maxWpm, maxRaw);
 
-  const list = Object.keys(Tribe.room.users);
+  const list = Object.keys(room.users);
   for (let i = 0; i < list.length; i++) {
     const userId = list[i];
     if (charts[userId]) {
@@ -361,7 +367,7 @@ export async function updateChartMaxValues(): Promise<void> {
         scales["raw"].min = 0;
       }
 
-      const result = Tribe.room.users[userId].result;
+      const result = room.users[userId].result;
       if (result && result.chartData !== "toolong" && scales?.["errors"]) {
         scales["errors"].max = Math.max(...result.chartData.err) + 1;
         scales["errors"].min = 0;

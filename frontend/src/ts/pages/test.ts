@@ -8,7 +8,7 @@ import Page from "./page";
 import { updateTestPageAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
-import * as Tribe from "../tribe/tribe";
+import * as TribeState from "../tribe/tribe-state";
 
 export const page = new Page(
   "test",
@@ -28,7 +28,7 @@ export const page = new Page(
   },
   async (options) => {
     updateTestPageAds(false);
-    if (Tribe.state > 5) {
+    if (TribeState.getState() > 5) {
       TestConfig.hide();
     } else {
       TestConfig.show();

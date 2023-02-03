@@ -57,6 +57,7 @@ import * as Tribe from "../tribe/tribe";
 import * as TribeResults from "../tribe/tribe-results";
 import * as TribeDelta from "../tribe/tribe-delta";
 import * as Random from "../utils/random";
+import * as TribeState from "../tribe/tribe-state";
 
 export const glarsesMode = false;
 
@@ -390,7 +391,7 @@ export function restart(options = {} as RestartOptions): void {
   if (
     TestUI.testRestarting ||
     TestUI.resultCalculating ||
-    (Tribe.state > 5 && !options.tribeOverride)
+    (TribeState.getState() > 5 && !options.tribeOverride)
   ) {
     event?.preventDefault();
     return;
@@ -551,13 +552,13 @@ export function restart(options = {} as RestartOptions): void {
     async () => {
       if (ActivePage.get() == "test") {
         AdController.updateTestPageAds(false);
-        if (Tribe.state < 5) {
+        if (TribeState.getState() < 5) {
           Focus.set(false);
         } else {
           Focus.set(true);
         }
       }
-      if (Tribe.state > 5) {
+      if (TribeState.getState() > 5) {
         TestConfig.hide();
       } else {
         TestConfig.show();
@@ -827,7 +828,7 @@ async function getNextWord(
 
 let rememberLazyMode: boolean;
 export async function init(): Promise<void> {
-  if (Tribe.state > 5 && Tribe.room) {
+  if (TribeState.getState() > 5 && TribeState.getRoom()) {
     Tribe.applyRandomSeed();
   }
   TestActive.set(false);
@@ -1065,7 +1066,7 @@ export async function init(): Promise<void> {
     const quotesCollection = await QuotesController.getQuotes(
       languageToGet,
       Config.quoteLength,
-      Tribe.state >= 5
+      TribeState.getState() >= 5
     );
 
     if (quotesCollection.length === 0) {
@@ -1109,7 +1110,9 @@ export async function init(): Promise<void> {
 
       rq = randomQuote;
     } else {
-      const randomQuote = QuotesController.getRandomQuote(Tribe.state >= 5);
+      const randomQuote = QuotesController.getRandomQuote(
+        TribeState.getState() >= 5
+      );
       if (randomQuote === null) {
         Notifications.add("No quotes found for selected quote length", 0);
         TestUI.setTestRestarting(false);
@@ -1842,7 +1845,7 @@ async function saveResult(
     //only allow retry if status is not in this list
     if (
       ![460, 461, 463, 464, 465].includes(response.status) &&
-      Tribe.state < 5
+      TribeState.getState() < 5
     ) {
       retrySaving.canRetry = true;
       $("#retrySavingResultButton").removeClass("hidden");

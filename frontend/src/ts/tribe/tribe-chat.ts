@@ -1,5 +1,5 @@
 import * as Notifications from "../elements/notifications";
-import * as Tribe from "./tribe";
+import * as TribeState from "../tribe/tribe-state";
 import * as Misc from "../utils/misc";
 import * as TestUI from "../test/test-ui";
 import tribeSocket from "./tribe-socket";
@@ -46,14 +46,15 @@ export function scrollChat(): void {
 }
 
 export function updateIsTyping(): void {
-  if (!Tribe.room) return;
+  const room = TribeState.getRoom();
+  if (!room) return;
   let string = "";
 
   const names: string[] = [];
 
-  for (const userId of Object.keys(Tribe.room.users)) {
-    if (Tribe.room.users[userId].isChatting && userId !== tribeSocket.getId()) {
-      names.push(Tribe.room.users[userId].name);
+  for (const userId of Object.keys(room.users)) {
+    if (room.users[userId].isChatting && userId !== tribeSocket.getId()) {
+      names.push(room.users[userId].name);
     }
   }
   if (names.length > 0) {
@@ -173,7 +174,7 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
 );
 
 $(document).keydown((e) => {
-  if (Tribe.state === 5) {
+  if (TribeState.getState() === 5) {
     if (
       e.key === "/" &&
       !$(".pageTribe .lobby .chat .input input").is(":focus")
@@ -181,7 +182,7 @@ $(document).keydown((e) => {
       $(".pageTribe .lobby .chat .input input").focus();
       e.preventDefault();
     }
-  } else if (TestUI.resultVisible && Tribe.state >= 20) {
+  } else if (TestUI.resultVisible && TribeState.getState() >= 20) {
     if (
       e.key === "/" &&
       !$(".pageTest #result #tribeResultBottom .chat .input input").is(":focus")

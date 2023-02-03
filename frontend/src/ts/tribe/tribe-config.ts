@@ -4,7 +4,7 @@ import * as Funbox from "../test/funbox/funbox";
 import * as CustomText from "../test/custom-text";
 
 import * as TribeButtons from "./tribe-buttons";
-import * as Tribe from "./tribe";
+import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
 
 export function getArray(config: TribeTypes.RoomConfig): string[] {
@@ -126,9 +126,9 @@ export function setLoadingIndicator(bool: boolean): void {
 }
 
 export function canChange(override: boolean): boolean {
-  if (Tribe.state <= 1) return true;
-  if (Tribe.getSelf()?.isLeader) {
-    if (Tribe.state !== 5) return false;
+  if (TribeState.getState() <= 1) return true;
+  if (TribeState.getSelf()?.isLeader) {
+    if (TribeState.getState() !== 5) return false;
     //is leader, allow
     return true;
   } else {
@@ -144,8 +144,8 @@ export function canChange(override: boolean): boolean {
 let syncConfigTimeout: NodeJS.Timeout | null = null;
 
 export function sync(): void {
-  if (Tribe.state <= 1) return;
-  if (!Tribe.getSelf()?.isLeader) return;
+  if (TribeState.getState() <= 1) return;
+  if (!TribeState.getSelf()?.isLeader) return;
   setLoadingIndicator(true);
   TribeButtons.disableStartButton();
   if (syncConfigTimeout !== null) return;

@@ -14,6 +14,7 @@ import * as PageTransition from "../states/page-transition";
 import * as NavigateEvent from "../observables/navigate-event";
 import { Auth } from "../firebase";
 import * as Tribe from "../tribe/tribe";
+import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "../tribe/tribe-socket";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
@@ -54,8 +55,8 @@ const routes: Route[] = [
   {
     path: "/",
     load: (_params, navigateOptions): void => {
-      if (Tribe.state >= 5 && !navigateOptions?.tribeOverride) {
-        if (Tribe.state == 22 && Tribe.getSelf()?.isLeader) {
+      if (TribeState.getState() >= 5 && !navigateOptions?.tribeOverride) {
+        if (TribeState.getState() == 22 && TribeState.getSelf()?.isLeader) {
           tribeSocket.out.room.backToLobby();
         } else {
           nav("/tribe", navigateOptions);
@@ -164,7 +165,13 @@ function nav(
   url = window.location.pathname + window.location.search,
   options = {} as NavigateOptions
 ): void {
-  if (Tribe.state > 5 && Tribe.state < 22 && !options?.tribeOverride) return;
+  if (
+    TribeState.getState() > 5 &&
+    TribeState.getState() < 22 &&
+    !options?.tribeOverride
+  ) {
+    return;
+  }
   if (
     TestUI.testRestarting ||
     TestUI.resultCalculating ||

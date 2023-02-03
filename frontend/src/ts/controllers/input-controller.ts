@@ -25,6 +25,7 @@ import * as CompositionState from "../states/composition";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
 import * as Tribe from "../tribe/tribe";
+import * as TribeState from "../tribe/tribe-state";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import { navigate } from "../observables/navigate-event";
@@ -714,8 +715,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     event.preventDefault();
 
     // change page if needed
-    if (Tribe.state >= 5) {
-      if (Tribe.state === 5 && ActivePage.get() !== "tribe") {
+    if (TribeState.getState() >= 5) {
+      if (TribeState.getState() === 5 && ActivePage.get() !== "tribe") {
         navigate("/tribe");
         return;
       } else if (ActivePage.get() !== "test") {
@@ -730,17 +731,17 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     }
 
     // tribe
-    if (Tribe.state >= 5) {
-      if (Tribe.state > 5 && Tribe.state < 22) return;
-      if (Tribe.getSelf()?.isLeader) {
-        if (Tribe.state === 5 || Tribe.state === 22) {
+    if (TribeState.getState() >= 5) {
+      if (TribeState.getState() > 5 && TribeState.getState() < 22) return;
+      if (TribeState.getSelf()?.isLeader) {
+        if (TribeState.getState() === 5 || TribeState.getState() === 22) {
           Tribe.initRace();
           return;
         }
       } else if (
-        Tribe.state === 5 ||
-        Tribe.state === 21 ||
-        Tribe.state === 22
+        TribeState.getState() === 5 ||
+        TribeState.getState() === 21 ||
+        TribeState.getState() === 22
       ) {
         tribeSocket.out.room.readyUpdate();
         return;
@@ -781,7 +782,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     //
     event.preventDefault();
 
-    if (Tribe.state >= 5 && ActivePage.get() === "test") return;
+    if (TribeState.getState() >= 5 && ActivePage.get() === "test") return;
 
     $("#restartTestButton").trigger("focus");
   }
@@ -819,7 +820,10 @@ $(document).on("keydown", async (event) => {
     }
   }
 
-  if ([10, 11].includes(Tribe.state) && Tribe.getSelf()?.isTyping) {
+  if (
+    [10, 11].includes(TribeState.getState()) &&
+    TribeState.getSelf()?.isTyping
+  ) {
     event.preventDefault();
     return;
   }
@@ -839,8 +843,8 @@ $(document).on("keydown", async (event) => {
     event.preventDefault();
 
     // change page if needed
-    if (Tribe.state >= 5) {
-      if (Tribe.state === 5 && ActivePage.get() !== "tribe") {
+    if (TribeState.getState() >= 5) {
+      if (TribeState.getState() === 5 && ActivePage.get() !== "tribe") {
         navigate("/tribe");
         return;
       } else if (ActivePage.get() !== "test") {
@@ -855,17 +859,17 @@ $(document).on("keydown", async (event) => {
     }
 
     // tribe
-    if (Tribe.state >= 5) {
-      if (Tribe.state > 5 && Tribe.state < 22) return;
-      if (Tribe.getSelf()?.isLeader) {
-        if (Tribe.state === 5 || Tribe.state === 22) {
+    if (TribeState.getState() >= 5) {
+      if (TribeState.getState() > 5 && TribeState.getState() < 22) return;
+      if (TribeState.getSelf()?.isLeader) {
+        if (TribeState.getState() === 5 || TribeState.getState() === 22) {
           Tribe.initRace();
           return;
         }
       } else if (
-        Tribe.state === 5 ||
-        Tribe.state === 21 ||
-        Tribe.state === 22
+        TribeState.getState() === 5 ||
+        TribeState.getState() === 21 ||
+        TribeState.getState() === 22
       ) {
         tribeSocket.out.room.readyUpdate();
         return;
@@ -873,17 +877,17 @@ $(document).on("keydown", async (event) => {
     }
 
     // tribe
-    if (Tribe.state >= 5) {
-      if (Tribe.state > 5 && Tribe.state < 22) return;
-      if (Tribe.getSelf()?.isLeader) {
-        if (Tribe.state === 5 || Tribe.state === 22) {
+    if (TribeState.getState() >= 5) {
+      if (TribeState.getState() > 5 && TribeState.getState() < 22) return;
+      if (TribeState.getSelf()?.isLeader) {
+        if (TribeState.getState() === 5 || TribeState.getState() === 22) {
           Tribe.initRace();
           return;
         }
       } else if (
-        Tribe.state === 5 ||
-        Tribe.state === 21 ||
-        Tribe.state === 22
+        TribeState.getState() === 5 ||
+        TribeState.getState() === 21 ||
+        TribeState.getState() === 22
       ) {
         tribeSocket.out.room.readyUpdate();
         return;
@@ -1042,7 +1046,10 @@ $("#wordsInput").on("keyup", (event) => {
 
   if (IgnoredKeys.includes(event.key)) return;
 
-  if ([10, 11].includes(Tribe.state) && Tribe.getSelf()?.isTyping) {
+  if (
+    [10, 11].includes(TribeState.getState()) &&
+    TribeState.getSelf()?.isTyping
+  ) {
     event.preventDefault();
     return;
   }
@@ -1075,12 +1082,18 @@ $("#wordsInput").on("input", (event) => {
   const popupVisible = Misc.isAnyPopupVisible();
   if (popupVisible) return;
 
-  if ([10, 11].includes(Tribe.state) && Tribe.getSelf()?.isTyping) {
+  if (
+    [10, 11].includes(TribeState.getState()) &&
+    TribeState.getSelf()?.isTyping
+  ) {
     event.preventDefault();
     return;
   }
 
-  if ([10, 11].includes(Tribe.state) && Tribe.getSelf()?.isTyping) {
+  if (
+    [10, 11].includes(TribeState.getState()) &&
+    TribeState.getSelf()?.isTyping
+  ) {
     event.preventDefault();
     return;
   }

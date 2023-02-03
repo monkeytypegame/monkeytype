@@ -1,4 +1,4 @@
-import * as Tribe from "./tribe";
+import * as TribeState from "./tribe-state";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
 import tribeSocket from "./tribe-socket";
@@ -12,7 +12,7 @@ export function init(page: string): void {
     el = $(".pageTribe .lobby .tribeBars");
   }
 
-  const room = Tribe.room;
+  const room = TribeState.getRoom();
   if (el) {
     el.empty();
   }
@@ -41,7 +41,7 @@ export function init(page: string): void {
     }
   }
   if (el) {
-    const tribeSelf = Tribe.getSelf();
+    const tribeSelf = TribeState.getSelf();
     el.append(`
       <tr class="player me" id="${tribeSelf?.id}">
         <td class="name">${tribeSelf?.name}</td>
@@ -90,7 +90,8 @@ export function reset(page?: string): void {
 }
 
 export function update(page: string, userId: string): void {
-  if (!Tribe.room) return;
+  const room = TribeState.getRoom();
+  if (!room) return;
   if (page === undefined) {
     update("test", userId);
     update("tribe", userId);
@@ -102,7 +103,7 @@ export function update(page: string, userId: string): void {
   } else if (page === "tribe") {
     el = $(".pageTribe .tribeBars");
   }
-  const user = Tribe.room.users[userId];
+  const user = room.users[userId];
 
   if (!el) {
     return;

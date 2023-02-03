@@ -21,7 +21,7 @@ import { Auth } from "../firebase";
 import * as SlowTimer from "../states/slow-timer";
 import * as FunboxList from "./funbox/funbox-list";
 import Ape from "../ape";
-import * as Tribe from "../tribe/tribe";
+import * as TribeState from "../tribe/tribe-state";
 import * as TribeResults from "../tribe/tribe-results";
 import * as TribeUserList from "../tribe/tribe-user-list";
 import * as TribeButtons from "../tribe/tribe-buttons";
@@ -798,10 +798,11 @@ export async function update(
       window.scrollTo({ top: 0 });
       TribeChat.scrollChat();
       $("#testModesNotice").addClass("hidden");
-      if (Tribe.room?.users) {
-        for (const userId of Object.keys(Tribe.room.users)) {
-          if (userId === Tribe.getSelf()?.id) continue;
-          if (Tribe.room.users[userId].isFinished) {
+      const room = TribeState.getRoom();
+      if (room?.users) {
+        for (const userId of Object.keys(room.users)) {
+          if (userId === TribeState.getSelf()?.id) continue;
+          if (room.users[userId].isFinished) {
             TribeChartController.drawChart(userId);
           }
         }
@@ -822,9 +823,9 @@ export async function update(
       //tribe
       $("#result .bottom .buttons div").addClass("hidden");
       $("#result #tribeResultBottom").addClass("hidden");
-      if (Tribe.state >= 12) {
+      if (TribeState.getState() >= 12) {
         $("#result #tribeResultBottom").removeClass("hidden");
-        if (Tribe.getSelf()?.isLeader) {
+        if (TribeState.getSelf()?.isLeader) {
           $("#result #nextTestButton").removeClass("hidden");
           $("#result #backToLobbyButton").removeClass("hidden");
         } else {

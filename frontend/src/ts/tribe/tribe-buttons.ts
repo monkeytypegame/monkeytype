@@ -1,4 +1,5 @@
 import * as Tribe from "./tribe";
+import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
 
 function showStartButton(page: string): void {
@@ -181,23 +182,23 @@ export function update(page?: string): void {
     update("result");
     return;
   }
-  const self = Tribe.getSelf();
+  const self = TribeState.getSelf();
   if (self?.isLeader) {
     showStartButton(page);
     hideReadyButton(page);
     hideAfkButton(page);
 
     disableStartButton(page);
-    if (Tribe.state === 5 || Tribe.state === 22) {
+    if (TribeState.getState() === 5 || TribeState.getState() === 22) {
       enableStartButton(page);
     }
 
     // TODO REENABLE
-    // if (Tribe.state === 5) {
+    // if (TribeState.get() === 5) {
     //   let readyCount = 0;
-    //   Object.keys(Tribe.room.users).forEach((userId) => {
-    //     if (Tribe.room.users[userId].isLeader || room.users[userId].isAfk) return;
-    //     if (Tribe.room.users[userId].isReady) {
+    //   Object.keys(TribeState.getRoom().users).forEach((userId) => {
+    //     if (TribeState.getRoom().users[userId].isLeader || room.users[userId].isAfk) return;
+    //     if (TribeState.getRoom().users[userId].isReady) {
     //       readyCount++;
     //     }
     //   });
@@ -232,7 +233,7 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userAfkButton,
   .pageTest #tribeResultBottom .buttons .userAfkButton`).on("click", (_e) => {
-  const self = Tribe.getSelf();
+  const self = TribeState.getSelf();
   if (!self) return;
   tribeSocket.out.room.afkUpdate(!self.isAfk);
 });

@@ -1,4 +1,4 @@
-import * as Tribe from "../tribe";
+import * as TribeState from "../tribe-state";
 import * as Notifications from "../../elements/notifications";
 import * as TribeChat from "../tribe-chat";
 import * as CustomText from "../../test/custom-text";
@@ -47,7 +47,7 @@ export function enableNameVisibilityButtons(): void {
 }
 
 export function updateVisibility(): void {
-  if (Tribe.getSelf()?.isLeader) {
+  if (TribeState.getSelf()?.isLeader) {
     $(
       ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
     ).removeClass("hidden");
@@ -56,7 +56,7 @@ export function updateVisibility(): void {
       ".pageTribe .tribePage.lobby .visibilityAndName .visibility .textButton"
     ).addClass("hidden");
   }
-  if (Tribe.room?.isPrivate) {
+  if (TribeState.getRoom()?.isPrivate) {
     $(".pageTribe .tribePage.lobby .visibilityAndName .visibility .text").text(
       "private"
     );
@@ -74,7 +74,7 @@ export function updateVisibility(): void {
 }
 
 export function updateRoomName(): void {
-  if (Tribe.getSelf()?.isLeader) {
+  if (TribeState.getSelf()?.isLeader) {
     $(
       ".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton"
     ).removeClass("hidden");
@@ -84,15 +84,14 @@ export function updateRoomName(): void {
     ).addClass("hidden");
   }
   $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .text").text(
-    Tribe.room?.name ?? ""
+    TribeState.getRoom()?.name ?? ""
   );
 }
 
 export function updateRoomConfig(): void {
-  if (Tribe.room == undefined) return;
+  const room = TribeState.getRoom();
+  if (!room) return;
   $(".pageTribe .tribePage.lobby .currentConfig .groups").empty();
-
-  const room = Tribe.room;
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Mode" data-balloon-pos="up" commands="mode">
@@ -244,13 +243,14 @@ export function updateRoomConfig(): void {
 }
 
 export function init(): void {
-  if (!Tribe.room) return;
+  const room = TribeState.getRoom();
+  if (!room) return;
   reset();
-  const link = location.origin + "/tribe/" + Tribe.room.id;
-  $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(Tribe.room.id);
+  const link = location.origin + "/tribe/" + room.id;
+  $(".pageTribe .tribePage.lobby .inviteLink .code .text").text(room.id);
   $(".pageTribe .tribePage.lobby .inviteLink .link").text(link);
   $(".pageTest #result #tribeResultBottom .inviteLink .code .text").text(
-    Tribe.room.id
+    room.id
   );
   $(".pageTest #result #tribeResultBottom .inviteLink .link").text(link);
   TribeUserList.update("lobby");
@@ -260,7 +260,7 @@ export function init(): void {
   updateRoomConfig();
   enableConfigButtons();
   enableNameVisibilityButtons();
-  TribeConfig.apply(Tribe.room.config);
+  TribeConfig.apply(room.config);
 }
 
 $(".pageTribe .tribePage.lobby .inviteLink .text").hover(

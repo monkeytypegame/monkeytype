@@ -1,5 +1,5 @@
 import { Howl } from "howler";
-import * as Tribe from "./tribe";
+import * as TribeState from "../tribe/tribe-state";
 
 const sounds: Record<string, Howl> = {
   join: new Howl({ src: "/sound/tribe-sounds/join.wav" }),
@@ -16,7 +16,7 @@ const sounds: Record<string, Howl> = {
 
 export function play(name: string): void {
   if (
-    [10, 11, 12].includes(Tribe.state) &&
+    [10, 11, 12].includes(TribeState.getState()) &&
     ["join", "leave", "chat", "chat_mention"].includes(name)
   ) {
     return;
