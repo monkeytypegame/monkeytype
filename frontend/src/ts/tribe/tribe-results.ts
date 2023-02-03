@@ -192,30 +192,37 @@ function updateUser(page: string, userId: string): void {
       userEl.find(`.other .text`).text("left");
       return;
     }
+    const userResult = user.result;
+    if (!userResult) {
+      userEl.find(`.other .text`).text("missing result data");
+      return;
+    }
     if (user.isFinished) {
-      userEl.find(`.wpm .text`).text(user.result.wpm.toFixed(2));
-      userEl.find(`.raw .text`).text(user.result.raw.toFixed(2));
-      userEl.find(`.acc .text`).text(user.result.acc.toFixed(2) + "%");
+      userEl.find(`.wpm .text`).text(userResult.wpm.toFixed(2));
+      userEl.find(`.raw .text`).text(userResult.raw.toFixed(2));
+      userEl.find(`.acc .text`).text(userResult.acc.toFixed(2) + "%");
       userEl
         .find(`.consistency .text`)
-        .text(user.result.consistency.toFixed(2) + "%");
+        .text(userResult.consistency.toFixed(2) + "%");
       userEl.find(`.char .text`).text(
         `
-        ${user.result.charStats[0]}/${user.result.charStats[1]}/${user.result.charStats[2]}/${user.result.charStats[3]}
+        ${userResult.charStats[0]}/${userResult.charStats[1]}/${userResult.charStats[2]}/${userResult.charStats[3]}
         `
       );
       let otherText = "-";
-      const resolve = user.result.resolve;
+      const resolve = userResult.resolve;
       if (resolve.afk) {
         otherText = "afk";
       } else if (resolve.repeated) {
         otherText = "repeated";
-      } else if (resolve.failed) {
+      } else if (resolve.failed && Tribe.room.config.isInfiniteTest === false) {
         otherText = `failed(${resolve.failedReason})`;
       } else if (resolve.saved === false) {
         otherText = `save failed(${resolve.saveFailedMessage})`;
       } else if (resolve.valid === false) {
         otherText = `invalid`;
+      } else if (Tribe.room.config.isInfiniteTest === true) {
+        otherText = `${Math.round(userResult.testDuration)}s`;
       } else if (resolve.saved && resolve.isPb) {
         otherText = "new pb";
       }
