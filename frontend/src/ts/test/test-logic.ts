@@ -57,6 +57,7 @@ import * as TribeResults from "../tribe/tribe-results";
 import * as TribeDelta from "../tribe/tribe-delta";
 import * as Random from "../utils/random";
 import * as TribeState from "../tribe/tribe-state";
+import * as Tribe from "../tribe/tribe";
 
 export const glarsesMode = false;
 
@@ -2027,6 +2028,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 });
 
 $(".pageTest").on("click", "#restartTestButton", () => {
+  if (TribeState.getState() >= 5) return;
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
@@ -2046,13 +2048,21 @@ $(".pageTest").on("click", "#retrySavingResultButton", retrySavingResult);
 
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.key === "Enter") {
-    restart();
+    if (TribeState.getRoom()) {
+      Tribe.initRace();
+    } else {
+      restart();
+    }
   }
 });
 
 $(".pageTest").on("click", "#nextTestButton", () => {
-  ManualRestart.set();
-  restart();
+  if (TribeState.getRoom()) {
+    Tribe.initRace();
+  } else {
+    ManualRestart.set();
+    restart();
+  }
 });
 
 $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {

@@ -19,10 +19,6 @@ import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import * as PractiseWords from "./practise-words";
-import * as TestLogic from "./test-logic";
-import * as ManualRestart from "./manual-restart-tracker";
-import * as TestActive from "../states/test-active";
-import * as Tribe from "../tribe/tribe";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -1057,48 +1053,6 @@ $("#wordsInput").on("focusout", () => {
   Caret.hide();
 });
 
-$(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.key == "Enter") {
-    if (TribeState.getState() >= 5) return;
-    ManualRestart.reset();
-    if (
-      TestActive.get() &&
-      Config.repeatQuotes === "typing" &&
-      Config.mode === "quote"
-    ) {
-      TestLogic.restart({
-        withSameWordset: true,
-      });
-    } else {
-      TestLogic.restart();
-    }
-  }
-});
-
-$(document.body).on("click", "#restartTestButton", () => {
-  if (TribeState.getState() >= 5) return;
-  ManualRestart.set();
-
-  if (resultCalculating) return;
-  if (
-    TestActive.get() &&
-    Config.repeatQuotes === "typing" &&
-    Config.mode === "quote"
-  ) {
-    TestLogic.restart({
-      withSameWordset: true,
-    });
-  } else {
-    TestLogic.restart();
-  }
-});
-
-$(document.body).on(
-  "click",
-  "#retrySavingResultButton",
-  TestLogic.retrySavingResult
-);
-
 $(document).on("keypress", "#practiseWordsButton", (event) => {
   if (event.keyCode == 13) {
     PractiseWords.showPopup(true);
@@ -1108,25 +1062,6 @@ $(document).on("keypress", "#practiseWordsButton", (event) => {
 $(document.body).on("click", "#practiseWordsButton", () => {
   // PractiseWords.init();
   PractiseWords.showPopup();
-});
-
-$(document).on("keypress", "#nextTestButton", (event) => {
-  if (event.keyCode == 13) {
-    if (TribeState.getRoom()) {
-      Tribe.initRace();
-    } else {
-      TestLogic.restart();
-    }
-  }
-});
-
-$(document.body).on("click", "#nextTestButton", () => {
-  if (TribeState.getRoom()) {
-    Tribe.initRace();
-  } else {
-    ManualRestart.set();
-    TestLogic.restart();
-  }
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
