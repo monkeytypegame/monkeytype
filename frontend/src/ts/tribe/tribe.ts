@@ -9,7 +9,7 @@ import * as TribeSound from "./tribe-sound";
 import * as TribeChat from "./tribe-chat";
 import * as TribeConfig from "./tribe-config";
 import * as TribeCountdown from "./tribe-countdown";
-import * as TestLogic from "../test/test-logic";
+import * as TimerEvent from "../observables/timer-event";
 import * as TribeBars from "./tribe-bars";
 import * as TribeResults from "./tribe-results";
 import * as TribeUserList from "./tribe-user-list";
@@ -485,7 +485,7 @@ TribeSocket.in.room.raceStarted(() => {
   TribeCountdown.hide();
   setTimeout(() => {
     if (!TestActive.get()) {
-      TestLogic.startTest();
+      TimerEvent.dispatch("start");
     }
   }, 500);
 });
@@ -558,7 +558,7 @@ TribeSocket.in.room.finishTimerOver(() => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
   if (TestActive.get()) {
-    TestLogic.fail("out of time");
+    TimerEvent.dispatch("fail", "out of time");
   }
 });
 
@@ -574,7 +574,7 @@ TribeSocket.in.room.readyTimerOver(() => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
   if (TestActive.get()) {
-    TestLogic.fail("out of time");
+    TimerEvent.dispatch("fail", "out of time");
   }
 });
 

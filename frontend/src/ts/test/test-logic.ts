@@ -2215,6 +2215,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 });
 
 TimerEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "start") startTest();
   if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
   if (eventKey === "finish") finish();
 });
