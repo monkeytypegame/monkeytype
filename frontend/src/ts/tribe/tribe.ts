@@ -28,7 +28,7 @@ import { escapeRegExp, escapeHTML } from "../utils/misc";
 const defaultName = "Guest";
 let name = "Guest";
 
-export const expectedVersion = "0.11.4";
+export const expectedVersion = "0.11.5";
 
 let autoJoin: string | undefined = undefined;
 
