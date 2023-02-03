@@ -388,6 +388,9 @@ TribeSocket.in.room.chatMessage((data) => {
   const nameregex = new RegExp(regexString, "i");
   if (!data.isSystem && data.from.id != TribeSocket.getId()) {
     if (nameregex.test(data.message)) {
+      if (ActivePage.get() !== "tribe") {
+        Notifications.add(data.message, 0, 3, "Mention", "at", undefined, true); //allowing html because the message is already escaped on the server
+      }
       TribeSound.play("chat_mention");
       data.message = data.message.replace(
         nameregex,
