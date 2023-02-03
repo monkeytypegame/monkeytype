@@ -254,6 +254,8 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
   const labels: number[] = [];
   if (!Tribe.room) return;
   const result = Tribe.room.users[userId].result;
+  if (!result) return;
+  if (result.chartData === "toolong") return;
   for (let i = 1; i <= result.chartData.wpm.length; i++) {
     labels.push(i);
   }
@@ -333,6 +335,7 @@ export async function updateChartMaxValues(): Promise<void> {
   for (const userId of Object.keys(Tribe.room.users)) {
     const result = Tribe.room.users[userId].result;
     if (!result) continue;
+    if (result.chartData === "toolong") return;
     const maxUserWpm = Math.max(maxWpm, Math.max(...result.chartData.wpm));
     const maxUserRaw = Math.max(maxRaw, Math.max(...result.chartData.raw));
     if (maxUserWpm > maxWpm) {
@@ -359,7 +362,7 @@ export async function updateChartMaxValues(): Promise<void> {
       }
 
       const result = Tribe.room.users[userId].result;
-      if (result && scales?.["errors"]) {
+      if (result && result.chartData !== "toolong" && scales?.["errors"]) {
         scales["errors"].max = Math.max(...result.chartData.err) + 1;
         scales["errors"].min = 0;
       }
