@@ -646,6 +646,40 @@
   margin-bottom: 2rem;
 }
 
+.pageTest #typingTest #tribeDeltaBar {
+  width: 50%;
+  height: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0 auto;
+  margin-top: 1rem;
+  .behind {
+    border-radius: var(--roundness) 0 0 var(--roundness);
+    background: var(--sub-alt-color);
+    justify-content: end;
+    .bar {
+      background: var(--error-color);
+    }
+  }
+  .ahead {
+    border-radius: 0 var(--roundness) var(--roundness) 0;
+    background: var(--sub-alt-color);
+    justify-content: start;
+    .bar {
+      background: var(--main-color);
+    }
+  }
+  .ahead,
+  .behind {
+    overflow: hidden;
+    display: flex;
+    .bar {
+      width: 0;
+      height: 100%;
+    }
+  }
+}
+
 .pageTest #typingTest .tribeBars,
 .pageTribe .tribeBars {
   grid-area: players;
