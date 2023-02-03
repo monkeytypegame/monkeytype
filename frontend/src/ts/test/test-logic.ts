@@ -829,7 +829,7 @@ async function getNextWord(
 let rememberLazyMode: boolean;
 export async function init(): Promise<void> {
   if (TribeState.getState() > 5 && TribeState.getRoom()) {
-    Tribe.applyRandomSeed();
+    Random.setSeed(TribeState.getRoom()?.seed.toString() ?? "");
   }
   TestActive.set(false);
   MonkeyPower.reset();

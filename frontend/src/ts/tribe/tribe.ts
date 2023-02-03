@@ -36,10 +36,6 @@ export function setAutoJoin(code: string): void {
   autoJoin = code;
 }
 
-export function applyRandomSeed(): void {
-  Random.setSeed(TribeState.getRoom()?.seed.toString() ?? "");
-}
-
 export function getStateString(state: number): string {
   if (state === -1) return "error";
   if (state === 1) return "connected";
@@ -448,7 +444,7 @@ TribeSocket.in.room.initRace((data) => {
     return;
   }
   if (room) room.seed = data.seed;
-  applyRandomSeed();
+  Random.setSeed(TribeState.getRoom()?.seed.toString() ?? "");
   navigate("/", {
     tribeOverride: true,
     force: true,
