@@ -5,8 +5,6 @@ import * as CustomText from "../../test/custom-text";
 import * as TribeConfig from "../tribe-config";
 import * as TribeUserList from "../tribe-user-list";
 import * as TribeButtons from "../tribe-buttons";
-import * as CommandlineLists from "../../commandline/commands";
-import * as Commandline from "../../commandline/index";
 import tribeSocket from "../tribe-socket";
 
 export function reset(): void {
@@ -328,22 +326,5 @@ $(".pageTribe .tribePage.lobby .visibilityAndName .roomName .textButton").on(
     //TODO proper popup
     const name = prompt("Enter new room name") as string;
     tribeSocket.out.room.updateName(name);
-  }
-);
-
-$(document).on(
-  "click",
-  ".pageTribe .tribePage.lobby .currentConfig .groups .group",
-  (e) => {
-    if (Tribe.getSelf()?.isLeader) {
-      // let commands = eval($(e.currentTarget).attr("commands"));
-      const commands = CommandlineLists.getList(
-        $(e.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
-      );
-      if (commands != undefined) {
-        CommandlineLists.pushCurrent(commands);
-        Commandline.show();
-      }
-    }
   }
 );

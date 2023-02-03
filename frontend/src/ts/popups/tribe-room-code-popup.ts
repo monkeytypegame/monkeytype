@@ -75,3 +75,8 @@ $("#tribeRoomCodePopupWrapper").on("click", (e) => {
     hide();
   }
 });
+
+$(".pageTribe .menu .customRooms #enterRoomCode").on("click", (e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
+  show();
+});

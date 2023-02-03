@@ -1,6 +1,4 @@
 import * as Notifications from "../../elements/notifications";
-import * as TribeRoomCodePopup from "../../popups/tribe-room-code-popup";
-import * as TribeBrowsePublicRoomsPopup from "../../popups/tribe-browse-public-rooms-popup";
 import Config from "../../config";
 import tribeSocket from "../tribe-socket";
 
@@ -115,16 +113,6 @@ $(".pageTribe .menu .customRooms #createCustomRoom").on("click", (e) => {
     mode2 = "zen";
   }
   tribeSocket.out.room.create(Config.mode, mode2);
-});
-
-$(".pageTribe .menu .customRooms #browseCustomRooms").on("click", (e) => {
-  if ($(e.currentTarget).hasClass("disabled")) return;
-  TribeBrowsePublicRoomsPopup.show();
-});
-
-$(".pageTribe .menu .customRooms #enterRoomCode").on("click", (e) => {
-  if ($(e.currentTarget).hasClass("disabled")) return;
-  TribeRoomCodePopup.show();
 });
 
 $(".pageTribe .menu .matchmaking .buttons .button").on("click", (e) => {

@@ -90,3 +90,8 @@ $("#tribeBrowsePublicRoomsPopupWrapper").on("click", (e) => {
     hide();
   }
 });
+
+$(".pageTribe .menu .customRooms #browseCustomRooms").on("click", (e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
+  show();
+});
