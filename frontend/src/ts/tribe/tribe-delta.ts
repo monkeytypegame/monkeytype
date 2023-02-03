@@ -6,6 +6,8 @@ import { mapRange } from "../utils/misc";
 
 const el = $(".pageTest #miniTimerAndLiveWpm .tribeDelta");
 
+let lastDelta = 0;
+
 export function update(): void {
   const room = TribeState.getRoom();
   if (!room) return;
@@ -36,6 +38,8 @@ export function update(): void {
   let min = center - (max - center);
   if (min < 0) min = 0;
 
+  // $("#tribeDeltaBar .text").text(`${min}\t${center}\t${max}`);
+
   // const deltaPercent = mapRange(delta, min, max, -100, 100);
 
   const myspeed = TribeState.getSelf()?.progress?.wpm ?? center;
@@ -43,20 +47,62 @@ export function update(): void {
   const behindbarel = $("#tribeDeltaBar .behind .bar");
   const aheadbarel = $("#tribeDeltaBar .ahead .bar");
 
-  behindbarel.stop(true, true).animate(
-    {
-      width: mapRange(myspeed, min, center, 100, 0) + "%",
-    },
-    1000,
-    "linear"
-  );
-  aheadbarel.stop(true, true).animate(
-    {
-      width: mapRange(myspeed, center, max, 0, 100) + "%",
-    },
-    1000,
-    "linear"
-  );
+  //check if the sign of the current delta is the same as the last one
+
+  if (Math.sign(delta) === Math.sign(lastDelta)) {
+    behindbarel.stop(true, true).animate(
+      {
+        width: mapRange(myspeed, min, center, 100, 0) + "%",
+      },
+      1000,
+      "linear"
+    );
+    aheadbarel.stop(true, true).animate(
+      {
+        width: mapRange(myspeed, center, max, 0, 100) + "%",
+      },
+      1000,
+      "linear"
+    );
+  } else {
+    if (delta > 0) {
+      aheadbarel.stop(true, true).animate(
+        {
+          width: mapRange(myspeed, center, max, 0, 100) + "%",
+        },
+        500,
+        "linear",
+        () => {
+          behindbarel.stop(true, true).animate(
+            {
+              width: mapRange(myspeed, min, center, 100, 0) + "%",
+            },
+            500,
+            "linear"
+          );
+        }
+      );
+    } else if (delta < 0) {
+      behindbarel.stop(true, true).animate(
+        {
+          width: mapRange(myspeed, min, center, 100, 0) + "%",
+        },
+        500,
+        "linear",
+        () => {
+          aheadbarel.stop(true, true).animate(
+            {
+              width: mapRange(myspeed, center, max, 0, 100) + "%",
+            },
+            500,
+            "linear"
+          );
+        }
+      );
+    }
+  }
+
+  lastDelta = delta;
 
   // if (myspeed < center) {
 
