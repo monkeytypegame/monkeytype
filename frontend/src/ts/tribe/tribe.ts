@@ -28,7 +28,7 @@ const defaultName = "Guest";
 let name = "Guest";
 
 export let state = -1;
-export const expectedVersion = "0.11.3";
+export const expectedVersion = "0.11.4";
 
 let autoJoin: string | undefined = undefined;
 
