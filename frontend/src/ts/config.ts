@@ -1688,6 +1688,8 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
     fontSize + "rem"
   );
 
+  $("#typingTest .tribeBars").css("margin-bottom", fontSize + "rem");
+
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize);
 
