@@ -1,4 +1,3 @@
-import * as Tribe from "./tribe";
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "./tribe-socket";
 
@@ -225,11 +224,6 @@ export function update(page?: string): void {
     }
   }
 }
-
-$(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
-  .pageTest #tribeResultBottom .buttons .startTestButton`).on("click", (_e) => {
-  Tribe.initRace();
-});
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userAfkButton,
   .pageTest #tribeResultBottom .buttons .userAfkButton`).on("click", (_e) => {

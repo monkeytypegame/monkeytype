@@ -619,3 +619,8 @@ TribeSocket.in.room.finalPositions((data) => {
     TribeSound.play("finish");
   }
 });
+
+$(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
+  .pageTest #tribeResultBottom .buttons .startTestButton`).on("click", (_e) => {
+  initRace();
+});
