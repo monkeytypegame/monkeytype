@@ -624,3 +624,8 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .startTestButton,
   .pageTest #tribeResultBottom .buttons .startTestButton`).on("click", (_e) => {
   initRace();
 });
+
+$(".pageTribe .tribePage.preloader .reconnectButton").on("click", () => {
+  TribePagePreloader.hideReconnectButton();
+  init();
+});

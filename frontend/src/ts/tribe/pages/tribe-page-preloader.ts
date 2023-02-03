@@ -1,5 +1,3 @@
-import * as Tribe from "../tribe";
-
 export function updateIcon(iconName: string, spinning = false): void {
   $(".pageTribe .tribePage.preloader .icon").html(
     `<i class="fas fa-fw fa-${iconName} ${spinning ? "fa-spin" : ""}"></i>`
@@ -21,8 +19,3 @@ export function showReconnectButton(): void {
 export function hideReconnectButton(): void {
   $(".pageTribe .tribePage.preloader .reconnectButton").addClass(`hidden`);
 }
-
-$(".pageTribe .tribePage.preloader .reconnectButton").on("click", () => {
-  hideReconnectButton();
-  Tribe.init();
-});
