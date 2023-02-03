@@ -20,6 +20,7 @@ declare namespace TribeTypes {
     testDuration: number;
     charStats: number[];
     chartData: MonkeyTypes.ChartData | "toolong";
+    duration: number;
     resolve: ResultResolve;
   }
 
@@ -76,6 +77,7 @@ declare namespace TribeTypes {
       time: number;
       word: number;
     };
+    isInfiniteTest: boolean;
   }
 
   interface UserProgress {
@@ -90,7 +92,7 @@ declare namespace TribeTypes {
     isLeader?: boolean;
     name: string;
     isReady?: boolean;
-    result?: MonkeyTypes.Result;
+    result?: Result;
     progress?: UserProgress;
     isFinished?: boolean;
     isTyping?: boolean;
