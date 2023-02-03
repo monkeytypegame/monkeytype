@@ -16,7 +16,6 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestActive from "../states/test-active";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
-import * as TestLogic from "./test-logic";
 import * as TribeState from "../tribe/tribe-state";
 import * as TribeBars from "../tribe/tribe-bars";
 
@@ -194,7 +193,7 @@ function sendTribeProgress(wpm: number, raw: number, acc: number): void {
       TestInput.input.current === "" &&
       TestInput.input.getHistory().length === 0
     ) {
-      TestLogic.finish();
+      TimerEvent.dispatch("finish");
     }
   }
   if (timerDebug) console.timeEnd("tribe progress");
