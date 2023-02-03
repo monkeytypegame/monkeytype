@@ -13,12 +13,13 @@ import * as TestInput from "../test-input";
 import * as WeakSpot from "../weak-spot";
 import { getPoem } from "../poetry";
 import { getSection } from "../wikipedia";
+import * as TribeState from "../../tribe/tribe-state";
 import * as IPGenerator from "../ip-addresses";
 import {
   areFunboxesCompatible,
   checkFunboxForcedConfigs,
 } from "./funbox-validation";
-import * as TribeConfig from "../../tribe/tribe-config";
+import * as TribeConfigSyncEvent from "../../observables/tribe-config-sync-event";
 
 const prefixSize = 2;
 
@@ -528,11 +529,11 @@ export function toggleScript(...params: string[]): void {
 }
 
 export function setFunbox(funbox: string, tribeOverride = false): boolean {
-  if (!TribeConfig.canChange(tribeOverride)) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
   FunboxMemory.load();
   UpdateConfig.setFunbox(funbox, false, tribeOverride);
   if (funbox === "none") FunboxMemory.load();
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   return true;
 }
 

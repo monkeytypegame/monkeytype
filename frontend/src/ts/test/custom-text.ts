@@ -1,4 +1,5 @@
-import * as TribeConfig from "../tribe/tribe-config";
+import * as TribeState from "../tribe/tribe-state";
+import * as TribeConfigSyncEvent from "../observables/tribe-config-sync-event";
 
 export let text = [
   "The",
@@ -23,9 +24,9 @@ export function setPopupTextareaState(value: string): void {
 }
 
 export function setText(txt: string[], tribeOverride = false): void {
-  if (!TribeConfig.canChange(tribeOverride)) return;
+  if (!TribeState.canChangeConfig(tribeOverride)) return;
   text = txt;
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
 export function getText(): string {
@@ -37,33 +38,33 @@ export function getTextArray(): string[] {
 }
 
 export function setIsWordRandom(val: boolean, tribeOverride = false): void {
-  if (!TribeConfig.canChange(tribeOverride)) return;
+  if (!TribeState.canChangeConfig(tribeOverride)) return;
   isWordRandom = val;
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
 export function setIsTimeRandom(val: boolean, tribeOverride = false): void {
-  if (!TribeConfig.canChange(tribeOverride)) return;
+  if (!TribeState.canChangeConfig(tribeOverride)) return;
   isTimeRandom = val;
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
 export function setTime(val: number, tribeOverride = false): void {
-  if (!TribeConfig.canChange(tribeOverride)) return;
+  if (!TribeState.canChangeConfig(tribeOverride)) return;
   time = val;
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
 export function setWord(val: number, tribeOverride = false): void {
-  if (!TribeConfig.canChange(tribeOverride)) return;
+  if (!TribeState.canChangeConfig(tribeOverride)) return;
   word = val;
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
 export function setDelimiter(val: string, tribeOverride = false): void {
-  if (!TribeConfig.canChange(tribeOverride)) return;
+  if (!TribeState.canChangeConfig(tribeOverride)) return;
   delimiter = val;
-  if (!tribeOverride) TribeConfig.sync();
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
 type CustomTextObject = Record<string, string>;
