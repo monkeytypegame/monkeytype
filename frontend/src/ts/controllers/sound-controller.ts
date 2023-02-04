@@ -1,7 +1,11 @@
 import Config from "../config";
 import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
-import { createErrorMessage, randomElementFromArray } from "../utils/misc";
+import {
+  createErrorMessage,
+  randomElementFromArray,
+  randomIntFromRange,
+} from "../utils/misc";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
@@ -11,12 +15,6 @@ interface ClickSounds {
     sounds: Howler.Howl[];
     counter: number;
   }[];
-}
-
-interface ScaleData {
-  octave: number; //current octave of scale
-  direction: number; //whether scale is ascending or descending
-  position: number; //current position in scale
 }
 
 let errorSound: Howler.Howl | null = null;
@@ -248,7 +246,7 @@ $(document).on("keydown", (event) => {
   currentCode = event.code || "KeyA";
 });
 
-const notes: Record<string, Array<number>> = {
+const notes = {
   C: [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01],
   Db: [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92],
   D: [18.35, 36.71, 73.42, 146.83, 293.66, 587.33, 1174.66, 2349.32, 4698.64],
@@ -261,12 +259,15 @@ const notes: Record<string, Array<number>> = {
   A: [27.5, 55.0, 110.0, 220.0, 440.0, 880.0, 1760.0, 3520.0],
   Bb: [29.14, 58.27, 116.54, 233.08, 466.16, 932.33, 1864.66, 3729.31],
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
-};
+} as const;
+
+type ValidNotes = keyof typeof notes;
+type ValidFrequencies = typeof notes[ValidNotes];
 
 type GetNoteFrequencyCallback = (octave: number) => number;
 
 function bindToNote(
-  noteFrequencies: number[],
+  noteFrequencies: ValidFrequencies,
   octaveOffset = 0
 ): GetNoteFrequencyCallback {
   return (octave: number): number => {
@@ -275,43 +276,43 @@ function bindToNote(
 }
 
 const codeToNote: Record<string, GetNoteFrequencyCallback> = {
-  KeyZ: bindToNote(notes["C"]),
-  KeyS: bindToNote(notes["Db"]),
-  KeyX: bindToNote(notes["D"]),
-  KeyD: bindToNote(notes["Eb"]),
-  KeyC: bindToNote(notes["E"]),
-  KeyV: bindToNote(notes["F"]),
-  KeyG: bindToNote(notes["Gb"]),
-  KeyB: bindToNote(notes["G"]),
-  KeyH: bindToNote(notes["Ab"]),
-  KeyN: bindToNote(notes["A"]),
-  KeyJ: bindToNote(notes["Bb"]),
-  KeyM: bindToNote(notes["B"]),
-  Comma: bindToNote(notes["C"], 1),
-  KeyL: bindToNote(notes["Db"], 1),
-  Period: bindToNote(notes["D"], 1),
-  Semicolon: bindToNote(notes["Eb"], 1),
-  Slash: bindToNote(notes["E"], 1),
-  KeyQ: bindToNote(notes["C"], 1),
-  Digit2: bindToNote(notes["Db"], 1),
-  KeyW: bindToNote(notes["D"], 1),
-  Digit3: bindToNote(notes["Eb"], 1),
-  KeyE: bindToNote(notes["E"], 1),
-  KeyR: bindToNote(notes["F"], 1),
-  Digit5: bindToNote(notes["Gb"], 1),
-  KeyT: bindToNote(notes["G"], 1),
-  Digit6: bindToNote(notes["Ab"], 1),
-  KeyY: bindToNote(notes["A"], 1),
-  Digit7: bindToNote(notes["Bb"], 1),
-  KeyU: bindToNote(notes["B"], 1),
-  KeyI: bindToNote(notes["C"], 2),
-  Digit9: bindToNote(notes["Db"], 2),
-  KeyO: bindToNote(notes["D"], 2),
-  Digit0: bindToNote(notes["Eb"], 2),
-  KeyP: bindToNote(notes["E"], 2),
-  BracketLeft: bindToNote(notes["F"], 2),
-  Equal: bindToNote(notes["Gb"], 2),
-  BracketRight: bindToNote(notes["G"], 2),
+  KeyZ: bindToNote(notes.C),
+  KeyS: bindToNote(notes.Db),
+  KeyX: bindToNote(notes.D),
+  KeyD: bindToNote(notes.Eb),
+  KeyC: bindToNote(notes.E),
+  KeyV: bindToNote(notes.F),
+  KeyG: bindToNote(notes.Gb),
+  KeyB: bindToNote(notes.G),
+  KeyH: bindToNote(notes.Ab),
+  KeyN: bindToNote(notes.A),
+  KeyJ: bindToNote(notes.Bb),
+  KeyM: bindToNote(notes.B),
+  Comma: bindToNote(notes.C, 1),
+  KeyL: bindToNote(notes.Db, 1),
+  Period: bindToNote(notes.D, 1),
+  Semicolon: bindToNote(notes.Eb, 1),
+  Slash: bindToNote(notes.E, 1),
+  KeyQ: bindToNote(notes.C, 1),
+  Digit2: bindToNote(notes.Db, 1),
+  KeyW: bindToNote(notes.D, 1),
+  Digit3: bindToNote(notes.Eb, 1),
+  KeyE: bindToNote(notes.E, 1),
+  KeyR: bindToNote(notes.F, 1),
+  Digit5: bindToNote(notes.Gb, 1),
+  KeyT: bindToNote(notes.G, 1),
+  Digit6: bindToNote(notes.Ab, 1),
+  KeyY: bindToNote(notes.A, 1),
+  Digit7: bindToNote(notes.Bb, 1),
+  KeyU: bindToNote(notes.B, 1),
+  KeyI: bindToNote(notes.C, 2),
+  Digit9: bindToNote(notes.Db, 2),
+  KeyO: bindToNote(notes.D, 2),
+  Digit0: bindToNote(notes.Eb, 2),
+  KeyP: bindToNote(notes.E, 2),
+  BracketLeft: bindToNote(notes.F, 2),
+  Equal: bindToNote(notes.Gb, 2),
+  BracketRight: bindToNote(notes.G, 2),
 };
 
 type DynamicClickSounds = Extract<
@@ -347,41 +348,67 @@ function initAudioContext(): void {
   }
 }
 
-const scales: Record<string, string[]> = {
+type ValidScales = "pentatonic" | "wholetone";
+
+const scales: Record<ValidScales, ValidNotes[]> = {
   pentatonic: ["C", "D", "E", "G", "A"],
+  wholetone: ["C", "D", "E", "Gb", "Ab", "Bb"],
 };
 
-const initialScale: ScaleData = {
-  //Metadata for the scale
-  position: 0,
-  octave: 4,
-  direction: 1,
-};
+interface ScaleData {
+  octave: number; // current octave of scale
+  direction: number; // whether scale is ascending or descending
+  position: number; // current position in scale
+}
 
-function createPreviewScale(num: number): () => void {
+function createPreviewScale(scaleName: ValidScales): () => void {
   // We use a JavaScript closure to create a preview function that can be called multiple times and progress through the scale
   const scale: ScaleData = {
     position: 0,
     octave: 4,
     direction: 1,
   };
-  return function previewScale() {
-    if (num == 12) {
-      playPentatonic(scale);
-    }
+
+  return () => {
+    playScale(scaleName, scale);
   };
 }
-export const previewPentatonic: () => void = createPreviewScale(12);
 
-export function playPentatonic(scaleMeta: ScaleData): void {
+interface ScaleMeta {
+  name: ValidScales;
+  preview: ReturnType<typeof createPreviewScale>;
+  meta: ScaleData;
+}
+
+const defaultScaleData: ScaleData = {
+  position: 0,
+  octave: 4,
+  direction: 1,
+};
+
+export const scaleConfigurations: Record<
+  Extract<MonkeyTypes.PlaySoundOnClick, "12" | "13">,
+  ScaleMeta
+> = {
+  "12": {
+    name: "pentatonic",
+    preview: createPreviewScale("pentatonic"),
+    meta: defaultScaleData,
+  },
+  "13": {
+    name: "wholetone",
+    preview: createPreviewScale("wholetone"),
+    meta: defaultScaleData,
+  },
+};
+
+export function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
   if (audioCtx === undefined) {
     initAudioContext();
   }
   if (!audioCtx) return;
 
-  const randNote: number = Math.floor(
-    Math.random() * scales["pentatonic"].length
-  );
+  const randomNote = randomIntFromRange(0, scales[scale].length);
 
   if (Math.random() < 0.5) {
     scaleMeta.octave += scaleMeta.direction;
@@ -394,10 +421,7 @@ export function playPentatonic(scaleMeta: ScaleData): void {
     scaleMeta.direction = 1;
   }
 
-  const currentFrequency =
-    notes[scales["pentatonic"][randNote]][scaleMeta.octave];
-
-  console.log(scales["pentatonic"][randNote] + scaleMeta.octave);
+  const currentFrequency = notes[scales[scale][randomNote]][scaleMeta.octave];
 
   const oscillatorNode = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
@@ -452,8 +476,12 @@ export function playNote(
 export function playClick(): void {
   if (Config.playSoundOnClick === "off") return;
 
-  if (parseInt(Config.playSoundOnClick) == 12) {
-    playPentatonic(initialScale);
+  if (Config.playSoundOnClick in scaleConfigurations) {
+    const { name, meta } =
+      scaleConfigurations[
+        Config.playSoundOnClick as keyof typeof scaleConfigurations
+      ];
+    playScale(name, meta);
     return;
   }
 
