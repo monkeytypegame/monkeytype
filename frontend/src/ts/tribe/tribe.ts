@@ -497,14 +497,17 @@ TribeSocket.in.room.progressUpdate((data) => {
   if (!room) return;
   room.maxWpm = data.roomMaxWpm;
   room.maxRaw = data.roomMaxRaw;
-  room.users[data.userId].progress = data.progress;
-  if (data.userId == TribeSocket.getId()) {
-    TribeDelta.update();
+
+  for (const [userId, userProgress] of Object.entries(data.users)) {
+    room.users[userId].progress = userProgress;
+    if (userId == TribeSocket.getId()) {
+      TribeDelta.update();
+    }
+    //todo only update one
+    TribeBars.update("test", userId);
+    TribeBars.update("tribe", userId);
+    TribeResults.updateBar("result", userId);
   }
-  //todo only update one
-  TribeBars.update("test", data.userId);
-  TribeBars.update("tribe", data.userId);
-  TribeResults.updateBar("result", data.userId);
 });
 
 // socket.on("room_user_result", (e) => {
