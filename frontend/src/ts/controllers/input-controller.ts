@@ -876,24 +876,6 @@ $(document).on("keydown", async (event) => {
       }
     }
 
-    // tribe
-    if (TribeState.getState() >= 5) {
-      if (TribeState.getState() > 5 && TribeState.getState() < 22) return;
-      if (TribeState.getSelf()?.isLeader) {
-        if (TribeState.getState() === 5 || TribeState.getState() === 22) {
-          Tribe.initRace();
-          return;
-        }
-      } else if (
-        TribeState.getState() === 5 ||
-        TribeState.getState() === 21 ||
-        TribeState.getState() === 22
-      ) {
-        tribeSocket.out.room.readyUpdate();
-        return;
-      }
-    }
-
     // in case we are in a long test, setting manual restart
     if (event.shiftKey) {
       ManualRestart.set();
