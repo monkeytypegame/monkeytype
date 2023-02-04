@@ -223,7 +223,6 @@ export async function refreshButtons(): Promise<void> {
       }
 
       const activeTheme = activeThemeName === theme.name ? "active" : "";
-      console.log(activeTheme);
       themesElHTML += `<div class="theme button ${activeTheme}" theme='${
         theme.name
       }' style="background: ${theme.bgColor}; color: ${
