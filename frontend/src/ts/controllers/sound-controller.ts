@@ -351,7 +351,7 @@ const scales: Record<string, string[]> = {
   pentatonic: ["C", "D", "E", "G", "A"],
 };
 
-let scaleMeta: scaleData = {
+const initialScale: scaleData = {
   //Metadata for the scale
   position: 0,
   octave: 4,
@@ -360,7 +360,7 @@ let scaleMeta: scaleData = {
 
 function createPreviewScale(num: number): () => void {
   // We use a JavaScript closure to create a preview function that can be called multiple times and progress through the scale
-  let scale: scaleData = {
+  const scale: scaleData = {
     position: 0,
     octave: 4,
     direction: 1,
@@ -453,7 +453,7 @@ export function playClick(): void {
   if (Config.playSoundOnClick === "off") return;
 
   if (parseInt(Config.playSoundOnClick) == 12) {
-    playPentatonic(scaleMeta);
+    playPentatonic(initialScale);
     return;
   }
 
