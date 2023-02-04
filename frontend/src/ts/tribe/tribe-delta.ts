@@ -5,6 +5,7 @@ import tribeSocket from "./tribe-socket";
 import { mapRange } from "../utils/misc";
 
 const el = $(".pageTest #miniTimerAndLiveWpm .tribeDelta");
+const elBar = $(".pageTest #tribeDeltaBar");
 
 let lastDelta = 0;
 
@@ -167,11 +168,39 @@ export function show(): void {
 export function hide(): void {
   el.animate(
     {
-      opacity: Config.timerOpacity,
+      opacity: 0,
     },
     125,
     () => {
       el.addClass("hidden");
+    }
+  );
+}
+
+export function showBar(): void {
+  console.log("show delta bar");
+  if (TribeState.getState() < 5) return;
+
+  console.log("actually showing delta");
+
+  if (!elBar.hasClass("hidden")) return;
+  elBar.removeClass("hidden").css("opacity", 0).animate(
+    {
+      opacity: Config.timerOpacity,
+    },
+    125
+  );
+}
+
+export function hideBar(): void {
+  console.log("hide delta bar");
+  elBar.animate(
+    {
+      opacity: 0,
+    },
+    125,
+    () => {
+      elBar.addClass("hidden");
     }
   );
 }

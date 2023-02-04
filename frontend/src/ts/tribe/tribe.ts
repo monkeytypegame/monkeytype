@@ -450,6 +450,7 @@ TribeSocket.in.room.initRace((data) => {
     force: true,
   });
   TribeDelta.reset();
+  TribeDelta.showBar();
   TribeCountdown.show2();
   TribeSound.play("start");
 });

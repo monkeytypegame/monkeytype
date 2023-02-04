@@ -1530,6 +1530,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   Caret.hide();
   LiveWpm.hide();
   TribeDelta.hide();
+  TribeDelta.hideBar();
   PbCrown.hide();
   LiveAcc.hide();
   LiveBurst.hide();
