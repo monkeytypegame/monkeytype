@@ -150,11 +150,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "pentatonic",
       configValue: "12",
       hover: (): void => {
-        SoundController.playNote("KeyQ", "triangle");
+        SoundController.previewPentatonic();
       },
       exec: (): void => {
-        UpdateConfig.setPlaySoundOnClick("11");
-        SoundController.playNote("KeyQ", "triangle");
+        UpdateConfig.setPlaySoundOnClick("12");
+        SoundController.previewPentatonic();
       },
     },
   ],
