@@ -414,11 +414,11 @@ TribeSocket.in.room.configChanged((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
   room.config = data.config;
-  for (const user of Object.values(room.users)) {
-    if (user.isReady) {
-      user.isReady = false;
-    }
-  }
+  // for (const user of Object.values(room.users)) {
+  //   if (user.isReady) {
+  //     user.isReady = false;
+  //   }
+  // }
   TribeConfig.apply(data.config);
   TribePageLobby.updateRoomConfig();
   TribeButtons.update();
