@@ -13,7 +13,7 @@ interface ClickSounds {
   }[];
 }
 
-interface scaleData {
+interface ScaleData {
   octave: number; //current octave of scale
   direction: number; //whether scale is ascending or descending
   position: number; //current position in scale
@@ -275,43 +275,43 @@ function bindToNote(
 }
 
 const codeToNote: Record<string, GetNoteFrequencyCallback> = {
-  KeyZ: bindToNote(notes["C"]),
-  KeyS: bindToNote(notes["Db"]),
-  KeyX: bindToNote(notes["D"]),
-  KeyD: bindToNote(notes["Eb"]),
-  KeyC: bindToNote(notes["E"]),
-  KeyV: bindToNote(notes["F"]),
-  KeyG: bindToNote(notes["Gb"]),
-  KeyB: bindToNote(notes["G"]),
-  KeyH: bindToNote(notes["Ab"]),
-  KeyN: bindToNote(notes["A"]),
-  KeyJ: bindToNote(notes["Bb"]),
-  KeyM: bindToNote(notes["B"]),
-  Comma: bindToNote(notes["C"], 1),
-  KeyL: bindToNote(notes["Db"], 1),
-  Period: bindToNote(notes["D"], 1),
-  Semicolon: bindToNote(notes["Eb"], 1),
-  Slash: bindToNote(notes["E"], 1),
-  KeyQ: bindToNote(notes["C"], 1),
-  Digit2: bindToNote(notes["Db"], 1),
-  KeyW: bindToNote(notes["D"], 1),
-  Digit3: bindToNote(notes["Eb"], 1),
-  KeyE: bindToNote(notes["E"], 1),
-  KeyR: bindToNote(notes["F"], 1),
-  Digit5: bindToNote(notes["Gb"], 1),
-  KeyT: bindToNote(notes["G"], 1),
-  Digit6: bindToNote(notes["Ab"], 1),
-  KeyY: bindToNote(notes["A"], 1),
-  Digit7: bindToNote(notes["Bb"], 1),
-  KeyU: bindToNote(notes["B"], 1),
-  KeyI: bindToNote(notes["C"], 2),
-  Digit9: bindToNote(notes["Db"], 2),
-  KeyO: bindToNote(notes["D"], 2),
-  Digit0: bindToNote(notes["Eb"], 2),
-  KeyP: bindToNote(notes["E"], 2),
-  BracketLeft: bindToNote(notes["F"], 2),
-  Equal: bindToNote(notes["Gb"], 2),
-  BracketRight: bindToNote(notes["G"], 2),
+  KeyZ: bindToNote(notes.C),
+  KeyS: bindToNote(notes.Db),
+  KeyX: bindToNote(notes.D),
+  KeyD: bindToNote(notes.Eb),
+  KeyC: bindToNote(notes.E),
+  KeyV: bindToNote(notes.F),
+  KeyG: bindToNote(notes.Gb),
+  KeyB: bindToNote(notes.G),
+  KeyH: bindToNote(notes.Ab),
+  KeyN: bindToNote(notes.A),
+  KeyJ: bindToNote(notes.Bb),
+  KeyM: bindToNote(notes.B),
+  Comma: bindToNote(notes.C, 1),
+  KeyL: bindToNote(notes.Db, 1),
+  Period: bindToNote(notes.D, 1),
+  Semicolon: bindToNote(notes.Eb, 1),
+  Slash: bindToNote(notes.E, 1),
+  KeyQ: bindToNote(notes.C, 1),
+  Digit2: bindToNote(notes.Db, 1),
+  KeyW: bindToNote(notes.D, 1),
+  Digit3: bindToNote(notes.Eb, 1),
+  KeyE: bindToNote(notes.E, 1),
+  KeyR: bindToNote(notes.F, 1),
+  Digit5: bindToNote(notes.Gb, 1),
+  KeyT: bindToNote(notes.G, 1),
+  Digit6: bindToNote(notes.Ab, 1),
+  KeyY: bindToNote(notes.A, 1),
+  Digit7: bindToNote(notes.Bb, 1),
+  KeyU: bindToNote(notes.B, 1),
+  KeyI: bindToNote(notes.C, 2),
+  Digit9: bindToNote(notes.Db, 2),
+  KeyO: bindToNote(notes.D, 2),
+  Digit0: bindToNote(notes.Eb, 2),
+  KeyP: bindToNote(notes.E, 2),
+  BracketLeft: bindToNote(notes.F, 2),
+  Equal: bindToNote(notes.Gb, 2),
+  BracketRight: bindToNote(notes.G, 2),
 };
 
 type DynamicClickSounds = Extract<
@@ -351,7 +351,7 @@ const scales: Record<string, string[]> = {
   pentatonic: ["C", "D", "E", "G", "A"],
 };
 
-const initialScale: scaleData = {
+const initialScale: ScaleData = {
   //Metadata for the scale
   position: 0,
   octave: 4,
@@ -360,7 +360,7 @@ const initialScale: scaleData = {
 
 function createPreviewScale(num: number): () => void {
   // We use a JavaScript closure to create a preview function that can be called multiple times and progress through the scale
-  const scale: scaleData = {
+  const scale: ScaleData = {
     position: 0,
     octave: 4,
     direction: 1,
@@ -373,7 +373,7 @@ function createPreviewScale(num: number): () => void {
 }
 export const previewPentatonic: () => void = createPreviewScale(12);
 
-export function playPentatonic(scaleMeta: scaleData): void {
+export function playPentatonic(scaleMeta: ScaleData): void {
   if (audioCtx === undefined) {
     initAudioContext();
   }
