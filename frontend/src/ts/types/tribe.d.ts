@@ -81,10 +81,11 @@ declare namespace TribeTypes {
   }
 
   interface UserProgress {
-    wpmProgress: number;
     wpm: number;
+    raw: number;
     acc: number;
     progress: number;
+    wpmProgress: number;
   }
 
   interface User {

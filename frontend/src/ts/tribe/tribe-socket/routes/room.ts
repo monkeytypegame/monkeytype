@@ -206,8 +206,7 @@ function raceStarted(callback: () => void): void {
 
 function progressUpdate(
   callback: (data: {
-    userId: string;
-    progress: TribeTypes.UserProgress;
+    users: Record<string, TribeTypes.UserProgress>;
     roomMaxRaw: number;
     roomMaxWpm: number;
   }) => void
