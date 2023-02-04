@@ -527,6 +527,7 @@
 
         tbody tr {
           color: var(--text-color);
+          transition: 0.25s opacity;
           &.me {
             color: var(--main-color);
             .crown .glow {
@@ -616,6 +617,9 @@
           }
           td:nth-child(7) {
             width: 33%;
+          }
+          &:hover {
+            opacity: 1;
           }
         }
       }
