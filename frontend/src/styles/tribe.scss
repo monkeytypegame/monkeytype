@@ -658,6 +658,7 @@
     background: var(--sub-alt-color);
     justify-content: end;
     .bar {
+      border-radius: var(--roundness) 0 0 var(--roundness);
       background: var(--error-color);
     }
   }
@@ -666,6 +667,7 @@
     background: var(--sub-alt-color);
     justify-content: start;
     .bar {
+      border-radius: 0 var(--roundness) var(--roundness) 0;
       background: var(--main-color);
     }
   }
