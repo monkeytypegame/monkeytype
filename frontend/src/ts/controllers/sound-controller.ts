@@ -352,12 +352,14 @@ const scales: Record<string, string[]> = {
 };
 
 let scaleMeta: scaleData = {
+  //Metadata for the scale
   position: 0,
   octave: 4,
   direction: 1,
 };
 
 function createPreviewScale(num: number): () => void {
+  // We use a JavaScript closure to create a preview function that can be called multiple times and progress through the scale
   let scale: scaleData = {
     position: 0,
     octave: 4,
@@ -406,7 +408,7 @@ export function playPentatonic(scaleMeta: scaleData): void {
   gainNode.connect(audioCtx.destination);
   oscillatorNode.frequency.value = currentFrequency;
   oscillatorNode.start(audioCtx.currentTime);
-  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime + 0, 0.3);
+  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3);
   oscillatorNode.stop(audioCtx.currentTime + 2);
 }
 
@@ -443,7 +445,7 @@ export function playNote(
 
   oscillatorNode.frequency.value = currentFrequency;
   oscillatorNode.start(audioCtx.currentTime);
-  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.01); //remove click sound
+  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.15); //remove click sound
   oscillatorNode.stop(audioCtx.currentTime + 0.5);
 }
 
