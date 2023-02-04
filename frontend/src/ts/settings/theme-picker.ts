@@ -21,8 +21,10 @@ export function updateActiveButton(): void {
   }
 
   document
-    .querySelector(`.pageSettings .section.themes .theme`)
-    ?.classList.remove("active");
+    .querySelectorAll(".pageSettings .section.themes .theme")
+    .forEach((el) => {
+      el.classList.remove("active");
+    });
   document
     .querySelector(
       `.pageSettings .section.themes .theme[theme='${activeThemeName}']`
@@ -221,6 +223,7 @@ export async function refreshButtons(): Promise<void> {
       }
 
       const activeTheme = activeThemeName === theme.name ? "active" : "";
+      console.log(activeTheme);
       themesElHTML += `<div class="theme button ${activeTheme}" theme='${
         theme.name
       }' style="background: ${theme.bgColor}; color: ${
