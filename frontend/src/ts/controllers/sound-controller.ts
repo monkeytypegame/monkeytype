@@ -275,38 +275,6 @@ function bindToNote(
   };
 }
 
-let noteAndOctaveToFrequency: Record<string, number> =
-  initNoteAndOctaveToFrequency();
-
-function initNoteAndOctaveToFrequency(): Record<string, number> {
-  let noteAndOctaveToFrequency: Record<string, number> = {};
-  const all_notes = [
-    "C",
-    "Db",
-    "D",
-    "Eb",
-    "E",
-    "F",
-    "Gb",
-    "G",
-    "Ab",
-    "A",
-    "Bb",
-    "B",
-    "C",
-  ];
-  const all_octaves = [0, 1, 2, 3, 4, 5, 6, 7];
-
-  for (const note of all_notes) {
-    for (const octave of all_octaves) {
-      const noteAndOctave = `${note}${octave}`;
-      noteAndOctaveToFrequency[noteAndOctave] =
-        notes[note as ValidNotes][octave];
-    }
-  }
-  return noteAndOctaveToFrequency;
-}
-
 const codeToNote: Record<string, GetNoteFrequencyCallback> = {
   KeyZ: bindToNote(notes.C),
   KeyS: bindToNote(notes.Db),
