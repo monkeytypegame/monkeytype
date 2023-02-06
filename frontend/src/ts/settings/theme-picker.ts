@@ -21,8 +21,10 @@ export function updateActiveButton(): void {
   }
 
   document
-    .querySelector(`.pageSettings .section.themes .theme`)
-    ?.classList.remove("active");
+    .querySelectorAll(".pageSettings .section.themes .theme")
+    .forEach((el) => {
+      el.classList.remove("active");
+    });
   document
     .querySelector(
       `.pageSettings .section.themes .theme[theme='${activeThemeName}']`
