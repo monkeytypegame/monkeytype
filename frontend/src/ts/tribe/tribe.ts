@@ -549,7 +549,7 @@ TribeSocket.in.room.userResult((data) => {
       } else {
         await TribeChartController.drawChart(data.userId);
       }
-      if (TribeState.getState() === 21) {
+      if (TribeState.getState() >= 21) {
         TribeChartController.updateChartMaxValues();
       }
     }, 250);
