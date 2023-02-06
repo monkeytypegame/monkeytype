@@ -60,6 +60,7 @@ function updateState(newState: number): void {
 
   if (state === 5) {
     TribePageLobby.enableNameVisibilityButtons();
+    TribeBars.hide("tribe");
   } else if (state === 10) {
     TribeButtons.disableStartButton("lobby");
     TribeButtons.disableReadyButton("lobby");
@@ -436,11 +437,13 @@ TribeSocket.in.room.initRace((data) => {
     TribeBars.show("test");
   } else {
     //TODO update lobby bars
+    if (ActivePage.get() !== "tribe") {
+      navigate("/tribe", {
+        tribeOverride: true,
+      });
+    }
     TribeBars.init("tribe");
     TribeBars.show("tribe");
-    if (!$(".pageTest").hasClass("hidden")) {
-      navigate("/tribe");
-    }
     return;
   }
   if (room) room.seed = data.seed;
