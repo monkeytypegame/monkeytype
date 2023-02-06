@@ -8,7 +8,8 @@ function showStartButton(page: string): void {
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
                 .pageTest #tribeResultBottom .buttons .backToLobbyButton,
-                .pageTest #result .bottom .buttons #nextTestButton`;
+                .pageTest #result .bottom .buttons #nextTestButton,
+                .pageTest #result .bottom .buttons #backToLobbyButton`;
   }
   $(elString).removeClass("hidden");
 }
@@ -20,7 +21,8 @@ function hideStartButton(page: string): void {
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
                 .pageTest #tribeResultBottom .buttons .backToLobbyButton,
-                .pageTest #result .bottom .buttons #nextTestButton`;
+                .pageTest #result .bottom .buttons #nextTestButton,
+                .pageTest #result .bottom .buttons #backToLobbyButton`;
   }
   $(elString).addClass("hidden");
 }
@@ -36,8 +38,8 @@ export function disableStartButton(page?: string): void {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
-                .pageTest #result .bottom .buttons #nextTestButton,
                 .pageTest #tribeResultBottom .buttons .backToLobbyButton,
+                .pageTest #result .bottom .buttons #nextTestButton,
                 .pageTest #result .bottom .buttons #backToLobbyButton`;
   }
   $(elString).addClass("disabled");
@@ -54,8 +56,8 @@ export function enableStartButton(page: string): void {
     elString = ".pageTribe .tribePage.lobby .lobbyButtons .startTestButton";
   } else if (page === "result") {
     elString = `.pageTest #tribeResultBottom .buttons .startTestButton,
-                .pageTest #result .bottom .buttons #nextTestButton,
                 .pageTest #tribeResultBottom .buttons .backToLobbyButton,
+                .pageTest #result .bottom .buttons #nextTestButton,
                 .pageTest #result .bottom .buttons #backToLobbyButton`;
   }
   $(elString).removeClass("disabled");
