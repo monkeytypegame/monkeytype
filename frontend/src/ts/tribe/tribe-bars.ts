@@ -42,7 +42,8 @@ export function init(page: string): void {
   }
   if (el) {
     const tribeSelf = TribeState.getSelf();
-    el.append(`
+    if (tribeSelf?.isTyping) {
+      el.append(`
       <tr class="player me" id="${tribeSelf?.id}">
         <td class="name">${tribeSelf?.name}</td>
         <td class="progress">
@@ -56,6 +57,7 @@ export function init(page: string): void {
         </td>
       </tr>
       `);
+    }
   }
 }
 
