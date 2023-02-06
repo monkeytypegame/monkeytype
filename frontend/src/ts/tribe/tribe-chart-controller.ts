@@ -291,10 +291,10 @@ export async function drawChart(userId: string): Promise<void> {
     if (charts[userId]) return;
     const element = $(
       `.pageTest #result #tribeResults table tbody tr#${userId} .minichart canvas`
-    )[0] as HTMLCanvasElement;
+    )[0] as HTMLCanvasElement | undefined;
 
     const room = TribeState.getRoom();
-    if (!room || !room.users[userId].result) {
+    if (!room || !room.users[userId].result || !element) {
       return;
     }
 
