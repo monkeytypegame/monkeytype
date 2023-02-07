@@ -2,7 +2,7 @@ import { Chart, ChartConfiguration } from "chart.js";
 import * as TribeState from "./tribe-state";
 import * as ThemeColors from "../elements/theme-colors";
 import * as Notifications from "../elements/notifications";
-import { createErrorMessage } from "../utils/misc";
+import { createErrorMessage, smooth } from "../utils/misc";
 import tribeSocket from "./tribe-socket";
 
 const charts: Record<string, Chart> = {};
@@ -265,9 +265,11 @@ async function fillData(chart: Chart, userId: string): Promise<void> {
   //   Math.max(...result.chartData.raw)
   // );
 
+  const smoothedRawData = smooth(result.chartData.raw, 1);
+
   chart.data.labels = labels;
   chart.data.datasets[0].data = result.chartData.wpm;
-  chart.data.datasets[1].data = result.chartData.raw;
+  chart.data.datasets[1].data = smoothedRawData;
   chart.data.datasets[2].data = result.chartData.err;
 
   // chart.options.scales["wpm"].ticks.max = Math.round(chartmaxval);
