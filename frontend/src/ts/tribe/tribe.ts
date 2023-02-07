@@ -289,6 +289,19 @@ TribeSocket.in.system.connectError((err) => {
   reset();
 });
 
+TribeSocket.in.system.reconnect((attempt) => {
+  Notifications.add(
+    `Reconnecting successful. (${attempt})`,
+    1,
+    undefined,
+    "Tribe"
+  );
+});
+
+TribeSocket.in.system.reconnectAttempt((attempt) => {
+  Notifications.add(`Reconnecting... (${attempt})`, 0, undefined, "Tribe");
+});
+
 TribeSocket.in.system.notification((data) => {
   Notifications.add(data.message, data.level ?? 0, undefined, "Tribe");
 });

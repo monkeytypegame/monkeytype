@@ -116,6 +116,14 @@ function connectError(callback: (err: Error) => void): void {
   Socket.on("connect_error", callback);
 }
 
+function reconnect(callback: (attempt: number) => void): void {
+  Socket.on("reconnect", callback);
+}
+
+function reconnectAttempt(callback: (attempt: number) => void): void {
+  Socket.on("reconnect_attempt", callback);
+}
+
 function notification(
   callback: (data: { message: string; level?: number }) => void
 ): void {
@@ -125,6 +133,8 @@ function notification(
 export default {
   in: {
     connect,
+    reconnect,
+    reconnectAttempt,
     disconnect,
     connectFailed,
     connectError,
