@@ -119,6 +119,7 @@ export async function init(): Promise<void> {
   // TribePagePreloader.updateText("Waiting for login");
   // await AccountController.authPromise;
   TribePagePreloader.updateText("Connecting to Tribe");
+  TribePagePreloader.updateSubtext("Please wait...");
   TribePagePreloader.hideReconnectButton();
 
   const snapName = DB.getSnapshot()?.name;
@@ -194,6 +195,7 @@ async function connect(): Promise<void> {
       `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${versionCheck.version}`,
       true
     );
+    TribePagePreloader.updateSubtext("");
     return;
   }
 
@@ -202,6 +204,7 @@ async function connect(): Promise<void> {
   updateState(1);
   if (autoJoin) {
     TribePagePreloader.updateText(`Joining room ${autoJoin}`);
+    TribePagePreloader.updateSubtext("Please wait...");
     setTimeout(() => {
       joinRoom(autoJoin as string);
     }, 500);
@@ -246,14 +249,15 @@ TribeSocket.in.user.updateName((e) => {
   name = e.name;
 });
 
-TribeSocket.in.system.disconnect(() => {
+TribeSocket.in.system.disconnect((reason, details) => {
   updateState(-1);
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add("Disconnected", -1, undefined, "Tribe");
   }
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
-  TribePagePreloader.updateText("Disconnected");
+  TribePagePreloader.updateText(`Disconnected`);
+  TribePagePreloader.updateSubtext(details?.["description"] ?? reason);
   TribePagePreloader.showReconnectButton();
   reset();
 });
@@ -266,6 +270,7 @@ TribeSocket.in.system.connectFailed((err) => {
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText("Connection failed");
+  TribePagePreloader.updateSubtext(err.message);
   TribePagePreloader.showReconnectButton();
   reset();
 });
@@ -278,7 +283,8 @@ TribeSocket.in.system.connectError((err) => {
   }
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
-  TribePagePreloader.updateText("Connection error");
+  TribePagePreloader.updateText(`Connection error`);
+  TribePagePreloader.updateSubtext(err.message);
   TribePagePreloader.showReconnectButton();
   reset();
 });

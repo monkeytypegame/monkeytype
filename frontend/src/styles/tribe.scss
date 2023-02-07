@@ -6,7 +6,7 @@
     &.preloader {
       display: grid;
       justify-content: center;
-      grid-template-rows: 2rem auto 1.8rem;
+      grid-template-rows: 2rem auto auto 1.8rem;
       gap: 1rem;
       justify-items: center;
       .icon {
@@ -16,6 +16,10 @@
       }
       .text {
         text-align: center;
+      }
+      .subtext {
+        font-size: 0.75em;
+        color: var(--sub-color);
       }
       .button {
         width: 10rem;

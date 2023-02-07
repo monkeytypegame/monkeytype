@@ -12,6 +12,14 @@ export function updateText(text: string, html = false): void {
   }
 }
 
+export function updateSubtext(text: string, html = false): void {
+  if (html) {
+    $(".pageTribe .tribePage.preloader .subtext").html(text);
+  } else {
+    $(".pageTribe .tribePage.preloader .subtext").text(text);
+  }
+}
+
 export function showReconnectButton(): void {
   $(".pageTribe .tribePage.preloader .reconnectButton").removeClass(`hidden`);
 }

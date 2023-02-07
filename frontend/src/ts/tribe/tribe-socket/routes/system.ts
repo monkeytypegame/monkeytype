@@ -104,7 +104,7 @@ function connect(callback: () => void): void {
   });
 }
 
-function disconnect(callback: () => void): void {
+function disconnect(callback: (reason: string, details?: any) => void): void {
   Socket.on("disconnect", callback);
 }
 
