@@ -27,6 +27,7 @@ import { escapeRegExp, escapeHTML, roundTo2 } from "../utils/misc";
 import * as Time from "../states/time";
 import * as TestWords from "../test/test-words";
 import * as TestStats from "../test/test-stats";
+import * as TestInput from "../test/test-input";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -533,11 +534,24 @@ TribeSocket.in.room.progressUpdate((data) => {
     if (Config.mode === "time") {
       progress = 100 - ((Time.get() + 1) / Config.time) * 100;
     } else {
+      const inputLen = TestInput.input.current.length;
+      const currentWordLen = TestWords.words.getCurrent().length;
+      const localWordProgress = Math.round((inputLen / currentWordLen) * 100);
+
+      const globalWordProgress = Math.round(
+        localWordProgress * (1 / TestWords.words.length)
+      );
+
       let outof = TestWords.words.length;
       if (Config.mode === "words") {
         outof = Config.words;
       }
-      progress = Math.floor((TestWords.words.currentIndex / (outof - 1)) * 100);
+
+      const wordsProgress = Math.floor(
+        (TestWords.words.currentIndex / (outof - 1)) * 100
+      );
+
+      progress = wordsProgress + globalWordProgress;
     }
     TribeSocket.out.room.progressUpdate(
       wpmAndRaw.wpm,
