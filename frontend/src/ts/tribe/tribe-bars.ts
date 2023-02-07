@@ -177,15 +177,6 @@ export function fadeUser(page: string | undefined, userId: string): void {
   el.find(`.player[id=${userId}]`).addClass("faded");
 }
 
-export function sendUpdate(
-  wpm: number,
-  raw: number,
-  acc: number,
-  progress: number
-): void {
-  tribeSocket.out.room.progressUpdate(wpm, raw, acc, progress);
-}
-
 // function refreshTestUserList() {
 //   $(".tribePlayers").empty();
 //   Object.keys(room.users).forEach((sid) => {

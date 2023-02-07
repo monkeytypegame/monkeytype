@@ -539,7 +539,12 @@ TribeSocket.in.room.progressUpdate((data) => {
       }
       progress = Math.floor((TestWords.words.currentIndex / (outof - 1)) * 100);
     }
-    TribeBars.sendUpdate(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);
+    TribeSocket.out.room.progressUpdate(
+      wpmAndRaw.wpm,
+      wpmAndRaw.raw,
+      acc,
+      progress
+    );
   }
 
   for (const [userId, userProgress] of Object.entries(data.users)) {
