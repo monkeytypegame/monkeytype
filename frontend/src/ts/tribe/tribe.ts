@@ -1,5 +1,5 @@
 import * as Notifications from "../elements/notifications";
-import * as UpdateConfig from "../config";
+import Config, * as UpdateConfig from "../config";
 import * as DB from "../db";
 import * as TribePages from "./tribe-pages";
 import * as TribePagePreloader from "./pages/tribe-page-preloader";
@@ -23,12 +23,15 @@ import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
 import * as ActivePage from "../states/active-page";
 import * as TribeState from "./tribe-state";
-import { escapeRegExp, escapeHTML } from "../utils/misc";
+import { escapeRegExp, escapeHTML, roundTo2 } from "../utils/misc";
+import * as Time from "../states/time";
+import * as TestWords from "../test/test-words";
+import * as TestStats from "../test/test-stats";
 
 const defaultName = "Guest";
 let name = "Guest";
 
-export const expectedVersion = "0.11.8";
+export const expectedVersion = "0.11.9";
 
 let autoJoin: string | undefined = undefined;
 
@@ -501,6 +504,24 @@ TribeSocket.in.room.progressUpdate((data) => {
   if (!room) return;
   room.maxWpm = data.roomMaxWpm;
   room.maxRaw = data.roomMaxRaw;
+  room.minWpm = data.roomMinWpm;
+  room.minRaw = data.roomMinRaw;
+
+  if (TribeState.getState() >= 10 && TribeState.getState() <= 21) {
+    const wpmAndRaw = TestStats.calculateWpmAndRaw();
+    const acc = roundTo2(TestStats.calculateAccuracy());
+    let progress = 0;
+    if (Config.mode === "time") {
+      progress = 100 - ((Time.get() + 1) / Config.time) * 100;
+    } else {
+      let outof = TestWords.words.length;
+      if (Config.mode === "words") {
+        outof = Config.words;
+      }
+      progress = Math.floor((TestWords.words.currentIndex / (outof - 1)) * 100);
+    }
+    TribeBars.sendUpdate(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);
+  }
 
   for (const [userId, userProgress] of Object.entries(data.users)) {
     room.users[userId].progress = userProgress;

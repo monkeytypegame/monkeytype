@@ -209,6 +209,8 @@ function progressUpdate(
     users: Record<string, TribeTypes.UserProgress>;
     roomMaxRaw: number;
     roomMaxWpm: number;
+    roomMinRaw: number;
+    roomMinWpm: number;
   }) => void
 ): void {
   Socket.on("room_progress_update", callback);

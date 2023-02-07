@@ -52,51 +52,51 @@ export function update(): void {
   //check if the sign of the current delta is the same as the last one
 
   if (Math.sign(delta) === Math.sign(lastDelta)) {
-    behindbarel.stop(true, true).animate(
+    behindbarel.stop(true, false).animate(
       {
         width: mapRange(myspeed, min, center, 100, 0) + "%",
       },
-      1000,
+      500,
       "linear"
     );
-    aheadbarel.stop(true, true).animate(
+    aheadbarel.stop(true, false).animate(
       {
         width: mapRange(myspeed, center, max, 0, 100) + "%",
       },
-      1000,
+      500,
       "linear"
     );
   } else {
     if (delta > 0) {
-      aheadbarel.stop(true, true).animate(
+      aheadbarel.stop(true, false).animate(
         {
           width: mapRange(myspeed, center, max, 0, 100) + "%",
         },
-        500,
+        250,
         "linear",
         () => {
-          behindbarel.stop(true, true).animate(
+          behindbarel.stop(true, false).animate(
             {
               width: mapRange(myspeed, min, center, 100, 0) + "%",
             },
-            500,
+            250,
             "linear"
           );
         }
       );
     } else if (delta < 0) {
-      behindbarel.stop(true, true).animate(
+      behindbarel.stop(true, false).animate(
         {
           width: mapRange(myspeed, min, center, 100, 0) + "%",
         },
-        500,
+        250,
         "linear",
         () => {
-          aheadbarel.stop(true, true).animate(
+          aheadbarel.stop(true, false).animate(
             {
               width: mapRange(myspeed, center, max, 0, 100) + "%",
             },
-            500,
+            250,
             "linear"
           );
         }

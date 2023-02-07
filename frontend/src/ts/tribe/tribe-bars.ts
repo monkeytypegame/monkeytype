@@ -118,7 +118,7 @@ export function update(page: string, userId: string): void {
     Math.floor(user.progress?.acc ?? 0) + "%"
   );
   el.find(`.player[id=${userId}] .bar`)
-    .stop(true, true)
+    .stop(true, false)
     .animate(
       {
         width:
@@ -126,7 +126,7 @@ export function update(page: string, userId: string): void {
             ? user.progress?.wpmProgress + "%"
             : user.progress?.progress + "%",
       },
-      SlowTimer.get() ? 0 : 1000,
+      SlowTimer.get() ? 0 : 500,
       "linear"
     );
 }
@@ -153,7 +153,7 @@ export function completeBar(page: string, userId: string): void {
       {
         width: "100%",
       },
-      SlowTimer.get() ? 0 : 1000,
+      SlowTimer.get() ? 0 : 500,
       "linear"
     );
 }
