@@ -54,6 +54,8 @@ declare namespace TribeTypes {
     config: RoomConfig;
     maxRaw: number;
     maxWpm: number;
+    minRaw: number;
+    minWpm: number;
     seed: number;
   }
 

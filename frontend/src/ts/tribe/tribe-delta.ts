@@ -36,8 +36,9 @@ export function update(): void {
 
   const max = room.maxWpm;
   const center = maxWpm;
-  let min = center - (max - center);
+  let min = room.minWpm;
   if (min < 0) min = 0;
+  if (min > center) min = center - (max - center);
 
   // $("#tribeDeltaBar .text").text(`${min}\t${center}\t${max}`);
 
