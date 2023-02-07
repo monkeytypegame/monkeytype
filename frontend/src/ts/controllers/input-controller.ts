@@ -716,7 +716,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     // change page if needed
     if (TribeState.getState() >= 5) {
-      if (TribeState.getState() > 5 && TribeState.getState() < 22) return;
+      if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
       if (TribeState.getState() === 5 && ActivePage.get() !== "tribe") {
         navigate("/tribe");
         return;
@@ -730,7 +730,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
     // tribe
     if (TribeState.getState() >= 5) {
-      if (TribeState.getState() > 5 && TribeState.getState() < 22) return;
+      if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
       if (TribeState.getSelf()?.isLeader) {
         if (TribeState.getState() === 5 || TribeState.getState() === 22) {
           Tribe.initRace();
@@ -842,7 +842,7 @@ $(document).on("keydown", async (event) => {
 
     // change page if needed
     if (TribeState.getState() >= 5) {
-      if (TribeState.getState() > 5 && TribeState.getState() < 22) return;
+      if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
       if (TribeState.getState() === 5 && ActivePage.get() !== "tribe") {
         navigate("/tribe");
         return;
@@ -856,7 +856,7 @@ $(document).on("keydown", async (event) => {
 
     // tribe
     if (TribeState.getState() >= 5) {
-      if (TribeState.getState() > 5 && TribeState.getState() < 22) return;
+      if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
       if (TribeState.getSelf()?.isLeader) {
         if (TribeState.getState() === 5 || TribeState.getState() === 22) {
           Tribe.initRace();
