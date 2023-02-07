@@ -120,6 +120,23 @@ export function updateBar(
   }
 }
 
+export function updateWpmAndAcc(
+  page: string,
+  userId: string,
+  wpm: number,
+  acc: number
+): void {
+  const room = TribeState.getRoom();
+  if (!room) return;
+  if (page === "result") {
+    const el = $(`.pageTest #result #tribeResults table tbody tr#${userId}`);
+    const user = room.users[userId];
+    if (!user) return;
+    el.find(".wpm .text").text(wpm);
+    el.find(".acc .text").text(`${acc}%`);
+  }
+}
+
 export function updatePositions(
   page: string,
   orderedList: {

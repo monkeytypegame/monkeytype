@@ -570,6 +570,12 @@ TribeSocket.in.room.progressUpdate((data) => {
     TribeBars.update("test", userId);
     TribeBars.update("tribe", userId);
     TribeResults.updateBar("result", userId);
+    TribeResults.updateWpmAndAcc(
+      "result",
+      userId,
+      userProgress.wpm,
+      userProgress.acc
+    );
   }
 });
 
