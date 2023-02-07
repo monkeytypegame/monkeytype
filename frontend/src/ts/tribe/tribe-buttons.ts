@@ -240,8 +240,7 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .leaveRoomButton,
 });
 
 $(`.pageTribe .tribePage.lobby .lobbyButtons .userReadyButton,
-.pageTest #tribeResultBottom .buttons .userReadyButton,
-.pageTest #result .bottom .buttons #readyButton`).on("click", (_e) => {
+.pageTest #tribeResultBottom .buttons .userReadyButton`).on("click", (_e) => {
   tribeSocket.out.room.readyUpdate();
 });
 

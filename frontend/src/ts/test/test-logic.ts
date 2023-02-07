@@ -66,6 +66,7 @@ import * as ConnectionState from "../states/connection";
 import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
+import tribeSocket from "../tribe/tribe-socket";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -2064,6 +2065,16 @@ $(".pageTest").on("click", "#nextTestButton", () => {
     ManualRestart.set();
     restart();
   }
+});
+
+$(document).on("keypress", "#readyButton", (event) => {
+  if (event.key === "Enter") {
+    tribeSocket.out.room.readyUpdate();
+  }
+});
+
+$(".pageTest").on("click", "#readyButton", () => {
+  tribeSocket.out.room.readyUpdate();
 });
 
 $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
