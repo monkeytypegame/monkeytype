@@ -129,6 +129,13 @@ export async function init(): Promise<void> {
     TribeSocket.updateName(name);
   }
 
+  //todo remove, only for dev
+  const lstribename = window.localStorage.getItem("tribeName");
+  if (lstribename) {
+    name = lstribename;
+    TribeSocket.updateName(lstribename);
+  }
+
   setTimeout(() => {
     TribeSocket.connect();
   }, 500);
@@ -242,6 +249,7 @@ TribeSocket.in.system.connect(() => {
 $(".tribechangename").on("click", () => {
   const name = prompt("Name");
   if (name) {
+    window.localStorage.setItem("tribeName", name); //todo remove, only for dev
     TribeSocket.out.user.setName(name, true);
   }
 });
