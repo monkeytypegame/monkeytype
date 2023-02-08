@@ -77,9 +77,7 @@ export function updateIsTyping(): void {
   }
 
   $(".pageTribe .lobby .chat .whoIsTyping").html(string);
-  $(".pageTest #result #tribeResultBottom .chat .messages .whoIsTyping").html(
-    string
-  );
+  $(".pageTest #result #tribeResultBottom .chat .whoIsTyping").html(string);
 }
 
 async function insertImageEmoji(text: string): Promise<string> {
@@ -205,3 +203,19 @@ $(".pageTribe .tribePage.lobby .chat .input input").on("input", (_e) => {
     sendChattingUpdate(false);
   }
 });
+
+$(".pageTest #result #tribeResultBottom .chat .input input").on(
+  "input",
+  (_e) => {
+    const val = $(
+      ".pageTest #result #tribeResultBottom .chat .input input"
+    ).val() as string;
+    $(".pageTribe .tribePage.lobby .chat .input input").val(val);
+    const vallen = val.length;
+    if (vallen === 1) {
+      sendChattingUpdate(true);
+    } else if (vallen === 0) {
+      sendChattingUpdate(false);
+    }
+  }
+);
