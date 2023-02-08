@@ -186,6 +186,7 @@ const settings: ChartConfiguration = {
         },
       },
       wpm: {
+        min: 0,
         axis: "y",
         display: true,
         // scaleLabel: {
@@ -208,6 +209,7 @@ const settings: ChartConfiguration = {
         },
       },
       raw: {
+        min: 0,
         axis: "y",
         display: false,
         // scaleLabel: {
@@ -227,6 +229,7 @@ const settings: ChartConfiguration = {
         },
       },
       error: {
+        min: 0,
         axis: "y",
         display: false,
         position: "right",
