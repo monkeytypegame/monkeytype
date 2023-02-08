@@ -126,7 +126,7 @@ export function update(page: string, userId: string): void {
             ? user.progress?.wpmProgress + "%"
             : user.progress?.progress + "%",
       },
-      SlowTimer.get() ? 0 : 500,
+      SlowTimer.get() ? 0 : TribeState.getRoom()?.updateRate ?? 500,
       "linear"
     );
 }

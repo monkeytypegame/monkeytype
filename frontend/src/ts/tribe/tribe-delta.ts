@@ -51,19 +51,21 @@ export function update(): void {
 
   //check if the sign of the current delta is the same as the last one
 
+  const duration = TribeState.getRoom()?.updateRate ?? 500;
+
   if (Math.sign(delta) === Math.sign(lastDelta)) {
     behindbarel.stop(true, false).animate(
       {
         width: mapRange(myspeed, min, center, 100, 0) + "%",
       },
-      500,
+      duration,
       "linear"
     );
     aheadbarel.stop(true, false).animate(
       {
         width: mapRange(myspeed, center, max, 0, 100) + "%",
       },
-      500,
+      duration,
       "linear"
     );
   } else {
@@ -72,14 +74,14 @@ export function update(): void {
         {
           width: mapRange(myspeed, center, max, 0, 100) + "%",
         },
-        250,
+        duration / 2,
         "linear",
         () => {
           behindbarel.stop(true, false).animate(
             {
               width: mapRange(myspeed, min, center, 100, 0) + "%",
             },
-            250,
+            duration / 2,
             "linear"
           );
         }
@@ -89,14 +91,14 @@ export function update(): void {
         {
           width: mapRange(myspeed, min, center, 100, 0) + "%",
         },
-        250,
+        duration / 2,
         "linear",
         () => {
           aheadbarel.stop(true, false).animate(
             {
               width: mapRange(myspeed, center, max, 0, 100) + "%",
             },
-            250,
+            duration / 2,
             "linear"
           );
         }
