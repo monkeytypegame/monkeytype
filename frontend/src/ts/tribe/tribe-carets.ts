@@ -52,7 +52,8 @@ export class TribeCaret {
 
   public animate(animationDuration: number): void {
     if (!this.element) {
-      return;
+      this.spawn();
+      return this.animate(animationDuration);
     }
     // if ($("#paceCaret").hasClass("hidden")) {
     //   $("#paceCaret").removeClass("hidden");
@@ -155,8 +156,6 @@ export function init(): void {
     if (socketId === tribeSocket.getId()) continue;
 
     carets[socketId] = new TribeCaret(socketId, 0, -1);
-    carets[socketId].spawn();
-    carets[socketId].animate(0);
   }
 }
 
