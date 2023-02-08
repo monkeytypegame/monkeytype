@@ -718,3 +718,9 @@ $(".pageTribe .tribePage.preloader .reconnectButton").on("click", () => {
   TribePagePreloader.hideReconnectButton();
   init();
 });
+
+window.addEventListener("beforeunload", () => {
+  if (TribeState.getState() > 0) {
+    TribeSocket.disconnect();
+  }
+});
