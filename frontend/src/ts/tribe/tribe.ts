@@ -23,7 +23,7 @@ import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
 import * as ActivePage from "../states/active-page";
 import * as TribeState from "./tribe-state";
-import { escapeRegExp, escapeHTML, roundTo2 } from "../utils/misc";
+import { escapeRegExp, escapeHTML } from "../utils/misc";
 import * as Time from "../states/time";
 import * as TestWords from "../test/test-words";
 import * as TestStats from "../test/test-stats";
@@ -540,7 +540,7 @@ TribeSocket.in.room.progressUpdate((data) => {
 
   if (TribeState.getState() >= 10 && TribeState.getState() <= 21) {
     const wpmAndRaw = TestStats.calculateWpmAndRaw();
-    const acc = roundTo2(TestStats.calculateAccuracy());
+    const acc = Math.floor(TestStats.calculateAccuracy());
     let progress = 0;
     if (Config.mode === "time") {
       progress = 100 - ((Time.get() + 1) / Config.time) * 100;
