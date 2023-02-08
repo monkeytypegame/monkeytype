@@ -52,8 +52,7 @@ export function update(): void {
   //check if the sign of the current delta is the same as the last one
 
   const duration = TribeState.getRoom()?.updateRate ?? 500;
-
-  if (Math.sign(delta) === Math.sign(lastDelta)) {
+  if (Math.sign(delta) === Math.sign(lastDelta) && Math.sign(delta) !== 0) {
     behindbarel.stop(true, false).animate(
       {
         width: mapRange(myspeed, min, center, 100, 0) + "%",
@@ -102,6 +101,21 @@ export function update(): void {
             "linear"
           );
         }
+      );
+    } else if (delta === 0) {
+      behindbarel.stop(true, false).animate(
+        {
+          width: "0%",
+        },
+        duration,
+        "linear"
+      );
+      aheadbarel.stop(true, false).animate(
+        {
+          width: "0%",
+        },
+        duration,
+        "linear"
       );
     }
   }
