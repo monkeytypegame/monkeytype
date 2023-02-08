@@ -62,15 +62,15 @@ export class TribeCaret {
     let animationLetterIndex = this.letterIndex;
     let animationWordIndex = this.wordIndex;
 
-    //move to next word if needed
-    while (
-      animationLetterIndex >= TestWords.words.get(animationWordIndex).length
-    ) {
-      animationLetterIndex -= TestWords.words.get(animationWordIndex).length;
-      animationWordIndex++;
-    }
-
     try {
+      //move to next word if needed
+      while (
+        animationLetterIndex >= TestWords.words.get(animationWordIndex).length
+      ) {
+        animationLetterIndex -= TestWords.words.get(animationWordIndex).length;
+        animationWordIndex++;
+      }
+
       let currentLetter;
       let newTop;
       let newLeft;
@@ -144,7 +144,7 @@ export class TribeCaret {
       console.error(
         `Error updating tribe caret for socket id ${this.socketId}: ${e}`
       );
-      this.element.addClass("hidden");
+      this.destroy();
     }
   }
 }
@@ -168,7 +168,7 @@ export function updateAndAnimate(
       data[socketId].wordIndex,
       data[socketId].letterIndex
     );
-    carets[socketId].animate(500);
+    carets[socketId].animate(getRoom()?.updateRate ?? 500);
   }
 }
 
