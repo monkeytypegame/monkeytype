@@ -209,7 +209,7 @@ function progressUpdate(
 function userResult(
   callback: (data: {
     userId: string;
-    result: TribeTypes.Result;
+    result: TribeTypes.Result | undefined;
     everybodyCompleted: boolean;
   }) => void
 ): void {
