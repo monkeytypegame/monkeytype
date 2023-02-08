@@ -563,7 +563,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       }
 
       const wordsProgress = Math.floor(
-        (TestWords.words.currentIndex / (outof - 1)) * 100
+        (TestWords.words.currentIndex / outof) * 100
       );
 
       progress = wordsProgress + globalWordProgress;
