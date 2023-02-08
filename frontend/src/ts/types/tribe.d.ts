@@ -88,6 +88,8 @@ declare namespace TribeTypes {
     acc: number;
     progress: number;
     wpmProgress: number;
+    wordIndex: number;
+    letterIndex: number;
   }
 
   interface User {

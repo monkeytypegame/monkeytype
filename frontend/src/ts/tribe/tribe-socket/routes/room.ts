@@ -57,18 +57,8 @@ function giveLeader(userId: string): void {
   });
 }
 
-function progressUpdateOut(
-  wpm: number,
-  raw: number,
-  acc: number,
-  progress: number
-): void {
-  Socket.emit("room_progress_update", {
-    wpm: wpm,
-    raw: raw,
-    acc: acc,
-    progress: progress,
-  });
+function progressUpdateOut(userProgress: TribeTypes.UserProgress): void {
+  Socket.emit("room_progress_update", userProgress);
 }
 
 function afkUpdate(isAfk: boolean): void {

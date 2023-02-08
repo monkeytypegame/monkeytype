@@ -4,23 +4,30 @@
   animation: caretFlashSmooth 1s infinite;
   position: absolute;
   border-radius: var(--roundness);
-  // transition: 0.05s;
   transform-origin: top left;
 }
 
 #paceCaret {
   height: 1.2em;
-  // background: var(--sub-color);
   background: var(--sub-color);
   opacity: 0.5;
   position: absolute;
   border-radius: var(--roundness);
-  // transition: 0.25s;
+  transform-origin: top left;
+}
+
+.tribeCaret {
+  height: 1.2em;
+  background: var(--sub-color);
+  opacity: 0.5;
+  position: absolute;
+  border-radius: var(--roundness);
   transform-origin: top left;
 }
 
 #caret,
-#paceCaret {
+#paceCaret,
+.tribeCaret {
   &.off {
     width: 0;
   }

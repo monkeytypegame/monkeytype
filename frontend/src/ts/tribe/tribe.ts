@@ -28,6 +28,7 @@ import * as Time from "../states/time";
 import * as TestWords from "../test/test-words";
 import * as TestStats from "../test/test-stats";
 import * as TestInput from "../test/test-input";
+import * as TribeCarets from "./tribe-carets";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -357,6 +358,7 @@ TribeSocket.in.room.left(() => {
   if (!$(".pageTribe").hasClass("active")) {
     navigate("/tribe");
   }
+  TribeCarets.destroyAll();
   TribeSound.play("leave");
   TribePages.change("menu").then(() => {
     reset();
@@ -487,6 +489,7 @@ TribeSocket.in.room.initRace((data) => {
   TribeDelta.showBar();
   TribeCountdown.show2();
   TribeSound.play("start");
+  TribeCarets.init();
 });
 
 TribeSocket.in.room.stateChanged((data) => {
@@ -560,13 +563,17 @@ TribeSocket.in.room.progressUpdate((data) => {
       );
 
       progress = wordsProgress + globalWordProgress;
+
+      TribeSocket.out.room.progressUpdate({
+        wpm: wpmAndRaw.wpm,
+        raw: wpmAndRaw.raw,
+        acc,
+        progress,
+        wpmProgress: 0,
+        wordIndex: TestWords.words.currentIndex,
+        letterIndex: inputLen - 1,
+      });
     }
-    TribeSocket.out.room.progressUpdate(
-      wpmAndRaw.wpm,
-      wpmAndRaw.raw,
-      acc,
-      progress
-    );
   }
 
   for (const [userId, userProgress] of Object.entries(data.users)) {
@@ -575,6 +582,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       TribeDelta.update();
     }
     //todo only update one
+    TribeCarets.updateAndAnimate(data.users);
     TribeBars.update("test", userId);
     TribeBars.update("tribe", userId);
     TribeResults.updateBar("result", userId);
@@ -613,7 +621,9 @@ TribeSocket.in.room.userResult((data) => {
     TribeBars.completeBar("tribe", data.userId);
     TribeResults.updateBar("result", data.userId, 100);
   }
+  TribeCarets.destroy(data.userId);
   if (!TestActive.get()) {
+    TribeCarets.destroyAll();
     TribeResults.update("result", data.userId);
     TribeUserList.update("result");
     setTimeout(async () => {

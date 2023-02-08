@@ -14,6 +14,8 @@ import * as Result from "./test/result";
 import * as TestInput from "./test/test-input";
 import * as Tribe from "./tribe/tribe";
 import * as TribeState from "./tribe/tribe-state";
+import * as TribeCarets from "./tribe/tribe-carets";
+
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
@@ -73,5 +75,8 @@ extendedGlobal.tribe = Tribe;
 
 //@ts-ignore
 extendedGlobal.tribeState = TribeState;
+
+//@ts-ignore
+extendedGlobal.tribeCarets = TribeCarets;
 
 extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
