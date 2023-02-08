@@ -49,6 +49,7 @@ declare namespace TribeTypes {
       [socketId: string]: User;
     };
     size: number;
+    updateRate: number;
     isPrivate: boolean;
     name: string;
     config: RoomConfig;
