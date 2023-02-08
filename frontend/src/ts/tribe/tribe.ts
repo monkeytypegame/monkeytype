@@ -608,8 +608,9 @@ TribeSocket.in.room.userResult((data) => {
   room.users[data.userId].result = data.result;
   room.users[data.userId].isFinished = true;
   room.users[data.userId].isTyping = false;
-  const resolve = data.result.resolve;
+  const resolve = data.result?.resolve;
   if (
+    resolve === undefined ||
     resolve?.afk ||
     resolve?.repeated ||
     resolve?.valid === false ||
