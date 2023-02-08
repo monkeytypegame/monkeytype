@@ -538,7 +538,11 @@ TribeSocket.in.room.progressUpdate((data) => {
   room.minWpm = data.roomMinWpm;
   room.minRaw = data.roomMinRaw;
 
-  if (TribeState.getState() >= 10 && TribeState.getState() <= 21) {
+  if (
+    TribeState.getState() >= 10 &&
+    TribeState.getState() <= 21 &&
+    TestActive.get() === true
+  ) {
     const wpmAndRaw = TestStats.calculateWpmAndRaw();
     const acc = Math.floor(TestStats.calculateAccuracy());
     let progress = 0;
