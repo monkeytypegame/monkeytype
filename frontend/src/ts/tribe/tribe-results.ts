@@ -214,6 +214,10 @@ function updateUser(page: string, userId: string): void {
     }
     const userResult = user.result;
     if (!userResult) {
+      userEl.find(`.wpm .text`).text("-");
+      userEl.find(`.raw .text`).text("-");
+      userEl.find(`.acc .text`).text("-");
+      userEl.find(`.consistency .text`).text("-");
       userEl.find(`.other .text`).text("missing result data");
       return;
     }
