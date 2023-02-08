@@ -13,6 +13,7 @@ import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
 import * as TestInput from "./test/test-input";
 import * as Tribe from "./tribe/tribe";
+import * as TribeState from "./tribe/tribe-state";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
@@ -69,4 +70,8 @@ extendedGlobal.egVideoListener = egVideoListener;
 
 //@ts-ignore
 extendedGlobal.tribe = Tribe;
+
+//@ts-ignore
+extendedGlobal.tribeState = TribeState;
+
 extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
