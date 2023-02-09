@@ -63,6 +63,10 @@ export async function sendVerificationEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { email, uid } = req.ctx.decodedToken;
+  const isVerified = (await admin.auth().getUser(uid)).emailVerified;
+  if (isVerified === true) {
+    throw new MonkeyError(400, "Email already verified");
+  }
 
   const userInfo = await UserDAL.getUser(uid, "request verification email");
 
