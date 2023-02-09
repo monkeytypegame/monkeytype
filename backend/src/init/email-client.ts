@@ -56,6 +56,7 @@ export async function init(): Promise<void> {
       pass: EMAIL_PASS,
     },
   });
+  transportInitialized = true;
 
   try {
     Logger.info("Verifying email client configuration...");
@@ -68,7 +69,6 @@ export async function init(): Promise<void> {
     }
 
     Logger.success("Email client configuration verified");
-    transportInitialized = true;
   } catch (error) {
     Logger.error(error.message);
     Logger.error("Failed to verify email client configuration.");
