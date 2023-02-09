@@ -43,6 +43,16 @@ class EmailQueue extends MonkeyQueue<EmailTask<EmailType>> {
     const task = buildTask(taskName, email, { name, verificationLink });
     await this.add(taskName, task);
   }
+
+  async sendForgotPasswordEmail(
+    email: string,
+    name: string,
+    passwordResetLink: string
+  ): Promise<void> {
+    const taskName = "resetPassword";
+    const task = buildTask(taskName, email, { name, passwordResetLink });
+    await this.add(taskName, task);
+  }
 }
 
 export default new EmailQueue(QUEUE_NAME, {
