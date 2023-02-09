@@ -448,6 +448,13 @@ export const userRequestVerificationEmail = rateLimit({
   handler: customHandler,
 });
 
+export const userForgotPasswordEmail = rateLimit({
+  windowMs: ONE_HOUR_MS / 4,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const userProfileGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 100 * REQUEST_MULTIPLIER,

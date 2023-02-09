@@ -81,6 +81,37 @@ export async function sendVerificationEmail(
   return new MonkeyResponse("Email sent");
 }
 
+export async function sendForgotPasswordEmail(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { email } = req.body;
+
+  let auth;
+  try {
+    auth = await admin.auth().getUserByEmail(email);
+  } catch (e) {
+    if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(404, "User not found");
+    }
+    throw e;
+  }
+
+  const userInfo = await UserDAL.getUser(
+    auth.uid,
+    "request forgot password email"
+  );
+
+  const link = await admin.auth().generatePasswordResetLink(email, {
+    url:
+      process.env.MODE === "dev"
+        ? "http://localhost:3000"
+        : "https://monkeytype.com",
+  });
+  await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
+
+  return new MonkeyResponse("Email sent if user was found");
+}
+
 export async function deleteUser(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
