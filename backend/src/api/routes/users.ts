@@ -583,7 +583,7 @@ router.post(
 );
 
 router.get(
-  "/requestVerificationEmail",
+  "/verificationEmail",
   authenticateRequest(),
   RateLimit.userRequestVerificationEmail,
   asyncHandler(UserController.requestVerificationEmail)

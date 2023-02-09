@@ -243,6 +243,6 @@ export default class Users {
   }
 
   async requestVerificationEmail(): Ape.EndpointData {
-    return await this.httpClient.get(`${BASE_PATH}/requestVerificationEmail`);
+    return await this.httpClient.get(`${BASE_PATH}/verificationEmail`);
   }
 }
