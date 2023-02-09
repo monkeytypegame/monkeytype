@@ -1465,7 +1465,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestActive.get()) return;
-  if (Config.mode == "zen" && TestInput.input.current.length != 0) {
+  if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
