@@ -219,10 +219,14 @@ async function timerStep(): Promise<void> {
 
   if (
     Time.get() >= 3 &&
-    TestInput.input.current === "" &&
-    TestInput.input.getHistory().length === 0
+    TestInput.input.getHistory().length === 0 &&
+    TestInput.input.current === ""
   ) {
-    TimerEvent.dispatch("finish");
+    // TestInput.keypressPerSecond
+    //check if every element from this array is 0
+    if (TestInput.keypressPerSecond.every((kp) => kp.afk === true)) {
+      TimerEvent.dispatch("finish");
+    }
   }
 
   // sendTribeProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc);
