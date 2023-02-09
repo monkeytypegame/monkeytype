@@ -7,6 +7,7 @@ import EmailQueue, {
   EmailType,
 } from "../queues/email-queue";
 import { sendEmail } from "../init/email-client";
+import { recordTimeToCompleteJob } from "../utils/prometheus";
 
 async function jobHandler(job: Job): Promise<void> {
   const type: EmailType = job.data.type;
@@ -24,7 +25,7 @@ async function jobHandler(job: Job): Promise<void> {
   }
 
   const elapsed = performance.now() - start;
-
+  recordTimeToCompleteJob(EmailQueue.queueName, type, elapsed);
   Logger.success(`Job: ${type} - completed in ${elapsed}ms`);
 }
 
