@@ -34,7 +34,6 @@ import {
   linkWithCredential,
   reauthenticateWithPopup,
   getAdditionalUserInfo,
-  sendPasswordResetEmail,
   User as UserType,
   Unsubscribe,
 } from "firebase/auth";
@@ -49,7 +48,6 @@ import { update as updateTagsCommands } from "../commandline/lists/tags";
 import * as ConnectionState from "../states/connection";
 
 export const gmailProvider = new GoogleAuthProvider();
-let canCall = true;
 
 export async function sendVerificationEmail(): Promise<void> {
   if (Auth === undefined) {
@@ -58,7 +56,7 @@ export async function sendVerificationEmail(): Promise<void> {
   }
 
   Loader.show();
-  const result = await Ape.users.requestVerificationEmail();
+  const result = await Ape.users.verificationEmail();
   if (result.status !== 200) {
     Loader.hide();
     Notifications.add(
@@ -406,35 +404,6 @@ export async function signIn(): Promise<void> {
     });
 }
 
-export async function forgotPassword(email: any): Promise<void> {
-  if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
-    return;
-  }
-  if (!canCall) {
-    return Notifications.add(
-      "Please wait before requesting another password reset link",
-      0,
-      5000
-    );
-  }
-  if (!email) return Notifications.add("Please enter an email!", -1);
-
-  try {
-    await sendPasswordResetEmail(Auth, email);
-    Notifications.add("Email sent", 1, 2);
-  } catch (error) {
-    Notifications.add(
-      Misc.createErrorMessage(error, "Failed to send email"),
-      -1
-    );
-  }
-  canCall = false;
-  setTimeout(function () {
-    canCall = true;
-  }, 10000);
-}
-
 export async function signInWithGoogle(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
@@ -717,13 +686,6 @@ async function signUp(): Promise<void> {
     return;
   }
 }
-
-$(".pageLogin #forgotPasswordButton").on("click", () => {
-  const emailField =
-    ($(".pageLogin .login input")[0] as HTMLInputElement).value || "";
-  const email = prompt("Email address", emailField);
-  forgotPassword(email);
-});
 
 $(".pageLogin .login input").keyup((e) => {
   if (e.key === "Enter") {

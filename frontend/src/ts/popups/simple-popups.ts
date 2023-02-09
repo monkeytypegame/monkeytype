@@ -1241,6 +1241,50 @@ list["deleteCustomTheme"] = new SimplePopup(
   }
 );
 
+list["forgotPassword"] = new SimplePopup(
+  "forgotPassword",
+  "text",
+  "Forgot Password",
+  [
+    {
+      type: "text",
+      placeholder: "Email",
+      initVal: "",
+    },
+  ],
+  "",
+  "Send",
+  async (_thisPopup, email) => {
+    Loader.show();
+    const result = await Ape.users.forgotPasswordEmail(email);
+    if (result.status !== 200) {
+      Loader.hide();
+      Notifications.add(
+        "Failed to request password reset email: " + result.message,
+        5000
+      );
+    } else {
+      Loader.hide();
+      Notifications.add("Password reset email sent", 1, 3);
+    }
+  },
+  (thisPopup) => {
+    const inputValue = $(
+      `.pageLogin .login input[name="current-email"]`
+    ).val() as string;
+    if (inputValue) {
+      thisPopup.inputs[0].initVal = inputValue;
+    }
+  },
+  () => {
+    //
+  }
+);
+
+$(".pageLogin #forgotPasswordButton").on("click", () => {
+  list["forgotPassword"].show();
+});
+
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
