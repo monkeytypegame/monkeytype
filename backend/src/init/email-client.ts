@@ -70,6 +70,7 @@ export async function init(): Promise<void> {
 
     Logger.success("Email client configuration verified");
   } catch (error) {
+    transportInitialized = false;
     Logger.error(error.message);
     Logger.error("Failed to verify email client configuration.");
   }
