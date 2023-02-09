@@ -546,10 +546,10 @@ TribeSocket.in.room.progressUpdate((data) => {
     const wpmAndRaw = TestStats.calculateWpmAndRaw();
     const acc = Math.floor(TestStats.calculateAccuracy());
     let progress = 0;
+    const inputLen = TestInput.input.current.length;
     if (Config.mode === "time") {
       progress = 100 - ((Time.get() + 1) / Config.time) * 100;
     } else {
-      const inputLen = TestInput.input.current.length;
       const currentWordLen = TestWords.words.getCurrent().length;
       const localWordProgress = Math.round((inputLen / currentWordLen) * 100);
 
@@ -567,17 +567,16 @@ TribeSocket.in.room.progressUpdate((data) => {
       );
 
       progress = wordsProgress + globalWordProgress;
-
-      TribeSocket.out.room.progressUpdate({
-        wpm: wpmAndRaw.wpm,
-        raw: wpmAndRaw.raw,
-        acc,
-        progress,
-        wpmProgress: 0,
-        wordIndex: TestWords.words.currentIndex,
-        letterIndex: inputLen - 1,
-      });
     }
+    TribeSocket.out.room.progressUpdate({
+      wpm: wpmAndRaw.wpm,
+      raw: wpmAndRaw.raw,
+      acc,
+      progress,
+      wpmProgress: 0,
+      wordIndex: TestWords.words.currentIndex,
+      letterIndex: inputLen - 1,
+    });
   }
 
   for (const [userId, userProgress] of Object.entries(data.users)) {
