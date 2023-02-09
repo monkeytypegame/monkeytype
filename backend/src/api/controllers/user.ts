@@ -59,7 +59,7 @@ export async function createNewUser(
   return new MonkeyResponse("User created");
 }
 
-export async function requestVerificationEmail(
+export async function sendVerificationEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { email, uid } = req.ctx.decodedToken;

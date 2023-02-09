@@ -586,7 +586,7 @@ router.get(
   "/verificationEmail",
   authenticateRequest(),
   RateLimit.userRequestVerificationEmail,
-  asyncHandler(UserController.requestVerificationEmail)
+  asyncHandler(UserController.sendVerificationEmail)
 );
 
 export default router;
