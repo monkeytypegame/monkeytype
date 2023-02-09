@@ -222,8 +222,6 @@ async function timerStep(): Promise<void> {
     TestInput.input.getHistory().length === 0 &&
     TestInput.input.current === ""
   ) {
-    // TestInput.keypressPerSecond
-    //check if every element from this array is 0
     if (TestInput.keypressPerSecond.every((kp) => kp.afk === true)) {
       TimerEvent.dispatch("finish");
     }
