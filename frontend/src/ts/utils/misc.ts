@@ -1330,7 +1330,8 @@ export function isPasswordStrong(password: string): boolean {
   const hasNumber = !!password.match(/[\d]/);
   const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
   const isLong = password.length >= 8;
-  return hasCapital && hasNumber && hasSpecial && isLong;
+  const isShort = password.length <= 64;
+  return hasCapital && hasNumber && hasSpecial && isLong && isShort;
 }
 
 export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {

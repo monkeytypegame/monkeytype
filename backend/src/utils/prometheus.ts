@@ -278,16 +278,6 @@ export function setCollectionSize(collection: string, size: number): void {
   collectionSize.set({ collection }, size);
 }
 
-const emailCount = new Counter({
-  name: "email_count",
-  help: "Emails sent by the server",
-  labelNames: ["type", "status"],
-});
-
-export function recordEmail(type: string, status: string): void {
-  emailCount.inc({ type, status });
-}
-
 const queueLength = new Gauge({
   name: "queue_length",
   help: "Length of the queues",
@@ -300,4 +290,14 @@ export function setQueueLength(
   length: number
 ): void {
   queueLength.set({ queueName, countType }, length);
+}
+
+const emailCount = new Counter({
+  name: "email_count",
+  help: "Emails sent by the server",
+  labelNames: ["type", "status"],
+});
+
+export function recordEmail(type: string, status: string): void {
+  emailCount.inc({ type, status });
 }

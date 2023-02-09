@@ -48,6 +48,8 @@ export async function show(
     $("#wordFilterPopup .languageInput").select2({
       width: "100%",
     });
+    $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
+    $("#wordFilterPopupWrapper .button").removeClass("hidden");
 
     $("#wordFilterPopupWrapper")
       .stop(true, true)
@@ -154,10 +156,7 @@ $("#wordFilterPopupWrapper .button").on("mousedown", (e) => {
   $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
   setTimeout(() => {
-    apply($(e.target).is("#set")).then(() => {
-      $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
-      $("#wordFilterPopupWrapper .button").removeClass("hidden");
-    });
+    apply($(e.target).is("#set"));
   }, 1);
 });
 

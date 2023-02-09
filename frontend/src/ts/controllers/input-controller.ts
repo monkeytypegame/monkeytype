@@ -580,8 +580,6 @@ function handleChar(
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
     TestLogic.fail("difficulty");
     return;
   }
@@ -599,8 +597,6 @@ function handleChar(
           Config.stopOnError == "off")) &&
       lastIndex === TestWords.words.length - 1
     ) {
-      TestInput.input.pushHistory();
-      TestInput.corrected.pushHistory();
       TestLogic.finish();
       return;
     }
