@@ -264,6 +264,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add("Disconnected", -1, undefined, "Tribe");
   }
+  TribeState.setRoom(undefined);
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText(`Disconnected`);
@@ -271,6 +272,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   TribePagePreloader.showReconnectButton();
   reset();
 });
+
 TribeSocket.in.system.connectFailed((err) => {
   updateState(-1);
   console.error(err);
