@@ -1605,6 +1605,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - AFK detected", 0);
     dontSave = true;
     resolve.afk = true;
+    TribeState.setAutoReady(false);
     // resolveTestSavePromise({
     //   afk: true,
     // });
