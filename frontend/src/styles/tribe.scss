@@ -630,20 +630,16 @@
     }
   }
   #typingTest .tribeCountdown {
-    position: absolute;
-    width: 100%;
-    display: grid;
-    justify-content: center;
-    height: 100%;
-    align-items: center;
-    font-size: 10rem;
-    line-height: 0;
-    z-index: 10;
+    text-align: center;
+    height: 0;
+    line-height: 150px;
+    z-index: 0;
+    position: relative;
+    user-select: none;
+    pointer-events: none;
     color: var(--main-color);
     pointer-events: none;
-    margin-top: 1rem;
-    z-index: -10;
-    opacity: 1;
+    font-size: 4.5rem;
     &.faded {
       opacity: 0.25;
     }

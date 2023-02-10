@@ -188,6 +188,7 @@ export function updateWordsHeight(): void {
       nh = wordsHeight;
     }
     $(".outOfFocusWarning").css("line-height", nh + "px");
+    $("#typingTest .tribeCountdown").css("line-height", nh + "px");
   } else {
     if (Config.tapeMode !== "off") {
       const wrapperHeight = wordHeight;
@@ -201,6 +202,7 @@ export function updateWordsHeight(): void {
         .css("height", wrapperHeight + "px")
         .css("overflow", "hidden");
       $(".outOfFocusWarning").css("line-height", wrapperHeight + "px");
+      $("#typingTest .tribeCountdown").css("line-height", wrapperHeight + "px");
     } else {
       $("#words")
         .css("height", wordHeight * 4 + "px")
@@ -211,6 +213,10 @@ export function updateWordsHeight(): void {
         .css("height", wordHeight * 3 + "px")
         .css("overflow", "hidden");
       $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
+      $("#typingTest .tribeCountdown").css(
+        "line-height",
+        wordHeight * 3 + "px"
+      );
     }
   }
 

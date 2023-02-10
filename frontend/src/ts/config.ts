@@ -1687,6 +1687,7 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
     "fontSize",
     fontSize + "rem"
   );
+  $("#typingTest .tribeCountdown").css("font-size", fontSize * 3 + "rem");
 
   $("#typingTest .tribeBars").css("margin-bottom", fontSize + "rem");
 
