@@ -586,10 +586,10 @@ TribeSocket.in.room.progressUpdate((data) => {
     }
     //todo only update one
     TribeCarets.updateAndAnimate(data.users);
-    TribeBars.update("test", userId);
-    TribeBars.update("tribe", userId);
-    TribeResults.updateBar("result", userId);
     if (room.users[userId].isFinished === false) {
+      TribeBars.update("test", userId);
+      TribeBars.update("tribe", userId);
+      TribeResults.updateBar("result", userId);
       TribeResults.updateWpmAndAcc(
         "result",
         userId,
