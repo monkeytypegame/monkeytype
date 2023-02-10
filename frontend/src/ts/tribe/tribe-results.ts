@@ -169,15 +169,17 @@ export function updateMiniCrowns(
 ): void {
   if (page === "result") {
     for (const crown of Object.keys(miniCrowns)) {
-      const userId = miniCrowns[crown as keyof typeof miniCrowns];
-      const userEl = $(
-        `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
-      );
-      userEl.find(`.${crown}`).append(`
+      const userIds = miniCrowns[crown as keyof typeof miniCrowns];
+      for (const userId of userIds) {
+        const userEl = $(
+          `.pageTest #result #tribeResults table tbody tr.user[id="${userId}"]`
+        );
+        userEl.find(`.${crown}`).append(`
         <div class="miniCrown">
         <i class="fas fa-fw fa-crown"></i>
         </div>
       `);
+      }
     }
   }
 }

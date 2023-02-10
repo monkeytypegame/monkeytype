@@ -427,7 +427,7 @@ TribeSocket.in.room.chatMessage((data) => {
   const nameregex = new RegExp(regexString, "i");
   if (!data.isSystem && data.from.id != TribeSocket.getId()) {
     if (nameregex.test(data.message)) {
-      if (ActivePage.get() !== "tribe") {
+      if (ActivePage.get() !== "tribe" && ActivePage.get() !== "test") {
         Notifications.add(data.message, 0, 3, "Mention", "at", undefined, true); //allowing html because the message is already escaped on the server
       }
       TribeSound.play("chat_mention");
@@ -696,10 +696,10 @@ TribeSocket.in.room.finalPositions((data) => {
 
   let isGlowing = false;
   if (
-    data.miniCrowns.wpm === data.miniCrowns.raw &&
-    data.miniCrowns.raw === data.miniCrowns.acc &&
-    data.miniCrowns.acc === data.miniCrowns.consistency &&
-    data.miniCrowns.wpm === data.sorted[0]?.id
+    data.miniCrowns.wpm.includes(data.sorted[0]?.id) &&
+    data.miniCrowns.acc.includes(data.sorted[0]?.id) &&
+    data.miniCrowns.raw.includes(data.sorted[0]?.id) &&
+    data.miniCrowns.consistency.includes(data.sorted[0]?.id)
   ) {
     isGlowing = true;
   }

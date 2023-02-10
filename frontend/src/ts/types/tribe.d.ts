@@ -108,9 +108,9 @@ declare namespace TribeTypes {
   }
 
   interface MiniCrowns {
-    raw: string;
-    wpm: string;
-    acc: string;
-    consistency: string;
+    raw: string[];
+    wpm: string[];
+    acc: string[];
+    consistency: string[];
   }
 }
