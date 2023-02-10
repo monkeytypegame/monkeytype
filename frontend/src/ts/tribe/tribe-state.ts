@@ -4,6 +4,16 @@ let state = -1;
 
 let room: TribeTypes.Room | undefined = undefined;
 
+let autoReady = false;
+
+export function setAutoReady(newAutoReady: boolean): void {
+  autoReady = newAutoReady;
+}
+
+export function getAutoReady(): boolean {
+  return autoReady;
+}
+
 export function setState(newState: number): void {
   state = newState;
 }

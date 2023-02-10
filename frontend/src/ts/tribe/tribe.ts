@@ -109,6 +109,9 @@ function updateState(newState: number): void {
   } else if (state === 21) {
     TribeResults.hideTimer();
     TribeResults.updateTimerText("Time left for everyone to get ready");
+    if (TribeState.getAutoReady() === true) {
+      TribeSocket.out.room.readyUpdate();
+    }
   } else if (state === 22) {
     TribePageLobby.enableNameVisibilityButtons();
     TribePageLobby.enableConfigButtons();

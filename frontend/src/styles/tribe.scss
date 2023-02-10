@@ -306,6 +306,17 @@
 
 .pageTribe .tribePage.lobby,
 .pageTest #result {
+  .readyButtonGroup {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    // .button:nth-child(1) {
+    //   border-radius: var(--roundness) 0 0 var(--roundness);
+    // }
+    // .button:nth-child(2) {
+    //   border-radius: 0 var(--roundness) var(--roundness) 0;
+    // }
+  }
   .tribeResultChat {
     display: grid;
     grid-template-areas:

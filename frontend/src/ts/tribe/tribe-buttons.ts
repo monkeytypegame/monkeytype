@@ -66,9 +66,13 @@ export function enableStartButton(page: string): void {
 function showReadyButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
-    elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
+    elString = `.pageTribe .tribePage.lobby .lobbyButtons .readyButtonGroup,
+                .pageTribe .tribePage.lobby .lobbyButtons .userReadyButton,
+                .pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton`;
   } else if (page === "result") {
-    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton,
+    elString = `.pageTest #tribeResultBottom .buttons .readyButtonGroup,
+                .pageTest #tribeResultBottom .buttons .userReadyButton,
+                .pageTest #tribeResultBottom .buttons .autoReadyButton,
                 .pageTest #result .bottom .buttons #readyButton`;
   }
   $(elString).removeClass("hidden");
@@ -77,9 +81,9 @@ function showReadyButton(page: string): void {
 function hideReadyButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
-    elString = ".pageTribe .tribePage.lobby .lobbyButtons .userReadyButton";
+    elString = ".pageTribe .tribePage.lobby .lobbyButtons .readyButtonGroup";
   } else if (page === "result") {
-    elString = `.pageTest #tribeResultBottom .buttons .userReadyButton,
+    elString = `.pageTest #tribeResultBottom .buttons .readyButtonGroup,
                 .pageTest #result .bottom .buttons #readyButton`;
   }
   $(elString).addClass("hidden");
@@ -167,6 +171,20 @@ export function activateAfkButton(page: string): void {
   $(elString).addClass("active");
 }
 
+export function updateAutoReadyButton(page: string): void {
+  let elString = "";
+  if (page === "lobby") {
+    elString = ".pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton";
+  } else if (page === "result") {
+    elString = ".pageTest #tribeResultBottom .buttons .autoReadyButton";
+  }
+  if (TribeState.getAutoReady()) {
+    $(elString).addClass("active");
+  } else {
+    $(elString).removeClass("active");
+  }
+}
+
 export function reset(): void {
   $("#result .bottom .buttons div").addClass("hidden");
   $("#result #nextTestButton").removeClass("hidden");
@@ -210,6 +228,7 @@ export function update(page?: string): void {
     //   }
     // }
   } else {
+    updateAutoReadyButton(page);
     hideStartButton(page);
     showAfkButton(page);
     showReadyButton(page);
@@ -248,4 +267,21 @@ $(
   `.pageTest #result .bottom .buttons #backToLobbyButton, .pageTest #tribeResultBottom .buttons .backToLobbyButton`
 ).on("click", (_e) => {
   tribeSocket.out.room.backToLobby();
+});
+
+$(`.pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton,
+.pageTest #tribeResultBottom .buttons .autoReadyButton`).on("click", (e) => {
+  TribeState.setAutoReady(!TribeState.getAutoReady());
+  if (TribeState.getAutoReady()) {
+    $(e.currentTarget).addClass("active");
+  } else {
+    $(e.currentTarget).removeClass("active");
+  }
+  if (
+    TribeState.getAutoReady() === true &&
+    [5, 21].includes(TribeState.getState()) &&
+    TribeState.getSelf()?.isReady !== true
+  ) {
+    tribeSocket.out.room.readyUpdate();
+  }
 });
