@@ -579,13 +579,14 @@ TribeSocket.in.room.progressUpdate((data) => {
     });
   }
 
+  TribeCarets.updateAndAnimate(data.users);
+
   for (const [userId, userProgress] of Object.entries(data.users)) {
     room.users[userId].progress = userProgress;
     if (userId == TribeSocket.getId()) {
       TribeDelta.update();
     }
     //todo only update one
-    TribeCarets.updateAndAnimate(data.users);
     if (room.users[userId].isFinished === false) {
       TribeBars.update("test", userId);
       TribeBars.update("tribe", userId);
