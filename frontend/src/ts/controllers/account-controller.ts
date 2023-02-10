@@ -614,14 +614,6 @@ async function signUp(): Promise<void> {
     return;
   }
 
-  if (password.length > 25) {
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    Notifications.add("Password is too long", 0);
-    return;
-  }
-
   if (
     !email.match(
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -650,10 +642,10 @@ async function signUp(): Promise<void> {
     return;
   }
 
-  // Force user to use a capital letter, number, special character when setting up an account and changing password
+  // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
   if (!Misc.isLocalhost() && !Misc.isPasswordStrong(password)) {
     Notifications.add(
-      "Password must contain at least one capital letter, number, a special character and at least 8 characters long",
+      "Password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
       0,
       4
     );

@@ -537,7 +537,7 @@ list["updatePassword"] = new SimplePopup(
       }
       if (!isLocalhost() && !isPasswordStrong(newPass)) {
         Notifications.add(
-          "New password must contain at least one capital letter, number, a special character and at least 8 characters long",
+          "New password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
           0,
           4
         );

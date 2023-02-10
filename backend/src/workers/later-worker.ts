@@ -9,6 +9,7 @@ import { DailyLeaderboard } from "../utils/daily-leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
 import { getOrdinalNumberString, mapRange } from "../utils/misc";
 import LaterQueue, { LaterTask } from "../queues/later-queue";
+import { recordTimeToCompleteJob } from "../utils/prometheus";
 
 interface DailyLeaderboardMailContext {
   yesterdayTimestamp: number;
@@ -110,7 +111,7 @@ async function jobHandler(job: Job): Promise<void> {
   }
 
   const elapsed = performance.now() - start;
-
+  recordTimeToCompleteJob(LaterQueue.queueName, taskName, elapsed);
   Logger.success(`Job: ${taskName} - completed in ${elapsed}ms`);
 }
 
