@@ -623,9 +623,11 @@ TribeSocket.in.room.userResult((data) => {
       TribeResults.fadeUser("result", data.userId);
     }
   } else {
-    TribeBars.completeBar("test", data.userId);
-    TribeBars.completeBar("tribe", data.userId);
-    TribeResults.updateBar("result", data.userId, 100);
+    if (room.config.mode !== "time") {
+      TribeBars.completeBar("test", data.userId);
+      TribeBars.completeBar("tribe", data.userId);
+      TribeResults.updateBar("result", data.userId, 100);
+    }
   }
   TribeCarets.destroy(data.userId);
   if (!TestActive.get()) {
