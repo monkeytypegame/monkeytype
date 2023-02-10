@@ -692,7 +692,7 @@ TribeSocket.in.room.backToLobby(() => {
 TribeSocket.in.room.finalPositions((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
-  TribeResults.updatePositions("result", data.sorted);
+  TribeResults.updatePositions("result", data.sorted, true);
   TribeResults.updateMiniCrowns("result", data.miniCrowns);
   for (const user of Object.values(data.sorted)) {
     room.users[user.id].points = user.newPoints;

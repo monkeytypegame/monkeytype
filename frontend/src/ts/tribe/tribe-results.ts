@@ -142,7 +142,8 @@ export function updatePositions(
   orderedList: {
     newPoints: number;
     id: string;
-  }[]
+  }[],
+  reorder = false
 ): void {
   const points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
   if (page === "result") {
@@ -160,6 +161,29 @@ export function updatePositions(
             : ""
         );
     });
+
+    //todo once i use state and redraw elements as needed instead of always keeping elements in the dom
+    //reorder table rows based on the ordered list
+    if (reorder) {
+      const elements: Record<string, JQuery<HTMLElement>> = {};
+      const el = $(".pageTest #result #tribeResults table tbody");
+      el.find("tr.user").each((_, userEl) => {
+        const id = $(userEl).attr("id");
+        if (id) {
+          elements[id] = $(userEl);
+        }
+      });
+
+      el.empty();
+      //add in the correct order, then add the rest
+      orderedList.forEach((user) => {
+        el.append(elements[user.id]);
+        delete elements[user.id];
+      });
+      for (const id of Object.keys(elements)) {
+        el.append(elements[id]);
+      }
+    }
   }
 }
 
