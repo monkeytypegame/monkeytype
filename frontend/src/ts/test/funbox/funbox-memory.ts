@@ -15,9 +15,13 @@ export function save(
   };
 }
 
-export function load(): void {
+export function load(tribeOverride = false): void {
   Object.keys(settingsMemory).forEach((setting) => {
-    settingsMemory[setting].setFunction(settingsMemory[setting].value, true);
+    settingsMemory[setting].setFunction(
+      settingsMemory[setting].value,
+      true,
+      tribeOverride
+    );
   });
   settingsMemory = {};
 }

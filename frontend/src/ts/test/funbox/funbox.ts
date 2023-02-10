@@ -530,7 +530,7 @@ export function toggleScript(...params: string[]): void {
 
 export function setFunbox(funbox: string, tribeOverride = false): boolean {
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
-  FunboxMemory.load();
+  FunboxMemory.load(tribeOverride);
   UpdateConfig.setFunbox(funbox, false, tribeOverride);
   if (funbox === "none") FunboxMemory.load();
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();

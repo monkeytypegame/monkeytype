@@ -275,9 +275,11 @@ export function setFunbox(
 
 export function toggleFunbox(
   funbox: string,
-  nosave?: boolean
+  nosave?: boolean,
+  tribeOverride = false
 ): number | boolean {
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
+  if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   let r;
 
@@ -298,6 +300,7 @@ export function toggleFunbox(
     r = -r - 1;
   }
   saveToLocalStorage("funbox", nosave);
+  if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("funbox", config.funbox);
 
   return r;
