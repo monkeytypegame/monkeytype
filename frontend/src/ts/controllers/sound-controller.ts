@@ -1,7 +1,11 @@
 import Config from "../config";
 import Howler, { Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
-import { createErrorMessage, randomElementFromArray } from "../utils/misc";
+import {
+  createErrorMessage,
+  randomElementFromArray,
+  randomIntFromRange,
+} from "../utils/misc";
 import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
@@ -255,12 +259,15 @@ const notes = {
   A: [27.5, 55.0, 110.0, 220.0, 440.0, 880.0, 1760.0, 3520.0],
   Bb: [29.14, 58.27, 116.54, 233.08, 466.16, 932.33, 1864.66, 3729.31],
   B: [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07],
-};
+} as const;
+
+type ValidNotes = keyof typeof notes;
+type ValidFrequencies = typeof notes[ValidNotes];
 
 type GetNoteFrequencyCallback = (octave: number) => number;
 
 function bindToNote(
-  noteFrequencies: number[],
+  noteFrequencies: ValidFrequencies,
   octaveOffset = 0
 ): GetNoteFrequencyCallback {
   return (octave: number): number => {
@@ -341,6 +348,95 @@ function initAudioContext(): void {
   }
 }
 
+type ValidScales = "pentatonic" | "wholetone";
+
+const scales: Record<ValidScales, ValidNotes[]> = {
+  pentatonic: ["C", "D", "E", "G", "A"],
+  wholetone: ["C", "D", "E", "Gb", "Ab", "Bb"],
+};
+
+interface ScaleData {
+  octave: number; // current octave of scale
+  direction: number; // whether scale is ascending or descending
+  position: number; // current position in scale
+}
+
+function createPreviewScale(scaleName: ValidScales): () => void {
+  // We use a JavaScript closure to create a preview function that can be called multiple times and progress through the scale
+  const scale: ScaleData = {
+    position: 0,
+    octave: 4,
+    direction: 1,
+  };
+
+  return () => {
+    if (clickSounds === null) init();
+    playScale(scaleName, scale);
+  };
+}
+
+interface ScaleMeta {
+  name: ValidScales;
+  preview: ReturnType<typeof createPreviewScale>;
+  meta: ScaleData;
+}
+
+const defaultScaleData: ScaleData = {
+  position: 0,
+  octave: 4,
+  direction: 1,
+};
+
+export const scaleConfigurations: Record<
+  Extract<MonkeyTypes.PlaySoundOnClick, "12" | "13">,
+  ScaleMeta
+> = {
+  "12": {
+    name: "pentatonic",
+    preview: createPreviewScale("pentatonic"),
+    meta: defaultScaleData,
+  },
+  "13": {
+    name: "wholetone",
+    preview: createPreviewScale("wholetone"),
+    meta: defaultScaleData,
+  },
+};
+
+export function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
+  if (audioCtx === undefined) {
+    initAudioContext();
+  }
+  if (!audioCtx) return;
+
+  const randomNote = randomIntFromRange(0, scales[scale].length - 1);
+
+  if (Math.random() < 0.5) {
+    scaleMeta.octave += scaleMeta.direction;
+  }
+
+  if (scaleMeta.octave >= 6) {
+    scaleMeta.direction = -1;
+  }
+  if (scaleMeta.octave <= 4) {
+    scaleMeta.direction = 1;
+  }
+
+  const currentFrequency = notes[scales[scale][randomNote]][scaleMeta.octave];
+
+  const oscillatorNode = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+
+  oscillatorNode.type = "sine";
+  gainNode.gain.value = parseFloat(Config.soundVolume) / 10;
+  oscillatorNode.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  oscillatorNode.frequency.value = currentFrequency;
+  oscillatorNode.start(audioCtx.currentTime);
+  gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.3);
+  oscillatorNode.stop(audioCtx.currentTime + 2);
+}
+
 export function playNote(
   codeOverride?: string,
   oscillatorTypeOverride?: SupportedOscillatorTypes
@@ -380,6 +476,16 @@ export function playNote(
 
 export function playClick(): void {
   if (Config.playSoundOnClick === "off") return;
+
+  if (Config.playSoundOnClick in scaleConfigurations) {
+    const { name, meta } =
+      scaleConfigurations[
+        Config.playSoundOnClick as keyof typeof scaleConfigurations
+      ];
+    playScale(name, meta);
+    return;
+  }
+
   if (Config.playSoundOnClick in clickSoundIdsToOscillatorType) {
     playNote();
     return;
