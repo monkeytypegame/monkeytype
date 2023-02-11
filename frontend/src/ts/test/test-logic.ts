@@ -408,7 +408,7 @@ export function restart(options = {} as RestartOptions): void {
         Notifications.add(
           `Quick restart disabled in long tests. ${message}`,
           0,
-          3
+          4
         );
         return;
       }
