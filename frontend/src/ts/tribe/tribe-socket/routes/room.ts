@@ -87,9 +87,10 @@ function result(result: TribeTypes.Result): void {
 
 function create(
   mode: MonkeyTypes.Mode,
-  mode2: string | number | MonkeyTypes.QuoteLength[]
+  mode2: string | number | MonkeyTypes.QuoteLength[],
+  type?: string
 ): void {
-  Socket.emit("room_create", { mode, mode2 });
+  Socket.emit("room_create", { mode, mode2, type });
 }
 
 function toggleVisibility(): void {

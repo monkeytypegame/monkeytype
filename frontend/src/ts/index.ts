@@ -15,6 +15,7 @@ import * as TestInput from "./test/test-input";
 import * as Tribe from "./tribe/tribe";
 import * as TribeState from "./tribe/tribe-state";
 import * as TribeCarets from "./tribe/tribe-carets";
+import * as TribeSocket from "./tribe/tribe-socket";
 
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
@@ -78,5 +79,8 @@ extendedGlobal.tribeState = TribeState;
 
 //@ts-ignore
 extendedGlobal.tribeCarets = TribeCarets;
+
+//@ts-ignore
+extendedGlobal.createTribeRoom = TribeSocket.default.out.room.create;
 
 extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
