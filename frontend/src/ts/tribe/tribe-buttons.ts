@@ -111,6 +111,25 @@ export function enableReadyButton(page: string): void {
   $(elString).removeClass("disabled");
 }
 
+export function disableAutoReadyButton(page: string): void {
+  let elString = "";
+  if (page === "lobby") {
+    elString = ".pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton";
+  } else if (page === "result") {
+    elString = `.pageTest #tribeResultBottom .buttons .autoReadyButton`;
+  }
+  $(elString).addClass("disabled");
+}
+
+export function enableAutoReadyButton(page: string): void {
+  let elString = "";
+  if (page === "lobby") {
+    elString = ".pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton";
+  } else if (page === "result") {
+    elString = `.pageTest #tribeResultBottom .buttons .autoReadyButton`;
+  }
+  $(elString).removeClass("disabled");
+}
 function showAfkButton(page: string): void {
   let elString = "";
   if (page === "lobby") {
@@ -235,9 +254,11 @@ export function update(page?: string): void {
     deactivateAfkButton(page);
     enableReadyButton(page);
     enableAfkButton(page);
+    enableAutoReadyButton(page);
     if (self?.isAfk) {
       activateAfkButton(page);
       disableReadyButton(page);
+      disableAutoReadyButton(page);
     }
     if (self?.isReady) {
       disableAfkButton(page);
@@ -279,7 +300,7 @@ $(`.pageTribe .tribePage.lobby .lobbyButtons .autoReadyButton,
   }
   if (
     TribeState.getAutoReady() === true &&
-    [5, 21].includes(TribeState.getState()) &&
+    [5, 21, 22].includes(TribeState.getState()) &&
     TribeState.getSelf()?.isReady !== true
   ) {
     tribeSocket.out.room.readyUpdate();
