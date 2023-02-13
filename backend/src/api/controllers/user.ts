@@ -70,12 +70,25 @@ export async function sendVerificationEmail(
 
   const userInfo = await UserDAL.getUser(uid, "request verification email");
 
-  const link = await admin.auth().generateEmailVerificationLink(email, {
-    url:
-      process.env.MODE === "dev"
-        ? "http://localhost:3000"
-        : "https://monkeytype.com",
-  });
+  let link = "";
+  try {
+    link = await admin.auth().generateEmailVerificationLink(email, {
+      url:
+        process.env.MODE === "dev"
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
+    });
+  } catch (e) {
+    if (
+      e.code === "auth/internal-error" &&
+      e.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
+    ) {
+      // for some reason this error is not handled with a custom auth/ code, so we have to do it manually
+      throw new MonkeyError(429, "Too many requests. Please try again later.");
+    }
+    throw e;
+  }
+
   await emailQueue.sendVerificationEmail(email, userInfo.name, link);
 
   return new MonkeyResponse("Email sent");
