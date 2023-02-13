@@ -1139,5 +1139,12 @@
     "mainColor": "#8fbcbb",
     "subColor": "#6a7791",
     "textColor": "#8fbcbb"
-  }
+  },
+  {
+    "name": "slambook",
+    "bgColor": "#FFFDDE",
+    "mainColor": "#13005A",
+    "subColor": "#1c82adc4",
+    "textColor": "#125d98"
+}
 ]
