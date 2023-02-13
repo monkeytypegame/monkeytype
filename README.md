@@ -1,8 +1,3 @@
-I know this is a little late:
-
-# IMPORTANT: I will be taking a break from Monkeytype for the duration of December (and potentially a bit of January too). I will address all PRs and issues when I start working on the project again. For critical issues, email jack@monkeytype.com. Thanks.
-
-
 [![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
 <br />
 
