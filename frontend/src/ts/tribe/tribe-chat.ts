@@ -151,6 +151,7 @@ function sendMessage(msg: string): void {
   lastMessageTimestamp = performance.now();
   sendChattingUpdate(false);
   tribeSocket.out.room.chatMessage(msg);
+  shouldScrollChat = true;
   $(".pageTribe .lobby .chat .input input").val("");
   $(".pageTest #result #tribeResultBottom .chat .input input").val("");
 }
@@ -222,3 +223,23 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
     }
   }
 );
+
+$(".pageTribe .lobby .chat .messages").on("scroll", (_e) => {
+  const el = $(".pageTribe .lobby .chat .messages")[0];
+  const scrollHeight = el.scrollHeight as number;
+  const scrollTop = el.scrollTop as number;
+  const height = el.clientHeight as number;
+  if (height + scrollTop < scrollHeight - 20) {
+    shouldScrollChat = false;
+  }
+});
+
+$(".pageTest #result #tribeResultBottom .chat .messages").on("scroll", (_e) => {
+  const el = $(".pageTest #result #tribeResultBottom .chat .messages")[0];
+  const scrollHeight = el.scrollHeight as number;
+  const scrollTop = el.scrollTop as number;
+  const height = el.clientHeight as number;
+  if (height + scrollTop < scrollHeight - 20) {
+    shouldScrollChat = false;
+  }
+});
