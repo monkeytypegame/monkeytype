@@ -62,7 +62,7 @@ async function bootServer(port: number): Promise<Server> {
       });
       Logger.success(
         `Workers initialized: ${workers
-          .map((worker) => worker.name)
+          .map((worker) => worker(connection).name)
           .join(", ")}`
       );
     }
