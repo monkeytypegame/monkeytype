@@ -713,6 +713,9 @@
     }
     .name {
       color: var(--sub-color);
+      text-overflow: ellipsis;
+      max-width: 125px;
+      overflow: hidden;
     }
     .progress {
       width: 100%;
