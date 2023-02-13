@@ -151,6 +151,9 @@
           <li>
             <a href="#Advertisements">Advertisements</a>
           </li>
+          <li>
+            <a href="#Advertisements2">Advertisements Part 2</a>
+          </li>
           <li><a href="#Cookies">What are cookies?</a></li>
           <li><a href="#Usage_of_Cookies">How do we use cookies?</a></li>
           <li>
@@ -304,6 +307,46 @@
           browser's cookies, or heading to the "Update cookie preferences"
           section of the settings page.
         </p>
+        <h1 id="Advertisements2">Advertisements Part 2</h1>
+        <p>
+          <i>
+            This section only applies for the duration of Monkeytype's
+            Advertiser A/B Test, beginning sometime in the second half on
+            February 2023.
+          </i>
+        </p>
+        <p><i>Common ID Cookie</i></p>
+        <p id="cookieP">
+          This site uses cookies and similar tracking technologies such as the
+          Common ID cookie to provide its services. Cookies are important
+          devices for measuring advertising effectiveness and ensuring a robust
+          online advertising industry. The Common ID cookie stores a unique user
+          id in the first party domain and is accessible to our ad partners.
+          This simple ID that can be utilized to improve user matching,
+          especially for delivering ads to iOS and MacOS browsers. Users can opt
+          out of the Common ID tracking cookie by clicking
+          <a
+            onclick="window.setCookie('_pubcid_optout', '1', 1825);"
+            href="#opt-out"
+          >
+            here
+          </a>
+          .
+        </p>
+        <p><i>Advertising Privacy Settings</i></p>
+        <p>
+          FOR EU USERS ONLY: When you use our site, pre-selected companies may
+          access and use certain information on your device and about your
+          interests to serve ads or personalized content. You may revisit or
+          change consent-choices at any time by clicking
+          <a
+            href="#tcfapi"
+            onclick="if(window.__tcfapi === undefined){console.warn('User is not in the EU - Consent Choices can only be configured when User is in the EU')}else{ramp.showCmpModal()}"
+          >
+            here
+          </a>
+          .
+        </p>
 
         <h1 id="Cookies">What are cookies?</h1>
         <p>
@@ -415,5 +458,22 @@
     document.querySelector("#top").addEventListener("click", () => {
       window.location = "/";
     });
+  </script>
+  <script type="text/javascript">
+    let optOutCounter = 0;
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+      var expires = "expires=" + d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      if (optOutCounter == 0) {
+        let cookieP = document.getElementById("cookieP");
+        var successCookie = document.createElement("h3");
+        successCookie.innerHTML = "Optout Success!";
+        successCookie.setAttribute("style", "color:green");
+        cookieP.appendChild(successCookie);
+        optOutCounter++;
+      }
+    }
   </script>
 </html>
