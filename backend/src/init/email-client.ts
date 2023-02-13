@@ -47,18 +47,18 @@ export async function init(): Promise<void> {
     throw new Error("No email client configuration provided");
   }
 
-  transporter = nodemailer.createTransport({
-    host: EMAIL_HOST,
-    secure: EMAIL_PORT === "465" ? true : false,
-    port: parseInt(EMAIL_PORT ?? "578", 10),
-    auth: {
-      user: EMAIL_USER,
-      pass: EMAIL_PASS,
-    },
-  });
-  transportInitialized = true;
-
   try {
+    transporter = nodemailer.createTransport({
+      host: EMAIL_HOST,
+      secure: EMAIL_PORT === "465" ? true : false,
+      port: parseInt(EMAIL_PORT ?? "578", 10),
+      auth: {
+        user: EMAIL_USER,
+        pass: EMAIL_PASS,
+      },
+    });
+    transportInitialized = true;
+
     Logger.info("Verifying email client configuration...");
     const result = await transporter.verify();
 
