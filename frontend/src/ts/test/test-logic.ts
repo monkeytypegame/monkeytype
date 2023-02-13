@@ -1586,7 +1586,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
-  } else if (completedEvent.rawWpm < 0 || completedEvent.rawWpm > 350) {
+  } else if (
+    completedEvent.rawWpm < 0 ||
+    (completedEvent.rawWpm > 350 &&
+      completedEvent.mode != "words" &&
+      completedEvent.mode2 != "10") ||
+    (completedEvent.rawWpm > 420 &&
+      completedEvent.mode == "words" &&
+      completedEvent.mode2 == "10")
+  ) {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
     dontSave = true;
