@@ -487,6 +487,17 @@
 }
 
 .pageTest {
+  .tribeCaret .caretName {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    font-size: 0.2em;
+    color: var(--text-color);
+    background: var(--sub-color);
+    border-radius: calc(var(--roundness) / 2);
+    padding: 0 0.4em;
+    margin-bottom: -1em;
+  }
   #result {
     #tribeResultBottom {
       margin-top: 1rem;

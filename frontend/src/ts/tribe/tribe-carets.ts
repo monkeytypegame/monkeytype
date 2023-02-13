@@ -14,11 +14,13 @@ export class TribeCaret {
   constructor(
     private socketId: string,
     private wordIndex: number,
-    private letterIndex: number
+    private letterIndex: number,
+    private name: string
   ) {
     this.socketId = socketId;
     this.wordIndex = wordIndex;
     this.letterIndex = letterIndex;
+    this.name = name;
   }
 
   public spawn(): void {
@@ -33,6 +35,12 @@ export class TribeCaret {
     (document.querySelector(".pageTest #wordsWrapper") as HTMLElement).prepend(
       element
     );
+
+    //create caretName element, fill the name and insert inside element
+    const caretName = document.createElement("div");
+    caretName.classList.add("caretName");
+    caretName.innerText = this.name;
+    element.appendChild(caretName);
 
     this.element = $(element);
   }
@@ -155,7 +163,9 @@ export function init(): void {
   for (const socketId of Object.keys(room.users)) {
     if (socketId === tribeSocket.getId()) continue;
 
-    carets[socketId] = new TribeCaret(socketId, 0, -1);
+    const name = room.users[socketId].name;
+
+    carets[socketId] = new TribeCaret(socketId, 0, -1, name);
   }
 }
 
