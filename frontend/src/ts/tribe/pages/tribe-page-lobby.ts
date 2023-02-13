@@ -193,7 +193,7 @@ export function updateRoomConfig(): void {
 
   $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
     <div class='group' aria-label="Funbox" data-balloon-pos="up" commands="funbox">
-    <i class="fas fa-gamepad"></i>${room.config.funbox}
+    <i class="fas fa-gamepad"></i>${room.config.funbox.replace(/_/g, " ")}
     </div>
     `);
 
