@@ -16,9 +16,12 @@ const sounds: Record<string, Howl> = {
 
 export function play(name: string): void {
   if (
-    [10, 11, 12].includes(TribeState.getState()) &&
+    TribeState.getSelf()?.isTyping === true &&
     ["join", "leave", "chat", "chat_mention"].includes(name)
   ) {
+    return;
+  }
+  if (!TribeState.getSelf()?.isTyping && ["cd", "cd_go"].includes(name)) {
     return;
   }
   sounds[name].seek(0);
