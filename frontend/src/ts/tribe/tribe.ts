@@ -207,6 +207,7 @@ async function connect(): Promise<void> {
       `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${versionCheck.version}`,
       true
     );
+    TribePagePreloader.hideReconnectButton();
     TribePagePreloader.updateSubtext("");
     return;
   }
