@@ -19,6 +19,7 @@ import * as RedisClient from "../../init/redis";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
+import emailQueue from "../../queues/email-queue";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -56,6 +57,59 @@ export async function createNewUser(
   Logger.logToDb("user_created", `${name} ${email}`, uid);
 
   return new MonkeyResponse("User created");
+}
+
+export async function sendVerificationEmail(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { email, uid } = req.ctx.decodedToken;
+  const isVerified = (await admin.auth().getUser(uid)).emailVerified;
+  if (isVerified === true) {
+    throw new MonkeyError(400, "Email already verified");
+  }
+
+  const userInfo = await UserDAL.getUser(uid, "request verification email");
+
+  const link = await admin.auth().generateEmailVerificationLink(email, {
+    url:
+      process.env.MODE === "dev"
+        ? "http://localhost:3000"
+        : "https://monkeytype.com",
+  });
+  await emailQueue.sendVerificationEmail(email, userInfo.name, link);
+
+  return new MonkeyResponse("Email sent");
+}
+
+export async function sendForgotPasswordEmail(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { email } = req.body;
+
+  let auth;
+  try {
+    auth = await admin.auth().getUserByEmail(email);
+  } catch (e) {
+    if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(404, "User not found");
+    }
+    throw e;
+  }
+
+  const userInfo = await UserDAL.getUser(
+    auth.uid,
+    "request forgot password email"
+  );
+
+  const link = await admin.auth().generatePasswordResetLink(email, {
+    url:
+      process.env.MODE === "dev"
+        ? "http://localhost:3000"
+        : "https://monkeytype.com",
+  });
+  await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
+
+  return new MonkeyResponse("Email sent if user was found");
 }
 
 export async function deleteUser(

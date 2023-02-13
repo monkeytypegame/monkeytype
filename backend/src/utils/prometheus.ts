@@ -292,6 +292,16 @@ export function setQueueLength(
   queueLength.set({ queueName, countType }, length);
 }
 
+const emailCount = new Counter({
+  name: "email_count",
+  help: "Emails sent by the server",
+  labelNames: ["type", "status"],
+});
+
+export function recordEmail(type: string, status: string): void {
+  emailCount.inc({ type, status });
+}
+
 const timeToCompleteJobTotal = new Counter({
   name: "time_to_complete_job_total",
   help: "Time to complete a job total",
