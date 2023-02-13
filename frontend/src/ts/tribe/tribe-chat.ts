@@ -139,6 +139,7 @@ export async function appendMessage(data: {
 }
 
 function sendMessage(msg: string): void {
+  msg = msg.trim();
   if (msg === "") return;
   if (msg.length > 512) {
     Notifications.add("Message cannot be longer than 512 characters.", 0);
