@@ -168,7 +168,7 @@ export function updateAndAnimate(
       data[socketId].wordIndex,
       data[socketId].letterIndex
     );
-    carets[socketId].animate((getRoom()?.updateRate ?? 500) / 2);
+    carets[socketId].animate((getRoom()?.updateRate ?? 500) / 4);
   }
 }
 
