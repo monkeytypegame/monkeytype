@@ -511,16 +511,24 @@ TribeSocket.in.room.usersUpdate((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
 
+  let isChattingChanged = false;
   for (const [userId, user] of Object.entries(data)) {
     if (user.isTyping !== undefined) {
       room.users[userId].isTyping = user.isTyping;
     }
     if (user.isAfk !== undefined) room.users[userId].isAfk = user.isAfk;
     if (user.isReady !== undefined) room.users[userId].isReady = user.isReady;
+    if (user.isChatting !== undefined) {
+      isChattingChanged = true;
+      room.users[userId].isChatting = user.isChatting;
+    }
   }
   TribeUserList.update("lobby");
   TribeUserList.update("result");
   TribeButtons.update("lobby");
+  if (isChattingChanged) {
+    TribeChat.updateIsTyping();
+  }
 });
 
 TribeSocket.in.room.raceStarted(() => {
