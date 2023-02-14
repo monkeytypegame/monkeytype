@@ -231,6 +231,8 @@ $(".pageTribe .lobby .chat .messages").on("scroll", (_e) => {
   const height = el.clientHeight as number;
   if (height + scrollTop < scrollHeight - 20) {
     shouldScrollChat = false;
+  } else {
+    shouldScrollChat = true;
   }
 });
 
@@ -241,5 +243,7 @@ $(".pageTest #result #tribeResultBottom .chat .messages").on("scroll", (_e) => {
   const height = el.clientHeight as number;
   if (height + scrollTop < scrollHeight - 20) {
     shouldScrollChat = false;
+  } else {
+    shouldScrollChat = true;
   }
 });
