@@ -52,7 +52,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     },
     {
       id: "setPaceCaretCustom",
-      display: "custom...",
+      display: "custom...(in cpm)",
       configValue: "custom",
       input: true,
       exec: (input): void => {

@@ -416,7 +416,7 @@ export function setPaceCaretCustomSpeed(
     return false;
   }
 
-  config.paceCaretCustomSpeed = val;
+  config.paceCaretCustomSpeed = Math.round(val / 5);
   saveToLocalStorage("paceCaretCustomSpeed", nosave);
   ConfigEvent.dispatch("paceCaretCustomSpeed", config.paceCaretCustomSpeed);
 
