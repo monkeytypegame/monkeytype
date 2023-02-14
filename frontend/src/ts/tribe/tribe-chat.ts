@@ -3,9 +3,60 @@ import * as TribeState from "../tribe/tribe-state";
 import * as Misc from "../utils/misc";
 import * as TestUI from "../test/test-ui";
 import tribeSocket from "./tribe-socket";
+import { InputSuggestions } from "../elements/input-suggestions";
 
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
+
+const lobbyChatSuggestions1 = new InputSuggestions(
+  $(".pageTribe .lobby .chat .input input"),
+  "@",
+  "",
+  3,
+  0,
+  "top"
+);
+
+const lobbyChatSuggestions2 = new InputSuggestions(
+  $(".pageTribe .lobby .chat .input input"),
+  ":",
+  ":",
+  3,
+  1,
+  "top"
+);
+
+Misc.getEmojiList().then((emojis) => {
+  const dataToSet: Record<string, TribeTypes.InputSuggestionEntry> = {};
+  for (const emoji of emojis) {
+    if (emoji.type === "emoji") {
+      dataToSet[emoji.from] = {
+        display: emoji.from,
+        textIcon: emoji.to,
+      };
+    } else {
+      dataToSet[emoji.from] = {
+        display: emoji.from,
+        imageIcon: emoji.to,
+      };
+    }
+  }
+  lobbyChatSuggestions2.setData(dataToSet);
+});
+
+export function updateSuggestionData(): void {
+  const users = TribeState.getRoom()?.users;
+  if (!users) return;
+  const dataToSet: Record<string, TribeTypes.InputSuggestionEntry> = {};
+  for (const user of Object.values(users)) {
+    if (user.id === tribeSocket.getId()) continue;
+    dataToSet[user.name] = {
+      display: user.name,
+      faIcon: "fa-user",
+    };
+  }
+  lobbyChatSuggestions1.setData(dataToSet);
+}
 
 export function reset(): void {
   $(".pageTribe .lobby .chat .messages").empty();
@@ -83,7 +134,7 @@ export function updateIsTyping(): void {
 async function insertImageEmoji(text: string): Promise<string> {
   const textSplit = text.trim().split(" ");
   let big = "";
-  if (textSplit.length === 1) big = " big";
+  if (textSplit.length === 1) big = "big";
   for (let i = 0; i < textSplit.length; i++) {
     if (/&#58;.+&#58;/g.test(textSplit[i])) {
       const emoji = await Misc.getEmojiList();
@@ -93,9 +144,13 @@ async function insertImageEmoji(text: string): Promise<string> {
           textSplit[i].replace(/&#58;/g, "").toLowerCase()
       );
       if (result[0] !== undefined) {
-        textSplit[
-          i
-        ] = `<div class="emoji ${big}" style="background-image: url('${result[0].to}')"></div>`;
+        if (result[0].type === "image") {
+          textSplit[
+            i
+          ] = `<div class="imageemoji ${big}" style="background-image: url('${result[0].to}')"></div>`;
+        } else if (result[0].type === "emoji") {
+          textSplit[i] = `<div class="emoji ${big}">${result[0].to}</div>`;
+        }
       }
     }
   }

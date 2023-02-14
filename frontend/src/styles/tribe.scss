@@ -382,7 +382,7 @@
           gap: 0.5rem;
           align-items: center;
           flex-wrap: wrap;
-          .emoji {
+          .imageemoji {
             width: 1.25rem;
             height: 1.25rem;
             background-size: contain;
@@ -393,6 +393,9 @@
               width: 2.25rem;
               height: 2.25rem;
             }
+          }
+          .emoji.big {
+            font-size: 2.25rem;
           }
         }
         span.mention {

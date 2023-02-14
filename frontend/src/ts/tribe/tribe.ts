@@ -169,6 +169,7 @@ export function joinRoom(roomId: string, fromBrowser = false): void {
       TribePageLobby.init();
       TribePages.change("lobby");
       TribeSound.play("join");
+      TribeChat.updateSuggestionData();
       // history.replaceState(null, "", `/tribe/${roomId}`);
     } else {
       TribePages.change("menu");
@@ -328,6 +329,7 @@ TribeSocket.in.room.joined((data) => {
   TribePageLobby.init();
   TribePages.change("lobby");
   TribeSound.play("join");
+  TribeChat.updateSuggestionData();
   // history.replaceState(null, "", `/tribe/${e.room.id}`);
 });
 
@@ -338,6 +340,7 @@ TribeSocket.in.room.playerJoined((data) => {
     room.size = Object.keys(room.users).length;
     TribeUserList.update();
     TribeSound.play("join");
+    TribeChat.updateSuggestionData();
     // TribeButtons.update("lobby")
   }
 });
