@@ -201,11 +201,8 @@ export class InputSuggestions {
   applySelection(): void {
     if (!this.suggestionsElement) return;
     if (this.selectedIndex === undefined) return;
-    const selected = this.suggestionsElement
-      .find(".suggestion")
-      .eq(this.selectedIndex);
-    const searchString = selected.data("search-string");
-    if (!searchString) return;
+    const toInsert = this.foundKeys[this.selectedIndex];
+    if (!toInsert) return;
 
     const currentVal = this.inputElement.val() as string;
     const split = currentVal.split(" ");
@@ -214,7 +211,7 @@ export class InputSuggestions {
     split.pop();
 
     //add the selected suggestion
-    split.push(searchString);
+    split.push(toInsert);
 
     //add the prefix
     split[split.length - 1] =
