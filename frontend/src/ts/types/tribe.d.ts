@@ -12,6 +12,13 @@ declare namespace TribeTypes {
     ];
   }
 
+  interface InputSuggestionEntry {
+    display: string;
+    imageIcon?: string;
+    faIcon?: string;
+    textIcon?: string;
+  }
+
   interface Result {
     wpm: number;
     raw: number;

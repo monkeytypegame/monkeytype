@@ -1,10 +1,3 @@
-interface Suggestion {
-  display: string;
-  imageIcon?: string;
-  faIcon?: string;
-  textIcon?: string;
-}
-
 export class InputSuggestions {
   private inputElement: JQuery<HTMLElement>;
   private suggestionsElement: JQuery<HTMLElement> | undefined;
@@ -12,7 +5,7 @@ export class InputSuggestions {
   private selectedIndex: number | undefined;
   private prefix: string;
   private suffix: string;
-  private data: Record<string, Suggestion>;
+  private data: Record<string, TribeTypes.InputSuggestionEntry>;
   private foundKeys: string[];
   private position: "top" | "bottom";
   private minInputForSuggestions: number;
@@ -193,7 +186,7 @@ export class InputSuggestions {
     this.updateRoundCorners();
   }
 
-  setData(data: Record<string, Suggestion>): void {
+  setData(data: Record<string, TribeTypes.InputSuggestionEntry>): void {
     this.data = data;
   }
 
