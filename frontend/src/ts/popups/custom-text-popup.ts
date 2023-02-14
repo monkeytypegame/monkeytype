@@ -82,21 +82,50 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
   } else {
     delimiter = " ";
   }
+  $(`${popup} .delimiterInputFields input`).on("change", () => {
+    CustomText.setSection(
+      parseInt($(`${popup} .sectioncount input`).val() as string) ||
+        CustomText.text.length - 1
+    );
+  });
+
   if (
     $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
   ) {
+    console.log("text is changed");
     const currentText = $(`${popup} textarea`).val() as string;
     const currentTextSplit = currentText.split(CustomText.delimiter);
-    console.log(currentTextSplit, "split");
-    console.log(CustomText.section, "sectioncount");
-    currentTextSplit.splice(0, CustomText.section);
+    // currentTextSplit.splice(0, CustomText.section);
     let newtext = currentTextSplit.join(delimiter);
     newtext = newtext.replace(/\n /g, "\n");
     $(`${popup} textarea`).val(newtext);
   } else {
-    let newtext = CustomText.text.join(delimiter);
+    let newtext = "";
+    if (
+      CustomText.section != CustomText.text.length - 1 &&
+      $(`${popup} .delimiterCheck input`).prop("checked")
+    ) {
+      console.log(CustomText.text, "text");
+      console.log(CustomText.section, "section");
+      const set = new Set();
+
+      while (set.size < CustomText.section) {
+        set.add(Math.floor(Math.random() * (CustomText.text.length - 1)));
+      }
+      for (const [item, value] of CustomText.text.entries()) {
+        item != CustomText.text.length && Array.from(set).includes(item)
+          ? (newtext += value + "|")
+          : (newtext += value + " ");
+      }
+      console.log(newtext, "newtext");
+    } else {
+      newtext = CustomText.text.join(delimiter); //add this line to get back the original text
+    }
+    // newtext = CustomText.text.join(delimiter); //add this line to get back the original text
     newtext = newtext.replace(/\n /g, "\n");
+    console.log(newtext, "text");
     $(`${popup} textarea`).val(newtext);
+    console.log("text hai kya");
   }
   CustomText.setDelimiter(delimiter);
 });
@@ -232,10 +261,9 @@ function apply(): void {
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
+  console.log(text, "text kyu kya");
   CustomText.setText(text.split(CustomText.delimiter));
-  CustomText.setSection(
-    parseInt($(`${popup} .sectioncount input`).val() as string) || -1
-  );
+
   CustomText.setWord(
     parseInt($(`${popup} .wordcount input`).val() as string) || -1
   );
