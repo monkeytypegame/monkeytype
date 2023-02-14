@@ -14,6 +14,7 @@ import * as RedisClient from "./init/redis";
 import queues from "./queues";
 import workers from "./workers";
 import Logger from "./utils/logger";
+import * as EmailClient from "./init/email-client";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -35,6 +36,9 @@ async function bootServer(port: number): Promise<Server> {
     const liveConfiguration = await getLiveConfiguration();
     Logger.success("Live configuration fetched");
 
+    Logger.info("Initializing email client...");
+    EmailClient.init();
+
     Logger.info("Connecting to redis...");
     await RedisClient.connect();
 
@@ -46,13 +50,21 @@ async function bootServer(port: number): Promise<Server> {
       queues.forEach((queue) => {
         queue.init(connection);
       });
-      Logger.success("Queues initialized");
+      Logger.success(
+        `Queues initialized: ${queues
+          .map((queue) => queue.queueName)
+          .join(", ")}`
+      );
 
       Logger.info("Initializing workers...");
       workers.forEach((worker) => {
         worker(connection).run();
       });
-      Logger.success("Workers initialized");
+      Logger.success(
+        `Workers initialized: ${workers
+          .map((worker) => worker(connection).name)
+          .join(", ")}`
+      );
     }
 
     initializeDailyLeaderboardsCache(liveConfiguration.dailyLeaderboards);

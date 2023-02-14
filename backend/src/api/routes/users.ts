@@ -582,4 +582,22 @@ router.post(
   asyncHandler(UserController.reportUser)
 );
 
+router.get(
+  "/verificationEmail",
+  authenticateRequest(),
+  RateLimit.userRequestVerificationEmail,
+  asyncHandler(UserController.sendVerificationEmail)
+);
+
+router.post(
+  "/forgotPasswordEmail",
+  RateLimit.userForgotPasswordEmail,
+  validateRequest({
+    body: {
+      email: joi.string().email().required(),
+    },
+  }),
+  asyncHandler(UserController.sendForgotPasswordEmail)
+);
+
 export default router;

@@ -35,9 +35,15 @@ export function check(): void {
 
 export function show(): void {
   Skeleton.append(wrapperId);
-  if ($("#cookiePopupWrapper")[0] === undefined) {
+  if (
+    $("#cookiePopupWrapper")[0] === undefined ||
+    $("#cookiePopupWrapper").is(":visible") === false ||
+    $("#cookiePopupWrapper").outerHeight(true) === 0
+  ) {
     //removed by cookie popup blocking extension
+    $("#cookiePopupWrapper").addClass("hidden");
     visible = false;
+    Skeleton.remove(wrapperId);
     return;
   }
   if (!isPopupVisible(wrapperId)) {
