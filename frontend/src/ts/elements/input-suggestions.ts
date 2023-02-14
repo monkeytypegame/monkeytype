@@ -156,17 +156,25 @@ export class InputSuggestions {
 
   updatePosition(): void {
     if (!this.suggestionsElement) return;
-    const inputRect = this.inputElement[0].getBoundingClientRect();
-    const suggestionsRect = this.suggestionsElement[0].getBoundingClientRect();
-    const top =
-      this.position === "top"
-        ? inputRect.top - suggestionsRect.height
-        : inputRect.bottom;
-    this.suggestionsElement.css({
-      top: top + "px",
-      left: inputRect.left + "px",
-      width: inputRect.width + "px",
-    });
+    if (this.position === "top") {
+      this.suggestionsElement.css({
+        left: this.inputElement[0].offsetLeft + "px",
+        width: this.inputElement[0].offsetWidth + "px",
+        top:
+          this.inputElement[0].offsetTop -
+          this.suggestionsElement[0].offsetHeight +
+          "px",
+      });
+    } else {
+      this.suggestionsElement.css({
+        left: this.inputElement[0].offsetLeft + "px",
+        width: this.inputElement[0].offsetWidth + "px",
+        top:
+          this.inputElement[0].offsetTop +
+          this.inputElement[0].offsetHeight +
+          "px",
+      });
+    }
   }
 
   updateSelected(): void {
