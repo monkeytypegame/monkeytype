@@ -15,12 +15,14 @@ export class InputSuggestions {
   private data: Record<string, Suggestion>;
   private foundKeys: string[];
   private position: "top" | "bottom";
+  private minInputForSuggestions: number;
 
   constructor(
     inputElement: JQuery<HTMLElement>,
     prefix: string,
     suffix: string,
     maxSuggestions: number,
+    minInputForSuggestions: number,
     position: "top" | "bottom"
   ) {
     this.inputElement = inputElement;
@@ -31,15 +33,19 @@ export class InputSuggestions {
     this.selectedIndex = undefined;
     this.position = position;
     this.foundKeys = [];
+    this.minInputForSuggestions = minInputForSuggestions;
 
     this.inputElement.on("input", () => {
       const inputVal = this.inputElement.val() as string;
       const split = inputVal.split(" ");
       const last = split[split.length - 1];
+      const search = last.slice(this.prefix.length);
 
-      if (last.startsWith(this.prefix)) {
+      if (
+        last.startsWith(this.prefix) &&
+        search.length >= this.minInputForSuggestions
+      ) {
         this.spawn();
-        const search = last.slice(this.prefix.length);
         this.search(search);
         this.fill();
       } else {
@@ -85,13 +91,6 @@ export class InputSuggestions {
     this.suggestionsElement = $(suggestionsElement);
     this.selectedIndex = 0;
 
-    console.log(
-      this.maxSuggestions,
-      this.selectedIndex,
-      this.prefix,
-      this.position
-    );
-
     this.updateRoundCorners();
   }
 
@@ -103,11 +102,13 @@ export class InputSuggestions {
     } else {
       //first filter by keys that begin with search, then add keys that contain search
       found = Object.keys(this.data).filter((key) =>
-        key.startsWith(searchString)
+        key.toLowerCase().startsWith(searchString.toLowerCase())
       );
       found = found.concat(
         Object.keys(this.data).filter(
-          (key) => key.includes(searchString) && !found.includes(key)
+          (key) =>
+            key.toLowerCase().includes(searchString.toLowerCase()) &&
+            !found.includes(key)
         )
       );
     }
