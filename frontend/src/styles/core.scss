@@ -445,6 +445,21 @@ key {
   }
 }
 
+.inputSuggestions {
+  position: absolute;
+  background: var(--sub-alt-color);
+  border-radius: var(--roundness);
+  font-size: 0.75rem;
+  overflow: hidden;
+  .suggestion {
+    padding: 0.5em 1em;
+    &.selected {
+      background: var(--text-color);
+      color: var(--sub-alt-color);
+    }
+  }
+}
+
 .configureAPI.button {
   position: fixed;
   left: 0;
