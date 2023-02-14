@@ -135,11 +135,11 @@ export class InputSuggestions {
       }" data-search-string="${searchString}" data-id="${added}">
         ${
           suggestion.imageIcon
-            ? `<img src="${suggestion.imageIcon}" />`
+            ? `<div class="icon"><img src="${suggestion.imageIcon}" /></div>`
             : suggestion.faIcon
-            ? `<i class="fas fa-fw ${suggestion.faIcon}"></i>`
+            ? `<div class="icon"><i class="fas fa-fw ${suggestion.faIcon}"></i></div>`
             : suggestion.textIcon
-            ? `<span>${suggestion.textIcon}</span>`
+            ? `<div class="icon"><span>${suggestion.textIcon}</span></div>`
             : ""
         }
         <span>${suggestion.display}</span>

@@ -453,9 +453,22 @@ key {
   overflow: hidden;
   .suggestion {
     padding: 0.5em 1em;
+    display: grid;
+    grid-template-columns: 1.25em 1fr;
+    gap: 1em;
     &.selected {
       background: var(--text-color);
       color: var(--sub-alt-color);
+    }
+    .icon {
+      width: 1.25em;
+      height: 1.25em;
+      display: grid;
+      place-items: center center;
+    }
+    img {
+      width: 1.25em;
+      height: 1.25em;
     }
   }
 }
