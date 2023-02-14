@@ -11,6 +11,7 @@ export class InputSuggestions {
   private maxSuggestions: number;
   private selectedIndex: number | undefined;
   private prefix: string;
+  private suffix: string;
   private data: Record<string, Suggestion>;
   private foundKeys: string[];
   private position: "top" | "bottom";
@@ -18,12 +19,14 @@ export class InputSuggestions {
   constructor(
     inputElement: JQuery<HTMLElement>,
     prefix: string,
+    suffix: string,
     maxSuggestions: number,
     position: "top" | "bottom"
   ) {
     this.inputElement = inputElement;
     this.data = {};
     this.prefix = prefix;
+    this.suffix = suffix;
     this.maxSuggestions = maxSuggestions;
     this.selectedIndex = undefined;
     this.position = position;
@@ -212,7 +215,8 @@ export class InputSuggestions {
     split.push(searchString);
 
     //add the prefix
-    split[split.length - 1] = this.prefix + split[split.length - 1];
+    split[split.length - 1] =
+      this.prefix + split[split.length - 1] + (this.suffix ? this.suffix : "");
 
     //join the array back into a string
     const newVal = split.join(" ");
