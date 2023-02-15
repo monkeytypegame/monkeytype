@@ -84,6 +84,7 @@ async function updateGraph(): Promise<void> {
   let smoothedRawData = chartData2;
   if (!useUnsmoothedRaw) {
     smoothedRawData = Misc.smooth(smoothedRawData, 1);
+    smoothedRawData = smoothedRawData.map((a) => Math.round(a));
   }
 
   ChartController.result.data.labels = labels;
