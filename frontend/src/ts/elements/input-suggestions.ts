@@ -201,6 +201,7 @@ export class InputSuggestions {
   applySelection(): void {
     if (!this.suggestionsElement) return;
     if (this.selectedIndex === undefined) return;
+    if (!this.suggestionsElement) return;
     const toInsert = this.foundKeys[this.selectedIndex];
     if (!toInsert) return;
 
@@ -271,5 +272,9 @@ export class InputSuggestions {
         "border-bottom-right-radius": "",
       });
     }
+  }
+
+  isVisible(): boolean {
+    return this.suggestionsElement !== undefined;
   }
 }
