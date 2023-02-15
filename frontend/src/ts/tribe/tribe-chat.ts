@@ -28,8 +28,33 @@ const lobbyChatSuggestions2 = new InputSuggestions(
   ["Enter", "Tab"]
 );
 
+const resultChatSuggestions1 = new InputSuggestions(
+  $(".pageTest #result #tribeResultBottom .chat .input input"),
+  "@",
+  "",
+  3,
+  0,
+  "top",
+  ["Enter", "Tab"]
+);
+
+const resultChatSuggestions2 = new InputSuggestions(
+  $(".pageTest #result #tribeResultBottom .chat .input input"),
+  ":",
+  ":",
+  3,
+  1,
+  "top",
+  ["Enter", "Tab"]
+);
+
 export function isAnyChatSuggestionVisible(): boolean {
-  return lobbyChatSuggestions1.isVisible() || lobbyChatSuggestions2.isVisible();
+  return (
+    lobbyChatSuggestions1.isVisible() ||
+    lobbyChatSuggestions2.isVisible() ||
+    resultChatSuggestions1.isVisible() ||
+    resultChatSuggestions2.isVisible()
+  );
 }
 
 Misc.getEmojiList().then((emojis) => {
@@ -48,6 +73,7 @@ Misc.getEmojiList().then((emojis) => {
     }
   }
   lobbyChatSuggestions2.setData(dataToSet);
+  resultChatSuggestions2.setData(dataToSet);
 });
 
 export function updateSuggestionData(): void {
@@ -62,11 +88,16 @@ export function updateSuggestionData(): void {
     };
   }
   lobbyChatSuggestions1.setData(dataToSet);
+  resultChatSuggestions1.setData(dataToSet);
 }
 
 export function reset(): void {
   $(".pageTribe .lobby .chat .messages").empty();
   $(".pageTest #result #tribeResultBottom .chat .messages").empty();
+  lobbyChatSuggestions1.destroy();
+  lobbyChatSuggestions2.destroy();
+  resultChatSuggestions1.destroy();
+  resultChatSuggestions2.destroy();
 }
 
 function sendChattingUpdate(bool: boolean): void {
