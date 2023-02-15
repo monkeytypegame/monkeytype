@@ -35,6 +35,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import tribeSocket from "../tribe/tribe-socket";
+import { isAnyChatSuggestionVisible } from "../tribe/tribe-chat";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -731,6 +732,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // tribe
     if (TribeState.getState() >= 5) {
       if (TribeState.getState() > 5 && TribeState.getState() < 21) return;
+      if (isAnyChatSuggestionVisible()) return;
       if (TribeState.getSelf()?.isLeader) {
         if (TribeState.getState() === 5 || TribeState.getState() === 22) {
           Tribe.initRace();
