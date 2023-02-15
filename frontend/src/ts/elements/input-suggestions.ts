@@ -281,6 +281,8 @@ export class InputSuggestions {
   }
 
   isVisible(): boolean {
-    return this.suggestionsElement !== undefined;
+    if (this.suggestionsElement === undefined) return false;
+
+    return this.suggestionsElement.is(":visible");
   }
 }
