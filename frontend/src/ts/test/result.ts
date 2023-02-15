@@ -568,6 +568,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   } else if (Config.difficulty == "master") {
     testType += "<br>master";
   }
+  if (Config.stopOnError !== "off") {
+    testType += `<br>stop on ${Config.stopOnError}`;
+  }
 
   $("#result .stats .testType .bottom").html(testType);
 }
