@@ -33,7 +33,7 @@ import * as TribeCarets from "./tribe-carets";
 const defaultName = "Guest";
 let name = "Guest";
 
-export const expectedVersion = "0.12.3";
+export const expectedVersion = "0.12.4";
 
 let autoJoin: string | undefined = undefined;
 
