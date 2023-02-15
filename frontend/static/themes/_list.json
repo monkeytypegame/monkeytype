@@ -1022,11 +1022,32 @@
     "textColor": "#414141"
   },
   {
-    "name": "catppuccin",
+    "name": "catppuccin_frappe",
+    "bgColor": "#303446",
+    "mainColor": "#8caaee",
+    "subColor": "#51576d",
+    "textColor": "#c6d0f5"
+  },
+  {
+    "name": "catppuccin_latte",
+    "bgColor": "#eff1f5",
+    "mainColor": "#1e66f5",
+    "subColor": "#bcc0cc",
+    "textColor": "#4c4f69"
+  },
+  {
+    "name": "catppuccin_macchiato",
+    "bgColor": "#24273a",
+    "mainColor": "#8aadf4",
+    "subColor": "#494d64",
+    "textColor": "#cad3f5"
+  },
+  {
+    "name": "catppuccin_mocha",
     "bgColor": "#1e1e2e",
-    "mainColor": "#abe9b3",
-    "subColor": "#575268",
-    "textColor": "#d9e0ee"
+    "mainColor": "#89b4fa",
+    "subColor": "#45475a",
+    "textColor": "#cdd6f4"
   },
   {
     "name": "snes",
