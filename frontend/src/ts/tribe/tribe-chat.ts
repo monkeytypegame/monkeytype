@@ -14,7 +14,8 @@ const lobbyChatSuggestions1 = new InputSuggestions(
   "",
   3,
   0,
-  "top"
+  "top",
+  ["Enter", "Tab"]
 );
 
 const lobbyChatSuggestions2 = new InputSuggestions(
@@ -23,8 +24,13 @@ const lobbyChatSuggestions2 = new InputSuggestions(
   ":",
   3,
   1,
-  "top"
+  "top",
+  ["Enter", "Tab"]
 );
+
+export function isAnyChatSuggestionVisible(): boolean {
+  return lobbyChatSuggestions1.isVisible() || lobbyChatSuggestions2.isVisible();
+}
 
 Misc.getEmojiList().then((emojis) => {
   const dataToSet: Record<string, TribeTypes.InputSuggestionEntry> = {};
@@ -213,6 +219,7 @@ function sendMessage(msg: string): void {
 
 $(".pageTribe .tribePage.lobby .chat .input input").on("keyup", (e) => {
   if (e.key === "Enter") {
+    if (isAnyChatSuggestionVisible()) return;
     const msg = $(".pageTribe .lobby .chat .input input").val();
     sendMessage(msg as string);
   }
@@ -222,6 +229,7 @@ $(".pageTest #result #tribeResultBottom .chat .input input").on(
   "keyup",
   (e) => {
     if (e.key === "Enter") {
+      if (isAnyChatSuggestionVisible()) return;
       const msg = $(
         ".pageTest #result #tribeResultBottom .chat .input input"
       ).val();
