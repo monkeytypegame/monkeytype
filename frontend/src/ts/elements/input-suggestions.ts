@@ -9,6 +9,7 @@ export class InputSuggestions {
   private foundKeys: string[];
   private position: "top" | "bottom";
   private minInputForSuggestions: number;
+  private applyWith: string[];
 
   constructor(
     inputElement: JQuery<HTMLElement>,
@@ -16,7 +17,8 @@ export class InputSuggestions {
     suffix: string,
     maxSuggestions: number,
     minInputForSuggestions: number,
-    position: "top" | "bottom"
+    position: "top" | "bottom",
+    applyWith: string[]
   ) {
     this.inputElement = inputElement;
     this.data = {};
@@ -27,6 +29,7 @@ export class InputSuggestions {
     this.position = position;
     this.foundKeys = [];
     this.minInputForSuggestions = minInputForSuggestions;
+    this.applyWith = applyWith;
 
     this.inputElement.on("input", () => {
       const inputVal = this.inputElement.val() as string;
@@ -65,7 +68,10 @@ export class InputSuggestions {
         }
         this.updateSelected();
       }
-      if (e.code === "Enter") {
+    });
+
+    this.inputElement.on("keyup", (e) => {
+      if (this.applyWith.includes(e.code)) {
         this.applySelection();
       }
     });
