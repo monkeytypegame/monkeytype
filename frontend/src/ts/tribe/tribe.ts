@@ -267,7 +267,12 @@ TribeSocket.in.user.updateName((e) => {
 TribeSocket.in.system.disconnect((reason, details) => {
   updateState(-1);
   if (!$(".pageTribe").hasClass("active")) {
-    Notifications.add("Disconnected", -1, undefined, "Tribe");
+    Notifications.add(
+      `Disconnected: ${details?.["description"] ?? reason}`,
+      -1,
+      undefined,
+      "Tribe"
+    );
   }
   TribeState.setRoom(undefined);
   TribePages.change("preloader");
