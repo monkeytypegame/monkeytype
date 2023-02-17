@@ -155,6 +155,22 @@ export class TribeCaret {
       this.destroy();
     }
   }
+
+  lineJump(offset: number, withAnimation: boolean): void {
+    if (!this.element) return;
+    if (withAnimation) {
+      this.element.stop(true, false).animate(
+        {
+          top: (<HTMLElement>this.element[0])?.offsetTop - offset,
+        },
+        SlowTimer.get() ? 0 : 125
+      );
+    } else {
+      this.element.css({
+        top: (<HTMLElement>this.element[0]).offsetTop - offset,
+      });
+    }
+  }
 }
 
 export function init(): void {
@@ -200,5 +216,11 @@ export function destroyAll(): void {
   for (const socketId of Object.keys(carets)) {
     carets[socketId].destroy();
     delete carets[socketId];
+  }
+}
+
+export function lineJump(offset: number, withAnimation: boolean): void {
+  for (const socketId of Object.keys(carets)) {
+    carets[socketId].lineJump(offset, withAnimation);
   }
 }

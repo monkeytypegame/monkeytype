@@ -19,6 +19,7 @@ import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import * as PractiseWords from "./practise-words";
+import * as TribeCarets from "../tribe/tribe-carets";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -656,6 +657,8 @@ export function lineJump(currentTop: number): void {
           SlowTimer.get() ? 0 : 125
         );
 
+      TribeCarets.lineJump(wordHeight, true);
+
       const newCss: { [key: string]: string } = {
         marginTop: `-${wordHeight * (currentLinesAnimating + 1)}px`,
       };
@@ -689,6 +692,8 @@ export function lineJump(currentTop: number): void {
           (<HTMLElement>document.querySelector("#paceCaret")).offsetTop -
           wordHeight,
       });
+
+      TribeCarets.lineJump(wordHeight, false);
     }
   }
   currentTestLine++;
