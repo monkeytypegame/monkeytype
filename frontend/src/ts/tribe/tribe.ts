@@ -367,6 +367,7 @@ TribeSocket.in.room.playerLeft((data) => {
     TribeResults.fadeUser("result", data.userId);
     TribeResults.update("result", data.userId);
     checkIfEveryoneIsReady();
+    TribeChat.updateSuggestionData();
   }
 });
 
