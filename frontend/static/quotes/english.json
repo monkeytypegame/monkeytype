@@ -1058,7 +1058,7 @@
       "length": 171
     },
     {
-      "text": "The law clearly states that magic may be used before muggles in life threatening situations.",
+      "text": "The law clearly states that magic may be used before Muggles in life-threatening situations.",
       "source": "Harry Potter and the Order of the Phoenix",
       "id": 179,
       "length": 92
@@ -12506,7 +12506,7 @@
       "length": 123
     },
     {
-      "text": "Before time began, there was the Cube. We know not where it comes from, only that it holds the power to create worlds and fill them with life. That is how our race was born. For a time we lived in harmony, but like all great power, some wanted it for good, others for evil. And so began the war. A war that ravaged our planet until it was consumed by death, and the Cube was lost to the far reaches of space. We scattered across the galaxy, hoping to find and rebuild our home. Searching every star, every world. And just when all hope seemed lost, message of a new discovery drew us to an unknown planet called... Earth. But we were already too late.",
+      "text": "Before time began, there was the Cube. We know not where it comes from, only that it holds the power to create worlds and fill them with life. That is how our race was born. For a time we lived in harmony, but like all great power, some wanted it for good, others for evil. And so began the war. A war that ravaged our planet until it was consumed by death, and the Cube was lost to the far reaches of space. We scattered across the galaxy, hoping to find it and rebuild our world, searching every star, every world. And just when all hope seemed lost, message of a new discovery drew us to an unknown planet called... Earth. But we were already too late.",
       "source": "Transformers",
       "id": 2141,
       "length": 651
@@ -21248,12 +21248,6 @@
       "length": 286
     },
     {
-      "text": "A-tisket, A-tasket, a brown and yellow basket. I send a letter to my mommy, on the way I dropped it. I dropped it, I dropped it, yes on the way I dropped it. A little girlie picked it up and put it in her pocket. She was trucking on down the avenue, not a single thing to do. She went peck peck pecking all around when she spied it on the ground. She took it, she took it, my little yellow basket. And if she doesn't bring it back I think that I will die.",
-      "source": "A-Tisket, A-Tasket",
-      "id": 3660,
-      "length": 455
-    },
-    {
       "text": "You won't find anyone else like me, you know. You won't find anyone who'd do for you like I've done for you.",
       "source": "The Man Who Fell to Earth",
       "id": 3661,
@@ -25676,7 +25670,7 @@
       "length": 214
     },
     {
-      "text": "He canceled all his commitments and pulled together the most important of his books, and now here he was sitting inside a dusty, smelly warehouse. Outside, a huge caravan was being prepared for a crossing of the Sahara, and was scheduled to pass through Al-Fayoum.",
+      "text": "He cancelled all his commitments and pulled together the most important of his books, and now here he was sitting inside a dusty, smelly warehouse. Outside, a huge caravan was being prepared for a crossing of the Sahara, and was scheduled to pass through Al-Fayoum.",
       "source": "The Alchemist",
       "id": 4421,
       "length": 264
@@ -35728,7 +35722,7 @@
     },
     {
       "text": "\"In this world, wherever there is light - there are also shadows. As long as the concept of winners exists, there must also be losers. The selfish desire of wanting to maintain peace causes wars, and hatred is born to protect love.\"",
-      "source": "Madara Uchihi, Naruto",
+      "source": "Madara Uchiha, Naruto",
       "length": 232,
       "approvedBy": "Smithster",
       "id": 6321
@@ -37533,7 +37527,7 @@
       "id": 6586
     },
     {
-      "text": "War has changed. It's no longer about nations, ideologies, or ethnicity. It's an endless series of proxy battles, fought by mercenaries and machines. War - and it's consumption of life - has become a well-oiled machine. War has changed. ID-tagged soldiers carry ID-tagged weapons, use ID-tagged gear. Nanomachines inside their bodies enhance and regulate their abilities. Genetic control, information control, emotion control, battlefield control... everything is monitored and kept under control. War... has changed. The age of deterrence has become the age of control, all in the name of averting catastrophe from weapons of mass destruction, and he who controls the battlefield, controls history. War... has changed. When the battlefield is under total control, war becomes routine.",
+      "text": "War has changed. It's no longer about nations, ideologies, or ethnicity. It's an endless series of proxy battles, fought by mercenaries and machines. War - and its consumption of life - has become a well-oiled machine. War has changed. ID-tagged soldiers carry ID-tagged weapons, use ID-tagged gear. Nanomachines inside their bodies enhance and regulate their abilities. Genetic control, information control, emotion control, battlefield control... everything is monitored and kept under control. War... has changed. The age of deterrence has become the age of control, all in the name of averting catastrophe from weapons of mass destruction, and he who controls the battlefield, controls history. War... has changed. When the battlefield is under total control, war becomes routine.",
       "source": "Metal Gear Solid 4",
       "length": 785,
       "approvedBy": "Smithster",
@@ -38713,13 +38707,13 @@
       "text": "It's so hard for me to be walkin' carefree cause this music is my therapy be happy for me, and I know how it feels waking up on that bathroom floor I have nowhere to go when you push me out of the door.",
       "source": "Let Go Or Be Dragged - Night at Delaney's",
       "id": 6767,
-      "length": 202 
+      "length": 202
     },
     {
       "text": "The ability to analyze a problem involves a combination of inherent insight and experience. The former, unfortunately, cannot be learned, but depends on the individual. However, the latter is of equal importance, and can be gained with patient study.",
       "source": "Conduction Heat Transfer",
       "id": 6768,
-      "length": 250 
+      "length": 250
     }
   ]
 }
