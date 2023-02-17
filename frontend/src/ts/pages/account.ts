@@ -987,6 +987,8 @@ function fillContent(): void {
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   applyHistorySmoothing();
+  ChartController.accountActivity.update();
+  ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
   Focus.set(false);
   Misc.swapElements(
