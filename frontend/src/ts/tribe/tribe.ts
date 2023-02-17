@@ -266,6 +266,7 @@ TribeSocket.in.user.updateName((e) => {
 
 TribeSocket.in.system.disconnect((reason, details) => {
   updateState(-1);
+  const roomId = TribeState.getRoom()?.id;
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add(
       `Disconnected: ${details?.["description"] ?? reason}`,
@@ -280,7 +281,11 @@ TribeSocket.in.system.disconnect((reason, details) => {
   TribePagePreloader.updateText(`Disconnected`);
   TribePagePreloader.updateSubtext(details?.["description"] ?? reason);
   TribePagePreloader.showReconnectButton();
+
   reset();
+  if (roomId) {
+    autoJoin = roomId;
+  }
 });
 
 TribeSocket.in.system.connectFailed((err) => {
