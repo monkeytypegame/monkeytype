@@ -354,9 +354,13 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
+
   if (
-    (char === "’" || char === "‘" || char === "'") &&
-    (originalChar === "’" || originalChar === "‘" || originalChar === "'")
+    (char === "’" || char === "‘" || char === "'" || char === "ʼ") &&
+    (originalChar === "’" ||
+      originalChar === "‘" ||
+      originalChar === "'" ||
+      originalChar === "ʼ")
   ) {
     return true;
   }
