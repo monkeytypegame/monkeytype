@@ -7,11 +7,16 @@ If your change is visual (mainly themes) it would be extra awesome if you could 
  -->
 
 ### Description
-
+Quote
 <!-- Please describe the change(s) made in your PR -->
 
 Closes #
-
+{
+    "text": "[Instinct is a lie, told by a fearful body, hoping to be wrong. Let go your earthly tether. Enter the void. Empty and become wind. New growth cannot exist without first the destruction of the old.]",
+    "source": "[The Legend of Korra]",
+    "id": [2813],
+    "length": [195]
+}./frontend/static/quotes/[language].json
 <!-- the issue(s) your PR resolves if any (delete if that is not the case) -->
 <!-- please also reference any issues and or PRs related to your pull request -->
 
