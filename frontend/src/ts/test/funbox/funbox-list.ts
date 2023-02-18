@@ -203,6 +203,15 @@ const list: MonkeyTypes.FunboxMetadata[] = [
       numbers: [false],
     },
   },
+  {
+    name: "binary",
+    alias: "numbers",
+    info: "01101000 01100001 01111000 00110000 01110010",
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    forcedConfig: {
+      numbers: [false],
+    },
+  },
 ];
 
 export function getAll(): MonkeyTypes.FunboxMetadata[] {
