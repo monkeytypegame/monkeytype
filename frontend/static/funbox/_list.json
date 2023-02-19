@@ -150,5 +150,10 @@
     "alias": "network",
     "info": "For sysadmins with a long beard.",
     "canGetPb": false
+  },
+  {
+    "name": "binary",
+    "info": "01000010 01100101 01100101 01110000 00100000 01100010 01101111 01101111 01110000 00101110",
+    "canGetPb": false
   }
 ]

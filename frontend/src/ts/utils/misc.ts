@@ -1383,3 +1383,8 @@ export function isLocalhost(): boolean {
     location.hostname === ""
   );
 }
+
+export function getBinary(): string {
+  const ret = Math.floor(Math.random() * 256).toString(2);
+  return ret.padStart(8, "0");
+}
