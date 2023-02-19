@@ -86,6 +86,12 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
 
     await this.add(taskName, dailyLeaderboardTopResultsTask);
   }
+
+  async sendReleaseAnnouncement(releaseId: number): Promise<void> {
+    const taskName = "sendReleaseAnnouncement";
+    const sendReleaseAnnouncementTask = buildGeorgeTask(taskName, [releaseId]);
+    await this.add(taskName, sendReleaseAnnouncementTask);
+  }
 }
 
 export default new GeorgeQueue(QUEUE_NAME, {
