@@ -156,7 +156,7 @@ async function updateProfile(): Promise<void> {
   hide();
 }
 
-$("#editProfilePopupWrapper").on("click", (e) => {
+$("#editProfilePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "editProfilePopupWrapper") {
     hide();
   }
