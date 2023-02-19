@@ -182,7 +182,8 @@
         /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/
       );
       const isLong = password.length >= 8;
-      return hasCapital && hasNumber && hasSpecial && isLong;
+      const isShort = password.length <= 64;
+      return hasCapital && hasNumber && hasSpecial && isLong && isShort;
     }
 
     function handleVerifyEmail(actionCode, continueUrl) {
@@ -244,7 +245,7 @@
 
           if (!isPasswordStrong(newPassword)) {
             alert(
-              "Password must be at least 8 characters long and contain at least one capital letter, one number and one special character."
+              "Password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long"
             );
             showResetPassword();
             return;

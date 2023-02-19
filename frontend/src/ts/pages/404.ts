@@ -1,4 +1,5 @@
 import Page from "./page";
+import * as Skeleton from "../popups/skeleton";
 
 export const page = new Page(
   "404",
@@ -8,12 +9,14 @@ export const page = new Page(
     //
   },
   async () => {
-    //
+    Skeleton.remove("page404");
   },
   async () => {
-    //
+    Skeleton.append("page404", "middle");
   },
   async () => {
     //
   }
 );
+
+Skeleton.save("page404");

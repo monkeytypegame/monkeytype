@@ -267,3 +267,58 @@ const uidRequestCount = new Counter({
 export function recordRequestForUid(uid: string): void {
   uidRequestCount.inc({ uid });
 }
+
+const collectionSize = new Gauge({
+  name: "db_collection_size",
+  help: "Size of a collection",
+  labelNames: ["collection"],
+});
+
+export function setCollectionSize(collection: string, size: number): void {
+  collectionSize.set({ collection }, size);
+}
+
+const queueLength = new Gauge({
+  name: "queue_length",
+  help: "Length of the queues",
+  labelNames: ["queueName", "countType"],
+});
+
+export function setQueueLength(
+  queueName: string,
+  countType: string,
+  length: number
+): void {
+  queueLength.set({ queueName, countType }, length);
+}
+
+const emailCount = new Counter({
+  name: "email_count",
+  help: "Emails sent by the server",
+  labelNames: ["type", "status"],
+});
+
+export function recordEmail(type: string, status: string): void {
+  emailCount.inc({ type, status });
+}
+
+const timeToCompleteJobTotal = new Counter({
+  name: "time_to_complete_job_total",
+  help: "Time to complete a job total",
+  labelNames: ["queueName", "jobName"],
+});
+
+const timeToCompleteJobCount = new Counter({
+  name: "time_to_complete_job_count",
+  help: "Time to complete a job count",
+  labelNames: ["queueName", "jobName"],
+});
+
+export function recordTimeToCompleteJob(
+  queueName: string,
+  jobName: string,
+  time: number
+): void {
+  timeToCompleteJobTotal.inc({ queueName, jobName }, time);
+  timeToCompleteJobCount.inc({ queueName, jobName });
+}

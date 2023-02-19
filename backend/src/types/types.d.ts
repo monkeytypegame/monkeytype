@@ -77,6 +77,7 @@ declare namespace MonkeyTypes {
       leaderboardExpirationTimeInDays: number;
       maxResults: number;
       validModeRules: ValidModeRule[];
+      scheduleRewardsModeRules: ValidModeRule[];
       dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
       xpRewardBrackets: RewardBracket[];
@@ -170,6 +171,7 @@ declare namespace MonkeyTypes {
     timeTyping?: number;
     uid: string;
     quoteMod?: boolean;
+    configurationMod?: boolean;
     cannotReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
@@ -359,7 +361,6 @@ declare namespace MonkeyTypes {
     wpm: number[];
     raw: number[];
     err: number[];
-    unsmoothedRaw?: number[];
   }
 
   interface KeyStats {
@@ -412,7 +413,6 @@ declare namespace MonkeyTypes {
     keySpacing: number[] | "toolong";
     keyDuration: number[] | "toolong";
     customText: MonkeyTypes.CustomText;
-    smoothConsistency: number;
     wpmConsistency: number;
     lang: string;
     challenge?: string | null;
@@ -434,7 +434,7 @@ declare namespace MonkeyTypes {
     level?: number;
   }
 
-  type ReportTypes = "quote";
+  type ReportTypes = "quote" | "user";
 
   interface Report {
     _id: ObjectId;

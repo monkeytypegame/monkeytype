@@ -106,7 +106,7 @@ export async function load(): Promise<void> {
     });
 
     filters.tags = newTags;
-    await updateFilterPresets();
+    // await updateFilterPresets();
     save();
   } catch {
     console.log("error in loading result filters");
@@ -116,8 +116,14 @@ export async function load(): Promise<void> {
 }
 
 export async function updateFilterPresets(): Promise<void> {
-  // remove all previous filter preset buttons
-  $(".pageAccount .presetFilterButtons .filterBtns").html("");
+  const parent = document.querySelector(".pageAccount .presetFilterButtons");
+  const buttons = document.querySelector(
+    ".pageAccount .presetFilterButtons .filterBtns"
+  );
+
+  if (!parent || !buttons) return;
+
+  buttons.innerHTML = "";
 
   const filterPresets =
     DB.getSnapshot()?.filterPresets.map((filter) => {
@@ -125,24 +131,22 @@ export async function updateFilterPresets(): Promise<void> {
       return filter;
     }) ?? [];
 
-  // if user has filter presets
   if (filterPresets.length > 0) {
-    // show region
-    $(".pageAccount .presetFilterButtons").show();
+    let html = "";
 
-    // add button for each filter
-    DB.getSnapshot()?.filterPresets.forEach((filter) => {
-      $(".pageAccount .group.presetFilterButtons .filterBtns").append(
-        `<div class="filterPresets">
-          <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
-          <div class="button delete-filter-preset" data-id="${filter._id}">
-            <i class="fas fa-fw fa-trash"></i>
-          </div>
-        </div>`
-      );
-    });
+    for (const filter of filterPresets) {
+      html += `<div class="filterPresets">
+      <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
+      <div class="button delete-filter-preset" data-id="${filter._id}">
+        <i class="fas fa-fw fa-trash"></i>
+      </div>
+    </div>`;
+    }
+
+    buttons.innerHTML = html;
+    parent.classList.remove("hidden");
   } else {
-    $(".pageAccount .presetFilterButtons").hide();
+    parent.classList.add("hidden");
   }
 }
 
@@ -458,32 +462,6 @@ export function toggle<G extends MonkeyTypes.Group>(
   }
 }
 
-export function updateTags(): void {
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-  ).empty();
-
-  const snapshot = DB.getSnapshot();
-
-  if ((snapshot?.tags?.length ?? 0) > 0) {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
-      "hidden"
-    );
-    $(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-    ).append(`<div class="button" filter="none">no tag</div>`);
-    snapshot?.tags?.forEach((tag) => {
-      $(
-        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag._id}">${tag.display}</div>`);
-    });
-  } else {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
-      "hidden"
-    );
-  }
-}
-
 $(
   ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
 ).on("click", ".button", (e) => {
@@ -678,46 +656,74 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
 });
 
 export async function appendButtons(): Promise<void> {
-  await Misc.getLanguageList()
-    .then((languages) => {
-      languages.forEach((language) => {
-        $(
-          ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
-        ).append(
-          `<div class="button" filter="${language}">${language.replace(
-            "_",
-            " "
-          )}</div>`
-        );
-      });
-    })
-    .catch((e) => {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to append language buttons")
-      );
-    });
+  let languageList;
+  try {
+    languageList = await Misc.getLanguageList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to append language buttons")
+    );
+  }
+  if (languageList) {
+    let html = "";
+    for (const language of languageList) {
+      html += `<div class="button" filter="${language}">${language.replace(
+        "_",
+        " "
+      )}</div>`;
+    }
+    const el = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+    );
+    if (el) el.innerHTML = html;
+  }
 
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-  ).append(`<div class="button" filter="none">none</div>`);
-  await Misc.getFunboxList()
-    .then((funboxModes) => {
-      funboxModes.forEach((funbox) => {
-        $(
-          ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-        ).append(
-          `<div class="button" filter="${funbox.name}">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`
-        );
-      });
-    })
-    .catch((e) => {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to append funbox buttons")
-      );
-    });
+  let funboxList;
+  try {
+    funboxList = await Misc.getFunboxList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to append funbox buttons")
+    );
+  }
+  if (funboxList) {
+    let html = "";
+    for (const funbox of funboxList) {
+      html += `<div class="button" filter="${
+        funbox.name
+      }">${funbox.name.replace(/_/g, " ")}</div>`;
+    }
+    const el = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+    );
+    if (el) {
+      el.innerHTML = `<div class="button" filter="none">none</div>` + html;
+    }
+  }
+
+  const snapshot = DB.getSnapshot();
+
+  if ((snapshot?.tags?.length ?? 0) > 0) {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
+      "hidden"
+    );
+    let html = `<div class="button" filter="none">no tag</div>`;
+    for (const tag of snapshot?.tags ?? []) {
+      html += `<div class="button" filter="${tag._id}">${tag.display}</div>`;
+    }
+    const el = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+    );
+    if (el) {
+      el.innerHTML = html;
+    }
+  } else {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
+      "hidden"
+    );
+  }
+
+  updateFilterPresets();
 }
 
 export function removeButtons(): void {
@@ -726,6 +732,9 @@ export function removeButtons(): void {
   ).empty();
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+  ).empty();
+  $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
 }
 

@@ -2,6 +2,10 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "quoteApprovePopupWrapper";
 
 interface Quote {
   _id: string;
@@ -75,19 +79,21 @@ async function getQuotes(): Promise<void> {
 }
 
 export async function show(noAnim = false): Promise<void> {
-  if ($("#quoteApprovePopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+
+  if (!isPopupVisible(wrapperId)) {
     quotes = [];
     getQuotes();
     $("#quoteApprovePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnim ? 0 : 100);
+      .animate({ opacity: 1 }, noAnim ? 0 : 125);
   }
 }
 
 export function hide(): void {
-  if (!$("#quoteApprovePopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#quoteApprovePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -95,10 +101,11 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#quoteApprovePopupWrapper").addClass("hidden");
           $("#quoteApprovePopupWrapper .quotes").empty();
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -231,3 +238,5 @@ $(document).on("input", "#quoteApprovePopup .quote .source", async (e) => {
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).addClass("hidden");
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).removeClass("hidden");
 });
+
+Skeleton.save(wrapperId);

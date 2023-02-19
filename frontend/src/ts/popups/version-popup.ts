@@ -1,7 +1,11 @@
 import format from "date-fns/format";
-import { getReleasesFromGitHub } from "../utils/misc";
+import { getReleasesFromGitHub, isPopupVisible } from "../utils/misc";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "versionHistoryWrapper";
 
 export function show(): void {
+  Skeleton.append(wrapperId);
   $("#versionHistory").html(`
     <div class="preloader">
       <i class="fas fa-fw fa-spin fa-circle-notch"></i>
@@ -37,6 +41,7 @@ function hide(): void {
     .animate({ opacity: 0 }, 125, () => {
       $("#versionHistoryWrapper").addClass("hidden");
       $("#versionHistory").html("");
+      Skeleton.remove(wrapperId);
     });
 }
 
@@ -56,11 +61,10 @@ $("#popups").on("click", "#versionHistoryWrapper", (e) => {
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#versionHistoryWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);

@@ -7,7 +7,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "setResultSavingOff",
       display: "off",
-      alias: "disabled",
+      alias: "disabled incognito",
       exec: (): void => {
         TestState.setSaving(false);
         ModesNotice.update();
@@ -16,7 +16,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "setResultSavingOn",
       display: "on",
-      alias: "enabled",
+      alias: "enabled incognito",
       exec: (): void => {
         TestState.setSaving(true);
         ModesNotice.update();

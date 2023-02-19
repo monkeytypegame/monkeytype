@@ -7,6 +7,7 @@ import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
+import { isLocalhost } from "./utils/misc";
 
 export function updateKeytips(): void {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
@@ -38,7 +39,7 @@ export function updateKeytips(): void {
   }
 }
 
-if (window.location.hostname === "localhost") {
+if (isLocalhost()) {
   window.onerror = function (error): void {
     Notifications.add(error.toString(), -1);
   };
@@ -84,12 +85,18 @@ window.addEventListener("beforeunload", (event) => {
 
 const debouncedEvent = debounce(250, async () => {
   Caret.updatePosition();
-  if (
-    Config.tapeMode !== "off" &&
-    getActivePage() === "test" &&
-    !TestUI.resultVisible
-  ) {
-    TestUI.scrollTape();
+  if (getActivePage() === "test" && !TestUI.resultVisible) {
+    if (Config.tapeMode !== "off") {
+      TestUI.scrollTape();
+    } else {
+      const word =
+        document.querySelectorAll<HTMLElement>("#words .word")[
+          TestUI.currentWordElementIndex - 1
+        ];
+      if (!word) return;
+      const currentTop: number = Math.floor(word.offsetTop);
+      TestUI.lineJump(currentTop);
+    }
   }
   setTimeout(() => {
     Caret.show();

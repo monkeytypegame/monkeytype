@@ -114,7 +114,7 @@
     "parameters": ["antidisestablishmentarianism",true,1],
     "requirements" : {
       "wpm": {
-        "min": 100
+        "min": 200
       }
     }
   }
@@ -266,6 +266,21 @@
     }
   }
   ,{
+    "name": "beepBoop",
+    "display": "Beep Boop",
+    "type": "script",
+    "parameters": ["beepboop.txt",null,null],
+    "message": "Mininum 45 WPM and 100% accuracy required.",
+    "requirements": {
+      "wpm": {
+        "min": 45
+      },
+      "acc": {
+        "min": 100
+      }
+    }
+  }
+  ,{
     "name": "whosYourDaddy",
     "display": "Who's your daddy?",
     "type": "script",
@@ -375,7 +390,7 @@
     "display": "Look at me. I am the developer now.",
     "autoRole": true,
     "type": "script",
-    "parameters": ["sourcecde.txt",null,null]
+    "parameters": ["sourcecode.txt",null,null]
   }
   ,{
     "name": "beLikeWater",

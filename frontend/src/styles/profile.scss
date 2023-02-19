@@ -232,6 +232,7 @@
     padding: 1rem;
     border-radius: var(--roundness);
     align-content: center;
+    padding-right: 3rem;
 
     // grid-template-columns: 15rem auto 15rem auto 2fr auto auto;
 
@@ -333,9 +334,9 @@
           color: var(--sub-color);
         }
         .avatar {
-          height: 100%;
+          height: auto;
           aspect-ratio: 1/1;
-          width: auto;
+          width: 100%;
         }
         div {
           grid-row: 1/2;

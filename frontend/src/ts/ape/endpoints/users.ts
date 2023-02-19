@@ -225,4 +225,30 @@ export default class Users {
     };
     return await this.httpClient.patch(`${BASE_PATH}/inbox`, { payload });
   }
+
+  async report(
+    uid: string,
+    reason: string,
+    comment: string,
+    captcha: string
+  ): Ape.EndpointData {
+    const payload = {
+      uid,
+      reason,
+      comment,
+      captcha,
+    };
+
+    return await this.httpClient.post(`${BASE_PATH}/report`, { payload });
+  }
+
+  async verificationEmail(): Ape.EndpointData {
+    return await this.httpClient.get(`${BASE_PATH}/verificationEmail`);
+  }
+
+  async forgotPasswordEmail(email: string): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/forgotPasswordEmail`, {
+      payload: { email },
+    });
+  }
 }

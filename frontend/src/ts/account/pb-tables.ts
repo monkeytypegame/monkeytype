@@ -5,13 +5,13 @@ import * as Misc from "../utils/misc";
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
 
-  const showAllButton = `<div  
+  const showAllButton = `<div class="buttonGroup"><div
   class="showAllButton button"
   data-balloon-pos="left"
   aria-label="Show all personal bests"
 >
   <i class="fas fa-ellipsis-v"></i>
-</div>`;
+</div></div>`;
 
   const htmlToShow = isProfile ? "" : showAllButton;
 

@@ -19,10 +19,17 @@ export function updateActiveButton(): void {
   ) {
     activeThemeName = ThemeController.randomTheme as string;
   }
-  $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${activeThemeName}]`).addClass(
-    "active"
-  );
+
+  document
+    .querySelectorAll(".pageSettings .section.themes .theme")
+    .forEach((el) => {
+      el.classList.remove("active");
+    });
+  document
+    .querySelector(
+      `.pageSettings .section.themes .theme[theme='${activeThemeName}']`
+    )
+    ?.classList.add("active");
 }
 
 function updateColors(
@@ -142,12 +149,16 @@ export async function refreshButtons(): Promise<void> {
     });
   } else {
     // Update theme buttons
-    const favThemesEl = $(
+    const favThemesEl = document.querySelector(
       ".pageSettings .section.themes .favThemes.buttons"
-    ).empty();
-    const themesEl = $(
+    ) as HTMLElement;
+    favThemesEl.innerHTML = "";
+    let favThemesElHTML = "";
+    const themesEl = document.querySelector(
       ".pageSettings .section.themes .allThemes.buttons"
-    ).empty();
+    ) as HTMLElement;
+    themesEl.innerHTML = "";
+    let themesElHTML = "";
 
     let activeThemeName = Config.theme;
     if (
@@ -171,38 +182,71 @@ export async function refreshButtons(): Promise<void> {
 
     //first show favourites
     if (Config.favThemes.length > 0) {
-      favThemesEl.css({ paddingBottom: "1rem" });
-      themes.forEach((theme) => {
+      favThemesEl.style.marginBottom = "1rem";
+      favThemesEl.style.marginTop = "1rem";
+      for (const theme of themes) {
         if (Config.favThemes.includes(theme.name)) {
           const activeTheme = activeThemeName === theme.name ? "active" : "";
-          favThemesEl.append(
-            `<div class="theme button ${activeTheme}" theme='${theme.name}' 
-            style="color:${theme.mainColor};background:${theme.bgColor}">
-            <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+          favThemesElHTML += `<div class="theme button ${activeTheme}" theme='${
+            theme.name
+          }' style="background: ${theme.bgColor}; color: ${
+            theme.mainColor
+          };outline: 0 solid ${theme.mainColor};">
+            <div class="favButton active"><i class="fas fa-star"></i></div>
             <div class="text">${theme.name.replace(/_/g, " ")}</div>
-            <div class="favButton active"><i class="fas fa-star"></i></div></div>`
-          );
+            <div class="themeBubbles" style="background: ${
+              theme["bgColor"]
+            };outline: 0.25rem solid ${theme["bgColor"]};">
+              <div class="themeBubble" style="background: ${
+                theme["mainColor"]
+              }"></div>
+              <div class="themeBubble" style="background: ${
+                theme["subColor"]
+              }"></div>
+              <div class="themeBubble" style="background: ${
+                theme["textColor"]
+              }"></div>
+            </div>
+            </div>
+            `;
         }
-      });
+      }
+      favThemesEl.innerHTML = favThemesElHTML;
     } else {
-      favThemesEl.css({ paddingBottom: "0" });
+      favThemesEl.style.marginBottom = "0";
+      favThemesEl.style.marginTop = "0";
     }
     //then the rest
-    themes.forEach((theme) => {
+    for (const theme of themes) {
       if (Config.favThemes.includes(theme.name)) {
-        return;
+        continue;
       }
 
       const activeTheme = activeThemeName === theme.name ? "active" : "";
-      themesEl.append(
-        `<div class="theme button ${activeTheme}" theme='${
-          theme.name
-        }' style="color:${theme.mainColor};background:${theme.bgColor}">
-        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+      themesElHTML += `<div class="theme button ${activeTheme}" theme='${
+        theme.name
+      }' style="background: ${theme.bgColor}; color: ${
+        theme.mainColor
+      };outline: 0 solid ${theme.mainColor};">
+        <div class="favButton"><i class="far fa-star"></i></div>
         <div class="text">${theme.name.replace(/_/g, " ")}</div>
-        <div class="favButton"><i class="far fa-star"></i></div></div>`
-      );
-    });
+        <div class="themeBubbles" style="background: ${
+          theme["bgColor"]
+        };outline: 0.25rem solid ${theme["bgColor"]};">
+          <div class="themeBubble" style="background: ${
+            theme["mainColor"]
+          }"></div>
+          <div class="themeBubble" style="background: ${
+            theme["subColor"]
+          }"></div>
+          <div class="themeBubble" style="background: ${
+            theme["textColor"]
+          }"></div>
+        </div>
+        </div>
+        `;
+    }
+    themesEl.innerHTML = themesElHTML;
   }
   updateActiveButton();
 }

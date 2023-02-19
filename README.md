@@ -1,8 +1,3 @@
-I know this is a little late:
-
-# IMPORTANT: I will be taking a break from Monkeytype for the duration of December (and potentially a bit of January too). I will address all PRs and issues when I start working on the project again. For critical issues, email jack@monkeytype.com. Thanks.
-
-
 [![](https://github.com/monkeytypegame/monkeytype/blob/master/frontend/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
 <br />
 
@@ -34,7 +29,7 @@ On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added 
 
 # Bug report or Feature request
 
-If you encounter a bug or have a feature request, [send us an email](mailto:jack@monkeytype.com), [create an issue](https://github.com/monkeytypegame/monkeytype/issues), [create a discussion thread](https://github.com/monkeytypegame/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
+If you encounter a bug or have a feature request, [send us an email](mailto:contact@monkeytype.com), [create an issue](https://github.com/monkeytypegame/monkeytype/issues), [create a discussion thread](https://github.com/monkeytypegame/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
 # Want to Contribute?
 
