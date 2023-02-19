@@ -1,8 +1,8 @@
-import _ from "lodash";
-import MonkeyError from "../utils/error";
-import { Response, NextFunction } from "express";
-import { RateLimiterMemory } from "rate-limiter-flexible";
+import { NextFunction, Response } from "express";
 import rateLimit, { Options } from "express-rate-limit";
+import _ from "lodash";
+import { RateLimiterMemory } from "rate-limiter-flexible";
+import MonkeyError from "../utils/error";
 
 const REQUEST_MULTIPLIER = process.env.MODE === "dev" ? 100 : 1;
 
@@ -494,6 +494,14 @@ export const apeKeysGet = rateLimit({
 export const apeKeysGenerate = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 15 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+// Webhooks Routing
+export const webhooksPost = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 120 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });

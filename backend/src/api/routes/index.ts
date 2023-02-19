@@ -1,20 +1,3 @@
-import _ from "lodash";
-import psas from "./psas";
-import publicStats from "./public";
-import users from "./users";
-import { join } from "path";
-import quotes from "./quotes";
-import configs from "./configs";
-import results from "./results";
-import presets from "./presets";
-import apeKeys from "./ape-keys";
-import configuration from "./configuration";
-import { version } from "../../version";
-import leaderboards from "./leaderboards";
-import addSwaggerMiddlewares from "./swagger";
-import { asyncHandler } from "../../middlewares/api-utils";
-import { MonkeyResponse } from "../../utils/monkey-response";
-import { recordClientVersion } from "../../utils/prometheus";
 import {
   Application,
   NextFunction,
@@ -22,6 +5,24 @@ import {
   Router,
   static as expressStatic,
 } from "express";
+import _ from "lodash";
+import { join } from "path";
+import { asyncHandler } from "../../middlewares/api-utils";
+import { MonkeyResponse } from "../../utils/monkey-response";
+import { recordClientVersion } from "../../utils/prometheus";
+import { version } from "../../version";
+import apeKeys from "./ape-keys";
+import configs from "./configs";
+import configuration from "./configuration";
+import leaderboards from "./leaderboards";
+import presets from "./presets";
+import psas from "./psas";
+import publicStats from "./public";
+import quotes from "./quotes";
+import results from "./results";
+import addSwaggerMiddlewares from "./swagger";
+import users from "./users";
+import webhooks from "./webhooks";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
@@ -37,6 +38,7 @@ const API_ROUTE_MAP = {
   "/leaderboards": leaderboards,
   "/quotes": quotes,
   "/ape-keys": apeKeys,
+  "/webhooks": webhooks,
 };
 
 function addApiRoutes(app: Application): void {
