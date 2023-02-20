@@ -97,4 +97,5 @@ export default <MonkeyTypes.Config>{
   lazyMode: false,
   showAverage: "off",
   tapeMode: "off",
+  wordFilter: "off",
 };

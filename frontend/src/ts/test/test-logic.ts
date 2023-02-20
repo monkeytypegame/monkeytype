@@ -719,8 +719,10 @@ async function getNextWord(
   wordsBound: number
 ): Promise<string> {
   let randomWord = wordset.randomWord();
+
   const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
   const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
+
   if (Config.mode === "quote") {
     randomWord =
       TestWords.randomQuote.textSplit?.[TestWords.words.length] ?? "";
@@ -797,6 +799,75 @@ async function getNextWord(
       } else if (Config.language.startsWith("nepali")) {
         randomWord = Misc.convertNumberToNepali(randomWord);
       }
+    }
+  }
+  if (Config.wordFilter === "left") {
+    while (
+      randomWord.indexOf("y") > -1 ||
+      randomWord.indexOf("u") > -1 ||
+      randomWord.indexOf("i") > -1 ||
+      randomWord.indexOf("o") > -1 ||
+      randomWord.indexOf("p") > -1 ||
+      randomWord.indexOf("h") > -1 ||
+      randomWord.indexOf("i") > -1 ||
+      randomWord.indexOf("j") > -1 ||
+      randomWord.indexOf("k") > -1 ||
+      randomWord.indexOf("l") > -1 ||
+      randomWord.indexOf("n") > -1 ||
+      randomWord.indexOf("m") > -1 ||
+      randomWord.indexOf("Y") > -1 ||
+      randomWord.indexOf("U") > -1 ||
+      randomWord.indexOf("I") > -1 ||
+      randomWord.indexOf("O") > -1 ||
+      randomWord.indexOf("P") > -1 ||
+      randomWord.indexOf("H") > -1 ||
+      randomWord.indexOf("I") > -1 ||
+      randomWord.indexOf("J") > -1 ||
+      randomWord.indexOf("K") > -1 ||
+      randomWord.indexOf("L") > -1 ||
+      randomWord.indexOf("N") > -1 ||
+      randomWord.indexOf("M") > -1
+    ) {
+      randomWord = wordset.randomWord();
+    }
+  }
+
+  if (Config.wordFilter === "right") {
+    while (
+      randomWord.indexOf("q") > -1 ||
+      randomWord.indexOf("w") > -1 ||
+      randomWord.indexOf("e") > -1 ||
+      randomWord.indexOf("r") > -1 ||
+      randomWord.indexOf("t") > -1 ||
+      randomWord.indexOf("y") > -1 ||
+      randomWord.indexOf("a") > -1 ||
+      randomWord.indexOf("s") > -1 ||
+      randomWord.indexOf("d") > -1 ||
+      randomWord.indexOf("f") > -1 ||
+      randomWord.indexOf("g") > -1 ||
+      randomWord.indexOf("z") > -1 ||
+      randomWord.indexOf("x") > -1 ||
+      randomWord.indexOf("c") > -1 ||
+      randomWord.indexOf("v") > -1 ||
+      randomWord.indexOf("b") > -1 ||
+      randomWord.indexOf("Q") > -1 ||
+      randomWord.indexOf("W") > -1 ||
+      randomWord.indexOf("E") > -1 ||
+      randomWord.indexOf("R") > -1 ||
+      randomWord.indexOf("T") > -1 ||
+      randomWord.indexOf("Y") > -1 ||
+      randomWord.indexOf("A") > -1 ||
+      randomWord.indexOf("S") > -1 ||
+      randomWord.indexOf("D") > -1 ||
+      randomWord.indexOf("F") > -1 ||
+      randomWord.indexOf("G") > -1 ||
+      randomWord.indexOf("Z") > -1 ||
+      randomWord.indexOf("X") > -1 ||
+      randomWord.indexOf("C") > -1 ||
+      randomWord.indexOf("V") > -1 ||
+      randomWord.indexOf("B") > -1
+    ) {
+      randomWord = wordset.randomWord();
     }
   }
 

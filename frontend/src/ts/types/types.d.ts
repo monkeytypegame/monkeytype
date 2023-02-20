@@ -78,6 +78,8 @@ declare namespace MonkeyTypes {
 
   type TapeMode = "off" | "letter" | "word";
 
+  type WordFilter = "off" | "left" | "right";
+
   type SingleListCommandLine = "manual" | "on";
 
   /*
@@ -471,6 +473,7 @@ declare namespace MonkeyTypes {
     lazyMode: boolean;
     showAverage: ShowAverage;
     tapeMode: TapeMode;
+    wordFilter: WordFilter;
   }
 
   type ConfigValues =

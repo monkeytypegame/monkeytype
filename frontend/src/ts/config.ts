@@ -1747,6 +1747,21 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   return true;
 }
 
+export function setWordFilter(
+  mode: MonkeyTypes.WordFilter,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("word filter", mode, [["off", "left", "right"]])) {
+    return false;
+  }
+
+  config.wordFilter = mode;
+  saveToLocalStorage("wordFilter", nosave);
+  ConfigEvent.dispatch("wordFilter", config.wordFilter);
+
+  return true;
+}
+
 export function apply(
   configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
 ): void {
@@ -1850,6 +1865,7 @@ export function apply(
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
     setAds(configObj.ads, true);
+    setWordFilter(configObj.wordFilter, true);
 
     ConfigEvent.dispatch(
       "configApplied",

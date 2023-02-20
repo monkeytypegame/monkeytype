@@ -385,6 +385,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setCustomBackgroundSize,
     "button"
   );
+  groups["wordFilter"] = new SettingsGroup(
+    "wordFilter",
+    UpdateConfig.setWordFilter,
+    "button"
+  );
   // groups.customLayoutfluid = new SettingsGroup(
   //   "customLayoutfluid",
   //   UpdateConfig.setCustomLayoutfluid
