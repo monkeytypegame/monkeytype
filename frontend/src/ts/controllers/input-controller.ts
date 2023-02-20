@@ -31,6 +31,7 @@ import * as FunboxList from "../test/funbox/funbox-list";
 import * as Settings from "../pages/settings";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
+import { ModifierKeys } from "../constants/modifier-keys";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -353,9 +354,13 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
+
   if (
-    (char === "’" || char === "‘" || char === "'") &&
-    (originalChar === "’" || originalChar === "‘" || originalChar === "'")
+    (char === "’" || char === "‘" || char === "'" || char === "ʼ") &&
+    (originalChar === "’" ||
+      originalChar === "‘" ||
+      originalChar === "'" ||
+      originalChar === "ʼ")
   ) {
     return true;
   }
@@ -579,8 +584,6 @@ function handleChar(
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
     TestLogic.fail("difficulty");
     return;
   }
@@ -598,8 +601,6 @@ function handleChar(
           Config.stopOnError == "off")) &&
       lastIndex === TestWords.words.length - 1
     ) {
-      TestInput.input.pushHistory();
-      TestInput.corrected.pushHistory();
       TestLogic.finish();
       return;
     }
@@ -670,6 +671,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // put caret at right position again
     area.selectionStart = area.selectionEnd = start + 1;
 
+    CustomText.setPopupTextareaState(area.value);
+
     return;
   }
 
@@ -683,7 +686,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   }
 
   const modalVisible: boolean =
-    !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+    Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
   if (Config.quickRestart === "esc") {
     // dont do anything special
@@ -758,8 +761,8 @@ $(document).keydown(async (event) => {
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
-  const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
-  const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
+  const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
+  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
 
@@ -771,7 +774,11 @@ $(document).keydown(async (event) => {
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
-  if (allowTyping && !wordsFocused && event.key !== "Enter") {
+  if (
+    allowTyping &&
+    !wordsFocused &&
+    !["Enter", ...ModifierKeys].includes(event.key)
+  ) {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning) {
       event.preventDefault();
@@ -786,7 +793,7 @@ $(document).keydown(async (event) => {
   //esc
   if (event.key === "Escape" && Config.quickRestart === "esc") {
     const modalVisible: boolean =
-      !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+      Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
     if (modalVisible) return;
 
@@ -1048,7 +1055,7 @@ $("#wordsInput").on("input", (event) => {
     TestUI.updateWordElement();
     Caret.updatePosition();
     if (!CompositionState.getComposing()) {
-      Replay.addReplayEvent("setLetterIndex", currTestInput.length);
+      Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
     }
   } else if (inputValue !== currTestInput) {
     let diffStart = 0;

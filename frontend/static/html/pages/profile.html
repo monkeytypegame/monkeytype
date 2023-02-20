@@ -1,4 +1,4 @@
-<div class="page pageProfileSearch hidden">
+<div class="page pageProfileSearch hidden" id="pageProfileSearch">
   <div class="search">
     <div class="title">Profile lookup</div>
     <input class="username" type="text" placeholder="username" />
@@ -8,7 +8,7 @@
   </div>
 </div>
 
-<div class="page pageProfile hidden">
+<div class="page pageProfile hidden" id="pageProfile">
   <div class="content">
     <div class="preloader">
       <i class="fas fa-fw fa-spin fa-circle-notch"></i>
@@ -34,7 +34,7 @@
             <div class="streak" data-balloon-pos="up">-</div>
           </div>
           <div class="levelAndBar">
-            <div class="level">-</div>
+            <div class="level" data-balloon-pos="up">-</div>
             <div class="xpBar">
               <div class="bar" style="width: 0%"></div>
             </div>
@@ -73,6 +73,15 @@
         <div class="socials big hidden">
           <div class="title">socials</div>
           <div class="value">-</div>
+        </div>
+        <div class="buttonGroup">
+          <div
+            class="userReportButton button"
+            data-balloon-pos="left"
+            aria-label="Report user"
+          >
+            <i class="fas fa-flag"></i>
+          </div>
         </div>
       </div>
       <div class="leaderboardsPositions">

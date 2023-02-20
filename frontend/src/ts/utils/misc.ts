@@ -1194,12 +1194,24 @@ export function createErrorMessage(error: unknown, message: string): string {
   return message;
 }
 
+export function isElementVisible(query: string): boolean {
+  const popup = document.querySelector(query);
+  if (!popup) {
+    return false;
+  }
+  const style = window.getComputedStyle(popup);
+  return style.display !== "none";
+}
+
+export function isPopupVisible(popupId: string): boolean {
+  return isElementVisible(`#popups #${popupId}`);
+}
+
 export function isAnyPopupVisible(): boolean {
   const popups = document.querySelectorAll("#popups .popupWrapper");
   let popupVisible = false;
   for (const popup of popups) {
-    const style = window.getComputedStyle(popup);
-    if (style.display !== "none") {
+    if (isPopupVisible(popup.id)) {
       popupVisible = true;
       break;
     }
@@ -1318,7 +1330,8 @@ export function isPasswordStrong(password: string): boolean {
   const hasNumber = !!password.match(/[\d]/);
   const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
   const isLong = password.length >= 8;
-  return hasCapital && hasNumber && hasSpecial && isLong;
+  const isShort = password.length <= 64;
+  return hasCapital && hasNumber && hasSpecial && isLong && isShort;
 }
 
 export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
@@ -1349,4 +1362,29 @@ export function camelCaseToWords(str: string): string {
     .replace(/([A-Z])/g, " $1")
     .trim()
     .toLowerCase();
+}
+
+export function loadCSS(href: string, prepend = false): void {
+  const link = document.createElement("link");
+  link.type = "text/css";
+  link.rel = "stylesheet";
+  link.href = href;
+  if (prepend) {
+    document.getElementsByTagName("head")[0].prepend(link);
+  } else {
+    document.getElementsByTagName("head")[0].appendChild(link);
+  }
+}
+
+export function isLocalhost(): boolean {
+  return (
+    location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1" ||
+    location.hostname === ""
+  );
+}
+
+export function getBinary(): string {
+  const ret = Math.floor(Math.random() * 256).toString(2);
+  return ret.padStart(8, "0");
 }

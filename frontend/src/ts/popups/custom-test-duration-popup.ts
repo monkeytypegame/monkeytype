@@ -2,6 +2,10 @@ import * as UpdateConfig from "../config";
 import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Notifications from "../elements/notifications";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "customTestDurationPopupWrapper";
 
 function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
@@ -68,12 +72,13 @@ function previewDuration(): void {
 }
 
 export function show(): void {
-  if ($("#customTestDurationPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+  if (!isPopupVisible(wrapperId)) {
     $("#customTestDurationPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#customTestDurationPopup input").trigger("focus").trigger("select");
       });
   }
@@ -82,7 +87,7 @@ export function show(): void {
 }
 
 export function hide(): void {
-  if (!$("#customTestDurationPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#customTestDurationPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -90,9 +95,10 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#customTestDurationPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -127,7 +133,7 @@ $("#customTestDurationPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#customTestDurationPopup input").keyup((e) => {
+$("#customTestDurationPopupWrapper input").keyup((e) => {
   previewDuration();
 
   if (e.key === "Enter") {
@@ -135,7 +141,7 @@ $("#customTestDurationPopup input").keyup((e) => {
   }
 });
 
-$("#customTestDurationPopup .button").on("click", () => {
+$("#customTestDurationPopupWrapper .button").on("click", () => {
   apply();
 });
 
@@ -147,11 +153,10 @@ $("#testConfig").on("click", ".time .textButton", (e) => {
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#customTestDurationPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);

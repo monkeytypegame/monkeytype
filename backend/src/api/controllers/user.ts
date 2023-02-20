@@ -16,6 +16,10 @@ import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
 import { randomBytes } from "crypto";
 import * as RedisClient from "../../init/redis";
+import { v4 as uuidv4 } from "uuid";
+import { ObjectId } from "mongodb";
+import * as ReportDAL from "../../dal/report";
+import emailQueue from "../../queues/email-queue";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -53,6 +57,72 @@ export async function createNewUser(
   Logger.logToDb("user_created", `${name} ${email}`, uid);
 
   return new MonkeyResponse("User created");
+}
+
+export async function sendVerificationEmail(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { email, uid } = req.ctx.decodedToken;
+  const isVerified = (await admin.auth().getUser(uid)).emailVerified;
+  if (isVerified === true) {
+    throw new MonkeyError(400, "Email already verified");
+  }
+
+  const userInfo = await UserDAL.getUser(uid, "request verification email");
+
+  let link = "";
+  try {
+    link = await admin.auth().generateEmailVerificationLink(email, {
+      url:
+        process.env.MODE === "dev"
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
+    });
+  } catch (e) {
+    if (
+      e.code === "auth/internal-error" &&
+      e.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
+    ) {
+      // for some reason this error is not handled with a custom auth/ code, so we have to do it manually
+      throw new MonkeyError(429, "Too many requests. Please try again later.");
+    }
+    throw e;
+  }
+
+  await emailQueue.sendVerificationEmail(email, userInfo.name, link);
+
+  return new MonkeyResponse("Email sent");
+}
+
+export async function sendForgotPasswordEmail(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { email } = req.body;
+
+  let auth;
+  try {
+    auth = await admin.auth().getUserByEmail(email);
+  } catch (e) {
+    if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(404, "User not found");
+    }
+    throw e;
+  }
+
+  const userInfo = await UserDAL.getUser(
+    auth.uid,
+    "request forgot password email"
+  );
+
+  const link = await admin.auth().generatePasswordResetLink(email, {
+    url:
+      process.env.MODE === "dev"
+        ? "http://localhost:3000"
+        : "https://monkeytype.com",
+  });
+  await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
+
+  return new MonkeyResponse("Email sent if user was found");
 }
 
 export async function deleteUser(
@@ -167,10 +237,10 @@ function getRelevantUserInfo(
   return _.omit(user, [
     "bananas",
     "lbPersonalBests",
-    "quoteMod",
     "inbox",
     "nameHistory",
     "lastNameChange",
+    "_id",
   ]);
 }
 
@@ -664,4 +734,32 @@ export async function updateInbox(
   await UserDAL.updateInbox(uid, mailIdsToMarkRead, mailIdsToDelete);
 
   return new MonkeyResponse("Inbox updated");
+}
+
+export async function reportUser(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const {
+    reporting: { maxReports, contentReportLimit },
+  } = req.ctx.configuration.quotes;
+
+  const { uid: uidToReport, reason, comment, captcha } = req.body;
+
+  await verifyCaptcha(captcha);
+
+  const newReport: MonkeyTypes.Report = {
+    _id: new ObjectId(),
+    id: uuidv4(),
+    type: "user",
+    timestamp: new Date().getTime(),
+    uid,
+    contentId: `${uidToReport}`,
+    reason,
+    comment,
+  };
+
+  await ReportDAL.createReport(newReport, maxReports, contentReportLimit);
+
+  return new MonkeyResponse("User reported");
 }

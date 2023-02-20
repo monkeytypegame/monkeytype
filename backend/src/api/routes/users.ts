@@ -6,6 +6,7 @@ import {
   asyncHandler,
   validateRequest,
   validateConfiguration,
+  checkUserPermissions,
 } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
@@ -257,7 +258,10 @@ router.patch(
   RateLimit.userTagsEdit,
   validateRequest({
     body: {
-      tagId: joi.string().required(),
+      tagId: joi
+        .string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
       newName: tagNameValidation,
     },
   }),
@@ -270,7 +274,10 @@ router.delete(
   RateLimit.userTagsRemove,
   validateRequest({
     params: {
-      tagId: joi.string().required(),
+      tagId: joi
+        .string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
     },
   }),
   asyncHandler(UserController.removeTag)
@@ -282,7 +289,10 @@ router.delete(
   RateLimit.userTagsClearPB,
   validateRequest({
     params: {
-      tagId: joi.string().required(),
+      tagId: joi
+        .string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
     },
   }),
   asyncHandler(UserController.clearTagPb)
@@ -528,6 +538,66 @@ router.patch(
     },
   }),
   asyncHandler(UserController.updateInbox)
+);
+
+const withCustomMessages = joi.string().messages({
+  "string.pattern.base": "Invalid parameter format",
+});
+
+router.post(
+  "/report",
+  validateConfiguration({
+    criteria: (configuration) => {
+      return configuration.quotes.reporting.enabled;
+    },
+    invalidMessage: "User reporting is unavailable.",
+  }),
+  authenticateRequest(),
+  RateLimit.quoteReportSubmit,
+  validateRequest({
+    body: {
+      uid: withCustomMessages.regex(/^\w+$/).required(),
+      reason: joi
+        .string()
+        .valid(
+          "Inappropriate name",
+          "Inappropriate bio",
+          "Inappropriate social links",
+          "Suspected cheating"
+        )
+        .required(),
+      comment: withCustomMessages
+        .allow("")
+        .regex(/^([.]|[^/<>])+$/)
+        .max(250)
+        .required(),
+      captcha: withCustomMessages.regex(/[\w-_]+/).required(),
+    },
+  }),
+  checkUserPermissions({
+    criteria: (user) => {
+      return !user.cannotReport;
+    },
+  }),
+  asyncHandler(UserController.reportUser)
+);
+
+router.get(
+  "/verificationEmail",
+  authenticateRequest(),
+  RateLimit.userRequestVerificationEmail,
+  asyncHandler(UserController.sendVerificationEmail)
+);
+
+router.post(
+  "/forgotPasswordEmail",
+  RateLimit.userForgotPasswordEmail,
+  validateRequest({
+    body: {
+      email: joi.string().email().required(),
+    },
+  }),
+  asyncHandler(UserController.sendForgotPasswordEmail)
 );
 
 export default router;

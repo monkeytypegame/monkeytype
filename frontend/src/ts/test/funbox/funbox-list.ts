@@ -20,6 +20,10 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     info: "Everything is mirrored!",
   },
   {
+    name: "upside_down",
+    info: "Everything is upside down!",
+  },
+  {
     name: "tts",
     info: "Listen closely.",
     properties: ["changesWordsVisibility", "speaks"],
@@ -197,6 +201,16 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
     forcedConfig: {
       numbers: [false],
+    },
+  },
+  {
+    name: "binary",
+    alias: "numbers",
+    info: "01000010 01100101 01100101 01110000 00100000 01100010 01101111 01101111 01110000 00101110",
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    forcedConfig: {
+      numbers: [false],
+      punctuation: [false],
     },
   },
 ];
