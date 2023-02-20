@@ -500,6 +500,7 @@
     border-radius: calc(var(--roundness) / 2);
     padding: 0 0.4em;
     margin-bottom: -1em;
+    user-select: none;
   }
   #result {
     #tribeResultBottom {
