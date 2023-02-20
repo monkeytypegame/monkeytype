@@ -177,7 +177,7 @@ async function insertImageEmoji(text: string): Promise<string> {
       const emoji = await Misc.getEmojiList();
       const result = emoji.filter(
         (e) =>
-          e.from.toLowerCase() ==
+          Misc.escapeHTML(e.from).toLowerCase() ==
           textSplit[i].replace(/&#58;/g, "").toLowerCase()
       );
       if (result[0] !== undefined) {
