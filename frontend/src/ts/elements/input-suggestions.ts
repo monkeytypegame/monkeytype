@@ -73,13 +73,13 @@ export class InputSuggestions {
     });
 
     this.inputElement.on("keydown", (e) => {
-      if (this.applyWith.includes(e.code)) {
+      if (this.applyWith.includes(e.code) && this.isVisible()) {
         e.preventDefault();
       }
     });
 
     this.inputElement.on("keyup", (e) => {
-      if (this.applyWith.includes(e.code)) {
+      if (this.applyWith.includes(e.code) && this.isVisible()) {
         this.applySelection();
       }
     });
