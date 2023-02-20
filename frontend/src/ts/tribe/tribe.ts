@@ -646,9 +646,15 @@ TribeSocket.in.room.userResult((data) => {
     resolve?.failed === true
   ) {
     //todo only one
-    TribeCarets.changeColor(data.userId, "colorfulError");
-    TribeBars.fadeUser("test", data.userId, "colorfulError");
-    TribeBars.fadeUser("tribe", data.userId, "colorfulError");
+
+    let color = undefined;
+    if (resolve?.failed === true) {
+      color = "colorfulError" as keyof MonkeyTypes.ThemeColors;
+    }
+
+    if (color) TribeCarets.changeColor(data.userId, color);
+    TribeBars.fadeUser("test", data.userId, color);
+    TribeBars.fadeUser("tribe", data.userId, color);
     if (room.config.isInfiniteTest === false) {
       TribeResults.fadeUser("result", data.userId);
     }
