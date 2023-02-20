@@ -2,8 +2,11 @@ import crypto from "crypto";
 import georgeQueue from "../../queues/george-queue";
 import { MonkeyResponse } from "../../utils/monkey-response";
 
-const secretHash = process.env.GITHUB_SECRET
-  ? crypto.createHash("sha256").update(process.env.GITHUB_SECRET).digest("hex")
+const secretHash = process.env.GITHUB_WEBHOOK_SECRET
+  ? crypto
+      .createHash("sha256")
+      .update(process.env.GITHUB_WEBHOOK_SECRET)
+      .digest("hex")
   : null;
 
 export async function sendRelease(
