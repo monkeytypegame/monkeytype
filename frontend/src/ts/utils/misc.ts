@@ -1338,7 +1338,8 @@ export function isPasswordStrong(password: string): boolean {
   const hasNumber = !!password.match(/[\d]/);
   const hasSpecial = !!password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
   const isLong = password.length >= 8;
-  return hasCapital && hasNumber && hasSpecial && isLong;
+  const isShort = password.length <= 64;
+  return hasCapital && hasNumber && hasSpecial && isLong && isShort;
 }
 
 export function areUnsortedArraysEqual(a: unknown[], b: unknown[]): boolean {
@@ -1389,4 +1390,9 @@ export function isLocalhost(): boolean {
     location.hostname === "127.0.0.1" ||
     location.hostname === ""
   );
+}
+
+export function getBinary(): string {
+  const ret = Math.floor(Math.random() * 256).toString(2);
+  return ret.padStart(8, "0");
 }

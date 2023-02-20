@@ -93,6 +93,8 @@ declare namespace MonkeyTypes {
     9 = sawtooth
     10 = square
     11 = triangle
+    12 = pentatonic
+    13 = wholetone
   */
   type PlaySoundOnClick =
     | "off"
@@ -106,7 +108,9 @@ declare namespace MonkeyTypes {
     | "8"
     | "9"
     | "10"
-    | "11";
+    | "11"
+    | "12"
+    | "13";
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 

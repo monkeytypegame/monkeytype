@@ -583,7 +583,7 @@ $("#commandLineWrapper #commandLine").on(
   }
 );
 
-$("#commandLineWrapper").on("click", (e) => {
+$("#commandLineWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
     UpdateConfig.setFontFamily(Config.fontFamily, true);

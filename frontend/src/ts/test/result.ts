@@ -90,6 +90,7 @@ async function updateGraph(): Promise<void> {
   let smoothedRawData = chartData2;
   if (!useUnsmoothedRaw) {
     smoothedRawData = Misc.smooth(smoothedRawData, 1);
+    smoothedRawData = smoothedRawData.map((a) => Math.round(a));
   }
 
   ChartController.result.data.labels = labels;
@@ -572,6 +573,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     testType += "<br>expert";
   } else if (Config.difficulty == "master") {
     testType += "<br>master";
+  }
+  if (Config.stopOnError !== "off") {
+    testType += `<br>stop on ${Config.stopOnError}`;
   }
 
   $("#result .stats .testType .bottom").html(testType);

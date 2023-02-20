@@ -1132,5 +1132,19 @@
     "mainColor": "#9999ff",
     "subColor": "#ccddff",
     "textColor": "#9999ff"
-  }
+  },
+  {
+    "name": "nord_light",
+    "bgColor": "#eceff4",
+    "mainColor": "#8fbcbb",
+    "subColor": "#6a7791",
+    "textColor": "#8fbcbb"
+  },
+  {
+    "name": "slambook",
+    "bgColor": "#FFFDDE",
+    "mainColor": "#13005A",
+    "subColor": "#1c82adc4",
+    "textColor": "#125d98"
+}
 ]
