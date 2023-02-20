@@ -12,6 +12,7 @@ import * as Misc from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
+import * as LineJumpEvent from "../observables/line-jump-event";
 import * as Hangul from "hangul-js";
 import * as TribeState from "../tribe/tribe-state";
 import format from "date-fns/format";
@@ -19,7 +20,6 @@ import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import * as PractiseWords from "./practise-words";
-import * as TribeCarets from "../tribe/tribe-carets";
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -657,8 +657,6 @@ export function lineJump(currentTop: number): void {
           SlowTimer.get() ? 0 : 125
         );
 
-      TribeCarets.lineJump(wordHeight, true);
-
       const newCss: { [key: string]: string } = {
         marginTop: `-${wordHeight * (currentLinesAnimating + 1)}px`,
       };
@@ -692,9 +690,8 @@ export function lineJump(currentTop: number): void {
           (<HTMLElement>document.querySelector("#paceCaret")).offsetTop -
           wordHeight,
       });
-
-      TribeCarets.lineJump(wordHeight, false);
     }
+    LineJumpEvent.dispatch(wordHeight);
   }
   currentTestLine++;
 }

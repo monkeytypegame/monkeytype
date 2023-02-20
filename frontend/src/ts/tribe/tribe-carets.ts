@@ -5,6 +5,7 @@ import { convertRemToPixels, mapRange } from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import { getRoom } from "./tribe-state";
 import tribeSocket from "./tribe-socket";
+import * as LineJumpEvent from "../observables/line-jump-event";
 
 const carets: { [key: string]: TribeCaret } = {};
 
@@ -224,3 +225,7 @@ export function lineJump(offset: number, withAnimation: boolean): void {
     carets[socketId].lineJump(offset, withAnimation);
   }
 }
+
+LineJumpEvent.subscribe((wordHeight: number) => {
+  lineJump(wordHeight, Config.smoothLineScroll);
+});
