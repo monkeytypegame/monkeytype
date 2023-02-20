@@ -30,7 +30,9 @@ export class InputSuggestions {
     this.foundKeys = [];
     this.minInputForSuggestions = minInputForSuggestions;
     this.applyWith = applyWith;
+  }
 
+  applyEventListeners(): void {
     this.inputElement.on("input", () => {
       const inputVal = this.inputElement.val() as string;
       const split = inputVal.split(" ");
@@ -67,6 +69,12 @@ export class InputSuggestions {
           }
         }
         this.updateSelected();
+      }
+    });
+
+    this.inputElement.on("keydown", (e) => {
+      if (this.applyWith.includes(e.code)) {
+        e.preventDefault();
       }
     });
 
