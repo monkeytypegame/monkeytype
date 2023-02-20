@@ -501,7 +501,7 @@ export const apeKeysGenerate = rateLimit({
 // Webhooks Routing
 export const webhooksPost = rateLimit({
   windowMs: ONE_HOUR_MS,
-  max: 120 * REQUEST_MULTIPLIER,
+  max: 10 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
