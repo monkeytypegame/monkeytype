@@ -41,6 +41,16 @@ export class MonkeyQueue<T> {
     await this.jobQueue.add(taskName, task, jobOpts);
   }
 
+  async getJobCounts(): Promise<{
+    [index: string]: number;
+  }> {
+    if (!this.jobQueue) {
+      return {};
+    }
+
+    return await this.jobQueue.getJobCounts();
+  }
+
   async addBulk(
     tasks: { name: string; data: T; opts?: BulkJobOptions }[]
   ): Promise<void> {

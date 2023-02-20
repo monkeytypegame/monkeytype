@@ -8,6 +8,9 @@ import { Auth } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "../popups/skeleton";
+
+const wrapperId = "leaderboardsWrapper";
 
 let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
@@ -136,7 +139,7 @@ function updateFooter(lb: LbKey): void {
   }
 
   if (
-    window.location.hostname !== "localhost" &&
+    !Misc.isLocalhost() &&
     (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 7200
   ) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
@@ -379,6 +382,7 @@ export function hide(): void {
         showingYesterday = false;
         updateYesterdayButton();
         $("#leaderboardsWrapper").addClass("hidden");
+        Skeleton.remove(wrapperId);
       }
     );
 }
@@ -578,7 +582,8 @@ export function show(): void {
     Notifications.add("You can't view leaderboards while offline", 0);
     return;
   }
-  if ($("#leaderboardsWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+  if (!Misc.isPopupVisible("leaderboardsWrapper")) {
     if (Auth?.currentUser) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
@@ -807,7 +812,7 @@ $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
 });
 
 $(document).on("keydown", (event) => {
-  if (event.key === "Escape" && !$("#leaderboardsWrapper").hasClass("hidden")) {
+  if (event.key === "Escape" && Misc.isPopupVisible("leaderboardsWrapper")) {
     hide();
     event.preventDefault();
   }
@@ -824,3 +829,5 @@ $(document).on("keypress", "#top #menu .textButton", (e) => {
     $(e.currentTarget).trigger("click");
   }
 });
+
+Skeleton.save(wrapperId);

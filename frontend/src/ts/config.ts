@@ -175,7 +175,22 @@ export function setPlaySoundOnClick(
 ): boolean {
   if (
     !isConfigValueValid("play sound on click", val, [
-      ["off", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+      [
+        "off",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+      ],
     ])
   ) {
     return false;
@@ -1611,6 +1626,9 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize);
 
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
+
   return true;
 }
 
@@ -1653,9 +1671,6 @@ export async function setCustomLayoutfluid(
   ) as MonkeyTypes.CustomLayoutFluid;
 
   config.customLayoutfluid = customLayoutfluid;
-  $(".pageSettings .section.customLayoutfluid input").val(
-    customLayoutfluid.replace(/#/g, " ")
-  );
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
 

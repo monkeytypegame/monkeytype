@@ -405,7 +405,11 @@ export function restart(options = {} as RestartOptions): void {
         } else if (Config.quickRestart === "esc") {
           message = "Press shift + escape or use your mouse to confirm.";
         }
-        Notifications.add("Quick restart disabled. " + message, 0, 3);
+        Notifications.add(
+          `Quick restart disabled in long tests. ${message}`,
+          0,
+          4
+        );
         return;
       }
       // }else{
@@ -544,6 +548,8 @@ export function restart(options = {} as RestartOptions): void {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       $("#wordsInput").val(" ");
       AdController.destroyResult();
+      $("#resultWordsHistory .words").empty();
+      $("#resultReplay #replayWords").empty();
       let shouldQuoteRepeat = false;
       if (
         Config.mode === "quote" &&
@@ -660,7 +666,7 @@ export function restart(options = {} as RestartOptions): void {
             // resetPaceCaret();
             PbCrown.hide();
             TestTimer.clear();
-            if ($("#commandLineWrapper").hasClass("hidden")) {
+            if (!Misc.isPopupVisible("commandLineWrapper")) {
               TestUI.focusWords();
             }
             // ChartController.result.update();
@@ -1463,7 +1469,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestActive.get()) return;
-  if (Config.mode == "zen" && TestInput.input.current.length != 0) {
+  if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
@@ -1580,7 +1586,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
-  } else if (completedEvent.rawWpm < 0 || completedEvent.rawWpm > 350) {
+  } else if (
+    completedEvent.rawWpm < 0 ||
+    (completedEvent.rawWpm > 350 &&
+      completedEvent.mode != "words" &&
+      completedEvent.mode2 != "10") ||
+    (completedEvent.rawWpm > 420 &&
+      completedEvent.mode == "words" &&
+      completedEvent.mode2 == "10")
+  ) {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
     dontSave = true;
@@ -1970,28 +1984,31 @@ $(".pageTest").on("click", "#testConfig .numbersMode.textButton", () => {
   restart();
 });
 
-$("#practiseWordsPopup .button.missed").on("click", () => {
-  PractiseWords.hidePopup();
-  PractiseWords.init(true, false);
-  restart({
-    practiseMissed: true,
-  });
+$("#popups").on("click", "#practiseWordsPopup .button.missed", () => {
+  if (PractiseWords.init(true, false)) {
+    PractiseWords.hidePopup();
+    restart({
+      practiseMissed: true,
+    });
+  }
 });
 
-$("#practiseWordsPopup .button.slow").on("click", () => {
-  PractiseWords.hidePopup();
-  PractiseWords.init(false, true);
-  restart({
-    practiseMissed: true,
-  });
+$("#popups").on("click", "#practiseWordsPopup .button.slow", () => {
+  if (PractiseWords.init(false, true)) {
+    PractiseWords.hidePopup();
+    restart({
+      practiseMissed: true,
+    });
+  }
 });
 
-$("#practiseWordsPopup .button.both").on("click", () => {
-  PractiseWords.hidePopup();
-  PractiseWords.init(true, true);
-  restart({
-    practiseMissed: true,
-  });
+$("#popups").on("click", "#practiseWordsPopup .button.both", () => {
+  if (PractiseWords.init(true, true)) {
+    PractiseWords.hidePopup();
+    restart({
+      practiseMissed: true,
+    });
+  }
 });
 
 $("#popups").on(

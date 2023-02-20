@@ -3,6 +3,7 @@ import { InputIndicator } from "../elements/input-indicator";
 import { sleep } from "../utils/misc";
 import Ape from "../ape";
 import { navigate } from "../observables/navigate-event";
+import * as Skeleton from "../popups/skeleton";
 
 const searchIndicator = new InputIndicator(
   $(".page.pageProfileSearch .search input"),
@@ -80,9 +81,10 @@ export const page = new Page(
     //
   },
   async () => {
-    //
+    Skeleton.remove("pageProfileSearch");
   },
   async () => {
+    Skeleton.append("pageProfileSearch", "middle");
     $(".page.pageProfileSearch input").val("");
     searchIndicator.hide();
   },
@@ -90,3 +92,5 @@ export const page = new Page(
     $(".page.pageProfileSearch input").focus();
   }
 );
+
+Skeleton.save("pageProfileSearch");

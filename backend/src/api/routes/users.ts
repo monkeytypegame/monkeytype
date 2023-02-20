@@ -258,7 +258,10 @@ router.patch(
   RateLimit.userTagsEdit,
   validateRequest({
     body: {
-      tagId: joi.string().required(),
+      tagId: joi
+        .string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
       newName: tagNameValidation,
     },
   }),
@@ -271,7 +274,10 @@ router.delete(
   RateLimit.userTagsRemove,
   validateRequest({
     params: {
-      tagId: joi.string().required(),
+      tagId: joi
+        .string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
     },
   }),
   asyncHandler(UserController.removeTag)
@@ -283,7 +289,10 @@ router.delete(
   RateLimit.userTagsClearPB,
   validateRequest({
     params: {
-      tagId: joi.string().required(),
+      tagId: joi
+        .string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
     },
   }),
   asyncHandler(UserController.clearTagPb)
@@ -571,6 +580,24 @@ router.post(
     },
   }),
   asyncHandler(UserController.reportUser)
+);
+
+router.get(
+  "/verificationEmail",
+  authenticateRequest(),
+  RateLimit.userRequestVerificationEmail,
+  asyncHandler(UserController.sendVerificationEmail)
+);
+
+router.post(
+  "/forgotPasswordEmail",
+  RateLimit.userForgotPasswordEmail,
+  validateRequest({
+    body: {
+      email: joi.string().email().required(),
+    },
+  }),
+  asyncHandler(UserController.sendForgotPasswordEmail)
 );
 
 export default router;

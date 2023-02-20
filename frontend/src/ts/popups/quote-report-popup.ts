@@ -5,6 +5,10 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "quoteReportPopupWrapper";
 
 interface State {
   previousPopupShowCallback?: () => void;
@@ -31,7 +35,9 @@ const defaultOptions: Options = {
 };
 
 export async function show(options = defaultOptions): Promise<void> {
-  if ($("#quoteReportPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+
+  if (!isPopupVisible(wrapperId)) {
     CaptchaController.render(
       document.querySelector("#quoteReportPopup .g-recaptcha") as HTMLElement,
       "quoteReportPopup"
@@ -60,14 +66,14 @@ export async function show(options = defaultOptions): Promise<void> {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, noAnim ? 0 : 100, () => {
+      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
         $("#quoteReportPopup textarea").trigger("focus").trigger("select");
       });
   }
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#quoteReportPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     const noAnim = state.previousPopupShowCallback ? true : false;
 
     $("#quoteReportPopupWrapper")
@@ -77,13 +83,14 @@ export async function hide(): Promise<void> {
         {
           opacity: 0,
         },
-        noAnim ? 0 : 100,
+        noAnim ? 0 : 125,
         () => {
           CaptchaController.reset("quoteReportPopup");
           $("#quoteReportPopupWrapper").addClass("hidden");
           if (state.previousPopupShowCallback) {
             state.previousPopupShowCallback();
           }
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -144,7 +151,7 @@ $("#quoteReportPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#quoteReportPopup .comment").on("input", () => {
+$("#quoteReportPopupWrapper .comment").on("input", () => {
   setTimeout(() => {
     const len = ($("#quoteReportPopup .comment").val() as string).length;
     $("#quoteReportPopup .characterCount").text(len);
@@ -156,7 +163,7 @@ $("#quoteReportPopup .comment").on("input", () => {
   }, 1);
 });
 
-$("#quoteReportPopup .submit").on("click", async () => {
+$("#quoteReportPopupWrapper .submit").on("click", async () => {
   await submitReport();
 });
 
@@ -166,3 +173,5 @@ $(".pageTest #reportQuoteButton").on("click", async () => {
     noAnim: false,
   });
 });
+
+Skeleton.save(wrapperId);

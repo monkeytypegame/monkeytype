@@ -3,6 +3,8 @@ import Ape from "../ape";
 import Page from "./page";
 import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
+import * as Skeleton from "../popups/skeleton";
+import * as Misc from "../utils/misc";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side .button").removeClass("disabled");
@@ -111,22 +113,20 @@ const checkPassword = (): void => {
     ".page.pageLogin .register.side .passwordInput"
   ).val() as string;
 
-  // Force user to use a capital letter, number, special character when setting up an account and changing password
-  if (password.length < 8) {
-    passwordIndicator.show("short", "Password must be at least 8 characters");
-    return;
-  } else {
-    const hasCapital = password.match(/[A-Z]/);
-    const hasNumber = password.match(/[\d]/);
-    const hasSpecial = password.match(/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/);
-    if (!hasCapital || !hasNumber || !hasSpecial) {
+  // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
+  if (!Misc.isLocalhost() && !Misc.isPasswordStrong(password)) {
+    if (password.length < 8) {
+      passwordIndicator.show("short", "Password must be at least 8 characters");
+    } else if (password.length > 64) {
+      passwordIndicator.show("long", "Password must be at most 64 characters");
+    } else {
       passwordIndicator.show(
         "weak",
         "Password must contain at least one capital letter, number, and special character"
       );
-    } else {
-      passwordIndicator.show("good", "Password is good");
     }
+  } else {
+    passwordIndicator.show("good", "Password is good");
   }
   updateSignupButton();
 };
@@ -204,6 +204,10 @@ const passwordIndicator = new InputIndicator(
       level: 1,
     },
     short: {
+      icon: "fa-times",
+      level: -1,
+    },
+    long: {
       icon: "fa-times",
       level: -1,
     },
@@ -301,12 +305,18 @@ export const page = new Page(
     //
   },
   async () => {
-    //
+    Skeleton.remove("pageLogin");
   },
   async () => {
-    //
+    Skeleton.append("pageLogin", "middle");
+    $(".pageLogin .button").removeClass("disabled");
+    $(".pageLogin input").prop("disabled", false);
   },
   async () => {
     //
   }
 );
+
+$(() => {
+  Skeleton.save("pageLogin");
+});

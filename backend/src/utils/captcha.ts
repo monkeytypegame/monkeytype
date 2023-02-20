@@ -19,6 +19,11 @@ export async function verify(captcha: string): Promise<boolean> {
       body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captcha}`,
     }
   );
-  const captchaData = (await response.json()) as CaptchaData;
-  return captchaData.success;
+
+  if (!response.ok) {
+    return false;
+  } else {
+    const captchaData = (await response.json()) as CaptchaData;
+    return captchaData.success;
+  }
 }

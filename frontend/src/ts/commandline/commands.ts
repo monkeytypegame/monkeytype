@@ -96,6 +96,7 @@ import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
+import * as TestStats from "../test/test-stats";
 
 Misc.getLayoutsList()
   .then((layouts) => {
@@ -380,6 +381,14 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
+      id: "clearNotifications",
+      display: "Clear all notifications",
+      icon: "fa-trash-alt",
+      exec: async (): Promise<void> => {
+        Notifications.clearAllNotifications();
+      },
+    },
+    {
       id: "clearSwCache",
       display: "Clear SW cache",
       icon: "fa-cog",
@@ -397,6 +406,22 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-cog",
       exec: async (): Promise<void> => {
         alert(await caches.keys());
+      },
+    },
+    {
+      id: "copyResultStats",
+      display: "Copy result stats",
+      icon: "fa-cog",
+      visible: false,
+      exec: async (): Promise<void> => {
+        navigator.clipboard
+          .writeText(JSON.stringify(TestStats.getStats()))
+          .then(() => {
+            Notifications.add("Copied to clipboard", 1);
+          })
+          .catch((e) => {
+            Notifications.add("Failed to copy to clipboard: " + e, -1);
+          });
       },
     },
     {

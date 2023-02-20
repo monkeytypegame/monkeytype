@@ -18,6 +18,7 @@ export function set(foc: boolean, withCursor = false): void {
     $("#testConfig").addClass("focus");
     $("#mobileTestConfig").addClass("focus");
     $("#bannerCenter").addClass("focus");
+    $("#notificationCenter").addClass("focus");
     $("#capsWarning").addClass("focus");
     $("#ad-vertical-right-wrapper").addClass("focus");
     $("#ad-vertical-left-wrapper").addClass("focus");
@@ -36,6 +37,7 @@ export function set(foc: boolean, withCursor = false): void {
     $("#testConfig").removeClass("focus");
     $("#mobileTestConfig").removeClass("focus");
     $("#bannerCenter").removeClass("focus");
+    $("#notificationCenter").removeClass("focus");
     $("#capsWarning").removeClass("focus");
     $("#app").removeClass("focus");
     $("#ad-vertical-right-wrapper").removeClass("focus");

@@ -3,8 +3,12 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 let apeKeys: MonkeyTypes.ApeKeys = {};
+
+const wrapperId = "apeKeysPopupWrapper";
 
 async function getData(): Promise<void> {
   Loader.show();
@@ -68,7 +72,7 @@ function refreshList(): void {
 }
 
 export function hide(): void {
-  if (!$("#apeKeysPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#apeKeysPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -76,9 +80,10 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#apeKeysPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -90,7 +95,8 @@ export async function show(): Promise<void> {
     Notifications.add("You are offline", 0, 2);
     return;
   }
-  if ($("#apeKeysPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+  if (!isPopupVisible(wrapperId)) {
     await getData();
     refreshList();
     $("#apeKeysPopupWrapper")
@@ -101,7 +107,7 @@ export async function show(): Promise<void> {
         {
           opacity: 1,
         },
-        100,
+        125,
         () => {
           $("#apeKeysPopup textarea").trigger("focus").trigger("select");
         }
@@ -141,3 +147,12 @@ $("#popups").on("click", "#apeKeysPopup table .textButton", async (e) => {
     Notifications.add("Key inactive", 1);
   }
 });
+
+$(document).on("keydown", (event) => {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
+    hide();
+    event.preventDefault();
+  }
+});
+
+Skeleton.save(wrapperId);

@@ -10,6 +10,7 @@ import { getCachedConfiguration } from "../init/configuration";
 import { formatSeconds, getOrdinalNumberString, mapRange } from "../utils/misc";
 import LaterQueue, { LaterTask } from "../queues/later-queue";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
+import { recordTimeToCompleteJob } from "../utils/prometheus";
 
 interface DailyLeaderboardMailContext {
   yesterdayTimestamp: number;
@@ -195,7 +196,7 @@ async function jobHandler(job: Job): Promise<void> {
   }
 
   const elapsed = performance.now() - start;
-
+  recordTimeToCompleteJob(LaterQueue.queueName, taskName, elapsed);
   Logger.success(`Job: ${taskName} - completed in ${elapsed}ms`);
 }
 
