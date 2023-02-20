@@ -21,8 +21,9 @@ export function update(): void {
     if ((user?.progress?.wpm ?? 0) > maxWpm) maxWpm = user?.progress?.wpm ?? 0;
   }
 
-  el.removeClass("bad");
   const delta = Math.round(maxWpm - (TribeState.getSelf()?.progress?.wpm ?? 0));
+
+  el.removeClass("bad");
   if (delta === 0) {
     el.text("-");
   } else if (delta > 0) {
