@@ -490,17 +490,20 @@
 }
 
 .pageTest {
-  .tribeCaret .caretName {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    font-size: 0.33em;
-    color: var(--bg-color);
-    background: inherit;
-    border-radius: calc(var(--roundness) / 2);
-    padding: 0 0.4em;
-    margin-bottom: -1em;
-    user-select: none;
+  .tribeCaret {
+    transition: 0.125s background;
+    .caretName {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      font-size: 0.33em;
+      color: var(--bg-color);
+      background: inherit;
+      border-radius: calc(var(--roundness) / 2);
+      padding: 0 0.4em;
+      margin-bottom: -1em;
+      user-select: none;
+    }
   }
   #result {
     #tribeResultBottom {
@@ -740,6 +743,7 @@
         background: rgba(0, 0, 0, 0.1);
         border-radius: var(--roundness);
         .bar {
+          transition: 0.125s background;
           height: 0.25rem;
           background: var(--sub-color);
           left: 0;
