@@ -156,11 +156,7 @@ export async function addResult(
   const resulthash = result.hash;
   delete result.hash;
   delete result.stringified;
-  if (
-    req.ctx.configuration.results.objectHashCheckEnabled &&
-    resulthash.length === 40
-  ) {
-    //if its not 64 that means client is still using old hashing package
+  if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const serverhash = objectHash(result);
     if (serverhash !== resulthash) {
       Logger.logToDb(

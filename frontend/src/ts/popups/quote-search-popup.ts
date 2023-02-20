@@ -312,7 +312,7 @@ $("#quoteSearchPopupWrapper .searchBox").on("keyup", (e) => {
 
 $("#quoteSearchPopupWrapper .quoteLengthFilter").on("change", searchForQuotes);
 
-$("#quoteSearchPopupWrapper").on("click", (e) => {
+$("#quoteSearchPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
     hide();
   }

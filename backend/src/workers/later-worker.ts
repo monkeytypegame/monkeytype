@@ -7,13 +7,18 @@ import GeorgeQueue from "../queues/george-queue";
 import { buildMonkeyMail } from "../utils/monkey-mail";
 import { DailyLeaderboard } from "../utils/daily-leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
-import { getOrdinalNumberString, mapRange } from "../utils/misc";
+import { formatSeconds, getOrdinalNumberString, mapRange } from "../utils/misc";
 import LaterQueue, { LaterTask } from "../queues/later-queue";
+import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
 
 interface DailyLeaderboardMailContext {
   yesterdayTimestamp: number;
   modeRule: MonkeyTypes.ValidModeRule;
+}
+
+interface WeeklyXpLeaderboardResultContext {
+  lastWeekTimestamp: number;
 }
 
 async function handleDailyLeaderboardResults(
@@ -100,6 +105,84 @@ async function handleDailyLeaderboardResults(
   );
 }
 
+async function handleWeeklyXpLeaderboardResults(
+  ctx: WeeklyXpLeaderboardResultContext
+): Promise<void> {
+  const {
+    leaderboards: { weeklyXp: weeklyXpConfig },
+    users: { inbox: inboxConfig },
+  } = await getCachedConfiguration(false);
+
+  const { enabled, xpRewardBrackets } = weeklyXpConfig;
+  if (!enabled || xpRewardBrackets.length < 0) {
+    return;
+  }
+
+  const { lastWeekTimestamp } = ctx;
+  const weeklyXpLeaderboard = new WeeklyXpLeaderboard(lastWeekTimestamp);
+
+  const maxRankToGet = Math.max(
+    ...xpRewardBrackets.map((bracket) => bracket.maxRank)
+  );
+
+  const allResults = await weeklyXpLeaderboard.getResults(
+    0,
+    maxRankToGet,
+    weeklyXpConfig
+  );
+
+  if (allResults.length === 0) {
+    return;
+  }
+
+  const mailEntries: {
+    uid: string;
+    mail: MonkeyTypes.MonkeyMail[];
+  }[] = [];
+
+  allResults.forEach((entry) => {
+    const { uid, name, rank = maxRankToGet, totalXp, timeTypedSeconds } = entry;
+
+    const xp = Math.round(totalXp);
+    const placementString = getOrdinalNumberString(rank);
+
+    const xpReward = _(xpRewardBrackets)
+      .filter((bracket) => rank >= bracket.minRank && rank <= bracket.maxRank)
+      .map((bracket) =>
+        mapRange(
+          rank,
+          bracket.minRank,
+          bracket.maxRank,
+          bracket.maxReward,
+          bracket.minReward
+        )
+      )
+      .max();
+
+    if (!xpReward) return;
+
+    const rewardMail = buildMonkeyMail({
+      subject: "Weekly XP Leaderboard placement",
+      body: `Congratulations ${name} on placing ${placementString} with ${xp} xp! Last week, you typed for a total of ${formatSeconds(
+        timeTypedSeconds
+      )}! Keep up the good work :)`,
+      rewards: [
+        {
+          type: "xp",
+          item: Math.round(xpReward),
+        },
+      ],
+    });
+
+    mailEntries.push({
+      uid: uid,
+      mail: [rewardMail],
+    });
+  });
+
+  await addToInboxBulk(mailEntries, inboxConfig);
+}
+
 async function jobHandler(job: Job): Promise<void> {
   const { taskName, ctx }: LaterTask = job.data;
   Logger.info(`Starting job: ${taskName}`);
@@ -108,6 +191,8 @@ async function jobHandler(job: Job): Promise<void> {
 
   if (taskName === "daily-leaderboard-results") {
     await handleDailyLeaderboardResults(ctx);
+  } else if (taskName === "weekly-xp-leaderboard-results") {
+    await handleWeeklyXpLeaderboardResults(ctx);
   }
 
   const elapsed = performance.now() - start;
