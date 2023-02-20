@@ -659,6 +659,9 @@ TribeSocket.in.room.userResult((data) => {
     if (room.config.isInfiniteTest === false) {
       TribeResults.fadeUser("result", data.userId);
     }
+    if (resolve?.afk) {
+      TribeCarets.destroy(data.userId);
+    }
   } else {
     TribeCarets.destroy(data.userId);
     if (room.config.mode !== "time") {
