@@ -270,3 +270,9 @@ export function formatSeconds(
 
   return `${normalized} ${unit}${normalized > 1 ? "s" : ""}`;
 }
+
+export function escapeHTML(str: string): string {
+  return String(str).replace(/[^\w. ]/gi, function (c) {
+    return "&#" + c.charCodeAt(0) + ";";
+  });
+}
