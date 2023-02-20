@@ -364,6 +364,7 @@ TribeSocket.in.room.playerLeft((data) => {
     TribeSound.play("leave");
     TribeButtons.update();
     TribeBars.fadeUser(undefined, data.userId);
+    TribeCarets.destroy(data.userId);
     TribeResults.fadeUser("result", data.userId);
     TribeResults.update("result", data.userId);
     checkIfEveryoneIsReady();
