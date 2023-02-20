@@ -1,7 +1,7 @@
 import * as TestWords from "../test/test-words";
 import * as TestUI from "../test/test-ui";
 import Config from "../config";
-import { convertRemToPixels, mapRange } from "../utils/misc";
+import { convertRemToPixels } from "../utils/misc";
 import * as SlowTimer from "../states/slow-timer";
 import { getRoom } from "./tribe-state";
 import tribeSocket from "./tribe-socket";
@@ -195,13 +195,6 @@ export function init(): void {
   }
 }
 
-//todo remove
-let durationDivider = 4;
-export function setDurationDivider(newDurationDivider: number): void {
-  newDurationDivider = mapRange(newDurationDivider, 1, 10, 1, 10);
-  durationDivider = newDurationDivider;
-}
-
 export function updateAndAnimate(
   data: Record<string, TribeTypes.UserProgress>
 ): void {
@@ -211,7 +204,7 @@ export function updateAndAnimate(
       data[socketId].wordIndex,
       data[socketId].letterIndex
     );
-    carets[socketId].animate((getRoom()?.updateRate ?? 500) / durationDivider);
+    carets[socketId].animate(getRoom()?.updateRate ?? 500);
   }
 }
 
