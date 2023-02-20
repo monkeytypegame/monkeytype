@@ -13,7 +13,10 @@ export async function sendRelease(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { "x-hub-signature-256": signature } = req.headers;
-  if (secretHash && signature !== `sha256=${secretHash}`) {
+  if (secretHash === null) {
+    return new MonkeyResponse("GitHub Webhook Secret not found", 500);
+  }
+  if (signature !== `sha256=${secretHash}`) {
     return new MonkeyResponse("Unauthorized", 401);
   }
 
