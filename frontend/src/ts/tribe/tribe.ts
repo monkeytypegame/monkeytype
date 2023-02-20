@@ -646,19 +646,20 @@ TribeSocket.in.room.userResult((data) => {
     resolve?.failed === true
   ) {
     //todo only one
-    TribeBars.fadeUser("test", data.userId);
-    TribeBars.fadeUser("tribe", data.userId);
+    TribeCarets.changeColor(data.userId, "colorfulError");
+    TribeBars.fadeUser("test", data.userId, "colorfulError");
+    TribeBars.fadeUser("tribe", data.userId, "colorfulError");
     if (room.config.isInfiniteTest === false) {
       TribeResults.fadeUser("result", data.userId);
     }
   } else {
+    TribeCarets.destroy(data.userId);
     if (room.config.mode !== "time") {
       TribeBars.completeBar("test", data.userId);
       TribeBars.completeBar("tribe", data.userId);
       TribeResults.updateBar("result", data.userId, 100);
     }
   }
-  TribeCarets.destroy(data.userId);
   if (!TestActive.get()) {
     TribeCarets.destroyAll();
     TribeResults.update("result", data.userId);

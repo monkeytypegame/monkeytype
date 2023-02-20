@@ -2,6 +2,7 @@ import * as TribeState from "./tribe-state";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
 import tribeSocket from "./tribe-socket";
+import * as ThemeColors from "../elements/theme-colors";
 
 export function init(page: string): void {
   let el: JQuery<HTMLElement> | undefined;
@@ -158,10 +159,14 @@ export function completeBar(page: string, userId: string): void {
     );
 }
 
-export function fadeUser(page: string | undefined, userId: string): void {
+export function fadeUser(
+  page: string | undefined,
+  userId: string,
+  changeColor?: keyof MonkeyTypes.ThemeColors
+): void {
   if (page === undefined) {
-    fadeUser("test", userId);
-    fadeUser("tribe", userId);
+    fadeUser("test", userId, changeColor);
+    fadeUser("tribe", userId, changeColor);
     return;
   }
   let el: JQuery<HTMLElement> | undefined;
@@ -175,6 +180,13 @@ export function fadeUser(page: string | undefined, userId: string): void {
   }
 
   el.find(`.player[id=${userId}]`).addClass("faded");
+
+  if (changeColor) {
+    ThemeColors.get(changeColor).then((color) => {
+      if (!el) return;
+      el.find(`.player[id=${userId}] .bar`).css("background-color", color);
+    });
+  }
 }
 
 // function refreshTestUserList() {

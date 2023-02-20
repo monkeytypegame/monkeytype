@@ -6,6 +6,7 @@ import * as SlowTimer from "../states/slow-timer";
 import { getRoom } from "./tribe-state";
 import tribeSocket from "./tribe-socket";
 import * as LineJumpEvent from "../observables/line-jump-event";
+import * as ThemeColors from "../elements/theme-colors";
 
 const carets: { [key: string]: TribeCaret } = {};
 
@@ -157,6 +158,14 @@ export class TribeCaret {
     }
   }
 
+  async changeColor(color: keyof MonkeyTypes.ThemeColors): Promise<void> {
+    if (!this.element) return;
+    const colorHex = await ThemeColors.get(color);
+    this.element.css({
+      background: colorHex,
+    });
+  }
+
   lineJump(offset: number, withAnimation: boolean): void {
     if (!this.element) return;
     if (withAnimation) {
@@ -210,6 +219,15 @@ export function destroy(socketId: string): void {
   if (carets[socketId]) {
     carets[socketId].destroy();
     delete carets[socketId];
+  }
+}
+
+export function changeColor(
+  socketId: string,
+  color: keyof MonkeyTypes.ThemeColors
+): void {
+  if (carets[socketId]) {
+    carets[socketId].changeColor(color);
   }
 }
 
