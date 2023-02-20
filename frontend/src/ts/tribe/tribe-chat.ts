@@ -341,3 +341,8 @@ $(".pageTest #result #tribeResultBottom .chat .messages").on("scroll", (_e) => {
     shouldScrollChat = true;
   }
 });
+
+lobbyChatSuggestions1.applyEventListeners();
+lobbyChatSuggestions2.applyEventListeners();
+resultChatSuggestions1.applyEventListeners();
+resultChatSuggestions2.applyEventListeners();
