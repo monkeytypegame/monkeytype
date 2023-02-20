@@ -12,10 +12,11 @@ const secretHash = process.env.GITHUB_WEBHOOK_SECRET
 export async function sendRelease(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { "x-hub-signature-256": signature } = req.headers;
   if (secretHash === null) {
     return new MonkeyResponse("GitHub Webhook Secret not found", 500);
   }
+
+  const { "x-hub-signature-256": signature } = req.headers;
   if (signature !== `sha256=${secretHash}`) {
     return new MonkeyResponse("Unauthorized", 401);
   }
