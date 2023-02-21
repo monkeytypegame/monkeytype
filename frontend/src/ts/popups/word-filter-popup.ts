@@ -50,13 +50,13 @@ async function init(): Promise<void> {
       return;
     }
 
-    for (let layout in LayoutList) {
+    for (const layout in LayoutList) {
       $("#wordFilterPopup .layoutInput").append(`
       <option value=${layout}>${layout}</option>
     `);
     }
 
-    let PresetList = [
+    const presets = [
       "left hand",
       "right hand",
       "home row",
@@ -64,7 +64,7 @@ async function init(): Promise<void> {
       "bottom row",
     ];
 
-    PresetList.map((preset) => {
+    presets.map((preset) => {
       $("#wordFilterPopup .presetInput").append(`
       <option value=${preset}>${preset}</option>
     `);
@@ -215,7 +215,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
   const presetName = $("#wordFilterPopup .presetInput").val() as string;
   const layoutName = $("#wordFilterPopup .layoutInput").val() as string;
 
-  const combine = (include: string[], exclude: string[]) => {
+  const combine = (include: string[], exclude: string[]): void => {
     let includeCharacters = "";
     let excludeCharacters = "";
 
@@ -231,7 +231,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
     $("#wordExcludeInput").val(excludeCharacters);
   };
 
-  const left = async () => {
+  const left = async (): Promise<void> => {
     const layout = await Misc.getLayout(layoutName);
 
     const topRowInclude = layout.keys.row2.slice(0, 5);
@@ -247,7 +247,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
 
     combine(include, exclude);
   };
-  const right = async () => {
+  const right = async (): Promise<void> => {
     const layout = await Misc.getLayout(layoutName);
     const topRowInclude = layout.keys.row2.slice(5);
     const homeRowInclude = layout.keys.row3.slice(5);
@@ -263,7 +263,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
     combine(include, exclude);
   };
 
-  const home = async () => {
+  const home = async (): Promise<void> => {
     const layout = await Misc.getLayout(layoutName);
 
     const homeRow = layout.keys.row3;
@@ -276,7 +276,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
     combine(include, exclude);
   };
 
-  const top = async () => {
+  const top = async (): Promise<void> => {
     const layout = await Misc.getLayout(layoutName);
 
     const homeRow = layout.keys.row3;
@@ -289,7 +289,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
     combine(include, exclude);
   };
 
-  const bottom = async () => {
+  const bottom = async (): Promise<void> => {
     const layout = await Misc.getLayout(layoutName);
 
     const homeRow = layout.keys.row3;
