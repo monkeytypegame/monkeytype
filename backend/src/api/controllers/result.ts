@@ -440,7 +440,8 @@ export async function addResult(
   const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
   let weeklyXpLeaderboardRank = -1;
   const eligibleForWeeklyXpLeaderboard =
-    !user.banned &&
+    user.banned !== true &&
+    user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
