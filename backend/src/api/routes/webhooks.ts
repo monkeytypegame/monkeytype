@@ -1,6 +1,7 @@
 import { Router } from "express";
 import joi from "joi";
 import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
+import { authenticateRequest } from "../../middlewares/auth";
 import * as RateLimit from "../../middlewares/rate-limit";
 import * as WebhookController from "../controllers/webhook";
 
@@ -8,6 +9,9 @@ const router = Router();
 
 router.post(
   "/releases",
+  authenticateRequest({
+    webhookType: "GitHub",
+  }),
   RateLimit.webhooksPost,
   validateRequest({
     body: {

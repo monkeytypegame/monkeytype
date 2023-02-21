@@ -72,7 +72,7 @@ const leaderboardUpdate = new Gauge({
   labelNames: ["language", "mode", "mode2", "step"],
 });
 
-export function incrementAuth(type: "Bearer" | "ApeKey" | "None"): void {
+export function incrementAuth(type: MonkeyTypes.DecodedTokenType): void {
   auth.inc({ type });
 }
 

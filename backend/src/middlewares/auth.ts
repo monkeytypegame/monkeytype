@@ -1,4 +1,5 @@
 import { compare } from "bcrypt";
+import crypto from "crypto";
 import { getApeKey, updateLastUsedOn } from "../dal/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
@@ -17,12 +18,14 @@ interface RequestAuthenticationOptions {
   isPublic?: boolean;
   acceptApeKeys?: boolean;
   requireFreshToken?: boolean;
+  webhookType?: MonkeyTypes.RequestAuthWebhookType;
 }
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,
   acceptApeKeys: false,
   requireFreshToken: false,
+  webhookType: undefined,
 };
 
 function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
@@ -41,14 +44,21 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
     let authType = "None";
 
     const { authorization: authHeader } = req.headers;
+    let { "x-hub-signature-256": githubHashSignature } = req.headers;
+
+    if (Array.isArray(githubHashSignature)) {
+      githubHashSignature = githubHashSignature[0];
+    }
 
     try {
-      if (authHeader) {
+      if (authHeader && !options.webhookType) {
         token = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
           options
         );
+      } else if (options.webhookType === "GitHub" && githubHashSignature) {
+        token = await authenticateWithGithubWebhook(githubHashSignature);
       } else if (options.isPublic) {
         token = {
           type: "None",
@@ -142,6 +152,27 @@ async function authenticateWithAuthHeader(
     "Unknown authentication scheme",
     `The authentication scheme "${authScheme}" is not implemented`
   );
+}
+
+async function authenticateWithGithubWebhook(
+  githubHashSignature: string
+): Promise<MonkeyTypes.DecodedToken> {
+  const secretHash = process.env.GITHUB_WEBHOOK_SECRET
+    ? crypto
+        .createHash("sha256")
+        .update(process.env.GITHUB_WEBHOOK_SECRET)
+        .digest("hex")
+    : null;
+
+  if (`sha256=${secretHash}` !== githubHashSignature) {
+    throw new MonkeyError(401, "Unauthorized");
+  }
+
+  return {
+    type: "Webhook_GitHub",
+    uid: "",
+    email: "",
+  };
 }
 
 async function authenticateWithBearerToken(

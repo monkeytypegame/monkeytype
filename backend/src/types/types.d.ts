@@ -9,6 +9,8 @@ declare namespace MonkeyTypes {
     mode2: string;
   }
 
+  type RequestAuthWebhookType = "GitHub";
+
   interface Configuration {
     maintenance: boolean;
     quotes: {
@@ -98,8 +100,10 @@ declare namespace MonkeyTypes {
     maxReward: number;
   }
 
+  type DecodedTokenType = "Bearer" | "ApeKey" | "None" | "Webhook_GitHub";
+
   interface DecodedToken {
-    type: "Bearer" | "ApeKey" | "None";
+    type: DecodedTokenType;
     uid: string;
     email: string;
   }
