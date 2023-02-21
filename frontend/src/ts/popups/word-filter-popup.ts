@@ -44,6 +44,39 @@ const presets: Record<string, FilterPreset> = {
       return [...topRowExclude, ...homeRowExclude, ...bottomRowExclude];
     },
   },
+  homeRow: {
+    display: "home row",
+    getIncludeString: (layout) => {
+      return layout.keys.row3;
+    },
+    getExcludeString: (layout) => {
+      const topRowExclude = layout.keys.row2;
+      const bottomRowExclude = layout.keys.row4;
+      return [...topRowExclude, ...bottomRowExclude];
+    },
+  },
+  topRow: {
+    display: "top row",
+    getIncludeString: (layout) => {
+      return layout.keys.row2;
+    },
+    getExcludeString: (layout) => {
+      const homeRowExclude = layout.keys.row3;
+      const bottomRowExclude = layout.keys.row4;
+      return [...homeRowExclude, ...bottomRowExclude];
+    },
+  },
+  bottomRow: {
+    display: "bottom row",
+    getIncludeString: (layout) => {
+      return layout.keys.row4;
+    },
+    getExcludeString: (layout) => {
+      const topRowExclude = layout.keys.row2;
+      const homeRowExclude = layout.keys.row3;
+      return [...topRowExclude, ...homeRowExclude];
+    },
+  },
 };
 
 async function init(): Promise<void> {
