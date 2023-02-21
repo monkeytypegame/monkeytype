@@ -26,7 +26,6 @@ const presets: Record<string, FilterPreset> = {
       const topRowExclude = layout.keys.row2.slice(5);
       const homeRowExclude = layout.keys.row3.slice(5);
       const bottomRowExclude = layout.keys.row4.slice(5);
-
       return [...topRowExclude, ...homeRowExclude, ...bottomRowExclude];
     },
   },
