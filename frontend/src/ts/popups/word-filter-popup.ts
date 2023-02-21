@@ -215,7 +215,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
   const presetName = $("#wordFilterPopup .presetInput").val() as string;
   const layoutName = $("#wordFilterPopup .layoutInput").val() as string;
 
-  const combine = (include: string[], exclude: string[]): void => {
+  const applyToInputs = (include: string[], exclude: string[]): void => {
     let includeCharacters = "";
     let excludeCharacters = "";
 
@@ -245,7 +245,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
     const include = topRowInclude.concat(homeRowInclude, bottomRowInclude);
     const exclude = topRowExclude.concat(homeRowExclude, bottomRowExclude);
 
-    combine(include, exclude);
+    applyToInputs(include, exclude);
   };
   const right = async (): Promise<void> => {
     const layout = await Misc.getLayout(layoutName);
@@ -260,7 +260,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
     const include = topRowInclude.concat(homeRowInclude, bottomRowInclude);
     const exclude = topRowExclude.concat(homeRowExclude, bottomRowExclude);
 
-    combine(include, exclude);
+    applyToInputs(include, exclude);
   };
 
   const home = async (): Promise<void> => {
@@ -273,7 +273,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
     const include = homeRow;
     const exclude = topRow.concat(bottomRow);
 
-    combine(include, exclude);
+    applyToInputs(include, exclude);
   };
 
   const top = async (): Promise<void> => {
@@ -286,7 +286,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
     const include = topRow;
     const exclude = homeRow.concat(bottomRow);
 
-    combine(include, exclude);
+    applyToInputs(include, exclude);
   };
 
   const bottom = async (): Promise<void> => {
@@ -299,7 +299,7 @@ $("#wordFilterPopup .button.generateButton").on("click", function () {
     const include = bottomRow;
     const exclude = homeRow.concat(topRow);
 
-    combine(include, exclude);
+    applyToInputs(include, exclude);
   };
 
   if (presetName == "left") {
