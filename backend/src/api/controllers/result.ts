@@ -390,7 +390,8 @@ export async function addResult(
   const validResultCriteria =
     (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
     !bailedOut &&
-    !user.banned &&
+    user.banned !== true &&
+    user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
