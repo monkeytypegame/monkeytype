@@ -14,6 +14,28 @@ interface FilterPreset {
 }
 
 const presets: Record<string, FilterPreset> = {
+  homeKeys: {
+    display: "home keys",
+    getIncludeString: (layout) => {
+      const homeKeysLeft = layout.keys.row3.slice(1, 5);
+      const homeKeysRight = layout.keys.row3.slice(6, 10);
+      return [...homeKeysLeft, ...homeKeysRight];
+    },
+    getExcludeString: (layout) => {
+      const topRow = layout.keys.row2;
+      const bottomRow = layout.keys.row4;
+      const homeRowLeft = layout.keys.row3.slice(0, 1);
+      const homeRowRight = layout.keys.row3.slice(10);
+      const homeRowMiddle = layout.keys.row3.slice(4, 6);
+      return [
+        ...topRow,
+        ...homeRowLeft,
+        ...homeRowMiddle,
+        ...homeRowRight,
+        ...bottomRow,
+      ];
+    },
+  },
   leftHand: {
     display: "left hand",
     getIncludeString: (layout) => {
