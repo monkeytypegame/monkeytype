@@ -559,74 +559,78 @@
 </div>
 <div id="wordFilterPopupWrapper" class="popupWrapper hidden">
   <div id="wordFilterPopup">
-    <div class="wordFilterLanguage">
+    <div class="top">
       <div class="group">
         <div class="title">language</div>
         <select class="languageInput" class=""></select>
-        <div class="spacer"></div>
+      </div>
+      <div class="tip">
+        You can manually filter words by length, words or characters (separated
+        by spaces) on the left side. On the right side you can generate filters
+        based on a preset and selected layout.
       </div>
     </div>
+    <div class="leftSide">
+      <div class="group lengthgrid">
+        <div class="title">min length</div>
+        <div class="title">max length</div>
 
-    <div class="wordFilterInputWrapper">
-      <div class="wordFilterInput">
-        <div class="group lengthgrid">
-          <div class="title">min length</div>
-          <div class="title">max length</div>
+        <input
+          class="wordLength wordMinInput"
+          autocomplete="off"
+          type="number"
+        />
+        <input
+          class="wordLength wordMaxInput"
+          autocomplete="off"
+          type="number"
+        />
+      </div>
+      <div class="group">
+        <div class="title">include</div>
+        <input
+          class="wordIncludeInput"
+          id="wordIncludeInput"
+          autocomplete="off"
+        />
+      </div>
+      <div class="group">
+        <div class="title">exclude</div>
+        <input
+          class="wordExcludeInput"
+          id="wordExcludeInput"
+          autocomplete="off"
+        />
+      </div>
+      <!-- </div> -->
+      <!-- <div class="tip">
+        Use the above filters to include and exclude words or characters
+        (separated by spaces)
+      </div> -->
+    </div>
+    <div class="divider"></div>
 
-          <input
-            class="wordLength wordMinInput"
-            autocomplete="off"
-            type="number"
-          />
-          <input
-            class="wordLength wordMaxInput"
-            autocomplete="off"
-            type="number"
-          />
-        </div>
-        <div class="group">
-          <div class="title">include</div>
-          <input
-            class="wordIncludeInput"
-            id="wordIncludeInput"
-            autocomplete="off"
-          />
-        </div>
-        <div class="group">
-          <div class="title">exclude</div>
-          <input
-            class="wordExcludeInput"
-            id="wordExcludeInput"
-            autocomplete="off"
-          />
-        </div>
-        <!-- </div> -->
-        <div class="tip">
-          Use the above filters to include and exclude words or characters
-          (separated by spaces)
-        </div>
-        <br />
-        <div class="tip">
-          "Set" replaces the current custom word list with the filter result,
-          "Add" appends the filter result to the current custom word list
-        </div>
-        <i
-          class="fas fa-fw fa-spin fa-circle-notch hidden loadingIndicator"
-        ></i>
-        <div class="button" id="set">set</div>
-        <div class="button">add</div>
+    <div class="rightSide">
+      <div class="group">
+        <div class="title">filter preset</div>
+        <select class="presetInput" class=""></select>
       </div>
-      <div class="divider"></div>
-      <div class="wordFilterGenerator">
-        <div class="group">
-          <div class="title">filter preset</div>
-          <select class="presetInput" class=""></select>
-          <div class="title">layout</div>
-          <select class="layoutInput"></select>
-          <div class="tip">Use the dropdowns above to generate presets</div>
-          <button class="generateButton" id="generateButton">generate</button>
-        </div>
+      <div class="group">
+        <div class="title">layout</div>
+        <select class="layoutInput"></select>
       </div>
+      <!-- <div class="tip">Use the dropdowns above to generate presets</div> -->
+      <div class="button" id="generateButton">generate</div>
+    </div>
+
+    <div class="bottom">
+      <div class="tip">
+        "Set" replaces the current custom word list with the filter result,
+        "Add" appends the filter result to the current custom word list
+      </div>
+      <i class="fas fa-fw fa-spin fa-circle-notch hidden loadingIndicator"></i>
+      <div class="button" id="set">set</div>
+      <div class="button">add</div>
     </div>
   </div>
 </div>

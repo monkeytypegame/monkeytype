@@ -225,10 +225,36 @@
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    display: grid;
+    grid-template-areas: "top top top" "left divider right" "bottom bottom bottom";
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
     width: 800px;
+
+    .top {
+      grid-area: top;
+    }
+
+    .leftSide {
+      grid-area: left;
+    }
+
+    .rightSide {
+      grid-area: right;
+    }
+
+    .bottom {
+      grid-area: bottom;
+    }
+
+    .leftSide,
+    .rightSide,
+    .bottom,
+    .top {
+      display: grid;
+      gap: 1rem;
+      height: max-content;
+    }
 
     input {
       width: 100%;
@@ -262,93 +288,10 @@
       justify-self: center;
     }
 
-    .wordFilterInputWrapper {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-
-    .wordFilterInput {
-      width: 47%;
-
-      input {
-        margin-bottom: 1rem;
-      }
-      .button {
-        margin-top: 1rem;
-      }
-    }
-
     .divider {
-      height: 230px;
       width: 0.25rem;
       background-color: var(--sub-alt-color);
-    }
-
-    .wordFilterGenerator {
-      width: 47%;
-
-      .generateButton {
-        color: var(--text-color);
-        cursor: pointer;
-        transition: background 0.125s, color 0.125s;
-        padding: 0.5em;
-        border-radius: var(--roundness);
-        background: var(--sub-alt-color);
-        text-align: center;
-        user-select: none;
-        -webkit-user-select: none;
-        align-content: center;
-        height: min-content;
-        height: -moz-min-content;
-        line-height: 1.25em;
-        appearance: none;
-        border: none;
-        font-family: inherit;
-        font-size: 1em;
-        margin-top: 0.5rem;
-
-        &.active {
-          background: var(--main-color);
-          color: var(--bg-color);
-          &:hover {
-            background: var(--text-color);
-          }
-          &:active {
-            background: var(--sub-color);
-            color: var(--bg-color);
-          }
-        }
-
-        &.disabled {
-          opacity: 0.33;
-          cursor: default;
-          pointer-events: none;
-          &:hover {
-            background: var(--text-color);
-            outline: none;
-          }
-          &:active {
-            background: var(--sub-color);
-            color: var(--bg-color);
-          }
-        }
-
-        &:hover {
-          color: var(--bg-color);
-          background: var(--text-color);
-          outline: none;
-        }
-        &:focus {
-          box-shadow: 0 0 0 0.15em var(--text-color);
-          // outline: 2px solid var(--text-color);
-        }
-        &:active {
-          background: var(--sub-color);
-          color: var(--bg-color);
-        }
-      }
+      border-radius: var(--roundness);
     }
   }
 }
