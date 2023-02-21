@@ -214,6 +214,12 @@ const list: MonkeyTypes.FunboxMetadata[] = [
       punctuation: [false],
     },
   },
+  {
+    name: "zipf",
+    alias: "frequency",
+    info: "Words are generated according to Zipf's law. (not all languages will produce Zipfy results, use with caution)",
+    properties: ["changesWordsFrequency"],
+  },
 ];
 
 export function getAll(): MonkeyTypes.FunboxMetadata[] {

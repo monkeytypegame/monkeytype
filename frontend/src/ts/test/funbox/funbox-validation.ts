@@ -98,7 +98,8 @@ export function canSetConfigWithCurrentFunboxes(
             f.properties?.find((fp) => fp.startsWith("toPush:")) ||
             f.properties?.includes("changesWordsVisibility") ||
             f.properties?.includes("speaks") ||
-            f.properties?.includes("changesLayout")
+            f.properties?.includes("changesLayout") ||
+            f.properties?.includes("changesWordsFrequency")
         )
       );
     }
@@ -108,7 +109,8 @@ export function canSetConfigWithCurrentFunboxes(
           (f) =>
             f.functions?.getWord ||
             f.functions?.pullSection ||
-            f.functions?.withWords
+            f.functions?.withWords ||
+            f.properties?.includes("changesWordsFrequency")
         )
       );
     }
@@ -222,6 +224,17 @@ export function areFunboxesCompatible(
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp == "changesWordsVisibility")
     ).length <= 1;
+  const oneFrequencyChangesMax =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp == "changesWordsFrequency")
+    ).length <= 1;
+  const noFrequencyChangesConflicts =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp == "changesWordsFrequency")
+    ).length == 0 ||
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp == "ignoresLanguage")
+    ).length == 0;
   const capitalisationChangePosibility =
     funboxesToCheck.filter((f) => f.properties?.find((fp) => fp == "noLetters"))
       .length == 0 ||
@@ -284,6 +297,8 @@ export function areFunboxesCompatible(
     layoutUsability &&
     oneNospaceOrToPushMax &&
     oneChangesWordsVisibilityMax &&
+    oneFrequencyChangesMax &&
+    noFrequencyChangesConflicts &&
     capitalisationChangePosibility &&
     noConflictsWithSymmetricChars &&
     canSpeak &&
