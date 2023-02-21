@@ -301,57 +301,6 @@ $("#wordFilterPopup .button.generateButton").on("click", async () => {
   const presetName = $("#wordFilterPopup .presetInput").val() as string;
   const layoutName = $("#wordFilterPopup .layoutInput").val() as string;
 
-  // const home = async (): Promise<void> => {
-  //   const layout = await Misc.getLayout(layoutName);
-
-  //   const homeRow = layout.keys.row3;
-  //   const topRow = layout.keys.row2;
-  //   const bottomRow = layout.keys.row4;
-
-  //   const include = homeRow;
-  //   const exclude = topRow.concat(bottomRow);
-
-  //   applyToInputs(include, exclude);
-  // };
-
-  // const top = async (): Promise<void> => {
-  //   const layout = await Misc.getLayout(layoutName);
-
-  //   const homeRow = layout.keys.row3;
-  //   const topRow = layout.keys.row2;
-  //   const bottomRow = layout.keys.row4;
-
-  //   const include = topRow;
-  //   const exclude = homeRow.concat(bottomRow);
-
-  //   applyToInputs(include, exclude);
-  // };
-
-  // const bottom = async (): Promise<void> => {
-  //   const layout = await Misc.getLayout(layoutName);
-
-  //   const homeRow = layout.keys.row3;
-  //   const topRow = layout.keys.row2;
-  //   const bottomRow = layout.keys.row4;
-
-  //   const include = bottomRow;
-  //   const exclude = homeRow.concat(topRow);
-
-  //   applyToInputs(include, exclude);
-  // };
-
-  // if (presetName == "left") {
-  //   left();
-  // } else if (presetName == "right") {
-  //   right();
-  // } else if (presetName == "home") {
-  //   home();
-  // } else if (presetName == "top") {
-  //   top();
-  // } else if (presetName == "bottom") {
-  //   bottom();
-  // }
-
   const presetToApply = presets[presetName];
   const layout = await Misc.getLayout(layoutName);
 
