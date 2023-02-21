@@ -139,7 +139,7 @@
 
       .customThemeInputs {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1.5fr 1fr 1.5fr;
         gap: 1rem;
       }
 
@@ -160,11 +160,6 @@
       label {
         display: grid;
         place-content: center start;
-      }
-
-      & p {
-        grid-area: unset;
-        grid-column: span 4;
       }
 
       & .spacer {
