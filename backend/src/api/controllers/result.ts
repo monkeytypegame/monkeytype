@@ -283,7 +283,8 @@ export async function addResult(
     result.mode === "time" &&
     result.wpm > 130 &&
     result.testDuration < 122 &&
-    (user.verified === false || user.verified === undefined)
+    (user.verified === false || user.verified === undefined) &&
+    user.lbOptOut !== true
   ) {
     if (!result.keySpacingStats || !result.keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;

@@ -136,6 +136,20 @@ export async function clearPb(uid: string): Promise<void> {
   );
 }
 
+export async function optOutOfLeaderboards(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        lbOptOut: true,
+        lbPersonalBests: {
+          time: {},
+        },
+      },
+    }
+  );
+}
+
 export async function updateQuoteRatings(
   uid: string,
   quoteRatings: MonkeyTypes.UserQuoteRatings
