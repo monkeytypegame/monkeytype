@@ -202,17 +202,13 @@ $("#wordFilterPopup .languageInput").one("select2:open", function () {
 $("#wordFilterPopupWrapper .button.addButton").on("mousedown", () => {
   $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
-  setTimeout(() => {
-    apply(false);
-  }, 1);
+  apply(false);
 });
 
 $("#wordFilterPopupWrapper .button.setButton").on("mousedown", () => {
   $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
-  setTimeout(() => {
-    apply(true);
-  }, 1);
+  apply(true);
 });
 
 $("#wordFilterPopup .button.generateButton").on("click", function () {
