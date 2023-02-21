@@ -7,6 +7,31 @@ const wrapperId = "wordFilterPopupWrapper";
 
 let initialised = false;
 
+interface FilterPreset {
+  display: string;
+  getIncludeString: (layout: MonkeyTypes.Layout) => string[];
+  getExcludeString: (layout: MonkeyTypes.Layout) => string[];
+}
+
+const presets: Record<string, FilterPreset> = {
+  leftHand: {
+    display: "left hand",
+    getIncludeString: (layout) => {
+      const topRowInclude = layout.keys.row2.slice(0, 5);
+      const homeRowInclude = layout.keys.row3.slice(0, 5);
+      const bottomRowInclude = layout.keys.row4.slice(0, 5);
+      return topRowInclude.concat(homeRowInclude, bottomRowInclude);
+    },
+    getExcludeString: (layout) => {
+      const topRowExclude = layout.keys.row2.slice(5);
+      const homeRowExclude = layout.keys.row3.slice(5);
+      const bottomRowExclude = layout.keys.row4.slice(5);
+
+      return topRowExclude.concat(homeRowExclude, bottomRowExclude);
+    },
+  },
+};
+
 async function init(): Promise<void> {
   if (!initialised) {
     $("#wordFilterPopup .languageInput").empty();
@@ -56,19 +81,11 @@ async function init(): Promise<void> {
     `);
     }
 
-    const presets = [
-      "left hand",
-      "right hand",
-      "home row",
-      "top row",
-      "bottom row",
-    ];
-
-    presets.map((preset) => {
-      $("#wordFilterPopup .presetInput").append(`
-      <option value=${preset}>${preset}</option>
-    `);
-    });
+    for (const [presetId, preset] of Object.entries(presets)) {
+      $("#wordFilterPopup .presetInput").append(
+        `<option value=${presetId}>${preset.display}</option>`
+      );
+    }
 
     initialised = true;
   }
@@ -211,108 +228,124 @@ $("#wordFilterPopupWrapper .button.setButton").on("mousedown", () => {
   apply(true);
 });
 
-$("#wordFilterPopup .button.generateButton").on("click", function () {
+$("#wordFilterPopup .button.generateButton").on("click", async () => {
   const presetName = $("#wordFilterPopup .presetInput").val() as string;
   const layoutName = $("#wordFilterPopup .layoutInput").val() as string;
 
-  const applyToInputs = (include: string[], exclude: string[]): void => {
-    let includeCharacters = "";
-    let excludeCharacters = "";
+  // const applyToInputs = (include: string[], exclude: string[]): void => {
+  //   let includeCharacters = "";
+  //   let excludeCharacters = "";
 
-    include.forEach((letter) => {
-      includeCharacters += letter[0] + " ";
-    });
+  //   include.forEach((letter) => {
+  //     includeCharacters += letter[0] + " ";
+  //   });
 
-    exclude.forEach((letter) => {
-      excludeCharacters += letter[0] + " ";
-    });
+  //   exclude.forEach((letter) => {
+  //     excludeCharacters += letter[0] + " ";
+  //   });
 
-    $("#wordIncludeInput").val(includeCharacters);
-    $("#wordExcludeInput").val(excludeCharacters);
-  };
+  //   $("#wordIncludeInput").val(includeCharacters);
+  //   $("#wordExcludeInput").val(excludeCharacters);
+  // };
 
-  const left = async (): Promise<void> => {
-    const layout = await Misc.getLayout(layoutName);
+  // const left = async (): Promise<void> => {
+  //   const layout = await Misc.getLayout(layoutName);
 
-    const topRowInclude = layout.keys.row2.slice(0, 5);
-    const homeRowInclude = layout.keys.row3.slice(0, 5);
-    const bottomRowInclude = layout.keys.row4.slice(0, 5);
+  //   const topRowInclude = layout.keys.row2.slice(0, 5);
+  //   const homeRowInclude = layout.keys.row3.slice(0, 5);
+  //   const bottomRowInclude = layout.keys.row4.slice(0, 5);
 
-    const topRowExclude = layout.keys.row2.slice(5);
-    const homeRowExclude = layout.keys.row3.slice(5);
-    const bottomRowExclude = layout.keys.row4.slice(5);
+  //   const topRowExclude = layout.keys.row2.slice(5);
+  //   const homeRowExclude = layout.keys.row3.slice(5);
+  //   const bottomRowExclude = layout.keys.row4.slice(5);
 
-    const include = topRowInclude.concat(homeRowInclude, bottomRowInclude);
-    const exclude = topRowExclude.concat(homeRowExclude, bottomRowExclude);
+  //   const include = topRowInclude.concat(homeRowInclude, bottomRowInclude);
+  //   const exclude = topRowExclude.concat(homeRowExclude, bottomRowExclude);
 
-    applyToInputs(include, exclude);
-  };
-  const right = async (): Promise<void> => {
-    const layout = await Misc.getLayout(layoutName);
-    const topRowInclude = layout.keys.row2.slice(5);
-    const homeRowInclude = layout.keys.row3.slice(5);
-    const bottomRowInclude = layout.keys.row4.slice(5);
+  //   applyToInputs(include, exclude);
+  // };
+  // const right = async (): Promise<void> => {
+  //   const layout = await Misc.getLayout(layoutName);
+  //   const topRowInclude = layout.keys.row2.slice(5);
+  //   const homeRowInclude = layout.keys.row3.slice(5);
+  //   const bottomRowInclude = layout.keys.row4.slice(5);
 
-    const topRowExclude = layout.keys.row2.slice(0, 5);
-    const homeRowExclude = layout.keys.row3.slice(0, 5);
-    const bottomRowExclude = layout.keys.row4.slice(0, 5);
+  //   const topRowExclude = layout.keys.row2.slice(0, 5);
+  //   const homeRowExclude = layout.keys.row3.slice(0, 5);
+  //   const bottomRowExclude = layout.keys.row4.slice(0, 5);
 
-    const include = topRowInclude.concat(homeRowInclude, bottomRowInclude);
-    const exclude = topRowExclude.concat(homeRowExclude, bottomRowExclude);
+  //   const include = topRowInclude.concat(homeRowInclude, bottomRowInclude);
+  //   const exclude = topRowExclude.concat(homeRowExclude, bottomRowExclude);
 
-    applyToInputs(include, exclude);
-  };
+  //   applyToInputs(include, exclude);
+  // };
 
-  const home = async (): Promise<void> => {
-    const layout = await Misc.getLayout(layoutName);
+  // const home = async (): Promise<void> => {
+  //   const layout = await Misc.getLayout(layoutName);
 
-    const homeRow = layout.keys.row3;
-    const topRow = layout.keys.row2;
-    const bottomRow = layout.keys.row4;
+  //   const homeRow = layout.keys.row3;
+  //   const topRow = layout.keys.row2;
+  //   const bottomRow = layout.keys.row4;
 
-    const include = homeRow;
-    const exclude = topRow.concat(bottomRow);
+  //   const include = homeRow;
+  //   const exclude = topRow.concat(bottomRow);
 
-    applyToInputs(include, exclude);
-  };
+  //   applyToInputs(include, exclude);
+  // };
 
-  const top = async (): Promise<void> => {
-    const layout = await Misc.getLayout(layoutName);
+  // const top = async (): Promise<void> => {
+  //   const layout = await Misc.getLayout(layoutName);
 
-    const homeRow = layout.keys.row3;
-    const topRow = layout.keys.row2;
-    const bottomRow = layout.keys.row4;
+  //   const homeRow = layout.keys.row3;
+  //   const topRow = layout.keys.row2;
+  //   const bottomRow = layout.keys.row4;
 
-    const include = topRow;
-    const exclude = homeRow.concat(bottomRow);
+  //   const include = topRow;
+  //   const exclude = homeRow.concat(bottomRow);
 
-    applyToInputs(include, exclude);
-  };
+  //   applyToInputs(include, exclude);
+  // };
 
-  const bottom = async (): Promise<void> => {
-    const layout = await Misc.getLayout(layoutName);
+  // const bottom = async (): Promise<void> => {
+  //   const layout = await Misc.getLayout(layoutName);
 
-    const homeRow = layout.keys.row3;
-    const topRow = layout.keys.row2;
-    const bottomRow = layout.keys.row4;
+  //   const homeRow = layout.keys.row3;
+  //   const topRow = layout.keys.row2;
+  //   const bottomRow = layout.keys.row4;
 
-    const include = bottomRow;
-    const exclude = homeRow.concat(topRow);
+  //   const include = bottomRow;
+  //   const exclude = homeRow.concat(topRow);
 
-    applyToInputs(include, exclude);
-  };
+  //   applyToInputs(include, exclude);
+  // };
 
-  if (presetName == "left") {
-    left();
-  } else if (presetName == "right") {
-    right();
-  } else if (presetName == "home") {
-    home();
-  } else if (presetName == "top") {
-    top();
-  } else if (presetName == "bottom") {
-    bottom();
-  }
+  // if (presetName == "left") {
+  //   left();
+  // } else if (presetName == "right") {
+  //   right();
+  // } else if (presetName == "home") {
+  //   home();
+  // } else if (presetName == "top") {
+  //   top();
+  // } else if (presetName == "bottom") {
+  //   bottom();
+  // }
+
+  const presetToApply = presets[presetName];
+  const layout = await Misc.getLayout(layoutName);
+
+  $("#wordIncludeInput").val(
+    presetToApply
+      .getIncludeString(layout)
+      .map((x) => x[0])
+      .join(" ")
+  );
+  $("#wordExcludeInput").val(
+    presetToApply
+      .getExcludeString(layout)
+      .map((x) => x[0])
+      .join(" ")
+  );
 });
 
 Skeleton.save(wrapperId);
