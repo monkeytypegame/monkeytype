@@ -20,14 +20,14 @@ const presets: Record<string, FilterPreset> = {
       const topRowInclude = layout.keys.row2.slice(0, 5);
       const homeRowInclude = layout.keys.row3.slice(0, 5);
       const bottomRowInclude = layout.keys.row4.slice(0, 5);
-      return topRowInclude.concat(homeRowInclude, bottomRowInclude);
+      return [...topRowInclude, ...homeRowInclude, ...bottomRowInclude];
     },
     getExcludeString: (layout) => {
       const topRowExclude = layout.keys.row2.slice(5);
       const homeRowExclude = layout.keys.row3.slice(5);
       const bottomRowExclude = layout.keys.row4.slice(5);
 
-      return topRowExclude.concat(homeRowExclude, bottomRowExclude);
+      return [...topRowExclude, ...homeRowExclude, ...bottomRowExclude];
     },
   },
 };
