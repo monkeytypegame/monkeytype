@@ -30,6 +30,21 @@ const presets: Record<string, FilterPreset> = {
       return [...topRowExclude, ...homeRowExclude, ...bottomRowExclude];
     },
   },
+  rightHand: {
+    display: "right hand",
+    getIncludeString: (layout) => {
+      const topRowInclude = layout.keys.row2.slice(5);
+      const homeRowInclude = layout.keys.row3.slice(5);
+      const bottomRowInclude = layout.keys.row4.slice(4);
+      return [...topRowInclude, ...homeRowInclude, ...bottomRowInclude];
+    },
+    getExcludeString: (layout) => {
+      const topRowExclude = layout.keys.row2.slice(0, 5);
+      const homeRowExclude = layout.keys.row3.slice(0, 5);
+      const bottomRowExclude = layout.keys.row4.slice(0, 4);
+      return [...topRowExclude, ...homeRowExclude, ...bottomRowExclude];
+    },
+  },
 };
 
 async function init(): Promise<void> {
@@ -231,54 +246,6 @@ $("#wordFilterPopupWrapper .button.setButton").on("mousedown", () => {
 $("#wordFilterPopup .button.generateButton").on("click", async () => {
   const presetName = $("#wordFilterPopup .presetInput").val() as string;
   const layoutName = $("#wordFilterPopup .layoutInput").val() as string;
-
-  // const applyToInputs = (include: string[], exclude: string[]): void => {
-  //   let includeCharacters = "";
-  //   let excludeCharacters = "";
-
-  //   include.forEach((letter) => {
-  //     includeCharacters += letter[0] + " ";
-  //   });
-
-  //   exclude.forEach((letter) => {
-  //     excludeCharacters += letter[0] + " ";
-  //   });
-
-  //   $("#wordIncludeInput").val(includeCharacters);
-  //   $("#wordExcludeInput").val(excludeCharacters);
-  // };
-
-  // const left = async (): Promise<void> => {
-  //   const layout = await Misc.getLayout(layoutName);
-
-  //   const topRowInclude = layout.keys.row2.slice(0, 5);
-  //   const homeRowInclude = layout.keys.row3.slice(0, 5);
-  //   const bottomRowInclude = layout.keys.row4.slice(0, 5);
-
-  //   const topRowExclude = layout.keys.row2.slice(5);
-  //   const homeRowExclude = layout.keys.row3.slice(5);
-  //   const bottomRowExclude = layout.keys.row4.slice(5);
-
-  //   const include = topRowInclude.concat(homeRowInclude, bottomRowInclude);
-  //   const exclude = topRowExclude.concat(homeRowExclude, bottomRowExclude);
-
-  //   applyToInputs(include, exclude);
-  // };
-  // const right = async (): Promise<void> => {
-  //   const layout = await Misc.getLayout(layoutName);
-  //   const topRowInclude = layout.keys.row2.slice(5);
-  //   const homeRowInclude = layout.keys.row3.slice(5);
-  //   const bottomRowInclude = layout.keys.row4.slice(5);
-
-  //   const topRowExclude = layout.keys.row2.slice(0, 5);
-  //   const homeRowExclude = layout.keys.row3.slice(0, 5);
-  //   const bottomRowExclude = layout.keys.row4.slice(0, 5);
-
-  //   const include = topRowInclude.concat(homeRowInclude, bottomRowInclude);
-  //   const exclude = topRowExclude.concat(homeRowExclude, bottomRowExclude);
-
-  //   applyToInputs(include, exclude);
-  // };
 
   // const home = async (): Promise<void> => {
   //   const layout = await Misc.getLayout(layoutName);
