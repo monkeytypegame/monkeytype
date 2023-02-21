@@ -199,15 +199,23 @@ $("#wordFilterPopup .languageInput").one("select2:open", function () {
   $("input.select2-search__field").prop("placeholder", "search");
 });
 
-$("#wordFilterPopupWrapper .button").on("mousedown", (e) => {
+$("#wordFilterPopupWrapper .button.addButton").on("mousedown", () => {
   $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
   setTimeout(() => {
-    apply($(e.target).is("#set"));
+    apply(false);
   }, 1);
 });
 
-$("#wordFilterPopup .generateButton").on("click", function () {
+$("#wordFilterPopupWrapper .button.setButton").on("mousedown", () => {
+  $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
+  $("#wordFilterPopupWrapper .button").addClass("hidden");
+  setTimeout(() => {
+    apply(true);
+  }, 1);
+});
+
+$("#wordFilterPopup .button.generateButton").on("click", function () {
   const presetName = $("#wordFilterPopup .presetInput").val() as string;
   const layoutName = $("#wordFilterPopup .layoutInput").val() as string;
 
