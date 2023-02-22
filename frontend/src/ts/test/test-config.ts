@@ -11,10 +11,12 @@ import * as ConfigEvent from "../observables/config-event";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
+  $("#mobileTestConfig").removeClass("invisible");
 }
 
 export function hide(): void {
   $("#testConfig").addClass("invisible");
+  $("#mobileTestConfig").addClass("invisible");
 }
 
 export async function update(

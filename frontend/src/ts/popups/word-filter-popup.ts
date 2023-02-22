@@ -7,11 +7,104 @@ const wrapperId = "wordFilterPopupWrapper";
 
 let initialised = false;
 
+interface FilterPreset {
+  display: string;
+  getIncludeString: (layout: MonkeyTypes.Layout) => string[];
+  getExcludeString: (layout: MonkeyTypes.Layout) => string[];
+}
+
+const presets: Record<string, FilterPreset> = {
+  homeKeys: {
+    display: "home keys",
+    getIncludeString: (layout) => {
+      const homeKeysLeft = layout.keys.row3.slice(0, 4);
+      const homeKeysRight = layout.keys.row3.slice(6, 10);
+      return [...homeKeysLeft, ...homeKeysRight];
+    },
+    getExcludeString: (layout) => {
+      const topRow = layout.keys.row2;
+      const bottomRow = layout.keys.row4;
+      const homeRowRight = layout.keys.row3.slice(10);
+      const homeRowMiddle = layout.keys.row3.slice(4, 6);
+      return [...topRow, ...homeRowMiddle, ...homeRowRight, ...bottomRow];
+    },
+  },
+  leftHand: {
+    display: "left hand",
+    getIncludeString: (layout) => {
+      const topRowInclude = layout.keys.row2.slice(0, 5);
+      const homeRowInclude = layout.keys.row3.slice(0, 5);
+      const bottomRowInclude = layout.keys.row4.slice(0, 5);
+      return [...topRowInclude, ...homeRowInclude, ...bottomRowInclude];
+    },
+    getExcludeString: (layout) => {
+      const topRowExclude = layout.keys.row2.slice(5);
+      const homeRowExclude = layout.keys.row3.slice(5);
+      const bottomRowExclude = layout.keys.row4.slice(5);
+      return [...topRowExclude, ...homeRowExclude, ...bottomRowExclude];
+    },
+  },
+  rightHand: {
+    display: "right hand",
+    getIncludeString: (layout) => {
+      const topRowInclude = layout.keys.row2.slice(5);
+      const homeRowInclude = layout.keys.row3.slice(5);
+      const bottomRowInclude = layout.keys.row4.slice(4);
+      return [...topRowInclude, ...homeRowInclude, ...bottomRowInclude];
+    },
+    getExcludeString: (layout) => {
+      const topRowExclude = layout.keys.row2.slice(0, 5);
+      const homeRowExclude = layout.keys.row3.slice(0, 5);
+      const bottomRowExclude = layout.keys.row4.slice(0, 4);
+      return [...topRowExclude, ...homeRowExclude, ...bottomRowExclude];
+    },
+  },
+  homeRow: {
+    display: "home row",
+    getIncludeString: (layout) => {
+      return layout.keys.row3;
+    },
+    getExcludeString: (layout) => {
+      const topRowExclude = layout.keys.row2;
+      const bottomRowExclude = layout.keys.row4;
+      return [...topRowExclude, ...bottomRowExclude];
+    },
+  },
+  topRow: {
+    display: "top row",
+    getIncludeString: (layout) => {
+      return layout.keys.row2;
+    },
+    getExcludeString: (layout) => {
+      const homeRowExclude = layout.keys.row3;
+      const bottomRowExclude = layout.keys.row4;
+      return [...homeRowExclude, ...bottomRowExclude];
+    },
+  },
+  bottomRow: {
+    display: "bottom row",
+    getIncludeString: (layout) => {
+      return layout.keys.row4;
+    },
+    getExcludeString: (layout) => {
+      const topRowExclude = layout.keys.row2;
+      const homeRowExclude = layout.keys.row3;
+      return [...topRowExclude, ...homeRowExclude];
+    },
+  },
+};
+
 async function init(): Promise<void> {
   if (!initialised) {
     $("#wordFilterPopup .languageInput").empty();
 
+    $("#wordFilterPopup .layoutInput").empty();
+
+    $("wordFilterPopup .presetInput").empty();
+
     let LanguageList;
+    let LayoutList;
+
     try {
       LanguageList = await Misc.getLanguageList();
     } catch (e) {
@@ -31,6 +124,31 @@ async function init(): Promise<void> {
         <option value=${language}>${prettyLang}</option>
       `);
     });
+
+    try {
+      LayoutList = await Misc.getLayoutsList();
+    } catch (e) {
+      console.error(
+        Misc.createErrorMessage(
+          e,
+          "Failed to initialise word filter popup preset list"
+        )
+      );
+      return;
+    }
+
+    for (const layout in LayoutList) {
+      $("#wordFilterPopup .layoutInput").append(`
+      <option value=${layout}>${layout}</option>
+    `);
+    }
+
+    for (const [presetId, preset] of Object.entries(presets)) {
+      $("#wordFilterPopup .presetInput").append(
+        `<option value=${presetId}>${preset.display}</option>`
+      );
+    }
+
     initialised = true;
   }
 }
@@ -46,6 +164,14 @@ export async function show(
     await init();
     callbackFuncOnHide = callbackOnHide;
     $("#wordFilterPopup .languageInput").select2({
+      width: "100%",
+    });
+
+    $("#wordFilterPopup .layoutInput").select2({
+      width: "100%",
+    });
+
+    $("#wordFilterPopup .presetInput").select2({
       width: "100%",
     });
     $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
@@ -152,12 +278,37 @@ $("#wordFilterPopup .languageInput").one("select2:open", function () {
   $("input.select2-search__field").prop("placeholder", "search");
 });
 
-$("#wordFilterPopupWrapper .button").on("mousedown", (e) => {
+$("#wordFilterPopupWrapper .button.addButton").on("mousedown", () => {
   $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
-  setTimeout(() => {
-    apply($(e.target).is("#set"));
-  }, 1);
+  apply(false);
+});
+
+$("#wordFilterPopupWrapper .button.setButton").on("mousedown", () => {
+  $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
+  $("#wordFilterPopupWrapper .button").addClass("hidden");
+  apply(true);
+});
+
+$("#wordFilterPopup .button.generateButton").on("click", async () => {
+  const presetName = $("#wordFilterPopup .presetInput").val() as string;
+  const layoutName = $("#wordFilterPopup .layoutInput").val() as string;
+
+  const presetToApply = presets[presetName];
+  const layout = await Misc.getLayout(layoutName);
+
+  $("#wordIncludeInput").val(
+    presetToApply
+      .getIncludeString(layout)
+      .map((x) => x[0])
+      .join(" ")
+  );
+  $("#wordExcludeInput").val(
+    presetToApply
+      .getExcludeString(layout)
+      .map((x) => x[0])
+      .join(" ")
+  );
 });
 
 Skeleton.save(wrapperId);

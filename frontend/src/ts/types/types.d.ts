@@ -187,6 +187,8 @@ declare namespace MonkeyTypes {
     display?: string;
   }
 
+  type FunboxWordsFrequency = "normal" | "zipf";
+
   type FunboxProperty =
     | "symmetricChars"
     | "conflictsWithSymmetricChars"
@@ -202,7 +204,8 @@ declare namespace MonkeyTypes {
     | "changesCapitalisation"
     | "nospace"
     | `toPush:${number}`
-    | "noInfiniteDuration";
+    | "noInfiniteDuration"
+    | "changesWordsFrequency";
 
   interface FunboxFunctions {
     getWord?: (wordset?: Misc.Wordset) => string;
@@ -227,6 +230,7 @@ declare namespace MonkeyTypes {
     start?: () => void;
     restart?: () => void;
     getWordHtml?: (char: string, letterTag?: boolean) => string;
+    getWordsFrequencyMode?: () => FunboxWordsFrequency;
   }
 
   interface FunboxForcedConfig {

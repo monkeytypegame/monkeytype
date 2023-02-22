@@ -32,6 +32,10 @@ declare namespace MonkeyTypes {
     };
     users: {
       signUp: boolean;
+      lastHashesCheck: {
+        enabled: boolean;
+        maxHashes: number;
+      };
       autoBan: {
         enabled: boolean;
         maxCount: number;
@@ -188,6 +192,7 @@ declare namespace MonkeyTypes {
     xp?: number;
     inbox?: MonkeyMail[];
     streak?: UserStreak;
+    lastReultHashes?: string[];
   }
 
   interface UserStreak {

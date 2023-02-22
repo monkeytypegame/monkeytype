@@ -452,6 +452,20 @@ export async function resetPb(uid: string): Promise<void> {
   );
 }
 
+export async function updateLastHashes(
+  uid: string,
+  lastHashes: string[]
+): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        lastReultHashes: lastHashes,
+      },
+    }
+  );
+}
+
 export async function updateTypingStats(
   uid: string,
   restartCount: number,

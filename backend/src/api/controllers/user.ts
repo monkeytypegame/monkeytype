@@ -241,6 +241,7 @@ function getRelevantUserInfo(
     "nameHistory",
     "lastNameChange",
     "_id",
+    "lastResultHashes",
   ]);
 }
 

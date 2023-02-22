@@ -155,5 +155,10 @@
     "name": "binary",
     "info": "01000010 01100101 01100101 01110000 00100000 01100010 01101111 01101111 01110000 00101110",
     "canGetPb": false
+  },
+  {
+    "name": "zipf",
+    "info": "Words are generated according to Zipf's law. (not all languages will produce Zipfy results, use with caution)",
+    "canGetPb": false
   }
 ]
