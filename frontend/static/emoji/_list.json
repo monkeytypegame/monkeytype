@@ -1,6 +1,26 @@
 [
   {
     "type": "image",
+    "from": "trollge",
+    "to": "https://cdn.discordapp.com/emojis/715599037864345670.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "ez",
+    "to": "https://cdn.discordapp.com/emojis/998324494030622771.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "troll",
+    "to": "https://cdn.discordapp.com/emojis/810584184405098517.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "doggeronafriday",
+    "to": "https://cdn.discordapp.com/emojis/1060243191254761613.png?v=1"
+  },
+  {
+    "type": "image",
     "from": "kek",
     "to": "https://cdn.discordapp.com/emojis/715592474126712832.png?v=1"
   },
