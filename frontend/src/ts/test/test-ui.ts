@@ -44,9 +44,8 @@ const debouncedZipfCheck = debounce(250, () => {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (
-    eventKey === "language" ||
-    (eventKey === "funbox" &&
-      (eventValue as string).split("#").includes("zipf"))
+    (eventKey === "language" || eventKey === "funbox") &&
+    (eventValue as string).split("#").includes("zipf")
   ) {
     debouncedZipfCheck();
   }
