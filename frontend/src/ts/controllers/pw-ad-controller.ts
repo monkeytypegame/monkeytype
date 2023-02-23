@@ -29,25 +29,52 @@ const selloutUnits = [
     selectorId: "ad-result-wrapper", // fill in appropriate selectorId as needed.
   },
   {
-    type: "leaderboard_btf",
+    type: "sky_atf", //160x600
     selectorId: "ad-vertical-right-wrapper", // fill in appropriate selectorId as needed.
   },
   {
+    type: "sky_atf", //160x600
+    selectorId: "ad-vertical-left-wrapper", // fill in appropriate selectorId as needed.
+  },
+  {
     type: "leaderboard_btf",
-    selectorId: "ad-vertical-left-wrapper", // fill in appropriate selectorId as needed.
+    selectorId: "ad-footer-wrapper",
   },
   {
-    type: "skyscraper_atf", //160x600
-    selectorId: "ad-vertical-right-wrapper", // fill in appropriate selectorId as needed.
+    type: "leaderboard_btf",
+    selectorId: "ad-about-1-wrapper",
   },
   {
-    type: "skyscraper_btf", //160x600
-    selectorId: "ad-vertical-left-wrapper", // fill in appropriate selectorId as needed.
+    type: "leaderboard_btf",
+    selectorId: "ad-about-2-wrapper",
   },
   {
-    type: "bottom_rail", //OOP or out-of-page unit do not need a selectorId. 728x90.
+    type: "leaderboard_btf",
+    selectorId: "ad-settings-1-wrapper",
+  },
+  {
+    type: "leaderboard_btf",
+    selectorId: "ad-settings-1-small-wrapper",
+  },
+  {
+    type: "leaderboard_btf",
+    selectorId: "ad-settings-2-wrapper",
+  },
+  {
+    type: "leaderboard_btf",
+    selectorId: "ad-settings-3-wrapper",
+  },
+  {
+    type: "leaderboard_btf",
+    selectorId: "ad-account-1-wrapper",
+  },
+  {
+    type: "leaderboard_btf",
+    selectorId: "ad-account-2-wrapper",
   },
 ];
+
+let rampReady = false;
 
 export function init(): void {
   // Set Values with your PubID and Website ID
@@ -57,15 +84,11 @@ export function init(): void {
   window.ramp = {
     que: [],
     passiveMode: true,
-    // onReady: (): void => {
-    //   const units = getUnits();
+    onReady: (): void => {
+      rampReady = true;
 
-    //   if (units) {
-    //     ramp.addUnits(units).then(() => {
-    //       ramp.displayUnits();
-    //     });
-    //   }
-    // },
+      reinstate();
+    },
   };
 
   const headOfDocument = document.getElementsByTagName("head")[0];
@@ -103,7 +126,14 @@ function getUnits(): unknown {
     units = selloutUnits;
   }
 
-  return units;
+  const toReturn = [];
+  for (const unit of units) {
+    if (document.querySelector(`#${unit.selectorId}`)) {
+      toReturn.push(unit);
+    }
+  }
+
+  return toReturn;
 }
 
 //add logic so script selects the correct ad units array, 'default', 'on', 'sellout'
@@ -116,17 +146,24 @@ function getUnits(): unknown {
 //            }
 //        )
 
-export function reinstate(): boolean {
-  //@ts-ignore
-  ramp.destroyUnits("all");
-  //@ts-ignore
-  return ramp.addUnits(getUnits());
+export async function reinstate(): boolean {
+  if (!rampReady) return;
+  await ramp.destroyUnits("all");
+  await ramp.addUnits(getUnits());
+  await ramp.displayUnits();
 }
 
 export async function refreshVisible(): Promise<void> {
+  if (!rampReady) return;
   ramp.triggerRefresh();
 }
 
 export function renderResult(): void {
-  ramp.addUnits(resultUnits);
+  if (!rampReady) return;
+  ramp.triggerRefresh();
+}
+
+export function setMobile(tf: boolean): void {
+  if (!rampReady) return;
+  ramp.setMobile(tf);
 }
