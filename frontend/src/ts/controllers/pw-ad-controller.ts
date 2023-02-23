@@ -15,11 +15,11 @@ const onUnits = [
     selectorId: "ad-result-wrapper", // fill in appropriate selectorId as needed.
   },
   {
-    type: "skyscraper_atf",
+    type: "sky_atf", //160x600
     selectorId: "ad-vertical-right-wrapper", // fill in appropriate selectorId as needed.
   },
   {
-    type: "skyscraper_btf",
+    type: "sky_atf", //160x600
     selectorId: "ad-vertical-left-wrapper", // fill in appropriate selectorId as needed.
   },
 ];
