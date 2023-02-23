@@ -131,7 +131,11 @@ function getUnits(): unknown {
 
   const toReturn = [];
   for (const unit of units) {
-    if (document.querySelector(`#${unit.selectorId}`)) {
+    const isSky = unit.type === "sky_atf";
+    if (
+      document.querySelector(`#${unit.selectorId}`) &&
+      (!isSky || (isSky && showSky))
+    ) {
       toReturn.push(unit);
     }
   }
@@ -175,4 +179,15 @@ export function renderResult(): void {
 export function setMobile(tf: boolean): void {
   if (!rampReady) return;
   ramp.setMobile(tf);
+}
+
+let showSky = false;
+
+export function updateSky(visible: boolean): void {
+  showSky = visible;
+  if (showSky && !ramp.getUnits().includes("sky_atf")) {
+    ramp.addUnits(getUnits()).then(() => {
+      ramp.displayUnits();
+    });
+  }
 }

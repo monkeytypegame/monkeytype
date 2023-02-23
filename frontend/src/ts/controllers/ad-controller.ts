@@ -106,6 +106,16 @@ function updateBreakpoint(noReinstate = false): void {
   }
 }
 
+function updateBreakpoint2(): void {
+  if (choice !== "pw") return;
+
+  if (window.innerWidth > 1330) {
+    PW.updateSky(true);
+  } else {
+    PW.updateSky(false);
+  }
+}
+
 export async function refreshVisible(): Promise<void> {
   if (choice === "eg") {
     await EG.refreshVisible();
@@ -245,10 +255,12 @@ export function destroyResult(): void {
 
 const debouncedMarginUpdate = debounce(100, updateVerticalMargin);
 const debouncedBreakpointUpdate = debounce(100, updateBreakpoint);
+const debouncedBreakpoint2Update = debounce(100, updateBreakpoint2);
 
 $(window).on("resize", () => {
   debouncedMarginUpdate();
   debouncedBreakpointUpdate();
+  debouncedBreakpoint2Update();
 });
 
 ConfigEvent.subscribe((event, value) => {
@@ -270,6 +282,7 @@ BannerEvent.subscribe(() => {
 
 $(document).ready(() => {
   updateBreakpoint(true);
+  updateBreakpoint2();
 });
 
 window.onerror = function (error): void {
