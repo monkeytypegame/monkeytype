@@ -218,3 +218,55 @@ export function getCurrentWeekTimestamp(): number {
   const currentTime = Date.now();
   return getStartOfWeekTimestamp(currentTime);
 }
+
+type TimeUnit =
+  | "second"
+  | "minute"
+  | "hour"
+  | "day"
+  | "week"
+  | "month"
+  | "year";
+
+export const MINUTE_IN_SECONDS = 1 * 60;
+export const HOUR_IN_SECONDS = 1 * 60 * MINUTE_IN_SECONDS;
+export const DAY_IN_SECONDS = 1 * 24 * HOUR_IN_SECONDS;
+export const WEEK_IN_SECONDS = 1 * 7 * DAY_IN_SECONDS;
+export const MONTH_IN_SECONDS = 1 * 30.4167 * DAY_IN_SECONDS;
+export const YEAR_IN_SECONDS = 1 * 12 * MONTH_IN_SECONDS;
+
+export function formatSeconds(
+  seconds: number
+): `${number} ${TimeUnit}${"s" | ""}` {
+  let unit: TimeUnit;
+  let secondsInUnit: number;
+
+  if (seconds < MINUTE_IN_SECONDS) {
+    unit = "second";
+    secondsInUnit = 1;
+  } else if (seconds < HOUR_IN_SECONDS) {
+    unit = "minute";
+    secondsInUnit = MINUTE_IN_SECONDS;
+  } else if (seconds < DAY_IN_SECONDS) {
+    unit = "hour";
+    secondsInUnit = HOUR_IN_SECONDS;
+  } else if (seconds < WEEK_IN_SECONDS) {
+    unit = "day";
+    secondsInUnit = DAY_IN_SECONDS;
+  } else if (seconds < YEAR_IN_SECONDS) {
+    if (seconds < WEEK_IN_SECONDS * 4) {
+      unit = "week";
+      secondsInUnit = WEEK_IN_SECONDS;
+    } else {
+      unit = "month";
+      secondsInUnit = MONTH_IN_SECONDS;
+    }
+  } else {
+    unit = "year";
+    secondsInUnit = YEAR_IN_SECONDS;
+  }
+
+  const normalized = roundTo2(seconds / secondsInUnit);
+
+  return `${normalized} ${unit}${normalized > 1 ? "s" : ""}`;
+}

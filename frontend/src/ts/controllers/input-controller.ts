@@ -421,7 +421,7 @@ function handleChar(
     if (
       Config.difficulty !== "normal" ||
       (Config.strictSpace && Config.mode !== "zen") ||
-      Config.stopOnError === "word"
+      (Config.stopOnError === "word" && charIndex > 0)
     ) {
       if (dontInsertSpace) {
         dontInsertSpace = false;

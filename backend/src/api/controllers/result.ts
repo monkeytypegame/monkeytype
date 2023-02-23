@@ -156,11 +156,7 @@ export async function addResult(
   const resulthash = result.hash;
   delete result.hash;
   delete result.stringified;
-  if (
-    req.ctx.configuration.results.objectHashCheckEnabled &&
-    resulthash.length === 40
-  ) {
-    //if its not 64 that means client is still using old hashing package
+  if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const serverhash = objectHash(result);
     if (serverhash !== resulthash) {
       Logger.logToDb(
@@ -174,6 +170,21 @@ export async function addResult(
       );
       const status = MonkeyStatusCodes.RESULT_HASH_INVALID;
       throw new MonkeyError(status.code, "Incorrect result hash");
+    }
+  }
+
+  if (req.ctx.configuration.users.lastHashesCheck.enabled) {
+    let lastHashes = user.lastReultHashes ?? [];
+    if (lastHashes.includes(resulthash)) {
+      const status = MonkeyStatusCodes.DUPLICATE_RESULT;
+      throw new MonkeyError(status.code, "Duplicate result");
+    } else {
+      lastHashes.unshift(resulthash);
+      const maxHashes = req.ctx.configuration.users.lastHashesCheck.maxHashes;
+      if (lastHashes.length > maxHashes) {
+        lastHashes = lastHashes.slice(0, maxHashes);
+      }
+      await UserDAL.updateLastHashes(uid, lastHashes);
     }
   }
 

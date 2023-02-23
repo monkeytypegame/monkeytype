@@ -17,8 +17,39 @@ import format from "date-fns/format";
 import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
+import { debounce } from "throttle-debounce";
+
+const debouncedZipfCheck = debounce(250, () => {
+  Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
+    if (supports === "no") {
+      Notifications.add(
+        `${Misc.capitalizeFirstLetter(
+          Config.language.replace(/_/g, " ")
+        )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
+        0,
+        7
+      );
+    }
+    if (supports === "unknown") {
+      Notifications.add(
+        `${Misc.capitalizeFirstLetter(
+          Config.language.replace(/_/g, " ")
+        )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
+        0,
+        7
+      );
+    }
+  });
+});
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (
+    (eventKey === "language" || eventKey === "funbox") &&
+    (eventValue as string).split("#").includes("zipf")
+  ) {
+    debouncedZipfCheck();
+  }
+
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
