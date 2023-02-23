@@ -155,7 +155,10 @@ function getUnits(): unknown {
 
 export async function reinstate(): boolean {
   if (!rampReady) return;
-  if (ActivePage.get() === "test" && !TestUI.resultVisible) return;
+  if (ActivePage.get() === "test" && !TestUI.resultVisible) {
+    ramp.destroyUnits("all");
+    return;
+  }
   await ramp.destroyUnits("all");
   await ramp.addUnits(getUnits());
   await ramp.displayUnits();
