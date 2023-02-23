@@ -16,7 +16,14 @@ export let adBlock: boolean;
 export let cookieBlocker: boolean;
 
 // const choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
-const choice: "eg" | "pw" = "eg";
+let choice: "eg" | "pw" = "eg";
+
+const adChoiceForce = window.localStorage.getItem("adChoiceForce");
+if (adChoiceForce === "eg") {
+  choice = "eg";
+} else if (adChoiceForce === "pw") {
+  choice = "pw";
+}
 
 export function init(): void {
   if (choice === "eg") {
@@ -109,12 +116,19 @@ export async function refreshVisible(): Promise<void> {
 
 export async function checkAdblock(): Promise<void> {
   return new Promise((resolve) => {
-    if (adBlock === undefined) {
+    if (choice === "eg") {
+      if (adBlock === undefined) {
+        //@ts-ignore
+        if (window.egAdPack === undefined) {
+          adBlock = true;
+        } else {
+          adBlock = false;
+        }
+      }
+    } else if (choice === "pw") {
       //@ts-ignore
-      if (window.egAdPack === undefined) {
+      if (window.ramp === undefined) {
         adBlock = true;
-      } else {
-        adBlock = false;
       }
     }
     resolve();
@@ -123,28 +137,30 @@ export async function checkAdblock(): Promise<void> {
 
 export async function checkCookieblocker(): Promise<void> {
   return new Promise((resolve) => {
-    if (cookieBlocker === undefined) {
-      //@ts-ignore
-      if (window.__tcfapi === undefined) {
-        cookieBlocker = true;
-        resolve();
-      }
-      //@ts-ignore
-      window.__tcfapi("getTCData", 2, (tcData, success) => {
-        if (success) {
-          if (tcData.eventStatus === "cmpuishown") {
-            cookieBlocker = true;
-          } else {
-            cookieBlocker = false;
-          }
-        } else {
+    if (choice === "eg") {
+      if (cookieBlocker === undefined) {
+        //@ts-ignore
+        if (window.__tcfapi === undefined) {
           cookieBlocker = true;
+          resolve();
         }
-        resolve();
-      });
-    } else {
-      resolve();
+        //@ts-ignore
+        window.__tcfapi("getTCData", 2, (tcData, success) => {
+          if (success) {
+            if (tcData.eventStatus === "cmpuishown") {
+              cookieBlocker = true;
+            } else {
+              cookieBlocker = false;
+            }
+          } else {
+            cookieBlocker = true;
+          }
+        });
+      }
+    } else if (choice === "pw") {
+      //todo
     }
+    resolve();
   });
 }
 
