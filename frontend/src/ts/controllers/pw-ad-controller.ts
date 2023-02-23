@@ -164,16 +164,16 @@ export async function reinstate(): boolean {
 export async function refreshVisible(): Promise<void> {
   if (!rampReady) return;
 
+  ramp.triggerRefresh();
+}
+
+export function renderResult(): void {
+  if (!rampReady) return;
   if (ramp.getUnits().includes("leaderboard_atf")) {
     ramp.triggerRefresh();
   } else {
     reinstate();
   }
-}
-
-export function renderResult(): void {
-  if (!rampReady) return;
-  ramp.triggerRefresh();
 }
 
 export function setMobile(tf: boolean): void {
@@ -185,7 +185,7 @@ let showSky = false;
 
 export function updateSky(visible: boolean): void {
   showSky = visible;
-  if (showSky && !ramp.getUnits().includes("sky_atf")) {
+  if (showSky && ramp && !ramp.getUnits().includes("sky_atf")) {
     ramp.addUnits(getUnits()).then(() => {
       ramp.displayUnits();
     });
