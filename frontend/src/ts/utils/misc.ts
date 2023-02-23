@@ -1402,3 +1402,12 @@ export function dreymarIndex(arrayLength: number): number {
   const W = Math.ceil(h);
   return W - 1;
 }
+
+export async function checkIfLanguageSupportsZipf(
+  language: string
+): Promise<"yes" | "no" | "unknown"> {
+  const lang = await getLanguage(language);
+  if (lang.orderedByFrequency === true) return "yes";
+  if (lang.orderedByFrequency === false) return "no";
+  return "unknown";
+}

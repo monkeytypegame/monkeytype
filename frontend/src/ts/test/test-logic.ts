@@ -1596,7 +1596,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - too short", 0);
     tooShort = true;
     dontSave = true;
-  } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
+  } else if (
+    completedEvent.wpm < 0 ||
+    (completedEvent.wpm > 350 &&
+      completedEvent.mode != "words" &&
+      completedEvent.mode2 != "10") ||
+    (completedEvent.wpm > 420 &&
+      completedEvent.mode == "words" &&
+      completedEvent.mode2 == "10")
+  ) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;

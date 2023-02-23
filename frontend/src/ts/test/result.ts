@@ -592,10 +592,18 @@ function updateOther(
   if (TestStats.invalid) {
     otherText += "<br>invalid";
     const extra: string[] = [];
-    if (result.wpm < 0 || result.wpm > 350) {
+    if (
+      result.wpm < 0 ||
+      (result.wpm > 350 && result.mode != "words" && result.mode2 != "10") ||
+      (result.wpm > 420 && result.mode == "words" && result.mode2 == "10")
+    ) {
       extra.push("wpm");
     }
-    if (result.rawWpm < 0 || result.rawWpm > 350) {
+    if (
+      result.rawWpm < 0 ||
+      (result.rawWpm > 350 && result.mode != "words" && result.mode2 != "10") ||
+      (result.rawWpm > 420 && result.mode == "words" && result.mode2 == "10")
+    ) {
       extra.push("raw");
     }
     if (result.acc < 75 || result.acc > 100) {
