@@ -674,8 +674,8 @@ $(document).on("keydown", (e) => {
       e.key === "ArrowDown" ||
       e.key === "Tab" ||
       // Should only branch if ctrl is held to allow the letters to still be typed
-      ((e.key === "p" || e.key === "n" || e.key === "j" || e.key === "k") &&
-        e.ctrlKey)
+      (e.ctrlKey &&
+        (e.key === "p" || e.key === "n" || e.key === "j" || e.key === "k"))
     ) {
       e.preventDefault();
       $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
