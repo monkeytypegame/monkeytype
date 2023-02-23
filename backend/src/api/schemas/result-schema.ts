@@ -59,7 +59,7 @@ const RESULT_SCHEMA = joi
     numbers: joi.boolean().required(),
     punctuation: joi.boolean().required(),
     quoteLength: joi.number(),
-    rawWpm: joi.number().required(),
+    rawWpm: joi.number().min(0).max(420).required(),
     restartCount: joi.number().required(),
     smoothConsistency: joi.number().optional(), // to be removed
     tags: joi
@@ -69,7 +69,7 @@ const RESULT_SCHEMA = joi
     testDuration: joi.number().required().min(1),
     timestamp: joi.date().timestamp().required(),
     uid: joi.string().required(),
-    wpm: joi.number().min(0).max(350).required(),
+    wpm: joi.number().min(0).max(420).required(),
     wpmConsistency: joi.number().min(0).required(),
   })
   .required();
