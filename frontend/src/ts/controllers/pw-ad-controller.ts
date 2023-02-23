@@ -1,6 +1,8 @@
 //@ts-nocheck
 
 import Config from "../config";
+import * as ActivePage from "../states/active-page";
+import * as TestUI from "../test/test-ui";
 
 // Step 1: Create the Ramp Object, NOTE: selector id needed for tagged units only
 const resultUnits = [
@@ -148,6 +150,7 @@ function getUnits(): unknown {
 
 export async function reinstate(): boolean {
   if (!rampReady) return;
+  if (ActivePage.get() === "test" && !TestUI.resultVisible) return;
   await ramp.destroyUnits("all");
   await ramp.addUnits(getUnits());
   await ramp.displayUnits();
@@ -155,7 +158,12 @@ export async function reinstate(): boolean {
 
 export async function refreshVisible(): Promise<void> {
   if (!rampReady) return;
-  ramp.triggerRefresh();
+
+  if (ramp.getUnits().includes("leaderboard_atf")) {
+    ramp.triggerRefresh();
+  } else {
+    reinstate();
+  }
 }
 
 export function renderResult(): void {
