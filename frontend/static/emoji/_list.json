@@ -6,11 +6,6 @@
   },
   {
     "type": "image",
-    "from": "ez",
-    "to": "https://cdn.discordapp.com/emojis/998324494030622771.png?v=1"
-  },
-  {
-    "type": "image",
     "from": "troll",
     "to": "https://cdn.discordapp.com/emojis/810584184405098517.png?v=1"
   },
@@ -43,11 +38,6 @@
     "type": "image",
     "from": "freakouteyes",
     "to": "https://cdn.discordapp.com/emojis/762468128323141662.gif?v=1"
-  },
-  {
-    "type": "image",
-    "from": "pepeHands",
-    "to": "https://cdn.discordapp.com/emojis/715544844256280689.png?v=1"
   },
   {
     "type": "image",
@@ -99,7 +89,7 @@
     "from": "kyle",
     "to": "https://cdn.discordapp.com/emojis/813586236664184852.png?v=1"
   },
-
+  
   {
     "type": "image",
     "from": "thonk",
@@ -130,7 +120,1112 @@
     "from": "ugh",
     "to": "https://cdn.discordapp.com/emojis/829545048340168757.png?v=1"
   },
-
+  {
+    "type": "image",
+    "from": "5head" ,
+    "to": "https://cdn.discordapp.com/emojis/737085918107795548.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "BIMShock" ,
+    "to": "https://cdn.discordapp.com/emojis/941012355230339132.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "BIMSit" ,
+    "to": "https://cdn.discordapp.com/emojis/942952920788373505.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "BIMStare" ,
+    "to": "https://cdn.discordapp.com/emojis/941008606705381507.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "BS" ,
+    "to": "https://cdn.discordapp.com/emojis/785183396161781810.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "BapSquish" ,
+    "to": "https://cdn.discordapp.com/emojis/950592110598447114.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "CRY" ,
+    "to": "https://cdn.discordapp.com/emojis/1073058418174197800.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "Despairge" ,
+    "to": "https://cdn.discordapp.com/emojis/1016111265791361074.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "EZ" ,
+    "to": "https://cdn.discordapp.com/emojis/715599037864345670.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "FeelsBadMan" ,
+    "to": "https://cdn.discordapp.com/emojis/725050539712315453.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "LAUGH" ,
+    "to": "https://cdn.discordapp.com/emojis/1073058423488389120.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "NAILS" ,
+    "to": "https://cdn.discordapp.com/emojis/1073057914664800399.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "NO" ,
+    "to": "https://cdn.discordapp.com/emojis/753773334172270662.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "OMG" ,
+    "to": "https://cdn.discordapp.com/emojis/1073058419709313117.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "OOF" ,
+    "to": "https://cdn.discordapp.com/emojis/714261589489877062.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "OkaygeBusiness" ,
+    "to": "https://cdn.discordapp.com/emojis/1045692574586904576.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "PauseChamp" ,
+    "to": "https://cdn.discordapp.com/emojis/799081460169441320.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "PeepoLinus" ,
+    "to": "https://cdn.discordapp.com/emojis/721640114392006676.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "PepeFlushed" ,
+    "to": "https://cdn.discordapp.com/emojis/948404646739861594.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "PepeHands" ,
+    "to": "https://cdn.discordapp.com/emojis/715544844256280689.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "PogChimp" ,
+    "to": "https://cdn.discordapp.com/emojis/715596196470718554.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "SCREAM" ,
+    "to": "https://cdn.discordapp.com/emojis/1073057936793948230.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "Susge" ,
+    "to": "https://cdn.discordapp.com/emojis/938441227802660944.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "TEARS" ,
+    "to": "https://cdn.discordapp.com/emojis/1073058421772931112.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "Trollge" ,
+    "to": "https://cdn.discordapp.com/emojis/998324494030622771.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "accuracy_zero" ,
+    "to": "https://cdn.discordapp.com/emojis/783819412292501504.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "ahh" ,
+    "to": "https://cdn.discordapp.com/emojis/736027796777730048.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "angreydoggo" ,
+    "to": "https://cdn.discordapp.com/emojis/715587667751993444.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "awoooo" ,
+    "to": "https://cdn.discordapp.com/emojis/815618460603383849.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "banana~1" ,
+    "to": "https://cdn.discordapp.com/emojis/868113390063718410.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "bananapepe" ,
+    "to": "https://cdn.discordapp.com/emojis/787529006152155139.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "bbyyoda" ,
+    "to": "https://cdn.discordapp.com/emojis/715591297125318706.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "beantheredonethat" ,
+    "to": "https://cdn.discordapp.com/emojis/781238048369016833.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "bedge" ,
+    "to": "https://cdn.discordapp.com/emojis/998324488359911424.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "beewithagun" ,
+    "to": "https://cdn.discordapp.com/emojis/861665868156108860.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "biblethump" ,
+    "to": "https://cdn.discordapp.com/emojis/715597100410208377.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "blender" ,
+    "to": "https://cdn.discordapp.com/emojis/910006721597034616.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "blurryeyes" ,
+    "to": "https://cdn.discordapp.com/emojis/714259465410445363.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "boi" ,
+    "to": "https://cdn.discordapp.com/emojis/716257280995360780.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "boomer" ,
+    "to": "https://cdn.discordapp.com/emojis/770769761880899594.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "brainlet" ,
+    "to": "https://cdn.discordapp.com/emojis/788215365616271370.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "breadlegs" ,
+    "to": "https://cdn.discordapp.com/emojis/861665854974590996.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "bruhgi" ,
+    "to": "https://cdn.discordapp.com/emojis/1013265363535925383.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "carole" ,
+    "to": "https://cdn.discordapp.com/emojis/715591276547932191.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "catge" ,
+    "to": "https://cdn.discordapp.com/emojis/967843135839420447.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "chadbananabydoggers" ,
+    "to": "https://cdn.discordapp.com/emojis/904289490661691423.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "chuu" ,
+    "to": "https://cdn.discordapp.com/emojis/1028758810023698432.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "clueless" ,
+    "to": "https://cdn.discordapp.com/emojis/998324487160348792.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "corey" ,
+    "to": "https://cdn.discordapp.com/emojis/787177211152302120.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "cororey" ,
+    "to": "https://cdn.discordapp.com/emojis/899482792805679107.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "cowboyape" ,
+    "to": "https://cdn.discordapp.com/emojis/861665880207261726.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "csspika" ,
+    "to": "https://cdn.discordapp.com/emojis/954146930265579650.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "damn" ,
+    "to": "https://cdn.discordapp.com/emojis/715597120324763658.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "deadass" ,
+    "to": "https://cdn.discordapp.com/emojis/1029972103660851220.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "despair" ,
+    "to": "https://cdn.discordapp.com/emojis/1023276827004915783.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "develop" ,
+    "to": "https://cdn.discordapp.com/emojis/735951289464258662.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "developd" ,
+    "to": "https://cdn.discordapp.com/emojis/736242500993286184.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "disgust" ,
+    "to": "https://cdn.discordapp.com/emojis/963573062748499978.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "dogchamp" ,
+    "to": "https://cdn.discordapp.com/emojis/936429905208569946.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "doggeronafriday" ,
+    "to": "https://cdn.discordapp.com/emojis/1060243191254761613.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "dogpeep" ,
+    "to": "https://cdn.discordapp.com/emojis/715598481007444058.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "downvote" ,
+    "to": "https://cdn.discordapp.com/emojis/715596221326164059.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "erm" ,
+    "to": "https://cdn.discordapp.com/emojis/1076654196096507904.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "feelsgoodman" ,
+    "to": "https://cdn.discordapp.com/emojis/715599307419418634.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "feelsstrongman" ,
+    "to": "https://cdn.discordapp.com/emojis/1060242791390793758.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "feelsyepman" ,
+    "to": "https://cdn.discordapp.com/emojis/1060242779541885028.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "flonshed" ,
+    "to": "https://cdn.discordapp.com/emojis/775594420996276262.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "flozshed" ,
+    "to": "https://cdn.discordapp.com/emojis/820150299439136778.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "flugshed" ,
+    "to": "https://cdn.discordapp.com/emojis/773771179898044466.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "flunshed" ,
+    "to": "https://cdn.discordapp.com/emojis/752920742026412133.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "flunshedbean" ,
+    "to": "https://cdn.discordapp.com/emojis/794368098555265085.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "frong" ,
+    "to": "https://cdn.discordapp.com/emojis/843683955228278844.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "gaspm" ,
+    "to": "https://cdn.discordapp.com/emojis/715587682910339123.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "gfruit" ,
+    "to": "https://cdn.discordapp.com/emojis/787177211005501441.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "gigachad" ,
+    "to": "https://cdn.discordapp.com/emojis/963573934542950491.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "gimme" ,
+    "to": "https://cdn.discordapp.com/emojis/778961739328782336.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "grill" ,
+    "to": "https://cdn.discordapp.com/emojis/795711728784506890.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "hehe" ,
+    "to": "https://cdn.discordapp.com/emojis/1029540641522339921.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "heheh" ,
+    "to": "https://cdn.discordapp.com/emojis/748547831714938910.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "hmm" ,
+    "to": "https://cdn.discordapp.com/emojis/715597836825264149.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "hmph" ,
+    "to": "https://cdn.discordapp.com/emojis/736029217380237363.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "holup" ,
+    "to": "https://cdn.discordapp.com/emojis/785675044616798221.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "instalike" ,
+    "to": "https://cdn.discordapp.com/emojis/715598535340589156.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "jasheStopItYou" ,
+    "to": "https://cdn.discordapp.com/emojis/776846606812184576.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "jasheYes" ,
+    "to": "https://cdn.discordapp.com/emojis/776846604165971999.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "jashenana" ,
+    "to": "https://cdn.discordapp.com/emojis/769258751815319552.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "jasheok" ,
+    "to": "https://cdn.discordapp.com/emojis/769262929848827944.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "jeez" ,
+    "to": "https://cdn.discordapp.com/emojis/771858310008668170.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "jefe" ,
+    "to": "https://cdn.discordapp.com/emojis/850792378531971072.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "jerry" ,
+    "to": "https://cdn.discordapp.com/emojis/715597836825264149.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "judgingmonkey" ,
+    "to": "https://cdn.discordapp.com/emojis/715597836825264149.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "jyojoh" ,
+    "to": "https://cdn.discordapp.com/emojis/787177210753843203.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kachow" ,
+    "to": "https://cdn.discordapp.com/emojis/771225981619798017.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kachow2" ,
+    "to": "https://cdn.discordapp.com/emojis/771226001036279828.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kappa" ,
+    "to": "https://cdn.discordapp.com/emojis/735594708159561750.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "katsuu" ,
+    "to": "https://cdn.discordapp.com/emojis/820732478448467968.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kek" ,
+    "to": "https://cdn.discordapp.com/emojis/1012336279301656688.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kekold" ,
+    "to": "https://cdn.discordapp.com/emojis/769417555642417172.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kekw" ,
+    "to": "https://cdn.discordapp.com/emojis/715592474126712832.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kenn" ,
+    "to": "https://cdn.discordapp.com/emojis/787177211194245120.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kenntall1" ,
+    "to": "https://cdn.discordapp.com/emojis/787138077533274150.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kenntall2" ,
+    "to": "https://cdn.discordapp.com/emojis/787138061544849468.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kk21droidLGrofl" ,
+    "to": "https://cdn.discordapp.com/emojis/1029972094852800512.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "kyle" ,
+    "to": "https://cdn.discordapp.com/emojis/813586236664184852.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "Madeg" ,
+    "to": "https://cdn.discordapp.com/emojis/1048029404980330556.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "mayonnaise" ,
+    "to": "https://cdn.discordapp.com/emojis/774030253835419698.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "meeno" ,
+    "to": "https://cdn.discordapp.com/emojis/897327085771685918.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "meeyes" ,
+    "to": "https://cdn.discordapp.com/emojis/897326981425791016.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "mike" ,
+    "to": "https://cdn.discordapp.com/emojis/715598463806734396.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "mio3d" ,
+    "to": "https://cdn.discordapp.com/emojis/769265704956067852.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "miodik" ,
+    "to": "https://cdn.discordapp.com/emojis/787177211165540392.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "mlady" ,
+    "to": "https://cdn.discordapp.com/emojis/998519727582347316.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "mogU" ,
+    "to": "https://cdn.discordapp.com/emojis/736007114916626522.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "monkaS" ,
+    "to": "https://cdn.discordapp.com/emojis/715624865423687691.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "monkeeyes" ,
+    "to": "https://cdn.discordapp.com/emojis/771858268162097163.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "monkeyS" ,
+    "to": "https://cdn.discordapp.com/emojis/736024188757737532.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "monkeyThink" ,
+    "to": "https://cdn.discordapp.com/emojis/736008152805277776.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "monkeyfacepalm" ,
+    "to": "https://cdn.discordapp.com/emojis/716004425663119380.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "monkeystare" ,
+    "to": "https://cdn.discordapp.com/emojis/788506153867804732.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "monkeywat" ,
+    "to": "https://cdn.discordapp.com/emojis/736026618883080223.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "moodge" ,
+    "to": "https://cdn.discordapp.com/emojis/1058080444471578644.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "moondespair" ,
+    "to": "https://cdn.discordapp.com/emojis/998325448482246780.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "mt" ,
+    "to": "https://cdn.discordapp.com/emojis/879153596388753508.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "musk" ,
+    "to": "https://cdn.discordapp.com/emojis/715598502528286822.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "nahhh" ,
+    "to": "https://cdn.discordapp.com/emojis/1047230589138391201.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "notlikethis" ,
+    "to": "https://cdn.discordapp.com/emojis/735213942942728303.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "octaThink" ,
+    "to": "https://cdn.discordapp.com/emojis/956026830995992656.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "octahappy" ,
+    "to": "https://cdn.discordapp.com/emojis/777709729090109461.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "octamad" ,
+    "to": "https://cdn.discordapp.com/emojis/777151573993324544.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "ohgodohfuck" ,
+    "to": "https://cdn.discordapp.com/emojis/799140202290741268.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "okay" ,
+    "to": "https://cdn.discordapp.com/emojis/998324491132350614.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "okayeg" ,
+    "to": "https://cdn.discordapp.com/emojis/1020399639150735420.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "okayegbusiness" ,
+    "to": "https://cdn.discordapp.com/emojis/1048029227288633394.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "okayegflip" ,
+    "to": "https://cdn.discordapp.com/emojis/1048029427663130644.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "okayge" ,
+    "to": "https://cdn.discordapp.com/emojis/1058080414255824906.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "okaythen" ,
+    "to": "https://cdn.discordapp.com/emojis/788508534232973332.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "ooga" ,
+    "to": "https://cdn.discordapp.com/emojis/715597788628385853.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "our" ,
+    "to": "https://cdn.discordapp.com/emojis/841286875493957682.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pagman" ,
+    "to": "https://cdn.discordapp.com/emojis/998327207736918036.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "payrespect" ,
+    "to": "https://cdn.discordapp.com/emojis/715591216028188672.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "peepoAngry" ,
+    "to": "https://cdn.discordapp.com/emojis/910974794571329536.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "peepog" ,
+    "to": "https://cdn.discordapp.com/emojis/715597612862144554.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pensivecornbydoggers" ,
+    "to": "https://cdn.discordapp.com/emojis/905315789949796352.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pensivecowboy" ,
+    "to": "https://cdn.discordapp.com/emojis/861666275143319552.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pensivepalmtree" ,
+    "to": "https://cdn.discordapp.com/emojis/824709397313880127.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pepeaa" ,
+    "to": "https://cdn.discordapp.com/emojis/715597139933397032.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pepepause" ,
+    "to": "https://cdn.discordapp.com/emojis/859859254474965002.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pepepoint" ,
+    "to": "https://cdn.discordapp.com/emojis/873063068899373136.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pepeshrimp" ,
+    "to": "https://cdn.discordapp.com/emojis/820149724203712532.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pepewot" ,
+    "to": "https://cdn.discordapp.com/emojis/788918785104805959.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pepewut" ,
+    "to": "https://cdn.discordapp.com/emojis/788916796820422707.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "perhaps" ,
+    "to": "https://cdn.discordapp.com/emojis/751172677481529344.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pikawaa" ,
+    "to": "https://cdn.discordapp.com/emojis/715587695308439662.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pingRee" ,
+    "to": "https://cdn.discordapp.com/emojis/714263270198083657.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "pogu" ,
+    "to": "https://cdn.discordapp.com/emojis/731211932387901473.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "poinged" ,
+    "to": "https://cdn.discordapp.com/emojis/802000170329702420.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "poopiga" ,
+    "to": "https://cdn.discordapp.com/emojis/1041564897261129758.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "prayge" ,
+    "to": "https://cdn.discordapp.com/emojis/998324485730082896.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "raccoonchef" ,
+    "to": "https://cdn.discordapp.com/emojis/784567505384374293.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "raisin" ,
+    "to": "https://cdn.discordapp.com/emojis/796886412993101824.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "ree" ,
+    "to": "https://cdn.discordapp.com/emojis/715591191168811039.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "ree~1" ,
+    "to": "https://cdn.discordapp.com/emojis/826489853696016415.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "reee" ,
+    "to": "https://cdn.discordapp.com/emojis/887662047402262568.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "residentsleeper" ,
+    "to": "https://cdn.discordapp.com/emojis/737688425183969374.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "retweet" ,
+    "to": "https://cdn.discordapp.com/emojis/778793383950155776.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "romerono" ,
+    "to": "https://cdn.discordapp.com/emojis/715591201751040060.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "rustle" ,
+    "to": "https://cdn.discordapp.com/emojis/736009097065005096.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "sadcat" ,
+    "to": "https://cdn.discordapp.com/emojis/781232467952664622.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "sadeg" ,
+    "to": "https://cdn.discordapp.com/emojis/1048029802986221660.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "sadge" ,
+    "to": "https://cdn.discordapp.com/emojis/1058080458426032128.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "sellout" ,
+    "to": "https://cdn.discordapp.com/emojis/715592442837205074.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "settiz" ,
+    "to": "https://cdn.discordapp.com/emojis/787177211023196191.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "shrimpcowbow" ,
+    "to": "https://cdn.discordapp.com/emojis/861665829958320178.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "shrimpkiller" ,
+    "to": "https://cdn.discordapp.com/emojis/861665818148339782.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "shrimpr" ,
+    "to": "https://cdn.discordapp.com/emojis/884111452103905400.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "shut" ,
+    "to": "https://cdn.discordapp.com/emojis/811825776202219540.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "smithydoom" ,
+    "to": "https://cdn.discordapp.com/emojis/817175315515834438.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "snugasabug" ,
+    "to": "https://cdn.discordapp.com/emojis/1069865993897254912.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "sonic" ,
+    "to": "https://cdn.discordapp.com/emojis/791693961726918666.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "soontm" ,
+    "to": "https://cdn.discordapp.com/emojis/716256410366640179.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "speedy" ,
+    "to": "https://cdn.discordapp.com/emojis/803781281401274388.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "speedybruh" ,
+    "to": "https://cdn.discordapp.com/emojis/769266559528337479.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "sponge~1" ,
+    "to": "https://cdn.discordapp.com/emojis/799869676418629672.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "surprisedpikachu" ,
+    "to": "https://cdn.discordapp.com/emojis/714262876528836699.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "susge" ,
+    "to": "https://cdn.discordapp.com/emojis/1058080428575166508.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "susgeboy" ,
+    "to": "https://cdn.discordapp.com/emojis/1058080485252812892.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "sussyge" ,
+    "to": "https://cdn.discordapp.com/emojis/1058080357422997655.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "swagrid" ,
+    "to": "https://cdn.discordapp.com/emojis/859377219142156308.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "tapshead" ,
+    "to": "https://cdn.discordapp.com/emojis/714262739627016193.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "taran" ,
+    "to": "https://cdn.discordapp.com/emojis/808178324869873725.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "terrified" ,
+    "to": "https://cdn.discordapp.com/emojis/1047230425388564490.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "this" ,
+    "to": "https://cdn.discordapp.com/emojis/741431049245950013.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "thonkeyes" ,
+    "to": "https://cdn.discordapp.com/emojis/715587711196463114.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "tohruthumbsup" ,
+    "to": "https://cdn.discordapp.com/emojis/1023276868251688970.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "towel" ,
+    "to": "https://cdn.discordapp.com/emojis/715599045850169394.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "towel~1" ,
+    "to": "https://cdn.discordapp.com/emojis/787830460301443082.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "tribewhen" ,
+    "to": "https://cdn.discordapp.com/emojis/857752988789243904.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "troll~1" ,
+    "to": "https://cdn.discordapp.com/emojis/810584184405098517.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "troll~2" ,
+    "to": "https://cdn.discordapp.com/emojis/895397724671848528.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "trollchad" ,
+    "to": "https://cdn.discordapp.com/emojis/963573445084463124.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "tyler" ,
+    "to": "https://cdn.discordapp.com/emojis/874304830594744370.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "ugh" ,
+    "to": "https://cdn.discordapp.com/emojis/852113213452845056.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "uhh" ,
+    "to": "https://cdn.discordapp.com/emojis/715597870233026560.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "untroll" ,
+    "to": "https://cdn.discordapp.com/emojis/810584643094839306.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "upvote" ,
+    "to": "https://cdn.discordapp.com/emojis/715591259636367362.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "usuckkenn" ,
+    "to": "https://cdn.discordapp.com/emojis/790060123623391242.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "vastus" ,
+    "to": "https://cdn.discordapp.com/emojis/787177210867744769.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "waah" ,
+    "to": "https://cdn.discordapp.com/emojis/736028608048529459.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "walt" ,
+    "to": "https://cdn.discordapp.com/emojis/963573669626519594.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "wat" ,
+    "to": "https://cdn.discordapp.com/emojis/788508110318338079.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "wearyyy" ,
+    "to": "https://cdn.discordapp.com/emojis/845320687001665606.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "weirdga" ,
+    "to": "https://cdn.discordapp.com/emojis/900764028857630740.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "weirdgate" ,
+    "to": "https://cdn.discordapp.com/emojis/805654301657399296.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "whatthe" ,
+    "to": "https://cdn.discordapp.com/emojis/714263142280069341.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "whew" ,
+    "to": "https://cdn.discordapp.com/emojis/716257493268955137.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "woop" ,
+    "to": "https://cdn.discordapp.com/emojis/887662014627979275.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "wtf" ,
+    "to": "https://cdn.discordapp.com/emojis/861665841741430796.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "youknowhat" ,
+    "to": "https://cdn.discordapp.com/emojis/716256434651791381.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "ze_or" ,
+    "to": "https://cdn.discordapp.com/emojis/815653579813027891.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "zoinked" ,
+    "to": "https://cdn.discordapp.com/emojis/773583103851102268.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "zoomer" ,
+    "to": "https://cdn.discordapp.com/emojis/77076978360385538.png?v=1"
+  },
+  
   
   {
     "type": "emoji",
