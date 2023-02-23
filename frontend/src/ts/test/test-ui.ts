@@ -34,7 +34,7 @@ const debouncedZipfCheck = debounce(250, () => {
       Notifications.add(
         `${Misc.capitalizeFirstLetter(
           Config.language.replace(/_/g, " ")
-        )} may not support Zipf funbox, because we don't know if its ordered by frequency or not. If you would like to add this label, please contact us.`,
+        )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
         0,
         7
       );
