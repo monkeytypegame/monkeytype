@@ -23,6 +23,7 @@ declare namespace MonkeyTypes {
     leftToRight: boolean;
     noLazyMode?: boolean;
     ligatures?: boolean;
+    orderedByFrequency?: boolean;
     words: string[];
     accents: Accents;
     bcp47?: string;
