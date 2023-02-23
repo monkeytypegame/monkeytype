@@ -3,6 +3,7 @@
   "leftToRight": true,
   "_comment": "Sourced from: https://en.wikipedia.org/wiki/Wikipedia:Lists_of_common_misspellings",
   "noLazyMode": true,
+  "orderedByFrequency": false,
   "words": [
     "caused",
     "ultimately",
