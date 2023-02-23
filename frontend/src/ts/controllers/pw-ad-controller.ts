@@ -55,7 +55,7 @@ const selloutUnits = [
     selectorId: "ad-settings-1-wrapper",
   },
   {
-    type: "leaderboard_btf",
+    type: "med_rect_btf",
     selectorId: "ad-settings-1-small-wrapper",
   },
   {
@@ -86,6 +86,7 @@ export function init(): void {
   window.ramp = {
     que: [],
     passiveMode: true,
+    forcePath: "320x50-test",
     onReady: (): void => {
       rampReady = true;
 
