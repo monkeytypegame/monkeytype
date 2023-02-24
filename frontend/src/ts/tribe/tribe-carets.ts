@@ -63,7 +63,7 @@ export class TribeCaret {
   public animate(animationDuration: number): void {
     if (!this.element) {
       this.spawn();
-      return this.animate(animationDuration);
+      return this.animate(125);
     }
     // if ($("#paceCaret").hasClass("hidden")) {
     //   $("#paceCaret").removeClass("hidden");
