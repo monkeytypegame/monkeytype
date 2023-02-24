@@ -161,7 +161,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "poetry",
     info: "Practice typing some beautiful prose.",
-    properties: ["noInfiniteDuration"],
+    properties: ["noInfiniteDuration", "ignoresLanguage"],
     forcedConfig: {
       punctuation: [false],
       numbers: [false],
@@ -170,7 +170,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "wikipedia",
     info: "Practice typing wikipedia sections.",
-    properties: ["noInfiniteDuration"],
+    properties: ["noInfiniteDuration", "ignoresLanguage"],
     forcedConfig: {
       punctuation: [false],
       numbers: [false],
@@ -179,11 +179,12 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "weakspot",
     info: "Focus on slow and mistyped letters.",
+    properties: ["changesWordsFrequency"],
   },
   {
     name: "pseudolang",
     info: "Nonsense words that look like the current language.",
-    properties: ["unspeakable"],
+    properties: ["unspeakable", "ignoresLanguage"],
   },
   {
     name: "IPv4",
@@ -212,6 +213,12 @@ const list: MonkeyTypes.FunboxMetadata[] = [
       numbers: [false],
       punctuation: [false],
     },
+  },
+  {
+    name: "zipf",
+    alias: "frequency",
+    info: "Words are generated according to Zipf's law. (not all languages will produce Zipfy results, use with caution)",
+    properties: ["changesWordsFrequency"],
   },
 ];
 

@@ -703,6 +703,18 @@ export function restart(options = {} as RestartOptions): void {
   );
 }
 
+function getFunboxWordsFrequency():
+  | MonkeyTypes.FunboxWordsFrequency
+  | undefined {
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWordsFrequencyMode
+  );
+  if (wordFunbox?.functions?.getWordsFrequencyMode) {
+    return wordFunbox.functions.getWordsFrequencyMode();
+  }
+  return undefined;
+}
+
 function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
   const wordFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.getWord
@@ -744,7 +756,9 @@ async function getNextWord(
   language: MonkeyTypes.LanguageObject,
   wordsBound: number
 ): Promise<string> {
-  let randomWord = wordset.randomWord();
+  const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
+
+  let randomWord = wordset.randomWord(funboxFrequency);
   const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
   const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
   if (Config.mode === "quote") {
@@ -761,7 +775,7 @@ async function getNextWord(
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
     (wordset.length < 4 || PractiseWords.before.mode !== null)
   ) {
-    randomWord = wordset.randomWord();
+    randomWord = wordset.randomWord(funboxFrequency);
   } else {
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
@@ -780,12 +794,12 @@ async function getNextWord(
           /[0-9]/i.test(randomWord)))
     ) {
       regenarationCount++;
-      randomWord = wordset.randomWord();
+      randomWord = wordset.randomWord(funboxFrequency);
     }
   }
 
   if (randomWord === undefined) {
-    randomWord = wordset.randomWord();
+    randomWord = wordset.randomWord(funboxFrequency);
   }
 
   if (
@@ -1651,10 +1665,15 @@ export async function finish(difficultyFailed = false): Promise<void> {
     tooShort = true;
     dontSave = true;
     resolve.tooShort = true;
-    // resolveTestSavePromise({
-    //   tooShort: true,
-    // });
-  } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
+  } else if (
+    completedEvent.wpm < 0 ||
+    (completedEvent.wpm > 350 &&
+      completedEvent.mode != "words" &&
+      completedEvent.mode2 != "10") ||
+    (completedEvent.wpm > 420 &&
+      completedEvent.mode == "words" &&
+      completedEvent.mode2 == "10")
+  ) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;

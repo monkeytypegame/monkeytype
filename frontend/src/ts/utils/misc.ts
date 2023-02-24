@@ -1317,8 +1317,12 @@ export class Wordset {
     this.length = this.words.length;
   }
 
-  public randomWord(): string {
-    return randomElementFromArray(this.words);
+  public randomWord(mode: MonkeyTypes.FunboxWordsFrequency): string {
+    if (mode === "zipf") {
+      return this.words[dreymarIndex(this.words.length)];
+    } else {
+      return randomElementFromArray(this.words);
+    }
   }
 }
 
@@ -1395,4 +1399,23 @@ export function isLocalhost(): boolean {
 export function getBinary(): string {
   const ret = Math.floor(Math.random() * 256).toString(2);
   return ret.padStart(8, "0");
+}
+
+export function dreymarIndex(arrayLength: number): number {
+  const n = arrayLength;
+  const g = 0.5772156649;
+  const M = Math.log(n) + g;
+  const r = Math.random();
+  const h = Math.exp(r * M - g);
+  const W = Math.ceil(h);
+  return W - 1;
+}
+
+export async function checkIfLanguageSupportsZipf(
+  language: string
+): Promise<"yes" | "no" | "unknown"> {
+  const lang = await getLanguage(language);
+  if (lang.orderedByFrequency === true) return "yes";
+  if (lang.orderedByFrequency === false) return "no";
+  return "unknown";
 }

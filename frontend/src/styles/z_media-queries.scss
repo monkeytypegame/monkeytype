@@ -645,6 +645,18 @@
     & > .text {
       margin-bottom: 1rem;
     }
+
+    & .customThemeEdit {
+      .customThemeInputs {
+        grid-template-columns: 1fr 1.5fr;
+      }
+      .spacer {
+        grid-column: span 2;
+      }
+      .customThemeButtons {
+        grid-template-columns: 1fr;
+      }
+    }
   }
 
   #result {

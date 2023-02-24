@@ -2,6 +2,7 @@
   "name": "english_25k",
   "leftToRight": true,
   "noLazyMode": true,
+  "orderedByFrequency": false,
   "words": [
     "plug",
     "rounders",

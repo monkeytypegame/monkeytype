@@ -123,6 +123,10 @@ const Funboxes: Record<string, MonkeyTypes.FunboxMetadata> = {
     canGetPb: false,
     difficultyLevel: 1,
   },
+  zipf: {
+    canGetPb: false,
+    difficultyLevel: 1,
+  },
 };
 
 export default Funboxes;

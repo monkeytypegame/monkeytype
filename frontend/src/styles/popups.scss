@@ -226,11 +226,45 @@
     border-radius: var(--roundness);
     padding: 2rem;
     display: grid;
-    gap: 1rem;
-    width: 400px;
+    grid-template-areas: "top top top" "left divider right" "bottom bottom bottom";
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    width: 800px;
+
+    .top {
+      grid-area: top;
+    }
+
+    .leftSide {
+      grid-area: left;
+    }
+
+    .rightSide {
+      grid-area: right;
+    }
+
+    .bottom {
+      grid-area: bottom;
+    }
+
+    .leftSide,
+    .rightSide,
+    .bottom,
+    .top {
+      display: grid;
+      gap: 1rem;
+      height: max-content;
+    }
 
     input {
       width: 100%;
+    }
+
+    .wordFilterLanguage {
+      grid-column: span 2;
+      .title {
+        width: 100%;
+      }
     }
 
     .group {
@@ -252,6 +286,12 @@
 
     .loadingIndicator {
       justify-self: center;
+    }
+
+    .divider {
+      width: 0.25rem;
+      background-color: var(--sub-alt-color);
+      border-radius: var(--roundness);
     }
   }
 }
