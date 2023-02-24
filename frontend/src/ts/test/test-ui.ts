@@ -212,7 +212,7 @@ export function updateWordsHeight(): void {
       .css("overflow", "hidden")
       .css("width", "100%")
       .css("margin-left", "unset");
-    $("#wordsWrapper").css("height", "auto").css("overflow", "hidden");
+    $("#wordsWrapper").css("height", "auto").css("overflow-y", "clip");
 
     let nh = wordHeight * 3;
 
@@ -232,7 +232,7 @@ export function updateWordsHeight(): void {
         .css("margin-left", "50%");
       $("#wordsWrapper")
         .css("height", wrapperHeight + "px")
-        .css("overflow", "hidden");
+        .css("overflow-y", "clip");
       $(".outOfFocusWarning").css("line-height", wrapperHeight + "px");
       $("#typingTest .tribeCountdown").css("line-height", wrapperHeight + "px");
     } else {
@@ -243,7 +243,7 @@ export function updateWordsHeight(): void {
         .css("margin-left", "unset");
       $("#wordsWrapper")
         .css("height", wordHeight * 3 + "px")
-        .css("overflow", "hidden");
+        .css("overflow-y", "clip");
       $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
       $("#typingTest .tribeCountdown").css(
         "line-height",
