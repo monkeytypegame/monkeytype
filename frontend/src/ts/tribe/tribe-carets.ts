@@ -81,19 +81,24 @@ export class TribeCaret {
         animationWordIndex++;
       }
 
+      let currentWord;
       let currentLetter;
-      let newTop;
-      let newLeft;
+      let newTop: number | undefined = undefined;
+      let newLeft: number | undefined = undefined;
       try {
         const newIndex =
           animationWordIndex -
           (TestWords.words.currentIndex - TestUI.currentWordElementIndex);
-        const word = document.querySelectorAll("#words .word")[newIndex];
+        currentWord = <HTMLElement>(
+          document.querySelectorAll("#words .word")[newIndex]
+        );
         if (animationLetterIndex === -1) {
-          currentLetter = <HTMLElement>word.querySelectorAll("letter")[0];
+          currentLetter = <HTMLElement>(
+            currentWord.querySelectorAll("letter")[0]
+          );
         } else {
           currentLetter = <HTMLElement>(
-            word.querySelectorAll("letter")[animationLetterIndex]
+            currentWord.querySelectorAll("letter")[animationLetterIndex]
           );
         }
 
@@ -112,7 +117,6 @@ export class TribeCaret {
         newTop =
           currentLetter.offsetTop -
           Config.fontSize * convertRemToPixels(1) * 0.1;
-        newLeft;
         if (animationLetterIndex === -1) {
           newLeft = currentLetter.offsetLeft;
         } else {
@@ -124,26 +128,61 @@ export class TribeCaret {
         this.element.addClass("hidden");
       }
 
-      if (newTop !== undefined) {
-        let smoothlinescroll = $("#words .smoothScroller").height();
-        if (smoothlinescroll === undefined) smoothlinescroll = 0;
+      const currentTop = this.element[0].offsetTop;
 
-        this.element.css({
-          top: newTop - smoothlinescroll,
-        });
+      if (newTop !== undefined) {
+        const smoothlinescroll = $("#words .smoothScroller").height() ?? 0;
+
+        //check if new top is greater or smaller than current top (within margin)
 
         if (Config.smoothCaret) {
-          this.element.stop(true, false).animate(
-            {
-              left: newLeft,
-            },
-            SlowTimer.get() ? 0 : animationDuration,
-            "linear"
-          );
+          if (
+            currentWord &&
+            currentTop !== undefined &&
+            (newTop < currentTop - 10 || newTop > currentTop + 10)
+          ) {
+            let left: number;
+            if (newTop < currentTop - 10) {
+              left = currentWord.offsetLeft + currentWord.offsetWidth;
+            } else {
+              left = currentWord.offsetLeft;
+            }
+
+            this.element.stop(true, false).animate(
+              {
+                left,
+                top: newTop - smoothlinescroll,
+              },
+              SlowTimer.get() ? 0 : 125,
+              "linear",
+              () => {
+                if (!this.element || !newLeft || !newTop) {
+                  return;
+                }
+                this.element.stop(true, false).animate(
+                  {
+                    left: newLeft,
+                  },
+                  SlowTimer.get() ? 0 : animationDuration - 125,
+                  "linear"
+                );
+              }
+            );
+          } else {
+            this.element.stop(true, false).animate(
+              {
+                left: newLeft,
+                top: newTop - smoothlinescroll,
+              },
+              SlowTimer.get() ? 0 : animationDuration,
+              "linear"
+            );
+          }
         } else {
           this.element.stop(true, false).animate(
             {
               left: newLeft,
+              top: newTop - smoothlinescroll,
             },
             0,
             "linear"
