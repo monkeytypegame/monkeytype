@@ -496,7 +496,7 @@
       position: absolute;
       right: 0;
       bottom: 0;
-      font-size: 0.33em;
+      font-size: clamp(0.25em, 0.5em, 1rem);
       color: var(--text-color);
       background: inherit;
       border-radius: calc(var(--roundness) / 2);
