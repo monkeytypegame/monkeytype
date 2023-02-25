@@ -193,6 +193,7 @@ declare namespace MonkeyTypes {
     inbox?: MonkeyMail[];
     streak?: UserStreak;
     lastReultHashes?: string[];
+    lbOptOut?: boolean;
   }
 
   interface UserStreak {

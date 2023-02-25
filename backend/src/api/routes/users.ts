@@ -202,6 +202,15 @@ router.delete(
   asyncHandler(UserController.clearPb)
 );
 
+router.post(
+  "/optOutOfLeaderboards",
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
+  RateLimit.userOptOutOfLeaderboards,
+  asyncHandler(UserController.optOutOfLeaderboards)
+);
+
 const requireFilterPresetsEnabled = validateConfiguration({
   criteria: (configuration) => {
     return configuration.results.filterPresets.enabled;

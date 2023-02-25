@@ -60,6 +60,18 @@
       "source": "vkd3d 3D Graphics Library",
       "length": 932,
       "id": 9
+    },
+    {
+      "text": "struct nlist *lookup(char *);\\nchar *strdup(char *);\\n\\nstruct nlist *install(char *name, char *defn)\\n{\\n\\tstruct nlist *np;\\n\\tunsigned hashval;\\n\\tif ((np = lookup(name)) == NULL) {\\n\\t\\tnp = (struct nlist *) malloc(sizeof(*np));\\n\\t\\tif (np == NULL || (np->name = strdup(name)) == NULL)\\n\\t\\t\\treturn NULL;\\n\\t\\thashval = hash(name);\\n\\t\\tnp->next = hashtab[hashval];\\n\\t\\thashtab[hashval] = np;\\n\\t} else\\n\\t\\tfree((void *) np->defn);\\n\\tif ((np->defn = strdup(defn)) == NULL)\\n\\t\\treturn NULL;\\n\\treturn np;\\n}",
+      "source": "The C Programming Language (K&R)",
+      "length": 516,
+      "id": 10
+    },
+    {
+      "text": "int strcmp(char *s, char *t)\\n{\\n\\tfor ( ; *s == *t; s++, t++)\\n\\t\\tif (*s == '\\0')\\n\\t\\t\\treturn 0;\\n\\treturn *s - *t;\\n}",
+      "source": "The C Programming Language (K&R)",
+      "length": 122,
+      "id": 11
     }
   ]
 }
