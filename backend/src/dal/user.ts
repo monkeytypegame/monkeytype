@@ -79,6 +79,7 @@ export async function resetUser(uid: string): Promise<void> {
       $unset: {
         discordAvatar: "",
         discordId: "",
+        lbOptOut: "",
       },
     }
   );
