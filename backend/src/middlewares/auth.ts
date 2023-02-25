@@ -58,7 +58,10 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
           options
         );
       } else if (options.webhookType === "GitHub" && githubHashSignature) {
-        token = await authenticateWithGithubWebhook(githubHashSignature);
+        token = await authenticateWithGithubWebhook(
+          githubHashSignature,
+          JSON.stringify(req.body)
+        );
       } else if (options.isPublic) {
         token = {
           type: "None",
@@ -155,12 +158,13 @@ async function authenticateWithAuthHeader(
 }
 
 async function authenticateWithGithubWebhook(
-  githubHashSignature: string
+  githubHashSignature: string,
+  body: string
 ): Promise<MonkeyTypes.DecodedToken> {
   const secretHash = process.env.GITHUB_WEBHOOK_SECRET
     ? crypto
-        .createHash("sha256")
-        .update(process.env.GITHUB_WEBHOOK_SECRET)
+        .createHmac("sha256", process.env.GITHUB_WEBHOOK_SECRET)
+        .update(body)
         .digest("hex")
     : null;
 
