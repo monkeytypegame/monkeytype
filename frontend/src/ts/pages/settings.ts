@@ -828,6 +828,10 @@ export function showAccountSection(): void {
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
   updateDiscordSection();
+
+  if (DB.getSnapshot()?.lbOptOut === true) {
+    $(".pageSettings .section.optOutOfLeaderboards").remove();
+  }
 }
 
 export async function update(groupUpdate = true): Promise<void> {
