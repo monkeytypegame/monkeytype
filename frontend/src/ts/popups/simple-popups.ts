@@ -734,7 +734,7 @@ list["resetAccount"] = new SimplePopup(
       Notifications.add("Resetting settings...", 0);
       UpdateConfig.reset();
       Loader.show();
-      Notifications.add("Resetting account and stats...", 0);
+      Notifications.add("Resetting account...", 0);
       const response = await Ape.users.reset();
 
       if (response.status !== 200) {
