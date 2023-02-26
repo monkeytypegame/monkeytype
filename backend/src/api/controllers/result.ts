@@ -368,7 +368,7 @@ export async function addResult(
 
   let totalDurationTypedSeconds = 0;
   let afk = result.afkDuration;
-  if (afk == undefined) {
+  if (afk === undefined) {
     afk = 0;
   }
   totalDurationTypedSeconds =
