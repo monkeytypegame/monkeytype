@@ -1,31 +1,31 @@
-import * as TestUI from "./test-ui";
+import { Chart } from "chart.js";
 import Config from "../config";
-import * as Misc from "../utils/misc";
-import * as TestStats from "./test-stats";
-import * as Keymap from "../elements/keymap";
+import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
-import * as ThemeColors from "../elements/theme-colors";
+import QuotesController from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as TodayTracker from "./today-tracker";
-import * as PbCrown from "./pb-crown";
+import * as Keymap from "../elements/keymap";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as ThemeColors from "../elements/theme-colors";
+import { Auth } from "../firebase";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
-import * as TestInput from "./test-input";
-import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
-import QuotesController from "../controllers/quotes-controller";
-import * as AdController from "../controllers/ad-controller";
-import * as TestConfig from "./test-config";
-import { Chart } from "chart.js";
-import { Auth } from "../firebase";
 import * as SlowTimer from "../states/slow-timer";
+import * as Misc from "../utils/misc";
 import * as FunboxList from "./funbox/funbox-list";
+import * as PbCrown from "./pb-crown";
+import * as TestConfig from "./test-config";
+import * as TestInput from "./test-input";
+import * as TestStats from "./test-stats";
+import * as TestUI from "./test-ui";
+import * as TodayTracker from "./today-tracker";
 
 // eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
+import confetti from "canvas-confetti";
 import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import confetti from "canvas-confetti";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -164,7 +164,7 @@ export async function updateGraphPBLine(): Promise<void> {
     result.lazyMode ?? false,
     result.funbox ?? "none"
   );
-  if (lpb == 0) return;
+  if (lpb === 0) return;
   const chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(
     2
   );
@@ -210,7 +210,7 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
   if (Config.alwaysShowDecimalPlaces) {
-    if (Config.alwaysShowCPM == false) {
+    if (!Config.alwaysShowCPM) {
       $("#result .stats .wpm .top .text").text("wpm");
       if (inf) {
         $("#result .stats .wpm .bottom").text("Infinite");
@@ -245,7 +245,7 @@ function updateWpmAndAcc(): void {
     }
 
     $("#result .stats .acc .bottom").text(
-      result.acc == 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
+      result.acc === 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
     );
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
@@ -256,7 +256,7 @@ function updateWpmAndAcc(): void {
     $("#result .stats .acc .bottom").removeAttr("aria-label");
   } else {
     //not showing decimal places
-    if (Config.alwaysShowCPM == false) {
+    if (!Config.alwaysShowCPM) {
       $("#result .stats .wpm .top .text").text("wpm");
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
@@ -469,7 +469,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
     `);
     if (
-      Config.mode != "quote" &&
+      Config.mode !== "quote" &&
       !dontSave &&
       (result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb)
     ) {
@@ -557,7 +557,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     FunboxList.get(Config.funbox).find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
-  if (Config.mode != "custom" && !ignoresLanguage) {
+  if (Config.mode !== "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }
   if (Config.punctuation) {
@@ -575,9 +575,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   if (Config.funbox !== "none") {
     testType += "<br>" + Config.funbox.replace(/_/g, " ").replace(/#/g, ", ");
   }
-  if (Config.difficulty == "expert") {
+  if (Config.difficulty === "expert") {
     testType += "<br>expert";
-  } else if (Config.difficulty == "master") {
+  } else if (Config.difficulty === "master") {
     testType += "<br>master";
   }
   if (Config.stopOnError !== "off") {
@@ -606,15 +606,17 @@ function updateOther(
     const extra: string[] = [];
     if (
       result.wpm < 0 ||
-      (result.wpm > 350 && result.mode != "words" && result.mode2 != "10") ||
-      (result.wpm > 420 && result.mode == "words" && result.mode2 == "10")
+      (result.wpm > 350 && result.mode !== "words" && result.mode2 !== "10") ||
+      (result.wpm > 420 && result.mode === "words" && result.mode2 === "10")
     ) {
       extra.push("wpm");
     }
     if (
       result.rawWpm < 0 ||
-      (result.rawWpm > 350 && result.mode != "words" && result.mode2 != "10") ||
-      (result.rawWpm > 420 && result.mode == "words" && result.mode2 == "10")
+      (result.rawWpm > 350 &&
+        result.mode !== "words" &&
+        result.mode2 !== "10") ||
+      (result.rawWpm > 420 && result.mode === "words" && result.mode2 === "10")
     ) {
       extra.push("raw");
     }
@@ -635,7 +637,7 @@ function updateOther(
     otherText += "<br>too short";
   }
 
-  if (otherText == "") {
+  if (otherText === "") {
     $("#result .stats .info").addClass("hidden");
   } else {
     $("#result .stats .info").removeClass("hidden");
