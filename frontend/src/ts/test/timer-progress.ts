@@ -9,8 +9,8 @@ import * as TestActive from "../states/test-active";
 import * as ConfigEvent from "../observables/config-event";
 
 export function show(): void {
-  const op = Config.showTimerProgress ? Config.timerOpacity : 0;
-  if (Config.mode != "zen" && Config.timerStyle === "bar") {
+  const op = Config.showTimerProgress ? parseInt(Config.timerOpacity) : 0;
+  if (Config.mode !== "zen" && Config.timerStyle === "bar") {
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
         opacity: op,
@@ -28,7 +28,7 @@ export function show(): void {
         },
         125
       );
-  } else if (Config.mode == "zen" || Config.timerStyle === "mini") {
+  } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
     if (op > 0) {
       $("#miniTimerAndLiveWpm .time")
         .stop(true, true)
@@ -186,7 +186,7 @@ export function update(): void {
         }
       }
     }
-  } else if (Config.mode == "zen") {
+  } else if (Config.mode === "zen") {
     if (Config.timerStyle === "text") {
       if (timerNumberElement !== null) {
         timerNumberElement.innerHTML =
