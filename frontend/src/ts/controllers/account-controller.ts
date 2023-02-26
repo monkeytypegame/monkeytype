@@ -101,7 +101,7 @@ export async function getDataAndInit(): Promise<boolean> {
     $("#top #menu .account").css("opacity", 1);
     return false;
   }
-  if (ActivePage.get() == "loading") {
+  if (ActivePage.get() === "loading") {
     LoadingPage.updateBar(100);
   } else {
     LoadingPage.updateBar(45);
@@ -163,15 +163,16 @@ export async function getDataAndInit(): Promise<boolean> {
         if (configsDifferent) return;
         try {
           if (key !== "resultFilters") {
-            if (Array.isArray(Config[key])) {
-              (Config[key] as string[]).forEach((arrval, index) => {
+            const value = Config[key];
+            if (Array.isArray(value)) {
+              value.forEach((arrval, index) => {
                 const arrayValue = (
-                  snapshot?.config?.[key] as
+                  snapshot.config?.[key] as
                     | string[]
                     | MonkeyTypes.QuoteLength[]
                     | MonkeyTypes.CustomBackgroundFilter
                 )[index];
-                if (arrval != arrayValue) {
+                if (arrval !== arrayValue) {
                   configsDifferent = true;
                   console.log(
                     `.config is different: ${arrval} != ${arrayValue}`
@@ -179,10 +180,10 @@ export async function getDataAndInit(): Promise<boolean> {
                 }
               });
             } else {
-              if (Config[key] != snapshot?.config?.[key]) {
+              if (value !== snapshot.config?.[key]) {
                 configsDifferent = true;
                 console.log(
-                  `..config is different ${key}: ${Config[key]} != ${snapshot?.config?.[key]}`
+                  `..config is different ${key}: ${Config[key]} != ${snapshot.config?.[key]}`
                 );
               }
             }
@@ -199,7 +200,7 @@ export async function getDataAndInit(): Promise<boolean> {
         UpdateConfig.apply(snapshot.config);
         Settings.update();
         UpdateConfig.saveFullConfigToLocalStorage(true);
-        if (ActivePage.get() == "test") {
+        if (ActivePage.get() === "test") {
           TestLogic.restart({
             nosave: true,
           });
@@ -293,7 +294,7 @@ if (Auth && ConnectionState.get()) {
       await loadUser(user);
     } else {
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
-      if (window.location.pathname == "/account") {
+      if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
       PageTransition.set(false);
@@ -328,7 +329,7 @@ if (Auth && ConnectionState.get()) {
     const search = window.location.search;
     const hash = window.location.hash;
     $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
-    if (window.location.pathname == "/account") {
+    if (window.location.pathname === "/account") {
       window.history.replaceState("", "", "/login");
     }
     PageTransition.set(false);
