@@ -78,7 +78,7 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
     delimiter = " ";
   }
   if (
-    $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
+    $(`${popup} textarea`).val() !== CustomText.text.join(CustomText.delimiter)
   ) {
     const currentText = $(`${popup} textarea`).val() as string;
     const currentTextSplit = currentText.split(CustomText.delimiter);
