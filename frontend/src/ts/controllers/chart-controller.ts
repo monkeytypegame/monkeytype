@@ -125,12 +125,12 @@ export const result: ChartWithUpdateColors<
         pointStyle: "crossRot",
         pointRadius: function (context): number {
           const index = context.dataIndex;
-          const value = context.dataset.data[index];
+          const value = context.dataset.data[index] as number;
           return (value ?? 0) <= 0 ? 0 : 3;
         },
         pointHoverRadius: function (context): number {
           const index = context.dataIndex;
-          const value = context.dataset.data[index];
+          const value = context.dataset.data[index] as number;
           return (value ?? 0) <= 0 ? 0 : 5;
         },
       },
@@ -227,7 +227,7 @@ export const result: ChartWithUpdateColors<
                   $("#resultWordsHistory .words .word")[wordIndex]
                 );
                 const input = wordEl.attr("input");
-                if (input != undefined) {
+                if (input !== undefined) {
                   wordEl.append(
                     `<div class="wordInputAfter">${input
                       .replace(/\t/g, "_")
@@ -366,16 +366,14 @@ export const accountHistory: ChartWithUpdateColors<
               "\n\n" +
               `mode: ${resultData.mode} `;
 
-            if (resultData.mode == "time") {
+            if (resultData.mode === "time") {
               label += resultData.mode2;
-            } else if (resultData.mode == "words") {
+            } else if (resultData.mode === "words") {
               label += resultData.mode2;
             }
 
-            let diff = resultData.difficulty;
-            if (diff == undefined) {
-              diff = "normal";
-            }
+            const diff = resultData.difficulty ?? "normal";
+
             label += "\n" + `difficulty: ${diff}`;
 
             label +=
@@ -842,7 +840,7 @@ function updateAccuracy(): void {
 }
 
 function updateStyle(): void {
-  if (Config.chartStyle == "scatter") {
+  if (Config.chartStyle === "scatter") {
     accountHistory.data.datasets[0].showLine = false;
     accountHistory.data.datasets[1].showLine = false;
   } else {
