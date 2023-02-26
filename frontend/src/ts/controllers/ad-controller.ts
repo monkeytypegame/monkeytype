@@ -253,9 +253,9 @@ export function destroyResult(): void {
   // $("#ad-result-small-wrapper").empty();
 }
 
-const debouncedMarginUpdate = debounce(100, updateVerticalMargin);
-const debouncedBreakpointUpdate = debounce(100, updateBreakpoint);
-const debouncedBreakpoint2Update = debounce(100, updateBreakpoint2);
+const debouncedMarginUpdate = debounce(500, updateVerticalMargin);
+const debouncedBreakpointUpdate = debounce(500, updateBreakpoint);
+const debouncedBreakpoint2Update = debounce(500, updateBreakpoint2);
 
 $(window).on("resize", () => {
   debouncedMarginUpdate();
