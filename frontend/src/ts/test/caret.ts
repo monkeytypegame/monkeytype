@@ -42,7 +42,7 @@ export async function updatePosition(): Promise<void> {
   const inputLen = TestInput.input.current.length;
   const currentLetterIndex = inputLen;
   //insert temporary character so the caret will work in zen mode
-  const activeWordEmpty = $("#words .active").children().length == 0;
+  const activeWordEmpty = $("#words .active").children().length === 0;
   if (activeWordEmpty) {
     $("#words .active").append('<letter style="opacity: 0;">_</letter>');
   }
@@ -87,7 +87,7 @@ export async function updatePosition(): Promise<void> {
   if (Config.tapeMode === "letter") {
     newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
   } else if (Config.tapeMode === "word") {
-    if (inputLen == 0) {
+    if (inputLen === 0) {
       newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
     } else {
       let inputWidth = 0;
