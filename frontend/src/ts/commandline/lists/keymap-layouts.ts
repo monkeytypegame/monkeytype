@@ -35,7 +35,7 @@ function update(layouts: MonkeyTypes.Layouts): void {
     },
   });
   Object.keys(layouts).forEach((layout) => {
-    if (layout.toString() != "default") {
+    if (layout.toString() !== "default") {
       subgroup.list.push({
         id: "changeKeymapLayout" + capitalizeFirstLetterOfEachWord(layout),
         display: layout.replace(/_/g, " "),
