@@ -408,8 +408,9 @@ $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
-  if (len == -2) {
+  const lenStr = $(e.currentTarget).attr("quoteLength") ?? "0";
+  const len = parseInt(lenStr);
+  if (len === -2) {
     show();
   }
 });

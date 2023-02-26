@@ -95,7 +95,7 @@ $(".pageTest").on("click", ".tags .editTagsButton", () => {
     const activeTagIds = $(".pageTest .tags .editTagsButton").attr(
       "active-tag-ids"
     ) as string;
-    const tags = activeTagIds == "" ? [] : activeTagIds.split(",");
+    const tags = activeTagIds === "" ? [] : activeTagIds.split(",");
     state["resultId"] = resultid;
     state["tags"] = JSON.stringify(tags);
     state["source"] = "resultPage";
@@ -202,7 +202,7 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
       );
     }
   } else if (source === "resultPage") {
-    if (newTags.length == 0) {
+    if (newTags.length === 0) {
       $(`.pageTest #result .tags .bottom`).html(
         "<div class='noTags'>no tags</div>"
       );
