@@ -81,7 +81,8 @@ export async function load(): Promise<void> {
   try {
     const newResultFilters = window.localStorage.getItem("resultFilters");
     if (
-      newResultFilters &&
+      newResultFilters !== null &&
+      newResultFilters !== "" &&
       Object.keys(JSON.parse(newResultFilters)).length >=
         Object.keys(defaultResultFilters).length
     ) {
