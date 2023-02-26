@@ -95,6 +95,14 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     color: "var(--text-color)",
     background: "var(--sub-color)",
   },
+  13: {
+    id: 13,
+    name: "Mythical",
+    description: "Yes, I'm actually this fast",
+    icon: "fa-rocket",
+    color: "white",
+    customStyle: "animation: rgb-bg 10s linear infinite;",
+  },
 };
 
 export function getHTMLById(
