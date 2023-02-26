@@ -1610,8 +1610,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.rawWpm < 0 ||
     (completedEvent.rawWpm > 350 &&
       completedEvent.mode !== "words" &&
-      completedEvent.mode2 !== "10" &&
-      completedEvent.mode2 !== 10) ||
+      completedEvent.mode2 !== "10") ||
     (completedEvent.rawWpm > 420 &&
       completedEvent.mode === "words" &&
       completedEvent.mode2 === "10")
