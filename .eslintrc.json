@@ -27,6 +27,7 @@
   "rules": {
     "json/*": ["error"],
     "indent": ["off"],
+    "eqeqeq": ["error", "always"],
     "linebreak-style": ["error", "unix"],
     "curly": ["error", "multi-line"],
     "quotes": [
