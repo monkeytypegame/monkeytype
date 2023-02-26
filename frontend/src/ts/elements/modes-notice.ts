@@ -199,7 +199,7 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.stopOnError != "off") {
+  if (Config.stopOnError !== "off") {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="stopOnError"><i class="fas fa-hand-paper"></i>stop on ${Config.stopOnError}</div>`
     );
