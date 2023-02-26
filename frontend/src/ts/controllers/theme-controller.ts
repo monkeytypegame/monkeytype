@@ -37,7 +37,7 @@ async function updateFavicon(size: number, curveSize: number): Promise<void> {
       maincolor = bgcolor;
       bgcolor = swap;
     }
-    if (bgcolor == maincolor) {
+    if (bgcolor === maincolor) {
       bgcolor = "#111";
       maincolor = "#eee";
     }
@@ -371,7 +371,7 @@ export function clearRandom(): void {
 }
 
 export function applyCustomBackgroundSize(): void {
-  if (Config.customBackgroundSize == "max") {
+  if (Config.customBackgroundSize === "max") {
     $(".customBackground img").css({
       // width: "calc(100%)",
       // height: "calc(100%)",

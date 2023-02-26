@@ -64,7 +64,7 @@ export function loadActiveFromLocalStorage(): void {
   let newTags: string[] | string = window.localStorage.getItem(
     "activeTags"
   ) as string;
-  if (newTags != undefined && newTags !== "") {
+  if (newTags !== undefined && newTags !== "") {
     try {
       newTags = JSON.parse(newTags) ?? [];
     } catch (e) {
