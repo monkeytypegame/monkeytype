@@ -94,6 +94,9 @@ function updateBreakpoint(noReinstate = false): void {
 
 export async function refreshVisible(): Promise<void> {
   //@ts-ignore
+  if (window.egAdPack === undefined) return;
+
+  //@ts-ignore
   const adDivs = Object.keys(window.egAdPack.gptAdSlots);
   const visibleAdDivs = [];
 
