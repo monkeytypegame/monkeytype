@@ -201,6 +201,21 @@ export async function clearPb(
   return new MonkeyResponse("User's PB cleared");
 }
 
+export async function optOutOfLeaderboards(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  await UserDAL.optOutOfLeaderboards(uid);
+  await purgeUserFromDailyLeaderboards(
+    uid,
+    req.ctx.configuration.dailyLeaderboards
+  );
+  Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
+
+  return new MonkeyResponse("User opted out of leaderboards");
+}
+
 export async function checkName(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -606,6 +621,7 @@ export async function getProfile(
     discordAvatar,
     xp,
     streak,
+    lbOptOut,
   } = user;
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
@@ -633,6 +649,7 @@ export async function getProfile(
     xp,
     streak: streak?.length ?? 0,
     maxStreak: streak?.maxLength ?? 0,
+    lbOptOut,
   };
 
   if (banned) {

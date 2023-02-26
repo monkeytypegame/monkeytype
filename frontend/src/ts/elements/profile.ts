@@ -31,6 +31,8 @@ export async function update(
 
   const banned = profile.banned === true;
 
+  const lbOptOut = profile.lbOptOut === true;
+
   if (!details || !profile || !profile.name || !profile.addedAt) return;
 
   details.find(".placeholderAvatar").removeClass("hidden");
@@ -72,6 +74,14 @@ export async function update(
       .find(".name")
       .append(
         `<div class="bannedIcon" aria-label="This account is banned" data-balloon-pos="up"><i class="fas fa-gavel"></i></div>`
+      );
+  }
+
+  if (lbOptOut) {
+    details
+      .find(".name")
+      .append(
+        `<div class="bannedIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
       );
   }
 

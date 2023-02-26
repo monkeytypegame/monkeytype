@@ -37,6 +37,10 @@ export default class Users {
     return await this.httpClient.patch(`${BASE_PATH}/reset`);
   }
 
+  async optOutOfLeaderboards(): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/optOutOfLeaderboards`);
+  }
+
   async updateName(name: string): Ape.EndpointData {
     return await this.httpClient.patch(`${BASE_PATH}/name`, {
       payload: { name },

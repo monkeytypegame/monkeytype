@@ -1,7 +1,6 @@
 {
   "name": "greek_1k",
   "leftToRight": true,
-  "noLazyMode": true,
   "bcp47": "el-GR",
   "words": [
     "άλλα",

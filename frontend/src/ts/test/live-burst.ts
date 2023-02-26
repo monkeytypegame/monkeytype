@@ -4,14 +4,10 @@ import * as ConfigEvent from "../observables/config-event";
 
 export async function update(burst: number): Promise<void> {
   if (!Config.showLiveBurst) return;
-  let number = burst;
-  if (Config.blindMode) {
-    number = 0;
-  }
   (document.querySelector("#miniTimerAndLiveWpm .burst") as Element).innerHTML =
-    number.toString();
+    burst.toString();
   (document.querySelector("#liveBurst") as Element).innerHTML =
-    number.toString();
+    burst.toString();
 }
 
 export function show(): void {

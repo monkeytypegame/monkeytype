@@ -565,6 +565,7 @@ declare namespace MonkeyTypes {
     inboxUnreadSize: number;
     streak: number;
     maxStreak: number;
+    lbOptOut?: boolean;
   }
 
   interface UserDetails {

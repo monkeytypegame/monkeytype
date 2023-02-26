@@ -2760,8 +2760,9 @@
         <span>reset settings</span>
       </div>
       <div class="text">
-        Resets settings to the default (but doesn't touch your tags). Warning:
-        you can't undo this action!
+        Resets settings to the default (but doesn't touch your tags).
+        <br />
+        <span class="red">You can't undo this action!</span>
       </div>
       <div class="buttons">
         <div
@@ -2781,7 +2782,9 @@
       </div>
       <div class="text">
         Resets all your personal bests (but doesn't delete any tests from your
-        history). Warning: you can't undo this action!
+        history).
+        <br />
+        <span class="red">You can't undo this action!</span>
       </div>
       <div class="buttons">
         <div
@@ -2794,12 +2797,38 @@
         </div>
       </div>
     </div>
+    <div class="section optOutOfLeaderboards needsAccount hidden">
+      <div class="groupTitle">
+        <i class="fas fa-crown"></i>
+        <span>opt out of leaderboards</span>
+      </div>
+      <div class="text">
+        Use this if you frequently trigger the anticheat (for example if using
+        stenography) to opt out of leaderboards.
+        <br />
+        <span class="red">You can't undo this action!</span>
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="optOutOfLeaderboardsButton"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          opt out
+        </div>
+      </div>
+    </div>
     <div class="section resetAccount needsAccount hidden">
       <div class="groupTitle">
         <i class="fas fa-redo-alt"></i>
         <span>reset account</span>
       </div>
-      <div class="text">Completely resets your account to a blank state.</div>
+      <div class="text">
+        Completely resets your account to a blank state.
+        <br />
+        <span class="red">You can't undo this action!</span>
+      </div>
       <div class="buttons">
         <div
           class="button danger"
@@ -2816,7 +2845,11 @@
         <i class="fas fa-trash"></i>
         <span>delete account</span>
       </div>
-      <div class="text">Deletes your account and all data connected to it.</div>
+      <div class="text">
+        Deletes your account and all data connected to it.
+        <br />
+        <span class="red">You can't undo this action!</span>
+      </div>
       <div class="buttons">
         <div
           class="button danger"
