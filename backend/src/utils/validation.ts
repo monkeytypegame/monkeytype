@@ -61,7 +61,8 @@ export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
 
   if (mode === "time") {
     const setTimeTooShort = mode2 > 0 && mode2 < 15;
-    const infiniteTimeTooShort = mode2 === "0" && testDuration < 15;
+    const infiniteTimeTooShort =
+      mode2 === "0" || (mode2 === 0 && testDuration < 15);
     const bailedOutTooShort = bailedOut
       ? bailedOut && testDuration < 15
       : false;
@@ -70,7 +71,8 @@ export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
 
   if (mode === "words") {
     const setWordTooShort = mode2 > 0 && mode2 < 10;
-    const infiniteWordTooShort = mode2 === "0" && testDuration < 15;
+    const infiniteWordTooShort =
+      mode2 === "0" || (mode2 === 0 && testDuration < 15);
     const bailedOutTooShort = bailedOut
       ? bailedOut && testDuration < 15
       : false;
