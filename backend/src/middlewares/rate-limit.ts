@@ -348,6 +348,13 @@ export const userClearPB = rateLimit({
   handler: customHandler,
 });
 
+export const userOptOutOfLeaderboards = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 10 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const userCustomFilterAdd = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,

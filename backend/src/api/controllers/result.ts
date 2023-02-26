@@ -283,7 +283,8 @@ export async function addResult(
     result.mode === "time" &&
     result.wpm > 130 &&
     result.testDuration < 122 &&
-    (user.verified === false || user.verified === undefined)
+    (user.verified === false || user.verified === undefined) &&
+    user.lbOptOut !== true
   ) {
     if (!result.keySpacingStats || !result.keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
@@ -389,7 +390,8 @@ export async function addResult(
   const validResultCriteria =
     (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
     !bailedOut &&
-    !user.banned &&
+    user.banned !== true &&
+    user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
@@ -438,7 +440,8 @@ export async function addResult(
   const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
   let weeklyXpLeaderboardRank = -1;
   const eligibleForWeeklyXpLeaderboard =
-    !user.banned &&
+    user.banned !== true &&
+    user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(

@@ -669,7 +669,14 @@ $(document).on("keydown", (e) => {
       trigger(command);
       return;
     }
-    if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Tab") {
+    if (
+      e.key === "ArrowUp" ||
+      e.key === "ArrowDown" ||
+      e.key === "Tab" ||
+      // Should only branch if ctrl is held to allow the letters to still be typed
+      (e.ctrlKey &&
+        (e.key === "p" || e.key === "n" || e.key === "j" || e.key === "k"))
+    ) {
       e.preventDefault();
       $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
         "mouseenter mouseleave"
@@ -682,7 +689,10 @@ $(document).on("keydown", (e) => {
       });
       if (
         e.key === "ArrowUp" ||
-        (e.key === "Tab" && e.shiftKey && Config.quickRestart !== "esc")
+        (e.key === "Tab" && e.shiftKey && Config.quickRestart !== "esc") ||
+        // Don't need to check for ctrl because that was already done above
+        e.key === "p" ||
+        e.key === "k"
       ) {
         entries.removeClass("activeKeyboard");
         if (activenum == 0) {
@@ -695,7 +705,9 @@ $(document).on("keydown", (e) => {
       }
       if (
         e.key === "ArrowDown" ||
-        (e.key === "Tab" && !e.shiftKey && Config.quickRestart !== "esc")
+        (e.key === "Tab" && !e.shiftKey && Config.quickRestart !== "esc") ||
+        e.key === "n" ||
+        e.key === "j"
       ) {
         entries.removeClass("activeKeyboard");
         if (activenum + 1 == entries.length) {
