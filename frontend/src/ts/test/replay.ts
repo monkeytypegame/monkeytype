@@ -196,7 +196,7 @@ function toggleReplayDisplay(): void {
   } else {
     //hide
     if (
-      (toggleButton?.parentNode as Element)?.getAttribute("aria-label") !=
+      (toggleButton?.parentNode as Element)?.getAttribute("aria-label") !==
       "Start replay"
     ) {
       pauseReplay();
