@@ -134,6 +134,10 @@ export class TribeCaret {
       if (newTop !== undefined) {
         const smoothlinescroll = $("#words .smoothScroller").height() ?? 0;
 
+        this.element.css({
+          top: newTop - smoothlinescroll,
+        });
+
         //check if new top is greater or smaller than current top (within margin)
 
         if (Config.smoothCaret) {
@@ -152,7 +156,6 @@ export class TribeCaret {
             this.element.stop(true, false).animate(
               {
                 left,
-                top: newTop - smoothlinescroll,
               },
               SlowTimer.get() ? 0 : 125,
               "linear",
@@ -173,7 +176,6 @@ export class TribeCaret {
             this.element.stop(true, false).animate(
               {
                 left: newLeft,
-                top: newTop - smoothlinescroll,
               },
               SlowTimer.get() ? 0 : animationDuration,
               "linear"
@@ -183,7 +185,6 @@ export class TribeCaret {
           this.element.stop(true, false).animate(
             {
               left: newLeft,
-              top: newTop - smoothlinescroll,
             },
             0,
             "linear"
