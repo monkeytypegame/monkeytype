@@ -1153,5 +1153,12 @@
     "mainColor": "#7d67a9",
     "subColor": "#3a98b9",
     "textColor": "#1b4c5e"
+  },
+  {
+    "name": "2077",
+    "bgColor": "#F6F102",
+    "mainColor": "#544A41",
+    "subColor": "#89CCE7",
+    "textColor": "#544A41"
   }
 ]
