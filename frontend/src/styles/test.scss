@@ -135,6 +135,7 @@
   align-content: flex-start;
   user-select: none;
   padding-bottom: 1em;
+  margin-top: 0.25em;
 
   .newline {
     width: inherit;
@@ -277,7 +278,7 @@
 .word {
   font-size: 1em;
   line-height: 1em;
-  margin: 0.25em;
+  margin: 0em 0.25em 0.5em 0.25em;
   color: var(--sub-color);
   font-variant: no-common-ligatures;
   // display: flex;
@@ -1268,7 +1269,6 @@
     transition: 0.25s;
     cursor: pointer;
     margin: 0 auto;
-    margin-top: 1rem;
     &:hover,
     &:focus {
       color: var(--main-color);
