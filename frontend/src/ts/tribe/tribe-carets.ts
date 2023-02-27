@@ -56,6 +56,7 @@ export class TribeCaret {
   }
 
   public updatePosition(newWordIndex: number, newLetterIndex: number): void {
+    if (newWordIndex < this.wordIndex) return;
     this.wordIndex = newWordIndex;
     this.letterIndex = newLetterIndex;
   }
