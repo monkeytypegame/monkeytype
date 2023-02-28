@@ -460,7 +460,11 @@ function updateTags(dontSave: boolean): void {
     $("#result .stats .tags .bottom").append(`
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
     `);
-    if (Config.mode != "quote" && !dontSave) {
+    if (
+      Config.mode != "quote" &&
+      !dontSave &&
+      (await Misc.getFunbox(result.funbox ?? ""))?.canGetPb === true
+    ) {
       if (tpb < result.wpm) {
         //new pb for that tag
         DB.saveLocalTagPB(

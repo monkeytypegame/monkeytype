@@ -1400,12 +1400,6 @@
       "length": 286
     },
     {
-      "text": "I think if you don't really like a girl, you shouldn't horse around with her at all, and if you do like her, then you're supposed to like her face, and if you like her face, you ought to be careful about doing crumby stuff to it, like squirting water all over it. It's really too bad that so much crumby stuff is a lot of fun sometimes.",
-      "source": "The Catcher in the Rye",
-      "id": 237,
-      "length": 336
-    },
-    {
       "text": "And now it's time for Silly Songs with Larry, the part of the show where Larry comes out and sings a silly song.",
       "source": "VeggieTales",
       "id": 238,
@@ -2622,12 +2616,6 @@
       "source": "Rhett & Link's Book of Mythicality: A Field Guide to Curiosity, Creativity, and Tomfoolery",
       "id": 440,
       "length": 179
-    },
-    {
-      "text": "But what leaves us out of breath the most isn't the moments spent on a bed too small for two but the expense of our hearts by the labor of our bodies. I guess that two float around the point. But I wanna say it's more than just those moments, at least more than the surface. It's the tempo within those seconds where time seems to slow to a crawl and I can't help but fall into the rhythm of your skin and your shaking breath and I sink into the warmest dreams and the softest skin.",
-      "source": "Twin Sized Sheets",
-      "id": 441,
-      "length": 482
     },
     {
       "text": "I'm not very good at this, out, being in public. But I felt the need to speak up for this city that I love with all my heart. No one should have to live in fear, in fear of madmen who have no regard for who they injure.",
@@ -11402,7 +11390,7 @@
       "length": 252
     },
     {
-      "text": "I had a job, I had a girl. I had something going, mister, in this world. I got laid off down at the lumber yard, our love went bad, times got hard. Now I work down at the carwash, where all it ever does is rain. Don't you feel like you're a rider on a downbound train.",
+      "text": "I had a job, I had a girl. I had something going, mister, in this world. I got laid off down at the lumber yard, our love went bad, times got hard. Now I work down at the carwash, where all it ever does is rain. Don't you feel like you're a rider on a downbound train?",
       "source": "Downbound Train",
       "id": 1950,
       "length": 268
@@ -13167,7 +13155,7 @@
     },
     {
       "text": "Most test subjects do experience some, uh, cognitive deterioration after a few months in suspension. Now, you've been under for... quite a bit longer, and it's not out of the question that you might have a very minor case of serious brain damage. But don't be alarmed, all right? Although, if you do feel alarmed, try to hold onto that feeling, because that is the proper reaction to being told you have brain damage.",
-      "source": "Portal 2",
+      "source": "Wheatley, Portal 2",
       "id": 2253,
       "length": 417
     },
@@ -15489,7 +15477,7 @@
     },
     {
       "text": "Every moment there are a million miracles happening around you: a flower blossoming, a bird tweeting, a bee humming, a raindrop falling, a snowflake wafting along the clear evening air. There is magic everywhere. If you learn how to live it, life is nothing short of a daily miracle.",
-      "source": "Inner Engineering: A Yogiâ€™s Guide to Joy",
+      "source": "Inner Engineering: A Yogi's Guide to Joy",
       "id": 2661,
       "length": 283
     },
@@ -23762,12 +23750,6 @@
       "length": 420
     },
     {
-      "text": "There is a difference between the Holy Spirit coming and residing within us and us receiving the clothing with power that Jesus spoke of - the baptism of the Holy Spirit.",
-      "source": "The Bourne Identity",
-      "id": 4090,
-      "length": 170
-    },
-    {
       "text": "There is no physical separation after the slicing, so that edge can be ignored and we can treat the pizza, for thermal purposes, as an infinite plane. The procedure reduces the heat-transfer problem to one dimension represented by a vector normal to the pizza surface.",
       "source": "The Thermodynamics of Pizza",
       "id": 4092,
@@ -27332,12 +27314,6 @@
       "length": 76
     },
     {
-      "text": "This was the story of Howard Beale: the first known instance of a man who was killed because he had lousy ratings.",
-      "source": "Network",
-      "id": 4712,
-      "length": 114
-    },
-    {
       "text": "Corn is what feeds the steer that becomes the steak. Corn feeds the chicken and the pig, the turkey and the lamb, the catfish and the tilapia and, increasingly, even the salmon, a carnivore by nature that the fish farmers are reengineering to tolerate corn. The eggs are made of corn. The milk and cheese and yogurt, which once came from dairy cows that grazed on grass, now typically come from cows that spend their working lives indoors tethered to machines, eating corn.",
       "source": "The Omnivore's Dilemma: A Natural History of Four Meals",
       "id": 4713,
@@ -27432,12 +27408,6 @@
       "source": "Breaking Away",
       "id": 4728,
       "length": 465
-    },
-    {
-      "text": "But I will tell you this. I'd use tonight to get myself organized. Ride out in the morning clear-headed. And startin' tomorrow morning, I will offer a personal $50 bounty for every decapitated head of as many of these godless heathens as anyone can bring in.",
-      "source": "Deadwood",
-      "id": 4729,
-      "length": 258
     },
     {
       "text": "By venturing too close to the dragon's flame, you made an ash out of yourself.",
@@ -31112,12 +31082,6 @@
       "id": 5382
     },
     {
-      "text": "Crying is for little girls, babies, and men who just had their ears ripped off.",
-      "source": "Oobeedoob Benubi, Thumb Wars",
-      "length": 79,
-      "id": 5383
-    },
-    {
       "text": "I can't stand the thought of looking at you someday, this face I love, and not knowing who you are.",
       "source": "Lisa Genova, Still Alice",
       "length": 99,
@@ -32144,12 +32108,6 @@
       "id": 5599
     },
     {
-      "text": "Only once in your life, I truly believe, you find someone who can completely turn your world around. You tell them things that you've never shared with another soul and they absorb everything you say and actually want to hear more. You share hopes for the future, dreams that will never come true, goals that were never achieved and the many disappointments life has thrown at you. When something wonderful happens, you can't wait to tell them about it, knowing they will share in your excitement. They are not embarrassed to cry with you when you are hurting or laugh with you when you make a fool of yourself. Never do they hurt your feelings or make you feel like you are not good enough, but rather they build you up and show you the things about yourself that make you special and even beautiful. There is never any pressure, jealousy or competition but only a quiet calmness when they are around. You can be yourself and not worry about what they will think of you because they love you for who you are. The things that seem insignificant to most people such as a note, song or walk become invaluable treasures kept safe in your heart to cherish forever. Memories of your childhood come back and are so clear and vivid it's like being young again. Colours seem brighter and more brilliant. Laughter seems part of daily life where before it was infrequent or didn't exist at all. A phone call or two during the day helps to get you through a long day's work and always brings a smile to your face. In their presence, there's no need for continuous conversation, but you find you're quite content in just having them nearby. Things that never interested you before become fascinating because you know they are important to this person who is so special to you. You think of this person on every occasion and in everything you do. Simple things bring them to mind like a pale blue sky, gentle wind or even a storm cloud on the horizon. You open your heart knowing that there's a chance it may be broken one day and in opening your heart, you experience a love and joy that you never dreamed possible. You find that being vulnerable is the only way to allow your heart to feel true pleasure that's so real it scares you. You find strength in knowing you have a true friend and possibly a soul mate who will remain loyal to the end. Life seems completely different, exciting and worthwhile. Your only hope and security is in knowing that they are a part of your life.",
-      "source": "Bob Marley",
-      "length": 2468,
-      "id": 5600
-    },
-    {
       "text": "All that is gold does not glitter, not all those who wander are lost; the old that is strong does not wither, deep roots are not reached by the frost. From the ashes a fire shall be woken, a light from the shadows shall spring; renewed shall be blade that was broken, the crownless again shall be king.",
       "source": "J.R.R. Tolkien, The Fellowship of the Ring",
       "length": 302,
@@ -32774,9 +32732,9 @@
       "id": 5715
     },
     {
-      "text": "Christie! Ms. Esposito! Hold up. Hey, Jimmy McGill, we met inside. Hi. You didn't get it. You were never gonna get it. They dangle these things in front of you. They tell you, you got a chance, but I'm sorry. It's a lie because they had already made up their mind and they knew what they were going to do before you walked in the door. You made a mistake and they are never forgetting it. As far as they're concerned, your mistake is just, it's who you are. And it's all you are. And I'm not just talking about the scholarship here, I'm talking about everything. I mean, they'll smile at you, they'll pat you on the head, but they are never, ever letting you in. But listen... Listen... it doesn't matter. It doesn't because you don't need them. They're not going to give it to you? So what? You're going to take it. You're going to do whatever it takes. Do you hear me? You are not going to play by the rules. You're going to go your own way. You're going to do what they won't do. You're going to be smart. You are going to cut corners and you are going to win. They're on the 35th floor? You're going to be on the 50th floor. You're going to be looking down on them. And the higher you rise, the more they're going to hate you. Good. Good! You rub their noses in it. You make them suffer. Because you don't matter all that much to them. So what? So what? Screw them! Remember... the winner takes it all. You understand what I'm trying to tell you, right? All right. All right. Go get them.",
+      "text": "Kristy! Ms. Esposito! Hold up. Hey, Jimmy McGill, we met inside. Hi. You didn't get it. You were never gonna get it. They dangle these things in front of you. They tell you, you got a chance, but I'm sorry. It's a lie because they had already made up their mind and they knew what they were going to do before you walked in the door. You made a mistake and they are never forgetting it. As far as they're concerned, your mistake is just, it's who you are. And it's all you are. And I'm not just talking about the scholarship here, I'm talking about everything. I mean, they'll smile at you, they'll pat you on the head, but they are never, ever letting you in. But listen. Listen. it doesn't matter. It doesn't because you don't need them. They're not going to give it to you? So what? You're going to take it. You're going to do whatever it takes. Do you hear me? You are not going to play by the rules. You're going to go your own way. You're going to do what they won't do. You're going to be smart. You are going to cut corners and you are going to win. They're on the 35th floor? You're going to be on the 50th floor. You're going to be looking down on them. And the higher you rise, the more they're going to hate you. Good. Good! You rub their noses in it. You make them suffer. Because you don't matter all that much to them. So what? So what? Screw them! Remember... the winner takes it all. You understand what I'm trying to tell you, right? All right. All right. Go get them.",
       "source": "Better Call Saul",
-      "length": 1492,
+      "length": 1486,
       "id": 5716
     },
     {
@@ -35973,9 +35931,9 @@
       "id": 6359
     },
     {
-      "text": "I'd rather have loyalty than love, 'cause love really don't mean jack. See, love is just a feeling - you can love somebody and talk behind their back. It don't take much to love, you can love somebody just by being attached. See, loyalty is a action, you can love or hate me and still have my back.",
+      "text": "I'd rather have loyalty than love, 'cause love really don't mean jack. See, love is just a feeling - you can love somebody and talk behind their back. It don't take much to love, you can love somebody just by being attached. See, loyalty is an action, you can love or hate me and still have my back.",
       "source": "21 Savage, Ball w/o You",
-      "length": 298,
+      "length": 299,
       "approvedBy": "Smithster",
       "id": 6360
     },
@@ -37856,7 +37814,7 @@
       "id": 6636
     },
     {
-      "text": "Don't leave, it's my fault. Cause' when it all comes crashing down I'll need you.",
+      "text": "Don't leave, it's my fault. 'Cause when it all comes crashing down I'll need you.",
       "source": "EARFQUAKE, Tyler, the Creator",
       "length": 81,
       "approvedBy": "Smithster",
@@ -37938,13 +37896,6 @@
       "length": 81,
       "approvedBy": "Smithster",
       "id": 6648
-    },
-    {
-      "text": "When you reach the end of your rope, tie a knot in it and hang on.",
-      "source": "Franklin D. Roosevelt",
-      "length": 66,
-      "approvedBy": "Smithster",
-      "id": 6649
     },
     {
       "text": "Always remember that you are absolutely unique. Just like everyone else.",
@@ -38064,13 +38015,6 @@
       "length": 96,
       "approvedBy": "Smithster",
       "id": 6666
-    },
-    {
-      "text": "Only poetry could best fit into the vast emptiness created by men.",
-      "source": "Manning Marable",
-      "length": 66,
-      "approvedBy": "Smithster",
-      "id": 6667
     },
     {
       "text": "A hot desert storm eddied around him and rushed to me, making my skin contract, and my pores slam shut... His hair was the color of burning embers and his eyes pierced.",
