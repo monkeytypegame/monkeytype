@@ -98,4 +98,5 @@ export default <MonkeyTypes.Config>{
   showAverage: "off",
   tapeMode: "off",
   tribeDelta: "bar",
+  tribeCarets: "on",
 };

@@ -7,6 +7,7 @@ import { getRoom } from "./tribe-state";
 import tribeSocket from "./tribe-socket";
 import * as LineJumpEvent from "../observables/line-jump-event";
 import * as ThemeColors from "../elements/theme-colors";
+import * as ConfigEvent from "../observables/config-event";
 
 const carets: { [key: string]: TribeCaret } = {};
 
@@ -41,10 +42,25 @@ export class TribeCaret {
     //create caretName element, fill the name and insert inside element
     const caretName = document.createElement("div");
     caretName.classList.add("caretName");
+
+    if (Config.tribeCarets === "noNames") {
+      caretName.classList.add("hidden");
+    }
+
     caretName.innerText = this.name;
     element.appendChild(caretName);
 
     this.element = $(element);
+  }
+
+  public setNameVisibility(visibility: boolean): void {
+    if (this.element) {
+      if (visibility) {
+        this.element.find(".caretName").removeClass("hidden");
+      } else {
+        this.element.find(".caretName").addClass("hidden");
+      }
+    }
   }
 
   public destroy(): void {
@@ -225,6 +241,7 @@ export class TribeCaret {
 }
 
 export function init(): void {
+  if (Config.tribeCarets === "off") return;
   const room = getRoom();
   if (!room) return;
   for (const socketId of Object.keys(room.users)) {
@@ -280,4 +297,22 @@ export function lineJump(offset: number, withAnimation: boolean): void {
 
 LineJumpEvent.subscribe((wordHeight: number) => {
   lineJump(wordHeight, Config.smoothLineScroll);
+});
+
+ConfigEvent.subscribe((key, value, _nosave, previousValue) => {
+  if (key !== "tribeCarets") return;
+  if (previousValue === value) return;
+
+  if (value === "off") destroyAll();
+  if (previousValue === "off") {
+    init();
+  }
+  if (
+    (previousValue === "on" && value === "noNames") ||
+    (value === "on" && previousValue === "noNames")
+  ) {
+    for (const socketId of Object.keys(carets)) {
+      carets[socketId].setNameVisibility(Config.tribeCarets === "on");
+    }
+  }
 });

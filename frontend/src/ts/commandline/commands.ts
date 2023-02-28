@@ -67,6 +67,7 @@ import FontSizeCommands from "./lists/font-size";
 import ResultScreenCommands from "./lists/result-screen";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 import TribeDeltaCommands from "./lists/tribe-delta";
+import TribeCaretsCommands from "./lists/tribe-carets";
 
 import TagsCommands from "./lists/tags";
 import CustomThemesListCommands from "./lists/custom-themes-list";
@@ -254,6 +255,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
 
     //tribe
     ...TribeDeltaCommands,
+    ...TribeCaretsCommands,
 
     //sound
     ...SoundVolumeCommands,

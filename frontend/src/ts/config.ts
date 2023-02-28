@@ -1850,6 +1850,21 @@ export function setTribeDelta(
   return true;
 }
 
+export function setTribeCarets(
+  value: MonkeyTypes.TribeCarets,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("tribe carets", value, [["off", "noNames", "on"]])) {
+    return false;
+  }
+
+  config.tribeCarets = value;
+  saveToLocalStorage("tribeCarets", nosave);
+  ConfigEvent.dispatch("tribeCarets", config.tribeCarets, nosave);
+
+  return true;
+}
+
 export function apply(
   configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
 ): void {
@@ -1955,6 +1970,7 @@ export function apply(
     setAds(configObj.ads, true);
 
     setTribeDelta(configObj.tribeDelta, true);
+    setTribeCarets(configObj.tribeCarets, true);
 
     ConfigEvent.dispatch(
       "configApplied",

@@ -209,6 +209,7 @@ declare namespace MonkeyTypes {
     | "changesWordsFrequency";
 
   type TribeDelta = "off" | "text" | "bar";
+  type TribeCarets = "off" | "noNames" | "on";
 
   interface FunboxFunctions {
     getWord?: (wordset?: Misc.Wordset) => string;
@@ -479,6 +480,7 @@ declare namespace MonkeyTypes {
     showAverage: ShowAverage;
     tapeMode: TapeMode;
     tribeDelta: TribeDelta;
+    tribeCarets: TribeCarets;
   }
 
   type ConfigValues =

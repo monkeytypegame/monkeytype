@@ -385,6 +385,16 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setCustomBackgroundSize,
     "button"
   );
+  groups["tribeDelta"] = new SettingsGroup(
+    "tribeDelta",
+    UpdateConfig.setTribeDelta,
+    "button"
+  );
+  groups["tribeCarets"] = new SettingsGroup(
+    "tribeCarets",
+    UpdateConfig.setTribeCarets,
+    "button"
+  );
   // groups.customLayoutfluid = new SettingsGroup(
   //   "customLayoutfluid",
   //   UpdateConfig.setCustomLayoutfluid
