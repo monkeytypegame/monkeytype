@@ -10,6 +10,9 @@ import * as PW from "./pw-ad-controller";
 const breakpoint = 900;
 let widerThanBreakpoint = true;
 
+const breakpoint2 = 1330;
+let widerThanBreakpoint2 = true;
+
 let initialised = false;
 
 export let adBlock: boolean;
@@ -106,13 +109,18 @@ function updateBreakpoint(noReinstate = false): void {
   }
 }
 
-function updateBreakpoint2(): void {
+function updateBreakpoint2(noReinstate = false): void {
   if (choice !== "pw") return;
+  const beforeUpdate = widerThanBreakpoint2;
 
-  if (window.innerWidth > 1330) {
-    PW.updateSky(true);
+  if (window.innerWidth > breakpoint2) {
+    widerThanBreakpoint2 = true;
   } else {
-    PW.updateSky(false);
+    widerThanBreakpoint2 = false;
+  }
+  if (noReinstate) return;
+  if (beforeUpdate !== widerThanBreakpoint2) {
+    PW.reinstate();
   }
 }
 

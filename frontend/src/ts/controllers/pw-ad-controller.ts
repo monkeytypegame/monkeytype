@@ -131,14 +131,14 @@ function getUnits(): unknown {
 
   const toReturn = [];
   for (const unit of units) {
-    const isSky = unit.type === "sky_atf";
+    // const isSky = unit.type === "sky_atf";
 
     const element = document.querySelector(`#${unit.selectorId}`);
 
     if (
       element &&
-      window.getComputedStyle(element).display !== "none" &&
-      (!isSky || (isSky && showSky))
+      window.getComputedStyle(element).display !== "none"
+      // && (!isSky || (isSky && showSky))
     ) {
       toReturn.push(unit);
     }
@@ -171,6 +171,8 @@ export async function reinstate(): boolean {
 export async function refreshVisible(): Promise<void> {
   if (!rampReady) return;
 
+  if (getUnits().length === 0) return;
+
   ramp.triggerRefresh();
 }
 
@@ -188,23 +190,23 @@ export function setMobile(tf: boolean): void {
   ramp.setMobile(tf);
 }
 
-let showSky = false;
+// let showSky = false;
 
-export function updateSky(visible: boolean): void {
-  showSky = visible;
-  if (
-    showSky &&
-    ramp &&
-    !ramp.getUnits().some((u) => u.includes("pw-160x600"))
-  ) {
-    ramp.addUnits(getUnits()).then(() => {
-      ramp.displayUnits();
-    });
-  } else if (ramp && !showSky) {
-    const toDestroy = [];
-    ramp.getUnits().map((u) => {
-      if (u.includes("pw-160x600")) toDestroy.push(u);
-    });
-    ramp.destroyUnits(toDestroy);
-  }
-}
+// export function updateSky(visible: boolean): void {
+//   showSky = visible;
+//   if (
+//     showSky &&
+//     ramp &&
+//     !ramp.getUnits().some((u) => u.includes("pw-160x600"))
+//   ) {
+//     ramp.addUnits(getUnits()).then(() => {
+//       ramp.displayUnits();
+//     });
+//   } else if (ramp && !showSky) {
+//     const toDestroy = [];
+//     ramp.getUnits().map((u) => {
+//       if (u.includes("pw-160x600")) toDestroy.push(u);
+//     });
+//     ramp.destroyUnits(toDestroy);
+//   }
+// }
