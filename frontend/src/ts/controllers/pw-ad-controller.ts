@@ -137,7 +137,8 @@ function getUnits(): unknown {
 
     if (
       element &&
-      window.getComputedStyle(element).display !== "none"
+      window.getComputedStyle(element).display !== "none" &&
+      element.offsetParent !== null
       // && (!isSky || (isSky && showSky))
     ) {
       toReturn.push(unit);
