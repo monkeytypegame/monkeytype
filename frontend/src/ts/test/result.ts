@@ -417,7 +417,7 @@ export async function updateCrown(): Promise<void> {
   );
 }
 
-function updateTags(dontSave: boolean): void {
+async function updateTags(dontSave: boolean): Promise<void> {
   const activeTags: MonkeyTypes.Tag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
@@ -445,6 +445,14 @@ function updateTags(dontSave: boolean): void {
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
 
+  const funboxes = result.funbox?.split("#") ?? [];
+
+  const funboxObjects = await Promise.all(
+    funboxes.map(async (f) => Misc.getFunbox(f))
+  );
+
+  const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
+
   let annotationSide = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
@@ -463,7 +471,7 @@ function updateTags(dontSave: boolean): void {
     if (
       Config.mode != "quote" &&
       !dontSave &&
-      (await Misc.getFunbox(result.funbox ?? ""))?.canGetPb === true
+      (funboxes.length === 0 || allFunboxesCanGetPb)
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
