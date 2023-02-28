@@ -2,6 +2,7 @@ import * as TribeState from "./tribe-state";
 import Config from "../config";
 import * as TestActive from "../states/test-active";
 import tribeSocket from "./tribe-socket";
+import * as ConfigEvent from "../observables/config-event";
 import { mapRange } from "../utils/misc";
 
 const el = $(".pageTest #miniTimerAndLiveWpm .tribeDelta");
@@ -173,6 +174,7 @@ export function reset(): void {
 export function show(): void {
   if (!TestActive.get()) return;
   if (TribeState.getState() < 5) return;
+  if (Config.tribeDelta !== "text") return;
 
   if (!el.hasClass("hidden")) return;
   el.removeClass("hidden").css("opacity", 0).animate(
@@ -196,10 +198,8 @@ export function hide(): void {
 }
 
 export function showBar(): void {
-  console.log("show delta bar");
   if (TribeState.getState() < 5) return;
-
-  console.log("actually showing delta");
+  if (Config.tribeDelta !== "bar") return;
 
   if (!elBar.hasClass("hidden")) return;
   elBar.removeClass("hidden").css("opacity", 0).animate(
@@ -222,3 +222,18 @@ export function hideBar(): void {
     }
   );
 }
+
+ConfigEvent.subscribe((key, value) => {
+  if (key !== "tribeDelta") return;
+
+  if (value === "text") {
+    hideBar();
+    show();
+  } else if (value === "bar") {
+    hide();
+    showBar();
+  } else {
+    hide();
+    hideBar();
+  }
+});

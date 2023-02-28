@@ -1835,6 +1835,21 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   return true;
 }
 
+export function setTribeDelta(
+  value: MonkeyTypes.TribeDelta,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("tribe delta", value, [["off", "text", "bar"]])) {
+    return false;
+  }
+
+  config.tribeDelta = value;
+  saveToLocalStorage("tribeDelta", nosave);
+  ConfigEvent.dispatch("tribeDelta", config.tribeDelta, nosave);
+
+  return true;
+}
+
 export function apply(
   configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
 ): void {
@@ -1938,6 +1953,8 @@ export function apply(
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
     setAds(configObj.ads, true);
+
+    setTribeDelta(configObj.tribeDelta, true);
 
     ConfigEvent.dispatch(
       "configApplied",

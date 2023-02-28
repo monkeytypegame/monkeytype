@@ -208,6 +208,8 @@ declare namespace MonkeyTypes {
     | "noInfiniteDuration"
     | "changesWordsFrequency";
 
+  type TribeDelta = "off" | "text" | "bar";
+
   interface FunboxFunctions {
     getWord?: (wordset?: Misc.Wordset) => string;
     punctuateWord?: (word: string) => string;
@@ -476,6 +478,7 @@ declare namespace MonkeyTypes {
     lazyMode: boolean;
     showAverage: ShowAverage;
     tapeMode: TapeMode;
+    tribeDelta: TribeDelta;
   }
 
   type ConfigValues =
