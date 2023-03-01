@@ -27,7 +27,6 @@ declare namespace TribeTypes {
     testDuration: number;
     charStats: number[];
     chartData: MonkeyTypes.ChartData;
-    duration: number;
     resolve: ResultResolve;
   }
 

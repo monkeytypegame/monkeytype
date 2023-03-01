@@ -1809,7 +1809,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
       charStats: completedEvent.charStats,
       chartData: tribeChartData,
       resolve: await testSavePromise,
-      duration: completedEvent.testDuration,
     });
     return;
   }
@@ -1853,7 +1852,6 @@ async function saveResult(
       charStats: completedEvent.charStats,
       chartData: tribeChartData,
       resolve: await testSavePromise,
-      duration: completedEvent.testDuration,
     });
     return;
   }
@@ -1873,7 +1871,6 @@ async function saveResult(
       charStats: completedEvent.charStats,
       chartData: tribeChartData,
       resolve: await testSavePromise,
-      duration: completedEvent.testDuration,
     });
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
@@ -1913,7 +1910,6 @@ async function saveResult(
       charStats: completedEvent.charStats,
       chartData: tribeChartData,
       resolve: await testSavePromise,
-      duration: completedEvent.testDuration,
     });
     console.log("Error saving result", completedEvent);
     return Notifications.add("Failed to save result: " + response.message, -1);
@@ -2030,7 +2026,6 @@ async function saveResult(
     charStats: completedEvent.charStats,
     chartData: tribeChartData,
     resolve: await testSavePromise,
-    duration: completedEvent.testDuration,
   });
 }
 
