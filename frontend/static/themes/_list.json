@@ -1153,5 +1153,12 @@
     "mainColor": "#7d67a9",
     "subColor": "#3a98b9",
     "textColor": "#1b4c5e"
+  },
+  {
+    "name": "eva_one",
+    "bgColor": "#1C1C1C",
+    "mainColor": "#00FF00",
+    "subColor": "#8B00FF",
+    "textColor": "#00FF00"
   }
 ]
