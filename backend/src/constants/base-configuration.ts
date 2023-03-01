@@ -31,6 +31,10 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   },
   users: {
     signUp: false,
+    lastHashesCheck: {
+      enabled: false,
+      maxHashes: 0,
+    },
     discordIntegration: {
       enabled: false,
     },
@@ -234,6 +238,14 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
           signUp: {
             type: "boolean",
             label: "Sign Up Enabled",
+          },
+          lastHashesCheck: {
+            type: "object",
+            label: "Last Hashes Check",
+            fields: {
+              enabled: { type: "boolean", label: "Enabled" },
+              maxHashes: { type: "number", label: "Hashes to store" },
+            },
           },
           xp: {
             type: "object",

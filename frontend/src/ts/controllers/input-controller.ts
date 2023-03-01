@@ -354,9 +354,13 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
+
   if (
-    (char === "’" || char === "‘" || char === "'") &&
-    (originalChar === "’" || originalChar === "‘" || originalChar === "'")
+    (char === "’" || char === "‘" || char === "'" || char === "ʼ") &&
+    (originalChar === "’" ||
+      originalChar === "‘" ||
+      originalChar === "'" ||
+      originalChar === "ʼ")
   ) {
     return true;
   }
@@ -417,7 +421,7 @@ function handleChar(
     if (
       Config.difficulty !== "normal" ||
       (Config.strictSpace && Config.mode !== "zen") ||
-      Config.stopOnError === "word"
+      (Config.stopOnError === "word" && charIndex > 0)
     ) {
       if (dontInsertSpace) {
         dontInsertSpace = false;
@@ -580,8 +584,6 @@ function handleChar(
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
     TestLogic.fail("difficulty");
     return;
   }
@@ -599,8 +601,6 @@ function handleChar(
           Config.stopOnError == "off")) &&
       lastIndex === TestWords.words.length - 1
     ) {
-      TestInput.input.pushHistory();
-      TestInput.corrected.pushHistory();
       TestLogic.finish();
       return;
     }

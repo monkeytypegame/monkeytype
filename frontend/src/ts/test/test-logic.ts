@@ -405,7 +405,11 @@ export function restart(options = {} as RestartOptions): void {
         } else if (Config.quickRestart === "esc") {
           message = "Press shift + escape or use your mouse to confirm.";
         }
-        Notifications.add("Quick restart disabled. " + message, 0, 3);
+        Notifications.add(
+          `Quick restart disabled in long tests. ${message}`,
+          0,
+          4
+        );
         return;
       }
       // }else{
@@ -673,6 +677,18 @@ export function restart(options = {} as RestartOptions): void {
   );
 }
 
+function getFunboxWordsFrequency():
+  | MonkeyTypes.FunboxWordsFrequency
+  | undefined {
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWordsFrequencyMode
+  );
+  if (wordFunbox?.functions?.getWordsFrequencyMode) {
+    return wordFunbox.functions.getWordsFrequencyMode();
+  }
+  return undefined;
+}
+
 function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
   const wordFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.getWord
@@ -714,7 +730,9 @@ async function getNextWord(
   language: MonkeyTypes.LanguageObject,
   wordsBound: number
 ): Promise<string> {
-  let randomWord = wordset.randomWord();
+  const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
+
+  let randomWord = wordset.randomWord(funboxFrequency);
   const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
   const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
   if (Config.mode === "quote") {
@@ -731,7 +749,7 @@ async function getNextWord(
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
     (wordset.length < 4 || PractiseWords.before.mode !== null)
   ) {
-    randomWord = wordset.randomWord();
+    randomWord = wordset.randomWord(funboxFrequency);
   } else {
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
@@ -750,12 +768,12 @@ async function getNextWord(
           /[0-9]/i.test(randomWord)))
     ) {
       regenarationCount++;
-      randomWord = wordset.randomWord();
+      randomWord = wordset.randomWord(funboxFrequency);
     }
   }
 
   if (randomWord === undefined) {
-    randomWord = wordset.randomWord();
+    randomWord = wordset.randomWord(funboxFrequency);
   }
 
   if (
@@ -1465,7 +1483,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestActive.get()) return;
-  if (Config.mode == "zen" && TestInput.input.current.length != 0) {
+  if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
@@ -1578,11 +1596,27 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - too short", 0);
     tooShort = true;
     dontSave = true;
-  } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
+  } else if (
+    completedEvent.wpm < 0 ||
+    (completedEvent.wpm > 350 &&
+      completedEvent.mode != "words" &&
+      completedEvent.mode2 != "10") ||
+    (completedEvent.wpm > 420 &&
+      completedEvent.mode == "words" &&
+      completedEvent.mode2 == "10")
+  ) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
-  } else if (completedEvent.rawWpm < 0 || completedEvent.rawWpm > 350) {
+  } else if (
+    completedEvent.rawWpm < 0 ||
+    (completedEvent.rawWpm > 350 &&
+      completedEvent.mode != "words" &&
+      completedEvent.mode2 != "10") ||
+    (completedEvent.rawWpm > 420 &&
+      completedEvent.mode == "words" &&
+      completedEvent.mode2 == "10")
+  ) {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
     dontSave = true;

@@ -2,6 +2,7 @@
   "name": "english_5k",
   "leftToRight": true,
   "noLazyMode": true,
+  "orderedByFrequency": false,
   "words": [
     "a",
     "abandon",

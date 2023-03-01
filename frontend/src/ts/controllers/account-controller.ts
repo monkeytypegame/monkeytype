@@ -26,7 +26,6 @@ import {
   browserSessionPersistence,
   browserLocalPersistence,
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
   setPersistence,
@@ -35,7 +34,6 @@ import {
   linkWithCredential,
   reauthenticateWithPopup,
   getAdditionalUserInfo,
-  sendPasswordResetEmail,
   User as UserType,
   Unsubscribe,
 } from "firebase/auth";
@@ -50,26 +48,25 @@ import { update as updateTagsCommands } from "../commandline/lists/tags";
 import * as ConnectionState from "../states/connection";
 
 export const gmailProvider = new GoogleAuthProvider();
-let canCall = true;
 
-export function sendVerificationEmail(): void {
+export async function sendVerificationEmail(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, 3);
     return;
   }
+
   Loader.show();
-  const user = Auth.currentUser;
-  if (user === null) return;
-  sendEmailVerification(user)
-    .then(() => {
-      Loader.hide();
-      Notifications.add("Email sent to " + user.email, 4000);
-    })
-    .catch((e) => {
-      Loader.hide();
-      Notifications.add("Error: " + e.message, 3000);
-      console.error(e.message);
-    });
+  const result = await Ape.users.verificationEmail();
+  if (result.status !== 200) {
+    Loader.hide();
+    Notifications.add(
+      "Failed to request verification email: " + result.message,
+      3000
+    );
+  } else {
+    Loader.hide();
+    Notifications.add("Verification email sent", 1, 3);
+  }
 }
 
 export async function getDataAndInit(): Promise<boolean> {
@@ -241,12 +238,6 @@ export async function getDataAndInit(): Promise<boolean> {
 
 export async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
-  $(".pageAccount .content p.accountVerificatinNotice").remove();
-  if (user.emailVerified === false) {
-    $(".pageAccount .content").prepend(
-      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
-    );
-  }
   PageTransition.set(false);
   AccountButton.loading(true);
   if ((await getDataAndInit()) === false) {
@@ -411,35 +402,6 @@ export async function signIn(): Promise<void> {
       LoginPage.enableSignInButton();
       LoginPage.updateSignupButton();
     });
-}
-
-export async function forgotPassword(email: any): Promise<void> {
-  if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
-    return;
-  }
-  if (!canCall) {
-    return Notifications.add(
-      "Please wait before requesting another password reset link",
-      0,
-      5000
-    );
-  }
-  if (!email) return Notifications.add("Please enter an email!", -1);
-
-  try {
-    await sendPasswordResetEmail(Auth, email);
-    Notifications.add("Email sent", 1, 2);
-  } catch (error) {
-    Notifications.add(
-      Misc.createErrorMessage(error, "Failed to send email"),
-      -1
-    );
-  }
-  canCall = false;
-  setTimeout(function () {
-    canCall = true;
-  }, 10000);
 }
 
 export async function signInWithGoogle(): Promise<void> {
@@ -676,7 +638,7 @@ async function signUp(): Promise<void> {
     }
 
     await updateProfile(createdAuthUser.user, { displayName: nname });
-    await sendEmailVerification(createdAuthUser.user);
+    await sendVerificationEmail();
     AllTimeStats.clear();
     $("#menu .textButton.account .text").text(nname);
     $(".pageLogin .button").removeClass("disabled");
@@ -724,13 +686,6 @@ async function signUp(): Promise<void> {
     return;
   }
 }
-
-$(".pageLogin #forgotPasswordButton").on("click", () => {
-  const emailField =
-    ($(".pageLogin .login input")[0] as HTMLInputElement).value || "";
-  const email = prompt("Email address", emailField);
-  forgotPassword(email);
-});
 
 $(".pageLogin .login input").keyup((e) => {
   if (e.key === "Enter") {

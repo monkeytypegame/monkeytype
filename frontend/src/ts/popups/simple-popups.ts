@@ -734,7 +734,7 @@ list["resetAccount"] = new SimplePopup(
       Notifications.add("Resetting settings...", 0);
       UpdateConfig.reset();
       Loader.show();
-      Notifications.add("Resetting account and stats...", 0);
+      Notifications.add("Resetting account...", 0);
       const response = await Ape.users.reset();
 
       if (response.status !== 200) {
@@ -746,6 +746,71 @@ list["resetAccount"] = new SimplePopup(
       }
       Loader.hide();
       Notifications.add("Reset complete", 1);
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    } catch (e) {
+      const typedError = e as FirebaseError;
+      Loader.hide();
+      if (typedError.code === "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
+    }
+  },
+  (thisPopup) => {
+    const user = Auth?.currentUser;
+    if (!user) return;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to reset";
+    }
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["optOutOfLeaderboards"] = new SimplePopup(
+  "optOutOfLeaderboards",
+  "text",
+  "Opt out of leaderboards",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "Are you sure you want to opt out of leaderboards?",
+  "Opt out",
+  async (_thisPopup, password: string) => {
+    try {
+      const user = Auth?.currentUser;
+      if (!user) return;
+      if (user.providerData.find((p) => p?.providerId === "password")) {
+        const credential = EmailAuthProvider.credential(
+          user.email as string,
+          password
+        );
+        await reauthenticateWithCredential(user, credential);
+      } else {
+        await reauthenticateWithPopup(user, AccountController.gmailProvider);
+      }
+
+      Loader.show();
+      const response = await Ape.users.optOutOfLeaderboards();
+
+      if (response.status !== 200) {
+        Loader.hide();
+        return Notifications.add(
+          `Failed to opt out of leaderboards: ${response.message}`,
+          -1
+        );
+      }
+      Loader.hide();
+      Notifications.add("Leaderboard opt out successful", 1);
       setTimeout(() => {
         location.reload();
       }, 3000);
@@ -1241,6 +1306,50 @@ list["deleteCustomTheme"] = new SimplePopup(
   }
 );
 
+list["forgotPassword"] = new SimplePopup(
+  "forgotPassword",
+  "text",
+  "Forgot Password",
+  [
+    {
+      type: "text",
+      placeholder: "Email",
+      initVal: "",
+    },
+  ],
+  "",
+  "Send",
+  async (_thisPopup, email) => {
+    Loader.show();
+    const result = await Ape.users.forgotPasswordEmail(email);
+    if (result.status !== 200) {
+      Loader.hide();
+      Notifications.add(
+        "Failed to request password reset email: " + result.message,
+        5000
+      );
+    } else {
+      Loader.hide();
+      Notifications.add("Password reset email sent", 1, 3);
+    }
+  },
+  (thisPopup) => {
+    const inputValue = $(
+      `.pageLogin .login input[name="current-email"]`
+    ).val() as string;
+    if (inputValue) {
+      thisPopup.inputs[0].initVal = inputValue;
+    }
+  },
+  () => {
+    //
+  }
+);
+
+$(".pageLogin #forgotPasswordButton").on("click", () => {
+  list["forgotPassword"].show();
+});
+
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
@@ -1330,6 +1439,14 @@ $(".pageSettings #resetAccount").on("click", () => {
     return;
   }
   list["resetAccount"].show();
+});
+
+$(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, 2);
+    return;
+  }
+  list["optOutOfLeaderboards"].show();
 });
 
 $("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {

@@ -17,6 +17,7 @@ import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
 import type { ScaleChartOptions } from "chart.js";
+import { Auth } from "../firebase";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -986,6 +987,8 @@ function fillContent(): void {
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   applyHistorySmoothing();
+  ChartController.accountActivity.update();
+  ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
   Focus.set(false);
   Misc.swapElements(
@@ -1278,6 +1281,12 @@ export const page = new Page(
     await update();
     await Misc.sleep(0);
     updateChartColors();
+    $(".pageAccount .content p.accountVerificatinNotice").remove();
+    if (Auth?.currentUser?.emailVerified === false) {
+      $(".pageAccount .content").prepend(
+        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
+      );
+    }
   },
   async () => {
     //

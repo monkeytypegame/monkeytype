@@ -202,6 +202,15 @@ router.delete(
   asyncHandler(UserController.clearPb)
 );
 
+router.post(
+  "/optOutOfLeaderboards",
+  authenticateRequest({
+    requireFreshToken: true,
+  }),
+  RateLimit.userOptOutOfLeaderboards,
+  asyncHandler(UserController.optOutOfLeaderboards)
+);
+
 const requireFilterPresetsEnabled = validateConfiguration({
   criteria: (configuration) => {
     return configuration.results.filterPresets.enabled;
@@ -580,6 +589,24 @@ router.post(
     },
   }),
   asyncHandler(UserController.reportUser)
+);
+
+router.get(
+  "/verificationEmail",
+  authenticateRequest(),
+  RateLimit.userRequestVerificationEmail,
+  asyncHandler(UserController.sendVerificationEmail)
+);
+
+router.post(
+  "/forgotPasswordEmail",
+  RateLimit.userForgotPasswordEmail,
+  validateRequest({
+    body: {
+      email: joi.string().email().required(),
+    },
+  }),
+  asyncHandler(UserController.sendForgotPasswordEmail)
 );
 
 export default router;

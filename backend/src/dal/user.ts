@@ -79,6 +79,7 @@ export async function resetUser(uid: string): Promise<void> {
       $unset: {
         discordAvatar: "",
         discordId: "",
+        lbOptOut: "",
       },
     }
   );
@@ -128,6 +129,20 @@ export async function clearPb(uid: string): Promise<void> {
           words: {},
           zen: {},
         },
+        lbPersonalBests: {
+          time: {},
+        },
+      },
+    }
+  );
+}
+
+export async function optOutOfLeaderboards(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        lbOptOut: true,
         lbPersonalBests: {
           time: {},
         },
@@ -447,6 +462,20 @@ export async function resetPb(uid: string): Promise<void> {
           words: {},
           zen: {},
         },
+      },
+    }
+  );
+}
+
+export async function updateLastHashes(
+  uid: string,
+  lastHashes: string[]
+): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        lastReultHashes: lastHashes,
       },
     }
   );

@@ -1,7 +1,6 @@
 {
   "name": "greek_5k",
   "leftToRight": true,
-  "noLazyMode": true,
   "bcp47": "el-GR",
   "words": [
     "άδεια",

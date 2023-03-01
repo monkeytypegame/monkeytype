@@ -520,6 +520,18 @@ FunboxList.setFunboxFunctions("IPv6", {
   },
 });
 
+FunboxList.setFunboxFunctions("binary", {
+  getWord(): string {
+    return Misc.getBinary();
+  },
+});
+
+FunboxList.setFunboxFunctions("zipf", {
+  getWordsFrequencyMode(): MonkeyTypes.FunboxWordsFrequency {
+    return "zipf";
+  },
+});
+
 export function toggleScript(...params: string[]): void {
   FunboxList.get(Config.funbox).forEach((funbox) => {
     if (funbox.functions?.toggleScript) funbox.functions.toggleScript(params);

@@ -156,11 +156,7 @@ export async function addResult(
   const resulthash = result.hash;
   delete result.hash;
   delete result.stringified;
-  if (
-    req.ctx.configuration.results.objectHashCheckEnabled &&
-    resulthash.length === 40
-  ) {
-    //if its not 64 that means client is still using old hashing package
+  if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const serverhash = objectHash(result);
     if (serverhash !== resulthash) {
       Logger.logToDb(
@@ -174,6 +170,21 @@ export async function addResult(
       );
       const status = MonkeyStatusCodes.RESULT_HASH_INVALID;
       throw new MonkeyError(status.code, "Incorrect result hash");
+    }
+  }
+
+  if (req.ctx.configuration.users.lastHashesCheck.enabled) {
+    let lastHashes = user.lastReultHashes ?? [];
+    if (lastHashes.includes(resulthash)) {
+      const status = MonkeyStatusCodes.DUPLICATE_RESULT;
+      throw new MonkeyError(status.code, "Duplicate result");
+    } else {
+      lastHashes.unshift(resulthash);
+      const maxHashes = req.ctx.configuration.users.lastHashesCheck.maxHashes;
+      if (lastHashes.length > maxHashes) {
+        lastHashes = lastHashes.slice(0, maxHashes);
+      }
+      await UserDAL.updateLastHashes(uid, lastHashes);
     }
   }
 
@@ -272,7 +283,8 @@ export async function addResult(
     result.mode === "time" &&
     result.wpm > 130 &&
     result.testDuration < 122 &&
-    (user.verified === false || user.verified === undefined)
+    (user.verified === false || user.verified === undefined) &&
+    user.lbOptOut !== true
   ) {
     if (!result.keySpacingStats || !result.keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
@@ -378,7 +390,8 @@ export async function addResult(
   const validResultCriteria =
     (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
     !bailedOut &&
-    !user.banned &&
+    user.banned !== true &&
+    user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
@@ -427,7 +440,8 @@ export async function addResult(
   const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
   let weeklyXpLeaderboardRank = -1;
   const eligibleForWeeklyXpLeaderboard =
-    !user.banned &&
+    user.banned !== true &&
+    user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(

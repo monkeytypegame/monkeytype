@@ -31,6 +31,8 @@ export async function update(
 
   const banned = profile.banned === true;
 
+  const lbOptOut = profile.lbOptOut === true;
+
   if (!details || !profile || !profile.name || !profile.addedAt) return;
 
   details.find(".placeholderAvatar").removeClass("hidden");
@@ -72,6 +74,14 @@ export async function update(
       .find(".name")
       .append(
         `<div class="bannedIcon" aria-label="This account is banned" data-balloon-pos="up"><i class="fas fa-gavel"></i></div>`
+      );
+  }
+
+  if (lbOptOut) {
+    details
+      .find(".name")
+      .append(
+        `<div class="bannedIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
       );
   }
 
@@ -143,7 +153,7 @@ export async function update(
         socialsEl.append(
           `<a href='https://github.com/${Misc.escapeHTML(
             git
-          )}/' target="_blank" aria-label="${Misc.escapeHTML(
+          )}/' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             git
           )}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
         );
@@ -154,7 +164,7 @@ export async function update(
         socialsEl.append(
           `<a href='https://twitter.com/${Misc.escapeHTML(
             twitter
-          )}' target="_blank" aria-label="${Misc.escapeHTML(
+          )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
           )}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
         );
@@ -170,7 +180,7 @@ export async function update(
         socialsEl.append(
           `<a href='${Misc.escapeHTML(
             website
-          )}' target="_blank" aria-label="${Misc.escapeHTML(
+          )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             websiteName ?? ""
           )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
         );

@@ -277,6 +277,10 @@ export function addBanner(
   return banner.id;
 }
 
+export function clearAllNotifications(): void {
+  $("#notificationCenter .notif").remove();
+}
+
 const debouncedMarginUpdate = debounce(100, updateMargin);
 
 $(window).on("resize", () => {
