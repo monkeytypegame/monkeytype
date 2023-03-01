@@ -35,7 +35,7 @@ export class TribeCaret {
     element.classList.add("tribeCaret", "default");
     element.style.fontSize = Config.fontSize + "rem";
     element.setAttribute("socketId", this.socketId);
-    (document.querySelector(".pageTest #wordsWrapper") as HTMLElement).prepend(
+    (document.querySelector(".pageTest #typingTest") as HTMLElement).prepend(
       element
     );
 
@@ -131,9 +131,14 @@ export class TribeCaret {
           throw ``;
         }
 
+        const wordsWrapper = document.querySelector(
+          "#wordsWrapper"
+        ) as HTMLElement;
+
         newTop =
           currentLetter.offsetTop -
-          Config.fontSize * convertRemToPixels(1) * 0.1;
+          Config.fontSize * convertRemToPixels(1) * 0.1 +
+          wordsWrapper.offsetTop;
         if (animationLetterIndex === -1) {
           newLeft = currentLetter.offsetLeft;
         } else {
