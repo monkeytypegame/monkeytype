@@ -170,11 +170,9 @@ export async function reinstate(): boolean {
 }
 
 export async function refreshVisible(): Promise<void> {
-  if (!rampReady) return;
-
-  if (getUnits().length === 0) return;
-
-  ramp.triggerRefresh();
+  // if (!rampReady) return;
+  // if (getUnits().length === 0) return;
+  // ramp.triggerRefresh();
 }
 
 export function renderResult(): void {
