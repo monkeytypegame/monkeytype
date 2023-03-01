@@ -681,8 +681,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin: 0 auto;
-  margin-bottom: 0.25em;
-  margin-top: 0.25em;
+  margin-top: 1rem;
   .behind {
     border-radius: var(--roundness) 0 0 var(--roundness);
     background: var(--sub-alt-color);

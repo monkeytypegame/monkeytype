@@ -1709,8 +1709,6 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   $("#typingTest .tribeBars").css("margin-bottom", fontSize + "rem");
 
-  $("#typingTest #tribeDeltaBar").css("font-size", fontSize + "rem");
-
   saveToLocalStorage("fontSize", nosave);
   ConfigEvent.dispatch("fontSize", config.fontSize);
 
