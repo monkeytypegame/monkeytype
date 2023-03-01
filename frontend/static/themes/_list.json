@@ -1146,5 +1146,12 @@
     "mainColor": "#13005A",
     "subColor": "#1c82adc4",
     "textColor": "#125d98"
-}
+  },
+  {
+    "name": "breeze",
+    "bgColor": "#e8d5c4",
+    "mainColor": "#7d67a9",
+    "subColor": "#3a98b9",
+    "textColor": "#1b4c5e"
+  }
 ]
