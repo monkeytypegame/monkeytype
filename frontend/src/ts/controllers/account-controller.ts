@@ -47,6 +47,8 @@ import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
 import * as ConnectionState from "../states/connection";
 
+let signedOutThisSession = false;
+
 export const gmailProvider = new GoogleAuthProvider();
 
 export async function sendVerificationEmail(): Promise<void> {
@@ -260,7 +262,7 @@ export async function loadUser(user: UserType): Promise<void> {
 
   // showFavouriteThemesAtTheTop();
 
-  if (TestLogic.notSignedInLastResult !== null) {
+  if (TestLogic.notSignedInLastResult !== null && !signedOutThisSession) {
     TestLogic.setNotSignedInUid(user.uid);
 
     const response = await Ape.results.save(TestLogic.notSignedInLastResult);
@@ -716,6 +718,7 @@ $("#top .signInOut").on("click", () => {
   }
   if (Auth.currentUser) {
     signOut();
+    signedOutThisSession = true;
   } else {
     navigate("/login");
   }
