@@ -3,7 +3,7 @@ import * as Misc from "../utils/misc";
 import * as ConfigEvent from "../observables/config-event";
 import * as BannerEvent from "../observables/banner-event";
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as EG from "./eg-ad-controller";
 import * as PW from "./pw-ad-controller";
 
@@ -36,7 +36,7 @@ export function init(): void {
   }
 
   setInterval(() => {
-    if (TestActive.get()) {
+    if (TestState.isActive) {
       return;
     }
     if (choice === "eg") {
