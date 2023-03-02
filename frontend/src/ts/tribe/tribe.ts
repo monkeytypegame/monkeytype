@@ -17,7 +17,7 @@ import * as TribeButtons from "./tribe-buttons";
 import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import * as TribeChartController from "./tribe-chart-controller";
 import * as TribeDelta from "./tribe-delta";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import { navigate } from "../observables/navigate-event";
 import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
@@ -100,7 +100,7 @@ function updateState(newState: number): void {
       }
     }
   } else if (state === 20) {
-    if (TestActive.get()) {
+    if (TestState.isActive) {
       TribeCountdown.update("");
       TribeCountdown.show(true);
     } else {
@@ -552,7 +552,7 @@ TribeSocket.in.room.raceStarted(() => {
   TribeSound.play("cd_go");
   TribeCountdown.hide2();
   setTimeout(() => {
-    if (!TestActive.get()) {
+    if (!TestState.isActive) {
       TimerEvent.dispatch("start");
     }
   }, 500);
@@ -570,7 +570,7 @@ TribeSocket.in.room.progressUpdate((data) => {
   if (
     TribeState.getState() >= 10 &&
     TribeState.getState() <= 21 &&
-    TestActive.get() === true
+    TestState.isActive === true
   ) {
     const wpmAndRaw = TestStats.calculateWpmAndRaw();
     const acc = Math.floor(TestStats.calculateAccuracy());
@@ -670,7 +670,7 @@ TribeSocket.in.room.userResult((data) => {
       TribeResults.updateBar("result", data.userId, 100);
     }
   }
-  if (!TestActive.get()) {
+  if (!TestState.isActive) {
     TribeCarets.destroyAll();
     TribeResults.update("result", data.userId);
     TribeUserList.update("result");
@@ -688,7 +688,7 @@ TribeSocket.in.room.userResult((data) => {
 });
 
 TribeSocket.in.room.finishTimerCountdown((data) => {
-  if (TestActive.get()) {
+  if (TestState.isActive) {
     TribeCountdown.update(data.time.toString());
   } else {
     TribeResults.updateTimer(data.time.toString());
@@ -698,13 +698,13 @@ TribeSocket.in.room.finishTimerCountdown((data) => {
 TribeSocket.in.room.finishTimerOver(() => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
-  if (TestActive.get()) {
+  if (TestState.isActive) {
     TimerEvent.dispatch("fail", "out of time");
   }
 });
 
 TribeSocket.in.room.readyTimerCountdown((data) => {
-  if (TestActive.get()) {
+  if (TestState.isActive) {
     TribeCountdown.update(data.time.toString());
   } else {
     TribeResults.updateTimer(data.time.toString());
@@ -714,7 +714,7 @@ TribeSocket.in.room.readyTimerCountdown((data) => {
 TribeSocket.in.room.readyTimerOver(() => {
   TribeCountdown.hide();
   TribeResults.hideTimer();
-  if (TestActive.get()) {
+  if (TestState.isActive) {
     TimerEvent.dispatch("fail", "out of time");
   }
 });

@@ -1,6 +1,6 @@
 import * as TribeState from "./tribe-state";
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import tribeSocket from "./tribe-socket";
 import * as ConfigEvent from "../observables/config-event";
 import { mapRange } from "../utils/misc";
@@ -172,7 +172,7 @@ export function reset(): void {
 }
 
 export function show(): void {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   if (TribeState.getState() < 5) return;
   if (Config.tribeDelta !== "text") return;
 
