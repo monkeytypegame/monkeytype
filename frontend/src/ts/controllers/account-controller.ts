@@ -10,7 +10,7 @@ import * as TestLogic from "../test/test-logic";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
@@ -218,7 +218,7 @@ export async function getDataAndInit(): Promise<boolean> {
     AccountButton.loading(false);
   }
   if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-    if (!TestActive.get()) {
+    if (!TestState.isActive) {
       PaceCaret.init();
     }
   }
