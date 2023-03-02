@@ -20,7 +20,7 @@ import * as Replay from "../test/replay";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as WeakSpot from "../test/weak-spot";
 import * as ActivePage from "../states/active-page";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as CompositionState from "../states/composition";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
@@ -104,7 +104,7 @@ function updateUI(): void {
 }
 
 function backspaceToPrevious(): void {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
 
   if (
     TestInput.input.history.length === 0 ||
@@ -145,7 +145,7 @@ function backspaceToPrevious(): void {
 }
 
 function handleSpace(): void {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
 
   if (TestInput.input.current === "") return;
 
@@ -445,7 +445,7 @@ function handleChar(
   }
 
   //start the test
-  if (!TestActive.get() && !TestLogic.startTest()) {
+  if (!TestState.isActive && !TestLogic.startTest()) {
     return;
   }
 

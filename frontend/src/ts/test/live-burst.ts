@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 export async function update(burst: number): Promise<void> {
@@ -12,7 +12,7 @@ export async function update(burst: number): Promise<void> {
 
 export function show(): void {
   if (!Config.showLiveBurst) return;
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   if (Config.timerStyle === "mini") {
     if (!$("#miniTimerAndLiveWpm .burst").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .burst")
