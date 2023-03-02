@@ -1156,9 +1156,9 @@
   },
   {
     "name": "eva_one",
-    "bgColor": "#1C1C1C",
-    "mainColor": "#00FF00",
-    "subColor": "#8B00FF",
-    "textColor": "#00FF00"
+    "bgColor": "#181717",
+    "mainColor": "#328632",
+    "subColor": "#9357cf",
+    "textColor": "#328632"
   }
 ]
