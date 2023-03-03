@@ -155,28 +155,24 @@ export async function checkAdblock(): Promise<void> {
 
 export async function checkCookieblocker(): Promise<void> {
   return new Promise((resolve) => {
-    if (choice === "eg") {
-      if (cookieBlocker === undefined) {
-        //@ts-ignore
-        if (window.__tcfapi === undefined) {
-          cookieBlocker = true;
-          resolve();
-        }
-        //@ts-ignore
-        window.__tcfapi("getTCData", 2, (tcData, success) => {
-          if (success) {
-            if (tcData.eventStatus === "cmpuishown") {
-              cookieBlocker = true;
-            } else {
-              cookieBlocker = false;
-            }
-          } else {
-            cookieBlocker = true;
-          }
-        });
+    if (cookieBlocker === undefined) {
+      //@ts-ignore
+      if (window.__tcfapi === undefined) {
+        cookieBlocker = true;
+        resolve();
       }
-    } else if (choice === "pw") {
-      //todo
+      //@ts-ignore
+      window.__tcfapi("getTCData", 2, (tcData, success) => {
+        if (success) {
+          if (tcData.eventStatus === "cmpuishown") {
+            cookieBlocker = true;
+          } else {
+            cookieBlocker = false;
+          }
+        } else {
+          cookieBlocker = true;
+        }
+      });
     }
     resolve();
   });
