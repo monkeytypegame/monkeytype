@@ -3,6 +3,7 @@ import { focusWords } from "../test/test-ui";
 import * as Notifications from "../elements/notifications";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
+import * as AdController from "../controllers/ad-controller";
 
 const wrapperId = "cookiePopupWrapper";
 
@@ -148,10 +149,7 @@ $(document).on("keypress", (e) => {
 
 $("#cookiePopup .cookie.ads .textButton").on("click", () => {
   try {
-    //@ts-ignore
-    window.__tcfapi("displayConsentUi", 2, function () {
-      //
-    });
+    AdController.showConsentPopup();
   } catch (e) {
     console.error("Failed to open ad consent UI");
     Notifications.add(

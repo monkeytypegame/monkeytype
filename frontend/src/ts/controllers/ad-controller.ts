@@ -256,6 +256,17 @@ export function updateTestPageAds(visible: boolean): void {
   }
 }
 
+export function showConsentPopup(): void {
+  if (choice === "eg") {
+    //@ts-ignore
+    window.__tcfapi("displayConsentUi", 2, function () {
+      //
+    });
+  } else {
+    //todo
+  }
+}
+
 export function destroyResult(): void {
   // $("#ad-result-wrapper").empty();
   // $("#ad-result-small-wrapper").empty();
