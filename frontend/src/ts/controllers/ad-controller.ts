@@ -263,7 +263,8 @@ export function showConsentPopup(): void {
       //
     });
   } else {
-    //todo
+    //@ts-ignore
+    ramp.showCmpModal();
   }
 }
 
