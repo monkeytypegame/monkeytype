@@ -35,6 +35,7 @@ export function check(): void {
 
 export function show(): void {
   Skeleton.append(wrapperId);
+  $("#cookiePopupWrapper").removeClass("hidden");
   if (
     $("#cookiePopupWrapper")[0] === undefined ||
     $("#cookiePopupWrapper").is(":visible") === false ||
