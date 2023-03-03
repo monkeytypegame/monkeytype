@@ -84,7 +84,15 @@ export async function sendVerificationEmail(
       e.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
     ) {
       // for some reason this error is not handled with a custom auth/ code, so we have to do it manually
-      throw new MonkeyError(429, "Too many requests. Please try again later.");
+      throw new MonkeyError(429, "Too many requests. Please try again later");
+    }
+    if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(
+        500,
+        "Auth user not found when the user was found in the database",
+        JSON.stringify({ email: email, userInfoEmail: email, stack: e.stack }),
+        userInfo.uid
+      );
     }
     throw e;
   }
