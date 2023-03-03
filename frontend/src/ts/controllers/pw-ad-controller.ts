@@ -10,11 +10,19 @@ const resultUnits = [
     type: "leaderboard_atf",
     selectorId: "ad-result-wrapper",
   },
+  {
+    type: "med_rect_btf",
+    selectorId: "ad-result-small-wrapper",
+  },
 ];
 const onUnits = [
   {
     type: "leaderboard_atf",
     selectorId: "ad-result-wrapper",
+  },
+  {
+    type: "med_rect_btf",
+    selectorId: "ad-result-small-wrapper",
   },
   {
     type: "sky_atf", //160x600
@@ -31,6 +39,10 @@ const selloutUnits = [
     selectorId: "ad-result-wrapper",
   },
   {
+    type: "med_rect_btf",
+    selectorId: "ad-result-small-wrapper",
+  },
+  {
     type: "sky_atf", //160x600
     selectorId: "ad-vertical-right-wrapper",
   },
@@ -43,12 +55,24 @@ const selloutUnits = [
     selectorId: "ad-footer-wrapper",
   },
   {
+    type: "med_rect_btf",
+    selectorId: "ad-footer-small-wrapper",
+  },
+  {
     type: "leaderboard_btf",
     selectorId: "ad-about-1-wrapper",
   },
   {
+    type: "med_rect_btf",
+    selectorId: "ad-about-1-small-wrapper",
+  },
+  {
     type: "leaderboard_btf",
     selectorId: "ad-about-2-wrapper",
+  },
+  {
+    type: "med_rect_btf",
+    selectorId: "ad-about-2-small-wrapper",
   },
   {
     type: "leaderboard_btf",
@@ -63,16 +87,32 @@ const selloutUnits = [
     selectorId: "ad-settings-2-wrapper",
   },
   {
+    type: "med_rect_btf",
+    selectorId: "ad-settings-2-small-wrapper",
+  },
+  {
     type: "leaderboard_btf",
     selectorId: "ad-settings-3-wrapper",
+  },
+  {
+    type: "med_rect_btf",
+    selectorId: "ad-settings-3-small-wrapper",
   },
   {
     type: "leaderboard_btf",
     selectorId: "ad-account-1-wrapper",
   },
   {
+    type: "med_rect_btf",
+    selectorId: "ad-account-1-small-wrapper",
+  },
+  {
     type: "leaderboard_btf",
     selectorId: "ad-account-2-wrapper",
+  },
+  {
+    type: "med_rect_btf",
+    selectorId: "ad-account-2-small-wrapper",
   },
 ];
 
@@ -177,7 +217,10 @@ export async function refreshVisible(): Promise<void> {
 
 export function renderResult(): void {
   if (!rampReady) return;
-  if (ramp.getUnits().includes("leaderboard_atf")) {
+  if (
+    ramp.getUnits().includes("leaderboard_atf") ||
+    ramp.getUnits().includes("med_rect_btf")
+  ) {
     ramp.triggerRefresh();
   } else {
     reinstate();
