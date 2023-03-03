@@ -8,35 +8,35 @@ import * as TestUI from "../test/test-ui";
 const resultUnits = [
   {
     type: "leaderboard_atf",
-    selectorId: "ad-result-wrapper", // fill in appropriate selectorId as needed.
+    selectorId: "ad-result-wrapper",
   },
 ];
 const onUnits = [
   {
     type: "leaderboard_atf",
-    selectorId: "ad-result-wrapper", // fill in appropriate selectorId as needed.
+    selectorId: "ad-result-wrapper",
   },
   {
     type: "sky_atf", //160x600
-    selectorId: "ad-vertical-right-wrapper", // fill in appropriate selectorId as needed.
+    selectorId: "ad-vertical-right-wrapper",
   },
   {
     type: "sky_atf", //160x600
-    selectorId: "ad-vertical-left-wrapper", // fill in appropriate selectorId as needed.
+    selectorId: "ad-vertical-left-wrapper",
   },
 ];
 const selloutUnits = [
   {
     type: "leaderboard_atf",
-    selectorId: "ad-result-wrapper", // fill in appropriate selectorId as needed.
+    selectorId: "ad-result-wrapper",
   },
   {
     type: "sky_atf", //160x600
-    selectorId: "ad-vertical-right-wrapper", // fill in appropriate selectorId as needed.
+    selectorId: "ad-vertical-right-wrapper",
   },
   {
     type: "sky_atf", //160x600
-    selectorId: "ad-vertical-left-wrapper", // fill in appropriate selectorId as needed.
+    selectorId: "ad-vertical-left-wrapper",
   },
   {
     type: "leaderboard_btf",
