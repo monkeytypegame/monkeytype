@@ -471,7 +471,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     if (
       Config.mode != "quote" &&
       !dontSave &&
-      (funboxes.length === 0 || allFunboxesCanGetPb)
+      (result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb)
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
@@ -735,7 +735,7 @@ export async function update(
   updateQuoteFavorite(randomQuote);
   await updateGraph();
   await updateGraphPBLine();
-  updateTags(dontSave);
+  await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
