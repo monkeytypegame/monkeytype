@@ -38,7 +38,6 @@ import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
-import * as TestActive from "../states/test-active";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
@@ -320,7 +319,7 @@ export function startTest(): boolean {
     AnalyticsController.log("testStartedNoLogin");
   }
 
-  TestActive.set(true);
+  TestState.setActive(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
@@ -417,7 +416,7 @@ export function restart(options = {} as RestartOptions): void {
       // }
     }
   }
-  if (TestActive.get()) {
+  if (TestState.isActive) {
     if (
       Config.repeatQuotes === "typing" &&
       Config.mode === "quote" &&
@@ -486,7 +485,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.corrected.reset();
   ShiftTracker.reset();
   Caret.hide();
-  TestActive.set(false);
+  TestState.setActive(false);
   Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
@@ -584,7 +583,7 @@ export function restart(options = {} as RestartOptions): void {
       } else {
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
-        TestActive.set(false);
+        TestState.setActive(false);
         Replay.stopReplayRecording();
         TestWords.words.resetCurrentIndex();
         TestInput.input.reset();
@@ -821,7 +820,7 @@ async function getNextWord(
 
 let rememberLazyMode: boolean;
 export async function init(): Promise<void> {
-  TestActive.set(false);
+  TestState.setActive(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
@@ -1482,7 +1481,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
@@ -1494,7 +1493,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
   TestStats.setEnd(performance.now());
-  TestActive.set(false);
+  TestState.setActive(false);
   Replay.stopReplayRecording();
   Focus.set(false);
   Caret.hide();
@@ -1899,7 +1898,7 @@ $(".pageTest").on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
-    TestActive.get() &&
+    TestState.isActive &&
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {

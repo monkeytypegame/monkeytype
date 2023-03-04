@@ -5,7 +5,7 @@ import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as Time from "../states/time";
 import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "../states/test-active";
+import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 export function show(): void {
@@ -201,7 +201,7 @@ export function update(): void {
 }
 
 export function updateStyle(): void {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   hide();
   update();
   setTimeout(() => {
@@ -211,7 +211,7 @@ export function updateStyle(): void {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "showTimerProgress") {
-    if (eventValue === true && TestActive.get()) {
+    if (eventValue === true && TestState.isActive) {
       show();
     } else {
       hide();

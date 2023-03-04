@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 const liveWpmElement = document.querySelector("#liveWpm") as Element;
@@ -8,11 +8,6 @@ const miniLiveWpmElement = document.querySelector(
 ) as Element;
 
 export function update(wpm: number, raw: number): void {
-  // if (!TestActive.get() || !Config.showLiveWpm) {
-  //   hideLiveWpm();
-  // } else {
-  //   showLiveWpm();
-  // }
   let number = wpm;
   if (Config.blindMode) {
     number = raw;
@@ -26,7 +21,7 @@ export function update(wpm: number, raw: number): void {
 
 export function show(): void {
   if (!Config.showLiveWpm) return;
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   if (Config.timerStyle === "mini") {
     if (!$("#miniTimerAndLiveWpm .wpm").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .wpm")
