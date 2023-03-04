@@ -485,8 +485,11 @@ $(document).ready(() => {
         event.shiftKey)
     ) {
       const popupVisible = isAnyPopupVisible();
+      const miniResultPopupVisible = isElementVisible(
+        ".pageAccount .miniResultChartWrapper"
+      );
 
-      if (popupVisible) return;
+      if (popupVisible || miniResultPopupVisible) return;
 
       if (Config.quickRestart === "esc" && ActivePage.get() === "login") return;
       event.preventDefault();
