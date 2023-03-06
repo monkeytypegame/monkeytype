@@ -100,7 +100,9 @@ const debouncedEvent = debounce(250, async () => {
     }
   }
   setTimeout(() => {
-    Caret.show();
+    if ($("#wordsInput").is(":focus")) {
+      Caret.show();
+    }
   }, 250);
 });
 
