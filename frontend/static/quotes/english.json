@@ -446,12 +446,6 @@
       "length": 154
     },
     {
-      "text": "This is the second most tragic thing to happen in my life...",
-      "source": "Lisa",
-      "id": 74,
-      "length": 60
-    },
-    {
       "text": "Lights up and they know who you are, know who you are. Do you know who you are?",
       "source": "Lights Up",
       "id": 75,
@@ -663,7 +657,7 @@
     },
     {
       "text": "Do not act as if you were going to live ten thousand years. Death hangs over you. While you live, while it is in your power, be good.",
-      "source": "Meditations",
+      "source": "Marcus Aurelius",
       "id": 113,
       "length": 133
     },
@@ -8198,12 +8192,6 @@
       "length": 87
     },
     {
-      "text": "While there are few problems in today's world that the United States can solve alone, there are even fewer that can be solved without the United States.",
-      "source": "Hard Choices",
-      "id": 1400,
-      "length": 152
-    },
-    {
       "text": "We all know that something is eternal. And it ain't houses and it ain't names, and it ain't earth, and it ain't even the stars... everybody knows in their bones that something is eternal, and that something has to do with human beings. All the greatest people ever lived have been telling us that for five thousand years and yet you'd be surprised how people are always losing hold of it. There's something way down deep that's eternal about every human being.",
       "source": "Our Town",
       "id": 1401,
@@ -13848,12 +13836,6 @@
       "source": "My Favorite Things",
       "id": 2375,
       "length": 177
-    },
-    {
-      "text": "There is a door at the end of a silent corridor. And it's haunting Harry Potter's dreams. Why else would he be waking in the middle of the night, screaming in terror?",
-      "source": "Harry Potter and the Order of the Phoenix",
-      "id": 2376,
-      "length": 166
     },
     {
       "text": "I am assured by our merchants, that a boy or a girl before twelve years old, is no salable commodity, and even when they come to this age, they will not yield above three pounds, or three pounds and half a crown at most, on the exchange; which cannot turn to account either to the parents or kingdom, the charge of nutriments and rags having been at least four times that value.",
@@ -31178,12 +31160,6 @@
       "id": 5400
     },
     {
-      "text": "I would burn the world and use my soul for tinder to hear her laugh again.",
-      "source": "Robert Jordan",
-      "length": 74,
-      "id": 5401
-    },
-    {
       "text": "How do I take off a mask when it stops being a mask, when it's as much a part of me as I am?",
       "source": "Mr. Robot",
       "length": 92,
@@ -32294,12 +32270,6 @@
       "id": 5632
     },
     {
-      "text": "I'm sick of following my dreams. I'm just going to ask them where they're going and hook up with them later.",
-      "source": "Mitch Hedberg",
-      "length": 108,
-      "id": 5634
-    },
-    {
       "text": "Know what I pray for? The strength to change what I can, the inability to accept what I can't, and the incapacity to tell the difference.",
       "source": "Calvin & Hobbes",
       "length": 137,
@@ -32732,7 +32702,7 @@
       "id": 5715
     },
     {
-      "text": "Kristy! Ms. Esposito! Hold up. Hey, Jimmy McGill, we met inside. Hi. You didn't get it. You were never gonna get it. They dangle these things in front of you. They tell you, you got a chance, but I'm sorry. It's a lie because they had already made up their mind and they knew what they were going to do before you walked in the door. You made a mistake and they are never forgetting it. As far as they're concerned, your mistake is just, it's who you are. And it's all you are. And I'm not just talking about the scholarship here, I'm talking about everything. I mean, they'll smile at you, they'll pat you on the head, but they are never, ever letting you in. But listen. Listen. it doesn't matter. It doesn't because you don't need them. They're not going to give it to you? So what? You're going to take it. You're going to do whatever it takes. Do you hear me? You are not going to play by the rules. You're going to go your own way. You're going to do what they won't do. You're going to be smart. You are going to cut corners and you are going to win. They're on the 35th floor? You're going to be on the 50th floor. You're going to be looking down on them. And the higher you rise, the more they're going to hate you. Good. Good! You rub their noses in it. You make them suffer. Because you don't matter all that much to them. So what? So what? Screw them! Remember... the winner takes it all. You understand what I'm trying to tell you, right? All right. All right. Go get them.",
+      "text": "Kristy! Ms. Esposito! Hold up. Hey, Jimmy McGill, we met inside. Hi. You didn't get it. You were never gonna get it. They dangle these things in front of you. They tell you, you got a chance, but I'm sorry. It's a lie because they had already made up their mind and they knew what they were going to do before you walked in the door. You made a mistake and they are never forgetting it. As far as they're concerned, your mistake is just, it's who you are. And it's all you are. And I'm not just talking about the scholarship here, I'm talking about everything. I mean, they'll smile at you, they'll pat you on the head, but they are never, ever letting you in. But listen. Listen. It doesn't matter. It doesn't because you don't need them. They're not going to give it to you? So what? You're going to take it. You're going to do whatever it takes. Do you hear me? You are not going to play by the rules. You're going to go your own way. You're going to do what they won't do. You're going to be smart. You are going to cut corners and you are going to win. They're on the 35th floor? You're going to be on the 50th floor. You're going to be looking down on them. And the higher you rise, the more they're going to hate you. Good. Good! You rub their noses in it. You make them suffer. Because you don't matter all that much to them. So what? So what? Screw them! Remember... the winner takes it all. You understand what I'm trying to tell you, right? All right. All right. Go get them.",
       "source": "Better Call Saul",
       "length": 1486,
       "id": 5716
@@ -32769,7 +32739,7 @@
     },
     {
       "text": "When I was younger, I left a trail of broken hearts like a rockstar. I'm not proud of it.",
-      "source": "Owl House",
+      "source": "Modern Family",
       "length": 89,
       "id": 5722
     },
@@ -32936,7 +32906,7 @@
       "id": 5751
     },
     {
-      "text": "You know. I've been working here for 44 years. Ain't nobody ever ordered nothing but T-Bone steak and a baked potato. Except this one asshole from New York tried to order trout back in 1987. We don't sell no goddamned trout. T-Bone steaks. So either you don't want the corn on the cob, or you don't want the green beans. So what don't you want?",
+      "text": "You know. I've been working here for 44 years. Ain't nobody ever ordered nothing but T-Bone steak and a baked potato. Except this one dude from New York tried to order trout back in 1987. We don't sell no goddamned trout. T-Bone steaks. So either you don't want the corn on the cob, or you don't want the green beans. So what don't you want?",
       "source": "Hell or High Water",
       "length": 344,
       "id": 5752
@@ -37849,7 +37819,7 @@
       "id": 6641
     },
     {
-      "text": "Rooted deep within the Puritans souls like some strange invasive weed lurked their belief in a second world, and Invisible World swarming with shadowy apparitions and unearthly phantoms of the air.",
+      "text": "Rooted deep within the Puritans souls like some strange invasive weed lurked their belief in a second world, an Invisible World swarming with shadowy apparitions and unearthly phantoms of the air.",
       "source": "Witches by Rosalyn Schanzer",
       "length": 197,
       "approvedBy": "Smithster",
