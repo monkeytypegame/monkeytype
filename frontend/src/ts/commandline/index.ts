@@ -19,6 +19,7 @@ import { update as updateCustomThemesList } from "./lists/custom-themes-list";
 import { update as updateTagsCommands } from "./lists/tags";
 import * as Skeleton from "../popups/skeleton";
 import * as TribeState from "../tribe/tribe-state";
+import * as CustomTextPopup from "../popups/custom-text-popup";
 
 const wrapperId = "commandLineWrapper";
 
@@ -799,11 +800,17 @@ $(".pageTribe").on(
   ".tribePage.lobby .currentConfig .groups .group",
   (e) => {
     if (TribeState.getSelf()?.isLeader) {
-      const commands = CommandlineLists.getList(
-        $(e.currentTarget).attr("commands") as CommandlineLists.ListsObjectKeys
-      );
-      if (commands != undefined) {
-        CommandlineLists.pushCurrent(commands);
+      const commands = $(e.currentTarget).attr(
+        "commands"
+      ) as CommandlineLists.ListsObjectKeys;
+      const command = $(e.currentTarget).attr("command") as string;
+      if (command !== undefined) {
+        if (command === "changeCustomText") {
+          CustomTextPopup.show();
+        }
+      } else if (commands !== undefined) {
+        const commandsList = CommandlineLists.getList(commands);
+        CommandlineLists.pushCurrent(commandsList);
         show();
       }
     }

@@ -147,7 +147,7 @@ export function updateRoomConfig(): void {
     }
 
     $(".pageTribe .tribePage.lobby .currentConfig .groups").append(`
-    <div class='group' aria-label="${t}" data-balloon-pos="up" data-balloon-break commands="customText">
+    <div class='group' aria-label="${t}" data-balloon-pos="up" data-balloon-break command="changeCustomText">
     <i class="fas fa-tools"></i>custom
     </div>
     `);
