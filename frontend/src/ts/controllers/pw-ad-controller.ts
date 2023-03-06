@@ -25,11 +25,11 @@ const onUnits = [
     selectorId: "ad-result-small-wrapper",
   },
   {
-    type: "sky_atf", //160x600
+    type: "sky_btf", //160x600
     selectorId: "ad-vertical-right-wrapper",
   },
   {
-    type: "sky_atf", //160x600
+    type: "sky_btf", //160x600
     selectorId: "ad-vertical-left-wrapper",
   },
 ];
@@ -43,11 +43,11 @@ const selloutUnits = [
     selectorId: "ad-result-small-wrapper",
   },
   {
-    type: "sky_atf", //160x600
+    type: "sky_btf", //160x600
     selectorId: "ad-vertical-right-wrapper",
   },
   {
-    type: "sky_atf", //160x600
+    type: "sky_btf", //160x600
     selectorId: "ad-vertical-left-wrapper",
   },
   {
@@ -171,7 +171,7 @@ function getUnits(): unknown {
 
   const toReturn = [];
   for (const unit of units) {
-    // const isSky = unit.type === "sky_atf";
+    // const isSky = unit.type === "sky_btf";
 
     const element = document.querySelector(`#${unit.selectorId}`);
 
