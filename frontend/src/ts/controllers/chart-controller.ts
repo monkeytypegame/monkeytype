@@ -250,7 +250,9 @@ export let accountHistoryActiveIndex: number;
 
 export const newAccountHistory: ChartWithUpdateColors<
   "line",
-  MonkeyTypes.HistoryChartData[] | MonkeyTypes.AccChartData[],
+  | MonkeyTypes.HistoryChartData[]
+  | MonkeyTypes.AccChartData[]
+  | MonkeyTypes.OtherChartData[],
   string
 > = new ChartWithUpdateColors($(".pageAccount #newAccountHistoryChart"), {
   type: "line",

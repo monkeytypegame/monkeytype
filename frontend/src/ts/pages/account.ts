@@ -765,7 +765,7 @@ function fillContent(): void {
   chartData.reverse();
   let testNum = 1;
   let currentPb = 0;
-  const pb = [];
+  const pb: { x: number; y: number }[] = [];
 
   chartData.forEach((a) => {
     a.x = testNum;
@@ -1189,6 +1189,8 @@ function fillContent(): void {
       )
     } ${Config.alwaysShowCPM ? "cpm" : "wpm"}.`
   );
+
+  $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   if (bestAverageTen) {
     if (Config.alwaysShowCPM) {

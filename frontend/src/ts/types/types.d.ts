@@ -177,6 +177,11 @@ declare namespace MonkeyTypes {
     errorRate: number;
   }
 
+  interface OtherChartData {
+    x: number;
+    y: number;
+  }
+
   interface ActivityChartDataPoint {
     x: number;
     y: number;
