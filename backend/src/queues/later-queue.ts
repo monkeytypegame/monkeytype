@@ -5,24 +5,36 @@ import { getCurrentDayTimestamp, getCurrentWeekTimestamp } from "../utils/misc";
 
 const QUEUE_NAME = "later";
 
-type LaterTasks = "daily-leaderboard-results" | "weekly-xp-leaderboard-results";
+export type LaterTaskType =
+  | "daily-leaderboard-results"
+  | "weekly-xp-leaderboard-results";
 
-export interface LaterTask {
-  taskName: LaterTasks;
-  ctx: any;
+export interface LaterTask<T extends LaterTaskType> {
+  taskName: LaterTaskType;
+  ctx: LaterTaskContexts[T];
 }
+
+export type LaterTaskContexts = {
+  "daily-leaderboard-results": {
+    yesterdayTimestamp: number;
+    modeRule: MonkeyTypes.ValidModeRule;
+  };
+  "weekly-xp-leaderboard-results": {
+    lastWeekTimestamp: number;
+  };
+};
 
 const ONE_MINUTE_IN_MILLISECONDS = 1000 * 60;
 const ONE_DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
-class LaterQueue extends MonkeyQueue<LaterTask> {
+class LaterQueue extends MonkeyQueue<LaterTask<LaterTaskType>> {
   private scheduledJobCache = new LRUCache<string, boolean>({
     max: 100,
   });
 
   private async scheduleTask(
     taskName: string,
-    task: LaterTask,
+    task: LaterTask<LaterTaskType>,
     jobId: string,
     delay: number
   ): Promise<void> {
@@ -41,9 +53,8 @@ class LaterQueue extends MonkeyQueue<LaterTask> {
   }
 
   async scheduleForNextWeek(
-    taskName: LaterTasks,
-    taskId: string,
-    taskContext?: any
+    taskName: LaterTaskType,
+    taskId: string
   ): Promise<void> {
     const currentWeekTimestamp = getCurrentWeekTimestamp();
     const jobId = `${taskName}:${currentWeekTimestamp}:${taskId}`;
@@ -52,10 +63,9 @@ class LaterQueue extends MonkeyQueue<LaterTask> {
       return;
     }
 
-    const task: LaterTask = {
+    const task: LaterTask<LaterTaskType> = {
       taskName,
       ctx: {
-        ...taskContext,
         lastWeekTimestamp: currentWeekTimestamp,
       },
     };
@@ -70,9 +80,9 @@ class LaterQueue extends MonkeyQueue<LaterTask> {
   }
 
   async scheduleForTomorrow(
-    taskName: LaterTasks,
+    taskName: LaterTaskType,
     taskId: string,
-    taskContext: any
+    modeRule: MonkeyTypes.ValidModeRule
   ): Promise<void> {
     const currentDayTimestamp = getCurrentDayTimestamp();
     const jobId = `${taskName}:${currentDayTimestamp}:${taskId}`;
@@ -81,10 +91,10 @@ class LaterQueue extends MonkeyQueue<LaterTask> {
       return;
     }
 
-    const task: LaterTask = {
+    const task: LaterTask<LaterTaskType> = {
       taskName,
       ctx: {
-        ...taskContext,
+        modeRule,
         yesterdayTimestamp: currentDayTimestamp,
       },
     };
