@@ -799,6 +799,8 @@ function fillContent(): void {
   const avgTenAcc = [];
   const avgHundred = [];
   const avgHundredAcc = [];
+  let bestAverageTen;
+  let bestAverageHundred;
 
   for (let i = 0; i < chartData.length; i++) {
     if (i < 10) {
@@ -806,6 +808,15 @@ function fillContent(): void {
       const subset = chartData.slice(0, i + 1);
       for (let j = 0; j < subset.length; j++) {
         avg += subset[j].y;
+      }
+      if (subset.length === 10) {
+        if (bestAverageTen === undefined) {
+          bestAverageTen = avg / subset.length;
+        } else {
+          if (avg / subset.length > bestAverageTen) {
+            bestAverageTen = avg / subset.length;
+          }
+        }
       }
 
       avg = avg / subset.length;
@@ -816,6 +827,16 @@ function fillContent(): void {
       const subset = chartData.slice(i - 9, i + 1);
       for (let j = 0; j < subset.length; j++) {
         avg += subset[j].y;
+      }
+
+      if (subset.length === 10) {
+        if (bestAverageTen === undefined) {
+          bestAverageTen = avg / subset.length;
+        } else {
+          if (avg / subset.length > bestAverageTen) {
+            bestAverageTen = avg / subset.length;
+          }
+        }
       }
 
       avg = avg / subset.length;
@@ -854,6 +875,15 @@ function fillContent(): void {
       for (let j = 0; j < subset.length; j++) {
         avg += subset[j].y;
       }
+      if (subset.length === 100) {
+        if (bestAverageHundred === undefined) {
+          bestAverageHundred = avg / subset.length;
+        } else {
+          if (avg / subset.length > bestAverageHundred) {
+            bestAverageHundred = avg / subset.length;
+          }
+        }
+      }
 
       avg = avg / subset.length;
 
@@ -863,6 +893,15 @@ function fillContent(): void {
       const subset = chartData.slice(i - 99, i + 1);
       for (let j = 0; j < subset.length; j++) {
         avg += subset[j].y;
+      }
+      if (subset.length === 100) {
+        if (bestAverageHundred === undefined) {
+          bestAverageHundred = avg / subset.length;
+        } else {
+          if (avg / subset.length > bestAverageHundred) {
+            bestAverageHundred = avg / subset.length;
+          }
+        }
       }
 
       avg = avg / subset.length;
@@ -894,22 +933,19 @@ function fillContent(): void {
     }
   }
 
-  // console.log(accChartData2);
-  // console.log(chartData2);
   console.log(chartData);
 
-  // @ts-ignore
   ChartController.newAccountHistory.data.datasets[3].data = avgTen;
 
   ChartController.newAccountHistory.data.datasets[0].data = chartData;
-  // @ts-ignore
+
   ChartController.newAccountHistory.data.datasets[1].data = pb;
   ChartController.newAccountHistory.data.datasets[2].data = accChartData;
-  // @ts-ignore
+
   ChartController.newAccountHistory.data.datasets[4].data = avgTenAcc;
-  // @ts-ignore
+
   ChartController.newAccountHistory.data.datasets[5].data = avgHundred;
-  // @ts-ignore
+
   ChartController.newAccountHistory.data.datasets[6].data = avgHundredAcc;
 
   if (
@@ -1154,7 +1190,33 @@ function fillContent(): void {
     } ${Config.alwaysShowCPM ? "cpm" : "wpm"}.`
   );
 
-  $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
+  if (bestAverageTen) {
+    if (Config.alwaysShowCPM) {
+      bestAverageTen = bestAverageTen * 5;
+    }
+    if (Config.alwaysShowDecimalPlaces) {
+      bestAverageTen = Misc.roundTo2(bestAverageTen).toFixed(2);
+    } else {
+      bestAverageTen = Math.round(bestAverageTen);
+    }
+
+    $(".pageAccount .highestWpmAverage10 .val").text(Number(bestAverageTen));
+  }
+
+  if (bestAverageHundred) {
+    if (Config.alwaysShowCPM) {
+      bestAverageHundred = bestAverageHundred * 5;
+    }
+    if (Config.alwaysShowDecimalPlaces) {
+      bestAverageHundred = Misc.roundTo2(bestAverageHundred).toFixed(2);
+    } else {
+      bestAverageHundred = Math.round(bestAverageHundred);
+    }
+
+    $(".pageAccount .highestWpmAverage100 .val").text(
+      Number(bestAverageHundred)
+    );
+  }
 
   applyHistorySmoothing();
   ChartController.accountActivity.update();
