@@ -93,9 +93,10 @@ const debouncedEvent = debounce(250, async () => {
         document.querySelectorAll<HTMLElement>("#words .word")[
           TestUI.currentWordElementIndex - 1
         ];
-      if (!word) return;
-      const currentTop: number = Math.floor(word.offsetTop);
-      TestUI.lineJump(currentTop);
+      if (word) {
+        const currentTop: number = Math.floor(word.offsetTop);
+        TestUI.lineJump(currentTop);
+      }
     }
   }
   setTimeout(() => {
