@@ -762,6 +762,176 @@ function fillContent(): void {
   ChartController.accountHistory.data.datasets[0].data = chartData;
   ChartController.accountHistory.data.datasets[1].data = accChartData;
 
+  chartData.reverse();
+  let testNum = 1;
+  let currentPb = 0;
+  const pb = [];
+
+  chartData.forEach((a) => {
+    a.x = testNum;
+    if (a.y > currentPb) {
+      currentPb = a.y;
+      pb.push(a);
+    }
+    testNum++;
+  });
+
+  testNum = 1;
+  accChartData.reverse();
+
+  accChartData.forEach((a) => {
+    a.x = testNum;
+    a.y = 100 - a.y;
+    testNum++;
+  });
+
+  const xMax = chartData.length + 1;
+
+  const integerPart = Math.round(pb[pb.length - 1].y);
+  const roundedInteger = Math.ceil(integerPart / 10) * 10;
+
+  pb.push({
+    x: xMax,
+    y: pb[pb.length - 1].y,
+  });
+
+  const avgTen = [];
+  const avgTenAcc = [];
+  const avgHundred = [];
+  const avgHundredAcc = [];
+
+  for (let i = 0; i < chartData.length; i++) {
+    if (i < 10) {
+      let avg = 0;
+      const subset = chartData.slice(0, i + 1);
+      for (let j = 0; j < subset.length; j++) {
+        avg += subset[j].y;
+      }
+
+      avg = avg / subset.length;
+
+      avgTen.push({ x: i + 1, y: avg });
+    } else {
+      let avg = 0;
+      const subset = chartData.slice(i - 9, i + 1);
+      for (let j = 0; j < subset.length; j++) {
+        avg += subset[j].y;
+      }
+
+      avg = avg / subset.length;
+
+      avgTen.push({ x: i + 1, y: avg });
+    }
+  }
+  for (let i = 0; i < accChartData.length; i++) {
+    if (i < 10) {
+      let avg = 0;
+      const subset = accChartData.slice(0, i + 1);
+      for (let j = 0; j < subset.length; j++) {
+        avg += subset[j].y;
+      }
+
+      avg = avg / subset.length;
+
+      avgTenAcc.push({ x: i + 1, y: avg });
+    } else {
+      let avg = 0;
+      const subset = accChartData.slice(i - 9, i + 1);
+      for (let j = 0; j < subset.length; j++) {
+        avg += subset[j].y;
+      }
+
+      avg = avg / subset.length;
+
+      avgTenAcc.push({ x: i + 1, y: avg });
+    }
+  }
+
+  for (let i = 0; i < chartData.length; i++) {
+    if (i < 100) {
+      let avg = 0;
+      const subset = chartData.slice(0, i + 1);
+      for (let j = 0; j < subset.length; j++) {
+        avg += subset[j].y;
+      }
+
+      avg = avg / subset.length;
+
+      avgHundred.push({ x: i + 1, y: avg });
+    } else {
+      let avg = 0;
+      const subset = chartData.slice(i - 99, i + 1);
+      for (let j = 0; j < subset.length; j++) {
+        avg += subset[j].y;
+      }
+
+      avg = avg / subset.length;
+
+      avgHundred.push({ x: i + 1, y: avg });
+    }
+  }
+  for (let i = 0; i < accChartData.length; i++) {
+    if (i < 100) {
+      let avg = 0;
+      const subset = accChartData.slice(0, i + 1);
+      for (let j = 0; j < subset.length; j++) {
+        avg += subset[j].y;
+      }
+
+      avg = avg / subset.length;
+
+      avgHundredAcc.push({ x: i + 1, y: avg });
+    } else {
+      let avg = 0;
+      const subset = accChartData.slice(i - 99, i + 1);
+      for (let j = 0; j < subset.length; j++) {
+        avg += subset[j].y;
+      }
+
+      avg = avg / subset.length;
+
+      avgHundredAcc.push({ x: i + 1, y: avg });
+    }
+  }
+
+  // console.log(accChartData2);
+  // console.log(chartData2);
+  console.log(chartData);
+
+  // @ts-ignore
+  ChartController.newAccountHistory.data.datasets[3].data = avgTen;
+
+  ChartController.newAccountHistory.data.datasets[0].data = chartData;
+  // @ts-ignore
+  ChartController.newAccountHistory.data.datasets[1].data = pb;
+  ChartController.newAccountHistory.data.datasets[2].data = accChartData;
+  // @ts-ignore
+  ChartController.newAccountHistory.data.datasets[4].data = avgTenAcc;
+  // @ts-ignore
+  ChartController.newAccountHistory.data.datasets[5].data = avgHundred;
+  // @ts-ignore
+  ChartController.newAccountHistory.data.datasets[6].data = avgHundredAcc;
+
+  if (
+    ChartController.newAccountHistory.options.scales &&
+    ChartController.newAccountHistory.options.scales["wpm"] &&
+    ChartController.newAccountHistory.options.scales["pb"] &&
+    ChartController.newAccountHistory.options.scales["wpmAvgTen"] &&
+    ChartController.newAccountHistory.options.scales["wpmAvgHundred"] &&
+    ChartController.newAccountHistory.options.scales["x"]
+  ) {
+    ChartController.newAccountHistory.options.scales["wpm"].max =
+      roundedInteger;
+    ChartController.newAccountHistory.options.scales["pb"].max = roundedInteger;
+    ChartController.newAccountHistory.options.scales["wpmAvgTen"].max =
+      roundedInteger;
+    ChartController.newAccountHistory.options.scales["wpmAvgHundred"].max =
+      roundedInteger;
+    ChartController.newAccountHistory.options.scales["x"].max = xMax;
+  }
+
+  console.log(chartData);
+
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
   const maxWpmChartVal = Math.max(...wpms);

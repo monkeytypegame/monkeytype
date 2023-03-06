@@ -248,6 +248,292 @@ export const result: ChartWithUpdateColors<
 
 export let accountHistoryActiveIndex: number;
 
+export const newAccountHistory: ChartWithUpdateColors<
+  "line",
+  MonkeyTypes.HistoryChartData[] | MonkeyTypes.AccChartData[],
+  string
+> = new ChartWithUpdateColors($(".pageAccount #newAccountHistoryChart"), {
+  type: "line",
+  data: {
+    datasets: [
+      {
+        yAxisID: "wpm",
+        data: [],
+        fill: false,
+        borderWidth: 0,
+      },
+
+      {
+        yAxisID: "pb",
+        data: [],
+        fill: false,
+        stepped: true,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+      },
+      {
+        yAxisID: "acc",
+        fill: false,
+        data: [],
+        pointStyle: "triangle",
+        borderWidth: 0,
+        pointBackgroundColor: "#cccccc",
+        hoverBorderColor: "#cccccc",
+        pointRadius: 4,
+      },
+      {
+        yAxisID: "wpmAvgTen",
+        data: [],
+        fill: false,
+        borderColor: "#cccccc",
+        pointRadius: 0,
+        pointHoverRadius: 0,
+      },
+      {
+        yAxisID: "accAvgTen",
+        data: [],
+        fill: false,
+        borderColor: "#cccccc",
+        pointRadius: 0,
+        pointHoverRadius: 0,
+      },
+      {
+        yAxisID: "wpmAvgHundred",
+        data: [],
+        fill: false,
+        borderColor: "#808080",
+        pointRadius: 0,
+        pointHoverRadius: 0,
+      },
+      {
+        yAxisID: "accAvgHundred",
+        label: "accAvgHundred",
+        data: [],
+        fill: false,
+        borderColor: "#808080",
+        pointRadius: 0,
+        pointHoverRadius: 0,
+      },
+    ],
+  },
+  options: {
+    // responsive: true,
+    maintainAspectRatio: false,
+    hover: {
+      mode: "nearest",
+      intersect: false,
+    },
+    scales: {
+      x: {
+        axis: "x",
+        type: "linear",
+        min: 0,
+        // max: 500,
+        ticks: {
+          // autoSkip: true,
+          // autoSkipPadding: 20,
+          stepSize: 10,
+        },
+        display: true,
+        title: {
+          display: true,
+          text: "Test Number",
+        },
+        grid: {
+          display: false,
+        },
+      },
+      wpm: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          stepSize: 10,
+        },
+        display: true,
+        title: {
+          display: true,
+          text: "Words per Minute",
+        },
+        position: "right",
+      },
+      pb: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
+        title: {
+          display: false,
+          text: "Personal Best",
+        },
+        position: "right",
+      },
+      acc: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        max: 100,
+        reverse: true,
+        ticks: {
+          stepSize: 10,
+        },
+        display: true,
+        title: {
+          display: true,
+          text: "Accuracy",
+        },
+        grid: {
+          display: false,
+        },
+        position: "left",
+      },
+      wpmAvgTen: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
+        grid: {
+          display: false,
+        },
+        position: "left",
+      },
+      accAvgTen: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        reverse: true,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
+        grid: {
+          display: false,
+        },
+        position: "left",
+      },
+      wpmAvgHundred: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
+        grid: {
+          display: false,
+        },
+        position: "left",
+      },
+      accAvgHundred: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        reverse: true,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
+        grid: {
+          display: false,
+        },
+        position: "left",
+      },
+    },
+
+    plugins: {
+      annotation: {
+        annotations: [],
+      },
+      tooltip: {
+        animation: { duration: 250 },
+        // Disable the on-canvas tooltip
+        enabled: true,
+
+        intersect: false,
+        external: function (ctx): void {
+          if (!ctx) return;
+          ctx.tooltip.options.displayColors = false;
+        },
+        filter: function (tooltipItem): boolean {
+          return (
+            tooltipItem.datasetIndex !== 1 &&
+            tooltipItem.datasetIndex !== 3 &&
+            tooltipItem.datasetIndex !== 4 &&
+            tooltipItem.datasetIndex !== 5 &&
+            tooltipItem.datasetIndex !== 6
+          );
+        },
+        callbacks: {
+          title: function (): string {
+            return "";
+          },
+
+          beforeLabel: function (tooltipItem): string {
+            if (tooltipItem.datasetIndex !== 0) {
+              const resultData = tooltipItem.dataset.data[
+                tooltipItem.dataIndex
+              ] as MonkeyTypes.AccChartData;
+              return `error rate: ${Misc.roundTo2(
+                resultData.errorRate
+              )}%\nacc: ${Misc.roundTo2(100 - resultData.errorRate)}%`;
+            }
+            const resultData = tooltipItem.dataset.data[
+              tooltipItem.dataIndex
+            ] as MonkeyTypes.HistoryChartData;
+            let label =
+              `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${resultData.wpm}` +
+              "\n" +
+              `raw: ${resultData.raw}` +
+              "\n" +
+              `acc: ${resultData.acc}` +
+              "\n\n" +
+              `mode: ${resultData.mode} `;
+
+            if (resultData.mode == "time") {
+              label += resultData.mode2;
+            } else if (resultData.mode == "words") {
+              label += resultData.mode2;
+            }
+
+            let diff = resultData.difficulty;
+            if (diff == undefined) {
+              diff = "normal";
+            }
+            label += "\n" + `difficulty: ${diff}`;
+
+            label +=
+              "\n" +
+              `punctuation: ${resultData.punctuation}` +
+              "\n" +
+              `language: ${resultData.language}` +
+              `${resultData.isPb ? "\n\nnew personal best" : ""}` +
+              "\n\n" +
+              `date: ${format(
+                new Date(resultData.timestamp),
+                "dd MMM yyyy HH:mm"
+              )}`;
+
+            return label;
+          },
+          label: function (): string {
+            return "";
+          },
+          afterLabel: function (tooltip): string {
+            accountHistoryActiveIndex = tooltip.dataIndex;
+            return "";
+          },
+        },
+      },
+    },
+  },
+});
+
 export const accountHistory: ChartWithUpdateColors<
   "line",
   MonkeyTypes.HistoryChartData[] | MonkeyTypes.AccChartData[],
@@ -283,10 +569,10 @@ export const accountHistory: ChartWithUpdateColors<
   options: {
     responsive: true,
     maintainAspectRatio: false,
-    hover: {
-      mode: "nearest",
-      intersect: false,
-    },
+    // hover: {
+    //   mode: "nearest",
+    //   intersect: false,
+    // },
     scales: {
       x: {
         axis: "x",
@@ -962,6 +1248,7 @@ export function updateAllChartColors(): void {
   result.updateColors();
   accountActivity.updateColors();
   miniResult.updateColors();
+  newAccountHistory.updateColors();
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
