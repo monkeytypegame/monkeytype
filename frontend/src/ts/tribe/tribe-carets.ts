@@ -100,6 +100,7 @@ export class TribeCaret {
 
       let currentWord;
       let currentLetter;
+      let wordsWrapper;
       let newTop: number | undefined = undefined;
       let newLeft: number | undefined = undefined;
       try {
@@ -131,9 +132,7 @@ export class TribeCaret {
           throw ``;
         }
 
-        const wordsWrapper = document.querySelector(
-          "#wordsWrapper"
-        ) as HTMLElement;
+        wordsWrapper = document.querySelector("#wordsWrapper") as HTMLElement;
 
         newTop =
           currentLetter.offsetTop -
@@ -155,8 +154,19 @@ export class TribeCaret {
       if (newTop !== undefined) {
         const smoothlinescroll = $("#words .smoothScroller").height() ?? 0;
 
+        let opacity = 1;
+
+        if (
+          currentWord &&
+          wordsWrapper &&
+          currentWord?.offsetTop > wordsWrapper.offsetHeight
+        ) {
+          opacity = 0;
+        }
+
         this.element.css({
           top: newTop - smoothlinescroll,
+          opacity,
         });
 
         //check if new top is greater or smaller than current top (within margin)
