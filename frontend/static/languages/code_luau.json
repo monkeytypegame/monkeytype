@@ -24,11 +24,9 @@
     "true",
     "until",
     "while",
-
     "export",
     "typeof",
     "continue",
-
     "assert",
     "collectgarbage",
     "error",
@@ -54,7 +52,6 @@
     "type",
     "unpack",
     "xpcall",
-
     "wait",
     "delay",
     "elapsedTime",
@@ -69,7 +66,6 @@
     "usersettings",
     "version",
     "warn",
-
     "bit32",
     "coroutine",
     "debug",
