@@ -261,6 +261,7 @@ export function init(): void {
   if (!room) return;
   for (const socketId of Object.keys(room.users)) {
     if (socketId === tribeSocket.getId()) continue;
+    if (room.users[socketId].isTyping !== true) continue;
 
     const name = room.users[socketId].name;
 
