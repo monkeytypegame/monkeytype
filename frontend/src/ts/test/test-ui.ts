@@ -194,7 +194,7 @@ export function showWords(): void {
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
-export function updateWordsInputPosition(force = false): void {
+function updateWordsInputPosition(force = false): void {
   const shouldUpdate = posUpdateLangList.some((l) =>
     Config.language.startsWith(l)
   );
@@ -216,7 +216,7 @@ export function updateWordsInputPosition(force = false): void {
   el.style.left = activeWord.offsetLeft + "px";
 }
 
-export function updateWordsHeight(force = false): void {
+function updateWordsHeight(force = false): void {
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
