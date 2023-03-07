@@ -49,7 +49,9 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   ) {
     debouncedZipfCheck();
   }
-  if (eventKey === "fontSize") updateWordsHeight(true);
+  if (eventKey === "fontSize") {
+    Misc.sleep(0).then(() => updateWordsHeight(true));
+  }
 
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
