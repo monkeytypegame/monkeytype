@@ -46,6 +46,7 @@
     "rawset",
     "require",
     "select",
+    "self",
     "setfenv",
     "setmetatable",
     "tonumber",
