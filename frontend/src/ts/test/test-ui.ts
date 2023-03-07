@@ -42,15 +42,15 @@ const debouncedZipfCheck = debounce(250, () => {
   });
 });
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
+ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (
     (eventKey === "language" || eventKey === "funbox") &&
     (eventValue as string).split("#").includes("zipf")
   ) {
     debouncedZipfCheck();
   }
-  if (eventKey === "fontSize") {
-    Misc.sleep(0).then(() => updateWordsHeight(true));
+  if (eventKey === "fontSize" && !nosave) {
+    updateWordsHeight(true);
   }
 
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
