@@ -208,6 +208,7 @@ function shouldUpdateWordsInputPosition(): boolean {
 }
 
 export function updateWordsInputPosition(initial = false): void {
+  if (Config.tapeMode !== "off" && !initial) return;
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
     "#words .active"
@@ -219,7 +220,16 @@ export function updateWordsInputPosition(initial = false): void {
     return;
   }
 
-  if (initial) {
+  if (Config.tapeMode !== "off") {
+    el.style.top = activeWord.offsetTop + "px";
+    el.style.left = activeWord.offsetLeft + "px";
+    return;
+  }
+
+  if (
+    initial &&
+    !posUpdateLangList.some((l) => Config.language.startsWith(l))
+  ) {
     el.style.left = "0px";
     el.style.top = activeWord.offsetHeight * 2 + "px";
   } else {
