@@ -109,7 +109,10 @@ export function focusWords(): void {
   }
 }
 
-export function updateActiveElement(backspace?: boolean): void {
+export function updateActiveElement(
+  backspace?: boolean,
+  initial = false
+): void {
   const active = document.querySelector("#words .active");
   if (Config.mode == "zen" && backspace) {
     active?.remove();
@@ -134,7 +137,9 @@ export function updateActiveElement(backspace?: boolean): void {
       });
     }
   } catch (e) {}
-  updateWordsInputPosition();
+  if (initial || shouldUpdateWordsInputPosition()) {
+    updateWordsInputPosition(initial);
+  }
 }
 
 function getWordHTML(word: string): string {
@@ -191,19 +196,18 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  updateActiveElement();
+  updateActiveElement(undefined, true);
   updateWordsHeight(true);
   updateWordsInputPosition(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
-function updateWordsInputPosition(force = false): void {
-  const shouldUpdate = posUpdateLangList.some((l) =>
-    Config.language.startsWith(l)
-  );
+function shouldUpdateWordsInputPosition(): boolean {
+  const language = posUpdateLangList.some((l) => Config.language.startsWith(l));
+  return language || (Config.mode !== "time" && Config.showAllLines);
+}
 
-  if (!force && !shouldUpdate) return;
-
+export function updateWordsInputPosition(initial = false): void {
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
     "#words .active"
@@ -215,9 +219,9 @@ function updateWordsInputPosition(force = false): void {
     return;
   }
 
-  if (!shouldUpdate && Config.tapeMode == "off") {
-    el.style.top = activeWord.offsetHeight * 2 + "px";
+  if (initial) {
     el.style.left = "0px";
+    el.style.top = activeWord.offsetHeight * 2 + "px";
   } else {
     el.style.top = activeWord.offsetTop + "px";
     el.style.left = activeWord.offsetLeft + "px";
