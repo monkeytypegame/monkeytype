@@ -730,6 +730,9 @@ function fillContent(): void {
 
   console.log(chartData);
 
+  let bestAverageTen;
+  let bestAverageHundred;
+
   if (chartData.length > 0) {
     chartData.reverse();
 
@@ -768,8 +771,6 @@ function fillContent(): void {
     const avgTenAcc = [];
     const avgHundred = [];
     const avgHundredAcc = [];
-    let bestAverageTen;
-    let bestAverageHundred;
 
     for (let i = 0; i < chartData.length; i++) {
       if (i < 10) {
@@ -887,34 +888,6 @@ function fillContent(): void {
 
     accountHistoryScaleOptions["x"].max = xMax;
 
-    if (bestAverageTen) {
-      if (Config.alwaysShowCPM) {
-        bestAverageTen = bestAverageTen * 5;
-      }
-      if (Config.alwaysShowDecimalPlaces) {
-        bestAverageTen = Misc.roundTo2(bestAverageTen).toFixed(2);
-      } else {
-        bestAverageTen = Math.round(bestAverageTen);
-      }
-
-      $(".pageAccount .highestWpmAverage10 .val").text(Number(bestAverageTen));
-    }
-
-    if (bestAverageHundred) {
-      if (Config.alwaysShowCPM) {
-        bestAverageHundred = bestAverageHundred * 5;
-      }
-      if (Config.alwaysShowDecimalPlaces) {
-        bestAverageHundred = Misc.roundTo2(bestAverageHundred).toFixed(2);
-      } else {
-        bestAverageHundred = Math.round(bestAverageHundred);
-      }
-
-      $(".pageAccount .highestWpmAverage100 .val").text(
-        Number(bestAverageHundred)
-      );
-    }
-
     chartData.reverse();
     accChartData.reverse();
   }
@@ -963,8 +936,6 @@ function fillContent(): void {
     Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
-  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
-
   let highestSpeed: number | string = topWpm;
   if (Config.alwaysShowCPM) {
     highestSpeed = topWpm * 5;
@@ -974,6 +945,15 @@ function fillContent(): void {
   } else {
     highestSpeed = Math.round(highestSpeed);
   }
+
+  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
+
+  $(".pageAccount .highestWpmAverage10 .title").text(
+    `best ${wpmCpm} average of 10`
+  );
+  $(".pageAccount .highestWpmAverage100 .title").text(
+    `best ${wpmCpm} average of 100`
+  );
 
   $(".pageAccount .highestWpm .title").text(`highest ${wpmCpm}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
@@ -1127,6 +1107,31 @@ function fillContent(): void {
   $(".pageAccount .testsCompleted .avgres").text(`
     ${(testRestarts / testCount).toFixed(1)} restarts per completed test
   `);
+
+  if (bestAverageTen) {
+    if (Config.alwaysShowDecimalPlaces) {
+      bestAverageTen = Misc.roundTo2(bestAverageTen).toFixed(2);
+    } else {
+      bestAverageTen = Math.round(bestAverageTen);
+    }
+    $(".pageAccount .highestWpmAverage10 .val").text(Number(bestAverageTen));
+  } else {
+    $(".pageAccount .highestWpmAverage10 .val").text("-");
+  }
+
+  if (bestAverageHundred) {
+    if (Config.alwaysShowDecimalPlaces) {
+      bestAverageHundred = Misc.roundTo2(bestAverageHundred).toFixed(2);
+    } else {
+      bestAverageHundred = Math.round(bestAverageHundred);
+    }
+
+    $(".pageAccount .highestWpmAverage100 .val").text(
+      Number(bestAverageHundred)
+    );
+  } else {
+    $(".pageAccount .highestWpmAverage100 .val").text("-");
+  }
 
   const wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
