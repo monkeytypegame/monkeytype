@@ -288,9 +288,14 @@ function updateWordsHeight(force = false): void {
 
     $("#words")
       .css("height", finalWordsHeight + "px")
-      .css("overflow", "hidden")
-      .css("width", "100%")
-      .css("margin-left", "unset");
+      .css("overflow", "hidden");
+
+    if (Config.tapeMode !== "off") {
+      $("#words").css("width", "200%").css("margin-left", "50%");
+    } else {
+      $("#words").css("width", "100%").css("margin-left", "unset");
+    }
+
     $("#wordsWrapper")
       .css("height", finalWrapperHeight + "px")
       .css("overflow", "hidden");
