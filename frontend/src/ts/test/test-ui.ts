@@ -208,15 +208,19 @@ function updateWordsInputPosition(force = false): void {
     "#words .active"
   ) as HTMLElement | null;
 
-  if (!shouldUpdate || !activeWord) {
-    const wordsWrapper = document.querySelector("#wordsWrapper") as HTMLElement;
-    el.style.top = wordsWrapper.offsetHeight / 2 + "px";
+  if (!activeWord) {
+    el.style.top = "0px";
     el.style.left = "0px";
     return;
   }
 
-  el.style.top = activeWord.offsetTop + "px";
-  el.style.left = activeWord.offsetLeft + "px";
+  if (!shouldUpdate) {
+    el.style.top = activeWord.offsetHeight * 2 + "px";
+    el.style.left = "0px";
+  } else {
+    el.style.top = activeWord.offsetTop + "px";
+    el.style.left = activeWord.offsetLeft + "px";
+  }
 }
 
 function updateWordsHeight(force = false): void {
