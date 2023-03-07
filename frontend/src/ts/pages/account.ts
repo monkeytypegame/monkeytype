@@ -202,46 +202,46 @@ let totalSecondsFiltered = 0;
 let chartData: MonkeyTypes.HistoryChartData[] = [];
 let accChartData: MonkeyTypes.AccChartData[] = [];
 
-export function smoothHistory(factor: number): void {
-  const smoothedWpmData = Misc.smooth(
-    chartData.map((a) => a.y),
-    factor
-  );
-  const smoothedAccData = Misc.smooth(
-    accChartData.map((a) => a.y),
-    factor
-  );
+// export function smoothHistory(factor: number): void {
+//   const smoothedWpmData = Misc.smooth(
+//     chartData.map((a) => a.y),
+//     factor
+//   );
+//   const smoothedAccData = Misc.smooth(
+//     accChartData.map((a) => a.y),
+//     factor
+//   );
 
-  const chartData2 = chartData.map((a, i) => {
-    const ret = Object.assign({}, a);
-    ret.y = smoothedWpmData[i];
-    return ret;
-  });
+//   const chartData2 = chartData.map((a, i) => {
+//     const ret = Object.assign({}, a);
+//     ret.y = smoothedWpmData[i];
+//     return ret;
+//   });
 
-  const accChartData2 = accChartData.map((a, i) => {
-    const ret = Object.assign({}, a);
-    ret.y = smoothedAccData[i];
-    return ret;
-  });
+//   const accChartData2 = accChartData.map((a, i) => {
+//     const ret = Object.assign({}, a);
+//     ret.y = smoothedAccData[i];
+//     return ret;
+//   });
 
-  ChartController.accountHistory.data.datasets[0].data = chartData2;
-  ChartController.accountHistory.data.datasets[1].data = accChartData2;
+//   ChartController.accountHistory.data.datasets[0].data = chartData2;
+//   ChartController.accountHistory.data.datasets[1].data = accChartData2;
 
-  if (chartData2.length || accChartData2.length) {
-    ChartController.accountHistory.options.animation = false;
-    ChartController.accountHistory.update();
-    delete ChartController.accountHistory.options.animation;
-  }
-}
+//   if (chartData2.length || accChartData2.length) {
+//     ChartController.accountHistory.options.animation = false;
+//     ChartController.accountHistory.update();
+//     delete ChartController.accountHistory.options.animation;
+//   }
+// }
 
-async function applyHistorySmoothing(): Promise<void> {
-  const smoothing = $(
-    ".pageAccount .content .below .smoothing input"
-  ).val() as string;
-  $(".pageAccount .content .below .smoothing .value").text(smoothing);
-  smoothHistory(parseInt(smoothing));
-  await Misc.sleep(0);
-}
+// async function applyHistorySmoothing(): Promise<void> {
+//   const smoothing = $(
+//     ".pageAccount .content .below .smoothing input"
+//   ).val() as string;
+//   $(".pageAccount .content .below .smoothing .value").text(smoothing);
+//   smoothHistory(parseInt(smoothing));
+//   await Misc.sleep(0);
+// }
 
 function fillContent(): void {
   LoadingPage.updateText("Displaying stats...");
@@ -759,8 +759,8 @@ function fillContent(): void {
     accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
   }
 
-  ChartController.accountHistory.data.datasets[0].data = chartData;
-  ChartController.accountHistory.data.datasets[1].data = accChartData;
+  // ChartController.accountHistory.data.datasets[0].data = chartData;
+  // ChartController.accountHistory.data.datasets[1].data = accChartData;
 
   chartData.reverse();
   let testNum = 1;
@@ -933,37 +933,28 @@ function fillContent(): void {
     }
   }
 
-  console.log(chartData);
-
-  ChartController.newAccountHistory.data.datasets[3].data = avgTen;
-
-  ChartController.newAccountHistory.data.datasets[0].data = chartData;
-
-  ChartController.newAccountHistory.data.datasets[1].data = pb;
-  ChartController.newAccountHistory.data.datasets[2].data = accChartData;
-
-  ChartController.newAccountHistory.data.datasets[4].data = avgTenAcc;
-
-  ChartController.newAccountHistory.data.datasets[5].data = avgHundred;
-
-  ChartController.newAccountHistory.data.datasets[6].data = avgHundredAcc;
-
+  ChartController.accountHistory.data.datasets[3].data = avgTen;
+  ChartController.accountHistory.data.datasets[0].data = chartData;
+  ChartController.accountHistory.data.datasets[1].data = pb;
+  ChartController.accountHistory.data.datasets[2].data = accChartData;
+  ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
+  ChartController.accountHistory.data.datasets[5].data = avgHundred;
+  ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
   if (
-    ChartController.newAccountHistory.options.scales &&
-    ChartController.newAccountHistory.options.scales["wpm"] &&
-    ChartController.newAccountHistory.options.scales["pb"] &&
-    ChartController.newAccountHistory.options.scales["wpmAvgTen"] &&
-    ChartController.newAccountHistory.options.scales["wpmAvgHundred"] &&
-    ChartController.newAccountHistory.options.scales["x"]
+    ChartController.accountHistory.options.scales &&
+    ChartController.accountHistory.options.scales["wpm"] &&
+    ChartController.accountHistory.options.scales["pb"] &&
+    ChartController.accountHistory.options.scales["wpmAvgTen"] &&
+    ChartController.accountHistory.options.scales["wpmAvgHundred"] &&
+    ChartController.accountHistory.options.scales["x"]
   ) {
-    ChartController.newAccountHistory.options.scales["wpm"].max =
+    ChartController.accountHistory.options.scales["wpm"].max = roundedInteger;
+    ChartController.accountHistory.options.scales["pb"].max = roundedInteger;
+    ChartController.accountHistory.options.scales["wpmAvgTen"].max =
       roundedInteger;
-    ChartController.newAccountHistory.options.scales["pb"].max = roundedInteger;
-    ChartController.newAccountHistory.options.scales["wpmAvgTen"].max =
+    ChartController.accountHistory.options.scales["wpmAvgHundred"].max =
       roundedInteger;
-    ChartController.newAccountHistory.options.scales["wpmAvgHundred"].max =
-      roundedInteger;
-    ChartController.newAccountHistory.options.scales["x"].max = xMax;
+    ChartController.accountHistory.options.scales["x"].max = xMax;
   }
 
   console.log(chartData);
@@ -1220,7 +1211,7 @@ function fillContent(): void {
     );
   }
 
-  applyHistorySmoothing();
+  // applyHistorySmoothing();
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
@@ -1466,9 +1457,9 @@ $(".pageAccount .group.presetFilterButtons").on(
   }
 );
 
-$(".pageAccount .content .below .smoothing input").on("input", () => {
-  applyHistorySmoothing();
-});
+// $(".pageAccount .content .below .smoothing input").on("input", () => {
+//   applyHistorySmoothing();
+// });
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
   Misc.downloadResultsCSV(filteredResults);

@@ -248,13 +248,13 @@ export const result: ChartWithUpdateColors<
 
 export let accountHistoryActiveIndex: number;
 
-export const newAccountHistory: ChartWithUpdateColors<
+export const accountHistory: ChartWithUpdateColors<
   "line",
   | MonkeyTypes.HistoryChartData[]
   | MonkeyTypes.AccChartData[]
   | MonkeyTypes.OtherChartData[],
   string
-> = new ChartWithUpdateColors($(".pageAccount #newAccountHistoryChart"), {
+> = new ChartWithUpdateColors($(".pageAccount #accountHistoryChart"), {
   type: "line",
   data: {
     datasets: [
@@ -536,162 +536,162 @@ export const newAccountHistory: ChartWithUpdateColors<
   },
 });
 
-export const accountHistory: ChartWithUpdateColors<
-  "line",
-  MonkeyTypes.HistoryChartData[] | MonkeyTypes.AccChartData[],
-  string
-> = new ChartWithUpdateColors($(".pageAccount #accountHistoryChart"), {
-  type: "line",
-  data: {
-    labels: [],
-    datasets: [
-      {
-        yAxisID: "wpm",
-        label: "wpm",
-        fill: false,
-        data: [],
-        borderColor: "#f44336",
-        borderWidth: 2,
-        trendlineLinear: {
-          style: "rgba(255,105,180, .8)",
-          lineStyle: "dotted",
-          width: 4,
-        },
-      },
-      {
-        yAxisID: "acc",
-        label: "acc",
-        fill: false,
-        data: [],
-        borderColor: "#cccccc",
-        borderWidth: 2,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    // hover: {
-    //   mode: "nearest",
-    //   intersect: false,
-    // },
-    scales: {
-      x: {
-        axis: "x",
-        type: "timeseries",
-        bounds: "ticks",
-        display: false,
-        offset: true,
-        title: {
-          display: false,
-          text: "Date",
-        },
-      },
-      wpm: {
-        axis: "y",
-        beginAtZero: true,
-        min: 0,
-        ticks: {
-          stepSize: 10,
-        },
-        display: true,
-        title: {
-          display: true,
-          text: "Words per Minute",
-        },
-        position: "right",
-      },
-      acc: {
-        axis: "y",
-        beginAtZero: true,
-        max: 100,
-        display: true,
-        position: "left",
-        title: {
-          display: true,
-          text: "Error rate (100 - accuracy)",
-        },
-        grid: {
-          display: false,
-        },
-      },
-    },
-    plugins: {
-      annotation: {
-        annotations: [],
-      },
-      tooltip: {
-        animation: { duration: 250 },
-        // Disable the on-canvas tooltip
-        enabled: true,
-        intersect: false,
-        external: function (ctx): void {
-          if (!ctx) return;
-          ctx.tooltip.options.displayColors = false;
-        },
-        callbacks: {
-          title: function (): string {
-            return "";
-          },
-          beforeLabel: function (tooltipItem): string {
-            if (tooltipItem.datasetIndex !== 0) {
-              const resultData = tooltipItem.dataset.data[
-                tooltipItem.dataIndex
-              ] as MonkeyTypes.AccChartData;
-              return `error rate: ${Misc.roundTo2(
-                resultData.errorRate
-              )}%\nacc: ${Misc.roundTo2(100 - resultData.errorRate)}%`;
-            }
-            const resultData = tooltipItem.dataset.data[
-              tooltipItem.dataIndex
-            ] as MonkeyTypes.HistoryChartData;
-            let label =
-              `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${resultData.wpm}` +
-              "\n" +
-              `raw: ${resultData.raw}` +
-              "\n" +
-              `acc: ${resultData.acc}` +
-              "\n\n" +
-              `mode: ${resultData.mode} `;
+// export const accountHistory: ChartWithUpdateColors<
+//   "line",
+//   MonkeyTypes.HistoryChartData[] | MonkeyTypes.AccChartData[],
+//   string
+// > = new ChartWithUpdateColors($(".pageAccount #accountHistoryChart"), {
+//   type: "line",
+//   data: {
+//     labels: [],
+//     datasets: [
+//       {
+//         yAxisID: "wpm",
+//         label: "wpm",
+//         fill: false,
+//         data: [],
+//         borderColor: "#f44336",
+//         borderWidth: 2,
+//         trendlineLinear: {
+//           style: "rgba(255,105,180, .8)",
+//           lineStyle: "dotted",
+//           width: 4,
+//         },
+//       },
+//       {
+//         yAxisID: "acc",
+//         label: "acc",
+//         fill: false,
+//         data: [],
+//         borderColor: "#cccccc",
+//         borderWidth: 2,
+//       },
+//     ],
+//   },
+//   options: {
+//     responsive: true,
+//     maintainAspectRatio: false,
+//     // hover: {
+//     //   mode: "nearest",
+//     //   intersect: false,
+//     // },
+//     scales: {
+//       x: {
+//         axis: "x",
+//         type: "timeseries",
+//         bounds: "ticks",
+//         display: false,
+//         offset: true,
+//         title: {
+//           display: false,
+//           text: "Date",
+//         },
+//       },
+//       wpm: {
+//         axis: "y",
+//         beginAtZero: true,
+//         min: 0,
+//         ticks: {
+//           stepSize: 10,
+//         },
+//         display: true,
+//         title: {
+//           display: true,
+//           text: "Words per Minute",
+//         },
+//         position: "right",
+//       },
+//       acc: {
+//         axis: "y",
+//         beginAtZero: true,
+//         max: 100,
+//         display: true,
+//         position: "left",
+//         title: {
+//           display: true,
+//           text: "Error rate (100 - accuracy)",
+//         },
+//         grid: {
+//           display: false,
+//         },
+//       },
+//     },
+//     plugins: {
+//       annotation: {
+//         annotations: [],
+//       },
+//       tooltip: {
+//         animation: { duration: 250 },
+//         // Disable the on-canvas tooltip
+//         enabled: true,
+//         intersect: false,
+//         external: function (ctx): void {
+//           if (!ctx) return;
+//           ctx.tooltip.options.displayColors = false;
+//         },
+//         callbacks: {
+//           title: function (): string {
+//             return "";
+//           },
+//           beforeLabel: function (tooltipItem): string {
+//             if (tooltipItem.datasetIndex !== 0) {
+//               const resultData = tooltipItem.dataset.data[
+//                 tooltipItem.dataIndex
+//               ] as MonkeyTypes.AccChartData;
+//               return `error rate: ${Misc.roundTo2(
+//                 resultData.errorRate
+//               )}%\nacc: ${Misc.roundTo2(100 - resultData.errorRate)}%`;
+//             }
+//             const resultData = tooltipItem.dataset.data[
+//               tooltipItem.dataIndex
+//             ] as MonkeyTypes.HistoryChartData;
+//             let label =
+//               `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${resultData.wpm}` +
+//               "\n" +
+//               `raw: ${resultData.raw}` +
+//               "\n" +
+//               `acc: ${resultData.acc}` +
+//               "\n\n" +
+//               `mode: ${resultData.mode} `;
 
-            if (resultData.mode == "time") {
-              label += resultData.mode2;
-            } else if (resultData.mode == "words") {
-              label += resultData.mode2;
-            }
+//             if (resultData.mode == "time") {
+//               label += resultData.mode2;
+//             } else if (resultData.mode == "words") {
+//               label += resultData.mode2;
+//             }
 
-            let diff = resultData.difficulty;
-            if (diff == undefined) {
-              diff = "normal";
-            }
-            label += "\n" + `difficulty: ${diff}`;
+//             let diff = resultData.difficulty;
+//             if (diff == undefined) {
+//               diff = "normal";
+//             }
+//             label += "\n" + `difficulty: ${diff}`;
 
-            label +=
-              "\n" +
-              `punctuation: ${resultData.punctuation}` +
-              "\n" +
-              `language: ${resultData.language}` +
-              `${resultData.isPb ? "\n\nnew personal best" : ""}` +
-              "\n\n" +
-              `date: ${format(
-                new Date(resultData.timestamp),
-                "dd MMM yyyy HH:mm"
-              )}`;
+//             label +=
+//               "\n" +
+//               `punctuation: ${resultData.punctuation}` +
+//               "\n" +
+//               `language: ${resultData.language}` +
+//               `${resultData.isPb ? "\n\nnew personal best" : ""}` +
+//               "\n\n" +
+//               `date: ${format(
+//                 new Date(resultData.timestamp),
+//                 "dd MMM yyyy HH:mm"
+//               )}`;
 
-            return label;
-          },
-          label: function (): string {
-            return "";
-          },
-          afterLabel: function (tooltip): string {
-            accountHistoryActiveIndex = tooltip.dataIndex;
-            return "";
-          },
-        },
-      },
-    },
-  },
-});
+//             return label;
+//           },
+//           label: function (): string {
+//             return "";
+//           },
+//           afterLabel: function (tooltip): string {
+//             accountHistoryActiveIndex = tooltip.dataIndex;
+//             return "";
+//           },
+//         },
+//       },
+//     },
+//   },
+// });
 
 export const accountActivity: ChartWithUpdateColors<
   "bar" | "line",
@@ -1124,9 +1124,16 @@ export const miniResult: ChartWithUpdateColors<
 
 function updateAccuracy(): void {
   accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
+  // newAccountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
+  // newAccountHistory.data.datasets[4].hidden = !Config.chartAccuracy;
+  // newAccountHistory.data.datasets[6].hidden = !Config.chartAccuracy;
   (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
     Config.chartAccuracy;
+  // (newAccountHistory.options as ScaleChartOptions<"line">).scales[
+  //   "acc"
+  // ].display = Config.chartAccuracy;
   accountHistory.update();
+  // newAccountHistory.update();
 }
 
 function updateStyle(): void {
@@ -1250,7 +1257,7 @@ export function updateAllChartColors(): void {
   result.updateColors();
   accountActivity.updateColors();
   miniResult.updateColors();
-  newAccountHistory.updateColors();
+  // newAccountHistory.updateColors();
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
