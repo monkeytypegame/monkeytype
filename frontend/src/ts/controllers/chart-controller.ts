@@ -1123,17 +1123,13 @@ export const miniResult: ChartWithUpdateColors<
 });
 
 function updateAccuracy(): void {
-  accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
-  // newAccountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
-  // newAccountHistory.data.datasets[4].hidden = !Config.chartAccuracy;
-  // newAccountHistory.data.datasets[6].hidden = !Config.chartAccuracy;
+  accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
+  accountHistory.data.datasets[4].hidden = !Config.chartAccuracy;
+  accountHistory.data.datasets[6].hidden = !Config.chartAccuracy;
+
   (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
     Config.chartAccuracy;
-  // (newAccountHistory.options as ScaleChartOptions<"line">).scales[
-  //   "acc"
-  // ].display = Config.chartAccuracy;
   accountHistory.update();
-  // newAccountHistory.update();
 }
 
 function updateStyle(): void {

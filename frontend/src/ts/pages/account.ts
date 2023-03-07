@@ -202,47 +202,6 @@ let totalSecondsFiltered = 0;
 let chartData: MonkeyTypes.HistoryChartData[] = [];
 let accChartData: MonkeyTypes.AccChartData[] = [];
 
-// export function smoothHistory(factor: number): void {
-//   const smoothedWpmData = Misc.smooth(
-//     chartData.map((a) => a.y),
-//     factor
-//   );
-//   const smoothedAccData = Misc.smooth(
-//     accChartData.map((a) => a.y),
-//     factor
-//   );
-
-//   const chartData2 = chartData.map((a, i) => {
-//     const ret = Object.assign({}, a);
-//     ret.y = smoothedWpmData[i];
-//     return ret;
-//   });
-
-//   const accChartData2 = accChartData.map((a, i) => {
-//     const ret = Object.assign({}, a);
-//     ret.y = smoothedAccData[i];
-//     return ret;
-//   });
-
-//   ChartController.accountHistory.data.datasets[0].data = chartData2;
-//   ChartController.accountHistory.data.datasets[1].data = accChartData2;
-
-//   if (chartData2.length || accChartData2.length) {
-//     ChartController.accountHistory.options.animation = false;
-//     ChartController.accountHistory.update();
-//     delete ChartController.accountHistory.options.animation;
-//   }
-// }
-
-// async function applyHistorySmoothing(): Promise<void> {
-//   const smoothing = $(
-//     ".pageAccount .content .below .smoothing input"
-//   ).val() as string;
-//   $(".pageAccount .content .below .smoothing .value").text(smoothing);
-//   smoothHistory(parseInt(smoothing));
-//   await Misc.sleep(0);
-// }
-
 function fillContent(): void {
   LoadingPage.updateText("Displaying stats...");
   LoadingPage.updateBar(100);
@@ -787,9 +746,6 @@ function fillContent(): void {
 
   const xMax = chartData.length + 1;
 
-  const integerPart = Math.round(pb[pb.length - 1].y);
-  const roundedInteger = Math.ceil(integerPart / 10) * 10;
-
   pb.push({
     x: xMax,
     y: pb[pb.length - 1].y,
@@ -940,24 +896,6 @@ function fillContent(): void {
   ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
   ChartController.accountHistory.data.datasets[5].data = avgHundred;
   ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
-  if (
-    ChartController.accountHistory.options.scales &&
-    ChartController.accountHistory.options.scales["wpm"] &&
-    ChartController.accountHistory.options.scales["pb"] &&
-    ChartController.accountHistory.options.scales["wpmAvgTen"] &&
-    ChartController.accountHistory.options.scales["wpmAvgHundred"] &&
-    ChartController.accountHistory.options.scales["x"]
-  ) {
-    ChartController.accountHistory.options.scales["wpm"].max = roundedInteger;
-    ChartController.accountHistory.options.scales["pb"].max = roundedInteger;
-    ChartController.accountHistory.options.scales["wpmAvgTen"].max =
-      roundedInteger;
-    ChartController.accountHistory.options.scales["wpmAvgHundred"].max =
-      roundedInteger;
-    ChartController.accountHistory.options.scales["x"].max = xMax;
-  }
-
-  console.log(chartData);
 
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
@@ -966,6 +904,13 @@ function fillContent(): void {
   // let accuracies = accChartData.map((r) => r.y);
   accountHistoryScaleOptions["wpm"].max =
     Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+  accountHistoryScaleOptions["pb"].max =
+    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+  accountHistoryScaleOptions["wpmAvgTen"].max =
+    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+  accountHistoryScaleOptions["wpmAvgHundred"].max =
+    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+  accountHistoryScaleOptions["x"].max = xMax;
 
   if (!Config.startGraphsAtZero) {
     accountHistoryScaleOptions["wpm"].min = Math.floor(minWpmChartVal);
@@ -1343,14 +1288,6 @@ function sortAndRefreshHistory(
 
 $(".pageAccount .toggleAccuracyOnChart").on("click", () => {
   UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
-});
-
-$(".pageAccount .toggleChartStyle").on("click", () => {
-  if (Config.chartStyle == "line") {
-    UpdateConfig.setChartStyle("scatter");
-  } else {
-    UpdateConfig.setChartStyle("line");
-  }
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {

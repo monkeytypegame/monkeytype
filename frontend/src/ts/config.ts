@@ -314,21 +314,6 @@ export function setChartAccuracy(
   return true;
 }
 
-export function setChartStyle(
-  chartStyle: MonkeyTypes.ChartStyle,
-  nosave?: boolean
-): boolean {
-  if (!isConfigValueValid("chart style", chartStyle, [["line", "scatter"]])) {
-    return false;
-  }
-
-  config.chartStyle = chartStyle;
-  saveToLocalStorage("chartStyle", nosave);
-  ConfigEvent.dispatch("chartStyle", config.chartStyle);
-
-  return true;
-}
-
 export function setStopOnError(
   soe: MonkeyTypes.StopOnError,
   nosave?: boolean
@@ -1825,7 +1810,6 @@ export function apply(
     setRepeatedPace(configObj.repeatedPace, true);
     setPageWidth(configObj.pageWidth, true);
     setChartAccuracy(configObj.chartAccuracy, true);
-    setChartStyle(configObj.chartStyle, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
     setMinWpm(configObj.minWpm, true);
