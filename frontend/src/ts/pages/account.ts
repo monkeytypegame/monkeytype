@@ -269,6 +269,9 @@ function fillContent(): void {
 
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
+
+  let testNum = DB.getSnapshot()?.results?.length || 0;
+
   DB.getSnapshot()?.results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       // totalSeconds += tt;
@@ -593,7 +596,7 @@ function fillContent(): void {
       }
 
       chartData.push({
-        x: result.timestamp,
+        x: testNum,
         y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
         wpm: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
         acc: result.acc,
@@ -612,10 +615,12 @@ function fillContent(): void {
       wpmChartData.push(result.wpm);
 
       accChartData.push({
-        x: result.timestamp,
+        x: testNum,
         y: 100 - result.acc,
         errorRate: 100 - result.acc,
       });
+
+      testNum--;
 
       if (result.wpm > topWpm) {
         const puncsctring = result.punctuation ? ",<br>with punctuation" : "";
@@ -718,36 +723,27 @@ function fillContent(): void {
     accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
   }
 
-  // ChartController.accountHistory.data.datasets[0].data = chartData;
-  // ChartController.accountHistory.data.datasets[1].data = accChartData;
-
   chartData.reverse();
-  let testNum = 1;
   let currentPb = 0;
   const pb: { x: number; y: number }[] = [];
 
   chartData.forEach((a) => {
-    a.x = testNum;
     if (a.y > currentPb) {
       currentPb = a.y;
       pb.push(a);
     }
-    testNum++;
   });
 
-  testNum = 1;
   accChartData.reverse();
 
   accChartData.forEach((a) => {
-    a.x = testNum;
     a.y = 100 - a.y;
-    testNum++;
   });
 
   const xMax = chartData.length + 1;
 
   pb.push({
-    x: xMax,
+    x: xMax - 1,
     y: pb[pb.length - 1].y,
   });
 
@@ -761,9 +757,12 @@ function fillContent(): void {
   for (let i = 0; i < chartData.length; i++) {
     if (i < 10) {
       let avg = 0;
+      let accAvg = 0;
       const subset = chartData.slice(0, i + 1);
+      const accSubset = accChartData.slice(0, i + 1);
       for (let j = 0; j < subset.length; j++) {
         avg += subset[j].y;
+        accAvg += accSubset[j].y;
       }
       if (subset.length === 10) {
         if (bestAverageTen === undefined) {
@@ -776,13 +775,18 @@ function fillContent(): void {
       }
 
       avg = avg / subset.length;
+      accAvg = accAvg / subset.length;
 
       avgTen.push({ x: i + 1, y: avg });
+      avgTenAcc.push({ x: i + 1, y: accAvg });
     } else {
       let avg = 0;
+      let accAvg = 0;
       const subset = chartData.slice(i - 9, i + 1);
+      const accSubset = accChartData.slice(i - 9, i + 1);
       for (let j = 0; j < subset.length; j++) {
         avg += subset[j].y;
+        accAvg += accSubset[j].y;
       }
 
       if (subset.length === 10) {
@@ -796,40 +800,22 @@ function fillContent(): void {
       }
 
       avg = avg / subset.length;
+      accAvg = accAvg / subset.length;
 
       avgTen.push({ x: i + 1, y: avg });
-    }
-  }
-  for (let i = 0; i < accChartData.length; i++) {
-    if (i < 10) {
-      let avg = 0;
-      const subset = accChartData.slice(0, i + 1);
-      for (let j = 0; j < subset.length; j++) {
-        avg += subset[j].y;
-      }
-
-      avg = avg / subset.length;
-
-      avgTenAcc.push({ x: i + 1, y: avg });
-    } else {
-      let avg = 0;
-      const subset = accChartData.slice(i - 9, i + 1);
-      for (let j = 0; j < subset.length; j++) {
-        avg += subset[j].y;
-      }
-
-      avg = avg / subset.length;
-
-      avgTenAcc.push({ x: i + 1, y: avg });
+      avgTenAcc.push({ x: i + 1, y: accAvg });
     }
   }
 
   for (let i = 0; i < chartData.length; i++) {
     if (i < 100) {
       let avg = 0;
+      let accAvg = 0;
       const subset = chartData.slice(0, i + 1);
+      const accSubset = accChartData.slice(0, i + 1);
       for (let j = 0; j < subset.length; j++) {
         avg += subset[j].y;
+        accAvg += accSubset[j].y;
       }
       if (subset.length === 100) {
         if (bestAverageHundred === undefined) {
@@ -842,13 +828,18 @@ function fillContent(): void {
       }
 
       avg = avg / subset.length;
+      accAvg = accAvg / subset.length;
 
       avgHundred.push({ x: i + 1, y: avg });
+      avgHundredAcc.push({ x: i + 1, y: accAvg });
     } else {
       let avg = 0;
+      let accAvg = 0;
       const subset = chartData.slice(i - 99, i + 1);
+      const accSubset = accChartData.slice(i - 99, i + 1);
       for (let j = 0; j < subset.length; j++) {
         avg += subset[j].y;
+        accAvg += accSubset[j].y;
       }
       if (subset.length === 100) {
         if (bestAverageHundred === undefined) {
@@ -861,10 +852,14 @@ function fillContent(): void {
       }
 
       avg = avg / subset.length;
+      accAvg = accAvg / subset.length;
 
       avgHundred.push({ x: i + 1, y: avg });
+
+      avgHundredAcc.push({ x: i + 1, y: accAvg });
     }
   }
+
   for (let i = 0; i < accChartData.length; i++) {
     if (i < 100) {
       let avg = 0;
@@ -896,6 +891,9 @@ function fillContent(): void {
   ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
   ChartController.accountHistory.data.datasets[5].data = avgHundred;
   ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
+
+  chartData.reverse();
+  accChartData.reverse();
 
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
@@ -1156,7 +1154,6 @@ function fillContent(): void {
     );
   }
 
-  // applyHistorySmoothing();
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
