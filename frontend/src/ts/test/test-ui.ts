@@ -255,10 +255,8 @@ function updateWordsHeight(force = false): void {
     let finalWordsHeight: number, finalWrapperHeight: number;
 
     if (Config.tapeMode !== "off") {
-      const wrapperHeight = wordHeight;
-
-      finalWordsHeight = wordHeight * 2;
-      finalWrapperHeight = wrapperHeight;
+      finalWordsHeight = wordHeight * 1.5;
+      finalWrapperHeight = wordHeight * 1.5;
     } else {
       let lines = 0;
       let lastHeight = 0;
