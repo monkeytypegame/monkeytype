@@ -38705,6 +38705,90 @@
       "source": "The Legend of Vox Machina",
       "id": 6782,
       "length": 183
+    },
+    {
+      "text": "We are uncovering better ways of developing software by doing it and helping others do it.",
+      "source": "Manifesto for Agile Software Development",
+      "id": 6783,
+      "length": 90
+    },
+    {
+      "text": "Individuals and interactions over processes and tools. Working software over comprehensive documentation. Customer collaboration over contract negotiation. Responding to change over following a plan.",
+      "source": "Manifesto for Agile Software Development",
+      "id": 6784,
+      "length": 199
+    },
+    {
+      "text": "Our highest priority is to satisfy the customer through early and continuous delivery of valuable software.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6785,
+      "length": 107
+    },
+    {
+      "text": "Welcome changing requirements, even late in development. Agile processes harness change for the customer's competitive advantage.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6786,
+      "length": 129
+    },
+    {
+      "text": "Deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6787,
+      "length": 126
+    },
+    {
+      "text": "Business people and developers must work together daily throughout the project.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6788,
+      "length": 79
+    },
+    {
+      "text": "Build projects around motivated individuals. Give them the environment and support they need, and trust them to get the job done.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6789,
+      "length": 129
+    },
+    {
+      "text": "The most efficient and effective method of conveying information to and within a development team is face-to-face conversation.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6790,
+      "length": 127
+    },
+    {
+      "text": "Working software is the primary measure of progress.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6791,
+      "length": 52
+    },
+    {
+      "text": "Agile processes promote sustainable development. The sponsors, developers, and users should be able to maintain a constant pace indefinitely.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6792,
+      "length": 141
+    },
+    {
+      "text": "Continuous attention to technical excellence and good design enhances agility.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6793,
+      "length": 78
+    },
+    {
+      "text": "Simplicity--the art of maximizing the amount of work not done--is essential.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6794,
+      "length": 76
+    },
+    {
+      "text": "The best architectures, requirements, and designs emerge from self-organizing teams.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6795,
+      "length": 84
+    },
+    {
+      "text": "At regular intervals, the team reflects on how to become more effective, then tunes and adjusts its behavior accordingly.",
+      "source": "Principles behind the Agile Manifesto",
+      "id": 6796,
+      "length": 121
     }
   ]
 }
