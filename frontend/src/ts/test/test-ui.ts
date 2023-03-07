@@ -49,7 +49,9 @@ ConfigEvent.subscribe((eventKey, eventValue) => {
   ) {
     debouncedZipfCheck();
   }
-  if (eventKey === "fontSize") updateWordsHeight(true);
+  if (eventKey === "fontSize") {
+    Misc.sleep(0).then(() => updateWordsHeight(true));
+  }
 
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
@@ -206,15 +208,19 @@ function updateWordsInputPosition(force = false): void {
     "#words .active"
   ) as HTMLElement | null;
 
-  if (!shouldUpdate || !activeWord) {
-    const wordsWrapper = document.querySelector("#wordsWrapper") as HTMLElement;
-    el.style.top = wordsWrapper.offsetHeight / 2 + "px";
+  if (!activeWord) {
+    el.style.top = "0px";
     el.style.left = "0px";
     return;
   }
 
-  el.style.top = activeWord.offsetTop + "px";
-  el.style.left = activeWord.offsetLeft + "px";
+  if (!shouldUpdate) {
+    el.style.top = activeWord.offsetHeight * 2 + "px";
+    el.style.left = "0px";
+  } else {
+    el.style.top = activeWord.offsetTop + "px";
+    el.style.left = activeWord.offsetLeft + "px";
+  }
 }
 
 function updateWordsHeight(force = false): void {
@@ -286,9 +292,14 @@ function updateWordsHeight(force = false): void {
 
     $("#words")
       .css("height", finalWordsHeight + "px")
-      .css("overflow", "hidden")
-      .css("width", "100%")
-      .css("margin-left", "unset");
+      .css("overflow", "hidden");
+
+    if (Config.tapeMode !== "off") {
+      $("#words").css("width", "200%").css("margin-left", "50%");
+    } else {
+      $("#words").css("width", "100%").css("margin-left", "unset");
+    }
+
     $("#wordsWrapper")
       .css("height", finalWrapperHeight + "px")
       .css("overflow", "hidden");
