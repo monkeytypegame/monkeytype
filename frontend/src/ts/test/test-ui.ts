@@ -197,33 +197,30 @@ export function showWords(): void {
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
 function updateWordsInputPosition(force = false): void {
-  Misc.sleep(10).then(() => {
-    //for some reason without sleep the css bugs out????
-    const shouldUpdate = posUpdateLangList.some((l) =>
-      Config.language.startsWith(l)
-    );
+  const shouldUpdate = posUpdateLangList.some((l) =>
+    Config.language.startsWith(l)
+  );
 
-    if (!force && !shouldUpdate) return;
+  if (!force && !shouldUpdate) return;
 
-    const el = document.querySelector("#wordsInput") as HTMLElement;
-    const activeWord = document.querySelector(
-      "#words .active"
-    ) as HTMLElement | null;
+  const el = document.querySelector("#wordsInput") as HTMLElement;
+  const activeWord = document.querySelector(
+    "#words .active"
+  ) as HTMLElement | null;
 
-    if (!activeWord) {
-      el.style.top = "0px";
-      el.style.left = "0px";
-      return;
-    }
+  if (!activeWord) {
+    el.style.top = "0px";
+    el.style.left = "0px";
+    return;
+  }
 
-    if (!shouldUpdate) {
-      el.style.top = activeWord.offsetHeight * 2 + "px";
-      el.style.left = "0px";
-    } else {
-      el.style.top = activeWord.offsetTop + "px";
-      el.style.left = activeWord.offsetLeft + "px";
-    }
-  });
+  if (!shouldUpdate && Config.tapeMode == "off") {
+    el.style.top = activeWord.offsetHeight * 2 + "px";
+    el.style.left = "0px";
+  } else {
+    el.style.top = activeWord.offsetTop + "px";
+    el.style.left = activeWord.offsetLeft + "px";
+  }
 }
 
 function updateWordsHeight(force = false): void {
