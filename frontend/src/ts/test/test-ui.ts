@@ -772,7 +772,6 @@ export function lineJump(currentTop: number): void {
     }
   }
   currentTestLine++;
-  updateWordsInputPosition();
   updateWordsHeight();
 }
 
