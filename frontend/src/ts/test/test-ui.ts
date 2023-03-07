@@ -191,6 +191,7 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
+  updateActiveElement();
   updateWordsHeight(true);
   updateWordsInputPosition(true);
 }
@@ -308,7 +309,6 @@ function updateWordsHeight(force = false): void {
     $(<Element>document.querySelector(".word")).remove();
   }
 
-  updateActiveElement();
   Caret.updatePosition();
 }
 
