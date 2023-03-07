@@ -197,30 +197,33 @@ export function showWords(): void {
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
 function updateWordsInputPosition(force = false): void {
-  const shouldUpdate = posUpdateLangList.some((l) =>
-    Config.language.startsWith(l)
-  );
+  Misc.sleep(10).then(() => {
+    //for some reason without sleep the css bugs out????
+    const shouldUpdate = posUpdateLangList.some((l) =>
+      Config.language.startsWith(l)
+    );
 
-  if (!force && !shouldUpdate) return;
+    if (!force && !shouldUpdate) return;
 
-  const el = document.querySelector("#wordsInput") as HTMLElement;
-  const activeWord = document.querySelector(
-    "#words .active"
-  ) as HTMLElement | null;
+    const el = document.querySelector("#wordsInput") as HTMLElement;
+    const activeWord = document.querySelector(
+      "#words .active"
+    ) as HTMLElement | null;
 
-  if (!activeWord) {
-    el.style.top = "0px";
-    el.style.left = "0px";
-    return;
-  }
+    if (!activeWord) {
+      el.style.top = "0px";
+      el.style.left = "0px";
+      return;
+    }
 
-  if (!shouldUpdate) {
-    el.style.top = activeWord.offsetHeight * 2 + "px";
-    el.style.left = "0px";
-  } else {
-    el.style.top = activeWord.offsetTop + "px";
-    el.style.left = activeWord.offsetLeft + "px";
-  }
+    if (!shouldUpdate) {
+      el.style.top = activeWord.offsetHeight * 2 + "px";
+      el.style.left = "0px";
+    } else {
+      el.style.top = activeWord.offsetTop + "px";
+      el.style.left = activeWord.offsetLeft + "px";
+    }
+  });
 }
 
 function updateWordsHeight(force = false): void {
@@ -255,8 +258,8 @@ function updateWordsHeight(force = false): void {
     let finalWordsHeight: number, finalWrapperHeight: number;
 
     if (Config.tapeMode !== "off") {
-      finalWordsHeight = wordHeight * 1.5;
-      finalWrapperHeight = wordHeight * 1.5;
+      finalWordsHeight = wordHeight * 2;
+      finalWrapperHeight = wordHeight;
     } else {
       let lines = 0;
       let lastHeight = 0;
