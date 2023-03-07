@@ -274,6 +274,9 @@ function updateWordsHeight(force = false): void {
         }
         wordIndex++;
       }
+
+      if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
+
       const wordsHeight = (wrapperHeight / 3) * 4;
 
       finalWordsHeight = wordsHeight;
