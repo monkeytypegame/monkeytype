@@ -188,7 +188,7 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  updateWordsHeight();
+  updateWordsHeight(true);
   updateWordsInputPosition(true);
 }
 
@@ -215,7 +215,8 @@ export function updateWordsInputPosition(force = false): void {
   el.style.left = activeWord.offsetLeft + "px";
 }
 
-export function updateWordsHeight(): void {
+export function updateWordsHeight(force = false): void {
+  if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
     $(<Element>document.querySelector(".word")).outerHeight(true)
@@ -243,29 +244,50 @@ export function updateWordsHeight(): void {
     }
     $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
+    let finalWordsHeight: number, finalWrapperHeight: number;
+
     if (Config.tapeMode !== "off") {
       const wrapperHeight = wordHeight;
 
-      $("#words")
-        .css("height", wordHeight * 2 + "px")
-        .css("overflow", "hidden")
-        .css("width", "200%")
-        .css("margin-left", "50%");
-      $("#wordsWrapper")
-        .css("height", wrapperHeight + "px")
-        .css("overflow", "hidden");
-      $(".outOfFocusWarning").css("line-height", wrapperHeight + "px");
+      finalWordsHeight = wordHeight * 2;
+      finalWrapperHeight = wrapperHeight;
     } else {
-      $("#words")
-        .css("height", wordHeight * 4 + "px")
-        .css("overflow", "hidden")
-        .css("width", "100%")
-        .css("margin-left", "unset");
-      $("#wordsWrapper")
-        .css("height", wordHeight * 3 + "px")
-        .css("overflow", "hidden");
-      $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
+      let lines = 0;
+      let lastHeight = 0;
+      let wordIndex = 0;
+      const words = document.querySelectorAll("#words .word");
+      let wrapperHeight = 0;
+
+      const wordComputedStyle = window.getComputedStyle(words[0]);
+      const wordTopMargin = parseInt(wordComputedStyle.marginTop);
+      const wordBottomMargin = parseInt(wordComputedStyle.marginBottom);
+
+      while (lines < 3) {
+        const word = words[wordIndex] as HTMLElement | null;
+        if (!word) break;
+        const height = word.offsetTop;
+        if (height > lastHeight) {
+          lines++;
+          wrapperHeight += word.offsetHeight + wordTopMargin + wordBottomMargin;
+          lastHeight = height;
+        }
+        wordIndex++;
+      }
+      const wordsHeight = (wrapperHeight / 3) * 4;
+
+      finalWordsHeight = wordsHeight;
+      finalWrapperHeight = wrapperHeight;
     }
+
+    $("#words")
+      .css("height", finalWordsHeight + "px")
+      .css("overflow", "hidden")
+      .css("width", "100%")
+      .css("margin-left", "unset");
+    $("#wordsWrapper")
+      .css("height", finalWrapperHeight + "px")
+      .css("overflow", "hidden");
+    $(".outOfFocusWarning").css("line-height", finalWrapperHeight + "px");
   }
 
   if (Config.mode === "zen") {
@@ -737,6 +759,7 @@ export function lineJump(currentTop: number): void {
   }
   currentTestLine++;
   updateWordsInputPosition();
+  updateWordsHeight();
 }
 
 export function arrangeCharactersRightToLeft(): void {

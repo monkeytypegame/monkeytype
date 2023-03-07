@@ -14,7 +14,7 @@ const commands: MonkeyTypes.Command[] = [
       if (!input) return;
       UpdateConfig.setFontSize(parseFloat(input));
       setTimeout(() => {
-        TestUI.updateWordsHeight();
+        TestUI.updateWordsHeight(true);
       }, 0); //honestly no clue why it i need to wait for the next event loop to do this
     },
   },
