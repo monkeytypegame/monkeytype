@@ -196,6 +196,11 @@ export function reset(): void {
   ChartController.accountActivity.data.datasets[1].data = [];
   ChartController.accountHistory.data.datasets[0].data = [];
   ChartController.accountHistory.data.datasets[1].data = [];
+  ChartController.accountHistory.data.datasets[2].data = [];
+  ChartController.accountHistory.data.datasets[3].data = [];
+  ChartController.accountHistory.data.datasets[4].data = [];
+  ChartController.accountHistory.data.datasets[5].data = [];
+  ChartController.accountHistory.data.datasets[6].data = [];
 }
 
 let totalSecondsFiltered = 0;
@@ -723,8 +728,19 @@ function fillContent(): void {
     accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
   }
 
+  console.log(chartData);
+
   if (chartData.length > 0) {
     chartData.reverse();
+
+    let testNum = 1;
+    for (let i = 0; i < chartData.length; i++) {
+      chartData[i].x = testNum;
+      accChartData[i].x = testNum;
+
+      testNum++;
+    }
+
     let currentPb = 0;
     const pb: { x: number; y: number }[] = [];
 
@@ -861,34 +877,10 @@ function fillContent(): void {
       }
     }
 
-    for (let i = 0; i < accChartData.length; i++) {
-      if (i < 100) {
-        let avg = 0;
-        const subset = accChartData.slice(0, i + 1);
-        for (let j = 0; j < subset.length; j++) {
-          avg += subset[j].y;
-        }
-
-        avg = avg / subset.length;
-
-        avgHundredAcc.push({ x: i + 1, y: avg });
-      } else {
-        let avg = 0;
-        const subset = accChartData.slice(i - 99, i + 1);
-        for (let j = 0; j < subset.length; j++) {
-          avg += subset[j].y;
-        }
-
-        avg = avg / subset.length;
-
-        avgHundredAcc.push({ x: i + 1, y: avg });
-      }
-    }
-
-    ChartController.accountHistory.data.datasets[3].data = avgTen;
     ChartController.accountHistory.data.datasets[0].data = chartData;
     ChartController.accountHistory.data.datasets[1].data = pb;
     ChartController.accountHistory.data.datasets[2].data = accChartData;
+    ChartController.accountHistory.data.datasets[3].data = avgTen;
     ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
     ChartController.accountHistory.data.datasets[5].data = avgHundred;
     ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
@@ -1157,6 +1149,12 @@ function fillContent(): void {
 
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
+  if (chartData.length || accChartData.length) {
+    ChartController.accountHistory.options.animation = false;
+    ChartController.accountHistory.update();
+    delete ChartController.accountHistory.options.animation;
+  }
+
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
@@ -1379,6 +1377,7 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "click",
   ".button",
   () => {
+    console.log("");
     setTimeout(() => {
       update();
     }, 0);
@@ -1393,10 +1392,6 @@ $(".pageAccount .group.presetFilterButtons").on(
     update();
   }
 );
-
-// $(".pageAccount .content .below .smoothing input").on("input", () => {
-//   applyHistorySmoothing();
-// });
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
   Misc.downloadResultsCSV(filteredResults);
