@@ -131,6 +131,7 @@ export function updateActiveElement(backspace?: boolean): void {
       });
     }
   } catch (e) {}
+  updateWordsInputPosition();
 }
 
 function getWordHTML(word: string): string {
@@ -188,6 +189,30 @@ export function showWords(): void {
   $("#words").html(wordsHTML);
 
   updateWordsHeight();
+  updateWordsInputPosition(true);
+}
+
+const posUpdateLangList = ["japanese", "chinese", "korean"];
+export function updateWordsInputPosition(force = false): void {
+  const shouldUpdate = posUpdateLangList.some((l) =>
+    Config.language.startsWith(l)
+  );
+
+  if (!force && !shouldUpdate) return;
+
+  const el = document.querySelector("#wordsInput") as HTMLElement;
+  const activeWord = document.querySelector(
+    "#words .active"
+  ) as HTMLElement | null;
+
+  if (!shouldUpdate || !activeWord) {
+    el.style.top = "0px";
+    el.style.left = "0px";
+    return;
+  }
+
+  el.style.top = activeWord.offsetTop + "px";
+  el.style.left = activeWord.offsetLeft + "px";
 }
 
 export function updateWordsHeight(): void {
@@ -711,6 +736,7 @@ export function lineJump(currentTop: number): void {
     }
   }
   currentTestLine++;
+  updateWordsInputPosition();
 }
 
 export function arrangeCharactersRightToLeft(): void {
