@@ -501,9 +501,9 @@ export function restart(options = {} as RestartOptions): void {
   $("#restartTestButton").blur();
   MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
-  if (ActivePage.get() == "test" && window.scrollY > 0) {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  // if (ActivePage.get() == "test" && window.scrollY > 0) {
+  // window.scrollTo({ top: 0, behavior: "smooth" });
+  // }
   $("#wordsInput").val(" ");
 
   TestUI.reset();
