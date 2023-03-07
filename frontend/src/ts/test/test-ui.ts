@@ -207,7 +207,8 @@ function updateWordsInputPosition(force = false): void {
   ) as HTMLElement | null;
 
   if (!shouldUpdate || !activeWord) {
-    el.style.top = "0px";
+    const wordsWrapper = document.querySelector("#wordsWrapper") as HTMLElement;
+    el.style.top = wordsWrapper.offsetHeight / 2 + "px";
     el.style.left = "0px";
     return;
   }
