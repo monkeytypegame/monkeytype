@@ -42,15 +42,15 @@ const debouncedZipfCheck = debounce(250, () => {
   });
 });
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
+ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (
     (eventKey === "language" || eventKey === "funbox") &&
     (eventValue as string).split("#").includes("zipf")
   ) {
     debouncedZipfCheck();
   }
-  if (eventKey === "fontSize") {
-    Misc.sleep(0).then(() => updateWordsHeight(true));
+  if (eventKey === "fontSize" && !nosave) {
+    updateWordsHeight(true);
   }
 
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -109,7 +109,10 @@ export function focusWords(): void {
   }
 }
 
-export function updateActiveElement(backspace?: boolean): void {
+export function updateActiveElement(
+  backspace?: boolean,
+  initial = false
+): void {
   const active = document.querySelector("#words .active");
   if (Config.mode == "zen" && backspace) {
     active?.remove();
@@ -134,7 +137,9 @@ export function updateActiveElement(backspace?: boolean): void {
       });
     }
   } catch (e) {}
-  updateWordsInputPosition();
+  if (initial || shouldUpdateWordsInputPosition()) {
+    updateWordsInputPosition(initial);
+  }
 }
 
 function getWordHTML(word: string): string {
@@ -191,18 +196,19 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
+  updateActiveElement(undefined, true);
   updateWordsHeight(true);
   updateWordsInputPosition(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
-function updateWordsInputPosition(force = false): void {
-  const shouldUpdate = posUpdateLangList.some((l) =>
-    Config.language.startsWith(l)
-  );
+function shouldUpdateWordsInputPosition(): boolean {
+  const language = posUpdateLangList.some((l) => Config.language.startsWith(l));
+  return language || (Config.mode !== "time" && Config.showAllLines);
+}
 
-  if (!force && !shouldUpdate) return;
-
+export function updateWordsInputPosition(initial = false): void {
+  if (Config.tapeMode !== "off" && !initial) return;
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
     "#words .active"
@@ -214,9 +220,18 @@ function updateWordsInputPosition(force = false): void {
     return;
   }
 
-  if (!shouldUpdate) {
-    el.style.top = activeWord.offsetHeight * 2 + "px";
+  if (Config.tapeMode !== "off") {
+    el.style.top = activeWord.offsetTop + "px";
+    el.style.left = activeWord.offsetLeft + "px";
+    return;
+  }
+
+  if (
+    initial &&
+    !posUpdateLangList.some((l) => Config.language.startsWith(l))
+  ) {
     el.style.left = "0px";
+    el.style.top = activeWord.offsetHeight * 2 + "px";
   } else {
     el.style.top = activeWord.offsetTop + "px";
     el.style.left = activeWord.offsetLeft + "px";
@@ -255,10 +270,8 @@ function updateWordsHeight(force = false): void {
     let finalWordsHeight: number, finalWrapperHeight: number;
 
     if (Config.tapeMode !== "off") {
-      const wrapperHeight = wordHeight;
-
       finalWordsHeight = wordHeight * 2;
-      finalWrapperHeight = wrapperHeight;
+      finalWrapperHeight = wordHeight;
     } else {
       let lines = 0;
       let lastHeight = 0;
@@ -310,7 +323,6 @@ function updateWordsHeight(force = false): void {
     $(<Element>document.querySelector(".word")).remove();
   }
 
-  updateActiveElement();
   Caret.updatePosition();
 }
 
@@ -774,7 +786,6 @@ export function lineJump(currentTop: number): void {
     }
   }
   currentTestLine++;
-  updateWordsInputPosition();
   updateWordsHeight();
 }
 
