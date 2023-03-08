@@ -51,6 +51,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
   if (eventKey === "fontSize" && !nosave) {
     updateWordsHeight(true);
+    updateWordsInputPosition(true);
   }
 
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
