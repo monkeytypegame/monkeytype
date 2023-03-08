@@ -160,10 +160,17 @@ export async function checkAdblock(): Promise<void> {
 export async function checkCookieblocker(): Promise<void> {
   return new Promise((resolve) => {
     if (cookieBlocker === undefined) {
+      if (choice === "pw") {
+        cookieBlocker = false;
+        resolve();
+        return;
+      }
+
       //@ts-ignore
       if (window.__tcfapi === undefined) {
         cookieBlocker = true;
         resolve();
+        return;
       }
       //@ts-ignore
       window.__tcfapi("getTCData", 2, (tcData, success) => {
