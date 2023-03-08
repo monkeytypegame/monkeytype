@@ -221,8 +221,21 @@ export function updateWordsInputPosition(initial = false): void {
     return;
   }
 
+  const computed = window.getComputedStyle(activeWord);
+  const activeWordMargin =
+    parseInt(computed.marginTop) + parseInt(computed.marginBottom);
+
+  const wordsWrapperTop =
+    (document.querySelector("#wordsWrapper") as HTMLElement | null)
+      ?.offsetTop || 0;
+
   if (Config.tapeMode !== "off") {
-    el.style.top = activeWord.offsetTop + "px";
+    el.style.top =
+      wordsWrapperTop +
+      activeWord.offsetHeight +
+      activeWordMargin * 0.25 +
+      -el.offsetHeight +
+      "px";
     el.style.left = activeWord.offsetLeft + "px";
     return;
   }
@@ -232,10 +245,22 @@ export function updateWordsInputPosition(initial = false): void {
     !posUpdateLangList.some((l) => Config.language.startsWith(l))
   ) {
     el.style.left = "0px";
-    el.style.top = activeWord.offsetHeight * 2 + "px";
+    el.style.top =
+      wordsWrapperTop +
+      activeWord.offsetHeight * 2 +
+      activeWordMargin * 1.5 +
+      -el.offsetHeight +
+      "px";
   } else {
-    el.style.top = activeWord.offsetTop + "px";
     el.style.left = activeWord.offsetLeft + "px";
+    el.style.top =
+      activeWord.offsetTop -
+      activeWordMargin +
+      wordsWrapperTop +
+      activeWord.offsetHeight +
+      activeWordMargin +
+      -el.offsetHeight +
+      "px";
   }
 }
 
