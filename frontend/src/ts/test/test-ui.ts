@@ -138,8 +138,8 @@ export function updateActiveElement(
       });
     }
   } catch (e) {}
-  if (initial || shouldUpdateWordsInputPosition()) {
-    updateWordsInputPosition(initial);
+  if (!initial && shouldUpdateWordsInputPosition()) {
+    updateWordsInputPosition();
   }
 }
 
