@@ -42,12 +42,15 @@ const debouncedZipfCheck = debounce(250, () => {
   });
 });
 
-ConfigEvent.subscribe((eventKey, eventValue) => {
+ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (
     (eventKey === "language" || eventKey === "funbox") &&
     (eventValue as string).split("#").includes("zipf")
   ) {
     debouncedZipfCheck();
+  }
+  if (eventKey === "fontSize" && !nosave) {
+    updateWordsHeight(true);
   }
 
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -106,7 +109,10 @@ export function focusWords(): void {
   }
 }
 
-export function updateActiveElement(backspace?: boolean): void {
+export function updateActiveElement(
+  backspace?: boolean,
+  initial = false
+): void {
   const active = document.querySelector("#words .active");
   if (Config.mode == "zen" && backspace) {
     active?.remove();
@@ -131,7 +137,9 @@ export function updateActiveElement(backspace?: boolean): void {
       });
     }
   } catch (e) {}
-  updateWordsInputPosition();
+  if (initial || shouldUpdateWordsInputPosition()) {
+    updateWordsInputPosition(initial);
+  }
 }
 
 function getWordHTML(word: string): string {
@@ -188,34 +196,50 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  updateWordsHeight();
+  updateActiveElement(undefined, true);
+  updateWordsHeight(true);
   updateWordsInputPosition(true);
 }
 
 const posUpdateLangList = ["japanese", "chinese", "korean"];
-export function updateWordsInputPosition(force = false): void {
-  const shouldUpdate = posUpdateLangList.some((l) =>
-    Config.language.startsWith(l)
-  );
+function shouldUpdateWordsInputPosition(): boolean {
+  const language = posUpdateLangList.some((l) => Config.language.startsWith(l));
+  return language || (Config.mode !== "time" && Config.showAllLines);
+}
 
-  if (!force && !shouldUpdate) return;
-
+export function updateWordsInputPosition(initial = false): void {
+  if (Config.tapeMode !== "off" && !initial) return;
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
     "#words .active"
   ) as HTMLElement | null;
 
-  if (!shouldUpdate || !activeWord) {
+  if (!activeWord) {
     el.style.top = "0px";
     el.style.left = "0px";
     return;
   }
 
-  el.style.top = activeWord.offsetTop + "px";
-  el.style.left = activeWord.offsetLeft + "px";
+  if (Config.tapeMode !== "off") {
+    el.style.top = activeWord.offsetTop + "px";
+    el.style.left = activeWord.offsetLeft + "px";
+    return;
+  }
+
+  if (
+    initial &&
+    !posUpdateLangList.some((l) => Config.language.startsWith(l))
+  ) {
+    el.style.left = "0px";
+    el.style.top = activeWord.offsetHeight * 2 + "px";
+  } else {
+    el.style.top = activeWord.offsetTop + "px";
+    el.style.left = activeWord.offsetLeft + "px";
+  }
 }
 
-export function updateWordsHeight(): void {
+function updateWordsHeight(force = false): void {
+  if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
     $(<Element>document.querySelector(".word")).outerHeight(true)
@@ -243,36 +267,62 @@ export function updateWordsHeight(): void {
     }
     $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
-    if (Config.tapeMode !== "off") {
-      const wrapperHeight = wordHeight;
+    let finalWordsHeight: number, finalWrapperHeight: number;
 
-      $("#words")
-        .css("height", wordHeight * 2 + "px")
-        .css("overflow", "hidden")
-        .css("width", "200%")
-        .css("margin-left", "50%");
-      $("#wordsWrapper")
-        .css("height", wrapperHeight + "px")
-        .css("overflow", "hidden");
-      $(".outOfFocusWarning").css("line-height", wrapperHeight + "px");
+    if (Config.tapeMode !== "off") {
+      finalWordsHeight = wordHeight * 2;
+      finalWrapperHeight = wordHeight;
     } else {
-      $("#words")
-        .css("height", wordHeight * 4 + "px")
-        .css("overflow", "hidden")
-        .css("width", "100%")
-        .css("margin-left", "unset");
-      $("#wordsWrapper")
-        .css("height", wordHeight * 3 + "px")
-        .css("overflow", "hidden");
-      $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
+      let lines = 0;
+      let lastHeight = 0;
+      let wordIndex = 0;
+      const words = document.querySelectorAll("#words .word");
+      let wrapperHeight = 0;
+
+      const wordComputedStyle = window.getComputedStyle(words[0]);
+      const wordTopMargin = parseInt(wordComputedStyle.marginTop);
+      const wordBottomMargin = parseInt(wordComputedStyle.marginBottom);
+
+      while (lines < 3) {
+        const word = words[wordIndex] as HTMLElement | null;
+        if (!word) break;
+        const height = word.offsetTop;
+        if (height > lastHeight) {
+          lines++;
+          wrapperHeight += word.offsetHeight + wordTopMargin + wordBottomMargin;
+          lastHeight = height;
+        }
+        wordIndex++;
+      }
+
+      if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
+
+      const wordsHeight = (wrapperHeight / 3) * 4;
+
+      finalWordsHeight = wordsHeight;
+      finalWrapperHeight = wrapperHeight;
     }
+
+    $("#words")
+      .css("height", finalWordsHeight + "px")
+      .css("overflow", "hidden");
+
+    if (Config.tapeMode !== "off") {
+      $("#words").css("width", "200%").css("margin-left", "50%");
+    } else {
+      $("#words").css("width", "100%").css("margin-left", "unset");
+    }
+
+    $("#wordsWrapper")
+      .css("height", finalWrapperHeight + "px")
+      .css("overflow", "hidden");
+    $(".outOfFocusWarning").css("line-height", finalWrapperHeight + "px");
   }
 
   if (Config.mode === "zen") {
     $(<Element>document.querySelector(".word")).remove();
   }
 
-  updateActiveElement();
   Caret.updatePosition();
 }
 
@@ -736,7 +786,7 @@ export function lineJump(currentTop: number): void {
     }
   }
   currentTestLine++;
-  updateWordsInputPosition();
+  updateWordsHeight();
 }
 
 export function arrangeCharactersRightToLeft(): void {
