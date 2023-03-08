@@ -1011,7 +1011,7 @@ export function toggleResultWords(): void {
   }
 }
 
-export function applyBurstHeatmap(): void {
+export async function applyBurstHeatmap(): Promise<void> {
   if (Config.burstHeatmap) {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
 
@@ -1033,26 +1033,39 @@ export function applyBurstHeatmap(): void {
       adatm.push(Math.abs(median - burst));
     });
     const step = Misc.mean(adatm);
+
+    const themeColors = await ThemeColors.getAll();
+
+    const colors = [
+      themeColors.colorfulError,
+      Misc.blendTwoHexColors(themeColors.colorfulError, themeColors.text),
+      themeColors.text,
+      Misc.blendTwoHexColors(themeColors.main, themeColors.text),
+      themeColors.main,
+    ];
+
+    const unreachedColor = themeColors.sub;
+
     const steps = [
       {
         val: 0,
-        class: "heatmap0",
+        colorId: 0,
       },
       {
         val: median - step * 1.5,
-        class: "heatmap1",
+        colorId: 1,
       },
       {
         val: median - step * 0.5,
-        class: "heatmap2",
+        colorId: 2,
       },
       {
         val: median + step * 0.5,
-        class: "heatmap3",
+        colorId: 3,
       },
       {
         val: median + step * 1.5,
-        class: "heatmap4",
+        colorId: 4,
       },
     ];
 
@@ -1074,26 +1087,29 @@ export function applyBurstHeatmap(): void {
     });
 
     $("#resultWordsHistory .words .word").each((_, word) => {
-      let cls = "";
       const wordBurstAttr = $(word).attr("burst");
       if (wordBurstAttr === undefined) {
-        cls = "unreached";
+        $(word).css("color", unreachedColor);
       } else {
         const wordBurstVal = parseInt(<string>wordBurstAttr);
         steps.forEach((step) => {
-          if (wordBurstVal >= step.val) cls = step.class;
+          if (wordBurstVal >= step.val) {
+            $(word).addClass("heatmapInherit");
+            $(word).css("color", colors[step.colorId]);
+          }
         });
       }
-      $(word).addClass(cls);
+    });
+
+    $("#resultWordsHistory .heatmapLegend .boxes .box").each((index, box) => {
+      $(box).css("background", colors[index]);
     });
   } else {
     $("#resultWordsHistory .heatmapLegend").addClass("hidden");
-    $("#resultWordsHistory .words .word").removeClass("heatmap0");
-    $("#resultWordsHistory .words .word").removeClass("heatmap1");
-    $("#resultWordsHistory .words .word").removeClass("heatmap2");
-    $("#resultWordsHistory .words .word").removeClass("heatmap3");
-    $("#resultWordsHistory .words .word").removeClass("heatmap4");
-    $("#resultWordsHistory .words .word").removeClass("unreached");
+    $("#resultWordsHistory .words .word").removeClass("heatmapInherit");
+    $("#resultWordsHistory .words .word").css("color", "");
+
+    $("#resultWordsHistory .heatmapLegend .boxes .box").css("color", "");
   }
 }
 
