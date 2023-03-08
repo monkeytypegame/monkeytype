@@ -1,4 +1,5 @@
 import * as Loader from "../elements/loader";
+import { normal as normalBlend } from "color-blend";
 
 async function fetchJson<T>(url: string): Promise<T> {
   try {
@@ -233,6 +234,62 @@ export async function getContributorsList(): Promise<string[]> {
   } catch (e) {
     throw new Error("Contributors list JSON fetch failed");
   }
+}
+
+export function blendTwoHexColors(color1: string, color2: string): string {
+  const rgb1 = hexToRgb(color1);
+  const rgb2 = hexToRgb(color2);
+
+  if (rgb1 && rgb2) {
+    const rgba1 = {
+      r: rgb1.r,
+      g: rgb1.g,
+      b: rgb1.b,
+      a: 1,
+    };
+    const rgba2 = {
+      r: rgb2.r,
+      g: rgb2.g,
+      b: rgb2.b,
+      a: 0.5,
+    };
+    const blended = normalBlend(rgba1, rgba2);
+    console.log(blended);
+    return rgbToHex(blended.r, blended.g, blended.b);
+  } else {
+    return "#000000";
+  }
+}
+
+function hexToRgb(hex: string):
+  | {
+      r: number;
+      g: number;
+      b: number;
+    }
+  | undefined {
+  if (hex.length != 4 && hex.length != 7 && !hex.startsWith("#")) {
+    return undefined;
+  }
+  let r: number;
+  let g: number;
+  let b: number;
+  if (hex.length == 4) {
+    r = ("0x" + hex[1] + hex[1]) as unknown as number;
+    g = ("0x" + hex[2] + hex[2]) as unknown as number;
+    b = ("0x" + hex[3] + hex[3]) as unknown as number;
+  } else if (hex.length == 7) {
+    r = ("0x" + hex[1] + hex[2]) as unknown as number;
+    g = ("0x" + hex[3] + hex[4]) as unknown as number;
+    b = ("0x" + hex[5] + hex[6]) as unknown as number;
+  } else {
+    return undefined;
+  }
+  return { r, g, b };
+}
+
+function rgbToHex(r: number, g: number, b: number): string {
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
 function hexToHSL(hex: string): {

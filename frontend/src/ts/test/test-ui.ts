@@ -51,6 +51,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
   if (eventKey === "fontSize" && !nosave) {
     updateWordsHeight(true);
+    updateWordsInputPosition(true);
   }
 
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
@@ -137,8 +138,8 @@ export function updateActiveElement(
       });
     }
   } catch (e) {}
-  if (initial || shouldUpdateWordsInputPosition()) {
-    updateWordsInputPosition(initial);
+  if (!initial && shouldUpdateWordsInputPosition()) {
+    updateWordsInputPosition();
   }
 }
 
@@ -220,8 +221,21 @@ export function updateWordsInputPosition(initial = false): void {
     return;
   }
 
+  const computed = window.getComputedStyle(activeWord);
+  const activeWordMargin =
+    parseInt(computed.marginTop) + parseInt(computed.marginBottom);
+
+  const wordsWrapperTop =
+    (document.querySelector("#wordsWrapper") as HTMLElement | null)
+      ?.offsetTop || 0;
+
   if (Config.tapeMode !== "off") {
-    el.style.top = activeWord.offsetTop + "px";
+    el.style.top =
+      wordsWrapperTop +
+      activeWord.offsetHeight +
+      activeWordMargin * 0.25 +
+      -el.offsetHeight +
+      "px";
     el.style.left = activeWord.offsetLeft + "px";
     return;
   }
@@ -231,10 +245,22 @@ export function updateWordsInputPosition(initial = false): void {
     !posUpdateLangList.some((l) => Config.language.startsWith(l))
   ) {
     el.style.left = "0px";
-    el.style.top = activeWord.offsetHeight * 2 + "px";
+    el.style.top =
+      wordsWrapperTop +
+      activeWord.offsetHeight * 2 +
+      activeWordMargin * 1.5 +
+      -el.offsetHeight +
+      "px";
   } else {
-    el.style.top = activeWord.offsetTop + "px";
     el.style.left = activeWord.offsetLeft + "px";
+    el.style.top =
+      activeWord.offsetTop -
+      activeWordMargin +
+      wordsWrapperTop +
+      activeWord.offsetHeight +
+      activeWordMargin +
+      -el.offsetHeight +
+      "px";
   }
 }
 
@@ -985,7 +1011,7 @@ export function toggleResultWords(): void {
   }
 }
 
-export function applyBurstHeatmap(): void {
+export async function applyBurstHeatmap(): Promise<void> {
   if (Config.burstHeatmap) {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
 
@@ -1007,26 +1033,39 @@ export function applyBurstHeatmap(): void {
       adatm.push(Math.abs(median - burst));
     });
     const step = Misc.mean(adatm);
+
+    const themeColors = await ThemeColors.getAll();
+
+    const colors = [
+      themeColors.colorfulError,
+      Misc.blendTwoHexColors(themeColors.colorfulError, themeColors.text),
+      themeColors.text,
+      Misc.blendTwoHexColors(themeColors.main, themeColors.text),
+      themeColors.main,
+    ];
+
+    const unreachedColor = themeColors.sub;
+
     const steps = [
       {
         val: 0,
-        class: "heatmap0",
+        colorId: 0,
       },
       {
         val: median - step * 1.5,
-        class: "heatmap1",
+        colorId: 1,
       },
       {
         val: median - step * 0.5,
-        class: "heatmap2",
+        colorId: 2,
       },
       {
         val: median + step * 0.5,
-        class: "heatmap3",
+        colorId: 3,
       },
       {
         val: median + step * 1.5,
-        class: "heatmap4",
+        colorId: 4,
       },
     ];
 
@@ -1048,26 +1087,29 @@ export function applyBurstHeatmap(): void {
     });
 
     $("#resultWordsHistory .words .word").each((_, word) => {
-      let cls = "";
       const wordBurstAttr = $(word).attr("burst");
       if (wordBurstAttr === undefined) {
-        cls = "unreached";
+        $(word).css("color", unreachedColor);
       } else {
         const wordBurstVal = parseInt(<string>wordBurstAttr);
         steps.forEach((step) => {
-          if (wordBurstVal >= step.val) cls = step.class;
+          if (wordBurstVal >= step.val) {
+            $(word).addClass("heatmapInherit");
+            $(word).css("color", colors[step.colorId]);
+          }
         });
       }
-      $(word).addClass(cls);
+    });
+
+    $("#resultWordsHistory .heatmapLegend .boxes .box").each((index, box) => {
+      $(box).css("background", colors[index]);
     });
   } else {
     $("#resultWordsHistory .heatmapLegend").addClass("hidden");
-    $("#resultWordsHistory .words .word").removeClass("heatmap0");
-    $("#resultWordsHistory .words .word").removeClass("heatmap1");
-    $("#resultWordsHistory .words .word").removeClass("heatmap2");
-    $("#resultWordsHistory .words .word").removeClass("heatmap3");
-    $("#resultWordsHistory .words .word").removeClass("heatmap4");
-    $("#resultWordsHistory .words .word").removeClass("unreached");
+    $("#resultWordsHistory .words .word").removeClass("heatmapInherit");
+    $("#resultWordsHistory .words .word").css("color", "");
+
+    $("#resultWordsHistory .heatmapLegend .boxes .box").css("color", "");
   }
 }
 

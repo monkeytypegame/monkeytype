@@ -504,22 +504,9 @@
           place-content: center center;
         }
         .box:nth-child(1) {
-          background: var(--colorful-error-color);
           border-radius: var(--roundness) 0 0 var(--roundness);
         }
-        .box:nth-child(2) {
-          background: var(--colorful-error-color);
-          filter: opacity(0.6);
-        }
-        .box:nth-child(3) {
-          background: var(--sub-color);
-        }
-        .box:nth-child(4) {
-          background: var(--main-color);
-          filter: opacity(0.6);
-        }
         .box:nth-child(5) {
-          background: var(--main-color);
           border-radius: 0 var(--roundness) var(--roundness) 0;
         }
       }
@@ -546,25 +533,8 @@
         letter.incorrect.extra {
           color: var(--error-extra-color);
         }
-        &.unreached letter {
-          filter: opacity(0.2);
-        }
-        &.heatmap0 letter {
-          color: var(--colorful-error-color);
-        }
-        &.heatmap1 letter {
-          color: var(--colorful-error-color);
-          filter: opacity(0.6);
-        }
-        &.heatmap2 letter {
-          color: var(--sub-color);
-        }
-        &.heatmap3 letter {
-          color: var(--main-color);
-          filter: opacity(0.6);
-        }
-        &.heatmap4 letter {
-          color: var(--main-color);
+        &.heatmapInherit letter {
+          color: inherit;
         }
       }
       &.rightToLeftTest {
