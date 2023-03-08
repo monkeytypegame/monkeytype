@@ -254,7 +254,6 @@ export function blendTwoHexColors(color1: string, color2: string): string {
       a: 0.5,
     };
     const blended = normalBlend(rgba1, rgba2);
-    console.log(blended);
     return rgbToHex(blended.r, blended.g, blended.b);
   } else {
     return "#000000";
