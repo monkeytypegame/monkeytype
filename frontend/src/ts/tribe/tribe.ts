@@ -369,6 +369,7 @@ TribeSocket.in.room.playerLeft((data) => {
     TribeResults.update("result", data.userId);
     checkIfEveryoneIsReady();
     TribeChat.updateSuggestionData();
+    TribeChat.updateIsTyping();
   }
 });
 
