@@ -48,6 +48,7 @@
 html {
   @extend .ffscroll;
   overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 a {

@@ -1,25 +1,29 @@
-import * as TestUI from "./test-ui";
+import {
+  Chart,
+  type PluginChartOptions,
+  type ScaleChartOptions,
+} from "chart.js";
 import Config from "../config";
-import * as Misc from "../utils/misc";
-import * as TestStats from "./test-stats";
-import * as Keymap from "../elements/keymap";
+import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
-import * as ThemeColors from "../elements/theme-colors";
+import QuotesController from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as TodayTracker from "./today-tracker";
-import * as PbCrown from "./pb-crown";
+import * as Keymap from "../elements/keymap";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as ThemeColors from "../elements/theme-colors";
+import { Auth } from "../firebase";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
-import * as TestInput from "./test-input";
-import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
-import QuotesController from "../controllers/quotes-controller";
-import * as AdController from "../controllers/ad-controller";
-import * as TestConfig from "./test-config";
-import { Chart } from "chart.js";
-import { Auth } from "../firebase";
 import * as SlowTimer from "../states/slow-timer";
+import * as Misc from "../utils/misc";
 import * as FunboxList from "./funbox/funbox-list";
+import * as PbCrown from "./pb-crown";
+import * as TestConfig from "./test-config";
+import * as TestInput from "./test-input";
+import * as TestStats from "./test-stats";
+import * as TestUI from "./test-ui";
+import * as TodayTracker from "./today-tracker";
 import Ape from "../ape";
 import * as TribeState from "../tribe/tribe-state";
 import * as TribeResults from "../tribe/tribe-results";
@@ -28,10 +32,8 @@ import * as TribeButtons from "../tribe/tribe-buttons";
 import * as TribeChat from "../tribe/tribe-chat";
 import * as TribeChartController from "../tribe/tribe-chart-controller";
 
-// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
-import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
-import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import confetti from "canvas-confetti";
+import type { AnnotationOptions } from "chartjs-plugin-annotation";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -477,7 +479,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     if (
       Config.mode != "quote" &&
       !dontSave &&
-      (funboxes.length === 0 || allFunboxesCanGetPb)
+      (result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb)
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
@@ -741,7 +743,7 @@ export async function update(
   updateQuoteFavorite(randomQuote);
   await updateGraph();
   await updateGraphPBLine();
-  updateTags(dontSave);
+  await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)

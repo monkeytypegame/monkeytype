@@ -101,9 +101,7 @@ export class DailyLeaderboard {
       await LaterQueue.scheduleForTomorrow(
         "daily-leaderboard-results",
         this.leaderboardModeKey,
-        {
-          modeRule: this.modeRule,
-        }
+        this.modeRule
       );
     }
 

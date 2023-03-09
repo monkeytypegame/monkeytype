@@ -398,13 +398,6 @@ export function restart(options = {} as RestartOptions): void {
   }
   if (ActivePage.get() == "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
-      if (
-        TestWords.hasTab &&
-        !options.event?.shiftKey &&
-        Config.quickRestart !== "esc"
-      ) {
-        return;
-      }
       if (Config.mode !== "zen") event?.preventDefault();
       if (
         !Misc.canQuickRestart(
@@ -519,9 +512,9 @@ export function restart(options = {} as RestartOptions): void {
   $("#restartTestButton").blur();
   MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
-  if (ActivePage.get() == "test" && window.scrollY > 0) {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  // if (ActivePage.get() == "test" && window.scrollY > 0) {
+  // window.scrollTo({ top: 0, behavior: "smooth" });
+  // }
   $("#wordsInput").val(" ");
 
   TestUI.reset();
@@ -934,7 +927,12 @@ export async function init(): Promise<void> {
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   if (funboxToPush) {
     wordsBound = +funboxToPush.split(":")[1];
-    if (Config.mode === "words" && Config.words < wordsBound) {
+    if (
+      (Config.mode === "words" && Config.words < wordsBound) ||
+      (Config.mode === "custom" &&
+        !CustomText.isTimeRandom &&
+        CustomText.word < wordsBound)
+    ) {
       wordsBound = Config.words;
     }
   } else if (Config.showAllLines) {
