@@ -1044,9 +1044,9 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     const colors = [
       themeColors.colorfulError,
-      Misc.blendTwoHexColors(themeColors.colorfulError, themeColors.text),
+      Misc.blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
       themeColors.text,
-      Misc.blendTwoHexColors(themeColors.main, themeColors.text),
+      Misc.blendTwoHexColors(themeColors.main, themeColors.text, 0.5),
       themeColors.main,
     ];
 
