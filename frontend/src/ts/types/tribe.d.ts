@@ -97,6 +97,7 @@ declare namespace TribeTypes {
     wpmProgress: number;
     wordIndex: number;
     letterIndex: number;
+    afk: boolean;
   }
 
   interface User {

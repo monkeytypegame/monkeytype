@@ -109,6 +109,10 @@ function backToLobbyOut(): void {
   Socket.emit("room_back_to_lobby");
 }
 
+function destroyTest(callback: (data: { reason: string }) => void): void {
+  Socket.on("room_destroy_test", callback);
+}
+
 function joined(callback: (data: { room: TribeTypes.Room }) => void): void {
   Socket.on("room_joined", callback);
 }
@@ -278,6 +282,7 @@ export default {
     readyTimerOver,
     backToLobby,
     finalPositions,
+    destroyTest,
   },
   out: {
     getPublicRooms,

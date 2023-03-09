@@ -598,6 +598,7 @@ TribeSocket.in.room.progressUpdate((data) => {
 
       progress = wordsProgress + globalWordProgress;
     }
+
     TribeSocket.out.room.progressUpdate({
       wpm: wpmAndRaw.wpm,
       raw: wpmAndRaw.raw,
@@ -606,6 +607,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       wpmProgress: 0,
       wordIndex: TestWords.words.currentIndex,
       letterIndex: inputLen - 1,
+      afk: TestInput.currentKeypress.afk,
     });
   }
 
@@ -701,6 +703,14 @@ TribeSocket.in.room.finishTimerOver(() => {
   TribeResults.hideTimer();
   if (TestState.isActive) {
     TimerEvent.dispatch("fail", "out of time");
+  }
+});
+
+TribeSocket.in.room.destroyTest((data) => {
+  if (TestState.isActive) {
+    if (data.reason === "afk") {
+      TimerEvent.dispatch("fail", "afk");
+    }
   }
 });
 
