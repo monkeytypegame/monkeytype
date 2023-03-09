@@ -1022,13 +1022,6 @@
     "textColor": "#414141"
   },
   {
-    "name": "catppuccin",
-    "bgColor": "#1e1e2e",
-    "mainColor": "#abe9b3",
-    "subColor": "#575268",
-    "textColor": "#d9e0ee"
-  },
-  {
     "name": "snes",
     "bgColor": "#bfbec2",
     "mainColor": "#553d94",
@@ -1153,5 +1146,33 @@
     "mainColor": "#7d67a9",
     "subColor": "#3a98b9",
     "textColor": "#1b4c5e"
+  },
+  {
+    "name": "ctp_mocha",
+    "bgColor": "#1e1e2e",
+    "mainColor": "#89b4fa",
+    "subColor": "#6c7086",
+    "textColor": "#cdd6f4"
+  },
+  {
+    "name": "ctp_macchiato",
+    "bgColor": "#24273a",
+    "mainColor": "#8aadf4",
+    "subColor": "#6e738d",
+    "textColor": "#cad3f5"
+  },
+  {
+    "name": "ctp_frappé",
+    "bgColor": "#303446",
+    "mainColor": "#8caaee",
+    "subColor": "#737994",
+    "textColor": "#c6d0f5"
+  },
+  {
+    "name": "ctp_latte",
+    "bgColor": "#eff1f5",
+    "mainColor": "#1e66f5",
+    "subColor": "#9ca0b0",
+    "textColor": "#4c4f69"
   }
 ]
