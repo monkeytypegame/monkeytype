@@ -280,12 +280,13 @@ function toggleFavourite(themeName: string): void {
 
 export function saveCustomThemeColors(): void {
   const newColors: string[] = [];
-  $.each(
-    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-    (_index, element) => {
-      newColors.push($(element).attr("value") as string);
-    }
-  );
+  for (const color of ThemeController.colorVars) {
+    newColors.push(
+      $(
+        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+      ).attr("value") as string
+    );
+  }
   UpdateConfig.setCustomThemeColors(newColors);
   Notifications.add("Custom theme saved", 1);
 }
