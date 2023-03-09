@@ -381,9 +381,9 @@ export async function screenshot(): Promise<void> {
   }
 
   function revertScreenshot(): void {
-    // $("#testConfig").removeClass("invisible");
     $("#ad-result-wrapper").removeClass("hidden");
     $("#ad-result-small-wrapper").removeClass("hidden");
+    $("#testConfig").removeClass("hidden");
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
@@ -396,6 +396,8 @@ export async function screenshot(): Promise<void> {
     if (!Auth?.currentUser) {
       $(".pageTest .loginTip").removeClass("hidden");
     }
+    (document.querySelector("html") as HTMLElement).style.scrollBehavior =
+      "smooth";
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
@@ -417,7 +419,6 @@ export async function screenshot(): Promise<void> {
     );
   }
   $(".pageTest .buttons").addClass("hidden");
-  // $("#testConfig").addClass("invisible");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
@@ -425,8 +426,13 @@ export async function screenshot(): Promise<void> {
   $("#nocss").addClass("hidden");
   $("#ad-result-wrapper").addClass("hidden");
   $("#ad-result-small-wrapper").addClass("hidden");
+  $("#testConfig").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
 
+  (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
+  window.scrollTo({
+    top: 0,
+  });
   const src = $("#result");
   const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
   const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
