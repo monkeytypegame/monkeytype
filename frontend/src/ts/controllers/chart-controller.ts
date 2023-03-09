@@ -1,21 +1,32 @@
 import {
-  Chart,
   BarController,
   BarElement,
   CategoryScale,
+  Chart,
   Filler,
-  LinearScale,
   LineController,
   LineElement,
+  LinearScale,
   PointElement,
   ScatterController,
   TimeScale,
   TimeSeriesScale,
   Tooltip,
+  type AnimationSpec,
+  type CartesianScaleOptions,
+  type ChartConfiguration,
+  type ChartDataset,
+  type ChartType,
+  type DefaultDataPoint,
+  type PluginChartOptions,
+  type ScaleChartOptions,
 } from "chart.js";
 
+import chartAnnotation, {
+  type AnnotationOptions,
+  type LabelOptions,
+} from "chartjs-plugin-annotation";
 import chartTrendline from "chartjs-plugin-trendline";
-import chartAnnotation from "chartjs-plugin-annotation";
 
 Chart.register(
   BarController,
@@ -40,31 +51,13 @@ Chart.register(
 Chart.defaults.elements.line.tension = 0.3;
 Chart.defaults.elements.line.fill = "origin";
 
-import * as TestInput from "../test/test-input";
-import * as ThemeColors from "../elements/theme-colors";
-import * as Misc from "../utils/misc";
-import Config from "../config";
-import * as ConfigEvent from "../observables/config-event";
-import format from "date-fns/format";
 import "chartjs-adapter-date-fns";
-
-// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
-import type {
-  AnimationSpec,
-  CartesianScaleOptions,
-  ChartConfiguration,
-  ChartDataset,
-  ChartType,
-  DefaultDataPoint,
-  PluginChartOptions,
-  ScaleChartOptions,
-} from "chart.js";
-
-// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
-import type {
-  AnnotationOptions,
-  LabelOptions,
-} from "chartjs-plugin-annotation";
+import format from "date-fns/format";
+import Config from "../config";
+import * as ThemeColors from "../elements/theme-colors";
+import * as ConfigEvent from "../observables/config-event";
+import * as TestInput from "../test/test-input";
+import * as Misc from "../utils/misc";
 
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
