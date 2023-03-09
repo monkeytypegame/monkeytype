@@ -898,7 +898,12 @@ export async function init(): Promise<void> {
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   if (funboxToPush) {
     wordsBound = +funboxToPush.split(":")[1];
-    if (Config.mode === "words" && Config.words < wordsBound) {
+    if (
+      (Config.mode === "words" && Config.words < wordsBound) ||
+      (Config.mode === "custom" &&
+        !CustomText.isTimeRandom &&
+        CustomText.word < wordsBound)
+    ) {
       wordsBound = Config.words;
     }
   } else if (Config.showAllLines) {
