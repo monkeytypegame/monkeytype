@@ -381,13 +381,6 @@ export function restart(options = {} as RestartOptions): void {
   }
   if (ActivePage.get() == "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
-      if (
-        TestWords.hasTab &&
-        !options.event?.shiftKey &&
-        Config.quickRestart !== "esc"
-      ) {
-        return;
-      }
       if (Config.mode !== "zen") event?.preventDefault();
       if (
         !Misc.canQuickRestart(
