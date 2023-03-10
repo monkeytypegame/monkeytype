@@ -177,7 +177,8 @@ export async function punctuateWord(
     lastChar != "," &&
     lastChar != "." &&
     currentLanguage !== "russian" &&
-    currentLanguage !== "ukrainian"
+    currentLanguage !== "ukrainian" &&
+    currentLanguage !== "slovak"
   ) {
     word = `'${word}'`;
   } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
