@@ -241,4 +241,11 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
   }
 });
 
+$(document).on("keydown", (event) => {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
+    hide();
+    event.preventDefault();
+  }
+});
+
 Skeleton.save(wrapperId);

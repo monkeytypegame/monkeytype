@@ -8,21 +8,16 @@ import { buildMonkeyMail } from "../utils/monkey-mail";
 import { DailyLeaderboard } from "../utils/daily-leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
 import { formatSeconds, getOrdinalNumberString, mapRange } from "../utils/misc";
-import LaterQueue, { LaterTask } from "../queues/later-queue";
+import LaterQueue, {
+  LaterTask,
+  LaterTaskContexts,
+  LaterTaskType,
+} from "../queues/later-queue";
 import { WeeklyXpLeaderboard } from "../services/weekly-xp-leaderboard";
 import { recordTimeToCompleteJob } from "../utils/prometheus";
 
-interface DailyLeaderboardMailContext {
-  yesterdayTimestamp: number;
-  modeRule: MonkeyTypes.ValidModeRule;
-}
-
-interface WeeklyXpLeaderboardResultContext {
-  lastWeekTimestamp: number;
-}
-
 async function handleDailyLeaderboardResults(
-  ctx: DailyLeaderboardMailContext
+  ctx: LaterTaskContexts["daily-leaderboard-results"]
 ): Promise<void> {
   const { yesterdayTimestamp, modeRule } = ctx;
   const { language, mode, mode2 } = modeRule;
@@ -106,7 +101,7 @@ async function handleDailyLeaderboardResults(
 }
 
 async function handleWeeklyXpLeaderboardResults(
-  ctx: WeeklyXpLeaderboardResultContext
+  ctx: LaterTaskContexts["weekly-xp-leaderboard-results"]
 ): Promise<void> {
   const {
     leaderboards: { weeklyXp: weeklyXpConfig },
@@ -184,15 +179,18 @@ async function handleWeeklyXpLeaderboardResults(
 }
 
 async function jobHandler(job: Job): Promise<void> {
-  const { taskName, ctx }: LaterTask = job.data;
+  const { taskName, ctx }: LaterTask<LaterTaskType> = job.data;
+
   Logger.info(`Starting job: ${taskName}`);
 
   const start = performance.now();
 
   if (taskName === "daily-leaderboard-results") {
-    await handleDailyLeaderboardResults(ctx);
+    const taskCtx = ctx as LaterTaskContexts["daily-leaderboard-results"];
+    await handleDailyLeaderboardResults(taskCtx);
   } else if (taskName === "weekly-xp-leaderboard-results") {
-    await handleWeeklyXpLeaderboardResults(ctx);
+    const taskCtx = ctx as LaterTaskContexts["weekly-xp-leaderboard-results"];
+    await handleWeeklyXpLeaderboardResults(taskCtx);
   }
 
   const elapsed = performance.now() - start;

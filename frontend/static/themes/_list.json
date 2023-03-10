@@ -1153,5 +1153,12 @@
     "mainColor": "#7d67a9",
     "subColor": "#3a98b9",
     "textColor": "#1b4c5e"
+  },
+  {
+    "name": "cherry_blossom",
+    "bgColor": "#323437",
+    "mainColor": "#d65ccc",
+    "subColor": "#787d82",
+    "textColor": "#d1d0c5"
   }
 ]

@@ -91,7 +91,7 @@ export function init(missed: boolean, slow: boolean): boolean {
   const punctuation =
     before.punctuation === null ? Config.punctuation : before.punctuation;
   const numbers = before.numbers === null ? Config.numbers : before.numbers;
-  UpdateConfig.setMode("custom");
+  UpdateConfig.setMode("custom", true);
 
   CustomText.setText(newCustomText);
   CustomText.setIsWordRandom(true);

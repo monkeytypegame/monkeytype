@@ -1,5 +1,4 @@
 import Config, * as UpdateConfig from "../../config";
-import * as TestUI from "../../test/test-ui";
 
 const commands: MonkeyTypes.Command[] = [
   {
@@ -13,9 +12,6 @@ const commands: MonkeyTypes.Command[] = [
     exec: (input): void => {
       if (!input) return;
       UpdateConfig.setFontSize(parseFloat(input));
-      setTimeout(() => {
-        TestUI.updateWordsHeight();
-      }, 0); //honestly no clue why it i need to wait for the next event loop to do this
     },
   },
 ];

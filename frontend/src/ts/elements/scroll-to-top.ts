@@ -2,7 +2,7 @@ import * as ActivePage from "../states/active-page";
 
 let visible = false;
 
-$(".scrollToTopButton").on("click", () => {
+$(document).on("click", ".scrollToTopButton", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
