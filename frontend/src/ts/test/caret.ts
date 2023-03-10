@@ -2,7 +2,7 @@ import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 
 export let caretAnimating = true;
 const caret = $("#caret");
@@ -134,7 +134,7 @@ export async function updatePosition(): Promise<void> {
     if (
       newTop >= middlePos &&
       contentHeight > browserHeight &&
-      TestActive.get()
+      TestState.isActive
     ) {
       const newscrolltop = newTop - middlePos / 2;
       window.scrollTo({

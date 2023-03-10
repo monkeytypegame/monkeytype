@@ -13,7 +13,7 @@ import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "../states/test-active";
+import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
 
@@ -236,7 +236,7 @@ export async function start(): Promise<void> {
     timer = setTimeout(function () {
       // time++;
 
-      if (!TestActive.get()) {
+      if (!TestState.isActive) {
         if (timer !== null) clearTimeout(timer);
         SlowTimer.clear();
         slowTimerCount = 0;

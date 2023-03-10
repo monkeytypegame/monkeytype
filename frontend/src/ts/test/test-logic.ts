@@ -1,62 +1,61 @@
+import objectHash from "object-hash";
 import Ape from "../ape";
-import * as TestUI from "./test-ui";
-import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
-import * as Misc from "../utils/misc";
+import * as AdController from "../controllers/ad-controller";
+import * as AnalyticsController from "../controllers/analytics-controller";
+import * as ChallengeContoller from "../controllers/challenge-controller";
 import QuotesController from "../controllers/quotes-controller";
-import * as Notifications from "../elements/notifications";
-import * as CustomText from "./custom-text";
-import * as CustomTextState from "../states/custom-text-name";
-import * as TestStats from "./test-stats";
-import * as PractiseWords from "./practise-words";
-import * as ShiftTracker from "./shift-tracker";
-import * as Focus from "./focus";
-import * as Funbox from "./funbox/funbox";
-import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
-import * as PaceCaret from "./pace-caret";
-import * as Caret from "./caret";
-import * as LiveWpm from "./live-wpm";
-import * as LiveAcc from "./live-acc";
-import * as LiveBurst from "./live-burst";
-import * as TimerProgress from "./timer-progress";
+import * as DB from "../db";
+import * as AccountButton from "../elements/account-button";
+import * as Keymap from "../elements/keymap";
+import * as Last10Average from "../elements/last-10-average";
+import * as ModesNotice from "../elements/modes-notice";
+import * as MonkeyPower from "../elements/monkey-power";
+import * as Notifications from "../elements/notifications";
+import { Auth } from "../firebase";
+import * as ConfigEvent from "../observables/config-event";
+import * as KeymapEvent from "../observables/keymap-event";
+import * as TimerEvent from "../observables/timer-event";
+import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as QuoteSubmitPopup from "../popups/quote-submit-popup";
-import * as PbCrown from "./pb-crown";
-import * as TestTimer from "./test-timer";
-import * as OutOfFocus from "./out-of-focus";
-import * as AccountButton from "../elements/account-button";
-import * as DB from "../db";
-import * as Replay from "./replay";
-import * as TodayTracker from "./today-tracker";
-import * as Wordset from "./wordset";
-import * as ChallengeContoller from "../controllers/challenge-controller";
-import * as QuoteRatePopup from "../popups/quote-rate-popup";
-import * as BritishEnglish from "./british-english";
-import * as EnglishPunctuation from "./english-punctuation";
-import * as LazyMode from "./lazy-mode";
-import * as Result from "./result";
-import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
-import * as TestActive from "../states/test-active";
-import * as TestInput from "./test-input";
-import * as TestWords from "./test-words";
-import * as TestState from "./test-state";
-import * as ModesNotice from "../elements/modes-notice";
-import * as PageTransition from "../states/page-transition";
-import * as ConfigEvent from "../observables/config-event";
-import * as TimerEvent from "../observables/timer-event";
-import * as Last10Average from "../elements/last-10-average";
-import * as Monkey from "./monkey";
-import objectHash from "object-hash";
-import * as AnalyticsController from "../controllers/analytics-controller";
-import { Auth } from "../firebase";
-import * as AdController from "../controllers/ad-controller";
-import * as TestConfig from "./test-config";
 import * as ConnectionState from "../states/connection";
+import * as CustomTextState from "../states/custom-text-name";
+import * as PageTransition from "../states/page-transition";
+import * as Misc from "../utils/misc";
+import * as BritishEnglish from "./british-english";
+import * as Caret from "./caret";
+import * as CustomText from "./custom-text";
+import * as EnglishPunctuation from "./english-punctuation";
+import * as Focus from "./focus";
+import * as Funbox from "./funbox/funbox";
 import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
-import * as KeymapEvent from "../observables/keymap-event";
+import * as LazyMode from "./lazy-mode";
+import * as LiveAcc from "./live-acc";
+import * as LiveBurst from "./live-burst";
+import * as LiveWpm from "./live-wpm";
+import * as ManualRestart from "./manual-restart-tracker";
+import * as Monkey from "./monkey";
+import * as OutOfFocus from "./out-of-focus";
+import * as PaceCaret from "./pace-caret";
+import * as PbCrown from "./pb-crown";
+import * as PractiseWords from "./practise-words";
+import * as Replay from "./replay";
+import * as Result from "./result";
+import * as ShiftTracker from "./shift-tracker";
+import * as TestConfig from "./test-config";
+import * as TestInput from "./test-input";
+import * as TestState from "./test-state";
+import * as TestStats from "./test-stats";
+import * as TestTimer from "./test-timer";
+import * as TestUI from "./test-ui";
+import * as TestWords from "./test-words";
+import * as TimerProgress from "./timer-progress";
+import * as TodayTracker from "./today-tracker";
+import * as Wordset from "./wordset";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -320,7 +319,7 @@ export function startTest(): boolean {
     AnalyticsController.log("testStartedNoLogin");
   }
 
-  TestActive.set(true);
+  TestState.setActive(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
@@ -417,7 +416,7 @@ export function restart(options = {} as RestartOptions): void {
       // }
     }
   }
-  if (TestActive.get()) {
+  if (TestState.isActive) {
     if (
       Config.repeatQuotes === "typing" &&
       Config.mode === "quote" &&
@@ -486,7 +485,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.corrected.reset();
   ShiftTracker.reset();
   Caret.hide();
-  TestActive.set(false);
+  TestState.setActive(false);
   Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
@@ -584,7 +583,7 @@ export function restart(options = {} as RestartOptions): void {
       } else {
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
-        TestActive.set(false);
+        TestState.setActive(false);
         Replay.stopReplayRecording();
         TestWords.words.resetCurrentIndex();
         TestInput.input.reset();
@@ -820,7 +819,7 @@ async function getNextWord(
 
 let rememberLazyMode: boolean;
 export async function init(): Promise<void> {
-  TestActive.set(false);
+  TestState.setActive(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
@@ -1481,7 +1480,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   if (TestInput.input.current.length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
@@ -1493,7 +1492,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
   TestStats.setEnd(performance.now());
-  TestActive.set(false);
+  TestState.setActive(false);
   Replay.stopReplayRecording();
   Focus.set(false);
   Caret.hide();
@@ -1898,7 +1897,7 @@ $(".pageTest").on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
-    TestActive.get() &&
+    TestState.isActive &&
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {

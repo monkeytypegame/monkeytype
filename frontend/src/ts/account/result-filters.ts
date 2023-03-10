@@ -1,10 +1,10 @@
-import * as Misc from "../utils/misc";
-import * as DB from "../db";
-import Config from "../config";
-import * as Notifications from "../elements/notifications";
 import Ape from "../ape/index";
+import Config from "../config";
+import * as DB from "../db";
 import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
 import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-preset-popup";
+import * as Misc from "../utils/misc";
 
 export const defaultResultFilters: MonkeyTypes.ResultFilters = {
   _id: "default-result-filters-id",
@@ -80,17 +80,41 @@ export async function load(): Promise<void> {
   console.log("loading filters");
   try {
     const newResultFilters = window.localStorage.getItem("resultFilters");
-    if (
-      newResultFilters !== null &&
-      newResultFilters !== "" &&
-      Object.keys(JSON.parse(newResultFilters)).length >=
-        Object.keys(defaultResultFilters).length
-    ) {
-      filters = JSON.parse(newResultFilters);
-      // save();
-    } else {
+
+    if (newResultFilters === null) {
       filters = defaultResultFilters;
-      // save();
+    } else {
+      const newFiltersObject = JSON.parse(newResultFilters);
+
+      let reset = false;
+      for (const key of Object.keys(defaultResultFilters)) {
+        if (reset === true) break;
+        if (newFiltersObject[key] === undefined) {
+          reset = true;
+          break;
+        }
+
+        if (
+          typeof defaultResultFilters[
+            key as keyof typeof defaultResultFilters
+          ] === "object"
+        ) {
+          for (const subKey of Object.keys(
+            defaultResultFilters[key as keyof typeof defaultResultFilters]
+          )) {
+            if (newFiltersObject[key][subKey] === undefined) {
+              reset = true;
+              break;
+            }
+          }
+        }
+      }
+
+      if (reset) {
+        filters = defaultResultFilters;
+      } else {
+        filters = newFiltersObject;
+      }
     }
 
     const newTags: {
@@ -531,6 +555,8 @@ $(
 $(".pageAccount .topFilters .button.allFilters").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
+
+  console.log(getFilters());
 
   (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update

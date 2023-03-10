@@ -2,7 +2,7 @@ import Config from "./config";
 import * as Caret from "./test/caret";
 import * as Notifications from "./elements/notifications";
 import * as CustomText from "./test/custom-text";
-import * as TestActive from "./states/test-active";
+import * as TestState from "./test/test-state";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
@@ -75,7 +75,7 @@ window.addEventListener("beforeunload", (event) => {
   ) {
     //ignore
   } else {
-    if (TestActive.get()) {
+    if (TestState.isActive) {
       event.preventDefault();
       // Chrome requires returnValue to be set.
       event.returnValue = "";
