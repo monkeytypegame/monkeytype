@@ -1,14 +1,14 @@
 :root {
   --bg-color: #282a36;
-  --main-color: #f2f2f2;
-  --caret-color: #f2f2f2;
-  --sub-color: #bd93f9;
+  --main-color: #bd93f9;
+  --caret-color: #bd93f9;
+  --sub-color: #6272a4;
   --sub-alt-color: #20222c;
-  --text-color: #f2f2f2;
-  --error-color: #f758a0;
-  --error-extra-color: #732e51;
-  --colorful-error-color: #f758a0;
-  --colorful-error-extra-color: #732e51;
+  --text-color: #f8f8f2;
+  --error-color: #ff5555;
+  --error-extra-color: #f1fa8c;
+  --colorful-error-color: #ff5555;
+  --colorful-error-extra-color: #f1fa8c;
 }
 
 #menu .textButton:nth-child(1) {

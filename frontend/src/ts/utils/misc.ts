@@ -236,7 +236,11 @@ export async function getContributorsList(): Promise<string[]> {
   }
 }
 
-export function blendTwoHexColors(color1: string, color2: string): string {
+export function blendTwoHexColors(
+  color1: string,
+  color2: string,
+  opacity: number
+): string {
   const rgb1 = hexToRgb(color1);
   const rgb2 = hexToRgb(color2);
 
@@ -251,7 +255,7 @@ export function blendTwoHexColors(color1: string, color2: string): string {
       r: rgb2.r,
       g: rgb2.g,
       b: rgb2.b,
-      a: 0.5,
+      a: opacity,
     };
     const blended = normalBlend(rgba1, rgba2);
     return rgbToHex(blended.r, blended.g, blended.b);

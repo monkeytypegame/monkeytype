@@ -1042,15 +1042,29 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     const themeColors = await ThemeColors.getAll();
 
-    const colors = [
+    let colors = [
       themeColors.colorfulError,
-      Misc.blendTwoHexColors(themeColors.colorfulError, themeColors.text),
+      Misc.blendTwoHexColors(themeColors.colorfulError, themeColors.text, 0.5),
       themeColors.text,
-      Misc.blendTwoHexColors(themeColors.main, themeColors.text),
+      Misc.blendTwoHexColors(themeColors.main, themeColors.text, 0.5),
       themeColors.main,
     ];
+    let unreachedColor = themeColors.sub;
 
-    const unreachedColor = themeColors.sub;
+    if (themeColors.main === themeColors.text) {
+      colors = [
+        themeColors.colorfulError,
+        Misc.blendTwoHexColors(
+          themeColors.colorfulError,
+          themeColors.text,
+          0.5
+        ),
+        themeColors.sub,
+        Misc.blendTwoHexColors(themeColors.sub, themeColors.text, 0.5),
+        themeColors.main,
+      ];
+      unreachedColor = themeColors.subAlt;
+    }
 
     const steps = [
       {
