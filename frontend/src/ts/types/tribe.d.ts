@@ -89,6 +89,16 @@ declare namespace TribeTypes {
     isInfiniteTest: boolean;
   }
 
+  interface UserProgressOut {
+    wpm: number;
+    raw: number;
+    acc: number;
+    progress: number;
+    wordIndex: number;
+    letterIndex: number;
+    afk: boolean;
+  }
+
   interface UserProgress {
     wpm: number;
     raw: number;

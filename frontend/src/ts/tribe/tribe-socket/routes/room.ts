@@ -57,7 +57,7 @@ function giveLeader(userId: string): void {
   });
 }
 
-function progressUpdateOut(userProgress: TribeTypes.UserProgress): void {
+function progressUpdateOut(userProgress: TribeTypes.UserProgressOut): void {
   Socket.emit("room_progress_update", userProgress);
 }
 

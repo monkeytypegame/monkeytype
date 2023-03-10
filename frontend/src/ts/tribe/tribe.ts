@@ -578,7 +578,11 @@ TribeSocket.in.room.progressUpdate((data) => {
     let progress = 0;
     const inputLen = TestInput.input.current.length;
     if (Config.mode === "time") {
-      progress = 100 - ((Time.get() + 1) / Config.time) * 100;
+      if (Config.time === 0) {
+        progress = 0;
+      } else {
+        progress = 100 - ((Time.get() + 1) / Config.time) * 100;
+      }
     } else {
       const currentWordLen = TestWords.words.getCurrent().length;
       const localWordProgress = Math.round((inputLen / currentWordLen) * 100);
@@ -604,7 +608,6 @@ TribeSocket.in.room.progressUpdate((data) => {
       raw: wpmAndRaw.raw,
       acc,
       progress,
-      wpmProgress: 0,
       wordIndex: TestWords.words.currentIndex,
       letterIndex: inputLen - 1,
       afk: TestInput.currentKeypress.afk,
