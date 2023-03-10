@@ -490,6 +490,7 @@ export function calculateStats(): Stats {
       (60 / testSeconds)) /
       5
   );
+  console.log(wpmraw);
   if (wpmCalcDebug) {
     console.log("chars", chars);
     console.log(
@@ -501,8 +502,8 @@ export function calculateStats(): Stats {
   }
   const acc = Misc.roundTo2(calculateAccuracy());
   return {
-    wpm: isNaN(wpm) ? 0 : wpm,
-    wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
+    wpm: isNaN(wpm) || !isFinite(wpm) ? 0 : wpm,
+    wpmRaw: isNaN(wpmraw) || !isFinite(wpmraw) ? 0 : wpmraw,
     acc: acc,
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars,
