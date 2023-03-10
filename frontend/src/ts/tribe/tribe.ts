@@ -578,11 +578,7 @@ TribeSocket.in.room.progressUpdate((data) => {
     let progress = 0;
     const inputLen = TestInput.input.current.length;
     if (Config.mode === "time") {
-      if (Config.time === 0) {
-        progress = 0;
-      } else {
-        progress = 100 - ((Time.get() + 1) / Config.time) * 100;
-      }
+      progress = 100 - ((Time.get() + 1) / Config.time) * 100;
     } else {
       const currentWordLen = TestWords.words.getCurrent().length;
       const localWordProgress = Math.round((inputLen / currentWordLen) * 100);
@@ -601,6 +597,10 @@ TribeSocket.in.room.progressUpdate((data) => {
       );
 
       progress = wordsProgress + globalWordProgress;
+    }
+
+    if (room.config.isInfiniteTest) {
+      progress = 0;
     }
 
     TribeSocket.out.room.progressUpdate({

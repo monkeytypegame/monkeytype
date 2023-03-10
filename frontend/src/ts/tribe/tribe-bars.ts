@@ -123,7 +123,7 @@ export function update(page: string, userId: string): void {
     .animate(
       {
         width:
-          Config.mode === "time"
+          Config.mode === "time" || room.config.isInfiniteTest
             ? user.progress?.wpmProgress + "%"
             : user.progress?.progress + "%",
       },
