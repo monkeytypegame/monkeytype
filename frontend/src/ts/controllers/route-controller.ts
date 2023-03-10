@@ -55,7 +55,15 @@ const routes: Route[] = [
   {
     path: "/",
     load: (_params, navigateOptions): void => {
-      if (TribeState.getState() >= 5 && !navigateOptions?.tribeOverride) {
+      if (navigateOptions?.tribeOverride === true) {
+        PageController.change(PageTest.page, {
+          tribeOverride: navigateOptions?.tribeOverride ?? false,
+          force: navigateOptions?.force ?? false,
+        });
+        return;
+      }
+
+      if (TribeState.getState() >= 5) {
         if (TribeState.getState() == 22 && TribeState.getSelf()?.isLeader) {
           tribeSocket.out.room.backToLobby();
         } else {
@@ -142,11 +150,25 @@ const routes: Route[] = [
   },
   {
     path: "/tribe",
-    load: (params): void => {
-      PageController.change(PageTribe.page, {
-        force: true,
-        params,
-      });
+    load: (params, navigateOptions): void => {
+      if (navigateOptions?.tribeOverride === true) {
+        PageController.change(PageTribe.page, {
+          tribeOverride: navigateOptions?.tribeOverride ?? false,
+          force: navigateOptions?.force ?? false,
+          params,
+        });
+        return;
+      }
+
+      if (TribeState.getState() == 22 && TribeState.getSelf()?.isLeader) {
+        tribeSocket.out.room.backToLobby();
+      } else {
+        PageController.change(PageTribe.page, {
+          tribeOverride: navigateOptions?.tribeOverride ?? false,
+          force: navigateOptions?.force ?? false,
+          params,
+        });
+      }
     },
   },
   {
