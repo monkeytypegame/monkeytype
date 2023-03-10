@@ -490,7 +490,6 @@ export function calculateStats(): Stats {
       (60 / testSeconds)) /
       5
   );
-  console.log(wpmraw);
   if (wpmCalcDebug) {
     console.log("chars", chars);
     console.log(
