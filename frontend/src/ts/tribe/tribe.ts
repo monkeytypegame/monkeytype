@@ -269,7 +269,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   const roomId = TribeState.getRoom()?.id;
   if (!$(".pageTribe").hasClass("active")) {
     Notifications.add(
-      `Disconnected: ${details?.["description"] ?? reason}`,
+      `Disconnected: ${details?.["description"]} (${reason})`,
       -1,
       undefined,
       "Tribe"
@@ -279,7 +279,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText(`Disconnected`);
-  TribePagePreloader.updateSubtext(details?.["description"] ?? reason);
+  TribePagePreloader.updateSubtext(`${details?.["description"]} (${reason})`);
   TribePagePreloader.showReconnectButton();
 
   reset();
