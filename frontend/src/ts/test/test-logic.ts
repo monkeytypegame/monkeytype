@@ -65,6 +65,7 @@ import * as ConnectionState from "../states/connection";
 import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
+import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import tribeSocket from "../tribe/tribe-socket";
 
 let failReason = "";
@@ -187,7 +188,8 @@ export async function punctuateWord(
     lastChar != "," &&
     lastChar != "." &&
     currentLanguage !== "russian" &&
-    currentLanguage !== "ukrainian"
+    currentLanguage !== "ukrainian" &&
+    currentLanguage !== "slovak"
   ) {
     word = `'${word}'`;
   } else if (Random.get() < 0.012 && lastChar != "," && lastChar != ".") {
@@ -507,6 +509,7 @@ export function restart(options = {} as RestartOptions): void {
   PaceCaret.reset();
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
+  LayoutfluidFunboxTimer.hide();
 
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
