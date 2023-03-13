@@ -454,16 +454,17 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
 
 // Handles click on share custom theme button
 $("#shareCustomThemeButton").on("click", () => {
-  const share: string[] = [];
-  $.each(
-    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-    (_, element) => {
-      share.push($(element).attr("value") as string);
-    }
-  );
+  const newColors: string[] = [];
+  for (const color of ThemeController.colorVars) {
+    newColors.push(
+      $(
+        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+      ).attr("value") as string
+    );
+  }
 
   const url =
-    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(share));
+    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(newColors));
 
   navigator.clipboard.writeText(url).then(
     function () {
