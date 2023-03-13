@@ -276,6 +276,9 @@ export function showConsentPopup(): void {
 }
 
 export function destroyResult(): void {
+  if (choice === "pw") {
+    PW.destroyAll();
+  }
   // $("#ad-result-wrapper").empty();
   // $("#ad-result-small-wrapper").empty();
 }

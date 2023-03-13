@@ -215,7 +215,12 @@ export async function refreshVisible(): Promise<void> {
   // ramp.triggerRefresh();
 }
 
-export function renderResult(): void {
+export function destroyAll(): void {
+  if (!rampReady) return;
+  ramp.destroyUnits("all");
+}
+
+export async function renderResult(): Promise<void> {
   if (!rampReady) return;
   // if (
   //   ramp.getUnits().includes("leaderboard_atf") ||
@@ -223,7 +228,10 @@ export function renderResult(): void {
   // ) {
   //   ramp.triggerRefresh();
   // } else {
-  reinstate();
+  // reinstate();
+  const units = getUnits();
+  await ramp.addUnits(units);
+  await ramp.displayUnits();
   // }
 }
 
