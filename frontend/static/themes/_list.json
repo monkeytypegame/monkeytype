@@ -149,9 +149,9 @@
   {
     "name": "dracula",
     "bgColor": "#282a36",
-    "mainColor": "#f2f2f2",
-    "subColor": "#bd93f9",
-    "textColor": "#f2f2f2"
+    "mainColor": "#bd93f9",
+    "subColor": "#6272a4",
+    "textColor": "#f8f8f2"
   },
   {
     "name": "nord",

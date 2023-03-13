@@ -23,6 +23,7 @@ import {
 import { isElementVisible, isLocalhost, isPasswordStrong } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as Skeleton from "./skeleton";
+import * as ThemeController from "../controllers/theme-controller";
 
 const wrapperId = "simplePopupWrapper";
 
@@ -1247,12 +1248,13 @@ list["updateCustomTheme"] = new SimplePopup(
 
     let newColors: string[] = [];
     if (updateColors === "true") {
-      $.each(
-        $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-        (_index, element) => {
-          newColors.push($(element).attr("value") as string);
-        }
-      );
+      for (const color of ThemeController.colorVars) {
+        newColors.push(
+          $(
+            `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+          ).attr("value") as string
+        );
+      }
     } else {
       newColors = customTheme.colors;
     }

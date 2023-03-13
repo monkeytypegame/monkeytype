@@ -12998,7 +12998,7 @@
       "length": 148
     },
     {
-      "text": "I'll tell you bedtime stories, and you pretend they're not boring. One day we'll have a house of our very own and we'll make it our home. And I'll do anything for you. It's just two little words. They're gonna change my world. Three letters, in old. And I mean them with all I got. We're gonna say I do.",
+      "text": "I'll tell you bedtime stories, and you pretend they're not boring. One day we'll have a house of our very own and we'll make it our home. And I'll do anything for you. It's just two little words. They're gonna change my world. Three letters, in all. And I mean them with all I got. We're gonna say I do.",
       "source": "Two Little Words (I do)",
       "id": 2229,
       "length": 303
@@ -38717,6 +38717,42 @@
       "source": "Walt Disney",
       "id": 6786,
       "length": 245
+    },
+    {
+      "text": "He's smart. He's angry. Put those two things together, you stay out of the way.",
+      "source": "Mr. Robot",
+      "id": 6787,
+      "length": 79
+    },
+    {
+      "text": "Sometimes, when I get bored, I create people in my head.",
+      "source": "Mr. Robot",
+      "id": 6788,
+      "length": 56
+    },
+    {
+      "text": "You wanna know what was done? A fundraising campaign to help you while you were on the street. I warned you to go back out onto the water so that the Snells wouldn't come after you - in fact, I begged them to let you go back down onto the water, instead of them just killing you and Grace, right then and there. And when they didn't listen to me, I paid seven hundred thousand dollars to save your lives. Seven hundred thousand dollars! Every single thing I've done has been to help you. Everything I've told you to do has been to help you, and what have you done? You've done the exact opposite every single time, and what did it get you? It got you right here.",
+      "source": "Ozark",
+      "id": 6789,
+      "length": 662
+    },
+    {
+      "text": "You asked if you were bad for me. That's not it. We are bad for each other.",
+      "source": "Better Call Saul",
+      "id": 6790,
+      "length": 75
+    },
+    {
+      "text": "Their names were Clotho (Spinner), Lachesis (Allotter), and Atropos (Inflexible). Clotho spun the thread of human fate, Lachesis dispensed it, and Atropos cut the thread (thus determining the individual's moment of death). The Romans identified the Parcae, originally personifications of childbirth, with the three Greek Fates. The Roman goddesses were named Noma, Decuma, and Morta.",
+      "source": "Greek Mythology",
+      "id": 6791,
+      "length": 383
+    },
+    {
+      "text": "Alright. Let me ask you something. If the rule you followed brought you to this... Of what use was the rule?",
+      "source": "No Country for Old Men",
+      "id": 6792,
+      "length": 108
     }
   ]
 }
