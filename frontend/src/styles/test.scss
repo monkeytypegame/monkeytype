@@ -1035,7 +1035,8 @@
       );
     }
   }
-  #memoryTimer {
+  #memoryTimer,
+  #layoutfluidTimer {
     background: var(--main-color);
     color: var(--bg-color);
     padding: 1rem;
