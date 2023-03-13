@@ -399,6 +399,9 @@ export function restart(options = {} as RestartOptions): void {
         } else if (Config.quickRestart === "esc") {
           message = "Press shift + escape or use your mouse to confirm.";
         }
+        else if (Config.quickRestart === "enter") {
+          message = "Press shift + enter or use your mouse to confirm.";
+        }
         Notifications.add(
           `Quick restart disabled in long tests. ${message}`,
           0,

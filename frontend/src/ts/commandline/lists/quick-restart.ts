@@ -21,6 +21,14 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
+      id: "changeQuickRestartEnter",
+      display: "enter",
+      configValue: "enter",
+      exec: (): void => {
+        UpdateConfig.setQuickRestartMode("enter");
+      },
+    },
+    {
       id: "changeQuickRestartOff",
       display: "off",
       configValue: "off",

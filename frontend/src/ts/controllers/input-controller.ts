@@ -702,7 +702,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
       setWordsInput(" " + TestInput.input.current);
       return;
     }
-  } else if (Config.quickRestart === "tab") {
+  } else if (Config.quickRestart === "tab" || Config.quickRestart === "escape") {
     // dont do anything special
     if (modalVisible) return;
 
