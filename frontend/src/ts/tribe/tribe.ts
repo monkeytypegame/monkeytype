@@ -385,6 +385,7 @@ TribeSocket.in.room.left(() => {
   TribePages.change("menu").then(() => {
     reset();
   });
+  TribeChat.updateIsTyping();
   name = defaultName;
 });
 

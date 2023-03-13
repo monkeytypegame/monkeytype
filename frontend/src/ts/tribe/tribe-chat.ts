@@ -135,7 +135,11 @@ export function scrollChat(): void {
 
 export function updateIsTyping(): void {
   const room = TribeState.getRoom();
-  if (!room) return;
+  if (!room) {
+    $(".pageTribe .lobby .chat .whoIsTyping").html("");
+    $(".pageTest #result #tribeResultBottom .chat .whoIsTyping").html("");
+    return;
+  }
   let string = "";
 
   const names: string[] = [];
