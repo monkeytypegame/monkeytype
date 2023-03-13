@@ -217,14 +217,14 @@ export async function refreshVisible(): Promise<void> {
 
 export function renderResult(): void {
   if (!rampReady) return;
-  if (
-    ramp.getUnits().includes("leaderboard_atf") ||
-    ramp.getUnits().includes("med_rect_btf")
-  ) {
-    ramp.triggerRefresh();
-  } else {
-    reinstate();
-  }
+  // if (
+  //   ramp.getUnits().includes("leaderboard_atf") ||
+  //   ramp.getUnits().includes("med_rect_btf")
+  // ) {
+  //   ramp.triggerRefresh();
+  // } else {
+  reinstate();
+  // }
 }
 
 export function setMobile(tf: boolean): void {
