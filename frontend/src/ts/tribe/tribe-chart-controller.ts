@@ -299,7 +299,7 @@ export async function drawChart(userId: string): Promise<void> {
     )[0] as HTMLCanvasElement | undefined;
 
     const room = TribeState.getRoom();
-    if (!room || !room.users[userId].result || !element) {
+    if (!room || !room.users[userId]?.result || !element) {
       return;
     }
 

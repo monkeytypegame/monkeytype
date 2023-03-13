@@ -92,9 +92,9 @@ export class TribeCaret {
     try {
       //move to next word if needed
       while (
-        animationLetterIndex >= TestWords.words.get(animationWordIndex).length
+        animationLetterIndex >= TestWords.words.get(animationWordIndex)?.length
       ) {
-        animationLetterIndex -= TestWords.words.get(animationWordIndex).length;
+        animationLetterIndex -= TestWords.words.get(animationWordIndex)?.length;
         animationWordIndex++;
       }
 
