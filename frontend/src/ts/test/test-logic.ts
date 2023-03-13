@@ -56,6 +56,7 @@ import * as ConnectionState from "../states/connection";
 import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
+import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -490,6 +491,7 @@ export function restart(options = {} as RestartOptions): void {
   PaceCaret.reset();
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
+  LayoutfluidFunboxTimer.hide();
 
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();

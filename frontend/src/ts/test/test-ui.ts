@@ -45,7 +45,7 @@ const debouncedZipfCheck = debounce(250, () => {
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (
     (eventKey === "language" || eventKey === "funbox") &&
-    (eventValue as string).split("#").includes("zipf")
+    Config.funbox.split("#").includes("zipf")
   ) {
     debouncedZipfCheck();
   }
@@ -197,8 +197,9 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  updateActiveElement(undefined, true);
   updateWordsHeight(true);
+  updateActiveElement(undefined, true);
+  Caret.updatePosition();
   updateWordsInputPosition(true);
 }
 
@@ -348,8 +349,6 @@ function updateWordsHeight(force = false): void {
   if (Config.mode === "zen") {
     $(<Element>document.querySelector(".word")).remove();
   }
-
-  Caret.updatePosition();
 }
 
 export function addWord(word: string): void {
