@@ -728,8 +728,6 @@ function fillContent(): void {
     accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
   }
 
-  console.log(chartData);
-
   let bestAverageTen;
   let bestAverageHundred;
 
@@ -761,6 +759,7 @@ function fillContent(): void {
     });
 
     const xMax = chartData.length + 1;
+    // const xMax = 900;
 
     pb.push({
       x: xMax - 1,
@@ -882,9 +881,9 @@ function fillContent(): void {
     ChartController.accountHistory.data.datasets[1].data = pb;
     ChartController.accountHistory.data.datasets[2].data = accChartData;
     ChartController.accountHistory.data.datasets[3].data = avgTen;
-    ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
+    // ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
     ChartController.accountHistory.data.datasets[5].data = avgHundred;
-    ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
+    // ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
 
     accountHistoryScaleOptions["x"].max = xMax;
 

@@ -256,6 +256,8 @@ export const accountHistory: ChartWithUpdateColors<
         data: [],
         fill: false,
         borderWidth: 0,
+        order: 10,
+        // pointRadius: 2,
       },
 
       {
@@ -265,6 +267,7 @@ export const accountHistory: ChartWithUpdateColors<
         stepped: true,
         pointRadius: 0,
         pointHoverRadius: 0,
+        order: 20,
       },
       {
         yAxisID: "acc",
@@ -272,9 +275,10 @@ export const accountHistory: ChartWithUpdateColors<
         data: [],
         pointStyle: "triangle",
         borderWidth: 0,
-        pointBackgroundColor: "#cccccc",
+        pointBackgroundColor: "rgba(255, 99, 132, 0.5)",
         hoverBorderColor: "#cccccc",
-        pointRadius: 4,
+        pointRadius: 3.5,
+        // order: 6,
       },
       {
         yAxisID: "wpmAvgTen",
@@ -283,6 +287,7 @@ export const accountHistory: ChartWithUpdateColors<
         borderColor: "#cccccc",
         pointRadius: 0,
         pointHoverRadius: 0,
+        order: 5,
       },
       {
         yAxisID: "accAvgTen",
@@ -291,12 +296,14 @@ export const accountHistory: ChartWithUpdateColors<
         borderColor: "#cccccc",
         pointRadius: 0,
         pointHoverRadius: 0,
+        // order: 5,
       },
       {
         yAxisID: "wpmAvgHundred",
         data: [],
         fill: false,
         borderColor: "#808080",
+        order: 1,
         pointRadius: 0,
         pointHoverRadius: 0,
       },
@@ -306,8 +313,10 @@ export const accountHistory: ChartWithUpdateColors<
         data: [],
         fill: false,
         borderColor: "#808080",
+        // borderDash: [5, 5],
         pointRadius: 0,
         pointHoverRadius: 0,
+        // order: 4,
       },
     ],
   },
@@ -323,7 +332,7 @@ export const accountHistory: ChartWithUpdateColors<
         axis: "x",
         type: "linear",
         min: 0,
-        // max: 500,
+        // max
         ticks: {
           // autoSkip: true,
           // autoSkipPadding: 20,
@@ -963,6 +972,10 @@ function updateAccuracy(): void {
   accountHistory.data.datasets[4].hidden = !Config.chartAccuracy;
   accountHistory.data.datasets[6].hidden = !Config.chartAccuracy;
 
+  // accountHistory.data.datasets[0].hidden = !Config.chartAccuracy;
+  // accountHistory.data.datasets[3].hidden = Config.chartAccuracy;
+  // accountHistory.data.datasets[5].hidden = Config.chartAccuracy;
+
   (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
     Config.chartAccuracy;
   accountHistory.update();
@@ -993,11 +1006,13 @@ export async function updateColors<
   const maincolor = await ThemeColors.get("main");
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
+  const subaltcolor = await ThemeColors.get("subAlt");
 
   //@ts-ignore
   chart.data.datasets[0].borderColor = (ctx): string => {
     const isPb = ctx.raw?.["isPb"];
     const color = isPb ? textcolor : maincolor;
+    // const color = "#000000";
     return color;
   };
   if (chart.data.datasets[1]) {
@@ -1043,6 +1058,18 @@ export async function updateColors<
         chart.data.datasets as ChartDataset<"line", TData>[]
       )[1].pointBackgroundColor = subcolor;
     }
+  }
+
+  if (chart.data.datasets.length === 7) {
+    const color = Misc.getContrastColor(maincolor, subcolor, subaltcolor);
+    (chart.data.datasets as ChartDataset<"line", TData>[])[3].borderColor =
+      color;
+    (chart.data.datasets as ChartDataset<"line", TData>[])[5].borderColor =
+      Misc.blendTwoHexColors(maincolor, color, 0.7);
+
+    (
+      chart.data.datasets as ChartDataset<"line", TData>[]
+    )[2].pointBackgroundColor = errorcolor;
   }
 
   const chartScaleOptions = chart.options as ScaleChartOptions<TType>;
