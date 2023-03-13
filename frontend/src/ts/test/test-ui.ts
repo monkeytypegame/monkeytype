@@ -197,8 +197,9 @@ export function showWords(): void {
 
   $("#words").html(wordsHTML);
 
-  updateActiveElement(undefined, true);
   updateWordsHeight(true);
+  updateActiveElement(undefined, true);
+  Caret.updatePosition();
   updateWordsInputPosition(true);
 }
 
@@ -348,8 +349,6 @@ function updateWordsHeight(force = false): void {
   if (Config.mode === "zen") {
     $(<Element>document.querySelector(".word")).remove();
   }
-
-  Caret.updatePosition();
 }
 
 export function addWord(word: string): void {
