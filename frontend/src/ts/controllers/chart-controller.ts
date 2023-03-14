@@ -256,10 +256,8 @@ export const accountHistory: ChartWithUpdateColors<
         data: [],
         fill: false,
         borderWidth: 0,
-        order: 10,
-        // pointRadius: 2,
+        order: 3,
       },
-
       {
         yAxisID: "pb",
         data: [],
@@ -267,7 +265,7 @@ export const accountHistory: ChartWithUpdateColors<
         stepped: true,
         pointRadius: 0,
         pointHoverRadius: 0,
-        order: 20,
+        order: 4,
       },
       {
         yAxisID: "acc",
@@ -275,34 +273,29 @@ export const accountHistory: ChartWithUpdateColors<
         data: [],
         pointStyle: "triangle",
         borderWidth: 0,
-        pointBackgroundColor: "rgba(255, 99, 132, 0.5)",
-        hoverBorderColor: "#cccccc",
         pointRadius: 3.5,
-        order: 6,
+        order: 3,
       },
       {
         yAxisID: "wpmAvgTen",
         data: [],
         fill: false,
-        borderColor: "#cccccc",
         pointRadius: 0,
         pointHoverRadius: 0,
-        order: 5,
+        order: 2,
       },
       {
         yAxisID: "accAvgTen",
         data: [],
         fill: false,
-        borderColor: "#cccccc",
         pointRadius: 0,
         pointHoverRadius: 0,
-        order: 5,
+        order: 2,
       },
       {
         yAxisID: "wpmAvgHundred",
         data: [],
         fill: false,
-        borderColor: "#808080",
         order: 1,
         pointRadius: 0,
         pointHoverRadius: 0,
@@ -312,11 +305,9 @@ export const accountHistory: ChartWithUpdateColors<
         label: "accAvgHundred",
         data: [],
         fill: false,
-        borderColor: "#808080",
-        // borderDash: [5, 5],
         pointRadius: 0,
         pointHoverRadius: 0,
-        order: 4,
+        order: 1,
       },
     ],
   },
@@ -332,10 +323,7 @@ export const accountHistory: ChartWithUpdateColors<
         axis: "x",
         type: "linear",
         min: 0,
-        // max
         ticks: {
-          // autoSkip: true,
-          // autoSkipPadding: 20,
           stepSize: 10,
         },
         display: true,
@@ -369,11 +357,6 @@ export const accountHistory: ChartWithUpdateColors<
           stepSize: 10,
         },
         display: false,
-        title: {
-          display: false,
-          text: "Personal Best",
-        },
-        position: "right",
       },
       acc: {
         axis: "y",
@@ -405,7 +388,6 @@ export const accountHistory: ChartWithUpdateColors<
         grid: {
           display: false,
         },
-        position: "left",
       },
       accAvgTen: {
         axis: "y",
@@ -419,7 +401,6 @@ export const accountHistory: ChartWithUpdateColors<
         grid: {
           display: false,
         },
-        position: "left",
       },
       wpmAvgHundred: {
         axis: "y",
@@ -432,7 +413,6 @@ export const accountHistory: ChartWithUpdateColors<
         grid: {
           display: false,
         },
-        position: "left",
       },
       accAvgHundred: {
         axis: "y",
@@ -446,7 +426,6 @@ export const accountHistory: ChartWithUpdateColors<
         grid: {
           display: false,
         },
-        position: "left",
       },
     },
 
