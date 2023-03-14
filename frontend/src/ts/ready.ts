@@ -38,7 +38,11 @@ $(document).ready(() => {
 
   CookiePopup.check();
   $("body").css("transition", "all .25s, transform .05s");
-  if (Config.quickRestart === "tab" || Config.quickRestart === "esc" || Config.quickRestart === "enter") {
+  if (
+    Config.quickRestart === "tab" ||
+    Config.quickRestart === "esc" ||
+    Config.quickRestart === "enter"
+  ) {
     $("#restartTestButton").addClass("hidden");
   }
   if (!window.localStorage.getItem("merchbannerclosed")) {
