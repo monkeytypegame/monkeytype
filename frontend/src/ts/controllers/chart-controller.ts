@@ -1075,14 +1075,18 @@ export async function updateColors<
       )[1].pointBackgroundColor = subcolor;
     }
   }
-
-  //@ts-ignore
-  chart.data.datasets[2].borderColor = (): string => {
-    const color = subcolor;
-    return color;
-  };
+  if (chart.data.datasets.length === 2) {
+    chart.data.datasets[1].borderColor = (): string => {
+      const color = subcolor;
+      return color;
+    };
+  }
 
   if (chart.data.datasets.length === 7) {
+    chart.data.datasets[2].borderColor = (): string => {
+      const color = subcolor;
+      return color;
+    };
     // const color = Misc.getContrastColor(maincolor, subcolor, subaltcolor);
 
     const text02 = Misc.blendTwoHexColors(bgcolor, textcolor, 0.2);
