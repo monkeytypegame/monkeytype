@@ -8,6 +8,12 @@ import { InputSuggestions } from "../elements/input-suggestions";
 let lastMessageTimestamp = 0;
 let shouldScrollChat = true;
 
+const chatHistory: {
+  isSystem: boolean;
+  socketId: string;
+  message: string;
+}[] = [];
+
 const lobbyChatSuggestions1 = new InputSuggestions(
   $(".pageTribe .lobby .chat .input input"),
   "@",
@@ -198,21 +204,37 @@ async function insertImageEmoji(text: string): Promise<string> {
   return textSplit.join(" ");
 }
 
-export async function appendMessage(data: {
-  isSystem: boolean;
-  from: TribeTypes.User;
-  message: string;
-}): Promise<void> {
+export function appendMessage(
+  isSystem: boolean,
+  socketId: string | undefined,
+  message: string
+): void {
+  chatHistory.push({
+    isSystem,
+    socketId,
+    message,
+  });
+  displayMessage(isSystem, socketId, message);
+}
+
+export async function displayMessage(
+  isSystem: boolean,
+  socketId: string | undefined,
+  message: string
+): Promise<void> {
   let cls = "message";
   let author = "";
-  if (data.isSystem) {
+  const fromName = socketId
+    ? TribeState.getRoom()?.users[socketId]?.name
+    : undefined;
+  if (isSystem) {
     cls = "systemMessage";
   } else {
-    let me = "";
-    if (data.from.id == tribeSocket.getId()) me = " me";
-    author = `<div class="author ${me}">${data.from.name}:</div>`;
+    let me = false;
+    if (socketId == tribeSocket.getId()) me = true;
+    author = `<div class="author ${me ? "me" : ""}">${fromName}:</div>`;
   }
-  data.message = await insertImageEmoji(data.message);
+  message = await insertImageEmoji(message);
 
   let previousAuthor = $(".pageTribe .lobby .chat .messages .message")
     .last()
@@ -220,17 +242,17 @@ export async function appendMessage(data: {
     .text();
   previousAuthor = previousAuthor.substring(0, previousAuthor.length - 1);
 
-  if (previousAuthor == data?.from?.name) {
+  if (previousAuthor == fromName) {
     // author = author.replace(`class="author`, `class="author invisible`);
   } else {
     cls += " newAuthor";
   }
 
   $(".pageTribe .lobby .chat .messages").append(`
-    <div class="${cls}">${author}<div class="text">${data.message}</div></div>
+    <div class="${cls}">${author}<div class="text">${message}</div></div>
   `);
   $(".pageTest #result #tribeResultBottom .chat .messages").append(`
-    <div class="${cls}">${author}<div class="text">${data.message}</div></div>
+    <div class="${cls}">${author}<div class="text">${message}</div></div>
   `);
   limitChatMessages();
   scrollChat();

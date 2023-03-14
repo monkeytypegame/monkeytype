@@ -463,7 +463,7 @@ TribeSocket.in.room.chatMessage((data) => {
     }
   }
 
-  TribeChat.appendMessage(data);
+  TribeChat.appendMessage(data.isSystem, data.from?.id, data.message);
 });
 
 // socket.on("room_config_changed", (e) => {
