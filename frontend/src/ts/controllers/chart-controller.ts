@@ -994,7 +994,7 @@ function updateAverage10(): void {
   } else {
     accountHistory.data.datasets[3].hidden = !Config.chartAverage10;
   }
-
+  accountHistory.updateColors();
   accountHistory.update();
 }
 
@@ -1005,7 +1005,7 @@ function updateAverage100(): void {
   } else {
     accountHistory.data.datasets[5].hidden = !Config.chartAverage100;
   }
-
+  accountHistory.updateColors();
   accountHistory.update();
 }
 
@@ -1028,9 +1028,9 @@ export async function updateColors<
   chart.data.datasets[0].borderColor = (ctx): string => {
     const isPb = ctx.raw?.["isPb"];
     const color = isPb ? textcolor : maincolor;
-    // const color = "#000000";
     return color;
   };
+
   if (chart.data.datasets[1]) {
     chart.data.datasets[1].borderColor = subcolor;
   }
@@ -1076,6 +1076,12 @@ export async function updateColors<
     }
   }
 
+  //@ts-ignore
+  chart.data.datasets[2].borderColor = (): string => {
+    const color = subcolor;
+    return color;
+  };
+
   if (chart.data.datasets.length === 7) {
     // const color = Misc.getContrastColor(maincolor, subcolor, subaltcolor);
 
@@ -1085,36 +1091,62 @@ export async function updateColors<
 
     const sub02 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.2);
     const sub04 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.4);
+    if (Config.chartAverage10 && Config.chartAverage100) {
+      //wpm
+      (
+        chart.data.datasets as ChartDataset<"line", TData>[]
+      )[0].pointBackgroundColor = main02;
 
-    //wpm
-    (
-      chart.data.datasets as ChartDataset<"line", TData>[]
-    )[0].pointBackgroundColor = main02;
+      //pb
+      (chart.data.datasets as ChartDataset<"line", TData>[])[1].borderColor =
+        text02;
 
-    //pb
-    (chart.data.datasets as ChartDataset<"line", TData>[])[1].borderColor =
-      text02;
+      //acc
+      (
+        chart.data.datasets as ChartDataset<"line", TData>[]
+      )[2].pointBackgroundColor = sub02;
 
-    //acc
-    (
-      chart.data.datasets as ChartDataset<"line", TData>[]
-    )[2].pointBackgroundColor = sub02;
+      //ao10 wpm
+      (chart.data.datasets as ChartDataset<"line", TData>[])[3].borderColor =
+        main04;
 
-    //ao10 wpm
-    (chart.data.datasets as ChartDataset<"line", TData>[])[3].borderColor =
-      main04;
+      //ao10 acc
+      (chart.data.datasets as ChartDataset<"line", TData>[])[4].borderColor =
+        sub04;
 
-    //ao10 acc
-    (chart.data.datasets as ChartDataset<"line", TData>[])[4].borderColor =
-      sub04;
+      //ao100 wpm
+      (chart.data.datasets as ChartDataset<"line", TData>[])[5].borderColor =
+        maincolor;
 
-    //ao100 wpm
-    (chart.data.datasets as ChartDataset<"line", TData>[])[5].borderColor =
-      maincolor;
-
-    //ao100 acc
-    (chart.data.datasets as ChartDataset<"line", TData>[])[6].borderColor =
-      subcolor;
+      //ao100 acc
+      (chart.data.datasets as ChartDataset<"line", TData>[])[6].borderColor =
+        subcolor;
+    } else if (
+      (Config.chartAverage10 && !Config.chartAverage100) ||
+      (!Config.chartAverage10 && Config.chartAverage100)
+    ) {
+      (
+        chart.data.datasets as ChartDataset<"line", TData>[]
+      )[0].pointBackgroundColor = main04;
+      (
+        chart.data.datasets as ChartDataset<"line", TData>[]
+      )[2].pointBackgroundColor = sub04;
+      (chart.data.datasets as ChartDataset<"line", TData>[])[3].borderColor =
+        maincolor;
+      (chart.data.datasets as ChartDataset<"line", TData>[])[5].borderColor =
+        maincolor;
+      (chart.data.datasets as ChartDataset<"line", TData>[])[4].borderColor =
+        subcolor;
+      (chart.data.datasets as ChartDataset<"line", TData>[])[6].borderColor =
+        subcolor;
+    } else {
+      (
+        chart.data.datasets as ChartDataset<"line", TData>[]
+      )[0].pointBackgroundColor = maincolor;
+      (
+        chart.data.datasets as ChartDataset<"line", TData>[]
+      )[2].pointBackgroundColor = subcolor;
+    }
   }
 
   const chartScaleOptions = chart.options as ScaleChartOptions<TType>;
