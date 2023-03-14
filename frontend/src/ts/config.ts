@@ -1840,6 +1840,8 @@ export function apply(
     setRepeatedPace(configObj.repeatedPace, true);
     setPageWidth(configObj.pageWidth, true);
     setChartAccuracy(configObj.chartAccuracy, true);
+    setChartAverage10(configObj.chartAverage10, true);
+    setChartAverage100(configObj.chartAverage100, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
     setMinWpm(configObj.minWpm, true);
