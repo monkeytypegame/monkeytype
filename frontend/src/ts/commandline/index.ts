@@ -454,7 +454,9 @@ $(document).ready(() => {
         (event.key?.toLowerCase() === "p" &&
           (event.metaKey || event.ctrlKey) &&
           event.shiftKey) ||
-        ((event.key === "Tab" || event.key === "Escape" || event.key === "enter") &&
+        ((event.key === "Tab" ||
+          event.key === "Escape" ||
+          event.key === "enter") &&
           Config.quickRestart === "esc")) &&
       isPopupVisible(wrapperId)
     ) {
