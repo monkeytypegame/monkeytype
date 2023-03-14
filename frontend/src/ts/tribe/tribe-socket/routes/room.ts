@@ -164,7 +164,7 @@ function chattingChanged(
 function chatMessage(
   callback: (data: {
     message: string;
-    from: TribeTypes.User;
+    from?: TribeTypes.User;
     isSystem: boolean;
   }) => void
 ): void {

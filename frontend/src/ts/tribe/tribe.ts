@@ -448,7 +448,7 @@ TribeSocket.in.room.chatMessage((data) => {
     data.from?.isLeader ? "|ready|&#64;everyone" : ""
   }`;
   const nameregex = new RegExp(regexString, "i");
-  if (!data.isSystem && data.from.id != TribeSocket.getId()) {
+  if (!data.isSystem && data.from?.id != TribeSocket.getId()) {
     if (nameregex.test(data.message)) {
       if (ActivePage.get() !== "tribe" && ActivePage.get() !== "test") {
         Notifications.add(data.message, 0, 3, "Mention", "at", undefined, true); //allowing html because the message is already escaped on the server
