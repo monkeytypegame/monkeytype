@@ -1292,6 +1292,14 @@ $(".pageAccount .toggleAccuracyOnChart").on("click", () => {
   UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
 });
 
+$(".pageAccount .toggleAverage10OnChart").on("click", () => {
+  UpdateConfig.setChartAverage10(!Config.chartAverage10);
+});
+
+$(".pageAccount .toggleAverage100OnChart").on("click", () => {
+  UpdateConfig.setChartAverage100(!Config.chartAverage100);
+});
+
 $(".pageAccount .loadMoreButton").on("click", () => {
   loadMoreLines();
 });

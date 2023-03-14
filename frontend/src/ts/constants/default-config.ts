@@ -70,6 +70,8 @@ export default <MonkeyTypes.Config>{
   repeatedPace: true,
   pageWidth: "125",
   chartAccuracy: true,
+  chartAverage10: true,
+  chartAverage100: true,
   chartStyle: "line",
   minWpm: "off",
   minWpmCustomSpeed: 100,

@@ -968,28 +968,45 @@ export const miniResult: ChartWithUpdateColors<
 });
 
 function updateAccuracy(): void {
-  accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
-  accountHistory.data.datasets[4].hidden = !Config.chartAccuracy;
-  accountHistory.data.datasets[6].hidden = !Config.chartAccuracy;
-
-  // accountHistory.data.datasets[0].hidden = !Config.chartAccuracy;
-  // accountHistory.data.datasets[3].hidden = Config.chartAccuracy;
-  // accountHistory.data.datasets[5].hidden = Config.chartAccuracy;
+  if (Config.chartAverage10 && Config.chartAverage100) {
+    accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
+    accountHistory.data.datasets[4].hidden = !Config.chartAccuracy;
+    accountHistory.data.datasets[6].hidden = !Config.chartAccuracy;
+  } else if (Config.chartAverage10) {
+    accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
+    accountHistory.data.datasets[4].hidden = !Config.chartAccuracy;
+  } else if (Config.chartAverage100) {
+    accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
+    accountHistory.data.datasets[6].hidden = !Config.chartAccuracy;
+  } else {
+    accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
+  }
 
   (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
     Config.chartAccuracy;
   accountHistory.update();
 }
 
-function updateStyle(): void {
-  if (Config.chartStyle == "scatter") {
-    accountHistory.data.datasets[0].showLine = false;
-    accountHistory.data.datasets[1].showLine = false;
+function updateAverage10(): void {
+  if (Config.chartAccuracy) {
+    accountHistory.data.datasets[3].hidden = !Config.chartAverage10;
+    accountHistory.data.datasets[4].hidden = !Config.chartAverage10;
   } else {
-    accountHistory.data.datasets[0].showLine = true;
-    accountHistory.data.datasets[1].showLine = true;
+    accountHistory.data.datasets[3].hidden = !Config.chartAverage10;
   }
-  accountHistory.updateColors();
+
+  accountHistory.update();
+}
+
+function updateAverage100(): void {
+  if (Config.chartAccuracy) {
+    accountHistory.data.datasets[5].hidden = !Config.chartAverage100;
+    accountHistory.data.datasets[6].hidden = !Config.chartAverage100;
+  } else {
+    accountHistory.data.datasets[5].hidden = !Config.chartAverage100;
+  }
+
+  accountHistory.update();
 }
 
 export async function updateColors<
@@ -1148,6 +1165,7 @@ export function updateAllChartColors(): void {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "chartAccuracy") updateAccuracy();
-  if (eventKey === "chartStyle") updateStyle();
+  if (eventKey === "chartAverage10") updateAverage10();
+  if (eventKey === "chartAverage100") updateAverage100();
   if (eventKey === "fontFamily") setDefaultFontFamily(eventValue as string);
 });

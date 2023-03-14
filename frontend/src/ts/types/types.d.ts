@@ -454,6 +454,8 @@ declare namespace MonkeyTypes {
     repeatedPace: boolean;
     pageWidth: PageWidth;
     chartAccuracy: boolean;
+    chartAverage10: boolean;
+    chartAverage100: boolean;
     chartStyle: ChartStyle;
     minWpm: MinimumWordsPerMinute;
     minWpmCustomSpeed: number;

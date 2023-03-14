@@ -88,6 +88,8 @@ const CONFIG_SCHEMA = joi.object({
   repeatedPace: joi.boolean(),
   pageWidth: joi.string().valid("100", "125", "150", "200", "max"),
   chartAccuracy: joi.boolean(),
+  chartAverage10: joi.boolean(),
+  chartAverage100: joi.boolean(),
   chartStyle: joi.string().valid("line", "scatter"),
   minWpm: joi.string().valid("off", "custom"),
   minWpmCustomSpeed: joi.number().min(0),

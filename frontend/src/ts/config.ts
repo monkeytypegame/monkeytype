@@ -314,6 +314,36 @@ export function setChartAccuracy(
   return true;
 }
 
+export function setChartAverage10(
+  chartAverage10: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("chart average 10", chartAverage10, ["boolean"])) {
+    return false;
+  }
+
+  config.chartAverage10 = chartAverage10;
+  saveToLocalStorage("chartAverage10", nosave);
+  ConfigEvent.dispatch("chartAverage10", config.chartAverage10);
+
+  return true;
+}
+
+export function setChartAverage100(
+  chartAverage100: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("chart average 100", chartAverage100, ["boolean"])) {
+    return false;
+  }
+
+  config.chartAverage100 = chartAverage100;
+  saveToLocalStorage("chartAverage100", nosave);
+  ConfigEvent.dispatch("chartAverage100", config.chartAverage100);
+
+  return true;
+}
+
 export function setStopOnError(
   soe: MonkeyTypes.StopOnError,
   nosave?: boolean
