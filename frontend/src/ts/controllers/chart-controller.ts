@@ -278,7 +278,7 @@ export const accountHistory: ChartWithUpdateColors<
         pointBackgroundColor: "rgba(255, 99, 132, 0.5)",
         hoverBorderColor: "#cccccc",
         pointRadius: 3.5,
-        // order: 6,
+        order: 6,
       },
       {
         yAxisID: "wpmAvgTen",
@@ -296,7 +296,7 @@ export const accountHistory: ChartWithUpdateColors<
         borderColor: "#cccccc",
         pointRadius: 0,
         pointHoverRadius: 0,
-        // order: 5,
+        order: 5,
       },
       {
         yAxisID: "wpmAvgHundred",
@@ -316,7 +316,7 @@ export const accountHistory: ChartWithUpdateColors<
         // borderDash: [5, 5],
         pointRadius: 0,
         pointHoverRadius: 0,
-        // order: 4,
+        order: 4,
       },
     ],
   },
@@ -1006,7 +1006,6 @@ export async function updateColors<
   const maincolor = await ThemeColors.get("main");
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
-  const subaltcolor = await ThemeColors.get("subAlt");
 
   //@ts-ignore
   chart.data.datasets[0].borderColor = (ctx): string => {
@@ -1061,15 +1060,44 @@ export async function updateColors<
   }
 
   if (chart.data.datasets.length === 7) {
-    const color = Misc.getContrastColor(maincolor, subcolor, subaltcolor);
-    (chart.data.datasets as ChartDataset<"line", TData>[])[3].borderColor =
-      color;
-    (chart.data.datasets as ChartDataset<"line", TData>[])[5].borderColor =
-      Misc.blendTwoHexColors(maincolor, color, 0.7);
+    // const color = Misc.getContrastColor(maincolor, subcolor, subaltcolor);
 
+    const text02 = Misc.blendTwoHexColors(bgcolor, textcolor, 0.2);
+    const main02 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.2);
+    const main04 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.4);
+
+    const sub02 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.2);
+    const sub04 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.4);
+
+    //wpm
     (
       chart.data.datasets as ChartDataset<"line", TData>[]
-    )[2].pointBackgroundColor = errorcolor;
+    )[0].pointBackgroundColor = main02;
+
+    //pb
+    (chart.data.datasets as ChartDataset<"line", TData>[])[1].borderColor =
+      text02;
+
+    //acc
+    (
+      chart.data.datasets as ChartDataset<"line", TData>[]
+    )[2].pointBackgroundColor = sub02;
+
+    //ao10 wpm
+    (chart.data.datasets as ChartDataset<"line", TData>[])[3].borderColor =
+      main04;
+
+    //ao10 acc
+    (chart.data.datasets as ChartDataset<"line", TData>[])[4].borderColor =
+      sub04;
+
+    //ao100 wpm
+    (chart.data.datasets as ChartDataset<"line", TData>[])[5].borderColor =
+      maincolor;
+
+    //ao100 acc
+    (chart.data.datasets as ChartDataset<"line", TData>[])[6].borderColor =
+      subcolor;
   }
 
   const chartScaleOptions = chart.options as ScaleChartOptions<TType>;
