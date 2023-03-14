@@ -54,6 +54,8 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     updateWordsInputPosition(true);
   }
 
+  if (eventKey === "theme") applyBurstHeatmap();
+
   if (eventValue === undefined || typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
