@@ -1798,7 +1798,7 @@ async function saveResult(
     }
     DB.saveLocalResult(completedEvent);
     DB.updateLocalStats(
-      TestStats.restartCount + 1,
+      completedEvent.incompleteTests.length + 1,
       completedEvent.testDuration +
         completedEvent.incompleteTestSeconds -
         completedEvent.afkDuration
