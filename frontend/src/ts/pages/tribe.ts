@@ -12,9 +12,11 @@ export const page = new Page(
   },
   async () => {
     // TODO: Fill it up later
+    TribeChat.reset("lobby");
   },
   async () => {
     if (TribeState.getState() == 5) {
+      TribeChat.fill("lobby");
       setTimeout(() => {
         TribeChat.scrollChat();
       }, 50);

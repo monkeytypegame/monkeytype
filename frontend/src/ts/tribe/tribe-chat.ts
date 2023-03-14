@@ -10,7 +10,7 @@ let shouldScrollChat = true;
 
 const chatHistory: {
   isSystem: boolean;
-  socketId: string;
+  socketId: string | undefined;
   message: string;
 }[] = [];
 
@@ -97,36 +97,47 @@ export function updateSuggestionData(): void {
   resultChatSuggestions1.setData(dataToSet);
 }
 
-export function reset(): void {
-  $(".pageTribe .lobby .chat .messages").empty();
-  $(".pageTest #result #tribeResultBottom .chat .messages").empty();
-  lobbyChatSuggestions1.destroy();
-  lobbyChatSuggestions2.destroy();
-  resultChatSuggestions1.destroy();
-  resultChatSuggestions2.destroy();
+export function reset(where: "both" | "lobby" | "result" = "both"): void {
+  if (where === "both" || where === "lobby") {
+    $(".pageTribe .lobby .chat .messages").empty();
+    lobbyChatSuggestions1.destroy();
+    lobbyChatSuggestions2.destroy();
+  }
+  if (where === "both" || where === "result") {
+    $(".pageTest #result #tribeResultBottom .chat .messages").empty();
+    resultChatSuggestions1.destroy();
+    resultChatSuggestions2.destroy();
+  }
+}
+
+export function fill(where: "both" | "lobby" | "result"): void {
+  for (const message of chatHistory) {
+    displayMessage(message.isSystem, message.socketId, message.message, where);
+  }
 }
 
 function sendChattingUpdate(bool: boolean): void {
   tribeSocket.out.room.chattingUpdate(bool);
 }
 
-function limitChatMessages(): void {
-  const messages1 = $(".pageTribe .lobby .chat .messages .message");
-  const messages2 = $(
-    ".pageTest #result #tribeResultBottom .chat .messages .message"
-  );
-  const limit = 100;
+// no need since the messages will now be removed from the dom on page change
+// function limitChatMessages(): void {
+//   const messages1 = $(".pageTribe .lobby .chat .messages .message");
+//   const messages2 = $(
+//     ".pageTest #result #tribeResultBottom .chat .messages .message"
+//   );
+//   const limit = 100;
 
-  //they should be in sync so it doesnt matter if i check one length
-  if (messages1.length <= limit) return;
+//   //they should be in sync so it doesnt matter if i check one length
+//   if (messages1.length <= limit) return;
 
-  const del = messages1.length - limit;
+//   const del = messages1.length - limit;
 
-  for (let i = 0; i < del; i++) {
-    $(messages1[i]).remove();
-    $(messages2[i]).remove();
-  }
-}
+//   for (let i = 0; i < del; i++) {
+//     $(messages1[i]).remove();
+//     $(messages2[i]).remove();
+//   }
+// }
 
 export function scrollChat(): void {
   const chatEl = $(".pageTribe .lobby .chat .messages")[0];
@@ -214,13 +225,19 @@ export function appendMessage(
     socketId,
     message,
   });
+
+  if (chatHistory.length > 100) {
+    chatHistory.splice(0, chatHistory.length - 100);
+  }
+
   displayMessage(isSystem, socketId, message);
 }
 
 export async function displayMessage(
   isSystem: boolean,
   socketId: string | undefined,
-  message: string
+  message: string,
+  where: "both" | "lobby" | "result" = "both" //todo remove both
 ): Promise<void> {
   let cls = "message";
   let author = "";
@@ -248,13 +265,17 @@ export async function displayMessage(
     cls += " newAuthor";
   }
 
-  $(".pageTribe .lobby .chat .messages").append(`
+  if (where === "both" || where === "lobby") {
+    $(".pageTribe .lobby .chat .messages").append(`
     <div class="${cls}">${author}<div class="text">${message}</div></div>
   `);
-  $(".pageTest #result #tribeResultBottom .chat .messages").append(`
+  }
+  if (where === "both" || where === "result") {
+    $(".pageTest #result #tribeResultBottom .chat .messages").append(`
     <div class="${cls}">${author}<div class="text">${message}</div></div>
   `);
-  limitChatMessages();
+  }
+  // limitChatMessages();
   scrollChat();
 }
 
