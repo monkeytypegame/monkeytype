@@ -881,9 +881,9 @@ function fillContent(): void {
     ChartController.accountHistory.data.datasets[1].data = pb;
     ChartController.accountHistory.data.datasets[2].data = accChartData;
     ChartController.accountHistory.data.datasets[3].data = avgTen;
-    // ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
+    ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
     ChartController.accountHistory.data.datasets[5].data = avgHundred;
-    // ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
+    ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
 
     accountHistoryScaleOptions["x"].max = xMax;
 
