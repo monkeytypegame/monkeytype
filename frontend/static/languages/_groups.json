@@ -272,7 +272,7 @@
   },
   {
     "name": "swedish",
-    "languages": ["swedish", "swedish_1k"]
+    "languages": ["swedish", "swedish_1k", "swedish_diacritics"]
   },
   {
     "name": "serbian",
