@@ -1141,7 +1141,9 @@ export function setQuickRestartMode(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("quick restart mode", mode, [["off", "esc", "tab", "enter"]])
+    !isConfigValueValid("quick restart mode", mode, [
+      ["off", "esc", "tab", "enter"],
+    ])
   ) {
     return false;
   }

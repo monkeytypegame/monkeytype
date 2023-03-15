@@ -398,8 +398,7 @@ export function restart(options = {} as RestartOptions): void {
           message = "Press shift + tab or use your mouse to confirm.";
         } else if (Config.quickRestart === "esc") {
           message = "Press shift + escape or use your mouse to confirm.";
-        }
-        else if (Config.quickRestart === "enter") {
+        } else if (Config.quickRestart === "enter") {
           message = "Press shift + enter or use your mouse to confirm.";
         }
         Notifications.add(
