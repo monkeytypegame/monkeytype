@@ -1148,7 +1148,7 @@ function fillContent(): void {
       Misc.roundTo2(
         Config.alwaysShowCPM ? wpmChangePerHour * 5 : wpmChangePerHour
       )
-    } ${Config.alwaysShowCPM ? "cpm" : "wpm"}.`
+    } ${Config.alwaysShowCPM ? "cpm" : "wpm"}`
   );
 
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
