@@ -947,42 +947,52 @@ export const miniResult: ChartWithUpdateColors<
 });
 
 function updateAccuracy(): void {
-  if (Config.chartAverage10 && Config.chartAverage100) {
-    accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
-    accountHistory.data.datasets[4].hidden = !Config.chartAccuracy;
-    accountHistory.data.datasets[6].hidden = !Config.chartAccuracy;
-  } else if (Config.chartAverage10) {
-    accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
-    accountHistory.data.datasets[4].hidden = !Config.chartAccuracy;
-  } else if (Config.chartAverage100) {
-    accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
-    accountHistory.data.datasets[6].hidden = !Config.chartAccuracy;
+  const accOn = Config.accountChart[0] === "on";
+  const avg10On = Config.accountChart[1] === "on";
+  const avg100On = Config.accountChart[2] === "on";
+
+  if (avg10On && avg100On) {
+    accountHistory.data.datasets[2].hidden = !accOn;
+    accountHistory.data.datasets[4].hidden = !accOn;
+    accountHistory.data.datasets[6].hidden = !accOn;
+  } else if (avg10On) {
+    accountHistory.data.datasets[2].hidden = !accOn;
+    accountHistory.data.datasets[4].hidden = !accOn;
+  } else if (Config.accountChart[2] === "on") {
+    accountHistory.data.datasets[2].hidden = !accOn;
+    accountHistory.data.datasets[6].hidden = !accOn;
   } else {
-    accountHistory.data.datasets[2].hidden = !Config.chartAccuracy;
+    accountHistory.data.datasets[2].hidden = !accOn;
   }
 
   (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
-    Config.chartAccuracy;
+    accOn;
   accountHistory.update();
 }
 
 function updateAverage10(): void {
-  if (Config.chartAccuracy) {
-    accountHistory.data.datasets[3].hidden = !Config.chartAverage10;
-    accountHistory.data.datasets[4].hidden = !Config.chartAverage10;
+  const accOn = Config.accountChart[0] === "on";
+  const avg10On = Config.accountChart[1] === "on";
+
+  if (accOn) {
+    accountHistory.data.datasets[3].hidden = !avg10On;
+    accountHistory.data.datasets[4].hidden = !avg10On;
   } else {
-    accountHistory.data.datasets[3].hidden = !Config.chartAverage10;
+    accountHistory.data.datasets[3].hidden = !avg10On;
   }
   accountHistory.updateColors();
   accountHistory.update();
 }
 
 function updateAverage100(): void {
-  if (Config.chartAccuracy) {
-    accountHistory.data.datasets[5].hidden = !Config.chartAverage100;
-    accountHistory.data.datasets[6].hidden = !Config.chartAverage100;
+  const accOn = Config.accountChart[0] === "on";
+  const avg100On = Config.accountChart[2] === "on";
+
+  if (accOn) {
+    accountHistory.data.datasets[5].hidden = !avg100On;
+    accountHistory.data.datasets[6].hidden = !avg100On;
   } else {
-    accountHistory.data.datasets[5].hidden = !Config.chartAverage100;
+    accountHistory.data.datasets[5].hidden = !avg100On;
   }
   accountHistory.updateColors();
   accountHistory.update();
@@ -1068,13 +1078,16 @@ export async function updateColors<
     };
     // const color = Misc.getContrastColor(maincolor, subcolor, subaltcolor);
 
+    const avg10On = Config.accountChart[1] === "on";
+    const avg100On = Config.accountChart[2] === "on";
+
     const text02 = Misc.blendTwoHexColors(bgcolor, textcolor, 0.2);
     const main02 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.2);
     const main04 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.4);
 
     const sub02 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.2);
     const sub04 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.4);
-    if (Config.chartAverage10 && Config.chartAverage100) {
+    if (avg10On && avg100On) {
       //wpm
       (
         chart.data.datasets as ChartDataset<"line", TData>[]
@@ -1103,10 +1116,7 @@ export async function updateColors<
       //ao100 acc
       (chart.data.datasets as ChartDataset<"line", TData>[])[6].borderColor =
         subcolor;
-    } else if (
-      (Config.chartAverage10 && !Config.chartAverage100) ||
-      (!Config.chartAverage10 && Config.chartAverage100)
-    ) {
+    } else if ((avg10On && !avg100On) || (!avg10On && avg100On)) {
       (chart.data.datasets as ChartDataset<"line", TData>[])[1].borderColor =
         text02;
       (
@@ -1182,8 +1192,12 @@ export function updateAllChartColors(): void {
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "chartAccuracy") updateAccuracy();
-  if (eventKey === "chartAverage10") updateAverage10();
-  if (eventKey === "chartAverage100") updateAverage100();
+  if (eventKey === "accountChart") {
+    updateAccuracy();
+    updateAverage10();
+    updateAverage100();
+  }
+  // if (eventKey === "chartAverage10") updateAverage10();
+  // if (eventKey === "chartAverage100") updateAverage100();
   if (eventKey === "fontFamily") setDefaultFontFamily(eventValue as string);
 });

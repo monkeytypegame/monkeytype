@@ -1289,15 +1289,18 @@ function sortAndRefreshHistory(
 }
 
 $(".pageAccount .toggleAccuracyOnChart").on("click", () => {
-  UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
+  // UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
+  UpdateConfig.setAccountChartAccuracy(!(Config.accountChart[0] == "on"));
 });
 
 $(".pageAccount .toggleAverage10OnChart").on("click", () => {
-  UpdateConfig.setChartAverage10(!Config.chartAverage10);
+  // UpdateConfig.setChartAverage10(!Config.chartAverage10);
+  UpdateConfig.setAccountChartAvg10(!(Config.accountChart[1] == "on"));
 });
 
 $(".pageAccount .toggleAverage100OnChart").on("click", () => {
-  UpdateConfig.setChartAverage100(!Config.chartAverage100);
+  // UpdateConfig.setChartAverage100(!Config.chartAverage100);
+  UpdateConfig.setAccountChartAvg100(!(Config.accountChart[2] == "on"));
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {
