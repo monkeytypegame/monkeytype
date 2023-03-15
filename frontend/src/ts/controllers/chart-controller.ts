@@ -326,7 +326,7 @@ export const accountHistory: ChartWithUpdateColors<
         ticks: {
           stepSize: 10,
         },
-        display: true,
+        display: false,
         title: {
           display: true,
           text: "Test Number",
