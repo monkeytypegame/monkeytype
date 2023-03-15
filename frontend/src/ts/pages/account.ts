@@ -759,42 +759,49 @@ function fillContent(): void {
     const avgHundred = [];
     const avgHundredAcc = [];
 
-    // get average 10 and 100
     for (let i = 0; i < chartData.length; i++) {
-      const startIdx = i < 10 ? 0 : i - 9;
-      const subset = chartData.slice(startIdx, i + 1);
-      const accSubset = accChartData.slice(startIdx, i + 1);
+      // calculate 10 subset averages
+      const startIdxTen = i < 10 ? 0 : i - 9;
+      const subsetTen = chartData.slice(startIdxTen, i + 1);
+      const accSubsetTen = accChartData.slice(startIdxTen, i + 1);
+      const avgTenValue =
+        subsetTen.reduce((acc, { y }) => acc + y, 0) / subsetTen.length;
+      const accAvgTenValue =
+        accSubsetTen.reduce((acc, { y }) => acc + y, 0) / subsetTen.length;
 
-      const avg = subset.reduce((acc, { y }) => acc + y, 0) / subset.length;
-      const accAvg =
-        accSubset.reduce((acc, { y }) => acc + y, 0) / subset.length;
-
-      if (subset.length === 10 && (!bestAverageTen || avg > bestAverageTen)) {
-        bestAverageTen = avg;
-      }
-
-      avgTen.push({ x: i + 1, y: avg });
-      avgTenAcc.push({ x: i + 1, y: accAvg });
-    }
-
-    for (let i = 0; i < chartData.length; i++) {
-      const startIdx = i < 100 ? 0 : i - 99;
-      const subset = chartData.slice(startIdx, i + 1);
-      const accSubset = accChartData.slice(startIdx, i + 1);
-
-      const avg = subset.reduce((acc, { y }) => acc + y, 0) / subset.length;
-      const accAvg =
-        accSubset.reduce((acc, { y }) => acc + y, 0) / subset.length;
-
+      // update best average ten
       if (
-        subset.length === 100 &&
-        (!bestAverageHundred || avg > bestAverageHundred)
+        subsetTen.length === 10 &&
+        (!bestAverageTen || avgTenValue > bestAverageTen)
       ) {
-        bestAverageHundred = avg;
+        bestAverageTen = avgTenValue;
       }
 
-      avgHundred.push({ x: i + 1, y: avg });
-      avgHundredAcc.push({ x: i + 1, y: accAvg });
+      // add values to arrays
+      avgTen.push({ x: i + 1, y: avgTenValue });
+      avgTenAcc.push({ x: i + 1, y: accAvgTenValue });
+
+      // calculate 100 subset averages
+      const startIdxHundred = i < 100 ? 0 : i - 99;
+      const subsetHundred = chartData.slice(startIdxHundred, i + 1);
+      const accSubsetHundred = accChartData.slice(startIdxHundred, i + 1);
+      const avgHundredValue =
+        subsetHundred.reduce((acc, { y }) => acc + y, 0) / subsetHundred.length;
+      const accAvgHundredValue =
+        accSubsetHundred.reduce((acc, { y }) => acc + y, 0) /
+        subsetHundred.length;
+
+      // update best average hundred
+      if (
+        subsetHundred.length === 100 &&
+        (!bestAverageHundred || avgHundredValue > bestAverageHundred)
+      ) {
+        bestAverageHundred = avgHundredValue;
+      }
+
+      // add values to arrays
+      avgHundred.push({ x: i + 1, y: avgHundredValue });
+      avgHundredAcc.push({ x: i + 1, y: accAvgHundredValue });
     }
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
