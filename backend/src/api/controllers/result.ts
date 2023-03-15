@@ -388,7 +388,10 @@ export async function addResult(
 
   const { funbox, bailedOut } = result;
   const validResultCriteria =
-    (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
+    (funbox === "none" ||
+      funbox === "plus_one" ||
+      funbox === "plus_two" ||
+      funbox === "plus_three") &&
     !bailedOut &&
     user.banned !== true &&
     user.lbOptOut !== true &&
