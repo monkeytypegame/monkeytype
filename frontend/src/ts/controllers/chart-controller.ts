@@ -1083,7 +1083,6 @@ export async function updateColors<
       //pb
       (chart.data.datasets as ChartDataset<"line", TData>[])[1].borderColor =
         text02;
-
       //acc
       (
         chart.data.datasets as ChartDataset<"line", TData>[]
@@ -1108,6 +1107,8 @@ export async function updateColors<
       (Config.chartAverage10 && !Config.chartAverage100) ||
       (!Config.chartAverage10 && Config.chartAverage100)
     ) {
+      (chart.data.datasets as ChartDataset<"line", TData>[])[1].borderColor =
+        text02;
       (
         chart.data.datasets as ChartDataset<"line", TData>[]
       )[0].pointBackgroundColor = main04;
@@ -1123,6 +1124,8 @@ export async function updateColors<
       (chart.data.datasets as ChartDataset<"line", TData>[])[6].borderColor =
         subcolor;
     } else {
+      (chart.data.datasets as ChartDataset<"line", TData>[])[1].borderColor =
+        text02;
       (
         chart.data.datasets as ChartDataset<"line", TData>[]
       )[0].pointBackgroundColor = maincolor;
