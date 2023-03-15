@@ -621,7 +621,7 @@ function fillContent(): void {
 
       accChartData.push({
         x: testNum,
-        y: 100 - result.acc,
+        y: result.acc,
         errorRate: 100 - result.acc,
       });
 
@@ -733,15 +733,9 @@ function fillContent(): void {
 
   if (chartData.length > 0) {
     chartData.reverse();
+    accChartData.reverse();
 
-    let testNum = 1;
-    for (let i = 0; i < chartData.length; i++) {
-      chartData[i].x = testNum;
-      accChartData[i].x = testNum;
-
-      testNum++;
-    }
-
+    // get pb points
     let currentPb = 0;
     const pb: { x: number; y: number }[] = [];
 
@@ -752,17 +746,11 @@ function fillContent(): void {
       }
     });
 
-    accChartData.reverse();
-
-    accChartData.forEach((a) => {
-      a.y = 100 - a.y;
-    });
-
-    const xMax = chartData.length + 1;
-    // const xMax = 900;
+    // add last point to pb
+    const xMax = chartData.length;
 
     pb.push({
-      x: xMax - 1,
+      x: xMax,
       y: pb[pb.length - 1].y,
     });
 
@@ -771,110 +759,42 @@ function fillContent(): void {
     const avgHundred = [];
     const avgHundredAcc = [];
 
+    // get average 10 and 100
     for (let i = 0; i < chartData.length; i++) {
-      if (i < 10) {
-        let avg = 0;
-        let accAvg = 0;
-        const subset = chartData.slice(0, i + 1);
-        const accSubset = accChartData.slice(0, i + 1);
-        for (let j = 0; j < subset.length; j++) {
-          avg += subset[j].y;
-          accAvg += accSubset[j].y;
-        }
-        if (subset.length === 10) {
-          if (bestAverageTen === undefined) {
-            bestAverageTen = avg / subset.length;
-          } else {
-            if (avg / subset.length > bestAverageTen) {
-              bestAverageTen = avg / subset.length;
-            }
-          }
-        }
+      const startIdx = i < 10 ? 0 : i - 9;
+      const subset = chartData.slice(startIdx, i + 1);
+      const accSubset = accChartData.slice(startIdx, i + 1);
 
-        avg = avg / subset.length;
-        accAvg = accAvg / subset.length;
+      const avg = subset.reduce((acc, { y }) => acc + y, 0) / subset.length;
+      const accAvg =
+        accSubset.reduce((acc, { y }) => acc + y, 0) / subset.length;
 
-        avgTen.push({ x: i + 1, y: avg });
-        avgTenAcc.push({ x: i + 1, y: accAvg });
-      } else {
-        let avg = 0;
-        let accAvg = 0;
-        const subset = chartData.slice(i - 9, i + 1);
-        const accSubset = accChartData.slice(i - 9, i + 1);
-        for (let j = 0; j < subset.length; j++) {
-          avg += subset[j].y;
-          accAvg += accSubset[j].y;
-        }
-
-        if (subset.length === 10) {
-          if (bestAverageTen === undefined) {
-            bestAverageTen = avg / subset.length;
-          } else {
-            if (avg / subset.length > bestAverageTen) {
-              bestAverageTen = avg / subset.length;
-            }
-          }
-        }
-
-        avg = avg / subset.length;
-        accAvg = accAvg / subset.length;
-
-        avgTen.push({ x: i + 1, y: avg });
-        avgTenAcc.push({ x: i + 1, y: accAvg });
+      if (subset.length === 10 && (!bestAverageTen || avg > bestAverageTen)) {
+        bestAverageTen = avg;
       }
+
+      avgTen.push({ x: i + 1, y: avg });
+      avgTenAcc.push({ x: i + 1, y: accAvg });
     }
 
     for (let i = 0; i < chartData.length; i++) {
-      if (i < 100) {
-        let avg = 0;
-        let accAvg = 0;
-        const subset = chartData.slice(0, i + 1);
-        const accSubset = accChartData.slice(0, i + 1);
-        for (let j = 0; j < subset.length; j++) {
-          avg += subset[j].y;
-          accAvg += accSubset[j].y;
-        }
-        if (subset.length === 100) {
-          if (bestAverageHundred === undefined) {
-            bestAverageHundred = avg / subset.length;
-          } else {
-            if (avg / subset.length > bestAverageHundred) {
-              bestAverageHundred = avg / subset.length;
-            }
-          }
-        }
+      const startIdx = i < 100 ? 0 : i - 99;
+      const subset = chartData.slice(startIdx, i + 1);
+      const accSubset = accChartData.slice(startIdx, i + 1);
 
-        avg = avg / subset.length;
-        accAvg = accAvg / subset.length;
+      const avg = subset.reduce((acc, { y }) => acc + y, 0) / subset.length;
+      const accAvg =
+        accSubset.reduce((acc, { y }) => acc + y, 0) / subset.length;
 
-        avgHundred.push({ x: i + 1, y: avg });
-        avgHundredAcc.push({ x: i + 1, y: accAvg });
-      } else {
-        let avg = 0;
-        let accAvg = 0;
-        const subset = chartData.slice(i - 99, i + 1);
-        const accSubset = accChartData.slice(i - 99, i + 1);
-        for (let j = 0; j < subset.length; j++) {
-          avg += subset[j].y;
-          accAvg += accSubset[j].y;
-        }
-        if (subset.length === 100) {
-          if (bestAverageHundred === undefined) {
-            bestAverageHundred = avg / subset.length;
-          } else {
-            if (avg / subset.length > bestAverageHundred) {
-              bestAverageHundred = avg / subset.length;
-            }
-          }
-        }
-
-        avg = avg / subset.length;
-        accAvg = accAvg / subset.length;
-
-        avgHundred.push({ x: i + 1, y: avg });
-
-        avgHundredAcc.push({ x: i + 1, y: accAvg });
+      if (
+        subset.length === 100 &&
+        (!bestAverageHundred || avg > bestAverageHundred)
+      ) {
+        bestAverageHundred = avg;
       }
+
+      avgHundred.push({ x: i + 1, y: avg });
+      avgHundredAcc.push({ x: i + 1, y: accAvg });
     }
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
@@ -885,7 +805,7 @@ function fillContent(): void {
     ChartController.accountHistory.data.datasets[5].data = avgHundred;
     ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
 
-    accountHistoryScaleOptions["x"].max = xMax;
+    accountHistoryScaleOptions["x"].max = xMax + 1;
 
     chartData.reverse();
     accChartData.reverse();

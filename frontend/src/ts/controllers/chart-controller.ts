@@ -296,9 +296,9 @@ export const accountHistory: ChartWithUpdateColors<
         yAxisID: "wpmAvgHundred",
         data: [],
         fill: false,
-        order: 1,
         pointRadius: 0,
         pointHoverRadius: 0,
+        order: 1,
       },
       {
         yAxisID: "accAvgHundred",
@@ -1155,10 +1155,6 @@ export async function updateColors<
   try {
     (
       chart.data.datasets[0]
-        .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
-    ).style = subcolor;
-    (
-      chart.data.datasets[1]
         .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
     ).style = subcolor;
   } catch {}
