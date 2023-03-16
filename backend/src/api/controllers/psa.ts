@@ -5,7 +5,7 @@ import { recordAdAbTest } from "../../utils/prometheus";
 export async function getPsas(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
-  const { adChoiceRaw } = req.query;
+  const { adChoice: adChoiceRaw } = req.query;
 
   //ensure adchoice raw is a string and either "pw" or "eg"
   const adChoice =
