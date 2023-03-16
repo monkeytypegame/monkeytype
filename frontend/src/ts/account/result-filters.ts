@@ -305,7 +305,6 @@ export function loadTags(tags: MonkeyTypes.Tag[]): void {
 
 export function reset(): void {
   filters = defaultResultFilters;
-  console.log("hi");
   save();
 }
 

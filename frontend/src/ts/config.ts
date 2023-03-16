@@ -299,51 +299,6 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-// export function setChartAccuracy(
-//   chartAccuracy: boolean,
-//   nosave?: boolean
-// ): boolean {
-//   if (!isConfigValueValid("chart accuracy", chartAccuracy, ["boolean"])) {
-//     return false;
-//   }
-
-//   config.chartAccuracy = chartAccuracy;
-//   saveToLocalStorage("chartAccuracy", nosave);
-//   ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
-
-//   return true;
-// }
-
-// export function setChartAverage10(
-//   chartAverage10: boolean,
-//   nosave?: boolean
-// ): boolean {
-//   if (!isConfigValueValid("chart average 10", chartAverage10, ["boolean"])) {
-//     return false;
-//   }
-
-//   config.chartAverage10 = chartAverage10;
-//   saveToLocalStorage("chartAverage10", nosave);
-//   ConfigEvent.dispatch("chartAverage10", config.chartAverage10);
-
-//   return true;
-// }
-
-// export function setChartAverage100(
-//   chartAverage100: boolean,
-//   nosave?: boolean
-// ): boolean {
-//   if (!isConfigValueValid("chart average 100", chartAverage100, ["boolean"])) {
-//     return false;
-//   }
-
-//   config.chartAverage100 = chartAverage100;
-//   saveToLocalStorage("chartAverage100", nosave);
-//   ConfigEvent.dispatch("chartAverage100", config.chartAverage100);
-
-//   return true;
-// }
-
 export function setAccountChart(
   array: MonkeyTypes.AccountChart,
   nosave?: boolean
@@ -1901,9 +1856,6 @@ export function apply(
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setRepeatedPace(configObj.repeatedPace, true);
     setPageWidth(configObj.pageWidth, true);
-    // setChartAccuracy(configObj.chartAccuracy, true);
-    // setChartAverage10(configObj.chartAverage10, true);
-    // setChartAverage100(configObj.chartAverage100, true);
     setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);

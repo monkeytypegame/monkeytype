@@ -352,25 +352,6 @@ function hexToHSL(hex: string): {
   };
 }
 
-export function getContrastColor(
-  base: string,
-  color1: string,
-  color2: string
-): string {
-  const { lgt: baseL } = hexToHSL(base);
-  const { lgt: color1L } = hexToHSL(color1);
-  const { lgt: color2L } = hexToHSL(color2);
-
-  const diff1 = Math.abs(baseL - color1L);
-  const diff2 = Math.abs(baseL - color2L);
-
-  if (diff1 > diff2) {
-    return color1;
-  } else {
-    return color2;
-  }
-}
-
 export function isColorLight(hex: string): boolean {
   const hsl = hexToHSL(hex);
   return hsl.lgt >= 50;
