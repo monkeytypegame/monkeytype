@@ -18,8 +18,7 @@ let initialised = false;
 export let adBlock: boolean;
 export let cookieBlocker: boolean;
 
-let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
-// let choice: "eg" | "pw" = "eg";
+export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
 
 console.log("AB choice: " + choice);
 

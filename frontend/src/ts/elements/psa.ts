@@ -3,6 +3,7 @@ import { isLocalhost, secondsToString } from "../utils/misc";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import * as Alerts from "./alerts";
+import { choice } from "../controllers/ad-controller";
 
 function clearMemory(): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
@@ -19,7 +20,7 @@ function setMemory(id: string): void {
 }
 
 async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
-  const response = await Ape.psas.get();
+  const response = await Ape.psas.get(choice);
   if (response.status === 500) {
     if (isLocalhost()) {
       Notifications.addBanner(

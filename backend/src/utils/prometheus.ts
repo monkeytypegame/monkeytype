@@ -322,3 +322,13 @@ export function recordTimeToCompleteJob(
   timeToCompleteJobTotal.inc({ queueName, jobName }, time);
   timeToCompleteJobCount.inc({ queueName, jobName });
 }
+
+const adAbTest = new Counter({
+  name: "ad_ab_test",
+  help: "Ad AB test",
+  labelNames: ["provider"],
+});
+
+export function recordAdAbTest(provider: string): void {
+  adAbTest.inc({ provider });
+}
