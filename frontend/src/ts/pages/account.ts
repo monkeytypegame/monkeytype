@@ -739,17 +739,19 @@ function fillContent(): void {
     chartData.forEach((a) => {
       if (a.y > currentPb) {
         currentPb = a.y;
-        pb.push(a);
+        //todo: remove temporary fix
+        // pb.push(a);
       }
     });
 
     // add last point to pb
     const xMax = chartData.length;
 
-    pb.push({
-      x: xMax,
-      y: pb[pb.length - 1].y,
-    });
+    //todo: remove temporary fix
+    // pb.push({
+    //   x: xMax,
+    //   y: pb[pb.length - 1].y,
+    // });
 
     const avgTen = [];
     const avgTenAcc = [];
@@ -783,6 +785,15 @@ function fillContent(): void {
       // add values to arrays
       avgHundred.push({ x: i + 1, y: avgHundredValue });
       avgHundredAcc.push({ x: i + 1, y: accAvgHundredValue });
+    }
+
+    //todo: remove temporary fix
+    for (let i = 0; i < chartData.length; i++) {
+      chartData[i].x = i + 1;
+    }
+
+    for (let i = 0; i < accChartData.length; i++) {
+      accChartData[i].x = i + 1;
     }
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
