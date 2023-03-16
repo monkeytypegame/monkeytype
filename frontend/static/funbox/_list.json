@@ -95,6 +95,11 @@
     "canGetPb": true
   },
   {
+    "name": "plus_three",
+    "info": "Only three future words are visible.",
+    "canGetPb": true
+  },
+  {
     "name": "read_ahead_easy",
     "info": "Only the current word is invisible.",
     "canGetPb": true
