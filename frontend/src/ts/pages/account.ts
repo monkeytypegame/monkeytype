@@ -735,13 +735,11 @@ function fillContent(): void {
     chartData.forEach((a) => {
       if (a.y > currentPb) {
         currentPb = a.y;
-        //todo: remove temporary fix
         pb.push(a);
       }
     });
 
     // add last point to pb
-
     pb.push({
       x: 1,
       y: pb[pb.length - 1].y,
