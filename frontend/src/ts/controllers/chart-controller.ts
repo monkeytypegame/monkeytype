@@ -243,38 +243,76 @@ export let accountHistoryActiveIndex: number;
 
 export const accountHistory: ChartWithUpdateColors<
   "line",
-  MonkeyTypes.HistoryChartData[] | MonkeyTypes.AccChartData[],
+  | MonkeyTypes.HistoryChartData[]
+  | MonkeyTypes.AccChartData[]
+  | MonkeyTypes.OtherChartData[],
   string
 > = new ChartWithUpdateColors($(".pageAccount #accountHistoryChart"), {
   type: "line",
   data: {
-    labels: [],
     datasets: [
       {
         yAxisID: "wpm",
-        label: "wpm",
-        fill: false,
         data: [],
-        borderColor: "#f44336",
-        borderWidth: 2,
-        trendlineLinear: {
-          style: "rgba(255,105,180, .8)",
-          lineStyle: "dotted",
-          width: 4,
-        },
+        fill: false,
+        borderWidth: 0,
+        order: 3,
+      },
+      {
+        yAxisID: "pb",
+        data: [],
+        fill: false,
+        stepped: true,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        order: 4,
       },
       {
         yAxisID: "acc",
-        label: "acc",
         fill: false,
         data: [],
-        borderColor: "#cccccc",
-        borderWidth: 2,
+        pointStyle: "triangle",
+        borderWidth: 0,
+        pointRadius: 3.5,
+        order: 3,
+      },
+      {
+        yAxisID: "wpmAvgTen",
+        data: [],
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        order: 2,
+      },
+      {
+        yAxisID: "accAvgTen",
+        data: [],
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        order: 2,
+      },
+      {
+        yAxisID: "wpmAvgHundred",
+        data: [],
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        order: 1,
+      },
+      {
+        yAxisID: "accAvgHundred",
+        label: "accAvgHundred",
+        data: [],
+        fill: false,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        order: 1,
       },
     ],
   },
   options: {
-    responsive: true,
+    // responsive: true,
     maintainAspectRatio: false,
     hover: {
       mode: "nearest",
@@ -283,13 +321,18 @@ export const accountHistory: ChartWithUpdateColors<
     scales: {
       x: {
         axis: "x",
-        type: "timeseries",
-        bounds: "ticks",
+        type: "linear",
+        min: 0,
+        ticks: {
+          stepSize: 10,
+        },
         display: false,
-        offset: true,
         title: {
+          display: true,
+          text: "Test Number",
+        },
+        grid: {
           display: false,
-          text: "Date",
         },
       },
       wpm: {
@@ -306,21 +349,86 @@ export const accountHistory: ChartWithUpdateColors<
         },
         position: "right",
       },
+      pb: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
+      },
       acc: {
         axis: "y",
         beginAtZero: true,
+        min: 0,
         max: 100,
+        reverse: true,
+        ticks: {
+          stepSize: 10,
+        },
         display: true,
-        position: "left",
         title: {
           display: true,
-          text: "Error rate (100 - accuracy)",
+          text: "Accuracy",
         },
+        grid: {
+          display: false,
+        },
+        position: "left",
+      },
+      wpmAvgTen: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
+        grid: {
+          display: false,
+        },
+      },
+      accAvgTen: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        reverse: true,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
+        grid: {
+          display: false,
+        },
+      },
+      wpmAvgHundred: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
+        grid: {
+          display: false,
+        },
+      },
+      accAvgHundred: {
+        axis: "y",
+        beginAtZero: true,
+        min: 0,
+        reverse: true,
+        ticks: {
+          stepSize: 10,
+        },
+        display: false,
         grid: {
           display: false,
         },
       },
     },
+
     plugins: {
       annotation: {
         annotations: [],
@@ -329,15 +437,26 @@ export const accountHistory: ChartWithUpdateColors<
         animation: { duration: 250 },
         // Disable the on-canvas tooltip
         enabled: true,
+
         intersect: false,
         external: function (ctx): void {
           if (!ctx) return;
           ctx.tooltip.options.displayColors = false;
         },
+        filter: function (tooltipItem): boolean {
+          return (
+            tooltipItem.datasetIndex !== 1 &&
+            tooltipItem.datasetIndex !== 3 &&
+            tooltipItem.datasetIndex !== 4 &&
+            tooltipItem.datasetIndex !== 5 &&
+            tooltipItem.datasetIndex !== 6
+          );
+        },
         callbacks: {
           title: function (): string {
             return "";
           },
+
           beforeLabel: function (tooltipItem): string {
             if (tooltipItem.datasetIndex !== 0) {
               const resultData = tooltipItem.dataset.data[
@@ -828,21 +947,55 @@ export const miniResult: ChartWithUpdateColors<
 });
 
 function updateAccuracy(): void {
-  accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
+  const accOn = Config.accountChart[0] === "on";
+  const avg10On = Config.accountChart[1] === "on";
+  const avg100On = Config.accountChart[2] === "on";
+
+  if (avg10On && avg100On) {
+    accountHistory.data.datasets[2].hidden = !accOn;
+    accountHistory.data.datasets[4].hidden = !accOn;
+    accountHistory.data.datasets[6].hidden = !accOn;
+  } else if (avg10On) {
+    accountHistory.data.datasets[2].hidden = !accOn;
+    accountHistory.data.datasets[4].hidden = !accOn;
+  } else if (Config.accountChart[2] === "on") {
+    accountHistory.data.datasets[2].hidden = !accOn;
+    accountHistory.data.datasets[6].hidden = !accOn;
+  } else {
+    accountHistory.data.datasets[2].hidden = !accOn;
+  }
+
   (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
-    Config.chartAccuracy;
+    accOn;
   accountHistory.update();
 }
 
-function updateStyle(): void {
-  if (Config.chartStyle == "scatter") {
-    accountHistory.data.datasets[0].showLine = false;
-    accountHistory.data.datasets[1].showLine = false;
+function updateAverage10(): void {
+  const accOn = Config.accountChart[0] === "on";
+  const avg10On = Config.accountChart[1] === "on";
+
+  if (accOn) {
+    accountHistory.data.datasets[3].hidden = !avg10On;
+    accountHistory.data.datasets[4].hidden = !avg10On;
   } else {
-    accountHistory.data.datasets[0].showLine = true;
-    accountHistory.data.datasets[1].showLine = true;
+    accountHistory.data.datasets[3].hidden = !avg10On;
   }
   accountHistory.updateColors();
+  accountHistory.update();
+}
+
+function updateAverage100(): void {
+  const accOn = Config.accountChart[0] === "on";
+  const avg100On = Config.accountChart[2] === "on";
+
+  if (accOn) {
+    accountHistory.data.datasets[5].hidden = !avg100On;
+    accountHistory.data.datasets[6].hidden = !avg100On;
+  } else {
+    accountHistory.data.datasets[5].hidden = !avg100On;
+  }
+  accountHistory.updateColors();
+  accountHistory.update();
 }
 
 export async function updateColors<
@@ -866,6 +1019,7 @@ export async function updateColors<
     const color = isPb ? textcolor : maincolor;
     return color;
   };
+
   if (chart.data.datasets[1]) {
     chart.data.datasets[1].borderColor = subcolor;
   }
@@ -910,6 +1064,60 @@ export async function updateColors<
       )[1].pointBackgroundColor = subcolor;
     }
   }
+  if (chart.data.datasets.length === 2) {
+    chart.data.datasets[1].borderColor = (): string => {
+      const color = subcolor;
+      return color;
+    };
+  }
+
+  if (chart.data.datasets.length === 7) {
+    chart.data.datasets[2].borderColor = (): string => {
+      const color = subcolor;
+      return color;
+    };
+    const avg10On = Config.accountChart[1] === "on";
+    const avg100On = Config.accountChart[2] === "on";
+
+    const text02 = Misc.blendTwoHexColors(bgcolor, textcolor, 0.2);
+    const main02 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.2);
+    const main04 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.4);
+
+    const sub02 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.2);
+    const sub04 = Misc.blendTwoHexColors(bgcolor, subcolor, 0.4);
+
+    const [
+      wpmDataset,
+      pbDataset,
+      accDataset,
+      ao10wpmDataset,
+      ao10accDataset,
+      ao100wpmDataset,
+      ao100accDataset,
+    ] = chart.data.datasets as ChartDataset<"line", TData>[];
+
+    if (avg10On && avg100On) {
+      wpmDataset.pointBackgroundColor = main02;
+      pbDataset.borderColor = text02;
+      accDataset.pointBackgroundColor = sub02;
+      ao10wpmDataset.borderColor = main04;
+      ao10accDataset.borderColor = sub04;
+      ao100wpmDataset.borderColor = maincolor;
+      ao100accDataset.borderColor = subcolor;
+    } else if ((avg10On && !avg100On) || (!avg10On && avg100On)) {
+      pbDataset.borderColor = text02;
+      wpmDataset.pointBackgroundColor = main04;
+      accDataset.pointBackgroundColor = sub04;
+      ao10wpmDataset.borderColor = maincolor;
+      ao100wpmDataset.borderColor = maincolor;
+      ao10accDataset.borderColor = subcolor;
+      ao100accDataset.borderColor = subcolor;
+    } else {
+      pbDataset.borderColor = text02;
+      wpmDataset.pointBackgroundColor = maincolor;
+      accDataset.pointBackgroundColor = subcolor;
+    }
+  }
 
   const chartScaleOptions = chart.options as ScaleChartOptions<TType>;
   Object.keys(chartScaleOptions.scales).forEach((scaleID) => {
@@ -921,10 +1129,6 @@ export async function updateColors<
   try {
     (
       chart.data.datasets[0]
-        .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
-    ).style = subcolor;
-    (
-      chart.data.datasets[1]
         .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
     ).style = subcolor;
   } catch {}
@@ -958,7 +1162,10 @@ export function updateAllChartColors(): void {
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "chartAccuracy") updateAccuracy();
-  if (eventKey === "chartStyle") updateStyle();
+  if (eventKey === "accountChart") {
+    updateAccuracy();
+    updateAverage10();
+    updateAverage100();
+  }
   if (eventKey === "fontFamily") setDefaultFontFamily(eventValue as string);
 });
