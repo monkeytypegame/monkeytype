@@ -275,8 +275,6 @@ function fillContent(): void {
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
 
-  let testNum = DB.getSnapshot()?.results?.length || 0;
-
   DB.getSnapshot()?.results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       // totalSeconds += tt;
@@ -601,7 +599,7 @@ function fillContent(): void {
       }
 
       chartData.push({
-        x: testNum,
+        x: filteredResults.length,
         y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
         wpm: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
         acc: result.acc,
@@ -620,12 +618,10 @@ function fillContent(): void {
       wpmChartData.push(result.wpm);
 
       accChartData.push({
-        x: testNum,
+        x: filteredResults.length,
         y: result.acc,
         errorRate: 100 - result.acc,
       });
-
-      testNum--;
 
       if (result.wpm > topWpm) {
         const puncsctring = result.punctuation ? ",<br>with punctuation" : "";
@@ -740,18 +736,16 @@ function fillContent(): void {
       if (a.y > currentPb) {
         currentPb = a.y;
         //todo: remove temporary fix
-        // pb.push(a);
+        pb.push(a);
       }
     });
 
     // add last point to pb
-    const xMax = chartData.length;
 
-    //todo: remove temporary fix
-    // pb.push({
-    //   x: xMax,
-    //   y: pb[pb.length - 1].y,
-    // });
+    pb.push({
+      x: 1,
+      y: pb[pb.length - 1].y,
+    });
 
     const avgTen = [];
     const avgTenAcc = [];
@@ -769,8 +763,8 @@ function fillContent(): void {
         accSubsetTen.reduce((acc, { y }) => acc + y, 0) / subsetTen.length;
 
       // add values to arrays
-      avgTen.push({ x: i + 1, y: avgTenValue });
-      avgTenAcc.push({ x: i + 1, y: accAvgTenValue });
+      avgTen.push({ x: chartData.length - i, y: avgTenValue });
+      avgTenAcc.push({ x: chartData.length - i, y: accAvgTenValue });
 
       // calculate 100 subset averages
       const startIdxHundred = i < 100 ? 0 : i - 99;
@@ -783,17 +777,8 @@ function fillContent(): void {
         subsetHundred.length;
 
       // add values to arrays
-      avgHundred.push({ x: i + 1, y: avgHundredValue });
-      avgHundredAcc.push({ x: i + 1, y: accAvgHundredValue });
-    }
-
-    //todo: remove temporary fix
-    for (let i = 0; i < chartData.length; i++) {
-      chartData[i].x = i + 1;
-    }
-
-    for (let i = 0; i < accChartData.length; i++) {
-      accChartData[i].x = i + 1;
+      avgHundred.push({ x: chartData.length - i, y: avgHundredValue });
+      avgHundredAcc.push({ x: chartData.length - i, y: accAvgHundredValue });
     }
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
@@ -804,7 +789,7 @@ function fillContent(): void {
     ChartController.accountHistory.data.datasets[5].data = avgHundred;
     ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
 
-    accountHistoryScaleOptions["x"].max = xMax + 1;
+    accountHistoryScaleOptions["x"].max = chartData.length + 1;
 
     chartData.reverse();
     accChartData.reverse();
