@@ -119,7 +119,7 @@ declare namespace MonkeyTypes {
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
-  type ChartStyle = "line" | "scatter";
+  type AccountChart = ("off" | "on")[];
 
   type MinimumWordsPerMinute = "off" | "custom";
 
@@ -175,6 +175,11 @@ declare namespace MonkeyTypes {
     x: number;
     y: number;
     errorRate: number;
+  }
+
+  interface OtherChartData {
+    x: number;
+    y: number;
   }
 
   interface ActivityChartDataPoint {
@@ -448,8 +453,7 @@ declare namespace MonkeyTypes {
     paceCaretCustomSpeed: number;
     repeatedPace: boolean;
     pageWidth: PageWidth;
-    chartAccuracy: boolean;
-    chartStyle: ChartStyle;
+    accountChart: AccountChart;
     minWpm: MinimumWordsPerMinute;
     minWpmCustomSpeed: number;
     highlightMode: HighlightMode;

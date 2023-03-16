@@ -75,6 +75,10 @@ const Funboxes: Record<string, MonkeyTypes.FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 0,
   },
+  plus_three: {
+    canGetPb: true,
+    difficultyLevel: 0,
+  },
   read_ahead_easy: {
     canGetPb: true,
     difficultyLevel: 1,

@@ -901,13 +901,24 @@ export async function init(): Promise<void> {
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
   if (funboxToPush) {
     wordsBound = +funboxToPush.split(":")[1];
-    if (
-      (Config.mode === "words" && Config.words < wordsBound) ||
-      (Config.mode === "custom" &&
-        !CustomText.isTimeRandom &&
-        CustomText.word < wordsBound)
-    ) {
+    if (Config.mode === "words" && Config.words < wordsBound) {
       wordsBound = Config.words;
+    }
+    if (
+      Config.mode === "custom" &&
+      !CustomText.isTimeRandom &&
+      CustomText.isWordRandom &&
+      CustomText.word < wordsBound
+    ) {
+      wordsBound = CustomText.word;
+    }
+    if (
+      Config.mode === "custom" &&
+      !CustomText.isTimeRandom &&
+      !CustomText.isWordRandom &&
+      CustomText.text.length < wordsBound
+    ) {
+      wordsBound = CustomText.text.length;
     }
   } else if (Config.showAllLines) {
     if (Config.mode === "quote") {
@@ -1798,7 +1809,7 @@ async function saveResult(
     }
     DB.saveLocalResult(completedEvent);
     DB.updateLocalStats(
-      TestStats.restartCount + 1,
+      completedEvent.incompleteTests.length + 1,
       completedEvent.testDuration +
         completedEvent.incompleteTestSeconds -
         completedEvent.afkDuration

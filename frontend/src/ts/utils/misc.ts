@@ -288,6 +288,7 @@ function hexToRgb(hex: string):
   } else {
     return undefined;
   }
+
   return { r, g, b };
 }
 
