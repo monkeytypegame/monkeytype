@@ -87,7 +87,7 @@ const CONFIG_SCHEMA = joi.object({
   paceCaretCustomSpeed: joi.number().min(0),
   repeatedPace: joi.boolean(),
   pageWidth: joi.string().valid("100", "125", "150", "200", "max"),
-  accountChart: joi.array().items(joi.string()),
+  accountChart: joi.array().items(joi.string()).optional(),
   chartAccuracy: joi.boolean().optional(), //remove after a bit
   chartStyle: joi.string().valid("line", "scatter").optional(), //remove after a bit
   minWpm: joi.string().valid("off", "custom"),
