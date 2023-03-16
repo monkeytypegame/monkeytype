@@ -15,7 +15,7 @@ export function init(): void {
 export function renderResult(widerThanBreakpoint: boolean): void {
   if (widerThanBreakpoint) {
     //@ts-ignore
-    window.egAps.refreshAds([
+    window.egAps.render([
       "ad-result",
       "ad-vertical-left",
       "ad-vertical-right",
@@ -23,7 +23,7 @@ export function renderResult(widerThanBreakpoint: boolean): void {
     ]);
   } else {
     //@ts-ignore
-    window.egAps.refreshAds([
+    window.egAps.render([
       "ad-result-small",
       "ad-vertical-left",
       "ad-vertical-right",
@@ -45,21 +45,20 @@ export function reinstate(): boolean {
 
 export async function refreshVisible(): Promise<void> {
   //@ts-ignore
-  const adDivs = Object.keys(window.egAdPack.gptAdSlots);
-  const visibleAdDivs = [];
-
-  for (let i = 0; i < adDivs.length; i++) {
-    const el = document.querySelectorAll(
-      "[data-adunit-name='" + adDivs[i] + "']"
-    )[0];
-    if (!el) continue;
-    const elParent = el.parentElement as HTMLElement;
-    if (
-      window.getComputedStyle(elParent).getPropertyValue("display") != "none"
-    ) {
-      visibleAdDivs.push(adDivs[i]);
-    }
-  }
-  //@ts-ignore
-  window.egAps.refreshAds(visibleAdDivs);
+  // const adDivs = Object.keys(window.egAdPack.gptAdSlots);
+  // const visibleAdDivs = [];
+  // for (let i = 0; i < adDivs.length; i++) {
+  //   const el = document.querySelectorAll(
+  //     "[data-adunit-name='" + adDivs[i] + "']"
+  //   )[0];
+  //   if (!el) continue;
+  //   const elParent = el.parentElement as HTMLElement;
+  //   if (
+  //     window.getComputedStyle(elParent).getPropertyValue("display") != "none"
+  //   ) {
+  //     visibleAdDivs.push(adDivs[i]);
+  //   }
+  // }
+  // //@ts-ignore
+  // window.egAps.refreshAds(visibleAdDivs);
 }
