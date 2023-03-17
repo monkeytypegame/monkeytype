@@ -322,15 +322,12 @@ export const accountHistory: ChartWithUpdateColors<
       x: {
         axis: "x",
         type: "linear",
+        reverse: true,
         min: 0,
         ticks: {
           stepSize: 10,
         },
         display: false,
-        title: {
-          display: true,
-          text: "Test Number",
-        },
         grid: {
           display: false,
         },
