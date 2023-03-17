@@ -228,6 +228,7 @@ FunboxList.setFunboxFunctions("arrows", {
       if (letterTag) retval += `</letter>`;
     }
     return retval;
+  }
 });
 
 FunboxList.setFunboxFunctions("arrows_ITG", {
