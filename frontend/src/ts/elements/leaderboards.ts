@@ -150,11 +150,20 @@ function updateFooter(lb: LbKey): void {
     return;
   }
 
-  $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+  if (DB.getSnapshot()?.lbOptOut === true) {
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td colspan="6" style="text-align:center;">You have opted out of the leaderboards</>
+    </tr>
+    `);
+    return;
+  } else {
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;">Not qualified</>
     </tr>
     `);
+  }
 
   let toppercent;
   if (currentTimeRange === "allTime" && currentRank[lb]) {

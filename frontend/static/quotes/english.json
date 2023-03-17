@@ -446,12 +446,6 @@
       "length": 154
     },
     {
-      "text": "This is the second most tragic thing to happen in my life...",
-      "source": "Lisa",
-      "id": 74,
-      "length": 60
-    },
-    {
       "text": "Lights up and they know who you are, know who you are. Do you know who you are?",
       "source": "Lights Up",
       "id": 75,
@@ -663,7 +657,7 @@
     },
     {
       "text": "Do not act as if you were going to live ten thousand years. Death hangs over you. While you live, while it is in your power, be good.",
-      "source": "Meditations",
+      "source": "Marcus Aurelius",
       "id": 113,
       "length": 133
     },
@@ -1398,12 +1392,6 @@
       "source": "The Good That Won't Come Out of Me",
       "id": 236,
       "length": 286
-    },
-    {
-      "text": "I think if you don't really like a girl, you shouldn't horse around with her at all, and if you do like her, then you're supposed to like her face, and if you like her face, you ought to be careful about doing crumby stuff to it, like squirting water all over it. It's really too bad that so much crumby stuff is a lot of fun sometimes.",
-      "source": "The Catcher in the Rye",
-      "id": 237,
-      "length": 336
     },
     {
       "text": "And now it's time for Silly Songs with Larry, the part of the show where Larry comes out and sings a silly song.",
@@ -2622,12 +2610,6 @@
       "source": "Rhett & Link's Book of Mythicality: A Field Guide to Curiosity, Creativity, and Tomfoolery",
       "id": 440,
       "length": 179
-    },
-    {
-      "text": "But what leaves us out of breath the most isn't the moments spent on a bed too small for two but the expense of our hearts by the labor of our bodies. I guess that two float around the point. But I wanna say it's more than just those moments, at least more than the surface. It's the tempo within those seconds where time seems to slow to a crawl and I can't help but fall into the rhythm of your skin and your shaking breath and I sink into the warmest dreams and the softest skin.",
-      "source": "Twin Sized Sheets",
-      "id": 441,
-      "length": 482
     },
     {
       "text": "I'm not very good at this, out, being in public. But I felt the need to speak up for this city that I love with all my heart. No one should have to live in fear, in fear of madmen who have no regard for who they injure.",
@@ -4802,12 +4784,6 @@
       "length": 355
     },
     {
-      "text": "There's no more harm in a kiss than shaving a monkey and pretending it's a woman.",
-      "source": "QI",
-      "id": 815,
-      "length": 81
-    },
-    {
       "text": "The most precious treasures we have in life are the images we store in the memory banks of our brains. The sum of these stored experiences is responsible for our sense of personal identity and our sense of connectedness to those around us.",
       "source": "Change Your Brain, Change Your Life",
       "id": 816,
@@ -6764,12 +6740,6 @@
       "length": 211
     },
     {
-      "text": "They say that right after God created man, he took a rib from him and made a chick. That's actually a bit of a creation myth - the truth is, after God saw that man was good, he created another man and saw that it was all good.",
-      "source": "Brocabulary: The New Man-i-festo of Dude Talk",
-      "id": 1149,
-      "length": 226
-    },
-    {
       "text": "When the snow is on our mind, rows and rows and lines and lines. In the haze of your fixation, we all crave for you, we all crave. And you can kill the wildest thing, but when you murder it's a sin. In the midst of your conviction, we all crave for you, we all crave.",
       "source": "Crave",
       "id": 1150,
@@ -8208,12 +8178,6 @@
       "source": "A Game of Thrones",
       "id": 1399,
       "length": 87
-    },
-    {
-      "text": "While there are few problems in today's world that the United States can solve alone, there are even fewer that can be solved without the United States.",
-      "source": "Hard Choices",
-      "id": 1400,
-      "length": 152
     },
     {
       "text": "We all know that something is eternal. And it ain't houses and it ain't names, and it ain't earth, and it ain't even the stars... everybody knows in their bones that something is eternal, and that something has to do with human beings. All the greatest people ever lived have been telling us that for five thousand years and yet you'd be surprised how people are always losing hold of it. There's something way down deep that's eternal about every human being.",
@@ -11402,7 +11366,7 @@
       "length": 252
     },
     {
-      "text": "I had a job, I had a girl. I had something going, mister, in this world. I got laid off down at the lumber yard, our love went bad, times got hard. Now I work down at the carwash, where all it ever does is rain. Don't you feel like you're a rider on a downbound train.",
+      "text": "I had a job, I had a girl. I had something going, mister, in this world. I got laid off down at the lumber yard, our love went bad, times got hard. Now I work down at the carwash, where all it ever does is rain. Don't you feel like you're a rider on a downbound train?",
       "source": "Downbound Train",
       "id": 1950,
       "length": 268
@@ -11601,7 +11565,7 @@
     },
     {
       "text": "The world ain't all sunshine and rainbows. It's a very mean and nasty place and I don't care how tough you are, it will beat you to your knees and keep you there permanently if you let it. You, me, or nobody is gonna hit as hard as life. But it ain't about how hard you hit. It's about how hard you can get hit and keep moving forward. That's how winning is done! Now if you know what you're worth then go out and get what you're worth. But you've gotta be willing to take the hits, and not pointing fingers saying you ain't where you wanna be because of him, or her, or anybody! Cowards do that and that ain't you! You're better than that!",
-      "source": "Rocky IV",
+      "source": "Rocky Balboa (2006)",
       "id": 1984,
       "length": 640
     },
@@ -13022,7 +12986,7 @@
       "length": 148
     },
     {
-      "text": "I'll tell you bedtime stories, and you pretend they're not boring. One day we'll have a house of our very own and we'll make it our home. And I'll do anything for you. It's just two little words. They're gonna change my world. Three letters, in old. And I mean them with all I got. We're gonna say I do.",
+      "text": "I'll tell you bedtime stories, and you pretend they're not boring. One day we'll have a house of our very own and we'll make it our home. And I'll do anything for you. It's just two little words. They're gonna change my world. Three letters, in all. And I mean them with all I got. We're gonna say I do.",
       "source": "Two Little Words (I do)",
       "id": 2229,
       "length": 303
@@ -13167,7 +13131,7 @@
     },
     {
       "text": "Most test subjects do experience some, uh, cognitive deterioration after a few months in suspension. Now, you've been under for... quite a bit longer, and it's not out of the question that you might have a very minor case of serious brain damage. But don't be alarmed, all right? Although, if you do feel alarmed, try to hold onto that feeling, because that is the proper reaction to being told you have brain damage.",
-      "source": "Portal 2",
+      "source": "Wheatley, Portal 2",
       "id": 2253,
       "length": 417
     },
@@ -13862,12 +13826,6 @@
       "length": 177
     },
     {
-      "text": "There is a door at the end of a silent corridor. And it's haunting Harry Potter's dreams. Why else would he be waking in the middle of the night, screaming in terror?",
-      "source": "Harry Potter and the Order of the Phoenix",
-      "id": 2376,
-      "length": 166
-    },
-    {
       "text": "I am assured by our merchants, that a boy or a girl before twelve years old, is no salable commodity, and even when they come to this age, they will not yield above three pounds, or three pounds and half a crown at most, on the exchange; which cannot turn to account either to the parents or kingdom, the charge of nutriments and rags having been at least four times that value.",
       "source": "A Modest Proposal",
       "id": 2377,
@@ -14448,12 +14406,6 @@
       "source": "Emotional Intelligence",
       "id": 2475,
       "length": 70
-    },
-    {
-      "text": "I wrote him back a letter and I told him it was not the perfect country and western song, because he hadn't said anything at all about mama, or trains, or trucks, or prison, or gettin' drunk. Well, he sat down and wrote another verse to this song and he sent it to me, and after reading it I realized that my friend had written the perfect country and western song, and I felt obliged to include it on this album. The last verse goes like this here. Well, I was drunk the day my mom got out of prison, and I went to pick her up in the rain. But before I could get to the station in my pickup truck, she got runned over by a damned old train.",
-      "source": "You Never Even Called Me by My Name",
-      "id": 2476,
-      "length": 641
     },
     {
       "text": "And I said, I don't care if they lay me off either, because I told Bill that if they move my desk one more time, then I'm quitting, I'm going to quit. They've moved my desk four times already this year, and I used to be over by the window, and I could see the squirrels, and they were married, but then, they switched from the Swingline to the Boston stapler, but I kept my Swingline stapler.",
@@ -15489,7 +15441,7 @@
     },
     {
       "text": "Every moment there are a million miracles happening around you: a flower blossoming, a bird tweeting, a bee humming, a raindrop falling, a snowflake wafting along the clear evening air. There is magic everywhere. If you learn how to live it, life is nothing short of a daily miracle.",
-      "source": "Inner Engineering: A Yogiâ€™s Guide to Joy",
+      "source": "Inner Engineering: A Yogi's Guide to Joy",
       "id": 2661,
       "length": 283
     },
@@ -16026,12 +15978,6 @@
       "source": "The Trial",
       "id": 2753,
       "length": 174
-    },
-    {
-      "text": "I know you're coming in the night like a thief, but I've had some time alone to hone my lying technique. I know you think that I'm someone you can trust, but I'm scared I'll get scared and I swear I'll try to nail you back up.",
-      "source": "Jesus Christ",
-      "id": 2754,
-      "length": 226
     },
     {
       "text": "Keep drinking coffee, stare me down across the table while I look outside. So many things I'd say if only I were able, but I just keep quiet and count the cars that pass by.",
@@ -19058,12 +19004,6 @@
       "length": 172
     },
     {
-      "text": "If one person casts a stone at us, cast stones back with two people! If two people cast stones, cast stones back with four! If eight do, with sixteen! If a thousand do, stand up and fight with the entire village! Consider an insult to one an insult to everyone!",
-      "source": "When They Cry",
-      "id": 3279,
-      "length": 261
-    },
-    {
       "text": "A setup like that cost more than we ever took. That crazy Harriman. That's bad business! How long do you think I'd stay in operation if every time I pulled a job it cost me money? If he'd just pay me what he's spending to make me stop robbing him, I'd stop robbing him!",
       "source": "Butch Cassidy and the Sundance Kid",
       "id": 3280,
@@ -20720,10 +20660,10 @@
       "length": 392
     },
     {
-      "text": "At that very moment, time stopped, as it was wont to do when present, past, and future collide; when one's existence ceases to be measured in days, hours, and minutes, but instead in immeasurable quantity of life events.",
+      "text": "At that very moment, time stopped, as it was one to do when present, past, and future collide; when one's existence ceases to be measured in days, hours, and minutes, but instead in immeasurable quantity of life events.",
       "source": "Pushing Daisies",
       "id": 3568,
-      "length": 220
+      "length": 219
     },
     {
       "text": "That's Tommy. He tells people he was named after a gun, but I know he was really named after a famous 19th century ballet dancer.",
@@ -23760,12 +23700,6 @@
       "source": "This Is the Zodiac Speaking: Into the Mind of a Serial Killer",
       "id": 4089,
       "length": 420
-    },
-    {
-      "text": "There is a difference between the Holy Spirit coming and residing within us and us receiving the clothing with power that Jesus spoke of - the baptism of the Holy Spirit.",
-      "source": "The Bourne Identity",
-      "id": 4090,
-      "length": 170
     },
     {
       "text": "There is no physical separation after the slicing, so that edge can be ignored and we can treat the pizza, for thermal purposes, as an infinite plane. The procedure reduces the heat-transfer problem to one dimension represented by a vector normal to the pizza surface.",
@@ -27332,12 +27266,6 @@
       "length": 76
     },
     {
-      "text": "This was the story of Howard Beale: the first known instance of a man who was killed because he had lousy ratings.",
-      "source": "Network",
-      "id": 4712,
-      "length": 114
-    },
-    {
       "text": "Corn is what feeds the steer that becomes the steak. Corn feeds the chicken and the pig, the turkey and the lamb, the catfish and the tilapia and, increasingly, even the salmon, a carnivore by nature that the fish farmers are reengineering to tolerate corn. The eggs are made of corn. The milk and cheese and yogurt, which once came from dairy cows that grazed on grass, now typically come from cows that spend their working lives indoors tethered to machines, eating corn.",
       "source": "The Omnivore's Dilemma: A Natural History of Four Meals",
       "id": 4713,
@@ -27432,12 +27360,6 @@
       "source": "Breaking Away",
       "id": 4728,
       "length": 465
-    },
-    {
-      "text": "But I will tell you this. I'd use tonight to get myself organized. Ride out in the morning clear-headed. And startin' tomorrow morning, I will offer a personal $50 bounty for every decapitated head of as many of these godless heathens as anyone can bring in.",
-      "source": "Deadwood",
-      "id": 4729,
-      "length": 258
     },
     {
       "text": "By venturing too close to the dragon's flame, you made an ash out of yourself.",
@@ -28098,12 +28020,6 @@
       "source": "Saving Us a Riot",
       "id": 4844,
       "length": 281
-    },
-    {
-      "text": "The oracles of God foretold the rising of an Antichrist in the Christian Church: and in the Pope of Rome, all the characteristics of that Antichrist are so marvelously answered that if any who read the Scriptures do not see it, there is a marvelous blindness upon them.",
-      "source": "Prophetic Faith of Our Fathers Vol 3",
-      "id": 4845,
-      "length": 269
     },
     {
       "text": "We didn't start the fire. It was always burning since the world's been turning. We didn't start the fire. No, we didn't light it, but we tried to fight it.",
@@ -31112,12 +31028,6 @@
       "id": 5382
     },
     {
-      "text": "Crying is for little girls, babies, and men who just had their ears ripped off.",
-      "source": "Oobeedoob Benubi, Thumb Wars",
-      "length": 79,
-      "id": 5383
-    },
-    {
       "text": "I can't stand the thought of looking at you someday, this face I love, and not knowing who you are.",
       "source": "Lisa Genova, Still Alice",
       "length": 99,
@@ -31212,12 +31122,6 @@
       "source": "Faye Valentine, Cowboy Bebop",
       "length": 732,
       "id": 5400
-    },
-    {
-      "text": "I would burn the world and use my soul for tinder to hear her laugh again.",
-      "source": "Robert Jordan",
-      "length": 74,
-      "id": 5401
     },
     {
       "text": "How do I take off a mask when it stops being a mask, when it's as much a part of me as I am?",
@@ -32144,12 +32048,6 @@
       "id": 5599
     },
     {
-      "text": "Only once in your life, I truly believe, you find someone who can completely turn your world around. You tell them things that you've never shared with another soul and they absorb everything you say and actually want to hear more. You share hopes for the future, dreams that will never come true, goals that were never achieved and the many disappointments life has thrown at you. When something wonderful happens, you can't wait to tell them about it, knowing they will share in your excitement. They are not embarrassed to cry with you when you are hurting or laugh with you when you make a fool of yourself. Never do they hurt your feelings or make you feel like you are not good enough, but rather they build you up and show you the things about yourself that make you special and even beautiful. There is never any pressure, jealousy or competition but only a quiet calmness when they are around. You can be yourself and not worry about what they will think of you because they love you for who you are. The things that seem insignificant to most people such as a note, song or walk become invaluable treasures kept safe in your heart to cherish forever. Memories of your childhood come back and are so clear and vivid it's like being young again. Colours seem brighter and more brilliant. Laughter seems part of daily life where before it was infrequent or didn't exist at all. A phone call or two during the day helps to get you through a long day's work and always brings a smile to your face. In their presence, there's no need for continuous conversation, but you find you're quite content in just having them nearby. Things that never interested you before become fascinating because you know they are important to this person who is so special to you. You think of this person on every occasion and in everything you do. Simple things bring them to mind like a pale blue sky, gentle wind or even a storm cloud on the horizon. You open your heart knowing that there's a chance it may be broken one day and in opening your heart, you experience a love and joy that you never dreamed possible. You find that being vulnerable is the only way to allow your heart to feel true pleasure that's so real it scares you. You find strength in knowing you have a true friend and possibly a soul mate who will remain loyal to the end. Life seems completely different, exciting and worthwhile. Your only hope and security is in knowing that they are a part of your life.",
-      "source": "Bob Marley",
-      "length": 2468,
-      "id": 5600
-    },
-    {
       "text": "All that is gold does not glitter, not all those who wander are lost; the old that is strong does not wither, deep roots are not reached by the frost. From the ashes a fire shall be woken, a light from the shadows shall spring; renewed shall be blade that was broken, the crownless again shall be king.",
       "source": "J.R.R. Tolkien, The Fellowship of the Ring",
       "length": 302,
@@ -32336,12 +32234,6 @@
       "id": 5632
     },
     {
-      "text": "I'm sick of following my dreams. I'm just going to ask them where they're going and hook up with them later.",
-      "source": "Mitch Hedberg",
-      "length": 108,
-      "id": 5634
-    },
-    {
       "text": "Know what I pray for? The strength to change what I can, the inability to accept what I can't, and the incapacity to tell the difference.",
       "source": "Calvin & Hobbes",
       "length": 137,
@@ -32498,9 +32390,9 @@
       "id": 5664
     },
     {
-      "text": "It is better to live one day as a lion, than a thousand days as a lamb.",
+      "text": "It is better to live one day as a lion than a thousand days as a lamb.",
       "source": "Proverbs",
-      "length": 71,
+      "length": 70,
       "id": 5665
     },
     {
@@ -32774,9 +32666,9 @@
       "id": 5715
     },
     {
-      "text": "Christie! Ms. Esposito! Hold up. Hey, Jimmy McGill, we met inside. Hi. You didn't get it. You were never gonna get it. They dangle these things in front of you. They tell you, you got a chance, but I'm sorry. It's a lie because they had already made up their mind and they knew what they were going to do before you walked in the door. You made a mistake and they are never forgetting it. As far as they're concerned, your mistake is just, it's who you are. And it's all you are. And I'm not just talking about the scholarship here, I'm talking about everything. I mean, they'll smile at you, they'll pat you on the head, but they are never, ever letting you in. But listen... Listen... it doesn't matter. It doesn't because you don't need them. They're not going to give it to you? So what? You're going to take it. You're going to do whatever it takes. Do you hear me? You are not going to play by the rules. You're going to go your own way. You're going to do what they won't do. You're going to be smart. You are going to cut corners and you are going to win. They're on the 35th floor? You're going to be on the 50th floor. You're going to be looking down on them. And the higher you rise, the more they're going to hate you. Good. Good! You rub their noses in it. You make them suffer. Because you don't matter all that much to them. So what? So what? Screw them! Remember... the winner takes it all. You understand what I'm trying to tell you, right? All right. All right. Go get them.",
+      "text": "Kristy! Ms. Esposito! Hold up. Hey, Jimmy McGill, we met inside. Hi. You didn't get it. You were never gonna get it. They dangle these things in front of you. They tell you, you got a chance, but I'm sorry. It's a lie because they had already made up their mind and they knew what they were going to do before you walked in the door. You made a mistake and they are never forgetting it. As far as they're concerned, your mistake is just, it's who you are. And it's all you are. And I'm not just talking about the scholarship here, I'm talking about everything. I mean, they'll smile at you, they'll pat you on the head, but they are never, ever letting you in. But listen. Listen. It doesn't matter. It doesn't because you don't need them. They're not going to give it to you? So what? You're going to take it. You're going to do whatever it takes. Do you hear me? You are not going to play by the rules. You're going to go your own way. You're going to do what they won't do. You're going to be smart. You are going to cut corners and you are going to win. They're on the 35th floor? You're going to be on the 50th floor. You're going to be looking down on them. And the higher you rise, the more they're going to hate you. Good. Good! You rub their noses in it. You make them suffer. Because you don't matter all that much to them. So what? So what? Screw them! Remember... the winner takes it all. You understand what I'm trying to tell you, right? All right. All right. Go get them.",
       "source": "Better Call Saul",
-      "length": 1492,
+      "length": 1486,
       "id": 5716
     },
     {
@@ -32811,7 +32703,7 @@
     },
     {
       "text": "When I was younger, I left a trail of broken hearts like a rockstar. I'm not proud of it.",
-      "source": "Owl House",
+      "source": "Modern Family",
       "length": 89,
       "id": 5722
     },
@@ -32978,9 +32870,9 @@
       "id": 5751
     },
     {
-      "text": "You know. I've been working here for 44 years. Ain't nobody ever ordered nothing but T-Bone steak and a baked potato. Except this one asshole from New York tried to order trout back in 1987. We don't sell no goddamned trout. T-Bone steaks. So either you don't want the corn on the cob, or you don't want the green beans. So what don't you want?",
+      "text": "You know. I've been working here for 44 years. Ain't nobody ever ordered nothing but T-Bone steak and a baked potato. Except this one dude from New York tried to order trout back in 1987. We don't sell no goddamned trout. T-Bone steaks. So either you don't want the corn on the cob, or you don't want the green beans. So what don't you want?",
       "source": "Hell or High Water",
-      "length": 344,
+      "length": 341,
       "id": 5752
     },
     {
@@ -34872,9 +34764,9 @@
       "id": 6184
     },
     {
-      "text": "The autumn chill that wakes me up; you loved the amber skies so much. Long limbs and frozen swims - you'd always go past where our feet would touch - and I complained the whole ride there, the car ride back and up the stairs. I should've asked you questions, I should've asked you how to be.",
+      "text": "The autumn chill that wakes me up; you loved the amber skies so much. Long limbs and frozen swims - you'd always go past where our feet would touch - and I complained the whole way there, the car ride back and up the stairs. I should've asked you questions, I should've asked you how to be.",
       "source": "Taylor Swift - Marjorie",
-      "length": 291,
+      "length": 290,
       "id": 6185
     },
     {
@@ -35973,9 +35865,9 @@
       "id": 6359
     },
     {
-      "text": "I'd rather have loyalty than love, 'cause love really don't mean jack. See, love is just a feeling - you can love somebody and talk behind their back. It don't take much to love, you can love somebody just by being attached. See, loyalty is a action, you can love or hate me and still have my back.",
+      "text": "I'd rather have loyalty than love, 'cause love really don't mean jack. See, love is just a feeling - you can love somebody and talk behind their back. It don't take much to love, you can love somebody just by being attached. See, loyalty is an action, you can love or hate me and still have my back.",
       "source": "21 Savage, Ball w/o You",
-      "length": 298,
+      "length": 299,
       "approvedBy": "Smithster",
       "id": 6360
     },
@@ -37611,9 +37503,9 @@
       "id": 6600
     },
     {
-      "text": "Whatever you do, don't reveal all of your tactics in a YouTube video. You fool. You moron.",
+      "text": "Whatever you do, don't reveal all of your tactics in a YouTube video. You fool.",
       "source": "Great Potato War",
-      "length": 90,
+      "length": 79,
       "approvedBy": "Smithster",
       "id": 6601
     },
@@ -37856,7 +37748,7 @@
       "id": 6636
     },
     {
-      "text": "Don't leave, it's my fault. Cause' when it all comes crashing down I'll need you.",
+      "text": "Don't leave, it's my fault. 'Cause when it all comes crashing down I'll need you.",
       "source": "EARFQUAKE, Tyler, the Creator",
       "length": 81,
       "approvedBy": "Smithster",
@@ -37891,9 +37783,9 @@
       "id": 6641
     },
     {
-      "text": "Rooted deep within the Puritans souls like some strange invasive weed lurked their belief in a second world, and Invisible World swarming with shadowy apparitions and unearthly phantoms of the air.",
+      "text": "Rooted deep within the Puritans souls like some strange invasive weed lurked their belief in a second world, an Invisible World swarming with shadowy apparitions and unearthly phantoms of the air.",
       "source": "Witches by Rosalyn Schanzer",
-      "length": 197,
+      "length": 196,
       "approvedBy": "Smithster",
       "id": 6642
     },
@@ -37938,13 +37830,6 @@
       "length": 81,
       "approvedBy": "Smithster",
       "id": 6648
-    },
-    {
-      "text": "When you reach the end of your rope, tie a knot in it and hang on.",
-      "source": "Franklin D. Roosevelt",
-      "length": 66,
-      "approvedBy": "Smithster",
-      "id": 6649
     },
     {
       "text": "Always remember that you are absolutely unique. Just like everyone else.",
@@ -38064,13 +37949,6 @@
       "length": 96,
       "approvedBy": "Smithster",
       "id": 6666
-    },
-    {
-      "text": "Only poetry could best fit into the vast emptiness created by men.",
-      "source": "Manning Marable",
-      "length": 66,
-      "approvedBy": "Smithster",
-      "id": 6667
     },
     {
       "text": "A hot desert storm eddied around him and rushed to me, making my skin contract, and my pores slam shut... His hair was the color of burning embers and his eyes pierced.",
@@ -38297,9 +38175,9 @@
       "id": 6703
     },
     {
-      "text": "It's about drive, it's about power, we stay hungry, we devour. Put in the work, put in the hours and take whats ours. Black and Samoan in my veins, my culture banging with Strange. I changed the game so what's my name?",
+      "text": "It's about drive, it's about power, we stay hungry, we devour. Put in the work, put in the hours and take what's ours. Black and Samoan in my veins, my culture banging with Strange. I changed the game so what's my name?",
       "source": "Face Off",
-      "length": 218,
+      "length": 219,
       "approvedBy": "Smithster",
       "id": 6704
     },
@@ -38707,6 +38585,150 @@
       "source": "Conduction Heat Transfer",
       "id": 6768,
       "length": 250
+    },
+    {
+      "text": "The secret of happiness, you see, is not found in seeking more, but in developing the capacity to enjoy less.",
+      "source": "Unknown",
+      "id": 6769,
+      "length": 109
+    },
+    {
+      "text": "My wife and I had lived in our house for over a dozen years at that point. Holly's family had lived in theirs even longer. We were both active families, involved in the community, with work, and with our churches. Yet, the thick woods covering the lots we each occupied along a cul-de-sac was enough of a barrier to our getting to know each other that we didn't even realize our neighbors across the street had a little girl the same age as ours. That is, until they met at the kindergarten in the elementary school six miles away.",
+      "source": "Strong Towns - A Bottom-Up Revolution to Rebuild American Prosperity",
+      "id": 6770,
+      "length": 531
+    },
+    {
+      "text": "The single quality that is common across every living creature on this planet, is fear. It’s funny, then, that as common as fear is, we so easily underestimate its power. Fear of growing close to someone, the subsequent fear of loss, fear of failure. And as more people depend on you, those fears can take on greater power. But fear itself isn’t worthy of concern, it is who we become while in its clutches. Will you be proud of that person? Will you forgive them? Will you understand why they felt the need to do the things they did? Will you even recognize them? Or will the person staring back at you be the very thing you should have feared from the start? I suppose we all find out sooner or later.",
+      "source": "RWBY",
+      "id": 6771,
+      "length": 703
+    },
+    {
+      "text": "I once told you I made more mistakes than any man, woman, or child on this planet. I wasn't exaggerating. I'm... cursed. For thousands of years I have walked the surface of Remnant; living, dying, and reincarnating in the body of a like-minded soul. The Professor Ozpin you all met was not my first form, and it clearly wasn't my last. It's... an extraordinarily strenuous process, on everyone involved.",
+      "source": "RWBY",
+      "id": 6772,
+      "length": 403
+    },
+    {
+      "text": "Being a team leader isn't just a title you carry into battle, but a badge you wear constantly. If you are not always performing at your absolute best, then what reason do you give others to follow you?",
+      "source": "RWBY",
+      "id": 6773,
+      "length": 201
+    },
+    {
+      "text": "I'll...keep this brief. You have traveled here today in search of knowledge--to hone your craft and acquire new skills. And when you have finished, you plan to dedicate your life to the protection of the people. But I look amongst you, and all I see is wasted energy, in need of purpose -- direction. You assume knowledge will free you of this, but your time at this school will prove that knowledge can only carry you so far. It is up to you to take the first step.",
+      "source": "RWBY",
+      "id": 6774,
+      "length": 466
+    },
+    {
+      "text": "It's important not to lose sight of what drives us: love, justice, reverence... but the moment you put your desires before my own... they will be lost to you. This isn't a threat, this is simply the truth. The path to your desires is only found... through me.",
+      "source": "RWBY",
+      "id": 6775,
+      "length": 259
+    },
+    {
+      "text": "You told me once that bad things just happen. You were angry when you said it, and I didn't want to listen. But you were right. Bad things do happen, all the time, every day. Which is why I'm out here, to do whatever I can, wherever I can, and hopefully do some good.",
+      "source": "RWBY",
+      "id": 6776,
+      "length": 267
+    },
+    {
+      "text": "We've all lost something, and I've seen what loss can do to people. But if we gave up every time we lost, then we'd never be able to move forward.",
+      "source": "RWBY",
+      "id": 6777,
+      "length": 146
+    },
+    {
+      "text": "You're wrong. We've done things that most people would call impossible, and I know the only reason we were able to do it is because we didn't do it alone! We had people to teach us, people to help us, we had each other. Work with us. At least I know we'll have a better chance if we try together. Please.",
+      "source": "RWBY",
+      "id": 6778,
+      "length": 304
+    },
+    {
+      "text": "Just because you don't have an idea, doesn't mean we're out of options! Oz hasn't been here to tell us what to do, but we still managed to get this far anyway. We've been in bad situations before, and we don't need an adult to come save us or tell us what to do. We just did it our way! And I say we do it our way. And if you think you can keep up with us \"kids\"... we'd be happy to have you.",
+      "source": "RWBY",
+      "id": 6779,
+      "length": 392
+    },
+    {
+      "text": "The Threads of Fate are not puppet strings. They connect life to destiny. You are fate-touched, able to see and bend the threads around you. Understand the wholeness of what you serve, champion. All the living share one experience: death. Your mother, your sister, even you. We must safeguard that beautiful moment when the soul transitions to a new purpose.",
+      "source": "The Legend of Vox Machina",
+      "id": 6780,
+      "length": 358
+    },
+    {
+      "text": "Protecting the sanctity between life and death. That is our cause. Your cause. Do you accept this charge?",
+      "source": "The Legend of Vox Machina",
+      "id": 6781,
+      "length": 105
+    },
+    {
+      "text": "I've been watching you longer than you know. Recklessly drawn to your destiny, like a flame. My beautiful champion. There is much to fear, but not death. For it gives meaning to life.",
+      "source": "The Legend of Vox Machina",
+      "id": 6782,
+      "length": 183
+    },
+    {
+      "text": "Most cities aren't. They want to believe they have a cash-flow problem because it is convenient, because insolvency is too difficult to fathom, especially when everyone else appears to be doing the exact same thing. Could everyone be wrong? Could we all be insolvent? These two questions probably cost me a total of six years in the intellectual wilderness as I clung to the notion that what I was seeing and measuring could not possibly be true, that a wisdom greater than mine had to be at work that I hadn't perceived.",
+      "source": "Strong Towns - A Bottom-Up Revolution to Rebuild American Prosperity",
+      "id": 6783,
+      "length": 521
+    },
+    {
+      "text": "It's also our path to salvation. Our cities are struggling financially, trapped in a system grinding them into decline. Working together in an intentional way, it is possible to make our places stronger financially while also improving the lives of people.",
+      "source": "Strong Towns - A Bottom-Up Revolution to Rebuild American Prosperity",
+      "id": 6784,
+      "length": 256
+    },
+    {
+      "text": "That is the essence of a Strong Towns approach, the bottom-up revolution America desperately needs.",
+      "source": "Strong Towns - A Bottom-Up Revolution to Rebuild American Prosperity",
+      "id": 6785,
+      "length": 99
+    },
+    {
+      "text": "I'm not against the automobile, but I just feel that the automobile has moved into communities too much. I feel that you can design so that the automobile is there, but still put pedestrians back again... I’d love to work on a project like that.",
+      "source": "Walt Disney",
+      "id": 6786,
+      "length": 245
+    },
+    {
+      "text": "He's smart. He's angry. Put those two things together, you stay out of the way.",
+      "source": "Mr. Robot",
+      "id": 6787,
+      "length": 79
+    },
+    {
+      "text": "Sometimes, when I get bored, I create people in my head.",
+      "source": "Mr. Robot",
+      "id": 6788,
+      "length": 56
+    },
+    {
+      "text": "You wanna know what was done? A fundraising campaign to help you while you were on the street. I warned you to go back out onto the water so that the Snells wouldn't come after you - in fact, I begged them to let you go back down onto the water, instead of them just killing you and Grace, right then and there. And when they didn't listen to me, I paid seven hundred thousand dollars to save your lives. Seven hundred thousand dollars! Every single thing I've done has been to help you. Everything I've told you to do has been to help you, and what have you done? You've done the exact opposite every single time, and what did it get you? It got you right here.",
+      "source": "Ozark",
+      "id": 6789,
+      "length": 662
+    },
+    {
+      "text": "You asked if you were bad for me. That's not it. We are bad for each other.",
+      "source": "Better Call Saul",
+      "id": 6790,
+      "length": 75
+    },
+    {
+      "text": "Their names were Clotho (Spinner), Lachesis (Allotter), and Atropos (Inflexible). Clotho spun the thread of human fate, Lachesis dispensed it, and Atropos cut the thread (thus determining the individual's moment of death). The Romans identified the Parcae, originally personifications of childbirth, with the three Greek Fates. The Roman goddesses were named Noma, Decuma, and Morta.",
+      "source": "Greek Mythology",
+      "id": 6791,
+      "length": 383
+    },
+    {
+      "text": "Alright. Let me ask you something. If the rule you followed brought you to this... Of what use was the rule?",
+      "source": "No Country for Old Men",
+      "id": 6792,
+      "length": 108
     }
   ]
 }

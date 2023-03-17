@@ -84,7 +84,15 @@ export async function sendVerificationEmail(
       e.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
     ) {
       // for some reason this error is not handled with a custom auth/ code, so we have to do it manually
-      throw new MonkeyError(429, "Too many requests. Please try again later.");
+      throw new MonkeyError(429, "Too many requests. Please try again later");
+    }
+    if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(
+        500,
+        "Auth user not found when the user was found in the database",
+        JSON.stringify({ email: email, userInfoEmail: email, stack: e.stack }),
+        userInfo.uid
+      );
     }
     throw e;
   }
@@ -199,6 +207,21 @@ export async function clearPb(
   Logger.logToDb("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
+}
+
+export async function optOutOfLeaderboards(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  await UserDAL.optOutOfLeaderboards(uid);
+  await purgeUserFromDailyLeaderboards(
+    uid,
+    req.ctx.configuration.dailyLeaderboards
+  );
+  Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
+
+  return new MonkeyResponse("User opted out of leaderboards");
 }
 
 export async function checkName(
@@ -606,6 +629,7 @@ export async function getProfile(
     discordAvatar,
     xp,
     streak,
+    lbOptOut,
   } = user;
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
@@ -633,6 +657,7 @@ export async function getProfile(
     xp,
     streak: streak?.length ?? 0,
     maxStreak: streak?.maxLength ?? 0,
+    lbOptOut,
   };
 
   if (banned) {

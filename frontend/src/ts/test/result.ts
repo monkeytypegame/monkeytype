@@ -1,31 +1,33 @@
-import * as TestUI from "./test-ui";
+import {
+  Chart,
+  type PluginChartOptions,
+  type ScaleChartOptions,
+} from "chart.js";
 import Config from "../config";
-import * as Misc from "../utils/misc";
-import * as TestStats from "./test-stats";
-import * as Keymap from "../elements/keymap";
+import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
-import * as ThemeColors from "../elements/theme-colors";
+import QuotesController from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as TodayTracker from "./today-tracker";
-import * as PbCrown from "./pb-crown";
+import * as Keymap from "../elements/keymap";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as ThemeColors from "../elements/theme-colors";
+import { Auth } from "../firebase";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
-import * as TestInput from "./test-input";
-import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
-import QuotesController from "../controllers/quotes-controller";
-import * as AdController from "../controllers/ad-controller";
-import * as TestConfig from "./test-config";
-import { Chart } from "chart.js";
-import { Auth } from "../firebase";
 import * as SlowTimer from "../states/slow-timer";
+import * as Misc from "../utils/misc";
 import * as FunboxList from "./funbox/funbox-list";
+import * as PbCrown from "./pb-crown";
+import * as TestConfig from "./test-config";
+import * as TestInput from "./test-input";
+import * as TestStats from "./test-stats";
+import * as TestUI from "./test-ui";
+import * as TodayTracker from "./today-tracker";
 
-// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
-import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
+import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import confetti from "canvas-confetti";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -417,7 +419,7 @@ export async function updateCrown(): Promise<void> {
   );
 }
 
-function updateTags(dontSave: boolean): void {
+async function updateTags(dontSave: boolean): Promise<void> {
   const activeTags: MonkeyTypes.Tag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
@@ -445,6 +447,14 @@ function updateTags(dontSave: boolean): void {
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
 
+  const funboxes = result.funbox?.split("#") ?? [];
+
+  const funboxObjects = await Promise.all(
+    funboxes.map(async (f) => Misc.getFunbox(f))
+  );
+
+  const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
+
   let annotationSide = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
@@ -460,7 +470,11 @@ function updateTags(dontSave: boolean): void {
     $("#result .stats .tags .bottom").append(`
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
     `);
-    if (Config.mode != "quote" && !dontSave) {
+    if (
+      Config.mode != "quote" &&
+      !dontSave &&
+      (result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb)
+    ) {
       if (tpb < result.wpm) {
         //new pb for that tag
         DB.saveLocalTagPB(
@@ -723,7 +737,7 @@ export async function update(
   updateQuoteFavorite(randomQuote);
   await updateGraph();
   await updateGraphPBLine();
-  updateTags(dontSave);
+  await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)

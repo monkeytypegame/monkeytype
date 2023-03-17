@@ -1,10 +1,10 @@
 import { mapRange } from "../utils/misc";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 
 ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "monkey" && TestActive.get()) {
+  if (eventKey === "monkey" && TestState.isActive) {
     if (Config.monkey) {
       $("#monkey").removeClass("hidden");
     } else {

@@ -209,6 +209,9 @@
       align-self: normal;
       color: var(--text-color);
       grid-area: text;
+      .red {
+        color: var(--error-color);
+      }
     }
 
     .inputs {
