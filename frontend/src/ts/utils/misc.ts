@@ -737,6 +737,66 @@ export function getArrows(): string {
   return arrowWord;
 }
 
+//code for "generateStep" is from Mirin's "Queue" modfile,
+// converted from lua to typescript by Spax
+// lineout: https://youtu.be/LnnArS9yrSs
+let foot = false;
+let facing = 0;
+let facingcount = 0;
+let lastl = 0,
+    lastr = 3,
+    llc = 0,
+    lrc = 0;
+export function generateStep(): number {
+  let c = 0;
+  facingcount--;
+  let a = Math.floor(Math.random() * 2);
+  if (foot) {
+    foot = false;
+    if (lastl === a) llc++;
+    else llc = 0;
+    if (llc > 1 || (lrc > 0 && llc > 0)) {
+      a = 1 - a;
+      llc = 0;
+    }
+    lastl = a;
+    c = a * (facing + 1);
+  } else {
+    foot = true;
+    if (lastr === a) lrc++;
+    else lrc = 0;
+    if (lrc > 1 || (lrc > 0 && llc > 0)) {
+      a = 1 - a;
+      lrc = 0;
+    }
+    lastr = a;
+    c = 3 - a * (facing + 1);
+  }
+
+  if (facingcount < 0 && a === 0) {
+    facing = 1 - facing;
+    facingcount = Math.floor(Math.random() * 3) + 3;
+  }
+  return c;
+}
+export function chart2Word(x: num): string {
+  let measure = "";
+  for(let i = 0; i < 4; i++) {
+    let a = generateStep();
+    switch (a) {
+    case 0:
+      measure += "←";
+    case 1:
+      measure += "↓";
+    case 2:
+      measure += "↑";
+    case 3:
+      measure += "→";
+    }
+  }
+  return measure;
+}
+
 export function getPositionString(number: number): string {
   let numend = "th";
   const t = number % 10;
