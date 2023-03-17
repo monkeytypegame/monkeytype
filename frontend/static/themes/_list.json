@@ -1160,5 +1160,13 @@
     "mainColor": "#d65ccc",
     "subColor": "#787d82",
     "textColor": "#d1d0c5"
+  },
+
+  {
+    "name": "kanagawa",
+    "bgColor": "#1f1f28",
+    "mainColor": "#E6C384",
+    "subColor": "#727169",
+    "textColor": "#DCD7BA"
   }
 ]
