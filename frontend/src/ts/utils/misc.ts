@@ -722,21 +722,6 @@ export function getASCII(): string {
   return ret;
 }
 
-export function getArrows(): string {
-  const arrowArray = ["←", "↑", "→", "↓"];
-  let arrowWord = "";
-  let lastchar;
-  for (let i = 0; i < 5; i++) {
-    let random = randomElementFromArray(arrowArray);
-    while (random === lastchar) {
-      random = randomElementFromArray(arrowArray);
-    }
-    lastchar = random;
-    arrowWord += random;
-  }
-  return arrowWord;
-}
-
 //code for "generateStep" is from Mirin's "Queue" modfile,
 // converted from lua to typescript by Spax
 // lineout: https://youtu.be/LnnArS9yrSs
@@ -779,7 +764,7 @@ export function generateStep(): number {
   }
   return c;
 }
-export function chart2Word(x: num): string {
+export function chart2Word(): string {
   let measure = "";
   for(let i = 0; i < 4; i++) {
     let a = generateStep();
