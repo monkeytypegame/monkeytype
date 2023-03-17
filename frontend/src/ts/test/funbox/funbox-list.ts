@@ -38,23 +38,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   },
   {
     name: "arrows",
-    info: "Eurobeat Intensifies...",
-    properties: [
-      "ignoresLanguage",
-      "ignoresLayout",
-      "nospace",
-      "noLetters",
-      "symmetricChars",
-    ],
-    forcedConfig: {
-      punctuation: [false],
-      numbers: [false],
-      highlightMode: ["letter", "off"],
-    },
-  },
-  {
-    name: "arrows_ITG",
-    info: "You can play it on a pad now!",
+    info: "Play it on a pad!",
     properties: [
       "ignoresLanguage",
       "ignoresLayout",
