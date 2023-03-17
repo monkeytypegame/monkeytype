@@ -160,7 +160,7 @@ FunboxList.setFunboxFunctions("choo_choo", {
 
 FunboxList.setFunboxFunctions("arrows", {
   getWord(): string {
-        return Misc.getArrows();
+        return Misc.chart2Word();
   },
     applyConfig(): void {
     $("#words").addClass("arrows");
