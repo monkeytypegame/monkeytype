@@ -275,8 +275,6 @@ function fillContent(): void {
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
 
-  let testNum = DB.getSnapshot()?.results?.length || 0;
-
   DB.getSnapshot()?.results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       // totalSeconds += tt;
@@ -601,7 +599,7 @@ function fillContent(): void {
       }
 
       chartData.push({
-        x: testNum,
+        x: filteredResults.length,
         y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
         wpm: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
         acc: result.acc,
@@ -620,12 +618,10 @@ function fillContent(): void {
       wpmChartData.push(result.wpm);
 
       accChartData.push({
-        x: testNum,
+        x: filteredResults.length,
         y: result.acc,
         errorRate: 100 - result.acc,
       });
-
-      testNum--;
 
       if (result.wpm > topWpm) {
         const puncsctring = result.punctuation ? ",<br>with punctuation" : "";
@@ -729,29 +725,23 @@ function fillContent(): void {
   }
 
   if (chartData.length > 0) {
-    chartData.reverse();
-    accChartData.reverse();
-
     // get pb points
     let currentPb = 0;
     const pb: { x: number; y: number }[] = [];
 
-    chartData.forEach((a) => {
+    for (let i = chartData.length - 1; i >= 0; i--) {
+      const a = chartData[i];
       if (a.y > currentPb) {
         currentPb = a.y;
-        //todo: remove temporary fix
-        // pb.push(a);
+        pb.push(a);
       }
-    });
+    }
 
     // add last point to pb
-    const xMax = chartData.length;
-
-    //todo: remove temporary fix
-    // pb.push({
-    //   x: xMax,
-    //   y: pb[pb.length - 1].y,
-    // });
+    pb.push({
+      x: 1,
+      y: pb[pb.length - 1].y,
+    });
 
     const avgTen = [];
     const avgTenAcc = [];
@@ -759,41 +749,27 @@ function fillContent(): void {
     const avgHundredAcc = [];
 
     for (let i = 0; i < chartData.length; i++) {
-      // calculate 10 subset averages
-      const startIdxTen = i < 10 ? 0 : i - 9;
-      const subsetTen = chartData.slice(startIdxTen, i + 1);
-      const accSubsetTen = accChartData.slice(startIdxTen, i + 1);
+      // calculate averages of 10
+      const subsetTen = chartData.slice(i, i + 10);
+      const accSubsetTen = accChartData.slice(i, i + 10);
       const avgTenValue =
         subsetTen.reduce((acc, { y }) => acc + y, 0) / subsetTen.length;
       const accAvgTenValue =
-        accSubsetTen.reduce((acc, { y }) => acc + y, 0) / subsetTen.length;
+        accSubsetTen.reduce((acc, { y }) => acc + y, 0) / accSubsetTen.length;
 
-      // add values to arrays
       avgTen.push({ x: i + 1, y: avgTenValue });
       avgTenAcc.push({ x: i + 1, y: accAvgTenValue });
 
-      // calculate 100 subset averages
-      const startIdxHundred = i < 100 ? 0 : i - 99;
-      const subsetHundred = chartData.slice(startIdxHundred, i + 1);
-      const accSubsetHundred = accChartData.slice(startIdxHundred, i + 1);
+      // calculate averages of 100
+      const subsetHundred = chartData.slice(i, i + 100);
+      const accSubsetHundred = accChartData.slice(i, i + 100);
       const avgHundredValue =
         subsetHundred.reduce((acc, { y }) => acc + y, 0) / subsetHundred.length;
       const accAvgHundredValue =
         accSubsetHundred.reduce((acc, { y }) => acc + y, 0) /
-        subsetHundred.length;
-
-      // add values to arrays
+        accSubsetHundred.length;
       avgHundred.push({ x: i + 1, y: avgHundredValue });
       avgHundredAcc.push({ x: i + 1, y: accAvgHundredValue });
-    }
-
-    //todo: remove temporary fix
-    for (let i = 0; i < chartData.length; i++) {
-      chartData[i].x = i + 1;
-    }
-
-    for (let i = 0; i < accChartData.length; i++) {
-      accChartData[i].x = i + 1;
     }
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
@@ -804,10 +780,7 @@ function fillContent(): void {
     ChartController.accountHistory.data.datasets[5].data = avgHundred;
     ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
 
-    accountHistoryScaleOptions["x"].max = xMax + 1;
-
-    chartData.reverse();
-    accChartData.reverse();
+    accountHistoryScaleOptions["x"].max = chartData.length + 1;
   }
 
   const wpms = chartData.map((r) => r.y);
