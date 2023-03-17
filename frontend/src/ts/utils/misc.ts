@@ -729,9 +729,9 @@ let foot = false;
 let facing = 0;
 let facingcount = 0;
 let lastl = 0,
-    lastr = 3,
-    llc = 0,
-    lrc = 0;
+  lastr = 3,
+  llc = 0,
+  lrc = 0;
 export function generateStep(): number {
   let c = 0;
   facingcount--;
@@ -766,17 +766,21 @@ export function generateStep(): number {
 }
 export function chart2Word(): string {
   let measure = "";
-  for(let i = 0; i < 4; i++) {
-    let a = generateStep();
+  for (let i = 0; i < 4; i++) {
+    const a = generateStep();
     switch (a) {
-    case 0:
-      measure += "←";
-    case 1:
-      measure += "↓";
-    case 2:
-      measure += "↑";
-    case 3:
-      measure += "→";
+      case 0:
+        measure += "←";
+        break;
+      case 1:
+        measure += "↓";
+        break;
+      case 2:
+        measure += "↑";
+        break;
+      case 3:
+        measure += "→";
+        break;
     }
   }
   return measure;

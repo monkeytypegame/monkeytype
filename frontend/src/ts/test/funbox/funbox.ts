@@ -160,9 +160,9 @@ FunboxList.setFunboxFunctions("choo_choo", {
 
 FunboxList.setFunboxFunctions("arrows", {
   getWord(): string {
-        return Misc.chart2Word();
+    return Misc.chart2Word();
   },
-    applyConfig(): void {
+  applyConfig(): void {
     $("#words").addClass("arrows");
   },
   rememberSettings(): void {
@@ -184,16 +184,28 @@ FunboxList.setFunboxFunctions("arrows", {
     return char;
   },
   isCharCorrect(char: string, originalChar: string): boolean {
-    if ((char === "a" || char === "ArrowLeft" || char === "j") && originalChar === "←") {
+    if (
+      (char === "a" || char === "ArrowLeft" || char === "j") &&
+      originalChar === "←"
+    ) {
       return true;
     }
-    if ((char === "s" || char === "ArrowDown" || char === "k") && originalChar === "↓") {
+    if (
+      (char === "s" || char === "ArrowDown" || char === "k") &&
+      originalChar === "↓"
+    ) {
       return true;
     }
-    if ((char === "w" || char === "ArrowUp" || char === "i") && originalChar === "↑") {
+    if (
+      (char === "w" || char === "ArrowUp" || char === "i") &&
+      originalChar === "↑"
+    ) {
       return true;
     }
-    if ((char === "d" || char === "ArrowRight" || char === "l") && originalChar === "→") {
+    if (
+      (char === "d" || char === "ArrowRight" || char === "l") &&
+      originalChar === "→"
+    ) {
       return true;
     }
     return false;
@@ -228,7 +240,7 @@ FunboxList.setFunboxFunctions("arrows", {
       if (letterTag) retval += `</letter>`;
     }
     return retval;
-  }
+  },
 });
 
 FunboxList.setFunboxFunctions("rAnDoMcAsE", {
