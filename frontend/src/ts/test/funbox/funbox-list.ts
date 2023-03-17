@@ -53,6 +53,22 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     },
   },
   {
+    name: "arrows_ITG",
+    info: "You can play it on a pad now!",
+    properties: [
+      "ignoresLanguage",
+      "ignoresLayout",
+      "nospace",
+      "noLetters",
+      "symmetricChars",
+    ],
+    forcedConfig: {
+      punctuation: [false],
+      numbers: [false],
+      highlightMode: ["letter", "off"],
+    },
+  },
+  {
     name: "rAnDoMcAsE",
     info: "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is.",
     properties: ["changesCapitalisation"],
