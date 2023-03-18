@@ -725,13 +725,6 @@ export function getASCII(): string {
 //code for "generateStep" is from Mirin's "Queue" modfile,
 // converted from lua to typescript by Spax
 // lineout: https://youtu.be/LnnArS9yrSs
-let foot = false;
-let facing = 0;
-let facingCount = 0;
-let lastl = 0,
-  lastr = 3,
-  llc = 0,
-  lrc = 0;
 let footTrack = false;
 let currFacing = 0;
 let facingCount = 0;
