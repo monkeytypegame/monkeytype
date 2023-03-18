@@ -735,7 +735,7 @@ let lastLeftStep = 0,
 export function generateStep(): number {
   let stepValue = 0;
   facingCount--;
-  let randomStep = Math.floor(Math.random() * 2);
+  let randomStep = Math.round(Math.random());
   if (footTrack) {
     if (lastLeftStep === randomStep) leftStepCount++;
     else leftStepCount = 0;
