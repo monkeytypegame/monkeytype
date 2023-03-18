@@ -732,7 +732,7 @@ let lastLeftStep = 0,
   lastRightStep = 3,
   leftStepCount = 0,
   rightStepCount = 0;
-export function generateStep(): number {
+function generateStep(): number {
   let stepValue = 0;
   facingCount--;
   let randomStep = Math.round(Math.random());
