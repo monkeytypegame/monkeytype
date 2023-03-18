@@ -736,7 +736,7 @@ let lastLeftStep = 0,
 export function generateStep(): number {
   facingCount--;
   let randomStep = Math.round(Math.random());
-  let stepValue = Math.round((Math.random()*5)-0.5);
+  let stepValue = Math.round(Math.random() * 5 - 0.5);
   if (first) {
     first = !first;
     footTrack = Boolean(Math.round(Math.random()));
@@ -753,7 +753,7 @@ export function generateStep(): number {
       }
       lastLeftStep = randomStep;
       stepValue = randomStep * (currFacing + 1);
-    //left foot
+      //left foot
     } else {
       if (lastRightStep === randomStep) rightStepCount++;
       else rightStepCount = 0;
@@ -766,7 +766,7 @@ export function generateStep(): number {
     }
     //alternation
     footTrack = !footTrack;
-  
+
     if (facingCount < 0 && randomStep === 0) {
       currFacing = 1 - currFacing;
       facingCount = Math.floor(Math.random() * 3) + 3;
