@@ -722,7 +722,7 @@ export function getASCII(): string {
   return ret;
 }
 
-//code for "generateStep" is from Mirin's "Queue" modfile,
+// code for "generateStep" is from Mirin's "Queue" modfile,
 // converted from lua to typescript by Spax
 // lineout: https://youtu.be/LnnArS9yrSs
 let footTrack = false;
@@ -737,7 +737,6 @@ export function generateStep(): number {
   facingCount--;
   let randomStep = Math.floor(Math.random() * 2);
   if (footTrack) {
-    footTrack = false;
     if (lastLeftStep === randomStep) leftStepCount++;
     else leftStepCount = 0;
     if (leftStepCount > 1 || (rightStepCount > 0 && leftStepCount > 0)) {
@@ -747,7 +746,6 @@ export function generateStep(): number {
     lastLeftStep = randomStep;
     stepValue = randomStep * (currFacing + 1);
   } else {
-    footTrack = true;
     if (lastRightStep === randomStep) rightStepCount++;
     else rightStepCount = 0;
     if (rightStepCount > 1 || (rightStepCount > 0 && leftStepCount > 0)) {
@@ -758,10 +756,13 @@ export function generateStep(): number {
     stepValue = 3 - randomStep * (currFacing + 1);
   }
 
+  footTrack = !footTrack;
+
   if (facingCount < 0 && randomStep === 0) {
     currFacing = 1 - currFacing;
     facingCount = Math.floor(Math.random() * 3) + 3;
   }
+
   return stepValue;
 }
 
