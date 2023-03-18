@@ -727,43 +727,51 @@ export function getASCII(): string {
 // lineout: https://youtu.be/LnnArS9yrSs
 let foot = false;
 let facing = 0;
-let facingcount = 0;
+let facingCount = 0;
 let lastl = 0,
   lastr = 3,
   llc = 0,
   lrc = 0;
+let footTrack = false;
+let currFacing = 0;
+let facingCount = 0;
+let lastLeftStep = 0,
+  lastRightStep = 3,
+  leftStepCount = 0,
+  rightStepCount = 0;
 export function generateStep(): number {
-  let c = 0;
-  facingcount--;
-  let a = Math.floor(Math.random() * 2);
-  if (foot) {
-    foot = false;
-    if (lastl === a) llc++;
-    else llc = 0;
-    if (llc > 1 || (lrc > 0 && llc > 0)) {
-      a = 1 - a;
-      llc = 0;
+  let stepValue = 0;
+  facingCount--;
+  let randomStep = Math.floor(Math.random() * 2);
+  if (footTrack) {
+    footTrack = false;
+    if (lastLeftStep === randomStep) leftStepCount++;
+    else leftStepCount = 0;
+    if (leftStepCount > 1 || (rightStepCount > 0 && leftStepCount > 0)) {
+      randomStep = 1 - randomStep;
+      leftStepCount = 0;
     }
-    lastl = a;
-    c = a * (facing + 1);
+    lastLeftStep = randomStep;
+    stepValue = randomStep * (currFacing + 1);
   } else {
-    foot = true;
-    if (lastr === a) lrc++;
-    else lrc = 0;
-    if (lrc > 1 || (lrc > 0 && llc > 0)) {
-      a = 1 - a;
-      lrc = 0;
+    footTrack = true;
+    if (lastRightStep === randomStep) rightStepCount++;
+    else rightStepCount = 0;
+    if (rightStepCount > 1 || (rightStepCount > 0 && leftStepCount > 0)) {
+      randomStep = 1 - randomStep;
+      rightStepCount = 0;
     }
-    lastr = a;
-    c = 3 - a * (facing + 1);
+    lastRightStep = randomStep;
+    stepValue = 3 - randomStep * (currFacing + 1);
   }
 
-  if (facingcount < 0 && a === 0) {
-    facing = 1 - facing;
-    facingcount = Math.floor(Math.random() * 3) + 3;
+  if (facingCount < 0 && randomStep === 0) {
+    currFacing = 1 - currFacing;
+    facingCount = Math.floor(Math.random() * 3) + 3;
   }
-  return c;
+  return stepValue;
 }
+
 export function chart2Word(): string {
   let measure = "";
   for (let i = 0; i < 4; i++) {
