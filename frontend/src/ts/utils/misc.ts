@@ -767,24 +767,13 @@ export function generateStep(): number {
 }
 
 export function chart2Word(): string {
+  const arrowArray = ["←", "↓", "↑", "→"];
+
   let measure = "";
   for (let i = 0; i < 4; i++) {
-    const a = generateStep();
-    switch (a) {
-      case 0:
-        measure += "←";
-        break;
-      case 1:
-        measure += "↓";
-        break;
-      case 2:
-        measure += "↑";
-        break;
-      case 3:
-        measure += "→";
-        break;
-    }
+    measure += arrowArray[generateStep()];
   }
+
   return measure;
 }
 
