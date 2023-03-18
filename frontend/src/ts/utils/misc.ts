@@ -725,6 +725,7 @@ export function getASCII(): string {
 // code for "generateStep" is from Mirin's "Queue" modfile,
 // converted from lua to typescript by Spax
 // lineout: https://youtu.be/LnnArS9yrSs
+let first = true;
 let footTrack = false;
 let currFacing = 0;
 let facingCount = 0;
@@ -732,35 +733,44 @@ let lastLeftStep = 0,
   lastRightStep = 3,
   leftStepCount = 0,
   rightStepCount = 0;
-function generateStep(): number {
-  let stepValue = 0;
+export function generateStep(): number {
   facingCount--;
   let randomStep = Math.round(Math.random());
-  if (footTrack) {
-    if (lastLeftStep === randomStep) leftStepCount++;
-    else leftStepCount = 0;
-    if (leftStepCount > 1 || (rightStepCount > 0 && leftStepCount > 0)) {
-      randomStep = 1 - randomStep;
-      leftStepCount = 0;
-    }
-    lastLeftStep = randomStep;
-    stepValue = randomStep * (currFacing + 1);
+  let stepValue = Math.round((Math.random()*5)-0.5);
+  if (first) {
+    first = !first;
+    footTrack = Boolean(Math.round(Math.random()));
+    if (footTrack) stepValue = 3;
+    else stepValue = 0;
   } else {
-    if (lastRightStep === randomStep) rightStepCount++;
-    else rightStepCount = 0;
-    if (rightStepCount > 1 || (rightStepCount > 0 && leftStepCount > 0)) {
-      randomStep = 1 - randomStep;
-      rightStepCount = 0;
+    //right foot
+    if (footTrack) {
+      if (lastLeftStep === randomStep) leftStepCount++;
+      else leftStepCount = 0;
+      if (leftStepCount > 1 || (rightStepCount > 0 && leftStepCount > 0)) {
+        randomStep = 1 - randomStep;
+        leftStepCount = 0;
+      }
+      lastLeftStep = randomStep;
+      stepValue = randomStep * (currFacing + 1);
+    //left foot
+    } else {
+      if (lastRightStep === randomStep) rightStepCount++;
+      else rightStepCount = 0;
+      if (rightStepCount > 1 || (rightStepCount > 0 && leftStepCount > 0)) {
+        randomStep = 1 - randomStep;
+        rightStepCount = 0;
+      }
+      lastRightStep = randomStep;
+      stepValue = 3 - randomStep * (currFacing + 1);
     }
-    lastRightStep = randomStep;
-    stepValue = 3 - randomStep * (currFacing + 1);
-  }
-
-  footTrack = !footTrack;
-
-  if (facingCount < 0 && randomStep === 0) {
-    currFacing = 1 - currFacing;
-    facingCount = Math.floor(Math.random() * 3) + 3;
+    //alternation
+    footTrack = !footTrack;
+  
+    if (facingCount < 0 && randomStep === 0) {
+      currFacing = 1 - currFacing;
+      facingCount = Math.floor(Math.random() * 3) + 3;
+    }
   }
 
   return stepValue;
