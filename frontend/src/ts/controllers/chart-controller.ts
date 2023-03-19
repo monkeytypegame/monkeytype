@@ -945,22 +945,10 @@ export const miniResult: ChartWithUpdateColors<
 
 function updateAccuracy(): void {
   const accOn = Config.accountChart[0] === "on";
-  const avg10On = Config.accountChart[1] === "on";
-  const avg100On = Config.accountChart[2] === "on";
 
-  if (avg10On && avg100On) {
-    accountHistory.data.datasets[2].hidden = !accOn;
-    accountHistory.data.datasets[4].hidden = !accOn;
-    accountHistory.data.datasets[6].hidden = !accOn;
-  } else if (avg10On) {
-    accountHistory.data.datasets[2].hidden = !accOn;
-    accountHistory.data.datasets[4].hidden = !accOn;
-  } else if (Config.accountChart[2] === "on") {
-    accountHistory.data.datasets[2].hidden = !accOn;
-    accountHistory.data.datasets[6].hidden = !accOn;
-  } else {
-    accountHistory.data.datasets[2].hidden = !accOn;
-  }
+  accountHistory.data.datasets[2].hidden = !accOn;
+  accountHistory.data.datasets[4].hidden = !accOn;
+  accountHistory.data.datasets[6].hidden = !accOn;
 
   (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
     accOn;
