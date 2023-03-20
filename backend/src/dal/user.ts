@@ -304,7 +304,7 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
   const user = await getUser(uid, "remove tag");
   if (
     user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() == _id).length === 0
+    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
@@ -321,7 +321,7 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
   const user = await getUser(uid, "remove tag pb");
   if (
     user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() == _id).length === 0
+    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
