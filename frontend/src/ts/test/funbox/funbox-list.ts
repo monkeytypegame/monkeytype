@@ -38,7 +38,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   },
   {
     name: "arrows",
-    info: "Eurobeat Intensifies...",
+    info: "Play it on a pad!",
     properties: [
       "ignoresLanguage",
       "ignoresLayout",

@@ -160,7 +160,7 @@ FunboxList.setFunboxFunctions("choo_choo", {
 
 FunboxList.setFunboxFunctions("arrows", {
   getWord(): string {
-    return Misc.getArrows();
+    return Misc.chart2Word();
   },
   applyConfig(): void {
     $("#words").addClass("arrows");
@@ -169,31 +169,43 @@ FunboxList.setFunboxFunctions("arrows", {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
   handleChar(char: string): string {
-    if (char === "a" || char === "ArrowLeft") {
+    if (char === "a" || char === "ArrowLeft" || char === "j") {
       return "←";
     }
-    if (char === "s" || char === "ArrowDown") {
+    if (char === "s" || char === "ArrowDown" || char === "k") {
       return "↓";
     }
-    if (char === "w" || char === "ArrowUp") {
+    if (char === "w" || char === "ArrowUp" || char === "i") {
       return "↑";
     }
-    if (char === "d" || char === "ArrowRight") {
+    if (char === "d" || char === "ArrowRight" || char === "l") {
       return "→";
     }
     return char;
   },
   isCharCorrect(char: string, originalChar: string): boolean {
-    if ((char === "a" || char === "ArrowLeft") && originalChar === "←") {
+    if (
+      (char === "a" || char === "ArrowLeft" || char === "j") &&
+      originalChar === "←"
+    ) {
       return true;
     }
-    if ((char === "s" || char === "ArrowDown") && originalChar === "↓") {
+    if (
+      (char === "s" || char === "ArrowDown" || char === "k") &&
+      originalChar === "↓"
+    ) {
       return true;
     }
-    if ((char === "w" || char === "ArrowUp") && originalChar === "↑") {
+    if (
+      (char === "w" || char === "ArrowUp" || char === "i") &&
+      originalChar === "↑"
+    ) {
       return true;
     }
-    if ((char === "d" || char === "ArrowRight") && originalChar === "→") {
+    if (
+      (char === "d" || char === "ArrowRight" || char === "l") &&
+      originalChar === "→"
+    ) {
       return true;
     }
     return false;
