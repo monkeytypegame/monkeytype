@@ -260,6 +260,36 @@ function apply(): void {
     );
     return;
   }
+
+  if (
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+    CustomText.isTimeRandom &&
+    CustomText.isWordRandom
+  ) {
+    Notifications.add(
+      "You need to pick between word count or time in seconds to start a random custom test",
+      0,
+      5
+    );
+    return;
+  }
+
+  if (
+    (CustomText.isWordRandom && CustomText.word === 0) ||
+    (CustomText.isTimeRandom && CustomText.time === 0)
+  ) {
+    Notifications.add(
+      "Infinite words! Make sure to use Bail Out from the command line to save your result.",
+      0,
+      7
+    );
+  }
+
+  ChallengeController.clearActive();
+  ManualRestart.set();
+  if (Config.mode !== "custom") UpdateConfig.setMode("custom");
+  TestLogic.restart();
+  hide();
 }
 
 $("#popups").on("click", `${popup} .button.apply`, () => {
