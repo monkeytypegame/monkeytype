@@ -74,8 +74,12 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
   let delimiter;
   if ($(`${popup} .delimiterCheck input`).prop("checked")) {
     delimiter = "|";
+
+    $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
   } else {
     delimiter = " ";
+
+    $(`${popup} .randomInputFields .sectioncount `).addClass("hidden");
   }
   if (
     $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
@@ -183,6 +187,7 @@ $(`${popup} .randomInputFields .time input`).on("keypress", () => {
 
 function apply(): void {
   let text = ($(`${popup} textarea`).val() as string).normalize();
+
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
@@ -217,11 +222,19 @@ function apply(): void {
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   CustomText.setText(text.split(CustomText.delimiter));
+  // console.log(text.split(CustomText.delimiter));
   CustomText.setWord(
     parseInt($(`${popup} .wordcount input`).val() as string) || -1
   );
+  // console.log(parseInt($(`${popup} .wordcount input`).val() as string) || -1);
   CustomText.setTime(parseInt($(`${popup} .time input`).val() as string) || -1);
 
+  CustomText.setSection(
+    parseInt($(`${popup} .sectioncount input`).val() as string) || -1
+  );
+  // console.log(
+  //   parseInt($(`${popup} .sectioncount input`).val() as string) || -1
+  // );
   CustomText.setIsWordRandom(
     $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
       CustomText.word > -1
@@ -230,11 +243,15 @@ function apply(): void {
     $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
       CustomText.time > -1
   );
-
+  CustomText.setIsSectionRandom(
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+      CustomText.section > -1
+  );
   if (
     $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
     !CustomText.isTimeRandom &&
-    !CustomText.isWordRandom
+    !CustomText.isWordRandom &&
+    !CustomText.isSectionRandom
   ) {
     Notifications.add(
       "You need to specify word count or time in seconds to start a random custom test",
@@ -243,36 +260,6 @@ function apply(): void {
     );
     return;
   }
-
-  if (
-    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
-    CustomText.isTimeRandom &&
-    CustomText.isWordRandom
-  ) {
-    Notifications.add(
-      "You need to pick between word count or time in seconds to start a random custom test",
-      0,
-      5
-    );
-    return;
-  }
-
-  if (
-    (CustomText.isWordRandom && CustomText.word === 0) ||
-    (CustomText.isTimeRandom && CustomText.time === 0)
-  ) {
-    Notifications.add(
-      "Infinite words! Make sure to use Bail Out from the command line to save your result.",
-      0,
-      7
-    );
-  }
-
-  ChallengeController.clearActive();
-  ManualRestart.set();
-  if (Config.mode !== "custom") UpdateConfig.setMode("custom");
-  TestLogic.restart();
-  hide();
 }
 
 $("#popups").on("click", `${popup} .button.apply`, () => {
