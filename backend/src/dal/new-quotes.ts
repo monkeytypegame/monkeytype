@@ -66,7 +66,7 @@ export async function add(
   } else {
     return { languageError: 1 };
   }
-  if (duplicateId != -1) {
+  if (duplicateId !== -1) {
     return { duplicateId, similarityScore };
   }
   await db.collection("new-quotes").insertOne(quote);

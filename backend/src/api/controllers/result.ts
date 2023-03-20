@@ -366,12 +366,8 @@ export async function addResult(
     delete result.challenge;
   }
 
-  let totalDurationTypedSeconds = 0;
-  let afk = result.afkDuration;
-  if (afk == undefined) {
-    afk = 0;
-  }
-  totalDurationTypedSeconds =
+  const afk = result.afkDuration ?? 0;
+  const totalDurationTypedSeconds =
     result.testDuration + result.incompleteTestSeconds - afk;
   updateTypingStats(uid, result.restartCount, totalDurationTypedSeconds);
   PublicDAL.updateStats(result.restartCount, totalDurationTypedSeconds);
