@@ -394,6 +394,7 @@ export async function screenshot(): Promise<void> {
     $("noscript").removeClass("hidden");
     $("#nocss").removeClass("hidden");
     $("#top, #bottom").removeClass("invisible");
+    $("#result").removeClass("noBalloons");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (!Auth?.currentUser) {
@@ -432,6 +433,7 @@ export async function screenshot(): Promise<void> {
   $("#testConfig").addClass("hidden");
   $(".page.pageTest").prepend("<div class='screenshotSpacer'></div>");
   $("#top, #bottom").addClass("invisible");
+  $("#result").addClass("noBalloons");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
@@ -450,49 +452,43 @@ export async function screenshot(): Promise<void> {
   try {
     const paddingX = Misc.convertRemToPixels(2);
     const paddingY = Misc.convertRemToPixels(2);
-    html2canvas(document.body, {
+    const canvas = await html2canvas(document.body, {
       backgroundColor: await ThemeColors.get("bg"),
       width: sourceWidth + paddingX * 2,
       height: sourceHeight + paddingY * 2,
       x: sourceX - paddingX,
       y: sourceY - paddingY,
-    }).then((canvas) => {
-      canvas.toBlob((blob) => {
-        try {
-          if (blob === null) return;
-          if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
-            open(URL.createObjectURL(blob));
-            revertScreenshot();
-          } else {
-            navigator.clipboard
-              .write([
-                new ClipboardItem(
-                  Object.defineProperty({}, blob.type, {
-                    value: blob,
-                    enumerable: true,
-                  })
-                ),
-              ])
-              .then(() => {
-                Notifications.add("Copied to clipboard", 1, 2);
-                revertScreenshot();
-              })
-              .catch((e) => {
-                Notifications.add(
-                  Misc.createErrorMessage(e, "Error saving image to clipboard"),
-                  -1
-                );
-                revertScreenshot();
-              });
-          }
-        } catch (e) {
+    });
+    canvas.toBlob(async (blob) => {
+      try {
+        if (blob === null) {
+          throw new Error("Could not create imgage, blob is null");
+        }
+        const clipItem = new ClipboardItem(
+          Object.defineProperty({}, blob.type, {
+            value: blob,
+            enumerable: true,
+          })
+        );
+        await navigator.clipboard.write([clipItem]);
+        Notifications.add("Copied to clipboard", 1, 2);
+      } catch (e) {
+        console.error("Error while saving image to clipboard", e);
+        if (blob) {
+          Notifications.add(
+            "Could not save image to clipboard. Opening in new tab instead (make sure popups are allowed)",
+            0,
+            5
+          );
+          open(URL.createObjectURL(blob));
+        } else {
           Notifications.add(
             Misc.createErrorMessage(e, "Error saving image to clipboard"),
             -1
           );
-          revertScreenshot();
         }
-      });
+      }
+      revertScreenshot();
     });
   } catch (e) {
     Notifications.add(Misc.createErrorMessage(e, "Error creating image"), -1);
