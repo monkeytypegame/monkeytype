@@ -1063,9 +1063,14 @@ $("#wordsInput").on("input", (event) => {
       diffStart++;
     }
 
+    let iOffset = 0;
+    if (/.+ .+/.test(inputValue)) {
+      iOffset = inputValue.indexOf(" ") + 1;
+      console.log("iOffset", iOffset);
+    }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
-      handleChar(inputValue[i], i, realInputValue);
+      handleChar(inputValue[i], i - iOffset, realInputValue);
     }
   }
 
