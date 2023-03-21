@@ -385,6 +385,7 @@ export async function screenshot(): Promise<void> {
     $("#ad-result-wrapper").removeClass("hidden");
     $("#ad-result-small-wrapper").removeClass("hidden");
     $("#testConfig").removeClass("hidden");
+    $(".pageTest .screenshotSpacer").remove();
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
@@ -392,6 +393,7 @@ export async function screenshot(): Promise<void> {
     $(".pageTest .buttons").removeClass("hidden");
     $("noscript").removeClass("hidden");
     $("#nocss").removeClass("hidden");
+    $("#top, #bottom").removeClass("invisible");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (!Auth?.currentUser) {
@@ -428,6 +430,8 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-wrapper").addClass("hidden");
   $("#ad-result-small-wrapper").addClass("hidden");
   $("#testConfig").addClass("hidden");
+  $(".page.pageTest").prepend("<div class='screenshotSpacer'></div>");
+  $("#top, #bottom").addClass("invisible");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
