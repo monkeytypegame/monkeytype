@@ -1064,9 +1064,8 @@ $("#wordsInput").on("input", (event) => {
     }
 
     let iOffset = 0;
-    if (/.+ .+/.test(inputValue)) {
+    if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
       iOffset = inputValue.indexOf(" ") + 1;
-      console.log("iOffset", iOffset);
     }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
