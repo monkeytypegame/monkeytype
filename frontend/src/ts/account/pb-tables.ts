@@ -126,13 +126,12 @@ function buildPbHtml(
   mode2: MonkeyTypes.StringNumber
 ): string {
   let retval = "";
-  let pbData;
   let dateText = "";
   const multiplier = Config.alwaysShowCPM ? 5 : 1;
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
   const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
   try {
-    pbData = pbs[mode][mode2].sort((a, b) => b.wpm - a.wpm)[0];
+    const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
     const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText = format(date, "dd MMM yyyy");
