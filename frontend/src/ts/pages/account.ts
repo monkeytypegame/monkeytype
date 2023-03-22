@@ -799,8 +799,10 @@ function fillContent(): void {
 
   if (!Config.startGraphsAtZero) {
     accountHistoryScaleOptions["wpm"].min = Math.floor(minWpmChartVal);
-  } else {
-    accountHistoryScaleOptions["wpm"].min = 0;
+    accountHistoryScaleOptions["pb"].min = Math.floor(minWpmChartVal);
+    accountHistoryScaleOptions["wpmAvgTen"].min = Math.floor(minWpmChartVal);
+    accountHistoryScaleOptions["wpmAvgHundred"].min =
+      Math.floor(minWpmChartVal);
   }
 
   if (!chartData || chartData.length == 0) {
