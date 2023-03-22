@@ -19,7 +19,9 @@ export function apply(_id: string): void {
         TagController.saveActiveToLocalStorage();
       }
       TestLogic.restart();
-      Notifications.add("Preset applied", 1, 2);
+      Notifications.add("Preset applied", 1, {
+        duration: 2,
+      });
       UpdateConfig.saveFullConfigToLocalStorage();
     }
   });

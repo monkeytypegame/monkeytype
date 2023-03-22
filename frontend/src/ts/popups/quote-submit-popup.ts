@@ -65,7 +65,9 @@ export async function show(noAnim = false): Promise<void> {
   Notifications.add(
     "Quote submission is disabled temporarily due to a large submission queue.",
     0,
-    5
+    {
+      duration: 5,
+    }
   );
   return;
   // Skeleton.append(wrapperId);

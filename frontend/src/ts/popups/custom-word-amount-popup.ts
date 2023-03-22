@@ -51,7 +51,9 @@ function apply(): void {
         Notifications.add(
           "Infinite words! Make sure to use Bail Out from the command line to save your result.",
           0,
-          7
+          {
+            duration: 7,
+          }
         );
       }
     }

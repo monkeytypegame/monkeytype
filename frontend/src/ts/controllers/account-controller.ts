@@ -53,7 +53,9 @@ export const gmailProvider = new GoogleAuthProvider();
 
 export async function sendVerificationEmail(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
 
@@ -63,11 +65,11 @@ export async function sendVerificationEmail(): Promise<void> {
     Loader.hide();
     Notifications.add(
       "Failed to request verification email: " + result.message,
-      3000
+      -1
     );
   } else {
     Loader.hide();
-    Notifications.add("Verification email sent", 1, 3);
+    Notifications.add("Verification email sent", 1);
   }
 }
 
@@ -89,12 +91,16 @@ export async function getDataAndInit(): Promise<boolean> {
       Notifications.add(
         "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
         0,
-        0
+        {
+          duration: 0,
+        }
       );
       Notifications.add(
         "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
         0,
-        0
+        {
+          duration: 0,
+        }
       );
     }
     const msg = e.message || e;
@@ -312,7 +318,9 @@ if (Auth && ConnectionState.get()) {
       Notifications.add(
         "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
         0,
-        7
+        {
+          duration: 7,
+        }
       );
       return;
       // Notifications.add("Loading challenge", 0);
@@ -344,7 +352,9 @@ if (Auth && ConnectionState.get()) {
       Notifications.add(
         "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
         0,
-        7
+        {
+          duration: 7,
+        }
       );
       return;
     }
@@ -353,11 +363,13 @@ if (Auth && ConnectionState.get()) {
 
 export async function signIn(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1);
     return;
   }
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
 
@@ -408,11 +420,15 @@ export async function signIn(): Promise<void> {
 
 export async function signInWithGoogle(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
 
@@ -457,7 +473,9 @@ export async function signInWithGoogle(): Promise<void> {
 
 export async function addGoogleAuth(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   Loader.show();
@@ -482,7 +500,9 @@ export async function addPasswordAuth(
   password: string
 ): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   Loader.show();
@@ -518,13 +538,17 @@ export async function addPasswordAuth(
 
 export function signOut(): void {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   if (!Auth.currentUser) return;
   Auth.signOut()
     .then(function () {
-      Notifications.add("Signed out", 0, 2);
+      Notifications.add("Signed out", 0, {
+        duration: 2,
+      });
       AllTimeStats.clear();
       Settings.hideAccountSection();
       AccountButton.update();
@@ -544,11 +568,15 @@ export function signOut(): void {
 
 async function signUp(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   RegisterCaptchaPopup.show();
@@ -583,7 +611,7 @@ async function signUp(): Promise<void> {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     )
   ) {
-    Notifications.add("Invalid email", 0, 3);
+    Notifications.add("Invalid email", 0);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
@@ -591,7 +619,7 @@ async function signUp(): Promise<void> {
   }
 
   if (email !== emailVerify) {
-    Notifications.add("Emails do not match", 0, 3);
+    Notifications.add("Emails do not match", 0);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
@@ -599,7 +627,7 @@ async function signUp(): Promise<void> {
   }
 
   if (password !== passwordVerify) {
-    Notifications.add("Passwords do not match", 0, 3);
+    Notifications.add("Passwords do not match", 0);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
@@ -611,7 +639,9 @@ async function signUp(): Promise<void> {
     Notifications.add(
       "Password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
       0,
-      4
+      {
+        duration: 4,
+      }
     );
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
@@ -663,7 +693,7 @@ async function signUp(): Promise<void> {
         );
       }
     }
-    Notifications.add("Account created", 1, 3);
+    Notifications.add("Account created", 1);
   } catch (e) {
     //make sure to do clean up here
     if (createdAuthUser) {
@@ -713,7 +743,9 @@ $(".pageLogin .login .button.signInWithGoogle").on("click", () => {
 
 $("#top .signInOut").on("click", () => {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   if (Auth.currentUser) {
@@ -738,7 +770,9 @@ $(".pageLogin .register .button").on("click", () => {
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   addGoogleAuth();
@@ -746,7 +780,9 @@ $(".pageSettings #addGoogleAuth").on("click", async () => {
 
 $(".pageAccount").on("click", ".sendVerificationEmail", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   sendVerificationEmail();
