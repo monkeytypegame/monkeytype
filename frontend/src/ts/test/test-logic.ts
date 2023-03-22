@@ -402,7 +402,10 @@ export function restart(options = {} as RestartOptions): void {
         Notifications.add(
           `Quick restart disabled in long tests. ${message}`,
           0,
-          4
+          {
+            duration: 4,
+            important: true,
+          }
         );
         return;
       }
@@ -1307,7 +1310,9 @@ export async function retrySavingResult(): Promise<void> {
     Notifications.add(
       "Could not retry saving the result as the result no longer exists.",
       0,
-      -1
+      {
+        duration: 5,
+      }
     );
 
     return;
@@ -1569,7 +1574,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let tooShort = false;
   //fail checks
   if (difficultyFailed) {
-    Notifications.add(`Test failed - ${failReason}`, 0, 1);
+    Notifications.add(`Test failed - ${failReason}`, 0, {
+      duration: 1,
+    });
     dontSave = true;
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
@@ -1659,7 +1666,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
         CustomText.getCustomTextLongProgress(customTextName) +
         TestInput.input.getHistory().length;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
-      Notifications.add("Long custom text progress saved", 1, 5);
+      Notifications.add("Long custom text progress saved", 1, {
+        duration: 5,
+      });
 
       let newText = CustomText.getCustomText(customTextName, true);
       newText = newText.slice(newProgress);
@@ -1668,7 +1677,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
       // They finished the test
       CustomText.setCustomTextLongProgress(customTextName, 0);
       CustomText.setText(CustomText.getCustomText(customTextName, true));
-      Notifications.add("Long custom text completed", 1, 5);
+      Notifications.add("Long custom text completed", 1, {
+        duration: 5,
+      });
     }
   }
 
@@ -1748,13 +1759,19 @@ async function saveResult(
   isRetrying: boolean
 ): Promise<void> {
   if (!TestState.savingEnabled) {
-    Notifications.add("Result not saved: disabled by user", -1, 3, "Notice");
+    Notifications.add("Result not saved: disabled by user", -1, {
+      duration: 3,
+      customTitle: "Notice",
+    });
     AccountButton.loading(false);
     return;
   }
 
   if (!ConnectionState.get()) {
-    Notifications.add("Result not saved: offline", -1, 2, "Notice");
+    Notifications.add("Result not saved: offline", -1, {
+      duration: 2,
+      customTitle: "Notice",
+    });
     AccountButton.loading(false);
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");

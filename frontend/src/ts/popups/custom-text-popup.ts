@@ -168,7 +168,9 @@ $(`${popup} textarea`).on("keypress", (e) => {
     CustomTextState.getCustomTextName() !== ""
   ) {
     CustomTextState.setCustomTextName("", undefined);
-    Notifications.add("Disabled long custom text progress tracking", 0, 5);
+    Notifications.add("Disabled long custom text progress tracking", 0, {
+      duration: 5,
+    });
     updateLongTextWarning();
   }
 });
@@ -239,7 +241,9 @@ function apply(): void {
     Notifications.add(
       "You need to specify word count or time in seconds to start a random custom test",
       0,
-      5
+      {
+        duration: 5,
+      }
     );
     return;
   }
@@ -252,7 +256,9 @@ function apply(): void {
     Notifications.add(
       "You need to pick between word count or time in seconds to start a random custom test",
       0,
-      5
+      {
+        duration: 5,
+      }
     );
     return;
   }
@@ -264,7 +270,9 @@ function apply(): void {
     Notifications.add(
       "Infinite words! Make sure to use Bail Out from the command line to save your result.",
       0,
-      7
+      {
+        duration: 7,
+      }
     );
   }
 

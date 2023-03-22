@@ -153,7 +153,9 @@ export function verify(
             Notifications.add(
               "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
               1,
-              5
+              {
+                duration: 5,
+              }
             );
           }
           Notifications.add(

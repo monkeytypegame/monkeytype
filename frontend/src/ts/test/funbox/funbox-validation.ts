@@ -139,7 +139,9 @@ export function canSetConfigWithCurrentFunboxes(
           key
         )} to ${value} with currently active funboxes.`,
         0,
-        5
+        {
+          duration: 5,
+        }
       );
     }
     return false;
@@ -178,7 +180,9 @@ export function canSetFunboxWithConfig(
         " "
       )} with currently active config.`,
       0,
-      5
+      {
+        duration: 5,
+      }
     );
     return false;
   } else {

@@ -11,7 +11,9 @@ const wrapperId = "tagsWrapper";
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
 
