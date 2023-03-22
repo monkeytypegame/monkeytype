@@ -173,7 +173,7 @@ router.patch(
         .string()
         .valid("time", "words", "quote", "zen", "custom")
         .required(),
-      mode2: joi.alternatives().try(joi.number(), joi.string()).required(),
+      mode2: joi.string().required(),
       language: joi.string().required(),
       rank: joi.number().required(),
     },
