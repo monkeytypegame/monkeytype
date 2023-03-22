@@ -1042,7 +1042,9 @@ export async function downloadResults(): Promise<void> {
   if (DB.getSnapshot()?.results !== undefined) return;
   const results = await DB.getUserResults();
   if (results === false && !ConnectionState.get()) {
-    Notifications.add("Could not get results - you are offline", -1, 5);
+    Notifications.add("Could not get results - you are offline", -1, {
+      duration: 5,
+    });
     return;
   }
   TodayTracker.addAllFromToday();

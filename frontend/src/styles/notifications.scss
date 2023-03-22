@@ -7,8 +7,11 @@
   right: 1rem;
   top: 1rem;
   transition: 0.125s opacity;
-  &.focus {
-    opacity: 0;
+  &.focus .notif {
+    visibility: hidden;
+  }
+  &.focus .notif.important {
+    visibility: visible;
   }
   .history {
     display: grid;
