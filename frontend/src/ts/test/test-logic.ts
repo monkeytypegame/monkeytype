@@ -404,6 +404,7 @@ export function restart(options = {} as RestartOptions): void {
           0,
           {
             duration: 4,
+            important: true,
           }
         );
         return;

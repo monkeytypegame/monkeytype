@@ -28,7 +28,7 @@ class Notification {
     type: string,
     message: string,
     level: number,
-    important: boolean,
+    important: boolean | undefined,
     duration: number | undefined,
     customTitle?: string,
     customIcon?: string,
@@ -40,7 +40,7 @@ class Notification {
     this.type = type;
     this.message = allowHTML ? message : Misc.escapeHTML(message);
     this.level = level;
-    this.important = important;
+    this.important = important || false;
     if (type === "banner") {
       this.duration = duration as number;
     } else {
@@ -259,7 +259,7 @@ export function add(
     "notification",
     message,
     level,
-    false,
+    options.important,
     options.duration,
     options.customTitle,
     options.customIcon,
