@@ -309,7 +309,7 @@ function fillContent(): void {
 
         if (result.mode == "time") {
           let timefilter: MonkeyTypes.Mode2Custom<"time"> = "custom";
-          if ([15, 30, 60, 120].includes(parseInt(result.mode2 as string))) {
+          if (["15", "30", "60", "120"].includes(result.mode2)) {
             timefilter = result.mode2;
           }
           if (!ResultFilters.getFilter("time", timefilter)) {
@@ -320,9 +320,7 @@ function fillContent(): void {
           }
         } else if (result.mode == "words") {
           let wordfilter: MonkeyTypes.Mode2Custom<"words"> = "custom";
-          if (
-            [10, 25, 50, 100, 200].includes(parseInt(result.mode2 as string))
-          ) {
+          if (["10", "25", "50", "100", "200"].includes(result.mode2)) {
             wordfilter = result.mode2;
           }
           if (!ResultFilters.getFilter("words", wordfilter)) {
@@ -540,7 +538,7 @@ function fillContent(): void {
         if (result.mode == "time") {
           tt = result.mode2;
         } else if (result.mode == "words") {
-          tt = (result.mode2 / result.wpm) * 60;
+          tt = (parseInt(result.mode2) / result.wpm) * 60;
         }
       } else {
         tt = parseFloat(result.testDuration as unknown as string); //legacy results could have a string here

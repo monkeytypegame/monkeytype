@@ -833,17 +833,19 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
 ): Promise<void> {
   if (mode === "time") {
     const timeMode = mode as "time";
-    const timeMode2 = mode2 as 15 | 60;
+    const timeMode2 = mode2 as "15" | "60";
 
     const snapshot = getSnapshot();
     if (!snapshot) return;
     if (snapshot.lbMemory === undefined) {
-      snapshot.lbMemory = { time: { 15: { english: 0 }, 60: { english: 0 } } };
+      snapshot.lbMemory = {
+        time: { "15": { english: 0 }, "60": { english: 0 } },
+      };
     }
     if (snapshot.lbMemory[timeMode] === undefined) {
       snapshot.lbMemory[timeMode] = {
-        15: { english: 0 },
-        60: { english: 0 },
+        "15": { english: 0 },
+        "60": { english: 0 },
       };
     }
     if (snapshot.lbMemory[timeMode][timeMode2] === undefined) {

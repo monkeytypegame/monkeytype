@@ -531,7 +531,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   const response = await Ape.leaderboards.get({
     language: currentLanguage,
     mode: "time",
-    mode2: lb.toString(),
+    mode2: lb,
     skip: skipVal,
     limit: limitVal,
     ...getDailyLeaderboardQuery(),
@@ -561,7 +561,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   const response = await Ape.leaderboards.get({
     language: currentLanguage,
     mode: "time",
-    mode2: lb.toString(),
+    mode2: lb,
     skip,
     ...getDailyLeaderboardQuery(),
   });
