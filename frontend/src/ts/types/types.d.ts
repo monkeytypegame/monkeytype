@@ -3,9 +3,7 @@ type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
 declare namespace MonkeyTypes {
   type Difficulty = "normal" | "expert" | "master";
 
-  type CustomModes = "custom";
-
-  type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
+  type Mode = keyof PersonalBests;
 
   type Mode2<M extends Mode> = keyof PersonalBests[M];
 
@@ -297,17 +295,11 @@ declare namespace MonkeyTypes {
   }
 
   interface PersonalBests {
-    time: {
-      [key: StringNumber]: PersonalBest[];
-    };
-    words: {
-      [key: StringNumber]: PersonalBest[];
-    };
-    quote: { [quote: string]: PersonalBest[] };
-    custom: { custom: PersonalBest[] };
-    zen: {
-      zen: PersonalBest[];
-    };
+    time: Partial<Record<StringNumber, PersonalBest[]>>;
+    words: Partial<Record<StringNumber, PersonalBest[]>>;
+    quote: Partial<Record<string, PersonalBest[]>>;
+    custom: Record<"custom", PersonalBest[]>;
+    zen: Record<"zen", PersonalBest[]>;
   }
 
   interface Tag {
@@ -597,11 +589,6 @@ declare namespace MonkeyTypes {
   }
 
   type FavoriteQuotes = Record<string, string[]>;
-
-  // Converting this to an interface causes a TS error
-  type PartialRecord<K extends keyof any, T> = {
-    [P in K]?: T;
-  };
 
   interface ResultFilters {
     _id: string;
