@@ -251,8 +251,8 @@ export async function update(
 
     const lbPos = where === "profile" ? profile.allTimeLbs : profile.lbMemory;
 
-    const t15 = lbPos?.time?.[15]?.["english"];
-    const t60 = lbPos?.time?.[60]?.["english"];
+    const t15 = lbPos?.time?.["15"]?.["english"];
+    const t60 = lbPos?.time?.["60"]?.["english"];
 
     if (!t15 && !t60) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");

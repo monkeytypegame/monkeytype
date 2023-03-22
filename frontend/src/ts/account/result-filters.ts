@@ -306,9 +306,8 @@ export function reset(): void {
   save();
 }
 
-type AboveChartDisplay = MonkeyTypes.PartialRecord<
-  MonkeyTypes.Group,
-  { all: boolean; array?: string[] }
+type AboveChartDisplay = Partial<
+  Record<MonkeyTypes.Group, { all: boolean; array?: string[] }>
 >;
 
 export function updateActive(): void {

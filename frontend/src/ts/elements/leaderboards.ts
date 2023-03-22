@@ -482,10 +482,10 @@ async function update(): Promise<void> {
     (response) => response.data
   );
 
-  currentData[15] = lb15Data;
-  currentData[60] = lb60Data;
-  currentRank[15] = lb15Rank;
-  currentRank[60] = lb60Rank;
+  currentData["15"] = lb15Data;
+  currentData["60"] = lb60Data;
+  currentRank["15"] = lb15Rank;
+  currentRank["60"] = lb60Rank;
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
@@ -742,9 +742,9 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
   "click",
   async () => {
-    if (!currentRank[15]?.rank) return;
+    if (!currentRank["15"]?.rank) return;
     leftScrollEnabled = false;
-    await requestNew("15", currentRank[15].rank - leaderboardSingleLimit / 2);
+    await requestNew("15", currentRank["15"].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
       "#leaderboardsWrapper #leaderboards .leftTableWrapper table tbody td"
     ).outerHeight() as number;
@@ -752,7 +752,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
       {
         scrollTop:
           rowHeight *
-            Math.min(currentRank[15].rank, leaderboardSingleLimit / 2) -
+            Math.min(currentRank["15"].rank, leaderboardSingleLimit / 2) -
           ($(
             "#leaderboardsWrapper #leaderboards .leftTableWrapper"
           ).outerHeight() as number) /
@@ -779,9 +779,9 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
   "click",
   async () => {
-    if (!currentRank[60]?.rank) return;
+    if (!currentRank["60"]?.rank) return;
     leftScrollEnabled = false;
-    await requestNew("60", currentRank[60].rank - leaderboardSingleLimit / 2);
+    await requestNew("60", currentRank["60"].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
       "#leaderboardsWrapper #leaderboards .rightTableWrapper table tbody td"
     ).outerHeight() as number;
@@ -789,7 +789,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
       {
         scrollTop:
           rowHeight *
-            Math.min(currentRank[60].rank, leaderboardSingleLimit / 2) -
+            Math.min(currentRank["60"].rank, leaderboardSingleLimit / 2) -
           ($(
             "#leaderboardsWrapper #leaderboards .rightTableWrapper"
           ).outerHeight() as number) /
