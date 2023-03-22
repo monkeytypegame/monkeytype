@@ -799,7 +799,7 @@ function fillContent(): void {
 
   if (!Config.startGraphsAtZero) {
     const minWpmChartValFloor = Math.floor(minWpmChartVal);
-  
+
     accountHistoryScaleOptions["wpm"].min = minWpmChartValFloor;
     accountHistoryScaleOptions["pb"].min = minWpmChartValFloor;
     accountHistoryScaleOptions["wpmAvgTen"].min = minWpmChartValFloor;
