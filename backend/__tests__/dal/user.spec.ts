@@ -237,8 +237,8 @@ describe("UserDal", () => {
       time: { 20: [mockPersonalBest] },
       words: {},
       quote: {},
-      custom: {},
-      zen: {},
+      custom: { custom: {} },
+      zen: { zen: {} },
     });
     // when
     await UserDAL.clearPb(testUser.uid);
