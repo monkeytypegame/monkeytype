@@ -8,7 +8,9 @@ const router = Router();
 
 router.get(
   "/",
-  authenticateRequest(),
+  authenticateRequest({
+    noCache: true,
+  }),
   checkIfUserIsAdmin(),
   asyncHandler(AdminController.test)
 );
