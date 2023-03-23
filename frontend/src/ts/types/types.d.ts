@@ -298,8 +298,8 @@ declare namespace MonkeyTypes {
     time: Partial<Record<StringNumber, PersonalBest[]>>;
     words: Partial<Record<StringNumber, PersonalBest[]>>;
     quote: Partial<Record<string, PersonalBest[]>>;
-    custom: Record<"custom", PersonalBest[]>;
-    zen: Record<"zen", PersonalBest[]>;
+    custom: Partial<Record<"custom", PersonalBest[]>>;
+    zen: Partial<Record<"zen", PersonalBest[]>>;
   }
 
   interface Tag {
