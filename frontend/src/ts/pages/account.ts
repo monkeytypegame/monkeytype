@@ -804,6 +804,11 @@ function fillContent(): void {
     accountHistoryScaleOptions["pb"].min = minWpmChartValFloor;
     accountHistoryScaleOptions["wpmAvgTen"].min = minWpmChartValFloor;
     accountHistoryScaleOptions["wpmAvgHundred"].min = minWpmChartValFloor;
+  } else {
+    accountHistoryScaleOptions["wpm"].min = 0;
+    accountHistoryScaleOptions["pb"].min = 0;
+    accountHistoryScaleOptions["wpmAvgTen"].min = 0;
+    accountHistoryScaleOptions["wpmAvgHundred"].min = 0;
   }
 
   if (!chartData || chartData.length == 0) {
