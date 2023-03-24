@@ -798,9 +798,17 @@ function fillContent(): void {
     Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
   if (!Config.startGraphsAtZero) {
-    accountHistoryScaleOptions["wpm"].min = Math.floor(minWpmChartVal);
+    const minWpmChartValFloor = Math.floor(minWpmChartVal);
+
+    accountHistoryScaleOptions["wpm"].min = minWpmChartValFloor;
+    accountHistoryScaleOptions["pb"].min = minWpmChartValFloor;
+    accountHistoryScaleOptions["wpmAvgTen"].min = minWpmChartValFloor;
+    accountHistoryScaleOptions["wpmAvgHundred"].min = minWpmChartValFloor;
   } else {
     accountHistoryScaleOptions["wpm"].min = 0;
+    accountHistoryScaleOptions["pb"].min = 0;
+    accountHistoryScaleOptions["wpmAvgTen"].min = 0;
+    accountHistoryScaleOptions["wpmAvgHundred"].min = 0;
   }
 
   if (!chartData || chartData.length == 0) {
