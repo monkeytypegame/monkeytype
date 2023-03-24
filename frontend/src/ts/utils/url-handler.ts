@@ -124,6 +124,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   if (de[2]) {
     const customTextSettings = de[2];
+    CustomText.setPopupTextareaState(
+      customTextSettings["text"].join(customTextSettings["delimiter"])
+    );
     CustomText.setText(customTextSettings["text"]);
     CustomText.setIsTimeRandom(customTextSettings["isTimeRandom"]);
     CustomText.setIsWordRandom(customTextSettings["isWordRandom"]);
