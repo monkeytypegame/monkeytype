@@ -823,9 +823,6 @@ export async function update(
       $("#words").empty();
       ChartController.result.resize();
 
-      if (Config.alwaysShowWordsHistory && Config.burstHeatmap) {
-        TestUI.applyBurstHeatmap();
-      }
       $("#result").trigger("focus");
       window.scrollTo({ top: 0 });
       $("#testModesNotice").addClass("hidden");
@@ -838,7 +835,7 @@ export async function update(
         125
       );
       if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
-        TestUI.toggleResultWords();
+        TestUI.toggleResultWords(true);
       }
       Keymap.hide();
       AdController.updateTestPageAds(true);
