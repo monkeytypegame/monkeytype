@@ -1522,3 +1522,26 @@ export async function checkIfLanguageSupportsZipf(
   if (lang.orderedByFrequency === false) return "no";
   return "unknown";
 }
+
+export function getStartOfDayTimestamp(timestamp: number): number {
+  return timestamp - (timestamp % 86400000);
+}
+
+export function getCurrentDayTimestamp(): number {
+  const currentTime = Date.now();
+  return getStartOfDayTimestamp(currentTime);
+}
+
+export function isYesterday(timestamp: number): boolean {
+  const yesterday = getStartOfDayTimestamp(Date.now() - 86400000);
+  const date = getStartOfDayTimestamp(timestamp);
+
+  return yesterday === date;
+}
+
+export function isToday(timestamp: number): boolean {
+  const today = getStartOfDayTimestamp(Date.now());
+  const date = getStartOfDayTimestamp(timestamp);
+
+  return today === date;
+}
