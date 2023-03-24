@@ -985,7 +985,7 @@ async function loadWordsHistory(): Promise<boolean> {
   return true;
 }
 
-export function toggleResultWords(): void {
+export function toggleResultWords(noAnimation = false): void {
   if (resultVisible) {
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
@@ -1001,7 +1001,7 @@ export function toggleResultWords(): void {
           $("#resultWordsHistory")
             .removeClass("hidden")
             .css("display", "none")
-            .slideDown(250, () => {
+            .slideDown(noAnimation ? 0 : 250, () => {
               if (Config.burstHeatmap) {
                 applyBurstHeatmap();
               }
@@ -1014,7 +1014,7 @@ export function toggleResultWords(): void {
         $("#resultWordsHistory")
           .removeClass("hidden")
           .css("display", "none")
-          .slideDown(250);
+          .slideDown(noAnimation ? 0 : 250);
       }
     } else {
       //hide
