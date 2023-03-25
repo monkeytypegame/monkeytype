@@ -123,7 +123,7 @@ $(document).on("keydown", (e) => {
   }
 });
 
-$(document).keyup((e) => {
+$(document).on("keyup", (e) => {
   if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
     leftState = false;
     rightState = false;
