@@ -1,11 +1,12 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
+import { capsState } from "./caps-warning";
 
 export let leftState = false;
 export let rightState = false;
-let caseState = false;
+
+type KeymapLegendStates = [letters: boolean, symbols: boolean];
 
 interface KeymapStrings {
   left: string[] | null;
@@ -19,32 +20,64 @@ const keymapStrings: KeymapStrings = {
   keymap: null,
 };
 
-function dynamicKeymapLegendStyle(uppercase: boolean): void {
-  const keymapKeys = <HTMLElement[]>[
-    ...document.getElementsByClassName("keymapKey"),
-  ];
+const symbolsPattern = /^[^\p{L}\p{N}]{1}$/u;
+
+const isMacLike = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+
+let keymapLegendStates: KeymapLegendStates = [false, false];
+function getLegendStates(): KeymapLegendStates | undefined {
+  const symbolsState = leftState || rightState;
+  const lettersState = isMacLike
+    ? symbolsState || capsState
+    : symbolsState !== capsState;
+
+  const [previousLettersState, previousSymbolsState] = keymapLegendStates;
+
+  if (
+    previousLettersState === lettersState &&
+    previousSymbolsState === symbolsState
+  ) {
+    return;
+  }
+
+  return (keymapLegendStates = [lettersState, symbolsState]);
+}
+
+export function updateKeymapLegendCasing(): void {
+  const states = getLegendStates();
+  if (states === undefined) return;
+
+  const keymapKeys = <HTMLElement[]>(
+    [...document.getElementsByClassName("keymapKey")].filter(
+      (el) => el.className === "keymapKey"
+    )
+  );
 
   const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);
+  if (layoutKeys.includes(undefined)) return;
 
   const keys = keymapKeys.map((el) => el.childNodes[1]);
 
-  if (capsState) uppercase = !uppercase;
-
-  if (layoutKeys.filter((v) => v === undefined).length > 2) return;
-
-  if ((uppercase && caseState) || (!uppercase && !caseState)) return;
-
-  caseState = uppercase;
-
-  const index = caseState ? 1 : 0;
+  const [lettersState, symbolsState] = states;
 
   for (let i = 0; i < layoutKeys.length; i++) {
-    const layoutKey = layoutKeys[i],
-      key = keys[i];
+    const layoutKey = layoutKeys[i];
+    const key = keys[i];
 
     if (key === undefined || layoutKey === undefined) continue;
 
-    key.textContent = layoutKey[index];
+    const lowerCaseCharacter = layoutKey[0];
+    const upperCaseCharacter = layoutKey[1];
+
+    const keyIsSymbol = [lowerCaseCharacter, upperCaseCharacter].some(
+      (character) => symbolsPattern.test(character)
+    );
+
+    const state = keyIsSymbol ? symbolsState : lettersState;
+    const keyIndex = Number(state);
+    const character = layoutKey[keyIndex];
+
+    key.textContent = character;
   }
 }
 
@@ -119,7 +152,7 @@ $(document).on("keydown", (e) => {
   }
 
   if (Config.keymapLegendStyle === "dynamic") {
-    dynamicKeymapLegendStyle(leftState || rightState);
+    updateKeymapLegendCasing();
   }
 });
 
@@ -130,7 +163,7 @@ $(document).on("keyup", (e) => {
   }
 
   if (Config.keymapLegendStyle === "dynamic") {
-    dynamicKeymapLegendStyle(leftState || rightState);
+    updateKeymapLegendCasing();
   }
 });
 
