@@ -803,7 +803,7 @@ async function getNextWord(
     randomWord = await punctuateWord(
       TestWords.words.get(TestWords.words.length - 1),
       randomWord,
-      TestWords.words.length + randomWord.split(" ").length - 1,
+      TestWords.words.length,
       wordsBound
     );
   }
@@ -1052,19 +1052,11 @@ export async function init(): Promise<void> {
         // eslint-disable-next-line no-constant-condition
         let currentSection = 0;
         while (currentSection < sectionsBound) {
-          let randomWord = await getNextWord(wordset, language, sectionsBound);
+          let randomWord = await getNextWord(wordset, language, undefined);
 
           if (randomWord.endsWith("|")) {
             randomWord = randomWord.slice(0, -1);
             currentSection++;
-            if (currentSection == CustomText.section) {
-              const wordsBound =
-                TestWords.words.length + randomWord.split(" ").length;
-              randomWord = await getNextWord(wordset, language, wordsBound);
-              if (randomWord.endsWith("|")) {
-                randomWord = randomWord.slice(0, -1);
-              }
-            }
           }
           if (/\t/g.test(randomWord)) {
             TestWords.setHasTab(true);
