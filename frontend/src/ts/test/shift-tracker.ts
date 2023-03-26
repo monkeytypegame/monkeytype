@@ -137,7 +137,7 @@ async function updateKeymapLegendCasing(): Promise<void> {
     const oppositeShift = isUsingOppositeShift(keycode);
 
     const state = keyIsSymbol ? symbolsState : lettersState;
-    const capitalize = oppositeShift ? state : false;
+    const capitalize = oppositeShift && state;
     const keyIndex = Number(capitalize);
     const character = layoutKey[keyIndex];
 
