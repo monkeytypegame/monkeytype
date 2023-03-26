@@ -48,7 +48,7 @@ function getLegendStates(): KeymapLegendStates | undefined {
   return (keymapLegendStates = [lettersState, symbolsState]);
 }
 
-export function updateKeymapLegendCasing(): void {
+function updateKeymapLegendCasing(): void {
   const states = getLegendStates();
   if (states === undefined) return;
 
