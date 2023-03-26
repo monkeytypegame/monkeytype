@@ -1,7 +1,7 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
-import * as Notifications from "../elements/notifications";
 import { capsState } from "./caps-warning";
+import * as Notifications from "../elements/notifications";
 
 export let leftState = false;
 export let rightState = false;
