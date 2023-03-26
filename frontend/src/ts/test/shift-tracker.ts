@@ -133,7 +133,7 @@ async function updateKeymapLegendCasing(): Promise<void> {
       (character) => symbolsPattern.test(character)
     );
 
-    const keycode = layoutKeyToKeycode(layoutKey, layout);
+    const keycode = layoutKeyToKeycode(lowerCaseCharacter, layout);
     const oppositeShift = isUsingOppositeShift(keycode);
 
     const state = keyIsSymbol ? symbolsState : lettersState;
@@ -189,6 +189,7 @@ const leftSideKeys = [
   "KeyF",
   "KeyG",
 
+  "IntlBackslash",
   "KeyZ",
   "KeyX",
   "KeyC",
@@ -271,6 +272,16 @@ export function layoutKeyToKeycode(
 
   const keyIndex = row.findIndex((k) => k.includes(key));
 
-  const keycode = qwertyKeycodeKeymap[rowIndex][keyIndex];
+  let keycode = qwertyKeycodeKeymap[rowIndex][keyIndex];
+  if (layout.type === "iso") {
+    if (rowIndex === 2 && keyIndex === 11) {
+      keycode = "Backslash";
+    } else if (rowIndex === 3 && keyIndex === 0) {
+      keycode = "IntlBackslash";
+    } else if (rowIndex === 3) {
+      keycode = qwertyKeycodeKeymap[3][keyIndex - 1];
+    }
+  }
+
   return keycode;
 }
