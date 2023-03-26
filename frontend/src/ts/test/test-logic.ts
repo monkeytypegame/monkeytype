@@ -57,6 +57,7 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+import { current } from "../commandline/commands";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -84,7 +85,7 @@ export async function punctuateWord(
   previousWord: string,
   currentWord: string,
   index: number,
-  maxindex: number
+  maxindex: number | undefined
 ): Promise<string> {
   let word = currentWord;
 
@@ -125,8 +126,9 @@ export async function punctuateWord(
     (Math.random() < 0.1 &&
       lastChar != "." &&
       lastChar != "," &&
+      maxindex &&
       index != maxindex - 2) ||
-    index == maxindex - 1
+    (maxindex && index == maxindex - 1)
   ) {
     if (currentLanguage == "spanish" || currentLanguage == "catalan") {
       if (spanishSentenceTracker == "?" || spanishSentenceTracker == "!") {
@@ -723,20 +725,25 @@ function applyLazyModeToWord(
 async function getNextWord(
   wordset: Misc.Wordset,
   language: MonkeyTypes.LanguageObject,
-  wordsBound: number
+  wordsBound: number | undefined
 ): Promise<string> {
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
 
   let randomWord = wordset.randomWord(funboxFrequency);
+  if (randomWord.endsWith("|")) {
+    randomWord = randomWord.slice(0, -1);
+  }
   const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
   const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
+
   if (Config.mode === "quote") {
     randomWord =
       TestWords.randomQuote.textSplit?.[TestWords.words.length] ?? "";
   } else if (
     Config.mode == "custom" &&
     !CustomText.isWordRandom &&
-    !CustomText.isTimeRandom
+    !CustomText.isTimeRandom &&
+    !CustomText.isSectionRandom
   ) {
     randomWord = CustomText.text[TestWords.words.length];
   } else if (
@@ -764,6 +771,9 @@ async function getNextWord(
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord(funboxFrequency);
+      if (randomWord.endsWith("|")) {
+        randomWord = randomWord.slice(0, -1);
+      }
     }
   }
 
@@ -793,7 +803,7 @@ async function getNextWord(
     randomWord = await punctuateWord(
       TestWords.words.get(TestWords.words.length - 1),
       randomWord,
-      TestWords.words.length,
+      TestWords.words.length + randomWord.split(" ").length - 1,
       wordsBound
     );
   }
@@ -810,8 +820,11 @@ async function getNextWord(
   }
 
   randomWord = applyFunboxesToWord(randomWord);
-
-  return randomWord;
+  if (Config.mode == "custom" && CustomText.isSectionRandom) {
+    return randomWord + "|";
+  } else {
+    return randomWord;
+  }
 }
 
 let rememberLazyMode: boolean;
@@ -895,6 +908,7 @@ export async function init(): Promise<void> {
   }
 
   let wordsBound = 100;
+  let sectionsBound;
 
   const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
@@ -912,6 +926,16 @@ export async function init(): Promise<void> {
     ) {
       wordsBound = CustomText.word;
     }
+
+    if (
+      Config.mode === "custom" &&
+      !CustomText.isTimeRandom &&
+      !CustomText.isWordRandom &&
+      CustomText.isSectionRandom
+    ) {
+      sectionsBound = wordsBound;
+    }
+
     if (
       Config.mode === "custom" &&
       !CustomText.isTimeRandom &&
@@ -944,6 +968,9 @@ export async function init(): Promise<void> {
       CustomText.word < wordsBound
     ) {
       wordsBound = CustomText.word;
+    }
+    if (Config.mode == "custom" && CustomText.isSectionRandom) {
+      sectionsBound = CustomText.section;
     }
     if (Config.mode == "custom" && CustomText.isTimeRandom) {
       wordsBound = 100;
@@ -1021,41 +1048,99 @@ export async function init(): Promise<void> {
     }
 
     if (wordCount == 0) {
-      for (let i = 0; i < wordsBound; i++) {
-        const randomWord = await getNextWord(wordset, language, wordsBound);
+      if (sectionsBound && sectionsBound > 0) {
+        // eslint-disable-next-line no-constant-condition
+        let currentSection = 0;
+        while (currentSection < sectionsBound) {
+          let randomWord = await getNextWord(wordset, language, sectionsBound);
 
-        if (/\t/g.test(randomWord)) {
-          TestWords.setHasTab(true);
-        }
-
-        const te = randomWord.replace(/\n/g, "\n ").replace(/ $/g, "");
-
-        if (/ +/.test(te)) {
-          const randomList = te.split(" ");
-          let id = 0;
-          while (id < randomList.length) {
-            TestWords.words.push(randomList[id]);
-            id++;
-
-            if (
-              TestWords.words.length == wordsBound &&
-              Config.mode == "custom" &&
-              CustomText.isWordRandom
-            ) {
-              break;
+          if (randomWord.endsWith("|")) {
+            randomWord = randomWord.slice(0, -1);
+            currentSection++;
+            if (currentSection == CustomText.section) {
+              const wordsBound =
+                TestWords.words.length + randomWord.split(" ").length;
+              randomWord = await getNextWord(wordset, language, wordsBound);
+              if (randomWord.endsWith("|")) {
+                randomWord = randomWord.slice(0, -1);
+              }
             }
           }
-          if (
-            Config.mode == "custom" &&
-            !CustomText.isWordRandom &&
-            !CustomText.isTimeRandom
-          ) {
-            //
-          } else {
-            i = TestWords.words.length - 1;
+          if (/\t/g.test(randomWord)) {
+            TestWords.setHasTab(true);
           }
-        } else {
-          TestWords.words.push(randomWord);
+
+          const te = randomWord.replace(/\n/g, "\n ").replace(/ $/g, "");
+
+          TestWords.words.pushSection(randomWord.split(" "));
+
+          if (/ +/.test(te)) {
+            const randomList = te.split(" ");
+
+            let id = 0;
+            while (id < randomList.length) {
+              TestWords.words.push(randomList[id]);
+              id++;
+
+              if (
+                TestWords.words.length == wordsBound &&
+                Config.mode == "custom" &&
+                CustomText.isWordRandom
+              ) {
+                break;
+              }
+            }
+            if (
+              Config.mode == "custom" &&
+              !CustomText.isWordRandom &&
+              !CustomText.isTimeRandom
+            ) {
+              //
+            } else {
+              currentSection = sectionsBound;
+            }
+          } else {
+            TestWords.words.push(randomWord);
+          }
+        }
+      } else {
+        for (let i = 0; i < wordsBound; i++) {
+          const randomWord = await getNextWord(wordset, language, wordsBound);
+
+          if (/\t/g.test(randomWord)) {
+            TestWords.setHasTab(true);
+          }
+
+          const te = randomWord.replace(/\n/g, "\n ").replace(/ $/g, "");
+
+          if (/ +/.test(te)) {
+            const randomList = te.split(" ");
+
+            let id = 0;
+            while (id < randomList.length) {
+              TestWords.words.push(randomList[id]);
+              id++;
+
+              if (
+                TestWords.words.length == wordsBound &&
+                Config.mode == "custom" &&
+                CustomText.isWordRandom
+              ) {
+                break;
+              }
+            }
+            if (
+              Config.mode == "custom" &&
+              !CustomText.isWordRandom &&
+              !CustomText.isTimeRandom
+            ) {
+              //
+            } else {
+              i = TestWords.words.length - 1;
+            }
+          } else {
+            TestWords.words.push(randomWord);
+          }
         }
       }
     }
@@ -1153,7 +1238,6 @@ export async function init(): Promise<void> {
       if (Config.language === "swiss_german") {
         w[i] = w[i].replace(/ß/g, "ss");
       }
-
       TestWords.words.push(w[i]);
     }
   }
@@ -1213,9 +1297,14 @@ export async function addWord(): Promise<void> {
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom &&
       TestWords.words.length >= CustomText.text.length) ||
     (Config.mode === "quote" &&
-      TestWords.words.length >= (TestWords.randomQuote.textSplit?.length ?? 0))
+      TestWords.words.length >=
+        (TestWords.randomQuote.textSplit?.length ?? 0)) ||
+    (Config.mode === "custom" &&
+      CustomText.isSectionRandom &&
+      TestWords.words.currentSectionIndex >= CustomText.section)
   ) {
     return;
   }
@@ -1263,15 +1352,29 @@ export async function addWord(): Promise<void> {
         };
   const wordset = await Wordset.withWords(language.words);
 
-  const randomWord = await getNextWord(wordset, language, bound);
+  let randomWord = await getNextWord(wordset, language, bound);
 
   const split = randomWord.split(" ");
-  if (split.length > 1) {
-    split.forEach((word) => {
+
+  const newSplit = split.map((word) => {
+    if (word.endsWith("|")) {
+      word = word.slice(0, -1);
+    }
+    return word;
+  });
+
+  TestWords.words.pushSection(newSplit);
+
+  if (newSplit.length > 1) {
+    newSplit.forEach((word) => {
       TestWords.words.push(word);
       TestUI.addWord(word);
     });
   } else {
+    if (randomWord.endsWith("|")) {
+      randomWord = randomWord.slice(0, -1);
+    }
+
     TestWords.words.push(randomWord);
     TestUI.addWord(randomWord);
   }

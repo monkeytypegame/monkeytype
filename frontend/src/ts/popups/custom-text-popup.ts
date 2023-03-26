@@ -78,7 +78,7 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
     $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
   } else {
     delimiter = " ";
-
+    $(`${popup} .randomInputFields .sectioncount input `).val("");
     $(`${popup} .randomInputFields .sectioncount `).addClass("hidden");
   }
   if (
@@ -117,10 +117,19 @@ export function hide(options = {} as HideOptions): void {
         options.noAnim ? 0 : 125,
         () => {
           if (options.resetState) {
+            const newText = CustomText.text.map((word) => {
+              if (word[word.length - 1] == "|") {
+                word = word.slice(0, -1);
+              }
+              return word;
+            });
+
             CustomText.setPopupTextareaState(
-              CustomText.text.join(CustomText.delimiter)
+              // CustomText.text.join(CustomText.delimiter)
+              newText.join(CustomText.delimiter)
             );
           }
+
           $(wrapper).addClass("hidden");
           Skeleton.remove(skeletonId);
         }
@@ -179,9 +188,16 @@ $(`${popup} textarea`).on("keypress", (e) => {
 
 $(`${popup} .randomInputFields .wordcount input`).on("keypress", () => {
   $(`${popup} .randomInputFields .time input`).val("");
+  $(`${popup} .randomInputFields .sectioncount input`).val("");
 });
 
 $(`${popup} .randomInputFields .time input`).on("keypress", () => {
+  $(`${popup} .randomInputFields .wordcount input`).val("");
+  $(`${popup} .randomInputFields .sectioncount input`).val("");
+});
+
+$(`${popup} .randomInputFields .sectioncount input`).on("keypress", () => {
+  $(`${popup} .randomInputFields .time input`).val("");
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
@@ -221,20 +237,24 @@ function apply(): void {
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
-  CustomText.setText(text.split(CustomText.delimiter));
-  // console.log(text.split(CustomText.delimiter));
+  if ($(`${popup} .sectioncount input`).val() !== "") {
+    const textArray: string[] = [];
+    text.split(CustomText.delimiter).forEach((word) => {
+      textArray.push(word + "|");
+    });
+    CustomText.setText(textArray);
+  } else {
+    CustomText.setText(text.split(CustomText.delimiter));
+  }
+
   CustomText.setWord(
     parseInt($(`${popup} .wordcount input`).val() as string) || -1
   );
-  // console.log(parseInt($(`${popup} .wordcount input`).val() as string) || -1);
   CustomText.setTime(parseInt($(`${popup} .time input`).val() as string) || -1);
 
   CustomText.setSection(
     parseInt($(`${popup} .sectioncount input`).val() as string) || -1
   );
-  // console.log(
-  //   parseInt($(`${popup} .sectioncount input`).val() as string) || -1
-  // );
   CustomText.setIsWordRandom(
     $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
       CustomText.word > -1
