@@ -1,24 +1,70 @@
 import Config from "../config";
 import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
-import * as Notifications from "../elements/notifications";
 
 export let leftState = false;
 export let rightState = false;
 
 type KeymapLegendStates = [letters: boolean, symbols: boolean];
 
-interface KeymapStrings {
-  left: string[] | null;
-  right: string[] | null;
-  keymap: string | null;
-}
-
-const keymapStrings: KeymapStrings = {
-  left: null,
-  right: null,
-  keymap: null,
-};
+const qwertyKeycodeKeymap = [
+  [
+    "Backquote",
+    "Digit1",
+    "Digit2",
+    "Digit3",
+    "Digit4",
+    "Digit5",
+    "Digit6",
+    "Digit7",
+    "Digit8",
+    "Digit9",
+    "Digit0",
+    "Minus",
+    "Equal",
+  ],
+  [
+    "KeyQ",
+    "KeyW",
+    "KeyE",
+    "KeyR",
+    "KeyT",
+    "KeyY",
+    "KeyU",
+    "KeyI",
+    "KeyO",
+    "KeyP",
+    "BracketLeft",
+    "BracketRight",
+    "Backslash",
+  ],
+  [
+    "KeyA",
+    "KeyS",
+    "KeyD",
+    "KeyF",
+    "KeyG",
+    "KeyH",
+    "KeyJ",
+    "KeyK",
+    "KeyL",
+    "Semicolon",
+    "Quote",
+  ],
+  [
+    "KeyZ",
+    "KeyX",
+    "KeyC",
+    "KeyV",
+    "KeyB",
+    "KeyN",
+    "KeyM",
+    "Comma",
+    "Period",
+    "Slash",
+  ],
+  ["Space"],
+];
 
 const symbolsPattern = /^[^\p{L}\p{N}]{1}$/u;
 
@@ -48,7 +94,7 @@ function getLegendStates(): KeymapLegendStates | undefined {
   return (keymapLegendStates = [lettersState, symbolsState]);
 }
 
-function updateKeymapLegendCasing(): void {
+async function updateKeymapLegendCasing(): Promise<void> {
   const states = getLegendStates();
   if (states === undefined) return;
 
@@ -65,6 +111,15 @@ function updateKeymapLegendCasing(): void {
 
   const [lettersState, symbolsState] = states;
 
+  const layoutName =
+    Config.keymapLayout === "overrideSync"
+      ? Config.layout === "default"
+        ? "qwerty"
+        : Config.layout
+      : Config.keymapLayout;
+
+  const layout = await Misc.getLayout(layoutName);
+
   for (let i = 0; i < layoutKeys.length; i++) {
     const layoutKey = layoutKeys[i];
     const key = keys[i];
@@ -78,72 +133,15 @@ function updateKeymapLegendCasing(): void {
       (character) => symbolsPattern.test(character)
     );
 
+    const keycode = layoutKeyToKeycode(layoutKey, layout);
+    const oppositeShift = isUsingOppositeShift(keycode);
+
     const state = keyIsSymbol ? symbolsState : lettersState;
-    const keyIndex = Number(state);
+    const capitalize = oppositeShift ? state : false;
+    const keyIndex = Number(capitalize);
     const character = layoutKey[keyIndex];
 
     key.textContent = character;
-  }
-}
-
-async function buildKeymapStrings(): Promise<void> {
-  if (keymapStrings.keymap === Config.keymapLayout) return;
-
-  const layoutName =
-    Config.keymapLayout === "overrideSync"
-      ? Config.layout
-      : Config.keymapLayout;
-
-  let layout;
-  try {
-    layout = await Misc.getLayout(layoutName);
-  } catch (e) {
-    Notifications.add(
-      Misc.createErrorMessage(e, "Failed to track shift state"),
-      -1
-    );
-    return;
-  }
-
-  const layoutKeys = layout.keys;
-  const layoutKeysEntries = Object.entries(layoutKeys) as [string, string[]][];
-
-  keymapStrings.keymap = Config.keymapLayout;
-
-  if (!layout) {
-    keymapStrings.left = null;
-    keymapStrings.right = null;
-  } else {
-    keymapStrings.left = layoutKeysEntries
-      .map(([rowName, row]) =>
-        row
-          // includes "6" and "y" (buttons on qwerty) into the left hand
-          .slice(
-            0,
-            ["row1", "row2"].includes(rowName)
-              ? rowName === "row1"
-                ? 7
-                : 6
-              : 5
-          )
-          .map((key) => key.split(""))
-      )
-      .flat(2);
-
-    keymapStrings.right = layoutKeysEntries
-      .map(([rowName, row]) =>
-        row
-          // includes "b" (buttons on qwerty) into the right hand
-          .slice(
-            ["row1", "row4"].includes(rowName)
-              ? rowName === "row1"
-                ? 6
-                : 4
-              : 5
-          )
-          .map((key) => key.split(""))
-      )
-      .flat(2);
   }
 }
 
@@ -183,6 +181,7 @@ const leftSideKeys = [
   "KeyE",
   "KeyR",
   "KeyT",
+  "KeyY",
 
   "KeyA",
   "KeyS",
@@ -194,6 +193,7 @@ const leftSideKeys = [
   "KeyX",
   "KeyC",
   "KeyV",
+  "KeyB",
 
   "Backquote",
   "Digit1",
@@ -201,9 +201,11 @@ const leftSideKeys = [
   "Digit3",
   "Digit4",
   "Digit5",
+  "Digit6",
 ];
 
 const rightSideKeys = [
+  "KeyY",
   "KeyU",
   "KeyI",
   "KeyO",
@@ -214,13 +216,17 @@ const rightSideKeys = [
   "KeyK",
   "KeyL",
 
+  "KeyB",
   "KeyN",
   "KeyM",
 
+  "Digit6",
   "Digit7",
   "Digit8",
   "Digit9",
   "Digit0",
+  "Minus",
+  "Equal",
 
   "Backslash",
   "BracketLeft",
@@ -232,46 +238,39 @@ const rightSideKeys = [
   "Slash",
 ];
 
-export async function isUsingOppositeShift(
-  event: JQuery.KeyDownEvent
-): Promise<boolean | null> {
-  if (!leftState && !rightState) return null;
-
-  if (
-    Config.oppositeShiftMode === "on" ||
-    (Config.oppositeShiftMode === "keymap" &&
-      Config.keymapLayout === "overrideSync" &&
-      Config.layout === "default")
-  ) {
-    if (
-      !rightSideKeys.includes(event.code) &&
-      !leftSideKeys.includes(event.code)
-    ) {
-      return null;
-    }
-
-    if (
-      (leftState && rightSideKeys.includes(event.code)) ||
-      (rightState && leftSideKeys.includes(event.code))
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  } else if (Config.oppositeShiftMode === "keymap") {
-    await buildKeymapStrings();
-
-    if (!keymapStrings.left || !keymapStrings.right) return null;
-
-    if (
-      (leftState && keymapStrings.right.includes(event.key)) ||
-      (rightState && keymapStrings.left.includes(event.key))
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+export function isUsingOppositeShift(keycode: string): boolean {
+  if (!leftState && !rightState) {
+    return true;
   }
 
-  return true;
+  if (Config.oppositeShiftMode === "off") {
+    return true;
+  }
+
+  const isRight = rightSideKeys.includes(keycode);
+  const isLeft = leftSideKeys.includes(keycode);
+  if (!isRight && !isLeft) {
+    return true;
+  }
+
+  if ((leftState && isRight) || (rightState && isLeft)) {
+    return true;
+  }
+
+  return false;
+}
+
+export function layoutKeyToKeycode(
+  key: string,
+  layout: MonkeyTypes.Layout
+): string {
+  const rows: string[][] = Object.values(layout.keys);
+
+  const rowIndex = rows.findIndex((row) => row.find((k) => k.includes(key)));
+  const row = rows[rowIndex];
+
+  const keyIndex = row.findIndex((k) => k.includes(key));
+
+  const keycode = qwertyKeycodeKeymap[rowIndex][keyIndex];
+  return keycode;
 }

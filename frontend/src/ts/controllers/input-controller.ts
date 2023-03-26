@@ -906,8 +906,7 @@ $(document).keydown(async (event) => {
   }
 
   if (Config.oppositeShiftMode !== "off") {
-    correctShiftUsed =
-      (await ShiftTracker.isUsingOppositeShift(event)) !== false;
+    correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
   }
 
   const funbox = FunboxList.get(Config.funbox).find(
