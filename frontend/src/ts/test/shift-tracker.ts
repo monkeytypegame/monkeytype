@@ -27,6 +27,11 @@ const isMacLike = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 let keymapLegendStates: KeymapLegendStates = [false, false];
 function getLegendStates(): KeymapLegendStates | undefined {
   const symbolsState = leftState || rightState;
+  // MacOS has different CapsLock and Shift logic than other operating systems
+  // Windows and Linux only capitalize letters if either Shift OR CapsLock are
+  // pressed, but not both at once.
+  // MacOS instead capitalizes when either or both are pressed,
+  // so we have to check for that.
   const lettersState = isMacLike
     ? symbolsState || capsState
     : symbolsState !== capsState;
