@@ -687,12 +687,16 @@ function getFunboxWordsFrequency():
   return undefined;
 }
 
-function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
+function getFunboxWord(
+  word: string,
+  wordIndex: number,
+  wordset?: Misc.Wordset
+): string {
   const wordFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.getWord
   );
   if (wordFunbox?.functions?.getWord) {
-    word = wordFunbox.functions.getWord(wordset);
+    word = wordFunbox.functions.getWord(wordset, wordIndex);
   }
   return word;
 }
@@ -725,6 +729,7 @@ function applyLazyModeToWord(
 
 async function getNextWord(
   wordset: Misc.Wordset,
+  wordIndex: number,
   language: MonkeyTypes.LanguageObject,
   wordsBound: number
 ): Promise<string> {
@@ -789,7 +794,7 @@ async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = getFunboxWord(randomWord, wordset);
+  randomWord = getFunboxWord(randomWord, wordIndex, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
   if (Config.punctuation) {
@@ -1029,7 +1034,7 @@ export async function init(): Promise<void> {
 
     if (wordCount == 0) {
       for (let i = 0; i < wordsBound; i++) {
-        const randomWord = await getNextWord(wordset, language, wordsBound);
+        const randomWord = await getNextWord(wordset, i, language, wordsBound);
 
         if (/\t/g.test(randomWord)) {
           TestWords.setHasTab(true);
@@ -1273,7 +1278,12 @@ export async function addWord(): Promise<void> {
         };
   const wordset = await Wordset.withWords(language.words);
 
-  const randomWord = await getNextWord(wordset, language, bound);
+  const randomWord = await getNextWord(
+    wordset,
+    TestWords.words.length,
+    language,
+    bound
+  );
 
   const split = randomWord.split(" ");
   if (split.length > 1) {
