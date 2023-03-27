@@ -776,9 +776,11 @@ function generateStep(): number {
   return stepValue;
 }
 
-export function chart2Word(): string {
+export function chart2Word(x: number): string {
   const arrowArray = ["←", "↓", "↑", "→"];
-
+  if (x === 0) {
+    first = true;
+  }
   let measure = "";
   for (let i = 0; i < 4; i++) {
     measure += arrowArray[generateStep()];
@@ -1415,12 +1417,15 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
 export class Wordset {
   public words: string[];
   public length: number;
+  public lastRandomWordIndex: number;
   constructor(words: string[]) {
     this.words = words;
     this.length = this.words.length;
+    this.lastRandomWordIndex = -1;
   }
 
   public randomWord(mode: MonkeyTypes.FunboxWordsFrequency): string {
+    this.lastRandomWordIndex++;
     if (mode === "zipf") {
       return this.words[dreymarIndex(this.words.length)];
     } else {
