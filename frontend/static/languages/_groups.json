@@ -154,7 +154,7 @@
   },
   {
     "name": "turkish",
-    "languages": ["turkish"]
+    "languages": ["turkish", "turkish_1k"]
   },
   {
     "name": "irish",
