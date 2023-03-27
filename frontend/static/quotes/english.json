@@ -3758,12 +3758,6 @@
       "length": 128
     },
     {
-      "text": "The human whose name is written in this note shall die. This note will not take effect unless the writer has the person's face in their mind when writing his/her name. Therefore, people sharing the same name will not be affected.",
-      "source": "Death Note",
-      "id": 637,
-      "length": 229
-    },
-    {
       "text": "It was the most horrible, the most repellent thing she had ever seen, far more nauseating than anything she had ever imagined with her conscious mind, or that had ever tormented her in her most terrible nightmares.",
       "source": "A Wrinkle in Time",
       "id": 638,
@@ -18842,12 +18836,6 @@
       "length": 137
     },
     {
-      "text": "On the eve of a day that's forgotten and fake and the trees they await and clouds anticipate the start of a day when we put on our face a mask that portrays that we don't need grace. On the eve of a day that is bigger than us but we open our eyes because we're told that we must and the trees wave their arms and the clouds try to plead, desperately yelling there's something we need. I'm not free, I asked forgiveness three times, same amount that I denied; I three-time MVPed this crime. I'm afraid to tell you who I adore, won't tell you who I'm singing towards.",
-      "source": "Ode To Sleep",
-      "id": 3251,
-      "length": 565
-    },
-    {
       "text": "The more things change, the more they stay the same. I'm not sure who the first person who said that was. Probably Shakespeare. Or maybe Sting. But at the moment, it's the sentence that best explains my tragic flaw: my inability to change. I don't think I'm alone in this. The more I get to know other people, the more I realize it's kind of everyone's flaw. Staying exactly the same for as long as possible, standing perfectly still... it feels safer somehow.",
       "source": "Everwood",
       "id": 3252,
@@ -21710,12 +21698,6 @@
       "length": 150
     },
     {
-      "text": "Baby, don't you know, all o'them tears gon' come and go. Baby you just gotta make up your mind that every little thing is gonna be alright. Baby, don't you know, all o'them tears gon' come and go, baby you just gotta make up your mind. We decide it.",
-      "source": "Be Alright",
-      "id": 3750,
-      "length": 249
-    },
-    {
       "text": "Who cares if you disagree? You are not me. Who made you king of anything? So you dare tell me who to be? Who died and made you king of anything?",
       "source": "King of Anything",
       "id": 3751,
@@ -22514,10 +22496,10 @@
       "length": 265
     },
     {
-      "text": "All we can know, is that we know nothing. And that's the height of human wisdom.",
+      "text": "All we can know is that we know nothing. And that's the height of human wisdom.",
       "source": "War and Peace",
       "id": 3886,
-      "length": 80
+      "length": 79
     },
     {
       "text": "I am, somehow, less interested in the weight and convolutions of Einstein's brain than in the near certainty that people of equal talent have lived and died in cotton fields and sweatshops.",
@@ -24764,10 +24746,10 @@
       "length": 109
     },
     {
-      "text": "This was a triumph! I'm making a note here: huge success! It's hard to overstate my satisfaction. Aperture Science: we do what we must because we can. For the good of all of us, except the ones who are dead. But there's no sense crying over every mistake. You just keep on trying 'til you run out of cake. And the science gets done, and you make a neat gun for the people who are still alive.",
+      "text": "This was a triumph! I'm making a note here: huge success! It's hard to overstate my satisfaction. Aperture Science: we do what we must, because we can. For the good of all of us, except the ones who are dead. But there's no sense crying over every mistake. You just keep on trying 'til you run out of cake. And the science gets done, and you make a neat gun for the people who are still alive.",
       "source": "Portal",
       "id": 4276,
-      "length": 392
+      "length": 393
     },
     {
       "text": "When you're a kid, they tell you it's all, \"Grow up. Get a job. Get married. Get a house. Have a kid, and that's it.\" But the truth is the world is so much stranger than that. It's so much darker. And so much madder. And so much better.",
@@ -25406,7 +25388,7 @@
       "length": 272
     },
     {
-      "text": "The letter she left was one line long. \"Goodbye forever I'm gone\". It was sitting on a table in a room in a red brick box that we used to call our home.",
+      "text": "The letter she left was one line long. \"Goodbye forever I'm gone.\" It was sitting on a table in a room in a red brick box that we used to call our home.",
       "source": "Goodbye I'm Gone",
       "id": 4386,
       "length": 152
@@ -26228,7 +26210,7 @@
       "length": 348
     },
     {
-      "text": "We live in the flicker - may it last as long as the old earth keeps rolling!",
+      "text": "We live in the flicker - may it last as long as the old Earth keeps rolling!",
       "source": "Heart of Darkness",
       "id": 4532,
       "length": 76
@@ -33356,12 +33338,6 @@
       "id": 5840
     },
     {
-      "text": "If you only do what you can do, you will never be more than you are now.",
-      "source": "Master Shifu",
-      "length": 72,
-      "id": 5842
-    },
-    {
       "text": "Size matters not. Look at me. Judge me by my size, do you? Hmm? Hmm. And well you should not. For my ally is the Force, and a powerful ally it is. Life creates it, makes it grow. Its energy surrounds us and binds us. Luminous beings are we, not this crude matter. You must feel the Force around you; here, between you, me, the tree, the rock, everywhere, yes. Even between the land and the ship.",
       "source": "Master Yoda",
       "length": 395,
@@ -36019,9 +35995,9 @@
       "id": 6388
     },
     {
-      "text": "I'm going to this right, show you I'm not movin'! Wherever you go I won't far to follow.",
+      "text": "I'm going to this right, show you I'm not movin'! Wherever you go, I won't be far to follow.",
       "source": "Waitress, Never Ever Getting Rid of Me",
-      "length": 88,
+      "length": 92,
       "approvedBy": "Smithster",
       "id": 6389
     },
@@ -36222,9 +36198,9 @@
       "id": 6417
     },
     {
-      "text": "Dude.. where’s your suit? Just once, when I say 'suit up' I wish you’d put on a suit.",
+      "text": "Dude... where's your suit? Just once, when I say \"suit up\" I wish you'd put on a suit.",
       "source": "How I met your mother",
-      "length": 85,
+      "length": 86,
       "approvedBy": "Smithster",
       "id": 6418
     },
