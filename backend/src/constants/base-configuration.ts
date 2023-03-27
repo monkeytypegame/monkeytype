@@ -22,6 +22,9 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     submissionsEnabled: false,
     maxFavorites: 0,
   },
+  admin: {
+    endpointsEnabled: false,
+  },
   apeKeys: {
     endpointsEnabled: false,
     acceptKeys: false,
@@ -199,6 +202,16 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
           maxFavorites: {
             type: "number",
             label: "Max Favorites",
+          },
+        },
+      },
+      admin: {
+        type: "object",
+        label: "Admin",
+        fields: {
+          endpointsEnabled: {
+            type: "boolean",
+            label: "Endpoints Enabled",
           },
         },
       },
