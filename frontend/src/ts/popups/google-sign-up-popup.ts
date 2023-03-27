@@ -48,7 +48,9 @@ export function show(credential: UserCredential): void {
 export async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     if (signedInUser !== undefined) {
-      Notifications.add("Sign up process canceled", 0, 5);
+      Notifications.add("Sign up process canceled", 0, {
+        duration: 5,
+      });
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
       if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
@@ -105,7 +107,7 @@ async function apply(): Promise<void> {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
       AllTimeStats.clear();
-      Notifications.add("Account created", 1, 3);
+      Notifications.add("Account created", 1);
       $("#menu .textButton.account .text").text(name);
       LoginPage.enableInputs();
       LoginPage.hidePreloader();

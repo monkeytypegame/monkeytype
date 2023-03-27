@@ -16,7 +16,9 @@ const state: Record<string, string | undefined> = {
 
 function show(): void {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   Skeleton.append(wrapperId);
@@ -82,7 +84,9 @@ $(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
     Notifications.add(
       "You haven't created any tags. You can do it in the settings page",
       0,
-      4
+      {
+        duration: 4,
+      }
     );
   }
 });
@@ -147,7 +151,9 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
 
   const responseTagPbs = response.data.tagPbs;
 
-  Notifications.add("Tags updated", 1, 2);
+  Notifications.add("Tags updated", 1, {
+    duration: 2,
+  });
   DB.getSnapshot()?.results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       if (result._id === resultId) {

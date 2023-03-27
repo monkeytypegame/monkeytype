@@ -62,6 +62,9 @@ declare namespace MonkeyTypes {
         maxMail: number;
       };
     };
+    admin: {
+      endpointsEnabled: boolean;
+    };
     apeKeys: {
       endpointsEnabled: boolean;
       acceptKeys: boolean;
@@ -176,7 +179,7 @@ declare namespace MonkeyTypes {
     uid: string;
     quoteMod?: boolean;
     configurationMod?: boolean;
-    cannotReport?: boolean;
+    canReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
     favoriteQuotes?: Record<string, string[]>;

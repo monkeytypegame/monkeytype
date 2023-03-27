@@ -1063,9 +1063,13 @@ $("#wordsInput").on("input", (event) => {
       diffStart++;
     }
 
+    let iOffset = 0;
+    if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
+      iOffset = inputValue.indexOf(" ") + 1;
+    }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
-      handleChar(inputValue[i], i, realInputValue);
+      handleChar(inputValue[i], i - iOffset, realInputValue);
     }
   }
 

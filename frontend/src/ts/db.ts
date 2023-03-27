@@ -42,7 +42,7 @@ export async function initSnapshot(): Promise<
   MonkeyTypes.Snapshot | number | boolean
 > {
   //send api request with token that returns tags, presets, and data needed for snap
-  const snap = defaultSnap;
+  const snap = { ...defaultSnap };
   try {
     if (!Auth?.currentUser) return false;
     // if (ActivePage.get() == "loading") {
