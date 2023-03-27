@@ -159,8 +159,9 @@ FunboxList.setFunboxFunctions("choo_choo", {
 });
 
 FunboxList.setFunboxFunctions("arrows", {
-  getWord(): string {
-    return Misc.chart2Word();
+  getWord(wordset: Misc.Wordset): string {
+    if (wordset.lastRandomWordIndex === 0) return Misc.chart2Word(0);
+    else return Misc.chart2Word(1);
   },
   applyConfig(): void {
     $("#words").addClass("arrows");
