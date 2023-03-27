@@ -733,7 +733,6 @@ async function getNextWord(
   language: MonkeyTypes.LanguageObject,
   wordsBound: number
 ): Promise<string> {
-  console.log(wordIndex);
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
 
   let randomWord = wordset.randomWord(funboxFrequency);
