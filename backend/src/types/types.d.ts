@@ -62,6 +62,9 @@ declare namespace MonkeyTypes {
         maxMail: number;
       };
     };
+    admin: {
+      endpointsEnabled: boolean;
+    };
     apeKeys: {
       endpointsEnabled: boolean;
       acceptKeys: boolean;
