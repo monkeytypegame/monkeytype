@@ -1412,15 +1412,12 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
 export class Wordset {
   public words: string[];
   public length: number;
-  public lastRandomWordIndex: number;
   constructor(words: string[]) {
     this.words = words;
     this.length = this.words.length;
-    this.lastRandomWordIndex = -1;
   }
 
   public randomWord(mode: MonkeyTypes.FunboxWordsFrequency): string {
-    this.lastRandomWordIndex++;
     if (mode === "zipf") {
       return this.words[dreymarIndex(this.words.length)];
     } else {

@@ -214,7 +214,7 @@ declare namespace MonkeyTypes {
     | "changesWordsFrequency";
 
   interface FunboxFunctions {
-    getWord?: (wordset?: Misc.Wordset) => string;
+    getWord?: (wordset?: Misc.Wordset, wordIndex?: number) => string;
     punctuateWord?: (word: string) => string;
     withWords?: (words?: string[]) => Promise<Misc.Wordset>;
     alterText?: (word: string) => string;
