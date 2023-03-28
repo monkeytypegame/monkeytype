@@ -18,6 +18,7 @@ import * as Focus from "../test/focus";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as Replay from "../test/replay";
 import * as MonkeyPower from "../elements/monkey-power";
+import * as Notifications from "../elements/notifications";
 import * as WeakSpot from "../test/weak-spot";
 import * as ActivePage from "../states/active-page";
 import * as TestState from "../test/test-state";
@@ -913,8 +914,14 @@ $(document).keydown(async (event) => {
       Config.oppositeShiftMode === "keymap" &&
       Config.keymapLayout !== "overrideSync"
     ) {
-      const keymapLayout = await Misc.getLayout(Config.keymapLayout);
+      const keymapLayout = await Misc.getLayout(Config.keymapLayout).catch(
+        () => undefined
+      );
+      if (keymapLayout === undefined) {
+        Notifications.add("Failed to load keymap layout", -1);
 
+        return;
+      }
       const keycode = ShiftTracker.layoutKeyToKeycode(event.key, keymapLayout);
 
       correctShiftUsed =
