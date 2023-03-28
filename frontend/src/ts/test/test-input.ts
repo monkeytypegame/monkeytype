@@ -298,7 +298,6 @@ export function logOldAndNew(
     test,
     duration,
     spacing: {
-      array: keypressTimings.spacing.array,
       stdDev: stdDev(keypressTimings.spacing.array as number[]),
       mean: mean(keypressTimings.spacing.array as number[]),
       min: Math.min(...(keypressTimings.spacing.array as number[])),
@@ -310,7 +309,6 @@ export function logOldAndNew(
       length: keypressTimings.spacing.array.length,
     },
     oldDuration: {
-      array: keypressTimings.duration.array,
       stdDev: stdDev(keypressTimings.duration.array as number[]),
       mean: mean(keypressTimings.duration.array as number[]),
       min: Math.min(...(keypressTimings.duration.array as number[])),
@@ -322,7 +320,6 @@ export function logOldAndNew(
       length: keypressTimings.duration.array.length,
     },
     newDuration: {
-      array: newKeypresDurationArray,
       stdDev: stdDev(newKeypresDurationArray),
       mean: mean(newKeypresDurationArray),
       min: Math.min(...newKeypresDurationArray),
