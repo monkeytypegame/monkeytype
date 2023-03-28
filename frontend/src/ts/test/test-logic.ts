@@ -1150,11 +1150,13 @@ export async function init(): Promise<void> {
               TestWords.words.push(randomList[id]);
               id++;
               totalWordCount++;
-              if (totalWordCount === sectionsBound) {
-                currentSection = sectionsBound;
-                TestWords.words.currentSection = randomWord.split(" ");
-                TestWords.words.currentWord = randomWord.split(" ")[id - 1];
-                break;
+              if (TestWords.words.end === false) {
+                if (totalWordCount === sectionsBound) {
+                  currentSection = sectionsBound;
+                  TestWords.words.currentSection = randomWord.split(" ");
+                  TestWords.words.currentWord = randomWord.split(" ")[id - 1];
+                  break;
+                }
               }
             }
             if (
