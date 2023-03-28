@@ -249,7 +249,6 @@ export async function refreshButtons(): Promise<void> {
     }
     themesEl.innerHTML = themesElHTML;
   }
-  updateActiveButton();
 }
 
 export function setCustomInputs(noThemeUpdate = false): void {
@@ -368,7 +367,6 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
     UpdateConfig.setTheme(theme);
-    updateActiveButton();
   }
 });
 
