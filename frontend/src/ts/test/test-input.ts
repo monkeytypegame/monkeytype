@@ -1,5 +1,5 @@
 import * as TestWords from "./test-words";
-import { roundTo2 } from "../utils/misc";
+import { roundTo2, stdDev, mean } from "../utils/misc";
 
 interface Keypress {
   count: number;
@@ -227,12 +227,50 @@ export function setKeypressTimingsTooLong(): void {
   keypressTimings.duration.array = "toolong";
 }
 
+const keysObj: Record<string, number> = {};
+
+let t1 = 0;
+let d1 = 0;
+
 export function pushKeypressDuration(val: number): void {
+  t1 += val;
+  d1++;
   (keypressTimings.duration.array as number[]).push(roundTo2(val));
 }
 
 export function setKeypressDuration(val: number): void {
   keypressTimings.duration.current = roundTo2(val);
+}
+
+let t2 = 0;
+let d2 = 0;
+const a: number[] = [];
+
+export function recordKeyupTime(key: string): void {
+  const now = performance.now();
+  const diff = Math.abs(keysObj[key] - now);
+
+  t2 += diff;
+  d2++;
+  a.push(roundTo2(diff));
+}
+
+export function recordKeydownTime(key: string): void {
+  keysObj[key] = performance.now();
+}
+
+export function logOldAndNew(): void {
+  if (!spacingDebug) return;
+  console.log(
+    "old",
+    t1,
+    d1,
+    t1 / d1,
+    keypressTimings.duration.array,
+    stdDev(keypressTimings.duration.array as number[]),
+    mean(keypressTimings.duration.array as number[])
+  );
+  console.log("new", t2, d2, t2 / d2, a, stdDev(a), mean(a));
 }
 
 function pushKeypressSpacing(val: number): void {
