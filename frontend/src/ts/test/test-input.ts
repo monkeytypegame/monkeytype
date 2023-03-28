@@ -244,7 +244,7 @@ export function setKeypressDuration(val: number): void {
 
 let t2 = 0;
 let d2 = 0;
-const a: number[] = [];
+let a: number[] = [];
 
 export function recordKeyupTime(key: string): void {
   const now = performance.now();
@@ -327,6 +327,11 @@ export function resetKeypressTimings(): void {
       array: [],
     },
   };
+  a = [];
+  t1 = 0;
+  d1 = 0;
+  t2 = 0;
+  d2 = 0;
   if (spacingDebug) console.clear();
 }
 
