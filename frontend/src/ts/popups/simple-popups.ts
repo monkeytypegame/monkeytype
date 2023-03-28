@@ -540,7 +540,9 @@ list["updatePassword"] = new SimplePopup(
         Notifications.add(
           "New password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
           0,
-          4
+          {
+            duration: 4,
+          }
         );
         return;
       }
@@ -678,7 +680,9 @@ list["deleteAccount"] = new SimplePopup(
       Notifications.add("Deleting login information...", 0);
       await Auth?.currentUser?.delete();
 
-      Notifications.add("Goodbye", 1, 5);
+      Notifications.add("Goodbye", 1, {
+        duration: 5,
+      });
 
       setTimeout(() => {
         location.reload();
@@ -1332,7 +1336,7 @@ list["forgotPassword"] = new SimplePopup(
       );
     } else {
       Loader.hide();
-      Notifications.add("Password reset email sent", 1, 3);
+      Notifications.add("Password reset email sent", 1);
     }
   },
   (thisPopup) => {
@@ -1356,7 +1360,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
     if (!ConnectionState.get()) {
-      Notifications.add("You are offline", 0, 2);
+      Notifications.add("You are offline", 0, { duration: 2 });
       return;
     }
     list["unlinkDiscord"].show();
@@ -1365,7 +1369,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
 
 $(".pageSettings #removeGoogleAuth").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["removeGoogleAuth"].show();
@@ -1373,7 +1377,7 @@ $(".pageSettings #removeGoogleAuth").on("click", () => {
 
 $("#resetSettingsButton").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["resetSettings"].show();
@@ -1381,7 +1385,7 @@ $("#resetSettingsButton").on("click", () => {
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["resetPersonalBests"].show();
@@ -1389,7 +1393,7 @@ $(".pageSettings #resetPersonalBestsButton").on("click", () => {
 
 $(".pageSettings #updateAccountName").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["updateName"].show();
@@ -1397,7 +1401,7 @@ $(".pageSettings #updateAccountName").on("click", () => {
 
 $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["updateName"].show();
@@ -1405,7 +1409,7 @@ $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["addPasswordAuth"].show();
@@ -1413,7 +1417,7 @@ $(".pageSettings #addPasswordAuth").on("click", () => {
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["updateEmail"].show();
@@ -1421,7 +1425,7 @@ $(".pageSettings #emailPasswordAuth").on("click", () => {
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["updatePassword"].show();
@@ -1429,7 +1433,7 @@ $(".pageSettings #passPasswordAuth").on("click", () => {
 
 $(".pageSettings #deleteAccount").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["deleteAccount"].show();
@@ -1437,7 +1441,7 @@ $(".pageSettings #deleteAccount").on("click", () => {
 
 $(".pageSettings #resetAccount").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["resetAccount"].show();
@@ -1445,7 +1449,7 @@ $(".pageSettings #resetAccount").on("click", () => {
 
 $(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["optOutOfLeaderboards"].show();
@@ -1453,7 +1457,7 @@ $(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
 
 $("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["generateApeKey"].show();
@@ -1464,7 +1468,7 @@ $(".pageSettings").on(
   ".section.themes .customTheme .delButton",
   (e) => {
     if (!ConnectionState.get()) {
-      Notifications.add("You are offline", 0, 2);
+      Notifications.add("You are offline", 0, { duration: 2 });
       return;
     }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
@@ -1478,7 +1482,7 @@ $(".pageSettings").on(
   ".section.themes .customTheme .editButton",
   (e) => {
     if (!ConnectionState.get()) {
-      Notifications.add("You are offline", 0, 2);
+      Notifications.add("You are offline", 0, { duration: 2 });
       return;
     }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
@@ -1516,7 +1520,7 @@ $("#popups").on(
 
 $("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
@@ -1525,7 +1529,7 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
 
 $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;

@@ -153,7 +153,9 @@ export function verify(
             Notifications.add(
               "You will receive a role shortly. Please don't post a screenshot in challenge submissions.",
               1,
-              5
+              {
+                duration: 5,
+              }
             );
           }
           Notifications.add(
@@ -229,6 +231,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setMode("words", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
+      CustomText.setPopupTextareaState(challenge.parameters[0] as string);
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setIsTimeRandom(false);
       CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
@@ -247,6 +250,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
+      CustomText.setPopupTextareaState(text);
       CustomText.setText(text.split(" "));
       CustomText.setIsWordRandom(false);
       CustomText.setTime(-1);

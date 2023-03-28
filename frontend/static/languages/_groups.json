@@ -82,6 +82,10 @@
     "languages": ["korean", "korean_1k", "korean_5k"]
   },
   {
+    "name": "chinese",
+    "languages": ["chinese_traditional"]
+  },
+  {
     "name": "russian",
     "languages": [
       "russian",
@@ -154,7 +158,7 @@
   },
   {
     "name": "turkish",
-    "languages": ["turkish"]
+    "languages": ["turkish", "turkish_1k"]
   },
   {
     "name": "irish",

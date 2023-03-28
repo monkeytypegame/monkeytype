@@ -98,9 +98,11 @@ export function hide(): void {
                   badgesClaimed.length > 1 ? "s" : ""
                 } unlocked: ${badgesClaimed.join(", ")}`,
                 1,
-                5,
-                "Reward",
-                "gift"
+                {
+                  duration: 5,
+                  customTitle: "Reward",
+                  customIcon: "gift",
+                }
               );
             }
             if (totalXpClaimed > 0) {

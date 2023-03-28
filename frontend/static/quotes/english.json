@@ -3758,12 +3758,6 @@
       "length": 128
     },
     {
-      "text": "The human whose name is written in this note shall die. This note will not take effect unless the writer has the person's face in their mind when writing his/her name. Therefore, people sharing the same name will not be affected.",
-      "source": "Death Note",
-      "id": 637,
-      "length": 229
-    },
-    {
       "text": "It was the most horrible, the most repellent thing she had ever seen, far more nauseating than anything she had ever imagined with her conscious mind, or that had ever tormented her in her most terrible nightmares.",
       "source": "A Wrinkle in Time",
       "id": 638,
@@ -18842,12 +18836,6 @@
       "length": 137
     },
     {
-      "text": "On the eve of a day that's forgotten and fake and the trees they await and clouds anticipate the start of a day when we put on our face a mask that portrays that we don't need grace. On the eve of a day that is bigger than us but we open our eyes because we're told that we must and the trees wave their arms and the clouds try to plead, desperately yelling there's something we need. I'm not free, I asked forgiveness three times, same amount that I denied; I three-time MVPed this crime. I'm afraid to tell you who I adore, won't tell you who I'm singing towards.",
-      "source": "Ode To Sleep",
-      "id": 3251,
-      "length": 565
-    },
-    {
       "text": "The more things change, the more they stay the same. I'm not sure who the first person who said that was. Probably Shakespeare. Or maybe Sting. But at the moment, it's the sentence that best explains my tragic flaw: my inability to change. I don't think I'm alone in this. The more I get to know other people, the more I realize it's kind of everyone's flaw. Staying exactly the same for as long as possible, standing perfectly still... it feels safer somehow.",
       "source": "Everwood",
       "id": 3252,
@@ -21710,12 +21698,6 @@
       "length": 150
     },
     {
-      "text": "Baby, don't you know, all o'them tears gon' come and go. Baby you just gotta make up your mind that every little thing is gonna be alright. Baby, don't you know, all o'them tears gon' come and go, baby you just gotta make up your mind. We decide it.",
-      "source": "Be Alright",
-      "id": 3750,
-      "length": 249
-    },
-    {
       "text": "Who cares if you disagree? You are not me. Who made you king of anything? So you dare tell me who to be? Who died and made you king of anything?",
       "source": "King of Anything",
       "id": 3751,
@@ -22514,10 +22496,10 @@
       "length": 265
     },
     {
-      "text": "All we can know, is that we know nothing. And that's the height of human wisdom.",
+      "text": "All we can know is that we know nothing. And that's the height of human wisdom.",
       "source": "War and Peace",
       "id": 3886,
-      "length": 80
+      "length": 79
     },
     {
       "text": "I am, somehow, less interested in the weight and convolutions of Einstein's brain than in the near certainty that people of equal talent have lived and died in cotton fields and sweatshops.",
@@ -24764,10 +24746,10 @@
       "length": 109
     },
     {
-      "text": "This was a triumph! I'm making a note here: huge success! It's hard to overstate my satisfaction. Aperture Science: we do what we must because we can. For the good of all of us, except the ones who are dead. But there's no sense crying over every mistake. You just keep on trying 'til you run out of cake. And the science gets done, and you make a neat gun for the people who are still alive.",
+      "text": "This was a triumph! I'm making a note here: huge success! It's hard to overstate my satisfaction. Aperture Science: we do what we must, because we can. For the good of all of us, except the ones who are dead. But there's no sense crying over every mistake. You just keep on trying 'til you run out of cake. And the science gets done, and you make a neat gun for the people who are still alive.",
       "source": "Portal",
       "id": 4276,
-      "length": 392
+      "length": 393
     },
     {
       "text": "When you're a kid, they tell you it's all, \"Grow up. Get a job. Get married. Get a house. Have a kid, and that's it.\" But the truth is the world is so much stranger than that. It's so much darker. And so much madder. And so much better.",
@@ -25406,7 +25388,7 @@
       "length": 272
     },
     {
-      "text": "The letter she left was one line long. \"Goodbye forever I'm gone\". It was sitting on a table in a room in a red brick box that we used to call our home.",
+      "text": "The letter she left was one line long. \"Goodbye forever I'm gone.\" It was sitting on a table in a room in a red brick box that we used to call our home.",
       "source": "Goodbye I'm Gone",
       "id": 4386,
       "length": 152
@@ -26228,7 +26210,7 @@
       "length": 348
     },
     {
-      "text": "We live in the flicker - may it last as long as the old earth keeps rolling!",
+      "text": "We live in the flicker - may it last as long as the old Earth keeps rolling!",
       "source": "Heart of Darkness",
       "id": 4532,
       "length": 76
@@ -33356,12 +33338,6 @@
       "id": 5840
     },
     {
-      "text": "If you only do what you can do, you will never be more than you are now.",
-      "source": "Master Shifu",
-      "length": 72,
-      "id": 5842
-    },
-    {
       "text": "Size matters not. Look at me. Judge me by my size, do you? Hmm? Hmm. And well you should not. For my ally is the Force, and a powerful ally it is. Life creates it, makes it grow. Its energy surrounds us and binds us. Luminous beings are we, not this crude matter. You must feel the Force around you; here, between you, me, the tree, the rock, everywhere, yes. Even between the land and the ship.",
       "source": "Master Yoda",
       "length": 395,
@@ -36019,9 +35995,9 @@
       "id": 6388
     },
     {
-      "text": "I'm going to this right, show you I'm not movin'! Wherever you go I won't far to follow.",
+      "text": "I'm going to this right, show you I'm not movin'! Wherever you go, I won't be far to follow.",
       "source": "Waitress, Never Ever Getting Rid of Me",
-      "length": 88,
+      "length": 92,
       "approvedBy": "Smithster",
       "id": 6389
     },
@@ -36222,9 +36198,9 @@
       "id": 6417
     },
     {
-      "text": "Dude.. where’s your suit? Just once, when I say 'suit up' I wish you’d put on a suit.",
+      "text": "Dude... where's your suit? Just once, when I say \"suit up\" I wish you'd put on a suit.",
       "source": "How I met your mother",
-      "length": 85,
+      "length": 86,
       "approvedBy": "Smithster",
       "id": 6418
     },
@@ -38680,6 +38656,144 @@
       "source": "No Country for Old Men",
       "id": 6792,
       "length": 108
+    },
+    {
+      "text": "Hey yo, I'm just like my country: I'm young, scrappy and hungry, and I'm not throwin' away my shot.",
+      "source": "My Shot, Hamilton",
+      "length": 99,
+      "id": 6793
+    },
+    {
+      "text": "There are moments that the words don't reach. There is suffering too terrible to name.",
+      "source": "It's Quiet Uptown, Hamilton",
+      "length": 86,
+      "id": 6794
+    },
+    {
+      "text": "I know that we can win. I know that greatness lies in you.",
+      "source": "History Has Its Eyes on You, Hamilton",
+      "length": 58,
+      "id": 6795
+    },
+    {
+      "text": "I made every mistake and felt the shame rise in me. And even now I lie awake, knowing history has its eyes on me.",
+      "source": "History Has Its Eyes on You, Hamilton",
+      "length": 113,
+      "id": 6796
+    },
+    {
+      "text": "No, show me how to say no to this, I don't know how to say no to this. In my mind, I'm tryin' to go...",
+      "source": "Say No to This, Hamilton",
+      "length": 102,
+      "id": 6797
+    },
+    {
+      "text": "And when push comes to shove, I will send a fully armed battalion to remind you of my love!",
+      "source": "You'll Be Back, Hamilton",
+      "length": 91,
+      "id": 6798
+    },
+    {
+      "text": "You're on your own. Awesome, wow! Do you have a clue what happens now?",
+      "source": "What Comes Next, Hamilton",
+      "length": 70,
+      "id": 6799
+    },
+    {
+      "text": "Look around, look around at how lucky we are to be alive right now.",
+      "source": "That Would Be Enough, Hamilton",
+      "length": 67,
+      "id": 6800
+    },
+    {
+      "text": "The fact that you're alive is a miracle. Just stay alive, that would be enough.",
+      "source": "That Would Be Enough, Hamilton",
+      "length": 79,
+      "id": 6801
+    },
+    {
+      "text": "Have your seconds meet face to face. Negotiate a peace, or negotiate a time and place.",
+      "source": "Ten Duel Commandments, Hamilton",
+      "length": 86,
+      "id": 6802
+    },
+    {
+      "text": "The challenge: demand satisfaction. If they apologize, no need for further action.",
+      "source": "Ten Duel Commandments, Hamilton",
+      "length": 82,
+      "id": 6803
+    },
+    {
+      "text": "Time to get some pistols and a doctor on site. You pay him in advance, you treat him with civility. You have him turn around, so he can have deniability.",
+      "source": "Ten Duel Commandments, Hamilton",
+      "length": 153,
+      "id": 6804
+    },
+    {
+      "text": "If it takes fighting a war for us to meet, it will have been worth it.",
+      "source": "Helpless, Hamilton",
+      "length": 70,
+      "id": 6805
+    },
+    {
+      "text": "All I have is my honor, a tolerance for pain, a couple of college credits, and my top-notch brain.",
+      "source": "Helpless, Hamilton",
+      "length": 98,
+      "id": 6806
+    },
+    {
+      "text": "I remember that night, I just might regret that night for the rest of my days.",
+      "source": "Satisfied, Hamilton",
+      "length": 78,
+      "id": 6807
+    },
+    {
+      "text": "I'll give him this, his financial system is a work of genius. I couldn't undo it if I tried. And I've tried.",
+      "source": "Who Lives, Who Dies, Who Tells Your Story, Hamilton",
+      "length": 108,
+      "id": 6808
+    },
+    {
+      "text": "He took our country from bankruptcy to prosperity. I hate to admit it, but he doesn't get enough credit for all the credit he gave us.",
+      "source": "Who Lives, Who Dies, Who Tells Your Story, Hamilton",
+      "length": 134,
+      "id": 6809
+    },
+    {
+      "text": "And when you're gone, who remembers your name? Who keeps your flame? Who tells your story?",
+      "source": "Who Lives, Who Dies, Who Tells Your Story, Hamilton",
+      "length": 90,
+      "id": 6810
+    },
+    {
+      "text": "You have no control who lives, who dies, who tells your story?",
+      "source": "Who Lives, Who Dies, Who Tells Your Story, Hamilton",
+      "length": 62,
+      "id": 6811
+    },
+    {
+      "text": "I am slow to anger but I toe the line, as I reckon with the effects of your life on mine.",
+      "source": "The Obedient Servant, Hamilton",
+      "length": 89,
+      "id": 6812
+    },
+    {
+      "text": "What is a legacy? It's planting seeds in a garden you never get to see.",
+      "source": "The World Was Wide Enough, Hamilton",
+      "length": 71,
+      "id": 6813
+    },
+    {
+      "text": "History obliterates in every picture it paints. It paints me and all my mistakes.",
+      "source": "The World Was Wide Enough, Hamilton",
+      "length": 81,
+      "id": 6814
+    },
+    {
+      "text": "You are a very special person. There is only one like you in the whole world. There's never been anyone exactly like you before, and there will never be again. Only you. And people can like you exactly as you are.",
+      "source": "Fred Rogers",
+      "length": 213,
+      "id": 6815
     }
   ]
 }

@@ -834,6 +834,9 @@ $(document).keydown(async (event) => {
   }
   TestInput.recordKeypressSpacing();
   TestInput.setKeypressDuration(performance.now());
+  setTimeout(() => {
+    TestInput.recordKeydownTime(event.code);
+  }, 0);
   TestInput.setKeypressNotAfk();
 
   //blocking firefox from going back in history with backspace
@@ -963,6 +966,7 @@ $("#wordsInput").keyup((event) => {
     );
     TestInput.pushKeypressDuration(diff);
   }
+  TestInput.recordKeyupTime(event.code);
   TestInput.setKeypressDuration(now);
   Monkey.stop();
 });
@@ -1063,9 +1067,13 @@ $("#wordsInput").on("input", (event) => {
       diffStart++;
     }
 
+    let iOffset = 0;
+    if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
+      iOffset = inputValue.indexOf(" ") + 1;
+    }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
-      handleChar(inputValue[i], i, realInputValue);
+      handleChar(inputValue[i], i - iOffset, realInputValue);
     }
   }
 

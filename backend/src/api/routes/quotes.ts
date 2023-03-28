@@ -151,7 +151,7 @@ router.post(
   }),
   checkUserPermissions({
     criteria: (user) => {
-      return !user.cannotReport;
+      return user.canReport !== false;
     },
   }),
   asyncHandler(QuoteController.reportQuote)
