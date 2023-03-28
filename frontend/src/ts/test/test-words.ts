@@ -4,12 +4,18 @@ class Words {
   public length: number;
   public currentIndex: number;
   public currentSectionIndex: number;
+  public end: boolean;
+  public currentWord: string;
+  public currentSection: string[] | undefined;
   constructor() {
     this.list = [];
     this.listSection = [];
     this.length = 0;
     this.currentIndex = 0;
     this.currentSectionIndex = 0;
+    this.end = false;
+    this.currentWord = "";
+    this.currentSection = undefined;
   }
   get(i?: undefined, raw?: boolean): string[];
   get(i: number, raw?: boolean): string;
@@ -44,12 +50,30 @@ class Words {
     this.listSection.push(words);
     this.currentSectionIndex++;
   }
+  endFalse(): void {
+    this.end = false;
+  }
+  endTrue(): void {
+    this.end = true;
+  }
+
+  setCurrentSection(section: string[]): void {
+    this.currentSection = section;
+  }
+
+  setCurrentWord(word: string): void {
+    this.currentWord = word;
+  }
+
   reset(): void {
     this.list = [];
     this.listSection = [];
     this.currentIndex = 0;
     this.currentSectionIndex = 0;
     this.length = this.list.length;
+    this.end = true;
+    this.currentWord = "";
+    this.currentSection = undefined;
   }
   resetCurrentIndex(): void {
     this.currentIndex = 0;
