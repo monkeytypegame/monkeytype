@@ -76,10 +76,14 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
     delimiter = "|";
 
     $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
+
+    $(`${popup} .randomInputFields .wordcount input `).val("");
+    $(`${popup} .randomInputFields .wordcount `).addClass("hidden");
   } else {
     delimiter = " ";
     $(`${popup} .randomInputFields .sectioncount input `).val("");
     $(`${popup} .randomInputFields .sectioncount `).addClass("hidden");
+    $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
   }
   if (
     $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
