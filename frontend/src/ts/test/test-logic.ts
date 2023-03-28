@@ -730,6 +730,7 @@ function applyLazyModeToWord(
 
 async function getNextWord(
   wordset: Misc.Wordset,
+  wordIndex: number,
   language: MonkeyTypes.LanguageObject,
   wordsBound: number | undefined,
   isLast?: boolean
@@ -808,7 +809,7 @@ async function getNextWord(
     const transformedWords = await Promise.all(
       randomWordArray.map(async (word) => {
         word = applyLazyModeToWord(word, language);
-        word = getFunboxWord(word, wordset);
+        word = getFunboxWord(word, wordIndex, wordset);
         word = await applyBritishEnglishToWord(word);
         return word;
       })
@@ -858,7 +859,7 @@ async function getNextWord(
     }
   } else {
     randomWord = applyLazyModeToWord(randomWord, language);
-    randomWord = getFunboxWord(randomWord, wordset);
+    randomWord = getFunboxWord(randomWord, wordIndex, wordset);
     randomWord = await applyBritishEnglishToWord(randomWord);
 
     if (isLast) {
@@ -1131,7 +1132,7 @@ export async function init(): Promise<void> {
       }
     }
 
- if (wordCount == 0) {
+    if (wordCount == 0) {
       if (sectionsBound && sectionsBound > 0) {
         let currentSection = 0;
         let isLast = false;
@@ -1140,6 +1141,7 @@ export async function init(): Promise<void> {
           if (currentSection == sectionsBound - 1) isLast = true;
           let randomWord = await getNextWord(
             wordset,
+            currentSection,
             language,
             undefined,
             isLast
@@ -1185,7 +1187,12 @@ export async function init(): Promise<void> {
         }
       } else {
         for (let i = 0; i < wordsBound; i++) {
-          const randomWord = await getNextWord(wordset, language, wordsBound);
+          const randomWord = await getNextWord(
+            wordset,
+            i,
+            language,
+            wordsBound
+          );
 
           if (/\t/g.test(randomWord)) {
             TestWords.setHasTab(true);
