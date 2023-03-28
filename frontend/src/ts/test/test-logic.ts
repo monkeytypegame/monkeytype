@@ -1390,8 +1390,6 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     afkDuration: undefined,
   };
 
-  TestInput.logOldAndNew();
-
   // stats
   const stats = TestStats.calculateStats();
   if (stats.time % 1 != 0 && Config.mode !== "time") {
@@ -1513,6 +1511,15 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   completedEvent.tags = activeTagsIds;
 
   if (completedEvent.mode != "custom") delete completedEvent.customText;
+
+  TestInput.logOldAndNew(
+    completedEvent.wpm,
+    completedEvent.acc,
+    completedEvent.rawWpm,
+    completedEvent.consistency,
+    `${completedEvent.mode} ${completedEvent.mode2}`,
+    completedEvent.testDuration
+  );
 
   return <CompletedEvent>completedEvent;
 }
