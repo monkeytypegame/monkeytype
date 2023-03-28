@@ -536,7 +536,7 @@ function fillContent(): void {
       ) {
         //test finished before testDuration field was introduced - estimate
         if (result.mode == "time") {
-          tt = result.mode2;
+          tt = parseInt(result.mode2);
         } else if (result.mode == "words") {
           tt = (parseInt(result.mode2) / result.wpm) * 60;
         }
