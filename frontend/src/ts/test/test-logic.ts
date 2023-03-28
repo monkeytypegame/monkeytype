@@ -1356,7 +1356,7 @@ export async function addWord(): Promise<void> {
   const toPushCount: string | undefined = funboxToPush?.split(":")[1];
   if (toPushCount) bound = +toPushCount - 1;
   if (
-    // TestWords.words.length - TestInput.input.history.length > bound ||
+    TestWords.words.length - TestInput.input.history.length > bound ||
     (Config.mode === "words" &&
       TestWords.words.length >= Config.words &&
       Config.words > 0) ||
@@ -1375,11 +1375,7 @@ export async function addWord(): Promise<void> {
     (Config.mode === "custom" &&
       CustomText.isSectionRandom &&
       TestWords.words.end)
-    // (Config.mode === "custom" &&
-    //   CustomText.isSectionRandom &&
-    //   TestWords.words.currentSectionIndex >= CustomText.section)
   ) {
-    // console.log(end);
     return;
   }
 
@@ -1437,8 +1433,6 @@ export async function addWord(): Promise<void> {
     return word;
   });
 
-  // console.log(newSplit);
-
   if (TestWords.words.currentSection === undefined) {
     TestWords.words.pushSection(newSplit);
     TestWords.words.currentSection = newSplit;
@@ -1457,7 +1451,6 @@ export async function addWord(): Promise<void> {
       if (TestWords.words.listSection.length === CustomText.section) {
         if (index + 1 === TestWords.words.currentSection.length - 1) {
           TestWords.words.currentSection = undefined;
-          // TestWords.words.reset();
           TestWords.words.end = true;
         }
       }
