@@ -9,6 +9,7 @@ import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
+import * as ActivePage from "../states/active-page";
 
 export function updateActiveButton(): void {
   let activeThemeName = Config.theme;
@@ -248,7 +249,6 @@ export async function refreshButtons(): Promise<void> {
     }
     themesEl.innerHTML = themesElHTML;
   }
-  updateActiveButton();
 }
 
 export function setCustomInputs(noThemeUpdate = false): void {
@@ -367,7 +367,6 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
     UpdateConfig.setTheme(theme);
-    updateActiveButton();
   }
 });
 
@@ -497,5 +496,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "customThemeId") refreshButtons();
-  // if (eventKey === "customTheme") updateActiveTab();
+  if (eventKey === "theme" && ActivePage.get() === "settings") {
+    updateActiveButton();
+  }
 });
