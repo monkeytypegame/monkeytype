@@ -390,6 +390,7 @@ export function resetKeypressTimings(): void {
   };
   newKeypresDurationArray = [];
   totalOverlap = 0;
+  lastOverlapStartTime = -1;
   if (spacingDebug) console.clear();
 }
 
