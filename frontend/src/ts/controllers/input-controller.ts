@@ -908,7 +908,7 @@ $(document).keydown(async (event) => {
     }
   }
 
-  if (Config.oppositeShiftMode !== "on") {
+  if (Config.oppositeShiftMode !== "off") {
     if (
       Config.oppositeShiftMode === "keymap" &&
       Config.keymapLayout !== "overrideSync"
