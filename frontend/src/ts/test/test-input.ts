@@ -1,5 +1,6 @@
 import * as TestWords from "./test-words";
 import { roundTo2, stdDev, mean } from "../utils/misc";
+import * as TestStats from "./test-stats";
 
 interface Keypress {
   count: number;
@@ -240,7 +241,12 @@ let newKeypresDurationArray: number[] = [];
 
 export function recordKeyupTime(key: string): void {
   const now = performance.now();
-  const diff = Math.abs(keysObj[key] - now);
+  let diff = Math.abs(keysObj[key] - now);
+
+  if (isNaN(diff) && newKeypresDurationArray.length === 0) {
+    diff = Math.abs(TestStats.start - now);
+  }
+
   newKeypresDurationArray.push(roundTo2(diff));
   delete keysObj[key];
 
