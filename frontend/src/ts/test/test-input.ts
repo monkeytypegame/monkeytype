@@ -227,7 +227,7 @@ export function setKeypressTimingsTooLong(): void {
   keypressTimings.duration.array = "toolong";
 }
 
-const keysObj: Record<string, number> = {};
+let keysObj: Record<string, number> = {};
 
 export function pushKeypressDuration(val: number): void {
   (keypressTimings.duration.array as number[]).push(roundTo2(val));
@@ -391,6 +391,7 @@ export function resetKeypressTimings(): void {
   newKeypresDurationArray = [];
   totalOverlap = 0;
   lastOverlapStartTime = -1;
+  keysObj = {};
   if (spacingDebug) console.clear();
 }
 
