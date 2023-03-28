@@ -268,7 +268,6 @@ function updateOverlap(): void {
       lastOverlapStartTime = -1;
     }
   }
-  console.log(totalOverlap);
 }
 
 export function logOldAndNew(
