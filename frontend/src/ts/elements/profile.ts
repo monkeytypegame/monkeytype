@@ -6,6 +6,7 @@ import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
 import * as ActivePage from "../states/active-page";
+import { formatDistanceToNowStrict } from "date-fns/esm";
 
 type ProfileViewPaths = "profile" | "account";
 
@@ -93,6 +94,8 @@ export async function update(
   const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
+  let hoverText = "";
+
   if (profile.streak && profile?.streak > 1) {
     details
       .find(".streak")
@@ -100,16 +103,41 @@ export async function update(
         `Current streak: ${profile.streak} ${
           profile.streak === 1 ? "day" : "days"
         }`
-      )
-      .attr(
-        "aria-label",
-        `Longest streak: ${profile.maxStreak} ${
-          profile.maxStreak === 1 ? "day" : "days"
-        }`
       );
+    hoverText = `Longest streak: ${profile.maxStreak} ${
+      profile.maxStreak === 1 ? "day" : "days"
+    }`;
   } else {
-    details.find(".streak").text("").attr("aria-label", "");
+    details.find(".streak").text("");
+    hoverText = "";
   }
+
+  if (where === "account") {
+    const results = DB.getSnapshot()?.results;
+    const lastResult = results?.[0];
+
+    const dayInMilis = 1000 * 60 * 60 * 24;
+    const timeDif = formatDistanceToNowStrict(
+      Misc.getCurrentDayTimestamp() + dayInMilis
+    );
+
+    if (lastResult) {
+      //check if the last result is from today
+      const isToday = Misc.isToday(lastResult.timestamp);
+      if (isToday) {
+        hoverText += `\nClaimed today: yes`;
+        hoverText += `\nCome back in: ${timeDif}`;
+      } else {
+        hoverText += `\nClaimed today: no`;
+        hoverText += `\nStreak lost in: ${timeDif}`;
+      }
+    }
+  }
+
+  details
+    .find(".streak")
+    .attr("aria-label", hoverText)
+    .attr("data-balloon-break", "");
 
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl

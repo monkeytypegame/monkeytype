@@ -725,7 +725,6 @@ export function getASCII(): string {
 // code for "generateStep" is from Mirin's "Queue" modfile,
 // converted from lua to typescript by Spax
 // lineout: https://youtu.be/LnnArS9yrSs
-let first = true;
 let footTrack = false;
 let currFacing = 0;
 let facingCount = 0;
@@ -733,12 +732,11 @@ let lastLeftStep = 0,
   lastRightStep = 3,
   leftStepCount = 0,
   rightStepCount = 0;
-function generateStep(): number {
+function generateStep(leftRightOverride: boolean): number {
   facingCount--;
   let randomStep = Math.round(Math.random());
   let stepValue = Math.round(Math.random() * 5 - 0.5);
-  if (first) {
-    first = !first;
+  if (leftRightOverride) {
     footTrack = Boolean(Math.round(Math.random()));
     if (footTrack) stepValue = 3;
     else stepValue = 0;
@@ -776,12 +774,11 @@ function generateStep(): number {
   return stepValue;
 }
 
-export function chart2Word(): string {
+export function chart2Word(first: boolean): string {
   const arrowArray = ["←", "↓", "↑", "→"];
-
   let measure = "";
   for (let i = 0; i < 4; i++) {
-    measure += arrowArray[generateStep()];
+    measure += arrowArray[generateStep(i === 0 && first)];
   }
 
   return measure;
@@ -1521,4 +1518,27 @@ export async function checkIfLanguageSupportsZipf(
   if (lang.orderedByFrequency === true) return "yes";
   if (lang.orderedByFrequency === false) return "no";
   return "unknown";
+}
+
+export function getStartOfDayTimestamp(timestamp: number): number {
+  return timestamp - (timestamp % 86400000);
+}
+
+export function getCurrentDayTimestamp(): number {
+  const currentTime = Date.now();
+  return getStartOfDayTimestamp(currentTime);
+}
+
+export function isYesterday(timestamp: number): boolean {
+  const yesterday = getStartOfDayTimestamp(Date.now() - 86400000);
+  const date = getStartOfDayTimestamp(timestamp);
+
+  return yesterday === date;
+}
+
+export function isToday(timestamp: number): boolean {
+  const today = getStartOfDayTimestamp(Date.now());
+  const date = getStartOfDayTimestamp(timestamp);
+
+  return today === date;
 }

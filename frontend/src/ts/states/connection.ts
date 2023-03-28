@@ -23,7 +23,9 @@ function showBanner(): void {
 ConnectionEvent.subscribe((newState) => {
   state = newState;
   if (state) {
-    Notifications.add("You're back online", 1, 3, "Connection");
+    Notifications.add("You're back online", 1, {
+      customTitle: "Connection",
+    });
     if (noInternetBannerId != undefined) {
       $(
         `#bannerCenter .banner[id="${noInternetBannerId}"] .closeButton`

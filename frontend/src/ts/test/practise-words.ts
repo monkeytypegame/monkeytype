@@ -93,6 +93,7 @@ export function init(missed: boolean, slow: boolean): boolean {
   const numbers = before.numbers === null ? Config.numbers : before.numbers;
   UpdateConfig.setMode("custom", true);
 
+  CustomText.setPopupTextareaState(newCustomText.join(CustomText.delimiter));
   CustomText.setText(newCustomText);
   CustomText.setIsWordRandom(true);
   CustomText.setIsTimeRandom(false);
