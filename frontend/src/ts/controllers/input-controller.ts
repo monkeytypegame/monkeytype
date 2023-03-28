@@ -916,9 +916,11 @@ $(document).keydown(async (event) => {
       const keymapLayout = await Misc.getLayout(Config.keymapLayout);
 
       const keycode = ShiftTracker.layoutKeyToKeycode(event.key, keymapLayout);
-      if (keycode !== undefined) {
-        correctShiftUsed = ShiftTracker.isUsingOppositeShift(keycode);
-      }
+
+      correctShiftUsed =
+        keycode === undefined
+          ? true
+          : ShiftTracker.isUsingOppositeShift(keycode);
     } else {
       correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
     }
