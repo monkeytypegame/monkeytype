@@ -227,7 +227,7 @@ export function setKeypressTimingsTooLong(): void {
   keypressTimings.duration.array = "toolong";
 }
 
-let keysObj: Record<string, number> = {};
+const keysObj: Record<string, number> = {};
 
 export function pushKeypressDuration(val: number): void {
   (keypressTimings.duration.array as number[]).push(roundTo2(val));
