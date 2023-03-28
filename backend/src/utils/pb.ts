@@ -33,7 +33,7 @@ export function checkAndUpdatePb(
   userPb[mode] ??= {};
   userPb[mode][mode2] ??= [];
 
-  const personalBestMatch = userPb[mode][mode2]!.find((pb) =>
+  const personalBestMatch = userPb[mode][mode2].find((pb) =>
     matchesPersonalBest(result, pb)
   );
 
@@ -43,7 +43,7 @@ export function checkAndUpdatePb(
     const didUpdate = updatePersonalBest(personalBestMatch, result);
     isPb = didUpdate;
   } else {
-    userPb[mode][mode2]!.push(buildPersonalBest(result));
+    userPb[mode][mode2].push(buildPersonalBest(result));
   }
 
   if (!_.isNil(lbPersonalBests)) {
