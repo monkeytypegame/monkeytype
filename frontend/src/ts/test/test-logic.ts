@@ -724,7 +724,8 @@ function applyLazyModeToWord(
 async function getNextWord(
   wordset: Misc.Wordset,
   language: MonkeyTypes.LanguageObject,
-  wordsBound: number | undefined
+  wordsBound: number | undefined,
+  isLast?: boolean
 ): Promise<string> {
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
 
@@ -794,31 +795,102 @@ async function getNextWord(
 
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
-  randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = getFunboxWord(randomWord, wordset);
-  randomWord = await applyBritishEnglishToWord(randomWord);
 
-  if (Config.punctuation) {
-    randomWord = await punctuateWord(
-      TestWords.words.get(TestWords.words.length - 1),
-      randomWord,
-      TestWords.words.length,
-      wordsBound
+  if (randomWord.split(" ").length > 1) {
+    const randomWordArray = randomWord.split(" ");
+    const transformedWords = await Promise.all(
+      randomWordArray.map(async (word) => {
+        word = applyLazyModeToWord(word, language);
+        word = getFunboxWord(word, wordset);
+        word = await applyBritishEnglishToWord(word);
+        return word;
+      })
     );
-  }
-  if (Config.numbers) {
-    if (Math.random() < 0.1) {
-      randomWord = Misc.getNumbers(4);
+    randomWord = transformedWords.join(" ");
 
-      if (Config.language.startsWith("kurdish")) {
-        randomWord = Misc.convertNumberToArabic(randomWord);
-      } else if (Config.language.startsWith("nepali")) {
-        randomWord = Misc.convertNumberToNepali(randomWord);
+    if (Config.punctuation) {
+      const punctuateWords = await Promise.all(
+        transformedWords.map(async (word) => {
+          let previousWord;
+          if (transformedWords[0] === word) {
+            previousWord = TestWords.words.get(TestWords.words.length - 1);
+          } else {
+            previousWord = transformedWords[transformedWords.indexOf(word) - 1];
+          }
+          if (isLast) {
+            wordsBound = TestWords.words.length + randomWord.split(" ").length;
+          }
+          console.log(TestWords.words.length + transformedWords.indexOf(word));
+          return await punctuateWord(
+            previousWord,
+            word,
+            TestWords.words.length + transformedWords.indexOf(word),
+            wordsBound
+          );
+        })
+      );
+      randomWord = punctuateWords.join(" ");
+    }
+    if (Config.numbers) {
+      let randomWordArray: string[] = randomWord.split(" ");
+
+      randomWordArray = randomWordArray.map((word) => {
+        if (Math.random() < 0.1) {
+          word = Misc.getNumbers(4);
+
+          if (Config.language.startsWith("kurdish")) {
+            word = Misc.convertNumberToArabic(word);
+          } else if (Config.language.startsWith("nepali")) {
+            word = Misc.convertNumberToNepali(word);
+          }
+          return word;
+        }
+        return word;
+      });
+
+      randomWord = randomWordArray.join(" ");
+    }
+  } else {
+    randomWord = applyLazyModeToWord(randomWord, language);
+    randomWord = getFunboxWord(randomWord, wordset);
+    randomWord = await applyBritishEnglishToWord(randomWord);
+
+    if (isLast) {
+      wordsBound = TestWords.words.length + randomWord.split(" ").length;
+    }
+
+    if (Config.punctuation) {
+      randomWord = await punctuateWord(
+        TestWords.words.get(TestWords.words.length - 1),
+        randomWord,
+        TestWords.words.length,
+        wordsBound
+      );
+    }
+    if (Config.numbers) {
+      if (Math.random() < 0.1) {
+        randomWord = Misc.getNumbers(4);
+
+        if (Config.language.startsWith("kurdish")) {
+          randomWord = Misc.convertNumberToArabic(randomWord);
+        } else if (Config.language.startsWith("nepali")) {
+          randomWord = Misc.convertNumberToNepali(randomWord);
+        }
       }
     }
   }
 
-  randomWord = applyFunboxesToWord(randomWord);
+  if (randomWord.split(" ").length > 1) {
+    const randomWordArray = randomWord.split(" ");
+    const transformedWords = await Promise.all(
+      randomWordArray.map(async (word) => {
+        word = applyFunboxesToWord(word);
+        return word;
+      })
+    );
+    randomWord = transformedWords.join(" ");
+  }
+
   if (Config.mode == "custom" && CustomText.isSectionRandom) {
     return randomWord + "|";
   } else {
@@ -1050,8 +1122,15 @@ export async function init(): Promise<void> {
       if (sectionsBound && sectionsBound > 0) {
         // eslint-disable-next-line no-constant-condition
         let currentSection = 0;
+        let isLast = false;
         while (currentSection < sectionsBound) {
-          let randomWord = await getNextWord(wordset, language, undefined);
+          if (currentSection == sectionsBound - 1) isLast = true;
+          let randomWord = await getNextWord(
+            wordset,
+            language,
+            undefined,
+            isLast
+          );
 
           if (randomWord.endsWith("|")) {
             randomWord = randomWord.slice(0, -1);
