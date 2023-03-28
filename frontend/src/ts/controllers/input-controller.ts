@@ -908,8 +908,20 @@ $(document).keydown(async (event) => {
     }
   }
 
-  if (Config.oppositeShiftMode !== "off") {
-    correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
+  if (Config.oppositeShiftMode !== "on") {
+    if (
+      Config.oppositeShiftMode === "keymap" &&
+      Config.keymapLayout !== "overrideSync"
+    ) {
+      const keymapLayout = await Misc.getLayout(Config.keymapLayout);
+
+      const keycode = ShiftTracker.layoutKeyToKeycode(event.key, keymapLayout);
+      if (keycode !== undefined) {
+        correctShiftUsed = ShiftTracker.isUsingOppositeShift(keycode);
+      }
+    } else {
+      correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
+    }
   }
 
   const funbox = FunboxList.get(Config.funbox).find(

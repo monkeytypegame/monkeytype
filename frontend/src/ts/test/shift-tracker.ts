@@ -134,6 +134,10 @@ async function updateKeymapLegendCasing(): Promise<void> {
     );
 
     const keycode = layoutKeyToKeycode(lowerCaseCharacter, layout);
+    if (keycode === undefined) {
+      return;
+    }
+
     const oppositeShift = isUsingOppositeShift(keycode);
 
     const state = keyIsSymbol ? symbolsState : lettersState;
@@ -264,13 +268,19 @@ export function isUsingOppositeShift(keycode: string): boolean {
 export function layoutKeyToKeycode(
   key: string,
   layout: MonkeyTypes.Layout
-): string {
+): string | undefined {
   const rows: string[][] = Object.values(layout.keys);
 
   const rowIndex = rows.findIndex((row) => row.find((k) => k.includes(key)));
   const row = rows[rowIndex];
+  if (row === undefined) {
+    return;
+  }
 
   const keyIndex = row.findIndex((k) => k.includes(key));
+  if (keyIndex === -1) {
+    return;
+  }
 
   let keycode = qwertyKeycodeKeymap[rowIndex][keyIndex];
   if (layout.type === "iso") {
