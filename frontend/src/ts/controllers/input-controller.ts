@@ -834,7 +834,9 @@ $(document).keydown(async (event) => {
   }
   TestInput.recordKeypressSpacing();
   TestInput.setKeypressDuration(performance.now());
-  TestInput.recordKeydownTime(event.code);
+  setTimeout(() => {
+    TestInput.recordKeydownTime(event.code);
+  }, 0);
   TestInput.setKeypressNotAfk();
 
   //blocking firefox from going back in history with backspace
