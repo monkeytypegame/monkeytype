@@ -239,15 +239,19 @@ export function setKeypressDuration(val: number): void {
 let newKeypresDurationArray: number[] = [];
 
 export function recordKeyupTime(key: string): void {
+  if (keysObj[key] === undefined) return;
   const now = performance.now();
   const diff = Math.abs(keysObj[key] - now);
-  newKeypresDurationArray.push(roundTo2(diff));
+  if (/(Key[A-Z])|(Digit[0-9])|Space/.test(key)) {
+    newKeypresDurationArray.push(roundTo2(diff));
+  }
   delete keysObj[key];
 
   updateOverlap();
 }
 
 export function recordKeydownTime(key: string): void {
+  if (keysObj[key] !== undefined) return;
   keysObj[key] = performance.now();
 
   updateOverlap();
