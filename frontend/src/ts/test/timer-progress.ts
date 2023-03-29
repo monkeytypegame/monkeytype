@@ -94,7 +94,33 @@ const miniTimerNumberElement = document.querySelector(
   "#miniTimerAndLiveWpm .time"
 );
 
+function getCurrentCount(): number {
+  let count;
+  if (CustomText.isSectionRandom && Config.mode === "custom") {
+    const wordCount = TestInput.input.history.length;
+    let sectionCompare = 0;
+
+    let i = 0;
+    while (wordCount > sectionCompare) {
+      sectionCompare += TestWords.words.listSection[i].length;
+      i++;
+    }
+    if (wordCount == sectionCompare) {
+      if (wordCount !== TestInput.input.prevWordCount) {
+        TestInput.input.sectionCount++;
+        TestInput.input.prevWordCount = wordCount;
+      }
+    }
+    count = TestInput.input.sectionCount;
+  } else {
+    count = TestInput.input.history.length;
+  }
+  return count;
+}
+
 export function update(): void {
+  console.log("update timer");
+
   const time = Time.get();
   if (
     Config.mode === "time" ||
@@ -144,6 +170,8 @@ export function update(): void {
     if (Config.mode === "custom") {
       if (CustomText.isWordRandom) {
         outof = CustomText.word;
+      } else if (CustomText.isSectionRandom) {
+        outof = CustomText.section;
       } else {
         outof = CustomText.text.length;
       }
@@ -172,7 +200,7 @@ export function update(): void {
       } else {
         if (timerNumberElement !== null) {
           timerNumberElement.innerHTML =
-            "<div>" + `${TestInput.input.history.length}/${outof}` + "</div>";
+            "<div>" + `${getCurrentCount()}/${outof}` + "</div>";
         }
       }
     } else if (Config.timerStyle === "mini") {
@@ -182,7 +210,7 @@ export function update(): void {
         }
       } else {
         if (miniTimerNumberElement !== null) {
-          miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}/${outof}`;
+          miniTimerNumberElement.innerHTML = `${getCurrentCount()}/${outof}`;
         }
       }
     }
@@ -208,14 +236,3 @@ export function updateStyle(): void {
     show();
   }, 125);
 }
-
-ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showTimerProgress") {
-    if (eventValue === true && TestState.isActive) {
-      show();
-    } else {
-      hide();
-    }
-  }
-  if (eventKey === "timerStyle") updateStyle();
-});

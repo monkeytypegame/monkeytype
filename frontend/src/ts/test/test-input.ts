@@ -25,12 +25,16 @@ class Input {
   historyLength: number;
   koreanStatus: boolean;
   length: number;
+  sectionCount: number;
+  prevWordCount: number;
   constructor() {
     this.current = "";
     this.history = [];
     this.historyLength = 0;
     this.length = 0;
     this.koreanStatus = false;
+    this.sectionCount = -1;
+    this.prevWordCount = -1;
   }
 
   reset(): void {
@@ -42,6 +46,8 @@ class Input {
   resetHistory(): void {
     this.history = [];
     this.length = 0;
+    this.sectionCount = -1;
+    this.prevWordCount = -1;
   }
 
   setCurrent(val: string): void {

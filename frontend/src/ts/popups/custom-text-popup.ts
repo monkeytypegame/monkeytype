@@ -243,15 +243,8 @@ function apply(): void {
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
-  if ($(`${popup} .sectioncount input`).val() !== "") {
-    const textArray: string[] = [];
-    text.split(CustomText.delimiter).forEach((word) => {
-      textArray.push(word + "|");
-    });
-    CustomText.setText(textArray);
-  } else {
-    CustomText.setText(text.split(CustomText.delimiter));
-  }
+
+  CustomText.setText(text.split(CustomText.delimiter));
 
   CustomText.setWord(
     parseInt($(`${popup} .wordcount input`).val() as string) || -1

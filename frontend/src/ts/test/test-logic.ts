@@ -738,9 +738,6 @@ async function getNextWord(
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
 
   let randomWord = wordset.randomWord(funboxFrequency);
-  if (randomWord.endsWith("|")) {
-    randomWord = randomWord.slice(0, -1);
-  }
   const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
   const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
 
@@ -779,9 +776,6 @@ async function getNextWord(
     ) {
       regenarationCount++;
       randomWord = wordset.randomWord(funboxFrequency);
-      if (randomWord.endsWith("|")) {
-        randomWord = randomWord.slice(0, -1);
-      }
     }
   }
 
@@ -1819,15 +1813,23 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom &&
       CustomText.text.length < 10) ||
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom &&
       CustomText.word < 10) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
+      !CustomText.isSectionRandom &&
       CustomText.isTimeRandom &&
       CustomText.time < 15) ||
+    (Config.mode === "custom" &&
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.isSectionRandom &&
+      TestWords.words.length < 10) ||
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     Notifications.add("Test invalid - too short", 0);
