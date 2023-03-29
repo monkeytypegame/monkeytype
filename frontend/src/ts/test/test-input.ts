@@ -236,22 +236,76 @@ export function pushKeypressDuration(val: number): void {
 export function setKeypressDuration(val: number): void {
   keypressTimings.duration.current = roundTo2(val);
 }
+
 let newKeypresDurationArray: number[] = [];
 
+const keysToTrack = [
+  "Backquote",
+  "Digit1",
+  "Digit2",
+  "Digit3",
+  "Digit4",
+  "Digit5",
+  "Digit6",
+  "Digit7",
+  "Digit8",
+  "Digit9",
+  "Digit0",
+  "Minus",
+  "Equal",
+  "KeyQ",
+  "KeyW",
+  "KeyE",
+  "KeyR",
+  "KeyT",
+  "KeyY",
+  "KeyU",
+  "KeyI",
+  "KeyO",
+  "KeyP",
+  "BracketLeft",
+  "BracketRight",
+  "Backslash",
+  "KeyA",
+  "KeyS",
+  "KeyD",
+  "KeyF",
+  "KeyG",
+  "KeyH",
+  "KeyJ",
+  "KeyK",
+  "KeyL",
+  "Semicolon",
+  "Quote",
+  "KeyZ",
+  "KeyX",
+  "KeyC",
+  "KeyV",
+  "KeyB",
+  "KeyN",
+  "KeyM",
+  "Comma",
+  "Period",
+  "Slash",
+  "Space",
+];
+
 export function recordKeyupTime(key: string): void {
-  if (keysObj[key] === undefined) return;
+  if (keysObj[key] === undefined || !keysToTrack.includes(key)) {
+    return;
+  }
   const now = performance.now();
   const diff = Math.abs(keysObj[key] - now);
-  if (/(Key[A-Z])|(Digit[0-9])|Space/.test(key)) {
-    newKeypresDurationArray.push(roundTo2(diff));
-  }
+  newKeypresDurationArray.push(roundTo2(diff));
   delete keysObj[key];
 
   updateOverlap();
 }
 
 export function recordKeydownTime(key: string): void {
-  if (keysObj[key] !== undefined) return;
+  if (keysObj[key] !== undefined || !keysToTrack.includes(key)) {
+    return;
+  }
   keysObj[key] = performance.now();
 
   updateOverlap();
