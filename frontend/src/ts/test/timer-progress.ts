@@ -6,7 +6,6 @@ import * as TestInput from "./test-input";
 import * as Time from "../states/time";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
-import * as ConfigEvent from "../observables/config-event";
 
 export function show(): void {
   const op = Config.showTimerProgress ? Config.timerOpacity : 0;
@@ -119,8 +118,6 @@ function getCurrentCount(): number {
 }
 
 export function update(): void {
-  console.log("update timer");
-
   const time = Time.get();
   if (
     Config.mode === "time" ||

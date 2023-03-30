@@ -1031,6 +1031,8 @@ export async function init(): Promise<void> {
         wordsBound = CustomText.word;
       } else if (CustomText.isTimeRandom) {
         wordsBound = 100;
+      } else if (Config.mode == "custom" && CustomText.isSectionRandom) {
+        sectionsBound = CustomText.section;
       } else {
         wordsBound = CustomText.text.length;
       }
@@ -1127,7 +1129,11 @@ export async function init(): Promise<void> {
     }
 
     if (wordCount == 0) {
-      if (sectionsBound && sectionsBound > 0) {
+      if (
+        sectionsBound &&
+        CustomText.isSectionRandom &&
+        Config.mode == "custom"
+      ) {
         let currentSection = 0;
         let isLast = false;
         let totalWordCount = 0;
@@ -1181,12 +1187,15 @@ export async function init(): Promise<void> {
         }
       } else {
         for (let i = 0; i < wordsBound; i++) {
+          console.log(sectionsBound);
+
           const randomWord = await getNextWord(
             wordset,
             i,
             language,
             wordsBound
           );
+          console.log("memory");
 
           if (/\t/g.test(randomWord)) {
             TestWords.setHasTab(true);
