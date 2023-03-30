@@ -834,9 +834,6 @@ $(document).keydown(async (event) => {
   }
   TestInput.recordKeypressSpacing();
   TestInput.setKeypressDuration(performance.now());
-  setTimeout(() => {
-    TestInput.recordKeydownTime(event.code);
-  }, 0);
   TestInput.setKeypressNotAfk();
 
   //blocking firefox from going back in history with backspace
@@ -950,6 +947,18 @@ $(document).keydown(async (event) => {
   isBackspace = event.key === "Backspace" || event.key === "delete";
 });
 
+$("#wordsInput").keydown((event) => {
+  setTimeout(() => {
+    TestInput.recordKeydownTime(event.code);
+  }, 0);
+});
+
+$("#wordsInput").keyup((event) => {
+  setTimeout(() => {
+    TestInput.recordKeyupTime(event.code);
+  }, 0);
+});
+
 $("#wordsInput").keyup((event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     event.preventDefault();
@@ -966,7 +975,6 @@ $("#wordsInput").keyup((event) => {
     );
     TestInput.pushKeypressDuration(diff);
   }
-  TestInput.recordKeyupTime(event.code);
   TestInput.setKeypressDuration(now);
   Monkey.stop();
 });
