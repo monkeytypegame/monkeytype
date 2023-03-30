@@ -890,6 +890,8 @@ async function getNextWord(
       })
     );
     randomWord = transformedWords.join(" ");
+  } else {
+    randomWord = applyFunboxesToWord(randomWord);
   }
 
   if (Config.mode == "custom" && CustomText.isSectionRandom) {
