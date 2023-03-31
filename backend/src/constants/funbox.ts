@@ -15,6 +15,10 @@ const Funboxes: Record<string, MonkeyTypes.FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 3,
   },
+  upside_down: {
+    canGetPb: true,
+    difficultyLevel: 3,
+  },
   tts: {
     canGetPb: true,
     difficultyLevel: 1,
@@ -71,6 +75,10 @@ const Funboxes: Record<string, MonkeyTypes.FunboxMetadata> = {
     canGetPb: true,
     difficultyLevel: 0,
   },
+  plus_three: {
+    canGetPb: true,
+    difficultyLevel: 0,
+  },
   read_ahead_easy: {
     canGetPb: true,
     difficultyLevel: 1,
@@ -112,6 +120,14 @@ const Funboxes: Record<string, MonkeyTypes.FunboxMetadata> = {
     difficultyLevel: 1,
   },
   IPv6: {
+    canGetPb: false,
+    difficultyLevel: 1,
+  },
+  binary: {
+    canGetPb: false,
+    difficultyLevel: 1,
+  },
+  zipf: {
     canGetPb: false,
     difficultyLevel: 1,
   },

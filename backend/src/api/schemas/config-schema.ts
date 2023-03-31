@@ -77,7 +77,7 @@ const CONFIG_SCHEMA = joi.object({
   playSoundOnError: joi.boolean(),
   playSoundOnClick: joi
     .string()
-    .valid("off", ..._.range(1, 12).map(_.toString)),
+    .valid("off", ..._.range(1, 14).map(_.toString)),
   soundVolume: joi.string().valid("0.1", "0.5", "1.0"),
   startGraphsAtZero: joi.boolean(),
   showOutOfFocusWarning: joi.boolean(),
@@ -87,8 +87,9 @@ const CONFIG_SCHEMA = joi.object({
   paceCaretCustomSpeed: joi.number().min(0),
   repeatedPace: joi.boolean(),
   pageWidth: joi.string().valid("100", "125", "150", "200", "max"),
-  chartAccuracy: joi.boolean(),
-  chartStyle: joi.string().valid("line", "scatter"),
+  accountChart: joi.array().items(joi.string()).optional(),
+  chartAccuracy: joi.boolean().optional(), //remove after a bit
+  chartStyle: joi.string().valid("line", "scatter").optional(), //remove after a bit
   minWpm: joi.string().valid("off", "custom"),
   minWpmCustomSpeed: joi.number().min(0),
   highlightMode: joi.string().valid("off", "letter", "word"),

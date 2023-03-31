@@ -51,8 +51,14 @@ router.patch(
   RateLimit.resultsTagsUpdate,
   validateRequest({
     body: {
-      tagIds: joi.array().items(joi.string()).required(),
-      resultId: joi.string().required(),
+      tagIds: joi
+        .array()
+        .items(joi.string().regex(/^[a-f\d]{24}$/i))
+        .required(),
+      resultId: joi
+        .string()
+        .regex(/^[a-f\d]{24}$/i)
+        .required(),
     },
   }),
   asyncHandler(ResultController.updateTags)

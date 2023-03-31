@@ -2,6 +2,7 @@
   "name": "english_25k",
   "leftToRight": true,
   "noLazyMode": true,
+  "orderedByFrequency": false,
   "words": [
     "plug",
     "rounders",
@@ -13646,7 +13647,6 @@
     "secretes",
     "jogging",
     "salience",
-    "spic",
     "nationalism",
     "roadblock",
     "rachitic",

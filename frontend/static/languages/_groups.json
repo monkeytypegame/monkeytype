@@ -41,7 +41,7 @@
   },
   {
     "name": "swiss_german",
-    "languages": ["swiss_german", "swiss_german_1k"]
+    "languages": ["swiss_german", "swiss_german_1k", "swiss_german_2k"]
   },
   {
     "name": "portuguese",
@@ -80,6 +80,10 @@
   {
     "name": "korean",
     "languages": ["korean", "korean_1k", "korean_5k"]
+  },
+  {
+    "name": "chinese",
+    "languages": ["chinese_traditional"]
   },
   {
     "name": "russian",
@@ -123,6 +127,16 @@
     ]
   },
   {
+    "name": "ukrainian_latynka",
+    "languages": [
+      "ukrainian_latynka",
+      "ukrainian_latynka_1k",
+      "ukrainian_latynka_10k",
+      "ukrainian_latynka_50k",
+      "ukrainian_latynka_endings"
+    ]
+  },
+  {
     "name": "lithuanian",
     "languages": ["lithuanian", "lithuanian_1k", "lithuanian_3k"]
   },
@@ -144,7 +158,7 @@
   },
   {
     "name": "turkish",
-    "languages": ["turkish"]
+    "languages": ["turkish", "turkish_1k"]
   },
   {
     "name": "irish",
@@ -262,7 +276,7 @@
   },
   {
     "name": "swedish",
-    "languages": ["swedish", "swedish_1k"]
+    "languages": ["swedish", "swedish_1k", "swedish_diacritics"]
   },
   {
     "name": "serbian",
@@ -362,6 +376,10 @@
     ]
   },
   {
+    "name": "uzbek",
+    "languages": ["uzbek", "uzbek_1k"]
+  },
+  {
     "name": "belarusian",
     "languages": ["belarusian_1k"]
   },
@@ -390,6 +408,36 @@
     "languages": ["toki_pona", "toki_pona_ku_suli", "toki_pona_ku_lili"]
   },
   {
+    "name": "other",
+    "languages": [
+      "lojban_gismu",
+      "lojban_cmavo",
+      "pig_latin",
+      "twitch_emotes",
+      "git"
+    ]
+  },
+  {
+    "name": "amharic",
+    "languages": ["amharic"]
+  },
+  {
+    "name": "oromo",
+    "languages": ["oromo", "oromo_1k", "oromo_5k"]
+  },
+  {
+    "name": "wordle",
+    "languages": ["wordle", "wordle_1k"]
+  },
+  {
+    "name": "kyrgyz",
+    "languages": ["kyrgyz"]
+  },
+  {
+    "name": "yiddish",
+    "languages": ["yiddish"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -415,12 +463,14 @@
       "code_rust",
       "code_ruby",
       "code_r",
+      "code_r_2k",
       "code_swift",
       "code_scala",
       "code_bash",
       "code_powershell",
       "code_lua",
       "code_luau",
+      "code_latex",
       "code_matlab",
       "code_sql",
       "code_perl",
@@ -436,31 +486,5 @@
       "code_gdscript",
       "code_assembly"
     ]
-  },
-  {
-    "name": "other",
-    "languages": [
-      "lojban_gismu",
-      "lojban_cmavo",
-      "pig_latin",
-      "twitch_emotes",
-      "git"
-    ]
-  },
-  {
-    "name": "amharic",
-    "languages": ["amharic"]
-  },
-  {
-    "name": "oromo",
-    "languages": ["oromo", "oromo_1k", "oromo_5k"]
-  },
-  {
-    "name": "wordle",
-    "languages": ["wordle", "wordle_1k"]
-  },
-  {
-    "name": "kyrgyz",
-    "languages": ["kyrgyz"]
   }
 ]

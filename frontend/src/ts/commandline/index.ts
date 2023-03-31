@@ -10,12 +10,23 @@ import * as PageTransition from "../states/page-transition";
 import * as TestWords from "../test/test-words";
 import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
-import { isAnyPopupVisible } from "../utils/misc";
+import {
+  isAnyPopupVisible,
+  isElementVisible,
+  isPopupVisible,
+} from "../utils/misc";
 import { update as updateCustomThemesList } from "./lists/custom-themes-list";
 import { update as updateTagsCommands } from "./lists/tags";
+import * as Skeleton from "../popups/skeleton";
+
+const wrapperId = "commandLineWrapper";
 
 let commandLineMouseMode = false;
 let themeChosen = false;
+
+const state: Record<string, boolean> = {
+  usingSingleList: false,
+};
 
 function showInput(
   command: string,
@@ -36,7 +47,7 @@ function showInput(
 }
 
 export function isSingleListCommandLineActive(): boolean {
-  return $("#commandLine").hasClass("allCommands");
+  return state["usingSingleList"];
 }
 
 function removeCommandlineBackground(): void {
@@ -90,7 +101,23 @@ function showFound(): void {
       if (obj.noIcon && !isSingleListCommandLineActive()) {
         iconHTML = "";
       }
-      commandsHTML += `<div class="entry" command="${obj.id}">${iconHTML}<div>${obj.display}</div></div>`;
+      let customStyle = "";
+      if (obj.customStyle) {
+        customStyle = obj.customStyle;
+      }
+
+      if (obj.id.startsWith("changeTheme") && obj.customData) {
+        commandsHTML += `<div class="entry withThemeBubbles" command="${obj.id}" style="${customStyle}">
+        ${iconHTML}<div>${obj.display}</div>
+        <div class="themeBubbles" style="background: ${obj.customData["bgColor"]};outline: 0.25rem solid ${obj.customData["bgColor"]};">
+          <div class="themeBubble" style="background: ${obj.customData["mainColor"]}"></div>
+          <div class="themeBubble" style="background: ${obj.customData["subColor"]}"></div>
+          <div class="themeBubble" style="background: ${obj.customData["textColor"]}"></div>
+        </div>
+        </div>`;
+      } else {
+        commandsHTML += `<div class="entry" command="${obj.id}" style="${customStyle}">${iconHTML}<div>${obj.display}</div></div>`;
+      }
     }
   });
   $("#commandLine .suggestions").html(commandsHTML);
@@ -194,11 +221,17 @@ export let show = (): void => {
   themeChosen = false;
 
   //take last element of array
-  if (!$(".page.pageLoading").hasClass("hidden")) return;
+  if (isElementVisible(".page.pageLoading")) return;
   Focus.set(false);
+  Skeleton.append(wrapperId);
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
-  if ($("#commandLineWrapper").hasClass("hidden")) {
+
+  if (state["usingSingleList"]) {
+    $("#commandLine").addClass("allCommands");
+  }
+
+  if (!isPopupVisible(wrapperId)) {
     $("#commandLineWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -233,9 +266,11 @@ function hide(shouldFocusTestUI = true): void {
         addCommandlineBackground();
         $("#commandLineWrapper").addClass("hidden");
         $("#commandLine").removeClass("allCommands");
+        state["usingSingleList"] = false;
         if (shouldFocusTestUI) {
           TestUI.focusWords();
         }
+        Skeleton.remove(wrapperId);
       }
     );
   if (shouldFocusTestUI) {
@@ -382,6 +417,7 @@ function useSingleListCommandLine(sshow = true): void {
   CommandlineLists.setCurrent([allCommands]);
   // }
   if (Config.singleListCommandLine != "manual") {
+    state["usingSingleList"] = true;
     $("#commandLine").addClass("allCommands");
   }
   if (sshow) show();
@@ -389,6 +425,7 @@ function useSingleListCommandLine(sshow = true): void {
 
 function restoreOldCommandLine(sshow = true): void {
   if (isSingleListCommandLineActive()) {
+    state["usingSingleList"] = false;
     $("#commandLine").removeClass("allCommands");
     CommandlineLists.setCurrent(
       CommandlineLists.current.filter((l) => l.title != "All Commands")
@@ -400,7 +437,7 @@ function restoreOldCommandLine(sshow = true): void {
   if (sshow) show();
 }
 
-$("#commandLine input").on("input", () => {
+$("#commandLineWrapper #commandLine input").on("input", () => {
   commandLineMouseMode = false;
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeMouse"
@@ -419,10 +456,11 @@ $(document).ready(() => {
           event.shiftKey) ||
         ((event.key === "Tab" || event.key === "Escape") &&
           Config.quickRestart === "esc")) &&
-      !$("#commandLineWrapper").hasClass("hidden")
+      isPopupVisible(wrapperId)
     ) {
       if (CommandlineLists.current.length > 1) {
         CommandlineLists.current.pop();
+        state["usingSingleList"] = false;
         $("#commandLine").removeClass("allCommands");
         show();
       } else {
@@ -447,8 +485,11 @@ $(document).ready(() => {
         event.shiftKey)
     ) {
       const popupVisible = isAnyPopupVisible();
+      const miniResultPopupVisible = isElementVisible(
+        ".pageAccount .miniResultChartWrapper"
+      );
 
-      if (popupVisible) return;
+      if (popupVisible || miniResultPopupVisible) return;
 
       if (Config.quickRestart === "esc" && ActivePage.get() === "login") return;
       event.preventDefault();
@@ -544,7 +585,7 @@ $("#commandLineWrapper #commandLine").on(
   }
 );
 
-$("#commandLineWrapper").on("click", (e) => {
+$("#commandLineWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
     UpdateConfig.setFontFamily(Config.fontFamily, true);
@@ -596,7 +637,7 @@ $(document).on("keydown", (e) => {
   // applyCustomThemeColors();
   // previewTheme(Config.theme, false);
   // }
-  if (!$("#commandLineWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#commandLine input").trigger("focus");
     if (e.key == ">" && Config.singleListCommandLine == "manual") {
       if (!isSingleListCommandLineActive()) {
@@ -631,7 +672,14 @@ $(document).on("keydown", (e) => {
       trigger(command);
       return;
     }
-    if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Tab") {
+    if (
+      e.key === "ArrowUp" ||
+      e.key === "ArrowDown" ||
+      e.key === "Tab" ||
+      // Should only branch if ctrl is held to allow the letters to still be typed
+      (e.ctrlKey &&
+        (e.key === "p" || e.key === "n" || e.key === "j" || e.key === "k"))
+    ) {
       e.preventDefault();
       $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
         "mouseenter mouseleave"
@@ -644,7 +692,10 @@ $(document).on("keydown", (e) => {
       });
       if (
         e.key === "ArrowUp" ||
-        (e.key === "Tab" && e.shiftKey && Config.quickRestart !== "esc")
+        (e.key === "Tab" && e.shiftKey && Config.quickRestart !== "esc") ||
+        // Don't need to check for ctrl because that was already done above
+        e.key === "p" ||
+        e.key === "k"
       ) {
         entries.removeClass("activeKeyboard");
         if (activenum == 0) {
@@ -657,7 +708,9 @@ $(document).on("keydown", (e) => {
       }
       if (
         e.key === "ArrowDown" ||
-        (e.key === "Tab" && !e.shiftKey && Config.quickRestart !== "esc")
+        (e.key === "Tab" && !e.shiftKey && Config.quickRestart !== "esc") ||
+        e.key === "n" ||
+        e.key === "j"
       ) {
         entries.removeClass("activeKeyboard");
         if (activenum + 1 == entries.length) {
@@ -772,11 +825,6 @@ $("#bottom").on("click", ".leftright .right .current-theme", (e) => {
   }
 });
 
-$(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
-  show();
-});
-
 $(".supportButtons .button.ads").on("click", () => {
   CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
   show();
@@ -786,3 +834,5 @@ $(document.body).on("click", "#supportMeWrapper .button.ads", () => {
   CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
   show();
 });
+
+Skeleton.save(wrapperId);

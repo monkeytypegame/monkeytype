@@ -175,7 +175,22 @@ export function setPlaySoundOnClick(
 ): boolean {
   if (
     !isConfigValueValid("play sound on click", val, [
-      ["off", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+      [
+        "off",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+      ],
     ])
   ) {
     return false;
@@ -284,32 +299,64 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setChartAccuracy(
-  chartAccuracy: boolean,
+export function setAccountChart(
+  array: MonkeyTypes.AccountChart,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("chart accuracy", chartAccuracy, ["boolean"])) {
+  if (
+    !isConfigValueValid("account chart", array, [["on", "off"], "stringArray"])
+  ) {
     return false;
   }
 
-  config.chartAccuracy = chartAccuracy;
-  saveToLocalStorage("chartAccuracy", nosave);
-  ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
+  config.accountChart = array;
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
 
   return true;
 }
 
-export function setChartStyle(
-  chartStyle: MonkeyTypes.ChartStyle,
+export function setAccountChartAccuracy(
+  value: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("chart style", chartStyle, [["line", "scatter"]])) {
+  if (!isConfigValueValid("account chart accuracy", value, ["boolean"])) {
     return false;
   }
 
-  config.chartStyle = chartStyle;
-  saveToLocalStorage("chartStyle", nosave);
-  ConfigEvent.dispatch("chartStyle", config.chartStyle);
+  config.accountChart[0] = value ? "on" : "off";
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
+
+  return true;
+}
+
+export function setAccountChartAvg10(
+  value: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("account chart avg 10", value, ["boolean"])) {
+    return false;
+  }
+
+  config.accountChart[1] = value ? "on" : "off";
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
+
+  return true;
+}
+
+export function setAccountChartAvg100(
+  value: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("account chart avg 100", value, ["boolean"])) {
+    return false;
+  }
+
+  config.accountChart[2] = value ? "on" : "off";
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
 
   return true;
 }
@@ -1165,17 +1212,16 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
     Notifications.add(
       "Empty input received, reverted to the default font.",
       0,
-      3,
-      "Custom font"
+      {
+        customTitle: "Custom font",
+      }
     );
   }
   if (!isConfigKeyValid(font)) {
-    Notifications.add(
-      `Invalid font name value: "${font}".`,
-      -1,
-      3,
-      "Custom font"
-    );
+    Notifications.add(`Invalid font name value: "${font}".`, -1, {
+      customTitle: "Custom font",
+      duration: 3,
+    });
     return false;
   }
   config.fontFamily = font;
@@ -1314,7 +1360,9 @@ function setThemes(
       Notifications.add(
         "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
         0,
-        7
+        {
+          duration: 7,
+        }
       );
     }
     customThemeColors.splice(4, 0, "#000000");
@@ -1401,7 +1449,9 @@ export function setCustomThemeColors(
     Notifications.add(
       "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
       0,
-      7
+      {
+        duration: 7,
+      }
     );
     colors.splice(4, 0, "#000000");
   }
@@ -1609,7 +1659,10 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   );
 
   saveToLocalStorage("fontSize", nosave);
-  ConfigEvent.dispatch("fontSize", config.fontSize);
+  ConfigEvent.dispatch("fontSize", config.fontSize, nosave);
+
+  // trigger a resize event to update the layout - handled in ui.ts:108
+  $(window).trigger("resize");
 
   return true;
 }
@@ -1653,9 +1706,6 @@ export async function setCustomLayoutfluid(
   ) as MonkeyTypes.CustomLayoutFluid;
 
   config.customLayoutfluid = customLayoutfluid;
-  $(".pageSettings .section.customLayoutfluid input").val(
-    customLayoutfluid.replace(/#/g, " ")
-  );
   saveToLocalStorage("customLayoutfluid", nosave);
   ConfigEvent.dispatch("customLayoutFluid", config.customLayoutfluid);
 
@@ -1809,8 +1859,7 @@ export function apply(
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setRepeatedPace(configObj.repeatedPace, true);
     setPageWidth(configObj.pageWidth, true);
-    setChartAccuracy(configObj.chartAccuracy, true);
-    setChartStyle(configObj.chartStyle, true);
+    setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
     setMinWpm(configObj.minWpm, true);

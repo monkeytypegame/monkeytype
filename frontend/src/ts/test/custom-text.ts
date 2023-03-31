@@ -14,6 +14,11 @@ export let isTimeRandom = false;
 export let word = -1;
 export let time = -1;
 export let delimiter = " ";
+export let popupTextareaState = "The quick brown fox jumps over the lazy dog";
+
+export function setPopupTextareaState(value: string): void {
+  popupTextareaState = value;
+}
 
 export function setText(txt: string[]): void {
   text = txt;

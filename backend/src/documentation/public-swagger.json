@@ -6,8 +6,8 @@
     "title": "Monkeytype API",
     "termsOfService": "https://monkeytype.com/terms-of-service",
     "contact": {
-      "name": "Developer",
-      "email": "jack@monkeytype.com"
+      "name": "Support",
+      "email": "support@monkeytype.com"
     }
   },
   "basePath": "api.monkeytype.com/",

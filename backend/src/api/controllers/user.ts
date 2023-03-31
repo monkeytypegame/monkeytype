@@ -16,6 +16,10 @@ import * as LeaderboardsDAL from "../../dal/leaderboards";
 import { purgeUserFromDailyLeaderboards } from "../../utils/daily-leaderboards";
 import { randomBytes } from "crypto";
 import * as RedisClient from "../../init/redis";
+import { v4 as uuidv4 } from "uuid";
+import { ObjectId } from "mongodb";
+import * as ReportDAL from "../../dal/report";
+import emailQueue from "../../queues/email-queue";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -53,6 +57,80 @@ export async function createNewUser(
   Logger.logToDb("user_created", `${name} ${email}`, uid);
 
   return new MonkeyResponse("User created");
+}
+
+export async function sendVerificationEmail(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { email, uid } = req.ctx.decodedToken;
+  const isVerified = (await admin.auth().getUser(uid)).emailVerified;
+  if (isVerified === true) {
+    throw new MonkeyError(400, "Email already verified");
+  }
+
+  const userInfo = await UserDAL.getUser(uid, "request verification email");
+
+  let link = "";
+  try {
+    link = await admin.auth().generateEmailVerificationLink(email, {
+      url:
+        process.env.MODE === "dev"
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
+    });
+  } catch (e) {
+    if (
+      e.code === "auth/internal-error" &&
+      e.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
+    ) {
+      // for some reason this error is not handled with a custom auth/ code, so we have to do it manually
+      throw new MonkeyError(429, "Too many requests. Please try again later");
+    }
+    if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(
+        500,
+        "Auth user not found when the user was found in the database",
+        JSON.stringify({ email: email, userInfoEmail: email, stack: e.stack }),
+        userInfo.uid
+      );
+    }
+    throw e;
+  }
+
+  await emailQueue.sendVerificationEmail(email, userInfo.name, link);
+
+  return new MonkeyResponse("Email sent");
+}
+
+export async function sendForgotPasswordEmail(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { email } = req.body;
+
+  let auth;
+  try {
+    auth = await admin.auth().getUserByEmail(email);
+  } catch (e) {
+    if (e.code === "auth/user-not-found") {
+      throw new MonkeyError(404, "User not found");
+    }
+    throw e;
+  }
+
+  const userInfo = await UserDAL.getUser(
+    auth.uid,
+    "request forgot password email"
+  );
+
+  const link = await admin.auth().generatePasswordResetLink(email, {
+    url:
+      process.env.MODE === "dev"
+        ? "http://localhost:3000"
+        : "https://monkeytype.com",
+  });
+  await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
+
+  return new MonkeyResponse("Email sent if user was found");
 }
 
 export async function deleteUser(
@@ -131,6 +209,21 @@ export async function clearPb(
   return new MonkeyResponse("User's PB cleared");
 }
 
+export async function optOutOfLeaderboards(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  await UserDAL.optOutOfLeaderboards(uid);
+  await purgeUserFromDailyLeaderboards(
+    uid,
+    req.ctx.configuration.dailyLeaderboards
+  );
+  Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
+
+  return new MonkeyResponse("User opted out of leaderboards");
+}
+
 export async function checkName(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -167,10 +260,11 @@ function getRelevantUserInfo(
   return _.omit(user, [
     "bananas",
     "lbPersonalBests",
-    "quoteMod",
     "inbox",
     "nameHistory",
     "lastNameChange",
+    "_id",
+    "lastResultHashes",
   ]);
 }
 
@@ -535,6 +629,7 @@ export async function getProfile(
     discordAvatar,
     xp,
     streak,
+    lbOptOut,
   } = user;
 
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
@@ -562,6 +657,7 @@ export async function getProfile(
     xp,
     streak: streak?.length ?? 0,
     maxStreak: streak?.maxLength ?? 0,
+    lbOptOut,
   };
 
   if (banned) {
@@ -664,4 +760,32 @@ export async function updateInbox(
   await UserDAL.updateInbox(uid, mailIdsToMarkRead, mailIdsToDelete);
 
   return new MonkeyResponse("Inbox updated");
+}
+
+export async function reportUser(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const {
+    reporting: { maxReports, contentReportLimit },
+  } = req.ctx.configuration.quotes;
+
+  const { uid: uidToReport, reason, comment, captcha } = req.body;
+
+  await verifyCaptcha(captcha);
+
+  const newReport: MonkeyTypes.Report = {
+    _id: new ObjectId(),
+    id: uuidv4(),
+    type: "user",
+    timestamp: new Date().getTime(),
+    uid,
+    contentId: `${uidToReport}`,
+    reason,
+    comment,
+  };
+
+  await ReportDAL.createReport(newReport, maxReports, contentReportLimit);
+
+  return new MonkeyResponse("User reported");
 }

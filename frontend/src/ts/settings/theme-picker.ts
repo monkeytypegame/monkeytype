@@ -9,6 +9,7 @@ import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
+import * as ActivePage from "../states/active-page";
 
 export function updateActiveButton(): void {
   let activeThemeName = Config.theme;
@@ -19,10 +20,17 @@ export function updateActiveButton(): void {
   ) {
     activeThemeName = ThemeController.randomTheme as string;
   }
-  $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${activeThemeName}]`).addClass(
-    "active"
-  );
+
+  document
+    .querySelectorAll(".pageSettings .section.themes .theme")
+    .forEach((el) => {
+      el.classList.remove("active");
+    });
+  document
+    .querySelector(
+      `.pageSettings .section.themes .theme[theme='${activeThemeName}']`
+    )
+    ?.classList.add("active");
 }
 
 function updateColors(
@@ -142,12 +150,16 @@ export async function refreshButtons(): Promise<void> {
     });
   } else {
     // Update theme buttons
-    const favThemesEl = $(
+    const favThemesEl = document.querySelector(
       ".pageSettings .section.themes .favThemes.buttons"
-    ).empty();
-    const themesEl = $(
+    ) as HTMLElement;
+    favThemesEl.innerHTML = "";
+    let favThemesElHTML = "";
+    const themesEl = document.querySelector(
       ".pageSettings .section.themes .allThemes.buttons"
-    ).empty();
+    ) as HTMLElement;
+    themesEl.innerHTML = "";
+    let themesElHTML = "";
 
     let activeThemeName = Config.theme;
     if (
@@ -171,40 +183,72 @@ export async function refreshButtons(): Promise<void> {
 
     //first show favourites
     if (Config.favThemes.length > 0) {
-      favThemesEl.css({ paddingBottom: "1rem" });
-      themes.forEach((theme) => {
+      favThemesEl.style.marginBottom = "1rem";
+      favThemesEl.style.marginTop = "1rem";
+      for (const theme of themes) {
         if (Config.favThemes.includes(theme.name)) {
           const activeTheme = activeThemeName === theme.name ? "active" : "";
-          favThemesEl.append(
-            `<div class="theme button ${activeTheme}" theme='${theme.name}' 
-            style="color:${theme.mainColor};background:${theme.bgColor}">
-            <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+          favThemesElHTML += `<div class="theme button ${activeTheme}" theme='${
+            theme.name
+          }' style="background: ${theme.bgColor}; color: ${
+            theme.mainColor
+          };outline: 0 solid ${theme.mainColor};">
+            <div class="favButton active"><i class="fas fa-star"></i></div>
             <div class="text">${theme.name.replace(/_/g, " ")}</div>
-            <div class="favButton active"><i class="fas fa-star"></i></div></div>`
-          );
+            <div class="themeBubbles" style="background: ${
+              theme["bgColor"]
+            };outline: 0.25rem solid ${theme["bgColor"]};">
+              <div class="themeBubble" style="background: ${
+                theme["mainColor"]
+              }"></div>
+              <div class="themeBubble" style="background: ${
+                theme["subColor"]
+              }"></div>
+              <div class="themeBubble" style="background: ${
+                theme["textColor"]
+              }"></div>
+            </div>
+            </div>
+            `;
         }
-      });
+      }
+      favThemesEl.innerHTML = favThemesElHTML;
     } else {
-      favThemesEl.css({ paddingBottom: "0" });
+      favThemesEl.style.marginBottom = "0";
+      favThemesEl.style.marginTop = "0";
     }
     //then the rest
-    themes.forEach((theme) => {
+    for (const theme of themes) {
       if (Config.favThemes.includes(theme.name)) {
-        return;
+        continue;
       }
 
       const activeTheme = activeThemeName === theme.name ? "active" : "";
-      themesEl.append(
-        `<div class="theme button ${activeTheme}" theme='${
-          theme.name
-        }' style="color:${theme.mainColor};background:${theme.bgColor}">
-        <div class="activeIndicator"><i class="fas fa-circle"></i></div>
+      themesElHTML += `<div class="theme button ${activeTheme}" theme='${
+        theme.name
+      }' style="background: ${theme.bgColor}; color: ${
+        theme.mainColor
+      };outline: 0 solid ${theme.mainColor};">
+        <div class="favButton"><i class="far fa-star"></i></div>
         <div class="text">${theme.name.replace(/_/g, " ")}</div>
-        <div class="favButton"><i class="far fa-star"></i></div></div>`
-      );
-    });
+        <div class="themeBubbles" style="background: ${
+          theme["bgColor"]
+        };outline: 0.25rem solid ${theme["bgColor"]};">
+          <div class="themeBubble" style="background: ${
+            theme["mainColor"]
+          }"></div>
+          <div class="themeBubble" style="background: ${
+            theme["subColor"]
+          }"></div>
+          <div class="themeBubble" style="background: ${
+            theme["textColor"]
+          }"></div>
+        </div>
+        </div>
+        `;
+    }
+    themesEl.innerHTML = themesElHTML;
   }
-  updateActiveButton();
 }
 
 export function setCustomInputs(noThemeUpdate = false): void {
@@ -236,12 +280,13 @@ function toggleFavourite(themeName: string): void {
 
 export function saveCustomThemeColors(): void {
   const newColors: string[] = [];
-  $.each(
-    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-    (_index, element) => {
-      newColors.push($(element).attr("value") as string);
-    }
-  );
+  for (const color of ThemeController.colorVars) {
+    newColors.push(
+      $(
+        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+      ).attr("value") as string
+    );
+  }
   UpdateConfig.setCustomThemeColors(newColors);
   Notifications.add("Custom theme saved", 1);
 }
@@ -322,7 +367,6 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
     UpdateConfig.setTheme(theme);
-    updateActiveButton();
   }
 });
 
@@ -409,16 +453,17 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
 
 // Handles click on share custom theme button
 $("#shareCustomThemeButton").on("click", () => {
-  const share: string[] = [];
-  $.each(
-    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-    (_, element) => {
-      share.push($(element).attr("value") as string);
-    }
-  );
+  const newColors: string[] = [];
+  for (const color of ThemeController.colorVars) {
+    newColors.push(
+      $(
+        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+      ).attr("value") as string
+    );
+  }
 
   const url =
-    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(share));
+    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(newColors));
 
   navigator.clipboard.writeText(url).then(
     function () {
@@ -451,5 +496,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "customThemeId") refreshButtons();
-  // if (eventKey === "customTheme") updateActiveTab();
+  if (eventKey === "theme" && ActivePage.get() === "settings") {
+    updateActiveButton();
+  }
 });

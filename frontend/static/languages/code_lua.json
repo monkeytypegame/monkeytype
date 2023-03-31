@@ -24,7 +24,6 @@
     "true",
     "until",
     "while",
-
     "assert",
     "collectgarbage",
     "dofile",
@@ -47,6 +46,7 @@
     "rawset",
     "require",
     "select",
+    "self",
     "setfenv",
     "setmetatable",
     "tonumber",

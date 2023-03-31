@@ -129,7 +129,7 @@ Follow these steps if you want to work on anything involving the database/accoun
   npm run dev-fe
   ```
 
-These commands will start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use `Ctrl+C` to stop it.
+These commands will start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>Ctrl+C</kbd> to stop it.
 
 Note: Rebuilding doesn't happen instantaneously and depends on your machine, so be patient for changes to appear.
 

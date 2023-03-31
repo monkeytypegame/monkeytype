@@ -60,6 +60,9 @@
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
     grid-template-columns: 1fr 1fr max-content;
   }
+  .pageSettings .section.themes .buttons {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 
 //1050px
@@ -75,6 +78,9 @@
   }
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+  .pageSettings .section.themes .buttons {
+    grid-template-columns: 1fr 1fr;
   }
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
     grid-template-columns: 1fr;
@@ -442,6 +448,13 @@
     }
   }
 
+  .pageAccount {
+    .group.chart .below {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+
   .pageSettings {
     .section.themes .tabContent.customTheme {
     }
@@ -489,10 +502,6 @@
       .emptygroup {
         display: none;
       }
-    }
-    .group.chart .below {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
     }
     .group.topFilters .buttonsAndTitle .buttons {
       display: grid;
@@ -639,6 +648,18 @@
     & > .text {
       margin-bottom: 1rem;
     }
+
+    & .customThemeEdit {
+      .customThemeInputs {
+        grid-template-columns: 1fr 1.5fr;
+      }
+      .spacer {
+        grid-column: span 2;
+      }
+      .customThemeButtons {
+        grid-template-columns: 1fr;
+      }
+    }
   }
 
   #result {
@@ -670,6 +691,9 @@
 
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr;
+  }
+  .pageSettings .section.themes .buttons {
+    grid-template-columns: 1fr;
   }
 }
 

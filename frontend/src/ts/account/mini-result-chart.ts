@@ -1,5 +1,6 @@
 import * as ChartController from "../controllers/chart-controller";
 import Config from "../config";
+import * as Misc from "../utils/misc";
 
 import type { ScaleChartOptions } from "chart.js";
 
@@ -23,13 +24,21 @@ function hide(): void {
 
 export function updateData(data: MonkeyTypes.ChartData): void {
   // let data = filteredResults[filteredId].chartData;
-  const labels = [];
+  let labels = [];
   for (let i = 1; i <= data.wpm.length; i++) {
     labels.push(i.toString());
   }
+
+  //make sure data.wpm and data.err are the same length as data.raw using slice
+  data.wpm = data.wpm.slice(0, data.raw.length);
+  data.err = data.err.slice(0, data.raw.length);
+  labels = labels.slice(0, data.raw.length);
+
+  const smoothedRawData = Misc.smooth(data.raw, 1);
+
   ChartController.miniResult.data.labels = labels;
   ChartController.miniResult.data.datasets[0].data = data.wpm;
-  ChartController.miniResult.data.datasets[1].data = data.raw;
+  ChartController.miniResult.data.datasets[1].data = smoothedRawData;
   ChartController.miniResult.data.datasets[2].data = data.err;
 
   const maxChartVal = Math.max(
@@ -51,6 +60,16 @@ export function updateData(data: MonkeyTypes.ChartData): void {
 
   ChartController.miniResult.updateColors();
 }
+
+$(document).on("keydown", (event) => {
+  if (
+    event.key === "Escape" &&
+    Misc.isElementVisible(".pageAccount .miniResultChartWrapper")
+  ) {
+    hide();
+    event.preventDefault();
+  }
+});
 
 $(".pageAccount").on("click", ".miniResultChartBg", () => {
   hide();

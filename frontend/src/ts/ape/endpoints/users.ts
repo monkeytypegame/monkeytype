@@ -37,6 +37,10 @@ export default class Users {
     return await this.httpClient.patch(`${BASE_PATH}/reset`);
   }
 
+  async optOutOfLeaderboards(): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/optOutOfLeaderboards`);
+  }
+
   async updateName(name: string): Ape.EndpointData {
     return await this.httpClient.patch(`${BASE_PATH}/name`, {
       payload: { name },
@@ -224,5 +228,31 @@ export default class Users {
       mailIdsToMarkRead: options.mailIdsToMarkRead,
     };
     return await this.httpClient.patch(`${BASE_PATH}/inbox`, { payload });
+  }
+
+  async report(
+    uid: string,
+    reason: string,
+    comment: string,
+    captcha: string
+  ): Ape.EndpointData {
+    const payload = {
+      uid,
+      reason,
+      comment,
+      captcha,
+    };
+
+    return await this.httpClient.post(`${BASE_PATH}/report`, { payload });
+  }
+
+  async verificationEmail(): Ape.EndpointData {
+    return await this.httpClient.get(`${BASE_PATH}/verificationEmail`);
+  }
+
+  async forgotPasswordEmail(email: string): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/forgotPasswordEmail`, {
+      payload: { email },
+    });
   }
 }

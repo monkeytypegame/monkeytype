@@ -8,7 +8,7 @@
   ],
   "quotes": [
     {
-      "text": "Men Norge er fremfor alt mennesker. Nordmenn er nordlendinger, trøndere, sørlendinger – og folk fra alle de andre regionene. Nordmenn har også innvandret fra Afghanistan, Pakistan og Polen, Sverige, Somalia og Syria. Mine besteforeldre innvandret fra Danmark og England for 110 år siden. Det er ikke alltid så lett å si hvor vi er fra, hvilken nasjonalitet vi tilhører. Det vi kaller hjem, er der hjertet vårt er – og det kan ikke alltid plasseres innenfor landegrenser. Nordmenn er unge og gamle, høye og lave, funksjonsfriske og rullestolbrukere. Stadig flere er over hundre år. Nordmenn er rike, fattige og midt i mellom. Nordmenn liker fotball og håndball, klatrer fjelltopper og seiler – mens andre er mest glad i sofaen. Noen har god selvtillit, mens andre sliter med å tro på at de er gode nok som de er. Nordmenn jobber i butikk, på sykehus, på oljeplattform. Nordmenn arbeider for at vi skal være trygge, arbeider med å holde landet rent for søppel, og leter etter nye løsninger for en grønn fremtid. Nordmenn dyrker jorda og driver fiske. Nordmenn forsker og lærer bort. Nordmenn er engasjert ungdom og livserfarne gamle. Nordmenn er enslige, skilte, barnefamilier og gamle ektepar. Nordmenn er jenter som er glad i jenter, gutter som er glad i gutter, og jenter og gutter som er glad i hverandre. Nordmenn tror på Gud, Allah, Altet og Ingenting. Nordmenn liker Grieg og Kygo, Hellbillies og Kari Bremnes. Med andre ord: Norge er dere. Norge er oss. Når vi synger «Ja vi elsker dette landet», skal vi huske på at vi også synger om hverandre. For det er vi som utgjør landet. Derfor er nasjonalsangen vår også en kjærlighetserklæring til det norske folk. Mitt største håp for Norge er at vi skal klare å ta vare på hverandre. At vi skal bygge dette landet videre – på tillit, felleskap og raushet. At vi skal kjenne at vi – på tross av all vår ulikhet – er ett folk. At Norge er ett.",
+      "text": "Men Norge er fremfor alt mennesker. Nordmenn er nordlendinger, trøndere, sørlendinger – og folk fra alle de andre regionene. Nordmenn har også innvandret fra Afghanistan, Pakistan og Polen, Sverige, Somalia og Syria. Mine besteforeldre innvandret fra Danmark og England for 110 år siden. Det er ikke alltid så lett å si hvor vi er fra, hvilken nasjonalitet vi tilhører. Det vi kaller hjem, er der hjertet vårt er – og det kan ikke alltid plasseres innenfor landegrenser. Nordmenn er unge og gamle, høye og lave, funksjonsfriske og rullestolbrukere. Stadig flere er over hundre år. Nordmenn er rike, fattige og midt i mellom. Nordmenn liker fotball og håndball, klatrer fjelltopper og seiler – mens andre er mest glad i sofaen. Noen har god selvtillit, mens andre sliter med å tro på at de er gode nok som de er. Nordmenn jobber i butikk, på sykehus, på oljeplattform. Nordmenn arbeider for at vi skal være trygge, arbeider med å holde landet rent for søppel, og leter etter nye løsninger for en grønn fremtid. Nordmenn dyrker jorda og driver fiske. Nordmenn forsker og lærer bort. Nordmenn er engasjert ungdom og livserfarne gamle. Nordmenn er enslige, skilte, barnefamilier og gamle ektepar. Nordmenn er jenter som er glad i jenter, gutter som er glad i gutter, og jenter og gutter som er glad i hverandre. Nordmenn tror på Gud, Allah, Altet og Ingenting. Nordmenn liker Grieg og Kygo, Hellbillies og Kari Bremnes. Med andre ord: Norge er dere. Norge er oss. Når vi synger \"Ja vi elsker dette landet\", skal vi huske på at vi også synger om hverandre. For det er vi som utgjør landet. Derfor er nasjonalsangen vår også en kjærlighetserklæring til det norske folk. Mitt største håp for Norge er at vi skal klare å ta vare på hverandre. At vi skal bygge dette landet videre – på tillit, felleskap og raushet. At vi skal kjenne at vi – på tross av all vår ulikhet – er ett folk. At Norge er ett.",
       "source": "Hagefest i slottsparken: Velkomsttale",
       "id": 1,
       "length": 1892
@@ -30,6 +30,12 @@
       "source": "Magnus Carlsen",
       "id": 4,
       "length": 79
+    },
+    {
+      "text": "Bjørnen sover, bjørnen sover, i sitt lune hi. Den er ikke farlig, bare man går varlig, men man kan jo, men man kan jo, aldri være TRYGG!",
+      "source": "Bjørnen sover",
+      "id": 5,
+      "length": 136
     }
   ]
 }

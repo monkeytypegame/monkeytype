@@ -7,6 +7,7 @@
     "break",
     "do",
     "else",
+    "self",
     "elseif",
     "end",
     "false",
@@ -24,13 +25,10 @@
     "true",
     "until",
     "while",
-
     "export",
     "typeof",
     "continue",
-
     "assert",
-    "collectgarbage",
     "error",
     "gcinfo",
     "getfenv",
@@ -54,7 +52,6 @@
     "type",
     "unpack",
     "xpcall",
-
     "wait",
     "delay",
     "elapsedTime",
@@ -69,7 +66,6 @@
     "usersettings",
     "version",
     "warn",
-
     "bit32",
     "coroutine",
     "debug",

@@ -380,4 +380,57 @@ describe("Misc Utils", () => {
       ).toEqual(expected);
     });
   });
+
+  it("formatSeconds", () => {
+    const testCases = [
+      {
+        seconds: 5,
+        expected: "5 seconds",
+      },
+      {
+        seconds: 65,
+        expected: "1.08 minutes",
+      },
+      {
+        seconds: misc.HOUR_IN_SECONDS,
+        expected: "1 hour",
+      },
+      {
+        seconds: misc.DAY_IN_SECONDS,
+        expected: "1 day",
+      },
+      {
+        seconds: misc.WEEK_IN_SECONDS,
+        expected: "1 week",
+      },
+      {
+        seconds: misc.YEAR_IN_SECONDS,
+        expected: "1 year",
+      },
+      {
+        seconds: 2 * misc.YEAR_IN_SECONDS,
+        expected: "2 years",
+      },
+      {
+        seconds: 4 * misc.YEAR_IN_SECONDS,
+        expected: "4 years",
+      },
+      {
+        seconds: 3 * misc.WEEK_IN_SECONDS,
+        expected: "3 weeks",
+      },
+      {
+        seconds: misc.MONTH_IN_SECONDS * 4,
+        expected: "4 months",
+      },
+      {
+        seconds: misc.MONTH_IN_SECONDS * 11,
+        expected: "11 months",
+      },
+    ];
+
+    testCases.forEach(({ seconds, expected }) => {
+      expect(misc.formatSeconds(seconds)).toBe(expected);
+    });
+  });
 });

@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 export function update(acc: number): void {
@@ -14,7 +14,7 @@ export function update(acc: number): void {
 
 export function show(): void {
   if (!Config.showLiveAcc) return;
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   if (Config.timerStyle === "mini") {
     if (!$("#miniTimerAndLiveWpm .acc").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .acc")

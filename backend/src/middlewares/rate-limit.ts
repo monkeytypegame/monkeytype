@@ -348,6 +348,13 @@ export const userClearPB = rateLimit({
   handler: customHandler,
 });
 
+export const userOptOutOfLeaderboards = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 10 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const userCustomFilterAdd = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
@@ -437,6 +444,20 @@ export const usersTagsEdit = userDiscordLink;
 export const userDiscordUnlink = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 15 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userRequestVerificationEmail = rateLimit({
+  windowMs: ONE_HOUR_MS / 4,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userForgotPasswordEmail = rateLimit({
+  windowMs: ONE_HOUR_MS / 4,
+  max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });

@@ -29,6 +29,7 @@ import "./elements/scroll-to-top";
 import "./popups/mobile-test-config-popup";
 import "./popups/edit-tags-popup";
 import "./popups/google-sign-up-popup";
+import "./popups/result-tags-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
 import "./commandline/index";

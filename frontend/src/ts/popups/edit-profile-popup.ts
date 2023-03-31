@@ -4,29 +4,37 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import { isPopupVisible } from "../utils/misc";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "editProfilePopupWrapper";
 
 let callbackFuncOnHide: (() => void) | null = null;
 
 export function show(callbackOnHide: () => void): void {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
-  if ($("#editProfilePopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+
+  if (!isPopupVisible(wrapperId)) {
     callbackFuncOnHide = callbackOnHide;
 
     $("#editProfilePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         hydrateInputs();
       });
   }
 }
 
 export function hide(): void {
-  if (!$("#editProfilePopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     callbackFuncOnHide && callbackFuncOnHide();
     $("#editProfilePopupWrapper")
       .stop(true, true)
@@ -35,9 +43,10 @@ export function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#editProfilePopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -149,22 +158,21 @@ async function updateProfile(): Promise<void> {
   hide();
 }
 
-$("#editProfilePopupWrapper").on("click", (e) => {
+$("#editProfilePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "editProfilePopupWrapper") {
     hide();
   }
 });
 
-$("#editProfilePopup .edit-profile-submit").on("click", async () => {
+$("#editProfilePopupWrapper .edit-profile-submit").on("click", async () => {
   await updateProfile();
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#editProfilePopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);

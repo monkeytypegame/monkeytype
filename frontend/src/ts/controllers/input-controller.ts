@@ -20,7 +20,7 @@ import * as Replay from "../test/replay";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as WeakSpot from "../test/weak-spot";
 import * as ActivePage from "../states/active-page";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as CompositionState from "../states/composition";
 import * as TestInput from "../test/test-input";
 import * as TestWords from "../test/test-words";
@@ -31,6 +31,7 @@ import * as FunboxList from "../test/funbox/funbox-list";
 import * as Settings from "../pages/settings";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
+import { ModifierKeys } from "../constants/modifier-keys";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -99,7 +100,7 @@ function updateUI(): void {
 }
 
 function backspaceToPrevious(): void {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
 
   if (
     TestInput.input.history.length === 0 ||
@@ -140,7 +141,7 @@ function backspaceToPrevious(): void {
 }
 
 function handleSpace(): void {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
 
   if (TestInput.input.current === "") return;
 
@@ -353,9 +354,13 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
   }
+
   if (
-    (char === "’" || char === "‘" || char === "'") &&
-    (originalChar === "’" || originalChar === "‘" || originalChar === "'")
+    (char === "’" || char === "‘" || char === "'" || char === "ʼ") &&
+    (originalChar === "’" ||
+      originalChar === "‘" ||
+      originalChar === "'" ||
+      originalChar === "ʼ")
   ) {
     return true;
   }
@@ -416,7 +421,7 @@ function handleChar(
     if (
       Config.difficulty !== "normal" ||
       (Config.strictSpace && Config.mode !== "zen") ||
-      Config.stopOnError === "word"
+      (Config.stopOnError === "word" && charIndex > 0)
     ) {
       if (dontInsertSpace) {
         dontInsertSpace = false;
@@ -436,7 +441,7 @@ function handleChar(
   }
 
   //start the test
-  if (!TestActive.get() && !TestLogic.startTest()) {
+  if (!TestState.isActive && !TestLogic.startTest()) {
     return;
   }
 
@@ -579,8 +584,6 @@ function handleChar(
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
-    TestInput.input.pushHistory();
-    TestInput.corrected.pushHistory();
     TestLogic.fail("difficulty");
     return;
   }
@@ -598,8 +601,6 @@ function handleChar(
           Config.stopOnError == "off")) &&
       lastIndex === TestWords.words.length - 1
     ) {
-      TestInput.input.pushHistory();
-      TestInput.corrected.pushHistory();
       TestLogic.finish();
       return;
     }
@@ -670,6 +671,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
     // put caret at right position again
     area.selectionStart = area.selectionEnd = start + 1;
 
+    CustomText.setPopupTextareaState(area.value);
+
     return;
   }
 
@@ -683,7 +686,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   }
 
   const modalVisible: boolean =
-    !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+    Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
   if (Config.quickRestart === "esc") {
     // dont do anything special
@@ -758,8 +761,8 @@ $(document).keydown(async (event) => {
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
   const pageTestActive: boolean = ActivePage.get() === "test";
-  const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
-  const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
+  const commandLineVisible = Misc.isPopupVisible("commandLineWrapper");
+  const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
 
@@ -771,7 +774,11 @@ $(document).keydown(async (event) => {
     !TestUI.resultVisible &&
     (wordsFocused || event.key !== "Enter");
 
-  if (allowTyping && !wordsFocused && event.key !== "Enter") {
+  if (
+    allowTyping &&
+    !wordsFocused &&
+    !["Enter", ...ModifierKeys].includes(event.key)
+  ) {
     TestUI.focusWords();
     if (Config.showOutOfFocusWarning) {
       event.preventDefault();
@@ -786,7 +793,7 @@ $(document).keydown(async (event) => {
   //esc
   if (event.key === "Escape" && Config.quickRestart === "esc") {
     const modalVisible: boolean =
-      !$("#commandLineWrapper").hasClass("hidden") || popupVisible;
+      Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
     if (modalVisible) return;
 
@@ -940,6 +947,18 @@ $(document).keydown(async (event) => {
   isBackspace = event.key === "Backspace" || event.key === "delete";
 });
 
+$("#wordsInput").keydown((event) => {
+  setTimeout(() => {
+    TestInput.recordKeydownTime(event.code);
+  }, 0);
+});
+
+$("#wordsInput").keyup((event) => {
+  setTimeout(() => {
+    TestInput.recordKeyupTime(event.code);
+  }, 0);
+});
+
 $("#wordsInput").keyup((event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     event.preventDefault();
@@ -1048,7 +1067,7 @@ $("#wordsInput").on("input", (event) => {
     TestUI.updateWordElement();
     Caret.updatePosition();
     if (!CompositionState.getComposing()) {
-      Replay.addReplayEvent("setLetterIndex", currTestInput.length);
+      Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
     }
   } else if (inputValue !== currTestInput) {
     let diffStart = 0;
@@ -1056,9 +1075,13 @@ $("#wordsInput").on("input", (event) => {
       diffStart++;
     }
 
+    let iOffset = 0;
+    if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
+      iOffset = inputValue.indexOf(" ") + 1;
+    }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
-      handleChar(inputValue[i], i, realInputValue);
+      handleChar(inputValue[i], i - iOffset, realInputValue);
     }
   }
 
