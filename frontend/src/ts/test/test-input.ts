@@ -1,5 +1,5 @@
 import * as TestWords from "./test-words";
-import { roundTo2 } from "../utils/misc";
+import { roundTo2, stdDev, mean } from "../utils/misc";
 
 interface Keypress {
   count: number;
@@ -227,12 +227,166 @@ export function setKeypressTimingsTooLong(): void {
   keypressTimings.duration.array = "toolong";
 }
 
+let keysObj: Record<string, number> = {};
+
 export function pushKeypressDuration(val: number): void {
   (keypressTimings.duration.array as number[]).push(roundTo2(val));
 }
 
 export function setKeypressDuration(val: number): void {
   keypressTimings.duration.current = roundTo2(val);
+}
+
+let newKeypresDurationArray: number[] = [];
+
+const keysToTrack = [
+  "Backquote",
+  "Digit1",
+  "Digit2",
+  "Digit3",
+  "Digit4",
+  "Digit5",
+  "Digit6",
+  "Digit7",
+  "Digit8",
+  "Digit9",
+  "Digit0",
+  "Minus",
+  "Equal",
+  "KeyQ",
+  "KeyW",
+  "KeyE",
+  "KeyR",
+  "KeyT",
+  "KeyY",
+  "KeyU",
+  "KeyI",
+  "KeyO",
+  "KeyP",
+  "BracketLeft",
+  "BracketRight",
+  "Backslash",
+  "KeyA",
+  "KeyS",
+  "KeyD",
+  "KeyF",
+  "KeyG",
+  "KeyH",
+  "KeyJ",
+  "KeyK",
+  "KeyL",
+  "Semicolon",
+  "Quote",
+  "KeyZ",
+  "KeyX",
+  "KeyC",
+  "KeyV",
+  "KeyB",
+  "KeyN",
+  "KeyM",
+  "Comma",
+  "Period",
+  "Slash",
+  "Space",
+];
+
+export function recordKeyupTime(key: string): void {
+  if (keysObj[key] === undefined || !keysToTrack.includes(key)) {
+    return;
+  }
+  const now = performance.now();
+  const diff = Math.abs(keysObj[key] - now);
+  newKeypresDurationArray.push(roundTo2(diff));
+  delete keysObj[key];
+
+  updateOverlap();
+}
+
+export function recordKeydownTime(key: string): void {
+  if (keysObj[key] !== undefined || !keysToTrack.includes(key)) {
+    return;
+  }
+  keysObj[key] = performance.now();
+
+  updateOverlap();
+}
+
+let totalOverlap = 0;
+let lastOverlapStartTime = -1;
+function updateOverlap(): void {
+  const now = performance.now();
+  const keys = Object.keys(keysObj);
+  if (keys.length > 1) {
+    if (lastOverlapStartTime === -1) {
+      lastOverlapStartTime = now;
+    }
+  } else {
+    if (lastOverlapStartTime !== -1) {
+      totalOverlap += now - lastOverlapStartTime;
+      lastOverlapStartTime = -1;
+    }
+  }
+}
+
+export function logOldAndNew(
+  wpm: number,
+  acc: number,
+  raw: number,
+  con: number,
+  test: string,
+  duration: number
+): void {
+  if (!spacingDebug) return;
+  // console.log(
+  //   "old",
+  //   t1,
+  //   d1,
+  //   t1 / d1,
+  //   keypressTimings.duration.array,
+  //   stdDev(keypressTimings.duration.array as number[]),
+  //   mean(keypressTimings.duration.array as number[])
+  // );
+  // console.log("new", t2, d2, t2 / d2, a, stdDev(a), mean(a));
+
+  console.log("RESULT", {
+    wpm,
+    acc,
+    raw,
+    con,
+    test,
+    duration,
+    spacing: {
+      stdDev: stdDev(keypressTimings.spacing.array as number[]),
+      mean: mean(keypressTimings.spacing.array as number[]),
+      min: Math.min(...(keypressTimings.spacing.array as number[])),
+      max: Math.max(...(keypressTimings.spacing.array as number[])),
+      total: (keypressTimings.spacing.array as number[]).reduce(
+        (a, b) => a + b,
+        0
+      ) as number,
+      length: keypressTimings.spacing.array.length,
+    },
+    oldDuration: {
+      stdDev: stdDev(keypressTimings.duration.array as number[]),
+      mean: mean(keypressTimings.duration.array as number[]),
+      min: Math.min(...(keypressTimings.duration.array as number[])),
+      max: Math.max(...(keypressTimings.duration.array as number[])),
+      total: (keypressTimings.duration.array as number[]).reduce(
+        (a, b) => a + b,
+        0
+      ) as number,
+      length: keypressTimings.duration.array.length,
+    },
+    newDuration: {
+      stdDev: stdDev(newKeypresDurationArray),
+      mean: mean(newKeypresDurationArray),
+      min: Math.min(...newKeypresDurationArray),
+      max: Math.max(...newKeypresDurationArray),
+      total: newKeypresDurationArray.reduce((a, b) => a + b, 0) as number,
+      length: newKeypresDurationArray.length,
+    },
+    totalOverlap,
+  });
 }
 
 function pushKeypressSpacing(val: number): void {
@@ -289,6 +443,10 @@ export function resetKeypressTimings(): void {
       array: [],
     },
   };
+  newKeypresDurationArray = [];
+  totalOverlap = 0;
+  lastOverlapStartTime = -1;
+  keysObj = {};
   if (spacingDebug) console.clear();
 }
 

@@ -255,7 +255,14 @@ function updateWpmAndAcc(): void {
     }
     $("#result .stats .time .bottom .text").text(time);
     $("#result .stats .raw .bottom").removeAttr("aria-label");
-    $("#result .stats .acc .bottom").removeAttr("aria-label");
+    // $("#result .stats .acc .bottom").removeAttr("aria-label");
+
+    $("#result .stats .acc .bottom").attr(
+      "aria-label",
+      `${TestInput.accuracy.incorrect} mistake${
+        TestInput.accuracy.incorrect == 1 ? "" : "s"
+      }`
+    );
   } else {
     //not showing decimal places
     if (Config.alwaysShowCPM == false) {
@@ -287,7 +294,12 @@ function updateWpmAndAcc(): void {
     }
 
     $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
-    $("#result .stats .acc .bottom").attr("aria-label", result.acc + "%");
+    $("#result .stats .acc .bottom").attr(
+      "aria-label",
+      `${result.acc}% (${TestInput.accuracy.incorrect} mistake${
+        TestInput.accuracy.incorrect == 1 ? "" : "s"
+      })`
+    );
   }
 }
 
@@ -811,9 +823,6 @@ export async function update(
       $("#words").empty();
       ChartController.result.resize();
 
-      if (Config.alwaysShowWordsHistory && Config.burstHeatmap) {
-        TestUI.applyBurstHeatmap();
-      }
       $("#result").trigger("focus");
       window.scrollTo({ top: 0 });
       $("#testModesNotice").addClass("hidden");
@@ -826,7 +835,7 @@ export async function update(
         125
       );
       if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
-        TestUI.toggleResultWords();
+        TestUI.toggleResultWords(true);
       }
       Keymap.hide();
       AdController.updateTestPageAds(true);

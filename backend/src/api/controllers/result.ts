@@ -176,6 +176,15 @@ export async function addResult(
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];
     if (lastHashes.includes(resulthash)) {
+      Logger.logToDb(
+        "duplicate_result",
+        {
+          lastHashes,
+          resulthash,
+          result,
+        },
+        uid
+      );
       const status = MonkeyStatusCodes.DUPLICATE_RESULT;
       throw new MonkeyError(status.code, "Duplicate result");
     } else {
@@ -366,12 +375,8 @@ export async function addResult(
     delete result.challenge;
   }
 
-  let totalDurationTypedSeconds = 0;
-  let afk = result.afkDuration;
-  if (afk == undefined) {
-    afk = 0;
-  }
-  totalDurationTypedSeconds =
+  const afk = result.afkDuration ?? 0;
+  const totalDurationTypedSeconds =
     result.testDuration + result.incompleteTestSeconds - afk;
   updateTypingStats(uid, result.restartCount, totalDurationTypedSeconds);
   PublicDAL.updateStats(result.restartCount, totalDurationTypedSeconds);

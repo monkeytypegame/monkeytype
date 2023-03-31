@@ -947,6 +947,18 @@ $(document).keydown(async (event) => {
   isBackspace = event.key === "Backspace" || event.key === "delete";
 });
 
+$("#wordsInput").keydown((event) => {
+  setTimeout(() => {
+    TestInput.recordKeydownTime(event.code);
+  }, 0);
+});
+
+$("#wordsInput").keyup((event) => {
+  setTimeout(() => {
+    TestInput.recordKeyupTime(event.code);
+  }, 0);
+});
+
 $("#wordsInput").keyup((event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     event.preventDefault();
@@ -1063,9 +1075,13 @@ $("#wordsInput").on("input", (event) => {
       diffStart++;
     }
 
+    let iOffset = 0;
+    if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
+      iOffset = inputValue.indexOf(" ") + 1;
+    }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
-      handleChar(inputValue[i], i, realInputValue);
+      handleChar(inputValue[i], i - iOffset, realInputValue);
     }
   }
 

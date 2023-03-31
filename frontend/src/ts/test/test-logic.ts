@@ -402,7 +402,10 @@ export function restart(options = {} as RestartOptions): void {
         Notifications.add(
           `Quick restart disabled in long tests. ${message}`,
           0,
-          4
+          {
+            duration: 4,
+            important: true,
+          }
         );
         return;
       }
@@ -684,12 +687,16 @@ function getFunboxWordsFrequency():
   return undefined;
 }
 
-function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
+function getFunboxWord(
+  word: string,
+  wordIndex: number,
+  wordset?: Misc.Wordset
+): string {
   const wordFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.getWord
   );
   if (wordFunbox?.functions?.getWord) {
-    word = wordFunbox.functions.getWord(wordset);
+    word = wordFunbox.functions.getWord(wordset, wordIndex);
   }
   return word;
 }
@@ -722,6 +729,7 @@ function applyLazyModeToWord(
 
 async function getNextWord(
   wordset: Misc.Wordset,
+  wordIndex: number,
   language: MonkeyTypes.LanguageObject,
   wordsBound: number
 ): Promise<string> {
@@ -786,7 +794,7 @@ async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = getFunboxWord(randomWord, wordset);
+  randomWord = getFunboxWord(randomWord, wordIndex, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
   if (Config.punctuation) {
@@ -878,13 +886,17 @@ export async function init(): Promise<void> {
   }
 
   if (Config.tapeMode !== "off" && !language.leftToRight) {
-    Notifications.add("This language does not support tape mode.", 0);
+    Notifications.add("This language does not support tape mode.", 0, {
+      important: true,
+    });
     UpdateConfig.setTapeMode("off");
   }
 
   if (Config.lazyMode === true && language.noLazyMode) {
     rememberLazyMode = true;
-    Notifications.add("This language does not support lazy mode.", 0);
+    Notifications.add("This language does not support lazy mode.", 0, {
+      important: true,
+    });
     UpdateConfig.setLazyMode(false, true);
   } else if (rememberLazyMode === true && !language.noLazyMode) {
     UpdateConfig.setLazyMode(true, true);
@@ -1022,7 +1034,7 @@ export async function init(): Promise<void> {
 
     if (wordCount == 0) {
       for (let i = 0; i < wordsBound; i++) {
-        const randomWord = await getNextWord(wordset, language, wordsBound);
+        const randomWord = await getNextWord(wordset, i, language, wordsBound);
 
         if (/\t/g.test(randomWord)) {
           TestWords.setHasTab(true);
@@ -1075,7 +1087,8 @@ export async function init(): Promise<void> {
         `No ${Config.language
           .replace(/_\d*k$/g, "")
           .replace(/_/g, " ")} quotes found`,
-        0
+        0,
+        { important: true }
       );
       if (Auth?.currentUser) {
         QuoteSubmitPopup.show(false);
@@ -1092,7 +1105,7 @@ export async function init(): Promise<void> {
       );
       if (targetQuote === undefined) {
         rq = <MonkeyTypes.Quote>quotesCollection.groups[0][0];
-        Notifications.add("Quote Id Does Not Exist", 0);
+        Notifications.add("Quote Id Does Not Exist", 0, { important: true });
       } else {
         rq = targetQuote;
       }
@@ -1102,7 +1115,7 @@ export async function init(): Promise<void> {
       );
 
       if (randomQuote === null) {
-        Notifications.add("No favorite quotes found", 0);
+        Notifications.add("No favorite quotes found", 0, { important: true });
         UpdateConfig.setQuoteLength(-1);
         restart();
         return;
@@ -1112,7 +1125,9 @@ export async function init(): Promise<void> {
     } else {
       const randomQuote = QuotesController.getRandomQuote();
       if (randomQuote === null) {
-        Notifications.add("No quotes found for selected quote length", 0);
+        Notifications.add("No quotes found for selected quote length", 0, {
+          important: true,
+        });
         TestUI.setTestRestarting(false);
         return;
       }
@@ -1263,7 +1278,12 @@ export async function addWord(): Promise<void> {
         };
   const wordset = await Wordset.withWords(language.words);
 
-  const randomWord = await getNextWord(wordset, language, bound);
+  const randomWord = await getNextWord(
+    wordset,
+    TestWords.words.length,
+    language,
+    bound
+  );
 
   const split = randomWord.split(" ");
   if (split.length > 1) {
@@ -1307,7 +1327,10 @@ export async function retrySavingResult(): Promise<void> {
     Notifications.add(
       "Could not retry saving the result as the result no longer exists.",
       0,
-      -1
+      {
+        duration: 5,
+        important: true,
+      }
     );
 
     return;
@@ -1489,6 +1512,15 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   if (completedEvent.mode != "custom") delete completedEvent.customText;
 
+  TestInput.logOldAndNew(
+    completedEvent.wpm,
+    completedEvent.acc,
+    completedEvent.rawWpm,
+    completedEvent.consistency,
+    `${completedEvent.mode} ${completedEvent.mode2}`,
+    completedEvent.testDuration
+  );
+
   return <CompletedEvent>completedEvent;
 }
 
@@ -1569,7 +1601,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let tooShort = false;
   //fail checks
   if (difficultyFailed) {
-    Notifications.add(`Test failed - ${failReason}`, 0, 1);
+    Notifications.add(`Test failed - ${failReason}`, 0, {
+      duration: 1,
+    });
     dontSave = true;
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
@@ -1659,16 +1693,25 @@ export async function finish(difficultyFailed = false): Promise<void> {
         CustomText.getCustomTextLongProgress(customTextName) +
         TestInput.input.getHistory().length;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
-      Notifications.add("Long custom text progress saved", 1, 5);
+      Notifications.add("Long custom text progress saved", 1, {
+        duration: 5,
+        important: true,
+      });
 
       let newText = CustomText.getCustomText(customTextName, true);
       newText = newText.slice(newProgress);
+      CustomText.setPopupTextareaState(newText.join(CustomText.delimiter));
       CustomText.setText(newText);
     } else {
       // They finished the test
       CustomText.setCustomTextLongProgress(customTextName, 0);
-      CustomText.setText(CustomText.getCustomText(customTextName, true));
-      Notifications.add("Long custom text completed", 1, 5);
+      const text = CustomText.getCustomText(customTextName, true);
+      CustomText.setPopupTextareaState(text.join(CustomText.delimiter));
+      CustomText.setText(text);
+      Notifications.add("Long custom text completed", 1, {
+        duration: 5,
+        important: true,
+      });
     }
   }
 
@@ -1748,13 +1791,21 @@ async function saveResult(
   isRetrying: boolean
 ): Promise<void> {
   if (!TestState.savingEnabled) {
-    Notifications.add("Result not saved: disabled by user", -1, 3, "Notice");
+    Notifications.add("Result not saved: disabled by user", -1, {
+      duration: 3,
+      customTitle: "Notice",
+      important: true,
+    });
     AccountButton.loading(false);
     return;
   }
 
   if (!ConnectionState.get()) {
-    Notifications.add("Result not saved: offline", -1, 2, "Notice");
+    Notifications.add("Result not saved: offline", -1, {
+      duration: 2,
+      customTitle: "Notice",
+      important: true,
+    });
     AccountButton.loading(false);
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
@@ -1875,7 +1926,7 @@ async function saveResult(
 
   $("#retrySavingResultButton").addClass("hidden");
   if (isRetrying) {
-    Notifications.add("Result saved", 1);
+    Notifications.add("Result saved", 1, { important: true });
   }
 }
 
