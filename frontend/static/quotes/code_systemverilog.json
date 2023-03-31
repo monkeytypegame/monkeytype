@@ -102,6 +102,48 @@
       "source": "Github - cjdrake/AES - aes_key_expand",
       "length": 888,
       "id": 16
+    },
+    {
+      "text": "module ACC_CLK_GEN\\n#(parameter int ACC_SIZE = 12,\\n\\tint FCW = 59\\n)\\n(\\n\\toutput logic clk_o,\\n\\tinput wire logic clk_i, rst_i\\n);\\n\\ttimeunit 1ns;\\n\\ttimeprecision 1ps;\\n\\tlogic [ACC_SIZE : 0] acc_reg;\\n\\talways_ff @(posedge clk_i) begin\\n\\t\\tif (rst_i) begin\\n\\t\\t\\t acc_reg <= '0;\\n\\t\\tend\\n\\t\\telse begin\\n\\t\\t\\tacc_reg <= acc_reg [ACC_SIZE-1:0] + FCW;\\n\\t\\tend\\n\\tend\\n\\talways_ff @(posedge clk_i) begin\\n\\t\\t\\tif (rst_i) begin\\n\\t\\t\\t\\t clk_o <= '0;\\n\\t\\t\\tend\\n\\t\\t\\telse if (acc_reg[ACC_SIZE]) begin\\n\\t\\t\\t\\tclk_o <= ~clk_o;\\n\\t\\t\\tend\\n\\tend\\nendmodule\\n\\n",
+      "source": "Github - degas91/UART_Controller - ACC_CLK_GEN",
+      "length": 568,
+      "id": 17
+    },
+    {
+      "text": "module EDGE_TO_PULSE\\n#(parameter string PULSE_TYPE = \"redge\"\\n)\\n(\\n\\toutput logic pulse_o,\\n\\tinput wire logic edge_i, clk_i, rst_i\\n);\\n\\ttimeunit 1ns;\\n\\ttimeprecision 1ps;\\n\\tlogic ff_out;\\n\\tgenerate if (PULSE_TYPE == \"redge\") begin\\n\\t\\t\\t\\talways_ff @(posedge clk_i) begin\\n\\t\\t\\t\\t\\tif (rst_i == 1) begin\\n\\t\\t\\t\\t\\t\\tff_out <= '0;\\n\\t\\t\\t\\t\\tend\\n\\t\\t\\t\\t\\telse begin\\n\\t\\t\\t\\t\\t\\tff_out <= edge_i;\\n\\t\\t\\t\\t\\tend\\n\\t\\t\\t\\tend\\n\\t\\t\\tassign pulse_o = edge_i && (~ff_out);\\n\\t\\t\\tend\\n\\t\\t\\telse if (PULSE_TYPE == \"fedge\") begin\\n\\t\\t\\t\\talways_ff @(posedge clk_i) begin\\n\\t\\t\\t\\t\\tif (rst_i == 1) begin\\n\\t\\t\\t\\t\\t\\tff_out <= '0;\\n\\t\\t\\t\\t\\tend\\n\\t\\t\\t\\t\\telse begin\\n\\t\\t\\t\\t\\t\\tff_out <= edge_i;\\n\\t\\t\\t\\t\\tend\\n\\t\\t\\t\\tend\\n\\t\\t\\tassign pulse_o = (~edge_i) && (ff_out);\\n\\t\\t\\tend\\n\\tendgenerate\\nendmodule\\n",
+      "source": "Github - degas91/UART_Controller - EDGE_TO_PULSE",
+      "length": 821,
+      "id": 18
+    },
+    {
+      "text": "module SYNC\\n#(parameter int WIDTH = 1,\\n\\tint PIPE_LENGTH = 2\\n)\\n(\\n\\toutput logic [WIDTH-1:0] sync_sig_o,\\n\\tinput wire logic [WIDTH-1:0] sig_i,\\n\\tinput wire logic dest_clk_i\\n);\\n\\ttimeunit 1ns;\\n\\ttimeprecision 1ps;\\n\\tlogic [PIPE_LENGTH-1:0] sync_sig;\\n\\tgenerate\\n\\t\\tfor ( genvar i = 0 ; i<WIDTH ; i++ ) begin\\n\\t\\t\\talways_ff @(posedge dest_clk_i) begin\\n\\t\\t\\t\\tsync_sig <= {sync_sig,sig_i[i]};\\n\\t\\t\\tend\\n\\t\\t\\tassign sync_sig_o[i] = sync_sig[PIPE_LENGTH-1];\\n\\t\\tend\\n\\tendgenerate\\nendmodule\\n\\n",
+      "source": "Github - degas91/UART_Controller - SYNC",
+      "length": 510,
+      "id": 19
+    },
+    {
+      "text": "module SYNC_DEBOUNCE\\n#(parameter int debounce_prd = 50\\n)\\n(\\n\\toutput logic sync_sig_o,\\n\\tinput wire logic raw_sig_i, dest_clk_i, dest_rst_i\\n);\\n\\ttimeunit 1ns;\\n\\ttimeprecision 1ps;\\n\\tlogic temp_sig, sync_sig, count_en;\\n\\tint count;\\n\\talways_ff@ (posedge dest_clk_i) begin\\n\\t\\tif (dest_rst_i) begin\\n\\t\\t\\ttemp_sig <= '0;\\n\\t\\tend\\n\\t\\telse begin\\n\\t\\t\\ttemp_sig <= sync_sig;\\n\\t\\tend\\n\\tend\\n\\tassign count_en = sync_sig ^ temp_sig;\\n\\talways_ff@ (posedge dest_clk_i) begin\\n\\t\\tif (dest_rst_i) begin\\n\\t\\t\\tcount <= 0;\\n\\t\\tend else begin\\n\\t\\t\\tif (count_en) begin\\n\\t\\t\\t\\tcount <= 0;\\n\\t\\t\\tend\\n\\t\\t\\telse if (count == debounce_prd-4) begin\\n\\t\\t\\t\\tsync_sig_o <= temp_sig;\\n\\t\\t\\tend\\n\\t\\t\\telse begin\\n\\t\\t\\t\\tcount <= count + 1;\\n\\t\\t\\tend\\n\\t\\tend\\n\\tend\\n\\tSYNC #(\\n\\t\\t.WIDTH(1),\\n\\t\\t.PIPE_LENGTH(2)\\n\\t\\t)\\n\\tCDC_SYNC (\\n\\t\\t.dest_clk_i(dest_clk_i),\\n\\t\\t.sig_i(raw_sig_i),\\n\\t\\t.sync_sig_o(sync_sig)\\n\\t\\t);\\nendmodule\\n",
+      "source": "Github - degas91/UART_Controller - SYNC_DEBOUNCE",
+      "length": 944,
+      "id": 20
+    },
+    {
+      "text": "package UART_pkg;\\n\\ttimeunit 1ns;\\n\\ttimeprecision 1ps;\\n\\ttypedef enum logic [2:0]\\n\\t{RX_IDLE    = 3'b000,\\n\\tRX_START    = 3'b001,\\n\\tRX_READ     = 3'b011,\\n\\tRX_STOP     = 3'b010,\\n\\tRX_STOP2    = 3'b110,\\n\\tRX_ERROR    = 3'b111,\\n\\tRX_EOM      = 3'b101,\\n\\tRX_XXX      = 3'bXXX } uart_rx_e;\\n\\ttypedef enum logic [1:0]\\n\\t{TX_IDLE    = 2'b00,\\n\\tTX_START    = 2'b01,\\n\\tTX_XMIT     = 2'b11,\\n\\tTX_XXX      = 2'bXX } uart_tx_e;\\nendpackage\\n",
+      "source": "Github - degas91/UART_Controller - UART_pkg",
+      "length": 446,
+      "id": 21
+    },
+    {
+      "text": "module UART_RCVR \\n#(parameter DATA_WIDTH = 8\\n) \\n(\\n\\toutput logic data_rdy_o, data_err_o,\\n\\toutput logic [DATA_WIDTH-1 : 0] rcvr_data_o,\\n\\tinput wire logic baud_i, serial_i, data_err_clr_i, data_rdy_clr_i, clk_i, rst_i\\n);\\n\\ttimeunit 1ns;\\n\\ttimeprecision 1ps;\\n\\timport UART_pkg::*;\\n\\tuart_rx_e state, next;\\n\\tlogic [DATA_WIDTH-1 : 0] shift_reg;\\n\\tlogic m_data_rdy,m_data_err;\\n\\tlogic baud_fedg,data_rdy,data_err;\\n\\tint bit_count;\\n\\talways_ff @(posedge clk_i) begin\\n\\t\\tif (rst_i) begin\\n\\t\\t\\tstate <= RX_IDLE;\\n\\t\\tend\\n\\t\\telse begin\\n\\t\\t\\tstate <= next;\\n\\t\\tend\\n\\tend\\n\\talways_comb begin\\n\\t\\tcase (state)\\n\\t\\t\\tRX_IDLE:\\n\\t\\t\\t\\tif (!baud_i && !serial_i) begin\\n\\t\\t\\t\\t\\tnext = RX_START;\\n\\t\\t\\t\\tend\\n\\t\\t\\t\\telse begin\\n\\t\\t\\t\\t\\tnext = RX_IDLE;\\n\\t\\t\\t\\tend\\n\\t\\t\\tRX_START: if (baud_i) next = RX_READ;\\n\\t\\t\\t\\t\\telse next = RX_START;\\n\\t\\t\\tRX_READ: if (bit_count  == DATA_WIDTH && baud_i) next = RX_STOP;\\n\\t\\t\\t\\t\\telse next = RX_READ;\\n\\t\\t\\tRX_STOP: if (!serial_i && !baud_i) next = RX_ERROR;\\n\\t\\t\\t\\t\\telse if (serial_i && !baud_i) next = RX_STOP2;\\n\\t\\t\\t\\t\\telse next = RX_STOP;\\n\\t\\t\\tRX_STOP2: if (!serial_i && baud_i) next = RX_ERROR;\\n\\t\\t\\t\\t\\telse if (serial_i && baud_i) next = RX_EOM;\\n\\t\\t\\t\\t\\telse next = RX_STOP2;\\n\\t\\t\\tRX_ERROR: next = RX_EOM;\\n\\t\\t\\tRX_EOM: next = RX_IDLE;\\n\\t\\t\\tdefault: next = RX_XXX;\\n\\t\\tendcase\\n\\tend\\n\\talways_comb begin\\n\\t\\t{m_data_err,m_data_rdy} = '0;\\n\\t\\tcase (state)\\n\\t\\t\\tRX_IDLE: ;\\n\\t\\t\\tRX_START: ;\\n\\t\\t\\tRX_READ: ;\\n\\t\\t\\tRX_STOP: ;\\n\\t\\t\\tRX_STOP2: ;\\n\\t\\t\\tRX_ERROR: m_data_err  = '1;\\n\\t\\t\\tRX_EOM: m_data_rdy  = '1;\\n\\t\\t\\tdefault: {m_data_err,m_data_rdy} = 'x;\\n\\t\\tendcase\\n\\tend\\n\\talways_ff @(posedge clk_i) begin\\n\\t\\tif (rst_i) begin\\n\\t\\t\\tdata_rdy <= '0;\\n\\t\\t\\tdata_err <= '0;\\n\\t\\tend\\n\\t\\telse begin\\n\\t\\t\\tdata_rdy <= m_data_rdy;\\n\\t\\t\\tdata_err <= m_data_err;\\n\\t\\tend\\n\\tend\\n\\talways_ff @(posedge clk_i) begin\\n\\t\\tif (rst_i) begin\\n\\t\\t\\tshift_reg <= '0;\\n\\t\\t\\tbit_count <= '0;\\n\\t\\tend\\n\\t\\telse begin\\n\\t\\t\\tif (baud_fedg && (state == RX_READ)) begin\\n\\t\\t\\t\\tshift_reg <= {serial_i, shift_reg[DATA_WIDTH-1:1]};\\n\\t\\t\\t\\tbit_count <= bit_count+1;\\n\\t\\t\\tend\\n\\t\\t\\telse if (state == RX_IDLE) begin\\n\\t\\t\\t\\tbit_count <= '0;\\n\\t\\t\\tend\\n\\t\\tend\\n\\tend\\n\\talways_ff @(posedge clk_i) begin\\n\\t\\tif (rst_i) begin\\n\\t\\t\\tdata_rdy_o <= '0;\\n\\t\\t\\trcvr_data_o <= '0;\\n\\t\\tend\\n\\t\\telse begin\\n\\t\\t\\tif (data_rdy == 1) begin\\n\\t\\t\\t\\tdata_rdy_o <= '1;\\n\\t\\t\\t\\trcvr_data_o <= shift_reg;\\n\\t\\t\\tend\\n\\t\\t\\telse if (data_rdy_clr_i == 1) begin\\n\\t\\t\\t\\tdata_rdy_o <= '0;\\n\\t\\t\\tend\\n\\t\\tend\\n\\tend\\n\\talways_ff @(posedge clk_i) begin\\n\\t\\tif (rst_i) begin\\n\\t\\t\\tdata_err_o <= '0;\\n\\t\\tend\\n\\t\\telse begin\\n\\t\\t\\tif (data_err == 1) begin\\n\\t\\t\\t\\tdata_err_o <= '1;\\n\\t\\t\\tend\\n\\t\\t\\telse if (data_err_clr_i == 1) begin\\n\\t\\t\\t\\tdata_err_o <= '0;\\n\\t\\t\\tend\\n\\t\\tend\\n\\tend\\n\\tEDGE_TO_PULSE #(\\n\\t.PULSE_TYPE(\"fedge\")\\n\\t)\\n\\tNEGEDGE_DTCT (\\n\\t.pulse_o(baud_fedg),\\n\\t.edge_i(baud_i),\\n\\t.clk_i(clk_i),\\n\\t.rst_i(rst_i)\\n\\t);\\nendmodule\\n",
+      "source": "Github - degas91/UART_Controller - UART_RCVR",
+      "length": 3041,
+      "id": 22
+    },
+    {
+      "text": "module UART_TOP\\n#(parameter DATA_WIDTH = 8, ACC_SIZE = 32, FCW = 9895605\\n)\\n(\\n\\toutput logic data_rdy_o, data_err_o, serial_o, busy_o,\\n\\toutput logic [DATA_WIDTH-1:0] rcvr_data_o,\\n\\tinput wire logic serial_i, start_tx_i, clk_i, rst_i, data_rdy_clr_i, data_err_clr_i,\\n\\tinput wire logic [DATA_WIDTH-1:0] xmit_data_i\\n);\\n\\ttimeunit 1nss;\\n\\ttimeprecision 1ps;\\n\\tlogic baud_clk, serial_sync;\\n\\tUART_RCVR #(\\n\\t\\t.DATA_WIDTH(DATA_WIDTH)\\n\\t\\t)\\n\\tRCVR (\\n\\t\\t.data_rdy_o(data_rdy_o),\\n\\t\\t.data_err_o(data_err_o),\\n\\t\\t.rcvr_data_o(rcvr_data_o),\\n\\t\\t.baud_i(baud_clk),\\n\\t\\t.serial_i(serial_sync),\\n\\t\\t.data_err_clr_i(data_err_clr_i),\\n\\t\\t.data_rdy_clr_i(data_rdy_clr_i),\\n\\t\\t.clk_i(clk_i),\\n\\t\\t.rst_i(rst_i)\\n\\t\\t);\\n\\tUART_XMTR #(\\n\\t\\t.DATA_WIDTH(DATA_WIDTH)\\n\\t\\t)\\n\\tXMTR (\\n\\t\\t.xmit_data_i(xmit_data_i),\\n\\t\\t.start_tx_i(start_tx_i),\\n\\t\\t.baud_i(baud_clk),\\n\\t\\t.clk_i(clk_i),\\n\\t\\t.rst_i(rst_i),\\n\\t\\t.busy_o(busy_o),\\n\\t\\t.serial_o(serial_o)\\n\\t\\t);\\n\\tSYNC_DEBOUNCE #(\\n\\t\\t.debounce_prd(50)\\n\\t\\t)\\n\\tSERIAL_I_DEBOUNCE (\\n\\t\\t.sync_sig_o(serial_sync),\\n\\t\\t.raw_sig_i(serial_i),\\n\\t\\t.dest_clk_i(clk_i),\\n\\t\\t.dest_rst_i(rst_i)\\n\\t\\t);\\n\\t(* use_dsp =\"yes\" *) ACC_CLK_GEN #(\\n\\t\\t.ACC_SIZE(ACC_SIZE),\\n\\t\\t.FCW (FCW)\\n\\t\\t)\\n\\tBAUD_GEN (\\n\\t\\t.clk_o(baud_clk),\\n\\t\\t.clk_i(clk_i),\\n\\t\\t.rst_i(rst_i)\\n\\t\\t);\\nendmodule\\n",
+      "source": "Github - degas91/UART_Controller - UART_TOP",
+      "length": 1342,
+      "id": 23
     }
   ]
 }
