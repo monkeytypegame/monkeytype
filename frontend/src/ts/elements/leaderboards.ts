@@ -642,7 +642,9 @@ $("#leaderboardsWrapper").on("click", (e) => {
 
 import languages from "../../../static/languages/_list.json";
 
-function generateLanguageData(languages: string[]): { id: string; text: string; selected?: boolean }[] {
+function generateLanguageData(
+  languages: string[]
+): { id: string; text: string; selected?: boolean }[] {
   return languages.map((language, index) => {
     return {
       id: language,
@@ -659,7 +661,6 @@ const languageSelector = $(
   width: "100%",
   data: generateLanguageData(languages),
 });
-
 
 languageSelector.on("select2:select", (e) => {
   currentLanguage = e.params.data.id;
