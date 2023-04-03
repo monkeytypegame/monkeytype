@@ -18,6 +18,7 @@ import * as Focus from "../test/focus";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as Replay from "../test/replay";
 import * as MonkeyPower from "../elements/monkey-power";
+import * as Notifications from "../elements/notifications";
 import * as WeakSpot from "../test/weak-spot";
 import * as ActivePage from "../states/active-page";
 import * as TestState from "../test/test-state";
@@ -906,8 +907,27 @@ $(document).keydown(async (event) => {
   }
 
   if (Config.oppositeShiftMode !== "off") {
-    correctShiftUsed =
-      (await ShiftTracker.isUsingOppositeShift(event)) !== false;
+    if (
+      Config.oppositeShiftMode === "keymap" &&
+      Config.keymapLayout !== "overrideSync"
+    ) {
+      const keymapLayout = await Misc.getLayout(Config.keymapLayout).catch(
+        () => undefined
+      );
+      if (keymapLayout === undefined) {
+        Notifications.add("Failed to load keymap layout", -1);
+
+        return;
+      }
+      const keycode = ShiftTracker.layoutKeyToKeycode(event.key, keymapLayout);
+
+      correctShiftUsed =
+        keycode === undefined
+          ? true
+          : ShiftTracker.isUsingOppositeShift(keycode);
+    } else {
+      correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
+    }
   }
 
   const funbox = FunboxList.get(Config.funbox).find(
