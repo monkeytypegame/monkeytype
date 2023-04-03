@@ -289,12 +289,12 @@ export function forceKeyup(): void {
   //skewing the average and standard deviation
   const avg = roundTo2(mean(keypressTimings.duration.array as number[]));
   const keysOrder = Object.entries(keysObj);
-  keysOrder.sort((a, b) => b[1] - a[1]);
-  for (let i = keysOrder.length - 1; i >= 1; i--) {
+  keysOrder.sort((a, b) => a[1] - b[1]);
+  for (let i = 0; i < keysOrder.length - 1; i++) {
     recordKeyupTime(keysOrder[i][0]);
   }
-  (keypressTimings.duration.array as number[])[keysEntry[keysOrder[0][0]]] =
-    avg;
+  const last = keysOrder[keysOrder.length - 1];
+  (keypressTimings.duration.array as number[])[keysEntry[last[0]]] = avg;
 }
 
 export function recordKeyupTime(key: string): void {
