@@ -1527,8 +1527,10 @@ function checkOverlap(obj: CompletedEvent) {
   let events: number[][] = [];
   let pref = 0;
   for (let i = 0; i < b.length; i++) {
-    events.push([pref, 1]);
-    events.push([pref + b[i], 0]);
+    if (b[i] != 0) {
+      events.push([pref, 1]);
+      events.push([pref + b[i], 0]);
+    }
     if (i != b.length - 1) {
       pref += a[i];
     }
@@ -1557,7 +1559,7 @@ function checkOverlap(obj: CompletedEvent) {
       }
       cur--;
     }
-    console.log({ time, type, cur });
+    console.log({ time, type, cur, res });
   }
 
   console.log({ res, real: obj.keyOverlap });

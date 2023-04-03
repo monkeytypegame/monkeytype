@@ -486,8 +486,7 @@ export function whorf(speed: number, wordlen: number): number {
 }
 
 export function roundTo2(num: number): number {
-  return num;
-  //return Math.round((num + Number.EPSILON) * 100) / 100;
+  return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
 export function findLineByLeastSquares(values_y: number[]): number[][] {

@@ -230,6 +230,7 @@ export function setKeypressTimingsTooLong(): void {
 }
 
 let keysObj: Record<string, number> = {};
+let keysEntry: Record<string, number> = {}; // index this key should have in duration array
 
 const keysToTrack = [
   "Backquote",
@@ -288,7 +289,7 @@ export function forceKeyup(): void {
   //skewing the average and standard deviation
   const avg = roundTo2(mean(keypressTimings.duration.array as number[]));
   for (const key of Object.keys(keysObj)) {
-    (keypressTimings.duration.array as number[]).push(avg);
+    //(keypressTimings.duration.array as number[]).push(avg);
     delete keysObj[key];
   }
 }
@@ -299,17 +300,23 @@ export function recordKeyupTime(key: string): void {
   }
   const now = performance.now();
   const diff = Math.abs(keysObj[key] - now);
-  (keypressTimings.duration.array as number[]).push(roundTo2(diff));
+  (keypressTimings.duration.array as number[])[keysEntry[key]] = diff;
   delete keysObj[key];
+  delete keysEntry[key];
 
   updateOverlap(now);
 }
 
+let start = -1;
 export function recordKeydownTime(key: string): void {
+  if (start == -1) start = performance.now();
   if (keysObj[key] !== undefined || !keysToTrack.includes(key)) {
     return;
   }
   keysObj[key] = performance.now();
+  keysEntry[key] = keypressTimings.duration.array.length;
+  if (keypressTimings.duration.array != "toolong")
+    keypressTimings.duration.array.push(0);
 
   updateOverlap(keysObj[key]);
 
@@ -343,6 +350,12 @@ function updateOverlap(now: number): void {
       keyOverlap.lastStartTime = -1;
     }
   }
+  console.log({
+    ov: { ...keyOverlap },
+    time: performance.now() - start,
+    cur: keys.length,
+    real: keyOverlap.total,
+  });
 }
 
 export function resetKeypressTimings(): void {
