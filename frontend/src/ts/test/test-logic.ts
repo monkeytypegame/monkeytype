@@ -1512,15 +1512,6 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   if (completedEvent.mode != "custom") delete completedEvent.customText;
 
-  TestInput.logOldAndNew(
-    completedEvent.wpm,
-    completedEvent.acc,
-    completedEvent.rawWpm,
-    completedEvent.consistency,
-    `${completedEvent.mode} ${completedEvent.mode2}`,
-    completedEvent.testDuration
-  );
-
   return <CompletedEvent>completedEvent;
 }
 

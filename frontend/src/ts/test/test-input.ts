@@ -327,66 +327,6 @@ function updateOverlap(): void {
     }
   }
 }
-
-export function logOldAndNew(
-  wpm: number,
-  acc: number,
-  raw: number,
-  con: number,
-  test: string,
-  duration: number
-): void {
-  if (!spacingDebug) return;
-  // console.log(
-  //   "old",
-  //   t1,
-  //   d1,
-  //   t1 / d1,
-  //   keypressTimings.duration.array,
-  //   stdDev(keypressTimings.duration.array as number[]),
-  //   mean(keypressTimings.duration.array as number[])
-  // );
-  // console.log("new", t2, d2, t2 / d2, a, stdDev(a), mean(a));
-
-  console.log("RESULT", {
-    wpm,
-    acc,
-    raw,
-    con,
-    test,
-    duration,
-    spacing: {
-      stdDev: stdDev(keypressTimings.spacing.array as number[]),
-      mean: mean(keypressTimings.spacing.array as number[]),
-      min: Math.min(...(keypressTimings.spacing.array as number[])),
-      max: Math.max(...(keypressTimings.spacing.array as number[])),
-      total: (keypressTimings.spacing.array as number[]).reduce(
-        (a, b) => a + b,
-        0
-      ) as number,
-      length: keypressTimings.spacing.array.length,
-    },
-    oldDuration: {
-      stdDev: stdDev(keypressTimings.duration.array as number[]),
-      mean: mean(keypressTimings.duration.array as number[]),
-      min: Math.min(...(keypressTimings.duration.array as number[])),
-      max: Math.max(...(keypressTimings.duration.array as number[])),
-      total: (keypressTimings.duration.array as number[]).reduce(
-        (a, b) => a + b,
-        0
-      ) as number,
-      length: keypressTimings.duration.array.length,
-    },
-    newDuration: {
-      stdDev: stdDev(newKeypresDurationArray),
-      mean: mean(newKeypresDurationArray),
-      min: Math.min(...newKeypresDurationArray),
-      max: Math.max(...newKeypresDurationArray),
-      total: newKeypresDurationArray.reduce((a, b) => a + b, 0) as number,
-      length: newKeypresDurationArray.length,
-    },
-    totalOverlap,
-  });
 }
 
 function pushKeypressSpacing(val: number): void {
