@@ -344,12 +344,6 @@
       "length": 75
     },
     {
-      "text": "I love to type crazy stuff.",
-      "source": "Alphabet",
-      "id": 57,
-      "length": 27
-    },
-    {
       "text": "When you lose the ones you love, you might find it hard to cry. Until it's only you and everybody else has left the room, you might feel what it's like to not know how to feel.",
       "source": "Never Enough",
       "id": 58,
@@ -4413,7 +4407,7 @@
     },
     {
       "text": "You think you're any different from me, or your friends, or this tree? If you listen hard enough, you can hear every living thing breathing together. You can feel everything growing. We're all living together, even if most folks don't act like it. We all have the same roots, and we are all branches of the same tree.",
-      "source": "Avatar The Last Airbender",
+      "source": "Avatar: The Last Airbender",
       "id": 750,
       "length": 317
     },
@@ -11936,10 +11930,10 @@
       "length": 315
     },
     {
-      "text": "Today you are you, that is truer than true. There is no one alive who is younger than you.",
+      "text": "Today you are you, that is truer than true. There is no one alive who is youer than you.",
       "source": "Happy Birthday to You!",
       "id": 2049,
-      "length": 90
+      "length": 88
     },
     {
       "text": "If I lay here, if I just lay here, would you lie with me and just forget the world?",
@@ -14067,7 +14061,7 @@
     },
     {
       "text": "The Sky People have sent us a message that they can take whatever they want. That no one can stop them. Well, we will send them a message. You ride out as fast as the wind can carry you. You tell the other clans to come. Tell them Toruk Macto calls to them!",
-      "source": "Avatar",
+      "source": "Avatar (2009)",
       "id": 2419,
       "length": 257
     },
@@ -15813,7 +15807,7 @@
     },
     {
       "text": "This is why we're here. Because this little gray rock sells for 20 million dollars a kilo. That's the only reason. This is what pays for the whole party, and it's what pays for your science. Those savages are threatening our whole operation. We're on the brink of war and you're supposed to be finding me a diplomatic solution. So use what you've got, and get me some results.",
-      "source": "Avatar",
+      "source": "Avatar (2009)",
       "id": 2726,
       "length": 376
     },
@@ -17457,7 +17451,7 @@
     },
     {
       "text": "The monks used to say that revenge is like a two-headed rat viper. While you watch your enemy go down, you're being poisoned yourself.",
-      "source": "Avatar: The last Airbender",
+      "source": "Avatar: The Last Airbender",
       "id": 3012,
       "length": 134
     },
@@ -20583,7 +20577,7 @@
     },
     {
       "text": "Look, you're supposed to be winning the hearts and minds of the natives. Isn't that the whole point of your little puppet show? If you walk like them, you talk like them, they'll trust you. We build them a school, teach them English. But after - how many years - the relations with the indigenous are only getting worse.",
-      "source": "Avatar",
+      "source": "Avatar (2009)",
       "id": 3557,
       "length": 320
     },
@@ -22688,10 +22682,10 @@
       "length": 97
     },
     {
-      "text": "As there is no profit in the physician's art unless it cure the diseases of the body, so there is none in philosophy, unless it expel the troubles of the soul.",
+      "text": "As there is no profit in the physician's art unless it cures the diseases of the body, so there is none in philosophy, unless it expels the troubles of the soul.",
       "source": "Letter to Marcella",
       "id": 3918,
-      "length": 159
+      "length": 161
     },
     {
       "text": "Trudging slowly over wet sand, back to the bench where your clothes were stolen. This is the coastal town that they forgot to close down. Armageddon - come Armageddon, come.",
@@ -25248,12 +25242,6 @@
       "source": "The Silence of the Lambs",
       "id": 4361,
       "length": 111
-    },
-    {
-      "text": "I'll take you for a ride on my garbage truck. Oh no, I'll take you to the dump 'cause you're my queen. I'll show you the sights. You know you wanna ride on my garbage truck.",
-      "source": "Garbage Truck",
-      "id": 4362,
-      "length": 173
     },
     {
       "text": "I often see racers, particularly at the back of the pack in amateur races, trying to go fast, with their arms flailing around, banging off shifts, jerking the steering into a turn with feet stabbing at the pedals. If the driver would only slow down, the car would actually go faster. It reminds me of the saying, \"never confuse movement for action.\"",
@@ -29564,12 +29552,6 @@
       "id": 5120
     },
     {
-      "text": "Precocious high school student Jimmy Kudo uses his keen powers of observation and astute intuition to solve mysteries that have left law enforcement officials baffled. Hot on the trail of a suspect, Jimmy is accosted from behind and fed a strange chemical which physically transforms him into a grade schooler! Taking on the pseudonym Conan Edogawa, he attempts to track down the people who did this to him. But until he finds a cure for his bizarre condition, Jimmy continues to help the police solve their toughest cases.",
-      "source": "Gosho Aoyama, Detective Conan",
-      "length": 523,
-      "id": 5121
-    },
-    {
       "text": "In late June 1945, working at Los Alamos, Von Neumann completed a 101-page document titled \"First Draft of a Report on the EDVAC\". In his clear and penetrating way, he set forth an overview of the design of a digital computer that would feature stored-program operation. Von Neumann boldly drew comparisons between his electronic circuits and the brain's neurons, emphasizing that just as the brain relies on its memory, so the computer would depend on its programs. Goldstine soon was distributing copies to interested scientists. In time the \"First Draft\" would become one of the most influential papers in computer science.",
       "source": "Maurice V. Wilkes, Computers Then And Now",
       "length": 626,
@@ -32594,7 +32576,7 @@
       "id": 5711
     },
     {
-      "text": "Their morals, their code; it's a bad joke. Dropped at the first sign of trouble. They're only as good as the world allows them to be. You'll see- I'll show you. When the chips are down these, uh, civilized people? They'll eat each other. See I'm not a monster, I'm just ahead of the curve.",
+      "text": "Their morals, their code; it's a bad joke. Dropped at the first sign of trouble. They're only as good as the world allows them to be. You'll see. I'll show you. When the chips are down these, uh, civilized people? They'll eat each other. See I'm not a monster, I'm just ahead of the curve.",
       "source": "The Dark Knight",
       "length": 289,
       "id": 5712
@@ -33108,12 +33090,6 @@
       "source": "The Very Hungry Caterpillar - Eric Carle",
       "length": 84,
       "id": 5802
-    },
-    {
-      "text": "It may be hard right now but you must silence those thoughts. Stop counting those things you have lost, what is gone is gone. So ask yourself, what is there that still remains to you.",
-      "source": "One piece",
-      "length": 183,
-      "id": 5803
     },
     {
       "text": "You will face many defeats in life, but never let yourself be defeated.",
@@ -33794,9 +33770,9 @@
       "id": 5921
     },
     {
-      "text": "So the crime was a trip to the market. The sentence, a lifetime of hurt. As she saw through tears. Her home of thirty odd years, reduced to rubble and dirt. And she cursed those who would approach her and hold papers up to her face, and say \"You should feel blessed you live in the US and not some other hellish place\"",
+      "text": "So the crime was a trip to the market. The sentence, a lifetime of hurt. As she saw through tears. Her home of thirty odd years, reduced to rubble and dirt. And she cursed those who would approach her and hold papers up to her face, and say \"You should feel blessed you live in the US and not some other hellish place.\"",
       "source": "Mischief Brew - Save a City",
-      "length": 318,
+      "length": 319,
       "id": 5922
     },
     {
@@ -36877,13 +36853,6 @@
       "id": 6517
     },
     {
-      "text": "To be, or not to be? That is the question: Whether 'tis nobler in the mind to suffer The slings and arrows of outrageous fortune, or to take arms against a sea of troubles, and, by opposing, end them?",
-      "source": "Hamlet",
-      "length": 200,
-      "approvedBy": "Smithster",
-      "id": 6518
-    },
-    {
       "text": "Wake up to reality! Nothing ever goes as planned in this accursed world. The longer you live, the more you realize that the only things that truly exist in this reality are merely pain. Suffering and futility. Listen, everywhere you look in this world, wherever there is light, there will always be shadows to be found as well. As long as there is a concept of victors, the vanquished will also exist. The selfish intent of wanting to preserve peace initiates war. And hatred is born in order to protect love. There are nexuses causal relationships that cannot be separated.",
       "source": "Madara Uchiha - Naruto Shippuden",
       "length": 574,
@@ -37906,13 +37875,6 @@
       "id": 6671
     },
     {
-      "text": "Fear is the path to the dark side. Fear leads to anger. Anger leads to hate. Hate leads to suffering.",
-      "source": "Yoda, Star wars",
-      "length": 101,
-      "approvedBy": "Smithster",
-      "id": 6672
-    },
-    {
       "text": "I wasn't supposed to come back after Christmas vacation on account of I was flunking four subjects and not applying myself and all.",
       "source": "The Catcher in the Rye, J.D. Salinger",
       "length": 131,
@@ -38794,6 +38756,24 @@
       "source": "Fred Rogers",
       "length": 213,
       "id": 6815
+    },
+    {
+      "text": "Would you please put some pants on? I feel weird having to ask you twice.",
+      "source": "The Hangover",
+      "length": 73,
+      "id": 6816
+    },
+    {
+      "text": "I'm not sure whose twisted idea it was to put hundreds of adolescents in underfunded schools run by people whose dreams were crushed years ago, but I admire the sadism.",
+      "source": "Wednesday",
+      "length": 168,
+      "id": 6817
+    },
+    {
+      "text": "Teach them our ways so they do not suffer the shame of being useless.",
+      "source": "Avatar: The Way of Water",
+      "length": 69,
+      "id": 6818
     }
   ]
 }

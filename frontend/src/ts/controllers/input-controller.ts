@@ -18,6 +18,7 @@ import * as Focus from "../test/focus";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as Replay from "../test/replay";
 import * as MonkeyPower from "../elements/monkey-power";
+import * as Notifications from "../elements/notifications";
 import * as WeakSpot from "../test/weak-spot";
 import * as ActivePage from "../states/active-page";
 import * as TestState from "../test/test-state";
@@ -833,8 +834,6 @@ $(document).keydown(async (event) => {
     );
   }
   TestInput.recordKeypressSpacing();
-  TestInput.setKeypressDuration(performance.now());
-  TestInput.recordKeydownTime(event.code);
   TestInput.setKeypressNotAfk();
 
   //blocking firefox from going back in history with backspace
@@ -907,8 +906,27 @@ $(document).keydown(async (event) => {
   }
 
   if (Config.oppositeShiftMode !== "off") {
-    correctShiftUsed =
-      (await ShiftTracker.isUsingOppositeShift(event)) !== false;
+    if (
+      Config.oppositeShiftMode === "keymap" &&
+      Config.keymapLayout !== "overrideSync"
+    ) {
+      const keymapLayout = await Misc.getLayout(Config.keymapLayout).catch(
+        () => undefined
+      );
+      if (keymapLayout === undefined) {
+        Notifications.add("Failed to load keymap layout", -1);
+
+        return;
+      }
+      const keycode = ShiftTracker.layoutKeyToKeycode(event.key, keymapLayout);
+
+      correctShiftUsed =
+        keycode === undefined
+          ? true
+          : ShiftTracker.isUsingOppositeShift(keycode);
+    } else {
+      correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
+    }
   }
 
   const funbox = FunboxList.get(Config.funbox).find(
@@ -948,6 +966,18 @@ $(document).keydown(async (event) => {
   isBackspace = event.key === "Backspace" || event.key === "delete";
 });
 
+$("#wordsInput").keydown((event) => {
+  setTimeout(() => {
+    TestInput.recordKeydownTime(event.code);
+  }, 0);
+});
+
+$("#wordsInput").keyup((event) => {
+  setTimeout(() => {
+    TestInput.recordKeyupTime(event.code);
+  }, 0);
+});
+
 $("#wordsInput").keyup((event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     event.preventDefault();
@@ -957,15 +987,6 @@ $("#wordsInput").keyup((event) => {
   if (IgnoredKeys.includes(event.key)) return;
 
   if (TestUI.resultVisible) return;
-  const now: number = performance.now();
-  if (TestInput.keypressTimings.duration.current !== -1) {
-    const diff: number = Math.abs(
-      TestInput.keypressTimings.duration.current - now
-    );
-    TestInput.pushKeypressDuration(diff);
-  }
-  TestInput.recordKeyupTime(event.code);
-  TestInput.setKeypressDuration(now);
   Monkey.stop();
 });
 

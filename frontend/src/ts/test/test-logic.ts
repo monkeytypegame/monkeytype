@@ -1304,6 +1304,7 @@ interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
   wpmConsistency: number;
   lang: string;
   challenge?: string | null;
+  keyOverlap: number;
 }
 
 type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
@@ -1376,6 +1377,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     tags: undefined,
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
+    keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
@@ -1511,15 +1513,6 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   completedEvent.tags = activeTagsIds;
 
   if (completedEvent.mode != "custom") delete completedEvent.customText;
-
-  TestInput.logOldAndNew(
-    completedEvent.wpm,
-    completedEvent.acc,
-    completedEvent.rawWpm,
-    completedEvent.consistency,
-    `${completedEvent.mode} ${completedEvent.mode2}`,
-    completedEvent.testDuration
-  );
 
   return <CompletedEvent>completedEvent;
 }
@@ -1830,6 +1823,10 @@ async function saveResult(
       }
     }
     console.log("Error saving result", completedEvent);
+    if (response.message === "Duration is using old calculation") {
+      response.message =
+        "Duration is using old calculation. Please refresh the page to download the new update. If the problem persists, please contact support.";
+    }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
