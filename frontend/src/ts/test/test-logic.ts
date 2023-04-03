@@ -1443,10 +1443,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const stddev = Misc.stdDev(rawPerSecond);
   const avg = Misc.mean(rawPerSecond);
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
-  let keyConsistencyArray =
-    TestInput.keypressTimings.spacing.array === "toolong"
-      ? []
-      : TestInput.keypressTimings.spacing.array.slice();
+  let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
       0,
@@ -1757,7 +1754,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.chartData = "toolong";
     completedEvent.keySpacing = "toolong";
     completedEvent.keyDuration = "toolong";
-    TestInput.setKeypressTimingsTooLong();
   }
 
   if (dontSave) {

@@ -62,10 +62,10 @@ interface Keypress {
 interface KeypressTimings {
   spacing: {
     last: number;
-    array: number[] | "toolong";
+    array: number[];
   };
   duration: {
-    array: number[] | "toolong";
+    array: number[];
   };
 }
 
@@ -282,16 +282,11 @@ export function incrementAccuracy(correctincorrect: boolean): void {
   }
 }
 
-export function setKeypressTimingsTooLong(): void {
-  keypressTimings.spacing.array = "toolong";
-  keypressTimings.duration.array = "toolong";
-}
-
 export function forceKeyup(): void {
   //using mean here because for words mode, the last keypress ends the test.
   //if we then force keyup on that last keypress, it will record a duration of 0
   //skewing the average and standard deviation
-  const avg = roundTo2(mean(keypressTimings.duration.array as number[]));
+  const avg = roundTo2(mean(keypressTimings.duration.array));
   const keysOrder = Object.entries(keyDownData);
   keysOrder.sort((a, b) => a[1].timestamp - b[1].timestamp);
   for (let i = 0; i < keysOrder.length - 1; i++) {
@@ -299,8 +294,7 @@ export function forceKeyup(): void {
   }
   const last = keysOrder[keysOrder.length - 1];
   if (last !== undefined) {
-    (keypressTimings.duration.array as number[])[keyDownData[last[0]].index] =
-      avg;
+    keypressTimings.duration.array[keyDownData[last[0]].index] = avg;
   }
 }
 
@@ -310,7 +304,7 @@ export function recordKeyupTime(key: string): void {
   }
   const now = performance.now();
   const diff = Math.abs(keyDownData[key].timestamp - now);
-  (keypressTimings.duration.array as number[])[keyDownData[key].index] = diff;
+  keypressTimings.duration.array[keyDownData[key].index] = diff;
   delete keyDownData[key];
 
   updateOverlap(now);
@@ -322,13 +316,13 @@ export function recordKeydownTime(key: string): void {
   }
   keyDownData[key].timestamp = performance.now();
   keyDownData[key].index = keypressTimings.duration.array.length;
-  (keypressTimings.duration.array as number[]).push(0);
+  keypressTimings.duration.array.push(0);
 
   updateOverlap(keyDownData[key].timestamp);
 
   if (keypressTimings.spacing.last !== -1) {
     const diff = Math.abs(performance.now() - keypressTimings.spacing.last);
-    (keypressTimings.spacing.array as number[]).push(roundTo2(diff));
+    keypressTimings.spacing.array.push(roundTo2(diff));
     if (spacingDebug) {
       console.log(
         "spacing debug",
