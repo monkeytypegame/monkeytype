@@ -318,9 +318,7 @@ export function recordKeydownTime(key: string): void {
   }
   keysDownTimestamps[key] = performance.now();
   keysIndices[key] = keypressTimings.duration.array.length;
-  if (keypressTimings.duration.array != "toolong") {
-    keypressTimings.duration.array.push(0);
-  }
+  (keypressTimings.duration.array as number[]).push(0);
 
   updateOverlap(keysDownTimestamps[key]);
 
