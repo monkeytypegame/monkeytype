@@ -291,7 +291,7 @@ export function recordKeyupTime(key: string): void {
   (keypressTimings.duration.array as number[]).push(roundTo2(diff));
   delete keysObj[key];
 
-  updateOverlap();
+  updateOverlap(now);
 }
 
 export function recordKeydownTime(key: string): void {
@@ -300,11 +300,10 @@ export function recordKeydownTime(key: string): void {
   }
   keysObj[key] = performance.now();
 
-  updateOverlap();
+  updateOverlap(keysObj[key]);
 }
 
-function updateOverlap(): void {
-  const now = performance.now();
+function updateOverlap(now: number): void {
   const keys = Object.keys(keysObj);
   if (keys.length > 1) {
     if (keyOverlap.lastStartTime === -1) {

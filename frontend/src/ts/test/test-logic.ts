@@ -1517,6 +1517,49 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   return <CompletedEvent>completedEvent;
 }
 
+function checkOverlap(obj: CompletedEvent) {
+  let a = obj.keySpacing as any;
+  let b = obj.keyDuration as any;
+  let events: number[][] = [];
+  let pref = 0;
+  for (let i = 0; i < b.length; i++) {
+    events.push([pref, 1]);
+    events.push([pref + b[i], 0]);
+    if (i != b.length - 1) {
+      pref += a[i];
+    }
+  }
+
+  events.sort((a, b) => {
+    if (a[0] === b[0]) {
+      return a[1] - b[1];
+    }
+    return a[0] - b[0];
+  });
+  console.log(events);
+
+  let res = 0;
+  let start = 0;
+  let cur = 0;
+  for (let [time, type] of events) {
+    if (type) {
+      cur++;
+      if (cur === 2) {
+        start = time;
+      }
+    } else {
+      if (cur === 2) {
+        res += time - start;
+      }
+      cur--;
+    }
+    console.log({ time, type, cur });
+  }
+
+  console.log({ res, real: obj.keyOverlap });
+  console.assert(Math.abs(res - obj.keyOverlap) <= 1e-6);
+}
+
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
   if (TestInput.input.current.length != 0) {
@@ -1557,6 +1600,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   const completedEvent = buildCompletedEvent(difficultyFailed);
+
+  console.log(completedEvent);
+  checkOverlap(completedEvent);
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
