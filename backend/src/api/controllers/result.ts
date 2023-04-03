@@ -174,31 +174,27 @@ export async function addResult(
     }
   }
 
-  if (req.ctx.configuration.users.lastHashesCheck.enabled) {
-    let lastHashes = user.lastReultHashes ?? [];
-    if (lastHashes.includes(resulthash)) {
-      Logger.logToDb(
-        "duplicate_result",
-        {
-          lastHashes,
-          resulthash,
-          result,
-        },
-        uid
-      );
-      const status = MonkeyStatusCodes.DUPLICATE_RESULT;
-      throw new MonkeyError(status.code, "Duplicate result");
-    } else {
-      lastHashes.unshift(resulthash);
-      const maxHashes = req.ctx.configuration.users.lastHashesCheck.maxHashes;
-      if (lastHashes.length > maxHashes) {
-        lastHashes = lastHashes.slice(0, maxHashes);
-      }
-      await UserDAL.updateLastHashes(uid, lastHashes);
+  try {
+    result.keySpacingStats = {
+      average:
+        result.keySpacing.reduce((previous, current) => (current += previous)) /
+        result.keySpacing.length,
+      sd: stdDev(result.keySpacing),
+    };
+  } catch (e) {
+    //
     }
+  try {
+    result.keyDurationStats = {
+      average:
+        result.keyDuration.reduce(
+          (previous, current) => (current += previous)
+        ) / result.keyDuration.length,
+      sd: stdDev(result.keyDuration),
+    };
+  } catch (e) {
+    //
   }
-
-  result.name = user.name;
 
   if (anticheatImplemented()) {
     if (!validateResult(result)) {
@@ -266,28 +262,6 @@ export async function addResult(
     throw new MonkeyError(status.code, "Invalid result spacing");
   }
 
-  try {
-    result.keySpacingStats = {
-      average:
-        result.keySpacing.reduce((previous, current) => (current += previous)) /
-        result.keySpacing.length,
-      sd: stdDev(result.keySpacing),
-    };
-  } catch (e) {
-    //
-  }
-  try {
-    result.keyDurationStats = {
-      average:
-        result.keyDuration.reduce(
-          (previous, current) => (current += previous)
-        ) / result.keyDuration.length,
-      sd: stdDev(result.keyDuration),
-    };
-  } catch (e) {
-    //
-  }
-
   //check keyspacing and duration here for bots
   if (
     result.mode === "time" &&
@@ -335,6 +309,32 @@ export async function addResult(
   delete result.keyDuration;
   delete result.smoothConsistency;
   delete result.wpmConsistency;
+
+  if (req.ctx.configuration.users.lastHashesCheck.enabled) {
+    let lastHashes = user.lastReultHashes ?? [];
+    if (lastHashes.includes(resulthash)) {
+      Logger.logToDb(
+        "duplicate_result",
+        {
+          lastHashes,
+          resulthash,
+          result,
+        },
+        uid
+      );
+      const status = MonkeyStatusCodes.DUPLICATE_RESULT;
+      throw new MonkeyError(status.code, "Duplicate result");
+    } else {
+      lastHashes.unshift(resulthash);
+      const maxHashes = req.ctx.configuration.users.lastHashesCheck.maxHashes;
+      if (lastHashes.length > maxHashes) {
+        lastHashes = lastHashes.slice(0, maxHashes);
+      }
+      await UserDAL.updateLastHashes(uid, lastHashes);
+    }
+  }
+
+  result.name = user.name;
 
   try {
     result.keyDurationStats.average = roundTo2(result.keyDurationStats.average);
