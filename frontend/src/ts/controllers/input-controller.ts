@@ -834,7 +834,6 @@ $(document).keydown(async (event) => {
     );
   }
   TestInput.recordKeypressSpacing();
-  TestInput.setKeypressDuration(performance.now());
   TestInput.setKeypressNotAfk();
 
   //blocking firefox from going back in history with backspace
@@ -988,14 +987,6 @@ $("#wordsInput").keyup((event) => {
   if (IgnoredKeys.includes(event.key)) return;
 
   if (TestUI.resultVisible) return;
-  const now: number = performance.now();
-  if (TestInput.keypressTimings.duration.current !== -1) {
-    const diff: number = Math.abs(
-      TestInput.keypressTimings.duration.current - now
-    );
-    TestInput.pushKeypressDuration(diff);
-  }
-  TestInput.setKeypressDuration(now);
   Monkey.stop();
 });
 

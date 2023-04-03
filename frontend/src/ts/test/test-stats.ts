@@ -28,7 +28,6 @@ interface KeypressTimings {
     array: number[] | "toolong";
   };
   duration: {
-    current: number;
     array: number[] | "toolong";
   };
 }

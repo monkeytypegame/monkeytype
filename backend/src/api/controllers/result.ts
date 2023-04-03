@@ -183,7 +183,7 @@ export async function addResult(
     };
   } catch (e) {
     //
-    }
+  }
   try {
     result.keyDurationStats = {
       average:
@@ -274,6 +274,9 @@ export async function addResult(
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
       throw new MonkeyError(status.code, "Missing key data");
     }
+    if (result.keyOverlap === undefined) {
+      throw new MonkeyError(400, "Duration is using old calculation");
+    }
     if (anticheatImplemented()) {
       if (!validateKeys(result, uid)) {
         //autoban
@@ -309,6 +312,7 @@ export async function addResult(
   delete result.keyDuration;
   delete result.smoothConsistency;
   delete result.wpmConsistency;
+  delete result.keyOverlap;
 
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];
