@@ -307,9 +307,7 @@ export function recordKeyupTime(key: string): void {
   updateOverlap(now);
 }
 
-let start = -1;
 export function recordKeydownTime(key: string): void {
-  if (start == -1) start = performance.now();
   if (keysObj[key] !== undefined || !keysToTrack.includes(key)) {
     return;
   }
@@ -350,12 +348,6 @@ function updateOverlap(now: number): void {
       keyOverlap.lastStartTime = -1;
     }
   }
-  console.log({
-    ov: { ...keyOverlap },
-    time: performance.now() - start,
-    cur: keys.length,
-    real: keyOverlap.total,
-  });
 }
 
 export function resetKeypressTimings(): void {

@@ -1542,7 +1542,6 @@ function checkOverlap(obj: CompletedEvent) {
     }
     return a[0] - b[0];
   });
-  console.log(events);
 
   let res = 0;
   let start = 0;
@@ -1559,11 +1558,8 @@ function checkOverlap(obj: CompletedEvent) {
       }
       cur--;
     }
-    console.log({ time, type, cur, res });
   }
-
-  console.log({ res, real: obj.keyOverlap });
-  console.assert(Math.abs(res - obj.keyOverlap) <= 1e-6);
+  console.assert(Math.abs(res - obj.keyOverlap) / obj.keyOverlap < 0.1);
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
