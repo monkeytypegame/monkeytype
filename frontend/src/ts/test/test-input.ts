@@ -1,6 +1,57 @@
 import * as TestWords from "./test-words";
 import { mean, roundTo2 } from "../utils/misc";
 
+const keysToTrack = [
+  "Backquote",
+  "Digit1",
+  "Digit2",
+  "Digit3",
+  "Digit4",
+  "Digit5",
+  "Digit6",
+  "Digit7",
+  "Digit8",
+  "Digit9",
+  "Digit0",
+  "Minus",
+  "Equal",
+  "KeyQ",
+  "KeyW",
+  "KeyE",
+  "KeyR",
+  "KeyT",
+  "KeyY",
+  "KeyU",
+  "KeyI",
+  "KeyO",
+  "KeyP",
+  "BracketLeft",
+  "BracketRight",
+  "Backslash",
+  "KeyA",
+  "KeyS",
+  "KeyD",
+  "KeyF",
+  "KeyG",
+  "KeyH",
+  "KeyJ",
+  "KeyK",
+  "KeyL",
+  "Semicolon",
+  "Quote",
+  "KeyZ",
+  "KeyX",
+  "KeyC",
+  "KeyV",
+  "KeyB",
+  "KeyN",
+  "KeyM",
+  "Comma",
+  "Period",
+  "Slash",
+  "Space",
+];
+
 interface Keypress {
   count: number;
   errors: number;
@@ -16,6 +67,11 @@ interface KeypressTimings {
   duration: {
     array: number[] | "toolong";
   };
+}
+
+interface Keydata {
+  timestamp: number;
+  index: number;
 }
 
 class Input {
@@ -136,6 +192,8 @@ class Corrected {
   }
 }
 
+let keyDownData: Record<string, Keydata> = {};
+
 export const input = new Input();
 export const corrected = new Corrected();
 
@@ -229,98 +287,44 @@ export function setKeypressTimingsTooLong(): void {
   keypressTimings.duration.array = "toolong";
 }
 
-let keysDownTimestamps: Record<string, number> = {};
-let keysIndices: Record<string, number> = {};
-
-const keysToTrack = [
-  "Backquote",
-  "Digit1",
-  "Digit2",
-  "Digit3",
-  "Digit4",
-  "Digit5",
-  "Digit6",
-  "Digit7",
-  "Digit8",
-  "Digit9",
-  "Digit0",
-  "Minus",
-  "Equal",
-  "KeyQ",
-  "KeyW",
-  "KeyE",
-  "KeyR",
-  "KeyT",
-  "KeyY",
-  "KeyU",
-  "KeyI",
-  "KeyO",
-  "KeyP",
-  "BracketLeft",
-  "BracketRight",
-  "Backslash",
-  "KeyA",
-  "KeyS",
-  "KeyD",
-  "KeyF",
-  "KeyG",
-  "KeyH",
-  "KeyJ",
-  "KeyK",
-  "KeyL",
-  "Semicolon",
-  "Quote",
-  "KeyZ",
-  "KeyX",
-  "KeyC",
-  "KeyV",
-  "KeyB",
-  "KeyN",
-  "KeyM",
-  "Comma",
-  "Period",
-  "Slash",
-  "Space",
-];
-
 export function forceKeyup(): void {
   //using mean here because for words mode, the last keypress ends the test.
   //if we then force keyup on that last keypress, it will record a duration of 0
   //skewing the average and standard deviation
   const avg = roundTo2(mean(keypressTimings.duration.array as number[]));
-  const keysOrder = Object.entries(keysDownTimestamps);
-  keysOrder.sort((a, b) => a[1] - b[1]);
+  const keysOrder = Object.entries(keyDownData);
+  keysOrder.sort((a, b) => a[1].timestamp - b[1].timestamp);
   for (let i = 0; i < keysOrder.length - 1; i++) {
     recordKeyupTime(keysOrder[i][0]);
   }
   const last = keysOrder[keysOrder.length - 1];
   if (last !== undefined) {
-    (keypressTimings.duration.array as number[])[keysIndices[last[0]]] = avg;
+    (keypressTimings.duration.array as number[])[keyDownData[last[0]].index] =
+      avg;
   }
 }
 
 export function recordKeyupTime(key: string): void {
-  if (keysDownTimestamps[key] === undefined || !keysToTrack.includes(key)) {
+  if (keyDownData[key] === undefined || !keysToTrack.includes(key)) {
     return;
   }
   const now = performance.now();
-  const diff = Math.abs(keysDownTimestamps[key] - now);
-  (keypressTimings.duration.array as number[])[keysIndices[key]] = diff;
-  delete keysDownTimestamps[key];
-  delete keysIndices[key];
+  const diff = Math.abs(keyDownData[key].timestamp - now);
+  (keypressTimings.duration.array as number[])[keyDownData[key].index] = diff;
+  delete keyDownData[key];
 
   updateOverlap(now);
 }
 
 export function recordKeydownTime(key: string): void {
-  if (keysDownTimestamps[key] !== undefined || !keysToTrack.includes(key)) {
+  if (keyDownData[key] !== undefined || !keysToTrack.includes(key)) {
     return;
   }
-  keysDownTimestamps[key] = performance.now();
-  keysIndices[key] = keypressTimings.duration.array.length;
+  keyDownData[key].timestamp = performance.now();
+  keyDownData[key].index = keypressTimings.duration.array.length;
   (keypressTimings.duration.array as number[]).push(0);
 
-  updateOverlap(keysDownTimestamps[key]);
+  updateOverlap(keyDownData[key].timestamp);
 
   if (keypressTimings.spacing.last !== -1) {
     const diff = Math.abs(performance.now() - keypressTimings.spacing.last);
@@ -341,7 +345,7 @@ export function recordKeydownTime(key: string): void {
 }
 
 function updateOverlap(now: number): void {
-  const keys = Object.keys(keysDownTimestamps);
+  const keys = Object.keys(keyDownData);
   if (keys.length > 1) {
     if (keyOverlap.lastStartTime === -1) {
       keyOverlap.lastStartTime = now;
@@ -368,8 +372,7 @@ export function resetKeypressTimings(): void {
     total: 0,
     lastStartTime: -1,
   };
-  keysDownTimestamps = {};
-  keysIndices = {};
+  keyDownData = {};
   if (spacingDebug) console.clear();
 }
 
