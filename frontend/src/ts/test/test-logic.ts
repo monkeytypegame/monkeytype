@@ -1823,9 +1823,9 @@ async function saveResult(
       }
     }
     console.log("Error saving result", completedEvent);
-    if (response.message === "Duration is using old calculation") {
+    if (response.message === "Old key data format") {
       response.message =
-        "Duration is using old calculation. Please refresh the page to download the new update. If the problem persists, please contact support.";
+        "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
     }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
