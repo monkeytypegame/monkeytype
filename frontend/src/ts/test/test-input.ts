@@ -314,8 +314,10 @@ export function recordKeydownTime(key: string): void {
   if (keyDownData[key] !== undefined || !keysToTrack.includes(key)) {
     return;
   }
-  keyDownData[key].timestamp = performance.now();
-  keyDownData[key].index = keypressTimings.duration.array.length;
+  keyDownData[key] = {
+    timestamp: performance.now(),
+    index: keypressTimings.duration.array.length,
+  };
   keypressTimings.duration.array.push(0);
 
   updateOverlap(keyDownData[key].timestamp);
