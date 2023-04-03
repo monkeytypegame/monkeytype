@@ -1573,6 +1573,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Replay.replayGetWordsList(TestInput.input.history);
   }
 
+  TestInput.forceKeyup(); //this ensures that the last keypress(es) are registered
+
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
   TestStats.setEnd(performance.now());
