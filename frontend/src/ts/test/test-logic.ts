@@ -1559,6 +1559,7 @@ function checkOverlap(obj: CompletedEvent) {
       cur--;
     }
   }
+  console.log({ res, real: obj.keyOverlap });
   console.assert(Math.abs(res - obj.keyOverlap) / obj.keyOverlap < 0.1);
 }
 

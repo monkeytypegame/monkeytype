@@ -288,10 +288,13 @@ export function forceKeyup(): void {
   //if we then force keyup on that last keypress, it will record a duration of 0
   //skewing the average and standard deviation
   const avg = roundTo2(mean(keypressTimings.duration.array as number[]));
-  for (const key of Object.keys(keysObj)) {
-    //(keypressTimings.duration.array as number[]).push(avg);
-    delete keysObj[key];
+  const keysOrder = Object.entries(keysObj);
+  keysOrder.sort((a, b) => b[1] - a[1]);
+  for (let i = keysOrder.length - 1; i >= 1; i--) {
+    recordKeyupTime(keysOrder[i][0]);
   }
+  (keypressTimings.duration.array as number[])[keysEntry[keysOrder[0][0]]] =
+    avg;
 }
 
 export function recordKeyupTime(key: string): void {
