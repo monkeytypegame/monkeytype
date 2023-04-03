@@ -294,8 +294,9 @@ export function forceKeyup(): void {
     recordKeyupTime(keysOrder[i][0]);
   }
   const last = keysOrder[keysOrder.length - 1];
-  if (last !== undefined)
+  if (last !== undefined) {
     (keypressTimings.duration.array as number[])[keysEntry[last[0]]] = avg;
+  }
 }
 
 export function recordKeyupTime(key: string): void {
@@ -317,8 +318,9 @@ export function recordKeydownTime(key: string): void {
   }
   keysObj[key] = performance.now();
   keysEntry[key] = keypressTimings.duration.array.length;
-  if (keypressTimings.duration.array != "toolong")
+  if (keypressTimings.duration.array != "toolong") {
     keypressTimings.duration.array.push(0);
+  }
 
   updateOverlap(keysObj[key]);
 
@@ -369,6 +371,7 @@ export function resetKeypressTimings(): void {
     lastStartTime: -1,
   };
   keysObj = {};
+  keysEntry = {};
   if (spacingDebug) console.clear();
 }
 

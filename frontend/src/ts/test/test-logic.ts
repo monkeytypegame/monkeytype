@@ -1521,18 +1521,18 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   return <CompletedEvent>completedEvent;
 }
 
-function checkOverlap(obj: CompletedEvent) {
-  let a = obj.keySpacing as any;
-  let b = obj.keyDuration as any;
-  let events: number[][] = [];
+function checkOverlap(obj: CompletedEvent): void {
+  const spacing = obj.keySpacing as any;
+  const duration = obj.keyDuration as any;
+  const events: number[][] = [];
   let pref = 0;
-  for (let i = 0; i < b.length; i++) {
-    if (b[i] != 0) {
+  for (let i = 0; i < duration.length; i++) {
+    if (duration[i] != 0) {
       events.push([pref, 1]);
-      events.push([pref + b[i], 0]);
+      events.push([pref + duration[i], 0]);
     }
-    if (i != b.length - 1) {
-      pref += a[i];
+    if (i != duration.length - 1) {
+      pref += spacing[i];
     }
   }
 
@@ -1546,7 +1546,7 @@ function checkOverlap(obj: CompletedEvent) {
   let res = 0;
   let start = 0;
   let cur = 0;
-  for (let [time, type] of events) {
+  for (const [time, type] of events) {
     if (type) {
       cur++;
       if (cur === 2) {
