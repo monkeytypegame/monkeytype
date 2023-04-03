@@ -275,7 +275,7 @@ export async function addResult(
       throw new MonkeyError(status.code, "Missing key data");
     }
     if (result.keyOverlap === undefined) {
-      throw new MonkeyError(400, "Duration is using old calculation");
+      throw new MonkeyError(400, "Old key data format");
     }
     if (anticheatImplemented()) {
       if (!validateKeys(result, uid)) {
