@@ -1305,6 +1305,7 @@ interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
   lang: string;
   challenge?: string | null;
   keyOverlap: number;
+  lastKeyToEnd: number;
 }
 
 type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
@@ -1378,6 +1379,9 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
     keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
+    lastKeyToEnd: Misc.roundTo2(
+      TestStats.end - TestInput.keypressTimings.spacing.last
+    ),
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
@@ -1518,14 +1522,13 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
+  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (!TestState.isActive) return;
   if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
   }
-
-  TestInput.recordKeypressSpacing(); //this is needed in case there is afk time at the end - to make sure test duration makes sense
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);

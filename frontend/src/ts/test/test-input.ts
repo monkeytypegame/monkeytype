@@ -10,7 +10,7 @@ interface Keypress {
 
 interface KeypressTimings {
   spacing: {
-    current: number;
+    last: number;
     array: number[] | "toolong";
   };
   duration: {
@@ -157,7 +157,7 @@ export let accuracy = {
 };
 export let keypressTimings: KeypressTimings = {
   spacing: {
-    current: -1,
+    last: -1,
     array: [],
   },
   duration: {
@@ -301,6 +301,23 @@ export function recordKeydownTime(key: string): void {
   keysObj[key] = performance.now();
 
   updateOverlap();
+
+  if (keypressTimings.spacing.last !== -1) {
+    const diff = Math.abs(performance.now() - keypressTimings.spacing.last);
+    (keypressTimings.spacing.array as number[]).push(roundTo2(diff));
+    if (spacingDebug) {
+      console.log(
+        "spacing debug",
+        "recorded",
+        "key",
+        "length",
+        keypressTimings.spacing.array.length,
+        "val",
+        roundTo2(diff)
+      );
+    }
+  }
+  keypressTimings.spacing.last = performance.now();
 }
 
 function updateOverlap(): void {
@@ -318,53 +335,10 @@ function updateOverlap(): void {
   }
 }
 
-function pushKeypressSpacing(val: number): void {
-  (keypressTimings.spacing.array as number[]).push(roundTo2(val));
-}
-
-function setKeypressSpacing(val: number): void {
-  keypressTimings.spacing.current = roundTo2(val);
-}
-
-export function recordKeypressSpacing(): void {
-  const now = performance.now();
-  const diff = Math.abs(keypressTimings.spacing.current - now);
-  if (keypressTimings.spacing.current !== -1) {
-    pushKeypressSpacing(diff);
-    if (spacingDebug) {
-      console.log(
-        "spacing debug",
-        "push",
-        diff,
-        "length",
-        keypressTimings.spacing.array.length
-      );
-    }
-  }
-  setKeypressSpacing(now);
-  if (spacingDebug) {
-    console.log(
-      "spacing debug",
-      "set",
-      now,
-      "length",
-      keypressTimings.spacing.array.length
-    );
-  }
-  if (spacingDebug) {
-    console.log(
-      "spacing debug",
-      "recorded",
-      "length",
-      keypressTimings.spacing.array.length
-    );
-  }
-}
-
 export function resetKeypressTimings(): void {
   keypressTimings = {
     spacing: {
-      current: performance.now(),
+      last: -1,
       array: [],
     },
     duration: {
@@ -423,7 +397,7 @@ export function restart(): void {
   };
   keypressTimings = {
     spacing: {
-      current: -1,
+      last: -1,
       array: [],
     },
     duration: {
