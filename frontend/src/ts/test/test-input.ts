@@ -294,7 +294,8 @@ export function forceKeyup(): void {
     recordKeyupTime(keysOrder[i][0]);
   }
   const last = keysOrder[keysOrder.length - 1];
-  (keypressTimings.duration.array as number[])[keysEntry[last[0]]] = avg;
+  if (last !== undefined)
+    (keypressTimings.duration.array as number[])[keysEntry[last[0]]] = avg;
 }
 
 export function recordKeyupTime(key: string): void {
