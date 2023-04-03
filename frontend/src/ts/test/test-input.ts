@@ -229,8 +229,8 @@ export function setKeypressTimingsTooLong(): void {
   keypressTimings.duration.array = "toolong";
 }
 
-let keysObj: Record<string, number> = {};
-let keysEntry: Record<string, number> = {}; // index this key should have in duration array
+let keysDownTimestamps: Record<string, number> = {};
+let keysIndices: Record<string, number> = {};
 
 const keysToTrack = [
   "Backquote",
@@ -288,41 +288,41 @@ export function forceKeyup(): void {
   //if we then force keyup on that last keypress, it will record a duration of 0
   //skewing the average and standard deviation
   const avg = roundTo2(mean(keypressTimings.duration.array as number[]));
-  const keysOrder = Object.entries(keysObj);
+  const keysOrder = Object.entries(keysDownTimestamps);
   keysOrder.sort((a, b) => a[1] - b[1]);
   for (let i = 0; i < keysOrder.length - 1; i++) {
     recordKeyupTime(keysOrder[i][0]);
   }
   const last = keysOrder[keysOrder.length - 1];
   if (last !== undefined) {
-    (keypressTimings.duration.array as number[])[keysEntry[last[0]]] = avg;
+    (keypressTimings.duration.array as number[])[keysIndices[last[0]]] = avg;
   }
 }
 
 export function recordKeyupTime(key: string): void {
-  if (keysObj[key] === undefined || !keysToTrack.includes(key)) {
+  if (keysDownTimestamps[key] === undefined || !keysToTrack.includes(key)) {
     return;
   }
   const now = performance.now();
-  const diff = Math.abs(keysObj[key] - now);
-  (keypressTimings.duration.array as number[])[keysEntry[key]] = diff;
-  delete keysObj[key];
-  delete keysEntry[key];
+  const diff = Math.abs(keysDownTimestamps[key] - now);
+  (keypressTimings.duration.array as number[])[keysIndices[key]] = diff;
+  delete keysDownTimestamps[key];
+  delete keysIndices[key];
 
   updateOverlap(now);
 }
 
 export function recordKeydownTime(key: string): void {
-  if (keysObj[key] !== undefined || !keysToTrack.includes(key)) {
+  if (keysDownTimestamps[key] !== undefined || !keysToTrack.includes(key)) {
     return;
   }
-  keysObj[key] = performance.now();
-  keysEntry[key] = keypressTimings.duration.array.length;
+  keysDownTimestamps[key] = performance.now();
+  keysIndices[key] = keypressTimings.duration.array.length;
   if (keypressTimings.duration.array != "toolong") {
     keypressTimings.duration.array.push(0);
   }
 
-  updateOverlap(keysObj[key]);
+  updateOverlap(keysDownTimestamps[key]);
 
   if (keypressTimings.spacing.last !== -1) {
     const diff = Math.abs(performance.now() - keypressTimings.spacing.last);
@@ -343,7 +343,7 @@ export function recordKeydownTime(key: string): void {
 }
 
 function updateOverlap(now: number): void {
-  const keys = Object.keys(keysObj);
+  const keys = Object.keys(keysDownTimestamps);
   if (keys.length > 1) {
     if (keyOverlap.lastStartTime === -1) {
       keyOverlap.lastStartTime = now;
@@ -370,8 +370,8 @@ export function resetKeypressTimings(): void {
     total: 0,
     lastStartTime: -1,
   };
-  keysObj = {};
-  keysEntry = {};
+  keysDownTimestamps = {};
+  keysIndices = {};
   if (spacingDebug) console.clear();
 }
 

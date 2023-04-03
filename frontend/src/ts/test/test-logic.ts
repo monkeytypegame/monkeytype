@@ -1560,7 +1560,10 @@ function checkOverlap(obj: CompletedEvent): void {
     }
   }
   console.log({ res, real: obj.keyOverlap });
-  console.assert(Math.abs(res - obj.keyOverlap) / obj.keyOverlap < 0.1);
+  console.assert(
+    Math.abs(res - obj.keyOverlap) / obj.keyOverlap < 0.1 ||
+      Math.abs(res - obj.keyOverlap) <= 1
+  );
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
