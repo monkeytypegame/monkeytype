@@ -1521,51 +1521,6 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   return <CompletedEvent>completedEvent;
 }
 
-function checkOverlap(obj: CompletedEvent): void {
-  const spacing = obj.keySpacing as any;
-  const duration = obj.keyDuration as any;
-  const events: number[][] = [];
-  let pref = 0;
-  for (let i = 0; i < duration.length; i++) {
-    if (duration[i] != 0) {
-      events.push([pref, 1]);
-      events.push([pref + duration[i], 0]);
-    }
-    if (i != duration.length - 1) {
-      pref += spacing[i];
-    }
-  }
-
-  events.sort((a, b) => {
-    if (a[0] === b[0]) {
-      return a[1] - b[1];
-    }
-    return a[0] - b[0];
-  });
-
-  let res = 0;
-  let start = 0;
-  let cur = 0;
-  for (const [time, type] of events) {
-    if (type) {
-      cur++;
-      if (cur === 2) {
-        start = time;
-      }
-    } else {
-      if (cur === 2) {
-        res += time - start;
-      }
-      cur--;
-    }
-  }
-  console.log({ res, real: obj.keyOverlap });
-  console.assert(
-    Math.abs(res - obj.keyOverlap) / obj.keyOverlap < 0.1 ||
-      Math.abs(res - obj.keyOverlap) <= 1
-  );
-}
-
 export async function finish(difficultyFailed = false): Promise<void> {
   await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (!TestState.isActive) return;
@@ -1607,9 +1562,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   const completedEvent = buildCompletedEvent(difficultyFailed);
-
-  console.log(completedEvent);
-  checkOverlap(completedEvent);
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
