@@ -122,7 +122,7 @@ export async function updateTags(
 
 interface AddResultData {
   isPb: boolean;
-  tagPbs: any[];
+  tagPbs: string[];
   insertedId: ObjectId;
   dailyLeaderboardRank?: number;
   weeklyXpLeaderboardRank?: number;
@@ -345,7 +345,7 @@ export async function addResult(
   }
 
   let isPb = false;
-  let tagPbs: any[] = [];
+  let tagPbs: string[] = [];
 
   if (!result.bailedOut) {
     [isPb, tagPbs] = await Promise.all([
