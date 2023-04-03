@@ -146,6 +146,7 @@ export async function addResult(
     );
   }
 
+  //todo add a type here
   const result = Object.assign({}, req.body.result);
   result.uid = uid;
   if (isTestTooShort(result)) {
