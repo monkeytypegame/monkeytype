@@ -1,5 +1,5 @@
 import * as TestWords from "./test-words";
-import { roundTo2 } from "../utils/misc";
+import { mean, roundTo2 } from "../utils/misc";
 
 interface Keypress {
   count: number;
@@ -281,6 +281,17 @@ const keysToTrack = [
   "Slash",
   "Space",
 ];
+
+export function forceKeyup(): void {
+  //using mean here because for words mode, the last keypress ends the test.
+  //if we then force keyup on that last keypress, it will record a duration of 0
+  //skewing the average and standard deviation
+  const avg = roundTo2(mean(keypressTimings.duration.array as number[]));
+  for (const key of Object.keys(keysObj)) {
+    (keypressTimings.duration.array as number[]).push(avg);
+    delete keysObj[key];
+  }
+}
 
 export function recordKeyupTime(key: string): void {
   if (keysObj[key] === undefined || !keysToTrack.includes(key)) {
