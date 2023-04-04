@@ -41,7 +41,7 @@ const leaderboardSingleLimit = 50;
 
 let updateTimer: number | undefined;
 
-function clearBody(lb: MonkeyTypes.StringNumber): void {
+function clearBody(lb: LbKey): void {
   if (lb === "15") {
     $("#leaderboardsWrapper table.left tbody").empty();
   } else if (lb === "60") {
@@ -49,7 +49,7 @@ function clearBody(lb: MonkeyTypes.StringNumber): void {
   }
 }
 
-function clearFoot(lb: MonkeyTypes.StringNumber): void {
+function clearFoot(lb: LbKey): void {
   if (lb === "15") {
     $("#leaderboardsWrapper table.left tfoot").empty();
   } else if (lb === "60") {
@@ -105,7 +105,7 @@ function startTimer(): void {
   }, 1000) as unknown as number;
 }
 
-function showLoader(lb: MonkeyTypes.StringNumber): void {
+function showLoader(lb: LbKey): void {
   if (lb === "15") {
     $(`#leaderboardsWrapper .leftTableLoader`).removeClass("hidden");
   } else if (lb === "60") {
@@ -113,7 +113,7 @@ function showLoader(lb: MonkeyTypes.StringNumber): void {
   }
 }
 
-function hideLoader(lb: MonkeyTypes.StringNumber): void {
+function hideLoader(lb: LbKey): void {
   if (lb === "15") {
     $(`#leaderboardsWrapper .leftTableLoader`).addClass("hidden");
   } else if (lb === "60") {
