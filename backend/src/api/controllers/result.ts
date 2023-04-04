@@ -122,7 +122,7 @@ export async function updateTags(
 
 interface AddResultData {
   isPb: boolean;
-  tagPbs: any[];
+  tagPbs: string[];
   insertedId: ObjectId;
   dailyLeaderboardRank?: number;
   weeklyXpLeaderboardRank?: number;
@@ -146,6 +146,7 @@ export async function addResult(
     );
   }
 
+  //todo add a type here
   const result = Object.assign({}, req.body.result);
   result.uid = uid;
   if (isTestTooShort(result)) {
@@ -173,31 +174,27 @@ export async function addResult(
     }
   }
 
-  if (req.ctx.configuration.users.lastHashesCheck.enabled) {
-    let lastHashes = user.lastReultHashes ?? [];
-    if (lastHashes.includes(resulthash)) {
-      Logger.logToDb(
-        "duplicate_result",
-        {
-          lastHashes,
-          resulthash,
-          result,
-        },
-        uid
-      );
-      const status = MonkeyStatusCodes.DUPLICATE_RESULT;
-      throw new MonkeyError(status.code, "Duplicate result");
-    } else {
-      lastHashes.unshift(resulthash);
-      const maxHashes = req.ctx.configuration.users.lastHashesCheck.maxHashes;
-      if (lastHashes.length > maxHashes) {
-        lastHashes = lastHashes.slice(0, maxHashes);
-      }
-      await UserDAL.updateLastHashes(uid, lastHashes);
-    }
+  try {
+    result.keySpacingStats = {
+      average:
+        result.keySpacing.reduce((previous, current) => (current += previous)) /
+        result.keySpacing.length,
+      sd: stdDev(result.keySpacing),
+    };
+  } catch (e) {
+    //
   }
-
-  result.name = user.name;
+  try {
+    result.keyDurationStats = {
+      average:
+        result.keyDuration.reduce(
+          (previous, current) => (current += previous)
+        ) / result.keyDuration.length,
+      sd: stdDev(result.keyDuration),
+    };
+  } catch (e) {
+    //
+  }
 
   if (anticheatImplemented()) {
     if (!validateResult(result)) {
@@ -265,28 +262,6 @@ export async function addResult(
     throw new MonkeyError(status.code, "Invalid result spacing");
   }
 
-  try {
-    result.keySpacingStats = {
-      average:
-        result.keySpacing.reduce((previous, current) => (current += previous)) /
-        result.keySpacing.length,
-      sd: stdDev(result.keySpacing),
-    };
-  } catch (e) {
-    //
-  }
-  try {
-    result.keyDurationStats = {
-      average:
-        result.keyDuration.reduce(
-          (previous, current) => (current += previous)
-        ) / result.keyDuration.length,
-      sd: stdDev(result.keyDuration),
-    };
-  } catch (e) {
-    //
-  }
-
   //check keyspacing and duration here for bots
   if (
     result.mode === "time" &&
@@ -298,6 +273,9 @@ export async function addResult(
     if (!result.keySpacingStats || !result.keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
       throw new MonkeyError(status.code, "Missing key data");
+    }
+    if (result.keyOverlap === undefined) {
+      throw new MonkeyError(400, "Old key data format");
     }
     if (anticheatImplemented()) {
       if (!validateKeys(result, uid)) {
@@ -334,6 +312,33 @@ export async function addResult(
   delete result.keyDuration;
   delete result.smoothConsistency;
   delete result.wpmConsistency;
+  delete result.keyOverlap;
+
+  if (req.ctx.configuration.users.lastHashesCheck.enabled) {
+    let lastHashes = user.lastReultHashes ?? [];
+    if (lastHashes.includes(resulthash)) {
+      Logger.logToDb(
+        "duplicate_result",
+        {
+          lastHashes,
+          resulthash,
+          result,
+        },
+        uid
+      );
+      const status = MonkeyStatusCodes.DUPLICATE_RESULT;
+      throw new MonkeyError(status.code, "Duplicate result");
+    } else {
+      lastHashes.unshift(resulthash);
+      const maxHashes = req.ctx.configuration.users.lastHashesCheck.maxHashes;
+      if (lastHashes.length > maxHashes) {
+        lastHashes = lastHashes.slice(0, maxHashes);
+      }
+      await UserDAL.updateLastHashes(uid, lastHashes);
+    }
+  }
+
+  result.name = user.name;
 
   try {
     result.keyDurationStats.average = roundTo2(result.keyDurationStats.average);
@@ -345,7 +350,7 @@ export async function addResult(
   }
 
   let isPb = false;
-  let tagPbs: any[] = [];
+  let tagPbs: string[] = [];
 
   if (!result.bailedOut) {
     [isPb, tagPbs] = await Promise.all([

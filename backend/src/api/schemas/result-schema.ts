@@ -43,10 +43,18 @@ const RESULT_SCHEMA = joi
     keyConsistency: joi.number().min(0).required(),
     keyDuration: joi
       .alternatives()
-      .try(joi.array().items(joi.number()), joi.string().valid("toolong")),
+      .try(
+        joi.array().items(joi.number().min(0)),
+        joi.string().valid("toolong")
+      ),
     keySpacing: joi
       .alternatives()
-      .try(joi.array().items(joi.number()), joi.string().valid("toolong")),
+      .try(
+        joi.array().items(joi.number().min(0)),
+        joi.string().valid("toolong")
+      ),
+    keyOverlap: joi.number().min(0),
+    lastKeyToEnd: joi.number().min(0),
     lang: joi.string(),
     stringified: joi.string(),
     language: joi.string().required(),

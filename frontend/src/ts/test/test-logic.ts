@@ -1304,6 +1304,8 @@ interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
   wpmConsistency: number;
   lang: string;
   challenge?: string | null;
+  keyOverlap: number;
+  lastKeyToEnd: number;
 }
 
 type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
@@ -1376,6 +1378,10 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     tags: undefined,
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
+    keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
+    lastKeyToEnd: Misc.roundTo2(
+      TestStats.end - TestInput.keypressTimings.spacing.last
+    ),
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
@@ -1437,10 +1443,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const stddev = Misc.stdDev(rawPerSecond);
   const avg = Misc.mean(rawPerSecond);
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
-  let keyConsistencyArray =
-    TestInput.keypressTimings.spacing.array === "toolong"
-      ? []
-      : TestInput.keypressTimings.spacing.array.slice();
+  let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
       0,
@@ -1512,19 +1515,11 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   if (completedEvent.mode != "custom") delete completedEvent.customText;
 
-  TestInput.logOldAndNew(
-    completedEvent.wpm,
-    completedEvent.acc,
-    completedEvent.rawWpm,
-    completedEvent.consistency,
-    `${completedEvent.mode} ${completedEvent.mode2}`,
-    completedEvent.testDuration
-  );
-
   return <CompletedEvent>completedEvent;
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
+  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (!TestState.isActive) return;
   if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
@@ -1532,7 +1527,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Replay.replayGetWordsList(TestInput.input.history);
   }
 
-  TestInput.recordKeypressSpacing(); //this is needed in case there is afk time at the end - to make sure test duration makes sense
+  TestInput.forceKeyup(); //this ensures that the last keypress(es) are registered
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
@@ -1759,7 +1754,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.chartData = "toolong";
     completedEvent.keySpacing = "toolong";
     completedEvent.keyDuration = "toolong";
-    TestInput.setKeypressTimingsTooLong();
   }
 
   if (dontSave) {
@@ -1830,6 +1824,10 @@ async function saveResult(
       }
     }
     console.log("Error saving result", completedEvent);
+    if (response.message === "Old key data format") {
+      response.message =
+        "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
+    }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
