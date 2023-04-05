@@ -38796,21 +38796,21 @@
             "id": 6815
         },
         {
-            "text": "Freedom is not worth having if it does not connote freedom to err. It passes my comprehension how human beings, be they ever so experienced and able, can delight in depriving other human beings of that precious right.",
-            "source": "The Autobiography of Mahatma Gandhi",
-            "length": 217,
+            "text": "Would you please put some pants on? I feel weird having to ask you twice.",
+            "source": "The Hangover",
+            "length": 73,
             "id": 6816
         },
         {
-            "text": "The only way to deal with fear is to face it head on. You cannot defeat what you cannot see.",
-            "source": "The Girl Who Kicked the Hornet's Nest",
-            "length": 92,
+            "text": "I'm not sure whose twisted idea it was to put hundreds of adolescents in underfunded schools run by people whose dreams were crushed years ago, but I admire the sadism.",
+            "source": "Wednesday",
+            "length": 168,
             "id": 6817
         },
         {
-            "text": "Life is a book and there are a thousand pages I have not yet read.",
-            "source": "Clockwork Princess",
-            "length": 56,
+            "text": "Teach them our ways so they do not suffer the shame of being useless.",
+            "source": "Avatar: The Way of Water",
+            "length": 69,
             "id": 6818
         },
         {
@@ -38898,12 +38898,6 @@
             "id": 6832
         },
         {
-            "text": "We are all in the gutter, but some of us are looking at the stars.",
-            "source": "Oscar Wilde",
-            "length": 66,
-            "id": 6832
-        },
-        {
             "text": "The two most important days in your life are the day you are born and the day you find out why.",
             "source": "Mark Twain",
             "length": 95,
@@ -38960,7 +38954,7 @@
         {
             "text": "Believe you can and you're halfway there.",
             "source": "Theodore Roosevelt",
-            "length": 43,
+            "length": 41,
             "id": 6842
         },
         {
@@ -38978,13 +38972,13 @@
         {
             "text": "The most beautiful thing we can experience is the mysterious. It is the source of all true art and all science. He to whom this emotion is a stranger, who can no longer pause to wonder and stand rapt in awe, is as good as dead: his eyes are closed.",
             "source": "Albert Einstein",
-            "length": 255,
+            "length": 248,
             "id": 6845
         },
         {
             "text": "I think the saddest people always try their hardest to make people happy because they know what it's like to feel absolutely worthless and they don't want anyone else to feel like that.",
             "source": "Robin Williams",
-            "length": 186,
+            "length": 185,
             "id": 6846
         },
         {
@@ -38996,7 +38990,7 @@
         {
             "text": "It is not the critic who counts; not the man who points out how the strong man stumbles, or where the doer of deeds could have done them better. The credit belongs to the man who is actually in the arena, whose face is marred by dust and sweat and blood; who strives valiantly; who errs, who comes short again and again, because there is no effort without error and shortcoming; but who does actually strive to do the deeds; who knows great enthusiasms, the great devotions; who spends himself in a worthy cause; who at the best knows in the end the triumph of high achievement, and who at the worst, if he fails, at least fails while daring greatly, so that his place shall never be with those cold and timid souls who neither know victory nor defeat.",
             "source": "Theodore Roosevelt",
-            "length": 725,
+            "length": 752,
             "id": 6848
         },
         {
@@ -39010,6 +39004,30 @@
             "source": "ChatGPT",
             "length": 740,
             "id": 6850
+        },
+        {
+            "text": "We are all in the gutter, but some of us are looking at the stars.",
+            "source": "Oscar Wilde",
+            "length": 66,
+            "id": 6851
+        },
+        {
+            "text": "Freedom is not worth having if it does not connote freedom to err. It passes my comprehension how human beings, be they ever so experienced and able, can delight in depriving other human beings of that precious right.",
+            "source": "The Autobiography of Mahatma Gandhi",
+            "length": 217,
+            "id": 6852
+        },
+        {
+            "text": "The only way to deal with fear is to face it head on. You cannot defeat what you cannot see.",
+            "source": "The Girl Who Kicked the Hornet's Nest",
+            "length": 92,
+            "id": 6853
+        },
+        {
+            "text": "Life is a book and there are a thousand pages I have not yet read.",
+            "source": "Clockwork Princess",
+            "length": 56,
+            "id": 6854
         }
     ]
 }
