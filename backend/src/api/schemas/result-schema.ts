@@ -55,6 +55,7 @@ const RESULT_SCHEMA = joi
       ),
     keyOverlap: joi.number().min(0),
     lastKeyToEnd: joi.number().min(0),
+    startToFirstKey: joi.number().min(0),
     lang: joi.string(),
     stringified: joi.string(),
     language: joi.string().required(),

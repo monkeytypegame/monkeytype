@@ -1306,6 +1306,7 @@ interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
   challenge?: string | null;
   keyOverlap: number;
   lastKeyToEnd: number;
+  startToFirstKey: number;
 }
 
 type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
@@ -1381,6 +1382,9 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
     lastKeyToEnd: Misc.roundTo2(
       TestStats.end - TestInput.keypressTimings.spacing.last
+    ),
+    startToFirstKey: Misc.roundTo2(
+      TestInput.keypressTimings.spacing.first - TestStats.start
     ),
     consistency: undefined,
     keyConsistency: undefined,
