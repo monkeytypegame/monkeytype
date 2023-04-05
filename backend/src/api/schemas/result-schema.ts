@@ -8,6 +8,7 @@ const RESULT_SCHEMA = joi
     blindMode: joi.boolean().required(),
     challenge: joi.string(),
     charStats: joi.array().items(joi.number().min(0)).required(),
+    charTotal: joi.number().min(0),
     chartData: joi
       .alternatives()
       .try(

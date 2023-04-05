@@ -322,6 +322,7 @@ export async function addResult(
   delete result.keyOverlap;
   delete result.lastKeyToEnd;
   delete result.startToFirstKey;
+  delete result.charTotal;
 
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];
