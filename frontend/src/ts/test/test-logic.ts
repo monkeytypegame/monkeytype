@@ -1307,6 +1307,7 @@ interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
   keyOverlap: number;
   lastKeyToEnd: number;
   startToFirstKey: number;
+  charTotal: number;
 }
 
 type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
@@ -1359,6 +1360,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     wpm: undefined,
     rawWpm: undefined,
     charStats: undefined,
+    charTotal: undefined,
     acc: undefined,
     mode: Config.mode,
     mode2: undefined,
@@ -1414,6 +1416,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     stats.extraChars,
     stats.missedChars,
   ];
+  completedEvent.charTotal = stats.allChars;
   completedEvent.acc = stats.acc;
 
   // if the last second was not rounded, add another data point to the history
