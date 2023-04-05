@@ -966,14 +966,22 @@ $(document).keydown(async (event) => {
 });
 
 $("#wordsInput").keydown((event) => {
+  if (event.originalEvent?.repeat) return;
+
   setTimeout(() => {
-    TestInput.recordKeydownTime(event.code);
+    const isAndroid =
+      event.key === "Unidentified" && event.code === "" && event.which === 229;
+    TestInput.recordKeydownTime(isAndroid ? "Android" : event.code);
   }, 0);
 });
 
 $("#wordsInput").keyup((event) => {
+  if (event.originalEvent?.repeat) return;
+
   setTimeout(() => {
-    TestInput.recordKeyupTime(event.code);
+    const isAndroid =
+      event.key === "Unidentified" && event.code === "" && event.which === 229;
+    TestInput.recordKeyupTime(isAndroid ? "Android" : event.code);
   }, 0);
 });
 
