@@ -824,15 +824,6 @@ $(document).keydown(async (event) => {
     return;
   }
 
-  if (TestInput.spacingDebug) {
-    console.log(
-      "spacing debug",
-      "keypress",
-      event.key,
-      "length",
-      TestInput.keypressTimings.spacing.array.length
-    );
-  }
   TestInput.setKeypressNotAfk();
 
   //blocking firefox from going back in history with backspace

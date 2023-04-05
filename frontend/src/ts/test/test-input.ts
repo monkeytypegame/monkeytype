@@ -322,14 +322,36 @@ export function recordKeyupTime(key: string): void {
 }
 
 export function recordKeydownTime(key: string): void {
-  if (!keysToTrack.includes(key)) return;
+  if (!keysToTrack.includes(key)) {
+    if (spacingDebug) {
+      console.log(
+        "spacing debug",
+        "key not tracked",
+        key,
+        "spacing array",
+        keypressTimings.spacing.array.length
+      );
+    }
+    return;
+  }
 
   if (key === "Android") {
     key = "Android" + androidIndex;
     androidIndex++;
   }
 
-  if (keyDownData[key] !== undefined) return;
+  if (keyDownData[key] !== undefined) {
+    if (spacingDebug) {
+      console.log(
+        "spacing debug",
+        "key already down",
+        key,
+        "spacing array",
+        keypressTimings.spacing.array.length
+      );
+    }
+    return;
+  }
 
   const now = performance.now();
 
@@ -348,8 +370,8 @@ export function recordKeydownTime(key: string): void {
       console.log(
         "spacing debug",
         "recorded",
-        "key",
-        "length",
+        key,
+        "spacing array",
         keypressTimings.spacing.array.length,
         "val",
         roundTo2(diff)
@@ -359,6 +381,9 @@ export function recordKeydownTime(key: string): void {
   keypressTimings.spacing.last = now;
   if (keypressTimings.spacing.first === -1) {
     keypressTimings.spacing.first = now;
+    if (spacingDebug) {
+      console.log("spacing debug", "saved first", now);
+    }
   }
 }
 
@@ -393,7 +418,12 @@ export function resetKeypressTimings(): void {
   };
   keyDownData = {};
   androidIndex = 0;
-  if (spacingDebug) console.clear();
+  if (spacingDebug) {
+    console.clear();
+    if (spacingDebug) {
+      console.log("spacing debug", "reset keypress timings");
+    }
+  }
 }
 
 export function pushMissedWord(word: string): void {
@@ -448,4 +478,7 @@ export function restart(): void {
       array: [],
     },
   };
+  if (spacingDebug) {
+    console.log("spacing debug", "restart");
+  }
 }
