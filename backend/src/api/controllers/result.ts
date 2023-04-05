@@ -320,6 +320,8 @@ export async function addResult(
   delete result.smoothConsistency;
   delete result.wpmConsistency;
   delete result.keyOverlap;
+  delete result.lastKeyToEnd;
+  delete result.startToFirstKey;
 
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];
