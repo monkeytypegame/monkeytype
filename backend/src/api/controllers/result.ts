@@ -39,6 +39,7 @@ import { buildMonkeyMail } from "../../utils/monkey-mail";
 import FunboxesMetadata from "../../constants/funbox";
 import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
+import { UAParser } from "ua-parser-js";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -197,7 +198,13 @@ export async function addResult(
   }
 
   if (anticheatImplemented()) {
-    if (!validateResult(result)) {
+    if (
+      !validateResult(
+        result,
+        req.headers["client-version"] as string,
+        JSON.stringify(new UAParser(req.headers["user-agent"]).getResult())
+      )
+    ) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
       throw new MonkeyError(status.code, "Result data doesn't make sense");
     }
@@ -313,6 +320,8 @@ export async function addResult(
   delete result.smoothConsistency;
   delete result.wpmConsistency;
   delete result.keyOverlap;
+  delete result.lastKeyToEnd;
+  delete result.startToFirstKey;
 
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];

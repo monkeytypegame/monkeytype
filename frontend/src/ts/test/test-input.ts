@@ -50,6 +50,7 @@ const keysToTrack = [
   "Period",
   "Slash",
   "Space",
+  "Android", //smells
 ];
 
 interface Keypress {
@@ -61,6 +62,7 @@ interface Keypress {
 
 interface KeypressTimings {
   spacing: {
+    first: number;
     last: number;
     array: number[];
   };
@@ -215,6 +217,7 @@ export let accuracy = {
 };
 export let keypressTimings: KeypressTimings = {
   spacing: {
+    first: -1,
     last: -1,
     array: [],
   },
@@ -298,10 +301,18 @@ export function forceKeyup(): void {
   }
 }
 
+let androidIndex = 0;
+
 export function recordKeyupTime(key: string): void {
-  if (keyDownData[key] === undefined || !keysToTrack.includes(key)) {
-    return;
+  if (!keysToTrack.includes(key)) return;
+
+  if (key === "Android") {
+    androidIndex--;
+    key = "Android" + androidIndex;
   }
+
+  if (keyDownData[key] === undefined) return;
+
   const now = performance.now();
   const diff = Math.abs(keyDownData[key].timestamp - now);
   keypressTimings.duration.array[keyDownData[key].index] = diff;
@@ -311,11 +322,19 @@ export function recordKeyupTime(key: string): void {
 }
 
 export function recordKeydownTime(key: string): void {
-  if (keyDownData[key] !== undefined || !keysToTrack.includes(key)) {
-    return;
+  if (!keysToTrack.includes(key)) return;
+
+  if (key === "Android") {
+    key = "Android" + androidIndex;
+    androidIndex++;
   }
+
+  if (keyDownData[key] !== undefined) return;
+
+  const now = performance.now();
+
   keyDownData[key] = {
-    timestamp: performance.now(),
+    timestamp: now,
     index: keypressTimings.duration.array.length,
   };
   keypressTimings.duration.array.push(0);
@@ -323,7 +342,7 @@ export function recordKeydownTime(key: string): void {
   updateOverlap(keyDownData[key].timestamp);
 
   if (keypressTimings.spacing.last !== -1) {
-    const diff = Math.abs(performance.now() - keypressTimings.spacing.last);
+    const diff = Math.abs(now - keypressTimings.spacing.last);
     keypressTimings.spacing.array.push(roundTo2(diff));
     if (spacingDebug) {
       console.log(
@@ -337,7 +356,10 @@ export function recordKeydownTime(key: string): void {
       );
     }
   }
-  keypressTimings.spacing.last = performance.now();
+  keypressTimings.spacing.last = now;
+  if (keypressTimings.spacing.first === -1) {
+    keypressTimings.spacing.first = now;
+  }
 }
 
 function updateOverlap(now: number): void {
@@ -357,6 +379,7 @@ function updateOverlap(now: number): void {
 export function resetKeypressTimings(): void {
   keypressTimings = {
     spacing: {
+      first: -1,
       last: -1,
       array: [],
     },
@@ -369,6 +392,7 @@ export function resetKeypressTimings(): void {
     lastStartTime: -1,
   };
   keyDownData = {};
+  androidIndex = 0;
   if (spacingDebug) console.clear();
 }
 
@@ -416,6 +440,7 @@ export function restart(): void {
   };
   keypressTimings = {
     spacing: {
+      first: -1,
       last: -1,
       array: [],
     },
