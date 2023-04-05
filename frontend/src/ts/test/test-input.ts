@@ -50,6 +50,7 @@ const keysToTrack = [
   "Period",
   "Slash",
   "Space",
+  "Android", //smells
 ];
 
 interface Keypress {
@@ -298,10 +299,18 @@ export function forceKeyup(): void {
   }
 }
 
+let androidIndex = 0;
+
 export function recordKeyupTime(key: string): void {
-  if (keyDownData[key] === undefined || !keysToTrack.includes(key)) {
-    return;
+  if (!keysToTrack.includes(key)) return;
+
+  if (key === "Android") {
+    androidIndex--;
+    key = "Android" + androidIndex;
   }
+
+  if (keyDownData[key] === undefined) return;
+
   const now = performance.now();
   const diff = Math.abs(keyDownData[key].timestamp - now);
   keypressTimings.duration.array[keyDownData[key].index] = diff;
@@ -311,9 +320,15 @@ export function recordKeyupTime(key: string): void {
 }
 
 export function recordKeydownTime(key: string): void {
-  if (keyDownData[key] !== undefined || !keysToTrack.includes(key)) {
-    return;
+  if (!keysToTrack.includes(key)) return;
+
+  if (key === "Android") {
+    key = "Android" + androidIndex;
+    androidIndex++;
   }
+
+  if (keyDownData[key] !== undefined) return;
+
   keyDownData[key] = {
     timestamp: performance.now(),
     index: keypressTimings.duration.array.length,
@@ -369,6 +384,7 @@ export function resetKeypressTimings(): void {
     lastStartTime: -1,
   };
   keyDownData = {};
+  androidIndex = 0;
   if (spacingDebug) console.clear();
 }
 
