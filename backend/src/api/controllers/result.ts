@@ -197,7 +197,7 @@ export async function addResult(
   }
 
   if (anticheatImplemented()) {
-    if (!validateResult(result)) {
+    if (!validateResult(result, req.headers["client-version"] as string)) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
       throw new MonkeyError(status.code, "Result data doesn't make sense");
     }

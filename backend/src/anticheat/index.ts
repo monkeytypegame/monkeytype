@@ -2,7 +2,7 @@ export function implemented(): boolean {
   return false;
 }
 
-export function validateResult(_result: object): boolean {
+export function validateResult(_result: object, _version: string): boolean {
   return true;
 }
 
