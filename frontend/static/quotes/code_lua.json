@@ -42,6 +42,42 @@
       "source": "Github ThePrimeagen/harpoon - mark",
       "length": 134,
       "id": 6
+    },
+    {
+      "text": "s = \"hello world from Lua\"\\nfor w in string.gmatch(s, \"%a+\") do\\n\\tprint(w)\\nend",
+      "source": "Lua 5.4 manual - string.gmatch",
+      "length": 80,
+      "id": 7
+    },
+    {
+      "text": "local i = 1\\nwhile a[i] do\\n\\tprint(a[i])\\n\\ti = i + 1\\nend",
+      "source": "Lua pil - while",
+      "length": 59,
+      "id": 8
+    },
+    {
+      "text": "-- print the first non-empty line\\nrepeat\\n\\tline = io.read()\\nuntil line ~= \"\"\\nprint(line)",
+      "source": "Lua pil - repeat",
+      "length": 92,
+      "id": 9
+    },
+    {
+      "text": "function perm (a)\\n\\tlocal n = table.getn(a)\\n\\treturn coroutine.wrap(function () permgen(a, n) end)\\nend",
+      "source": "Lua pil - coroutines",
+      "length": 105,
+      "id": 10
+    },
+    {
+      "text": "function Set (list)\\n\\tlocal set = {}\\n\\tfor _, l in ipairs(list) do set[l] = true end\\n\\treturn set\\nend",
+      "source": "Lua pil - set",
+      "length": 105,
+      "id": 11
+    },
+    {
+      "text": "line = io.read()\\nn = tonumber(line)\\nif n == nil then\\n\\terror(line .. \" is not a valid number\")\\nelse\\n\\tprint(n*2)\\nend",
+      "source": "Lua pil - strings",
+      "length": 122,
+      "id": 12
     }
   ]
 }
