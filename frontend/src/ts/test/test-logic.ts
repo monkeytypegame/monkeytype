@@ -1382,9 +1382,10 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
     keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
-    lastKeyToEnd: Misc.roundTo2(
-      TestStats.end - TestInput.keypressTimings.spacing.last
-    ),
+    lastKeyToEnd:
+      Config.mode === "zen"
+        ? 0
+        : Misc.roundTo2(TestStats.end - TestInput.keypressTimings.spacing.last),
     startToFirstKey: Misc.roundTo2(
       TestInput.keypressTimings.spacing.first - TestStats.start
     ),
