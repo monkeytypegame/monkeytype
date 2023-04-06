@@ -1382,10 +1382,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
     keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
-    lastKeyToEnd:
-      Config.mode === "zen"
-        ? 0
-        : Misc.roundTo2(TestStats.end - TestInput.keypressTimings.spacing.last),
+    lastKeyToEnd: undefined,
     startToFirstKey: undefined,
     consistency: undefined,
     keyConsistency: undefined,
@@ -1405,10 +1402,20 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     TestInput.keypressTimings.spacing.first - TestStats.start
   );
 
-  if (stfk > 0) {
-    completedEvent.startToFirstKey = stfk;
-  } else {
+  if (stfk < 0) {
     completedEvent.startToFirstKey = 0;
+  } else {
+    completedEvent.startToFirstKey = stfk;
+  }
+
+  const lkte = Misc.roundTo2(
+    TestStats.end - TestInput.keypressTimings.spacing.last
+  );
+
+  if (lkte < 0 || Config.mode === "zen") {
+    completedEvent.lastKeyToEnd = 0;
+  } else {
+    completedEvent.lastKeyToEnd = lkte;
   }
 
   // stats
