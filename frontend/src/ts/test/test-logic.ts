@@ -307,7 +307,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-export function startTest(): boolean {
+export function startTest(now: number): boolean {
   if (PageTransition.get()) {
     return false;
   }
@@ -348,7 +348,7 @@ export function startTest(): boolean {
     }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  TestStats.setStart(performance.now());
+  TestStats.setStart(now);
   TestTimer.start();
   return true;
 }
@@ -1386,9 +1386,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
       Config.mode === "zen"
         ? 0
         : Misc.roundTo2(TestStats.end - TestInput.keypressTimings.spacing.last),
-    startToFirstKey: Misc.roundTo2(
-      TestInput.keypressTimings.spacing.first - TestStats.start
-    ),
+    startToFirstKey: undefined,
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
@@ -1402,6 +1400,16 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     testDuration: undefined,
     afkDuration: undefined,
   };
+
+  const stfk = Misc.roundTo2(
+    TestInput.keypressTimings.spacing.first - TestStats.start
+  );
+
+  if (stfk > 0) {
+    completedEvent.startToFirstKey = stfk;
+  } else {
+    completedEvent.startToFirstKey = 0;
+  }
 
   // stats
   const stats = TestStats.calculateStats();
@@ -1527,19 +1535,21 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
-  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (!TestState.isActive) return;
+  const now = performance.now();
+  TestStats.setEnd(now);
+
+  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
   }
 
-  TestInput.forceKeyup(); //this ensures that the last keypress(es) are registered
+  TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
-  TestStats.setEnd(performance.now());
   TestState.setActive(false);
   Replay.stopReplayRecording();
   Focus.set(false);
