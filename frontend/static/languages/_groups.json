@@ -82,10 +82,6 @@
     "languages": ["korean", "korean_1k", "korean_5k"]
   },
   {
-    "name": "chinese",
-    "languages": ["chinese_traditional"]
-  },
-  {
     "name": "russian",
     "languages": [
       "russian",
@@ -261,6 +257,10 @@
   {
     "name": "vietnamese",
     "languages": ["vietnamese", "vietnamese_1k", "vietnamese_5k"]
+  },
+  {
+    "name": "chinese",
+    "languages": ["chinese_traditional"]
   },
   {
     "name": "jyutping",
