@@ -2,6 +2,22 @@ import * as TestWords from "./test-words";
 import { mean, roundTo2 } from "../utils/misc";
 
 const keysToTrack = [
+  "NumpadMultiply",
+  "NumpadSubtract",
+  "NumpadAdd",
+  "NumpadDecimal",
+  "NumpadEqual",
+  "NumpadDivide",
+  "Numpad0",
+  "Numpad1",
+  "Numpad2",
+  "Numpad3",
+  "Numpad4",
+  "Numpad5",
+  "Numpad6",
+  "Numpad7",
+  "Numpad8",
+  "Numpad9",
   "Backquote",
   "Digit1",
   "Digit2",
@@ -39,6 +55,7 @@ const keysToTrack = [
   "KeyL",
   "Semicolon",
   "Quote",
+  "IntlBackslash",
   "KeyZ",
   "KeyX",
   "KeyC",
@@ -285,7 +302,7 @@ export function incrementAccuracy(correctincorrect: boolean): void {
   }
 }
 
-export function forceKeyup(): void {
+export function forceKeyup(now: number): void {
   //using mean here because for words mode, the last keypress ends the test.
   //if we then force keyup on that last keypress, it will record a duration of 0
   //skewing the average and standard deviation
@@ -293,7 +310,7 @@ export function forceKeyup(): void {
   const keysOrder = Object.entries(keyDownData);
   keysOrder.sort((a, b) => a[1].timestamp - b[1].timestamp);
   for (let i = 0; i < keysOrder.length - 1; i++) {
-    recordKeyupTime(keysOrder[i][0]);
+    recordKeyupTime(now, keysOrder[i][0]);
   }
   const last = keysOrder[keysOrder.length - 1];
   if (last !== undefined) {
@@ -303,7 +320,7 @@ export function forceKeyup(): void {
 
 let androidIndex = 0;
 
-export function recordKeyupTime(key: string): void {
+export function recordKeyupTime(now: number, key: string): void {
   if (!keysToTrack.includes(key)) return;
 
   if (key === "Android") {
@@ -313,7 +330,6 @@ export function recordKeyupTime(key: string): void {
 
   if (keyDownData[key] === undefined) return;
 
-  const now = performance.now();
   const diff = Math.abs(keyDownData[key].timestamp - now);
   keypressTimings.duration.array[keyDownData[key].index] = diff;
   delete keyDownData[key];
@@ -321,7 +337,7 @@ export function recordKeyupTime(key: string): void {
   updateOverlap(now);
 }
 
-export function recordKeydownTime(key: string): void {
+export function recordKeydownTime(now: number, key: string): void {
   if (!keysToTrack.includes(key)) {
     if (spacingDebug) {
       console.log(
@@ -352,8 +368,6 @@ export function recordKeydownTime(key: string): void {
     }
     return;
   }
-
-  const now = performance.now();
 
   keyDownData[key] = {
     timestamp: now,
