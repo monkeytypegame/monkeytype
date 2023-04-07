@@ -3326,10 +3326,88 @@
       "id": 561
     },
     {
-      "text": "Es ist besser, ein einziges kleines Licht anzuzünden, als die Dunkelheit zu verfluchen.",
-      "source": "Konfuzius",
-      "length": 87,
-      "id": 562
+	    "text": "Es ist besser, ein einziges kleines Licht anzuzünden, als die Dunkelheit zu verfluchen.",
+	    "source": "Konfuzius",
+	    "length": 87,
+	    "id": 562
+    },
+    {
+	    "text": "Die Summe unseres Lebens sind die Stunden, in denen wir liebten.",
+	    "source": "Wilhelm Busch",
+	    "length": 64,
+	    "id": 563
+    },
+    {
+	    "text": "Das Trinkgeschirr, sobald es leer, macht keine rechte Freude mehr.",
+	    "source": "Wilhelm Busch",
+	    "length": 66,
+	    "id": 564
+    },
+    {
+	    "text": "Merkmal großer Menschen ist, dass sie an andere weit geringere Anforderungen stellen, als an sich selbst.",
+	    "source": "Marie von Ebner-Eschenbach",
+	    "length": 105,
+	    "id": 565
+    },
+    {
+	    "text": "Das Gleiche lässt uns in Ruhe, aber der Widerspruch ist es, der uns produktiv macht.",
+	    "source": "Johann Wolfgang von Goethe",
+	    "length": 84,
+	    "id": 566
+    },
+    {
+	    "text": "Lerne zuzuhören und du wirst auch von denjenigen Nutzen ziehen, die nur dummes Zeug reden.",
+	    "source": "Platon",
+	    "length": 90,
+	    "id": 567
+    },
+    {
+	    "text": "Nicht den Tod sollte man fürchten, sondern dass man nie beginnen wird zu leben.",
+	    "source": "Mark Aurel",
+	    "length": 79,
+	    "id": 568
+    },
+    {
+	    "text": "Der Schwache kann nicht verzeihen. Verzeihen ist eine Eigenschaft des Starken.",
+	    "source": "Mahatma Gandhi",
+	    "length": 78,
+	    "id": 569
+    },
+    {
+	    "text": "Nichts ist leichter, als so zu schreiben, dass kein Mensch es versteht; wie hingegen nichts schwerer, als bedeutende Gedanken so auszudrücken, dass jeder sie verstehen muss.",
+	    "source": "Arthur Schopenhauer",
+	    "length": 173,
+	    "id": 570
+    },
+    {
+	    "text": "Die Demokratie lebt vom Kompromiss. Wer keine Kompromisse machen kann, ist für die Demokratie nicht zu gebrauchen.",
+	    "source": "Helmut Schmidt",
+	    "length": 114,
+	    "id": 571
+    },
+    {
+	    "text": "Die Demokratie, wie ich sie verstehe, muss den Schwächsten die gleichen Chancen zusichern wie den Stärksten.",
+	    "source": "Mahatma Gandhi",
+	    "length": 108,
+	    "id": 572
+    },
+    {
+	    "text": "Politik ist ein Streit der Interessen, der sich als Wettstreit der Prinzipien maskiert.",
+	    "source": "Ambrose Bierce",
+	    "length": 87,
+	    "id": 573
+    },
+    {
+	    "text": "Reich wird man nicht durch das, was man verdient, sondern durch das, was man nicht ausgibt.",
+	    "source": "Henry Ford",
+	    "length": 91,
+	    "id": 574
+    },
+    {
+	    "text": "Als ich jung war, glaubte ich, Geld sei das Wichtigste im Leben. Jetzt wo ich alt bin, weiß ich, dass es das Wichtigste ist.",
+	    "source": "Oscar Wilde",
+	    "length": 124,
+	    "id": 575
     }
   ]
 }
