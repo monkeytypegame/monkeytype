@@ -394,6 +394,9 @@ function handleChar(
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
   }
+
+  const now = performance.now();
+
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
   if (char === "…") {
     for (let i = 0; i < 3; i++) {
@@ -442,7 +445,7 @@ function handleChar(
   }
 
   //start the test
-  if (!TestState.isActive && !TestLogic.startTest()) {
+  if (!TestState.isActive && !TestLogic.startTest(now)) {
     return;
   }
 
@@ -464,7 +467,7 @@ function handleChar(
   }
 
   if (TestInput.input.current === "") {
-    TestInput.setBurstStart(performance.now());
+    TestInput.setBurstStart(now);
   }
 
   if (!isCharKorean && !Config.language.startsWith("korean")) {
@@ -958,21 +961,21 @@ $(document).keydown(async (event) => {
 
 $("#wordsInput").keydown((event) => {
   if (event.originalEvent?.repeat) return;
-
+  const now = performance.now();
   setTimeout(() => {
     const isAndroid =
       event.key === "Unidentified" && event.code === "" && event.which === 229;
-    TestInput.recordKeydownTime(isAndroid ? "Android" : event.code);
+    TestInput.recordKeydownTime(now, isAndroid ? "Android" : event.code);
   }, 0);
 });
 
 $("#wordsInput").keyup((event) => {
   if (event.originalEvent?.repeat) return;
-
+  const now = performance.now();
   setTimeout(() => {
     const isAndroid =
       event.key === "Unidentified" && event.code === "" && event.which === 229;
-    TestInput.recordKeyupTime(isAndroid ? "Android" : event.code);
+    TestInput.recordKeyupTime(now, isAndroid ? "Android" : event.code);
   }, 0);
 });
 
