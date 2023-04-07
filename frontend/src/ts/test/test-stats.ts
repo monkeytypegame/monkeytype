@@ -24,11 +24,10 @@ interface Keypress {
 
 interface KeypressTimings {
   spacing: {
-    current: number;
+    last: number;
     array: number[] | "toolong";
   };
   duration: {
-    current: number;
     array: number[] | "toolong";
   };
 }
