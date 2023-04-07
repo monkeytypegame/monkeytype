@@ -4803,8 +4803,6 @@
   "periskop",
   "antilop",
   "kalotip",
-  "ambrotip",
-  "kyanotip",
   "rahip",
   "tanksavar",
   "sporsever",
@@ -4886,7 +4884,6 @@
   "antlaşma",
   "azarlamak",
   "kovalamak",
-  "ışıma",
   "rastlama",
   "rastgele",
   "koparmak",
@@ -4898,6 +4895,15 @@
   "kaldıraç",
   "karaciğer",
   "kabataslak",
-  "kalemtıraş"
+  "kalemtıraş",
+  "sözcü",
+  "yoklama",
+  "hırka",
+  "tik",
+  "kademeli",
+  "katran",
+  "kaşıntı",
+  "kadro",
+  "kaktüs"
   ]
 }
