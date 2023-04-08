@@ -94,7 +94,13 @@ export async function initSnapshot(): Promise<
     ].map((response: Ape.HttpClientResponse) => response.data);
 
     snap.name = userData.name;
-    snap.personalBests = userData.personalBests;
+    snap.personalBests = userData.personalBests ?? {
+      time: {},
+      words: {},
+      zen: {},
+      quote: {},
+      custom: {},
+    };
     snap.banned = userData.banned;
     snap.lbOptOut = userData.lbOptOut;
     snap.verified = userData.verified;
