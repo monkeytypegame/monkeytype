@@ -868,8 +868,8 @@ list["clearTagPb"] = new SimplePopup(
       tag.personalBests = {
         time: {},
         words: {},
-        zen: {},
         quote: {},
+        zen: {},
         custom: {},
       };
       $(
@@ -949,8 +949,8 @@ list["resetPersonalBests"] = new SimplePopup(
       snapshot.personalBests = {
         time: {},
         words: {},
-        zen: {},
         quote: {},
+        zen: {},
         custom: {},
       };
     } catch (e) {

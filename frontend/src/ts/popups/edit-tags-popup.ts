@@ -145,9 +145,9 @@ async function apply(): Promise<void> {
           tag.personalBests = {
             time: {},
             words: {},
-            custom: { custom: [] },
-            zen: { zen: [] },
-            quote: { custom: [] },
+            quote: {},
+            zen: {},
+            custom: {},
           };
         }
       });
