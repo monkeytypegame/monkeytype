@@ -337,7 +337,17 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
       uid: uid,
       "tags._id": new ObjectId(_id),
     },
-    { $set: { "tags.$.personalBests": {} } }
+    {
+      $set: {
+        "tags.$.personalBests": {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+        },
+      },
+    }
   );
 }
 
@@ -376,20 +386,18 @@ export async function checkIfPb(
     return false;
   }
 
-  let lbPb = user.lbPersonalBests;
-  if (!lbPb) lbPb = { time: {} };
+  user.personalBests ??= {
+    time: {},
+    custom: {},
+    quote: {},
+    words: {},
+    zen: {},
+  };
+  user.lbPersonalBests ??= {
+    time: {},
+  };
 
-  const pb = checkAndUpdatePb(
-    user.personalBests ?? {
-      time: {},
-      custom: {},
-      quote: {},
-      words: {},
-      zen: {},
-    },
-    lbPb,
-    result
-  );
+  const pb = checkAndUpdatePb(user.personalBests, user.lbPersonalBests, result);
 
   if (!pb.isPb) return false;
 
@@ -435,15 +443,15 @@ export async function checkIfTagPb(
   const ret: string[] = [];
 
   for (const tag of tagsToCheck) {
-    const tagPbs: MonkeyTypes.PersonalBests = tag.personalBests ?? {
+    tag.personalBests ??= {
       time: {},
       words: {},
+      quote: {},
       zen: {},
       custom: {},
-      quote: {},
     };
 
-    const tagpb = checkAndUpdatePb(tagPbs, undefined, result);
+    const tagpb = checkAndUpdatePb(tag.personalBests, undefined, result);
     if (tagpb.isPb) {
       ret.push(tag._id.toHexString());
       await getUsersCollection().updateOne(
