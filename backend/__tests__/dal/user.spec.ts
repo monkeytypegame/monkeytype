@@ -219,8 +219,8 @@ describe("UserDal", () => {
             time: { 20: [mockPersonalBest] },
             words: {},
             quote: {},
-            custom: {},
             zen: {},
+            custom: {},
           },
         },
       }

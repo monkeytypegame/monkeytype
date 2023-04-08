@@ -24,6 +24,13 @@ export async function addUser(
     email,
     uid,
     addedAt: Date.now(),
+    personalBests: {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    },
   };
 
   const result = await getUsersCollection().updateOne(
@@ -47,11 +54,11 @@ export async function resetUser(uid: string): Promise<void> {
     {
       $set: {
         personalBests: {
-          custom: {},
-          quote: {},
           time: {},
           words: {},
+          quote: {},
           zen: {},
+          custom: {},
         },
         lbPersonalBests: {
           time: {},
@@ -123,11 +130,11 @@ export async function clearPb(uid: string): Promise<void> {
     {
       $set: {
         personalBests: {
-          custom: {},
-          quote: {},
           time: {},
           words: {},
+          quote: {},
           zen: {},
+          custom: {},
         },
         lbPersonalBests: {
           time: {},
@@ -457,10 +464,10 @@ export async function resetPb(uid: string): Promise<void> {
       $set: {
         personalBests: {
           time: {},
-          custom: {},
-          quote: {},
           words: {},
+          quote: {},
           zen: {},
+          custom: {},
         },
       },
     }
