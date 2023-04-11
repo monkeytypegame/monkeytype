@@ -541,7 +541,7 @@ declare namespace MonkeyTypes {
     quoteRatings?: QuoteRatings;
     results?: Result<Mode>[];
     verified?: boolean;
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
     name: string;
     customThemes: CustomTheme[];
     presets?: Preset[];
