@@ -171,7 +171,7 @@ declare namespace MonkeyTypes {
     lbPersonalBests?: LbPersonalBests;
     name: string;
     customThemes?: CustomTheme[];
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
     quoteRatings?: UserQuoteRatings;
     startedTests?: number;
     tags?: UserTag[];
@@ -285,7 +285,7 @@ declare namespace MonkeyTypes {
   interface UserTag {
     _id: ObjectId;
     name: string;
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
   }
 
   interface LeaderboardEntry {

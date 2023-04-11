@@ -270,14 +270,27 @@ export async function addTag(
   name: string
 ): Promise<MonkeyTypes.UserTag> {
   const _id = new ObjectId();
-  await getUsersCollection().updateOne(
-    { uid },
-    { $push: { tags: { _id, name } } }
-  );
-  return {
+  const toPush = {
     _id,
     name,
+    personalBests: {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    },
   };
+
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $push: {
+        tags: toPush,
+      },
+    }
+  );
+  return toPush;
 }
 
 export async function getTags(uid: string): Promise<MonkeyTypes.UserTag[]> {
