@@ -736,9 +736,6 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
     try {
       let found = false;
 
-      filteredtag.personalBests[mode][mode2] ??=
-        [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
-
       (
         filteredtag.personalBests[mode][
           mode2
