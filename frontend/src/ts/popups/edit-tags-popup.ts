@@ -101,6 +101,13 @@ async function apply(): Promise<void> {
         display: propTagName,
         name: response.data.name,
         _id: response.data._id,
+        personalBests: {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+        },
       });
       Settings.update();
     }
