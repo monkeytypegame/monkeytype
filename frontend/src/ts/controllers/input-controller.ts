@@ -970,6 +970,10 @@ $("#wordsInput").keydown((event) => {
     console.log("spacing debug keydown", event.key, event.code, event.which);
   }
 
+  if (event.key === " ") {
+    event.code = "Space"; //powertoys bug
+  }
+
   const now = performance.now();
   setTimeout(() => {
     const isAndroid =
@@ -983,6 +987,10 @@ $("#wordsInput").keyup((event) => {
 
   if (TestInput.spacingDebug) {
     console.log("spacing debug keyup", event.key, event.code, event.which);
+  }
+
+  if (event.key === " ") {
+    event.code = "Space"; //powertoys bug
   }
 
   const now = performance.now();
