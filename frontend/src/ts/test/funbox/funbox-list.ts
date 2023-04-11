@@ -38,7 +38,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   },
   {
     name: "arrows",
-    info: "Eurobeat Intensifies...",
+    info: "Play it on a pad!",
     properties: [
       "ignoresLanguage",
       "ignoresLayout",
@@ -117,6 +117,11 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     name: "plus_two",
     info: "Only two future words are visible.",
     properties: ["changesWordsVisibility", "toPush:3", "noInfiniteDuration"],
+  },
+  {
+    name: "plus_three",
+    info: "Only three future words are visible.",
+    properties: ["changesWordsVisibility", "toPush:4", "noInfiniteDuration"],
   },
   {
     name: "read_ahead_easy",

@@ -91,6 +91,12 @@
         "sourceType": "module",
         "project": "**/tsconfig.json"
       }
+    },
+    {
+      "files": ["backend/**/*.ts"],
+      "rules": {
+        "eqeqeq": "error"
+      }
     }
   ]
 }

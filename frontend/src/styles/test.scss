@@ -9,7 +9,6 @@
     top: 0;
     left: 0;
     width: 100vw;
-    /*   height: 0.5rem; */
     height: 0.5rem;
     background: black;
     /*   background: #0f0f0f; */
@@ -455,6 +454,13 @@
     display: inline-block;
     font-size: 0.75rem;
     padding-bottom: 0;
+  }
+
+  &.noBalloons {
+    [aria-label][data-balloon-pos]:before,
+    [aria-label][data-balloon-pos]:after {
+      display: none;
+    }
   }
 
   &:focus {

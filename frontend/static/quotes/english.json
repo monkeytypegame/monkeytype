@@ -344,12 +344,6 @@
       "length": 75
     },
     {
-      "text": "I love to type crazy stuff.",
-      "source": "Alphabet",
-      "id": 57,
-      "length": 27
-    },
-    {
       "text": "When you lose the ones you love, you might find it hard to cry. Until it's only you and everybody else has left the room, you might feel what it's like to not know how to feel.",
       "source": "Never Enough",
       "id": 58,
@@ -3758,12 +3752,6 @@
       "length": 128
     },
     {
-      "text": "The human whose name is written in this note shall die. This note will not take effect unless the writer has the person's face in their mind when writing his/her name. Therefore, people sharing the same name will not be affected.",
-      "source": "Death Note",
-      "id": 637,
-      "length": 229
-    },
-    {
       "text": "It was the most horrible, the most repellent thing she had ever seen, far more nauseating than anything she had ever imagined with her conscious mind, or that had ever tormented her in her most terrible nightmares.",
       "source": "A Wrinkle in Time",
       "id": 638,
@@ -4419,7 +4407,7 @@
     },
     {
       "text": "You think you're any different from me, or your friends, or this tree? If you listen hard enough, you can hear every living thing breathing together. You can feel everything growing. We're all living together, even if most folks don't act like it. We all have the same roots, and we are all branches of the same tree.",
-      "source": "Avatar The Last Airbender",
+      "source": "Avatar: The Last Airbender",
       "id": 750,
       "length": 317
     },
@@ -4782,12 +4770,6 @@
       "source": "Whistle While You Work",
       "id": 814,
       "length": 355
-    },
-    {
-      "text": "There's no more harm in a kiss than shaving a monkey and pretending it's a woman.",
-      "source": "QI",
-      "id": 815,
-      "length": 81
     },
     {
       "text": "The most precious treasures we have in life are the images we store in the memory banks of our brains. The sum of these stored experiences is responsible for our sense of personal identity and our sense of connectedness to those around us.",
@@ -5274,12 +5256,6 @@
       "source": "Star Trek: The Next Generation",
       "id": 896,
       "length": 115
-    },
-    {
-      "text": "The human whose name is written in this note shall die.",
-      "source": "Death Note",
-      "id": 897,
-      "length": 55
     },
     {
       "text": "It is hard to make that boat go as fast as you want to. The enemy, of course, is resistance of the water, as you have to displace the amount of water equal to the weight of men and equipment, but that very water is what supports you and that very enemy is your friend. So is life: the very problems you must overcome also support you and make you stronger in overcoming them.",
@@ -6744,12 +6720,6 @@
       "source": "Good Will Hunting",
       "id": 1148,
       "length": 211
-    },
-    {
-      "text": "They say that right after God created man, he took a rib from him and made a chick. That's actually a bit of a creation myth - the truth is, after God saw that man was good, he created another man and saw that it was all good.",
-      "source": "Brocabulary: The New Man-i-festo of Dude Talk",
-      "id": 1149,
-      "length": 226
     },
     {
       "text": "When the snow is on our mind, rows and rows and lines and lines. In the haze of your fixation, we all crave for you, we all crave. And you can kill the wildest thing, but when you murder it's a sin. In the midst of your conviction, we all crave for you, we all crave.",
@@ -11577,7 +11547,7 @@
     },
     {
       "text": "The world ain't all sunshine and rainbows. It's a very mean and nasty place and I don't care how tough you are, it will beat you to your knees and keep you there permanently if you let it. You, me, or nobody is gonna hit as hard as life. But it ain't about how hard you hit. It's about how hard you can get hit and keep moving forward. That's how winning is done! Now if you know what you're worth then go out and get what you're worth. But you've gotta be willing to take the hits, and not pointing fingers saying you ain't where you wanna be because of him, or her, or anybody! Cowards do that and that ain't you! You're better than that!",
-      "source": "Rocky IV",
+      "source": "Rocky Balboa (2006)",
       "id": 1984,
       "length": 640
     },
@@ -12884,12 +12854,6 @@
       "length": 191
     },
     {
-      "text": "I don't worry. This is all wrong. I don't know what it is but when I kiss you it's like I'm kissing my brother. I guess that doesn't make any sense, does it?",
-      "source": "Back to the Future",
-      "id": 2210,
-      "length": 157
-    },
-    {
       "text": "One just can't imagine what prison is like from outside. You think, well, there'd be lots of time to think and read, it wouldn't be too bad. But it is too bad. It's the slowness of time. I'll swear all the clocks in the world have gone centuries slower since I came here.",
       "source": "The Collector",
       "id": 2211,
@@ -14085,7 +14049,7 @@
     },
     {
       "text": "The Sky People have sent us a message that they can take whatever they want. That no one can stop them. Well, we will send them a message. You ride out as fast as the wind can carry you. You tell the other clans to come. Tell them Toruk Macto calls to them!",
-      "source": "Avatar",
+      "source": "Avatar (2009)",
       "id": 2419,
       "length": 257
     },
@@ -15831,7 +15795,7 @@
     },
     {
       "text": "This is why we're here. Because this little gray rock sells for 20 million dollars a kilo. That's the only reason. This is what pays for the whole party, and it's what pays for your science. Those savages are threatening our whole operation. We're on the brink of war and you're supposed to be finding me a diplomatic solution. So use what you've got, and get me some results.",
-      "source": "Avatar",
+      "source": "Avatar (2009)",
       "id": 2726,
       "length": 376
     },
@@ -15990,12 +15954,6 @@
       "source": "The Trial",
       "id": 2753,
       "length": 174
-    },
-    {
-      "text": "I know you're coming in the night like a thief, but I've had some time alone to hone my lying technique. I know you think that I'm someone you can trust, but I'm scared I'll get scared and I swear I'll try to nail you back up.",
-      "source": "Jesus Christ",
-      "id": 2754,
-      "length": 226
     },
     {
       "text": "Keep drinking coffee, stare me down across the table while I look outside. So many things I'd say if only I were able, but I just keep quiet and count the cars that pass by.",
@@ -17481,7 +17439,7 @@
     },
     {
       "text": "The monks used to say that revenge is like a two-headed rat viper. While you watch your enemy go down, you're being poisoned yourself.",
-      "source": "Avatar: The last Airbender",
+      "source": "Avatar: The Last Airbender",
       "id": 3012,
       "length": 134
     },
@@ -18858,12 +18816,6 @@
       "source": "Mass Effect 3",
       "id": 3250,
       "length": 137
-    },
-    {
-      "text": "On the eve of a day that's forgotten and fake and the trees they await and clouds anticipate the start of a day when we put on our face a mask that portrays that we don't need grace. On the eve of a day that is bigger than us but we open our eyes because we're told that we must and the trees wave their arms and the clouds try to plead, desperately yelling there's something we need. I'm not free, I asked forgiveness three times, same amount that I denied; I three-time MVPed this crime. I'm afraid to tell you who I adore, won't tell you who I'm singing towards.",
-      "source": "Ode To Sleep",
-      "id": 3251,
-      "length": 565
     },
     {
       "text": "The more things change, the more they stay the same. I'm not sure who the first person who said that was. Probably Shakespeare. Or maybe Sting. But at the moment, it's the sentence that best explains my tragic flaw: my inability to change. I don't think I'm alone in this. The more I get to know other people, the more I realize it's kind of everyone's flaw. Staying exactly the same for as long as possible, standing perfectly still... it feels safer somehow.",
@@ -20613,7 +20565,7 @@
     },
     {
       "text": "Look, you're supposed to be winning the hearts and minds of the natives. Isn't that the whole point of your little puppet show? If you walk like them, you talk like them, they'll trust you. We build them a school, teach them English. But after - how many years - the relations with the indigenous are only getting worse.",
-      "source": "Avatar",
+      "source": "Avatar (2009)",
       "id": 3557,
       "length": 320
     },
@@ -21728,12 +21680,6 @@
       "length": 150
     },
     {
-      "text": "Baby, don't you know, all o'them tears gon' come and go. Baby you just gotta make up your mind that every little thing is gonna be alright. Baby, don't you know, all o'them tears gon' come and go, baby you just gotta make up your mind. We decide it.",
-      "source": "Be Alright",
-      "id": 3750,
-      "length": 249
-    },
-    {
       "text": "Who cares if you disagree? You are not me. Who made you king of anything? So you dare tell me who to be? Who died and made you king of anything?",
       "source": "King of Anything",
       "id": 3751,
@@ -22346,7 +22292,7 @@
       "length": 170
     },
     {
-      "text": "Yet the web of thought has no such creases and is more like a weaver's masterpieces; one step, a thousand threads arise, hither and thither shoots each shuttle, the threads flow on, unseen and subtle, each blow effects a thousand ties.",
+      "text": "Yet the web of thought has no such creases and is more like a weaver's masterpieces; one step, a thousand threads arise, hither and thither shoots each shuttle, the threads flow on, unseen and subtle, each blow affects a thousand ties.",
       "source": "Faust",
       "id": 3854,
       "length": 235
@@ -22532,10 +22478,10 @@
       "length": 265
     },
     {
-      "text": "All we can know, is that we know nothing. And that's the height of human wisdom.",
+      "text": "All we can know is that we know nothing. And that's the height of human wisdom.",
       "source": "War and Peace",
       "id": 3886,
-      "length": 80
+      "length": 79
     },
     {
       "text": "I am, somehow, less interested in the weight and convolutions of Einstein's brain than in the near certainty that people of equal talent have lived and died in cotton fields and sweatshops.",
@@ -22724,10 +22670,10 @@
       "length": 97
     },
     {
-      "text": "As there is no profit in the physician's art unless it cure the diseases of the body, so there is none in philosophy, unless it expel the troubles of the soul.",
+      "text": "As there is no profit in the physician's art unless it cures the diseases of the body, so there is none in philosophy, unless it expels the troubles of the soul.",
       "source": "Letter to Marcella",
       "id": 3918,
-      "length": 159
+      "length": 161
     },
     {
       "text": "Trudging slowly over wet sand, back to the bench where your clothes were stolen. This is the coastal town that they forgot to close down. Armageddon - come Armageddon, come.",
@@ -24782,10 +24728,10 @@
       "length": 109
     },
     {
-      "text": "This was a triumph! I'm making a note here: huge success! It's hard to overstate my satisfaction. Aperture Science: we do what we must because we can. For the good of all of us, except the ones who are dead. But there's no sense crying over every mistake. You just keep on trying 'til you run out of cake. And the science gets done, and you make a neat gun for the people who are still alive.",
+      "text": "This was a triumph! I'm making a note here: huge success! It's hard to overstate my satisfaction. Aperture Science: we do what we must, because we can. For the good of all of us, except the ones who are dead. But there's no sense crying over every mistake. You just keep on trying 'til you run out of cake. And the science gets done, and you make a neat gun for the people who are still alive.",
       "source": "Portal",
       "id": 4276,
-      "length": 392
+      "length": 393
     },
     {
       "text": "When you're a kid, they tell you it's all, \"Grow up. Get a job. Get married. Get a house. Have a kid, and that's it.\" But the truth is the world is so much stranger than that. It's so much darker. And so much madder. And so much better.",
@@ -25286,12 +25232,6 @@
       "length": 111
     },
     {
-      "text": "I'll take you for a ride on my garbage truck. Oh no, I'll take you to the dump 'cause you're my queen. I'll show you the sights. You know you wanna ride on my garbage truck.",
-      "source": "Garbage Truck",
-      "id": 4362,
-      "length": 173
-    },
-    {
       "text": "I often see racers, particularly at the back of the pack in amateur races, trying to go fast, with their arms flailing around, banging off shifts, jerking the steering into a turn with feet stabbing at the pedals. If the driver would only slow down, the car would actually go faster. It reminds me of the saying, \"never confuse movement for action.\"",
       "source": "Speed Secrets: Professional Race Driving Techniques",
       "id": 4363,
@@ -25424,7 +25364,7 @@
       "length": 272
     },
     {
-      "text": "The letter she left was one line long. \"Goodbye forever I'm gone\". It was sitting on a table in a room in a red brick box that we used to call our home.",
+      "text": "The letter she left was one line long. \"Goodbye forever I'm gone.\" It was sitting on a table in a room in a red brick box that we used to call our home.",
       "source": "Goodbye I'm Gone",
       "id": 4386,
       "length": 152
@@ -26222,12 +26162,6 @@
       "length": 311
     },
     {
-      "text": "Anyway, anyway, guys guys guys, come on. I'm in this computer, right. So I'm looking around, looking around, you know, throwing commands at it. I don't know where it is or what it does or anything. It's like, it's like choice, it's just beautiful, okay. Like four hours I'm just messing around in there. Finally I figure out that it's a bank. Right, okay wait, okay, so it's a bank. So, this morning, I look in the paper, some cash machine in, like, Bumsville Idaho, spits out seven hundred dollars into the middle of the street.",
-      "source": "Hackers",
-      "id": 4526,
-      "length": 529
-    },
-    {
       "text": "Writer's block is a good example of a dispositional fallacy: A description of behavior can't also explain the described behavior. Writer's block is nothing more than the behavior of not writing. Saying that you can't write because of writer's block is merely saying that you can't write because you aren't writing. It's trivial. The cure of writer's block - if you can cure a specious affliction - is writing.",
       "source": "How to Write a Lot: A Practical Guide to Productive Academic Writing",
       "id": 4527,
@@ -26252,7 +26186,7 @@
       "length": 348
     },
     {
-      "text": "We live in the flicker - may it last as long as the old earth keeps rolling!",
+      "text": "We live in the flicker - may it last as long as the old Earth keeps rolling!",
       "source": "Heart of Darkness",
       "id": 4532,
       "length": 76
@@ -27314,12 +27248,6 @@
       "length": 302
     },
     {
-      "text": "We're only making plans for Nigel. He has his future in British Steel. We're only making plans for Nigel. Nigel's whole future is as good as sealed. And if young Nigel says he's happy he must be happy. He must be happy in his work.",
-      "source": "Making Plans for Nigel",
-      "id": 4718,
-      "length": 231
-    },
-    {
       "text": "Well we're living here in Allentown and they're closing all the factories down. Out in Bethlehem they're killing time, filling out forms, standing in line. Well our fathers fought the Second World War. Spent their weekends on the Jersey Shore. Met our mothers in the USO. Asked them to dance. Danced with them slow.",
       "source": "Allentown",
       "id": 4719,
@@ -28040,12 +27968,6 @@
       "length": 281
     },
     {
-      "text": "The oracles of God foretold the rising of an Antichrist in the Christian Church: and in the Pope of Rome, all the characteristics of that Antichrist are so marvelously answered that if any who read the Scriptures do not see it, there is a marvelous blindness upon them.",
-      "source": "Prophetic Faith of Our Fathers Vol 3",
-      "id": 4845,
-      "length": 269
-    },
-    {
       "text": "We didn't start the fire. It was always burning since the world's been turning. We didn't start the fire. No, we didn't light it, but we tried to fight it.",
       "source": "We Didn't Start the Fire",
       "id": 4846,
@@ -28488,12 +28410,6 @@
       "source": "The Return",
       "id": 4925,
       "length": 399
-    },
-    {
-      "text": "I can have a reporter out here in twenty minutes, with cameras, asking why you are persecuting an innocent, handicapped, Congressional Medal of Honor winner. Perhaps because he's a well-known conservative Republican and you are considering a bid on the Democratic ticket next year? Just to be clear, that was me threatening you.",
-      "source": "Scandal",
-      "id": 4927,
-      "length": 328
     },
     {
       "text": "How I love to watch the morn, with golden sun that shines. Up above to nicely warm these frosty toes of mine. The wind doth taste of bittersweet, like jasper wine and sugar. I bet it's blown through others' feet like those of... Caspar Weinberger.",
@@ -29072,12 +28988,6 @@
       "length": 103
     },
     {
-      "text": "I am what I am, an' I'm not ashamed. \"Never be ashamed,\" my ol' dad used ter say, \"there's some who'll hold it against you, but they're not worth botherin' with.\"",
-      "source": "Harry Potter and the Goblet of Fire",
-      "id": 5027,
-      "length": 162
-    },
-    {
       "text": "It matters not what someone is born, but what they grow to be.",
       "source": "Harry Potter and the Goblet of Fire",
       "id": 5028,
@@ -29628,12 +29538,6 @@
       "source": "R J Palacio, Wonder",
       "length": 259,
       "id": 5120
-    },
-    {
-      "text": "Precocious high school student Jimmy Kudo uses his keen powers of observation and astute intuition to solve mysteries that have left law enforcement officials baffled. Hot on the trail of a suspect, Jimmy is accosted from behind and fed a strange chemical which physically transforms him into a grade schooler! Taking on the pseudonym Conan Edogawa, he attempts to track down the people who did this to him. But until he finds a cure for his bizarre condition, Jimmy continues to help the police solve their toughest cases.",
-      "source": "Gosho Aoyama, Detective Conan",
-      "length": 523,
-      "id": 5121
     },
     {
       "text": "In late June 1945, working at Los Alamos, Von Neumann completed a 101-page document titled \"First Draft of a Report on the EDVAC\". In his clear and penetrating way, he set forth an overview of the design of a digital computer that would feature stored-program operation. Von Neumann boldly drew comparisons between his electronic circuits and the brain's neurons, emphasizing that just as the brain relies on its memory, so the computer would depend on its programs. Goldstine soon was distributing copies to interested scientists. In time the \"First Draft\" would become one of the most influential papers in computer science.",
@@ -30872,7 +30776,7 @@
       "id": 5351
     },
     {
-      "text": "Some forms of high-tech communication can hinder concentration on other tasks. Experts who study human-machine interactions - things like instant messaging, calendar reminders, e-mail alerts, and computer pop-ups - report that the wired world suffers from \"distraction overload and continuous partial attention.\" The result of a succession of interruptions may be that \"you risk never focusing exclusively on any thought or perception for long and never being able to work straight through to completion on anything.\" among other things, such distractions can cause memory loss and decreased memory accuracy as well as potentially disastrous errors.",
+      "text": "Some forms of high-tech communication can hinder concentration on other tasks. Experts who study human-machine interactions - things like instant messaging, calendar reminders, e-mail alerts, and computer pop-ups - report that the wired world suffers from \"distraction overload and continuous partial attention.\" The result of a succession of interruptions may be that \"you risk never focusing exclusively on any thought or perception for long and never being able to work straight through to completion on anything.\" Among other things, such distractions can cause memory loss and decreased memory accuracy as well as potentially disastrous errors.",
       "source": "Newsweek Magazine",
       "length": 649,
       "id": 5352
@@ -30996,12 +30900,6 @@
       "source": "Thomas Shelby, Peaky Blinders",
       "length": 294,
       "id": 5373
-    },
-    {
-      "text": "La-di-da-di, we like to party. We don't cause trouble, we don't bother nobody. We're just some men that's on the mic and when we rock up on the mic we rock the mic (Right). For all of y'all keeping y'all in health. Just to see you smile and enjoy yourself 'cause it's cool when you 'cause a cozy condition, that we create, 'cause that's our mission. So listen to what we say because this type of stuff, it happens every day.",
-      "source": "Doug E. Fresh & The Get Fresh Crew ft. Slick Rick - La Di Da Di",
-      "length": 424,
-      "id": 5374
     },
     {
       "text": "Some people think they can outsmart me. Maybe, maybe. I have yet to meet one that can outsmart bullet.",
@@ -31494,12 +31392,6 @@
       "source": "Fahrenheit 451",
       "length": 78,
       "id": 5482
-    },
-    {
-      "text": "Have you ever watched the jet cars race on the boulevard?... I sometimes think drivers don't know what grass is, or flowers, because they never see them slowly... If you showed a driver a green blur, Oh yes! He'd say, that's grass! A pink blur! That's a rose garden! White blurs are houses. Brown blurs are cows.",
-      "source": "Fahrenheit 451",
-      "length": 312,
-      "id": 5484
     },
     {
       "text": "My father picked me up from school one day and we played hookey and went to the beach. It was too cold to go in the water so we sat on a blanket and ate pizza. When I got home my sneakers were full of sand and I dumped it on my bedroom floor. I didn't know the difference, I was six. My mother screamed at me for the mess but he wasn't mad. He said that billions of years ago the world's shifting and ocean moving brought that sand to that spot on the beach and then I took it away. Every day he said we change the world. Which is a nice thought until I think about how many days and lifetimes I would need to bring a shoe full of sand home until there is no beach. Until it made a difference to anyone. Every day we change the world. But to change the world in a way that means anything that takes more time than most people have. It never happens all at once. It's slow. It's methodical. It's exhausting. We don't all have the stomach for it.",
@@ -32624,12 +32516,6 @@
       "id": 5703
     },
     {
-      "text": "On a daily basis I consume enough drugs to sedate Manhattan, Long Island, and Queens for a month. I take Quaaludes 10-15 times a day for my 'back pain', Adderall to stay focused, Xanax to take the edge off, pot to mellow me out, cocaine to wake me back up again, and morphine... Well, because it's awesome.",
-      "source": "The Wolf Of Wall Street",
-      "length": 306,
-      "id": 5704
-    },
-    {
       "text": "My name is Jordan Belfort. The year I turned 26, I made 49 million dollars, which really pissed me off because it was three shy of a million a week.",
       "source": "The Wolf Of Wall Street",
       "length": 148,
@@ -32672,7 +32558,7 @@
       "id": 5711
     },
     {
-      "text": "Their morals, their code; it's a bad joke. Dropped at the first sign of trouble. They're only as good as the world allows them to be. You'll see- I'll show you. When the chips are down these, uh, civilized people? They'll eat each other. See I'm not a monster, I'm just ahead of the curve.",
+      "text": "Their morals, their code; it's a bad joke. Dropped at the first sign of trouble. They're only as good as the world allows them to be. You'll see. I'll show you. When the chips are down these, uh, civilized people? They'll eat each other. See I'm not a monster, I'm just ahead of the curve.",
       "source": "The Dark Knight",
       "length": 289,
       "id": 5712
@@ -33188,12 +33074,6 @@
       "id": 5802
     },
     {
-      "text": "It may be hard right now but you must silence those thoughts. Stop counting those things you have lost, what is gone is gone. So ask yourself, what is there that still remains to you.",
-      "source": "One piece",
-      "length": 183,
-      "id": 5803
-    },
-    {
       "text": "You will face many defeats in life, but never let yourself be defeated.",
       "source": "Maya Angelou",
       "length": 71,
@@ -33416,12 +33296,6 @@
       "id": 5840
     },
     {
-      "text": "If you only do what you can do, you will never be more than you are now.",
-      "source": "Master Shifu",
-      "length": 72,
-      "id": 5842
-    },
-    {
       "text": "Size matters not. Look at me. Judge me by my size, do you? Hmm? Hmm. And well you should not. For my ally is the Force, and a powerful ally it is. Life creates it, makes it grow. Its energy surrounds us and binds us. Luminous beings are we, not this crude matter. You must feel the Force around you; here, between you, me, the tree, the rock, everywhere, yes. Even between the land and the ship.",
       "source": "Master Yoda",
       "length": 395,
@@ -33590,9 +33464,9 @@
       "id": 5870
     },
     {
-      "text": "In many ways, the work of a critic is easy. We risk very little, yet enjoy a position over those who offer up their work and their selves to our judgment. We thrive on negative criticism, which is fun to write and to read. But the bitter truth we critics must face, is that in the grand scheme of things, the average piece of junk is probably more meaningful than our criticism designating it so. But there are times when a critic truly risks something, and that is in the discovery and defense of the new. The world is often unkind to new talent, new creations. The new needs friends. Last night, I experienced something new: an extraordinary meal from a singularly unexpected source. To say that both the meal and its maker have challenged my preconceptions about fine cooking is a gross understatement. They have rocked me to my core. In the past, I have made no secret of my disdain for Chef Gusteau's famous motto, \"Anyone can cook\". But I realize, only now do I truly understand what he meant. Not everyone can become a great artist; but a great artist can come from anywhere. It is difficult to imagine more humble origins than those of the genius now cooking at Gusteau's, who is, in this critic's opinion, nothing less than the finest chef in France. I will be returning to Gusteau's soon, hungry for more.",
+      "text": "In many ways, the work of a critic is easy. We risk very little, yet enjoy a position over those who offer up their work and their selves to our judgement. We thrive on negative criticism, which is fun to write and to read. But the bitter truth we critics must face, is that in the grand scheme of things, the average piece of junk is probably more meaningful than our criticism designating it so. But there are times when a critic truly risks something, and that is in the discovery and defense of the new. The world is often unkind to new talent, new creations. The new needs friends. Last night, I experienced something new: an extraordinary meal from a singularly unexpected source. To say that both the meal and its maker have challenged my preconceptions about fine cooking is a gross understatement. They have rocked me to my core. In the past, I have made no secret of my disdain for Chef Gusteau's famous motto, \"Anyone can cook\". But I realize, only now do I truly understand what he meant. Not everyone can become a great artist; but a great artist can come from anywhere. It is difficult to imagine more humble origins than those of the genius now cooking at Gusteau's, who is, in this critic's opinion, nothing less than the finest chef in France. I will be returning to Gusteau's soon, hungry for more.",
       "source": "Ratatouille",
-      "length": 1315,
+      "length": 1316,
       "id": 5871
     },
     {
@@ -33878,9 +33752,9 @@
       "id": 5921
     },
     {
-      "text": "So the crime was a trip to the market. The sentence, a lifetime of hurt. As she saw through tears. Her home of thirty odd years, reduced to rubble and dirt. And she cursed those who would approach her and hold papers up to her face, and say \"You should feel blessed you live in the US and not some other hellish place\"",
+      "text": "So the crime was a trip to the market. The sentence, a lifetime of hurt. As she saw through tears. Her home of thirty odd years, reduced to rubble and dirt. And she cursed those who would approach her and hold papers up to her face, and say \"You should feel blessed you live in the US and not some other hellish place.\"",
       "source": "Mischief Brew - Save a City",
-      "length": 318,
+      "length": 319,
       "id": 5922
     },
     {
@@ -34180,12 +34054,6 @@
       "source": "Everyone has a story - Savi Sharma",
       "length": 336,
       "id": 6082
-    },
-    {
-      "text": "My friend chuckled. They would only laugh if you were reading something funny, he said confidently. \"Now tell me are you coming for the author's meet next weekend?\" he asked.",
-      "source": "Everyone has a story - Savi Sharma",
-      "length": 174,
-      "id": 6083
     },
     {
       "text": "Definitely, I said. What would the weekend bring for some? Would I still be lost in search of my story? Live life in moments, not in days or years or your schedules. It's our misconception - most of the time - that we live our lives the way we want. Every single step that we take is influenced by others. Only the part that we hide from everyone else and keep deep within our heart, is our own. I strongly urge you all to realize that hidden part of yours. Go, live that part. Live your life. Don't let your dreams die within you. Trust me, your struggle, your fight, will be worth the risk in opening yourself up. Get up. Inhale the air of passion. Start your journey. Grab your dreams. Enjoy your mistakes. Dance to the rhythm of your heartbeats. Smile. Laugh. Love. Live.",
@@ -35854,14 +35722,7 @@
       "id": 6353
     },
     {
-      "text": "This thing - it grabs hold of us again at the wrong place, at the wrong time... and we're dead.",
-      "source": "Ennis Del Mar, Brokeback Mountain",
-      "length": 95,
-      "approvedBy": "Smithster",
-      "id": 6354
-    },
-    {
-      "text": "When I look back on my life, It's not that I don't want to see things exactly as they happened. It's just that I prefer to remember them in an artistic way and truthfully the lie of it all is much more honest because I invented it.",
+      "text": "When I look back on my life, it's not that I don't want to see things exactly as they happened. It's just that I prefer to remember them in an artistic way and truthfully the lie of it all is much more honest because I invented it.",
       "source": "Lady Gaga, Prelude Pathetique (Marry the Night)",
       "length": 231,
       "approvedBy": "Smithster",
@@ -36092,9 +35953,9 @@
       "id": 6388
     },
     {
-      "text": "I'm going to this right, show you I'm not movin'! Wherever you go I won't far to follow.",
+      "text": "I'm going to this right, show you I'm not movin'! Wherever you go, I won't be far to follow.",
       "source": "Waitress, Never Ever Getting Rid of Me",
-      "length": 88,
+      "length": 92,
       "approvedBy": "Smithster",
       "id": 6389
     },
@@ -36295,9 +36156,9 @@
       "id": 6417
     },
     {
-      "text": "Dude.. where’s your suit? Just once, when I say 'suit up' I wish you’d put on a suit.",
+      "text": "Dude... where's your suit? Just once, when I say \"suit up\" I wish you'd put on a suit.",
       "source": "How I met your mother",
-      "length": 85,
+      "length": 86,
       "approvedBy": "Smithster",
       "id": 6418
     },
@@ -36972,13 +36833,6 @@
       "length": 188,
       "approvedBy": "Smithster",
       "id": 6517
-    },
-    {
-      "text": "To be, or not to be? That is the question: Whether 'tis nobler in the mind to suffer The slings and arrows of outrageous fortune, or to take arms against a sea of troubles, and, by opposing, end them?",
-      "source": "Hamlet",
-      "length": 200,
-      "approvedBy": "Smithster",
-      "id": 6518
     },
     {
       "text": "Wake up to reality! Nothing ever goes as planned in this accursed world. The longer you live, the more you realize that the only things that truly exist in this reality are merely pain. Suffering and futility. Listen, everywhere you look in this world, wherever there is light, there will always be shadows to be found as well. As long as there is a concept of victors, the vanquished will also exist. The selfish intent of wanting to preserve peace initiates war. And hatred is born in order to protect love. There are nexuses causal relationships that cannot be separated.",
@@ -37681,9 +37535,9 @@
       "id": 6623
     },
     {
-      "text": "A darkness approaches. A day will come in the future where everything you care about will change... Until then I'll be watching you! I'll be watching you..",
+      "text": "A darkness approaches. A day will come in the future where everything you care about will change... Until then I'll be watching you! I'll be watching you...",
       "source": "Bill Cipher, Gravity Falls",
-      "length": 155,
+      "length": 156,
       "approvedBy": "Smithster",
       "id": 6624
     },
@@ -38001,13 +37855,6 @@
       "length": 348,
       "approvedBy": "Smithster",
       "id": 6671
-    },
-    {
-      "text": "Fear is the path to the dark side. Fear leads to anger. Anger leads to hate. Hate leads to suffering.",
-      "source": "Yoda, Star wars",
-      "length": 101,
-      "approvedBy": "Smithster",
-      "id": 6672
     },
     {
       "text": "I wasn't supposed to come back after Christmas vacation on account of I was flunking four subjects and not applying myself and all.",
@@ -38753,6 +38600,372 @@
       "source": "No Country for Old Men",
       "id": 6792,
       "length": 108
+    },
+    {
+      "text": "Hey yo, I'm just like my country: I'm young, scrappy and hungry, and I'm not throwin' away my shot.",
+      "source": "My Shot, Hamilton",
+      "length": 99,
+      "id": 6793
+    },
+    {
+      "text": "There are moments that the words don't reach. There is suffering too terrible to name.",
+      "source": "It's Quiet Uptown, Hamilton",
+      "length": 86,
+      "id": 6794
+    },
+    {
+      "text": "I know that we can win. I know that greatness lies in you.",
+      "source": "History Has Its Eyes on You, Hamilton",
+      "length": 58,
+      "id": 6795
+    },
+    {
+      "text": "I made every mistake and felt the shame rise in me. And even now I lie awake, knowing history has its eyes on me.",
+      "source": "History Has Its Eyes on You, Hamilton",
+      "length": 113,
+      "id": 6796
+    },
+    {
+      "text": "No, show me how to say no to this, I don't know how to say no to this. In my mind, I'm tryin' to go...",
+      "source": "Say No to This, Hamilton",
+      "length": 102,
+      "id": 6797
+    },
+    {
+      "text": "And when push comes to shove, I will send a fully armed battalion to remind you of my love!",
+      "source": "You'll Be Back, Hamilton",
+      "length": 91,
+      "id": 6798
+    },
+    {
+      "text": "You're on your own. Awesome, wow! Do you have a clue what happens now?",
+      "source": "What Comes Next, Hamilton",
+      "length": 70,
+      "id": 6799
+    },
+    {
+      "text": "Look around, look around at how lucky we are to be alive right now.",
+      "source": "That Would Be Enough, Hamilton",
+      "length": 67,
+      "id": 6800
+    },
+    {
+      "text": "The fact that you're alive is a miracle. Just stay alive, that would be enough.",
+      "source": "That Would Be Enough, Hamilton",
+      "length": 79,
+      "id": 6801
+    },
+    {
+      "text": "Have your seconds meet face to face. Negotiate a peace, or negotiate a time and place.",
+      "source": "Ten Duel Commandments, Hamilton",
+      "length": 86,
+      "id": 6802
+    },
+    {
+      "text": "The challenge: demand satisfaction. If they apologize, no need for further action.",
+      "source": "Ten Duel Commandments, Hamilton",
+      "length": 82,
+      "id": 6803
+    },
+    {
+      "text": "Time to get some pistols and a doctor on site. You pay him in advance, you treat him with civility. You have him turn around, so he can have deniability.",
+      "source": "Ten Duel Commandments, Hamilton",
+      "length": 153,
+      "id": 6804
+    },
+    {
+      "text": "If it takes fighting a war for us to meet, it will have been worth it.",
+      "source": "Helpless, Hamilton",
+      "length": 70,
+      "id": 6805
+    },
+    {
+      "text": "All I have is my honor, a tolerance for pain, a couple of college credits, and my top-notch brain.",
+      "source": "Helpless, Hamilton",
+      "length": 98,
+      "id": 6806
+    },
+    {
+      "text": "I remember that night, I just might regret that night for the rest of my days.",
+      "source": "Satisfied, Hamilton",
+      "length": 78,
+      "id": 6807
+    },
+    {
+      "text": "I'll give him this, his financial system is a work of genius. I couldn't undo it if I tried. And I've tried.",
+      "source": "Who Lives, Who Dies, Who Tells Your Story, Hamilton",
+      "length": 108,
+      "id": 6808
+    },
+    {
+      "text": "He took our country from bankruptcy to prosperity. I hate to admit it, but he doesn't get enough credit for all the credit he gave us.",
+      "source": "Who Lives, Who Dies, Who Tells Your Story, Hamilton",
+      "length": 134,
+      "id": 6809
+    },
+    {
+      "text": "And when you're gone, who remembers your name? Who keeps your flame? Who tells your story?",
+      "source": "Who Lives, Who Dies, Who Tells Your Story, Hamilton",
+      "length": 90,
+      "id": 6810
+    },
+    {
+      "text": "You have no control who lives, who dies, who tells your story?",
+      "source": "Who Lives, Who Dies, Who Tells Your Story, Hamilton",
+      "length": 62,
+      "id": 6811
+    },
+    {
+      "text": "I am slow to anger but I toe the line, as I reckon with the effects of your life on mine.",
+      "source": "The Obedient Servant, Hamilton",
+      "length": 89,
+      "id": 6812
+    },
+    {
+      "text": "What is a legacy? It's planting seeds in a garden you never get to see.",
+      "source": "The World Was Wide Enough, Hamilton",
+      "length": 71,
+      "id": 6813
+    },
+    {
+      "text": "History obliterates in every picture it paints. It paints me and all my mistakes.",
+      "source": "The World Was Wide Enough, Hamilton",
+      "length": 81,
+      "id": 6814
+    },
+    {
+      "text": "You are a very special person. There is only one like you in the whole world. There's never been anyone exactly like you before, and there will never be again. Only you. And people can like you exactly as you are.",
+      "source": "Fred Rogers",
+      "length": 213,
+      "id": 6815
+    },
+    {
+      "text": "I'm not sure whose twisted idea it was to put hundreds of adolescents in underfunded schools run by people whose dreams were crushed years ago, but I admire the sadism.",
+      "source": "Wednesday",
+      "length": 168,
+      "id": 6817
+    },
+    {
+      "text": "Teach them our ways so they do not suffer the shame of being useless.",
+      "source": "Avatar: The Way of Water",
+      "length": 69,
+      "id": 6818
+    },
+    {
+      "text": "A true leader has the confidence to stand alone, the courage to make tough decisions, and the compassion to listen to the needs of others. He does not set out to be a leader, but becomes one by the equality of his actions and the integrity of his intent.",
+      "source": "The 7 Habits of Highly Effective People",
+      "length": 254,
+      "id": 6819
+    },
+    {
+      "text": "Life is a journey, not a destination. The key to success is to enjoy every step along the way. Embrace the struggles, learn from the failures, and appreciate the victories. The destination may be important, but it's the journey that truly shapes us.",
+      "source": "The Power of Positive Thinking",
+      "length": 249,
+      "id": 6820
+    },
+    {
+      "text": "Life is not a problem to be solved, but a reality to be experienced. We do not remember days, we remember moments. Life is like riding a bicycle. To keep your balance, you must keep moving. Don't cry because it's over, smile because it happened. In three words I can sum up everything I've learned about life: it goes on.",
+      "source": "Søren Kierkegaard",
+      "length": 321,
+      "id": 6821
+    },
+    {
+      "text": "I think the saddest people always try their hardest to make people happy because they know what it's like to feel absolutely worthless and they don't want anyone else to feel like that.",
+      "source": "The Perks of Being a Wallflower",
+      "length": 185,
+      "id": 6822
+    },
+    {
+      "text": "The only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle. As with all matters of the heart, you'll know when you find it.",
+      "source": "Steve Jobs",
+      "length": 174,
+      "id": 6823
+    },
+    {
+      "text": "It is not the critic who counts; not the man who points out how the strong man stumbles, or where the doer of deeds could have done them better. The credit belongs to the man who is actually in the arena, whose face is marred by dust and sweat and blood.",
+      "source": "Theodore Roosevolt",
+      "length": 254,
+      "id": 6824
+    },
+    {
+      "text": "It is better to be hated for what you are than to be loved for what you are not.",
+      "source": "Andrè Gide",
+      "length": 80,
+      "id": 6825
+    },
+    {
+      "text": "Happiness can be found, even in the darkest of times, if one only remembers to turn on the light.",
+      "source": "Harry Potter and the Prisoner of Azkaban",
+      "length": 97,
+      "id": 6826
+    },
+    {
+      "text": "The greatest glory in living lies not in never falling, but in rising every time we fall. This means recognizing that failure and setbacks are a natural part of the journey to success, and using them as opportunities to learn and grow. It means finding the strength and resilience to get back up and keep going, even when things seem impossible. It means believing in ourselves and our abilities, and never giving up on our dreams.",
+      "source": "Nelson Mandela",
+      "length": 431,
+      "id": 6827
+    },
+    {
+      "text": "The best way to find yourself is to lose yourself in the service of others.",
+      "source": "Mahatma Gandhi",
+      "length": 75,
+      "id": 6828
+    },
+    {
+      "text": "We do not need magic to transform our world. We carry all the power we need inside ourselves already.",
+      "source": "J.K. Rowling",
+      "length": 101,
+      "id": 6829
+    },
+    {
+      "text": "We cannot solve our problems with the same thinking we used when we created them.",
+      "source": "Albert Einstein",
+      "length": 81,
+      "id": 6830
+    },
+    {
+      "text": "The only thing necessary for the triumph of evil is for good men to do nothing.",
+      "source": "Edmund Burke",
+      "length": 79,
+      "id": 6831
+    },
+    {
+      "text": "Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle.",
+      "source": "Christian D. Larson",
+      "length": 116,
+      "id": 6832
+    },
+    {
+      "text": "The two most important days in your life are the day you are born and the day you find out why.",
+      "source": "Mark Twain",
+      "length": 95,
+      "id": 6833
+    },
+    {
+      "text": "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.",
+      "source": "Ralph Waldo Emerson",
+      "length": 110,
+      "id": 6834
+    },
+    {
+      "text": "I am not afraid of storms, for I am learning how to sail my ship.",
+      "source": "Louisa May Alcott (Little Women)",
+      "length": 65,
+      "id": 6835
+    },
+    {
+      "text": "You can never cross the ocean until you have the courage to lose sight of the shore.",
+      "source": "Christopher Columbus",
+      "length": 84,
+      "id": 6836
+    },
+    {
+      "text": "It is not easy to find happiness in ourselves, and it is not possible to find it elsewhere. The only way to true happiness is to learn to accept and love ourselves for who we are, flaws and all. This means embracing our strengths as well as our weaknesses, and finding joy in the journey of self-discovery and self-improvement. It may not be an easy path, but it is one that is worth taking.",
+      "source": "Unknown",
+      "length": 391,
+      "id": 6837
+    },
+    {
+      "text": "The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well. This means finding a sense of purpose and meaning in our lives, and striving to make a positive impact in the world around us. It means being kind and caring towards others, and using our unique talents and abilities to create something that will endure beyond our lifetime.",
+      "source": "Ralph Waldo Emerson",
+      "length": 440,
+      "id": 6838
+    },
+    {
+      "text": "Life is not about waiting for the storm to pass, it is about learning to dance in the rain. This means embracing the challenges and difficulties that come our way, and finding the strength and resilience to overcome them. It means learning to see the beauty and joy in every moment, even when things seem bleak or uncertain. It means living fully in the present, and finding the courage to take risks and pursue our dreams.",
+      "source": "Unknown",
+      "length": 423,
+      "id": 6839
+    },
+    {
+      "text": "The best way to predict your future is to create it. This means taking control of our lives and our destinies, and actively shaping the course of our future. It means setting goals and working towards them with determination and persistence, even when the path is difficult or uncertain. It means being willing to take risks and try new things, and never giving up in the face of adversity or setbacks.",
+      "source": "Abraham Lincoln",
+      "length": 402,
+      "id": 6840
+    },
+    {
+      "text": "Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful. This means finding joy and fulfillment in our work and our passions, and pursuing them with dedication and enthusiasm. It means recognizing that success is not just about wealth or status, but about living a life that is meaningful and rewarding on a personal level.",
+      "source": "Albert Schweitzer",
+      "length": 392,
+      "id": 6841
+    },
+    {
+      "text": "Believe you can and you're halfway there.",
+      "source": "Theodore Roosevelt",
+      "length": 41,
+      "id": 6842
+    },
+    {
+      "text": "Happiness is not something ready-made. It comes from your own actions.",
+      "source": "Dalai Lama",
+      "length": 70,
+      "id": 6843
+    },
+    {
+      "text": "You can't build a reputation on what you are going to do.",
+      "source": "Henry Ford",
+      "length": 57,
+      "id": 6844
+    },
+    {
+      "text": "The most beautiful thing we can experience is the mysterious. It is the source of all true art and all science. He to whom this emotion is a stranger, who can no longer pause to wonder and stand rapt in awe, is as good as dead: his eyes are closed.",
+      "source": "Albert Einstein",
+      "length": 248,
+      "id": 6845
+    },
+    {
+      "text": "I think the saddest people always try their hardest to make people happy because they know what it's like to feel absolutely worthless and they don't want anyone else to feel like that.",
+      "source": "Robin Williams",
+      "length": 185,
+      "id": 6846
+    },
+    {
+      "text": "I have no special talents. I am only passionately curious.",
+      "source": "Albert Einstein",
+      "length": 58,
+      "id": 6847
+    },
+    {
+      "text": "It is not the critic who counts; not the man who points out how the strong man stumbles, or where the doer of deeds could have done them better. The credit belongs to the man who is actually in the arena, whose face is marred by dust and sweat and blood; who strives valiantly; who errs, who comes short again and again, because there is no effort without error and shortcoming; but who does actually strive to do the deeds; who knows great enthusiasms, the great devotions; who spends himself in a worthy cause; who at the best knows in the end the triumph of high achievement, and who at the worst, if he fails, at least fails while daring greatly, so that his place shall never be with those cold and timid souls who neither know victory nor defeat.",
+      "source": "Theodore Roosevelt",
+      "length": 752,
+      "id": 6848
+    },
+    {
+      "text": "Our birthdays are feathers in the broad wing of time.",
+      "source": "Jean Paul",
+      "length": 53,
+      "id": 6849
+    },
+    {
+      "text": "Life is a journey, not a destination,\" whispered the old traveler as he sat by the fire. He closed his eyes and reminisced about the days when he was young and full of wonder. \"The world is vast and full of mysteries waiting to be discovered. And yet, we are often so consumed by our own trivial problems that we fail to appreciate the beauty that surrounds us.\" He took a sip of his tea and continued, \"But there is hope. For every sunset, there is a sunrise. For every heartbreak, there is a chance to love again. We must embrace every moment and cherish every memory, for they are the building blocks of our journey.\" The young man listening intently, thanked the traveler for his wise words and promised to live his life to the fullest.",
+      "source": "ChatGPT",
+      "length": 740,
+      "id": 6850
+    },
+    {
+      "text": "We are all in the gutter, but some of us are looking at the stars.",
+      "source": "Oscar Wilde",
+      "length": 66,
+      "id": 6851
+    },
+    {
+      "text": "Freedom is not worth having if it does not connote freedom to err. It passes my comprehension how human beings, be they ever so experienced and able, can delight in depriving other human beings of that precious right.",
+      "source": "The Autobiography of Mahatma Gandhi",
+      "length": 217,
+      "id": 6852
+    },
+    {
+      "text": "The only way to deal with fear is to face it head on. You cannot defeat what you cannot see.",
+      "source": "The Girl Who Kicked the Hornet's Nest",
+      "length": 92,
+      "id": 6853
+    },
+    {
+      "text": "Life is a book and there are a thousand pages I have not yet read.",
+      "source": "Clockwork Princess",
+      "length": 66,
+      "id": 6854
     }
   ]
 }

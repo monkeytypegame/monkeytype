@@ -1119,7 +1119,9 @@ $(".pageSettings .section.fontSize .inputAndButton .save").on("click", () => {
     )
   );
   if (didConfigSave) {
-    Notifications.add("Saved", 1, 1);
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
   }
 });
 
@@ -1133,7 +1135,9 @@ $(".pageSettings .section.fontSize .inputAndButton input").keypress((e) => {
       )
     );
     if (didConfigSave === true) {
-      Notifications.add("Saved", 1, 1);
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
     }
   }
 });

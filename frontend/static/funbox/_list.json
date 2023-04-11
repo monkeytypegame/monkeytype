@@ -35,7 +35,7 @@
   },
   {
     "name": "arrows",
-    "info": "Eurobeat Intensifies...",
+    "info": "Play it on a pad!",
     "canGetPb": false
   },
   {
@@ -92,6 +92,11 @@
   {
     "name": "plus_two",
     "info": "Only two future words are visible.",
+    "canGetPb": true
+  },
+  {
+    "name": "plus_three",
+    "info": "Only three future words are visible.",
     "canGetPb": true
   },
   {

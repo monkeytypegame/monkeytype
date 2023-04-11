@@ -331,32 +331,64 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setChartAccuracy(
-  chartAccuracy: boolean,
+export function setAccountChart(
+  array: MonkeyTypes.AccountChart,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("chart accuracy", chartAccuracy, ["boolean"])) {
+  if (
+    !isConfigValueValid("account chart", array, [["on", "off"], "stringArray"])
+  ) {
     return false;
   }
 
-  config.chartAccuracy = chartAccuracy;
-  saveToLocalStorage("chartAccuracy", nosave);
-  ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
+  config.accountChart = array;
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
 
   return true;
 }
 
-export function setChartStyle(
-  chartStyle: MonkeyTypes.ChartStyle,
+export function setAccountChartAccuracy(
+  value: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("chart style", chartStyle, [["line", "scatter"]])) {
+  if (!isConfigValueValid("account chart accuracy", value, ["boolean"])) {
     return false;
   }
 
-  config.chartStyle = chartStyle;
-  saveToLocalStorage("chartStyle", nosave);
-  ConfigEvent.dispatch("chartStyle", config.chartStyle);
+  config.accountChart[0] = value ? "on" : "off";
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
+
+  return true;
+}
+
+export function setAccountChartAvg10(
+  value: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("account chart avg 10", value, ["boolean"])) {
+    return false;
+  }
+
+  config.accountChart[1] = value ? "on" : "off";
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
+
+  return true;
+}
+
+export function setAccountChartAvg100(
+  value: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("account chart avg 100", value, ["boolean"])) {
+    return false;
+  }
+
+  config.accountChart[2] = value ? "on" : "off";
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
 
   return true;
 }
@@ -1251,17 +1283,16 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
     Notifications.add(
       "Empty input received, reverted to the default font.",
       0,
-      3,
-      "Custom font"
+      {
+        customTitle: "Custom font",
+      }
     );
   }
   if (!isConfigKeyValid(font)) {
-    Notifications.add(
-      `Invalid font name value: "${font}".`,
-      -1,
-      3,
-      "Custom font"
-    );
+    Notifications.add(`Invalid font name value: "${font}".`, -1, {
+      customTitle: "Custom font",
+      duration: 3,
+    });
     return false;
   }
   config.fontFamily = font;
@@ -1400,7 +1431,9 @@ function setThemes(
       Notifications.add(
         "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
         0,
-        7
+        {
+          duration: 7,
+        }
       );
     }
     customThemeColors.splice(4, 0, "#000000");
@@ -1493,7 +1526,9 @@ export function setCustomThemeColors(
     Notifications.add(
       "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
       0,
-      7
+      {
+        duration: 7,
+      }
     );
     colors.splice(4, 0, "#000000");
   }
@@ -1940,8 +1975,7 @@ export function apply(
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setRepeatedPace(configObj.repeatedPace, true);
     setPageWidth(configObj.pageWidth, true);
-    setChartAccuracy(configObj.chartAccuracy, true);
-    setChartStyle(configObj.chartStyle, true);
+    setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
     setMinWpm(configObj.minWpm, true);
