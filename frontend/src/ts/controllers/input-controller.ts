@@ -395,6 +395,10 @@ function handleChar(
     return;
   }
 
+  if (TestInput.spacingDebug) {
+    console.log("handleChar", char, charIndex, realInputValue);
+  }
+
   const now = performance.now();
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
