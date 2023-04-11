@@ -593,7 +593,9 @@ router.post(
 
 router.get(
   "/verificationEmail",
-  authenticateRequest(),
+  authenticateRequest({
+    noCache: true,
+  }),
   RateLimit.userRequestVerificationEmail,
   asyncHandler(UserController.sendVerificationEmail)
 );
