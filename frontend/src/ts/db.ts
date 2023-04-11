@@ -94,13 +94,15 @@ export async function initSnapshot(): Promise<
     ].map((response: Ape.HttpClientResponse) => response.data);
 
     snap.name = userData.name;
-    snap.personalBests = userData.personalBests ?? {
+    snap.personalBests = {
       time: {},
       words: {},
       quote: {},
       zen: {},
       custom: {},
+      ...userData.personalBests,
     };
+
     snap.banned = userData.banned;
     snap.lbOptOut = userData.lbOptOut;
     snap.verified = userData.verified;
@@ -172,6 +174,14 @@ export async function initSnapshot(): Promise<
 
     snap.tags.forEach((tag) => {
       tag.display = tag.name.replaceAll("_", " ");
+      tag.personalBests = {
+        time: {},
+        words: {},
+        quote: {},
+        zen: {},
+        custom: {},
+        ...tag.personalBests,
+      };
     });
 
     snap.tags = snap.tags?.sort((a, b) => {
