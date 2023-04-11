@@ -965,6 +965,11 @@ $(document).keydown(async (event) => {
 
 $("#wordsInput").keydown((event) => {
   if (event.originalEvent?.repeat) return;
+
+  if (TestInput.spacingDebug) {
+    console.log("spacing debug keydown", event.key, event.code, event.which);
+  }
+
   const now = performance.now();
   setTimeout(() => {
     const isAndroid =
@@ -975,6 +980,11 @@ $("#wordsInput").keydown((event) => {
 
 $("#wordsInput").keyup((event) => {
   if (event.originalEvent?.repeat) return;
+
+  if (TestInput.spacingDebug) {
+    console.log("spacing debug keyup", event.key, event.code, event.which);
+  }
+
   const now = performance.now();
   setTimeout(() => {
     const isAndroid =
