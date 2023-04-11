@@ -63,7 +63,19 @@ export async function sendVerificationEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { email, uid } = req.ctx.decodedToken;
-  const isVerified = (await admin.auth().getUser(uid)).emailVerified;
+  const isVerified = (
+    await admin
+      .auth()
+      .getUser("uid")
+      .catch((e) => {
+        throw new MonkeyError(
+          500, // this should never happen, but it does. it mightve been caused by auth token cache, will see if disabling cache fixes it
+          "Auth user not found, even though the token got decoded",
+          JSON.stringify({ uid, email, stack: e.stack }),
+          uid
+        );
+      })
+  ).emailVerified;
   if (isVerified === true) {
     throw new MonkeyError(400, "Email already verified");
   }
