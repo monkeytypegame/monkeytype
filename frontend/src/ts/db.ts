@@ -592,13 +592,9 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
       custom: {},
     };
 
-    if (dbSnapshot.personalBests[mode] === undefined) {
-      if (mode === "zen") {
-        dbSnapshot.personalBests.zen = { zen: [] };
-      } else if (mode === "custom") {
-        dbSnapshot.personalBests.custom = { custom: [] };
-      }
-    }
+    dbSnapshot.personalBests[mode] ??= {
+      [mode2]: [],
+    };
 
     dbSnapshot.personalBests[mode][mode2] ??=
       [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
@@ -675,6 +671,13 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
       custom: {},
     };
 
+    filteredtag.personalBests[mode] ??= {
+      [mode2]: [],
+    };
+
+    filteredtag.personalBests[mode][mode2] ??=
+      [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+
     const personalBests = (filteredtag.personalBests[mode][mode2] ??
       []) as MonkeyTypes.PersonalBest[];
 
@@ -722,6 +725,13 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
       zen: {},
       custom: {},
     };
+
+    filteredtag.personalBests[mode] ??= {
+      [mode2]: [],
+    };
+
+    filteredtag.personalBests[mode][mode2] ??=
+      [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
 
     try {
       let found = false;
