@@ -303,7 +303,7 @@ declare namespace MonkeyTypes {
     _id: string;
     name: string;
     display: string;
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
     active?: boolean;
   }
 
