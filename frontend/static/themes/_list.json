@@ -1160,5 +1160,12 @@
     "mainColor": "#d65ccc",
     "subColor": "#787d82",
     "textColor": "#d1d0c5"
+  },
+  {
+    "name": "monochrome",
+    "bgColor": "#949494",
+    "mainColor": "#ffffff",
+    "subColor": "#474747",
+    "textColor": "#292929"
   }
 ]
