@@ -66,7 +66,7 @@ export async function sendVerificationEmail(
   const isVerified = (
     await admin
       .auth()
-      .getUser("uid")
+      .getUser(uid)
       .catch((e) => {
         throw new MonkeyError(
           500, // this should never happen, but it does. it mightve been caused by auth token cache, will see if disabling cache fixes it
