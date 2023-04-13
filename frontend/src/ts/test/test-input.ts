@@ -67,7 +67,7 @@ const keysToTrack = [
   "Period",
   "Slash",
   "Space",
-  "Android", //smells
+  "NoCode", //android (smells) and some keyboards might send no location data - need to use this as a fallback
 ];
 
 interface Keypress {
@@ -318,14 +318,14 @@ export function forceKeyup(now: number): void {
   }
 }
 
-let androidIndex = 0;
+let noCodeIndex = 0;
 
 export function recordKeyupTime(now: number, key: string): void {
   if (!keysToTrack.includes(key)) return;
 
-  if (key === "Android") {
-    androidIndex--;
-    key = "Android" + androidIndex;
+  if (key === "NoCode") {
+    noCodeIndex--;
+    key = "NoCode" + noCodeIndex;
   }
 
   if (keyDownData[key] === undefined) return;
@@ -351,9 +351,9 @@ export function recordKeydownTime(now: number, key: string): void {
     return;
   }
 
-  if (key === "Android") {
-    key = "Android" + androidIndex;
-    androidIndex++;
+  if (key === "NoCode") {
+    key = "NoCode" + noCodeIndex;
+    noCodeIndex++;
   }
 
   if (keyDownData[key] !== undefined) {
@@ -431,7 +431,7 @@ export function resetKeypressTimings(): void {
     lastStartTime: -1,
   };
   keyDownData = {};
-  androidIndex = 0;
+  noCodeIndex = 0;
   if (spacingDebug) {
     console.clear();
     if (spacingDebug) {

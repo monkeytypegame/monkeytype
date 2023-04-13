@@ -993,9 +993,8 @@ $("#wordsInput").keydown((event) => {
 
   const now = performance.now();
   setTimeout(() => {
-    const isAndroid =
-      event.key === "Unidentified" && event.code === "" && event.which === 229;
-    TestInput.recordKeydownTime(now, isAndroid ? "Android" : event.code);
+    const eventCode = event.code === "" ? "NoCode" : event.code;
+    TestInput.recordKeydownTime(now, eventCode);
   }, 0);
 });
 
@@ -1010,11 +1009,12 @@ $("#wordsInput").keyup((event) => {
     event.code = "Space"; //powertoys bug
   }
 
+  event.code = "";
+
   const now = performance.now();
   setTimeout(() => {
-    const isAndroid =
-      event.key === "Unidentified" && event.code === "" && event.which === 229;
-    TestInput.recordKeyupTime(now, isAndroid ? "Android" : event.code);
+    const eventCode = event.code === "" ? "NoCode" : event.code;
+    TestInput.recordKeyupTime(now, eventCode);
   }, 0);
 });
 

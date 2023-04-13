@@ -30236,7 +30236,7 @@
       "id": 5244
     },
     {
-      "text": "\"All the same, I should like it all plain and clear,\" said Bilbo obstinately, putting on his business manner (usually reserved for people who tried to borrow money off him), and doing his best to appear wise and prudent and professional and live up to Gandalf's recommendation. \"Also I should like to know about risks, out-of-pocket expenses, time required and remuneration, and so forth\" - by which he meant: \"What am I going to get out of it? and am I going to come back alive?\"",
+      "text": "\"All the same, I should like it all plain and clear,\" said Bilbo obstinately, putting on his business manner (usually reserved for people who tried to borrow money off him), and doing his best to appear wise and prudent and professional and live up to Gandalf's recommendation. \"Also I should like to know about risks, out-of-pocket expenses, time required and remuneration, and so forth\" - by which he meant: \"What am I going to get out of it? And am I going to come back alive?\"",
       "source": "Bilbo Baggins, The Hobbit",
       "length": 480,
       "id": 5245
@@ -33746,7 +33746,7 @@
       "id": 5920
     },
     {
-      "text": "Myanmar and Brazil. Amusing coincidence that two of the three countries that provide the world's sesame seeds have such large cicada population, no? The cicadas of Myanmar emerge every 13 years, while the Brazilian cicadas emerge every 17. Next year they will hatch, simultaneously, for the first time in 221 years. Crops from both countries will be decimated. Unlike Myanmar and Brazil, Indonesia has no cicada population. I was surprised to see Indonesian sesame seed futures priced so low. I made a purchase. And now, if the shortage spikes the global price even ten percent. We'll profit... Evan? 'Sixty-eight million dollars.' If you wish, I could tap that projected revenue and make you a bridge loan of 15 million dollars, gentlemen.",
+      "text": "Myanmar and Brazil. Amusing coincidence that two of the three countries that provide the world's sesame seeds have such large cicada population, no? The cicadas of Myanmar emerge every 13 years, while the Brazilian cicadas emerge every 17. Next year they will hatch, simultaneously, for the first time in 221 years. Crops from both countries will be decimated. Unlike Myanmar and Brazil, Indonesia has no cicada population. I was surprised to see Indonesian sesame seed futures priced so low. I made a purchase. And now, if the shortage spikes the global price even ten percent. We'll profit... Evan? \"Sixty-eight million dollars.\" If you wish, I could tap that projected revenue and make you a bridge loan of 15 million dollars, gentlemen.",
       "source": "Peter Gregory - Silicon Valley",
       "length": 740,
       "id": 5921
@@ -35895,13 +35895,6 @@
       "length": 220,
       "approvedBy": "Smithster",
       "id": 6380
-    },
-    {
-      "text": "It is a beautiful day outside. Birds are singing, flowers are blooming... On days like these, kids like you... should be burning in hell.",
-      "source": "Undertale",
-      "length": 137,
-      "approvedBy": "Smithster",
-      "id": 6381
     },
     {
       "text": "It seems after all I couldn't be anything more than a simple puppet. But you three... You're strong. With a power like that... Maybe you three can break your own strings. Let me become your strength.",
@@ -38158,13 +38151,6 @@
       "id": 6720
     },
     {
-      "text": "It's a beautiful day outside. Birds are singing, flowers are blooming. On days like these, kids like you... Should be burning in Hell.",
-      "source": "Undertale",
-      "length": 134,
-      "approvedBy": "Smithster",
-      "id": 6721
-    },
-    {
       "text": "Time makes us sentimental. Perhaps, in the end, it is because of time that we suffer.",
       "source": "Call Me by Your Name",
       "length": 85,
@@ -38984,6 +38970,12 @@
       "source": "The Forty Rules of Love",
       "length": 239,
       "id": 6857
+    },
+    {
+      "text": "I'm sorry. I'm sorry. I'm sorry. It's all to save Eldia and the Island. But not only because of that. The reality outside the walls was nothing like the world I had dreamed of. It was nothing like the world I had seen in Armin's book. When I learned that humanity outside the walls survived... I was so disappointed. I wished... for everything to be wiped away.",
+      "source": "Eren - Attack on Titan",
+      "length": 361,
+      "id": 6858
     }
   ]
 }
