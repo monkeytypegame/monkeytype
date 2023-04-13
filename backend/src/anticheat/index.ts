@@ -5,7 +5,8 @@ export function implemented(): boolean {
 export function validateResult(
   _result: object,
   _version: string,
-  _uaStringifiedObject: string
+  _uaStringifiedObject: string,
+  _lbOptOut: boolean
 ): boolean {
   return true;
 }

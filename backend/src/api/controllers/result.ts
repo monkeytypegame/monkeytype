@@ -202,7 +202,8 @@ export async function addResult(
       !validateResult(
         result,
         req.headers["client-version"] as string,
-        JSON.stringify(new UAParser(req.headers["user-agent"]).getResult())
+        JSON.stringify(new UAParser(req.headers["user-agent"]).getResult()),
+        user.lbOptOut === true
       )
     ) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;

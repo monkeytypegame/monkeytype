@@ -395,6 +395,10 @@ function handleChar(
     return;
   }
 
+  if (TestInput.spacingDebug) {
+    console.log("handleChar", char, charIndex, realInputValue);
+  }
+
   const now = performance.now();
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
@@ -757,6 +761,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   }
 }
 
+let lastBailoutAttempt = -1;
+
 $(document).keydown(async (event) => {
   if (ActivePage.get() == "loading") return;
 
@@ -870,8 +876,23 @@ $(document).keydown(async (event) => {
           CustomTextState.isCustomTextLong() ?? false
         )
       ) {
-        TestInput.setBailout(true);
-        TestLogic.finish();
+        const delay = Date.now() - lastBailoutAttempt;
+        if (lastBailoutAttempt === -1 || delay > 200) {
+          lastBailoutAttempt = Date.now();
+          if (delay >= 5000) {
+            Notifications.add(
+              "Please double tap shift+enter to confirm bail out",
+              0,
+              {
+                important: true,
+                duration: 5000,
+              }
+            );
+          }
+        } else {
+          TestInput.setBailout(true);
+          TestLogic.finish();
+        }
       }
     } else {
       handleChar("\n", TestInput.input.current.length);
@@ -961,6 +982,15 @@ $(document).keydown(async (event) => {
 
 $("#wordsInput").keydown((event) => {
   if (event.originalEvent?.repeat) return;
+
+  if (TestInput.spacingDebug) {
+    console.log("spacing debug keydown", event.key, event.code, event.which);
+  }
+
+  if (event.key === " ") {
+    event.code = "Space"; //powertoys bug
+  }
+
   const now = performance.now();
   setTimeout(() => {
     const isAndroid =
@@ -971,6 +1001,15 @@ $("#wordsInput").keydown((event) => {
 
 $("#wordsInput").keyup((event) => {
   if (event.originalEvent?.repeat) return;
+
+  if (TestInput.spacingDebug) {
+    console.log("spacing debug keyup", event.key, event.code, event.which);
+  }
+
+  if (event.key === " ") {
+    event.code = "Space"; //powertoys bug
+  }
+
   const now = performance.now();
   setTimeout(() => {
     const isAndroid =
