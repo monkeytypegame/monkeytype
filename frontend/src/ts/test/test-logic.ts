@@ -750,7 +750,7 @@ async function getNextWord(
     !CustomText.isTimeRandom &&
     !CustomText.isSectionRandom
   ) {
-    randomWord = CustomText.text[TestWords.words.length];
+    randomWord = CustomText.text[TestWords.words.listSection.length];
   } else if (
     Config.mode == "custom" &&
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
@@ -1185,25 +1185,24 @@ export async function init(): Promise<void> {
             }
           } else {
             TestWords.words.push(randomWord);
+            TestWords.words.pushSection(randomWord.split(" "));
           }
         }
       } else {
         for (let i = 0; i < wordsBound; i++) {
-          console.log(sectionsBound);
-
           const randomWord = await getNextWord(
             wordset,
             i,
             language,
             wordsBound
           );
-          console.log("memory");
 
           if (/\t/g.test(randomWord)) {
             TestWords.setHasTab(true);
           }
 
           const te = randomWord.replace(/\n/g, "\n ").replace(/ $/g, "");
+          TestWords.words.pushSection(randomWord.split(" "));
 
           if (/ +/.test(te)) {
             const randomList = te.split(" ");
@@ -1211,6 +1210,7 @@ export async function init(): Promise<void> {
             let id = 0;
             while (id < randomList.length) {
               TestWords.words.push(randomList[id]);
+
               id++;
 
               if (
