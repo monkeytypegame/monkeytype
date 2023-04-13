@@ -1009,8 +1009,6 @@ $("#wordsInput").keyup((event) => {
     event.code = "Space"; //powertoys bug
   }
 
-  event.code = "";
-
   const now = performance.now();
   setTimeout(() => {
     const eventCode = event.code === "" ? "NoCode" : event.code;
