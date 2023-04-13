@@ -987,13 +987,14 @@ $("#wordsInput").keydown((event) => {
     console.log("spacing debug keydown", event.key, event.code, event.which);
   }
 
-  if (event.key === " ") {
-    event.code = "Space"; //powertoys bug
-  }
+  // if (event.key === " ") {
+  //   event.code = "Space"; //powertoys bug
+  // }
 
   const now = performance.now();
   setTimeout(() => {
-    const eventCode = event.code === "" ? "NoCode" : event.code;
+    const eventCode =
+      event.code === "" || event.which === 231 ? "NoCode" : event.code;
     TestInput.recordKeydownTime(now, eventCode);
   }, 0);
 });
@@ -1005,13 +1006,14 @@ $("#wordsInput").keyup((event) => {
     console.log("spacing debug keyup", event.key, event.code, event.which);
   }
 
-  if (event.key === " ") {
-    event.code = "Space"; //powertoys bug
-  }
+  // if (event.key === " ") {
+  //   event.code = "Space"; //powertoys bug
+  // }
 
   const now = performance.now();
   setTimeout(() => {
-    const eventCode = event.code === "" ? "NoCode" : event.code;
+    const eventCode =
+      event.code === "" || event.which === 231 ? "NoCode" : event.code;
     TestInput.recordKeyupTime(now, eventCode);
   }, 0);
 });
