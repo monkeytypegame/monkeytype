@@ -1163,9 +1163,9 @@
   },
   {
     "name": "monochrome",
-    "bgColor": "#949494",
-    "mainColor": "#ffffff",
-    "subColor": "#474747",
-    "textColor": "#292929"
+    "bgColor": "#ffffff",
+    "mainColor": "#000000",
+    "subColor": "#838383",
+    "textColor": "#000000"
   }
 ]
