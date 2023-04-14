@@ -381,6 +381,14 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
+      id: "clearNotifications",
+      display: "Clear all notifications",
+      icon: "fa-trash-alt",
+      exec: async (): Promise<void> => {
+        Notifications.clearAllNotifications();
+      },
+    },
+    {
       id: "clearSwCache",
       display: "Clear SW cache",
       icon: "fa-cog",

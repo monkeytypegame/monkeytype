@@ -17,6 +17,7 @@ interface RequestAuthenticationOptions {
   isPublic?: boolean;
   acceptApeKeys?: boolean;
   requireFreshToken?: boolean;
+  noCache?: boolean;
 }
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
@@ -149,7 +150,10 @@ async function authenticateWithBearerToken(
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   try {
-    const decodedToken = await verifyIdToken(token, options.requireFreshToken);
+    const decodedToken = await verifyIdToken(
+      token,
+      options.requireFreshToken || options.noCache
+    );
 
     if (options.requireFreshToken) {
       const now = Date.now();

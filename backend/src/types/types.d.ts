@@ -30,6 +30,10 @@ declare namespace MonkeyTypes {
     };
     users: {
       signUp: boolean;
+      lastHashesCheck: {
+        enabled: boolean;
+        maxHashes: number;
+      };
       autoBan: {
         enabled: boolean;
         maxCount: number;
@@ -57,6 +61,9 @@ declare namespace MonkeyTypes {
         enabled: boolean;
         maxMail: number;
       };
+    };
+    admin: {
+      endpointsEnabled: boolean;
     };
     apeKeys: {
       endpointsEnabled: boolean;
@@ -172,7 +179,7 @@ declare namespace MonkeyTypes {
     uid: string;
     quoteMod?: boolean;
     configurationMod?: boolean;
-    cannotReport?: boolean;
+    canReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
     favoriteQuotes?: Record<string, string[]>;
@@ -184,6 +191,8 @@ declare namespace MonkeyTypes {
     xp?: number;
     inbox?: MonkeyMail[];
     streak?: UserStreak;
+    lastReultHashes?: string[];
+    lbOptOut?: boolean;
   }
 
   interface UserStreak {

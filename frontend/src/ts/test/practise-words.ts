@@ -91,8 +91,9 @@ export function init(missed: boolean, slow: boolean): boolean {
   const punctuation =
     before.punctuation === null ? Config.punctuation : before.punctuation;
   const numbers = before.numbers === null ? Config.numbers : before.numbers;
-  UpdateConfig.setMode("custom");
+  UpdateConfig.setMode("custom", true);
 
+  CustomText.setPopupTextareaState(newCustomText.join(CustomText.delimiter));
   CustomText.setText(newCustomText);
   CustomText.setIsWordRandom(true);
   CustomText.setIsTimeRandom(false);

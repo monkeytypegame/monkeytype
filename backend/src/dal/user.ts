@@ -79,6 +79,7 @@ export async function resetUser(uid: string): Promise<void> {
       $unset: {
         discordAvatar: "",
         discordId: "",
+        lbOptOut: "",
       },
     }
   );
@@ -128,6 +129,20 @@ export async function clearPb(uid: string): Promise<void> {
           words: {},
           zen: {},
         },
+        lbPersonalBests: {
+          time: {},
+        },
+      },
+    }
+  );
+}
+
+export async function optOutOfLeaderboards(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        lbOptOut: true,
         lbPersonalBests: {
           time: {},
         },
@@ -289,7 +304,7 @@ export async function removeTag(uid: string, _id: string): Promise<void> {
   const user = await getUser(uid, "remove tag");
   if (
     user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() == _id).length === 0
+    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
@@ -306,7 +321,7 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
   const user = await getUser(uid, "remove tag pb");
   if (
     user.tags === undefined ||
-    user.tags.filter((t) => t._id.toHexString() == _id).length === 0
+    user.tags.filter((t) => t._id.toHexString() === _id).length === 0
   ) {
     throw new MonkeyError(404, "Tag not found");
   }
@@ -447,6 +462,20 @@ export async function resetPb(uid: string): Promise<void> {
           words: {},
           zen: {},
         },
+      },
+    }
+  );
+}
+
+export async function updateLastHashes(
+  uid: string,
+  lastHashes: string[]
+): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        lastReultHashes: lastHashes,
       },
     }
   );

@@ -149,9 +149,9 @@
   {
     "name": "dracula",
     "bgColor": "#282a36",
-    "mainColor": "#f2f2f2",
-    "subColor": "#bd93f9",
-    "textColor": "#f2f2f2"
+    "mainColor": "#bd93f9",
+    "subColor": "#6272a4",
+    "textColor": "#f8f8f2"
   },
   {
     "name": "nord",
@@ -1139,5 +1139,26 @@
     "mainColor": "#8fbcbb",
     "subColor": "#6a7791",
     "textColor": "#8fbcbb"
+  },
+  {
+    "name": "slambook",
+    "bgColor": "#FFFDDE",
+    "mainColor": "#13005A",
+    "subColor": "#1c82adc4",
+    "textColor": "#125d98"
+  },
+  {
+    "name": "breeze",
+    "bgColor": "#e8d5c4",
+    "mainColor": "#7d67a9",
+    "subColor": "#3a98b9",
+    "textColor": "#1b4c5e"
+  },
+  {
+    "name": "cherry_blossom",
+    "bgColor": "#323437",
+    "mainColor": "#d65ccc",
+    "subColor": "#787d82",
+    "textColor": "#d1d0c5"
   }
 ]

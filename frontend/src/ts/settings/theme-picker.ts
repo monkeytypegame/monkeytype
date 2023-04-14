@@ -9,6 +9,7 @@ import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
+import * as ActivePage from "../states/active-page";
 
 export function updateActiveButton(): void {
   let activeThemeName = Config.theme;
@@ -248,7 +249,6 @@ export async function refreshButtons(): Promise<void> {
     }
     themesEl.innerHTML = themesElHTML;
   }
-  updateActiveButton();
 }
 
 export function setCustomInputs(noThemeUpdate = false): void {
@@ -280,12 +280,13 @@ function toggleFavourite(themeName: string): void {
 
 export function saveCustomThemeColors(): void {
   const newColors: string[] = [];
-  $.each(
-    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-    (_index, element) => {
-      newColors.push($(element).attr("value") as string);
-    }
-  );
+  for (const color of ThemeController.colorVars) {
+    newColors.push(
+      $(
+        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+      ).attr("value") as string
+    );
+  }
   UpdateConfig.setCustomThemeColors(newColors);
   Notifications.add("Custom theme saved", 1);
 }
@@ -366,7 +367,6 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
     UpdateConfig.setTheme(theme);
-    updateActiveButton();
   }
 });
 
@@ -453,16 +453,17 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
 
 // Handles click on share custom theme button
 $("#shareCustomThemeButton").on("click", () => {
-  const share: string[] = [];
-  $.each(
-    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-    (_, element) => {
-      share.push($(element).attr("value") as string);
-    }
-  );
+  const newColors: string[] = [];
+  for (const color of ThemeController.colorVars) {
+    newColors.push(
+      $(
+        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+      ).attr("value") as string
+    );
+  }
 
   const url =
-    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(share));
+    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(newColors));
 
   navigator.clipboard.writeText(url).then(
     function () {
@@ -495,5 +496,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "customThemeId") refreshButtons();
-  // if (eventKey === "customTheme") updateActiveTab();
+  if (eventKey === "theme" && ActivePage.get() === "settings") {
+    updateActiveButton();
+  }
 });

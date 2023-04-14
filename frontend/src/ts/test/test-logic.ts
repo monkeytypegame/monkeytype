@@ -38,7 +38,6 @@ import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
-import * as TestActive from "../states/test-active";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as TestState from "./test-state";
@@ -57,6 +56,7 @@ import * as ConnectionState from "../states/connection";
 import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
+import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -178,7 +178,8 @@ export async function punctuateWord(
     lastChar != "," &&
     lastChar != "." &&
     currentLanguage !== "russian" &&
-    currentLanguage !== "ukrainian"
+    currentLanguage !== "ukrainian" &&
+    currentLanguage !== "slovak"
   ) {
     word = `'${word}'`;
   } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
@@ -306,7 +307,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-export function startTest(): boolean {
+export function startTest(now: number): boolean {
   if (PageTransition.get()) {
     return false;
   }
@@ -320,7 +321,7 @@ export function startTest(): boolean {
     AnalyticsController.log("testStartedNoLogin");
   }
 
-  TestActive.set(true);
+  TestState.setActive(true);
   Replay.startReplayRecording();
   Replay.replayGetWordsList(TestWords.words.list);
   TestInput.resetKeypressTimings();
@@ -347,7 +348,7 @@ export function startTest(): boolean {
     }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  TestStats.setStart(performance.now());
+  TestStats.setStart(now);
   TestTimer.start();
   return true;
 }
@@ -382,13 +383,6 @@ export function restart(options = {} as RestartOptions): void {
   }
   if (ActivePage.get() == "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
-      if (
-        TestWords.hasTab &&
-        !options.event?.shiftKey &&
-        Config.quickRestart !== "esc"
-      ) {
-        return;
-      }
       if (Config.mode !== "zen") event?.preventDefault();
       if (
         !Misc.canQuickRestart(
@@ -405,7 +399,14 @@ export function restart(options = {} as RestartOptions): void {
         } else if (Config.quickRestart === "esc") {
           message = "Press shift + escape or use your mouse to confirm.";
         }
-        Notifications.add("Quick restart disabled. " + message, 0, 3);
+        Notifications.add(
+          `Quick restart disabled in long tests. ${message}`,
+          0,
+          {
+            duration: 4,
+            important: true,
+          }
+        );
         return;
       }
       // }else{
@@ -413,7 +414,7 @@ export function restart(options = {} as RestartOptions): void {
       // }
     }
   }
-  if (TestActive.get()) {
+  if (TestState.isActive) {
     if (
       Config.repeatQuotes === "typing" &&
       Config.mode === "quote" &&
@@ -482,7 +483,7 @@ export function restart(options = {} as RestartOptions): void {
   TestInput.corrected.reset();
   ShiftTracker.reset();
   Caret.hide();
-  TestActive.set(false);
+  TestState.setActive(false);
   Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
@@ -493,14 +494,15 @@ export function restart(options = {} as RestartOptions): void {
   PaceCaret.reset();
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
+  LayoutfluidFunboxTimer.hide();
 
   $("#showWordHistoryButton").removeClass("loaded");
   $("#restartTestButton").blur();
   MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
-  if (ActivePage.get() == "test" && window.scrollY > 0) {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  // if (ActivePage.get() == "test" && window.scrollY > 0) {
+  // window.scrollTo({ top: 0, behavior: "smooth" });
+  // }
   $("#wordsInput").val(" ");
 
   TestUI.reset();
@@ -580,7 +582,7 @@ export function restart(options = {} as RestartOptions): void {
       } else {
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
-        TestActive.set(false);
+        TestState.setActive(false);
         Replay.stopReplayRecording();
         TestWords.words.resetCurrentIndex();
         TestInput.input.reset();
@@ -673,12 +675,28 @@ export function restart(options = {} as RestartOptions): void {
   );
 }
 
-function getFunboxWord(word: string, wordset?: Misc.Wordset): string {
+function getFunboxWordsFrequency():
+  | MonkeyTypes.FunboxWordsFrequency
+  | undefined {
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWordsFrequencyMode
+  );
+  if (wordFunbox?.functions?.getWordsFrequencyMode) {
+    return wordFunbox.functions.getWordsFrequencyMode();
+  }
+  return undefined;
+}
+
+function getFunboxWord(
+  word: string,
+  wordIndex: number,
+  wordset?: Misc.Wordset
+): string {
   const wordFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.getWord
   );
   if (wordFunbox?.functions?.getWord) {
-    word = wordFunbox.functions.getWord(wordset);
+    word = wordFunbox.functions.getWord(wordset, wordIndex);
   }
   return word;
 }
@@ -711,10 +729,13 @@ function applyLazyModeToWord(
 
 async function getNextWord(
   wordset: Misc.Wordset,
+  wordIndex: number,
   language: MonkeyTypes.LanguageObject,
   wordsBound: number
 ): Promise<string> {
-  let randomWord = wordset.randomWord();
+  const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
+
+  let randomWord = wordset.randomWord(funboxFrequency);
   const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
   const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
   if (Config.mode === "quote") {
@@ -731,7 +752,7 @@ async function getNextWord(
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
     (wordset.length < 4 || PractiseWords.before.mode !== null)
   ) {
-    randomWord = wordset.randomWord();
+    randomWord = wordset.randomWord(funboxFrequency);
   } else {
     let regenarationCount = 0; //infinite loop emergency stop button
     while (
@@ -750,12 +771,12 @@ async function getNextWord(
           /[0-9]/i.test(randomWord)))
     ) {
       regenarationCount++;
-      randomWord = wordset.randomWord();
+      randomWord = wordset.randomWord(funboxFrequency);
     }
   }
 
   if (randomWord === undefined) {
-    randomWord = wordset.randomWord();
+    randomWord = wordset.randomWord(funboxFrequency);
   }
 
   if (
@@ -773,7 +794,7 @@ async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = getFunboxWord(randomWord, wordset);
+  randomWord = getFunboxWord(randomWord, wordIndex, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
   if (Config.punctuation) {
@@ -803,7 +824,7 @@ async function getNextWord(
 
 let rememberLazyMode: boolean;
 export async function init(): Promise<void> {
-  TestActive.set(false);
+  TestState.setActive(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
@@ -865,13 +886,17 @@ export async function init(): Promise<void> {
   }
 
   if (Config.tapeMode !== "off" && !language.leftToRight) {
-    Notifications.add("This language does not support tape mode.", 0);
+    Notifications.add("This language does not support tape mode.", 0, {
+      important: true,
+    });
     UpdateConfig.setTapeMode("off");
   }
 
   if (Config.lazyMode === true && language.noLazyMode) {
     rememberLazyMode = true;
-    Notifications.add("This language does not support lazy mode.", 0);
+    Notifications.add("This language does not support lazy mode.", 0, {
+      important: true,
+    });
     UpdateConfig.setLazyMode(false, true);
   } else if (rememberLazyMode === true && !language.noLazyMode) {
     UpdateConfig.setLazyMode(true, true);
@@ -890,6 +915,22 @@ export async function init(): Promise<void> {
     wordsBound = +funboxToPush.split(":")[1];
     if (Config.mode === "words" && Config.words < wordsBound) {
       wordsBound = Config.words;
+    }
+    if (
+      Config.mode === "custom" &&
+      !CustomText.isTimeRandom &&
+      CustomText.isWordRandom &&
+      CustomText.word < wordsBound
+    ) {
+      wordsBound = CustomText.word;
+    }
+    if (
+      Config.mode === "custom" &&
+      !CustomText.isTimeRandom &&
+      !CustomText.isWordRandom &&
+      CustomText.text.length < wordsBound
+    ) {
+      wordsBound = CustomText.text.length;
     }
   } else if (Config.showAllLines) {
     if (Config.mode === "quote") {
@@ -993,7 +1034,7 @@ export async function init(): Promise<void> {
 
     if (wordCount == 0) {
       for (let i = 0; i < wordsBound; i++) {
-        const randomWord = await getNextWord(wordset, language, wordsBound);
+        const randomWord = await getNextWord(wordset, i, language, wordsBound);
 
         if (/\t/g.test(randomWord)) {
           TestWords.setHasTab(true);
@@ -1046,7 +1087,8 @@ export async function init(): Promise<void> {
         `No ${Config.language
           .replace(/_\d*k$/g, "")
           .replace(/_/g, " ")} quotes found`,
-        0
+        0,
+        { important: true }
       );
       if (Auth?.currentUser) {
         QuoteSubmitPopup.show(false);
@@ -1063,7 +1105,7 @@ export async function init(): Promise<void> {
       );
       if (targetQuote === undefined) {
         rq = <MonkeyTypes.Quote>quotesCollection.groups[0][0];
-        Notifications.add("Quote Id Does Not Exist", 0);
+        Notifications.add("Quote Id Does Not Exist", 0, { important: true });
       } else {
         rq = targetQuote;
       }
@@ -1073,7 +1115,7 @@ export async function init(): Promise<void> {
       );
 
       if (randomQuote === null) {
-        Notifications.add("No favorite quotes found", 0);
+        Notifications.add("No favorite quotes found", 0, { important: true });
         UpdateConfig.setQuoteLength(-1);
         restart();
         return;
@@ -1083,7 +1125,9 @@ export async function init(): Promise<void> {
     } else {
       const randomQuote = QuotesController.getRandomQuote();
       if (randomQuote === null) {
-        Notifications.add("No quotes found for selected quote length", 0);
+        Notifications.add("No quotes found for selected quote length", 0, {
+          important: true,
+        });
         TestUI.setTestRestarting(false);
         return;
       }
@@ -1234,7 +1278,12 @@ export async function addWord(): Promise<void> {
         };
   const wordset = await Wordset.withWords(language.words);
 
-  const randomWord = await getNextWord(wordset, language, bound);
+  const randomWord = await getNextWord(
+    wordset,
+    TestWords.words.length,
+    language,
+    bound
+  );
 
   const split = randomWord.split(" ");
   if (split.length > 1) {
@@ -1255,6 +1304,10 @@ interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
   wpmConsistency: number;
   lang: string;
   challenge?: string | null;
+  keyOverlap: number;
+  lastKeyToEnd: number;
+  startToFirstKey: number;
+  charTotal: number;
 }
 
 type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
@@ -1278,7 +1331,10 @@ export async function retrySavingResult(): Promise<void> {
     Notifications.add(
       "Could not retry saving the result as the result no longer exists.",
       0,
-      -1
+      {
+        duration: 5,
+        important: true,
+      }
     );
 
     return;
@@ -1304,6 +1360,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     wpm: undefined,
     rawWpm: undefined,
     charStats: undefined,
+    charTotal: undefined,
     acc: undefined,
     mode: Config.mode,
     mode2: undefined,
@@ -1324,6 +1381,9 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     tags: undefined,
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
+    keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
+    lastKeyToEnd: undefined,
+    startToFirstKey: undefined,
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
@@ -1337,6 +1397,26 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     testDuration: undefined,
     afkDuration: undefined,
   };
+
+  const stfk = Misc.roundTo2(
+    TestInput.keypressTimings.spacing.first - TestStats.start
+  );
+
+  if (stfk < 0) {
+    completedEvent.startToFirstKey = 0;
+  } else {
+    completedEvent.startToFirstKey = stfk;
+  }
+
+  const lkte = Misc.roundTo2(
+    TestStats.end - TestInput.keypressTimings.spacing.last
+  );
+
+  if (lkte < 0 || Config.mode === "zen") {
+    completedEvent.lastKeyToEnd = 0;
+  } else {
+    completedEvent.lastKeyToEnd = lkte;
+  }
 
   // stats
   const stats = TestStats.calculateStats();
@@ -1352,6 +1432,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     stats.extraChars,
     stats.missedChars,
   ];
+  completedEvent.charTotal = stats.allChars;
   completedEvent.acc = stats.acc;
 
   // if the last second was not rounded, add another data point to the history
@@ -1385,10 +1466,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const stddev = Misc.stdDev(rawPerSecond);
   const avg = Misc.mean(rawPerSecond);
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
-  let keyConsistencyArray =
-    TestInput.keypressTimings.spacing.array === "toolong"
-      ? []
-      : TestInput.keypressTimings.spacing.array.slice();
+  let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
       0,
@@ -1464,19 +1542,22 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
+  const now = performance.now();
+  TestStats.setEnd(now);
+
+  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
   }
 
-  TestInput.recordKeypressSpacing(); //this is needed in case there is afk time at the end - to make sure test duration makes sense
+  TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
-  TestStats.setEnd(performance.now());
-  TestActive.set(false);
+  TestState.setActive(false);
   Replay.stopReplayRecording();
   Focus.set(false);
   Caret.hide();
@@ -1540,7 +1621,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let tooShort = false;
   //fail checks
   if (difficultyFailed) {
-    Notifications.add(`Test failed - ${failReason}`, 0, 1);
+    Notifications.add(`Test failed - ${failReason}`, 0, {
+      duration: 1,
+    });
     dontSave = true;
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
@@ -1578,11 +1661,27 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - too short", 0);
     tooShort = true;
     dontSave = true;
-  } else if (completedEvent.wpm < 0 || completedEvent.wpm > 350) {
+  } else if (
+    completedEvent.wpm < 0 ||
+    (completedEvent.wpm > 350 &&
+      completedEvent.mode != "words" &&
+      completedEvent.mode2 != "10") ||
+    (completedEvent.wpm > 420 &&
+      completedEvent.mode == "words" &&
+      completedEvent.mode2 == "10")
+  ) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
     dontSave = true;
-  } else if (completedEvent.rawWpm < 0 || completedEvent.rawWpm > 350) {
+  } else if (
+    completedEvent.rawWpm < 0 ||
+    (completedEvent.rawWpm > 350 &&
+      completedEvent.mode != "words" &&
+      completedEvent.mode2 != "10") ||
+    (completedEvent.rawWpm > 420 &&
+      completedEvent.mode == "words" &&
+      completedEvent.mode2 == "10")
+  ) {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
     dontSave = true;
@@ -1614,16 +1713,25 @@ export async function finish(difficultyFailed = false): Promise<void> {
         CustomText.getCustomTextLongProgress(customTextName) +
         TestInput.input.getHistory().length;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
-      Notifications.add("Long custom text progress saved", 1, 5);
+      Notifications.add("Long custom text progress saved", 1, {
+        duration: 5,
+        important: true,
+      });
 
       let newText = CustomText.getCustomText(customTextName, true);
       newText = newText.slice(newProgress);
+      CustomText.setPopupTextareaState(newText.join(CustomText.delimiter));
       CustomText.setText(newText);
     } else {
       // They finished the test
       CustomText.setCustomTextLongProgress(customTextName, 0);
-      CustomText.setText(CustomText.getCustomText(customTextName, true));
-      Notifications.add("Long custom text completed", 1, 5);
+      const text = CustomText.getCustomText(customTextName, true);
+      CustomText.setPopupTextareaState(text.join(CustomText.delimiter));
+      CustomText.setText(text);
+      Notifications.add("Long custom text completed", 1, {
+        duration: 5,
+        important: true,
+      });
     }
   }
 
@@ -1671,7 +1779,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.chartData = "toolong";
     completedEvent.keySpacing = "toolong";
     completedEvent.keyDuration = "toolong";
-    TestInput.setKeypressTimingsTooLong();
   }
 
   if (dontSave) {
@@ -1703,13 +1810,21 @@ async function saveResult(
   isRetrying: boolean
 ): Promise<void> {
   if (!TestState.savingEnabled) {
-    Notifications.add("Result not saved: disabled by user", -1, 3, "Notice");
+    Notifications.add("Result not saved: disabled by user", -1, {
+      duration: 3,
+      customTitle: "Notice",
+      important: true,
+    });
     AccountButton.loading(false);
     return;
   }
 
   if (!ConnectionState.get()) {
-    Notifications.add("Result not saved: offline", -1, 2, "Notice");
+    Notifications.add("Result not saved: offline", -1, {
+      duration: 2,
+      customTitle: "Notice",
+      important: true,
+    });
     AccountButton.loading(false);
     retrySaving.canRetry = true;
     $("#retrySavingResultButton").removeClass("hidden");
@@ -1734,6 +1849,10 @@ async function saveResult(
       }
     }
     console.log("Error saving result", completedEvent);
+    if (response.message === "Old key data format") {
+      response.message =
+        "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
+    }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
@@ -1764,7 +1883,7 @@ async function saveResult(
     }
     DB.saveLocalResult(completedEvent);
     DB.updateLocalStats(
-      TestStats.restartCount + 1,
+      completedEvent.incompleteTests.length + 1,
       completedEvent.testDuration +
         completedEvent.incompleteTestSeconds -
         completedEvent.afkDuration
@@ -1830,7 +1949,7 @@ async function saveResult(
 
   $("#retrySavingResultButton").addClass("hidden");
   if (isRetrying) {
-    Notifications.add("Result saved", 1);
+    Notifications.add("Result saved", 1, { important: true });
   }
 }
 
@@ -1865,7 +1984,7 @@ $(".pageTest").on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
   if (
-    TestActive.get() &&
+    TestState.isActive &&
     Config.repeatQuotes === "typing" &&
     Config.mode === "quote"
   ) {

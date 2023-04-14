@@ -89,7 +89,13 @@
       "parserOptions": {
         "ecmaVersion": 12,
         "sourceType": "module",
-        "project": "./tsconfig.json"
+        "project": "**/tsconfig.json"
+      }
+    },
+    {
+      "files": ["backend/**/*.ts"],
+      "rules": {
+        "eqeqeq": "error"
       }
     }
   ]

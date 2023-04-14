@@ -23,6 +23,7 @@ import {
 import { isElementVisible, isLocalhost, isPasswordStrong } from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as Skeleton from "./skeleton";
+import * as ThemeController from "../controllers/theme-controller";
 
 const wrapperId = "simplePopupWrapper";
 
@@ -539,7 +540,9 @@ list["updatePassword"] = new SimplePopup(
         Notifications.add(
           "New password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
           0,
-          4
+          {
+            duration: 4,
+          }
         );
         return;
       }
@@ -677,7 +680,9 @@ list["deleteAccount"] = new SimplePopup(
       Notifications.add("Deleting login information...", 0);
       await Auth?.currentUser?.delete();
 
-      Notifications.add("Goodbye", 1, 5);
+      Notifications.add("Goodbye", 1, {
+        duration: 5,
+      });
 
       setTimeout(() => {
         location.reload();
@@ -734,7 +739,7 @@ list["resetAccount"] = new SimplePopup(
       Notifications.add("Resetting settings...", 0);
       UpdateConfig.reset();
       Loader.show();
-      Notifications.add("Resetting account and stats...", 0);
+      Notifications.add("Resetting account...", 0);
       const response = await Ape.users.reset();
 
       if (response.status !== 200) {
@@ -746,6 +751,71 @@ list["resetAccount"] = new SimplePopup(
       }
       Loader.hide();
       Notifications.add("Reset complete", 1);
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    } catch (e) {
+      const typedError = e as FirebaseError;
+      Loader.hide();
+      if (typedError.code === "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
+    }
+  },
+  (thisPopup) => {
+    const user = Auth?.currentUser;
+    if (!user) return;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs = [];
+      thisPopup.buttonText = "Reauthenticate to reset";
+    }
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
+list["optOutOfLeaderboards"] = new SimplePopup(
+  "optOutOfLeaderboards",
+  "text",
+  "Opt out of leaderboards",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "Are you sure you want to opt out of leaderboards?",
+  "Opt out",
+  async (_thisPopup, password: string) => {
+    try {
+      const user = Auth?.currentUser;
+      if (!user) return;
+      if (user.providerData.find((p) => p?.providerId === "password")) {
+        const credential = EmailAuthProvider.credential(
+          user.email as string,
+          password
+        );
+        await reauthenticateWithCredential(user, credential);
+      } else {
+        await reauthenticateWithPopup(user, AccountController.gmailProvider);
+      }
+
+      Loader.show();
+      const response = await Ape.users.optOutOfLeaderboards();
+
+      if (response.status !== 200) {
+        Loader.hide();
+        return Notifications.add(
+          `Failed to opt out of leaderboards: ${response.message}`,
+          -1
+        );
+      }
+      Loader.hide();
+      Notifications.add("Leaderboard opt out successful", 1);
       setTimeout(() => {
         location.reload();
       }, 3000);
@@ -1182,12 +1252,13 @@ list["updateCustomTheme"] = new SimplePopup(
 
     let newColors: string[] = [];
     if (updateColors === "true") {
-      $.each(
-        $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-        (_index, element) => {
-          newColors.push($(element).attr("value") as string);
-        }
-      );
+      for (const color of ThemeController.colorVars) {
+        newColors.push(
+          $(
+            `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+          ).attr("value") as string
+        );
+      }
     } else {
       newColors = customTheme.colors;
     }
@@ -1241,11 +1312,55 @@ list["deleteCustomTheme"] = new SimplePopup(
   }
 );
 
+list["forgotPassword"] = new SimplePopup(
+  "forgotPassword",
+  "text",
+  "Forgot Password",
+  [
+    {
+      type: "text",
+      placeholder: "Email",
+      initVal: "",
+    },
+  ],
+  "",
+  "Send",
+  async (_thisPopup, email) => {
+    Loader.show();
+    const result = await Ape.users.forgotPasswordEmail(email);
+    if (result.status !== 200) {
+      Loader.hide();
+      Notifications.add(
+        "Failed to request password reset email: " + result.message,
+        5000
+      );
+    } else {
+      Loader.hide();
+      Notifications.add("Password reset email sent", 1);
+    }
+  },
+  (thisPopup) => {
+    const inputValue = $(
+      `.pageLogin .login input[name="current-email"]`
+    ).val() as string;
+    if (inputValue) {
+      thisPopup.inputs[0].initVal = inputValue;
+    }
+  },
+  () => {
+    //
+  }
+);
+
+$(".pageLogin #forgotPasswordButton").on("click", () => {
+  list["forgotPassword"].show();
+});
+
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
   "click",
   () => {
     if (!ConnectionState.get()) {
-      Notifications.add("You are offline", 0, 2);
+      Notifications.add("You are offline", 0, { duration: 2 });
       return;
     }
     list["unlinkDiscord"].show();
@@ -1254,7 +1369,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
 
 $(".pageSettings #removeGoogleAuth").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["removeGoogleAuth"].show();
@@ -1262,7 +1377,7 @@ $(".pageSettings #removeGoogleAuth").on("click", () => {
 
 $("#resetSettingsButton").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["resetSettings"].show();
@@ -1270,7 +1385,7 @@ $("#resetSettingsButton").on("click", () => {
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["resetPersonalBests"].show();
@@ -1278,7 +1393,7 @@ $(".pageSettings #resetPersonalBestsButton").on("click", () => {
 
 $(".pageSettings #updateAccountName").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["updateName"].show();
@@ -1286,7 +1401,7 @@ $(".pageSettings #updateAccountName").on("click", () => {
 
 $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["updateName"].show();
@@ -1294,7 +1409,7 @@ $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["addPasswordAuth"].show();
@@ -1302,7 +1417,7 @@ $(".pageSettings #addPasswordAuth").on("click", () => {
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["updateEmail"].show();
@@ -1310,7 +1425,7 @@ $(".pageSettings #emailPasswordAuth").on("click", () => {
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["updatePassword"].show();
@@ -1318,7 +1433,7 @@ $(".pageSettings #passPasswordAuth").on("click", () => {
 
 $(".pageSettings #deleteAccount").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["deleteAccount"].show();
@@ -1326,15 +1441,23 @@ $(".pageSettings #deleteAccount").on("click", () => {
 
 $(".pageSettings #resetAccount").on("click", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["resetAccount"].show();
 });
 
+$(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, { duration: 2 });
+    return;
+  }
+  list["optOutOfLeaderboards"].show();
+});
+
 $("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   list["generateApeKey"].show();
@@ -1345,7 +1468,7 @@ $(".pageSettings").on(
   ".section.themes .customTheme .delButton",
   (e) => {
     if (!ConnectionState.get()) {
-      Notifications.add("You are offline", 0, 2);
+      Notifications.add("You are offline", 0, { duration: 2 });
       return;
     }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
@@ -1359,7 +1482,7 @@ $(".pageSettings").on(
   ".section.themes .customTheme .editButton",
   (e) => {
     if (!ConnectionState.get()) {
-      Notifications.add("You are offline", 0, 2);
+      Notifications.add("You are offline", 0, { duration: 2 });
       return;
     }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
@@ -1397,7 +1520,7 @@ $("#popups").on(
 
 $("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
@@ -1406,7 +1529,7 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
 
 $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;

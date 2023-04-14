@@ -23,6 +23,7 @@ declare namespace MonkeyTypes {
     leftToRight: boolean;
     noLazyMode?: boolean;
     ligatures?: boolean;
+    orderedByFrequency?: boolean;
     words: string[];
     accents: Accents;
     bcp47?: string;
@@ -118,7 +119,7 @@ declare namespace MonkeyTypes {
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
-  type ChartStyle = "line" | "scatter";
+  type AccountChart = ("off" | "on")[];
 
   type MinimumWordsPerMinute = "off" | "custom";
 
@@ -176,6 +177,11 @@ declare namespace MonkeyTypes {
     errorRate: number;
   }
 
+  interface OtherChartData {
+    x: number;
+    y: number;
+  }
+
   interface ActivityChartDataPoint {
     x: number;
     y: number;
@@ -186,6 +192,8 @@ declare namespace MonkeyTypes {
     name: string;
     display?: string;
   }
+
+  type FunboxWordsFrequency = "normal" | "zipf";
 
   type FunboxProperty =
     | "symmetricChars"
@@ -202,10 +210,11 @@ declare namespace MonkeyTypes {
     | "changesCapitalisation"
     | "nospace"
     | `toPush:${number}`
-    | "noInfiniteDuration";
+    | "noInfiniteDuration"
+    | "changesWordsFrequency";
 
   interface FunboxFunctions {
-    getWord?: (wordset?: Misc.Wordset) => string;
+    getWord?: (wordset?: Misc.Wordset, wordIndex?: number) => string;
     punctuateWord?: (word: string) => string;
     withWords?: (words?: string[]) => Promise<Misc.Wordset>;
     alterText?: (word: string) => string;
@@ -227,6 +236,7 @@ declare namespace MonkeyTypes {
     start?: () => void;
     restart?: () => void;
     getWordHtml?: (char: string, letterTag?: boolean) => string;
+    getWordsFrequencyMode?: () => FunboxWordsFrequency;
   }
 
   interface FunboxForcedConfig {
@@ -443,8 +453,7 @@ declare namespace MonkeyTypes {
     paceCaretCustomSpeed: number;
     repeatedPace: boolean;
     pageWidth: PageWidth;
-    chartAccuracy: boolean;
-    chartStyle: ChartStyle;
+    accountChart: AccountChart;
     minWpm: MinimumWordsPerMinute;
     minWpmCustomSpeed: number;
     highlightMode: HighlightMode;
@@ -560,6 +569,7 @@ declare namespace MonkeyTypes {
     inboxUnreadSize: number;
     streak: number;
     maxStreak: number;
+    lbOptOut?: boolean;
   }
 
   interface UserDetails {

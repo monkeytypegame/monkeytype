@@ -17,6 +17,7 @@ import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
 import type { ScaleChartOptions } from "chart.js";
+import { Auth } from "../firebase";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -195,52 +196,16 @@ export function reset(): void {
   ChartController.accountActivity.data.datasets[1].data = [];
   ChartController.accountHistory.data.datasets[0].data = [];
   ChartController.accountHistory.data.datasets[1].data = [];
+  ChartController.accountHistory.data.datasets[2].data = [];
+  ChartController.accountHistory.data.datasets[3].data = [];
+  ChartController.accountHistory.data.datasets[4].data = [];
+  ChartController.accountHistory.data.datasets[5].data = [];
+  ChartController.accountHistory.data.datasets[6].data = [];
 }
 
 let totalSecondsFiltered = 0;
 let chartData: MonkeyTypes.HistoryChartData[] = [];
 let accChartData: MonkeyTypes.AccChartData[] = [];
-
-export function smoothHistory(factor: number): void {
-  const smoothedWpmData = Misc.smooth(
-    chartData.map((a) => a.y),
-    factor
-  );
-  const smoothedAccData = Misc.smooth(
-    accChartData.map((a) => a.y),
-    factor
-  );
-
-  const chartData2 = chartData.map((a, i) => {
-    const ret = Object.assign({}, a);
-    ret.y = smoothedWpmData[i];
-    return ret;
-  });
-
-  const accChartData2 = accChartData.map((a, i) => {
-    const ret = Object.assign({}, a);
-    ret.y = smoothedAccData[i];
-    return ret;
-  });
-
-  ChartController.accountHistory.data.datasets[0].data = chartData2;
-  ChartController.accountHistory.data.datasets[1].data = accChartData2;
-
-  if (chartData2.length || accChartData2.length) {
-    ChartController.accountHistory.options.animation = false;
-    ChartController.accountHistory.update();
-    delete ChartController.accountHistory.options.animation;
-  }
-}
-
-async function applyHistorySmoothing(): Promise<void> {
-  const smoothing = $(
-    ".pageAccount .content .below .smoothing input"
-  ).val() as string;
-  $(".pageAccount .content .below .smoothing .value").text(smoothing);
-  smoothHistory(parseInt(smoothing));
-  await Misc.sleep(0);
-}
 
 function fillContent(): void {
   LoadingPage.updateText("Displaying stats...");
@@ -309,6 +274,7 @@ function fillContent(): void {
 
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
+
   DB.getSnapshot()?.results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       // totalSeconds += tt;
@@ -633,7 +599,7 @@ function fillContent(): void {
       }
 
       chartData.push({
-        x: result.timestamp,
+        x: filteredResults.length,
         y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
         wpm: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
         acc: result.acc,
@@ -652,8 +618,8 @@ function fillContent(): void {
       wpmChartData.push(result.wpm);
 
       accChartData.push({
-        x: result.timestamp,
-        y: 100 - result.acc,
+        x: filteredResults.length,
+        y: result.acc,
         errorRate: 100 - result.acc,
       });
 
@@ -758,8 +724,64 @@ function fillContent(): void {
     accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
   }
 
-  ChartController.accountHistory.data.datasets[0].data = chartData;
-  ChartController.accountHistory.data.datasets[1].data = accChartData;
+  if (chartData.length > 0) {
+    // get pb points
+    let currentPb = 0;
+    const pb: { x: number; y: number }[] = [];
+
+    for (let i = chartData.length - 1; i >= 0; i--) {
+      const a = chartData[i];
+      if (a.y > currentPb) {
+        currentPb = a.y;
+        pb.push(a);
+      }
+    }
+
+    // add last point to pb
+    pb.push({
+      x: 1,
+      y: pb[pb.length - 1].y,
+    });
+
+    const avgTen = [];
+    const avgTenAcc = [];
+    const avgHundred = [];
+    const avgHundredAcc = [];
+
+    for (let i = 0; i < chartData.length; i++) {
+      // calculate averages of 10
+      const subsetTen = chartData.slice(i, i + 10);
+      const accSubsetTen = accChartData.slice(i, i + 10);
+      const avgTenValue =
+        subsetTen.reduce((acc, { y }) => acc + y, 0) / subsetTen.length;
+      const accAvgTenValue =
+        accSubsetTen.reduce((acc, { y }) => acc + y, 0) / accSubsetTen.length;
+
+      avgTen.push({ x: i + 1, y: avgTenValue });
+      avgTenAcc.push({ x: i + 1, y: accAvgTenValue });
+
+      // calculate averages of 100
+      const subsetHundred = chartData.slice(i, i + 100);
+      const accSubsetHundred = accChartData.slice(i, i + 100);
+      const avgHundredValue =
+        subsetHundred.reduce((acc, { y }) => acc + y, 0) / subsetHundred.length;
+      const accAvgHundredValue =
+        accSubsetHundred.reduce((acc, { y }) => acc + y, 0) /
+        accSubsetHundred.length;
+      avgHundred.push({ x: i + 1, y: avgHundredValue });
+      avgHundredAcc.push({ x: i + 1, y: accAvgHundredValue });
+    }
+
+    ChartController.accountHistory.data.datasets[0].data = chartData;
+    ChartController.accountHistory.data.datasets[1].data = pb;
+    ChartController.accountHistory.data.datasets[2].data = accChartData;
+    ChartController.accountHistory.data.datasets[3].data = avgTen;
+    ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
+    ChartController.accountHistory.data.datasets[5].data = avgHundred;
+    ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
+
+    accountHistoryScaleOptions["x"].max = chartData.length + 1;
+  }
 
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
@@ -768,11 +790,25 @@ function fillContent(): void {
   // let accuracies = accChartData.map((r) => r.y);
   accountHistoryScaleOptions["wpm"].max =
     Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+  accountHistoryScaleOptions["pb"].max =
+    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+  accountHistoryScaleOptions["wpmAvgTen"].max =
+    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+  accountHistoryScaleOptions["wpmAvgHundred"].max =
+    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
   if (!Config.startGraphsAtZero) {
-    accountHistoryScaleOptions["wpm"].min = Math.floor(minWpmChartVal);
+    const minWpmChartValFloor = Math.floor(minWpmChartVal);
+
+    accountHistoryScaleOptions["wpm"].min = minWpmChartValFloor;
+    accountHistoryScaleOptions["pb"].min = minWpmChartValFloor;
+    accountHistoryScaleOptions["wpmAvgTen"].min = minWpmChartValFloor;
+    accountHistoryScaleOptions["wpmAvgHundred"].min = minWpmChartValFloor;
   } else {
     accountHistoryScaleOptions["wpm"].min = 0;
+    accountHistoryScaleOptions["pb"].min = 0;
+    accountHistoryScaleOptions["wpmAvgTen"].min = 0;
+    accountHistoryScaleOptions["wpmAvgHundred"].min = 0;
   }
 
   if (!chartData || chartData.length == 0) {
@@ -799,8 +835,6 @@ function fillContent(): void {
     Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
-  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
-
   let highestSpeed: number | string = topWpm;
   if (Config.alwaysShowCPM) {
     highestSpeed = topWpm * 5;
@@ -810,6 +844,8 @@ function fillContent(): void {
   } else {
     highestSpeed = Math.round(highestSpeed);
   }
+
+  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
 
   $(".pageAccount .highestWpm .title").text(`highest ${wpmCpm}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
@@ -980,12 +1016,19 @@ function fillContent(): void {
       Misc.roundTo2(
         Config.alwaysShowCPM ? wpmChangePerHour * 5 : wpmChangePerHour
       )
-    } ${Config.alwaysShowCPM ? "cpm" : "wpm"}.`
+    } ${Config.alwaysShowCPM ? "cpm" : "wpm"}`
   );
 
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
-  applyHistorySmoothing();
+  if (chartData.length || accChartData.length) {
+    ChartController.accountHistory.options.animation = false;
+    ChartController.accountHistory.update();
+    delete ChartController.accountHistory.options.animation;
+  }
+
+  ChartController.accountActivity.update();
+  ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
   Focus.set(false);
   Misc.swapElements(
@@ -1007,7 +1050,9 @@ export async function downloadResults(): Promise<void> {
   if (DB.getSnapshot()?.results !== undefined) return;
   const results = await DB.getUserResults();
   if (results === false && !ConnectionState.get()) {
-    Notifications.add("Could not get results - you are offline", -1, 5);
+    Notifications.add("Could not get results - you are offline", -1, {
+      duration: 5,
+    });
     return;
   }
   TodayTracker.addAllFromToday();
@@ -1114,15 +1159,15 @@ function sortAndRefreshHistory(
 }
 
 $(".pageAccount .toggleAccuracyOnChart").on("click", () => {
-  UpdateConfig.setChartAccuracy(!Config.chartAccuracy);
+  UpdateConfig.setAccountChartAccuracy(!(Config.accountChart[0] == "on"));
 });
 
-$(".pageAccount .toggleChartStyle").on("click", () => {
-  if (Config.chartStyle == "line") {
-    UpdateConfig.setChartStyle("scatter");
-  } else {
-    UpdateConfig.setChartStyle("line");
-  }
+$(".pageAccount .toggleAverage10OnChart").on("click", () => {
+  UpdateConfig.setAccountChartAvg10(!(Config.accountChart[1] == "on"));
+});
+
+$(".pageAccount .toggleAverage100OnChart").on("click", () => {
+  UpdateConfig.setAccountChartAvg100(!(Config.accountChart[2] == "on"));
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {
@@ -1229,10 +1274,6 @@ $(".pageAccount .group.presetFilterButtons").on(
   }
 );
 
-$(".pageAccount .content .below .smoothing input").on("input", () => {
-  applyHistorySmoothing();
-});
-
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
   Misc.downloadResultsCSV(filteredResults);
 });
@@ -1278,6 +1319,12 @@ export const page = new Page(
     await update();
     await Misc.sleep(0);
     updateChartColors();
+    $(".pageAccount .content p.accountVerificatinNotice").remove();
+    if (Auth?.currentUser?.emailVerified === false) {
+      $(".pageAccount .content").prepend(
+        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
+      );
+    }
   },
   async () => {
     //

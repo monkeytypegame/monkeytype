@@ -1,31 +1,33 @@
-import * as TestUI from "./test-ui";
+import {
+  Chart,
+  type PluginChartOptions,
+  type ScaleChartOptions,
+} from "chart.js";
 import Config from "../config";
-import * as Misc from "../utils/misc";
-import * as TestStats from "./test-stats";
-import * as Keymap from "../elements/keymap";
+import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
-import * as ThemeColors from "../elements/theme-colors";
+import QuotesController from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as TodayTracker from "./today-tracker";
-import * as PbCrown from "./pb-crown";
+import * as Keymap from "../elements/keymap";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as ThemeColors from "../elements/theme-colors";
+import { Auth } from "../firebase";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
-import * as TestInput from "./test-input";
-import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
-import QuotesController from "../controllers/quotes-controller";
-import * as AdController from "../controllers/ad-controller";
-import * as TestConfig from "./test-config";
-import { Chart } from "chart.js";
-import { Auth } from "../firebase";
 import * as SlowTimer from "../states/slow-timer";
+import * as Misc from "../utils/misc";
 import * as FunboxList from "./funbox/funbox-list";
+import * as PbCrown from "./pb-crown";
+import * as TestConfig from "./test-config";
+import * as TestInput from "./test-input";
+import * as TestStats from "./test-stats";
+import * as TestUI from "./test-ui";
+import * as TodayTracker from "./today-tracker";
 
-// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
-import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
+import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import confetti from "canvas-confetti";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -84,6 +86,7 @@ async function updateGraph(): Promise<void> {
   let smoothedRawData = chartData2;
   if (!useUnsmoothedRaw) {
     smoothedRawData = Misc.smooth(smoothedRawData, 1);
+    smoothedRawData = smoothedRawData.map((a) => Math.round(a));
   }
 
   ChartController.result.data.labels = labels;
@@ -252,7 +255,14 @@ function updateWpmAndAcc(): void {
     }
     $("#result .stats .time .bottom .text").text(time);
     $("#result .stats .raw .bottom").removeAttr("aria-label");
-    $("#result .stats .acc .bottom").removeAttr("aria-label");
+    // $("#result .stats .acc .bottom").removeAttr("aria-label");
+
+    $("#result .stats .acc .bottom").attr(
+      "aria-label",
+      `${TestInput.accuracy.incorrect} mistake${
+        TestInput.accuracy.incorrect == 1 ? "" : "s"
+      }`
+    );
   } else {
     //not showing decimal places
     if (Config.alwaysShowCPM == false) {
@@ -284,7 +294,12 @@ function updateWpmAndAcc(): void {
     }
 
     $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
-    $("#result .stats .acc .bottom").attr("aria-label", result.acc + "%");
+    $("#result .stats .acc .bottom").attr(
+      "aria-label",
+      `${result.acc}% (${TestInput.accuracy.incorrect} mistake${
+        TestInput.accuracy.incorrect == 1 ? "" : "s"
+      })`
+    );
   }
 }
 
@@ -416,7 +431,7 @@ export async function updateCrown(): Promise<void> {
   );
 }
 
-function updateTags(dontSave: boolean): void {
+async function updateTags(dontSave: boolean): Promise<void> {
   const activeTags: MonkeyTypes.Tag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
@@ -444,6 +459,14 @@ function updateTags(dontSave: boolean): void {
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
 
+  const funboxes = result.funbox?.split("#") ?? [];
+
+  const funboxObjects = await Promise.all(
+    funboxes.map(async (f) => Misc.getFunbox(f))
+  );
+
+  const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
+
   let annotationSide = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
@@ -459,7 +482,11 @@ function updateTags(dontSave: boolean): void {
     $("#result .stats .tags .bottom").append(`
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
     `);
-    if (Config.mode != "quote" && !dontSave) {
+    if (
+      Config.mode != "quote" &&
+      !dontSave &&
+      (result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb)
+    ) {
       if (tpb < result.wpm) {
         //new pb for that tag
         DB.saveLocalTagPB(
@@ -567,6 +594,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   } else if (Config.difficulty == "master") {
     testType += "<br>master";
   }
+  if (Config.stopOnError !== "off") {
+    testType += `<br>stop on ${Config.stopOnError}`;
+  }
 
   $("#result .stats .testType .bottom").html(testType);
 }
@@ -588,10 +618,18 @@ function updateOther(
   if (TestStats.invalid) {
     otherText += "<br>invalid";
     const extra: string[] = [];
-    if (result.wpm < 0 || result.wpm > 350) {
+    if (
+      result.wpm < 0 ||
+      (result.wpm > 350 && result.mode != "words" && result.mode2 != "10") ||
+      (result.wpm > 420 && result.mode == "words" && result.mode2 == "10")
+    ) {
       extra.push("wpm");
     }
-    if (result.rawWpm < 0 || result.rawWpm > 350) {
+    if (
+      result.rawWpm < 0 ||
+      (result.rawWpm > 350 && result.mode != "words" && result.mode2 != "10") ||
+      (result.rawWpm > 420 && result.mode == "words" && result.mode2 == "10")
+    ) {
       extra.push("raw");
     }
     if (result.acc < 75 || result.acc > 100) {
@@ -711,7 +749,7 @@ export async function update(
   updateQuoteFavorite(randomQuote);
   await updateGraph();
   await updateGraphPBLine();
-  updateTags(dontSave);
+  await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
@@ -785,9 +823,6 @@ export async function update(
       $("#words").empty();
       ChartController.result.resize();
 
-      if (Config.alwaysShowWordsHistory && Config.burstHeatmap) {
-        TestUI.applyBurstHeatmap();
-      }
       $("#result").trigger("focus");
       window.scrollTo({ top: 0 });
       $("#testModesNotice").addClass("hidden");
@@ -800,7 +835,7 @@ export async function update(
         125
       );
       if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
-        TestUI.toggleResultWords();
+        TestUI.toggleResultWords(true);
       }
       Keymap.hide();
       AdController.updateTestPageAds(true);

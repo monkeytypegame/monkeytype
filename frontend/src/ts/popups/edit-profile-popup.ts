@@ -13,7 +13,9 @@ let callbackFuncOnHide: (() => void) | null = null;
 
 export function show(callbackOnHide: () => void): void {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   Skeleton.append(wrapperId);
@@ -156,7 +158,7 @@ async function updateProfile(): Promise<void> {
   hide();
 }
 
-$("#editProfilePopupWrapper").on("click", (e) => {
+$("#editProfilePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "editProfilePopupWrapper") {
     hide();
   }

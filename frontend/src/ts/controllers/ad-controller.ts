@@ -3,7 +3,7 @@ import * as Misc from "../utils/misc";
 import * as ConfigEvent from "../observables/config-event";
 import * as BannerEvent from "../observables/banner-event";
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 
 const breakpoint = 900;
 let widerThanBreakpoint = true;
@@ -27,7 +27,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>`);
 
   setInterval(() => {
-    if (TestActive.get()) {
+    if (TestState.isActive) {
       return;
     }
     refreshVisible();

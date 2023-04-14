@@ -8,6 +8,7 @@ const RESULT_SCHEMA = joi
     blindMode: joi.boolean().required(),
     challenge: joi.string(),
     charStats: joi.array().items(joi.number().min(0)).required(),
+    charTotal: joi.number().min(0),
     chartData: joi
       .alternatives()
       .try(
@@ -43,10 +44,19 @@ const RESULT_SCHEMA = joi
     keyConsistency: joi.number().min(0).required(),
     keyDuration: joi
       .alternatives()
-      .try(joi.array().items(joi.number()), joi.string().valid("toolong")),
+      .try(
+        joi.array().items(joi.number().min(0)),
+        joi.string().valid("toolong")
+      ),
     keySpacing: joi
       .alternatives()
-      .try(joi.array().items(joi.number()), joi.string().valid("toolong")),
+      .try(
+        joi.array().items(joi.number().min(0)),
+        joi.string().valid("toolong")
+      ),
+    keyOverlap: joi.number().min(0),
+    lastKeyToEnd: joi.number().min(0),
+    startToFirstKey: joi.number().min(0),
     lang: joi.string(),
     stringified: joi.string(),
     language: joi.string().required(),
@@ -59,7 +69,7 @@ const RESULT_SCHEMA = joi
     numbers: joi.boolean().required(),
     punctuation: joi.boolean().required(),
     quoteLength: joi.number(),
-    rawWpm: joi.number().required(),
+    rawWpm: joi.number().min(0).max(420).required(),
     restartCount: joi.number().required(),
     smoothConsistency: joi.number().optional(), // to be removed
     tags: joi
@@ -69,7 +79,7 @@ const RESULT_SCHEMA = joi
     testDuration: joi.number().required().min(1),
     timestamp: joi.date().timestamp().required(),
     uid: joi.string().required(),
-    wpm: joi.number().min(0).max(350).required(),
+    wpm: joi.number().min(0).max(420).required(),
     wpmConsistency: joi.number().min(0).required(),
   })
   .required();

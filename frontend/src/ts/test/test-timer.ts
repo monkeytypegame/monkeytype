@@ -13,9 +13,10 @@ import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as Caret from "./caret";
 import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "../states/test-active";
+import * as TestState from "./test-state";
 import * as Time from "../states/time";
 import * as TimerEvent from "../observables/timer-event";
+import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 
 let slowTimerCount = 0;
 let timer: NodeJS.Timeout | null = null;
@@ -101,15 +102,16 @@ function layoutfluid(): void {
     }
 
     if (flooredSwitchTimes.includes(time + 3)) {
-      Notifications.add("3", 0, 1);
+      LayoutfluidFunboxTimer.show();
+      LayoutfluidFunboxTimer.update(3, layouts[index + 1]);
     } else if (flooredSwitchTimes.includes(time + 2)) {
-      Notifications.add("2", 0, 1);
+      LayoutfluidFunboxTimer.update(2, layouts[index + 1]);
     } else if (flooredSwitchTimes.includes(time + 1)) {
-      Notifications.add("1", 0, 1);
+      LayoutfluidFunboxTimer.update(1, layouts[index + 1]);
     }
 
     if (Config.layout !== layout && layout !== undefined) {
-      Notifications.add(`--- !!! ${layout} !!! ---`, 0);
+      LayoutfluidFunboxTimer.hide();
       UpdateConfig.setLayout(layout, true);
       UpdateConfig.setKeymapLayout(layout, true);
     }
@@ -236,7 +238,7 @@ export async function start(): Promise<void> {
     timer = setTimeout(function () {
       // time++;
 
-      if (!TestActive.get()) {
+      if (!TestState.isActive) {
         if (timer !== null) clearTimeout(timer);
         SlowTimer.clear();
         slowTimerCount = 0;

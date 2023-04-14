@@ -18,6 +18,7 @@ export function setSnapshot(
 ): void {
   const originalBanned = dbSnapshot?.banned;
   const originalVerified = dbSnapshot?.verified;
+  const lbOptOut = dbSnapshot?.lbOptOut;
 
   //not allowing user to override these values i guess?
   try {
@@ -26,10 +27,14 @@ export function setSnapshot(
   try {
     delete newSnapshot?.verified;
   } catch {}
+  try {
+    delete newSnapshot?.lbOptOut;
+  } catch {}
   dbSnapshot = newSnapshot;
   if (dbSnapshot) {
     dbSnapshot.banned = originalBanned;
     dbSnapshot.verified = originalVerified;
+    dbSnapshot.lbOptOut = lbOptOut;
   }
 }
 
@@ -37,7 +42,7 @@ export async function initSnapshot(): Promise<
   MonkeyTypes.Snapshot | number | boolean
 > {
   //send api request with token that returns tags, presets, and data needed for snap
-  const snap = defaultSnap;
+  const snap = { ...defaultSnap };
   try {
     if (!Auth?.currentUser) return false;
     // if (ActivePage.get() == "loading") {
@@ -91,6 +96,7 @@ export async function initSnapshot(): Promise<
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
     snap.banned = userData.banned;
+    snap.lbOptOut = userData.lbOptOut;
     snap.verified = userData.verified;
     snap.discordId = userData.discordId;
     snap.discordAvatar = userData.discordAvatar;

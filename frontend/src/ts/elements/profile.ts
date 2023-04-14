@@ -6,6 +6,7 @@ import { getHTMLById } from "../controllers/badge-controller";
 import { throttle } from "throttle-debounce";
 import * as EditProfilePopup from "../popups/edit-profile-popup";
 import * as ActivePage from "../states/active-page";
+import { formatDistanceToNowStrict } from "date-fns/esm";
 
 type ProfileViewPaths = "profile" | "account";
 
@@ -30,6 +31,8 @@ export async function update(
   // ============================================================================
 
   const banned = profile.banned === true;
+
+  const lbOptOut = profile.lbOptOut === true;
 
   if (!details || !profile || !profile.name || !profile.addedAt) return;
 
@@ -75,6 +78,14 @@ export async function update(
       );
   }
 
+  if (lbOptOut) {
+    details
+      .find(".name")
+      .append(
+        `<div class="bannedIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
+      );
+  }
+
   updateNameFontSize(where);
 
   const joinedText = "Joined " + format(profile.addedAt ?? 0, "dd MMM yyyy");
@@ -83,6 +94,8 @@ export async function update(
   const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
+  let hoverText = "";
+
   if (profile.streak && profile?.streak > 1) {
     details
       .find(".streak")
@@ -90,16 +103,41 @@ export async function update(
         `Current streak: ${profile.streak} ${
           profile.streak === 1 ? "day" : "days"
         }`
-      )
-      .attr(
-        "aria-label",
-        `Longest streak: ${profile.maxStreak} ${
-          profile.maxStreak === 1 ? "day" : "days"
-        }`
       );
+    hoverText = `Longest streak: ${profile.maxStreak} ${
+      profile.maxStreak === 1 ? "day" : "days"
+    }`;
   } else {
-    details.find(".streak").text("").attr("aria-label", "");
+    details.find(".streak").text("");
+    hoverText = "";
   }
+
+  if (where === "account") {
+    const results = DB.getSnapshot()?.results;
+    const lastResult = results?.[0];
+
+    const dayInMilis = 1000 * 60 * 60 * 24;
+    const timeDif = formatDistanceToNowStrict(
+      Misc.getCurrentDayTimestamp() + dayInMilis
+    );
+
+    if (lastResult) {
+      //check if the last result is from today
+      const isToday = Misc.isToday(lastResult.timestamp);
+      if (isToday) {
+        hoverText += `\nClaimed today: yes`;
+        hoverText += `\nCome back in: ${timeDif}`;
+      } else {
+        hoverText += `\nClaimed today: no`;
+        hoverText += `\nStreak lost in: ${timeDif}`;
+      }
+    }
+  }
+
+  details
+    .find(".streak")
+    .attr("aria-label", hoverText)
+    .attr("data-balloon-break", "");
 
   const typingStatsEl = details.find(".typingStats");
   typingStatsEl
@@ -143,7 +181,7 @@ export async function update(
         socialsEl.append(
           `<a href='https://github.com/${Misc.escapeHTML(
             git
-          )}/' target="_blank" aria-label="${Misc.escapeHTML(
+          )}/' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             git
           )}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
         );
@@ -154,7 +192,7 @@ export async function update(
         socialsEl.append(
           `<a href='https://twitter.com/${Misc.escapeHTML(
             twitter
-          )}' target="_blank" aria-label="${Misc.escapeHTML(
+          )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
           )}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
         );
@@ -170,7 +208,7 @@ export async function update(
         socialsEl.append(
           `<a href='${Misc.escapeHTML(
             website
-          )}' target="_blank" aria-label="${Misc.escapeHTML(
+          )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             websiteName ?? ""
           )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
         );

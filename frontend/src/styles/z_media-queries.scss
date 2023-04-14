@@ -448,6 +448,13 @@
     }
   }
 
+  .pageAccount {
+    .group.chart .below {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+
   .pageSettings {
     .section.themes .tabContent.customTheme {
     }
@@ -495,10 +502,6 @@
       .emptygroup {
         display: none;
       }
-    }
-    .group.chart .below {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
     }
     .group.topFilters .buttonsAndTitle .buttons {
       display: grid;
@@ -644,6 +647,18 @@
 
     & > .text {
       margin-bottom: 1rem;
+    }
+
+    & .customThemeEdit {
+      .customThemeInputs {
+        grid-template-columns: 1fr 1.5fr;
+      }
+      .spacer {
+        grid-column: span 2;
+      }
+      .customThemeButtons {
+        grid-template-columns: 1fr;
+      }
     }
   }
 

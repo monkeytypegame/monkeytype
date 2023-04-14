@@ -22,6 +22,9 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     submissionsEnabled: false,
     maxFavorites: 0,
   },
+  admin: {
+    endpointsEnabled: false,
+  },
   apeKeys: {
     endpointsEnabled: false,
     acceptKeys: false,
@@ -31,6 +34,10 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   },
   users: {
     signUp: false,
+    lastHashesCheck: {
+      enabled: false,
+      maxHashes: 0,
+    },
     discordIntegration: {
       enabled: false,
     },
@@ -198,6 +205,16 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
           },
         },
       },
+      admin: {
+        type: "object",
+        label: "Admin",
+        fields: {
+          endpointsEnabled: {
+            type: "boolean",
+            label: "Endpoints Enabled",
+          },
+        },
+      },
       apeKeys: {
         type: "object",
         label: "Ape Keys",
@@ -234,6 +251,14 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
           signUp: {
             type: "boolean",
             label: "Sign Up Enabled",
+          },
+          lastHashesCheck: {
+            type: "object",
+            label: "Last Hashes Check",
+            fields: {
+              enabled: { type: "boolean", label: "Enabled" },
+              maxHashes: { type: "number", label: "Hashes to store" },
+            },
           },
           xp: {
             type: "object",
