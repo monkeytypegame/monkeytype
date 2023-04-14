@@ -1,0 +1,29 @@
+{
+  "language": "afrikaans",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Sy oë dobber soos 'n bootjie op die see, 'Dude, ek dink nou ek is 'n cyborg.' Dan eers verstaan ek. Plank het die transponder in sy hand ingeplant.",
+      "source": "Donker Web, Fanie Viljoen",
+      "length": 147,
+      "id": 1
+    },
+    {
+      "text": "Ja, die hele wêreld word stil en luister in die donker uur, na die naggeluide van Lisa se klavier.",
+      "source": "Lisa se klavier - Koos Kumbuis",
+      "length": 98,
+      "id": 2
+    },
+    {
+      "text": "Maar ek het vasgestaan en gesê ek gaan, man-alleen een donker nag. Ek het myself gestaal en my perd laat haal, maar ek het so iets nooit verwag.",
+      "source": "Op Pad Na Nooitgedacht - Koos Du Plessis",
+      "length": 144,
+      "id": 3
+    }
+  ]
+}
