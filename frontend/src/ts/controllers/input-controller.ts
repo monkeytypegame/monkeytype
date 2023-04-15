@@ -987,9 +987,13 @@ $("#wordsInput").keydown((event) => {
     console.log("spacing debug keydown", event.key, event.code, event.which);
   }
 
-  // if (event.key === " ") {
-  //   event.code = "Space"; //powertoys bug
-  // }
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    event.code = "Space";
+  }
+
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    event.code = "NoCode";
+  }
 
   const now = performance.now();
   setTimeout(() => {
@@ -1006,9 +1010,13 @@ $("#wordsInput").keyup((event) => {
     console.log("spacing debug keyup", event.key, event.code, event.which);
   }
 
-  // if (event.key === " ") {
-  //   event.code = "Space"; //powertoys bug
-  // }
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    event.code = "Space";
+  }
+
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    event.code = "NoCode";
+  }
 
   const now = performance.now();
   setTimeout(() => {
