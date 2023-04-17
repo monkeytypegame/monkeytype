@@ -885,7 +885,7 @@ $(document).keydown(async (event) => {
               0,
               {
                 important: true,
-                duration: 5000,
+                duration: 5,
               }
             );
           }
