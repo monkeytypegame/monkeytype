@@ -18,18 +18,19 @@ let initialised = false;
 export let adBlock: boolean;
 export let cookieBlocker: boolean;
 
-export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
+// export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
+export const choice: "eg" | "pw" = "eg";
 
-console.log("AB choice: " + choice);
+// console.log("AB choice: " + choice);
 
-const adChoiceForce = window.localStorage.getItem("adChoiceForce");
-if (adChoiceForce === "eg") {
-  choice = "eg";
-  console.log("AB choice forced: " + choice);
-} else if (adChoiceForce === "pw") {
-  choice = "pw";
-  console.log("AB choice forced: " + choice);
-}
+// const adChoiceForce = window.localStorage.getItem("adChoiceForce");
+// if (adChoiceForce === "eg") {
+//   choice = "eg";
+//   console.log("AB choice forced: " + choice);
+// } else if (adChoiceForce === "pw") {
+//   choice = "pw";
+//   console.log("AB choice forced: " + choice);
+// }
 
 export function init(): void {
   if (choice === "eg") {

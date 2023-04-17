@@ -7,13 +7,10 @@ export default class Psas {
     this.httpClient = httpClient;
   }
 
-  async get(adChoice: string): Ape.EndpointData {
+  async get(): Ape.EndpointData {
     return await this.httpClient.get(BASE_PATH, {
       headers: {
         "Client-Version": CLIENT_VERSION,
-      },
-      searchQuery: {
-        adChoice,
       },
     });
   }
