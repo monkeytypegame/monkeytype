@@ -987,15 +987,19 @@ $("#wordsInput").keydown((event) => {
     console.log("spacing debug keydown", event.key, event.code, event.which);
   }
 
-  if (event.key === " ") {
-    event.code = "Space"; //powertoys bug
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    event.code = "Space";
+  }
+
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    event.code = "NoCode";
   }
 
   const now = performance.now();
   setTimeout(() => {
-    const isAndroid =
-      event.key === "Unidentified" && event.code === "" && event.which === 229;
-    TestInput.recordKeydownTime(now, isAndroid ? "Android" : event.code);
+    const eventCode =
+      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+    TestInput.recordKeydownTime(now, eventCode);
   }, 0);
 });
 
@@ -1006,15 +1010,19 @@ $("#wordsInput").keyup((event) => {
     console.log("spacing debug keyup", event.key, event.code, event.which);
   }
 
-  if (event.key === " ") {
-    event.code = "Space"; //powertoys bug
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    event.code = "Space";
+  }
+
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    event.code = "NoCode";
   }
 
   const now = performance.now();
   setTimeout(() => {
-    const isAndroid =
-      event.key === "Unidentified" && event.code === "" && event.which === 229;
-    TestInput.recordKeyupTime(now, isAndroid ? "Android" : event.code);
+    const eventCode =
+      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+    TestInput.recordKeyupTime(now, eventCode);
   }, 0);
 });
 

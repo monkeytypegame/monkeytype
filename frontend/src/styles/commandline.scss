@@ -140,6 +140,16 @@
           }
         }
 
+        &.active {
+          color: var(--bg-color) !important;
+          background: var(--text-color) !important;
+          .fas,
+          .far,
+          .fab {
+            color: var(--bg-color);
+          }
+        }
+
         // &:hover {
         //   color: var(--text-color);
         //   background: var(--sub-color);
