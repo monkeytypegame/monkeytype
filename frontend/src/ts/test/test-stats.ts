@@ -186,16 +186,12 @@ export function setInvalid(): void {
 
 export function calculateTestSeconds(now?: number): number {
   if (now === undefined) {
-    const endAfkSeconds = (end - TestInput.lastKeypress) / 1000;
-    if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
-      return (TestInput.lastKeypress - start) / 1000;
-    } else {
       return (end - start) / 1000;
-    }
   } else {
     return (now - start) / 1000;
   }
 }
+
 let avg = 0;
 export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   const start = performance.now();
