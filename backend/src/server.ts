@@ -1,7 +1,4 @@
 import "dotenv/config";
-import admin, { ServiceAccount } from "firebase-admin";
-// @ts-ignore
-import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-disable-line require-path-exists/exists
 import * as db from "./init/db";
 import jobs from "./jobs";
 import { getLiveConfiguration } from "./init/configuration";
@@ -15,6 +12,7 @@ import queues from "./queues";
 import workers from "./workers";
 import Logger from "./utils/logger";
 import * as EmailClient from "./init/email-client";
+import { init as initFirebaseAdmin } from "./init/firebase-admin";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -25,12 +23,7 @@ async function bootServer(port: number): Promise<Server> {
     Logger.success("Connected to database");
 
     Logger.info("Initializing Firebase app instance...");
-    admin.initializeApp({
-      credential: admin.credential.cert(
-        serviceAccount as unknown as ServiceAccount
-      ),
-    });
-    Logger.success("Firebase app initialized");
+    initFirebaseAdmin();
 
     Logger.info("Fetching live configuration...");
     const liveConfiguration = await getLiveConfiguration();

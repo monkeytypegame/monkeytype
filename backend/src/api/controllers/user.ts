@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
+import FirebaseAdmin from "../../init/firebase-admin";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -37,7 +38,7 @@ export async function createNewUser(
     await verifyCaptcha(captcha);
   } catch (e) {
     try {
-      await admin.auth().deleteUser(uid);
+      await FirebaseAdmin().auth().deleteUser(uid);
     } catch (e) {
       // user might be deleted on the frontend
     }
@@ -84,12 +85,14 @@ export async function sendVerificationEmail(
 
   let link = "";
   try {
-    link = await admin.auth().generateEmailVerificationLink(email, {
-      url:
-        process.env.MODE === "dev"
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-    });
+    link = await FirebaseAdmin()
+      .auth()
+      .generateEmailVerificationLink(email, {
+        url:
+          process.env.MODE === "dev"
+            ? "http://localhost:3000"
+            : "https://monkeytype.com",
+      });
   } catch (e) {
     if (
       e.code === "auth/internal-error" &&
@@ -121,7 +124,7 @@ export async function sendForgotPasswordEmail(
 
   let auth;
   try {
-    auth = await admin.auth().getUserByEmail(email);
+    auth = await FirebaseAdmin().auth().getUserByEmail(email);
   } catch (e) {
     if (e.code === "auth/user-not-found") {
       throw new MonkeyError(404, "User not found");
@@ -134,12 +137,14 @@ export async function sendForgotPasswordEmail(
     "request forgot password email"
   );
 
-  const link = await admin.auth().generatePasswordResetLink(email, {
-    url:
-      process.env.MODE === "dev"
-        ? "http://localhost:3000"
-        : "https://monkeytype.com",
-  });
+  const link = await FirebaseAdmin()
+    .auth()
+    .generatePasswordResetLink(email, {
+      url:
+        process.env.MODE === "dev"
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
+    });
   await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
 
   return new MonkeyResponse("Email sent if user was found");
@@ -292,7 +297,7 @@ export async function getUser(
     if (e.status === 404) {
       let user;
       try {
-        user = await admin.auth().getUser(uid);
+        user = await FirebaseAdmin().auth().getUser(uid);
         //exists, recreate in db
         await UserDAL.addUser(user.displayName, user.email, uid);
         userInfo = await UserDAL.getUser(uid, "get user (recreated)");
