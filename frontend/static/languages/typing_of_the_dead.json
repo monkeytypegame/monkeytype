@@ -3,6 +3,7 @@
   "leftToRight": true,
   "noLazyMode": true,
   "orderedByFrequency": false,
+  "originalPunctuation": true,
   "words": [
     "1MG",
     "2MB",
