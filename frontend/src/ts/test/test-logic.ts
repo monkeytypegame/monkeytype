@@ -797,7 +797,7 @@ async function getNextWord(
   randomWord = getFunboxWord(randomWord, wordIndex, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
-  if (Config.punctuation) {
+  if (Config.punctuation && !language.originalPunctuation === true) {
     randomWord = await punctuateWord(
       TestWords.words.get(TestWords.words.length - 1),
       randomWord,
