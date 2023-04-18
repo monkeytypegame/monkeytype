@@ -76,7 +76,8 @@ async function bootServer(port: number): Promise<Server> {
     recordServerVersion(version);
   } catch (error) {
     Logger.error("Failed to boot server");
-    Logger.error(error);
+    Logger.error(error.message);
+    console.error(error);
     return process.exit(1);
   }
 
