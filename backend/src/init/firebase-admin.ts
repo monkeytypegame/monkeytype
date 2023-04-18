@@ -6,7 +6,7 @@ import path from "path";
 
 const SERVICE_ACCOUNT_PATH = path.join(
   __dirname,
-  "../credentials/serviceAccountKey.json"
+  "../../src/credentials/serviceAccountKey.json"
 );
 
 export function init(): void {
