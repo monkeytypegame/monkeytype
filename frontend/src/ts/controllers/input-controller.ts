@@ -238,7 +238,6 @@ function handleSpace(): void {
     Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
-    TestInput.updateLastKeypress();
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
       TestLogic.fail("difficulty");
       return;
@@ -249,6 +248,7 @@ function handleSpace(): void {
     }
     Replay.addReplayEvent("submitErrorWord");
   }
+  TestInput.updateLastKeypress();
 
   let wordLength: number;
   if (Config.mode === "zen") {
@@ -885,7 +885,7 @@ $(document).keydown(async (event) => {
               0,
               {
                 important: true,
-                duration: 5000,
+                duration: 5,
               }
             );
           }

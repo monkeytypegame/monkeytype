@@ -1303,12 +1303,12 @@ export function createErrorMessage(error: unknown, message: string): string {
 }
 
 export function isElementVisible(query: string): boolean {
-  const popup = document.querySelector(query);
-  if (!popup) {
+  const el = document.querySelector(query);
+  if (!el) {
     return false;
   }
-  const style = window.getComputedStyle(popup);
-  return style.display !== "none";
+  // const style = window.getComputedStyle(el);
+  return !!el.getClientRects().length;
 }
 
 export function isPopupVisible(popupId: string): boolean {
