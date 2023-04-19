@@ -41,7 +41,7 @@ export async function addUser(
 export async function deleteUser(uid: string): Promise<void> {
   await getUsersCollection().deleteOne({ uid });
 }
-    
+
 export async function resetUser(uid: string): Promise<void> {
   await getUsersCollection().updateOne(
     { uid },
