@@ -44,6 +44,22 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setKeymapStyle("split_matrix");
       },
     },
+    {
+      id: "setKeymapStyleSteno",
+      display: "steno",
+      configValue: "steno",
+      exec: (): void => {
+        UpdateConfig.setKeymapStyle("steno");
+      },
+    },
+    {
+      id: "setKeymapStyleStenoMatrix",
+      display: "steno matrix",
+      configValue: "steno_matrix",
+      exec: (): void => {
+        UpdateConfig.setKeymapStyle("steno_matrix");
+      },
+    },
   ],
 };
 

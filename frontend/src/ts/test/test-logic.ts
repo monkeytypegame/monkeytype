@@ -307,7 +307,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-export function startTest(): boolean {
+export function startTest(now: number): boolean {
   if (PageTransition.get()) {
     return false;
   }
@@ -348,7 +348,7 @@ export function startTest(): boolean {
     }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  TestStats.setStart(performance.now());
+  TestStats.setStart(now);
   TestTimer.start();
   return true;
 }
@@ -797,7 +797,7 @@ async function getNextWord(
   randomWord = getFunboxWord(randomWord, wordIndex, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
-  if (Config.punctuation) {
+  if (Config.punctuation && !language.originalPunctuation === true) {
     randomWord = await punctuateWord(
       TestWords.words.get(TestWords.words.length - 1),
       randomWord,
@@ -1382,13 +1382,8 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
     keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
-    lastKeyToEnd:
-      Config.mode === "zen"
-        ? 0
-        : Misc.roundTo2(TestStats.end - TestInput.keypressTimings.spacing.last),
-    startToFirstKey: Misc.roundTo2(
-      TestInput.keypressTimings.spacing.first - TestStats.start
-    ),
+    lastKeyToEnd: undefined,
+    startToFirstKey: undefined,
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
@@ -1402,6 +1397,26 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     testDuration: undefined,
     afkDuration: undefined,
   };
+
+  const stfk = Misc.roundTo2(
+    TestInput.keypressTimings.spacing.first - TestStats.start
+  );
+
+  if (stfk < 0) {
+    completedEvent.startToFirstKey = 0;
+  } else {
+    completedEvent.startToFirstKey = stfk;
+  }
+
+  const lkte = Misc.roundTo2(
+    TestStats.end - TestInput.keypressTimings.spacing.last
+  );
+
+  if (lkte < 0 || Config.mode === "zen") {
+    completedEvent.lastKeyToEnd = 0;
+  } else {
+    completedEvent.lastKeyToEnd = lkte;
+  }
 
   // stats
   const stats = TestStats.calculateStats();
@@ -1527,19 +1542,26 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
-  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (!TestState.isActive) return;
+  const now = performance.now();
+  TestStats.setEnd(now);
+
+  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
   }
 
-  TestInput.forceKeyup(); //this ensures that the last keypress(es) are registered
+  TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
+
+  const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
+  if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
+    TestStats.setEnd(TestInput.keypressTimings.spacing.last);
+  }
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
-  TestStats.setEnd(performance.now());
   TestState.setActive(false);
   Replay.stopReplayRecording();
   Focus.set(false);

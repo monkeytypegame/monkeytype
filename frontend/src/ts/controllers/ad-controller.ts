@@ -4,33 +4,50 @@ import * as ConfigEvent from "../observables/config-event";
 import * as BannerEvent from "../observables/banner-event";
 import Config from "../config";
 import * as TestState from "../test/test-state";
+import * as EG from "./eg-ad-controller";
+import * as PW from "./pw-ad-controller";
 
 const breakpoint = 900;
 let widerThanBreakpoint = true;
+
+const breakpoint2 = 1330;
+let widerThanBreakpoint2 = true;
 
 let initialised = false;
 
 export let adBlock: boolean;
 export let cookieBlocker: boolean;
 
+// export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
+export const choice: "eg" | "pw" = "eg";
+
+// console.log("AB choice: " + choice);
+
+// const adChoiceForce = window.localStorage.getItem("adChoiceForce");
+// if (adChoiceForce === "eg") {
+//   choice = "eg";
+//   console.log("AB choice forced: " + choice);
+// } else if (adChoiceForce === "pw") {
+//   choice = "pw";
+//   console.log("AB choice forced: " + choice);
+// }
+
 export function init(): void {
-  $("head").append(`<script>
-!function(e){var s=new XMLHttpRequest;s.open("GET","https://api.enthusiastgaming.net/scripts/cdn.enthusiast.gg/script/eg-aps/release/eg-aps-bootstrap-v2.0.0.bundle.js?site=monkeytype.com",!0),s.onreadystatechange=function(){var t;4==s.readyState&&(200<=s.status&&s.status<300||304==s.status)&&((t=e.createElement("script")).type="text/javascript",t.text=s.responseText,e.head.appendChild(t))},s.send(null)}(document);
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-W7WN5QV');
-</script>`);
-  $("body")
-    .prepend(`<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W7WN5QV"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>`);
+  if (choice === "eg") {
+    EG.init();
+  } else {
+    PW.init();
+  }
 
   setInterval(() => {
     if (TestState.isActive) {
       return;
     }
-    refreshVisible();
+    if (choice === "eg") {
+      EG.refreshVisible();
+    } else {
+      PW.refreshVisible();
+    }
   }, 60000);
 
   initialised = true;
@@ -88,39 +105,52 @@ function updateBreakpoint(noReinstate = false): void {
   }
   if (noReinstate) return;
   if (beforeUpdate !== widerThanBreakpoint) {
-    reinstate();
+    if (choice === "eg") {
+      EG.reinstate();
+    } else {
+      PW.reinstate();
+    }
+  }
+}
+
+function updateBreakpoint2(noReinstate = false): void {
+  if (choice !== "pw") return;
+  const beforeUpdate = widerThanBreakpoint2;
+
+  if (window.innerWidth > breakpoint2) {
+    widerThanBreakpoint2 = true;
+  } else {
+    widerThanBreakpoint2 = false;
+  }
+  if (noReinstate) return;
+  if (beforeUpdate !== widerThanBreakpoint2) {
+    PW.reinstate();
   }
 }
 
 export async function refreshVisible(): Promise<void> {
-  //@ts-ignore
-  const adDivs = Object.keys(window.egAdPack.gptAdSlots);
-  const visibleAdDivs = [];
-
-  for (let i = 0; i < adDivs.length; i++) {
-    const el = document.querySelectorAll(
-      "[data-adunit-name='" + adDivs[i] + "']"
-    )[0];
-    if (!el) continue;
-    const elParent = el.parentElement as HTMLElement;
-    if (
-      window.getComputedStyle(elParent).getPropertyValue("display") != "none"
-    ) {
-      visibleAdDivs.push(adDivs[i]);
-    }
+  if (choice === "eg") {
+    await EG.refreshVisible();
+  } else {
+    await PW.refreshVisible();
   }
-  //@ts-ignore
-  window.egAps.refreshAds(visibleAdDivs);
 }
 
 export async function checkAdblock(): Promise<void> {
   return new Promise((resolve) => {
-    if (adBlock === undefined) {
+    if (choice === "eg") {
+      if (adBlock === undefined) {
+        //@ts-ignore
+        if (window.egAdPack === undefined) {
+          adBlock = true;
+        } else {
+          adBlock = false;
+        }
+      }
+    } else if (choice === "pw") {
       //@ts-ignore
-      if (window.egAdPack === undefined) {
+      if (window.ramp === undefined) {
         adBlock = true;
-      } else {
-        adBlock = false;
       }
     }
     resolve();
@@ -130,10 +160,17 @@ export async function checkAdblock(): Promise<void> {
 export async function checkCookieblocker(): Promise<void> {
   return new Promise((resolve) => {
     if (cookieBlocker === undefined) {
+      if (choice === "pw") {
+        cookieBlocker = false;
+        resolve();
+        return;
+      }
+
       //@ts-ignore
       if (window.__tcfapi === undefined) {
         cookieBlocker = true;
         resolve();
+        return;
       }
       //@ts-ignore
       window.__tcfapi("getTCData", 2, (tcData, success) => {
@@ -146,11 +183,9 @@ export async function checkCookieblocker(): Promise<void> {
         } else {
           cookieBlocker = true;
         }
-        resolve();
       });
-    } else {
-      resolve();
     }
+    resolve();
   });
 }
 
@@ -164,13 +199,10 @@ export async function reinstate(): Promise<boolean> {
   await checkCookieblocker();
   if (adBlock || cookieBlocker) return false;
 
-  try {
-    //@ts-ignore
-    window.egAps.reinstate();
-    return true;
-  } catch (e) {
-    console.error(e);
-    return false;
+  if (choice === "eg") {
+    return EG.reinstate();
+  } else {
+    return PW.reinstate();
   }
 }
 
@@ -210,40 +242,10 @@ export async function renderResult(): Promise<void> {
     return;
   }
 
-  if (widerThanBreakpoint) {
-    // $("#ad-result-wrapper").html(`
-    // <div class="icon"><i class="fas fa-ad"></i></div>
-    // <div id="ad-result"></div>
-    // `);
-    // if ($("#ad-result-wrapper").is(":empty")) {
-    //@ts-ignore
-    // window.egAps.render(["ad-result"]);
-    // } else {
-    //@ts-ignore
-    window.egAps.refreshAds([
-      "ad-result",
-      "ad-vertical-left",
-      "ad-vertical-right",
-      "ad-footer",
-    ]);
-    // }
+  if (choice === "eg") {
+    EG.renderResult(widerThanBreakpoint);
   } else {
-    // $("#ad-result-small-wrapper").html(`
-    // <div class="icon small"><i class="fas fa-ad"></i></div>
-    // <div id="ad-result-small"></div>
-    // `);
-    // if ($("#ad-result-small-wrapper").is(":empty")) {
-    //@ts-ignore
-    // window.egAps.render(["ad-result-small"]);
-    // } else {
-    //@ts-ignore
-    window.egAps.refreshAds([
-      "ad-result-small",
-      "ad-vertical-left",
-      "ad-vertical-right",
-      "ad-footer-small",
-    ]);
-    // }
+    PW.renderResult();
   }
 }
 
@@ -261,17 +263,34 @@ export function updateTestPageAds(visible: boolean): void {
   }
 }
 
+export function showConsentPopup(): void {
+  if (choice === "eg") {
+    //@ts-ignore
+    window.__tcfapi("displayConsentUi", 2, function () {
+      //
+    });
+  } else {
+    //@ts-ignore
+    ramp.showCmpModal();
+  }
+}
+
 export function destroyResult(): void {
+  if (choice === "pw") {
+    PW.destroyAll();
+  }
   // $("#ad-result-wrapper").empty();
   // $("#ad-result-small-wrapper").empty();
 }
 
-const debouncedMarginUpdate = debounce(100, updateVerticalMargin);
-const debouncedBreakpointUpdate = debounce(100, updateBreakpoint);
+const debouncedMarginUpdate = debounce(500, updateVerticalMargin);
+const debouncedBreakpointUpdate = debounce(500, updateBreakpoint);
+const debouncedBreakpoint2Update = debounce(500, updateBreakpoint2);
 
 $(window).on("resize", () => {
   debouncedMarginUpdate();
   debouncedBreakpointUpdate();
+  debouncedBreakpoint2Update();
 });
 
 ConfigEvent.subscribe((event, value) => {
@@ -293,10 +312,14 @@ BannerEvent.subscribe(() => {
 
 $(document).ready(() => {
   updateBreakpoint(true);
+  updateBreakpoint2();
 });
 
 window.onerror = function (error): void {
-  if (typeof error === "string" && error.substring(0, 6) === "EG APS") {
-    $("#ad-result-wrapper .iconAndText").addClass("withLeft");
+  //@ts-ignore
+  if (choice === "eg") {
+    if (typeof error === "string" && error.substring(0, 6) === "EG APS") {
+      $("#ad-result-wrapper .iconAndText").addClass("withLeft");
+    }
   }
 };

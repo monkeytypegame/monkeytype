@@ -238,7 +238,6 @@ function handleSpace(): void {
     Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
-    TestInput.updateLastKeypress();
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
       TestLogic.fail("difficulty");
       return;
@@ -249,6 +248,7 @@ function handleSpace(): void {
     }
     Replay.addReplayEvent("submitErrorWord");
   }
+  TestInput.updateLastKeypress();
 
   let wordLength: number;
   if (Config.mode === "zen") {
@@ -394,6 +394,13 @@ function handleChar(
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
   }
+
+  if (TestInput.spacingDebug) {
+    console.log("handleChar", char, charIndex, realInputValue);
+  }
+
+  const now = performance.now();
+
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
   if (char === "…") {
     for (let i = 0; i < 3; i++) {
@@ -442,7 +449,7 @@ function handleChar(
   }
 
   //start the test
-  if (!TestState.isActive && !TestLogic.startTest()) {
+  if (!TestState.isActive && !TestLogic.startTest(now)) {
     return;
   }
 
@@ -464,7 +471,7 @@ function handleChar(
   }
 
   if (TestInput.input.current === "") {
-    TestInput.setBurstStart(performance.now());
+    TestInput.setBurstStart(now);
   }
 
   if (!isCharKorean && !Config.language.startsWith("korean")) {
@@ -754,6 +761,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   }
 }
 
+let lastBailoutAttempt = -1;
+
 $(document).keydown(async (event) => {
   if (ActivePage.get() == "loading") return;
 
@@ -867,8 +876,23 @@ $(document).keydown(async (event) => {
           CustomTextState.isCustomTextLong() ?? false
         )
       ) {
-        TestInput.setBailout(true);
-        TestLogic.finish();
+        const delay = Date.now() - lastBailoutAttempt;
+        if (lastBailoutAttempt === -1 || delay > 200) {
+          lastBailoutAttempt = Date.now();
+          if (delay >= 5000) {
+            Notifications.add(
+              "Please double tap shift+enter to confirm bail out",
+              0,
+              {
+                important: true,
+                duration: 5,
+              }
+            );
+          }
+        } else {
+          TestInput.setBailout(true);
+          TestLogic.finish();
+        }
       }
     } else {
       handleChar("\n", TestInput.input.current.length);
@@ -959,20 +983,46 @@ $(document).keydown(async (event) => {
 $("#wordsInput").keydown((event) => {
   if (event.originalEvent?.repeat) return;
 
+  if (TestInput.spacingDebug) {
+    console.log("spacing debug keydown", event.key, event.code, event.which);
+  }
+
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    event.code = "Space";
+  }
+
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    event.code = "NoCode";
+  }
+
+  const now = performance.now();
   setTimeout(() => {
-    const isAndroid =
-      event.key === "Unidentified" && event.code === "" && event.which === 229;
-    TestInput.recordKeydownTime(isAndroid ? "Android" : event.code);
+    const eventCode =
+      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+    TestInput.recordKeydownTime(now, eventCode);
   }, 0);
 });
 
 $("#wordsInput").keyup((event) => {
   if (event.originalEvent?.repeat) return;
 
+  if (TestInput.spacingDebug) {
+    console.log("spacing debug keyup", event.key, event.code, event.which);
+  }
+
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    event.code = "Space";
+  }
+
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    event.code = "NoCode";
+  }
+
+  const now = performance.now();
   setTimeout(() => {
-    const isAndroid =
-      event.key === "Unidentified" && event.code === "" && event.which === 229;
-    TestInput.recordKeyupTime(isAndroid ? "Android" : event.code);
+    const eventCode =
+      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+    TestInput.recordKeyupTime(now, eventCode);
   }, 0);
 });
 

@@ -671,6 +671,10 @@ const languageSelector = $(
       id: "italian",
       text: "italian",
     },
+    {
+      id: "russian",
+      text: "russian",
+    },
   ],
 });
 
