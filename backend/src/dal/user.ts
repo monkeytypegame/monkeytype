@@ -3,7 +3,7 @@ import { isUsernameValid } from "../utils/validation";
 import { updateUserEmail } from "../utils/auth";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
-import * as DB from "../../../db";
+import * as DB from "../../../frontend/db";
 import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
