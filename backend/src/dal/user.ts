@@ -3,6 +3,7 @@ import { isUsernameValid } from "../utils/validation";
 import { updateUserEmail } from "../utils/auth";
 import { canFunboxGetPb, checkAndUpdatePb } from "../utils/pb";
 import * as db from "../init/db";
+import * as DB from "../db";
 import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
@@ -40,7 +41,6 @@ export async function addUser(
 export async function deleteUser(uid: string): Promise<void> {
   await getUsersCollection().deleteOne({ uid });
 }
-
 export async function resetUser(uid: string): Promise<void> {
   await getUsersCollection().updateOne(
     { uid },
@@ -190,8 +190,9 @@ async function findByName(name: string): Promise<MonkeyTypes.User | undefined> {
   )[0];
 }
 
+// TODO: check if name returned by findByName or name parameter is case insensitive
 export async function isNameAvailable(name: string): Promise<boolean> {
-  return (await findByName(name)) === undefined;
+  return ((await findByName(name)) === undefined || name !== DB.getSnapshot()?.name);
 }
 
 export async function getUserByName(
