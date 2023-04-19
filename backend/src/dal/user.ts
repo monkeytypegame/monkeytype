@@ -193,7 +193,9 @@ async function findByName(name: string): Promise<MonkeyTypes.User | undefined> {
 
 // TODO: check if name returned by findByName or name parameter is case insensitive
 export async function isNameAvailable(name: string): Promise<boolean> {
-  return ((await findByName(name)) === undefined || name !== DB.getSnapshot()?.name);
+  return (
+    (await findByName(name)) === undefined || name !== DB.getSnapshot()?.name
+  );
 }
 
 export async function getUserByName(
