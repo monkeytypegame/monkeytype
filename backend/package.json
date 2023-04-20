@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "bcrypt": "5.0.1",
-    "bullmq": "1.78.1",
+    "bullmq": "1.91.1",
     "chalk": "4.1.2",
     "cors": "2.8.5",
     "cron": "2.3.0",
