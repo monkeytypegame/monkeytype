@@ -20,7 +20,7 @@
     "bullmq": "1.78.1",
     "chalk": "4.1.2",
     "cors": "2.8.5",
-    "cron": "2.1.0",
+    "cron": "2.3.0",
     "dotenv": "10.0.0",
     "express": "4.17.3",
     "express-rate-limit": "6.2.1",
