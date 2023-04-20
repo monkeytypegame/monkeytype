@@ -266,7 +266,7 @@ export async function refresh(
                   splitSpacer += `<div class="keymapSplitSpacer"></div>`;
                 }
               } else {
-                if (i === 5 && isSteno) {
+                if (i === 5) {
                   splitSpacer += `<div class="keymapSplitSpacer"></div>`;
                 }
               }
