@@ -85,7 +85,11 @@ export async function resetUser(uid: string): Promise<void> {
   );
 }
 
-export async function updateName(uid: string, name: string): Promise<void> {
+export async function updateName(
+  uid: string,
+  name: string,
+  previousName: string
+): Promise<void> {
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
   }
@@ -93,16 +97,12 @@ export async function updateName(uid: string, name: string): Promise<void> {
     throw new MonkeyError(409, "Username already taken", name);
   }
 
-  const user = await getUser(uid, "update name");
-
-  const oldName = user.name;
-
   await getUsersCollection().updateOne(
     { uid },
     {
       $set: { name, lastNameChange: Date.now() },
       $unset: { needsToChangeName: "" },
-      $push: { nameHistory: oldName },
+      $push: { nameHistory: previousName },
     }
   );
 }

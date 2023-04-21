@@ -212,7 +212,7 @@ export async function updateName(
     throw new MonkeyError(409, "You can change your name once every 30 days");
   }
 
-  await UserDAL.updateName(uid, name);
+  await UserDAL.updateName(uid, name, user.name);
   Logger.logToDb(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,
