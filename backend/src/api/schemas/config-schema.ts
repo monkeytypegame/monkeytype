@@ -62,7 +62,15 @@ const CONFIG_SCHEMA = joi.object({
   keymapMode: joi.string().valid("off", "static", "react", "next"),
   keymapStyle: joi
     .string()
-    .valid("staggered", "alice", "matrix", "split", "split_matrix"),
+    .valid(
+      "staggered",
+      "alice",
+      "matrix",
+      "split",
+      "split_matrix",
+      "steno",
+      "steno_matrix"
+    ),
   keymapLegendStyle: joi
     .string()
     .valid("lowercase", "uppercase", "blank", "dynamic"),
