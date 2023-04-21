@@ -85,9 +85,6 @@ export async function resetUser(uid: string): Promise<void> {
   );
 }
 
-const DAY_IN_SECONDS = 24 * 60 * 60;
-const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
-
 export async function updateName(uid: string, name: string): Promise<void> {
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
@@ -99,13 +96,6 @@ export async function updateName(uid: string, name: string): Promise<void> {
   const user = await getUser(uid, "update name");
 
   const oldName = user.name;
-
-  if (
-    !user?.needsToChangeName &&
-    Date.now() - (user.lastNameChange ?? 0) < THIRTY_DAYS_IN_SECONDS
-  ) {
-    throw new MonkeyError(409, "You can change your name once every 30 days");
-  }
 
   await getUsersCollection().updateOne(
     { uid },
