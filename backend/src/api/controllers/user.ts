@@ -49,7 +49,7 @@ export async function createNewUser(
     throw new MonkeyError(400, "Invalid domain");
   }
 
-  const available = await UserDAL.isNameAvailable(name);
+  const available = await UserDAL.isNameAvailable(name, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }
@@ -256,8 +256,9 @@ export async function checkName(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { name } = req.params;
+  const { uid } = req.ctx.decodedToken;
 
-  const available = await UserDAL.isNameAvailable(name);
+  const available = await UserDAL.isNameAvailable(name, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }
