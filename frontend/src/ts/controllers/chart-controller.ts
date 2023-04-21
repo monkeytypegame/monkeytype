@@ -1165,7 +1165,7 @@ export function updateAllChartColors(): void {
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "accountChart") {
+  if (eventKey === "accountChart" && ActivePage.get() === "account") {
     updateAccuracy();
     updateAverage10();
     updateAverage100();
