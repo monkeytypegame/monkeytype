@@ -119,6 +119,9 @@ router.post(
 
 router.get(
   "/checkName/:name",
+  authenticateRequest({
+    isPublic: true,
+  }),
   RateLimit.userCheckName,
   validateRequest({
     params: {
