@@ -53,7 +53,7 @@ Chart.defaults.elements.line.fill = "origin";
 
 import "chartjs-adapter-date-fns";
 import format from "date-fns/format";
-import Config from "../config";
+import Config, { getConfigChanges } from "../config";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ConfigEvent from "../observables/config-event";
 import * as TestInput from "../test/test-input";
@@ -943,8 +943,26 @@ export const miniResult: ChartWithUpdateColors<
   },
 });
 
+type ButtonBellowChart =
+  | ".toggleAccuracyOnChart"
+  | ".toggleAverage10OnChart"
+  | ".toggleAverage100OnChart";
+
+function updateButtonChartsColors(
+  isActive: boolean,
+  className: ButtonBellowChart
+): void {
+  isActive
+    ? $(`.pageAccount ${className}`).addClass("active")
+    : $(`.pageAccount ${className}`).removeClass("active");
+}
+
 function updateAccuracy(): void {
-  const accOn = Config.accountChart[0] === "on";
+  const accOn =
+    getConfigChanges()?.accountChart?.[0] === "on" ??
+    Config.accountChart[0] === "on";
+
+  updateButtonChartsColors(accOn, ".toggleAccuracyOnChart");
 
   accountHistory.data.datasets[2].hidden = !accOn;
   accountHistory.data.datasets[4].hidden = !accOn;
@@ -956,8 +974,14 @@ function updateAccuracy(): void {
 }
 
 function updateAverage10(): void {
-  const accOn = Config.accountChart[0] === "on";
-  const avg10On = Config.accountChart[1] === "on";
+  const accOn =
+    getConfigChanges()?.accountChart?.[0] === "on" ??
+    Config.accountChart[0] === "on";
+  const avg10On =
+    getConfigChanges()?.accountChart?.[1] === "on" ??
+    Config.accountChart[0] === "on";
+
+  updateButtonChartsColors(avg10On, ".toggleAverage10OnChart");
 
   if (accOn) {
     accountHistory.data.datasets[3].hidden = !avg10On;
@@ -970,8 +994,14 @@ function updateAverage10(): void {
 }
 
 function updateAverage100(): void {
-  const accOn = Config.accountChart[0] === "on";
-  const avg100On = Config.accountChart[2] === "on";
+  const accOn =
+    getConfigChanges()?.accountChart?.[0] === "on" ??
+    Config.accountChart[0] === "on";
+  const avg100On =
+    getConfigChanges()?.accountChart?.[2] === "on" ??
+    Config.accountChart[0] === "on";
+
+  updateButtonChartsColors(avg100On, ".toggleAverage100OnChart");
 
   if (accOn) {
     accountHistory.data.datasets[5].hidden = !avg100On;
