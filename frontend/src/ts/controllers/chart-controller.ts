@@ -948,7 +948,8 @@ type ButtonBelowChart =
   | ".toggleAverage10OnChart"
   | ".toggleAverage100OnChart";
 
-function updateButtonChartsColors(
+
+function updateAccountChartButton(
   isActive: boolean,
   className: ButtonBelowChart
 ): void {
@@ -959,7 +960,7 @@ function updateButtonChartsColors(
 
 function updateAccuracy(): void {
   const accOn = Config.accountChart[0] === "on";
-  updateButtonChartsColors(accOn, ".toggleAccuracyOnChart");
+  updateAccountChartButton(accOn, ".toggleAccuracyOnChart");
 
   accountHistory.data.datasets[2].hidden = !accOn;
   accountHistory.data.datasets[4].hidden = !accOn;
@@ -973,7 +974,7 @@ function updateAccuracy(): void {
 function updateAverage10(): void {
   const accOn = Config.accountChart[0] === "on";
   const avg10On = Config.accountChart[1] === "on";
-  updateButtonChartsColors(avg10On, ".toggleAverage10OnChart");
+  updateAccountChartButton(avg10On, ".toggleAverage10OnChart");
 
   if (accOn) {
     accountHistory.data.datasets[3].hidden = !avg10On;
@@ -988,7 +989,7 @@ function updateAverage10(): void {
 function updateAverage100(): void {
   const accOn = Config.accountChart[0] === "on";
   const avg100On = Config.accountChart[2] === "on";
-  updateButtonChartsColors(avg100On, ".toggleAverage100OnChart");
+  updateAccountChartButton(avg100On, ".toggleAverage100OnChart");
 
   if (accOn) {
     accountHistory.data.datasets[5].hidden = !avg100On;
