@@ -28,6 +28,8 @@ import chartAnnotation, {
 } from "chartjs-plugin-annotation";
 import chartTrendline from "chartjs-plugin-trendline";
 
+import * as ActivePage from "../states/active-page";
+
 Chart.register(
   BarController,
   BarElement,
@@ -948,6 +950,11 @@ type ButtonBelowChart =
   | ".toggleAverage10OnChart"
   | ".toggleAverage100OnChart";
 
+export function updateAccountChartButtons(): void {
+  updateAccuracy();
+  updateAverage10();
+  updateAverage100();
+}
 
 function updateAccountChartButton(
   isActive: boolean,
