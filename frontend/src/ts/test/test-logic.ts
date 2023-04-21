@@ -1543,6 +1543,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
+  TestUI.setResultCalculating(true);
   const now = performance.now();
   TestStats.setEnd(now);
 
@@ -1560,7 +1561,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
-  TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
