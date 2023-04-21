@@ -129,7 +129,11 @@ describe("UserDal", () => {
 
     // when, then
     await expect(
-      UserDAL.updateName(userToUpdateNameFor.uid, userWithNameTaken.name)
+      UserDAL.updateName(
+        userToUpdateNameFor.uid,
+        userWithNameTaken.name,
+        userToUpdateNameFor.name
+      )
     ).rejects.toThrow("Username already taken");
   });
 
@@ -157,7 +161,11 @@ describe("UserDal", () => {
     invalidNames.forEach(
       async (invalidName) =>
         await expect(
-          UserDAL.updateName(testUser.uid, invalidName as unknown as string)
+          UserDAL.updateName(
+            testUser.uid,
+            invalidName as unknown as string,
+            testUser.name
+          )
         ).rejects.toThrow("Invalid username")
     );
   });
@@ -173,7 +181,7 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    await UserDAL.updateName(testUser.uid, "renamedTestUser");
+    await UserDAL.updateName(testUser.uid, "renamedTestUser", testUser.name);
 
     const updatedUser = await UserDAL.getUser(testUser.uid, "test");
 
@@ -181,7 +189,7 @@ describe("UserDal", () => {
     expect(updatedUser.name).toBe("renamedTestUser");
 
     await expect(
-      UserDAL.updateName(updatedUser.uid, "NewValidName")
+      UserDAL.updateName(updatedUser.uid, "NewValidName", updatedUser.name)
     ).rejects.toThrow("You can change your name once every 30 days");
   });
 
@@ -196,7 +204,7 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    await UserDAL.updateName(testUser.uid, "renamedTestUser");
+    await UserDAL.updateName(testUser.uid, "renamedTestUser", testUser.name);
 
     // then
     const updatedUser = await UserDAL.getUser(testUser.uid, "test");

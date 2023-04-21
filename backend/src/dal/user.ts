@@ -90,10 +90,16 @@ export async function updateName(
   name: string,
   previousName: string
 ): Promise<void> {
+  if (name === previousName) {
+    throw new MonkeyError(400, "New name is the same as the old name");
+  }
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
   }
-  if (!(await isNameAvailable(name))) {
+  if (
+    name.toLowerCase() !== previousName.toLowerCase() &&
+    !(await isNameAvailable(name, uid))
+  ) {
     throw new MonkeyError(409, "Username already taken", name);
   }
 
@@ -180,8 +186,14 @@ async function findByName(name: string): Promise<MonkeyTypes.User | undefined> {
   )[0];
 }
 
-export async function isNameAvailable(name: string): Promise<boolean> {
-  return (await findByName(name)) === undefined;
+export async function isNameAvailable(
+  name: string,
+  uid: string
+): Promise<boolean> {
+  const user = await findByName(name);
+  // if the user found by name is the same as the user we are checking for, then the name is available
+  // this means that the user can update the casing of their name without it being taken
+  return user === undefined || user.uid === uid;
 }
 
 export async function getUserByName(
