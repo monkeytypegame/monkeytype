@@ -1,6 +1,6 @@
 import _ from "lodash";
 import IORedis from "ioredis";
-import { Worker, Job } from "bullmq";
+import { Worker, Job, ConnectionOptions } from "bullmq";
 import Logger from "../utils/logger";
 import { addToInboxBulk } from "../dal/user";
 import GeorgeQueue from "../queues/george-queue";
@@ -201,5 +201,5 @@ async function jobHandler(job: Job): Promise<void> {
 export default (redisConnection?: IORedis.Redis): Worker =>
   new Worker(LaterQueue.queueName, jobHandler, {
     autorun: false,
-    connection: redisConnection,
+    connection: redisConnection as ConnectionOptions,
   });

@@ -737,7 +737,8 @@ $(document).on("keydown", (e) => {
           activeIndex++;
         }
       }
-      // console.log(`scrolling to ${scroll}`);
+      updateActiveEntry();
+      keepActiveEntryInView();
       try {
         const list =
           CommandlineLists.current[CommandlineLists.current.length - 1];
@@ -764,8 +765,6 @@ $(document).on("keydown", (e) => {
           }
         });
       } catch (e) {}
-      updateActiveEntry();
-      keepActiveEntryInView();
       return false;
     }
   }
