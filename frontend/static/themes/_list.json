@@ -1160,5 +1160,11 @@
     "mainColor": "#d65ccc",
     "subColor": "#787d82",
     "textColor": "#d1d0c5"
+  },
+  {
+    "name": "Abilify",
+    "bgColor": "#3b3030",
+    "mainColor": "#e39d93",
+    "textColor": "#e2cebe"
   }
 ]
