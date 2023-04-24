@@ -3,7 +3,7 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     id: 1,
     name: "Developer",
     description: "I made this",
-    icon: "fa-rocket",
+    icon: "fa-laptop",
     color: "white",
     customStyle: "animation: rgb-bg 10s linear infinite;",
   },
@@ -94,6 +94,14 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     icon: "fa-hands-helping",
     color: "var(--text-color)",
     background: "var(--sub-color)",
+  },
+  13: {
+    id: 13,
+    name: "Mythical",
+    description: "Yes, I'm actually this fast",
+    icon: "fa-rocket",
+    color: "white",
+    customStyle: "animation: rgb-bg 10s linear infinite;",
   },
 };
 
