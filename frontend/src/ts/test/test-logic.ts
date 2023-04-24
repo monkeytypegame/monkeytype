@@ -1788,10 +1788,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.keyDuration = "toolong";
   }
 
-  // if (dontSave) {
-  //   AnalyticsController.log("testCompletedInvalid");
-  //   return;
-  // }
+  if (dontSave) {
+    AnalyticsController.log("testCompletedInvalid");
+    return;
+  }
 
   // user is logged in
 
@@ -1808,26 +1808,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (completedEvent.challenge === null) delete completedEvent?.challenge;
 
   completedEvent.hash = objectHash(completedEvent);
-
-  console.log(completedEvent.keyDuration);
-  console.log(completedEvent.keySpacing);
-
-  TestInput.keypressTimings.spacing.array.push(6969696969696969);
-
-  setTimeout(() => {
-    const stats = TestStats.getStats();
-    //@ts-ignore
-    console.log(stats.lastResult?.keyDuration);
-    //@ts-ignore
-    console.log(stats.lastResult?.keySpacing);
-  }, 3000);
-
-  setTimeout(() => {
-    //@ts-ignore
-    console.log(completedEvent.keyDuration);
-    //@ts-ignore
-    console.log(completedEvent.keySpacing);
-  }, 5000);
 
   saveResult(completedEvent, false);
 }
