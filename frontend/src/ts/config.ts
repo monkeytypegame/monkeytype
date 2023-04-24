@@ -1557,7 +1557,15 @@ export function setKeymapStyle(
 ): boolean {
   if (
     !isConfigValueValid("keymap style", style, [
-      ["staggered", "alice", "matrix", "split", "split_matrix"],
+      [
+        "staggered",
+        "alice",
+        "matrix",
+        "split",
+        "split_matrix",
+        "steno",
+        "steno_matrix",
+      ],
     ])
   ) {
     return false;

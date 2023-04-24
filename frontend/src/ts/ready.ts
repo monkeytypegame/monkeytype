@@ -104,12 +104,12 @@ if ("serviceWorker" in navigator) {
             (event.isUpdate || event2.isUpdate) &&
             updateBannerId === undefined
           ) {
-            updateBannerId = Notifications.addBanner(
-              "Update ready - please refresh",
-              1,
-              "gift",
-              true
-            );
+            // updateBannerId = Notifications.addBanner(
+            //   "Update ready - please refresh",
+            //   1,
+            //   "gift",
+            //   true
+            // );
           }
         });
 
