@@ -18,6 +18,7 @@ import {
 import { update as updateCustomThemesList } from "./lists/custom-themes-list";
 import { update as updateTagsCommands } from "./lists/tags";
 import * as Skeleton from "../popups/skeleton";
+import * as ManualRestart from "../test/manual-restart-tracker";
 
 const wrapperId = "commandLineWrapper";
 
@@ -291,6 +292,8 @@ function trigger(command: string): void {
   let shouldFocusTestUI = true;
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
   let sticky = false;
+
+  ManualRestart.set();
 
   $.each(list.list, (_index, obj) => {
     if (obj.id == command) {

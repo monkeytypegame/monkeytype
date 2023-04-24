@@ -54,6 +54,8 @@ async function errorHandlingMiddleware(
           message: error.message,
           stack: error.stack,
           endpoint: req.originalUrl,
+          method: req.method,
+          url: req.url,
         });
       } catch (e) {
         Logger.error("Logging to db failed.");
