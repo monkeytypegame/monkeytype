@@ -35,6 +35,7 @@
     "css-minimizer-webpack-plugin": "3.4.1",
     "eslint-webpack-plugin": "3.1.1",
     "extra-watch-webpack-plugin": "1.0.3",
+    "filemanager-webpack-plugin": "8.0.0",
     "grecaptcha": "1.0.3",
     "gulp": "4.0.2",
     "gulp-eslint-new": "1.4.2",
@@ -75,7 +76,6 @@
     "konami": "1.6.3",
     "lz-ts": "1.1.2",
     "object-hash": "3.0.0",
-    "remove-files-webpack-plugin": "1.5.0",
     "stemmer": "2.0.0",
     "throttle-debounce": "3.0.1",
     "workbox-window": "6.5.4"

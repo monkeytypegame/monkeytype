@@ -1543,6 +1543,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
+  TestUI.setResultCalculating(true);
   const now = performance.now();
   TestStats.setEnd(now);
 
@@ -1560,7 +1561,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
-  TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
@@ -1588,7 +1588,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.removeAfkData();
   }
 
-  const completedEvent = buildCompletedEvent(difficultyFailed);
+  const ce = buildCompletedEvent(difficultyFailed);
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
@@ -1607,14 +1607,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   let dontSave = false;
 
-  if (countUndefined(completedEvent) > 0) {
-    console.log(completedEvent);
+  if (countUndefined(ce) > 0) {
+    console.log(ce);
     Notifications.add(
       "Failed to build result object: One of the fields is undefined or NaN",
       -1
     );
     dontSave = true;
   }
+
+  const completedEvent = JSON.parse(JSON.stringify(ce));
 
   ///////// completed event ready
 

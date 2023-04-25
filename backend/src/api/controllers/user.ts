@@ -49,7 +49,7 @@ export async function createNewUser(
     throw new MonkeyError(400, "Invalid domain");
   }
 
-  const available = await UserDAL.isNameAvailable(name);
+  const available = await UserDAL.isNameAvailable(name, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }
@@ -194,17 +194,28 @@ export async function resetUser(
   return new MonkeyResponse("User reset");
 }
 
+const DAY_IN_SECONDS = 24 * 60 * 60;
+const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
+
 export async function updateName(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { name } = req.body;
 
-  const oldUser = await UserDAL.getUser(uid, "update name");
-  await UserDAL.updateName(uid, name);
+  const user = await UserDAL.getUser(uid, "update name");
+
+  if (
+    !user?.needsToChangeName &&
+    Date.now() - (user.lastNameChange ?? 0) < THIRTY_DAYS_IN_SECONDS
+  ) {
+    throw new MonkeyError(409, "You can change your name once every 30 days");
+  }
+
+  await UserDAL.updateName(uid, name, user.name);
   Logger.logToDb(
     "user_name_updated",
-    `changed name from ${oldUser.name} to ${name}`,
+    `changed name from ${user.name} to ${name}`,
     uid
   );
 
@@ -245,8 +256,9 @@ export async function checkName(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { name } = req.params;
+  const { uid } = req.ctx.decodedToken;
 
-  const available = await UserDAL.isNameAvailable(name);
+  const available = await UserDAL.isNameAvailable(name, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }

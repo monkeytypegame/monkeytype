@@ -85,26 +85,22 @@ export async function resetUser(uid: string): Promise<void> {
   );
 }
 
-const DAY_IN_SECONDS = 24 * 60 * 60;
-const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
-
-export async function updateName(uid: string, name: string): Promise<void> {
+export async function updateName(
+  uid: string,
+  name: string,
+  previousName: string
+): Promise<void> {
+  if (name === previousName) {
+    throw new MonkeyError(400, "New name is the same as the old name");
+  }
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
   }
-  if (!(await isNameAvailable(name))) {
-    throw new MonkeyError(409, "Username already taken", name);
-  }
-
-  const user = await getUser(uid, "update name");
-
-  const oldName = user.name;
-
   if (
-    !user?.needsToChangeName &&
-    Date.now() - (user.lastNameChange ?? 0) < THIRTY_DAYS_IN_SECONDS
+    name.toLowerCase() !== previousName.toLowerCase() &&
+    !(await isNameAvailable(name, uid))
   ) {
-    throw new MonkeyError(409, "You can change your name once every 30 days");
+    throw new MonkeyError(409, "Username already taken", name);
   }
 
   await getUsersCollection().updateOne(
@@ -112,7 +108,7 @@ export async function updateName(uid: string, name: string): Promise<void> {
     {
       $set: { name, lastNameChange: Date.now() },
       $unset: { needsToChangeName: "" },
-      $push: { nameHistory: oldName },
+      $push: { nameHistory: previousName },
     }
   );
 }
@@ -190,8 +186,14 @@ async function findByName(name: string): Promise<MonkeyTypes.User | undefined> {
   )[0];
 }
 
-export async function isNameAvailable(name: string): Promise<boolean> {
-  return (await findByName(name)) === undefined;
+export async function isNameAvailable(
+  name: string,
+  uid: string
+): Promise<boolean> {
+  const user = await findByName(name);
+  // if the user found by name is the same as the user we are checking for, then the name is available
+  // this means that the user can update the casing of their name without it being taken
+  return user === undefined || user.uid === uid;
 }
 
 export async function getUserByName(

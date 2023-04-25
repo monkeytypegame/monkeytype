@@ -70,7 +70,9 @@ declare namespace MonkeyTypes {
     | "alice"
     | "matrix"
     | "split"
-    | "split_matrix";
+    | "split_matrix"
+    | "steno"
+    | "steno_matrix";
 
   type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
 
