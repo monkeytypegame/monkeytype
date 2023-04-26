@@ -552,21 +552,13 @@ export async function init(): Promise<void> {
     TestWords.words.push(word);
   }
 
-  //handle right-to-left languages
-  TestUI.setLeftToRight(language.leftToRight);
-  TestUI.setLigatures(language.ligatures ?? false);
-  // if (Config.mode == "zen") {
-  //   // Creating an empty active word element for zen mode
-  //   $("#words").append('<div class="word active"></div>');
-  //   $("#words").css("height", "auto");
-  //   $("#wordsWrapper").css("height", "auto");
-  // } else {
-  TestUI.showWords();
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     KeymapEvent.highlight(TestWords.words.getCurrent().at(0) as string);
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
-  // }
+  TestUI.setLeftToRight(language.leftToRight);
+  TestUI.setLigatures(language.ligatures ?? false);
+  TestUI.showWords();
 }
 
 //add word during the test
