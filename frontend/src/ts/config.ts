@@ -1086,7 +1086,10 @@ export function setQuoteLength(
       len = 1;
     }
     len = parseInt(len.toString()) as MonkeyTypes.QuoteLength;
-    if (multipleMode) {
+
+    if (len === -1) {
+      config.quoteLength = [0, 1, 2, 3];
+    } else if (multipleMode && len >= 0) {
       if (!config.quoteLength.includes(len)) {
         config.quoteLength.push(len);
       } else {
