@@ -371,6 +371,12 @@ export async function generateWords(
   const ret = [];
   const limit = getWordsLimit();
 
+  let wordList = language.words;
+  if (Config.mode == "custom") {
+    wordList = CustomText.text;
+  }
+  const wordset = await Wordset.withWords(wordList);
+
   if (Config.mode === "quote") {
     const languageToGet = language.name.startsWith("swiss_german")
       ? "german"
@@ -461,12 +467,6 @@ export async function generateWords(
     Config.mode === "words" ||
     Config.mode === "custom"
   ) {
-    let wordList = language.words;
-    if (Config.mode == "custom") {
-      wordList = CustomText.text;
-    }
-    const wordset = await Wordset.withWords(wordList);
-
     //todo check if this is needed
     let wordCount = 0;
 
