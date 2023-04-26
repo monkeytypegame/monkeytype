@@ -119,6 +119,9 @@ router.post(
 
 router.get(
   "/checkName/:name",
+  authenticateRequest({
+    isPublic: true,
+  }),
   RateLimit.userCheckName,
   validateRequest({
     params: {
@@ -593,7 +596,9 @@ router.post(
 
 router.get(
   "/verificationEmail",
-  authenticateRequest(),
+  authenticateRequest({
+    noCache: true,
+  }),
   RateLimit.userRequestVerificationEmail,
   asyncHandler(UserController.sendVerificationEmail)
 );

@@ -660,6 +660,10 @@ const languageSelector = $(
       text: "german",
     },
     {
+      id: "french",
+      text: "french",
+    },
+    {
       id: "portuguese",
       text: "portuguese",
     },
@@ -670,6 +674,10 @@ const languageSelector = $(
     {
       id: "italian",
       text: "italian",
+    },
+    {
+      id: "russian",
+      text: "russian",
     },
   ],
 });

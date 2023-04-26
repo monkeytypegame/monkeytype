@@ -111,6 +111,7 @@ backend/worker.*
 #scripts
 updateContributors.js
 removeDupes.js
+content-validation.js
 
 ads.txt
 updateContributors.mjs

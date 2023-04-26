@@ -219,6 +219,45 @@
       }
     }
   }
+  &.steno,
+  &.steno_matrix {
+    .r2,
+    .r3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    }
+    .r4 {
+      display: grid;
+      grid-template-columns: 3.25fr 1fr 1fr 1fr 1fr 1fr 3.25fr;
+    }
+    &.steno {
+      .r2,
+      .r3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      }
+      .r4 {
+        display: grid;
+        grid-template-columns: 2.6fr 1fr 1fr 0.1fr 1fr 1fr 3.65fr;
+        .keymapSplitSpacer {
+          display: block;
+        }
+      }
+      .r2 .keymapKey:nth-child(1),
+      .r2 .keymapKey:nth-child(5) {
+        height: 4.25rem;
+      }
+      .r3 .keymapKey:nth-child(1),
+      .r3 .keymapKey:nth-child(5) {
+        visibility: hidden;
+      }
+    }
+    &.steno_matrix {
+      .keymapSplitSpacer {
+        display: block;
+      }
+    }
+  }
   &.alice {
     .keymapSplitSpacer {
       display: block;

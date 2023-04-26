@@ -18,6 +18,7 @@ import * as Focus from "../test/focus";
 import * as ShiftTracker from "../test/shift-tracker";
 import * as Replay from "../test/replay";
 import * as MonkeyPower from "../elements/monkey-power";
+import * as Notifications from "../elements/notifications";
 import * as WeakSpot from "../test/weak-spot";
 import * as ActivePage from "../states/active-page";
 import * as TestState from "../test/test-state";
@@ -237,7 +238,6 @@ function handleSpace(): void {
     Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
-    TestInput.updateLastKeypress();
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
       TestLogic.fail("difficulty");
       return;
@@ -248,6 +248,7 @@ function handleSpace(): void {
     }
     Replay.addReplayEvent("submitErrorWord");
   }
+  TestInput.updateLastKeypress();
 
   let wordLength: number;
   if (Config.mode === "zen") {
@@ -339,20 +340,20 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  if (Config.language.startsWith("russian")) {
-    if ((char === "е" || char === "e") && originalChar === "ё") {
-      return true;
-    }
-    if (char === "ё" && (originalChar === "е" || originalChar === "e")) {
-      return true;
-    }
-  }
-
   const funbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.isCharCorrect
   );
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
+  }
+
+  if (Config.language.startsWith("russian")) {
+    if (
+      (char === "ё" || char === "е" || char === "e") &&
+      (originalChar === "ё" || originalChar === "е" || originalChar === "e")
+    ) {
+      return true;
+    }
   }
 
   if (
@@ -393,6 +394,13 @@ function handleChar(
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
   }
+
+  if (TestInput.spacingDebug) {
+    console.log("handleChar", char, charIndex, realInputValue);
+  }
+
+  const now = performance.now();
+
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
   if (char === "…") {
     for (let i = 0; i < 3; i++) {
@@ -441,7 +449,7 @@ function handleChar(
   }
 
   //start the test
-  if (!TestState.isActive && !TestLogic.startTest()) {
+  if (!TestState.isActive && !TestLogic.startTest(now)) {
     return;
   }
 
@@ -463,7 +471,7 @@ function handleChar(
   }
 
   if (TestInput.input.current === "") {
-    TestInput.setBurstStart(performance.now());
+    TestInput.setBurstStart(now);
   }
 
   if (!isCharKorean && !Config.language.startsWith("korean")) {
@@ -753,6 +761,8 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   }
 }
 
+let lastBailoutAttempt = -1;
+
 $(document).keydown(async (event) => {
   if (ActivePage.get() == "loading") return;
 
@@ -823,20 +833,6 @@ $(document).keydown(async (event) => {
     return;
   }
 
-  if (TestInput.spacingDebug) {
-    console.log(
-      "spacing debug",
-      "keypress",
-      event.key,
-      "length",
-      TestInput.keypressTimings.spacing.array.length
-    );
-  }
-  TestInput.recordKeypressSpacing();
-  TestInput.setKeypressDuration(performance.now());
-  setTimeout(() => {
-    TestInput.recordKeydownTime(event.code);
-  }, 0);
   TestInput.setKeypressNotAfk();
 
   //blocking firefox from going back in history with backspace
@@ -880,8 +876,23 @@ $(document).keydown(async (event) => {
           CustomTextState.isCustomTextLong() ?? false
         )
       ) {
-        TestInput.setBailout(true);
-        TestLogic.finish();
+        const delay = Date.now() - lastBailoutAttempt;
+        if (lastBailoutAttempt === -1 || delay > 200) {
+          lastBailoutAttempt = Date.now();
+          if (delay >= 5000) {
+            Notifications.add(
+              "Please double tap shift+enter to confirm bail out",
+              0,
+              {
+                important: true,
+                duration: 5,
+              }
+            );
+          }
+        } else {
+          TestInput.setBailout(true);
+          TestLogic.finish();
+        }
       }
     } else {
       handleChar("\n", TestInput.input.current.length);
@@ -909,8 +920,27 @@ $(document).keydown(async (event) => {
   }
 
   if (Config.oppositeShiftMode !== "off") {
-    correctShiftUsed =
-      (await ShiftTracker.isUsingOppositeShift(event)) !== false;
+    if (
+      Config.oppositeShiftMode === "keymap" &&
+      Config.keymapLayout !== "overrideSync"
+    ) {
+      const keymapLayout = await Misc.getLayout(Config.keymapLayout).catch(
+        () => undefined
+      );
+      if (keymapLayout === undefined) {
+        Notifications.add("Failed to load keymap layout", -1);
+
+        return;
+      }
+      const keycode = ShiftTracker.layoutKeyToKeycode(event.key, keymapLayout);
+
+      correctShiftUsed =
+        keycode === undefined
+          ? true
+          : ShiftTracker.isUsingOppositeShift(keycode);
+    } else {
+      correctShiftUsed = ShiftTracker.isUsingOppositeShift(event.code);
+    }
   }
 
   const funbox = FunboxList.get(Config.funbox).find(
@@ -950,6 +980,52 @@ $(document).keydown(async (event) => {
   isBackspace = event.key === "Backspace" || event.key === "delete";
 });
 
+$("#wordsInput").keydown((event) => {
+  if (event.originalEvent?.repeat) return;
+
+  if (TestInput.spacingDebug) {
+    console.log("spacing debug keydown", event.key, event.code, event.which);
+  }
+
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    event.code = "Space";
+  }
+
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    event.code = "NoCode";
+  }
+
+  const now = performance.now();
+  setTimeout(() => {
+    const eventCode =
+      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+    TestInput.recordKeydownTime(now, eventCode);
+  }, 0);
+});
+
+$("#wordsInput").keyup((event) => {
+  if (event.originalEvent?.repeat) return;
+
+  if (TestInput.spacingDebug) {
+    console.log("spacing debug keyup", event.key, event.code, event.which);
+  }
+
+  if (event.code === "NumpadEnter" && Config.funbox.includes("58008")) {
+    event.code = "Space";
+  }
+
+  if (event.code.includes("Arrow") && Config.funbox.includes("arrows")) {
+    event.code = "NoCode";
+  }
+
+  const now = performance.now();
+  setTimeout(() => {
+    const eventCode =
+      event.code === "" || event.which === 231 ? "NoCode" : event.code;
+    TestInput.recordKeyupTime(now, eventCode);
+  }, 0);
+});
+
 $("#wordsInput").keyup((event) => {
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     event.preventDefault();
@@ -959,15 +1035,6 @@ $("#wordsInput").keyup((event) => {
   if (IgnoredKeys.includes(event.key)) return;
 
   if (TestUI.resultVisible) return;
-  const now: number = performance.now();
-  if (TestInput.keypressTimings.duration.current !== -1) {
-    const diff: number = Math.abs(
-      TestInput.keypressTimings.duration.current - now
-    );
-    TestInput.pushKeypressDuration(diff);
-  }
-  TestInput.recordKeyupTime(event.code);
-  TestInput.setKeypressDuration(now);
   Monkey.stop();
 });
 

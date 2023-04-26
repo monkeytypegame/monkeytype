@@ -308,7 +308,7 @@ async function applyEnglishPunctuationToWord(word: string): Promise<string> {
   return EnglishPunctuation.replace(word);
 }
 
-export function startTest(): boolean {
+export function startTest(now: number): boolean {
   if (PageTransition.get()) {
     return false;
   }
@@ -349,7 +349,7 @@ export function startTest(): boolean {
     }
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  TestStats.setStart(performance.now());
+  TestStats.setStart(now);
   TestTimer.start();
   return true;
 }
@@ -810,7 +810,7 @@ async function getNextWord(
     );
     randomWord = transformedWords.join(" ");
 
-    if (Config.punctuation) {
+    if (Config.punctuation && !language.originalPunctuation === true) {
       const punctuateWords = await Promise.all(
         transformedWords.map(async (word) => {
           let previousWord;
@@ -860,7 +860,7 @@ async function getNextWord(
       wordsBound = TestWords.words.length + randomWord.split(" ").length;
     }
 
-    if (Config.punctuation) {
+    if (Config.punctuation && !language.originalPunctuation === true) {
       randomWord = await punctuateWord(
         TestWords.words.get(TestWords.words.length - 1),
         randomWord,
@@ -1501,6 +1501,10 @@ interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
   wpmConsistency: number;
   lang: string;
   challenge?: string | null;
+  keyOverlap: number;
+  lastKeyToEnd: number;
+  startToFirstKey: number;
+  charTotal: number;
 }
 
 type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
@@ -1553,6 +1557,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     wpm: undefined,
     rawWpm: undefined,
     charStats: undefined,
+    charTotal: undefined,
     acc: undefined,
     mode: Config.mode,
     mode2: undefined,
@@ -1573,6 +1578,9 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     tags: undefined,
     keySpacing: TestInput.keypressTimings.spacing.array,
     keyDuration: TestInput.keypressTimings.duration.array,
+    keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
+    lastKeyToEnd: undefined,
+    startToFirstKey: undefined,
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
@@ -1586,6 +1594,26 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     testDuration: undefined,
     afkDuration: undefined,
   };
+
+  const stfk = Misc.roundTo2(
+    TestInput.keypressTimings.spacing.first - TestStats.start
+  );
+
+  if (stfk < 0) {
+    completedEvent.startToFirstKey = 0;
+  } else {
+    completedEvent.startToFirstKey = stfk;
+  }
+
+  const lkte = Misc.roundTo2(
+    TestStats.end - TestInput.keypressTimings.spacing.last
+  );
+
+  if (lkte < 0 || Config.mode === "zen") {
+    completedEvent.lastKeyToEnd = 0;
+  } else {
+    completedEvent.lastKeyToEnd = lkte;
+  }
 
   // stats
   const stats = TestStats.calculateStats();
@@ -1601,6 +1629,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     stats.extraChars,
     stats.missedChars,
   ];
+  completedEvent.charTotal = stats.allChars;
   completedEvent.acc = stats.acc;
 
   // if the last second was not rounded, add another data point to the history
@@ -1634,10 +1663,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   const stddev = Misc.stdDev(rawPerSecond);
   const avg = Misc.mean(rawPerSecond);
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
-  let keyConsistencyArray =
-    TestInput.keypressTimings.spacing.array === "toolong"
-      ? []
-      : TestInput.keypressTimings.spacing.array.slice();
+  let keyConsistencyArray = TestInput.keypressTimings.spacing.array.slice();
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
       0,
@@ -1709,31 +1735,30 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   if (completedEvent.mode != "custom") delete completedEvent.customText;
 
-  TestInput.logOldAndNew(
-    completedEvent.wpm,
-    completedEvent.acc,
-    completedEvent.rawWpm,
-    completedEvent.consistency,
-    `${completedEvent.mode} ${completedEvent.mode2}`,
-    completedEvent.testDuration
-  );
-
   return <CompletedEvent>completedEvent;
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
+  TestUI.setResultCalculating(true);
+  const now = performance.now();
+  TestStats.setEnd(now);
+
+  await Misc.sleep(1); //this is needed to make sure the last keypress is registered
   if (TestInput.input.current.length != 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
   }
 
-  TestInput.recordKeypressSpacing(); //this is needed in case there is afk time at the end - to make sure test duration makes sense
+  TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
-  TestUI.setResultCalculating(true);
+  const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
+  if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
+    TestStats.setEnd(TestInput.keypressTimings.spacing.last);
+  }
+
   TestUI.setResultVisible(true);
-  TestStats.setEnd(performance.now());
   TestState.setActive(false);
   Replay.stopReplayRecording();
   Focus.set(false);
@@ -1760,7 +1785,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.removeAfkData();
   }
 
-  const completedEvent = buildCompletedEvent(difficultyFailed);
+  const ce = buildCompletedEvent(difficultyFailed);
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
@@ -1779,14 +1804,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   let dontSave = false;
 
-  if (countUndefined(completedEvent) > 0) {
-    console.log(completedEvent);
+  if (countUndefined(ce) > 0) {
+    console.log(ce);
     Notifications.add(
       "Failed to build result object: One of the fields is undefined or NaN",
       -1
     );
     dontSave = true;
   }
+
+  const completedEvent = JSON.parse(JSON.stringify(ce));
 
   ///////// completed event ready
 
@@ -1964,7 +1991,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.chartData = "toolong";
     completedEvent.keySpacing = "toolong";
     completedEvent.keyDuration = "toolong";
-    TestInput.setKeypressTimingsTooLong();
   }
 
   if (dontSave) {
@@ -2035,6 +2061,10 @@ async function saveResult(
       }
     }
     console.log("Error saving result", completedEvent);
+    if (response.message === "Old key data format") {
+      response.message =
+        "Old key data format. Please refresh the page to download the new update. If the problem persists, please contact support.";
+    }
     return Notifications.add("Failed to save result: " + response.message, -1);
   }
 
