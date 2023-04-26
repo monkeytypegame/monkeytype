@@ -11,6 +11,58 @@ import * as EnglishPunctuation from "./english-punctuation";
 import * as PractiseWords from "./practise-words";
 import * as Misc from "../utils/misc";
 
+function getFunboxWordsFrequency():
+  | MonkeyTypes.FunboxWordsFrequency
+  | undefined {
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWordsFrequencyMode
+  );
+  if (wordFunbox?.functions?.getWordsFrequencyMode) {
+    return wordFunbox.functions.getWordsFrequencyMode();
+  }
+  return undefined;
+}
+
+function getFunboxWord(
+  word: string,
+  wordIndex: number,
+  wordset?: Wordset.Wordset
+): string {
+  const wordFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.getWord
+  );
+  if (wordFunbox?.functions?.getWord) {
+    word = wordFunbox.functions.getWord(wordset, wordIndex);
+  }
+  return word;
+}
+
+function applyFunboxesToWord(word: string): string {
+  for (const f of FunboxList.get(Config.funbox)) {
+    if (f.functions?.alterText) {
+      word = f.functions.alterText(word);
+    }
+  }
+  return word;
+}
+
+async function applyBritishEnglishToWord(word: string): Promise<string> {
+  if (Config.britishEnglish && /english/.test(Config.language)) {
+    word = await BritishEnglish.replace(word);
+  }
+  return word;
+}
+
+function applyLazyModeToWord(
+  word: string,
+  language: MonkeyTypes.LanguageObject
+): string {
+  if (Config.lazyMode === true && !language.noLazyMode) {
+    word = LazyMode.replaceAccents(word, language.accents);
+  }
+  return word;
+}
+
 export function getWordsLimit(): number {
   let limit = 100;
 
@@ -72,10 +124,6 @@ export function getWordsLimit(): number {
   }
 
   return limit;
-}
-
-export async function getWordset(list: string[]): Promise<Wordset.Wordset> {
-  return await Wordset.withWords(list);
 }
 
 export class WordGenError extends Error {
@@ -269,58 +317,6 @@ export async function generateWords(
     }
   }
   return ret;
-}
-
-function getFunboxWordsFrequency():
-  | MonkeyTypes.FunboxWordsFrequency
-  | undefined {
-  const wordFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWordsFrequencyMode
-  );
-  if (wordFunbox?.functions?.getWordsFrequencyMode) {
-    return wordFunbox.functions.getWordsFrequencyMode();
-  }
-  return undefined;
-}
-
-function getFunboxWord(
-  word: string,
-  wordIndex: number,
-  wordset?: Wordset.Wordset
-): string {
-  const wordFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWord
-  );
-  if (wordFunbox?.functions?.getWord) {
-    word = wordFunbox.functions.getWord(wordset, wordIndex);
-  }
-  return word;
-}
-
-function applyFunboxesToWord(word: string): string {
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.alterText) {
-      word = f.functions.alterText(word);
-    }
-  }
-  return word;
-}
-
-async function applyBritishEnglishToWord(word: string): Promise<string> {
-  if (Config.britishEnglish && /english/.test(Config.language)) {
-    word = await BritishEnglish.replace(word);
-  }
-  return word;
-}
-
-function applyLazyModeToWord(
-  word: string,
-  language: MonkeyTypes.LanguageObject
-): string {
-  if (Config.lazyMode === true && !language.noLazyMode) {
-    word = LazyMode.replaceAccents(word, language.accents);
-  }
-  return word;
 }
 
 //generate next word
