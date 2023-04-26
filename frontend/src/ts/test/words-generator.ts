@@ -424,6 +424,7 @@ export async function generateWords(
       rq = randomQuote;
     }
 
+    rq.language = Config.language.replace(/_\d*k$/g, "");
     rq.text = rq.text.replace(/ +/gm, " ");
     rq.text = rq.text.replace(/\\\\t/gm, "\t");
     rq.text = rq.text.replace(/\\\\n/gm, "\n");
@@ -433,7 +434,6 @@ export async function generateWords(
     rq.text = rq.text.replace(/…/g, "...");
     rq.text = rq.text.trim();
     rq.textSplit = rq.text.split(" ");
-    rq.language = Config.language.replace(/_\d*k$/g, "");
 
     TestWords.setRandomQuote(rq);
 
