@@ -1,3 +1,7 @@
+import Config from "../config";
+import * as FunboxList from "./funbox/funbox-list";
+import * as CustomText from "./custom-text";
+
 class Words {
   public list: string[];
   public length: number;
@@ -68,4 +72,67 @@ export function setRandomQuote(rq: MonkeyTypes.Quote): void {
 
 export function setHasTab(tf: boolean): void {
   hasTab = tf;
+}
+
+export function getWordsLimit(): number {
+  let limit = 100;
+
+  const funboxToPush = FunboxList.get(Config.funbox)
+    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+    ?.properties?.find((fp) => fp.startsWith("toPush:"));
+
+  if (Config.showAllLines) {
+    if (Config.mode === "custom") {
+      if (CustomText.isWordRandom) {
+        limit = CustomText.word;
+      } else if (!CustomText.isTimeRandom && !CustomText.isWordRandom) {
+        limit = CustomText.text.length;
+      }
+    }
+    if (Config.mode == "words") {
+      limit = Config.words;
+    }
+  }
+
+  //infinite words
+  if (Config.mode === "words" && Config.words === 0) {
+    limit = 100;
+  }
+  if (
+    Config.mode === "custom" &&
+    CustomText.isWordRandom &&
+    CustomText.word === 0
+  ) {
+    limit = 100;
+  }
+
+  //funboxes
+  if (funboxToPush) {
+    limit = +funboxToPush.split(":")[1];
+  }
+
+  //make sure the limit is not higher than the word count
+  if (Config.mode === "words" && Config.words !== 0 && Config.words < limit) {
+    limit = Config.words;
+  }
+  if (
+    Config.mode === "custom" &&
+    !CustomText.isTimeRandom &&
+    CustomText.isWordRandom &&
+    CustomText.word !== 0 &&
+    CustomText.word < limit
+  ) {
+    limit = CustomText.word;
+  }
+  if (
+    Config.mode === "custom" &&
+    !CustomText.isTimeRandom &&
+    !CustomText.isWordRandom &&
+    CustomText.text.length !== 0 &&
+    CustomText.text.length < limit
+  ) {
+    limit = CustomText.text.length;
+  }
+
+  return limit;
 }

@@ -727,6 +727,7 @@ function applyLazyModeToWord(
   return word;
 }
 
+//generate next word
 async function getNextWord(
   wordset: Misc.Wordset,
   wordIndex: number,
@@ -906,84 +907,9 @@ export async function init(): Promise<void> {
     rememberLazyMode = false;
   }
 
-  let wordsBound = 100;
+  const wordsBound = TestWords.getWordsLimit();
 
-  const funboxToPush = FunboxList.get(Config.funbox)
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
-  if (funboxToPush) {
-    wordsBound = +funboxToPush.split(":")[1];
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-    if (
-      Config.mode === "custom" &&
-      !CustomText.isTimeRandom &&
-      CustomText.isWordRandom &&
-      CustomText.word < wordsBound
-    ) {
-      wordsBound = CustomText.word;
-    }
-    if (
-      Config.mode === "custom" &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isWordRandom &&
-      CustomText.text.length < wordsBound
-    ) {
-      wordsBound = CustomText.text.length;
-    }
-  } else if (Config.showAllLines) {
-    if (Config.mode === "quote") {
-      wordsBound = 100;
-    } else if (Config.mode === "custom") {
-      if (CustomText.isWordRandom) {
-        wordsBound = CustomText.word;
-      } else if (CustomText.isTimeRandom) {
-        wordsBound = 100;
-      } else {
-        wordsBound = CustomText.text.length;
-      }
-    } else if (Config.mode != "time") {
-      wordsBound = Config.words;
-    }
-  } else {
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-    if (
-      Config.mode == "custom" &&
-      CustomText.isWordRandom &&
-      CustomText.word < wordsBound
-    ) {
-      wordsBound = CustomText.word;
-    }
-    if (Config.mode == "custom" && CustomText.isTimeRandom) {
-      wordsBound = 100;
-    }
-    if (
-      Config.mode == "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      CustomText.text.length < wordsBound
-    ) {
-      wordsBound = CustomText.text.length;
-    }
-  }
-
-  if (
-    (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      CustomText.word == 0) ||
-    (Config.mode === "custom" &&
-      CustomText.isTimeRandom &&
-      CustomText.time == 0)
-  ) {
-    wordsBound = 100;
-  }
-
-  if (Config.mode === "words" && Config.words === 0) {
-    wordsBound = 100;
-  }
+  Notifications.add("Words bound: " + wordsBound, 0, { important: true });
 
   if (
     Config.mode == "time" ||
@@ -1154,9 +1080,7 @@ export async function init(): Promise<void> {
 
     if (w === undefined) return;
 
-    wordsBound = Math.min(wordsBound, w.length);
-
-    for (let i = 0; i < wordsBound; i++) {
+    for (let i = 0; i < Math.min(wordsBound, w.length); i++) {
       if (/\t/g.test(w[i])) {
         TestWords.setHasTab(true);
       }
@@ -1209,6 +1133,7 @@ export async function init(): Promise<void> {
   // }
 }
 
+//add word during the test
 export async function addWord(): Promise<void> {
   let bound = 100;
   const funboxToPush = FunboxList.get(Config.funbox)
