@@ -365,9 +365,12 @@ export class WordGenError extends Error {
   }
 }
 
+let currentQuote: string[] = [];
+
 export async function generateWords(
   language: MonkeyTypes.LanguageObject
 ): Promise<string[]> {
+  currentQuote = [];
   const ret = [];
   const limit = getWordsLimit();
 
@@ -439,26 +442,15 @@ export async function generateWords(
 
     TestWords.setRandomQuote(rq);
 
-    const w = TestWords.randomQuote.textSplit;
-
-    if (w === undefined) {
+    if (TestWords.randomQuote.textSplit === undefined) {
       throw new WordGenError("Random quote textSplit is undefined");
     }
 
-    for (let i = 0; i < Math.min(limit, w.length); i++) {
-      if (/\t/g.test(w[i])) {
-        TestWords.setHasTab(true);
-      }
+    currentQuote = TestWords.randomQuote.textSplit;
 
-      w[i] = applyLazyModeToWord(w[i], language);
-      w[i] = applyFunboxesToWord(w[i]);
-      w[i] = await applyBritishEnglishToWord(w[i]);
-
-      if (Config.language === "swiss_german") {
-        w[i] = w[i].replace(/ß/g, "ss");
-      }
-
-      ret.push(w[i]);
+    for (let i = 0; i < Math.min(limit, currentQuote.length); i++) {
+      const randomWord = await getNextWord(wordset, i, language, limit);
+      ret.push(randomWord);
     }
   }
 
@@ -561,8 +553,7 @@ export async function getNextWord(
   const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
   const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
   if (Config.mode === "quote") {
-    randomWord =
-      TestWords.randomQuote.textSplit?.[TestWords.words.length] ?? "";
+    randomWord = currentQuote[wordIndex];
   } else if (
     Config.mode == "custom" &&
     !CustomText.isWordRandom &&
