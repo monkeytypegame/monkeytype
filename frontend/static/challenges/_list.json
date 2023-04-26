@@ -277,6 +277,9 @@
       },
       "acc": {
         "min": 100
+      },
+      "funbox": {
+        "exact": "nospace"
       }
     }
   }
