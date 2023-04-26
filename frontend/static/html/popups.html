@@ -413,7 +413,7 @@
 
 <div id="settingsImportWrapper" class="popupWrapper hidden">
   <div id="settingsImport" action="">
-    <input type="text" placeholder="import settings" />
+    <input type="text" title="import settings" />
     <div class="button">import settings</div>
   </div>
 </div>
@@ -452,7 +452,7 @@
           <div class="button">Got it</div>
         </div>
       </div>
-      <textarea class="textarea" placeholder="Custom text"></textarea>
+      <textarea class="textarea"></textarea>
     </div>
     <div class="inputs">
       <label class="checkbox randomWordsCheckbox">
@@ -579,13 +579,13 @@
           class="wordLength wordMinInput"
           autocomplete="off"
           type="number"
-          placeholder="min"
+          title="min"
         />
         <input
           class="wordLength wordMaxInput"
           autocomplete="off"
           type="number"
-          placeholder="max"
+          title="max"
         />
       </div>
       <div class="group">
@@ -594,7 +594,7 @@
           class="wordIncludeInput"
           id="wordIncludeInput"
           autocomplete="off"
-          placeholder="include"
+          title="include"
         />
       </div>
       <div class="group">
@@ -603,7 +603,7 @@
           class="wordExcludeInput"
           id="wordExcludeInput"
           autocomplete="off"
-          placeholder="exclude"
+          title="exclude"
         />
       </div>
       <!-- </div> -->
@@ -668,7 +668,7 @@
   <div id="customTestDurationPopup">
     <div class="title">Test duration</div>
     <div class="preview"></div>
-    <input value="1" placeholder="test duration" />
+    <input value="1" title="test duration" />
     <div class="tip">
       You can start an infinite test by inputting 0. Then, to stop the test, use
       the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
@@ -841,7 +841,7 @@
 <div id="tagsWrapper" class="popupWrapper hidden">
   <div id="tagsEdit" action="" tagid="">
     <div class="title"></div>
-    <input type="text" placeholder="tag" />
+    <input type="text" title="tag" />
     <div class="button"><i class="fas fa-plus"></i></div>
   </div>
 </div>
@@ -854,7 +854,7 @@
 <div id="presetWrapper" class="popupWrapper hidden">
   <div id="presetEdit" action="" presetid="">
     <div class="title"></div>
-    <input type="text" class="text" placeholder="presets" />
+    <input type="text" class="text" title="presets" />
     <label class="checkbox">
       <input type="checkbox" />
       <div class="customTextCheckbox">
@@ -1164,21 +1164,11 @@
     </div>
     <div>
       <label>bio</label>
-      <textarea
-        class="bio"
-        type="text"
-        autocomplete="off"
-        placeholder="info about you"
-      ></textarea>
+      <textarea class="bio" type="text" autocomplete="off"></textarea>
     </div>
     <div>
       <label>keyboard</label>
-      <textarea
-        class="keyboard"
-        type="text"
-        autocomplete="off"
-        placeholder="keyboard info"
-      ></textarea>
+      <textarea class="keyboard" type="text" autocomplete="off"></textarea>
     </div>
     <div>
       <label>github</label>
@@ -1196,12 +1186,7 @@
     </div>
     <div>
       <label>website</label>
-      <input
-        class="website"
-        type="text"
-        value=""
-        placeholder="www.monkeytypegameexample.com"
-      />
+      <input class="website" type="text" value="" />
     </div>
     <div>
       <label>badge</label>
