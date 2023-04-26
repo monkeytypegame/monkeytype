@@ -116,6 +116,7 @@ label.checkbox {
     width: 0;
     height: 0;
     display: none;
+    -webkit-user-select: none;
     user-select: none;
 
     & ~ .customTextCheckbox {
@@ -125,6 +126,7 @@ label.checkbox {
       border-radius: calc(var(--roundness) / 2);
       display: inline-grid;
       margin: 0 0.5rem 0 0;
+      -webkit-user-select: none;
       user-select: none;
       cursor: pointer;
       & .check {
@@ -273,11 +275,11 @@ key {
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
   text-align: center;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   align-content: center;
-  height: min-content;
   height: -moz-min-content;
+  height: min-content;
   line-height: 1.25em;
   appearance: none;
   border: none;
@@ -332,18 +334,18 @@ key {
   padding: 0.5em;
   border-radius: var(--roundness);
   text-align: center;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   align-content: center;
-  height: min-content;
   height: -moz-min-content;
+  height: min-content;
   line-height: 1.25em;
   appearance: none;
   border: none;
   font-family: inherit;
   font-size: 1em;
-  width: max-content;
   width: -moz-max-content;
+  width: max-content;
   display: grid;
   grid-auto-flow: column;
   gap: 0.25em;
@@ -474,6 +476,7 @@ key {
   color: var(--text-color);
   border-radius: calc(var(--roundness) / 2);
   // padding: 0.15em 0.5em;
+  -webkit-user-select: none;
   user-select: none;
   display: grid;
   grid-template-columns: max-content auto;
