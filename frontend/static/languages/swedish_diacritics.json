@@ -1,6 +1,6 @@
 {
   "name": "swedish_diacritics",
-  "leftToRight": true,
+
   "bcp47": "sv-SE",
   "words": [
     "blåbär",

@@ -1,6 +1,6 @@
 {
   "name": "kurdish_central_45k",
-  "leftToRight": false,
+  "rightToLeft": true,
   "ligatures": true,
   "bcp47": "ckb",
   "words": [

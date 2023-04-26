@@ -1,6 +1,6 @@
 {
   "name": "wordle_1k",
-  "leftToRight": true,
+
   "noLazyMode": true,
   "words": [
     "cigar",

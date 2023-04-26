@@ -508,7 +508,7 @@ function validateLanguages() {
       type: "object",
       properties: {
         name: { type: "string" },
-        leftToRight: { type: "boolean" },
+        rightToLeft: { type: "boolean" },
         noLazyMode: { type: "boolean" },
         bcp47: { type: "string" },
         words: {
@@ -525,7 +525,7 @@ function validateLanguages() {
           },
         },
       },
-      required: ["name", "leftToRight", "words"],
+      required: ["name", "words"],
     };
     let languageFilesAllGood = true;
     let languageWordListsAllGood = true;

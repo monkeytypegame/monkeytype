@@ -1,6 +1,6 @@
 {
   "name": "pinyin",
-  "leftToRight": true,
+
   "accents": [
     ["āáǎà", "a"],
     ["ōóǒò", "o"],

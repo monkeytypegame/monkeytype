@@ -1,6 +1,6 @@
 {
   "name": "code_c++",
-  "leftToRight": true,
+
   "noLazyMode": true,
   "words": [
     "alignas",

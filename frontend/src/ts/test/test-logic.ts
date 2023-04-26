@@ -514,7 +514,7 @@ export async function init(): Promise<void> {
     }
   }
 
-  if (Config.tapeMode !== "off" && !language.leftToRight) {
+  if (Config.tapeMode !== "off" && !language.rightToLeft) {
     Notifications.add("This language does not support tape mode.", 0, {
       important: true,
     });
@@ -566,7 +566,7 @@ export async function init(): Promise<void> {
     KeymapEvent.highlight(TestWords.words.getCurrent().at(0) as string);
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
-  TestUI.setLeftToRight(language.leftToRight);
+  TestUI.setRightToLeft(language.rightToLeft);
   TestUI.setLigatures(language.ligatures ?? false);
   TestUI.showWords();
 }
