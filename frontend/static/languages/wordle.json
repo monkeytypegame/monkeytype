@@ -1,6 +1,5 @@
 {
   "name": "wordle",
-
   "_comment": "https://github.com/yyx990803/vue-wordle/blob/main/src/words.ts",
   "words": [
     "notch",

@@ -1,6 +1,5 @@
 {
   "name": "telugu_1k",
-
   "noLazyMode": true,
   "bcp47": "te-IN",
   "ligatures": true,

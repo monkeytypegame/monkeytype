@@ -1,6 +1,5 @@
 {
   "name": "sanskrit",
-
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "sa",

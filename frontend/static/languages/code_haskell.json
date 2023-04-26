@@ -1,6 +1,5 @@
 {
   "name": "code_haskell",
-
   "noLazyMode": true,
   "words": [
     "!",

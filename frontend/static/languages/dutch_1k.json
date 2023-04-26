@@ -1,6 +1,5 @@
 {
   "name": "dutch_1k",
-
   "noLazyMode": true,
   "bcp47": "nl-NL",
   "words": [

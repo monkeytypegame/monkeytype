@@ -1,6 +1,5 @@
 {
   "name": "code_brainfck",
-
   "noLazyMode": true,
   "words": [
     ">",

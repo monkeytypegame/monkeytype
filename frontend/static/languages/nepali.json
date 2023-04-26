@@ -1,6 +1,5 @@
 {
   "name": "nepali",
-
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "ne-NP",
