@@ -842,18 +842,6 @@ export function setRightToLeft(isEnabled: boolean): void {
   }
 }
 
-export function setLigatures(isEnabled: boolean): void {
-  if (isEnabled) {
-    $("#words").addClass("withLigatures");
-    $("#resultWordsHistory .words").addClass("withLigatures");
-    $("#resultReplay .words").addClass("withLigatures");
-  } else {
-    $("#words").removeClass("withLigatures");
-    $("#resultWordsHistory .words").removeClass("withLigatures");
-    $("#resultReplay .words").removeClass("withLigatures");
-  }
-}
-
 async function loadWordsHistory(): Promise<boolean> {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
