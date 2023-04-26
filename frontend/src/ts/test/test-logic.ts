@@ -455,9 +455,6 @@ export async function init(): Promise<void> {
     await Funbox.activate();
   }
 
-  if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
-    UpdateConfig.setQuoteLength(-1);
-  }
   let language;
   try {
     language = await Misc.getLanguage(Config.language);
@@ -485,6 +482,9 @@ export async function init(): Promise<void> {
   }
 
   if (Config.mode === "quote") {
+    if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
+      UpdateConfig.setQuoteLength(-1);
+    }
     let group;
     try {
       group = await Misc.findCurrentGroup(Config.language);
