@@ -456,7 +456,7 @@ export async function generateWords(
         w[i] = w[i].replace(/ß/g, "ss");
       }
 
-      TestWords.words.push(w[i]);
+      ret.push(w[i]);
     }
   }
 
@@ -523,7 +523,7 @@ export async function generateWords(
         const randomList = te.split(" ");
         let id = 0;
         while (id < randomList.length) {
-          TestWords.words.push(randomList[id]);
+          ret.push(randomList[id]);
           id++;
 
           if (
@@ -544,7 +544,7 @@ export async function generateWords(
           i = TestWords.words.length - 1;
         }
       } else {
-        TestWords.words.push(randomWord);
+        ret.push(randomWord);
       }
     }
   }
