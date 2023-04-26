@@ -1027,7 +1027,9 @@ function fillContent(): void {
     delete ChartController.accountHistory.options.animation;
   }
 
-  ChartController.updateAccountChartButtons();
+  if (chartData.length) {
+    ChartController.updateAccountChartButtons();
+  }
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
