@@ -448,11 +448,6 @@ export async function init(): Promise<void> {
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestUI.setCurrentWordElementIndex(0);
-  // accuracy = {
-  //   correct: 0,
-  //   incorrect: 0,
-  // };
-
   TestInput.input.resetHistory();
   TestInput.input.resetCurrent();
 
