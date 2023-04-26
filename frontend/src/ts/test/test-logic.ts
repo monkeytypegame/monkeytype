@@ -885,7 +885,7 @@ export async function init(): Promise<void> {
     }
   }
 
-  if (Config.tapeMode !== "off" && !language.leftToRight) {
+  if (Config.tapeMode !== "off" && !language.rightToLeft) {
     Notifications.add("This language does not support tape mode.", 0, {
       important: true,
     });
@@ -1173,11 +1173,7 @@ export async function init(): Promise<void> {
     }
   }
   //handle right-to-left languages
-  if (language.leftToRight) {
-    TestUI.arrangeCharactersLeftToRight();
-  } else {
-    TestUI.arrangeCharactersRightToLeft();
-  }
+  TestUI.setRightToLeft(language.rightToLeft);
   if (language.ligatures) {
     $("#words").addClass("withLigatures");
     $("#resultWordsHistory .words").addClass("withLigatures");

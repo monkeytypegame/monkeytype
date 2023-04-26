@@ -1,6 +1,5 @@
 {
   "name": "code_vim",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     ":e",

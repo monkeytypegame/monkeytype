@@ -1,6 +1,5 @@
 {
   "name": "korean_1k",
-  "leftToRight": true,
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "ko-KR",

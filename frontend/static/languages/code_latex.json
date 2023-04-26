@@ -1,6 +1,5 @@
 {
   "name": "code_latex",
-  "leftToRight": true,
   "noLazyMode": true,
   "ligatures": false,
   "words": [

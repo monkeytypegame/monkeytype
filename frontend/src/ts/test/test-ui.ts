@@ -830,16 +830,16 @@ export function lineJump(currentTop: number): void {
   updateWordsHeight();
 }
 
-export function arrangeCharactersRightToLeft(): void {
-  $("#words").addClass("rightToLeftTest");
-  $("#resultWordsHistory .words").addClass("rightToLeftTest");
-  $("#resultReplay .words").addClass("rightToLeftTest");
-}
-
-export function arrangeCharactersLeftToRight(): void {
-  $("#words").removeClass("rightToLeftTest");
-  $("#resultWordsHistory .words").removeClass("rightToLeftTest");
-  $("#resultReplay .words").removeClass("rightToLeftTest");
+export function setRightToLeft(isEnabled: boolean): void {
+  if (isEnabled) {
+    $("#words").addClass("rightToLeftTest");
+    $("#resultWordsHistory .words").addClass("rightToLeftTest");
+    $("#resultReplay .words").addClass("rightToLeftTest");
+  } else {
+    $("#words").removeClass("rightToLeftTest");
+    $("#resultWordsHistory .words").removeClass("rightToLeftTest");
+    $("#resultReplay .words").removeClass("rightToLeftTest");
+  }
 }
 
 async function loadWordsHistory(): Promise<boolean> {
