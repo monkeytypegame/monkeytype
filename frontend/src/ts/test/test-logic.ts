@@ -36,6 +36,7 @@ import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
+import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
 import * as ModesNotice from "../elements/modes-notice";
 import * as PageTransition from "../states/page-transition";
@@ -526,9 +527,9 @@ export async function init(): Promise<void> {
 
   let generatedWords: string[];
   try {
-    generatedWords = await TestWords.generateWords(language);
+    generatedWords = await WordsGenerator.generateWords(language);
   } catch (e) {
-    if (e instanceof TestWords.WordGenError) {
+    if (e instanceof WordsGenerator.WordGenError) {
       Notifications.add(e.message, 0, {
         important: true,
       });
@@ -658,7 +659,7 @@ export async function addWord(): Promise<void> {
         };
   const wordset = await Wordset.withWords(language.words);
 
-  const randomWord = await TestWords.getNextWord(
+  const randomWord = await WordsGenerator.getNextWord(
     wordset,
     TestWords.words.length,
     language,
