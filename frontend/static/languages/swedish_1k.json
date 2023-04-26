@@ -1,6 +1,6 @@
 {
   "name": "swedish_1k",
-  "leftToRight": true,
+
   "bcp47": "sv-SE",
   "words": [
     "jag",

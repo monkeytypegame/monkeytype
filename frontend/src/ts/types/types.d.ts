@@ -20,7 +20,7 @@ declare namespace MonkeyTypes {
 
   interface LanguageObject {
     name: string;
-    leftToRight: boolean;
+    rightToLeft: boolean;
     noLazyMode?: boolean;
     ligatures?: boolean;
     orderedByFrequency?: boolean;

@@ -1,6 +1,6 @@
 {
   "name": "pig_latin",
-  "leftToRight": true,
+
   "noLazyMode": true,
   "words": [
     "ethay",

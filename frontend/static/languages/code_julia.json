@@ -1,6 +1,6 @@
 {
   "name": "code_julia",
-  "leftToRight": true,
+
   "noLazyMode": true,
   "words": [
     "return",

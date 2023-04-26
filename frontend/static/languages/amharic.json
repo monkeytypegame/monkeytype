@@ -1,6 +1,6 @@
 {
   "name": "amharic",
-  "leftToRight": true,
+
   "ligatures": false,
   "bcp47": "am-ET",
   "words": [

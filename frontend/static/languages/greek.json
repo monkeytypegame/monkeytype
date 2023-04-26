@@ -1,6 +1,6 @@
 {
   "name": "greek",
-  "leftToRight": true,
+
   "bcp47": "el-GR",
   "words": [
     "άρθρο",
