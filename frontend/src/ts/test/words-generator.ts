@@ -508,13 +508,7 @@ export async function generateWords(
 
     for (let i = 0; i < limit; i++) {
       const randomWord = await getNextWord(wordset, i, language, limit);
-
-      if (/\t/g.test(randomWord)) {
-        TestWords.setHasTab(true);
-      }
-
       const te = randomWord.replace(/\n/g, "\n ").replace(/ $/g, "");
-
       if (/ +/.test(te)) {
         const randomList = te.split(" ");
         let id = 0;
@@ -544,6 +538,13 @@ export async function generateWords(
       }
     }
   }
+
+  for (const word of ret) {
+    if (/\t/g.test(word)) {
+      TestWords.setHasTab(true);
+    }
+  }
+
   return ret;
 }
 
