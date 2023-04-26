@@ -62,12 +62,12 @@ export async function updatePosition(): Promise<void> {
   ] as HTMLElement;
 
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
-  const isLanguageLeftToRight = currentLanguage.leftToRight;
+  const isLanguageRightToLeft = currentLanguage.rightToLeft;
   const letterPosLeft =
     (currentLetter
       ? currentLetter.offsetLeft
       : previousLetter.offsetLeft + previousLetter.offsetWidth) +
-    (isLanguageLeftToRight
+    (!isLanguageRightToLeft
       ? 0
       : currentLetter
       ? currentLetter.offsetWidth

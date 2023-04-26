@@ -1,6 +1,5 @@
 {
   "name": "oromo",
-  "leftToRight": true,
   "ligatures": false,
   "bcp47": "om",
   "words": [
