@@ -18,6 +18,7 @@ import {
   areFunboxesCompatible,
   checkFunboxForcedConfigs,
 } from "./funbox-validation";
+import { Wordset } from "../wordset";
 
 const prefixSize = 2;
 
@@ -52,7 +53,7 @@ class CharDistribution {
   }
 }
 
-class PseudolangWordGenerator extends Misc.Wordset {
+class PseudolangWordGenerator extends Wordset {
   public ngrams: { [prefix: string]: CharDistribution } = {};
   constructor(words: string[]) {
     super(words);
@@ -479,16 +480,16 @@ FunboxList.setFunboxFunctions("wikipedia", {
 });
 
 FunboxList.setFunboxFunctions("weakspot", {
-  getWord(wordset?: Misc.Wordset): string {
+  getWord(wordset?: Wordset): string {
     if (wordset !== undefined) return WeakSpot.getWord(wordset);
     else return "";
   },
 });
 
 FunboxList.setFunboxFunctions("pseudolang", {
-  async withWords(words?: string[]): Promise<Misc.Wordset> {
+  async withWords(words?: string[]): Promise<Wordset> {
     if (words !== undefined) return new PseudolangWordGenerator(words);
-    return new Misc.Wordset([]);
+    return new Wordset([]);
   },
 });
 

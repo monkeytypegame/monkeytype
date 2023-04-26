@@ -1,6 +1,7 @@
 import Config from "../config";
 import * as FunboxList from "./funbox/funbox-list";
 import * as CustomText from "./custom-text";
+import * as Wordset from "./wordset";
 
 class Words {
   public list: string[];
@@ -135,4 +136,8 @@ export function getWordsLimit(): number {
   }
 
   return limit;
+}
+
+export async function getWordset(list: string[]): Promise<Wordset.Wordset> {
+  return await Wordset.withWords(list);
 }

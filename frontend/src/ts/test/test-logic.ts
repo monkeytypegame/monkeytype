@@ -29,7 +29,6 @@ import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
-import * as Wordset from "./wordset";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as BritishEnglish from "./british-english";
@@ -57,6 +56,7 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+import * as Wordset from "./wordset";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -690,7 +690,7 @@ function getFunboxWordsFrequency():
 function getFunboxWord(
   word: string,
   wordIndex: number,
-  wordset?: Misc.Wordset
+  wordset?: Wordset.Wordset
 ): string {
   const wordFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.getWord
@@ -729,7 +729,7 @@ function applyLazyModeToWord(
 
 //generate next word
 async function getNextWord(
-  wordset: Misc.Wordset,
+  wordset: Wordset.Wordset,
   wordIndex: number,
   language: MonkeyTypes.LanguageObject,
   wordsBound: number
