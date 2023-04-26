@@ -242,6 +242,7 @@ export function restart(options = {} as RestartOptions): void {
   $("#words").stop(true, true);
   $("#words .smoothScroller").stop(true, true).remove();
 
+  testReinitCount = 0;
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
@@ -442,7 +443,21 @@ export function restart(options = {} as RestartOptions): void {
 }
 
 let rememberLazyMode: boolean;
+let testReinitCount = 0;
 export async function init(): Promise<void> {
+  testReinitCount++;
+  if (testReinitCount > 5) {
+    TestUI.setTestRestarting(false);
+    Notifications.add(
+      "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
+      -1,
+      {
+        important: true,
+      }
+    );
+    return;
+  }
+
   TestState.setActive(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
@@ -524,6 +539,7 @@ export async function init(): Promise<void> {
   try {
     generatedWords = await WordsGenerator.generateWords(language);
   } catch (e) {
+    console.error(e);
     if (e instanceof WordsGenerator.WordGenError) {
       Notifications.add(e.message, 0, {
         important: true,
@@ -538,8 +554,7 @@ export async function init(): Promise<void> {
       );
     }
 
-    TestUI.setTestRestarting(false);
-    restart();
+    init();
     return;
   }
 
