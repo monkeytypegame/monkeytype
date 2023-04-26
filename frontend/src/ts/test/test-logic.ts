@@ -553,20 +553,8 @@ export async function init(): Promise<void> {
   }
 
   //handle right-to-left languages
-  if (language.leftToRight) {
-    TestUI.arrangeCharactersLeftToRight();
-  } else {
-    TestUI.arrangeCharactersRightToLeft();
-  }
-  if (language.ligatures) {
-    $("#words").addClass("withLigatures");
-    $("#resultWordsHistory .words").addClass("withLigatures");
-    $("#resultReplay .words").addClass("withLigatures");
-  } else {
-    $("#words").removeClass("withLigatures");
-    $("#resultWordsHistory .words").removeClass("withLigatures");
-    $("#resultReplay .words").removeClass("withLigatures");
-  }
+  TestUI.setLeftToRight(language.leftToRight);
+  TestUI.setLigatures(language.ligatures ?? false);
   // if (Config.mode == "zen") {
   //   // Creating an empty active word element for zen mode
   //   $("#words").append('<div class="word active"></div>');

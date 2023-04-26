@@ -842,6 +842,30 @@ export function arrangeCharactersLeftToRight(): void {
   $("#resultReplay .words").removeClass("rightToLeftTest");
 }
 
+export function setLeftToRight(isEnabled: boolean): void {
+  if (isEnabled) {
+    $("#words").removeClass("rightToLeftTest");
+    $("#resultWordsHistory .words").removeClass("rightToLeftTest");
+    $("#resultReplay .words").removeClass("rightToLeftTest");
+  } else {
+    $("#words").addClass("rightToLeftTest");
+    $("#resultWordsHistory .words").addClass("rightToLeftTest");
+    $("#resultReplay .words").addClass("rightToLeftTest");
+  }
+}
+
+export function setLigatures(isEnabled: boolean): void {
+  if (isEnabled) {
+    $("#words").addClass("withLigatures");
+    $("#resultWordsHistory .words").addClass("withLigatures");
+    $("#resultReplay .words").addClass("withLigatures");
+  } else {
+    $("#words").removeClass("withLigatures");
+    $("#resultWordsHistory .words").removeClass("withLigatures");
+    $("#resultReplay .words").removeClass("withLigatures");
+  }
+}
+
 async function loadWordsHistory(): Promise<boolean> {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
