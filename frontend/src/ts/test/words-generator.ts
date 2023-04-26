@@ -619,6 +619,10 @@ export async function getNextWord(
   randomWord = getFunboxWord(randomWord, wordIndex, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
+  if (Config.language === "swiss_german") {
+    randomWord = randomWord.replace(/ß/g, "ss");
+  }
+
   if (Config.punctuation && !language.originalPunctuation === true) {
     randomWord = await punctuateWord(
       TestWords.words.get(TestWords.words.length - 1),
