@@ -189,7 +189,7 @@ export async function generateWords(
     if (Config.mode == "custom") {
       wordList = CustomText.text;
     }
-    const wordset = await getWordset(wordList);
+    const wordset = await Wordset.withWords(wordList);
 
     //todo check if this is needed
     let wordCount = 0;
