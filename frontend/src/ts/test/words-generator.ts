@@ -477,12 +477,6 @@ export async function generateWords(
         if (section === false) {
           UpdateConfig.toggleFunbox(sectionFunbox.name);
           throw new Error("Failed to pull section");
-          // Notifications.add(
-          //   "Error while getting section. Please try again later",
-          //   -1
-          // );
-          // restart();
-          // return;
         }
 
         if (section === undefined) continue;
