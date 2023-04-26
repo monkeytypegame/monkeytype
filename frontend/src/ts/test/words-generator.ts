@@ -396,24 +396,20 @@ export async function generateWords(
         QuoteSearchPopup.selectedId
       );
       if (targetQuote === undefined) {
-        // rq = <MonkeyTypes.Quote>quotesCollection.groups[0][0];
         UpdateConfig.setQuoteLength(-1);
         throw new WordGenError(
           `Quote ${QuoteSearchPopup.selectedId} does not exist`
         );
-      } else {
-        rq = targetQuote;
       }
+      rq = targetQuote;
     } else if (Config.quoteLength.includes(-3)) {
       const randomQuote = QuotesController.getRandomFavoriteQuote(
         Config.language
       );
-
       if (randomQuote === null) {
         UpdateConfig.setQuoteLength(-1);
         throw new WordGenError("No favorite quotes found");
       }
-
       rq = randomQuote;
     } else {
       const randomQuote = QuotesController.getRandomQuote();
