@@ -399,7 +399,7 @@ export async function generateWords(
       );
     }
 
-    let rq: MonkeyTypes.Quote | undefined = undefined;
+    let rq: MonkeyTypes.Quote;
     if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
       const targetQuote = QuotesController.getQuoteById(
         QuoteSearchPopup.selectedId
