@@ -478,8 +478,15 @@ export async function generateWords(
     currentQuote = TestWords.randomQuote.textSplit;
 
     for (let i = 0; i < Math.min(limit, currentQuote.length); i++) {
-      const randomWord = await getNextWord(wordset, i, language, limit);
-      ret.push(randomWord);
+      const nextWord = await getNextWord(
+        wordset,
+        i,
+        language,
+        limit,
+        ret.at(-1) ?? "",
+        ret.at(-2) ?? ""
+      );
+      ret.push(nextWord);
     }
   }
 
@@ -494,8 +501,15 @@ export async function generateWords(
     }
 
     for (let i = 0; i < limit; i++) {
-      const randomWord = await getNextWord(wordset, i, language, limit);
-      const te = randomWord.replace(/\n/g, "\n ").replace(/ $/g, "");
+      const nextWord = await getNextWord(
+        wordset,
+        i,
+        language,
+        limit,
+        ret.at(-1) ?? "",
+        ret.at(-2) ?? ""
+      );
+      const te = nextWord.replace(/\n/g, "\n ").replace(/ $/g, "");
       if (/ +/.test(te)) {
         const randomList = te.split(" ");
         let id = 0;
@@ -521,7 +535,7 @@ export async function generateWords(
           i = TestWords.words.length - 1;
         }
       } else {
-        ret.push(randomWord);
+        ret.push(nextWord);
       }
     }
   }
@@ -533,13 +547,12 @@ export async function getNextWord(
   wordset: Wordset.Wordset,
   wordIndex: number,
   language: MonkeyTypes.LanguageObject,
-  wordsBound: number
+  wordsBound: number,
+  previousWord: string,
+  previousWord2: string
 ): Promise<string> {
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
-
   let randomWord = wordset.randomWord(funboxFrequency);
-  const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
-  const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
   if (Config.mode === "quote") {
     randomWord = currentQuote[wordIndex];
   } else if (
