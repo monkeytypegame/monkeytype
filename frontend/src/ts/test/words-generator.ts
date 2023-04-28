@@ -459,17 +459,11 @@ export async function generateWords(
     Config.mode === "words" ||
     Config.mode === "custom"
   ) {
-    //todo check if this is needed
-    let wordCount = 0;
-
     const sectionFunbox = FunboxList.get(Config.funbox).find(
       (f) => f.functions?.pullSection
     );
     if (sectionFunbox?.functions?.pullSection) {
-      while (
-        (Config.mode == "words" && Config.words >= wordCount) ||
-        (Config.mode === "time" && wordCount < 100)
-      ) {
+      while (ret.length < limit) {
         const section = await sectionFunbox.functions.pullSection(
           Config.language
         );
@@ -482,14 +476,13 @@ export async function generateWords(
         if (section === undefined) continue;
 
         for (const word of section.words) {
-          if (wordCount >= Config.words && Config.mode == "words") {
-            wordCount++;
+          if (ret.length >= Config.words && Config.mode == "words") {
             break;
           }
-          wordCount++;
           ret.push(word);
         }
       }
+      return ret;
     }
 
     for (let i = 0; i < limit; i++) {
