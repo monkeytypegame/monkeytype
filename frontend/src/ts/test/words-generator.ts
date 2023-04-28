@@ -255,6 +255,35 @@ function getFunboxWordsFrequency():
   return undefined;
 }
 
+async function getFunboxSection(limit: number): Promise<string[]> {
+  const ret = [];
+  const sectionFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.pullSection
+  );
+  if (sectionFunbox?.functions?.pullSection) {
+    while (ret.length < limit) {
+      const section = await sectionFunbox.functions.pullSection(
+        Config.language
+      );
+
+      if (section === false) {
+        UpdateConfig.toggleFunbox(sectionFunbox.name);
+        throw new Error("Failed to pull section");
+      }
+
+      if (section === undefined) continue;
+
+      for (const word of section.words) {
+        if (ret.length >= Config.words && Config.mode == "words") {
+          break;
+        }
+        ret.push(word);
+      }
+    }
+  }
+  return ret;
+}
+
 function getFunboxWord(
   word: string,
   wordIndex: number,
@@ -459,30 +488,9 @@ export async function generateWords(
     Config.mode === "words" ||
     Config.mode === "custom"
   ) {
-    const sectionFunbox = FunboxList.get(Config.funbox).find(
-      (f) => f.functions?.pullSection
-    );
-    if (sectionFunbox?.functions?.pullSection) {
-      while (ret.length < limit) {
-        const section = await sectionFunbox.functions.pullSection(
-          Config.language
-        );
-
-        if (section === false) {
-          UpdateConfig.toggleFunbox(sectionFunbox.name);
-          throw new Error("Failed to pull section");
-        }
-
-        if (section === undefined) continue;
-
-        for (const word of section.words) {
-          if (ret.length >= Config.words && Config.mode == "words") {
-            break;
-          }
-          ret.push(word);
-        }
-      }
-      return ret;
+    const funboxSection = await getFunboxSection(limit);
+    if (funboxSection.length > 0) {
+      return funboxSection;
     }
 
     for (let i = 0; i < limit; i++) {
