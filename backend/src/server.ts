@@ -25,7 +25,7 @@ async function bootServer(port: number): Promise<Server> {
     initFirebaseAdmin();
 
     Logger.info("Fetching live configuration...");
-    const liveConfiguration = await getLiveConfiguration();
+    await getLiveConfiguration();
     Logger.success("Live configuration fetched");
 
     Logger.info("Initializing email client...");
