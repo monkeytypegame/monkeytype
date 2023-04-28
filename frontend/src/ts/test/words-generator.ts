@@ -400,7 +400,7 @@ export async function generateWords(
   language: MonkeyTypes.LanguageObject
 ): Promise<string[]> {
   currentQuote = [];
-  const ret = [];
+  const ret: string[] = [];
   const limit = getWordsLimit();
 
   let wordList = language.words;
