@@ -370,6 +370,7 @@
 
 .sortable:hover {
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   background-color: var(--sub-alt-color);
 }
