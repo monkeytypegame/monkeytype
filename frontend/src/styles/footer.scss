@@ -48,6 +48,7 @@
   }
 
   .leftright {
+    -webkit-user-select: none;
     user-select: none;
     display: grid;
     grid-template-columns: auto auto;
@@ -62,16 +63,16 @@
       text-align: left;
       display: grid;
       grid-auto-flow: column;
+      width: -moz-fit-content;
       width: fit-content;
       gap: 1rem;
-      width: -moz-fit-content;
     }
     .right {
       text-align: right;
       display: grid;
       grid-auto-flow: column;
-      width: fit-content;
       width: -moz-fit-content;
+      width: fit-content;
       justify-self: right;
       gap: 1rem;
       // align-items: center;
@@ -82,8 +83,8 @@
       grid-auto-flow: column;
       gap: 0.25rem;
       align-items: baseline;
-      width: max-content;
       width: -moz-available;
+      width: max-content;
     }
   }
 
