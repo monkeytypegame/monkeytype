@@ -54,8 +54,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
-    updateWordsHeight(true);
-    updateWordsInputPosition(true);
+    setTimeout(() => {
+      updateWordsHeight(true);
+      updateWordsInputPosition(true);
+    }, 0);
   }
 
   if (eventKey === "theme") applyBurstHeatmap();
@@ -272,6 +274,7 @@ export function updateWordsInputPosition(initial = false): void {
 }
 
 function updateWordsHeight(force = false): void {
+  console.log("------updating words height");
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
