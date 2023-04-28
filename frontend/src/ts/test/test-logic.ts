@@ -559,6 +559,12 @@ export async function init(): Promise<void> {
   }
 
   for (const word of generatedWords) {
+    if (/\t/g.test(word)) {
+      TestWords.setHasTab(true);
+    }
+  }
+
+  for (const word of generatedWords) {
     TestWords.words.push(word);
   }
 

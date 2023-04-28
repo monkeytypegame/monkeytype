@@ -524,13 +524,6 @@ export async function generateWords(
       }
     }
   }
-
-  for (const word of ret) {
-    if (/\t/g.test(word)) {
-      TestWords.setHasTab(true);
-    }
-  }
-
   return ret;
 }
 
