@@ -1,0 +1,26 @@
+:root {
+  --bg-color: #1f1f1f;
+  --main-color: #f2c17b;
+  --caret-color: #768f95;
+  --sub-color: #8fb7f6;
+  --sub-alt-color: #1f1f1f;
+  --text-color: #f2c17b;
+  --error-color: #ffffff;
+  --error-extra-color: #d2dff4;
+  --colorful-error-color: #768f95;
+  --colorful-error-extra-color: #d2dff4;
+}
+
+letter.incorrect {
+  background-color: #e27878;
+  text-shadow: none;
+}
+
+.word letter.incorrect:first-of-type {
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+.word letter.incorrect:last-of-type {
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+}

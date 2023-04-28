@@ -7,6 +7,13 @@
     "textColor": "#d2dff4"
   },
   {
+    "name": "test_theme",
+    "bgColor": "#1f1f1f",
+    "mainColor": "#f2c17b",
+    "subColor": "#8fb7f6",
+    "textColor": "#f2c17b"
+  },
+  {
     "name": "viridescent",
     "bgColor": "#2c3333",
     "mainColor": "#95d5b2",
