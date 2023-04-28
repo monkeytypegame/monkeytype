@@ -19,7 +19,6 @@ const dailyLeaderboardsConfig = {
       mode2: "\\d+",
     },
   ],
-  dailyLeaderboardCacheSize: 3,
   topResultsToAnnounce: 3,
   xpRewardBrackets: [],
   scheduleRewardsModeRules: [],
