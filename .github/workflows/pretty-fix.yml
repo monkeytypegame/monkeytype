@@ -21,7 +21,7 @@ jobs:
           echo "PR_TITLE=Prettier Fix - $(date)" >> $GITHUB_ENV
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: "16.13.2"
 
