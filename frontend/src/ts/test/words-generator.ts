@@ -547,7 +547,7 @@ export async function getNextWord(
     !CustomText.isWordRandom &&
     !CustomText.isTimeRandom
   ) {
-    randomWord = CustomText.text[TestWords.words.length];
+    randomWord = CustomText.text[wordIndex];
   } else if (
     Config.mode == "custom" &&
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
