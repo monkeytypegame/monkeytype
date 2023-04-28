@@ -274,7 +274,6 @@ export function updateWordsInputPosition(initial = false): void {
 }
 
 function updateWordsHeight(force = false): void {
-  console.log("------updating words height");
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
