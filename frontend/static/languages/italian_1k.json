@@ -1,6 +1,5 @@
 {
   "name": "italian_1k",
-  "leftToRight": true,
   "bcp47": "it-IT",
   "words": [
     "cosa",

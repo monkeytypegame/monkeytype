@@ -238,7 +238,6 @@ function handleSpace(): void {
     Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
-    TestInput.updateLastKeypress();
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
       TestLogic.fail("difficulty");
       return;
@@ -249,6 +248,7 @@ function handleSpace(): void {
     }
     Replay.addReplayEvent("submitErrorWord");
   }
+  TestInput.updateLastKeypress();
 
   let wordLength: number;
   if (Config.mode === "zen") {
@@ -340,20 +340,20 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  if (Config.language.startsWith("russian")) {
-    if ((char === "е" || char === "e") && originalChar === "ё") {
-      return true;
-    }
-    if (char === "ё" && (originalChar === "е" || originalChar === "e")) {
-      return true;
-    }
-  }
-
   const funbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.isCharCorrect
   );
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
+  }
+
+  if (Config.language.startsWith("russian")) {
+    if (
+      (char === "ё" || char === "е" || char === "e") &&
+      (originalChar === "ё" || originalChar === "е" || originalChar === "e")
+    ) {
+      return true;
+    }
   }
 
   if (
@@ -885,7 +885,7 @@ $(document).keydown(async (event) => {
               0,
               {
                 important: true,
-                duration: 5000,
+                duration: 5,
               }
             );
           }

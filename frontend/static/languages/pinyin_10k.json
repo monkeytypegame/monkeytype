@@ -1,6 +1,5 @@
 {
   "name": "pinyin_10k",
-  "leftToRight": true,
   "accents": [
     ["āáǎà", "a"],
     ["ōóǒò", "o"],

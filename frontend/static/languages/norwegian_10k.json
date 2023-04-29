@@ -1,6 +1,5 @@
 {
   "name": "norwegian_10k",
-  "leftToRight": true,
   "bcp47": "no-NO",
   "words": [
     "i",

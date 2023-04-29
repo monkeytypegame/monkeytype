@@ -1,6 +1,6 @@
 {
   "name": "urdu",
-  "leftToRight": false,
+  "rightToLeft": true,
   "ligatures": true,
   "noLazyMode": true,
   "words": [

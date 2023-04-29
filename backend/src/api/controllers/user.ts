@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
+import FirebaseAdmin from "../../init/firebase-admin";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -37,7 +38,7 @@ export async function createNewUser(
     await verifyCaptcha(captcha);
   } catch (e) {
     try {
-      await admin.auth().deleteUser(uid);
+      await FirebaseAdmin().auth().deleteUser(uid);
     } catch (e) {
       // user might be deleted on the frontend
     }
@@ -48,7 +49,7 @@ export async function createNewUser(
     throw new MonkeyError(400, "Invalid domain");
   }
 
-  const available = await UserDAL.isNameAvailable(name);
+  const available = await UserDAL.isNameAvailable(name, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }
@@ -84,12 +85,14 @@ export async function sendVerificationEmail(
 
   let link = "";
   try {
-    link = await admin.auth().generateEmailVerificationLink(email, {
-      url:
-        process.env.MODE === "dev"
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-    });
+    link = await FirebaseAdmin()
+      .auth()
+      .generateEmailVerificationLink(email, {
+        url:
+          process.env.MODE === "dev"
+            ? "http://localhost:3000"
+            : "https://monkeytype.com",
+      });
   } catch (e) {
     if (
       e.code === "auth/internal-error" &&
@@ -121,7 +124,7 @@ export async function sendForgotPasswordEmail(
 
   let auth;
   try {
-    auth = await admin.auth().getUserByEmail(email);
+    auth = await FirebaseAdmin().auth().getUserByEmail(email);
   } catch (e) {
     if (e.code === "auth/user-not-found") {
       throw new MonkeyError(404, "User not found");
@@ -134,12 +137,14 @@ export async function sendForgotPasswordEmail(
     "request forgot password email"
   );
 
-  const link = await admin.auth().generatePasswordResetLink(email, {
-    url:
-      process.env.MODE === "dev"
-        ? "http://localhost:3000"
-        : "https://monkeytype.com",
-  });
+  const link = await FirebaseAdmin()
+    .auth()
+    .generatePasswordResetLink(email, {
+      url:
+        process.env.MODE === "dev"
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
+    });
   await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
 
   return new MonkeyResponse("Email sent if user was found");
@@ -189,17 +194,28 @@ export async function resetUser(
   return new MonkeyResponse("User reset");
 }
 
+const DAY_IN_SECONDS = 24 * 60 * 60;
+const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
+
 export async function updateName(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { name } = req.body;
 
-  const oldUser = await UserDAL.getUser(uid, "update name");
-  await UserDAL.updateName(uid, name);
+  const user = await UserDAL.getUser(uid, "update name");
+
+  if (
+    !user?.needsToChangeName &&
+    Date.now() - (user.lastNameChange ?? 0) < THIRTY_DAYS_IN_SECONDS
+  ) {
+    throw new MonkeyError(409, "You can change your name once every 30 days");
+  }
+
+  await UserDAL.updateName(uid, name, user.name);
   Logger.logToDb(
     "user_name_updated",
-    `changed name from ${oldUser.name} to ${name}`,
+    `changed name from ${user.name} to ${name}`,
     uid
   );
 
@@ -240,8 +256,9 @@ export async function checkName(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { name } = req.params;
+  const { uid } = req.ctx.decodedToken;
 
-  const available = await UserDAL.isNameAvailable(name);
+  const available = await UserDAL.isNameAvailable(name, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }
@@ -292,7 +309,7 @@ export async function getUser(
     if (e.status === 404) {
       let user;
       try {
-        user = await admin.auth().getUser(uid);
+        user = await FirebaseAdmin().auth().getUser(uid);
         //exists, recreate in db
         await UserDAL.addUser(user.displayName, user.email, uid);
         userInfo = await UserDAL.getUser(uid, "get user (recreated)");

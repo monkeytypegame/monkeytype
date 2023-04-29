@@ -1,7 +1,7 @@
 {
   "name": "portuguese",
   "_comment": "Sourced from: https://www.wordandphrase.info/port",
-  "leftToRight": true,
+
   "bcp47": "pt-PT",
   "words": [
     "o",

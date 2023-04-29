@@ -1,6 +1,5 @@
 {
   "name": "persian_romanized",
-  "leftToRight": true,
   "ligatures": false,
   "noLazyMode": true,
   "bcp47": "fa",

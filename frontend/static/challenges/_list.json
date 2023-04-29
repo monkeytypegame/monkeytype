@@ -269,7 +269,7 @@
     "name": "beepBoop",
     "display": "Beep Boop",
     "type": "script",
-    "parameters": ["beepboop.txt",null,null],
+    "parameters": ["beepboop.txt",null,"nospace"],
     "message": "Mininum 45 WPM and 100% accuracy required.",
     "requirements": {
       "wpm": {
@@ -277,6 +277,9 @@
       },
       "acc": {
         "min": 100
+      },
+      "funbox": {
+        "exact": "nospace"
       }
     }
   }
