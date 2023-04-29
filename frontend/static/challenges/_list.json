@@ -728,5 +728,35 @@
     "display": "Feet warrior",
     "type": "customTime",
     "parameters": [3600]
+  },
+  {
+    "name": "rightHandedWords",
+    "display": "Right Handed Words",
+    "type": "script",
+    "parameters": ["rightHanded.txt",null,null],
+    "message": "Mininum 20 WPM and 80% accuracy required, only using your right hand.",
+    "requirements": {
+      "wpm": {
+        "min": 20
+      },
+      "acc": {
+        "min": 80
+      }
+    }
+  },
+  {
+    "name": "leftHandedWords",
+    "display": "Left Handed Words",
+    "type": "script",
+    "parameters": ["leftHanded.txt",null,null],
+    "message": "Mininum 20 WPM and 80% accuracy required, only using your left hand.",
+    "requirements": {
+      "wpm": {
+        "min": 20
+      },
+      "acc": {
+        "min": 80
+      }
+    }
   }
 ]
