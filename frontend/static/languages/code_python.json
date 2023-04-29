@@ -1,6 +1,5 @@
 {
   "name": "code_python",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "__str__",

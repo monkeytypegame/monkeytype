@@ -885,7 +885,7 @@ export async function init(): Promise<void> {
     }
   }
 
-  if (Config.tapeMode !== "off" && !language.leftToRight) {
+  if (Config.tapeMode !== "off" && !language.rightToLeft) {
     Notifications.add("This language does not support tape mode.", 0, {
       important: true,
     });
@@ -1173,11 +1173,7 @@ export async function init(): Promise<void> {
     }
   }
   //handle right-to-left languages
-  if (language.leftToRight) {
-    TestUI.arrangeCharactersLeftToRight();
-  } else {
-    TestUI.arrangeCharactersRightToLeft();
-  }
+  TestUI.setRightToLeft(language.rightToLeft);
   if (language.ligatures) {
     $("#words").addClass("withLigatures");
     $("#resultWordsHistory .words").addClass("withLigatures");
@@ -1788,10 +1784,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
     completedEvent.keyDuration = "toolong";
   }
 
-  // if (dontSave) {
-  //   AnalyticsController.log("testCompletedInvalid");
-  //   return;
-  // }
+  if (dontSave) {
+    AnalyticsController.log("testCompletedInvalid");
+    return;
+  }
 
   // user is logged in
 
@@ -1808,26 +1804,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (completedEvent.challenge === null) delete completedEvent?.challenge;
 
   completedEvent.hash = objectHash(completedEvent);
-
-  console.log(completedEvent.keyDuration);
-  console.log(completedEvent.keySpacing);
-
-  TestInput.keypressTimings.spacing.array.push(6969696969696969);
-
-  setTimeout(() => {
-    const stats = TestStats.getStats();
-    //@ts-ignore
-    console.log(stats.lastResult?.keyDuration);
-    //@ts-ignore
-    console.log(stats.lastResult?.keySpacing);
-  }, 3000);
-
-  setTimeout(() => {
-    //@ts-ignore
-    console.log(completedEvent.keyDuration);
-    //@ts-ignore
-    console.log(completedEvent.keySpacing);
-  }, 5000);
 
   saveResult(completedEvent, false);
 }

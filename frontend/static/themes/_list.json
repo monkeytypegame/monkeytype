@@ -1162,6 +1162,12 @@
     "textColor": "#d1d0c5"
   },
   {
+    "name": "everblush",
+    "bgColor": "#141b1e",
+    "mainColor": "#8ccf7e",
+    "subColor": "#838887",
+    "textColor": "#dadada"
+  },
     "name": "Abilify",
     "bgColor": "#3b3030",
     "mainColor": "#e39d93",

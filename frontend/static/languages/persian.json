@@ -1,6 +1,6 @@
 {
   "name": "persian",
-  "leftToRight": false,
+  "rightToLeft": true,
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "fa",

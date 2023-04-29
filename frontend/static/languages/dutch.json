@@ -1,6 +1,5 @@
 {
   "name": "dutch",
-  "leftToRight": true,
   "noLazyMode": true,
   "bcp47": "nl-NL",
   "words": [
