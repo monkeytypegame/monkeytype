@@ -1037,6 +1037,10 @@ export async function updateColors<
     chart.data.datasets[2].borderColor = errorcolor;
   }
 
+  if (!("type" in chart.config)) {
+    return;
+  }
+
   if (chart.data.datasets[0].type === undefined) {
     if (chart.config.type === "line") {
       (
