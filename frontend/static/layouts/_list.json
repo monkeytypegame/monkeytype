@@ -1495,7 +1495,7 @@
       "row5": [" "]
     }
   },
-  "nordic_no": {
+  "norwegian_qwerty": {
     "keymapShowTopRow": false,
     "type": "iso",
     "keys": {
@@ -1506,7 +1506,7 @@
     "row5": [" "]
     }
   },
-  "nordic_se": {
+  "swedish_qwerty": {
     "keymapShowTopRow": false,
     "type": "iso",
     "keys": {
@@ -1517,7 +1517,7 @@
     "row5": [" "]
     }
   },
-  "nordic_dk": {
+  "danish_qwerty": {
     "keymapShowTopRow": false,
     "type": "iso",
     "keys": {
