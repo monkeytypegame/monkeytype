@@ -26,7 +26,10 @@ import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
 
 import confetti from "canvas-confetti";
-import type { AnnotationOptions } from "chartjs-plugin-annotation";
+import type {
+  AnnotationOptions,
+  LabelPosition,
+} from "chartjs-plugin-annotation";
 import Ape from "../ape";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
@@ -467,7 +470,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
 
   const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
 
-  let annotationSide = "start";
+  let annotationSide: LabelPosition = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
     const tpb = await DB.getLocalTagPB(
