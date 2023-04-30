@@ -381,7 +381,16 @@ export function getWordsLimit(): number {
     CustomText.text.length !== 0 &&
     CustomText.text.length < limit
   ) {
-    limit = CustomText.text.length;
+    let newLimit = 0;
+    for (const word of CustomText.text) {
+      if (/ /g.test(word)) {
+        newLimit += word.split(" ").length;
+      } else {
+        newLimit++;
+      }
+    }
+
+    limit = newLimit;
   }
 
   return limit;
