@@ -147,7 +147,6 @@ async function updateGraph(): Promise<void> {
         padding: 3,
         borderRadius: 3,
         position: "start",
-        enabled: true,
         content: `${content}`,
       },
     });
@@ -195,7 +194,6 @@ export async function updateGraphPBLine(): Promise<void> {
       padding: 3,
       borderRadius: 3,
       position: "center",
-      enabled: true,
       content: `PB: ${chartlpb}`,
     },
   });
@@ -538,7 +536,6 @@ async function updateTags(dontSave: boolean): Promise<void> {
             borderRadius: 3,
             position: annotationSide,
             xAdjust: labelAdjust,
-            enabled: true,
             content: `${tag.display} PB: ${Misc.roundTo2(
               Config.alwaysShowCPM ? tpb * 5 : tpb
             ).toFixed(2)}`,
