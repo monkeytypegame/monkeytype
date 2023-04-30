@@ -85,7 +85,6 @@ declare namespace MonkeyTypes {
       maxResults: number;
       validModeRules: ValidModeRule[];
       scheduleRewardsModeRules: ValidModeRule[];
-      dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
       xpRewardBrackets: RewardBracket[];
     };
