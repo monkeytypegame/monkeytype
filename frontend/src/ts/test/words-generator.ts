@@ -410,6 +410,7 @@ export async function generateWords(
 ): Promise<string[]> {
   currentQuote = [];
   currentSection = [];
+  sectionIndex = 0;
   const ret: string[] = [];
   const limit = getWordsLimit();
 
@@ -552,6 +553,7 @@ export async function generateWords(
   return ret;
 }
 
+let sectionIndex = 0;
 let currentSection: string[] = [];
 
 //generate next word
@@ -577,7 +579,7 @@ export async function getNextWord(
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom
     ) {
-      randomWord = CustomText.text[wordIndex];
+      randomWord = CustomText.text[sectionIndex];
     } else if (
       Config.mode == "custom" &&
       (CustomText.isWordRandom || CustomText.isTimeRandom) &&
@@ -607,10 +609,9 @@ export async function getNextWord(
         firstAfterSplit = randomWord.split(" ")[0];
       }
     }
-    if (/ /g.test(randomWord)) {
-      currentSection = [...randomWord.split(" ")];
-      randomWord = currentSection.shift() as string;
-    }
+    currentSection = [...randomWord.split(" ")];
+    randomWord = currentSection.shift() as string;
+    sectionIndex++;
   } else {
     randomWord = currentSection.shift() as string;
   }
