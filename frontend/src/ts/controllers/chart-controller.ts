@@ -28,6 +28,14 @@ import chartAnnotation, {
 } from "chartjs-plugin-annotation";
 import chartTrendline from "chartjs-plugin-trendline";
 
+// TODO: find out why the import from chartjs-plugin-trendline does not apply this
+declare module "chart.js" {
+  // eslint-disable-next-line
+  interface ChartDatasetProperties<TType extends ChartType, TData> {
+    trendlineLinear?: TrendlineLinearPlugin.TrendlineLinearOptions;
+  }
+}
+
 import * as ActivePage from "../states/active-page";
 
 Chart.register(
