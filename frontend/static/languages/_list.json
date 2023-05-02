@@ -226,6 +226,7 @@
   ,"oromo_5k"
   ,"wordle"
   ,"wordle_1k"
+  ,"typing_of_the_dead"
   ,"yiddish"
   ,"code_python"
   ,"code_python_1k"
@@ -272,5 +273,6 @@
   ,"code_elixir"
   ,"code_zig"
   ,"code_gdscript"
+  ,"code_gdscript_2"
   ,"code_assembly"
 ]

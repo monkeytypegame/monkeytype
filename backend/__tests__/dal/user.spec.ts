@@ -129,7 +129,31 @@ describe("UserDal", () => {
 
     // when, then
     await expect(
-      UserDAL.updateName(userToUpdateNameFor.uid, userWithNameTaken.name)
+      UserDAL.updateName(
+        userToUpdateNameFor.uid,
+        userWithNameTaken.name,
+        userToUpdateNameFor.name
+      )
+    ).rejects.toThrow("Username already taken");
+  });
+
+  it("same usernames (different casing) should be available only for the same user", async () => {
+    await UserDAL.addUser("User1", "user1@test.com", "uid1");
+
+    await UserDAL.addUser("User2", "user2@test.com", "uid2");
+
+    const user1 = await UserDAL.getUser("uid1", "test");
+    const user2 = await UserDAL.getUser("uid2", "test");
+
+    await UserDAL.updateName(user1.uid, "user1", user1.name);
+
+    const updatedUser1 = await UserDAL.getUser("uid1", "test");
+
+    // when, then
+    expect(updatedUser1.name).toBe("user1");
+
+    await expect(
+      UserDAL.updateName(user2.uid, "USER1", user2.name)
     ).rejects.toThrow("Username already taken");
   });
 
@@ -157,32 +181,13 @@ describe("UserDal", () => {
     invalidNames.forEach(
       async (invalidName) =>
         await expect(
-          UserDAL.updateName(testUser.uid, invalidName as unknown as string)
+          UserDAL.updateName(
+            testUser.uid,
+            invalidName as unknown as string,
+            testUser.name
+          )
         ).rejects.toThrow("Invalid username")
     );
-  });
-
-  it("UserDAL.updateName should fail if user has changed name recently", async () => {
-    // given
-    const testUser = {
-      name: "Test",
-      email: "mockemail@email.com",
-      uid: "userId",
-    };
-
-    await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
-
-    // when
-    await UserDAL.updateName(testUser.uid, "renamedTestUser");
-
-    const updatedUser = await UserDAL.getUser(testUser.uid, "test");
-
-    // then
-    expect(updatedUser.name).toBe("renamedTestUser");
-
-    await expect(
-      UserDAL.updateName(updatedUser.uid, "NewValidName")
-    ).rejects.toThrow("You can change your name once every 30 days");
   });
 
   it("UserDAL.updateName should change the name of a user", async () => {
@@ -196,7 +201,7 @@ describe("UserDal", () => {
     await UserDAL.addUser(testUser.name, testUser.email, testUser.uid);
 
     // when
-    await UserDAL.updateName(testUser.uid, "renamedTestUser");
+    await UserDAL.updateName(testUser.uid, "renamedTestUser", testUser.name);
 
     // then
     const updatedUser = await UserDAL.getUser(testUser.uid, "test");

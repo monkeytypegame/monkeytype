@@ -4,6 +4,7 @@ import * as Misc from "../utils/misc";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
 import * as FunboxList from "./funbox/funbox-list";
+import * as TestState from "./test-state";
 
 interface CharCount {
   spaces: number;
@@ -186,16 +187,12 @@ export function setInvalid(): void {
 
 export function calculateTestSeconds(now?: number): number {
   if (now === undefined) {
-    const endAfkSeconds = (end - TestInput.lastKeypress) / 1000;
-    if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
-      return (TestInput.lastKeypress - start) / 1000;
-    } else {
-      return (end - start) / 1000;
-    }
+    return (end - start) / 1000;
   } else {
     return (now - start) / 1000;
   }
 }
+
 let avg = 0;
 export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   const start = performance.now();
@@ -279,13 +276,15 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
     spaces = 0;
   }
   chars += currTestInput.length;
-  const testSeconds = calculateTestSeconds(performance.now());
+  const testSeconds = calculateTestSeconds(
+    TestState.isActive ? performance.now() : end
+  );
   const wpm = Math.round(
     ((correctWordChars + spaces) * (60 / testSeconds)) / 5
   );
   const raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
-  const end = performance.now();
-  avg = (end - start + avg) / 2;
+  const endPerf = performance.now();
+  avg = (endPerf - start + avg) / 2;
   return {
     wpm: wpm,
     raw: raw,

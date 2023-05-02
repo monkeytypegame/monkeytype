@@ -1,6 +1,5 @@
 {
   "name": "turkish_1k",
-  "leftToRight": true,
   "bcp47": "tr-TR",
   "words": [
     "bir",
@@ -729,7 +728,6 @@
     "elbise",
     "bulut",
     "sürpriz",
-    "sessiz",
     "taş",
     "küçücük",
     "tırmanış",

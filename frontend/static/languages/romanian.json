@@ -1,6 +1,5 @@
 {
   "name": "romanian",
-  "leftToRight": true,
   "bcp47": "ro-RO",
   "words": [
     "acasă",

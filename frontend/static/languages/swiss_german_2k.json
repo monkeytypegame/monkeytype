@@ -1,7 +1,7 @@
 {
   "name": "swiss_german_2k",
   "_comment": "Sourced from: https://1000mostcommonwords.com/1000-most-common-swiss-german-words/. and and random words from: https://de.wiktionary.org",
-  "leftToRight": true,
+
   "bcp47": "de-CH",
   "words": [
     "niederschiesset",

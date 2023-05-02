@@ -85,6 +85,7 @@
       max-height: calc(100vh - 10rem - 3rem);
       display: grid;
       cursor: pointer;
+      -webkit-user-select: none;
       user-select: none;
 
       .entry {
@@ -131,6 +132,16 @@
         }
 
         &.activeKeyboard {
+          color: var(--bg-color) !important;
+          background: var(--text-color) !important;
+          .fas,
+          .far,
+          .fab {
+            color: var(--bg-color);
+          }
+        }
+
+        &.active {
           color: var(--bg-color) !important;
           background: var(--text-color) !important;
           .fas,

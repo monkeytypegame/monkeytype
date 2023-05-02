@@ -132,6 +132,7 @@
   flex-wrap: wrap;
   width: 100%;
   align-content: flex-start;
+  -webkit-user-select: none;
   user-select: none;
   padding-bottom: 1em;
 
@@ -581,6 +582,7 @@
       }
     }
     .title {
+      -webkit-user-select: none;
       user-select: none;
       margin-bottom: 0.25rem;
     }
@@ -589,6 +591,7 @@
       flex-wrap: wrap;
       width: 100%;
       align-content: flex-start;
+      -webkit-user-select: none;
       user-select: none;
       .word {
         position: relative;
@@ -908,13 +911,14 @@
   color: var(--error-color);
   transition: 0.25s;
   cursor: pointer;
-  width: max-content;
   width: -moz-max-content;
+  width: max-content;
   background: var(--colorful-error-color);
   color: var(--bg-color);
   justify-self: center;
   justify-content: center;
   margin: 0 auto 1rem auto;
+  -webkit-user-select: none;
   user-select: none;
 
   &:hover,
@@ -951,8 +955,8 @@
 #koInputVisualContainer {
   position: relative;
   padding-top: 1rem;
-  width: min-content;
   width: -moz-min-content;
+  width: min-content;
   height: 3rem;
   margin: 0 auto;
 
@@ -964,8 +968,8 @@
 
   &.blurred {
     opacity: 0.25;
-    filter: blur(4px);
     -webkit-filter: blur(4px);
+    filter: blur(4px);
   }
 }
 
@@ -1119,6 +1123,7 @@
     position: absolute;
     transform: translateX(-50%);
     top: -6rem;
+    -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
     opacity: 0;
@@ -1129,6 +1134,7 @@
     line-height: 150px;
     z-index: 999;
     position: relative;
+    -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
   }
@@ -1141,6 +1147,7 @@
     margin-bottom: 0.5rem;
     transition: 0.125s;
     justify-content: center;
+    -webkit-user-select: none;
     user-select: none;
 
     .textButton {

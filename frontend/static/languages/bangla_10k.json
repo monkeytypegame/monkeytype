@@ -1,6 +1,5 @@
 {
   "name": "bangla_10k",
-  "leftToRight": true,
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "bn_BD",

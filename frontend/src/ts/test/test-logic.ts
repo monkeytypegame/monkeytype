@@ -823,7 +823,7 @@ async function getNextWord(
   randomWord = getFunboxWord(randomWord, wordIndex, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
-  if (Config.punctuation) {
+  if (Config.punctuation && !language.originalPunctuation === true) {
     randomWord = await punctuateWord(
       TestWords.words.get(TestWords.words.length - 1),
       randomWord,
@@ -914,7 +914,7 @@ export async function init(): Promise<void> {
     }
   }
 
-  if (Config.tapeMode !== "off" && !language.leftToRight) {
+  if (Config.tapeMode !== "off" && !language.rightToLeft) {
     Notifications.add("This language does not support tape mode.", 0, {
       important: true,
     });
@@ -1205,11 +1205,7 @@ export async function init(): Promise<void> {
     }
   }
   //handle right-to-left languages
-  if (language.leftToRight) {
-    TestUI.arrangeCharactersLeftToRight();
-  } else {
-    TestUI.arrangeCharactersRightToLeft();
-  }
+  TestUI.setRightToLeft(language.rightToLeft);
   if (language.ligatures) {
     $("#words").addClass("withLigatures");
     $("#resultWordsHistory .words").addClass("withLigatures");
@@ -1588,6 +1584,7 @@ let testSavePromise: Promise<TribeTypes.ResultResolve> = new Promise(
 
 export async function finish(difficultyFailed = false): Promise<void> {
   if (!TestState.isActive) return;
+  TestUI.setResultCalculating(true);
   const now = performance.now();
   TestStats.setEnd(now);
 
@@ -1608,7 +1605,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
-  TestUI.setResultCalculating(true);
+  const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
+  if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
+    TestStats.setEnd(TestInput.keypressTimings.spacing.last);
+  }
+
   TestUI.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
@@ -1638,7 +1639,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.removeAfkData();
   }
 
-  const completedEvent = buildCompletedEvent(difficultyFailed);
+  const ce = buildCompletedEvent(difficultyFailed);
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
@@ -1657,14 +1658,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   let dontSave = false;
 
-  if (countUndefined(completedEvent) > 0) {
-    console.log(completedEvent);
+  if (countUndefined(ce) > 0) {
+    console.log(ce);
     Notifications.add(
       "Failed to build result object: One of the fields is undefined or NaN",
       -1
     );
     dontSave = true;
   }
+
+  const completedEvent = JSON.parse(JSON.stringify(ce));
 
   ///////// completed event ready
 
