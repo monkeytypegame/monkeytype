@@ -897,7 +897,7 @@ export async function init(): Promise<void> {
     }
   }
 
-  if (Config.tapeMode !== "off" && !language.rightToLeft) {
+  if (Config.tapeMode !== "off" && language.rightToLeft === true) {
     Notifications.add("This language does not support tape mode.", 0, {
       important: true,
     });
