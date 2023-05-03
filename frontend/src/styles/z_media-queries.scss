@@ -755,6 +755,13 @@
   #commandLineWrapper {
     padding: 5rem 1rem;
   }
+  .pageSettings .section.themes .customTheme.button.active,
+  .pageSettings .section.themes .theme.button.active {
+    transform: scale(1.025);
+  }
+  .pageSettings .section.themes .buttons div.theme:hover {
+    transform: scale(1.025);
+  }
   .profile .pbsWords,
   .profile .pbsTime {
     font-size: 0.9rem;
