@@ -176,7 +176,7 @@ export function update(): void {
         }
       }
     } else if (Config.timerStyle === "mini") {
-      if (Config.words === 0) {
+      if (outof === 0) {
         if (miniTimerNumberElement !== null) {
           miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
         }
