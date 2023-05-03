@@ -219,6 +219,9 @@
       "leaderboards"
       "pbsTime"
       "pbsWords";
+    .details .bioAndKeyboard {
+      height: 100%; //dumb safari fix
+    }
     .details.soc {
       grid-template-columns: 1.25fr auto 1fr auto auto;
       .typingStats {
@@ -617,6 +620,7 @@
         grid-template-columns: 1fr 1fr 1fr;
       }
       .socials {
+        height: 100%; //dumb safari fix
         justify-content: start;
         .title {
           display: block;
