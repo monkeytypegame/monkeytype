@@ -464,6 +464,18 @@ export function restart(options = {} as RestartOptions): void {
     if (PractiseWords.before.numbers !== null) {
       UpdateConfig.setNumbers(PractiseWords.before.numbers);
     }
+
+    if (PractiseWords.before.customText) {
+      CustomText.setText(PractiseWords.before.customText.text);
+      CustomText.setIsTimeRandom(PractiseWords.before.customText.isTimeRandom);
+      CustomText.setIsWordRandom(PractiseWords.before.customText.isWordRandom);
+      CustomText.setWord(PractiseWords.before.customText.word);
+      CustomText.setTime(PractiseWords.before.customText.time);
+      CustomText.setPopupTextareaState(
+        PractiseWords.before.customText.text.join(CustomText.delimiter)
+      );
+    }
+
     UpdateConfig.setMode(PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
