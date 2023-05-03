@@ -24,6 +24,13 @@ export async function addUser(
     email,
     uid,
     addedAt: Date.now(),
+    personalBests: {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    },
   };
 
   const result = await getUsersCollection().updateOne(
@@ -47,11 +54,11 @@ export async function resetUser(uid: string): Promise<void> {
     {
       $set: {
         personalBests: {
-          custom: {},
-          quote: {},
           time: {},
           words: {},
+          quote: {},
           zen: {},
+          custom: {},
         },
         lbPersonalBests: {
           time: {},
@@ -119,11 +126,11 @@ export async function clearPb(uid: string): Promise<void> {
     {
       $set: {
         personalBests: {
-          custom: {},
-          quote: {},
           time: {},
           words: {},
+          quote: {},
           zen: {},
+          custom: {},
         },
         lbPersonalBests: {
           time: {},
@@ -265,14 +272,27 @@ export async function addTag(
   name: string
 ): Promise<MonkeyTypes.UserTag> {
   const _id = new ObjectId();
-  await getUsersCollection().updateOne(
-    { uid },
-    { $push: { tags: { _id, name } } }
-  );
-  return {
+  const toPush = {
     _id,
     name,
+    personalBests: {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    },
   };
+
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $push: {
+        tags: toPush,
+      },
+    }
+  );
+  return toPush;
 }
 
 export async function getTags(uid: string): Promise<MonkeyTypes.UserTag[]> {
@@ -332,7 +352,17 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
       uid: uid,
       "tags._id": new ObjectId(_id),
     },
-    { $set: { "tags.$.personalBests": {} } }
+    {
+      $set: {
+        "tags.$.personalBests": {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+        },
+      },
+    }
   );
 }
 
@@ -371,20 +401,18 @@ export async function checkIfPb(
     return false;
   }
 
-  let lbPb = user.lbPersonalBests;
-  if (!lbPb) lbPb = { time: {} };
+  user.personalBests ??= {
+    time: {},
+    custom: {},
+    quote: {},
+    words: {},
+    zen: {},
+  };
+  user.lbPersonalBests ??= {
+    time: {},
+  };
 
-  const pb = checkAndUpdatePb(
-    user.personalBests ?? {
-      time: {},
-      custom: {},
-      quote: {},
-      words: {},
-      zen: {},
-    },
-    lbPb,
-    result
-  );
+  const pb = checkAndUpdatePb(user.personalBests, user.lbPersonalBests, result);
 
   if (!pb.isPb) return false;
 
@@ -430,15 +458,15 @@ export async function checkIfTagPb(
   const ret: string[] = [];
 
   for (const tag of tagsToCheck) {
-    const tagPbs: MonkeyTypes.PersonalBests = tag.personalBests ?? {
+    tag.personalBests ??= {
       time: {},
       words: {},
+      quote: {},
       zen: {},
       custom: {},
-      quote: {},
     };
 
-    const tagpb = checkAndUpdatePb(tagPbs, undefined, result);
+    const tagpb = checkAndUpdatePb(tag.personalBests, undefined, result);
     if (tagpb.isPb) {
       ret.push(tag._id.toHexString());
       await getUsersCollection().updateOne(
@@ -459,10 +487,10 @@ export async function resetPb(uid: string): Promise<void> {
       $set: {
         personalBests: {
           time: {},
-          custom: {},
-          quote: {},
           words: {},
+          quote: {},
           zen: {},
+          custom: {},
         },
       },
     }
