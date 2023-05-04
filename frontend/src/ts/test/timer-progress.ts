@@ -9,7 +9,7 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 export function show(): void {
-  const op = Config.showTimerProgress ? parseInt(Config.timerOpacity) : 0;
+  const op = Config.showTimerProgress ? parseFloat(Config.timerOpacity) : 0;
   if (Config.mode != "zen" && Config.timerStyle === "bar") {
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
