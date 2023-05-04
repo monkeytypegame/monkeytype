@@ -478,10 +478,6 @@ export async function init(): Promise<void> {
   TestInput.input.resetHistory();
   TestInput.input.resetCurrent();
 
-  if (ActivePage.get() == "test") {
-    await Funbox.activate();
-  }
-
   let language;
   try {
     language = await Misc.getLanguage(Config.language);
@@ -491,21 +487,15 @@ export async function init(): Promise<void> {
       -1
     );
   }
-  if (language && language.name !== Config.language) {
-    UpdateConfig.setLanguage("english");
-  }
 
-  if (!language) {
+  if (!language || (language && language.name !== Config.language)) {
     UpdateConfig.setLanguage("english");
-    try {
-      language = await Misc.getLanguage(Config.language);
-    } catch (e) {
-      Notifications.add(
-        Misc.createErrorMessage(e, "Failed to load language"),
-        -1
-      );
+    await init();
       return;
     }
+
+  if (ActivePage.get() == "test") {
+    await Funbox.activate();
   }
 
   if (Config.mode === "quote") {
@@ -521,7 +511,12 @@ export async function init(): Promise<void> {
       );
       return;
     }
-    if (group && group.name !== "code" && group.name !== Config.language) {
+    if (
+      group &&
+      group.name !== "code" &&
+      group.name !== "other" &&
+      group.name !== Config.language
+    ) {
       UpdateConfig.setLanguage(group.name);
     }
   }
@@ -566,7 +561,7 @@ export async function init(): Promise<void> {
       );
     }
 
-    init();
+    await init();
     return;
   }
 
