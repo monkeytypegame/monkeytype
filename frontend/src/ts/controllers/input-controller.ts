@@ -618,7 +618,8 @@ function handleChar(
           currentWord.length === TestInput.input.current.length &&
           Config.stopOnError == "off")) &&
       lastIndex === TestWords.words.length - 1 &&
-      (!Config.language.startsWith("chinese") || (realInputValue && charIndex + 2 == realInputValue.length))
+      (!Config.language.startsWith("chinese") ||
+        (realInputValue && charIndex + 2 == realInputValue.length))
     ) {
       TestLogic.finish();
       return;
@@ -1125,9 +1126,11 @@ $("#wordsInput").on("input", (event) => {
     backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
     if (containsChinese) {
-      if (currTestInput.length - inputValue.length <= 2
-        && currTestInput.slice(0, currTestInput.length) === currTestInput) {
-          TestInput.input.current = inputValue;
+      if (
+        currTestInput.length - inputValue.length <= 2 &&
+        currTestInput.slice(0, currTestInput.length) === currTestInput
+      ) {
+        TestInput.input.current = inputValue;
       } else {
         // IME has converted pinyin to Chinese Character(s)
         let diffStart = 0;
