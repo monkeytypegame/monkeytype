@@ -458,7 +458,7 @@ let rememberLazyMode: boolean;
 let testReinitCount = 0;
 export async function init(): Promise<void> {
   testReinitCount++;
-  if (testReinitCount > 5) {
+  if (testReinitCount >= 5) {
     TestUI.setTestRestarting(false);
     Notifications.add(
       "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
