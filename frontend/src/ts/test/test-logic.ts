@@ -1203,15 +1203,7 @@ export async function init(): Promise<void> {
   // } else {
   TestUI.showWords();
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    KeymapEvent.highlight(
-      TestWords.words
-        .getCurrent()
-        .substring(
-          TestInput.input.current.length,
-          TestInput.input.current.length + 1
-        )
-        .toString()
-    );
+    KeymapEvent.highlight(TestWords.words.getCurrent().at(0) as string);
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
   // }
