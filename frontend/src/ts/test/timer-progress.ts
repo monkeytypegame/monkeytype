@@ -9,7 +9,7 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 export function show(): void {
-  const op = Config.showTimerProgress ? Config.timerOpacity : 0;
+  const op = Config.showTimerProgress ? parseFloat(Config.timerOpacity) : 0;
   if (Config.mode != "zen" && Config.timerStyle === "bar") {
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
@@ -176,7 +176,7 @@ export function update(): void {
         }
       }
     } else if (Config.timerStyle === "mini") {
-      if (Config.words === 0) {
+      if (outof === 0) {
         if (miniTimerNumberElement !== null) {
           miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
         }

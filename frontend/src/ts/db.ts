@@ -95,6 +95,18 @@ export async function initSnapshot(): Promise<
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
+    snap.personalBests ??= {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    };
+
+    for (const mode of ["time", "words", "quote", "zen", "custom"]) {
+      snap.personalBests[mode as keyof MonkeyTypes.PersonalBests] ??= {};
+    }
+
     snap.banned = userData.banned;
     snap.lbOptOut = userData.lbOptOut;
     snap.verified = userData.verified;
@@ -166,6 +178,17 @@ export async function initSnapshot(): Promise<
 
     snap.tags.forEach((tag) => {
       tag.display = tag.name.replaceAll("_", " ");
+      tag.personalBests ??= {
+        time: {},
+        words: {},
+        quote: {},
+        zen: {},
+        custom: {},
+      };
+
+      for (const mode of ["time", "words", "quote", "zen", "custom"]) {
+        tag.personalBests[mode as keyof MonkeyTypes.PersonalBests] ??= {};
+      }
     });
 
     snap.tags = snap.tags?.sort((a, b) => {
@@ -577,30 +600,21 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
   function cont(): void {
     if (!dbSnapshot) return;
     let found = false;
-    if (dbSnapshot.personalBests === undefined) {
-      dbSnapshot.personalBests = {
-        time: {},
-        words: {},
-        zen: { zen: [] },
-        quote: { custom: [] },
-        custom: { custom: [] },
-      };
-    }
 
-    if (dbSnapshot.personalBests[mode] === undefined) {
-      if (mode === "zen") {
-        dbSnapshot.personalBests["zen"] = { zen: [] };
-      } else {
-        dbSnapshot.personalBests[mode as Exclude<typeof mode, "zen">] = {
-          custom: [],
-        };
-      }
-    }
+    dbSnapshot.personalBests ??= {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    };
 
-    if (dbSnapshot.personalBests[mode][mode2] === undefined) {
-      dbSnapshot.personalBests[mode][mode2] =
-        [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
-    }
+    dbSnapshot.personalBests[mode] ??= {
+      [mode2]: [],
+    };
+
+    dbSnapshot.personalBests[mode][mode2] ??=
+      [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
 
     (
       dbSnapshot.personalBests[mode][
@@ -630,15 +644,15 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
           mode2
         ] as unknown as MonkeyTypes.PersonalBest[]
       ).push({
-        language: language,
-        difficulty: difficulty,
-        lazyMode: lazyMode,
-        punctuation: punctuation,
-        wpm: wpm,
-        acc: acc,
-        raw: raw,
+        language,
+        difficulty,
+        lazyMode,
+        punctuation,
+        wpm,
+        acc,
+        raw,
         timestamp: Date.now(),
-        consistency: consistency,
+        consistency,
       });
     }
   }
@@ -666,34 +680,34 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
 
     if (filteredtag === undefined) return ret;
 
-    if (filteredtag.personalBests === undefined) {
-      filteredtag.personalBests = {
-        time: {},
-        words: {},
-        zen: { zen: [] },
-        quote: { custom: [] },
-        custom: { custom: [] },
-      };
-    }
+    filteredtag.personalBests ??= {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    };
 
-    try {
-      const personalBests = (filteredtag.personalBests[mode][mode2] ??
-        []) as MonkeyTypes.PersonalBest[];
+    filteredtag.personalBests[mode] ??= {
+      [mode2]: [],
+    };
 
-      personalBests.forEach((pb) => {
-        if (
+    filteredtag.personalBests[mode][mode2] ??=
+      [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+
+    const personalBests = (filteredtag.personalBests[mode][mode2] ??
+      []) as MonkeyTypes.PersonalBest[];
+
+    ret =
+      personalBests.find(
+        (pb) =>
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
           pb.language == language &&
           (pb.lazyMode === lazyMode ||
             (pb.lazyMode === undefined && lazyMode === false))
-        ) {
-          ret = pb.wpm;
-        }
-      });
-    } catch (e) {
-      console.log(e);
-    }
+      )?.wpm ?? 0;
+
     return ret;
   }
 
@@ -721,22 +735,24 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
       (t) => t._id === tagId
     )[0] as MonkeyTypes.Tag;
 
-    if (!filteredtag.personalBests) {
-      filteredtag.personalBests = {
-        time: {},
-        words: {},
-        zen: { zen: [] },
-        quote: { custom: [] },
-        custom: { custom: [] },
-      };
-    }
+    filteredtag.personalBests ??= {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    };
+
+    filteredtag.personalBests[mode] ??= {
+      [mode2]: [],
+    };
+
+    filteredtag.personalBests[mode][mode2] ??=
+      [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
 
     try {
       let found = false;
-      if (filteredtag.personalBests[mode][mode2] === undefined) {
-        filteredtag.personalBests[mode][mode2] =
-          [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
-      }
+
       (
         filteredtag.personalBests[mode][
           mode2
@@ -765,15 +781,15 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
             mode2
           ] as unknown as MonkeyTypes.PersonalBest[]
         ).push({
-          language: language,
-          difficulty: difficulty,
-          lazyMode: lazyMode,
-          punctuation: punctuation,
-          wpm: wpm,
-          acc: acc,
-          raw: raw,
+          language,
+          difficulty,
+          lazyMode,
+          punctuation,
+          wpm,
+          acc,
+          raw,
           timestamp: Date.now(),
-          consistency: consistency,
+          consistency,
         });
       }
     } catch (e) {
@@ -781,17 +797,10 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
       filteredtag.personalBests = {
         time: {},
         words: {},
-        zen: { zen: [] },
-        quote: { custom: [] },
-        custom: { custom: [] },
+        quote: {},
+        zen: {},
+        custom: {},
       };
-      if (mode === "zen") {
-        filteredtag.personalBests["zen"] = { zen: [] };
-      } else {
-        filteredtag.personalBests[mode as Exclude<typeof mode, "zen">] = {
-          custom: [],
-        };
-      }
       filteredtag.personalBests[mode][mode2] = [
         {
           language: language,
