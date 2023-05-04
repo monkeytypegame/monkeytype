@@ -421,84 +421,7 @@ export async function generateWords(
   const wordset = await Wordset.withWords(wordList);
 
   if (Config.mode === "quote") {
-    const languageToGet = language.name.startsWith("swiss_german")
-      ? "german"
-      : language.name;
-
-    const quotesCollection = await QuotesController.getQuotes(
-      languageToGet,
-      Config.quoteLength
-    );
-
-    if (quotesCollection.length === 0) {
-      UpdateConfig.setMode("words");
-      throw new WordGenError(
-        `No ${Config.language
-          .replace(/_\d*k$/g, "")
-          .replace(/_/g, " ")} quotes found`
-      );
-    }
-
-    let rq: MonkeyTypes.Quote;
-    if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
-      const targetQuote = QuotesController.getQuoteById(
-        QuoteSearchPopup.selectedId
-      );
-      if (targetQuote === undefined) {
-        UpdateConfig.setQuoteLength(-1);
-        throw new WordGenError(
-          `Quote ${QuoteSearchPopup.selectedId} does not exist`
-        );
-      }
-      rq = targetQuote;
-    } else if (Config.quoteLength.includes(-3)) {
-      const randomQuote = QuotesController.getRandomFavoriteQuote(
-        Config.language
-      );
-      if (randomQuote === null) {
-        UpdateConfig.setQuoteLength(-1);
-        throw new WordGenError("No favorite quotes found");
-      }
-      rq = randomQuote;
-    } else {
-      const randomQuote = QuotesController.getRandomQuote();
-      if (randomQuote === null) {
-        UpdateConfig.setQuoteLength(-1);
-        throw new WordGenError("No quotes found for selected quote length");
-      }
-      rq = randomQuote;
-    }
-
-    rq.language = Config.language.replace(/_\d*k$/g, "");
-    rq.text = rq.text.replace(/ +/gm, " ");
-    rq.text = rq.text.replace(/\\\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\\\n/gm, "\n");
-    rq.text = rq.text.replace(/\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\n/gm, "\n");
-    rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-    rq.text = rq.text.replace(/…/g, "...");
-    rq.text = rq.text.trim();
-    rq.textSplit = rq.text.split(" ");
-
-    TestWords.setRandomQuote(rq);
-
-    if (TestWords.randomQuote.textSplit === undefined) {
-      throw new WordGenError("Random quote textSplit is undefined");
-    }
-
-    currentQuote = TestWords.randomQuote.textSplit;
-
-    for (let i = 0; i < Math.min(limit, currentQuote.length); i++) {
-      const nextWord = await getNextWord(
-        wordset,
-        i,
-        language,
-        limit,
-        ret.at(-1) ?? "",
-        ret.at(-2) ?? ""
-      );
-      ret.push(nextWord);
-    }
+    return await generateQuoteWords(language, wordset, limit);
   }
 
   if (
@@ -522,6 +445,93 @@ export async function generateWords(
       );
       ret.push(nextWord);
     }
+  }
+  return ret;
+}
+
+async function generateQuoteWords(
+  language: MonkeyTypes.LanguageObject,
+  wordset: Wordset.Wordset,
+  limit: number
+): Promise<string[]> {
+  const ret: string[] = [];
+  const languageToGet = language.name.startsWith("swiss_german")
+    ? "german"
+    : language.name;
+
+  const quotesCollection = await QuotesController.getQuotes(
+    languageToGet,
+    Config.quoteLength
+  );
+
+  if (quotesCollection.length === 0) {
+    UpdateConfig.setMode("words");
+    throw new WordGenError(
+      `No ${Config.language
+        .replace(/_\d*k$/g, "")
+        .replace(/_/g, " ")} quotes found`
+    );
+  }
+
+  let rq: MonkeyTypes.Quote;
+  if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
+    const targetQuote = QuotesController.getQuoteById(
+      QuoteSearchPopup.selectedId
+    );
+    if (targetQuote === undefined) {
+      UpdateConfig.setQuoteLength(-1);
+      throw new WordGenError(
+        `Quote ${QuoteSearchPopup.selectedId} does not exist`
+      );
+    }
+    rq = targetQuote;
+  } else if (Config.quoteLength.includes(-3)) {
+    const randomQuote = QuotesController.getRandomFavoriteQuote(
+      Config.language
+    );
+    if (randomQuote === null) {
+      UpdateConfig.setQuoteLength(-1);
+      throw new WordGenError("No favorite quotes found");
+    }
+    rq = randomQuote;
+  } else {
+    const randomQuote = QuotesController.getRandomQuote();
+    if (randomQuote === null) {
+      UpdateConfig.setQuoteLength(-1);
+      throw new WordGenError("No quotes found for selected quote length");
+    }
+    rq = randomQuote;
+  }
+
+  rq.language = Config.language.replace(/_\d*k$/g, "");
+  rq.text = rq.text.replace(/ +/gm, " ");
+  rq.text = rq.text.replace(/\\\\t/gm, "\t");
+  rq.text = rq.text.replace(/\\\\n/gm, "\n");
+  rq.text = rq.text.replace(/\\t/gm, "\t");
+  rq.text = rq.text.replace(/\\n/gm, "\n");
+  rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+  rq.text = rq.text.replace(/…/g, "...");
+  rq.text = rq.text.trim();
+  rq.textSplit = rq.text.split(" ");
+
+  TestWords.setRandomQuote(rq);
+
+  if (TestWords.randomQuote.textSplit === undefined) {
+    throw new WordGenError("Random quote textSplit is undefined");
+  }
+
+  currentQuote = TestWords.randomQuote.textSplit;
+
+  for (let i = 0; i < Math.min(limit, currentQuote.length); i++) {
+    const nextWord = await getNextWord(
+      wordset,
+      i,
+      language,
+      limit,
+      ret.at(-1) ?? "",
+      ret.at(-2) ?? ""
+    );
+    ret.push(nextWord);
   }
   return ret;
 }
