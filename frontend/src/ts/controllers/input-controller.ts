@@ -490,10 +490,7 @@ function handleChar(
     const realInput: string = (realInputValue ?? "").slice(1);
     resultingWord = realInput;
     koInputVisual.innerText = resultingWord.slice(-1);
-  } else if (
-    Config.language.startsWith("chinese") &&
-    CompositionState.getComposing()
-  ) {
+  } else if (Config.language.startsWith("chinese")) {
     resultingWord = (realInputValue ?? "").slice(1);
   } else {
     resultingWord =
@@ -611,6 +608,7 @@ function handleChar(
   if (Config.mode != "zen") {
     //not applicable to zen mode
     //auto stop the test if the last word is correct
+    //do not stop if not all characters have been parsed by handleChar yet
     const currentWord: string = TestWords.words.getCurrent();
     const lastIndex: number = TestWords.words.currentIndex;
     if (
@@ -619,7 +617,8 @@ function handleChar(
           !Config.language.startsWith("korean") &&
           currentWord.length === TestInput.input.current.length &&
           Config.stopOnError == "off")) &&
-      lastIndex === TestWords.words.length - 1
+      lastIndex === TestWords.words.length - 1 &&
+      (!Config.language.startsWith("chinese") || (realInputValue && charIndex + 2 == realInputValue.length))
     ) {
       TestLogic.finish();
       return;
@@ -1126,8 +1125,8 @@ $("#wordsInput").on("input", (event) => {
     backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
     if (containsChinese) {
-      if (currTestInput.length - inputValue.length == 1
-        && currTestInput.slice(0, -1) === currTestInput) {
+      if (currTestInput.length - inputValue.length <= 2
+        && currTestInput.slice(0, currTestInput.length) === currTestInput) {
           TestInput.input.current = inputValue;
       } else {
         // IME has converted pinyin to Chinese Character(s)
@@ -1176,10 +1175,7 @@ $("#wordsInput").on("input", (event) => {
     }
   }
 
-  if (!containsChinese || !CompositionState.getComposing()) {
-    console.log("setting chinese word input")
-    setWordsInput(" " + TestInput.input.current);
-  }
+  setWordsInput(" " + TestInput.input.current);
 
   updateUI();
   if (Config.tapeMode !== "off") {
@@ -1196,17 +1192,6 @@ $("#wordsInput").on("input", (event) => {
     const stateafter = CompositionState.getComposing();
     if (statebefore !== stateafter) {
       TestUI.updateWordElement();
-    }
-
-    const currentWord: string = TestWords.words.getCurrent();
-    const lastIndex: number = TestWords.words.currentIndex;
-    if (
-      Config.language.startsWith("chinese") &&
-      currentWord === TestInput.input.current &&
-      lastIndex === TestWords.words.length - 1
-    ) {
-      TestLogic.finish();
-      return;
     }
 
     // force caret at end of input
