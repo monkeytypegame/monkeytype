@@ -520,34 +520,7 @@ export async function generateWords(
         ret.at(-1) ?? "",
         ret.at(-2) ?? ""
       );
-      // const te = nextWord.replace(/\n/g, "\n ").replace(/ $/g, "");
-      // if (/ +/.test(te)) {
-      //   const randomList = te.split(" ");
-      //   let id = 0;
-      //   while (id < randomList.length) {
-      //     ret.push(randomList[id]);
-      //     id++;
-
-      //     if (
-      //       TestWords.words.length == limit &&
-      //       Config.mode == "custom" &&
-      //       CustomText.isWordRandom
-      //     ) {
-      //       break;
-      //     }
-      //   }
-      //   if (
-      //     Config.mode == "custom" &&
-      //     !CustomText.isWordRandom &&
-      //     !CustomText.isTimeRandom
-      //   ) {
-      //     //
-      //   } else {
-      //     i = TestWords.words.length - 1;
-      //   }
-      // } else {
       ret.push(nextWord);
-      // }
     }
   }
   return ret;
