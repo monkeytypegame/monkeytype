@@ -146,6 +146,13 @@ function handleSpace(): void {
 
   if (TestInput.input.current === "") return;
 
+  if (
+    CompositionState.getComposing() &&
+    Config.language.startsWith("chinese")
+  ) {
+    return;
+  }
+
   if (Config.mode == "zen") {
     $("#words .word.active").removeClass("active");
     $("#words").append("<div class='word active'></div>");
@@ -474,12 +481,7 @@ function handleChar(
     TestInput.setBurstStart(now);
   }
 
-  if (!isCharKorean && !Config.language.startsWith("korean")) {
-    resultingWord =
-      TestInput.input.current.substring(0, charIndex) +
-      char +
-      TestInput.input.current.substring(charIndex + 1);
-  } else {
+  if (isCharKorean || Config.language.startsWith("korean")) {
     // Get real input from #WordsInput char call.
     // This is because the chars can't be confirmed correctly.
     // With chars alone this happens when a previous symbol is completed
@@ -488,6 +490,16 @@ function handleChar(
     const realInput: string = (realInputValue ?? "").slice(1);
     resultingWord = realInput;
     koInputVisual.innerText = resultingWord.slice(-1);
+  } else if (
+    Config.language.startsWith("chinese") &&
+    CompositionState.getComposing()
+  ) {
+    resultingWord = (realInputValue ?? "").slice(1);
+  } else {
+    resultingWord =
+      TestInput.input.current.substring(0, charIndex) +
+      char +
+      TestInput.input.current.substring(charIndex + 1);
   }
 
   // If a trailing composed char is used, ignore it when counting accuracy
@@ -1068,6 +1080,7 @@ $("#wordsInput").on("input", (event) => {
   }
 
   const containsKorean = TestInput.input.getKoreanStatus();
+  const containsChinese = Config.language.startsWith("chinese");
 
   //Hangul.disassemble breaks down Korean characters into its components
   //allowing it to be treated as normal latin characters
@@ -1112,15 +1125,34 @@ $("#wordsInput").on("input", (event) => {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
-    if (!containsKorean) {
-      TestInput.input.current = inputValue;
-    } else {
+    if (containsChinese) {
+      if (currTestInput.length - inputValue.length == 1
+        && currTestInput.slice(0, -1) === currTestInput) {
+          TestInput.input.current = inputValue;
+      } else {
+        // IME has converted pinyin to Chinese Character(s)
+        let diffStart = 0;
+        while (inputValue[diffStart] === currTestInput[diffStart]) {
+          diffStart++;
+        }
+
+        let iOffset = 0;
+        if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
+          iOffset = inputValue.indexOf(" ") + 1;
+        }
+        for (let i = diffStart; i < inputValue.length; i++) {
+          handleChar(inputValue[i], i - iOffset, realInputValue);
+        }
+      }
+    } else if (containsKorean) {
       const realInput = (event.target as HTMLInputElement).value
         .normalize()
         .slice(1);
 
       TestInput.input.current = realInput;
       koInputVisual.innerText = realInput.slice(-1);
+    } else {
+      TestInput.input.current = inputValue;
     }
 
     TestUI.updateWordElement();
@@ -1144,7 +1176,11 @@ $("#wordsInput").on("input", (event) => {
     }
   }
 
-  setWordsInput(" " + TestInput.input.current);
+  if (!containsChinese || !CompositionState.getComposing()) {
+    console.log("setting chinese word input")
+    setWordsInput(" " + TestInput.input.current);
+  }
+
   updateUI();
   if (Config.tapeMode !== "off") {
     TestUI.scrollTape();
@@ -1160,6 +1196,17 @@ $("#wordsInput").on("input", (event) => {
     const stateafter = CompositionState.getComposing();
     if (statebefore !== stateafter) {
       TestUI.updateWordElement();
+    }
+
+    const currentWord: string = TestWords.words.getCurrent();
+    const lastIndex: number = TestWords.words.currentIndex;
+    if (
+      Config.language.startsWith("chinese") &&
+      currentWord === TestInput.input.current &&
+      lastIndex === TestWords.words.length - 1
+    ) {
+      TestLogic.finish();
+      return;
     }
 
     // force caret at end of input
