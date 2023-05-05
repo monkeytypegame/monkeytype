@@ -474,7 +474,7 @@ export function playNote(
   oscillatorNode.stop(audioCtx.currentTime + 0.5);
 }
 
-export function playClick(): void {
+export function playClick(codeOverride?: string): void {
   if (Config.playSoundOnClick === "off") return;
 
   if (Config.playSoundOnClick in scaleConfigurations) {
@@ -487,7 +487,7 @@ export function playClick(): void {
   }
 
   if (Config.playSoundOnClick in clickSoundIdsToOscillatorType) {
-    playNote();
+    playNote(codeOverride ?? undefined);
     return;
   }
 

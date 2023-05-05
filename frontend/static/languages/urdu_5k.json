@@ -1,6 +1,6 @@
 {
   "name": "urdu_5k",
-  "leftToRight": false,
+  "rightToLeft": true,
   "ligatures": true,
   "noLazyMode": true,
   "words": [

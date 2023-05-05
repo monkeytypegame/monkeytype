@@ -1,6 +1,5 @@
 {
   "name": "tamil",
-  "leftToRight": true,
   "noLazyMode": true,
   "bcp47": "ta-IN",
   "ligatures": true,

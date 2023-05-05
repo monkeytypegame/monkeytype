@@ -219,10 +219,13 @@ function apply(): void {
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   CustomText.setText(text.split(CustomText.delimiter));
+
   CustomText.setWord(
-    parseInt($(`${popup} .wordcount input`).val() as string) || -1
+    parseInt(($(`${popup} .wordcount input`).val() as string) || "-1")
   );
-  CustomText.setTime(parseInt($(`${popup} .time input`).val() as string) || -1);
+  CustomText.setTime(
+    parseInt(($(`${popup} .time input`).val() as string) || "-1")
+  );
 
   CustomText.setIsWordRandom(
     $(`${popup} .randomWordsCheckbox input`).prop("checked") &&

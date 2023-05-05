@@ -16,11 +16,9 @@ function update(mode: MonkeyTypes.Mode): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
 
-  const allmode2 = (
-    snapshot.personalBests === undefined
-      ? undefined
-      : snapshot.personalBests[mode]
-  ) as { [quote: string]: PersonalBest[] } | undefined;
+  const allmode2 = snapshot.personalBests?.[mode] as
+    | Record<string, PersonalBest[]>
+    | undefined;
 
   if (allmode2 === undefined) return;
 

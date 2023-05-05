@@ -85,7 +85,6 @@ declare namespace MonkeyTypes {
       maxResults: number;
       validModeRules: ValidModeRule[];
       scheduleRewardsModeRules: ValidModeRule[];
-      dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
       xpRewardBrackets: RewardBracket[];
     };
@@ -171,7 +170,7 @@ declare namespace MonkeyTypes {
     lbPersonalBests?: LbPersonalBests;
     name: string;
     customThemes?: CustomTheme[];
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
     quoteRatings?: UserQuoteRatings;
     startedTests?: number;
     tags?: UserTag[];
@@ -285,7 +284,7 @@ declare namespace MonkeyTypes {
   interface UserTag {
     _id: ObjectId;
     name: string;
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
   }
 
   interface LeaderboardEntry {
@@ -353,17 +352,11 @@ declare namespace MonkeyTypes {
   }
 
   interface PersonalBests {
-    time: {
-      [key: number]: PersonalBest[];
-    };
-    words: {
-      [key: number]: PersonalBest[];
-    };
-    quote: { [quote: string]: PersonalBest[] };
-    custom: { custom?: PersonalBest[] };
-    zen: {
-      zen?: PersonalBest[];
-    };
+    time: Record<number, PersonalBest[]>;
+    words: Record<number, PersonalBest[]>;
+    quote: Record<string, PersonalBest[]>;
+    custom: Partial<Record<"custom", PersonalBest[]>>;
+    zen: Partial<Record<"zen", PersonalBest[]>>;
   }
 
   interface ChartData {

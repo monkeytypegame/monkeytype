@@ -464,6 +464,18 @@ export function restart(options = {} as RestartOptions): void {
     if (PractiseWords.before.numbers !== null) {
       UpdateConfig.setNumbers(PractiseWords.before.numbers);
     }
+
+    if (PractiseWords.before.customText) {
+      CustomText.setText(PractiseWords.before.customText.text);
+      CustomText.setIsTimeRandom(PractiseWords.before.customText.isTimeRandom);
+      CustomText.setIsWordRandom(PractiseWords.before.customText.isWordRandom);
+      CustomText.setWord(PractiseWords.before.customText.word);
+      CustomText.setTime(PractiseWords.before.customText.time);
+      CustomText.setPopupTextareaState(
+        PractiseWords.before.customText.text.join(CustomText.delimiter)
+      );
+    }
+
     UpdateConfig.setMode(PractiseWords.before.mode);
     PractiseWords.resetBefore();
   }
@@ -885,7 +897,7 @@ export async function init(): Promise<void> {
     }
   }
 
-  if (Config.tapeMode !== "off" && !language.leftToRight) {
+  if (Config.tapeMode !== "off" && language.rightToLeft === true) {
     Notifications.add("This language does not support tape mode.", 0, {
       important: true,
     });
@@ -1173,11 +1185,7 @@ export async function init(): Promise<void> {
     }
   }
   //handle right-to-left languages
-  if (language.leftToRight) {
-    TestUI.arrangeCharactersLeftToRight();
-  } else {
-    TestUI.arrangeCharactersRightToLeft();
-  }
+  TestUI.setRightToLeft(language.rightToLeft);
   if (language.ligatures) {
     $("#words").addClass("withLigatures");
     $("#resultWordsHistory .words").addClass("withLigatures");
@@ -1195,15 +1203,7 @@ export async function init(): Promise<void> {
   // } else {
   TestUI.showWords();
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    KeymapEvent.highlight(
-      TestWords.words
-        .getCurrent()
-        .substring(
-          TestInput.input.current.length,
-          TestInput.input.current.length + 1
-        )
-        .toString()
-    );
+    KeymapEvent.highlight(TestWords.words.getCurrent().at(0) as string);
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
   // }
@@ -1588,7 +1588,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.removeAfkData();
   }
 
-  const completedEvent = buildCompletedEvent(difficultyFailed);
+  const ce = buildCompletedEvent(difficultyFailed);
 
   function countUndefined(input: unknown): number {
     if (typeof input === "number") {
@@ -1607,14 +1607,16 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   let dontSave = false;
 
-  if (countUndefined(completedEvent) > 0) {
-    console.log(completedEvent);
+  if (countUndefined(ce) > 0) {
+    console.log(ce);
     Notifications.add(
       "Failed to build result object: One of the fields is undefined or NaN",
       -1
     );
     dontSave = true;
   }
+
+  const completedEvent = JSON.parse(JSON.stringify(ce));
 
   ///////// completed event ready
 

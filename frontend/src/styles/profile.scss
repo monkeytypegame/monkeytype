@@ -25,6 +25,9 @@
   align-content: center;
   height: 100%;
   display: grid;
+  .content {
+    display: grid; //stupid fix for stupid safari
+  }
   .preloader {
     position: absolute;
     z-index: 1;
@@ -439,6 +442,7 @@
       align-self: stretch;
       grid-auto-flow: column;
       width: 100%;
+      height: 100%; //dumb safari fix
     }
     .bioAndKeyboard {
       display: grid;
@@ -457,7 +461,7 @@
     }
     .separator {
       width: 0.5rem;
-      height: 100%;
+      height: auto;
       background: var(--bg-color);
       border-radius: var(--roundness);
     }

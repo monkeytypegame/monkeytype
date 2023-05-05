@@ -1,5 +1,4 @@
 import _ from "lodash";
-import LRUCache from "lru-cache";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
@@ -189,18 +188,6 @@ export async function purgeUserFromDailyLeaderboards(
   await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
 }
 
-let DAILY_LEADERBOARDS: LRUCache<string, DailyLeaderboard>;
-
-export function initializeDailyLeaderboardsCache(
-  configuration: MonkeyTypes.Configuration["dailyLeaderboards"]
-): void {
-  const { dailyLeaderboardCacheSize } = configuration;
-
-  DAILY_LEADERBOARDS = new LRUCache({
-    max: dailyLeaderboardCacheSize,
-  });
-}
-
 function isValidModeRule(
   modeRule: MonkeyTypes.ValidModeRule,
   modeRules: MonkeyTypes.ValidModeRule[]
@@ -227,16 +214,9 @@ export function getDailyLeaderboard(
   const modeRule = { language, mode, mode2 };
   const isValidMode = isValidModeRule(modeRule, validModeRules);
 
-  if (!enabled || !isValidMode || !DAILY_LEADERBOARDS) {
+  if (!enabled || !isValidMode) {
     return null;
   }
 
-  const key = `${language}:${mode}:${mode2}:${customTimestamp}`;
-
-  if (!DAILY_LEADERBOARDS.has(key)) {
-    const dailyLeaderboard = new DailyLeaderboard(modeRule, customTimestamp);
-    DAILY_LEADERBOARDS.set(key, dailyLeaderboard);
-  }
-
-  return DAILY_LEADERBOARDS.get(key) ?? null;
+  return new DailyLeaderboard(modeRule, customTimestamp);
 }

@@ -413,14 +413,14 @@
 
 <div id="settingsImportWrapper" class="popupWrapper hidden">
   <div id="settingsImport" action="">
-    <input type="text" />
+    <input type="text" title="import settings" />
     <div class="button">import settings</div>
   </div>
 </div>
 
 <div id="customThemeShareWrapper" class="popupWrapper hidden">
   <div id="customThemeShare" action="">
-    <input type="text" />
+    <input type="text" title="custom theme" />
     <div class="button">ok</div>
   </div>
 </div>
@@ -452,7 +452,7 @@
           <div class="button">Got it</div>
         </div>
       </div>
-      <textarea class="textarea" placeholder="Custom text"></textarea>
+      <textarea class="textarea"></textarea>
     </div>
     <div class="inputs">
       <label class="checkbox randomWordsCheckbox">
@@ -562,7 +562,7 @@
     <div class="top">
       <div class="group">
         <div class="title">language</div>
-        <select class="languageInput" class=""></select>
+        <select class="languageInput" title="language"></select>
       </div>
       <div class="tip">
         You can manually filter words by length, words or characters (separated
@@ -579,11 +579,13 @@
           class="wordLength wordMinInput"
           autocomplete="off"
           type="number"
+          title="min"
         />
         <input
           class="wordLength wordMaxInput"
           autocomplete="off"
           type="number"
+          title="max"
         />
       </div>
       <div class="group">
@@ -592,6 +594,7 @@
           class="wordIncludeInput"
           id="wordIncludeInput"
           autocomplete="off"
+          title="include"
         />
       </div>
       <div class="group">
@@ -600,6 +603,7 @@
           class="wordExcludeInput"
           id="wordExcludeInput"
           autocomplete="off"
+          title="exclude"
         />
       </div>
       <!-- </div> -->
@@ -613,7 +617,7 @@
     <div class="rightSide">
       <div class="group">
         <div class="title">presets</div>
-        <select class="presetInput" class=""></select>
+        <select class="presetInput"></select>
       </div>
       <div class="group">
         <div class="title">layout</div>
@@ -658,7 +662,7 @@
   <div id="customTestDurationPopup">
     <div class="title">Test duration</div>
     <div class="preview"></div>
-    <input value="1" />
+    <input value="1" title="test duration" />
     <div class="tip">
       You can start an infinite test by inputting 0. Then, to stop the test, use
       the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
@@ -768,7 +772,7 @@
     <label>quote</label>
     <div class="quote"></div>
     <label>reason</label>
-    <select name="report-reason" class="reason">
+    <select name="report-reason" class="reason" title="reason">
       <option value="Grammatical error">Grammatical error</option>
       <option value="Inappropriate content">Inappropriate content</option>
       <option value="Low quality content">Low quality content</option>
@@ -831,7 +835,7 @@
 <div id="tagsWrapper" class="popupWrapper hidden">
   <div id="tagsEdit" action="" tagid="">
     <div class="title"></div>
-    <input type="text" />
+    <input type="text" title="tag" />
     <div class="button"><i class="fas fa-plus"></i></div>
   </div>
 </div>
@@ -844,7 +848,7 @@
 <div id="presetWrapper" class="popupWrapper hidden">
   <div id="presetEdit" action="" presetid="">
     <div class="title"></div>
-    <input type="text" class="text" />
+    <input type="text" class="text" title="presets" />
     <label class="checkbox">
       <input type="checkbox" />
       <div class="customTextCheckbox">
@@ -992,7 +996,7 @@
         class="button"
         href="https://ko-fi.com/monkeytype"
         target="_blank"
-        rel="noreferrer"
+        rel="noreferrer noopener"
       >
         <div class="icon"><i class="fas fa-fw fa-donate"></i></div>
         <div class="text">Donate</div>
@@ -1001,7 +1005,7 @@
         class="button"
         href="https://www.patreon.com/monkeytype"
         target="_blank"
-        rel="noreferrer"
+        rel="noreferrer noopener"
       >
         <div class="icon"><i class="fab fa-fw fa-patreon"></i></div>
         <div class="text">
@@ -1014,7 +1018,7 @@
         class="button"
         href="https://monkeytype.store"
         target="_blank"
-        rel="noreferrer"
+        rel="noreferrer noopener"
       >
         <div class="icon"><i class="fas fa-fw fa-tshirt"></i></div>
         <div class="text">Buy Merch</div>
@@ -1164,14 +1168,14 @@
       <label>github</label>
       <div class="socialURL">
         <p>https://github.com/</p>
-        <input class="github" type="text" value="" />
+        <input class="github" type="text" value="" placeholder="username" />
       </div>
     </div>
     <div>
       <label>twitter</label>
       <div class="socialURL">
         <p>https://twitter.com/</p>
-        <input class="twitter" type="text" value="" />
+        <input class="twitter" type="text" value="" placeholder="username" />
       </div>
     </div>
     <div>

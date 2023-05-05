@@ -253,7 +253,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setPlaySoundOnClick,
     "button",
     () => {
-      if (Config.playSoundOnClick !== "off") Sound.playClick();
+      if (Config.playSoundOnClick !== "off") Sound.playClick("KeyQ");
     }
   );
   groups["showAllLines"] = new SettingsGroup(
