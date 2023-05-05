@@ -491,8 +491,8 @@ export async function init(): Promise<void> {
   if (!language || (language && language.name !== Config.language)) {
     UpdateConfig.setLanguage("english");
     await init();
-      return;
-    }
+    return;
+  }
 
   if (ActivePage.get() == "test") {
     await Funbox.activate();
