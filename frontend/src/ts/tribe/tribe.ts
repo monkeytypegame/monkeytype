@@ -73,7 +73,9 @@ function updateState(newState: number): void {
     TribePageLobby.disableNameVisibilityButtons();
     const self = TribeState.getSelf();
     if (self && (self.isReady || self.isLeader)) {
-      Notifications.add("Race is starting...", 1, undefined, "Tribe");
+      Notifications.add("Race is starting...", 1, {
+        customTitle: "Tribe",
+      });
     }
   } else if (state === 11) {
     if (room?.users) {
@@ -242,7 +244,9 @@ function checkIfEveryoneIsReady(): void {
       }
     });
     if (everyoneReady) {
-      Notifications.add("Everyone is ready", 1, undefined, "Tribe");
+      Notifications.add("Everyone is ready", 1, {
+        customTitle: "Tribe",
+      });
       TribeSound.play("chat_mention");
     }
   }
@@ -271,8 +275,9 @@ TribeSocket.in.system.disconnect((reason, details) => {
     Notifications.add(
       `Disconnected: ${JSON.stringify(details)} (${reason})`,
       -1,
-      undefined,
-      "Tribe"
+      {
+        customTitle: "Tribe",
+      }
     );
   }
   TribeState.setRoom(undefined);
@@ -292,7 +297,9 @@ TribeSocket.in.system.connectFailed((err) => {
   updateState(-1);
   console.error(err);
   if (!$(".pageTribe").hasClass("active")) {
-    Notifications.add("Connection failed", -1, undefined, "Tribe");
+    Notifications.add("Connection failed", -1, {
+      customTitle: "Tribe",
+    });
   }
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
@@ -306,7 +313,9 @@ TribeSocket.in.system.connectError((err) => {
   updateState(-1);
   console.error(err);
   if (!$(".pageTribe").hasClass("active")) {
-    Notifications.add("Connection error", -1, undefined, "Tribe");
+    Notifications.add("Connection error", -1, {
+      customTitle: "Tribe",
+    });
   }
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
@@ -317,20 +326,21 @@ TribeSocket.in.system.connectError((err) => {
 });
 
 TribeSocket.in.system.reconnect((attempt) => {
-  Notifications.add(
-    `Reconnecting successful. (${attempt})`,
-    1,
-    undefined,
-    "Tribe"
-  );
+  Notifications.add(`Reconnecting successful. (${attempt})`, 1, {
+    customTitle: "Tribe",
+  });
 });
 
 TribeSocket.in.system.reconnectAttempt((attempt) => {
-  Notifications.add(`Reconnecting... (${attempt})`, 0, undefined, "Tribe");
+  Notifications.add(`Reconnecting... (${attempt})`, 0, {
+    customTitle: "Tribe",
+  });
 });
 
 TribeSocket.in.system.notification((data) => {
-  Notifications.add(data.message, data.level ?? 0, undefined, "Tribe");
+  Notifications.add(data.message, data.level ?? 0, {
+    customTitle: "Tribe",
+  });
 });
 
 TribeSocket.in.room.joined((data) => {
