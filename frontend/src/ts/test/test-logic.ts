@@ -3,7 +3,7 @@ import * as TestUI from "./test-ui";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
-import QuotesController from "../controllers/quotes-controller";
+
 import * as Notifications from "../elements/notifications";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "../states/custom-text-name";
@@ -21,7 +21,7 @@ import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
-import * as QuoteSubmitPopup from "../popups/quote-submit-popup";
+
 import * as PbCrown from "./pb-crown";
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
@@ -29,17 +29,14 @@ import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as Replay from "./replay";
 import * as TodayTracker from "./today-tracker";
-import * as Wordset from "./wordset";
 import * as ChallengeContoller from "../controllers/challenge-controller";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
-import * as BritishEnglish from "./british-english";
-import * as EnglishPunctuation from "./english-punctuation";
-import * as LazyMode from "./lazy-mode";
 import * as Result from "./result";
 import * as MonkeyPower from "../elements/monkey-power";
 import * as ActivePage from "../states/active-page";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
+import * as WordsGenerator from "./words-generator";
 import * as TestState from "./test-state";
 import * as ModesNotice from "../elements/modes-notice";
 import * as PageTransition from "../states/page-transition";
@@ -57,6 +54,7 @@ import * as FunboxList from "./funbox/funbox-list";
 import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
+import * as Wordset from "./wordset";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -73,238 +71,6 @@ export function setNotSignedInUid(uid: string): void {
   notSignedInLastResult.uid = uid;
   delete notSignedInLastResult.hash;
   notSignedInLastResult.hash = objectHash(notSignedInLastResult);
-}
-
-function shouldCapitalize(lastChar: string): boolean {
-  return /[?!.؟]/.test(lastChar);
-}
-
-let spanishSentenceTracker = "";
-export async function punctuateWord(
-  previousWord: string,
-  currentWord: string,
-  index: number,
-  maxindex: number
-): Promise<string> {
-  let word = currentWord;
-
-  const currentLanguage = Config.language.split("_")[0];
-
-  const lastChar = Misc.getLastChar(previousWord);
-
-  const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.punctuateWord
-  );
-  if (funbox?.functions?.punctuateWord) {
-    return funbox.functions.punctuateWord(word);
-  }
-  if (
-    currentLanguage != "code" &&
-    currentLanguage != "georgian" &&
-    (index == 0 || shouldCapitalize(lastChar))
-  ) {
-    //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
-
-    word = Misc.capitalizeFirstLetterOfEachWord(word);
-
-    if (currentLanguage == "turkish") {
-      word = word.replace(/I/g, "İ");
-    }
-
-    if (currentLanguage == "spanish" || currentLanguage == "catalan") {
-      const rand = Math.random();
-      if (rand > 0.9) {
-        word = "¿" + word;
-        spanishSentenceTracker = "?";
-      } else if (rand > 0.8) {
-        word = "¡" + word;
-        spanishSentenceTracker = "!";
-      }
-    }
-  } else if (
-    (Math.random() < 0.1 &&
-      lastChar != "." &&
-      lastChar != "," &&
-      index != maxindex - 2) ||
-    index == maxindex - 1
-  ) {
-    if (currentLanguage == "spanish" || currentLanguage == "catalan") {
-      if (spanishSentenceTracker == "?" || spanishSentenceTracker == "!") {
-        word += spanishSentenceTracker;
-        spanishSentenceTracker = "";
-      }
-    } else {
-      const rand = Math.random();
-      if (rand <= 0.8) {
-        if (currentLanguage == "kurdish") {
-          word += ".";
-        } else if (currentLanguage === "nepali") {
-          word += "।";
-        } else {
-          word += ".";
-        }
-      } else if (rand > 0.8 && rand < 0.9) {
-        if (currentLanguage == "french") {
-          word = "?";
-        } else if (
-          currentLanguage == "arabic" ||
-          currentLanguage == "persian" ||
-          currentLanguage == "urdu" ||
-          currentLanguage == "kurdish"
-        ) {
-          word += "؟";
-        } else if (currentLanguage == "greek") {
-          word += ";";
-        } else {
-          word += "?";
-        }
-      } else {
-        if (currentLanguage == "french") {
-          word = "!";
-        } else {
-          word += "!";
-        }
-      }
-    }
-  } else if (
-    Math.random() < 0.01 &&
-    lastChar != "," &&
-    lastChar != "." &&
-    currentLanguage !== "russian"
-  ) {
-    word = `"${word}"`;
-  } else if (
-    Math.random() < 0.011 &&
-    lastChar != "," &&
-    lastChar != "." &&
-    currentLanguage !== "russian" &&
-    currentLanguage !== "ukrainian" &&
-    currentLanguage !== "slovak"
-  ) {
-    word = `'${word}'`;
-  } else if (Math.random() < 0.012 && lastChar != "," && lastChar != ".") {
-    if (currentLanguage == "code") {
-      const r = Math.random();
-      if (r < 0.25) {
-        word = `(${word})`;
-      } else if (r < 0.5) {
-        word = `{${word}}`;
-      } else if (r < 0.75) {
-        word = `[${word}]`;
-      } else {
-        word = `<${word}>`;
-      }
-    } else {
-      word = `(${word})`;
-    }
-  } else if (
-    Math.random() < 0.013 &&
-    lastChar != "," &&
-    lastChar != "." &&
-    lastChar != ";" &&
-    lastChar != "؛" &&
-    lastChar != ":"
-  ) {
-    if (currentLanguage == "french") {
-      word = ":";
-    } else if (currentLanguage == "greek") {
-      word = "·";
-    } else {
-      word += ":";
-    }
-  } else if (
-    Math.random() < 0.014 &&
-    lastChar != "," &&
-    lastChar != "." &&
-    previousWord != "-"
-  ) {
-    word = "-";
-  } else if (
-    Math.random() < 0.015 &&
-    lastChar != "," &&
-    lastChar != "." &&
-    lastChar != ";" &&
-    lastChar != "؛" &&
-    lastChar != ":"
-  ) {
-    if (currentLanguage == "french") {
-      word = ";";
-    } else if (currentLanguage == "greek") {
-      word = "·";
-    } else if (currentLanguage == "arabic" || currentLanguage == "kurdish") {
-      word += "؛";
-    } else {
-      word += ";";
-    }
-  } else if (Math.random() < 0.2 && lastChar != ",") {
-    if (
-      currentLanguage == "arabic" ||
-      currentLanguage == "urdu" ||
-      currentLanguage == "persian" ||
-      currentLanguage == "kurdish"
-    ) {
-      word += "،";
-    } else {
-      word += ",";
-    }
-  } else if (Math.random() < 0.25 && currentLanguage == "code") {
-    const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
-    const specialsC = [
-      "{",
-      "}",
-      "[",
-      "]",
-      "(",
-      ")",
-      ";",
-      "=",
-      "+",
-      "%",
-      "/",
-      "/*",
-      "*/",
-      "//",
-      "!=",
-      "==",
-      "<=",
-      ">=",
-      "||",
-      "&&",
-      "<<",
-      ">>",
-      "%=",
-      "&=",
-      "*=",
-      "++",
-      "+=",
-      "--",
-      "-=",
-      "/=",
-      "^=",
-      "|=",
-    ];
-
-    if (
-      (Config.language.startsWith("code_c") &&
-        !Config.language.startsWith("code_css")) ||
-      Config.language.startsWith("code_arduino")
-    ) {
-      word = Misc.randomElementFromArray(specialsC);
-    } else {
-      word = Misc.randomElementFromArray(specials);
-    }
-  } else if (
-    Math.random() < 0.5 &&
-    currentLanguage === "english" &&
-    (await EnglishPunctuation.check(word))
-  ) {
-    word = await applyEnglishPunctuationToWord(word);
-  }
-  return word;
-}
-
-async function applyEnglishPunctuationToWord(word: string): Promise<string> {
-  return EnglishPunctuation.replace(word);
 }
 
 export function startTest(now: number): boolean {
@@ -488,6 +254,7 @@ export function restart(options = {} as RestartOptions): void {
   $("#words").stop(true, true);
   $("#words .smoothScroller").stop(true, true).remove();
 
+  testReinitCount = 0;
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
@@ -687,175 +454,30 @@ export function restart(options = {} as RestartOptions): void {
   );
 }
 
-function getFunboxWordsFrequency():
-  | MonkeyTypes.FunboxWordsFrequency
-  | undefined {
-  const wordFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWordsFrequencyMode
-  );
-  if (wordFunbox?.functions?.getWordsFrequencyMode) {
-    return wordFunbox.functions.getWordsFrequencyMode();
-  }
-  return undefined;
-}
-
-function getFunboxWord(
-  word: string,
-  wordIndex: number,
-  wordset?: Misc.Wordset
-): string {
-  const wordFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWord
-  );
-  if (wordFunbox?.functions?.getWord) {
-    word = wordFunbox.functions.getWord(wordset, wordIndex);
-  }
-  return word;
-}
-
-function applyFunboxesToWord(word: string): string {
-  for (const f of FunboxList.get(Config.funbox)) {
-    if (f.functions?.alterText) {
-      word = f.functions.alterText(word);
-    }
-  }
-  return word;
-}
-
-async function applyBritishEnglishToWord(word: string): Promise<string> {
-  if (Config.britishEnglish && /english/.test(Config.language)) {
-    word = await BritishEnglish.replace(word);
-  }
-  return word;
-}
-
-function applyLazyModeToWord(
-  word: string,
-  language: MonkeyTypes.LanguageObject
-): string {
-  if (Config.lazyMode === true && !language.noLazyMode) {
-    word = LazyMode.replaceAccents(word, language.accents);
-  }
-  return word;
-}
-
-async function getNextWord(
-  wordset: Misc.Wordset,
-  wordIndex: number,
-  language: MonkeyTypes.LanguageObject,
-  wordsBound: number
-): Promise<string> {
-  const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
-
-  let randomWord = wordset.randomWord(funboxFrequency);
-  const previousWord = TestWords.words.get(TestWords.words.length - 1, true);
-  const previousWord2 = TestWords.words.get(TestWords.words.length - 2, true);
-  if (Config.mode === "quote") {
-    randomWord =
-      TestWords.randomQuote.textSplit?.[TestWords.words.length] ?? "";
-  } else if (
-    Config.mode == "custom" &&
-    !CustomText.isWordRandom &&
-    !CustomText.isTimeRandom
-  ) {
-    randomWord = CustomText.text[TestWords.words.length];
-  } else if (
-    Config.mode == "custom" &&
-    (CustomText.isWordRandom || CustomText.isTimeRandom) &&
-    (wordset.length < 4 || PractiseWords.before.mode !== null)
-  ) {
-    randomWord = wordset.randomWord(funboxFrequency);
-  } else {
-    let regenarationCount = 0; //infinite loop emergency stop button
-    while (
-      regenarationCount < 100 &&
-      (previousWord == randomWord ||
-        previousWord2 == randomWord ||
-        (Config.mode !== "custom" &&
-          !Config.punctuation &&
-          randomWord == "I") ||
-        (Config.mode !== "custom" &&
-          !Config.punctuation &&
-          !Config.language.startsWith("code") &&
-          /[-=_+[\]{};'\\:"|,./<>?]/i.test(randomWord)) ||
-        (Config.mode !== "custom" &&
-          !Config.numbers &&
-          /[0-9]/i.test(randomWord)))
-    ) {
-      regenarationCount++;
-      randomWord = wordset.randomWord(funboxFrequency);
-    }
-  }
-
-  if (randomWord === undefined) {
-    randomWord = wordset.randomWord(funboxFrequency);
-  }
-
-  if (
-    Config.mode !== "custom" &&
-    Config.mode !== "quote" &&
-    /[A-Z]/.test(randomWord) &&
-    !Config.punctuation &&
-    !Config.language.startsWith("german") &&
-    !Config.language.startsWith("swiss_german") &&
-    !Config.language.startsWith("code")
-  ) {
-    randomWord = randomWord.toLowerCase();
-  }
-
-  randomWord = randomWord.replace(/ +/gm, " ");
-  randomWord = randomWord.replace(/(^ )|( $)/gm, "");
-  randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = getFunboxWord(randomWord, wordIndex, wordset);
-  randomWord = await applyBritishEnglishToWord(randomWord);
-
-  if (Config.punctuation && !language.originalPunctuation === true) {
-    randomWord = await punctuateWord(
-      TestWords.words.get(TestWords.words.length - 1),
-      randomWord,
-      TestWords.words.length,
-      wordsBound
-    );
-  }
-  if (Config.numbers) {
-    if (Math.random() < 0.1) {
-      randomWord = Misc.getNumbers(4);
-
-      if (Config.language.startsWith("kurdish")) {
-        randomWord = Misc.convertNumberToArabic(randomWord);
-      } else if (Config.language.startsWith("nepali")) {
-        randomWord = Misc.convertNumberToNepali(randomWord);
-      }
-    }
-  }
-
-  randomWord = applyFunboxesToWord(randomWord);
-
-  return randomWord;
-}
-
 let rememberLazyMode: boolean;
+let testReinitCount = 0;
 export async function init(): Promise<void> {
+  testReinitCount++;
+  if (testReinitCount >= 5) {
+    TestUI.setTestRestarting(false);
+    Notifications.add(
+      "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
+      -1,
+      {
+        important: true,
+      }
+    );
+    return;
+  }
+
   TestState.setActive(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
   TestUI.setCurrentWordElementIndex(0);
-  // accuracy = {
-  //   correct: 0,
-  //   incorrect: 0,
-  // };
-
   TestInput.input.resetHistory();
   TestInput.input.resetCurrent();
 
-  if (ActivePage.get() == "test") {
-    await Funbox.activate();
-  }
-
-  if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
-    UpdateConfig.setQuoteLength(-1);
-  }
   let language;
   try {
     language = await Misc.getLanguage(Config.language);
@@ -865,24 +487,21 @@ export async function init(): Promise<void> {
       -1
     );
   }
-  if (language && language.name !== Config.language) {
+
+  if (!language || (language && language.name !== Config.language)) {
     UpdateConfig.setLanguage("english");
+    await init();
+    return;
   }
 
-  if (!language) {
-    UpdateConfig.setLanguage("english");
-    try {
-      language = await Misc.getLanguage(Config.language);
-    } catch (e) {
-      Notifications.add(
-        Misc.createErrorMessage(e, "Failed to load language"),
-        -1
-      );
-      return;
-    }
+  if (ActivePage.get() == "test") {
+    await Funbox.activate();
   }
 
   if (Config.mode === "quote") {
+    if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
+      UpdateConfig.setQuoteLength(-1);
+    }
     let group;
     try {
       group = await Misc.findCurrentGroup(Config.language);
@@ -892,7 +511,12 @@ export async function init(): Promise<void> {
       );
       return;
     }
-    if (group && group.name !== "code" && group.name !== Config.language) {
+    if (
+      group &&
+      group.name !== "code" &&
+      group.name !== "other" &&
+      group.name !== Config.language
+    ) {
       UpdateConfig.setLanguage(group.name);
     }
   }
@@ -918,297 +542,49 @@ export async function init(): Promise<void> {
     rememberLazyMode = false;
   }
 
-  let wordsBound = 100;
-
-  const funboxToPush = FunboxList.get(Config.funbox)
-    .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-    ?.properties?.find((fp) => fp.startsWith("toPush:"));
-  if (funboxToPush) {
-    wordsBound = +funboxToPush.split(":")[1];
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-    if (
-      Config.mode === "custom" &&
-      !CustomText.isTimeRandom &&
-      CustomText.isWordRandom &&
-      CustomText.word < wordsBound
-    ) {
-      wordsBound = CustomText.word;
-    }
-    if (
-      Config.mode === "custom" &&
-      !CustomText.isTimeRandom &&
-      !CustomText.isWordRandom &&
-      CustomText.text.length < wordsBound
-    ) {
-      wordsBound = CustomText.text.length;
-    }
-  } else if (Config.showAllLines) {
-    if (Config.mode === "quote") {
-      wordsBound = 100;
-    } else if (Config.mode === "custom") {
-      if (CustomText.isWordRandom) {
-        wordsBound = CustomText.word;
-      } else if (CustomText.isTimeRandom) {
-        wordsBound = 100;
-      } else {
-        wordsBound = CustomText.text.length;
-      }
-    } else if (Config.mode != "time") {
-      wordsBound = Config.words;
-    }
-  } else {
-    if (Config.mode === "words" && Config.words < wordsBound) {
-      wordsBound = Config.words;
-    }
-    if (
-      Config.mode == "custom" &&
-      CustomText.isWordRandom &&
-      CustomText.word < wordsBound
-    ) {
-      wordsBound = CustomText.word;
-    }
-    if (Config.mode == "custom" && CustomText.isTimeRandom) {
-      wordsBound = 100;
-    }
-    if (
-      Config.mode == "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      CustomText.text.length < wordsBound
-    ) {
-      wordsBound = CustomText.text.length;
-    }
-  }
-
-  if (
-    (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      CustomText.word == 0) ||
-    (Config.mode === "custom" &&
-      CustomText.isTimeRandom &&
-      CustomText.time == 0)
-  ) {
-    wordsBound = 100;
-  }
-
-  if (Config.mode === "words" && Config.words === 0) {
-    wordsBound = 100;
-  }
-
-  if (
-    Config.mode == "time" ||
-    Config.mode == "words" ||
-    Config.mode == "custom"
-  ) {
-    let wordList = language.words;
-    if (Config.mode == "custom") {
-      wordList = CustomText.text;
-    }
-    const wordset = await Wordset.withWords(wordList);
-    let wordCount = 0;
-
-    const sectionFunbox = FunboxList.get(Config.funbox).find(
-      (f) => f.functions?.pullSection
-    );
-    if (sectionFunbox?.functions?.pullSection) {
-      while (
-        (Config.mode == "words" && Config.words >= wordCount) ||
-        (Config.mode === "time" && wordCount < 100)
-      ) {
-        const section = await sectionFunbox.functions.pullSection(
-          Config.language
-        );
-
-        if (section === false) {
-          Notifications.add(
-            "Error while getting section. Please try again later",
-            -1
-          );
-          UpdateConfig.toggleFunbox(sectionFunbox.name);
-          restart();
-          return;
-        }
-
-        if (section === undefined) continue;
-
-        for (const word of section.words) {
-          if (wordCount >= Config.words && Config.mode == "words") {
-            wordCount++;
-            break;
-          }
-          wordCount++;
-          TestWords.words.push(word);
-        }
-      }
-    }
-
-    if (wordCount == 0) {
-      for (let i = 0; i < wordsBound; i++) {
-        const randomWord = await getNextWord(wordset, i, language, wordsBound);
-
-        if (/\t/g.test(randomWord)) {
-          TestWords.setHasTab(true);
-        }
-
-        const te = randomWord.replace(/\n/g, "\n ").replace(/ $/g, "");
-
-        if (/ +/.test(te)) {
-          const randomList = te.split(" ");
-          let id = 0;
-          while (id < randomList.length) {
-            TestWords.words.push(randomList[id]);
-            id++;
-
-            if (
-              TestWords.words.length == wordsBound &&
-              Config.mode == "custom" &&
-              CustomText.isWordRandom
-            ) {
-              break;
-            }
-          }
-          if (
-            Config.mode == "custom" &&
-            !CustomText.isWordRandom &&
-            !CustomText.isTimeRandom
-          ) {
-            //
-          } else {
-            i = TestWords.words.length - 1;
-          }
-        } else {
-          TestWords.words.push(randomWord);
-        }
-      }
-    }
-  } else if (Config.mode === "quote") {
-    const languageToGet = Config.language.startsWith("swiss_german")
-      ? "german"
-      : Config.language;
-
-    const quotesCollection = await QuotesController.getQuotes(
-      languageToGet,
-      Config.quoteLength
-    );
-
-    if (quotesCollection.length === 0) {
-      TestUI.setTestRestarting(false);
-      Notifications.add(
-        `No ${Config.language
-          .replace(/_\d*k$/g, "")
-          .replace(/_/g, " ")} quotes found`,
-        0,
-        { important: true }
-      );
-      if (Auth?.currentUser) {
-        QuoteSubmitPopup.show(false);
-      }
-      UpdateConfig.setMode("words");
-      restart();
-      return;
-    }
-
-    let rq: MonkeyTypes.Quote | undefined = undefined;
-    if (Config.quoteLength.includes(-2) && Config.quoteLength.length === 1) {
-      const targetQuote = QuotesController.getQuoteById(
-        QuoteSearchPopup.selectedId
-      );
-      if (targetQuote === undefined) {
-        rq = <MonkeyTypes.Quote>quotesCollection.groups[0][0];
-        Notifications.add("Quote Id Does Not Exist", 0, { important: true });
-      } else {
-        rq = targetQuote;
-      }
-    } else if (Config.quoteLength.includes(-3)) {
-      const randomQuote = QuotesController.getRandomFavoriteQuote(
-        Config.language
-      );
-
-      if (randomQuote === null) {
-        Notifications.add("No favorite quotes found", 0, { important: true });
-        UpdateConfig.setQuoteLength(-1);
-        restart();
-        return;
-      }
-
-      rq = randomQuote;
+  let generatedWords: string[];
+  try {
+    generatedWords = await WordsGenerator.generateWords(language);
+  } catch (e) {
+    console.error(e);
+    if (e instanceof WordsGenerator.WordGenError) {
+      Notifications.add(e.message, 0, {
+        important: true,
+      });
     } else {
-      const randomQuote = QuotesController.getRandomQuote();
-      if (randomQuote === null) {
-        Notifications.add("No quotes found for selected quote length", 0, {
+      Notifications.add(
+        Misc.createErrorMessage(e, "Failed to generate words"),
+        -1,
+        {
           important: true,
-        });
-        TestUI.setTestRestarting(false);
-        return;
-      }
-
-      rq = randomQuote;
+        }
+      );
     }
 
-    if (rq === undefined) return;
+    await init();
+    return;
+  }
 
-    rq.text = rq.text.replace(/ +/gm, " ");
-    rq.text = rq.text.replace(/\\\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\\\n/gm, "\n");
-    rq.text = rq.text.replace(/\\t/gm, "\t");
-    rq.text = rq.text.replace(/\\n/gm, "\n");
-    rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-    rq.text = rq.text.replace(/…/g, "...");
-    rq.text = rq.text.trim();
-    rq.textSplit = rq.text.split(" ");
-    rq.language = Config.language.replace(/_\d*k$/g, "");
-
-    TestWords.setRandomQuote(rq);
-
-    const w = TestWords.randomQuote.textSplit;
-
-    if (w === undefined) return;
-
-    wordsBound = Math.min(wordsBound, w.length);
-
-    for (let i = 0; i < wordsBound; i++) {
-      if (/\t/g.test(w[i])) {
-        TestWords.setHasTab(true);
-      }
-
-      w[i] = applyLazyModeToWord(w[i], language);
-      w[i] = applyFunboxesToWord(w[i]);
-      w[i] = await applyBritishEnglishToWord(w[i]);
-
-      if (Config.language === "swiss_german") {
-        w[i] = w[i].replace(/ß/g, "ss");
-      }
-
-      TestWords.words.push(w[i]);
+  for (const word of generatedWords) {
+    if (/\t/g.test(word)) {
+      TestWords.setHasTab(true);
     }
   }
-  //handle right-to-left languages
-  TestUI.setRightToLeft(language.rightToLeft);
-  if (language.ligatures) {
-    $("#words").addClass("withLigatures");
-    $("#resultWordsHistory .words").addClass("withLigatures");
-    $("#resultReplay .words").addClass("withLigatures");
-  } else {
-    $("#words").removeClass("withLigatures");
-    $("#resultWordsHistory .words").removeClass("withLigatures");
-    $("#resultReplay .words").removeClass("withLigatures");
+
+  for (const word of generatedWords) {
+    TestWords.words.push(word);
   }
-  // if (Config.mode == "zen") {
-  //   // Creating an empty active word element for zen mode
-  //   $("#words").append('<div class="word active"></div>');
-  //   $("#words").css("height", "auto");
-  //   $("#wordsWrapper").css("height", "auto");
-  // } else {
-  TestUI.showWords();
+
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     KeymapEvent.highlight(TestWords.words.getCurrent().at(0) as string);
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
-  // }
+  TestUI.setRightToLeft(language.rightToLeft);
+  TestUI.setLigatures(language.ligatures ?? false);
+  TestUI.showWords();
 }
 
+//add word during the test
 export async function addWord(): Promise<void> {
   let bound = 100;
   const funboxToPush = FunboxList.get(Config.funbox)
@@ -1278,11 +654,13 @@ export async function addWord(): Promise<void> {
         };
   const wordset = await Wordset.withWords(language.words);
 
-  const randomWord = await getNextWord(
+  const randomWord = await WordsGenerator.getNextWord(
     wordset,
     TestWords.words.length,
     language,
-    bound
+    bound,
+    TestWords.words.get(TestWords.words.length - 1, true),
+    TestWords.words.get(TestWords.words.length - 2, true)
   );
 
   const split = randomWord.split(" ");
