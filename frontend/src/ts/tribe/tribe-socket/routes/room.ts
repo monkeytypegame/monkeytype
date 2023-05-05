@@ -243,12 +243,18 @@ function backToLobby(callback: () => void): void {
   Socket.on("room_back_to_lobby", callback);
 }
 
+export type FinalPositions = Record<
+  number,
+  {
+    id: string;
+    newPoints: number;
+    newPointsTotal: number;
+  }[]
+>;
+
 function finalPositions(
   callback: (data: {
-    sorted: {
-      newPoints: number;
-      id: string;
-    }[];
+    positions: FinalPositions;
     miniCrowns: TribeTypes.MiniCrowns;
   }) => void
 ): void {

@@ -3,6 +3,7 @@ import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as SlowTimer from "../states/slow-timer";
 import tribeSocket from "./tribe-socket";
+import { FinalPositions } from "./tribe-socket/routes/room";
 
 const initialised: Record<string, boolean | object> = {};
 
@@ -139,28 +140,22 @@ export function updateWpmAndAcc(
 
 export function updatePositions(
   page: string,
-  orderedList: {
-    newPoints: number;
-    id: string;
-  }[],
+  positions: FinalPositions,
   reorder = false
 ): void {
-  const points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
   if (page === "result") {
-    orderedList.forEach((user, index) => {
-      const userEl = $(
-        `.pageTest #result #tribeResults table tbody tr.user[id="${user.id}"]`
-      );
-      const string = Misc.getPositionString(index + 1);
-      userEl.find(".pos").text(string);
-      userEl
-        .find(".points")
-        .text(
-          points[index]
-            ? `+${points[index]}${points[index] === 1 ? "pt" : "pts"}`
-            : ""
+    for (const [position, users] of Object.entries(positions)) {
+      for (const user of users) {
+        const userEl = $(
+          `.pageTest #result #tribeResults table tbody tr.user[id="${user.id}"]`
         );
-    });
+        const string = Misc.getPositionString(parseInt(position));
+        userEl.find(".pos").text(string);
+        userEl
+          .find(".points")
+          .text(`+${user.newPoints}${user.newPoints === 1 ? "pt" : "pts"}`);
+      }
+    }
 
     //todo once i use state and redraw elements as needed instead of always keeping elements in the dom
     //reorder table rows based on the ordered list
@@ -176,10 +171,13 @@ export function updatePositions(
 
       el.empty();
       //add in the correct order, then add the rest
-      orderedList.forEach((user) => {
-        el.append(elements[user.id]);
-        delete elements[user.id];
-      });
+
+      for (const [_pos, users] of Object.entries(positions)) {
+        for (const user of users) {
+          el.append(elements[user.id]);
+          delete elements[user.id];
+        }
+      }
       for (const id of Object.keys(elements)) {
         el.append(elements[id]);
       }

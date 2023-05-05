@@ -757,30 +757,38 @@ TribeSocket.in.room.backToLobby(() => {
 TribeSocket.in.room.finalPositions((data) => {
   const room = TribeState.getRoom();
   if (!room) return;
-  TribeResults.updatePositions("result", data.sorted, true);
+  TribeResults.updatePositions("result", data.positions, true);
   TribeResults.updateMiniCrowns("result", data.miniCrowns);
-  for (const user of Object.values(data.sorted)) {
-    room.users[user.id].points = user.newPoints;
+  for (const userArray of Object.values(data.positions)) {
+    for (const user of userArray) {
+      room.users[user.id].points = user.newPointsTotal;
+    }
   }
   TribeUserList.update();
 
-  let isGlowing = false;
-  if (
-    data.miniCrowns.wpm.includes(data.sorted[0]?.id) &&
-    data.miniCrowns.acc.includes(data.sorted[0]?.id) &&
-    data.miniCrowns.raw.includes(data.sorted[0]?.id) &&
-    data.miniCrowns.consistency.includes(data.sorted[0]?.id)
-  ) {
-    isGlowing = true;
+  let localGlow = false;
+
+  for (const winner of data.positions["1"]) {
+    if (winner.id === TribeSocket.getId()) {
+      localGlow = true;
+    }
+
+    let isGlowing = false;
+    if (
+      data.miniCrowns.wpm.includes(winner.id) &&
+      data.miniCrowns.acc.includes(winner.id) &&
+      data.miniCrowns.raw.includes(winner.id) &&
+      data.miniCrowns.consistency.includes(winner.id)
+    ) {
+      isGlowing = true;
+    }
+
+    TribeResults.showCrown("result", winner.id, isGlowing);
   }
 
-  if (data.sorted[0]?.id) {
-    TribeResults.showCrown("result", data.sorted[0]?.id, isGlowing);
-  }
-
-  if (data?.sorted[0]?.id === TribeSocket.getId()) {
+  if (data.positions[1].some((u) => u.id === TribeSocket.getId())) {
     TribeSound.play("finish_win");
-    if (isGlowing) {
+    if (localGlow) {
       TribeSound.play("glow");
     }
   } else {
