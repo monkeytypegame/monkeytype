@@ -248,12 +248,10 @@ function updateUser(page: string, userId: string): void {
       return;
     }
     if (user.isFinished) {
-      userEl.find(`.wpm .text`).text(userResult.wpm.toFixed(2));
-      userEl.find(`.raw .text`).text(userResult.raw.toFixed(2));
-      userEl.find(`.acc .text`).text(userResult.acc.toFixed(2) + "%");
-      userEl
-        .find(`.consistency .text`)
-        .text(userResult.consistency.toFixed(2) + "%");
+      userEl.find(`.wpm .text`).text(userResult.wpm);
+      userEl.find(`.raw .text`).text(userResult.raw);
+      userEl.find(`.acc .text`).text(userResult.acc + "%");
+      userEl.find(`.consistency .text`).text(userResult.consistency + "%");
       userEl.find(`.char .text`).text(
         `
         ${userResult.charStats[0]}/${userResult.charStats[1]}/${userResult.charStats[2]}/${userResult.charStats[3]}
