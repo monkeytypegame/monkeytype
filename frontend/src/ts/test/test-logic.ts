@@ -980,10 +980,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
     resolveTestSavePromise = resolve;
   });
 
-  testSavePromise = new Promise((resolve) => {
-    resolveTestSavePromise = resolve;
-  });
-
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
