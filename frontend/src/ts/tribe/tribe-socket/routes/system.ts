@@ -1,3 +1,4 @@
+import { DisconnectDescription } from "socket.io-client/build/esm/socket";
 import Socket from "../socket";
 
 async function versionCheck(
@@ -104,7 +105,9 @@ function connect(callback: () => void): void {
   });
 }
 
-function disconnect(callback: (reason: string, details?: any) => void): void {
+function disconnect(
+  callback: (reason: string, details?: DisconnectDescription) => void
+): void {
   Socket.on("disconnect", callback);
 }
 
