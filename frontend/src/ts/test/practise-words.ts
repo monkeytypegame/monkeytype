@@ -10,16 +10,26 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "practiseWordsPopupWrapper";
 
+interface BeforeCustomText {
+  text: string[];
+  isTimeRandom: boolean;
+  isWordRandom: boolean;
+  time: number;
+  word: number;
+}
+
 interface Before {
   mode: MonkeyTypes.Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
+  customText: BeforeCustomText | null;
 }
 
 export const before: Before = {
   mode: null,
   punctuation: null,
   numbers: null,
+  customText: null,
 };
 
 export function init(missed: boolean, slow: boolean): boolean {
@@ -91,8 +101,19 @@ export function init(missed: boolean, slow: boolean): boolean {
   const punctuation =
     before.punctuation === null ? Config.punctuation : before.punctuation;
   const numbers = before.numbers === null ? Config.numbers : before.numbers;
-  UpdateConfig.setMode("custom", true);
 
+  let customText = null;
+  if (Config.mode === "custom") {
+    customText = {
+      text: CustomText.text,
+      isWordRandom: CustomText.isWordRandom,
+      isTimeRandom: CustomText.isTimeRandom,
+      word: CustomText.word,
+      time: CustomText.time,
+    };
+  }
+
+  UpdateConfig.setMode("custom", true);
   CustomText.setPopupTextareaState(newCustomText.join(CustomText.delimiter));
   CustomText.setText(newCustomText);
   CustomText.setIsWordRandom(true);
@@ -107,6 +128,7 @@ export function init(missed: boolean, slow: boolean): boolean {
   before.mode = mode;
   before.punctuation = punctuation;
   before.numbers = numbers;
+  before.customText = customText;
 
   return true;
 }
@@ -115,6 +137,7 @@ export function resetBefore(): void {
   before.mode = null;
   before.punctuation = null;
   before.numbers = null;
+  before.customText = null;
 }
 
 export function showPopup(focus = false): void {

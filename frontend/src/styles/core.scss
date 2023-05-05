@@ -173,6 +173,10 @@ label.checkbox {
   }
 }
 
+#middle {
+  display: grid; //stupid fix for stupid safari
+}
+
 key {
   color: var(--bg-color);
   background-color: var(--sub-color);

@@ -68,10 +68,10 @@
       "length": 738
     },
     {
-      "text": "public int IndexOf(int elem) {\n\tint index = 0;\n\tfor (Node curr = head; curr != null; curr = curr.GetTail()) {\n\t \tif (curr.GetElem() == elem) {\n\t\t\treturn index;\n\t\t} else {\n\t\t\tindex++;\n\t\t}\n\t}\n\treturn -1;\n}",
+      "text": "public int IndexOf(int elem) {\n\tint index = 0;\n\tfor (Node curr = head; curr != null; curr = curr.GetTail()) {\n\t\tif (curr.GetElem() == elem) {\n\t\t\treturn index;\n\t\t} else {\n\t\t\tindex++;\n\t\t}\n\t}\n\treturn -1;\n}",
       "source": "Get the Index of an Element in a Linked List",
       "id": 11,
-      "length": 203
+      "length": 202
     },
     {
       "text": "public void SetTail(Node curr, Node next) {\n\tif (curr == null) {\n\t\tnext.SetNext(head);\n\t\thead = next;\n\t} else {\n\t\tnext.SetNext(curr.GetNext());\n\t\tcurr.SetNext(next);\n\t}\n\tnumNodes++;\n}",

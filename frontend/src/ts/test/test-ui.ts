@@ -57,8 +57,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
-    updateWordsHeight(true);
-    updateWordsInputPosition(true);
+    setTimeout(() => {
+      updateWordsHeight(true);
+      updateWordsInputPosition(true);
+    }, 0);
   }
 
   if (eventKey === "theme") applyBurstHeatmap();
@@ -852,6 +854,18 @@ export function setRightToLeft(isEnabled: boolean): void {
     $("#words").removeClass("rightToLeftTest");
     $("#resultWordsHistory .words").removeClass("rightToLeftTest");
     $("#resultReplay .words").removeClass("rightToLeftTest");
+  }
+}
+
+export function setLigatures(isEnabled: boolean): void {
+  if (isEnabled) {
+    $("#words").addClass("withLigatures");
+    $("#resultWordsHistory .words").addClass("withLigatures");
+    $("#resultReplay .words").addClass("withLigatures");
+  } else {
+    $("#words").removeClass("withLigatures");
+    $("#resultWordsHistory .words").removeClass("withLigatures");
+    $("#resultReplay .words").removeClass("withLigatures");
   }
 }
 
