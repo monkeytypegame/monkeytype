@@ -440,8 +440,8 @@ export async function generateWords(
         i,
         language,
         limit,
-        ret.at(-1) ?? "",
-        ret.at(-2) ?? ""
+        Misc.nthElementFromArray(ret, -1) ?? "",
+        Misc.nthElementFromArray(ret, -2) ?? ""
       );
       ret.push(nextWord);
     }
@@ -528,8 +528,8 @@ async function generateQuoteWords(
       i,
       language,
       limit,
-      ret.at(-1) ?? "",
-      ret.at(-2) ?? ""
+      Misc.nthElementFromArray(ret, -1) ?? "",
+      Misc.nthElementFromArray(ret, -2) ?? ""
     );
     ret.push(nextWord);
   }

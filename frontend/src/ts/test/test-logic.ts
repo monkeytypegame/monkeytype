@@ -576,7 +576,9 @@ export async function init(): Promise<void> {
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    KeymapEvent.highlight(TestWords.words.getCurrent().at(0) as string);
+    KeymapEvent.highlight(
+      Misc.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
+    );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
   TestUI.setRightToLeft(language.rightToLeft);

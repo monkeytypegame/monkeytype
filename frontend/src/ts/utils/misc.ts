@@ -1282,6 +1282,14 @@ export function randomElementFromArray<T>(array: T[]): T {
   return array[randomIntFromRange(0, array.length - 1)];
 }
 
+export function nthElementFromArray<T>(
+  array: T[],
+  index: number
+): T | undefined {
+  index = index < 0 ? array.length + index : index;
+  return array[index];
+}
+
 export function randomElementFromObject<T extends object>(
   object: T
 ): T[keyof T] {
