@@ -279,7 +279,7 @@ TribeSocket.in.system.disconnect((reason, details) => {
   TribePages.change("preloader");
   TribePagePreloader.updateIcon("times");
   TribePagePreloader.updateText(`Disconnected`);
-  TribePagePreloader.updateSubtext(`${details?.["description"]} (${reason})`);
+  TribePagePreloader.updateSubtext(`${JSON.stringify(details)} (${reason})`);
   TribePagePreloader.showReconnectButton();
 
   reset();
@@ -451,7 +451,13 @@ TribeSocket.in.room.chatMessage((data) => {
   if (!data.isSystem && data.from?.id != TribeSocket.getId()) {
     if (nameregex.test(data.message)) {
       if (ActivePage.get() !== "tribe" && ActivePage.get() !== "test") {
-        Notifications.add(data.message, 0, 3, "Mention", "at", undefined, true); //allowing html because the message is already escaped on the server
+        Notifications.add(data.message, 0, {
+          //allowing html because the message is already escaped on the server
+          duration: 3,
+          customTitle: "Mention",
+          customIcon: "at",
+          allowHTML: true,
+        });
       }
       TribeSound.play("chat_mention");
       data.message = data.message.replace(
