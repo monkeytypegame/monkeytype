@@ -3,6 +3,7 @@
 import "../styles/index.scss";
 import "./firebase";
 
+import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
 import "./controllers/ad-controller";
@@ -65,3 +66,5 @@ extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
 extendedGlobal.egVideoListener = egVideoListener;
 
 extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
+
+extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;

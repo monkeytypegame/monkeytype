@@ -32,14 +32,17 @@ export async function change(
 
   return new Promise((resolve) => {
     if (PageTransition.get()) {
-      console.log(`change page ${page.name} stopped`);
+      console.debug(
+        `change page to ${page.name} stopped, page transition is true`
+      );
       return resolve(false);
     }
-    console.log(`change page ${page.name}`);
 
     if (!options.force && ActivePage.get() === page.name) {
-      console.log(`page ${page.name} already active`);
+      console.debug(`change page ${page.name} stoped, page already active`);
       return resolve(false);
+    } else {
+      console.log(`changing page ${page.name}`);
     }
 
     const pages: Record<string, Page> = {
