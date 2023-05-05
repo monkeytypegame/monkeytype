@@ -1723,7 +1723,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 });
 
 TimerEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "start") startTest();
+  if (eventKey === "start") startTest(performance.now());
   if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
   if (eventKey === "finish") finish();
 });
