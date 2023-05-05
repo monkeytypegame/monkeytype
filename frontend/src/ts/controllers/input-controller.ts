@@ -798,8 +798,6 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 
 let lastBailoutAttempt = -1;
 
-let lastBailoutAttempt = -1;
-
 $(document).keydown(async (event) => {
   if (ActivePage.get() == "loading") return;
 
