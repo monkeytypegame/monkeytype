@@ -77,7 +77,6 @@ function save(): void {
 }
 
 export async function load(): Promise<void> {
-  console.log("loading filters");
   try {
     const newResultFilters = window.localStorage.getItem("resultFilters");
 
@@ -297,7 +296,6 @@ export function getFilter<G extends MonkeyTypes.Group>(
 // }
 
 export function loadTags(tags: MonkeyTypes.Tag[]): void {
-  console.log("loading tags");
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });

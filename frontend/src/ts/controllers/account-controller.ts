@@ -294,6 +294,7 @@ if (Auth && ConnectionState.get()) {
     const search = window.location.search;
     const hash = window.location.hash;
     console.log(`auth state changed, user ${user ? true : false}`);
+    console.debug(user);
     if (user) {
       $("#top .signInOut .icon").html(
         `<i class="fas fa-fw fa-sign-out-alt"></i>`
