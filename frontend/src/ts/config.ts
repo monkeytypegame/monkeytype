@@ -76,6 +76,7 @@ async function saveToLocalStorage(
 export async function saveFullConfigToLocalStorage(
   noDbCheck = false
 ): Promise<void> {
+  console.log("saving full config to localStorage");
   if (!dbConfigLoaded && !noDbCheck) {
     setChangedBeforeDb(true);
   }
@@ -2046,10 +2047,8 @@ export function loadFromLocalStorage(): void {
       newConfig = {} as MonkeyTypes.Config;
     }
     apply(newConfig);
-    console.log("applying localStorage config");
     localStorageConfig = newConfig;
     saveFullConfigToLocalStorage(true);
-    console.log("saving localStorage config");
   } else {
     reset();
   }

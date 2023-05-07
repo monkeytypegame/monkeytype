@@ -3,6 +3,7 @@
 import "../styles/index.scss";
 import "./firebase";
 
+import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
 import "./controllers/ad-controller";
@@ -84,3 +85,5 @@ extendedGlobal.tribeCarets = TribeCarets;
 extendedGlobal.createTribeRoom = TribeSocket.default.out.room.create;
 
 extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
+
+extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;
