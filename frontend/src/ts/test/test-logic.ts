@@ -661,8 +661,8 @@ export async function addWord(): Promise<void> {
     TestWords.words.length,
     language,
     bound,
-    TestWords.words.get(TestWords.words.length - 1, true),
-    TestWords.words.get(TestWords.words.length - 2, true)
+    TestWords.words.get(TestWords.words.length - 1),
+    TestWords.words.get(TestWords.words.length - 2)
   );
 
   const split = randomWord.split(" ");
