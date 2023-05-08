@@ -457,6 +457,7 @@ export function restart(options = {} as RestartOptions): void {
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
 export async function init(): Promise<void> {
+  console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount >= 5) {
     TestUI.setTestRestarting(false);
@@ -584,6 +585,7 @@ export async function init(): Promise<void> {
   TestUI.setRightToLeft(language.rightToLeft);
   TestUI.setLigatures(language.ligatures ?? false);
   TestUI.showWords();
+  console.debug("Test initialized with words", generatedWords);
 }
 
 //add word during the test

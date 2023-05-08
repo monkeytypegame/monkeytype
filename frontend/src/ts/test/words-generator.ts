@@ -548,6 +548,14 @@ export async function getNextWord(
   previousWord: string,
   previousWord2: string
 ): Promise<string> {
+  console.debug("Getting next word", {
+    wordset,
+    wordIndex,
+    language,
+    wordsBound,
+    previousWord,
+    previousWord2,
+  });
   const funboxFrequency = getFunboxWordsFrequency() ?? "normal";
   let randomWord = wordset.randomWord(funboxFrequency);
   const previousWordRaw = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
@@ -646,6 +654,8 @@ export async function getNextWord(
   }
 
   randomWord = applyFunboxesToWord(randomWord);
+
+  console.debug("Word:", randomWord);
 
   return randomWord;
 }
