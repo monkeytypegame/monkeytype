@@ -456,6 +456,7 @@ export async function generateWords(
       if (
         (Config.mode === "custom" &&
           CustomText.isSectionRandom &&
+          CustomText.section !== 0 &&
           sectionIndex >= CustomText.section &&
           currentSection.length === 0) ||
         ret.length >= limit
