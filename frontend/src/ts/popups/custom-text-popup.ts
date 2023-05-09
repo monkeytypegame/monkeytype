@@ -247,9 +247,11 @@ function apply(): void {
   CustomText.setText(text.split(CustomText.delimiter));
 
   CustomText.setWord(
-    parseInt($(`${popup} .wordcount input`).val() as string) || -1
+    parseInt(($(`${popup} .wordcount input`).val() as string) || "-1")
   );
-  CustomText.setTime(parseInt($(`${popup} .time input`).val() as string) || -1);
+  CustomText.setTime(
+    parseInt(($(`${popup} .time input`).val() as string) || "-1")
+  );
 
   CustomText.setSection(
     parseInt($(`${popup} .sectioncount input`).val() as string) || -1

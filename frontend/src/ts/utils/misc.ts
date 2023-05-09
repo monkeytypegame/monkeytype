@@ -1282,6 +1282,14 @@ export function randomElementFromArray<T>(array: T[]): T {
   return array[randomIntFromRange(0, array.length - 1)];
 }
 
+export function nthElementFromArray<T>(
+  array: T[],
+  index: number
+): T | undefined {
+  index = index < 0 ? array.length + index : index;
+  return array[index];
+}
+
 export function randomElementFromObject<T extends object>(
   object: T
 ): T[keyof T] {
@@ -1407,23 +1415,6 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
 
     return result;
   }) as T;
-}
-
-export class Wordset {
-  public words: string[];
-  public length: number;
-  constructor(words: string[]) {
-    this.words = words;
-    this.length = this.words.length;
-  }
-
-  public randomWord(mode: MonkeyTypes.FunboxWordsFrequency): string {
-    if (mode === "zipf") {
-      return this.words[dreymarIndex(this.words.length)];
-    } else {
-      return randomElementFromArray(this.words);
-    }
-  }
 }
 
 export class Section {

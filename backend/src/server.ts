@@ -2,7 +2,6 @@ import "dotenv/config";
 import * as db from "./init/db";
 import jobs from "./jobs";
 import { getLiveConfiguration } from "./init/configuration";
-import { initializeDailyLeaderboardsCache } from "./utils/daily-leaderboards";
 import app from "./app";
 import { Server } from "http";
 import { version } from "./version";
@@ -26,7 +25,7 @@ async function bootServer(port: number): Promise<Server> {
     initFirebaseAdmin();
 
     Logger.info("Fetching live configuration...");
-    const liveConfiguration = await getLiveConfiguration();
+    await getLiveConfiguration();
     Logger.success("Live configuration fetched");
 
     Logger.info("Initializing email client...");
@@ -59,8 +58,6 @@ async function bootServer(port: number): Promise<Server> {
           .join(", ")}`
       );
     }
-
-    initializeDailyLeaderboardsCache(liveConfiguration.dailyLeaderboards);
 
     Logger.info("Starting cron jobs...");
     jobs.forEach((job) => job.start());

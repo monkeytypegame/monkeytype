@@ -1,7 +1,5 @@
 {
   "name": "russian",
-  "leftToRight": true,
-  "noLazyMode": false,
   "bcp47": "ru-RU",
   "words": [
     "о",

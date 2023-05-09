@@ -729,7 +729,7 @@
     },
     {
       "text": "Es ist eine gefährliche Sache, Frodo, aus deiner Tür hinauszugehen. Du betrittst die Straße, und wenn du nicht auf deine Füße aufpasst, kann man nicht wissen, wohin sie dich tragen.",
-      "source": "Derr Herr der Ringe",
+      "source": "Der Herr der Ringe",
       "length": 181,
       "id": 122
     },
@@ -1886,9 +1886,9 @@
       "id": 316
     },
     {
-      "text": "Er gibt mir Feuer. Lange Zeit sagen wir nichts, pusten nur unseren Rauch auf die Stadt da unten. Dann sagt er: \"Da unten könnte alles Mögliche passieren, und hier oben würde man einfach nichts davon merken.\"",
+      "text": "Er gibt mir Feuer. Lange Zeit sagen wir nichts, pusten nur unseren Rauch auf die Stadt da unten. Dann sagt er: \"Da unten könnte alles Mögliche passieren und hier oben würde man einfach nichts davon merken.\"",
       "source": "Bevor ich sterbe",
-      "length": 207,
+      "length": 206,
       "id": 317
     },
     {

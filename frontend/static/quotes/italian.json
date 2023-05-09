@@ -642,6 +642,36 @@
       "source": "Luigi Pirandello, Il fu Mattia Pascal",
       "length": 106,
       "id": 106
+    },
+    {
+      "text": "La vita è un'opera d'arte che richiede la massima attenzione e dedizione.",
+      "source": "Leonardo da Vinci",
+      "length": 73,
+      "id": 107
+    },
+    {
+      "text": "Non c'è niente di più difficile al mondo che non essere altro, non fare altro, non avere altro che ciò che la propria natura vi impone.",
+      "source": "Giovanni Pascoli",
+      "length": 135,
+      "id": 108
+    },
+    {
+      "text": "L’uomo passa la prima metà della sua vita a rovinarsi la salute e la seconda metà alla ricerca di guarire.",
+      "source": "Leonardo da Vinci",
+      "length": 106,
+      "id": 109
+    },
+    {
+      "text": "Il più grande pericolo per noi non è che miriamo troppo in alto e non riusciamo a raggiungere il nostro obiettivo ma che miriamo troppo in basso e lo raggiungiamo.",
+      "source": "Michelangelo Buonarroti",
+      "length": 163,
+      "id": 110
+    },
+    {
+      "text": "Non puoi insegnare niente a un uomo. Puoi solo aiutarlo a scoprire ciò che ha dentro di sé.",
+      "source": "Galileo Galilei",
+      "length": 91,
+      "id": 111
     }
   ]
 }

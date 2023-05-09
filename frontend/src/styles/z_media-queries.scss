@@ -219,6 +219,9 @@
       "leaderboards"
       "pbsTime"
       "pbsWords";
+    .details .bioAndKeyboard {
+      height: 100%; //dumb safari fix
+    }
     .details.soc {
       grid-template-columns: 1.25fr auto 1fr auto auto;
       .typingStats {
@@ -617,6 +620,7 @@
         grid-template-columns: 1fr 1fr 1fr;
       }
       .socials {
+        height: 100%; //dumb safari fix
         justify-content: start;
         .title {
           display: block;
@@ -750,6 +754,13 @@
 @media only screen and (max-width: 34.375rem) {
   #commandLineWrapper {
     padding: 5rem 1rem;
+  }
+  .pageSettings .section.themes .customTheme.button.active,
+  .pageSettings .section.themes .theme.button.active {
+    transform: scale(1.025);
+  }
+  .pageSettings .section.themes .buttons div.theme:hover {
+    transform: scale(1.025);
   }
   .profile .pbsWords,
   .profile .pbsTime {

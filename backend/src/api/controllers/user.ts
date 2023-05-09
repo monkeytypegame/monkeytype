@@ -331,6 +331,14 @@ export async function getUser(
     }
   }
 
+  userInfo.personalBests ??= {
+    time: {},
+    words: {},
+    quote: {},
+    zen: {},
+    custom: {},
+  };
+
   const agentLog = buildAgentLog(req);
   Logger.logToDb("user_data_requested", agentLog, uid);
 

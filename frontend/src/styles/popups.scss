@@ -64,6 +64,7 @@
       &.disabled {
         opacity: 0.5;
         pointer-events: none;
+        -webkit-user-select: none;
         user-select: none;
       }
     }
@@ -133,6 +134,7 @@
       margin: 1rem 0;
       &.disabled {
         opacity: 0.5;
+        -webkit-user-select: none;
         user-select: none;
         pointer-events: none;
       }
@@ -149,6 +151,7 @@
       &.disabled {
         opacity: 0.5;
         pointer-events: none;
+        -webkit-user-select: none;
         user-select: none;
       }
     }
@@ -590,6 +593,7 @@
     width: 465px;
     z-index: 100000001;
     // outline: 0.5rem solid var(--bg-color)
+    -webkit-user-select: none;
     user-select: none;
     .main {
       display: grid;
@@ -822,6 +826,7 @@
         transition: 0.25s;
         padding: 1rem;
         box-sizing: border-box;
+        -webkit-user-select: none;
         user-select: none;
         cursor: pointer;
         height: min-content;
@@ -926,6 +931,7 @@
     top: -1.25rem;
     right: 0.25rem;
     color: var(--sub-color);
+    -webkit-user-select: none;
     user-select: none;
     &.red {
       color: var(--error-color);
@@ -1076,6 +1082,7 @@
       gap: 1rem;
       transition: 0.25s;
       box-sizing: border-box;
+      -webkit-user-select: none;
       user-select: none;
       height: min-content;
       margin-bottom: 1rem;
@@ -1143,9 +1150,9 @@
       margin-bottom: -1rem;
     }
 
-    .text {
-      // color: var(--sub-color);
-    }
+    // .text {
+    //   // color: var(--sub-color);
+    // }
 
     .quote {
       font-size: 1.5rem;
@@ -1169,6 +1176,7 @@
       top: -1.25rem;
       right: 0.25rem;
       color: var(--sub-color);
+      -webkit-user-select: none;
       user-select: none;
       &.red {
         color: var(--error-color);
@@ -1197,9 +1205,9 @@
       margin-bottom: -1rem;
     }
 
-    .text {
-      // color: var(--sub-color);
-    }
+    // .text {
+    //   // color: var(--sub-color);
+    // }
 
     .user {
       font-size: 1.5rem;
@@ -1223,6 +1231,7 @@
       top: -1.25rem;
       right: 0.25rem;
       color: var(--sub-color);
+      -webkit-user-select: none;
       user-select: none;
       &.red {
         color: var(--error-color);
@@ -1577,6 +1586,7 @@
       font-size: 1.25rem;
       margin-bottom: 1rem;
       color: var(--sub-color);
+      -webkit-user-select: none;
       user-select: none;
     }
     .accountAlerts > .claimAll,
