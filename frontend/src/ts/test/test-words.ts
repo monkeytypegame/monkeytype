@@ -1,21 +1,14 @@
 class Words {
   public list: string[];
-  public listSection: string[][];
   public length: number;
   public currentIndex: number;
-  public currentSectionIndex: number;
-  public end: boolean;
   public currentWord: string;
-  public currentSection: string[] | undefined;
+
   constructor() {
     this.list = [];
-    this.listSection = [];
     this.length = 0;
     this.currentIndex = 0;
-    this.currentSectionIndex = 0;
-    this.end = false;
     this.currentWord = "";
-    this.currentSection = undefined;
   }
   get(i?: undefined, raw?: boolean): string[];
   get(i: number, raw?: boolean): string;
@@ -36,29 +29,9 @@ class Words {
   getLast(): string {
     return this.list[this.list.length - 1];
   }
-  getLastSection(): string[] {
-    return this.listSection[this.listSection.length - 1];
-  }
-  getLastSection2(): string[] {
-    return this.listSection[this.listSection.length - 2];
-  }
   push(word: string): void {
     this.list.push(word);
     this.length = this.list.length;
-  }
-  pushSection(words: string[]): void {
-    this.listSection.push(words);
-    this.currentSectionIndex++;
-  }
-  endFalse(): void {
-    this.end = false;
-  }
-  endTrue(): void {
-    this.end = true;
-  }
-
-  setCurrentSection(section: string[]): void {
-    this.currentSection = section;
   }
 
   setCurrentWord(word: string): void {
@@ -67,13 +40,11 @@ class Words {
 
   reset(): void {
     this.list = [];
-    this.listSection = [];
+
     this.currentIndex = 0;
-    this.currentSectionIndex = 0;
+
     this.length = this.list.length;
-    this.end = true;
     this.currentWord = "";
-    this.currentSection = undefined;
   }
   resetCurrentIndex(): void {
     this.currentIndex = 0;

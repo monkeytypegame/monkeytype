@@ -674,41 +674,8 @@ export async function addWord(): Promise<void> {
     TestWords.words.get(TestWords.words.length - 2)
   );
 
-  const split = randomWord.split(" ");
-
-  const newSplit = split.map((word) => {
-    if (word.endsWith("|")) {
-      word = word.slice(0, -1);
-    }
-    return word;
-  });
-
-  if (TestWords.words.currentSection === undefined) {
-    TestWords.words.pushSection(newSplit);
-    TestWords.words.currentSection = newSplit;
-    TestWords.words.currentWord = newSplit[0];
-    TestWords.words.end = false;
-  } else {
-    const index = TestWords.words.currentSection.indexOf(
-      TestWords.words.currentWord
-    );
-    if (index === TestWords.words.currentSection.length - 1) {
-      TestWords.words.pushSection(newSplit);
-      TestWords.words.currentSection = newSplit;
-      TestWords.words.currentWord = TestWords.words.currentSection[0];
-    } else {
-      TestWords.words.currentWord = TestWords.words.currentSection[index + 1];
-      if (TestWords.words.listSection.length === CustomText.section) {
-        if (index + 1 === TestWords.words.currentSection.length - 1) {
-          TestWords.words.currentSection = undefined;
-          TestWords.words.end = true;
-        }
-      }
-    }
-  }
-
-  TestWords.words.push(TestWords.words.currentWord);
-  TestUI.addWord(TestWords.words.currentWord);
+  TestWords.words.push(randomWord);
+  TestUI.addWord(randomWord);
 }
 
 interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
