@@ -615,7 +615,9 @@ export async function addWord(): Promise<void> {
         (TestWords.randomQuote.textSplit?.length ?? 0)) ||
     (Config.mode === "custom" &&
       CustomText.isSectionRandom &&
-      TestWords.words.end)
+      WordsGenerator.sectionIndex >= CustomText.section &&
+      WordsGenerator.currentSection.length === 0 &&
+      CustomText.section != 0)
   ) {
     return;
   }
