@@ -465,7 +465,7 @@ export async function generateWords(
       i++;
     }
   }
-  sectionHistory = []; //free up a bit of memory? is that even a thing??
+  sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
 }
 
