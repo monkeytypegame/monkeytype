@@ -254,7 +254,7 @@ function apply(): void {
   );
 
   CustomText.setSection(
-    parseInt($(`${popup} .sectioncount input`).val() as string) || -1
+    parseInt(($(`${popup} .sectioncount input`).val() as string) || "-1")
   );
   CustomText.setIsWordRandom(
     $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
