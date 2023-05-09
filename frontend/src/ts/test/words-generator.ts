@@ -355,6 +355,9 @@ export function getWordsLimit(): number {
   ) {
     limit = 100;
   }
+  if (Config.mode === "custom" && CustomText.isSectionRandom) {
+    limit = 100;
+  }
 
   //funboxes
   if (funboxToPush) {
@@ -367,6 +370,7 @@ export function getWordsLimit(): number {
   }
   if (
     Config.mode === "custom" &&
+    !CustomText.isSectionRandom &&
     !CustomText.isTimeRandom &&
     CustomText.isWordRandom &&
     CustomText.word !== 0 &&
@@ -378,6 +382,7 @@ export function getWordsLimit(): number {
     Config.mode === "custom" &&
     !CustomText.isTimeRandom &&
     !CustomText.isWordRandom &&
+    !CustomText.isSectionRandom &&
     CustomText.text.length !== 0 &&
     CustomText.text.length < limit
   ) {
