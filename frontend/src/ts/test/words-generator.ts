@@ -439,7 +439,9 @@ export async function generateWords(
       return funboxSection;
     }
 
-    for (let i = 0; i < limit; i++) {
+    let stop = false;
+    let i = 0;
+    while (stop === false) {
       const nextWord = await getNextWord(
         wordset,
         i,
@@ -449,6 +451,17 @@ export async function generateWords(
         Misc.nthElementFromArray(ret, -2) ?? ""
       );
       ret.push(nextWord);
+
+      if (
+        (Config.mode === "custom" &&
+          CustomText.isSectionRandom &&
+          sectionIndex >= CustomText.section &&
+          currentSection.length === 0) ||
+        ret.length >= limit
+      ) {
+        stop = true;
+      }
+      i++;
     }
   }
   return ret;
