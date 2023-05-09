@@ -4,7 +4,11 @@ import MonkeyError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as DiscordUtils from "../../utils/discord";
-import { buildAgentLog, sanitizeString } from "../../utils/misc";
+import {
+  MILLISECONDS_IN_DAY,
+  buildAgentLog,
+  sanitizeString,
+} from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
 import admin from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
@@ -194,9 +198,6 @@ export async function resetUser(
   return new MonkeyResponse("User reset");
 }
 
-const DAY_IN_SECONDS = 24 * 60 * 60;
-const THIRTY_DAYS_IN_SECONDS = DAY_IN_SECONDS * 30;
-
 export async function updateName(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -207,7 +208,7 @@ export async function updateName(
 
   if (
     !user?.needsToChangeName &&
-    Date.now() - (user.lastNameChange ?? 0) < THIRTY_DAYS_IN_SECONDS
+    Date.now() - (user.lastNameChange ?? 0) < MILLISECONDS_IN_DAY * 30
   ) {
     throw new MonkeyError(409, "You can change your name once every 30 days");
   }
