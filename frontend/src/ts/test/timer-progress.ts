@@ -6,6 +6,7 @@ import * as TestInput from "./test-input";
 import * as Time from "../states/time";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
+import * as WordsGenerator from "../test/words-generator";
 
 export function show(): void {
   const op = Config.showTimerProgress ? parseFloat(Config.timerOpacity) : 0;
@@ -94,27 +95,27 @@ const miniTimerNumberElement = document.querySelector(
 );
 
 function getCurrentCount(): number {
-  let count;
-  if (CustomText.isSectionRandom && Config.mode === "custom") {
-    const wordCount = TestInput.input.history.length;
-    let sectionCompare = 0;
-
-    let i = 0;
-    while (wordCount > sectionCompare) {
-      sectionCompare += TestWords.words.listSection[i].length;
-      i++;
-    }
-    if (wordCount == sectionCompare) {
-      if (wordCount !== TestInput.input.prevWordCount) {
-        TestInput.input.sectionCount++;
-        TestInput.input.prevWordCount = wordCount;
-      }
-    }
-    count = TestInput.input.sectionCount;
-  } else {
-    count = TestInput.input.history.length;
-  }
-  return count;
+  return TestInput.input.history.length;
+  // let count;
+  // if (CustomText.isSectionRandom && Config.mode === "custom") {
+  //   const wordCount = TestInput.input.history.length;
+  //   let sectionCompare = 0;
+  //   let i = 0;
+  //   while (wordCount > sectionCompare) {
+  //     sectionCompare += TestWords.words.listSection[i].length;
+  //     i++;
+  //   }
+  //   if (wordCount == sectionCompare) {
+  //     if (wordCount !== TestInput.input.prevWordCount) {
+  //       TestInput.input.sectionCount++;
+  //       TestInput.input.prevWordCount = wordCount;
+  //     }
+  //   }
+  //   count = TestInput.input.sectionCount;
+  // } else {
+  // count = TestInput.input.history.length;
+  // }
+  // return count;
 }
 
 export function update(): void {
