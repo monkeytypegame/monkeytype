@@ -416,6 +416,7 @@ export async function generateWords(
   currentQuote = [];
   currentSection = [];
   sectionIndex = 0;
+  sectionHistory = [];
   const ret: string[] = [];
   const limit = getWordsLimit();
 
@@ -464,6 +465,7 @@ export async function generateWords(
       i++;
     }
   }
+  sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
 }
 
@@ -556,6 +558,7 @@ async function generateQuoteWords(
 
 let sectionIndex = 0;
 let currentSection: string[] = [];
+let sectionHistory: string[] = [];
 
 //generate next word
 export async function getNextWord(
@@ -586,15 +589,32 @@ export async function getNextWord(
     } else if (
       Config.mode == "custom" &&
       !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom
+      !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom
     ) {
       randomWord = CustomText.text[sectionIndex];
     } else if (
       Config.mode == "custom" &&
-      (CustomText.isWordRandom || CustomText.isTimeRandom) &&
+      (CustomText.isWordRandom ||
+        CustomText.isTimeRandom ||
+        CustomText.isSectionRandom) &&
       (wordset.length < 4 || PractiseWords.before.mode !== null)
     ) {
       randomWord = wordset.randomWord(funboxFrequency);
+    } else if (Config.mode === "custom" && CustomText.isSectionRandom) {
+      randomWord = wordset.randomWord(funboxFrequency);
+
+      const previousSection = Misc.nthElementFromArray(sectionHistory, -1);
+      const previousSection2 = Misc.nthElementFromArray(sectionHistory, -2);
+
+      let regenerationCount = 0;
+      while (
+        regenerationCount < 100 &&
+        (previousSection === randomWord || previousSection2 === randomWord)
+      ) {
+        regenerationCount++;
+        randomWord = wordset.randomWord(funboxFrequency);
+      }
     } else {
       let regenarationCount = 0; //infinite loop emergency stop button
       let firstAfterSplit = randomWord.split(" ")[0].toLowerCase();
@@ -619,6 +639,7 @@ export async function getNextWord(
       }
     }
     currentSection = [...randomWord.split(" ")];
+    sectionHistory.push(randomWord);
     randomWord = currentSection.shift() as string;
     sectionIndex++;
   } else {
