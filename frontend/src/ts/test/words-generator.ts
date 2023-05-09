@@ -651,6 +651,10 @@ export async function getNextWord(
     throw new WordGenError("Random word is undefined");
   }
 
+  if (/ /g.test(randomWord)) {
+    throw new WordGenError("Random word contains spaces");
+  }
+
   if (
     Config.mode !== "custom" &&
     Config.mode !== "quote" &&
