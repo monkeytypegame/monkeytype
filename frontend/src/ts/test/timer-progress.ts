@@ -95,27 +95,11 @@ const miniTimerNumberElement = document.querySelector(
 );
 
 function getCurrentCount(): number {
-  return TestInput.input.history.length;
-  // let count;
-  // if (CustomText.isSectionRandom && Config.mode === "custom") {
-  //   const wordCount = TestInput.input.history.length;
-  //   let sectionCompare = 0;
-  //   let i = 0;
-  //   while (wordCount > sectionCompare) {
-  //     sectionCompare += TestWords.words.listSection[i].length;
-  //     i++;
-  //   }
-  //   if (wordCount == sectionCompare) {
-  //     if (wordCount !== TestInput.input.prevWordCount) {
-  //       TestInput.input.sectionCount++;
-  //       TestInput.input.prevWordCount = wordCount;
-  //     }
-  //   }
-  //   count = TestInput.input.sectionCount;
-  // } else {
-  // count = TestInput.input.history.length;
-  // }
-  // return count;
+  if (Config.mode === "custom" && CustomText.isSectionRandom) {
+    return TestWords.words.sectionIndexList[TestWords.words.currentIndex] - 1;
+  } else {
+    return TestInput.input.history.length;
+  }
 }
 
 export function update(): void {

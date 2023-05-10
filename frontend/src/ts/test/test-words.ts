@@ -1,11 +1,13 @@
 class Words {
   public list: string[];
+  public sectionIndexList: number[];
   public length: number;
   public currentIndex: number;
   // public currentWord: string; //todo probably delete
 
   constructor() {
     this.list = [];
+    this.sectionIndexList = [];
     this.length = 0;
     this.currentIndex = 0;
     // this.currentWord = "";
@@ -29,8 +31,9 @@ class Words {
   getLast(): string {
     return this.list[this.list.length - 1];
   }
-  push(word: string): void {
+  push(word: string, sectionIndex: number): void {
     this.list.push(word);
+    this.sectionIndexList.push(sectionIndex);
     this.length = this.list.length;
   }
 
@@ -40,6 +43,7 @@ class Words {
 
   reset(): void {
     this.list = [];
+    this.sectionIndexList = [];
     this.currentIndex = 0;
     this.length = this.list.length;
     // this.currentWord = "";

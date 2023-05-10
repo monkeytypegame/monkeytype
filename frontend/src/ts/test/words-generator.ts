@@ -412,12 +412,21 @@ let currentQuote: string[] = [];
 
 export async function generateWords(
   language: MonkeyTypes.LanguageObject
-): Promise<string[]> {
+): Promise<{
+  words: string[];
+  sectionIndexes: number[];
+}> {
   currentQuote = [];
   currentSection = [];
   sectionIndex = 0;
   sectionHistory = [];
-  const ret: string[] = [];
+  const ret: {
+    words: string[];
+    sectionIndexes: number[];
+  } = {
+    words: [],
+    sectionIndexes: [],
+  };
   const limit = getWordsLimit();
 
   let wordList = language.words;
@@ -437,7 +446,14 @@ export async function generateWords(
   ) {
     const funboxSection = await getFunboxSection(limit);
     if (funboxSection.length > 0) {
-      return funboxSection;
+      const indexes = [];
+      for (let i = 0; i < funboxSection.length; i++) {
+        indexes.push(i);
+      }
+      return {
+        words: funboxSection,
+        sectionIndexes: indexes,
+      };
     }
 
     let stop = false;
@@ -448,10 +464,11 @@ export async function generateWords(
         i,
         language,
         limit,
-        Misc.nthElementFromArray(ret, -1) ?? "",
-        Misc.nthElementFromArray(ret, -2) ?? ""
+        Misc.nthElementFromArray(ret.words, -1) ?? "",
+        Misc.nthElementFromArray(ret.words, -2) ?? ""
       );
-      ret.push(nextWord);
+      ret.words.push(nextWord.word);
+      ret.sectionIndexes.push(nextWord.sectionIndex);
 
       if (
         (Config.mode === "custom" &&
@@ -459,7 +476,7 @@ export async function generateWords(
           CustomText.section !== 0 &&
           sectionIndex >= CustomText.section &&
           currentSection.length === 0) ||
-        ret.length >= limit
+        ret.words.length >= limit
       ) {
         stop = true;
       }
@@ -474,8 +491,17 @@ async function generateQuoteWords(
   language: MonkeyTypes.LanguageObject,
   wordset: Wordset.Wordset,
   limit: number
-): Promise<string[]> {
-  const ret: string[] = [];
+): Promise<{
+  words: string[];
+  sectionIndexes: number[];
+}> {
+  const ret: {
+    words: string[];
+    sectionIndexes: number[];
+  } = {
+    words: [],
+    sectionIndexes: [],
+  };
   const languageToGet = language.name.startsWith("swiss_german")
     ? "german"
     : language.name;
@@ -549,10 +575,11 @@ async function generateQuoteWords(
       i,
       language,
       limit,
-      Misc.nthElementFromArray(ret, -1) ?? "",
-      Misc.nthElementFromArray(ret, -2) ?? ""
+      Misc.nthElementFromArray(ret.words, -1) ?? "",
+      Misc.nthElementFromArray(ret.words, -2) ?? ""
     );
-    ret.push(nextWord);
+    ret.words.push(nextWord.word);
+    ret.sectionIndexes.push(i);
   }
   return ret;
 }
@@ -569,7 +596,10 @@ export async function getNextWord(
   wordsBound: number,
   previousWord: string,
   previousWord2: string
-): Promise<string> {
+): Promise<{
+  word: string;
+  sectionIndex: number;
+}> {
   console.debug("Getting next word", {
     wordset,
     wordIndex,
@@ -701,5 +731,8 @@ export async function getNextWord(
 
   console.debug("Word:", randomWord);
 
-  return randomWord;
+  return {
+    word: randomWord,
+    sectionIndex: sectionIndex,
+  };
 }
