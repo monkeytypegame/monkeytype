@@ -557,8 +557,8 @@ async function generateQuoteWords(
   return ret;
 }
 
-let sectionIndex = 0;
-let currentSection: string[] = [];
+export let sectionIndex = 0;
+export let currentSection: string[] = [];
 let sectionHistory: string[] = [];
 
 //generate next word
