@@ -6,6 +6,7 @@ import * as TestInput from "./test-input";
 import * as Time from "../states/time";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
+import * as ConfigEvent from "../observables/config-event";
 // import * as WordsGenerator from "../test/words-generator";
 
 export function show(): void {
@@ -234,3 +235,14 @@ export function updateStyle(): void {
     show();
   }, 125);
 }
+
+ConfigEvent.subscribe((eventKey, eventValue) => {
+  if (eventKey === "showTimerProgress") {
+    if (eventValue === true && TestState.isActive) {
+      show();
+    } else {
+      hide();
+    }
+  }
+  if (eventKey === "timerStyle") updateStyle();
+});
