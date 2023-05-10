@@ -388,24 +388,20 @@ export function smooth(
   return result;
 }
 
-export function smoothExp(
-  arr: number[],
-  _alpha: number,
-  getter = (value: number): number => value
-): number[] {
-  arr = arr.map(getter);
+export function smoothExp(arr: number[]): number[] {
   const result = [arr[0]];
 
   let as_ = [] as number[][];
   for (let i = 1; i < arr.length; i++) {
-    let diff = Math.abs(arr[i] - arr[i-1]) / arr[i-1];
+    let diff = (arr[i] - arr[i - 1]) / arr[i - 1];
+    if (diff < 0) diff = (arr[i - 1] - arr[i]) / arr[i];
     const mult = 0.4;
     const al = 0.6;
     const ar = 0.9;
     let a = ar - Math.exp(-diff * mult) * (ar - al);
     if (a != a) a = al;
-    as_.push([a,diff]);
-    result[i] = a * arr[i] + (1-a) * result[i-1];
+    as_.push([a, diff]);
+    result[i] = a * arr[i] + (1 - a) * result[i - 1];
   }
 
   console.log(arr);
