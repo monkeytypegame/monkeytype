@@ -7,7 +7,6 @@ import * as Time from "../states/time";
 import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
-// import * as WordsGenerator from "../test/words-generator";
 
 export function show(): void {
   const op = Config.showTimerProgress ? parseFloat(Config.timerOpacity) : 0;
