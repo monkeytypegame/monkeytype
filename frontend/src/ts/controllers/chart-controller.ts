@@ -129,6 +129,28 @@ export const result: ChartWithUpdateColors<
           return (value ?? 0) <= 0 ? 0 : 5;
         },
       },
+      {
+        //@ts-ignore the type is defined incorrectly, have to ingore the error
+        clip: false,
+        label: "rawOld",
+        data: [],
+        borderColor: "rgba(125, 20, 50, 0.5)",
+        borderWidth: 2,
+        yAxisID: "raw",
+        order: 4,
+        pointRadius: 2,
+      },
+      {
+        //@ts-ignore the type is defined incorrectly, have to ingore the error
+        clip: false,
+        label: "rawReal",
+        data: [],
+        borderColor: "rgba(125, 125, 125, 0.5)",
+        borderWidth: 2,
+        yAxisID: "raw",
+        order: 5,
+        pointRadius: 2,
+      },
     ],
   },
   options: {

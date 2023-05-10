@@ -93,6 +93,10 @@ async function updateGraph(): Promise<void> {
   ChartController.result.data.datasets[0].data = chartData1;
   ChartController.result.data.datasets[1].data = smoothedRawData;
 
+  ChartController.result.data.datasets[3].data = Misc.smoothExp(chartData2).map(Math.round);
+  ChartController.result.data.datasets[4].data = chartData2;
+
+
   ChartController.result.data.datasets[0].label = Config.alwaysShowCPM
     ? "cpm"
     : "wpm";
