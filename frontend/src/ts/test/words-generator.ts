@@ -669,6 +669,8 @@ export async function getNextWord(
         firstAfterSplit = randomWord.split(" ")[0];
       }
     }
+    randomWord = randomWord.replace(/ +/g, " ");
+    randomWord = randomWord.replace(/(^ )|( $)/g, "");
     currentSection = [...randomWord.split(" ")];
     sectionHistory.push(randomWord);
     randomWord = currentSection.shift() as string;
