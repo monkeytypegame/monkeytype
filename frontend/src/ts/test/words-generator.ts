@@ -677,8 +677,12 @@ export async function getNextWord(
     randomWord = currentSection.shift() as string;
   }
 
-  if (!randomWord) {
+  if (randomWord === undefined) {
     throw new WordGenError("Random word is undefined");
+  }
+
+  if (randomWord === "") {
+    throw new WordGenError("Random word is empty");
   }
 
   if (/ /g.test(randomWord)) {
