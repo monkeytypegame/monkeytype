@@ -2,13 +2,13 @@ class Words {
   public list: string[];
   public length: number;
   public currentIndex: number;
-  public currentWord: string;
+  // public currentWord: string; //todo probably delete
 
   constructor() {
     this.list = [];
     this.length = 0;
     this.currentIndex = 0;
-    this.currentWord = "";
+    // this.currentWord = "";
   }
   get(i?: undefined, raw?: boolean): string[];
   get(i: number, raw?: boolean): string;
@@ -34,17 +34,15 @@ class Words {
     this.length = this.list.length;
   }
 
-  setCurrentWord(word: string): void {
-    this.currentWord = word;
-  }
+  // setCurrentWord(word: string): void {
+  //   this.currentWord = word;
+  // }
 
   reset(): void {
     this.list = [];
-
     this.currentIndex = 0;
-
     this.length = this.list.length;
-    this.currentWord = "";
+    // this.currentWord = "";
   }
   resetCurrentIndex(): void {
     this.currentIndex = 0;

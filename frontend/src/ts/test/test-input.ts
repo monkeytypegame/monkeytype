@@ -100,16 +100,15 @@ class Input {
   historyLength: number;
   koreanStatus: boolean;
   length: number;
-  sectionCount: number;
-  prevWordCount: number;
+  // sectionCount: number; //todo probably delete
   constructor() {
     this.current = "";
     this.history = [];
     this.historyLength = 0;
     this.length = 0;
     this.koreanStatus = false;
-    this.sectionCount = -1;
-    this.prevWordCount = -1;
+    // this.sectionCount = -1;
+    // this.prevWordCount = -1;
   }
 
   reset(): void {
