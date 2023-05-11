@@ -389,9 +389,6 @@ export function smooth(
 }
 
 export function smoothExp(arr: number[]): number[] {
-  // @ts-ignore
-  return smoothGaussian(arr);
-  // @ts-ignore
   const result = [arr[0]];
   for (let i = 1; i < arr.length; i++) {
     let diff = (arr[i] - result[i - 1]) / result[i - 1];
