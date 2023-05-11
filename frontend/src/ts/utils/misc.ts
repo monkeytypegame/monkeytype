@@ -389,23 +389,26 @@ export function smooth(
 }
 
 export function smoothExp(arr: number[]): number[] {
-  const result = [arr[0]];
+  const kernel = [];
+  const k = 2;
+  for (let i = 0; i <= k * 2; i++) {
+    kernel[i] = Math.exp(-Math.pow(k - i, 2));
+  }
+  let sum = kernel.reduce((a, b) => a + b);
+  for (let i = 0; i <= k * 2; i++) kernel[i] /= sum;
 
-  let as_ = [] as number[][];
-  for (let i = 1; i < arr.length; i++) {
-    let diff = (arr[i] - arr[i - 1]) / arr[i - 1];
-    if (diff < 0) diff = (arr[i - 1] - arr[i]) / arr[i];
-    const mult = 0.4;
-    const al = 0.6;
-    const ar = 0.9;
-    let a = ar - Math.exp(-diff * mult) * (ar - al);
-    if (a != a) a = al;
-    as_.push([a, diff]);
-    result[i] = a * arr[i] + (1 - a) * result[i - 1];
+  const result = [] as number[];
+  for (let i = 0; i < arr.length; i++) {
+    //convolution
+    result[i] = kernel[k] * arr[i];
+    for (let j = 0; j < k; j++)
+      result[i] += kernel[j] * (i - k + j >= 0 ? arr[i - k + j] : arr[0]);
+    for (let j = 1; j <= k; j++)
+      result[i] +=
+        kernel[k + j] * (i + j < arr.length ? arr[i + j] : arr[arr.length - 1]);
   }
 
-  console.log(arr);
-  console.log(as_);
+  console.log(kernel);
   return result;
 }
 
