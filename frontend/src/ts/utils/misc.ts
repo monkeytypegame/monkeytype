@@ -389,7 +389,7 @@ export function smooth(
 }
 
 export function smoothExp(arr: number[]): number[] {
-  let result = [arr[0]];
+  const result = [arr[0]];
   for (let i = 1; i < arr.length; i++) {
     let diff = (arr[i] - result[i - 1]) / result[i - 1];
     if (diff < 0) diff = (result[i - 1] - arr[i]) / arr[i];
@@ -401,6 +401,30 @@ export function smoothExp(arr: number[]): number[] {
     result[i] = a * arr[i] + (1 - a) * result[i - 1];
   }
 
+  return result;
+}
+
+export function smoothGaussian(arr: number[]): number[] {
+  const kernel = [];
+  const k = 2;
+  for (let i = 0; i <= k * 2; i++) {
+    kernel[i] = Math.exp(-Math.pow(k - i, 2));
+  }
+  let sum = kernel.reduce((a, b) => a + b);
+  for (let i = 0; i <= k * 2; i++) kernel[i] /= sum;
+
+  const result = [] as number[];
+  for (let i = 0; i < arr.length; i++) {
+    //convolution
+    result[i] = kernel[k] * arr[i];
+    for (let j = 0; j < k; j++)
+      result[i] += kernel[j] * (i - k + j >= 0 ? arr[i - k + j] : arr[0]);
+    for (let j = 1; j <= k; j++)
+      result[i] +=
+        kernel[k + j] * (i + j < arr.length ? arr[i + j] : arr[arr.length - 1]);
+  }
+
+  console.log(kernel);
   return result;
 }
 
