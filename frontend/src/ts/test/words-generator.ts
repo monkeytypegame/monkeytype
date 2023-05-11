@@ -355,7 +355,7 @@ export function getWordsLimit(): number {
   ) {
     limit = 100;
   }
-  if (Config.mode === "custom" && CustomText.isSectionRandom) {
+  if (Config.mode === "custom" && CustomText.delimiter === "|") {
     limit = 100;
   }
 
@@ -475,6 +475,12 @@ export async function generateWords(
           CustomText.isSectionRandom &&
           CustomText.section !== 0 &&
           sectionIndex >= CustomText.section &&
+          currentSection.length === 0) ||
+        (Config.mode === "custom" &&
+          !CustomText.isSectionRandom &&
+          !CustomText.isTimeRandom &&
+          CustomText.delimiter === "|" &&
+          sectionIndex >= wordset.length &&
           currentSection.length === 0) ||
         ret.words.length >= limit
       ) {
