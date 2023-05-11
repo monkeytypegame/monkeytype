@@ -132,7 +132,7 @@ export const result: ChartWithUpdateColors<
       {
         //@ts-ignore the type is defined incorrectly, have to ingore the error
         clip: false,
-        label: "rawOld",
+        label: "rawNew",
         data: [],
         borderColor: "rgba(125, 20, 50, 0.5)",
         borderWidth: 2,
