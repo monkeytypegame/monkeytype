@@ -389,6 +389,9 @@ export function smooth(
 }
 
 export function smoothExp(arr: number[]): number[] {
+  // @ts-ignore
+  return smoothGaussian(arr);
+  // @ts-ignore
   const result = [arr[0]];
   for (let i = 1; i < arr.length; i++) {
     let diff = (arr[i] - result[i - 1]) / result[i - 1];
@@ -406,9 +409,10 @@ export function smoothExp(arr: number[]): number[] {
 
 export function smoothGaussian(arr: number[]): number[] {
   const kernel = [];
-  const k = 2;
+  const k = 2; // window size is 2*k+1 (take k before, and k after)
+  const sigma = 1; // sigma, yk; larger - more smooth
   for (let i = 0; i <= k * 2; i++) {
-    kernel[i] = Math.exp(-Math.pow(k - i, 2));
+    kernel[i] = Math.exp(-Math.pow(k - i, 2) / sigma);
   }
   let sum = kernel.reduce((a, b) => a + b);
   for (let i = 0; i <= k * 2; i++) kernel[i] /= sum;
