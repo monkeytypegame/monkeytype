@@ -1,12 +1,12 @@
 import Config, * as UpdateConfig from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
-  title: "Custom background filter...",
+  title: "custom background filter...",
   configKey: "customBackgroundFilter",
   list: [
     {
       id: "setCustomBackgroundBlur",
-      display: "Blur...",
+      display: "blur...",
       icon: "fa-image",
       input: true,
       defaultValue: (): string => {
@@ -21,7 +21,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     },
     {
       id: "setCustomBackgroundBrightness",
-      display: "Brightness...",
+      display: "brightness...",
       icon: "fa-image",
       input: true,
       defaultValue: (): string => {
@@ -36,7 +36,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     },
     {
       id: "setCustomBackgroundSaturation",
-      display: "Saturation...",
+      display: "saturation...",
       icon: "fa-image",
       input: true,
       defaultValue: (): string => {
@@ -51,7 +51,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     },
     {
       id: "setCustomBackgroundOpacity",
-      display: "Opacity...",
+      display: "opacity...",
       icon: "fa-image",
       input: true,
       defaultValue: (): string => {
@@ -70,7 +70,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 const commands: MonkeyTypes.Command[] = [
   {
     id: "setCustomBackgroundFilter",
-    display: "Custom background filter...",
+    display: "custom background filter...",
     icon: "fa-image",
     subgroup,
   },
