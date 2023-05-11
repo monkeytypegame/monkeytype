@@ -14,7 +14,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
       exec: (input): void => {
         if (!input) return;
-        let tempArr = Config.customBackgroundFilter;
+        const tempArr = Config.customBackgroundFilter;
         tempArr[0] = parseFloat(input);
         UpdateConfig.setCustomBackgroundFilter(tempArr);
       },
@@ -29,7 +29,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
       exec: (input): void => {
         if (!input) return;
-        let tempArr = Config.customBackgroundFilter;
+        const tempArr = Config.customBackgroundFilter;
         tempArr[1] = parseFloat(input);
         UpdateConfig.setCustomBackgroundFilter(tempArr);
       },
@@ -44,7 +44,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
       exec: (input): void => {
         if (!input) return;
-        let tempArr = Config.customBackgroundFilter;
+        const tempArr = Config.customBackgroundFilter;
         tempArr[2] = parseFloat(input);
         UpdateConfig.setCustomBackgroundFilter(tempArr);
       },
@@ -59,7 +59,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
       exec: (input): void => {
         if (!input) return;
-        let tempArr = Config.customBackgroundFilter;
+        const tempArr = Config.customBackgroundFilter;
         tempArr[3] = parseFloat(input);
         UpdateConfig.setCustomBackgroundFilter(tempArr);
       },
