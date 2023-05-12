@@ -83,7 +83,8 @@ $("#shareCustomThemeWrapper #shareCustomThemeEdit .copy-button").on(
           hide();
         },
         function (err) {
-          console.error("Could not copy text: ", err);
+          Notifications.add("Could not copy text", 0);
+          hide();
           CustomThemePopup.show(url);
         }
       );
