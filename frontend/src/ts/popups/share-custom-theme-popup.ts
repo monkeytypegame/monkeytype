@@ -1,6 +1,7 @@
 import * as ThemeController from "../controllers/theme-controller";
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
+import * as CustomThemePopup from "./custom-theme-popup";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
 
@@ -72,21 +73,22 @@ $("#shareCustomThemeWrapper").on("click", (e) => {
 });
 
 $("#shareCustomThemeWrapper #shareCustomThemeEdit .copy-button").on(
-  "click",
-  async () => {
-    const url = await generateUrl();
-
-    navigator.clipboard.writeText(url).then(
-      function () {
-        Notifications.add("URL Copied to clipboard", 0);
-        hide();
-      },
-      function (err) {
-        console.error("Could not copy text: ", err);
-      }
-    );
-  }
-);
+    "click",
+    async () => {
+      const url = await generateUrl();
+  
+      navigator.clipboard.writeText(url).then(
+        function () {
+          Notifications.add("URL Copied to clipboard", 0);
+          hide();
+        },
+        function (err) {
+          console.error("Could not copy text: ", err);
+          CustomThemePopup.show(url);
+        }
+      );
+    }
+);  
 
 $("#shareCustomThemeButton").on("click", () => {
   show();
