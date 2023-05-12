@@ -73,23 +73,23 @@ $("#shareCustomThemeWrapper").on("click", (e) => {
 });
 
 $("#shareCustomThemeWrapper #shareCustomThemeEdit .copy-button").on(
-    "click",
-    async () => {
-      const url = await generateUrl();
-  
-      navigator.clipboard.writeText(url).then(
-        function () {
-          Notifications.add("URL Copied to clipboard", 0);
-          hide();
-        },
-        function (err) {
-          Notifications.add("Could not copy text", 0);
-          hide();
-          CustomThemePopup.show(url);
-        }
-      );
-    }
-);  
+  "click",
+  async () => {
+    const url = await generateUrl();
+
+    navigator.clipboard.writeText(url).then(
+      function () {
+        Notifications.add("URL Copied to clipboard", 0);
+        hide();
+      },
+      function (err) {
+        Notifications.add("Could not copy text", 0);
+        hide();
+        CustomThemePopup.show(url);
+      }
+    );
+  }
+);
 
 $("#shareCustomThemeButton").on("click", () => {
   show();
