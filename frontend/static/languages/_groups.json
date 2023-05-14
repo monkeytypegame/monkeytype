@@ -202,7 +202,7 @@
   },
   {
     "name": "norwegian_bokmål",
-    "languages": ["norwegian_bokmål", "norwegian_bokmål_1k", "norwegian_bokmål_5k", "norwegian_bokmål_10k", "norwegian_bokmål_150k", "norwegian_bokmål_600k", ]
+    "languages": ["norwegian_bokmål", "norwegian_bokmål_1k", "norwegian_bokmål_5k", "norwegian_bokmål_10k", "norwegian_bokmål_150k", "norwegian_bokmål_600k"]
   },
   {
     "name": "norwegian_nynorsk",
