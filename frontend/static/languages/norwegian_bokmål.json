@@ -1,6 +1,6 @@
 {
-  "name": "norwegian",
-  "bcp47": "no-NO",
+  "name": "norwegian_bokmål",
+  "bcp47": "nb-NO",
   "words": [
     "i",
     "og",
