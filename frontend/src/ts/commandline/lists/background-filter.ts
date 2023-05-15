@@ -1,7 +1,7 @@
 import Config, * as UpdateConfig from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
-  title: "custom background filter...",
+  title: "Custom background filter...",
   configKey: "customBackgroundFilter",
   list: [
     {
