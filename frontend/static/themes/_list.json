@@ -1167,5 +1167,12 @@
     "mainColor": "#8ccf7e",
     "subColor": "#838887",
     "textColor": "#dadada"
+  },
+  {
+    "name": "tokyo_night",
+    "bgColor": "#1a1b26",
+    "mainColor": "#7aa2f7"
+    "subColor": "#828bb8"
+    "textColor": "#7aa2f7"
   }
 ]
