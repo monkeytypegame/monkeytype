@@ -1,6 +1,6 @@
 {
   "name": "norwegian_bokmal",
-    "orderedByFrequency": true,
+  "orderedByFrequency": true,
   "bcp47": "nb-NO",
   "words": [
     "i",
