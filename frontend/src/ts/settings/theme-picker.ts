@@ -4,7 +4,7 @@ import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
-import * as CustomThemePopup from "../popups/custom-theme-popup";
+import * as ShareCustomThemePopup from "../popups/share-custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
@@ -453,26 +453,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
 
 // Handles click on share custom theme button
 $("#shareCustomThemeButton").on("click", () => {
-  const newColors: string[] = [];
-  for (const color of ThemeController.colorVars) {
-    newColors.push(
-      $(
-        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
-      ).attr("value") as string
-    );
-  }
-
-  const url =
-    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(newColors));
-
-  navigator.clipboard.writeText(url).then(
-    function () {
-      Notifications.add("URL Copied to clipboard", 0);
-    },
-    function () {
-      CustomThemePopup.show(url);
-    }
-  );
+  ShareCustomThemePopup.show();
 });
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
