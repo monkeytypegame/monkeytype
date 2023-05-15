@@ -64,12 +64,12 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   }
 
   let colorArray = [];
-  let bgi, bgp, bgf;
+  let image, size, filter;
   if (Array.isArray(decoded.c) && decoded.c.length === 10) {
     colorArray = decoded.c;
-    bgi = decoded.bgi;
-    bgp = decoded.bgp;
-    bgf = decoded.bgf;
+    image = decoded.bgi;
+    size = decoded.bgp;
+    filter = decoded.bgf;
   } else if (Array.isArray(decoded) && decoded.length === 10) {
     // This is for backward compatibility with old format
     colorArray = decoded;
@@ -85,10 +85,10 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
     UpdateConfig.setCustomThemeColors(colorArray);
     Notifications.add("Custom theme applied", 1);
 
-    if (bgi !== undefined) {
-      UpdateConfig.setCustomBackground(bgi);
-      UpdateConfig.setCustomBackgroundSize(bgp);
-      UpdateConfig.setCustomBackgroundFilter(bgf);
+    if (image !== undefined) {
+      UpdateConfig.setCustomBackground(image);
+      UpdateConfig.setCustomBackgroundSize(size);
+      UpdateConfig.setCustomBackgroundFilter(filter);
     }
 
     if (!Config.customTheme) UpdateConfig.setCustomTheme(true);
