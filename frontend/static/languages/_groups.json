@@ -201,12 +201,12 @@
     "languages": ["hungarian", "hungarian_2k"]
   },
   {
-    "name": "norwegian",
-    "languages": ["norwegian", "norwegian_1k", "norwegian_5k", "norwegian_10k"]
+    "name": "norwegian_bokmal",
+    "languages": ["norwegian_bokmal", "norwegian_bokmal_1k", "norwegian_bokmal_5k", "norwegian_bokmal_10k", "norwegian_bokmal_150k", "norwegian_bokmal_600k"]
   },
   {
     "name": "norwegian_nynorsk",
-    "languages": ["norwegian_nynorsk"]
+    "languages": ["norwegian_nynorsk", "norwegian_nynorsk_1k", "norwegian_nynorsk_5k", "norwegian_nynorsk_10k", "norwegian_nynorsk_100k", "norwegian_nynorsk_400k"]
   },
   {
     "name": "hebrew",
