@@ -1,6 +1,5 @@
 {
   "name": "latvian",
-  "leftToRight": true,
   "ligatures": false,
   "bcp47": "lv",
   "words": [

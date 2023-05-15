@@ -340,20 +340,20 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     return true;
   }
 
-  if (Config.language.startsWith("russian")) {
-    if ((char === "е" || char === "e") && originalChar === "ё") {
-      return true;
-    }
-    if (char === "ё" && (originalChar === "е" || originalChar === "e")) {
-      return true;
-    }
-  }
-
   const funbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.isCharCorrect
   );
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
+  }
+
+  if (Config.language.startsWith("russian")) {
+    if (
+      (char === "ё" || char === "е" || char === "e") &&
+      (originalChar === "ё" || originalChar === "е" || originalChar === "e")
+    ) {
+      return true;
+    }
   }
 
   if (

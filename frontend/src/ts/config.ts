@@ -74,6 +74,7 @@ async function saveToLocalStorage(
 export async function saveFullConfigToLocalStorage(
   noDbCheck = false
 ): Promise<void> {
+  console.log("saving full config to localStorage");
   if (!dbConfigLoaded && !noDbCheck) {
     setChangedBeforeDb(true);
   }
@@ -1086,7 +1087,10 @@ export function setQuoteLength(
       len = 1;
     }
     len = parseInt(len.toString()) as MonkeyTypes.QuoteLength;
-    if (multipleMode) {
+
+    if (len === -1) {
+      config.quoteLength = [0, 1, 2, 3];
+    } else if (multipleMode && len >= 0) {
       if (!config.quoteLength.includes(len)) {
         config.quoteLength.push(len);
       } else {
@@ -1924,10 +1928,8 @@ export function loadFromLocalStorage(): void {
       newConfig = {} as MonkeyTypes.Config;
     }
     apply(newConfig);
-    console.log("applying localStorage config");
     localStorageConfig = newConfig;
     saveFullConfigToLocalStorage(true);
-    console.log("saving localStorage config");
   } else {
     reset();
   }

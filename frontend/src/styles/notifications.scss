@@ -18,6 +18,7 @@
     gap: 1rem;
   }
   .notif {
+    -webkit-user-select: none;
     user-select: none;
     .icon {
       color: var(--sub-color);
