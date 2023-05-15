@@ -41,15 +41,16 @@ function hide(): void {
 
 async function generateUrl(): Promise<string> {
   const newTheme: {
-    c: (string | undefined)[];
+    c: string[];
     bgi?: string;
     bgp?: string;
     bgf?: object;
   } = {
-    c: ThemeController.colorVars.map((color) =>
-      $(
-        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
-      ).attr("value")
+    c: ThemeController.colorVars.map(
+      (color) =>
+        $(
+          `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+        ).attr("value") as string
     ),
   };
 
