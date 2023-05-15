@@ -94,6 +94,14 @@ const miniTimerNumberElement = document.querySelector(
   "#miniTimerAndLiveWpm .time"
 );
 
+function getCurrentCount(): number {
+  if (Config.mode === "custom" && CustomText.isSectionRandom) {
+    return TestWords.words.sectionIndexList[TestWords.words.currentIndex] - 1;
+  } else {
+    return TestInput.input.history.length;
+  }
+}
+
 export function update(): void {
   const time = Time.get();
   if (
@@ -144,6 +152,8 @@ export function update(): void {
     if (Config.mode === "custom") {
       if (CustomText.isWordRandom) {
         outof = CustomText.word;
+      } else if (CustomText.isSectionRandom) {
+        outof = CustomText.section;
       } else {
         outof = CustomText.text.length;
       }
@@ -172,7 +182,7 @@ export function update(): void {
       } else {
         if (timerNumberElement !== null) {
           timerNumberElement.innerHTML =
-            "<div>" + `${TestInput.input.history.length}/${outof}` + "</div>";
+            "<div>" + `${getCurrentCount()}/${outof}` + "</div>";
         }
       }
     } else if (Config.timerStyle === "mini") {
@@ -182,7 +192,7 @@ export function update(): void {
         }
       } else {
         if (miniTimerNumberElement !== null) {
-          miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}/${outof}`;
+          miniTimerNumberElement.innerHTML = `${getCurrentCount()}/${outof}`;
         }
       }
     }

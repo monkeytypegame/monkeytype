@@ -8,6 +8,10 @@ export async function createReport(
   maxReports: number,
   contentReportLimit: number
 ): Promise<void> {
+  if (report.type === "user" && report.contentId === report.uid) {
+    throw new MonkeyError(400, "You cannot report yourself.");
+  }
+
   const reportsCount = await db
     .collection<MonkeyTypes.Report>(COLLECTION_NAME)
     .estimatedDocumentCount();
