@@ -99,6 +99,7 @@ import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import * as TestStats from "../test/test-stats";
+import * as QuoteSearchPopup from "../popups/quote-search-popup";
 
 Misc.getLayoutsList()
   .then((layouts) => {
@@ -193,7 +194,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         UpdateConfig.setMode("quote");
-        $("#quote-search-button").trigger("click");
+        QuoteSearchPopup.show();
       },
       shouldFocusTestUI: false,
     },

@@ -87,6 +87,7 @@ export async function resetUser(uid: string): Promise<void> {
         discordAvatar: "",
         discordId: "",
         lbOptOut: "",
+        inbox: "",
       },
     }
   );
