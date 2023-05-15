@@ -65,6 +65,8 @@ import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
 import ResultScreenCommands from "./lists/result-screen";
+import CustomBackgroundSizeCommands from "./lists/background-size";
+import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 
 import TagsCommands from "./lists/tags";
@@ -303,6 +305,8 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setCustomBackground(input);
       },
     },
+    ...CustomBackgroundSizeCommands,
+    ...CustomBackgroundFilterCommands,
     ...RandomThemeCommands,
     {
       id: "randomizeTheme",
