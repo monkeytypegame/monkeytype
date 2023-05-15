@@ -334,8 +334,6 @@ function addChildCommands(
   parentCommandDisplay = "",
   parentCommand?: MonkeyTypes.CommandsSubgroup
 ): void {
-  console.log(commandItem, parentCommandDisplay, parentCommand);
-
   let commandItemDisplay = (commandItem as MonkeyTypes.Command).display;
 
   if ((commandItem as MonkeyTypes.Command)?.input !== true) {
