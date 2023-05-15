@@ -67,9 +67,9 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   let image, size, filter;
   if (Array.isArray(decoded.c) && decoded.c.length === 10) {
     colorArray = decoded.c;
-    image = decoded.bgi;
-    size = decoded.bgp;
-    filter = decoded.bgf;
+    image = decoded.i;
+    size = decoded.s;
+    filter = decoded.f;
   } else if (Array.isArray(decoded) && decoded.length === 10) {
     // This is for backward compatibility with old format
     colorArray = decoded;

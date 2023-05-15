@@ -41,10 +41,10 @@ function hide(): void {
 
 async function generateUrl(): Promise<string> {
   const newTheme: {
-    c: string[];
-    bgi?: string;
-    bgp?: string;
-    bgf?: object;
+    c: string[]; //colors
+    i?: string; //image
+    s?: string; //size
+    f?: object; //filter
   } = {
     c: ThemeController.colorVars.map(
       (color) =>
@@ -59,9 +59,9 @@ async function generateUrl(): Promise<string> {
       ":checked"
     )
   ) {
-    newTheme.bgi = Config.customBackground;
-    newTheme.bgp = Config.customBackgroundSize;
-    newTheme.bgf = Config.customBackgroundFilter;
+    newTheme.i = Config.customBackground;
+    newTheme.s = Config.customBackgroundSize;
+    newTheme.f = Config.customBackgroundFilter;
   }
 
   return "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(newTheme));
