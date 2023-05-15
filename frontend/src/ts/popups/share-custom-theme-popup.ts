@@ -80,7 +80,7 @@ $("#shareCustomThemeWrapper #shareCustomThemeEdit .copy-button").on(
 
     navigator.clipboard.writeText(url).then(
       function () {
-        Notifications.add("URL Copied to clipboard", 0);
+        Notifications.add("URL Copied to clipboard", 1);
         hide();
       },
       function () {
