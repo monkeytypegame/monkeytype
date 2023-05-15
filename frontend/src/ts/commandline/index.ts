@@ -334,10 +334,17 @@ function addChildCommands(
   parentCommandDisplay = "",
   parentCommand?: MonkeyTypes.CommandsSubgroup
 ): void {
-  let commandItemDisplay = (commandItem as MonkeyTypes.Command).display.replace(
-    /\s?\.\.\.$/g,
-    ""
-  );
+  console.log(commandItem, parentCommandDisplay, parentCommand);
+
+  let commandItemDisplay = (commandItem as MonkeyTypes.Command).display;
+
+  if ((commandItem as MonkeyTypes.Command)?.input !== true) {
+    commandItemDisplay = (commandItem as MonkeyTypes.Command).display.replace(
+      /\s?\.\.\.$/g,
+      ""
+    );
+  }
+
   let icon = `<i class="fas fa-fw"></i>`;
   if (
     (commandItem as MonkeyTypes.Command).configValue !== undefined &&
@@ -346,7 +353,10 @@ function addChildCommands(
   ) {
     icon = `<i class="fas fa-fw fa-check"></i>`;
   }
-  if ((commandItem as MonkeyTypes.Command).noIcon) {
+  if (
+    (commandItem as MonkeyTypes.Command).noIcon ||
+    (commandItem as MonkeyTypes.Command).input === true
+  ) {
     icon = "";
   }
 
