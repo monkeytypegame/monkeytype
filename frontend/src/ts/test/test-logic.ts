@@ -349,7 +349,7 @@ export function restart(options = {} as RestartOptions): void {
             toPush.push(TestWords.words.get(i));
           }
           TestWords.words.reset();
-          toPush.forEach((word) => TestWords.words.push(word));
+          toPush.forEach((word, index) => TestWords.words.push(word, index));
         }
       }
       if (!options.withSameWordset && !shouldQuoteRepeat) {
@@ -544,8 +544,11 @@ export async function init(): Promise<void> {
   }
 
   let generatedWords: string[];
+  let generatedSectionIndexes: number[];
   try {
-    generatedWords = await WordsGenerator.generateWords(language);
+    const gen = await WordsGenerator.generateWords(language);
+    generatedWords = gen.words;
+    generatedSectionIndexes = gen.sectionIndexes;
   } catch (e) {
     console.error(e);
     if (e instanceof WordsGenerator.WordGenError) {
@@ -572,8 +575,8 @@ export async function init(): Promise<void> {
     }
   }
 
-  for (const word of generatedWords) {
-    TestWords.words.push(word);
+  for (let i = 0; i < generatedWords.length; i++) {
+    TestWords.words.push(generatedWords[i], generatedSectionIndexes[i]);
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -586,6 +589,10 @@ export async function init(): Promise<void> {
   TestUI.setLigatures(language.ligatures ?? false);
   TestUI.showWords();
   console.debug("Test initialized with words", generatedWords);
+  console.debug(
+    "Test initialized with section indexes",
+    generatedSectionIndexes
+  );
 }
 
 //add word during the test
@@ -608,9 +615,16 @@ export async function addWord(): Promise<void> {
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom &&
       TestWords.words.length >= CustomText.text.length) ||
     (Config.mode === "quote" &&
-      TestWords.words.length >= (TestWords.randomQuote.textSplit?.length ?? 0))
+      TestWords.words.length >=
+        (TestWords.randomQuote.textSplit?.length ?? 0)) ||
+    (Config.mode === "custom" &&
+      CustomText.isSectionRandom &&
+      WordsGenerator.sectionIndex >= CustomText.section &&
+      WordsGenerator.currentSection.length === 0 &&
+      CustomText.section != 0)
   ) {
     return;
   }
@@ -637,12 +651,13 @@ export async function addWord(): Promise<void> {
       if (section === undefined) return;
 
       let wordCount = 0;
-      for (const word of section.words) {
+      for (let i = 0; i < section.words.length; i++) {
+        const word = section.words[i];
         if (wordCount >= Config.words && Config.mode == "words") {
           break;
         }
         wordCount++;
-        TestWords.words.push(word);
+        TestWords.words.push(word, i);
         TestUI.addWord(word);
       }
     }
@@ -667,16 +682,8 @@ export async function addWord(): Promise<void> {
     TestWords.words.get(TestWords.words.length - 2)
   );
 
-  const split = randomWord.split(" ");
-  if (split.length > 1) {
-    split.forEach((word) => {
-      TestWords.words.push(word);
-      TestUI.addWord(word);
-    });
-  } else {
-    TestWords.words.push(randomWord);
-    TestUI.addWord(randomWord);
-  }
+  TestWords.words.push(randomWord.word, randomWord.sectionIndex);
+  TestUI.addWord(randomWord.word);
 }
 
 interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
@@ -1036,15 +1043,23 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom &&
       CustomText.text.length < 10) ||
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom &&
       CustomText.word < 10) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
+      !CustomText.isSectionRandom &&
       CustomText.isTimeRandom &&
       CustomText.time < 15) ||
+    (Config.mode === "custom" &&
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.isSectionRandom &&
+      TestWords.words.length < 10) ||
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     Notifications.add("Test invalid - too short", 0);
