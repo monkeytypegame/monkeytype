@@ -59,9 +59,9 @@ async function generateUrl(): Promise<string> {
       ":checked"
     )
   ) {
-    newTheme.bgi = await Config.customBackground;
-    newTheme.bgp = await Config.customBackgroundSize;
-    newTheme.bgf = await Config.customBackgroundFilter;
+    newTheme.bgi = Config.customBackground;
+    newTheme.bgp = Config.customBackgroundSize;
+    newTheme.bgf = Config.customBackgroundFilter;
   }
 
   return "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(newTheme));
