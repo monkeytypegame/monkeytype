@@ -3,7 +3,7 @@ import Config from "../config";
 import * as Notifications from "../elements/notifications";
 import * as CustomThemePopup from "./custom-theme-popup";
 import * as Skeleton from "./skeleton";
-import { isPopupVisible } from "../utils/misc";
+import { createErrorMessage, isPopupVisible } from "../utils/misc";
 
 const wrapperId = "shareCustomThemeWrapper";
 
@@ -83,8 +83,18 @@ $("#shareCustomThemeWrapper #shareCustomThemeEdit .copy-button").on(
         Notifications.add("URL Copied to clipboard", 1);
         hide();
       },
-      function () {
-        Notifications.add("Could not copy text", 0);
+      function (e) {
+        Notifications.add(
+          createErrorMessage(e, "Failed to copy to clipboard"),
+          -1
+        );
+        Notifications.add(
+          "Looks like we couldn't copy the link straight to your clipboard. Please copy it manually.",
+          0,
+          {
+            duration: 5,
+          }
+        );
         hide();
         CustomThemePopup.show(url);
       }
