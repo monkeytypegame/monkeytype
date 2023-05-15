@@ -14,9 +14,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
       exec: (input): void => {
         if (!input) return;
-        const tempArr = Config.customBackgroundFilter;
-        tempArr[0] = parseFloat(input);
-        UpdateConfig.setCustomBackgroundFilter(tempArr);
+        const newFilters = Config.customBackgroundFilter;
+        newFilters[0] = parseFloat(input);
+        UpdateConfig.setCustomBackgroundFilter(newFilters);
       },
     },
     {
@@ -29,9 +29,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
       exec: (input): void => {
         if (!input) return;
-        const tempArr = Config.customBackgroundFilter;
-        tempArr[1] = parseFloat(input);
-        UpdateConfig.setCustomBackgroundFilter(tempArr);
+        const newFilters = Config.customBackgroundFilter;
+        newFilters[1] = parseFloat(input);
+        UpdateConfig.setCustomBackgroundFilter(newFilters);
       },
     },
     {
@@ -44,9 +44,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
       exec: (input): void => {
         if (!input) return;
-        const tempArr = Config.customBackgroundFilter;
-        tempArr[2] = parseFloat(input);
-        UpdateConfig.setCustomBackgroundFilter(tempArr);
+        const newFilters = Config.customBackgroundFilter;
+        newFilters[2] = parseFloat(input);
+        UpdateConfig.setCustomBackgroundFilter(newFilters);
       },
     },
     {
@@ -59,9 +59,9 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
       exec: (input): void => {
         if (!input) return;
-        const tempArr = Config.customBackgroundFilter;
-        tempArr[3] = parseFloat(input);
-        UpdateConfig.setCustomBackgroundFilter(tempArr);
+        const newFilters = Config.customBackgroundFilter;
+        newFilters[3] = parseFloat(input);
+        UpdateConfig.setCustomBackgroundFilter(newFilters);
       },
     },
   ],
