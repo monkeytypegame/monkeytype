@@ -355,7 +355,6 @@ export function restart(options = {} as RestartOptions): void {
       if (!options.withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
         TestState.setPaceRepeat(repeatWithPace);
-        TestWords.setHasTab(false);
         await init();
         await PaceCaret.init();
       } else {
@@ -569,10 +568,25 @@ export async function init(): Promise<void> {
     return;
   }
 
+  const beforeHasNumbers = TestWords.hasNumbers ? true : false;
+
+  let hasTab = false;
+  let hasNumbers = false;
+
   for (const word of generatedWords) {
-    if (/\t/g.test(word)) {
-      TestWords.setHasTab(true);
+    if (/\t/g.test(word) && !hasTab) {
+      hasTab = true;
     }
+    if (/\d/g.test(word) && !hasNumbers) {
+      hasNumbers = true;
+    }
+  }
+
+  TestWords.setHasTab(hasTab);
+  TestWords.setHasNumbers(hasNumbers);
+
+  if (beforeHasNumbers !== hasNumbers) {
+    Keymap.refresh();
   }
 
   for (let i = 0; i < generatedWords.length; i++) {
