@@ -83,7 +83,7 @@
   },
   {
     "name": "chinese",
-    "languages": ["chinese_traditional"]
+    "languages": ["chinese_traditional", "chinese_simplified", "chinese_simplified_1k", "chinese_simplified_5k", "chinese_simplified_10k, chinese_simplified_50k, chinese_simplified_100k"]
   },
   {
     "name": "russian",
