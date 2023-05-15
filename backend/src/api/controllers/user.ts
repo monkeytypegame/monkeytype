@@ -28,7 +28,7 @@ import FirebaseAdmin from "../../init/firebase-admin";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
-    throw new MonkeyError(422, "Captcha check failed");
+    throw new MonkeyError(403, "Captcha check failed");
   }
 }
 
