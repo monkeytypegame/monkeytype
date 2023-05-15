@@ -3,14 +3,12 @@ class Words {
   public sectionIndexList: number[];
   public length: number;
   public currentIndex: number;
-  // public currentWord: string; //todo probably delete
 
   constructor() {
     this.list = [];
     this.sectionIndexList = [];
     this.length = 0;
     this.currentIndex = 0;
-    // this.currentWord = "";
   }
   get(i?: undefined, raw?: boolean): string[];
   get(i: number, raw?: boolean): string;
@@ -37,16 +35,11 @@ class Words {
     this.length = this.list.length;
   }
 
-  // setCurrentWord(word: string): void {
-  //   this.currentWord = word;
-  // }
-
   reset(): void {
     this.list = [];
     this.sectionIndexList = [];
     this.currentIndex = 0;
     this.length = this.list.length;
-    // this.currentWord = "";
   }
   resetCurrentIndex(): void {
     this.currentIndex = 0;

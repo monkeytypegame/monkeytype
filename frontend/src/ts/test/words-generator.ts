@@ -470,20 +470,23 @@ export async function generateWords(
       ret.words.push(nextWord.word);
       ret.sectionIndexes.push(nextWord.sectionIndex);
 
-      if (
-        (Config.mode === "custom" &&
-          CustomText.isSectionRandom &&
-          CustomText.section !== 0 &&
-          sectionIndex >= CustomText.section &&
-          currentSection.length === 0) ||
-        (Config.mode === "custom" &&
-          !CustomText.isSectionRandom &&
-          !CustomText.isTimeRandom &&
-          CustomText.delimiter === "|" &&
-          sectionIndex >= wordset.length &&
-          currentSection.length === 0) ||
-        ret.words.length >= limit
-      ) {
+      const randomSectionStop =
+        CustomText.isSectionRandom &&
+        CustomText.section !== 0 &&
+        sectionIndex >= CustomText.section;
+
+      const nonRandomSectionStop =
+        !CustomText.isSectionRandom &&
+        !CustomText.isTimeRandom &&
+        sectionIndex >= wordset.length;
+
+      const customModeStop =
+        Config.mode === "custom" &&
+        currentSection.length === 0 &&
+        CustomText.delimiter === "|" &&
+        (randomSectionStop || nonRandomSectionStop);
+
+      if (customModeStop || ret.words.length >= limit) {
         stop = true;
       }
       i++;
