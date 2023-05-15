@@ -201,8 +201,8 @@
     "languages": ["hungarian", "hungarian_2k"]
   },
   {
-    "name": "norwegian_bokmål",
-    "languages": ["norwegian_bokmål", "norwegian_bokmål_1k", "norwegian_bokmål_5k", "norwegian_bokmål_10k", "norwegian_bokmål_150k", "norwegian_bokmål_600k"]
+    "name": "norwegian_bokmal",
+    "languages": ["norwegian_bokmal", "norwegian_bokmal_1k", "norwegian_bokmal_5k", "norwegian_bokmal_10k", "norwegian_bokmal_150k", "norwegian_bokmal_600k"]
   },
   {
     "name": "norwegian_nynorsk",
