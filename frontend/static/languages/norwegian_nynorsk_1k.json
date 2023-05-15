@@ -1,5 +1,6 @@
 {
 	"name": "norwegian_nynorsk_1k",
+  "orderedByFrequency": true,
 	"bcp47": "nn-NO",
 	"words": [
 		"i",
