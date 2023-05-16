@@ -12,7 +12,10 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
-import { canSetConfigWithCurrentFunboxes } from "./test/funbox/funbox-validation";
+import {
+  canSetConfigWithCurrentFunboxes,
+  canSetFunboxWithConfig,
+} from "./test/funbox/funbox-validation";
 import * as TribeState from "./tribe/tribe-state";
 import * as TribeConfigSyncEvent from "./observables/tribe-config-sync-event";
 
@@ -280,6 +283,12 @@ export function setFunbox(
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
+  for (const funbox of config.funbox.split("#")) {
+    if (!canSetFunboxWithConfig(funbox, config)) {
+      return false;
+    }
+  }
+
   const val = funbox ? funbox : "none";
   config.funbox = val;
   saveToLocalStorage("funbox", nosave);
@@ -302,6 +311,9 @@ export function toggleFunbox(
   const funboxArray = config.funbox.split("#");
   if (funboxArray[0] == "none") funboxArray.splice(0, 1);
   if (!funboxArray.includes(funbox)) {
+    if (!canSetFunboxWithConfig(funbox, config)) {
+      return false;
+    }
     funboxArray.push(funbox);
     config.funbox = funboxArray.sort().join("#");
     r = funboxArray.indexOf(funbox);

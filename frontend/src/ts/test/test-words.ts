@@ -1,9 +1,12 @@
 class Words {
   public list: string[];
+  public sectionIndexList: number[];
   public length: number;
   public currentIndex: number;
+
   constructor() {
     this.list = [];
+    this.sectionIndexList = [];
     this.length = 0;
     this.currentIndex = 0;
   }
@@ -26,12 +29,15 @@ class Words {
   getLast(): string {
     return this.list[this.list.length - 1];
   }
-  push(word: string): void {
+  push(word: string, sectionIndex: number): void {
     this.list.push(word);
+    this.sectionIndexList.push(sectionIndex);
     this.length = this.list.length;
   }
+
   reset(): void {
     this.list = [];
+    this.sectionIndexList = [];
     this.currentIndex = 0;
     this.length = this.list.length;
   }
@@ -60,6 +66,7 @@ class Words {
 
 export const words = new Words();
 export let hasTab = false;
+export let hasNumbers = false;
 export let randomQuote = null as unknown as MonkeyTypes.Quote;
 
 export function setRandomQuote(rq: MonkeyTypes.Quote): void {
@@ -68,4 +75,8 @@ export function setRandomQuote(rq: MonkeyTypes.Quote): void {
 
 export function setHasTab(tf: boolean): void {
   hasTab = tf;
+}
+
+export function setHasNumbers(tf: boolean): void {
+  hasNumbers = tf;
 }

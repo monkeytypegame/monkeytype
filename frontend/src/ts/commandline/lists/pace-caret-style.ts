@@ -5,6 +5,14 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   configKey: "paceCaretStyle",
   list: [
     {
+      id: "setPaceCaretStyleOff",
+      display: "off",
+      configValue: "off",
+      exec: (): void => {
+        UpdateConfig.setPaceCaretStyle("off");
+      },
+    },
+    {
       id: "setPaceCaretStyleDefault",
       display: "line",
       configValue: "default",

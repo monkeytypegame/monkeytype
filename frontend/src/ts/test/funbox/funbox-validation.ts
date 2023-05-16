@@ -154,6 +154,7 @@ export function canSetFunboxWithConfig(
   funbox: string,
   config: MonkeyTypes.Config
 ): boolean {
+  console.log("cansetfunboxwithconfig", funbox, config.mode);
   let funboxToCheck = config.funbox;
   if (funboxToCheck === "none") {
     funboxToCheck = funbox;

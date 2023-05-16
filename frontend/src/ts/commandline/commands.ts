@@ -65,6 +65,8 @@ import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
 import ResultScreenCommands from "./lists/result-screen";
+import CustomBackgroundSizeCommands from "./lists/background-size";
+import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 import TribeDeltaCommands from "./lists/tribe-delta";
 import TribeCaretsCommands from "./lists/tribe-carets";
@@ -99,6 +101,7 @@ import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import * as TestStats from "../test/test-stats";
+import * as QuoteSearchPopup from "../popups/quote-search-popup";
 
 Misc.getLayoutsList()
   .then((layouts) => {
@@ -193,7 +196,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         UpdateConfig.setMode("quote");
-        $("#quote-search-button").trigger("click");
+        QuoteSearchPopup.show();
       },
       shouldFocusTestUI: false,
     },
@@ -309,6 +312,8 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setCustomBackground(input);
       },
     },
+    ...CustomBackgroundSizeCommands,
+    ...CustomBackgroundFilterCommands,
     ...RandomThemeCommands,
     {
       id: "randomizeTheme",

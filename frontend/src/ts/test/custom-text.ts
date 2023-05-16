@@ -14,8 +14,10 @@ export let text = [
 ];
 export let isWordRandom = false;
 export let isTimeRandom = false;
+export let isSectionRandom = false;
 export let word = -1;
 export let time = -1;
+export let section = -1;
 export let delimiter = " ";
 export let popupTextareaState = "The quick brown fox jumps over the lazy dog";
 
@@ -49,6 +51,10 @@ export function setIsTimeRandom(val: boolean, tribeOverride = false): void {
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
 }
 
+export function setIsSectionRandom(val: boolean): void {
+  isSectionRandom = val;
+}
+
 export function setTime(val: number, tribeOverride = false): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
   time = val;
@@ -59,6 +65,10 @@ export function setWord(val: number, tribeOverride = false): void {
   if (!TribeState.canChangeConfig(tribeOverride)) return;
   word = val;
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
+}
+
+export function setSection(val: number): void {
+  section = val;
 }
 
 export function setDelimiter(val: string, tribeOverride = false): void {
