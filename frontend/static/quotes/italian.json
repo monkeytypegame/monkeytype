@@ -333,7 +333,7 @@
     },
     {
       "text": "Oggi non è che un giorno qualunque di tutti i giorni che verranno. Ma quello che accadrà in tutti gli altri giorni che verranno può dipendere da quello che farai oggi..",
-      "source": "Hernet Hemingway",
+      "source": "Ernest Hemingway",
       "length": 168,
       "id": 55
     },
@@ -666,6 +666,42 @@
       "source": "Galileo Galilei",
       "length": 91,
       "id": 111
+    },
+    {
+      "text": "Lei e Mattia erano uniti da un filo elastico e invisibile, sepolto sotto un mucchio di cose di poca importanza, un filo che poteva esistere soltanto fra due come loro: due che avevano riconosciuto la propria solitudine l’uno nell’altra.",
+      "source": "Paolo Giordano, La solitudine dei numeri primi",
+      "length": 236,
+      "id": 112
+    },
+    {
+      "text": "Se non c’è amore, non solo inaridisce la vita delle persone, ma anche quella delle città.",
+      "source": "Elena Ferrante, L'amica geniale",
+      "length": 89,
+      "id": 113
+    },
+    {
+      "text": "Perché dovevo andare a scuola? Perché il mondo funzionava così? Nasci, vai a scuola, lavori e muori. Chi aveva deciso che quello era il modo giusto? Non si poteva vivere diversamente? Come gli uomini primitivi?",
+      "source": "Niccolò Ammaniti, Io e te",
+      "length": 210,
+      "id": 114
+    },
+    {
+      "text": "Ma ormai avevo imparato a fare le domande degli adulti, in cui si chiede una cosa per saperne un'altra.",
+      "source": "Paolo Cognetti, Le otto montagne",
+      "length": 103,
+      "id": 115
+    },
+    {
+      "text": "Dà ancora uno sguardo fuori della finestra, una brevissima occhiata, per l’ultima sua porzione di stelle. Poi nel buio, benché nessuno lo veda, sorride.",
+      "source": "Dino Buzzati, Il deserto dei tartari",
+      "length": 152,
+      "id": 116
+    },
+    {
+      "text": "I nomadi lo sanno: le mappe non servono a orientarsi, ma a sognare il viaggio nei mesi che precedono il distacco.",
+      "source": "Paolo Rumiz, Trans Europa Express",
+      "length": 113,
+      "id": 117
     }
   ]
 }
