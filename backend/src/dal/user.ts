@@ -765,7 +765,7 @@ export async function recordAutoBanEvent(
 
   const now = Date.now();
 
-  //remove any old events
+  //only keep events within the last maxHours
   const recentAutoBanTimestamps = autoBanTimestamps.filter(
     (timestamp) => timestamp >= now - maxHours * SECONDS_PER_HOUR * 1000
   );
