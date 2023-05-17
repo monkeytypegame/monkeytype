@@ -303,6 +303,7 @@
     position: absolute;
     background: var(--sub-color);
     color: var(--bg-color);
+    pointer-events: none;
     /* background: red; */
     padding: 0.5rem;
     /* left: .5rem; */
@@ -528,8 +529,6 @@
       flex-wrap: wrap;
       width: 100%;
       align-content: flex-start;
-      -webkit-user-select: none;
-      user-select: none;
       .word {
         position: relative;
         margin: 0.18rem 0.6rem 0.15rem 0;
@@ -560,6 +559,11 @@
         }
       }
     }
+  }
+
+  #resultReplay .words {
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .chart {
