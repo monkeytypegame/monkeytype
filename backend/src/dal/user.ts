@@ -777,13 +777,15 @@ export async function recordAutoBanEvent(
   const updateObj: Partial<MonkeyTypes.User> = {
     autoBanTimestamps: recentAutoBanTimestamps,
   };
+  let banningUser = false;
   if (recentAutoBanTimestamps.length > maxCount) {
     updateObj.banned = true;
+    banningUser = true;
     ret = true;
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
-  Logger.logToDb("user_auto_banned", { autoBanTimestamps }, uid);
+  Logger.logToDb("user_auto_banned", { autoBanTimestamps, banningUser }, uid);
   return ret;
 }
 
