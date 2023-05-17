@@ -276,7 +276,8 @@ export async function addResult(
     result.wpm > 130 &&
     result.testDuration < 122 &&
     (user.verified === false || user.verified === undefined) &&
-    user.lbOptOut !== true
+    user.lbOptOut !== true &&
+    user.banned !== true //no need to check again if user is already banned
   ) {
     if (!result.keySpacingStats || !result.keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
@@ -301,6 +302,7 @@ export async function addResult(
               body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
             UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+            user.banned = true;
           }
         }
         const status = MonkeyStatusCodes.BOT_DETECTED;
