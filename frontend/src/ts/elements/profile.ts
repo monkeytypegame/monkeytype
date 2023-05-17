@@ -316,6 +316,10 @@ export async function update(
 }
 
 export function updateNameFontSize(where: ProfileViewPaths): void {
+  //dont run this function in safari because OH MY GOD IT IS SO SLOW
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (isSafari) return;
+
   let details;
   if (where === "account") {
     details = $(".pageAccount .profile .details");
@@ -323,19 +327,18 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
     details = $(".pageProfile .profile .details");
   }
   if (!details) return;
-  const nameField = details.find(".name");
-  const nameFieldParent = nameField.parent();
+  const nameFieldjQ = details.find(".name");
+  const nameFieldParent = nameFieldjQ.parent()[0];
+  const nameField = nameFieldjQ[0];
   const upperLimit = Misc.convertRemToPixels(2);
-  // const nameFieldParentWidth = nameField.parent().width() ?? 0;
-  let fontSize = 15;
-  let nameWidth;
-  let parentWidth;
-  do {
-    fontSize = fontSize + 1;
-    nameField.css("font-size", fontSize);
-    nameWidth = nameField.width() ?? 0;
-    parentWidth = nameFieldParent.width() ?? 0;
-  } while (nameWidth < parentWidth - 10 && fontSize < upperLimit);
+
+  nameField.style.fontSize = `10px`;
+  const parentWidth = nameFieldParent.clientWidth;
+  const widthAt10 = nameField.clientWidth;
+  const ratioAt10 = parentWidth / widthAt10;
+  const fittedFontSize = ratioAt10 * 10;
+  const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
+  nameField.style.fontSize = `${finalFontSize}px`;
 }
 
 $(".details .editProfileButton").on("click", () => {
