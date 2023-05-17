@@ -1022,13 +1022,10 @@ function fillContent(): void {
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   if (chartData.length || accChartData.length) {
+    ChartController.updateAccountChartButtons();
     ChartController.accountHistory.options.animation = false;
     ChartController.accountHistory.update();
     delete ChartController.accountHistory.options.animation;
-  }
-
-  if (chartData.length) {
-    ChartController.updateAccountChartButtons();
   }
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
