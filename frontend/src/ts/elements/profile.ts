@@ -346,7 +346,7 @@ $(".details .editProfileButton").on("click", () => {
   });
 });
 
-const throttledEvent = throttle(250, () => {
+const throttledEvent = throttle(1000, () => {
   const activePage = ActivePage.get();
   if (activePage && ["account", "profile"].includes(activePage)) {
     updateNameFontSize(activePage as ProfileViewPaths);
