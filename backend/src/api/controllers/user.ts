@@ -109,12 +109,18 @@ export async function sendVerificationEmail(
       throw new MonkeyError(
         500,
         "Auth user not found when the user was found in the database",
-        JSON.stringify({ email: email, userInfoEmail: email, stack: e.stack }),
+        JSON.stringify({
+          decodedTokenEmail: email,
+          userInfoEmail: userInfo.email,
+          stack: e.stack,
+        }),
         userInfo.uid
       );
     }
     throw e;
   }
+
+  console.log(link);
 
   await emailQueue.sendVerificationEmail(email, userInfo.name, link);
 

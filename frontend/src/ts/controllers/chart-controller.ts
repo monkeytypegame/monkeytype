@@ -951,9 +951,9 @@ type ButtonBelowChart =
   | ".toggleAverage100OnChart";
 
 export function updateAccountChartButtons(): void {
-  updateAccuracy();
-  updateAverage10();
-  updateAverage100();
+  updateAccuracy(false);
+  updateAverage10(false);
+  updateAverage100(false);
 }
 
 function updateAccountChartButton(
@@ -965,7 +965,7 @@ function updateAccountChartButton(
     : $(`.pageAccount ${className}`).removeClass("active");
 }
 
-function updateAccuracy(): void {
+function updateAccuracy(updateChart = true): void {
   const accOn = Config.accountChart[0] === "on";
   updateAccountChartButton(accOn, ".toggleAccuracyOnChart");
 
@@ -975,10 +975,10 @@ function updateAccuracy(): void {
 
   (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
     accOn;
-  accountHistory.update();
+  if (updateChart) accountHistory.updateColors();
 }
 
-function updateAverage10(): void {
+function updateAverage10(updateChart = true): void {
   const accOn = Config.accountChart[0] === "on";
   const avg10On = Config.accountChart[1] === "on";
   updateAccountChartButton(avg10On, ".toggleAverage10OnChart");
@@ -989,11 +989,10 @@ function updateAverage10(): void {
   } else {
     accountHistory.data.datasets[3].hidden = !avg10On;
   }
-  accountHistory.updateColors();
-  accountHistory.update();
+  if (updateChart) accountHistory.updateColors();
 }
 
-function updateAverage100(): void {
+function updateAverage100(updateChart = true): void {
   const accOn = Config.accountChart[0] === "on";
   const avg100On = Config.accountChart[2] === "on";
   updateAccountChartButton(avg100On, ".toggleAverage100OnChart");
@@ -1004,8 +1003,7 @@ function updateAverage100(): void {
   } else {
     accountHistory.data.datasets[5].hidden = !avg100On;
   }
-  accountHistory.updateColors();
-  accountHistory.update();
+  if (updateChart) accountHistory.updateColors();
 }
 
 export async function updateColors<
