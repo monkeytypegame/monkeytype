@@ -522,10 +522,7 @@ function fillContent(): void {
         };
       }
 
-      const bucket = Math.floor(result.wpm / 10) * 10;
-      const bucket2 = Math.floor(Math.round(result.wpm) / 10) * 10;
-
-      if (bucket !== bucket2) console.log(result.wpm, bucket, bucket2);
+      const bucket = Math.floor(Math.round(result.wpm) / 10) * 10;
 
       if (Object.keys(histogramChartData).includes(String(bucket))) {
         histogramChartData[bucket]++;
