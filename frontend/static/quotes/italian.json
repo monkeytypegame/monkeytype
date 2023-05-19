@@ -333,7 +333,7 @@
     },
     {
       "text": "Oggi non è che un giorno qualunque di tutti i giorni che verranno. Ma quello che accadrà in tutti gli altri giorni che verranno può dipendere da quello che farai oggi..",
-      "source": "Hernet Hemingway",
+      "source": "Ernest Hemingway",
       "length": 168,
       "id": 55
     },
@@ -632,12 +632,6 @@
       "id": 104
     },
     {
-      "text": "Se ni' mondo esistesse un po' di bene e ognun si considerasse suo fratello ci sarebbe meno pensieri e meno pene e il mondo ne sarebbe assai più bello.",
-      "source": "Pietro Pacciani, Processo",
-      "length": 150,
-      "id": 105
-    },
-    {
       "text": "Una delle poche cose, anzi forse la sola ch'io sapessi di certo era questa: che mi chiamavo Mattia Pascal.",
       "source": "Luigi Pirandello, Il fu Mattia Pascal",
       "length": 106,
@@ -672,6 +666,72 @@
       "source": "Galileo Galilei",
       "length": 91,
       "id": 111
+    },
+    {
+      "text": "Lei e Mattia erano uniti da un filo elastico e invisibile, sepolto sotto un mucchio di cose di poca importanza, un filo che poteva esistere soltanto fra due come loro: due che avevano riconosciuto la propria solitudine l’uno nell’altra.",
+      "source": "Paolo Giordano, La solitudine dei numeri primi",
+      "length": 236,
+      "id": 112
+    },
+    {
+      "text": "Se non c’è amore, non solo inaridisce la vita delle persone, ma anche quella delle città.",
+      "source": "Elena Ferrante, L'amica geniale",
+      "length": 89,
+      "id": 113
+    },
+    {
+      "text": "Perché dovevo andare a scuola? Perché il mondo funzionava così? Nasci, vai a scuola, lavori e muori. Chi aveva deciso che quello era il modo giusto? Non si poteva vivere diversamente? Come gli uomini primitivi?",
+      "source": "Niccolò Ammaniti, Io e te",
+      "length": 210,
+      "id": 114
+    },
+    {
+      "text": "Ma ormai avevo imparato a fare le domande degli adulti, in cui si chiede una cosa per saperne un'altra.",
+      "source": "Paolo Cognetti, Le otto montagne",
+      "length": 103,
+      "id": 115
+    },
+    {
+      "text": "Dà ancora uno sguardo fuori della finestra, una brevissima occhiata, per l’ultima sua porzione di stelle. Poi nel buio, benché nessuno lo veda, sorride.",
+      "source": "Dino Buzzati, Il deserto dei tartari",
+      "length": 152,
+      "id": 116
+    },
+    {
+      "text": "I nomadi lo sanno: le mappe non servono a orientarsi, ma a sognare il viaggio nei mesi che precedono il distacco.",
+      "source": "Paolo Rumiz, Trans Europa Express",
+      "length": 113,
+      "id": 117
+    },
+    {
+      "text": "Hanno successo soltanto coloro che, nella vita, si rivolgono con gioia, entusiasmo e dedizione a ciò che fanno.",
+      "source": "Reinhold Messner, Spostare le montagne",
+      "length": 111,
+      "id": 118
+    },
+    {
+      "text": "Tu sei come un colibrì perché come il colibrì metti tutta la tua energia nel restare fermo. Settanta battiti d'ali al secondo per rimanere già dove sei. Riesci a fermarti nel mondo e nel tempo, riesci fermare il mondo è il tempo intorno a te, certe volte riesci addirittura anche a risalirlo, il tempo, e a ritrovare quello perduto, così come il colibrì è capace di volare all'indietro.",
+      "source": "Sandro Veronesi, Il colibrì",
+      "length": 386,
+      "id": 119
+    },
+    {
+      "text": "La legge di Murphy dice che tutto quello che deve accadere, accadrà. E a noi non sembrava assolutamente una cosa brutta.",
+      "source": "Interstellar",
+      "length": 120,
+      "id": 120
+    },
+    {
+      "text": "E' davvero strano il sistema economico da cui ci si aspetta oggi la salvezza del mondo! Nessuno fabbrica più nulla con le proprie mani, nessuno s’ingegna più a fare una pentola, uno zufolo o a inventare un carretto; l’idea più brillante che si possa avere quella di andare in qualche parte della terra a comprare qualcosa da rivendere altrove, con profitto.",
+      "source": "Tiziano Terzani",
+      "length": 357,
+      "id": 121
+    },
+    {
+      "text": "In ogni gara c’è sempre l’amico senza volto che ha esattamente il tuo passo. Stai pronto a lasciare il vecchio per quello nuovo e concentrati sul tuo obiettivo: tagliare il traguardo con il sorriso sulle labbra.",
+      "source": "Stefano Baldini, Maratona per tutti",
+      "length": 211,
+      "id": 122
     }
   ]
 }

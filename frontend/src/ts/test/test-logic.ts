@@ -1227,6 +1227,10 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean
 ): Promise<void> {
+  if (PractiseWords.before.mode !== null) {
+    return;
+  }
+
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, {
       duration: 3,

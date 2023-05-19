@@ -24429,7 +24429,7 @@
     },
     {
       "text": "The greatest enemy of knowledge is not ignorance, it is the illusion of knowledge.",
-      "source": "Enemy of Knowledge",
+      "source": "Stephen Hawking",
       "id": 4231,
       "length": 82
     },
@@ -31778,12 +31778,6 @@
       "id": 5576
     },
     {
-      "text": "The greatest enemy of knowledge is not ignorance, it is the illusion of knowledge.",
-      "source": "Stephen Hawking",
-      "length": 82,
-      "id": 5577
-    },
-    {
       "text": "We may encounter many defeats, but we must not be defeated.",
       "source": "Maya Angelou",
       "length": 59,
@@ -34414,12 +34408,6 @@
       "source": "Middlesex - Jeffrey Eugenides",
       "length": 178,
       "id": 6155
-    },
-    {
-      "text": "Intrigued by that enigma, he dug so deeply into her sentiments that in search of interest he found love, because by trying to make her love him he ended up falling in love with her.",
-      "source": "One Hundred Years of Solitude - Gabriel Garcia Marquez",
-      "length": 181,
-      "id": 6156
     },
     {
       "text": "The future wasn't set in stone. Maybe something good would happen. Perhaps I would experience something that made me glad I kept living. The chances weren't zero. And that meant I couldn't yet give in to the allure of death.",
@@ -37983,13 +37971,6 @@
       "id": 6713
     },
     {
-      "text": "He came. He left. Nothing else had changed. I had not changed. The world hadn't changed. Yet nothing would be the same. All that remains is dreammaking and strange remembrance.",
-      "source": "Call Me by Your Name",
-      "length": 176,
-      "approvedBy": "Smithster",
-      "id": 6715
-    },
-    {
       "text": "Although Ganon is gone for now, there is still so much more for us to do, and so many painful memories that we must bear.",
       "source": "Zelda - The Legend of Zelda: Breath of the Wild",
       "length": 121,
@@ -38273,12 +38254,6 @@
       "source": "Baby Driver",
       "id": 6762,
       "length": 152
-    },
-    {
-      "text": "In the moment when I truly understand my enemy, understand him well enough to defeat him, then in that very moment I also love him. I think it's impossible to really understand somebody, what they want, what they believe, and not love them the way they love themselves. And then, in that very moment when I love them... I destroy them.",
-      "source": "Enders Game",
-      "id": 6763,
-      "length": 335
     },
     {
       "text": "All right, I've been thinking. When life gives you lemons? Don't make lemonade. Make life take the lemons back! Get mad! I don't want your damn lemons! What am I supposed to do with these?! Demand to see life's manager! Make life rue the day it thought it could give Cave Johnson lemons! Do you know who I am?! I'm the man who's gonna burn your house down! With the lemons! I'm gonna get my engineers to invent a combustible lemon that burns your house down!",
@@ -38645,12 +38620,6 @@
       "source": "Andrè Gide",
       "length": 80,
       "id": 6825
-    },
-    {
-      "text": "Happiness can be found, even in the darkest of times, if one only remembers to turn on the light.",
-      "source": "Harry Potter and the Prisoner of Azkaban",
-      "length": 97,
-      "id": 6826
     },
     {
       "text": "The greatest glory in living lies not in never falling, but in rising every time we fall. This means recognizing that failure and setbacks are a natural part of the journey to success, and using them as opportunities to learn and grow. It means finding the strength and resilience to get back up and keep going, even when things seem impossible. It means believing in ourselves and our abilities, and never giving up on our dreams.",
@@ -39161,180 +39130,6 @@
       "source": "Personal knowledge: Towards a Post-Critical Philosophy",
       "id": 6912,
       "length": 227
-    },
-    {
-      "text": "The way I see it, if you want the rainbow, you gotta put up with the rain.",
-      "source": "Dolly Parton",
-      "length": 74,
-      "id": 6913
-    },
-    {
-      "text": "An education isn't how much you have committed to memory, or even how much you know. It's being able to differentiate between what you do know and what you don't.",
-      "source": "Anatole France",
-      "length": 162,
-      "id": 6914
-    },
-    {
-      "text": "Arithmetic is numbers you squeeze from your head to your hand to your pencil to your paper until you get the right answer.",
-      "source": "Carl Sandburg",
-      "length": 122,
-      "id": 6915
-    },
-    {
-      "text": "You only live life once; but if you live it right, once is enough.",
-      "source": "Adam Marshall",
-      "length": 66,
-      "id": 6916
-    },
-    {
-      "text": "Don't throw away the old bucket until you know whether the new one holds water.",
-      "source": "Swedish Proverb",
-      "length": 79,
-      "id": 6917 
-    },
-    {
-      "text": "There is nothing new under the sun but there are lots of old things we don't know.",
-      "source": "Ambrose Bierce",
-      "length": 82,
-      "id": 6918
-    },
-    {
-      "text": "If you're a misfit within a group of misfits, does that mean you're actually popular and normal?",
-      "source": "Laura Preble",
-      "length": 96,
-      "id": 6919
-    },
-    {
-      "text": "You don’t remember what happened. What you remember becomes what happened.",
-      "source": "John Green - An Abundance of Katherines",
-      "length": 74,
-      "id": 6920
-    },
-    {
-      "text": "Learn all you can from the mistakes of others. You won't have time to make them all yourself.",
-      "source": "Alfred Sheinwold",
-      "length": 93,
-      "id": 6921
-    },
-    {
-      "text": "The only one who can tell you \"you can't\" is you. And you don't have to listen.",
-      "source": "Dean Karnazes",
-      "length": 79,
-      "id": 6922
-    },
-    {
-      "text": "In the game of life it's a good idea to have a few early losses, which relieves you of the pressure of trying to maintain an undefeated season.",
-      "source": "Bill Vaughan",
-      "length": 143,
-      "id": 6923
-    },
-    {
-      "text": "I like an escalator because an escalator can never break, it can only become stairs. There would never be an escalator temporarily out of order sign, only an escalator temporarily stairs. Sorry for the convenience.",
-      "source": "Mitch Hedberg",
-      "length": 214,
-      "id": 6924
-    },
-    {
-      "text": "Sometimes, when one person is absent, the whole world seems depopulated.",
-      "source": "Allphonse de Lamartine",
-      "length": 72,
-      "id": 6925
-    },
-    {
-      "text": "That's just the way things go. We meet people, get to know them and then they get up and leave us behind.",
-      "source": "Takayuki Ikkaku, Arisa Hosaka and Toshihiro Kawabata - Animal Crossing: Wild World",
-      "length": 105,
-      "id": 6926
-    },
-    {
-      "text": "I honestly don't know how you live without having a cat inside your house. It's like having a little living piece of art that is also very warm and soft.",
-      "source": "Hank Green",
-      "length": 153,
-      "id": 6927
-    },
-    {
-      "text": "That's the great thing about being in the third grade. If you've got one polysyllabic adjective, everyone thinks you're a genius.",
-      "source": "John Green",
-      "length": 129,
-      "id": 6928
-    },
-    {
-      "text": "You must not lose faith in humanity. Humanity is an ocean; if a few drops of the ocean are dirty, the ocean does not become dirty.",
-      "source": "Mahatma Gandhi",
-      "length": 130,
-      "id": 6929
-    },
-    {
-      "text": "He who is carried on another's back does not appreciate how far off the town is.",
-      "source": "African Proverb",
-      "length": 80,
-      "id": 6930
-    },
-    {
-      "text": "Bricks and mortar make a house, but the laughter of children makes a home.",
-      "source": "Irish Proverb",
-      "length": 74,
-      "id": 6931
-    },
-    {
-      "text": "Four things come not back: the spoken word, the sped arrow, the past life, and the neglected opportunity.",
-      "source": "Arabian Proverb",
-      "length": 105,
-      "id": 6932
-    },
-    {
-      "text": "He who thinks by the inch and talks by the yard deserves to be kicked by the foot.",
-      "source": "Unknown",
-      "length": 82,
-      "id": 6933
-    },
-    {
-      "text": "Don't let people drive you crazy when you know it's in walking distance.",
-      "source": "Unknown",
-      "length": 72,
-      "id": 6934
-    },
-    {
-      "text": "Computer games don't affect kids. I mean; if Pac Man affected us as kids, we'd all be running around in darkened rooms, munching pills and listening to repetitive music.",
-      "source": "Marcus Brigstocke",
-      "length": 169,
-      "id": 6935
-    },
-    {
-      "text": "Give a man a fish, and he'll eat for a day. Give a fish a man, and he'll eat for weeks!",
-      "source": "Takayuki Ikkaku, Arisa Hosaka and Toshihiro Kawabata - Animal Crossing: Wild World",
-      "length": 87,
-      "id": 6936
-    },
-    {
-      "text": "Those who educate children well are more to be honored than parents, for these only gave life, those the art of living well.",
-      "source": "Aristotle",
-      "length": 124,
-      "id": 6937
-    },
-    {
-      "text": "He who asks is a fool for five minutes, but he who does not ask remains a fool forever.",
-      "source": "Chinese Proverb",
-      "length": 87,
-      "id": 6938
-    },
-    {
-      "text": "When the character of a man is not clear to you, look at his friends.",
-      "source": "Japanese Proverb",
-      "length": 69,
-      "id": 6939
-    },
-    {
-      "text": "Don't think there are no crocodiles because the water is calm.",
-      "source": "Malayan Proverb",
-      "length": 62,
-      "id": 6940
-    },
-    {
-      "text": "Keep five yards from a carriage, ten yards from a horse, and a hundred yards from an elephant; but the distance one should keep from a wicked man cannot be measured.",
-      "source": "Indian Proverb",
-      "length": 165,
-      "id": 6941
     }
   ]
 }
