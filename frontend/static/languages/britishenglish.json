@@ -603,5 +603,6 @@
   ["catalogs", "catalogues"],
   ["cataloged", "catalogued"],
   ["uncataloged", "uncatalogued"],
-  ["catalogers", "cataloguers"]
+  ["catalogers", "cataloguers"],
+  ["program", "programme"]
 ]
