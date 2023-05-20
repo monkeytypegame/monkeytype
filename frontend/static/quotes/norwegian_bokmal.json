@@ -223,11 +223,11 @@
       "id": 36,
       "length": 61
     },
-    {
-      "text": "Den beste måten å øve opp ein brekt finger på, er å spele fiolin.",
-      "source": "Ordtak",
+    {      
+      "text": "Det er mye tull med disse automatheisene gitt, jeg tror det kommer til å gå sånn jeg, at folk kommer til å gå. Sånn tror jeg det kommer til å gå, at folk kommer til å gå.",
+      "source": "Fleksnes",
       "id": 37,
-      "length": 65
+      "length": 170
     },
     {
       "text": "Nøtt' itte å bygge bil da vettu, når'n itte eier nåla i veggen.",
@@ -900,12 +900,6 @@
       "source": "Fleksnes",
       "id": 149,
       "length": 77
-    },
-    {
-      "text": "Det er mye tull med disse automatheisene gitt, jeg tror det kommer til å gå sånn jeg, at folk kommer til å gå. Sånn tror jeg det kommer til å gå, at folk kommer til å gå.",
-      "source": "Fleksnes",
-      "id": 150,
-      "length": 170
     }
   ]
 }
