@@ -1527,7 +1527,7 @@
     },
     {
       "text": "I have often wondered how it is that every man loves himself more than all the rest of men, but yet sets less value on his own opinion of himself than on the opinion of others.",
-      "source": "Meditations",
+      "source": "Marcus Aurelius, Meditations",
       "id": 262,
       "length": 176
     },
@@ -9765,7 +9765,7 @@
     },
     {
       "text": "Maybe there aren't any such things as good friends or bad friends - maybe there are just friends, people who stand by you when you're hurt and who help you feel not so lonely. Maybe they're always worth being scared for, and hoping for, and living for. Maybe worth dying for too, if that's what has to be. No good friends. No bad friends. Only people you want, need to be with; people who build their houses in your heart.",
-      "source": "It",
+      "source": "Stephen King, It",
       "id": 1681,
       "length": 422
     },
@@ -30507,7 +30507,7 @@
     },
     {
       "text": "All warfare is based on deception. Hence, when we are able to attack, we must seem unable; when using our forces, we must appear inactive; when we are near, we must make the enemy believe we are far away; when far away, we must make him believe we are near.",
-      "source": "Sunt Tzu - The Art Of War",
+      "source": "Sunt Tzu, The Art Of War",
       "length": 257,
       "id": 5315
     },
@@ -34699,7 +34699,7 @@
     },
     {
       "text": "If you don't share someone's pain, you can never understand them.",
-      "source": "Nagato - Naruto",
+      "source": "Nagato, Naruto",
       "length": 65,
       "id": 6211
     },
@@ -35103,13 +35103,6 @@
       "length": 384,
       "approvedBy": "Smithster",
       "id": 6279
-    },
-    {
-      "text": "Maybe there aren't any such things as good friends or bad friends - maybe there are just friends, people who stand by you when you're hurt and who help you feel not so lonely. Maybe they're always worth being scared for, and hoping for, and living for. Maybe worth dying for too, if that's what has to be. No good friends. No bad friends. Only people you want, need to be with; people who build their houses in your heart.",
-      "source": "Stephen King, It",
-      "length": 422,
-      "approvedBy": "Smithster",
-      "id": 6280
     },
     {
       "text": "I am so amazingly cool you could keep a side of meat in me for a month. I am so hip I have difficulty seeing over my pelvis.",
@@ -35649,13 +35642,6 @@
       "length": 91,
       "approvedBy": "Smithster",
       "id": 6365
-    },
-    {
-      "text": "I have often wondered how it is that every man loves himself more than all the rest of men, but yet sets less value on his own opinion of himself than on the opinion of others.",
-      "source": "Marcus Aurelius",
-      "length": 176,
-      "approvedBy": "Smithster",
-      "id": 6366
     },
     {
       "text": "There's no such thing as winning or losing. There's won and there's lost. There is victory and there's defeat. There are absolutes. Everything in between is still left to fight for. The enemy will only have won when there is no one left to fight against him. Until then, there is only struggle, because that's what tides do - they turn.",
@@ -36806,13 +36792,6 @@
       "id": 6539
     },
     {
-      "text": "If you don't share someone's pain, you can never understand them.",
-      "source": "Naruto",
-      "length": 65,
-      "approvedBy": "Smithster",
-      "id": 6540
-    },
-    {
       "text": "The concept of hope is nothing more than giving up. A word that holds no true meaning.",
       "source": "Naruto",
       "length": 86,
@@ -37794,13 +37773,6 @@
       "id": 6693
     },
     {
-      "text": "All warfare is based on deception. Hence, when we are able to attack, we must seem unable; when using our forces, we must appear inactive; when we are near, we must make the enemy believe we are far away; when far away, we must make him believe we are near.",
-      "source": "Sun Tzu, The Art of War",
-      "length": 257,
-      "approvedBy": "Smithster",
-      "id": 6694
-    },
-    {
       "text": "You have to believe in the long-term plan you have but you need the short-term goals to motivate and inspire you.",
       "source": "Roger Federer",
       "length": 113,
@@ -38562,7 +38534,7 @@
     },
     {
       "text": "I think the saddest people always try their hardest to make people happy because they know what it's like to feel absolutely worthless and they don't want anyone else to feel like that.",
-      "source": "The Perks of Being a Wallflower",
+      "source": "Robin Williams",
       "length": 185,
       "id": 6822
     },
@@ -38697,12 +38669,6 @@
       "source": "Albert Einstein",
       "length": 248,
       "id": 6845
-    },
-    {
-      "text": "I think the saddest people always try their hardest to make people happy because they know what it's like to feel absolutely worthless and they don't want anyone else to feel like that.",
-      "source": "Robin Williams",
-      "length": 185,
-      "id": 6846
     },
     {
       "text": "I have no special talents. I am only passionately curious.",
