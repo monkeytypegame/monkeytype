@@ -404,25 +404,31 @@ export function smoothExp(arr: number[]): number[] {
   return result;
 }
 
-export function smoothGaussian(arr: number[]): number[] {
+export function smoothGaussian(arr: number[], half = true): number[] {
   const kernel = [];
-  const k = 2; // window size is 2*k+1 (take k before, and k after)
-  const sigma = 1; // sigma, yk; larger - more smooth
+  const k = 3; // window size is 2*k+1 (take k before, and k after)
+  const sigma = 2.5; // larger - more smooth
   for (let i = 0; i <= k * 2; i++) {
     kernel[i] = Math.exp(-Math.pow(k - i, 2) / sigma);
   }
-  let sum = kernel.reduce((a, b) => a + b);
-  for (let i = 0; i <= k * 2; i++) kernel[i] /= sum;
+
+  let sum = 0;
+  for (let i = 0; i <= k + +!half * k; i++) sum += kernel[i];
+  for (let i = 0; i <= k * 2; i++) {
+    kernel[i] /= sum;
+  }
 
   const result = [] as number[];
   for (let i = 0; i < arr.length; i++) {
-    //convolution
     result[i] = kernel[k] * arr[i];
-    for (let j = 0; j < k; j++)
-      result[i] += kernel[j] * (i - k + j >= 0 ? arr[i - k + j] : arr[0]);
-    for (let j = 1; j <= k; j++)
-      result[i] +=
-        kernel[k + j] * (i + j < arr.length ? arr[i + j] : arr[arr.length - 1]);
+    for (let j = 0; j < k; j++) {
+      result[i] += kernel[j] * arr[Math.max(0, i - k + j)];
+    }
+    if (!half) {
+      for (let j = 1; j <= k; j++) {
+        result[i] += kernel[k + j] * arr[Math.min(i + j, arr.length - 1)];
+      }
+    }
   }
 
   console.log(kernel);
