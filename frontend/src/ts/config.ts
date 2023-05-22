@@ -2,7 +2,6 @@ import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import {
-  isConfigKeyValid,
   isConfigValueValid,
   isConfigValueValidAsync,
 } from "./config-validation";
@@ -1233,7 +1232,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
       }
     );
   }
-  if (!isConfigKeyValid(font)) {
+  if (!font || !/^[0-9a-zA-Z_.\-#+()]+$/.test(font)) {
     Notifications.add(`Invalid font name value: "${font}".`, -1, {
       customTitle: "Custom font",
       duration: 3,
