@@ -83,7 +83,13 @@
   },
   {
     "name": "chinese",
-    "languages": ["chinese_traditional", "chinese_simplified", "chinese_simplified_1k", "chinese_simplified_5k", "chinese_simplified_10k, chinese_simplified_50k, chinese_simplified_100k"]
+    "languages": [
+      "chinese_traditional",
+      "chinese_simplified",
+      "chinese_simplified_1k",
+      "chinese_simplified_5k",
+      "chinese_simplified_10k, chinese_simplified_50k, chinese_simplified_100k"
+    ]
   },
   {
     "name": "russian",
@@ -202,11 +208,25 @@
   },
   {
     "name": "norwegian_bokmal",
-    "languages": ["norwegian_bokmal", "norwegian_bokmal_1k", "norwegian_bokmal_5k", "norwegian_bokmal_10k", "norwegian_bokmal_150k", "norwegian_bokmal_600k"]
+    "languages": [
+      "norwegian_bokmal",
+      "norwegian_bokmal_1k",
+      "norwegian_bokmal_5k",
+      "norwegian_bokmal_10k",
+      "norwegian_bokmal_150k",
+      "norwegian_bokmal_600k"
+    ]
   },
   {
     "name": "norwegian_nynorsk",
-    "languages": ["norwegian_nynorsk", "norwegian_nynorsk_1k", "norwegian_nynorsk_5k", "norwegian_nynorsk_10k", "norwegian_nynorsk_100k", "norwegian_nynorsk_400k"]
+    "languages": [
+      "norwegian_nynorsk",
+      "norwegian_nynorsk_1k",
+      "norwegian_nynorsk_5k",
+      "norwegian_nynorsk_10k",
+      "norwegian_nynorsk_100k",
+      "norwegian_nynorsk_400k"
+    ]
   },
   {
     "name": "hebrew",
