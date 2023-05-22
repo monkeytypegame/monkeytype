@@ -47,6 +47,30 @@ let resultScaleOptions = (
   ChartController.result.options as ScaleChartOptions<"line" | "scatter">
 ).scales;
 
+//@ts-ignore
+let data = [];
+
+export function test(b: boolean, s: number): void {
+  ChartController.result.data.datasets[3].data = Misc.smoothGaussian(
+    //@ts-ignore
+    data,
+    b,
+    s
+  ).map(Math.round);
+  ChartController.result.update();
+}
+
+export function test2(mult: number, al: number, ar: number): void {
+  ChartController.result.data.datasets[3].data = Misc.smoothExp(
+    //@ts-ignore
+    data,
+    mult,
+    al,
+    ar
+  ).map(Math.round);
+  ChartController.result.update();
+}
+
 async function updateGraph(): Promise<void> {
   const labels = [];
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
@@ -92,6 +116,8 @@ async function updateGraph(): Promise<void> {
   ChartController.result.data.labels = labels;
   ChartController.result.data.datasets[0].data = chartData1;
   ChartController.result.data.datasets[1].data = smoothedRawData;
+
+  data = chartData2;
 
   ChartController.result.data.datasets[3].data = Misc.smoothGaussian(
     chartData2

@@ -68,3 +68,9 @@ extendedGlobal.egVideoListener = egVideoListener;
 extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
 
 extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;
+
+//@ts-ignore
+extendedGlobal.test = Result.test;
+
+//@ts-ignore
+extendedGlobal.test2 = Result.test2;
