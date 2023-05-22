@@ -355,6 +355,9 @@ export function getWordsLimit(): number {
   ) {
     limit = 100;
   }
+  if (Config.mode === "custom" && CustomText.delimiter === "|") {
+    limit = 100;
+  }
 
   //funboxes
   if (funboxToPush) {
@@ -367,6 +370,7 @@ export function getWordsLimit(): number {
   }
   if (
     Config.mode === "custom" &&
+    !CustomText.isSectionRandom &&
     !CustomText.isTimeRandom &&
     CustomText.isWordRandom &&
     CustomText.word !== 0 &&
@@ -378,6 +382,7 @@ export function getWordsLimit(): number {
     Config.mode === "custom" &&
     !CustomText.isTimeRandom &&
     !CustomText.isWordRandom &&
+    !CustomText.isSectionRandom &&
     CustomText.text.length !== 0 &&
     CustomText.text.length < limit
   ) {
@@ -407,11 +412,21 @@ let currentQuote: string[] = [];
 
 export async function generateWords(
   language: MonkeyTypes.LanguageObject
-): Promise<string[]> {
+): Promise<{
+  words: string[];
+  sectionIndexes: number[];
+}> {
   currentQuote = [];
   currentSection = [];
   sectionIndex = 0;
-  const ret: string[] = [];
+  sectionHistory = [];
+  const ret: {
+    words: string[];
+    sectionIndexes: number[];
+  } = {
+    words: [],
+    sectionIndexes: [],
+  };
   const limit = getWordsLimit();
 
   let wordList = language.words;
@@ -431,21 +446,53 @@ export async function generateWords(
   ) {
     const funboxSection = await getFunboxSection(limit);
     if (funboxSection.length > 0) {
-      return funboxSection;
+      const indexes = [];
+      for (let i = 0; i < funboxSection.length; i++) {
+        indexes.push(i);
+      }
+      return {
+        words: funboxSection,
+        sectionIndexes: indexes,
+      };
     }
 
-    for (let i = 0; i < limit; i++) {
+    let stop = false;
+    let i = 0;
+    while (stop === false) {
       const nextWord = await getNextWord(
         wordset,
         i,
         language,
         limit,
-        Misc.nthElementFromArray(ret, -1) ?? "",
-        Misc.nthElementFromArray(ret, -2) ?? ""
+        Misc.nthElementFromArray(ret.words, -1) ?? "",
+        Misc.nthElementFromArray(ret.words, -2) ?? ""
       );
-      ret.push(nextWord);
+      ret.words.push(nextWord.word);
+      ret.sectionIndexes.push(nextWord.sectionIndex);
+
+      const randomSectionStop =
+        CustomText.isSectionRandom &&
+        CustomText.section !== 0 &&
+        sectionIndex >= CustomText.section;
+
+      const nonRandomSectionStop =
+        !CustomText.isSectionRandom &&
+        !CustomText.isTimeRandom &&
+        sectionIndex >= wordset.length;
+
+      const customModeStop =
+        Config.mode === "custom" &&
+        currentSection.length === 0 &&
+        CustomText.delimiter === "|" &&
+        (randomSectionStop || nonRandomSectionStop);
+
+      if (customModeStop || ret.words.length >= limit) {
+        stop = true;
+      }
+      i++;
     }
   }
+  sectionHistory = []; //free up a bit of memory? is that even a thing?
   return ret;
 }
 
@@ -453,8 +500,17 @@ async function generateQuoteWords(
   language: MonkeyTypes.LanguageObject,
   wordset: Wordset.Wordset,
   limit: number
-): Promise<string[]> {
-  const ret: string[] = [];
+): Promise<{
+  words: string[];
+  sectionIndexes: number[];
+}> {
+  const ret: {
+    words: string[];
+    sectionIndexes: number[];
+  } = {
+    words: [],
+    sectionIndexes: [],
+  };
   const languageToGet = language.name.startsWith("swiss_german")
     ? "german"
     : language.name;
@@ -528,16 +584,18 @@ async function generateQuoteWords(
       i,
       language,
       limit,
-      Misc.nthElementFromArray(ret, -1) ?? "",
-      Misc.nthElementFromArray(ret, -2) ?? ""
+      Misc.nthElementFromArray(ret.words, -1) ?? "",
+      Misc.nthElementFromArray(ret.words, -2) ?? ""
     );
-    ret.push(nextWord);
+    ret.words.push(nextWord.word);
+    ret.sectionIndexes.push(i);
   }
   return ret;
 }
 
-let sectionIndex = 0;
-let currentSection: string[] = [];
+export let sectionIndex = 0;
+export let currentSection: string[] = [];
+let sectionHistory: string[] = [];
 
 //generate next word
 export async function getNextWord(
@@ -547,7 +605,10 @@ export async function getNextWord(
   wordsBound: number,
   previousWord: string,
   previousWord2: string
-): Promise<string> {
+): Promise<{
+  word: string;
+  sectionIndex: number;
+}> {
   console.debug("Getting next word", {
     wordset,
     wordIndex,
@@ -568,15 +629,32 @@ export async function getNextWord(
     } else if (
       Config.mode == "custom" &&
       !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom
+      !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom
     ) {
       randomWord = CustomText.text[sectionIndex];
     } else if (
       Config.mode == "custom" &&
-      (CustomText.isWordRandom || CustomText.isTimeRandom) &&
+      (CustomText.isWordRandom ||
+        CustomText.isTimeRandom ||
+        CustomText.isSectionRandom) &&
       (wordset.length < 4 || PractiseWords.before.mode !== null)
     ) {
       randomWord = wordset.randomWord(funboxFrequency);
+    } else if (Config.mode === "custom" && CustomText.isSectionRandom) {
+      randomWord = wordset.randomWord(funboxFrequency);
+
+      const previousSection = Misc.nthElementFromArray(sectionHistory, -1);
+      const previousSection2 = Misc.nthElementFromArray(sectionHistory, -2);
+
+      let regenerationCount = 0;
+      while (
+        regenerationCount < 100 &&
+        (previousSection === randomWord || previousSection2 === randomWord)
+      ) {
+        regenerationCount++;
+        randomWord = wordset.randomWord(funboxFrequency);
+      }
     } else {
       let regenarationCount = 0; //infinite loop emergency stop button
       let firstAfterSplit = randomWord.split(" ")[0].toLowerCase();
@@ -600,15 +678,26 @@ export async function getNextWord(
         firstAfterSplit = randomWord.split(" ")[0];
       }
     }
+    randomWord = randomWord.replace(/ +/g, " ");
+    randomWord = randomWord.replace(/(^ )|( $)/g, "");
     currentSection = [...randomWord.split(" ")];
+    sectionHistory.push(randomWord);
     randomWord = currentSection.shift() as string;
     sectionIndex++;
   } else {
     randomWord = currentSection.shift() as string;
   }
 
-  if (!randomWord) {
+  if (randomWord === undefined) {
     throw new WordGenError("Random word is undefined");
+  }
+
+  if (randomWord === "") {
+    throw new WordGenError("Random word is empty");
+  }
+
+  if (/ /g.test(randomWord)) {
+    throw new WordGenError("Random word contains spaces");
   }
 
   if (
@@ -657,5 +746,8 @@ export async function getNextWord(
 
   console.debug("Word:", randomWord);
 
-  return randomWord;
+  return {
+    word: randomWord,
+    sectionIndex: sectionIndex,
+  };
 }

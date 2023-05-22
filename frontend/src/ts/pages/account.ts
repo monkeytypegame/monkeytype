@@ -522,7 +522,7 @@ function fillContent(): void {
         };
       }
 
-      const bucket = Math.floor(result.wpm / 10) * 10;
+      const bucket = Math.floor(Math.round(result.wpm) / 10) * 10;
 
       if (Object.keys(histogramChartData).includes(String(bucket))) {
         histogramChartData[bucket]++;
@@ -1022,13 +1022,10 @@ function fillContent(): void {
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   if (chartData.length || accChartData.length) {
+    ChartController.updateAccountChartButtons();
     ChartController.accountHistory.options.animation = false;
     ChartController.accountHistory.update();
     delete ChartController.accountHistory.options.animation;
-  }
-
-  if (chartData.length) {
-    ChartController.updateAccountChartButtons();
   }
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
