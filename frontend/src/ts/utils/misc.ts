@@ -406,10 +406,13 @@ export function smoothExp(
   return result;
 }
 
-export function smoothGaussian(arr: number[], half = true): number[] {
+export function smoothGaussian(
+  arr: number[],
+  half = true,
+  sigma = 2
+): number[] {
   const kernel = [];
   const k = 3; // window size is 2*k+1 (take k before, and k after)
-  const sigma = 2.5; // larger - more smooth
   for (let i = 0; i <= k * 2; i++) {
     kernel[i] = Math.exp(-Math.pow(k - i, 2) / sigma);
   }
