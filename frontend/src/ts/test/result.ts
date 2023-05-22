@@ -60,13 +60,13 @@ export function test(b: boolean, s: number): void {
   ChartController.result.update();
 }
 
-export function test2(mult: number, al: number, ar: number): void {
+export function test2(multiplier: number, left: number, right: number): void {
   ChartController.result.data.datasets[3].data = Misc.smoothExp(
     //@ts-ignore
     data,
-    mult,
-    al,
-    ar
+    multiplier,
+    left,
+    right
   ).map(Math.round);
   ChartController.result.update();
 }
