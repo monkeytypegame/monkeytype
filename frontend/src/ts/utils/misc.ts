@@ -388,19 +388,21 @@ export function smooth(
   return result;
 }
 
-export function smoothExp(arr: number[]): number[] {
-  const result = [arr[0]];
-  for (let i = 1; i < arr.length; i++) {
-    let diff = (arr[i] - result[i - 1]) / result[i - 1];
-    if (diff < 0) diff = (result[i - 1] - arr[i]) / arr[i];
-    const mult = 0.4;
-    const al = 0.6;
-    const ar = 0.9;
-    let a = ar - Math.exp(-diff * mult) * (ar - al);
-    if (a != a) a = al;
-    result[i] = a * arr[i] + (1 - a) * result[i - 1];
+export function smoothExp(
+  array: number[],
+  multiplier = 0.4,
+  leftBound = 0.6,
+  rightBound = 0.9
+): number[] {
+  const result = [array[0]];
+  for (let i = 1; i < array.length; i++) {
+    let diff = (array[i] - result[i - 1]) / result[i - 1];
+    if (diff < 0) diff = (result[i - 1] - array[i]) / array[i];
+    let a =
+      rightBound - Math.exp(-diff * multiplier) * (rightBound - leftBound);
+    if (a != a) a = leftBound;
+    result[i] = a * array[i] + (1 - a) * result[i - 1];
   }
-
   return result;
 }
 
