@@ -21,8 +21,6 @@
 }
 
 .pageAccount {
-  display: grid;
-  gap: 1rem;
   height: 100%;
 
   .preloader {
@@ -30,7 +28,8 @@
   }
 
   .content {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
   }
 
