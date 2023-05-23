@@ -120,8 +120,6 @@ export async function sendVerificationEmail(
     throw e;
   }
 
-  console.log(link);
-
   await emailQueue.sendVerificationEmail(email, userInfo.name, link);
 
   return new MonkeyResponse("Email sent");

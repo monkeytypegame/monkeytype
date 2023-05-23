@@ -930,25 +930,25 @@ function fillContent(): void {
   if (Config.alwaysShowDecimalPlaces) {
     highestAcc = Misc.roundTo2(highestAcc).toFixed(2);
   } else {
-    highestAcc = Math.round(highestAcc);
+    highestAcc = Math.floor(highestAcc);
   }
 
   $(".pageAccount .highestAcc .val").text(highestAcc + "%");
 
   let averageAcc: number | string = totalAcc;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAcc = Math.floor(averageAcc / testCount).toFixed(2);
+    averageAcc = Misc.roundTo2(averageAcc / testCount);
   } else {
-    averageAcc = Math.round(averageAcc / testCount);
+    averageAcc = Math.floor(averageAcc / testCount);
   }
 
   $(".pageAccount .avgAcc .val").text(averageAcc + "%");
 
   let averageAccLast10: number | string = totalAcc10;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAccLast10 = Math.floor(averageAccLast10 / last10).toFixed(2);
+    averageAccLast10 = Misc.roundTo2(averageAccLast10 / last10);
   } else {
-    averageAccLast10 = Math.round(averageAccLast10 / last10);
+    averageAccLast10 = Math.floor(averageAccLast10 / last10);
   }
 
   $(".pageAccount .avgAcc10 .val").text(averageAccLast10 + "%");
