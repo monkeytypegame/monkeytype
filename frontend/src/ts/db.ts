@@ -377,7 +377,7 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
     dbSnapshot?.results?.forEach((result) => {
       if (
         result.mode == mode &&
-        result.mode2 == mode2 &&
+        result.mode2 == mode2 && //do not use triple equals here, legacy results might use numbers in mode2 (or use a better solution for this)
         result.punctuation == punctuation &&
         result.language == language &&
         result.difficulty == difficulty &&
