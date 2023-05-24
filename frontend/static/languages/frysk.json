@@ -2,7 +2,7 @@
   "name": "frysk",
   "rightToLeft": false,
   "ligatures": false,
-  "bcp47": "fy",
+  "bcp47": "fy-FY",
   "words": [
     "fûgel",
     "boer",
