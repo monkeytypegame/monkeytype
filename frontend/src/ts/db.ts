@@ -437,7 +437,8 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
             activeTagIds.some((tagId) => result.tags.includes(tagId)))
         ) {
           // Continue if the mode2 doesn't match and it's not a quote
-          if (result.mode2 !== mode2 && mode !== "quote") {
+          if (result.mode2 != mode2 && mode !== "quote") {
+            //not using triple equals, legacy results might use numbers in mode2
             continue;
           }
 
@@ -449,7 +450,8 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
           }
 
           // Check if the mode2 matches and if it does, add it to the sum, for quotes, this is the quote id
-          if (result.mode2 === mode2) {
+          if (result.mode2 == mode2) {
+            //not using triple equals, legacy results might use numbers in mode2
             wpmSum += result.wpm;
             accSum += result.acc;
             count++;
