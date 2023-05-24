@@ -516,7 +516,8 @@ export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
           }
 
           // Continue if the mode2 doesn't match and it's not a quote
-          if (result.mode2 !== mode2 && mode !== "quote") {
+          if (result.mode2 != mode2 && mode !== "quote") {
+            //not using triple equals, legacy results might use numbers in mode2
             continue;
           }
 
