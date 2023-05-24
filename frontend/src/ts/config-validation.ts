@@ -66,7 +66,10 @@ export function isConfigValueValid(
         break;
 
       case "numberArray":
-        if (isArray(val) && val.every((v) => typeof v === "number")) {
+        if (
+          isArray(val) &&
+          val.every((v) => typeof v === "number" && !isNaN(v))
+        ) {
           isValid = true;
         }
         break;

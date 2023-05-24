@@ -7,6 +7,7 @@ import * as Misc from "../utils/misc";
 import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
+import * as TestWords from "../test/test-words";
 
 const stenoKeys: MonkeyTypes.Layout = {
   keymapShowTopRow: true,
@@ -141,6 +142,7 @@ export async function refresh(
     }
 
     const showTopRow =
+      (TestWords.hasNumbers && Config.keymapMode === "next") ||
       Config.keymapShowTopRow === "always" ||
       ((lts as typeof layouts["qwerty"]).keymapShowTopRow &&
         Config.keymapShowTopRow !== "never");

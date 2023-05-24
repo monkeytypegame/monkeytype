@@ -104,6 +104,7 @@ function updateBreakpoint(noReinstate = false): void {
     widerThanBreakpoint = false;
   }
   if (noReinstate) return;
+  if (Config.ads === "off" || !initialised) return;
   if (beforeUpdate !== widerThanBreakpoint) {
     if (choice === "eg") {
       EG.reinstate();
@@ -123,6 +124,7 @@ function updateBreakpoint2(noReinstate = false): void {
     widerThanBreakpoint2 = false;
   }
   if (noReinstate) return;
+  if (Config.ads === "off" || !initialised) return;
   if (beforeUpdate !== widerThanBreakpoint2) {
     PW.reinstate();
   }

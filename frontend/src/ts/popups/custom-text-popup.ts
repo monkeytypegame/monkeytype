@@ -74,8 +74,16 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
   let delimiter;
   if ($(`${popup} .delimiterCheck input`).prop("checked")) {
     delimiter = "|";
+
+    $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
+
+    $(`${popup} .randomInputFields .wordcount input `).val("");
+    $(`${popup} .randomInputFields .wordcount `).addClass("hidden");
   } else {
     delimiter = " ";
+    $(`${popup} .randomInputFields .sectioncount input `).val("");
+    $(`${popup} .randomInputFields .sectioncount `).addClass("hidden");
+    $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
   }
   if (
     $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
@@ -113,10 +121,19 @@ export function hide(options = {} as HideOptions): void {
         options.noAnim ? 0 : 125,
         () => {
           if (options.resetState) {
+            const newText = CustomText.text.map((word) => {
+              if (word[word.length - 1] == "|") {
+                word = word.slice(0, -1);
+              }
+              return word;
+            });
+
             CustomText.setPopupTextareaState(
-              CustomText.text.join(CustomText.delimiter)
+              // CustomText.text.join(CustomText.delimiter)
+              newText.join(CustomText.delimiter)
             );
           }
+
           $(wrapper).addClass("hidden");
           Skeleton.remove(skeletonId);
         }
@@ -177,14 +194,22 @@ $(`${popup} textarea`).on("keypress", (e) => {
 
 $(`${popup} .randomInputFields .wordcount input`).on("keypress", () => {
   $(`${popup} .randomInputFields .time input`).val("");
+  $(`${popup} .randomInputFields .sectioncount input`).val("");
 });
 
 $(`${popup} .randomInputFields .time input`).on("keypress", () => {
+  $(`${popup} .randomInputFields .wordcount input`).val("");
+  $(`${popup} .randomInputFields .sectioncount input`).val("");
+});
+
+$(`${popup} .randomInputFields .sectioncount input`).on("keypress", () => {
+  $(`${popup} .randomInputFields .time input`).val("");
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
 function apply(): void {
   let text = ($(`${popup} textarea`).val() as string).normalize();
+
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
@@ -218,6 +243,7 @@ function apply(): void {
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
+
   CustomText.setText(text.split(CustomText.delimiter));
 
   CustomText.setWord(
@@ -227,6 +253,9 @@ function apply(): void {
     parseInt(($(`${popup} .time input`).val() as string) || "-1")
   );
 
+  CustomText.setSection(
+    parseInt(($(`${popup} .sectioncount input`).val() as string) || "-1")
+  );
   CustomText.setIsWordRandom(
     $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
       CustomText.word > -1
@@ -235,11 +264,15 @@ function apply(): void {
     $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
       CustomText.time > -1
   );
-
+  CustomText.setIsSectionRandom(
+    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+      CustomText.section > -1
+  );
   if (
     $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
     !CustomText.isTimeRandom &&
-    !CustomText.isWordRandom
+    !CustomText.isWordRandom &&
+    !CustomText.isSectionRandom
   ) {
     Notifications.add(
       "You need to specify word count or time in seconds to start a random custom test",

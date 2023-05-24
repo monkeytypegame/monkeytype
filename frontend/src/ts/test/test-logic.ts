@@ -349,13 +349,12 @@ export function restart(options = {} as RestartOptions): void {
             toPush.push(TestWords.words.get(i));
           }
           TestWords.words.reset();
-          toPush.forEach((word) => TestWords.words.push(word));
+          toPush.forEach((word, index) => TestWords.words.push(word, index));
         }
       }
       if (!options.withSameWordset && !shouldQuoteRepeat) {
         TestState.setRepeated(false);
         TestState.setPaceRepeat(repeatWithPace);
-        TestWords.setHasTab(false);
         await init();
         await PaceCaret.init();
       } else {
@@ -457,6 +456,7 @@ export function restart(options = {} as RestartOptions): void {
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
 export async function init(): Promise<void> {
+  console.debug("Initializing test");
   testReinitCount++;
   if (testReinitCount >= 5) {
     TestUI.setTestRestarting(false);
@@ -543,8 +543,11 @@ export async function init(): Promise<void> {
   }
 
   let generatedWords: string[];
+  let generatedSectionIndexes: number[];
   try {
-    generatedWords = await WordsGenerator.generateWords(language);
+    const gen = await WordsGenerator.generateWords(language);
+    generatedWords = gen.words;
+    generatedSectionIndexes = gen.sectionIndexes;
   } catch (e) {
     console.error(e);
     if (e instanceof WordsGenerator.WordGenError) {
@@ -565,14 +568,29 @@ export async function init(): Promise<void> {
     return;
   }
 
+  const beforeHasNumbers = TestWords.hasNumbers ? true : false;
+
+  let hasTab = false;
+  let hasNumbers = false;
+
   for (const word of generatedWords) {
-    if (/\t/g.test(word)) {
-      TestWords.setHasTab(true);
+    if (/\t/g.test(word) && !hasTab) {
+      hasTab = true;
+    }
+    if (/\d/g.test(word) && !hasNumbers) {
+      hasNumbers = true;
     }
   }
 
-  for (const word of generatedWords) {
-    TestWords.words.push(word);
+  TestWords.setHasTab(hasTab);
+  TestWords.setHasNumbers(hasNumbers);
+
+  if (beforeHasNumbers !== hasNumbers) {
+    Keymap.refresh();
+  }
+
+  for (let i = 0; i < generatedWords.length; i++) {
+    TestWords.words.push(generatedWords[i], generatedSectionIndexes[i]);
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -584,6 +602,11 @@ export async function init(): Promise<void> {
   TestUI.setRightToLeft(language.rightToLeft);
   TestUI.setLigatures(language.ligatures ?? false);
   TestUI.showWords();
+  console.debug("Test initialized with words", generatedWords);
+  console.debug(
+    "Test initialized with section indexes",
+    generatedSectionIndexes
+  );
 }
 
 //add word during the test
@@ -606,9 +629,16 @@ export async function addWord(): Promise<void> {
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom &&
       TestWords.words.length >= CustomText.text.length) ||
     (Config.mode === "quote" &&
-      TestWords.words.length >= (TestWords.randomQuote.textSplit?.length ?? 0))
+      TestWords.words.length >=
+        (TestWords.randomQuote.textSplit?.length ?? 0)) ||
+    (Config.mode === "custom" &&
+      CustomText.isSectionRandom &&
+      WordsGenerator.sectionIndex >= CustomText.section &&
+      WordsGenerator.currentSection.length === 0 &&
+      CustomText.section != 0)
   ) {
     return;
   }
@@ -635,12 +665,13 @@ export async function addWord(): Promise<void> {
       if (section === undefined) return;
 
       let wordCount = 0;
-      for (const word of section.words) {
+      for (let i = 0; i < section.words.length; i++) {
+        const word = section.words[i];
         if (wordCount >= Config.words && Config.mode == "words") {
           break;
         }
         wordCount++;
-        TestWords.words.push(word);
+        TestWords.words.push(word, i);
         TestUI.addWord(word);
       }
     }
@@ -661,20 +692,12 @@ export async function addWord(): Promise<void> {
     TestWords.words.length,
     language,
     bound,
-    TestWords.words.get(TestWords.words.length - 1, true),
-    TestWords.words.get(TestWords.words.length - 2, true)
+    TestWords.words.get(TestWords.words.length - 1),
+    TestWords.words.get(TestWords.words.length - 2)
   );
 
-  const split = randomWord.split(" ");
-  if (split.length > 1) {
-    split.forEach((word) => {
-      TestWords.words.push(word);
-      TestUI.addWord(word);
-    });
-  } else {
-    TestWords.words.push(randomWord);
-    TestUI.addWord(randomWord);
-  }
+  TestWords.words.push(randomWord.word, randomWord.sectionIndex);
+  TestUI.addWord(randomWord.word);
 }
 
 interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
@@ -1032,15 +1055,23 @@ export async function finish(difficultyFailed = false): Promise<void> {
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom &&
       CustomText.text.length < 10) ||
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
+      !CustomText.isSectionRandom &&
       CustomText.word < 10) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
+      !CustomText.isSectionRandom &&
       CustomText.isTimeRandom &&
       CustomText.time < 15) ||
+    (Config.mode === "custom" &&
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.isSectionRandom &&
+      TestWords.words.length < 10) ||
     (Config.mode === "zen" && completedEvent.testDuration < 15)
   ) {
     Notifications.add("Test invalid - too short", 0);
@@ -1194,6 +1225,10 @@ async function saveResult(
   completedEvent: CompletedEvent,
   isRetrying: boolean
 ): Promise<void> {
+  if (PractiseWords.before.mode !== null) {
+    return;
+  }
+
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, {
       duration: 3,
