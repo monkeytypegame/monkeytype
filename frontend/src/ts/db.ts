@@ -377,7 +377,7 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
     dbSnapshot?.results?.forEach((result) => {
       if (
         result.mode == mode &&
-        `${result.mode2}` === `${mode2 as unknown}` && //using template strings here because legacy results can have numbers in mode2
+        `${result.mode2}` === `${mode2 as string | number}` && //using template strings here because legacy results can have numbers in mode2
         result.punctuation == punctuation &&
         result.language == language &&
         result.difficulty == difficulty &&
@@ -437,8 +437,11 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
             activeTagIds.some((tagId) => result.tags.includes(tagId)))
         ) {
           // Continue if the mode2 doesn't match and it's not a quote
-          if (result.mode2 != mode2 && mode !== "quote") {
-            //not using triple equals, legacy results might use numbers in mode2
+          if (
+            `${result.mode2}` !== `${mode2 as string | number}` &&
+            mode !== "quote"
+          ) {
+            //using template strings because legacy results might use numbers in mode2
             continue;
           }
 
@@ -450,8 +453,8 @@ export async function getUserAverage10<M extends MonkeyTypes.Mode>(
           }
 
           // Check if the mode2 matches and if it does, add it to the sum, for quotes, this is the quote id
-          if (result.mode2 == mode2) {
-            //not using triple equals, legacy results might use numbers in mode2
+          if (`${result.mode2}` === `${mode2 as string | number}`) {
+            //using template strings because legacy results might use numbers in mode2
             wpmSum += result.wpm;
             accSum += result.acc;
             count++;
@@ -516,8 +519,11 @@ export async function getUserDailyBest<M extends MonkeyTypes.Mode>(
           }
 
           // Continue if the mode2 doesn't match and it's not a quote
-          if (result.mode2 != mode2 && mode !== "quote") {
-            //not using triple equals, legacy results might use numbers in mode2
+          if (
+            `${result.mode2}` !== `${mode2 as string | number}` &&
+            mode !== "quote"
+          ) {
+            //using template strings because legacy results might use numbers in mode2
             continue;
           }
 
