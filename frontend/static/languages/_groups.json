@@ -459,6 +459,10 @@
     "languages": ["yiddish"]
   },
   {
+    "name": "frysk",
+    "languages": ["frysk"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
