@@ -311,7 +311,7 @@ function fillContent(): void {
           let timefilter: MonkeyTypes.Mode2Custom<"time"> = "custom";
           if (
             ["15", "30", "60", "120"].includes(
-              (result.mode2 as string | number).toString() //legacy results could have a number in mode2
+              `${result.mode2}` //legacy results could have a number in mode2
             )
           ) {
             timefilter = `${result.mode2}`;
@@ -326,7 +326,7 @@ function fillContent(): void {
           let wordfilter: MonkeyTypes.Mode2Custom<"words"> = "custom";
           if (
             ["10", "25", "50", "100", "200"].includes(
-              (result.mode2 as string | number).toString() //legacy results could have a number in mode2
+              `${result.mode2}` //legacy results could have a number in mode2
             )
           ) {
             wordfilter = `${result.mode2}`;
