@@ -558,7 +558,7 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
   const user = await getUser(uid, "increment bananas");
 
   let best60: number | undefined;
-  const personalBests60 = user.personalBests?.time[60];
+  const personalBests60 = user.personalBests?.time["60"];
 
   if (personalBests60) {
     best60 = Math.max(...personalBests60.map((best) => best.wpm));

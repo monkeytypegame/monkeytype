@@ -16,56 +16,56 @@ let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
 let showingYesterday = false;
 
-type LbKey = 15 | 60;
+type LbKey = "15" | "60";
 
 let currentData: {
   [key in LbKey]: MonkeyTypes.LeaderboardEntry[];
 } = {
-  15: [],
-  60: [],
+  "15": [],
+  "60": [],
 };
 
 let currentRank: {
   [key in LbKey]: MonkeyTypes.LeaderboardEntry | Record<string, never>;
 } = {
-  15: {},
-  60: {},
+  "15": {},
+  "60": {},
 };
 
 const requesting = {
-  15: false,
-  60: false,
+  "15": false,
+  "60": false,
 };
 
 const leaderboardSingleLimit = 50;
 
 let updateTimer: number | undefined;
 
-function clearBody(lb: number): void {
-  if (lb === 15) {
+function clearBody(lb: LbKey): void {
+  if (lb === "15") {
     $("#leaderboardsWrapper table.left tbody").empty();
-  } else if (lb === 60) {
+  } else if (lb === "60") {
     $("#leaderboardsWrapper table.right tbody").empty();
   }
 }
 
-function clearFoot(lb: number): void {
-  if (lb === 15) {
+function clearFoot(lb: LbKey): void {
+  if (lb === "15") {
     $("#leaderboardsWrapper table.left tfoot").empty();
-  } else if (lb === 60) {
+  } else if (lb === "60") {
     $("#leaderboardsWrapper table.right tfoot").empty();
   }
 }
 
 function reset(): void {
   currentData = {
-    15: [],
-    60: [],
+    "15": [],
+    "60": [],
   };
 
   currentRank = {
-    15: {},
-    60: {},
+    "15": {},
+    "60": {},
   };
 }
 
@@ -105,25 +105,25 @@ function startTimer(): void {
   }, 1000) as unknown as number;
 }
 
-function showLoader(lb: number): void {
-  if (lb === 15) {
+function showLoader(lb: LbKey): void {
+  if (lb === "15") {
     $(`#leaderboardsWrapper .leftTableLoader`).removeClass("hidden");
-  } else if (lb === 60) {
+  } else if (lb === "60") {
     $(`#leaderboardsWrapper .rightTableLoader`).removeClass("hidden");
   }
 }
 
-function hideLoader(lb: number): void {
-  if (lb === 15) {
+function hideLoader(lb: LbKey): void {
+  if (lb === "15") {
     $(`#leaderboardsWrapper .leftTableLoader`).addClass("hidden");
-  } else if (lb === 60) {
+  } else if (lb === "60") {
     $(`#leaderboardsWrapper .rightTableLoader`).addClass("hidden");
   }
 }
 
 function updateFooter(lb: LbKey): void {
   let side;
-  if (lb === 15) {
+  if (lb === "15") {
     side = "left";
   } else {
     side = "right";
@@ -208,7 +208,7 @@ function checkLbMemory(lb: LbKey): void {
   if (currentTimeRange === "daily") return;
 
   let side;
-  if (lb === 15) {
+  if (lb === "15") {
     side = "left";
   } else {
     side = "right";
@@ -252,7 +252,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   }
 
   let side;
-  if (lb === 15) {
+  if (lb === "15") {
     side = "left";
   } else {
     side = "right";
@@ -382,10 +382,10 @@ export function hide(): void {
       },
       100,
       () => {
-        clearBody(15);
-        clearBody(60);
-        clearFoot(15);
-        clearFoot(60);
+        clearBody("15");
+        clearBody("60");
+        clearFoot("15");
+        clearFoot("60");
         reset();
         stopTimer();
         showingYesterday = false;
@@ -439,8 +439,8 @@ async function update(): Promise<void> {
   leftScrollEnabled = false;
   rightScrollEnabled = false;
 
-  showLoader(15);
-  showLoader(60);
+  showLoader("15");
+  showLoader("60");
 
   const timeModes = ["15", "60"];
 
@@ -470,8 +470,8 @@ async function update(): Promise<void> {
 
   const failedResponse = responses.find((response) => response.status !== 200);
   if (failedResponse) {
-    hideLoader(15);
-    hideLoader(60);
+    hideLoader("15");
+    hideLoader("60");
     return Notifications.add(
       "Failed to load leaderboards: " + failedResponse.message,
       -1
@@ -482,12 +482,12 @@ async function update(): Promise<void> {
     (response) => response.data
   );
 
-  currentData[15] = lb15Data;
-  currentData[60] = lb60Data;
-  currentRank[15] = lb15Rank;
-  currentRank[60] = lb60Rank;
+  currentData["15"] = lb15Data;
+  currentData["60"] = lb60Data;
+  currentRank["15"] = lb15Rank;
+  currentRank["60"] = lb60Rank;
 
-  const leaderboardKeys: LbKey[] = [15, 60];
+  const leaderboardKeys: LbKey[] = ["15", "60"];
 
   leaderboardKeys.forEach((leaderboardTime: LbKey) => {
     hideLoader(leaderboardTime);
@@ -531,7 +531,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   const response = await Ape.leaderboards.get({
     language: currentLanguage,
     mode: "time",
-    mode2: lb.toString(),
+    mode2: lb,
     skip: skipVal,
     limit: limitVal,
     ...getDailyLeaderboardQuery(),
@@ -561,7 +561,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   const response = await Ape.leaderboards.get({
     language: currentLanguage,
     mode: "time",
-    mode2: lb.toString(),
+    mode2: lb,
     skip,
     ...getDailyLeaderboardQuery(),
   });
@@ -694,7 +694,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    requestMore(15, true);
+    requestMore("15", true);
   }
 });
 
@@ -705,7 +705,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round(elem.outerHeight() as number) + 50
   ) {
-    requestMore(15);
+    requestMore("15");
   }
 });
 
@@ -715,7 +715,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   if (!rightScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    requestMore(60, true);
+    requestMore("60", true);
   }
 });
 
@@ -725,7 +725,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round((elem.outerHeight() as number) + 50)
   ) {
-    requestMore(60);
+    requestMore("60");
   }
 });
 
@@ -734,7 +734,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").on(
   async () => {
     leftScrollEnabled = false;
     $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scrollTop(0);
-    await requestNew(15, 0);
+    await requestNew("15", 0);
     leftScrollEnabled = true;
   }
 );
@@ -742,9 +742,9 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
   "click",
   async () => {
-    if (!currentRank[15]?.rank) return;
+    if (!currentRank["15"]?.rank) return;
     leftScrollEnabled = false;
-    await requestNew(15, currentRank[15].rank - leaderboardSingleLimit / 2);
+    await requestNew("15", currentRank["15"].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
       "#leaderboardsWrapper #leaderboards .leftTableWrapper table tbody td"
     ).outerHeight() as number;
@@ -752,7 +752,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
       {
         scrollTop:
           rowHeight *
-            Math.min(currentRank[15].rank, leaderboardSingleLimit / 2) -
+            Math.min(currentRank["15"].rank, leaderboardSingleLimit / 2) -
           ($(
             "#leaderboardsWrapper #leaderboards .leftTableWrapper"
           ).outerHeight() as number) /
@@ -771,7 +771,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").on(
   async () => {
     rightScrollEnabled = false;
     $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scrollTop(0);
-    await requestNew(60, 0);
+    await requestNew("60", 0);
     rightScrollEnabled = true;
   }
 );
@@ -779,9 +779,9 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
   "click",
   async () => {
-    if (!currentRank[60]?.rank) return;
+    if (!currentRank["60"]?.rank) return;
     leftScrollEnabled = false;
-    await requestNew(60, currentRank[60].rank - leaderboardSingleLimit / 2);
+    await requestNew("60", currentRank["60"].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
       "#leaderboardsWrapper #leaderboards .rightTableWrapper table tbody td"
     ).outerHeight() as number;
@@ -789,7 +789,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
       {
         scrollTop:
           rowHeight *
-            Math.min(currentRank[60].rank, leaderboardSingleLimit / 2) -
+            Math.min(currentRank["60"].rank, leaderboardSingleLimit / 2) -
           ($(
             "#leaderboardsWrapper #leaderboards .rightTableWrapper"
           ).outerHeight() as number) /

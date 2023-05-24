@@ -25,17 +25,16 @@ export function checkAndUpdatePb(
   lbPersonalBests: MonkeyTypes.LbPersonalBests | undefined,
   result: Result
 ): CheckAndUpdatePbResult {
-  const mode = result.mode;
-  const mode2 = result.mode2 as 15 | 60;
+  // TODO: find a better way to type this
+  const mode = result.mode as "time";
+  const mode2 = result.mode2 as MonkeyTypes.Mode2<"time">;
 
   const userPb = userPersonalBests ?? {};
-  userPb[mode] = userPb[mode] ?? {};
-  userPb[mode][mode2] = userPb[mode][mode2] ?? [];
+  userPb[mode] ??= {};
+  userPb[mode][mode2] ??= [];
 
-  const personalBestMatch: MonkeyTypes.PersonalBest = userPb[mode][mode2].find(
-    (pb: MonkeyTypes.PersonalBest) => {
-      return matchesPersonalBest(result, pb);
-    }
+  const personalBestMatch = userPb[mode][mode2].find((pb) =>
+    matchesPersonalBest(result, pb)
   );
 
   let isPb = true;

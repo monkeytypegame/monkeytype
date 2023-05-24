@@ -1028,6 +1028,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   let afkDetected = kps.every((second) => second.afk);
   if (TestInput.bailout) afkDetected = false;
 
+  const mode2Number = parseInt(completedEvent.mode2);
+
   let tooShort = false;
   //fail checks
   if (difficultyFailed) {
@@ -1042,17 +1044,13 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - repeated", 0);
     dontSave = true;
   } else if (
+    (Config.mode === "time" && mode2Number < 15 && mode2Number > 0) ||
     (Config.mode === "time" &&
-      completedEvent.mode2 < 15 &&
-      completedEvent.mode2 > 0) ||
-    (Config.mode === "time" &&
-      completedEvent.mode2 == 0 &&
+      mode2Number === 0 &&
       completedEvent.testDuration < 15) ||
+    (Config.mode === "words" && mode2Number < 10 && mode2Number > 0) ||
     (Config.mode === "words" &&
-      completedEvent.mode2 < 10 &&
-      completedEvent.mode2 > 0) ||
-    (Config.mode === "words" &&
-      completedEvent.mode2 == 0 &&
+      mode2Number === 0 &&
       completedEvent.testDuration < 15) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&

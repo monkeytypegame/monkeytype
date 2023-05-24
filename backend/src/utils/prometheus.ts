@@ -105,10 +105,10 @@ export function incrementResult(
   } = res;
 
   let m2 = mode2 as string;
-  if (mode === "time" && ![15, 30, 60, 120].includes(parseInt(mode2))) {
+  if (mode === "time" && !["15", "30", "60", "120"].includes(mode2)) {
     m2 = "custom";
   }
-  if (mode === "words" && ![10, 25, 50, 100].includes(parseInt(mode2))) {
+  if (mode === "words" && !["10", "25", "50", "100"].includes(mode2)) {
     m2 = "custom";
   }
   if (mode === "quote" || mode === "zen" || mode === "custom") m2 = mode;

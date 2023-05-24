@@ -3,7 +3,7 @@ const BASE_PATH = "/leaderboards";
 interface LeaderboardQuery {
   language: string;
   mode: MonkeyTypes.Mode;
-  mode2: string | number;
+  mode2: string;
   isDaily?: boolean;
   daysBefore?: number;
 }

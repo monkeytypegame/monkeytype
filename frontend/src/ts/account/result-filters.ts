@@ -26,17 +26,17 @@ export const defaultResultFilters: MonkeyTypes.ResultFilters = {
     custom: true,
   },
   words: {
-    10: true,
-    25: true,
-    50: true,
-    100: true,
+    "10": true,
+    "25": true,
+    "50": true,
+    "100": true,
     custom: true,
   },
   time: {
-    15: true,
-    30: true,
-    60: true,
-    120: true,
+    "15": true,
+    "30": true,
+    "60": true,
+    "120": true,
     custom: true,
   },
   quoteLength: {
@@ -306,9 +306,8 @@ export function reset(): void {
   save();
 }
 
-type AboveChartDisplay = MonkeyTypes.PartialRecord<
-  MonkeyTypes.Group,
-  { all: boolean; array?: string[] }
+type AboveChartDisplay = Partial<
+  Record<MonkeyTypes.Group, { all: boolean; array?: string[] }>
 >;
 
 export function updateActive(): void {

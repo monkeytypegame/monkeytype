@@ -376,7 +376,7 @@ export async function addResult(
     result.isPb = true;
   }
 
-  if (result.mode === "time" && String(result.mode2) === "60") {
+  if (result.mode === "time" && result.mode2 === "60") {
     incrementBananas(uid, result.wpm);
     if (isPb && user.discordId) {
       GeorgeQueue.updateDiscordRole(user.discordId, result.wpm);

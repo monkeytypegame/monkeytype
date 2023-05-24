@@ -65,7 +65,7 @@ const RESULT_SCHEMA = joi
       .string()
       .valid("time", "words", "quote", "zen", "custom")
       .required(),
-    mode2: joi.alternatives().try(joi.number(), joi.string()).required(),
+    mode2: joi.string().required(),
     numbers: joi.boolean().required(),
     punctuation: joi.boolean().required(),
     quoteLength: joi.number(),
