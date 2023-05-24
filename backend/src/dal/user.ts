@@ -558,7 +558,7 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
   const user = await getUser(uid, "increment bananas");
 
   let best60: number | undefined;
-  const personalBests60 = user.personalBests?.time[60];
+  const personalBests60 = user.personalBests?.time["60"];
 
   if (personalBests60) {
     best60 = Math.max(...personalBests60.map((best) => best.wpm));
@@ -765,7 +765,7 @@ export async function recordAutoBanEvent(
 
   const now = Date.now();
 
-  //remove any old events
+  //only keep events within the last maxHours
   const recentAutoBanTimestamps = autoBanTimestamps.filter(
     (timestamp) => timestamp >= now - maxHours * SECONDS_PER_HOUR * 1000
   );
@@ -777,13 +777,15 @@ export async function recordAutoBanEvent(
   const updateObj: Partial<MonkeyTypes.User> = {
     autoBanTimestamps: recentAutoBanTimestamps,
   };
+  let banningUser = false;
   if (recentAutoBanTimestamps.length > maxCount) {
     updateObj.banned = true;
+    banningUser = true;
     ret = true;
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
-  Logger.logToDb("user_auto_banned", { autoBanTimestamps }, uid);
+  Logger.logToDb("user_auto_banned", { autoBanTimestamps, banningUser }, uid);
   return ret;
 }
 

@@ -309,8 +309,12 @@ function fillContent(): void {
 
         if (result.mode == "time") {
           let timefilter: MonkeyTypes.Mode2Custom<"time"> = "custom";
-          if ([15, 30, 60, 120].includes(parseInt(result.mode2 as string))) {
-            timefilter = result.mode2;
+          if (
+            ["15", "30", "60", "120"].includes(
+              `${result.mode2}` //legacy results could have a number in mode2
+            )
+          ) {
+            timefilter = `${result.mode2}`;
           }
           if (!ResultFilters.getFilter("time", timefilter)) {
             if (filterDebug) {
@@ -321,9 +325,11 @@ function fillContent(): void {
         } else if (result.mode == "words") {
           let wordfilter: MonkeyTypes.Mode2Custom<"words"> = "custom";
           if (
-            [10, 25, 50, 100, 200].includes(parseInt(result.mode2 as string))
+            ["10", "25", "50", "100", "200"].includes(
+              `${result.mode2}` //legacy results could have a number in mode2
+            )
           ) {
-            wordfilter = result.mode2;
+            wordfilter = `${result.mode2}`;
           }
           if (!ResultFilters.getFilter("words", wordfilter)) {
             if (filterDebug) {
@@ -522,7 +528,7 @@ function fillContent(): void {
         };
       }
 
-      const bucket = Math.floor(result.wpm / 10) * 10;
+      const bucket = Math.floor(Math.round(result.wpm) / 10) * 10;
 
       if (Object.keys(histogramChartData).includes(String(bucket))) {
         histogramChartData[bucket]++;
@@ -538,9 +544,9 @@ function fillContent(): void {
       ) {
         //test finished before testDuration field was introduced - estimate
         if (result.mode == "time") {
-          tt = result.mode2;
+          tt = parseInt(result.mode2);
         } else if (result.mode == "words") {
-          tt = (result.mode2 / result.wpm) * 60;
+          tt = (parseInt(result.mode2) / result.wpm) * 60;
         }
       } else {
         tt = parseFloat(result.testDuration as unknown as string); //legacy results could have a string here
@@ -930,25 +936,25 @@ function fillContent(): void {
   if (Config.alwaysShowDecimalPlaces) {
     highestAcc = Misc.roundTo2(highestAcc).toFixed(2);
   } else {
-    highestAcc = Math.round(highestAcc);
+    highestAcc = Math.floor(highestAcc);
   }
 
   $(".pageAccount .highestAcc .val").text(highestAcc + "%");
 
   let averageAcc: number | string = totalAcc;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAcc = Math.floor(averageAcc / testCount).toFixed(2);
+    averageAcc = Misc.roundTo2(averageAcc / testCount);
   } else {
-    averageAcc = Math.round(averageAcc / testCount);
+    averageAcc = Math.floor(averageAcc / testCount);
   }
 
   $(".pageAccount .avgAcc .val").text(averageAcc + "%");
 
   let averageAccLast10: number | string = totalAcc10;
   if (Config.alwaysShowDecimalPlaces) {
-    averageAccLast10 = Math.floor(averageAccLast10 / last10).toFixed(2);
+    averageAccLast10 = Misc.roundTo2(averageAccLast10 / last10);
   } else {
-    averageAccLast10 = Math.round(averageAccLast10 / last10);
+    averageAccLast10 = Math.floor(averageAccLast10 / last10);
   }
 
   $(".pageAccount .avgAcc10 .val").text(averageAccLast10 + "%");
@@ -1022,13 +1028,10 @@ function fillContent(): void {
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   if (chartData.length || accChartData.length) {
+    ChartController.updateAccountChartButtons();
     ChartController.accountHistory.options.animation = false;
     ChartController.accountHistory.update();
     delete ChartController.accountHistory.options.animation;
-  }
-
-  if (chartData.length) {
-    ChartController.updateAccountChartButtons();
   }
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();

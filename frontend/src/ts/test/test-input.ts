@@ -68,6 +68,7 @@ const keysToTrack = [
   "Slash",
   "Space",
   "Enter",
+  "Tab",
   "NoCode", //android (smells) and some keyboards might send no location data - need to use this as a fallback
 ];
 
