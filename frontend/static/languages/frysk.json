@@ -1,7 +1,5 @@
 {
 	"name": "frysk",
-	"rightToLeft": false,
-	"ligatures": false,
 	"bcp47": "fy-FY",
 	"words": [
 		"oanbiede",
