@@ -93,8 +93,10 @@ export function update(
   $(`.page${source} .profile .pbsTime`).html("");
   $(`.page${source} .profile .pbsWords`).html("");
 
-  text = "";
-  [15, 30, 60, 120].forEach((mode2) => {
+  const timeMode2s: MonkeyTypes.Mode2<"time">[] = ["15", "30", "60", "120"];
+  const wordMode2s: MonkeyTypes.Mode2<"words">[] = ["10", "25", "50", "100"];
+
+  timeMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "time", mode2);
   });
 
@@ -111,7 +113,7 @@ export function update(
   $(`.page${source} .profile .pbsTime`).append(text + showAllButton);
 
   text = "";
-  [10, 25, 50, 100].forEach((mode2) => {
+  wordMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "words", mode2);
   });
 
@@ -121,16 +123,15 @@ export function update(
 function buildPbHtml(
   pbs: MonkeyTypes.PersonalBests,
   mode: "time" | "words",
-  mode2: number
+  mode2: MonkeyTypes.StringNumber
 ): string {
   let retval = "";
-  let pbData;
   let dateText = "";
   const multiplier = Config.alwaysShowCPM ? 5 : 1;
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
   const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
   try {
-    pbData = pbs[mode][mode2].sort((a, b) => b.wpm - a.wpm)[0];
+    const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
     const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText = format(date, "dd MMM yyyy");
