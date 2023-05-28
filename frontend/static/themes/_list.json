@@ -1169,11 +1169,11 @@
     "textColor": "#dadada"
   },
   {
-    "name": "hacker",
-    "bgColor": "#000000",
-    "mainColor": "#1bf207",
-    "subColor": "#2ac62a",
-    "textColor": "#d1ffcd"
+    "name": "grape",
+    "bgColor": "#2c003e",
+    "mainColor": "#ff8f00",
+    "subColor": "#651e56",
+    "textColor": "#fff"
   }
 
 ]
