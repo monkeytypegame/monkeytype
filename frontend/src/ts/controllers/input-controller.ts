@@ -295,6 +295,16 @@ function handleSpace(): void {
     }
   } //end of line wrap
 
+  // enable if i decide that auto tab should also work after a space
+  // if (
+  //   Config.language.startsWith("code") &&
+  //   /^\t+/.test(TestWords.words.getCurrent()) &&
+  //   TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
+  // ) {
+  //   //send a tab event using jquery
+  //   $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
+  // }
+
   if (Config.keymapMode === "react") {
     KeymapEvent.flash(" ", true);
   }
@@ -650,6 +660,16 @@ function handleChar(
     (char === "\n" && thisCharCorrect)
   ) {
     handleSpace();
+  }
+
+  if (
+    thisCharCorrect &&
+    Config.language.startsWith("code") &&
+    /^\t+/.test(TestWords.words.getCurrent()) &&
+    TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
+  ) {
+    // handleChar("\t", TestInput.input.current.length);
+    $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
   }
 
   if (char !== "\n") {
