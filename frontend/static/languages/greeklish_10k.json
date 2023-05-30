@@ -1,6 +1,7 @@
 {
   "name": "greeklish_10k",
   "noLazyMode": true,
+  "orderedByFrequency": true,
   "words": [
     "agria",
     "adeia",

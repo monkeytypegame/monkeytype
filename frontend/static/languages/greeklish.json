@@ -1,6 +1,7 @@
 {
   "name": "greeklish",
   "noLazyMode": true,
+  "orderedByFrequency": false,
   "words": [
     "artho",
     "stepsh",

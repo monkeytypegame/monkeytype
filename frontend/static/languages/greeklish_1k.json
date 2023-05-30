@@ -1,6 +1,7 @@
 {
   "name": "greeklish_1k",
   "noLazyMode": true,
+  "orderedByFrequency": true,
   "words": [
     "alla",
     "alles",
