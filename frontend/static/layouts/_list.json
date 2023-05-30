@@ -1561,7 +1561,7 @@
       "row5": [" "]
     }
   },
-  "graphite-angle": {
+  "graphite_angle": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
@@ -1572,7 +1572,7 @@
       "row5": [" "]
     }
   },
-  "graphite-matrix": {
+  "graphite_matrix": {
     "keymapShowTopRow": false,
     "type": "ansi",
     "keys": {
