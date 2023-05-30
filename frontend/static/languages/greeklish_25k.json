@@ -1,7 +1,7 @@
 {
   "name": "greeklish_25k",
   "noLazyMode": true,
-  "orderedByFrequency": true,
+  "orderedByFrequency": false,
   "words": [
     "a",
     "aastrixt",
