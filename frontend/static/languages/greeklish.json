@@ -1,6 +1,6 @@
 {
   "name": "greeklish",
-  "bcp47": "el-GR",
+  "noLazyMode": true,
   "words": [
     "artho",
     "stepsh",
