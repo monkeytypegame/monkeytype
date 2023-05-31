@@ -460,7 +460,7 @@
   },
   {
     "name": "frysk",
-    "languages": ["frysk"]
+    "languages": ["frysk", "frysk_1k"]
   },
   {
     "name": "code",
