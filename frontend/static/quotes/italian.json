@@ -822,6 +822,30 @@
       "source": "Guido, La vita è bella",
       "length": 365,
       "id": 137
+    },
+    {
+      "text": "Che stupidi che siamo, quanti inviti respinti, quante parole non dette, quanti sguardi non ricambiati. Tante volte la vita ci passa accanto e noi non ce ne accorgiamo nemmeno.",
+      "source": "Le fate ignoranti",
+      "length": 175,
+      "id": 138
+    },
+    {
+      "text": "Se al mondo diventassimo tutti scienziati, le casse qui ai mercati chi le scarica più?",
+      "source": "Le vacanze intelligenti",
+      "length": 86,
+      "id": 139
+    },
+    {
+      "text": "Uno passa la vita a farsi dire che prima è troppo giovane, poi dopo diventa troppo vecchio. Ci sarà una fase centrale in cui uno deve correre, no?",
+      "source": "Turné",
+      "length": 146,
+      "id": 140
+    },
+    {
+      "text": "Se non ci siamo anche noi, quelli ti combinano la repubblica in quattro e quattr’otto. Se vogliamo che tutto rimanga com’è, bisogna che tutto cambi.",
+      "source": "Il gattopardo",
+      "length": 148,
+      "id": 141
     }
   ]
 }

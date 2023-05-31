@@ -405,7 +405,7 @@ function updateTitle(): void {
 
   let text = `${timeRangeString} ${capitalizedLanguage} Leaderboards`;
 
-  if (showingYesterday) {
+  if (showingYesterday && currentTimeRange !== "allTime") {
     text += " (Yesterday)";
   }
 
