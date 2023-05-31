@@ -18,7 +18,7 @@ function hide(): void {
   }
 }
 
-$("#wordsInput").on("keydown", function (event) {
+$(document).on("keydown", function (event) {
   if (
     event?.originalEvent?.getModifierState &&
     event?.originalEvent?.getModifierState("CapsLock")
@@ -37,7 +37,7 @@ $("#wordsInput").on("keydown", function (event) {
   } catch {}
 });
 
-$("#wordsInput").on("keyup", function (event) {
+$(document).on("keyup", function (event) {
   if (
     event?.originalEvent?.getModifierState &&
     event?.originalEvent?.getModifierState("CapsLock")
