@@ -1174,6 +1174,13 @@
     "mainColor": "#ff8f00",
     "subColor": "#651e56",
     "textColor": "#fff"
+  },
+  {
+    "name": "11_cyan",
+    "bgColor": "#111111",
+    "mainColor": "#ffffff",
+    "subColor": "#bababa",
+    "textColor": "#3faafe"
   }
 
 ]
