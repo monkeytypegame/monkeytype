@@ -1002,7 +1002,15 @@ $(document).keydown(async (event) => {
 });
 
 $("#wordsInput").keydown((event) => {
-  if (event.originalEvent?.repeat) return;
+  if (event.originalEvent?.repeat) {
+    console.log(
+      "spacing debug keydown STOPPED - repeat",
+      event.key,
+      event.code,
+      event.which
+    );
+    return;
+  }
 
   if (TestInput.spacingDebug) {
     console.log("spacing debug keydown", event.key, event.code, event.which);
@@ -1025,7 +1033,15 @@ $("#wordsInput").keydown((event) => {
 });
 
 $("#wordsInput").keyup((event) => {
-  if (event.originalEvent?.repeat) return;
+  if (event.originalEvent?.repeat) {
+    console.log(
+      "spacing debug keydown STOPPED - repeat",
+      event.key,
+      event.code,
+      event.which
+    );
+    return;
+  }
 
   if (TestInput.spacingDebug) {
     console.log("spacing debug keyup", event.key, event.code, event.which);

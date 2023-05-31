@@ -334,6 +334,17 @@ export function recordKeyupTime(now: number, key: string): void {
 
   const diff = Math.abs(keyDownData[key].timestamp - now);
   keypressTimings.duration.array[keyDownData[key].index] = diff;
+  if (spacingDebug) {
+    console.log(
+      "spacing debug",
+      "recorded",
+      key,
+      "durating array",
+      keypressTimings.duration.array.length,
+      "val",
+      roundTo2(diff)
+    );
+  }
   delete keyDownData[key];
 
   updateOverlap(now);
