@@ -1,19 +1,21 @@
 import Config from "../config";
 
+const el = document.querySelector("#capsWarning") as HTMLElement;
+
 export let capsState = false;
 
 let visible = false;
 
 function show(): void {
   if (!visible) {
-    $("#capsWarning").removeClass("hidden");
+    el?.classList.remove("hidden");
     visible = true;
   }
 }
 
 function hide(): void {
   if (visible) {
-    $("#capsWarning").addClass("hidden");
+    el?.classList.add("hidden");
     visible = false;
   }
 }
