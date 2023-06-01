@@ -1,24 +1,26 @@
 import Config from "../config";
 
+const el = document.querySelector("#capsWarning") as HTMLElement;
+
 export let capsState = false;
 
 let visible = false;
 
 function show(): void {
   if (!visible) {
-    $("#capsWarning").removeClass("hidden");
+    el?.classList.remove("hidden");
     visible = true;
   }
 }
 
 function hide(): void {
   if (visible) {
-    $("#capsWarning").addClass("hidden");
+    el?.classList.add("hidden");
     visible = false;
   }
 }
 
-$("#wordsInput").on("keydown", function (event) {
+$(document).on("keydown", function (event) {
   if (
     event?.originalEvent?.getModifierState &&
     event?.originalEvent?.getModifierState("CapsLock")
@@ -37,7 +39,7 @@ $("#wordsInput").on("keydown", function (event) {
   } catch {}
 });
 
-$("#wordsInput").on("keyup", function (event) {
+$(document).on("keyup", function (event) {
   if (
     event?.originalEvent?.getModifierState &&
     event?.originalEvent?.getModifierState("CapsLock")

@@ -680,6 +680,9 @@ export async function getNextWord(
     }
     randomWord = randomWord.replace(/ +/g, " ");
     randomWord = randomWord.replace(/(^ )|( $)/g, "");
+
+    randomWord = getFunboxWord(randomWord, wordIndex, wordset);
+
     currentSection = [...randomWord.split(" ")];
     sectionHistory.push(randomWord);
     randomWord = currentSection.shift() as string;
@@ -715,7 +718,6 @@ export async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = getFunboxWord(randomWord, wordIndex, wordset);
   randomWord = await applyBritishEnglishToWord(randomWord);
 
   if (Config.language === "swiss_german") {
