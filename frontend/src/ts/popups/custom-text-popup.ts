@@ -34,6 +34,23 @@ export function show(noAnim = false): void {
   Skeleton.append(skeletonId);
   if (!Misc.isElementVisible(wrapper)) {
     updateLongTextWarning();
+
+    if (
+      CustomText.isSectionRandom ||
+      CustomText.isTimeRandom ||
+      CustomText.isWordRandom
+    ) {
+      $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
+    } else {
+      $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+    }
+
+    if (CustomText.delimiter === "|") {
+      $(`${popup} .delimiterCheck input`).prop("checked", true);
+    } else {
+      $(`${popup} .delimiterCheck input`).prop("checked", false);
+    }
+
     if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
     } else {
