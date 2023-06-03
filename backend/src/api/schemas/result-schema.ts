@@ -45,13 +45,13 @@ const RESULT_SCHEMA = joi
     keyDuration: joi
       .alternatives()
       .try(
-        joi.array().max(122).items(joi.number().min(0)),
+        joi.array().items(joi.number().min(0)),
         joi.string().valid("toolong")
       ),
     keySpacing: joi
       .alternatives()
       .try(
-        joi.array().max(122).items(joi.number().min(0)),
+        joi.array().items(joi.number().min(0)),
         joi.string().valid("toolong")
       ),
     keyOverlap: joi.number().min(0),
