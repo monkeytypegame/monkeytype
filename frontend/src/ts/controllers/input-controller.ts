@@ -137,6 +137,19 @@ function backspaceToPrevious(): void {
   Funbox.toggleScript(TestWords.words.getCurrent());
   TestUI.updateWordElement();
 
+  if (Config.mode === "zen") {
+    const els: HTMLElement[] = (document.querySelector("#words")?.children ||
+      []) as HTMLElement[];
+
+    for (let i = els.length - 1; i >= 0; i--) {
+      if (els[i].classList.contains("newline")) {
+        els[i].remove();
+      } else {
+        break;
+      }
+    }
+  }
+
   Caret.updatePosition();
   Replay.addReplayEvent("backWord");
 }
