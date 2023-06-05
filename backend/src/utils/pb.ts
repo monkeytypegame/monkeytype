@@ -1,5 +1,5 @@
 import _ from "lodash";
-import FunboxesMetadata from "../constants/funbox";
+import FunboxesMetadata from "../constants/funbox-list";
 
 interface CheckAndUpdatePbResult {
   isPb: boolean;
