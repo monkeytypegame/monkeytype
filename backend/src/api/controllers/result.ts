@@ -20,7 +20,7 @@ import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
-import { isTestTooShort } from "../../utils/validation";
+import { areFunboxesCompatible, isTestTooShort } from "../../utils/validation";
 import {
   implemented as anticheatImplemented,
   validateResult,
@@ -36,7 +36,7 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import FunboxesMetadata from "../../constants/funbox";
+import FunboxList from "../../constants/funbox-list";
 import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
@@ -173,6 +173,17 @@ export async function addResult(
       const status = MonkeyStatusCodes.RESULT_HASH_INVALID;
       throw new MonkeyError(status.code, "Incorrect result hash");
     }
+  }
+
+  if (result.funbox) {
+    const funboxes = result.funbox.split("#");
+    if (funboxes.length !== _.uniq(funboxes).length) {
+      throw new MonkeyError(400, "Duplicate funboxes");
+    }
+  }
+
+  if (!areFunboxesCompatible(result.funbox)) {
+    throw new MonkeyError(400, "Impossible funbox combination");
   }
 
   try {
@@ -625,9 +636,8 @@ async function calculateXp(
   }
 
   if (funboxBonusConfiguration > 0) {
-    const resultFunboxes = _.uniq(funbox.split("#"));
-    const funboxModifier = _.sumBy(resultFunboxes, (funboxName) => {
-      const funbox = FunboxesMetadata[funboxName as string];
+    const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
+      const funbox = FunboxList.find((f) => f.name === funboxName);
       const difficultyLevel = funbox?.difficultyLevel ?? 0;
       return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
     });
