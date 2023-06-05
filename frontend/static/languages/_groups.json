@@ -164,7 +164,13 @@
   },
   {
     "name": "greeklish",
-    "languages": ["greeklish", "greeklish_1k", "greeklish_5k", "greeklish_10k", "greeklish_25k"]
+    "languages": [
+      "greeklish",
+      "greeklish_1k",
+      "greeklish_5k",
+      "greeklish_10k",
+      "greeklish_25k"
+    ]
   },
 
   {
