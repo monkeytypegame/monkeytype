@@ -39133,6 +39133,12 @@
       "source": "Indian Proverb",
       "length": 165,
       "id": 6941
+    },
+    {
+      "text":"Some people have told me they don't think a fat penguin really embodies the grace of Linux, which just tells me they have never seen an angry penguin charging at them in excess of 100 mph. They'd be a lot more careful about what they say if they had.",
+      "source": "Linus Torvalds",
+      "length": 250,
+      "id": 6942
     }
   ]
 }
