@@ -95,7 +95,6 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     info: "Where was the ampersand again?. Only ASCII characters.",
     properties: ["ignoresLanguage", "noLetters", "unspeakable"],
     forcedConfig: {
-      punctuation: [false],
       numbers: [false],
     },
   },
