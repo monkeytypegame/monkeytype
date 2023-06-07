@@ -49,7 +49,7 @@
   },
   {
     "name": "arabic",
-    "languages": ["arabic", "arabic_10k"]
+    "languages": ["arabic", "arabic_1k", "arabic_10k"]
   },
   {
     "name": "italian",
