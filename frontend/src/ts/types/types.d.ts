@@ -566,7 +566,7 @@ declare namespace MonkeyTypes {
     inboxUnreadSize: number;
     streak: number;
     maxStreak: number;
-    streakHourOffset: number;
+    streakHourOffset?: number;
     lbOptOut?: boolean;
   }
 
