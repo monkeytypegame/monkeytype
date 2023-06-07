@@ -6,7 +6,7 @@ import * as Loader from "../elements/loader";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
-import { getSnapshot } from "../db";
+import { getSnapshot, setSnapshot } from "../db";
 
 const wrapperId = "streakHourOffsetPopupWrapper";
 
@@ -109,6 +109,9 @@ async function apply(): Promise<void> {
     );
   } else {
     Notifications.add("Streak hour offset set", 1);
+    const snap = getSnapshot() as MonkeyTypes.Snapshot;
+    snap.streakHourOffset = value;
+    setSnapshot(snap);
     hide();
   }
 }
