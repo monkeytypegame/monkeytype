@@ -138,6 +138,8 @@ function backspaceToPrevious(): void {
   TestUI.updateWordElement();
 
   if (Config.mode === "zen") {
+    TimerProgress.update();
+
     const els: HTMLElement[] = (document.querySelector("#words")?.children ||
       []) as HTMLElement[];
 
