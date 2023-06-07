@@ -98,8 +98,8 @@ export async function incrementBadAuth(
   } catch (error) {}
 }
 
-export const onePerMin = rateLimit({
-  windowMs: 60 * 1000,
+export const adminLimit = rateLimit({
+  windowMs: 5000,
   max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,

@@ -7,7 +7,7 @@ import {
   validateConfiguration,
 } from "../../middlewares/api-utils";
 import * as AdminController from "../controllers/admin";
-import { onePerMin } from "../../middlewares/rate-limit";
+import { adminLimit } from "../../middlewares/rate-limit";
 import { toggleBan } from "../controllers/user";
 
 const router = Router();
@@ -23,7 +23,7 @@ router.use(
 
 router.get(
   "/",
-  onePerMin,
+  adminLimit,
   authenticateRequest({
     noCache: true,
   }),
@@ -33,7 +33,7 @@ router.get(
 
 router.post(
   "/toggleBan",
-  onePerMin,
+  adminLimit,
   authenticateRequest({
     noCache: true,
   }),
