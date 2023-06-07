@@ -831,3 +831,20 @@ export async function reportUser(
 
   return new MonkeyResponse("User reported");
 }
+
+export async function setStreakHourOffset(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { hourOffset } = req.body;
+
+  const user = await UserDAL.getUser(uid, "update user profile");
+
+  if (user.streak?.hourOffset !== undefined) {
+    throw new MonkeyError(403, "Streak hour offset already set");
+  }
+
+  await UserDAL.setStreakHourOffset(uid, hourOffset);
+
+  return new MonkeyResponse("Streak hour offset set");
+}
