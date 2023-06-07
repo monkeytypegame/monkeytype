@@ -6,6 +6,7 @@ import * as Loader from "../elements/loader";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
+import { getSnapshot } from "../db";
 
 const wrapperId = "streakHourOffsetPopupWrapper";
 
@@ -19,14 +20,22 @@ export function show(): void {
 
   Skeleton.append(wrapperId);
   if (!isPopupVisible(wrapperId)) {
-    updatePreview();
+    if (getSnapshot()?.streakHourOffset !== undefined) {
+      $(`#${wrapperId} .text`).html(
+        "You have already set your streak hour offset."
+      );
+      $(`#${wrapperId} input`).remove();
+      $(`#${wrapperId} .preview`).remove();
+      $(`#${wrapperId} .button`).remove();
+    } else {
+      updatePreview();
+    }
 
     $(`#${wrapperId}`)
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
-        console.log("focusing");
         $(`#${wrapperId} input`).trigger("focus");
       });
   }
