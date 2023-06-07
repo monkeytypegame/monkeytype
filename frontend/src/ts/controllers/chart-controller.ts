@@ -392,6 +392,7 @@ export const accountHistory: ChartWithUpdateColors<
         axis: "y",
         beginAtZero: true,
         min: 0,
+        max: 100,
         reverse: true,
         ticks: {
           stepSize: 10,
@@ -417,6 +418,7 @@ export const accountHistory: ChartWithUpdateColors<
         axis: "y",
         beginAtZero: true,
         min: 0,
+        max: 100,
         reverse: true,
         ticks: {
           stepSize: 10,
