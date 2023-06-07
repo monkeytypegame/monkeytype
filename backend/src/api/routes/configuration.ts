@@ -8,7 +8,7 @@ import {
 } from "../../middlewares/api-utils";
 import * as ConfigurationController from "../controllers/configuration";
 import { authenticateRequest } from "../../middlewares/auth";
-import { onePerMin } from "../../middlewares/rate-limit";
+import { adminLimit } from "../../middlewares/rate-limit";
 
 const router = Router();
 
@@ -22,7 +22,7 @@ router.get("/", asyncHandler(ConfigurationController.getConfiguration));
 
 router.patch(
   "/",
-  onePerMin,
+  adminLimit,
   useInProduction([authenticateRequest(), checkIfUserIsConfigurationMod]),
   validateRequest({
     body: {
@@ -34,7 +34,7 @@ router.patch(
 
 router.get(
   "/schema",
-  onePerMin,
+  adminLimit,
   useInProduction([authenticateRequest(), checkIfUserIsConfigurationMod]),
   asyncHandler(ConfigurationController.getSchema)
 );
