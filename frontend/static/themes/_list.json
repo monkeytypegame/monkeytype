@@ -1174,6 +1174,16 @@
     "mainColor": "#ff8f00",
     "subColor": "#651e56",
     "textColor": "#fff"
+  },
+  
+    {
+    "name": "egypt",
+    "bgColor": "#C8102E",
+    "mainColor": "#C09300",
+    "subColor": "#9994b8",
+    "textColor": "#C8102E"
   }
+  
+  
 
 ]
