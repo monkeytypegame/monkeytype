@@ -131,6 +131,14 @@ export async function update(
         hoverText += `\nClaimed today: no`;
         hoverText += `\nStreak lost in: ${timeDif}`;
       }
+
+      if (profile.streakHourOffset) {
+        hoverText += `\n\nHour offset: ${
+          profile.streakHourOffset > 0 ? "+" : ""
+        }${profile.streakHourOffset}`;
+      } else {
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
+      }
     }
   }
 
