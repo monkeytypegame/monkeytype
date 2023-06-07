@@ -831,3 +831,24 @@ export async function reportUser(
 
   return new MonkeyResponse("User reported");
 }
+
+export async function toggleBan(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.body;
+
+  const user = await UserDAL.getUser(uid, "toggle ban");
+  const discordId = user.discordId;
+
+  if (user.banned) {
+    UserDAL.setBanned(uid, false);
+    if (discordId) GeorgeQueue.userBanned(discordId, false);
+  } else {
+    UserDAL.setBanned(uid, true);
+    if (discordId) GeorgeQueue.userBanned(discordId, true);
+  }
+
+  return new MonkeyResponse(`Ban toggled`, {
+    banned: !user.banned,
+  });
+}

@@ -7,6 +7,7 @@ import {
   validateRequest,
   validateConfiguration,
   checkUserPermissions,
+  useInProduction,
 } from "../../middlewares/api-utils";
 import * as RateLimit from "../../middlewares/rate-limit";
 import { withApeRateLimiter } from "../../middlewares/ape-rate-limit";
@@ -14,6 +15,12 @@ import { containsProfanity, isUsernameValid } from "../../utils/validation";
 import filterSchema from "../schemas/filter-schema";
 
 const router = Router();
+
+const checkIfUserIsAdmin = checkUserPermissions({
+  criteria: (user) => {
+    return !!user.admin;
+  },
+});
 
 const tagNameValidation = joi
   .string()
@@ -612,6 +619,13 @@ router.post(
     },
   }),
   asyncHandler(UserController.sendForgotPasswordEmail)
+);
+
+router.post(
+  "/toggleBan",
+  RateLimit.onePerMin,
+  useInProduction([authenticateRequest(), checkIfUserIsAdmin]),
+  asyncHandler(UserController.toggleBan)
 );
 
 export default router;
