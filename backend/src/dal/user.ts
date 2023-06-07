@@ -973,11 +973,12 @@ export async function updateStreak(
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
     maxLength: user.streak?.maxLength ?? 0,
+    hourOffset: user.streak?.hourOffset ?? 0,
   };
 
-  if (isYesterday(streak.lastResultTimestamp)) {
+  if (isYesterday(streak.lastResultTimestamp, streak.hourOffset)) {
     streak.length += 1;
-  } else if (!isToday(streak.lastResultTimestamp)) {
+  } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset)) {
     Logger.logToDb("streak_lost", { streak }, uid);
     streak.length = 1;
   }
