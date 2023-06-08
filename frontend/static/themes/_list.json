@@ -1174,6 +1174,13 @@
     "mainColor": "#ff8f00",
     "subColor": "#651e56",
     "textColor": "#fff"
+  },
+  {
+    "name": "everforest",
+    "bgColor": "#272e33",
+    "mainColor": "#a7c080",
+    "subColor": "#7a8478",
+    "textColor": "#d3c6aa"
   }
 
 ]
