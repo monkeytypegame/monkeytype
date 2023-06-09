@@ -396,6 +396,9 @@ FunboxList.setFunboxFunctions("ascii", {
   getWord(): string {
     return Misc.getASCII();
   },
+  punctuateWord(word: string): string {
+    return word;
+  },
 });
 
 FunboxList.setFunboxFunctions("specials", {

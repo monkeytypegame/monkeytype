@@ -1,5 +1,5 @@
 import _ from "lodash";
-import FunboxesMetadata from "../constants/funbox-list";
+import FunboxList from "../constants/funbox-list";
 
 interface CheckAndUpdatePbResult {
   isPb: boolean;
@@ -15,9 +15,17 @@ export function canFunboxGetPb(
   const funbox = result.funbox;
   if (!funbox || funbox === "none") return true;
 
-  return funbox
-    .split("#")
-    .every((funboxName) => FunboxesMetadata[funboxName]?.canGetPb === true);
+  let ret = true;
+  const resultFunboxes = funbox.split("#");
+  for (const funbox of FunboxList) {
+    if (resultFunboxes.includes(funbox.name)) {
+      if (!funbox.canGetPb) {
+        ret = false;
+      }
+    }
+  }
+
+  return ret;
 }
 
 export function checkAndUpdatePb(

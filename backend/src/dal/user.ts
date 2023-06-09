@@ -991,3 +991,11 @@ export async function updateStreak(
 
   return streak.length;
 }
+
+export async function setBanned(uid: string, banned: boolean): Promise<void> {
+  if (banned) {
+    await getUsersCollection().updateOne({ uid }, { $set: { banned: true } });
+  } else {
+    await getUsersCollection().updateOne({ uid }, { $unset: { banned: "" } });
+  }
+}

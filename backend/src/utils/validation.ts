@@ -112,9 +112,6 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
 
   const funboxesToCheck = FunboxList.filter((f) => funboxes.includes(f.name));
 
-  console.log(funboxesToCheck);
-  console.log(funboxes);
-
   const allFunboxesAreValid = funboxesToCheck.length === funboxes.length;
   const oneWordModifierMax =
     funboxesToCheck.filter(
@@ -214,28 +211,6 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
       }
     }
   }
-
-  console.log(allowedConfig);
-
-  console.log(
-    allFunboxesAreValid,
-    oneWordModifierMax,
-    layoutUsability,
-    oneNospaceOrToPushMax,
-    oneChangesWordsVisibilityMax,
-    oneFrequencyChangesMax,
-    noFrequencyChangesConflicts,
-    capitalisationChangePosibility,
-    noConflictsWithSymmetricChars,
-    canSpeak,
-    hasLanguageToSpeak,
-    oneToPushOrPullSectionMax,
-    oneApplyCSSMax,
-    onePunctuateWordMax,
-    oneCharCheckerMax,
-    oneCharReplacerMax,
-    noConfigConflicts
-  );
 
   return (
     allFunboxesAreValid &&
