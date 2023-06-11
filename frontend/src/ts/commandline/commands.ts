@@ -7,6 +7,7 @@ import QuoteLengthCommands from "./lists/quote-length";
 import StopOnErrorCommands from "./lists/stop-on-error";
 import NumbersCommands from "./lists/numbers";
 import SmoothCaretCommands from "./lists/smooth-caret";
+import SmoothCaretSpeedCommands from "./lists/smooth-caret-speed";
 import QuickRestartCommands from "./lists/quick-restart";
 import RepeatQuotesCommands from "./lists/repeat-quotes";
 import LiveWpmCommands from "./lists/live-wpm";
@@ -261,6 +262,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
 
     //caret
     ...SmoothCaretCommands,
+    ...SmoothCaretSpeedCommands,
     ...CaretStyleCommands,
     ...PaceCaretModeCommands,
     ...RepeatedPaceCommands,
