@@ -1142,15 +1142,26 @@ export function setWordCount(
 }
 
 //caret
-export function setSmoothCaret(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("smooth caret", mode, ["boolean"])) return false;
-
-  config.smoothCaret = mode;
-  if (mode) {
-    $("#caret").css("animation-name", "caretFlashSmooth");
-  } else {
-    $("#caret").css("animation-name", "caretFlashHard");
+export function setSmoothCaret(
+  mode: "off" | "slow" | "medium" | "fast",
+  nosave?: boolean
+): boolean {
+  if (typeof mode === "string") {
+    if (
+      !isConfigValueValid("smooth caret", mode, [
+        ["off", "slow", "medium", "fast"],
+      ])
+    ) {
+      return false;
+    }
+    config.smoothCaret = mode;
+  } else if (typeof mode === "boolean") {
+    if (!isConfigValueValid("smooth caret", mode, ["boolean"])) {
+      return false;
+    }
+    config.smoothCaret = mode ? "medium" : "off";
   }
+
   saveToLocalStorage("smoothCaret", nosave);
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 
