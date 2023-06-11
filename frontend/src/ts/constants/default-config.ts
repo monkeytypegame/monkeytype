@@ -21,6 +21,7 @@ export default <MonkeyTypes.Config>{
   showLiveWpm: false,
   showTimerProgress: true,
   smoothCaret: true,
+  smoothCaretSpeed: 1.0,
   quickRestart: "off",
   punctuation: false,
   numbers: false,

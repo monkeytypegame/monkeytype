@@ -124,7 +124,10 @@ export async function updatePosition(): Promise<void> {
 
   caret
     .stop(true, false)
-    .animate(animation, Config.smoothCaret && !SlowTimer.get() ? 100 : 0);
+    .animate(
+      animation,
+      Config.smoothCaret && !SlowTimer.get() ? 100 / Config.smoothCaretSpeed : 0
+    );
 
   if (Config.showAllLines) {
     const browserHeight = window.innerHeight;

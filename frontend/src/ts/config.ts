@@ -1156,6 +1156,17 @@ export function setSmoothCaret(mode: boolean, nosave?: boolean): boolean {
 
   return true;
 }
+export function setSmoothCaretSpeed(val: number, nosave?: boolean): boolean {
+  if (!isConfigValueValid("smooth caret speed", val, ["number"])) {
+    return false;
+  }
+
+  config.smoothCaretSpeed = val;
+  saveToLocalStorage("smoothCaretSpeed", nosave);
+  ConfigEvent.dispatch("smoothCaretSpeed", config.smoothCaretSpeed);
+
+  return true;
+}
 
 export function setStartGraphsAtZero(mode: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("start graphs at zero", mode, ["boolean"])) {
@@ -1860,6 +1871,7 @@ export function apply(
     setKeymapShowTopRow(configObj.keymapShowTopRow, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
+    setSmoothCaretSpeed(configObj.smoothCaretSpeed, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowLiveAcc(configObj.showLiveAcc, true);

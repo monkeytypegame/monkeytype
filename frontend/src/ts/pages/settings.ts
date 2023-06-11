@@ -32,6 +32,11 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setSmoothCaret,
     "button"
   );
+  groups["smoothCaretSpeed"] = new SettingsGroup(
+    "smoothCaretSpeed",
+    UpdateConfig.setSmoothCaretSpeed,
+    "button"
+  );
   groups["difficulty"] = new SettingsGroup(
     "difficulty",
     UpdateConfig.setDifficulty,
@@ -856,6 +861,9 @@ export async function update(groupUpdate = true): Promise<void> {
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
     Config.paceCaretCustomSpeed
   );
+  $(".pageSettings .section.smoothCaretSpeed input.smoothCaretSpeed").val(
+    Config.smoothCaretSpeed
+  );
   $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
     Config.minWpmCustomSpeed
   );
@@ -937,6 +945,20 @@ function toggleSettingsGroup(groupName: string): void {
       );
   }
 }
+
+$(".pageSettings .section.smoothCaretSpeed").on(
+  "focusout",
+  "input.smoothCaretSpeed",
+  () => {
+    UpdateConfig.setSmoothCaretSpeed(
+      parseInt(
+        $(
+          ".pageSettings .section.smoothCaretSpeed input.smoothCaretSpeed"
+        ).val() as string
+      )
+    );
+  }
+);
 
 $(".pageSettings .section.paceCaret").on(
   "focusout",
