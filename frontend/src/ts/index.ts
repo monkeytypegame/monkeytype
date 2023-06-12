@@ -20,6 +20,7 @@ import "./popups/support-popup";
 import "./popups/contact-popup";
 import "./popups/version-popup";
 import "./popups/edit-preset-popup";
+import "./popups/set-streak-hour-offset";
 import "./popups/simple-popups";
 import "./controllers/input-controller";
 import "./ready";

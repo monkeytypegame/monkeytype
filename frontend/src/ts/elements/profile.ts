@@ -117,19 +117,31 @@ export async function update(
     const lastResult = results?.[0];
 
     const dayInMilis = 1000 * 60 * 60 * 24;
+    const milisOffset = (profile.streakHourOffset ?? 0) * 3600000;
     const timeDif = formatDistanceToNowStrict(
-      Misc.getCurrentDayTimestamp() + dayInMilis
+      Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset
     );
 
     if (lastResult) {
       //check if the last result is from today
       const isToday = Misc.isToday(lastResult.timestamp);
+
+      const offsetString = profile.streakHourOffset
+        ? `(${profile.streakHourOffset > 0 ? "+" : ""}${
+            profile.streakHourOffset
+          } offset)`
+        : "";
+
       if (isToday) {
         hoverText += `\nClaimed today: yes`;
-        hoverText += `\nCome back in: ${timeDif}`;
+        hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
       } else {
         hoverText += `\nClaimed today: no`;
-        hoverText += `\nStreak lost in: ${timeDif}`;
+        hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+      }
+
+      if (profile.streakHourOffset === undefined) {
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
       }
     }
   }
