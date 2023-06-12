@@ -255,4 +255,10 @@ export default class Users {
       payload: { email },
     });
   }
+
+  async setStreakHourOffset(hourOffset: number): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/setStreakHourOffset`, {
+      payload: { hourOffset },
+    });
+  }
 }

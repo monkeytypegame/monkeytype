@@ -1505,6 +1505,25 @@
   }
 }
 
+#streakHourOffsetPopupWrapper {
+  #streakHourOffsetPopup {
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+    width: 400px;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+    .red {
+      color: var(--error-color);
+    }
+  }
+}
+
 #tagsWrapper,
 #newResultFilterPresetPopupWrapper,
 #editProfilePopupWrapper {

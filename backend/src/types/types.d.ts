@@ -199,6 +199,7 @@ declare namespace MonkeyTypes {
     lastResultTimestamp: number;
     length: number;
     maxLength: number;
+    hourOffset?: number;
   }
 
   interface UserInventory {
