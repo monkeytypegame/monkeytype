@@ -844,6 +844,25 @@
     <div class="button"><i class="fas fa-plus"></i></div>
   </div>
 </div>
+<div id="streakHourOffsetPopupWrapper" class="popupWrapper hidden">
+  <div id="streakHourOffsetPopup">
+    <div class="title">Set Streak Hour Offset</div>
+    <div class="text">
+      Streaks reset at midnight UTC by default. If this is not convenient for
+      you (for example if it means that streaks reset in the middle of the day),
+      you can change the hour offset here.
+      <br />
+      <br />
+      This will not take daylight savings time into consideration!
+      <br />
+      <br />
+      <span class="red">You can only do this once!</span>
+    </div>
+    <input type="number" min="-11" max="12" value="0" />
+    <div class="preview"></div>
+    <div class="button">set</div>
+  </div>
+</div>
 <div id="resultEditTagsPanelWrapper" class="popupWrapper hidden">
   <div id="resultEditTagsPanel" resultid="">
     <div class="buttons"></div>

@@ -2697,6 +2697,29 @@
         <div class="button" tabindex="0" onclick="this.blur();">open</div>
       </div>
     </div>
+    <div class="section setStreakHourOffset needsAccount hidden">
+      <div class="groupTitle">
+        <i class="fas fa-clock"></i>
+        <span>set streak hour offset</span>
+      </div>
+      <div class="text">
+        Streaks reset at midnight UTC by default. If this is not convenient for
+        you (for example if it means that streaks reset in the middle of the
+        day), you can change the hour offset here.
+        <br />
+        <span class="red">You can only do this once!</span>
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="setStreakHourOffset"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          update hour offset
+        </div>
+      </div>
+    </div>
     <div class="section updateAccountName needsAccount hidden">
       <div class="groupTitle">
         <i class="fas fa-user"></i>
