@@ -299,6 +299,13 @@ export const userGet = rateLimit({
   handler: customHandler,
 });
 
+export const setStreakHourOffset = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 5 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const userSignup = rateLimit({
   windowMs: 24 * ONE_HOUR_MS, // 1 day
   max: 2 * REQUEST_MULTIPLIER,

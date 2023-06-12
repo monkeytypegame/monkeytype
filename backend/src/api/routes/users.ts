@@ -419,6 +419,18 @@ router.get(
   asyncHandler(UserController.getStats)
 );
 
+router.post(
+  "/setStreakHourOffset",
+  authenticateRequest(),
+  RateLimit.setStreakHourOffset,
+  validateRequest({
+    body: {
+      hourOffset: joi.number().min(-11).max(12).required(),
+    },
+  }),
+  asyncHandler(UserController.setStreakHourOffset)
+);
+
 router.get(
   "/favoriteQuotes",
   authenticateRequest(),
