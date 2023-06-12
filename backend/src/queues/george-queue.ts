@@ -45,6 +45,12 @@ class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
     await this.add(taskName, awardChallengeTask);
   }
 
+  async userBanned(discordId: string, banned: boolean): Promise<void> {
+    const taskName = "userBanned";
+    const userBannedTask = buildGeorgeTask(taskName, [discordId, banned]);
+    await this.add(taskName, userBannedTask);
+  }
+
   async announceLeaderboardUpdate(
     newRecords: any[],
     leaderboardId: string

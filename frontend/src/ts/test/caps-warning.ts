@@ -40,21 +40,23 @@ $(document).on("keydown", function (event) {
 });
 
 $(document).on("keyup", function (event) {
-  if (
-    event?.originalEvent?.getModifierState &&
-    event?.originalEvent?.getModifierState("CapsLock")
-  ) {
-    //filthy fix but optional chaining refues to work
-    capsState = true;
-  } else {
-    capsState = false;
-  }
-
-  try {
-    if (Config.capsLockWarning && capsState) {
-      show();
+  setTimeout(() => {
+    if (
+      event?.originalEvent?.getModifierState &&
+      event?.originalEvent?.getModifierState("CapsLock")
+    ) {
+      //filthy fix but optional chaining refues to work
+      capsState = true;
     } else {
-      hide();
+      capsState = false;
     }
-  } catch {}
+
+    try {
+      if (Config.capsLockWarning && capsState) {
+        show();
+      } else {
+        hide();
+      }
+    } catch {}
+  }, 1); // weird fix to make sure the caps warning doesnt get stuck on linux
 });

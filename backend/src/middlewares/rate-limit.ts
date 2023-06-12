@@ -98,6 +98,13 @@ export async function incrementBadAuth(
   } catch (error) {}
 }
 
+export const adminLimit = rateLimit({
+  windowMs: 5000,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 // Config Routing
 export const configUpdate = rateLimit({
   windowMs: ONE_HOUR_MS,

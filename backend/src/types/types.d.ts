@@ -178,6 +178,7 @@ declare namespace MonkeyTypes {
     uid: string;
     quoteMod?: boolean;
     configurationMod?: boolean;
+    admin?: boolean;
     canReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;

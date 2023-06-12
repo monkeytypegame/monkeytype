@@ -99,11 +99,16 @@ async function updateKeymapLegendCasing(): Promise<void> {
   const states = getLegendStates();
   if (states === undefined) return;
 
-  const keymapKeys = <HTMLElement[]>(
-    [...document.getElementsByClassName("keymapKey")].filter(
-      (el) => el.className === "keymapKey"
-    )
-  );
+  const keymapKeys = <HTMLElement[]>[
+    ...document.getElementsByClassName("keymapKey"),
+  ].filter((el) => {
+    const isKeymapKey = el.classList.contains("keymapKey");
+    const isNotSpace =
+      !el.classList.contains("keySpace") &&
+      !el.classList.contains("keySplitSpace");
+
+    return isKeymapKey && isNotSpace;
+  });
 
   const layoutKeys = keymapKeys.map((el) => el.dataset["key"]);
   if (layoutKeys.includes(undefined)) return;
