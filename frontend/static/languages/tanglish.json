@@ -1,8 +1,7 @@
 {
   "name": "tanglish",
-  "noLazyMode": true,
+  "rightToLeft": false,
   "ligatures": false,
-  "orderedByFrequency": true,
   "words": [
     "macha",
     "mama",
