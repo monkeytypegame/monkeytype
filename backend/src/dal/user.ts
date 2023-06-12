@@ -1007,7 +1007,7 @@ export async function setStreakHourOffset(
     }
   );
 }
-  
+
 export async function setBanned(uid: string, banned: boolean): Promise<void> {
   if (banned) {
     await getUsersCollection().updateOne({ uid }, { $set: { banned: true } });
