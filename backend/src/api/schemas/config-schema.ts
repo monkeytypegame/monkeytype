@@ -26,9 +26,10 @@ const CONFIG_SCHEMA = joi.object({
   showKeyTips: joi.boolean(),
   showLiveWpm: joi.boolean(),
   showTimerProgress: joi.boolean(),
-  smoothCaret: joi
-    .alternatives()
-    .try(joi.string().valid("off", "slow", "medium", "fast"), joi.boolean()),
+  smoothCaret: joi.alternatives().try(
+    joi.boolean(), // remove after a bit
+    joi.string().valid("off", "slow", "medium", "fast")
+  ),
   quickRestart: joi.string().valid("off", "tab", "esc"),
   punctuation: joi.boolean(),
   numbers: joi.boolean(),

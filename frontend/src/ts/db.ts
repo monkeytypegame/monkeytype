@@ -151,6 +151,10 @@ export async function initSnapshot(): Promise<
         configData.quickRestart = "tab";
       }
 
+      if (typeof configData.smoothCaret === "boolean") {
+        configData.smoothCaret = configData.smoothCaret ? "medium" : "off";
+      }
+
       if (configData.swapEscAndTab === true) {
         configData.quickRestart = "esc";
       }

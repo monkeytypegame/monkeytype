@@ -1143,24 +1143,17 @@ export function setWordCount(
 
 //caret
 export function setSmoothCaret(
-  mode: "off" | "slow" | "medium" | "fast",
+  mode: MonkeyTypes.SmoothCaretMode,
   nosave?: boolean
 ): boolean {
-  if (typeof mode === "string") {
-    if (
-      !isConfigValueValid("smooth caret", mode, [
-        ["off", "slow", "medium", "fast"],
-      ])
-    ) {
-      return false;
-    }
-    config.smoothCaret = mode;
-  } else if (typeof mode === "boolean") {
-    if (!isConfigValueValid("smooth caret", mode, ["boolean"])) {
-      return false;
-    }
-    config.smoothCaret = mode ? "medium" : "off";
+  if (
+    !isConfigValueValid("smooth caret", mode, [
+      ["off", "slow", "medium", "fast"],
+    ])
+  ) {
+    return false;
   }
+  config.smoothCaret = mode;
 
   saveToLocalStorage("smoothCaret", nosave);
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
