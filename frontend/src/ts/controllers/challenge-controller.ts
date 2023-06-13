@@ -44,66 +44,69 @@ export function verify(
         let requirementsMet = true;
         const failReasons = [];
         for (const requirementType in TestState.activeChallenge.requirements) {
-          if (requirementsMet == false) return null;
+          if (requirementsMet === false) return null;
           const requirementValue =
             TestState.activeChallenge.requirements[
               requirementType as keyof typeof TestState.activeChallenge.requirements
             ];
-          if (requirementType == "wpm") {
+          if (requirementType === "wpm") {
             const wpmMode = Object.keys(requirementValue)[0];
-            if (wpmMode == "exact") {
-              if (Math.round(result.wpm) != requirementValue["exact"]) {
+            if (wpmMode === "exact") {
+              if (Math.round(result.wpm) !== requirementValue["exact"]) {
                 requirementsMet = false;
                 failReasons.push(`WPM not ${requirementValue["exact"]}`);
               }
-            } else if (wpmMode == "min") {
-              if (result.wpm < requirementValue["min"]) {
+            } else if (wpmMode === "min") {
+              if (result.wpm < Number(requirementValue["min"])) {
                 requirementsMet = false;
                 failReasons.push(`WPM below ${requirementValue["min"]}`);
               }
             }
-          } else if (requirementType == "acc") {
+          } else if (requirementType === "acc") {
             const accMode = Object.keys(requirementValue)[0];
-            if (accMode == "exact") {
-              if (result.acc != requirementValue["exact"]) {
+            if (accMode === "exact") {
+              if (result.acc !== requirementValue["exact"]) {
                 requirementsMet = false;
                 failReasons.push(`Accuracy not ${requirementValue["exact"]}`);
               }
-            } else if (accMode == "min") {
-              if (result.acc < requirementValue["min"]) {
+            } else if (accMode === "min") {
+              if (result.acc < Number(requirementValue["min"])) {
                 requirementsMet = false;
                 failReasons.push(`Accuracy below ${requirementValue["min"]}`);
               }
             }
-          } else if (requirementType == "afk") {
+          } else if (requirementType === "afk") {
             const afkMode = Object.keys(requirementValue)[0];
-            if (afkMode == "max") {
-              if (Math.round(afk) > requirementValue["max"]) {
+            if (afkMode === "max") {
+              if (Math.round(afk) > Number(requirementValue["max"])) {
                 requirementsMet = false;
                 failReasons.push(
                   `AFK percentage above ${requirementValue["max"]}`
                 );
               }
             }
-          } else if (requirementType == "time") {
+          } else if (requirementType === "time") {
             const timeMode = Object.keys(requirementValue)[0];
-            if (timeMode == "min") {
-              if (Math.round(result.testDuration) < requirementValue["min"]) {
+            if (timeMode === "min") {
+              if (
+                Math.round(result.testDuration) <
+                Number(requirementValue["min"])
+              ) {
                 requirementsMet = false;
                 failReasons.push(`Test time below ${requirementValue["min"]}`);
               }
             }
-          } else if (requirementType == "funbox") {
+          } else if (requirementType === "funbox") {
             const funboxMode = requirementValue["exact"]
               .toString()
               .split("#")
               .sort()
               .join("#");
-            if (funboxMode != result.funbox) {
+            if (funboxMode !== result.funbox) {
               requirementsMet = false;
               for (const f of funboxMode.split("#")) {
                 if (
-                  result.funbox?.split("#").find((rf) => rf == f) == undefined
+                  result.funbox?.split("#").find((rf) => rf === f) === undefined
                 ) {
                   failReasons.push(`${f} funbox not active`);
                 }
@@ -111,36 +114,38 @@ export function verify(
               if (result.funbox?.split("#")) {
                 for (const f of result.funbox.split("#")) {
                   if (
-                    funboxMode.split("#").find((rf) => rf == f) == undefined
+                    funboxMode.split("#").find((rf) => rf === f) === undefined
                   ) {
                     failReasons.push(`${f} funbox active`);
                   }
                 }
               }
             }
-          } else if (requirementType == "raw") {
+          } else if (requirementType === "raw") {
             const rawMode = Object.keys(requirementValue)[0];
-            if (rawMode == "exact") {
-              if (Math.round(result.rawWpm) != requirementValue["exact"]) {
+            if (rawMode === "exact") {
+              if (Math.round(result.rawWpm) !== requirementValue["exact"]) {
                 requirementsMet = false;
                 failReasons.push(`Raw WPM not ${requirementValue["exact"]}`);
               }
             }
-          } else if (requirementType == "con") {
+          } else if (requirementType === "con") {
             const conMode = Object.keys(requirementValue)[0];
-            if (conMode == "exact") {
-              if (Math.round(result.consistency) != requirementValue["exact"]) {
+            if (conMode === "exact") {
+              if (
+                Math.round(result.consistency) !== requirementValue["exact"]
+              ) {
                 requirementsMet = false;
                 failReasons.push(
                   `Consistency not ${requirementValue["exact"]}`
                 );
               }
             }
-          } else if (requirementType == "config") {
+          } else if (requirementType === "config") {
             for (const configKey in requirementValue) {
               const configValue = requirementValue[configKey];
               if (
-                Config[configKey as keyof MonkeyTypes.Config] != configValue
+                Config[configKey as keyof MonkeyTypes.Config] !== configValue
               ) {
                 requirementsMet = false;
                 failReasons.push(`${configKey} not set to ${configValue}`);
@@ -262,10 +267,10 @@ export async function setup(challengeName: string): Promise<boolean> {
       CustomText.setWord(-1);
       UpdateConfig.setMode("custom", true);
       UpdateConfig.setDifficulty("normal", true);
-      if (challenge.parameters[1] != null) {
+      if (challenge.parameters[1] !== null) {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
-      if (challenge.parameters[2] != null) {
+      if (challenge.parameters[2] !== null) {
         Funbox.activate(<string>challenge.parameters[2]);
       }
     } else if (challenge.type === "accuracy") {

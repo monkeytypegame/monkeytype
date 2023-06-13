@@ -222,7 +222,7 @@ export const result: ChartWithUpdateColors<
                   $("#resultWordsHistory .words .word")[wordIndex]
                 );
                 const input = wordEl.attr("input");
-                if (input != undefined) {
+                if (input !== undefined) {
                   wordEl.append(
                     `<div class="wordInputAfter">${input
                       .replace(/\t/g, "_")
@@ -479,14 +479,14 @@ export const accountHistory: ChartWithUpdateColors<
               "\n\n" +
               `mode: ${resultData.mode} `;
 
-            if (resultData.mode == "time") {
+            if (resultData.mode === "time") {
               label += resultData.mode2;
-            } else if (resultData.mode == "words") {
+            } else if (resultData.mode === "words") {
               label += resultData.mode2;
             }
 
             let diff = resultData.difficulty;
-            if (diff == undefined) {
+            if (diff === undefined) {
               diff = "normal";
             }
             label += "\n" + `difficulty: ${diff}`;
