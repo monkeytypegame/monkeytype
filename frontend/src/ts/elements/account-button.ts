@@ -368,7 +368,7 @@ async function animateXpBar(
 
   barEl.css("width", `${(startingLevel % 1) * 100}%`);
 
-  if (endingLevel % 1 == 0) {
+  if (endingLevel % 1 === 0) {
     await Misc.promiseAnimation(
       barEl,
       {
