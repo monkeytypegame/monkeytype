@@ -80,6 +80,8 @@ declare namespace MonkeyTypes {
 
   type ShowAverage = "off" | "wpm" | "acc" | "both";
 
+  type SmoothCaretMode = "off" | "slow" | "medium" | "fast";
+
   type TapeMode = "off" | "letter" | "word";
 
   type SingleListCommandLine = "manual" | "on";
@@ -401,7 +403,7 @@ declare namespace MonkeyTypes {
     showKeyTips: boolean;
     showLiveWpm: boolean;
     showTimerProgress: boolean;
-    smoothCaret: boolean;
+    smoothCaret: SmoothCaretMode;
     quickRestart: "off" | "esc" | "tab";
     punctuation: boolean;
     numbers: boolean;
