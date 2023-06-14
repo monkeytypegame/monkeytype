@@ -1154,6 +1154,11 @@ export function setSmoothCaret(
     return false;
   }
   config.smoothCaret = mode;
+  if (smoothCaret === "off") {
+    $("#caret").css("animation-name", "caretFlashHard");
+  } else {
+    $("#caret").css("animation-name", "caretFlashSmooth");
+  }
 
   saveToLocalStorage("smoothCaret", nosave);
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
