@@ -973,12 +973,12 @@ export async function updateStreak(
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
     maxLength: user.streak?.maxLength ?? 0,
-    hourOffset: user.streak?.hourOffset ?? 0,
+    hourOffset: user.streak?.hourOffset,
   };
 
-  if (isYesterday(streak.lastResultTimestamp, streak.hourOffset)) {
+  if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
-  } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset)) {
+  } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     Logger.logToDb("streak_lost", { streak }, uid);
     streak.length = 1;
   }
@@ -989,13 +989,13 @@ export async function updateStreak(
 
   streak.lastResultTimestamp = timestamp;
 
-  delete streak.hourOffset; // make sure we dont overwrite the hour offset
-
   if (user.streak?.hourOffset === 0) {
     // todo this needs to be removed after a while
-    //@ts-ignore
-    streak.hourOffset = undefined;
+    delete streak.hourOffset;
   }
+
+  console.log(user.streak?.hourOffset);
+  console.log("setting streak", streak);
 
   await getUsersCollection().updateOne({ uid }, { $set: { streak } });
 
