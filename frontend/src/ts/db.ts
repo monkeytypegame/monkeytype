@@ -146,19 +146,6 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading config...");
     if (configData) {
-      //swap legacy values to new ones
-      if (configData.quickTab === true) {
-        configData.quickRestart = "tab";
-      }
-
-      if (typeof configData.smoothCaret === "boolean") {
-        configData.smoothCaret = configData.smoothCaret ? "medium" : "off";
-      }
-
-      if (configData.swapEscAndTab === true) {
-        configData.quickRestart = "esc";
-      }
-
       const newConfig = {
         ...DefaultConfig,
       };

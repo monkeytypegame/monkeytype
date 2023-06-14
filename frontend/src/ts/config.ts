@@ -1813,6 +1813,9 @@ export function apply(
   configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
 ): void {
   if (!configToApply) return;
+
+  configToApply = replaceLegacyValues(configToApply);
+
   const configObj = configToApply as MonkeyTypes.Config;
   (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
     (configKey) => {
@@ -1950,6 +1953,28 @@ export function loadFromLocalStorage(): void {
   }
   // TestLogic.restart(false, true);
   loadDone();
+}
+
+function replaceLegacyValues(
+  configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
+): MonkeyTypes.Config | MonkeyTypes.ConfigChanges {
+  const configObj = configToApply as MonkeyTypes.Config;
+
+  //@ts-ignore
+  if (configObj.quickTab === true) {
+    configObj.quickRestart = "tab";
+  }
+
+  if (typeof configObj.smoothCaret === "boolean") {
+    configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
+  }
+
+  //@ts-ignore
+  if (configObj.swapEscAndTab === true) {
+    configObj.quickRestart = "esc";
+  }
+
+  return configObj;
 }
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
