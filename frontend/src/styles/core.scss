@@ -514,3 +514,21 @@ key {
   box-shadow: 0 0 0 0.5em var(--bg-color);
   transition: 0.125s;
 }
+
+#fpsCounter {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: var(--sub-alt-color);
+  color: rgb(255, 217, 0);
+  padding: 0.25rem;
+  width: 10ch;
+  text-align: center;
+  z-index: 999999999;
+  &.main {
+    color: rgb(30, 255, 0);
+  }
+  &.error {
+    color: red;
+  }
+}
