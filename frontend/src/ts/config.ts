@@ -1154,7 +1154,7 @@ export function setSmoothCaret(
     return false;
   }
   config.smoothCaret = mode;
-  if (smoothCaret === "off") {
+  if (mode === "off") {
     $("#caret").css("animation-name", "caretFlashHard");
   } else {
     $("#caret").css("animation-name", "caretFlashSmooth");
