@@ -207,7 +207,7 @@ let totalSecondsFiltered = 0;
 let chartData: MonkeyTypes.HistoryChartData[] = [];
 let accChartData: MonkeyTypes.AccChartData[] = [];
 
-function fillContent(): void {
+async function fillContent(): Promise<void> {
   LoadingPage.updateText("Displaying stats...");
   LoadingPage.updateBar(100);
   console.log("updating account page");
@@ -652,6 +652,7 @@ function fillContent(): void {
     $(".pageAccount .group.history table thead tr td:nth-child(2)").text("wpm");
   }
 
+  await Misc.sleep(0);
   loadMoreLines();
   ////////
 
@@ -1033,6 +1034,7 @@ function fillContent(): void {
     ChartController.accountHistory.update();
     delete ChartController.accountHistory.options.animation;
   }
+  await Misc.sleep(0);
   ChartController.accountActivity.update();
   ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
@@ -1077,7 +1079,7 @@ export async function update(): Promise<void> {
     await downloadResults();
     try {
       await Misc.sleep(0);
-      fillContent();
+      await fillContent();
     } catch (e) {
       console.error(e);
       Notifications.add(`Something went wrong: ${e}`, -1);
