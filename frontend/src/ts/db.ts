@@ -149,15 +149,6 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading config...");
     if (configData) {
-      //swap legacy values to new ones
-      if (configData.quickTab === true) {
-        configData.quickRestart = "tab";
-      }
-
-      if (configData.swapEscAndTab === true) {
-        configData.quickRestart = "esc";
-      }
-
       const newConfig = {
         ...DefaultConfig,
       };

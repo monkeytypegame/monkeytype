@@ -1142,15 +1142,24 @@ export function setWordCount(
 }
 
 //caret
-export function setSmoothCaret(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("smooth caret", mode, ["boolean"])) return false;
-
-  config.smoothCaret = mode;
-  if (mode) {
-    $("#caret").css("animation-name", "caretFlashSmooth");
-  } else {
-    $("#caret").css("animation-name", "caretFlashHard");
+export function setSmoothCaret(
+  mode: MonkeyTypes.SmoothCaretMode,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("smooth caret", mode, [
+      ["off", "slow", "medium", "fast"],
+    ])
+  ) {
+    return false;
   }
+  config.smoothCaret = mode;
+  if (mode === "off") {
+    $("#caret").css("animation-name", "caretFlashHard");
+  } else {
+    $("#caret").css("animation-name", "caretFlashSmooth");
+  }
+
   saveToLocalStorage("smoothCaret", nosave);
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 
@@ -1809,6 +1818,9 @@ export function apply(
   configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
 ): void {
   if (!configToApply) return;
+
+  configToApply = replaceLegacyValues(configToApply);
+
   const configObj = configToApply as MonkeyTypes.Config;
   (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
     (configKey) => {
@@ -1946,6 +1958,28 @@ export function loadFromLocalStorage(): void {
   }
   // TestLogic.restart(false, true);
   loadDone();
+}
+
+function replaceLegacyValues(
+  configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
+): MonkeyTypes.Config | MonkeyTypes.ConfigChanges {
+  const configObj = configToApply as MonkeyTypes.Config;
+
+  //@ts-ignore
+  if (configObj.quickTab === true) {
+    configObj.quickRestart = "tab";
+  }
+
+  if (typeof configObj.smoothCaret === "boolean") {
+    configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
+  }
+
+  //@ts-ignore
+  if (configObj.swapEscAndTab === true) {
+    configObj.quickRestart = "esc";
+  }
+
+  return configObj;
 }
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
