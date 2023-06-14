@@ -131,7 +131,10 @@ export async function initSnapshot(): Promise<
     snap.inboxUnreadSize = userData.inboxUnreadSize ?? 0;
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
-    snap.streakHourOffset = userData?.streak?.hourOffset;
+
+    const hourOffset = userData?.streak?.hourOffset;
+    snap.streakHourOffset =
+      hourOffset === undefined || hourOffset === null ? undefined : hourOffset;
 
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format

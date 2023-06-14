@@ -988,6 +988,15 @@ export async function updateStreak(
   }
 
   streak.lastResultTimestamp = timestamp;
+
+  delete streak.hourOffset; // make sure we dont overwrite the hour offset
+
+  if (user.streak?.hourOffset === 0) {
+    // todo this needs to be removed after a while
+    //@ts-ignore
+    streak.hourOffset = undefined;
+  }
+
   await getUsersCollection().updateOne({ uid }, { $set: { streak } });
 
   return streak.length;
