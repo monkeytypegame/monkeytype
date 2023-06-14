@@ -840,7 +840,10 @@ export async function setStreakHourOffset(
 
   const user = await UserDAL.getUser(uid, "update user profile");
 
-  if (user.streak?.hourOffset !== undefined) {
+  if (
+    user.streak?.hourOffset !== undefined &&
+    user.streak?.hourOffset !== null
+  ) {
     throw new MonkeyError(403, "Streak hour offset already set");
   }
 
