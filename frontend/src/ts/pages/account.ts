@@ -1049,7 +1049,7 @@ async function fillContent(): Promise<void> {
     async () => {
       setTimeout(() => {
         Profile.updateNameFontSize("account");
-      }, 1);
+      }, 10);
     }
   );
 }
