@@ -10,13 +10,11 @@ export function get(): boolean {
 
 let noInternetBannerId: number | undefined = undefined;
 
-
 let bannerAlreadyClosed = false;
 
 export function showOfflineBanner(): void {
   if (bannerAlreadyClosed) return;
   if (noInternetBannerId === undefined) {
-
     noInternetBannerId = Notifications.addBanner(
       "No internet connection",
       0,
