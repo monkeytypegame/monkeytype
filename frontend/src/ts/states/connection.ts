@@ -10,7 +10,7 @@ export function get(): boolean {
 let noInternetBannerId: number | undefined = undefined;
 
 function showBanner(): void {
-  if (noInternetBannerId == undefined) {
+  if (noInternetBannerId === undefined) {
     noInternetBannerId = Notifications.addBanner(
       "No internet connection",
       0,
@@ -26,7 +26,7 @@ ConnectionEvent.subscribe((newState) => {
     Notifications.add("You're back online", 1, {
       customTitle: "Connection",
     });
-    if (noInternetBannerId != undefined) {
+    if (noInternetBannerId !== undefined) {
       $(
         `#bannerCenter .banner[id="${noInternetBannerId}"] .closeButton`
       ).trigger("click");
