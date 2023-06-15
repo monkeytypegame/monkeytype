@@ -59,7 +59,7 @@ async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
 export async function show(): Promise<void> {
   const latest = await getLatest();
   if (latest === null) return;
-  if (latest.length == 0) {
+  if (latest.length === 0) {
     clearMemory();
     return;
   }
