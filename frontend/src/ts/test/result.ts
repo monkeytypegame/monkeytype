@@ -97,10 +97,12 @@ async function updateGraph(): Promise<void> {
     ? "cpm"
     : "wpm";
 
-  maxChartVal = Math.max(...[Math.max(...chartData2), Math.max(...chartData1)]);
+  maxChartVal = Math.max(
+    ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
+  );
   if (!Config.startGraphsAtZero) {
     const minChartVal = Math.min(
-      ...[Math.min(...chartData2), Math.min(...chartData1)]
+      ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
     );
     resultScaleOptions["wpm"].min = minChartVal;
     resultScaleOptions["raw"].min = minChartVal;
