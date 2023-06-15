@@ -305,6 +305,9 @@ export function restart(options = {} as RestartOptions): void {
     }
     AccountButton.skipXpBreakdown();
   }
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
   TestUI.setResultVisible(false);
   PageTransition.set(true);
   TestUI.setTestRestarting(true);
@@ -1178,6 +1181,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
   TestStats.setLastResult(JSON.parse(JSON.stringify(completedEvent)));
+
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
 
   await Result.update(
     completedEvent,

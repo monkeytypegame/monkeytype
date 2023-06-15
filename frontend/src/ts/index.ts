@@ -39,6 +39,7 @@ import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
 import "./test/tts";
+import "./elements/fps-counter";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
