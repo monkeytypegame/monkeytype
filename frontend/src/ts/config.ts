@@ -143,13 +143,13 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
 
   const previous = config.mode;
   config.mode = mode;
-  if (config.mode == "custom") {
+  if (config.mode === "custom") {
     setPunctuation(false, true);
     setNumbers(false, true);
-  } else if (config.mode == "quote") {
+  } else if (config.mode === "quote") {
     setPunctuation(false, true);
     setNumbers(false, true);
-  } else if (config.mode == "zen") {
+  } else if (config.mode === "zen") {
     if (config.paceCaret != "off") {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
     }
@@ -277,7 +277,7 @@ export function toggleFunbox(
   let r;
 
   const funboxArray = config.funbox.split("#");
-  if (funboxArray[0] == "none") funboxArray.splice(0, 1);
+  if (funboxArray[0] === "none") funboxArray.splice(0, 1);
   if (!funboxArray.includes(funbox)) {
     if (!canSetFunboxWithConfig(funbox, config)) {
       return false;
@@ -288,7 +288,7 @@ export function toggleFunbox(
   } else {
     r = funboxArray.indexOf(funbox);
     funboxArray.splice(r, 1);
-    if (funboxArray.length == 0) {
+    if (funboxArray.length === 0) {
       config.funbox = "none";
     } else {
       config.funbox = funboxArray.join("#");
