@@ -45,7 +45,7 @@ export async function initSnapshot(): Promise<
   const snap = { ...defaultSnap };
   try {
     if (!Auth?.currentUser) return false;
-    // if (ActivePage.get() == "loading") {
+    // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(22.5);
     // } else {
     //   LoadingPage.updateBar(16);
@@ -139,7 +139,7 @@ export async function initSnapshot(): Promise<
     } else if (userData.lbMemory) {
       snap.lbMemory = userData.lbMemory;
     }
-    // if (ActivePage.get() == "loading") {
+    // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(45);
     // } else {
     //   LoadingPage.updateBar(32);
@@ -168,7 +168,7 @@ export async function initSnapshot(): Promise<
 
       snap.config = newConfig;
     }
-    // if (ActivePage.get() == "loading") {
+    // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
     // } else {
     //   LoadingPage.updateBar(48);
@@ -201,7 +201,7 @@ export async function initSnapshot(): Promise<
         return 0;
       }
     });
-    // if (ActivePage.get() == "loading") {
+    // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(90);
     // } else {
     //   LoadingPage.updateBar(64);
@@ -377,11 +377,11 @@ export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
 
     dbSnapshot?.results?.forEach((result) => {
       if (
-        result.mode == mode &&
+        result.mode === mode &&
         `${result.mode2}` === `${mode2 as string | number}` && //using template strings here because legacy results can have numbers in mode2
-        result.punctuation == punctuation &&
-        result.language == language &&
-        result.difficulty == difficulty &&
+        result.punctuation === punctuation &&
+        result.language === language &&
+        result.difficulty === difficulty &&
         (result.lazyMode === lazyMode ||
           (result.lazyMode === undefined && lazyMode === false))
       ) {
@@ -572,9 +572,9 @@ export async function getLocalPB<M extends MonkeyTypes.Mode>(
         ] as unknown as MonkeyTypes.PersonalBest[]
       ).forEach((pb) => {
         if (
-          pb.punctuation == punctuation &&
-          pb.difficulty == difficulty &&
-          pb.language == language &&
+          pb.punctuation === punctuation &&
+          pb.difficulty === difficulty &&
+          pb.language === language &&
           (pb.lazyMode === lazyMode ||
             (pb.lazyMode === undefined && lazyMode === false))
         ) {
@@ -605,7 +605,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
   raw: number,
   consistency: number
 ): Promise<void> {
-  if (mode == "quote") return;
+  if (mode === "quote") return;
   if (!dbSnapshot) return;
   function cont(): void {
     if (!dbSnapshot) return;
@@ -632,9 +632,9 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
       ] as unknown as MonkeyTypes.PersonalBest[]
     ).forEach((pb) => {
       if (
-        pb.punctuation == punctuation &&
-        pb.difficulty == difficulty &&
-        pb.language == language &&
+        pb.punctuation === punctuation &&
+        pb.difficulty === difficulty &&
+        pb.language === language &&
         (pb.lazyMode === lazyMode ||
           (pb.lazyMode === undefined && lazyMode === false))
       ) {
@@ -667,7 +667,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
     }
   }
 
-  if (dbSnapshot != null) {
+  if (dbSnapshot !== null) {
     cont();
   }
 }
@@ -711,9 +711,9 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
     ret =
       personalBests.find(
         (pb) =>
-          pb.punctuation == punctuation &&
-          pb.difficulty == difficulty &&
-          pb.language == language &&
+          pb.punctuation === punctuation &&
+          pb.difficulty === difficulty &&
+          pb.language === language &&
           (pb.lazyMode === lazyMode ||
             (pb.lazyMode === undefined && lazyMode === false))
       )?.wpm ?? 0;
@@ -739,7 +739,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
   raw: number,
   consistency: number
 ): Promise<number | undefined> {
-  if (mode == "quote") return;
+  if (mode === "quote") return;
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.filter(
       (t) => t._id === tagId
@@ -769,9 +769,9 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
         ] as unknown as MonkeyTypes.PersonalBest[]
       ).forEach((pb) => {
         if (
-          pb.punctuation == punctuation &&
-          pb.difficulty == difficulty &&
-          pb.language == language &&
+          pb.punctuation === punctuation &&
+          pb.difficulty === difficulty &&
+          pb.language === language &&
           (pb.lazyMode === lazyMode ||
             (pb.lazyMode === undefined && lazyMode === false))
         ) {
@@ -827,7 +827,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
     }
   }
 
-  if (dbSnapshot != null) {
+  if (dbSnapshot !== null) {
     cont();
   }
 
@@ -863,7 +863,7 @@ export async function updateLbMemory<M extends MonkeyTypes.Mode>(
     }
     const current = snapshot.lbMemory[timeMode][timeMode2][language];
     snapshot.lbMemory[timeMode][timeMode2][language] = rank;
-    if (api && current != rank) {
+    if (api && current !== rank) {
       await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
     }
     setSnapshot(snapshot);
@@ -899,17 +899,17 @@ export function updateLocalStats(started: number, time: number): void {
     snapshot.typingStats = {} as MonkeyTypes.TypingStats;
   }
   if (snapshot !== null && snapshot.typingStats !== undefined) {
-    if (snapshot.typingStats.timeTyping == undefined) {
+    if (snapshot.typingStats.timeTyping === undefined) {
       snapshot.typingStats.timeTyping = time;
     } else {
       snapshot.typingStats.timeTyping += time;
     }
-    if (snapshot.typingStats.startedTests == undefined) {
+    if (snapshot.typingStats.startedTests === undefined) {
       snapshot.typingStats.startedTests = started;
     } else {
       snapshot.typingStats.startedTests += started;
     }
-    if (snapshot.typingStats.completedTests == undefined) {
+    if (snapshot.typingStats.completedTests === undefined) {
       snapshot.typingStats.completedTests = 1;
     } else {
       snapshot.typingStats.completedTests += 1;
@@ -961,7 +961,7 @@ export function setStreak(streak: number): void {
 //     let ret = 0;
 //     try {
 //       ret = dbSnapshot.tags.filter((t) => t.id === tagId)[0].pb;
-//       if (ret == undefined) {
+//       if (ret === undefined) {
 //         ret = 0;
 //       }
 //       return ret;
@@ -984,7 +984,7 @@ export function setStreak(streak: number): void {
 //     });
 //   }
 
-//   if (dbSnapshot != null) {
+//   if (dbSnapshot !== null) {
 //     cont();
 //   }
 // }

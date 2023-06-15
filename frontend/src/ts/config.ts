@@ -150,7 +150,7 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
     setPunctuation(false, true);
     setNumbers(false, true);
   } else if (config.mode === "zen") {
-    if (config.paceCaret != "off") {
+    if (config.paceCaret !== "off") {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
     }
   }
@@ -451,12 +451,12 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val == "pb" && !Auth?.currentUser) {
+    if (val === "pb" && !Auth?.currentUser) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
   }
-  // if (config.mode === "zen" && val != "off") {
+  // if (config.mode === "zen" && val !== "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
   // }
@@ -777,19 +777,19 @@ export function setCaretStyle(
   $("#caret").removeClass("carrot");
   $("#caret").removeClass("banana");
 
-  if (caretStyle == "off") {
+  if (caretStyle === "off") {
     $("#caret").addClass("off");
-  } else if (caretStyle == "default") {
+  } else if (caretStyle === "default") {
     $("#caret").addClass("default");
-  } else if (caretStyle == "block") {
+  } else if (caretStyle === "block") {
     $("#caret").addClass("block");
-  } else if (caretStyle == "outline") {
+  } else if (caretStyle === "outline") {
     $("#caret").addClass("outline");
-  } else if (caretStyle == "underline") {
+  } else if (caretStyle === "underline") {
     $("#caret").addClass("underline");
-  } else if (caretStyle == "carrot") {
+  } else if (caretStyle === "carrot") {
     $("#caret").addClass("carrot");
-  } else if (caretStyle == "banana") {
+  } else if (caretStyle === "banana") {
     $("#caret").addClass("banana");
   }
   saveToLocalStorage("caretStyle", nosave);
@@ -819,17 +819,17 @@ export function setPaceCaretStyle(
   $("#paceCaret").removeClass("carrot");
   $("#paceCaret").removeClass("banana");
 
-  if (caretStyle == "default") {
+  if (caretStyle === "default") {
     $("#paceCaret").addClass("default");
-  } else if (caretStyle == "block") {
+  } else if (caretStyle === "block") {
     $("#paceCaret").addClass("block");
-  } else if (caretStyle == "outline") {
+  } else if (caretStyle === "outline") {
     $("#paceCaret").addClass("outline");
-  } else if (caretStyle == "underline") {
+  } else if (caretStyle === "underline") {
     $("#paceCaret").addClass("underline");
-  } else if (caretStyle == "carrot") {
+  } else if (caretStyle === "carrot") {
     $("#paceCaret").addClass("carrot");
-  } else if (caretStyle == "banana") {
+  } else if (caretStyle === "banana") {
     $("#paceCaret").addClass("banana");
   }
   saveToLocalStorage("paceCaretStyle", nosave);
@@ -1254,7 +1254,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
 export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("freedom mode", freedom, ["boolean"])) return false;
 
-  if (freedom == null) {
+  if (freedom === null) {
     freedom = false;
   }
   config.freedomMode = freedom;
@@ -1634,7 +1634,7 @@ export function setLayout(layout: string, nosave?: boolean): boolean {
 }
 
 // export function setSavedLayout(layout: string, nosave?: boolean): boolean {
-//   if (layout == null || layout == undefined) {
+//   if (layout === null || layout === undefined) {
 //     layout = "qwerty";
 //   }
 //   config.savedLayout = layout;
@@ -1670,7 +1670,7 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   // after converting from the string to float system
 
   // keeping this in for now, if you want a big font go 14.9 or something
-  if (fontSize == 15) {
+  if (fontSize === 15) {
     fontSize = 1.5;
   }
 
@@ -1699,7 +1699,7 @@ export function setCustomBackground(value: string, nosave?: boolean): boolean {
       value
     ) &&
       !/[<> "]/.test(value)) ||
-    value == ""
+    value === ""
   ) {
     config.customBackground = value;
     saveToLocalStorage("customBackground", nosave);
@@ -1747,7 +1747,7 @@ export function setCustomBackgroundSize(
     return false;
   }
 
-  if (value != "cover" && value != "contain" && value != "max") {
+  if (value !== "cover" && value !== "contain" && value !== "max") {
     value = "cover";
   }
   config.customBackgroundSize = value;
@@ -1952,7 +1952,7 @@ export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
   (Object.keys(config) as (keyof MonkeyTypes.Config)[])
     .filter((key) => {
-      return config[key] != DefaultConfig[key];
+      return config[key] !== DefaultConfig[key];
     })
     .forEach((key) => {
       (configChanges[key] as typeof config[typeof key]) = config[key];
