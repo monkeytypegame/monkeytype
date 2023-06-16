@@ -22,6 +22,8 @@
     "plugin:require-path-exists/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
+    // "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    // "plugin:@typescript-eslint/strict"
   ],
   "plugins": ["json", "require-path-exists", "@typescript-eslint"],
   "rules": {
@@ -68,6 +70,12 @@
       // enable the rule specifically for TypeScript files
       "files": ["*.ts", "*.tsx"],
       "rules": {
+        // "@typescript-eslint/strict-boolean-expressions": [
+        //   "error",
+        //   {
+        //     "allowString": false
+        //   }
+        // ],
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "error",
