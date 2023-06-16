@@ -93,6 +93,7 @@
           }
         ],
         "@typescript-eslint/promise-function-async": "warn"
+        // "@typescript-eslint/no-unnecessary-condition": "error" TODO ADD THIS
       },
       "parserOptions": {
         "ecmaVersion": 12,
