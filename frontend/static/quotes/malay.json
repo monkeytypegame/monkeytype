@@ -1,0 +1,100 @@
+{
+  "language": "malay",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Barangkali tugas manusia ialah memunggah batu-batu halangan dan menggunakannya sebagai dasar atau landas sebuah bangunan yang baru.",
+      "source": "A. Samad Said - Hujan Pagi",
+      "length": 131,
+      "id": 1
+    },
+    {
+      "text": "Dinda jangan marah marah, takut nanti lekas tua. Kanda setia orangnya, takkan pernah mendua. Dari jutaan bintang, dinda paling gemerlapan. Dari segenap wanita, dindalah yang paling menawan",
+      "source": "Kugiran Masdo - Dinda",
+      "length": 188,
+      "id": 2
+    },
+    {
+      "text": "Ku ingin kau tahu diriku di sini menanti dirimu. Meski ku tunggu hingga hujung waktuku, dan berharap rasa ini kan abadi untuk selamanya.",
+      "source": "Ungu - Cinta Dalam Hati",
+      "length": 136,
+      "id": 3
+    },
+    {
+      "text": "Kebijakan yang sesungguhnya, biasanya tampak melalui kerendahan hati dan tidak banyak cakap.",
+      "source":  "Habiburrahman El-Shirazy",
+      "length": 92,
+      "id": 4
+    },
+    {
+      "text": "Kalau harga sayur-sayuran naik, sawi naik kangkung naik. Ada masa dia naik, ada masa dia turun. Hari ini dalam surat khabar saya baca ada yang dah turun. Kangkung dulu naik sekarang ni dah turun. Bila turun kenapa tak puji kerajaan?",
+      "source": "Najib Razak - Kangkung",
+      "length": 233,
+      "id": 5
+    },
+    {
+      "text": "Awak ni kalau saya tengok macam orang Kedah... \"Macam apa?\"... Macam orang Kedah. \"Macam mana awak tau?\"... Sebab tengok awak je saya dah tau awak dah 'Kedah-lam' hati saya.",
+      "source": "Sepahtu Reunion Live Tour",
+      "length": 173,
+      "id": 6
+    },
+    {
+      "text": "Dahlia memerhatikan gelagat kanak-kanak tersebut dari depan rumahnya dalam jarak 45 meter. Anak-anak melompat dari jambatan dengan begitu bebas, begitu bahagia. Alangkah bahagianya mereka. Ada sebak menembak di jiwa.",
+      "source": "Songket Bebenang Emas",
+      "length": 188 ,
+      "id": 7
+    },
+    {
+      "text": "Adnan menghunus keris kayu pemberian ayahnya lalu menikam batang pisang. Dia berlagak seperti Hang Tuah yang sedang menikam musuhnya. Pak Saidi yang baru pulang dari kebun tersenyum melihat telatah anak sulungnya itu lalu berkata, \"Jangan tikam batang pisang itu. Nanti ia mati.\"",
+      "source": "Leftenan Adnan Wira Bangsa",
+      "length": 279,
+      "id": 8
+    },
+    {
+      "text": "Air yang dicincang tidak akan putus",
+      "source": "Peribahasa Melayu",
+      "length": 35,
+      "id": 9
+    },
+    {
+      "text": "Gajah berjuang sama gajah, pelanduk mati di tengah-tengah.",
+      "source": "Peribahasa Melayu",
+      "length": 58,
+      "id": 10
+    },
+    {
+      "text": "Pucuk pauh delima batu, anak sembilang di tapak tangan. Biar pun jauh beribu batu, hilang di mata di hati jangan.",
+      "source": "Koleksi Pantun Warisan",
+      "length": 113,
+      "id": 11
+    },
+    {
+      "text": "Kalau ada sumur di ladang, boleh kita menumpang mandi. Kalau ada umur yang panjang, boleh lah kita berjumpa lagi.",
+      "source": "Koleksi Pantun Warisan",
+      "length": 113,
+      "id": 12
+    },
+    {
+      "text": "Pisang emas dibawa belayar, masak sebiji di atas peti. Hutang emas boleh dibayar, hutang budi dibawa mati.",
+      "source": "Koleksi Pantun Warisan",
+      "length": 106,
+      "id":
+    },
+    {
+      "text": "Guru kencing berdiri, murid kencing berlari.",
+      "source": "Peribahasa Melayu",
+      "length": 44,
+      "id": 13
+    }
+    {
+      "text": "Berakit-rakit ke hulu, berenang-renang ke tepian. Bersakit-sakit dahulu, bersenang-senang kemudian.",
+      "source": "Peribahasa Melayu",
+      "length": 99,
+      "id": 14
+    },
+}
