@@ -88,9 +88,7 @@ export function getStartOfDayTimestamp(
   timestamp: number,
   offsetMilis = 0
 ): number {
-  return (
-    timestamp - offsetMilis - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY)
-  );
+  return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
 }
 
 export function getCurrentDayTimestamp(): number {
