@@ -994,9 +994,6 @@ export async function updateStreak(
     delete streak.hourOffset;
   }
 
-  console.log(user.streak?.hourOffset);
-  console.log("setting streak", streak);
-
   await getUsersCollection().updateOne({ uid }, { $set: { streak } });
 
   return streak.length;

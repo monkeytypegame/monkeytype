@@ -218,7 +218,7 @@ export function update(expectedStepEnd: number): void {
         top: newTop - smoothlinescroll,
       });
 
-      if (Config.smoothCaret) {
+      if (Config.smoothCaret !== "off") {
         caret.stop(true, true).animate(
           {
             left: newLeft,
