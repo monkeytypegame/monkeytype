@@ -1174,6 +1174,12 @@
     "mainColor": "#ff8f00",
     "subColor": "#651e56",
     "textColor": "#fff"
-  }
-
+  },
+  {
+  "name": "Zoro",
+  "bgColor": "##fdfef9",
+  "mainColor": "#86d70c",
+  "subColor": "##542da0",
+  "textColor": "##342c67"
+}
 ]
