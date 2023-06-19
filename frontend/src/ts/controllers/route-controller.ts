@@ -6,12 +6,14 @@ import * as PageAccount from "../pages/account";
 import * as PageLogin from "../pages/login";
 import * as Page404 from "../pages/404";
 import * as PageProfile from "../pages/profile";
-import * as PageProfileSearch from "../pages/profile-search";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
 import * as NavigateEvent from "../observables/navigate-event";
 import { Auth } from "../firebase";
+
+//this is the only one that is using nav (through navigation event) - maybe consider removing this circular somehow to get rid of the nav event
+import * as PageProfileSearch from "../pages/profile-search";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
