@@ -1176,11 +1176,11 @@
     "textColor": "#fff"
   },
   {
-    "name": "0000",
+    "name": "xmint",
     "bgColor": "#0A4D68",
     "mainColor": "#00FFCA",
     "subColor": "#99d6ea",
-    "textColor": "#00FFCA"
+    "textColor": "#fffff"
   }
 
 ]
