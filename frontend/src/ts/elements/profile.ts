@@ -86,7 +86,9 @@ export async function update(
       );
   }
 
-  updateNameFontSize(where);
+  setTimeout(() => {
+    updateNameFontSize(where);
+  }, 10);
 
   const joinedText = "Joined " + format(profile.addedAt ?? 0, "dd MMM yyyy");
   const creationDate = new Date(profile.addedAt);
