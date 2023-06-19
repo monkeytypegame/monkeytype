@@ -231,9 +231,11 @@ export async function setup(challengeName: string): Promise<boolean> {
       UpdateConfig.setMode("words", true);
       UpdateConfig.setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
+      CustomText.setDelimiter(" ");
       CustomText.setPopupTextareaState(challenge.parameters[0] as string);
       CustomText.setText((challenge.parameters[0] as string).split(" "));
       CustomText.setIsTimeRandom(false);
+      CustomText.setIsSectionRandom(false);
       CustomText.setIsWordRandom(challenge.parameters[1] as boolean);
       CustomText.setWord(challenge.parameters[2] as number);
       CustomText.setTime(-1);
@@ -250,9 +252,12 @@ export async function setup(challengeName: string): Promise<boolean> {
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
+      CustomText.setDelimiter(" ");
       CustomText.setPopupTextareaState(text);
       CustomText.setText(text.split(" "));
       CustomText.setIsWordRandom(false);
+      CustomText.setIsSectionRandom(false);
+      CustomText.setIsTimeRandom(false);
       CustomText.setTime(-1);
       CustomText.setWord(-1);
       UpdateConfig.setMode("custom", true);

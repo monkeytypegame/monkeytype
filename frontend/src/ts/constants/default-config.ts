@@ -20,7 +20,7 @@ export default <MonkeyTypes.Config>{
   showKeyTips: true,
   showLiveWpm: false,
   showTimerProgress: true,
-  smoothCaret: true,
+  smoothCaret: "medium",
   quickRestart: "off",
   punctuation: false,
   numbers: false,

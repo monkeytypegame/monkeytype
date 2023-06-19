@@ -831,3 +831,44 @@ export async function reportUser(
 
   return new MonkeyResponse("User reported");
 }
+
+export async function setStreakHourOffset(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { hourOffset } = req.body;
+
+  const user = await UserDAL.getUser(uid, "update user profile");
+
+  if (
+    user.streak?.hourOffset !== undefined &&
+    user.streak?.hourOffset !== null
+  ) {
+    throw new MonkeyError(403, "Streak hour offset already set");
+  }
+
+  await UserDAL.setStreakHourOffset(uid, hourOffset);
+
+  return new MonkeyResponse("Streak hour offset set");
+}
+
+export async function toggleBan(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.body;
+
+  const user = await UserDAL.getUser(uid, "toggle ban");
+  const discordId = user.discordId;
+
+  if (user.banned) {
+    UserDAL.setBanned(uid, false);
+    if (discordId) GeorgeQueue.userBanned(discordId, false);
+  } else {
+    UserDAL.setBanned(uid, true);
+    if (discordId) GeorgeQueue.userBanned(discordId, true);
+  }
+
+  return new MonkeyResponse(`Ban toggled`, {
+    banned: !user.banned,
+  });
+}

@@ -1167,5 +1167,13 @@
     "mainColor": "#8ccf7e",
     "subColor": "#838887",
     "textColor": "#dadada"
+  },
+  {
+    "name": "grape",
+    "bgColor": "#2c003e",
+    "mainColor": "#ff8f00",
+    "subColor": "#651e56",
+    "textColor": "#fff"
   }
+
 ]

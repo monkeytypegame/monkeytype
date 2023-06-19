@@ -132,6 +132,10 @@ export async function initSnapshot(): Promise<
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
 
+    const hourOffset = userData?.streak?.hourOffset;
+    snap.streakHourOffset =
+      hourOffset === undefined || hourOffset === null ? undefined : hourOffset;
+
     if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
       //old memory format
       snap.lbMemory = {} as MonkeyTypes.LeaderboardMemory;
@@ -145,15 +149,6 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading config...");
     if (configData) {
-      //swap legacy values to new ones
-      if (configData.quickTab === true) {
-        configData.quickRestart = "tab";
-      }
-
-      if (configData.swapEscAndTab === true) {
-        configData.quickRestart = "esc";
-      }
-
       const newConfig = {
         ...DefaultConfig,
       };

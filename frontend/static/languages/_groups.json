@@ -15,7 +15,7 @@
   },
   {
     "name": "spanish",
-    "languages": ["spanish", "spanish_1k", "spanish_10k"]
+    "languages": ["spanish", "spanish_1k", "spanish_10k", "spanish_650k"]
   },
   {
     "name": "lorem_ipsum",
@@ -163,6 +163,17 @@
     "languages": ["greek", "greek_1k", "greek_5k", "greek_10k", "greek_25k"]
   },
   {
+    "name": "greeklish",
+    "languages": [
+      "greeklish",
+      "greeklish_1k",
+      "greeklish_5k",
+      "greeklish_10k",
+      "greeklish_25k"
+    ]
+  },
+
+  {
     "name": "turkish",
     "languages": ["turkish", "turkish_1k", "turkish_5k"]
   },
@@ -176,7 +187,7 @@
   },
   {
     "name": "tamil",
-    "languages": ["tamil", "tamil_1k"]
+    "languages": ["tamil", "tamil_1k", "tanglish"]
   },
   {
     "name": "telugu",
@@ -457,6 +468,10 @@
   {
     "name": "yiddish",
     "languages": ["yiddish"]
+  },
+  {
+    "name": "frysk",
+    "languages": ["frysk", "frysk_1k"]
   },
   {
     "name": "code",

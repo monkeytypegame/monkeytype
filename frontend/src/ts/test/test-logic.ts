@@ -323,6 +323,9 @@ export function restart(options = {} as RestartOptions): void {
     }
     AccountButton.skipXpBreakdown();
   }
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
   TestUI.setResultVisible(false);
   PageTransition.set(true);
   TestUI.setTestRestarting(true);
@@ -1197,7 +1200,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
-    if (TestInput.bailout || TestInput.input.length < TestWords.words.length) {
+    if (
+      TestInput.bailout ||
+      TestInput.input.history.length < TestWords.words.length
+    ) {
       // They bailed out
       const newProgress =
         CustomText.getCustomTextLongProgress(customTextName) +
@@ -1257,6 +1263,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   $("#result .stats .dailyLeaderboard").addClass("hidden");
 
   TestStats.setLastResult(JSON.parse(JSON.stringify(completedEvent)));
+
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
 
   await Result.update(
     completedEvent,
@@ -1325,10 +1335,6 @@ async function saveResult(
   tribeChartData: MonkeyTypes.ChartData,
   isRetrying: boolean
 ): Promise<void> {
-  if (PractiseWords.before.mode !== null) {
-    return;
-  }
-
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, {
       duration: 3,

@@ -25,6 +25,7 @@ import "./popups/support-popup";
 import "./popups/contact-popup";
 import "./popups/version-popup";
 import "./popups/edit-preset-popup";
+import "./popups/set-streak-hour-offset";
 import "./popups/simple-popups";
 import "./controllers/input-controller";
 import "./ready";
@@ -43,6 +44,7 @@ import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
 import "./test/tts";
+import "./elements/fps-counter";
 import "./popups/tribe-room-code-popup";
 import "./popups/tribe-browse-public-rooms-popup";
 

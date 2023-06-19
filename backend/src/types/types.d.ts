@@ -178,6 +178,7 @@ declare namespace MonkeyTypes {
     uid: string;
     quoteMod?: boolean;
     configurationMod?: boolean;
+    admin?: boolean;
     canReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
@@ -198,6 +199,7 @@ declare namespace MonkeyTypes {
     lastResultTimestamp: number;
     length: number;
     maxLength: number;
+    hourOffset?: number;
   }
 
   interface UserInventory {
@@ -475,7 +477,11 @@ declare namespace MonkeyTypes {
   }
 
   interface FunboxMetadata {
+    name: string;
     canGetPb: boolean;
     difficultyLevel: number;
+    properties?: string[];
+    frontendForcedConfig?: Record<string, string[] | boolean[]>;
+    frontendFunctions?: string[];
   }
 }

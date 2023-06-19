@@ -141,6 +141,21 @@ function backspaceToPrevious(): void {
   Funbox.toggleScript(TestWords.words.getCurrent());
   TestUI.updateWordElement();
 
+  if (Config.mode === "zen") {
+    TimerProgress.update();
+
+    const els: HTMLElement[] = (document.querySelector("#words")?.children ||
+      []) as HTMLElement[];
+
+    for (let i = els.length - 1; i >= 0; i--) {
+      if (els[i].classList.contains("newline")) {
+        els[i].remove();
+      } else {
+        break;
+      }
+    }
+  }
+
   Caret.updatePosition();
   Replay.addReplayEvent("backWord");
 }
@@ -298,6 +313,16 @@ function handleSpace(): void {
       TestUI.lineJump(currentTop);
     }
   } //end of line wrap
+
+  // enable if i decide that auto tab should also work after a space
+  // if (
+  //   Config.language.startsWith("code") &&
+  //   /^\t+/.test(TestWords.words.getCurrent()) &&
+  //   TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
+  // ) {
+  //   //send a tab event using jquery
+  //   $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
+  // }
 
   if (Config.keymapMode === "react") {
     KeymapEvent.flash(" ", true);
@@ -654,6 +679,16 @@ function handleChar(
     (char === "\n" && thisCharCorrect)
   ) {
     handleSpace();
+  }
+
+  if (
+    thisCharCorrect &&
+    Config.language.startsWith("code") &&
+    /^\t+/.test(TestWords.words.getCurrent()) &&
+    TestWords.words.getCurrent()[TestInput.input.current.length] === "\t"
+  ) {
+    // handleChar("\t", TestInput.input.current.length);
+    $("#wordsInput").trigger($.Event("keydown", { key: "Tab", code: "Tab" }));
   }
 
   if (char !== "\n") {
@@ -1052,7 +1087,15 @@ $(document).keydown(async (event) => {
 });
 
 $("#wordsInput").keydown((event) => {
-  if (event.originalEvent?.repeat) return;
+  if (event.originalEvent?.repeat) {
+    console.log(
+      "spacing debug keydown STOPPED - repeat",
+      event.key,
+      event.code,
+      event.which
+    );
+    return;
+  }
 
   if (TestInput.spacingDebug) {
     console.log("spacing debug keydown", event.key, event.code, event.which);
@@ -1075,7 +1118,15 @@ $("#wordsInput").keydown((event) => {
 });
 
 $("#wordsInput").keyup((event) => {
-  if (event.originalEvent?.repeat) return;
+  if (event.originalEvent?.repeat) {
+    console.log(
+      "spacing debug keydown STOPPED - repeat",
+      event.key,
+      event.code,
+      event.which
+    );
+    return;
+  }
 
   if (TestInput.spacingDebug) {
     console.log("spacing debug keyup", event.key, event.code, event.which);

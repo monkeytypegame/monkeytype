@@ -17,7 +17,7 @@ export function stopAnimation(): void {
 
 export function startAnimation(): void {
   if (caretAnimating === false) {
-    if (Config.smoothCaret && !SlowTimer.get()) {
+    if (Config.smoothCaret !== "off" && !SlowTimer.get()) {
       caret.css("animation-name", "caretFlashSmooth");
     } else {
       caret.css("animation-name", "caretFlashHard");
@@ -122,9 +122,20 @@ export async function updatePosition(): Promise<void> {
     caret.css("width", "");
   }
 
+  const smoothCaretSpeed =
+    Config.smoothCaret == "off"
+      ? 0
+      : Config.smoothCaret == "slow"
+      ? 150
+      : Config.smoothCaret == "medium"
+      ? 100
+      : Config.smoothCaret == "fast"
+      ? 85
+      : 0;
+
   caret
     .stop(true, false)
-    .animate(animation, Config.smoothCaret && !SlowTimer.get() ? 100 : 0);
+    .animate(animation, !SlowTimer.get() ? smoothCaretSpeed : 0);
 
   if (Config.showAllLines) {
     const browserHeight = window.innerHeight;

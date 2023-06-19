@@ -973,11 +973,12 @@ export async function updateStreak(
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
     maxLength: user.streak?.maxLength ?? 0,
+    hourOffset: user.streak?.hourOffset,
   };
 
-  if (isYesterday(streak.lastResultTimestamp)) {
+  if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
-  } else if (!isToday(streak.lastResultTimestamp)) {
+  } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     Logger.logToDb("streak_lost", { streak }, uid);
     streak.length = 1;
   }
@@ -987,7 +988,36 @@ export async function updateStreak(
   }
 
   streak.lastResultTimestamp = timestamp;
+
+  if (user.streak?.hourOffset === 0) {
+    // todo this needs to be removed after a while
+    delete streak.hourOffset;
+  }
+
   await getUsersCollection().updateOne({ uid }, { $set: { streak } });
 
   return streak.length;
+}
+
+export async function setStreakHourOffset(
+  uid: string,
+  hourOffset: number
+): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        "streak.hourOffset": hourOffset,
+        "streak.lastResultTimestamp": Date.now(),
+      },
+    }
+  );
+}
+
+export async function setBanned(uid: string, banned: boolean): Promise<void> {
+  if (banned) {
+    await getUsersCollection().updateOne({ uid }, { $set: { banned: true } });
+  } else {
+    await getUsersCollection().updateOne({ uid }, { $unset: { banned: "" } });
+  }
 }

@@ -6,7 +6,6 @@ import * as PageAccount from "../pages/account";
 import * as PageLogin from "../pages/login";
 import * as Page404 from "../pages/404";
 import * as PageProfile from "../pages/profile";
-import * as PageProfileSearch from "../pages/profile-search";
 import * as PageTribe from "../pages/tribe";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
@@ -16,6 +15,9 @@ import { Auth } from "../firebase";
 import * as Tribe from "../tribe/tribe";
 import * as TribeState from "../tribe/tribe-state";
 import tribeSocket from "../tribe/tribe-socket";
+
+//this is the only one that is using nav (through navigation event) - maybe consider removing this circular somehow to get rid of the nav event
+import * as PageProfileSearch from "../pages/profile-search";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc

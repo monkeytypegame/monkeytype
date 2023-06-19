@@ -1,17 +1,22 @@
-type SetFunction = (...params: any[]) => any;
+type SetFunction<T> = (param: T, nosave?: boolean) => boolean;
 
-let settingsMemory: {
-  [key: string]: { value: any; setFunction: SetFunction };
-} = {};
+type SettingsMemory<T> = {
+  [key: string]: {
+    value: T;
+    setFunction: SetFunction<T>;
+  };
+};
 
-export function save(
+let settingsMemory: SettingsMemory<MonkeyTypes.ConfigValues> = {};
+
+export function save<T extends MonkeyTypes.ConfigValues>(
   settingName: string,
-  value: any,
-  setFunction: SetFunction
+  value: T,
+  setFunction: SetFunction<T>
 ): void {
   settingsMemory[settingName] ??= {
     value,
-    setFunction,
+    setFunction: setFunction as SetFunction<MonkeyTypes.ConfigValues>,
   };
 }
 
