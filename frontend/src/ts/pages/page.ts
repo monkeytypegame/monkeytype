@@ -4,7 +4,7 @@ interface Options {
 }
 
 export default class Page {
-  public name: string;
+  public name: MonkeyTypes.PageName;
   public element: JQuery;
   public pathname: string;
   public beforeHide: () => Promise<void>;
@@ -12,7 +12,7 @@ export default class Page {
   public beforeShow: (options: Options) => Promise<void>;
   public afterShow: () => Promise<void>;
   constructor(
-    name: string,
+    name: MonkeyTypes.PageName,
     element: JQuery,
     pathname: string,
     beforeHide: () => Promise<void>,
