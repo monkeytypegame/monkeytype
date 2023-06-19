@@ -5,7 +5,7 @@ const captchas: Record<string, number> = {};
 export function render(
   element: HTMLElement,
   id: string,
-  callback?: (data: any) => void
+  callback?: (responseToken: string) => void
 ): void {
   if (captchas[id] !== undefined && captchas[id] !== null) {
     return;
