@@ -16,7 +16,9 @@ async function fetchJson<T>(url: string): Promise<T> {
   }
 }
 
-export const cachedFetchJson = memoizeAsync(fetchJson);
+export const cachedFetchJson = memoizeAsync<string, typeof fetchJson>(
+  fetchJson
+);
 
 export async function getLayoutsList(): Promise<MonkeyTypes.Layouts> {
   try {
@@ -1393,11 +1395,11 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function memoizeAsync<T extends (...args: any) => Promise<any>>(
+export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
   fn: T,
-  getKey?: (...args: Parameters<T>) => any
+  getKey?: (...args: Parameters<T>) => P
 ): T {
-  const cache = new Map<any, Promise<ReturnType<T>>>();
+  const cache = new Map<P, Promise<ReturnType<T>>>();
 
   return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
     const key = getKey ? getKey.apply(args) : args[0];
@@ -1410,7 +1412,7 @@ export function memoizeAsync<T extends (...args: any) => Promise<any>>(
     }
 
     // eslint-disable-next-line prefer-spread
-    const result = fn.apply(null, args);
+    const result = fn.apply(null, args) as Promise<ReturnType<T>>;
     cache.set(key, result);
 
     return result;
