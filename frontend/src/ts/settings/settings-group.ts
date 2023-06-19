@@ -1,21 +1,21 @@
 import Config from "../config";
 
-export default class SettingsGroup {
+export default class SettingsGroup<T> {
   public configName: string;
-  public configValue: MonkeyTypes.ConfigValues;
-  public configFunction: (...params: any[]) => boolean;
+  public configValue: T;
+  public configFunction: (param: T, nosave?: boolean) => boolean;
   public mode: string;
   public setCallback?: () => void;
   public updateCallback?: () => void;
   constructor(
     configName: string,
-    configFunction: (...params: any[]) => boolean,
+    configFunction: (param: T, nosave?: boolean) => boolean,
     mode: string,
     setCallback?: () => void,
     updateCallback?: () => void
   ) {
     this.configName = configName;
-    this.configValue = Config[configName as keyof typeof Config];
+    this.configValue = Config[configName as keyof typeof Config] as T;
     this.mode = mode;
     this.configFunction = configFunction;
     this.setCallback = setCallback;
@@ -35,7 +35,7 @@ export default class SettingsGroup {
           ) {
             return;
           }
-          this.setValue(target.val());
+          this.setValue(target.val() as T);
         }
       );
     } else if (this.mode === "button") {
@@ -51,31 +51,23 @@ export default class SettingsGroup {
             return;
           }
           let value: string | boolean = target.attr(configName) as string;
-          const params = target.attr("params");
-          if (!value && !params) return;
+          if (!value) return;
           if (value === "true") value = true;
           if (value === "false") value = false;
-          this.setValue(value, params as unknown as MonkeyTypes.ConfigValues[]);
+          this.setValue(value as T);
         }
       );
     }
   }
 
-  setValue(
-    value: MonkeyTypes.ConfigValues,
-    params?: MonkeyTypes.ConfigValues[]
-  ): void {
-    if (params === undefined) {
-      this.configFunction(value);
-    } else {
-      this.configFunction(value, ...params);
-    }
+  setValue(value: T): void {
+    this.configFunction(value);
     this.updateInput();
     if (this.setCallback) this.setCallback();
   }
 
   updateInput(): void {
-    this.configValue = Config[this.configName as keyof typeof Config];
+    this.configValue = Config[this.configName as keyof typeof Config] as T;
     $(`.pageSettings .section.${this.configName} .button`).removeClass(
       "active"
     );
