@@ -19,7 +19,7 @@ import Ape from "../ape";
 import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 import * as Skeleton from "../popups/skeleton";
 
-interface SettingsGroups<T> {
+interface SettingsGroups<T extends MonkeyTypes.ConfigValues> {
   [key: string]: SettingsGroup<T>;
 }
 
