@@ -721,7 +721,7 @@ declare namespace MonkeyTypes {
     prerelease: boolean;
     created_at: string;
     published_at: string;
-    assets: any[];
+    assets: unknown[];
     tarball_url: string;
     zipball_url: string;
     body: string;
