@@ -17,7 +17,7 @@ export function stopAnimation(): void {
 
 export function startAnimation(): void {
   if (caretAnimating === false) {
-    if (Config.smoothCaret && !SlowTimer.get()) {
+    if (Config.smoothCaret !== "off" && !SlowTimer.get()) {
       caret.css("animation-name", "caretFlashSmooth");
     } else {
       caret.css("animation-name", "caretFlashHard");
