@@ -21,7 +21,7 @@ interface ChangeOptions {
 }
 
 export async function change(
-  page: Page,
+  pageName: MonkeyTypes.PageName,
   options = {} as ChangeOptions
 ): Promise<boolean> {
   const defaultOptions = {
@@ -33,19 +33,19 @@ export async function change(
   return new Promise((resolve) => {
     if (PageTransition.get()) {
       console.debug(
-        `change page to ${page.name} stopped, page transition is true`
+        `change page to ${pageName} stopped, page transition is true`
       );
       return resolve(false);
     }
 
-    if (!options.force && ActivePage.get() === page.name) {
-      console.debug(`change page ${page.name} stoped, page already active`);
+    if (!options.force && ActivePage.get() === pageName) {
+      console.debug(`change page ${pageName} stoped, page already active`);
       return resolve(false);
     } else {
-      console.log(`changing page ${page.name}`);
+      console.log(`changing page ${pageName}`);
     }
 
-    const pages: Record<string, Page> = {
+    const pages: Record<MonkeyTypes.PageName, Page> = {
       loading: PageLoading.page,
       test: PageTest.page,
       settings: Settings.page,
@@ -58,7 +58,7 @@ export async function change(
     };
 
     const previousPage = pages[ActivePage.get()];
-    const nextPage = page;
+    const nextPage = pages[pageName];
 
     previousPage?.beforeHide();
     PageTransition.set(true);

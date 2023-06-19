@@ -1,19 +1,9 @@
 import * as PageController from "./page-controller";
-import * as PageTest from "../pages/test";
-import * as PageAbout from "../pages/about";
-import * as PageSettings from "../pages/settings";
-import * as PageAccount from "../pages/account";
-import * as PageLogin from "../pages/login";
-import * as Page404 from "../pages/404";
-import * as PageProfile from "../pages/profile";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
 import * as NavigateEvent from "../observables/navigate-event";
 import { Auth } from "../firebase";
-
-//this is the only one that is using nav (through navigation event) - maybe consider removing this circular somehow to get rid of the nav event
-import * as PageProfileSearch from "../pages/profile-search";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -49,17 +39,24 @@ interface Route {
   ) => void;
 }
 
+const route404: Route = {
+  path: "404",
+  load: (): void => {
+    PageController.change("404");
+  },
+};
+
 const routes: Route[] = [
   {
     path: "/",
     load: (): void => {
-      PageController.change(PageTest.page);
+      PageController.change("test");
     },
   },
   {
     path: "/verify",
     load: (): void => {
-      PageController.change(PageTest.page);
+      PageController.change("test");
     },
   },
   // {
@@ -74,13 +71,13 @@ const routes: Route[] = [
   {
     path: "/about",
     load: (): void => {
-      PageController.change(PageAbout.page);
+      PageController.change("about");
     },
   },
   {
     path: "/settings",
     load: (): void => {
-      PageController.change(PageSettings.page);
+      PageController.change("settings");
     },
   },
   {
@@ -94,7 +91,7 @@ const routes: Route[] = [
         nav("/account");
         return;
       }
-      PageController.change(PageLogin.page);
+      PageController.change("login");
     },
   },
   {
@@ -104,7 +101,7 @@ const routes: Route[] = [
         nav("/");
         return;
       }
-      PageController.change(PageAccount.page, {
+      PageController.change("account", {
         data: options.data,
       });
     },
@@ -112,13 +109,13 @@ const routes: Route[] = [
   {
     path: "/profile",
     load: (_params): void => {
-      PageController.change(PageProfileSearch.page);
+      PageController.change("profileSearch");
     },
   },
   {
     path: "/profile/:uidOrName",
     load: (params, options): void => {
-      PageController.change(PageProfile.page, {
+      PageController.change("profile", {
         force: true,
         params: {
           uidOrName: params["uidOrName"],
@@ -160,7 +157,7 @@ async function router(options = {} as NavigateOptions): Promise<void> {
   };
 
   if (!match) {
-    PageController.change(Page404.page);
+    route404.load({}, {});
     return;
   }
 
