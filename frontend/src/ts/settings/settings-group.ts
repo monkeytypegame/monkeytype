@@ -1,19 +1,8 @@
 import Config from "../config";
 
-type ConfigValues =
-  | string
-  | number
-  | boolean
-  | string[]
-  | MonkeyTypes.QuoteLength[]
-  | MonkeyTypes.ResultFilters
-  | MonkeyTypes.CustomBackgroundFilter
-  | null
-  | undefined;
-
 export default class SettingsGroup {
   public configName: string;
-  public configValue: ConfigValues;
+  public configValue: MonkeyTypes.ConfigValues;
   public configFunction: (...params: any[]) => boolean;
   public mode: string;
   public setCallback?: () => void;
@@ -66,13 +55,16 @@ export default class SettingsGroup {
           if (!value && !params) return;
           if (value === "true") value = true;
           if (value === "false") value = false;
-          this.setValue(value, params as unknown as ConfigValues[]);
+          this.setValue(value, params as unknown as MonkeyTypes.ConfigValues[]);
         }
       );
     }
   }
 
-  setValue(value: ConfigValues, params?: ConfigValues[]): void {
+  setValue(
+    value: MonkeyTypes.ConfigValues,
+    params?: MonkeyTypes.ConfigValues[]
+  ): void {
     if (params === undefined) {
       this.configFunction(value);
     } else {
