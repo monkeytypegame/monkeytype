@@ -43,9 +43,9 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
 import * as ConnectionState from "../states/connection";
+import { navigate } from "./route-controller";
 
 let signedOutThisSession = false;
 

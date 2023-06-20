@@ -2,7 +2,6 @@ import * as PageController from "./page-controller";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import * as NavigateEvent from "../observables/navigate-event";
 import { Auth } from "../firebase";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
@@ -11,7 +10,7 @@ import { Auth } from "../firebase";
 //this will be used in tribe
 interface NavigateOptions {
   empty?: boolean;
-  data?: any;
+  data?: unknown;
 }
 
 function pathToRegex(path: string): RegExp {
@@ -84,11 +83,11 @@ const routes: Route[] = [
     path: "/login",
     load: (): void => {
       if (!Auth) {
-        nav("/");
+        navigate("/");
         return;
       }
       if (Auth.currentUser) {
-        nav("/account");
+        navigate("/account");
         return;
       }
       PageController.change("login");
@@ -98,7 +97,7 @@ const routes: Route[] = [
     path: "/account",
     load: (_params, options): void => {
       if (!Auth) {
-        nav("/");
+        navigate("/");
         return;
       }
       PageController.change("account", {
@@ -126,7 +125,7 @@ const routes: Route[] = [
   },
 ];
 
-function nav(
+export function navigate(
   url = window.location.pathname + window.location.search,
   options = {} as NavigateOptions
 ): void {
@@ -173,19 +172,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = e?.target as HTMLLinkElement;
     if (target.matches("[router-link]") && target?.href) {
       e.preventDefault();
-      nav(target.href);
+      navigate(target.href);
     }
   });
 });
 
 $("#top .logo").on("click", () => {
-  nav("/");
+  navigate("/");
 });
 
 $("#popups").on("click", "#leaderboards a.entryName", () => {
   Leaderboards.hide();
-});
-
-NavigateEvent.subscribe((url, options) => {
-  nav(url, options);
 });

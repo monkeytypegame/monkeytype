@@ -10,7 +10,7 @@ import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 
 type ProfileViewPaths = "profile" | "account";
 
-interface ProfileData extends MonkeyTypes.Snapshot {
+export interface ProfileData extends MonkeyTypes.Snapshot {
   allTimeLbs: MonkeyTypes.LeaderboardMemory;
   uid: string;
 }
