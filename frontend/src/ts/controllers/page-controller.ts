@@ -10,14 +10,13 @@ import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
 import * as Page404 from "../pages/404";
 import * as PageTransition from "../states/page-transition";
-import type Page from "../pages/page";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 
 interface ChangeOptions {
   force?: boolean;
   params?: { [key: string]: string };
-  data?: any;
+  data?: unknown;
 }
 
 export async function change(
@@ -45,7 +44,7 @@ export async function change(
       console.log(`changing page ${pageName}`);
     }
 
-    const pages: Record<MonkeyTypes.PageName, Page> = {
+    const pages = {
       loading: PageLoading.page,
       test: PageTest.page,
       settings: Settings.page,
@@ -80,6 +79,7 @@ export async function change(
         previousPage?.afterHide();
         await nextPage?.beforeShow({
           params: options.params,
+          // @ts-expect-error
           data: options.data,
         });
       }
