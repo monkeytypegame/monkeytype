@@ -1,6 +1,17 @@
 type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
 
 declare namespace MonkeyTypes {
+  type PageName =
+    | "loading"
+    | "test"
+    | "settings"
+    | "about"
+    | "account"
+    | "login"
+    | "profile"
+    | "profileSearch"
+    | "404";
+
   type Difficulty = "normal" | "expert" | "master";
 
   type Mode = keyof PersonalBests;

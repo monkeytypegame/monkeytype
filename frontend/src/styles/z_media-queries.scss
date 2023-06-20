@@ -429,6 +429,12 @@
     grid-template-columns: 1fr;
   }
 
+  .page404 .content {
+    grid-auto-flow: row;
+    grid-template-columns: 300px;
+    gap: 1rem;
+  }
+
   .pageAbout {
     .section {
       .contributors,
@@ -1027,6 +1033,9 @@
     .tables .leftTableWrapper {
       height: calc(50vh - 9rem);
     }
+  }
+  .page404 .content {
+    grid-template-columns: 1fr;
   }
 }
 
