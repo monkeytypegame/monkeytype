@@ -4,7 +4,7 @@ import * as Skeleton from "./skeleton";
 
 const wrapperId = "registerCaptchaPopupWrapper";
 
-let resolvePromise: (data?: string) => void;
+let resolvePromise: (token?: string) => void;
 
 export let promise: Promise<string | undefined> = new Promise((resolve) => {
   resolvePromise = resolve;
@@ -20,8 +20,8 @@ export function show(): void {
     CaptchaController.render(
       $("#registerCaptchaPopup .g-recaptcha")[0],
       "register",
-      (data) => {
-        resolvePromise(data);
+      (token) => {
+        resolvePromise(token);
         hide();
       }
     );

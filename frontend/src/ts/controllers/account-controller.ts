@@ -43,9 +43,9 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
 import * as ConnectionState from "../states/connection";
+import { navigate } from "./route-controller";
 
 let signedOutThisSession = false;
 
@@ -581,8 +581,8 @@ async function signUp(): Promise<void> {
     return;
   }
   RegisterCaptchaPopup.show();
-  const captcha = await RegisterCaptchaPopup.promise;
-  if (!captcha) {
+  const captchaToken = await RegisterCaptchaPopup.promise;
+  if (!captchaToken) {
     Notifications.add("Please complete the captcha", -1);
     return;
   }
@@ -662,7 +662,7 @@ async function signUp(): Promise<void> {
 
     const signInResponse = await Ape.users.create(
       nname,
-      captcha,
+      captchaToken,
       email,
       createdAuthUser.user.uid
     );
