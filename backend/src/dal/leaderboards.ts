@@ -132,9 +132,7 @@ export async function update(
   const end2 = performance.now();
   const start3 = performance.now();
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
-  try {
-    await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
-  } catch (e) {}
+  await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
   if (lb && lb.length !== 0) {
     await db
       .collection<MonkeyTypes.LeaderboardEntry>(
