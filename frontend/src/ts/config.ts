@@ -1756,6 +1756,7 @@ export function setCustomBackgroundSize(
     return false;
   }
 
+  //todo this might not be needed because of the above check
   if (value !== "cover" && value !== "contain" && value !== "max") {
     value = "cover";
   }
