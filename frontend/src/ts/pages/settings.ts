@@ -673,7 +673,7 @@ export function hideAccountSection(): void {
 
 export function updateDiscordSection(): void {
   //no code and no discord
-  if (Auth?.currentUser === null) {
+  if (!Auth?.currentUser) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
     if (!DB.getSnapshot()) return;
