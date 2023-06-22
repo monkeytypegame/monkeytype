@@ -733,6 +733,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
   raw: number,
   consistency: number
 ): Promise<number | undefined> {
+  if (!dbSnapshot) return;
   if (mode === "quote") return;
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.filter(
