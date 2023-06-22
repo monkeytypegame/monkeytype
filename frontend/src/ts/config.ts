@@ -1263,7 +1263,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
 export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("freedom mode", freedom, ["boolean"])) return false;
 
-  if (freedom === null) {
+  if (freedom === null || freedom === undefined) {
     freedom = false;
   }
   config.freedomMode = freedom;
