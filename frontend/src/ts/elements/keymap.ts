@@ -25,9 +25,7 @@ function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
   try {
-    if ($(".activeKey") !== undefined) {
-      $(".activeKey").removeClass("activeKey");
-    }
+    $(".activeKey").removeClass("activeKey");
 
     let highlightKey;
     if (Config.language.startsWith("korean")) {
