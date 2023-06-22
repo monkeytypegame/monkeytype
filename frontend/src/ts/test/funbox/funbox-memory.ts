@@ -1,4 +1,8 @@
-type SetFunction<T> = (param: T, nosave?: boolean) => boolean;
+type SetFunction<T> = (
+  param: T,
+  nosave?: boolean,
+  tribeOverride?: boolean
+) => boolean;
 
 type SettingsMemory<T> = {
   [key: string]: {
