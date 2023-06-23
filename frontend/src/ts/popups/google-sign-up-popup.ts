@@ -207,12 +207,12 @@ const checkNameDebounced = debounce(1000, async () => {
     return;
   }
 
-  if (response.status == 422) {
+  if (response.status === 422) {
     nameIndicator.show("unavailable", response.message);
     return;
   }
 
-  if (response.status == 409) {
+  if (response.status === 409) {
     nameIndicator.show("taken", response.message);
     return;
   }

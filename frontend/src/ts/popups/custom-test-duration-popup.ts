@@ -62,7 +62,7 @@ function previewDuration(): void {
 
   if (duration < 0) {
     formattedDuration = "NEGATIVE TIME";
-  } else if (duration == 0) {
+  } else if (duration === 0) {
     formattedDuration = "Infinite test";
   } else {
     formattedDuration = "Total time: " + format(duration);
@@ -113,7 +113,7 @@ function apply(): void {
     TestLogic.restart();
     if (val >= 1800) {
       Notifications.add("Stay safe and take breaks!", 0);
-    } else if (val == 0) {
+    } else if (val === 0) {
       Notifications.add(
         "Infinite time! Make sure to use Bail Out from the command line to save your result.",
         0,
@@ -149,7 +149,7 @@ $("#customTestDurationPopupWrapper .button").on("click", () => {
 
 $("#testConfig").on("click", ".time .textButton", (e) => {
   const mode = $(e.currentTarget).attr("timeConfig");
-  if (mode == "custom") {
+  if (mode === "custom") {
     show();
   }
 });
