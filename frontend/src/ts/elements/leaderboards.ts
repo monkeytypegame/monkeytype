@@ -170,7 +170,7 @@ function updateFooter(lb: LbKey): void {
     const num = Misc.roundTo2(
       (currentRank[lb]["rank"] / (currentRank[lb].count as number)) * 100
     );
-    if (currentRank[lb]["rank"] == 1) {
+    if (currentRank[lb]["rank"] === 1) {
       toppercent = "GOAT";
     } else {
       toppercent = `Top ${num}%`;
@@ -313,7 +313,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     }
     if (entry.hidden) return;
     let meClassString = "";
-    if (entry.name == loggedInUserName) {
+    if (entry.name === loggedInUserName) {
       meClassString = ' class="me"';
     }
     const date = new Date(entry.timestamp);

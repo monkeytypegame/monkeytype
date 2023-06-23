@@ -297,12 +297,12 @@ $(window).on("resize", () => {
 
 ConfigEvent.subscribe((event, value) => {
   if (event === "ads") {
-    if (value == "off") {
+    if (value === "off") {
       removeAll();
-    } else if (value == "result") {
+    } else if (value === "result") {
       removeSellout();
       removeOn();
-    } else if (value == "on") {
+    } else if (value === "on") {
       removeSellout();
     }
   }

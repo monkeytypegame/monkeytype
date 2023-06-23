@@ -168,7 +168,7 @@ export async function updateGraphPBLine(): Promise<void> {
     result.lazyMode ?? false,
     result.funbox ?? "none"
   );
-  if (lpb == 0) return;
+  if (lpb === 0) return;
   const chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(
     2
   );
@@ -214,7 +214,7 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
   if (Config.alwaysShowDecimalPlaces) {
-    if (Config.alwaysShowCPM == false) {
+    if (Config.alwaysShowCPM === false) {
       $("#result .stats .wpm .top .text").text("wpm");
       if (inf) {
         $("#result .stats .wpm .bottom").text("Infinite");
@@ -249,7 +249,7 @@ function updateWpmAndAcc(): void {
     }
 
     $("#result .stats .acc .bottom").text(
-      result.acc == 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
+      result.acc === 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
     );
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
@@ -262,12 +262,12 @@ function updateWpmAndAcc(): void {
     $("#result .stats .acc .bottom").attr(
       "aria-label",
       `${TestInput.accuracy.incorrect} mistake${
-        TestInput.accuracy.incorrect == 1 ? "" : "s"
+        TestInput.accuracy.incorrect === 1 ? "" : "s"
       }`
     );
   } else {
     //not showing decimal places
-    if (Config.alwaysShowCPM == false) {
+    if (Config.alwaysShowCPM === false) {
       $("#result .stats .wpm .top .text").text("wpm");
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
@@ -299,7 +299,7 @@ function updateWpmAndAcc(): void {
     $("#result .stats .acc .bottom").attr(
       "aria-label",
       `${result.acc}% (${TestInput.accuracy.incorrect} mistake${
-        TestInput.accuracy.incorrect == 1 ? "" : "s"
+        TestInput.accuracy.incorrect === 1 ? "" : "s"
       })`
     );
   }
@@ -485,7 +485,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
     `);
     if (
-      Config.mode != "quote" &&
+      Config.mode !== "quote" &&
       !dontSave &&
       (result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb)
     ) {
@@ -573,7 +573,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     FunboxList.get(Config.funbox).find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
-  if (Config.mode != "custom" && !ignoresLanguage) {
+  if (Config.mode !== "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }
   if (Config.punctuation) {
@@ -591,9 +591,9 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   if (Config.funbox !== "none") {
     testType += "<br>" + Config.funbox.replace(/_/g, " ").replace(/#/g, ", ");
   }
-  if (Config.difficulty == "expert") {
+  if (Config.difficulty === "expert") {
     testType += "<br>expert";
-  } else if (Config.difficulty == "master") {
+  } else if (Config.difficulty === "master") {
     testType += "<br>master";
   }
   if (Config.stopOnError !== "off") {
@@ -622,15 +622,17 @@ function updateOther(
     const extra: string[] = [];
     if (
       result.wpm < 0 ||
-      (result.wpm > 350 && result.mode != "words" && result.mode2 != "10") ||
-      (result.wpm > 420 && result.mode == "words" && result.mode2 == "10")
+      (result.wpm > 350 && result.mode !== "words" && result.mode2 !== "10") ||
+      (result.wpm > 420 && result.mode === "words" && result.mode2 === "10")
     ) {
       extra.push("wpm");
     }
     if (
       result.rawWpm < 0 ||
-      (result.rawWpm > 350 && result.mode != "words" && result.mode2 != "10") ||
-      (result.rawWpm > 420 && result.mode == "words" && result.mode2 == "10")
+      (result.rawWpm > 350 &&
+        result.mode !== "words" &&
+        result.mode2 !== "10") ||
+      (result.rawWpm > 420 && result.mode === "words" && result.mode2 === "10")
     ) {
       extra.push("raw");
     }
@@ -651,7 +653,7 @@ function updateOther(
     otherText += "<br>too short";
   }
 
-  if (otherText == "") {
+  if (otherText === "") {
     $("#result .stats .info").addClass("hidden");
   } else {
     $("#result .stats .info").removeClass("hidden");

@@ -161,7 +161,7 @@ function handleSpace(): void {
 
   if (TestInput.input.current === "") return;
 
-  if (Config.mode == "zen") {
+  if (Config.mode === "zen") {
     $("#words .word.active").removeClass("active");
     $("#words").append("<div class='word active'></div>");
   }
@@ -188,7 +188,7 @@ function handleSpace(): void {
 
   //correct word or in zen mode
   const isWordCorrect: boolean =
-    currentWord === TestInput.input.current || Config.mode == "zen";
+    currentWord === TestInput.input.current || Config.mode === "zen";
   MonkeyPower.addPower(isWordCorrect, true);
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
@@ -226,13 +226,13 @@ function handleSpace(): void {
           TestInput.corrected.current.substring(cil + 1);
       }
     }
-    if (Config.stopOnError != "off") {
-      if (Config.difficulty == "expert" || Config.difficulty == "master") {
+    if (Config.stopOnError !== "off") {
+      if (Config.difficulty === "expert" || Config.difficulty === "master") {
         //failed due to diff when pressing space
         TestLogic.fail("difficulty");
         return;
       }
-      if (Config.stopOnError == "word") {
+      if (Config.stopOnError === "word") {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
         TestUI.updateWordElement(true);
@@ -253,7 +253,7 @@ function handleSpace(): void {
     Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
-    if (Config.difficulty == "expert" || Config.difficulty == "master") {
+    if (Config.difficulty === "expert" || Config.difficulty === "master") {
       TestLogic.fail("difficulty");
       return;
     } else if (TestWords.words.currentIndex === TestWords.words.length) {
@@ -285,7 +285,7 @@ function handleSpace(): void {
 
   if (
     !Config.showAllLines ||
-    Config.mode == "time" ||
+    Config.mode === "time" ||
     (CustomText.isWordRandom && CustomText.word === 0) ||
     CustomText.isTimeRandom
   ) {
@@ -332,10 +332,10 @@ function handleSpace(): void {
     TimerProgress.update();
   }
   if (
-    Config.mode == "time" ||
-    Config.mode == "words" ||
-    Config.mode == "custom" ||
-    Config.mode == "quote"
+    Config.mode === "time" ||
+    Config.mode === "words" ||
+    Config.mode === "custom" ||
+    Config.mode === "quote"
   ) {
     TestLogic.addWord();
   }
@@ -344,7 +344,7 @@ function handleSpace(): void {
 function isCharCorrect(char: string, charIndex: number): boolean {
   if (!correctShiftUsed) return false;
 
-  if (Config.mode == "zen") {
+  if (Config.mode === "zen") {
     return true;
   }
 
@@ -392,7 +392,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   }
 
   if (
-    (char === `"` || char === "”" || char == "“" || char === "„") &&
+    (char === `"` || char === "”" || char === "“" || char === "„") &&
     (originalChar === `"` ||
       originalChar === "”" ||
       originalChar === "“" ||
@@ -556,7 +556,7 @@ function handleChar(
     KeymapEvent.flash(char, thisCharCorrect);
   }
 
-  if (!correctShiftUsed && Config.difficulty != "master") return;
+  if (!correctShiftUsed && Config.difficulty !== "master") return;
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
   if (TestInput.corrected.current === "") {
@@ -586,7 +586,7 @@ function handleChar(
 
   if (
     Config.difficulty !== "master" &&
-    Config.stopOnError == "letter" &&
+    Config.stopOnError === "letter" &&
     !thisCharCorrect
   ) {
     return;
@@ -616,12 +616,12 @@ function handleChar(
     TestInput.input.current = resultingWord;
   }
 
-  if (!thisCharCorrect && Config.difficulty == "master") {
+  if (!thisCharCorrect && Config.difficulty === "master") {
     TestLogic.fail("difficulty");
     return;
   }
 
-  if (Config.mode != "zen") {
+  if (Config.mode !== "zen") {
     //not applicable to zen mode
     //auto stop the test if the last word is correct
     const currentWord: string = TestWords.words.getCurrent();
@@ -631,7 +631,7 @@ function handleChar(
         (Config.quickEnd &&
           !Config.language.startsWith("korean") &&
           currentWord.length === TestInput.input.current.length &&
-          Config.stopOnError == "off")) &&
+          Config.stopOnError === "off")) &&
       lastIndex === TestWords.words.length - 1
     ) {
       TestLogic.finish();
@@ -654,7 +654,7 @@ function handleChar(
       !TestUI.lineTransition &&
       TestInput.input.current.length > 1
     ) {
-      if (Config.mode == "zen") {
+      if (Config.mode === "zen") {
         const currentTop = Math.floor(
           document.querySelectorAll<HTMLElement>("#words .word")[
             TestUI.currentWordElementIndex - 1
@@ -722,7 +722,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   let shouldInsertTabCharacter = false;
 
   if (
-    (Config.mode == "zen" && !event.shiftKey) ||
+    (Config.mode === "zen" && !event.shiftKey) ||
     (TestWords.hasTab && !event.shiftKey)
   ) {
     shouldInsertTabCharacter = true;
@@ -799,7 +799,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 let lastBailoutAttempt = -1;
 
 $(document).keydown(async (event) => {
-  if (ActivePage.get() == "loading") return;
+  if (ActivePage.get() === "loading") return;
 
   if (IgnoredKeys.includes(event.key)) return;
 
@@ -831,7 +831,7 @@ $(document).keydown(async (event) => {
   }
 
   //tab
-  if (event.key == "Tab") {
+  if (event.key === "Tab") {
     handleTab(event, popupVisible);
   }
 
@@ -900,7 +900,7 @@ $(document).keydown(async (event) => {
 
   if (event.key === "Enter") {
     if (event.shiftKey) {
-      if (Config.mode == "zen") {
+      if (Config.mode === "zen") {
         TestLogic.finish();
       } else if (
         !Misc.canQuickRestart(
@@ -1108,7 +1108,7 @@ $("#wordsInput").on("input", (event) => {
   TestInput.setKeypressNotAfk();
 
   if (
-    (Config.layout == "default" || Config.layout == "korean") &&
+    (Config.layout === "default" || Config.layout === "korean") &&
     (event.target as HTMLInputElement).value
       .normalize()
       .match(

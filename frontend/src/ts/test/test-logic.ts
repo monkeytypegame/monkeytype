@@ -147,7 +147,7 @@ export function restart(options = {} as RestartOptions): void {
     event?.preventDefault();
     return;
   }
-  if (ActivePage.get() == "test" && !TestUI.resultVisible) {
+  if (ActivePage.get() === "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") event?.preventDefault();
       if (
@@ -205,7 +205,7 @@ export function restart(options = {} as RestartOptions): void {
     }
   }
 
-  if (Config.mode == "zen") {
+  if (Config.mode === "zen") {
     $("#words").empty();
   }
 
@@ -279,7 +279,7 @@ export function restart(options = {} as RestartOptions): void {
   $("#restartTestButton").blur();
   MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
-  // if (ActivePage.get() == "test" && window.scrollY > 0) {
+  // if (ActivePage.get() === "test" && window.scrollY > 0) {
   // window.scrollTo({ top: 0, behavior: "smooth" });
   // }
   $("#wordsInput").val(" ");
@@ -317,7 +317,7 @@ export function restart(options = {} as RestartOptions): void {
     },
     options.noAnim ? 0 : 125,
     async () => {
-      if (ActivePage.get() == "test") {
+      if (ActivePage.get() === "test") {
         AdController.updateTestPageAds(false);
         Focus.set(false);
       }
@@ -497,7 +497,7 @@ export async function init(): Promise<void> {
     return;
   }
 
-  if (ActivePage.get() == "test") {
+  if (ActivePage.get() === "test") {
     await Funbox.activate();
   }
 
@@ -628,7 +628,7 @@ export async function addWord(): Promise<void> {
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
       TestWords.words.length >= CustomText.word &&
-      CustomText.word != 0) ||
+      CustomText.word !== 0) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
@@ -641,7 +641,7 @@ export async function addWord(): Promise<void> {
       CustomText.isSectionRandom &&
       WordsGenerator.sectionIndex >= CustomText.section &&
       WordsGenerator.currentSection.length === 0 &&
-      CustomText.section != 0)
+      CustomText.section !== 0)
   ) {
     return;
   }
@@ -670,7 +670,7 @@ export async function addWord(): Promise<void> {
       let wordCount = 0;
       for (let i = 0; i < section.words.length; i++) {
         const word = section.words[i];
-        if (wordCount >= Config.words && Config.mode == "words") {
+        if (wordCount >= Config.words && Config.mode === "words") {
           break;
         }
         wordCount++;
@@ -826,7 +826,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   // stats
   const stats = TestStats.calculateStats();
-  if (stats.time % 1 != 0 && Config.mode !== "time") {
+  if (stats.time % 1 !== 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
   TestStats.setLastTestWpm(stats.wpm);
@@ -942,7 +942,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   } catch (e) {}
   completedEvent.tags = activeTagsIds;
 
-  if (completedEvent.mode != "custom") delete completedEvent.customText;
+  if (completedEvent.mode !== "custom") delete completedEvent.customText;
 
   return <CompletedEvent>completedEvent;
 }
@@ -954,7 +954,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestStats.setEnd(now);
 
   await Misc.sleep(1); //this is needed to make sure the last keypress is registered
-  if (TestInput.input.current.length != 0) {
+  if (TestInput.input.current.length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
@@ -963,7 +963,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
-  if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
+  if ((Config.mode === "zen" || TestInput.bailout) && endAfkSeconds < 7) {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
@@ -990,7 +990,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   //remove afk from zen
-  if (Config.mode == "zen" || TestInput.bailout) {
+  if (Config.mode === "zen" || TestInput.bailout) {
     TestStats.removeAfkData();
   }
 
@@ -1083,11 +1083,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   } else if (
     completedEvent.wpm < 0 ||
     (completedEvent.wpm > 350 &&
-      completedEvent.mode != "words" &&
-      completedEvent.mode2 != "10") ||
+      completedEvent.mode !== "words" &&
+      completedEvent.mode2 !== "10") ||
     (completedEvent.wpm > 420 &&
-      completedEvent.mode == "words" &&
-      completedEvent.mode2 == "10")
+      completedEvent.mode === "words" &&
+      completedEvent.mode2 === "10")
   ) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
@@ -1095,11 +1095,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   } else if (
     completedEvent.rawWpm < 0 ||
     (completedEvent.rawWpm > 350 &&
-      completedEvent.mode != "words" &&
-      completedEvent.mode2 != "10") ||
+      completedEvent.mode !== "words" &&
+      completedEvent.mode2 !== "10") ||
     (completedEvent.rawWpm > 420 &&
-      completedEvent.mode == "words" &&
-      completedEvent.mode2 == "10")
+      completedEvent.mode === "words" &&
+      completedEvent.mode2 === "10")
   ) {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
@@ -1436,7 +1436,7 @@ $(".pageTest").on("click", "#nextTestButton", () => {
 });
 
 $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
-  if (Config.mode == "zen") {
+  if (Config.mode === "zen") {
     Notifications.add("Repeat test disabled in zen mode");
     return;
   }
@@ -1447,7 +1447,7 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 });
 
 $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
-  if (Config.mode == "zen") {
+  if (Config.mode === "zen") {
     Notifications.add("Repeat test disabled in zen mode");
     return;
   }
@@ -1471,7 +1471,7 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
 $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
-  if (wrd != "custom") {
+  if (wrd !== "custom") {
     UpdateConfig.setWordCount(parseInt(wrd));
     ManualRestart.set();
     restart();
@@ -1481,7 +1481,7 @@ $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
 $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
-  if (mode != "custom") {
+  if (mode !== "custom") {
     UpdateConfig.setTimeConfig(parseInt(mode));
     ManualRestart.set();
     restart();
@@ -1493,8 +1493,8 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
   >parseInt($(e.currentTarget).attr("quoteLength") ?? "1");
-  if (len != -2) {
-    if (len == -1) {
+  if (len !== -2) {
+    if (len === -1) {
       len = [0, 1, 2, 3];
     }
     UpdateConfig.setQuoteLength(len, false, e.shiftKey);

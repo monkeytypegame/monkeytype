@@ -32,7 +32,7 @@ let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
-  if (!filteredResults || filteredResults.length == 0) return;
+  if (!filteredResults || filteredResults.length === 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
@@ -43,7 +43,7 @@ function loadMoreLines(lineIndex?: number): void {
     const result = filteredResults[i];
     if (!result) continue;
     let diff = result.difficulty;
-    if (diff == undefined) {
+    if (diff === undefined) {
       diff = "normal";
     }
 
@@ -52,7 +52,7 @@ function loadMoreLines(lineIndex?: number): void {
       raw = Config.alwaysShowCPM
         ? (result.rawWpm * 5).toFixed(2)
         : result.rawWpm.toFixed(2);
-      if (raw == undefined) {
+      if (raw === undefined) {
         raw = "-";
       }
     } catch (e) {
@@ -291,7 +291,7 @@ async function fillContent(): Promise<void> {
         }
 
         let resdiff = result.difficulty;
-        if (resdiff == undefined) {
+        if (resdiff === undefined) {
           resdiff = "normal";
         }
         if (!ResultFilters.getFilter("difficulty", resdiff)) {
@@ -307,7 +307,7 @@ async function fillContent(): Promise<void> {
           return;
         }
 
-        if (result.mode == "time") {
+        if (result.mode === "time") {
           let timefilter: MonkeyTypes.Mode2Custom<"time"> = "custom";
           if (
             ["15", "30", "60", "120"].includes(
@@ -322,7 +322,7 @@ async function fillContent(): Promise<void> {
             }
             return;
           }
-        } else if (result.mode == "words") {
+        } else if (result.mode === "words") {
           let wordfilter: MonkeyTypes.Mode2Custom<"words"> = "custom";
           if (
             ["10", "25", "50", "100", "200"].includes(
@@ -339,7 +339,7 @@ async function fillContent(): Promise<void> {
           }
         }
 
-        if (result.quoteLength != null) {
+        if (result.quoteLength !== null) {
           let filter: MonkeyTypes.QuoteModes | undefined = undefined;
           if (result.quoteLength === 0) {
             filter = "short";
@@ -416,7 +416,7 @@ async function fillContent(): Promise<void> {
               break;
             }
           }
-          if (counter == 0) {
+          if (counter === 0) {
             if (filterDebug) {
               console.log(`skipping result due to funbox filter`, result);
             }
@@ -538,28 +538,28 @@ async function fillContent(): Promise<void> {
 
       let tt = 0;
       if (
-        result.testDuration == undefined &&
+        result.testDuration === undefined &&
         result.mode2 !== "custom" &&
         result.mode2 !== "zen"
       ) {
         //test finished before testDuration field was introduced - estimate
-        if (result.mode == "time") {
+        if (result.mode === "time") {
           tt = parseInt(result.mode2);
-        } else if (result.mode == "words") {
+        } else if (result.mode === "words") {
           tt = (parseInt(result.mode2) / result.wpm) * 60;
         }
       } else {
         tt = parseFloat(result.testDuration as unknown as string); //legacy results could have a string here
       }
-      if (result.incompleteTestSeconds != undefined) {
+      if (result.incompleteTestSeconds !== undefined) {
         tt += result.incompleteTestSeconds;
-      } else if (result.restartCount != undefined && result.restartCount > 0) {
+      } else if (result.restartCount !== undefined && result.restartCount > 0) {
         tt += (tt / 4) * result.restartCount;
       }
 
-      // if (result.incompleteTestSeconds != undefined) {
+      // if (result.incompleteTestSeconds !== undefined) {
       //   tt += result.incompleteTestSeconds;
-      // } else if (result.restartCount != undefined && result.restartCount > 0) {
+      // } else if (result.restartCount !== undefined && result.restartCount > 0) {
       //   tt += (tt / 4) * result.restartCount;
       // }
       totalSecondsFiltered += tt;
@@ -582,7 +582,7 @@ async function fillContent(): Promise<void> {
         }
       }
 
-      if (result.rawWpm != null) {
+      if (result.rawWpm !== null) {
         if (rawWpm.last10Count < 10) {
           rawWpm.last10Count++;
           rawWpm.last10Total += result.rawWpm;
@@ -600,7 +600,7 @@ async function fillContent(): Promise<void> {
 
       totalAcc += result.acc;
 
-      if (result.restartCount != undefined) {
+      if (result.restartCount !== undefined) {
         testRestarts += result.restartCount;
       }
 
@@ -635,7 +635,7 @@ async function fillContent(): Promise<void> {
           ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
           : "";
         topWpm = result.wpm;
-        if (result.mode == "custom") topMode = result.mode;
+        if (result.mode === "custom") topMode = result.mode;
         else {
           topMode =
             result.mode + " " + result.mode2 + puncsctring + numbsctring;
@@ -709,7 +709,7 @@ async function fillContent(): Promise<void> {
       x: bucket,
       y: histogramChartData[bucket],
     });
-    if (bucket + 10 != parseInt(keys[i + 1])) {
+    if (bucket + 10 !== parseInt(keys[i + 1])) {
       for (let j = bucket + 10; j < parseInt(keys[i + 1]); j += 10) {
         histogramChartDataBucketed.push({ x: j, y: 0 });
         labels.push(`${j} - ${j + 9}`);
@@ -818,7 +818,7 @@ async function fillContent(): Promise<void> {
     accountHistoryScaleOptions["wpmAvgHundred"].min = 0;
   }
 
-  if (!chartData || chartData.length == 0) {
+  if (!chartData || chartData.length === 0) {
     $(".pageAccount .group.noDataError").removeClass("hidden");
     $(".pageAccount .group.chart").addClass("hidden");
     $(".pageAccount .group.dailyActivityChart").addClass("hidden");
@@ -960,7 +960,7 @@ async function fillContent(): Promise<void> {
 
   $(".pageAccount .avgAcc10 .val").text(averageAccLast10 + "%");
 
-  if (totalCons == 0 || totalCons == undefined) {
+  if (totalCons === 0 || totalCons === undefined) {
     $(".pageAccount .avgCons .val").text("-");
     $(".pageAccount .avgCons10 .val").text("-");
   } else {
@@ -1104,7 +1104,7 @@ function sortAndRefreshHistory(
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
   if (forceDescending !== null) {
-    if (forceDescending == true) {
+    if (forceDescending === true) {
       $(headerClass).append(
         '<i class="fas fa-sort-down" aria-hidden="true"></i>'
       );
@@ -1167,15 +1167,15 @@ function sortAndRefreshHistory(
 }
 
 $(".pageAccount .toggleAccuracyOnChart").on("click", () => {
-  UpdateConfig.setAccountChartAccuracy(!(Config.accountChart[0] == "on"));
+  UpdateConfig.setAccountChartAccuracy(!(Config.accountChart[0] === "on"));
 });
 
 $(".pageAccount .toggleAverage10OnChart").on("click", () => {
-  UpdateConfig.setAccountChartAvg10(!(Config.accountChart[1] == "on"));
+  UpdateConfig.setAccountChartAvg10(!(Config.accountChart[1] === "on"));
 });
 
 $(".pageAccount .toggleAverage100OnChart").on("click", () => {
-  UpdateConfig.setAccountChartAvg100(!(Config.accountChart[2] == "on"));
+  UpdateConfig.setAccountChartAvg100(!(Config.accountChart[2] === "on"));
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {
@@ -1319,7 +1319,7 @@ export const page = new Page(
     await ResultFilters.appendButtons();
     ResultFilters.updateActive();
     await Misc.sleep(0);
-    if (DB.getSnapshot()?.results == undefined) {
+    if (DB.getSnapshot()?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
