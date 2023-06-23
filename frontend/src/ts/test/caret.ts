@@ -5,12 +5,12 @@ import * as SlowTimer from "../states/slow-timer";
 import * as TestState from "../test/test-state";
 
 export let caretAnimating = true;
-const caret = $("#caret");
+const caret = document.querySelector("#caret") as HTMLElement;
 
 export function stopAnimation(): void {
   if (caretAnimating === true) {
-    caret.css("animation-name", "none");
-    caret.css("opacity", "1");
+    caret.style.animationName = "none";
+    caret.style.opacity = "1";
     caretAnimating = false;
   }
 }
@@ -18,16 +18,16 @@ export function stopAnimation(): void {
 export function startAnimation(): void {
   if (caretAnimating === false) {
     if (Config.smoothCaret !== "off" && !SlowTimer.get()) {
-      caret.css("animation-name", "caretFlashSmooth");
+      caret.style.animationName = "caretFlashSmooth";
     } else {
-      caret.css("animation-name", "caretFlashHard");
+      caret.style.animationName = "caretFlashHard";
     }
     caretAnimating = true;
   }
 }
 
 export function hide(): void {
-  caret.addClass("hidden");
+  caret.classList.add("hidden");
 }
 
 export async function updatePosition(): Promise<void> {
@@ -109,7 +109,9 @@ export async function updatePosition(): Promise<void> {
   let smoothlinescroll = $("#words .smoothScroller").height();
   if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
-  caret.css("display", "block"); //for some goddamn reason adding width animation sets the display to none ????????
+  const jqcaret = $(caret);
+
+  jqcaret.css("display", "block"); //for some goddamn reason adding width animation sets the display to none ????????
 
   const animation: { top: number; left: number; width?: string } = {
     top: newTop - smoothlinescroll,
@@ -119,7 +121,7 @@ export async function updatePosition(): Promise<void> {
   if (newWidth !== "") {
     animation["width"] = newWidth;
   } else {
-    caret.css("width", "");
+    jqcaret.css("width", "");
   }
 
   const smoothCaretSpeed =
@@ -133,13 +135,13 @@ export async function updatePosition(): Promise<void> {
       ? 85
       : 0;
 
-  caret
+  jqcaret
     .stop(true, false)
     .animate(animation, !SlowTimer.get() ? smoothCaretSpeed : 0);
 
   if (Config.showAllLines) {
     const browserHeight = window.innerHeight;
-    const middlePos = browserHeight / 2 - (caret.outerHeight() as number) / 2;
+    const middlePos = browserHeight / 2 - (jqcaret.outerHeight() as number) / 2;
     const contentHeight = document.body.scrollHeight;
 
     if (
@@ -162,7 +164,7 @@ export async function updatePosition(): Promise<void> {
 
 export function show(): void {
   if ($("#result").hasClass("hidden")) {
-    caret.removeClass("hidden");
+    caret.classList.remove("hidden");
     updatePosition();
     startAnimation();
   }
