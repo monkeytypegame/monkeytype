@@ -54,7 +54,7 @@ export function init(missed: boolean, slow: boolean): boolean {
     sortableMissedWords = sortableMissedWords.slice(0, limit);
   }
 
-  if (missed && !slow && sortableMissedWords.length == 0) {
+  if (missed && !slow && sortableMissedWords.length === 0) {
     Notifications.add("You haven't missed any words", 0);
     return false;
   }
@@ -77,7 +77,7 @@ export function init(missed: boolean, slow: boolean): boolean {
   // console.log(sortableMissedWords);
   // console.log(sortableSlowWords);
 
-  if (sortableMissedWords.length == 0 && sortableSlowWords.length == 0) {
+  if (sortableMissedWords.length === 0 && sortableSlowWords.length === 0) {
     Notifications.add("Could not start a new custom test", 0);
     return false;
   }

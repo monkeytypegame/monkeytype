@@ -194,7 +194,7 @@ export async function getCharFromEvent(
 
   let mapIndex = null;
   for (let i = 0; i < keyEventCodes.length; i++) {
-    if (event.code == keyEventCodes[i]) {
+    if (event.code === keyEventCodes[i]) {
       mapIndex = i;
     }
   }

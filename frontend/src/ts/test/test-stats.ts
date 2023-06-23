@@ -209,11 +209,11 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   for (let i = 0; i < TestInput.input.history.length; i++) {
     const word: string = !containsKorean
       ? //english
-        Config.mode == "zen"
+        Config.mode === "zen"
         ? (TestInput.input.getHistory(i) as string)
         : TestWords.words.get(i)
       : //korean
-      Config.mode == "zen"
+      Config.mode === "zen"
       ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
       : Hangul.disassemble(TestWords.words.get(i)).join("");
 
@@ -238,7 +238,7 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   }
   if (currTestInput !== "") {
     const word =
-      Config.mode == "zen"
+      Config.mode === "zen"
         ? currTestInput
         : !containsKorean
         ? TestWords.words.getCurrent()
@@ -265,7 +265,7 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
     chars += toAdd.correct;
     chars += toAdd.incorrect;
     chars += toAdd.missed;
-    if (toAdd.incorrect == 0) {
+    if (toAdd.incorrect === 0) {
       //word is correct so far, add chars
       correctWordChars += toAdd.correct;
     }
@@ -332,13 +332,13 @@ export function calculateBurst(): number {
   wordLength = !containsKorean
     ? TestInput.input.current.length
     : Hangul.disassemble(TestInput.input.current).length;
-  if (wordLength == 0) {
+  if (wordLength === 0) {
     wordLength = !containsKorean
       ? TestInput.input.getHistoryLast()?.length ?? 0
       : Hangul.disassemble(TestInput.input.getHistoryLast() as string)
           ?.length ?? 0;
   }
-  if (wordLength == 0) return 0;
+  if (wordLength === 0) return 0;
   const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
   return Math.round(speed);
 }
@@ -371,11 +371,11 @@ function countChars(): CharCount {
     const containsKorean = TestInput.input.getKoreanStatus();
     const word: string = !containsKorean
       ? //english
-        Config.mode == "zen"
+        Config.mode === "zen"
         ? (TestInput.input.getHistory(i) as string)
         : TestWords.words.get(i)
       : //korean
-      Config.mode == "zen"
+      Config.mode === "zen"
       ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
       : Hangul.disassemble(TestWords.words.get(i)).join("");
 
@@ -387,7 +387,7 @@ function countChars(): CharCount {
       ? (TestInput.input.getHistory(i) as string)
       : Hangul.disassemble(TestInput.input.getHistory(i) as string).join("");
 
-    if (historyWord == word) {
+    if (historyWord === word) {
       //the word is correct
       correctWordChars += word.length;
       correctChars += word.length;
@@ -402,7 +402,7 @@ function countChars(): CharCount {
       for (let c = 0; c < historyWord.length; c++) {
         if (c < word.length) {
           //on char that still has a word list pair
-          if (historyWord[c] == word[c]) {
+          if (historyWord[c] === word[c]) {
             correctChars++;
           } else {
             incorrectChars++;
@@ -422,7 +422,7 @@ function countChars(): CharCount {
       for (let c = 0; c < word.length; c++) {
         if (c < historyWord.length) {
           //on char that still has a word list pair
-          if (historyWord[c] == word[c]) {
+          if (historyWord[c] === word[c]) {
             toAdd.correct++;
           } else {
             toAdd.incorrect++;
@@ -434,7 +434,7 @@ function countChars(): CharCount {
       }
       correctChars += toAdd.correct;
       incorrectChars += toAdd.incorrect;
-      if (i === TestInput.input.history.length - 1 && Config.mode == "time") {
+      if (i === TestInput.input.history.length - 1 && Config.mode === "time") {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {
@@ -456,7 +456,7 @@ function countChars(): CharCount {
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
     incorrectChars:
-      Config.mode == "zen" ? TestInput.accuracy.incorrect : incorrectChars,
+      Config.mode === "zen" ? TestInput.accuracy.incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,
@@ -469,7 +469,7 @@ export function calculateStats(): Stats {
     console.log("date based time", (end2 - start2) / 1000);
     console.log("performance.now based time", testSeconds);
   }
-  if (Config.mode != "custom") {
+  if (Config.mode !== "custom") {
     testSeconds = Misc.roundTo2(testSeconds);
     if (wpmCalcDebug) {
       console.log("mode is not custom - wounding");

@@ -126,7 +126,7 @@ function showFound(): void {
     }
   });
   $("#commandLine .suggestions").html(commandsHTML);
-  if ($("#commandLine .suggestions .entry").length == 0) {
+  if ($("#commandLine .suggestions .entry").length === 0) {
     $("#commandLine .separator").css({ height: 0, margin: 0 });
   } else {
     $("#commandLine .separator").css({
@@ -168,7 +168,7 @@ function updateSuggested(): void {
   const inputVal = ($("#commandLine input").val() as string)
     .toLowerCase()
     .split(" ")
-    .filter((s, i) => s || i == 0); //remove empty entries after first
+    .filter((s, i) => s || i === 0); //remove empty entries after first
   const list = CommandlineLists.current[CommandlineLists.current.length - 1];
 
   if (list.beforeList) list.beforeList();
@@ -185,10 +185,10 @@ function updateSuggested(): void {
     return;
   }
   //ignore the preceeding ">"s in the command line input
-  if (inputVal[0] && inputVal[0][0] == ">") {
+  if (inputVal[0] && inputVal[0][0] === ">") {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
   }
-  if (inputVal[0] == "" && inputVal.length == 1) {
+  if (inputVal[0] === "" && inputVal.length === 1) {
     $.each(list.list, (_index, obj) => {
       if (obj.visible !== false) obj.found = true;
     });
@@ -196,7 +196,7 @@ function updateSuggested(): void {
     $.each(list.list, (_index, obj) => {
       let foundcount = 0;
       $.each(inputVal, (_index2, obj2) => {
-        if (obj2 == "") return;
+        if (obj2 === "") return;
         const escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
         const re = new RegExp("\\b" + escaped, "g");
         const res = obj.display.toLowerCase().match(re);
@@ -296,7 +296,7 @@ function trigger(command: string): void {
   ManualRestart.set();
 
   $.each(list.list, (_index, obj) => {
-    if (obj.id == command) {
+    if (obj.id === command) {
       if (obj.shouldFocusTestUI !== undefined) {
         shouldFocusTestUI = obj.shouldFocusTestUI;
       }
@@ -429,9 +429,9 @@ function generateSingleListOfCommands(): {
 
 function useSingleListCommandLine(sshow = true): void {
   const allCommands = generateSingleListOfCommands();
-  // if (Config.singleListCommandLine == "manual") {
+  // if (Config.singleListCommandLine === "manual") {
   // CommandlineLists.pushCurrent(allCommands);
-  // } else if (Config.singleListCommandLine == "on") {
+  // } else if (Config.singleListCommandLine === "on") {
   CommandlineLists.setCurrent([allCommands]);
   // }
   if (Config.singleListCommandLine != "manual") {
@@ -536,7 +536,7 @@ $(document).ready(() => {
       if (Config.quickRestart === "esc" && ActivePage.get() === "login") return;
       event.preventDefault();
 
-      if (Config.singleListCommandLine == "on") {
+      if (Config.singleListCommandLine === "on") {
         useSingleListCommandLine(false);
       } else {
         CommandlineLists.setCurrent([CommandlineLists.commands]);
@@ -554,7 +554,7 @@ $("#commandInput input").on("keydown", (e) => {
     const value = $("#commandInput input").val() as string;
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (_index, obj) => {
-      if (obj.id == command) {
+      if (obj.id === command) {
         if (obj.exec) obj.exec(value);
       }
     });
@@ -594,7 +594,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   try {
     const list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (_index, obj) => {
-      if (obj.id == hoverId) {
+      if (obj.id === hoverId) {
         if (/changeTheme.+/gi.test(obj.id)) {
           removeCommandlineBackground();
         } else {
@@ -679,11 +679,11 @@ $(document).on("keydown", (e) => {
   if (isPopupVisible(wrapperId)) {
     $("#commandLine input").trigger("focus");
     commandLineMouseMode = false;
-    if (e.key == ">" && Config.singleListCommandLine == "manual") {
+    if (e.key === ">" && Config.singleListCommandLine === "manual") {
       if (!isSingleListCommandLineActive()) {
         useSingleListCommandLine(false);
         return;
-      } else if ($("#commandLine input").val() == ">") {
+      } else if ($("#commandLine input").val() === ">") {
         //so that it will ignore succeeding ">" when input is already ">"
         e.preventDefault();
         return;
@@ -694,7 +694,7 @@ $(document).on("keydown", (e) => {
       setTimeout(() => {
         const inputVal = $("#commandLine input").val() as string;
         if (
-          Config.singleListCommandLine == "manual" &&
+          Config.singleListCommandLine === "manual" &&
           isSingleListCommandLineActive() &&
           inputVal[0] !== ">"
         ) {
@@ -730,7 +730,7 @@ $(document).on("keydown", (e) => {
         e.key === "p" ||
         e.key === "k"
       ) {
-        if (activeIndex == 0) {
+        if (activeIndex === 0) {
           activeIndex = entries.length - 1;
         } else {
           activeIndex--;
@@ -742,7 +742,7 @@ $(document).on("keydown", (e) => {
         e.key === "n" ||
         e.key === "j"
       ) {
-        if (activeIndex + 1 == entries.length) {
+        if (activeIndex + 1 === entries.length) {
           activeIndex = 0;
         } else {
           activeIndex++;
@@ -757,7 +757,7 @@ $(document).on("keydown", (e) => {
           "#commandLineWrapper #commandLine .suggestions .entry.active"
         ).attr("command");
         $.each(list.list, (_index, obj) => {
-          if (obj.id == activeCommandId) {
+          if (obj.id === activeCommandId) {
             if (/changeTheme.+/gi.test(obj.id)) {
               removeCommandlineBackground();
             } else {
@@ -783,7 +783,7 @@ $(document).on("keydown", (e) => {
 });
 
 $("#commandLineMobileButton").on("click", () => {
-  if (Config.singleListCommandLine == "on") {
+  if (Config.singleListCommandLine === "on") {
     useSingleListCommandLine(false);
   } else {
     CommandlineLists.setCurrent([CommandlineLists.commands]);
