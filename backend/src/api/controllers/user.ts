@@ -52,7 +52,11 @@ export async function createNewUser(
   if (email.endsWith("@tidal.lol") || email.endsWith("@selfbot.cc")) {
     throw new MonkeyError(400, "Invalid domain");
   }
-
+  
+  if (email.endsWith("@gmil.com") || email.endsWith("@gnail.com") || email.endsWith("gamail.com")) {
+    throw new MonkeyError()
+  }
+  
   const available = await UserDAL.isNameAvailable(name, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
@@ -90,7 +94,7 @@ export async function sendVerificationEmail(
   if (userInfo.email !== email) {
     throw new MonkeyError(
       400,
-      "Authenticated email does not match the email found in th database. This might happen if you recently changed your email. Please refresh and try again."
+      "Authenticated email does not match the email found in the database. This might happen if you recently changed your email. Please refresh and try again."
     );
   }
 
