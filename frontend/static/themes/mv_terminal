@@ -1,5 +1,5 @@
 :root {
-    --bg-color: ##090909;
+    --bg-color: #090909;
     --main-color: #4da51e;
     --caret-color: #eb9600;
     --sub-color: #8f8f8f;
