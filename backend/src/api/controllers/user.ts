@@ -87,6 +87,13 @@ export async function sendVerificationEmail(
 
   const userInfo = await UserDAL.getUser(uid, "request verification email");
 
+  if (userInfo.email !== email) {
+    throw new MonkeyError(
+      400,
+      "Authenticated email does not match the email found in th database. This might happen if you recently changed your email. Please refresh and try again."
+    );
+  }
+
   let link = "";
   try {
     link = await FirebaseAdmin()
