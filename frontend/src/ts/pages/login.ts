@@ -305,6 +305,7 @@ export const page = new Page(
     //
   },
   async () => {
+    $(".pageLogin input").val("");
     Skeleton.remove("pageLogin");
   },
   async () => {
