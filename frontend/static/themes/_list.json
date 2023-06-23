@@ -1177,8 +1177,8 @@
   },
   {
     "name": "mv_terminal",
-    "bgColor": "#ffffff",
-    "mainColor": "#ffffff"
+    "bgColor": "#090909",
+    "mainColor": "#4da51e"
 }
 
 ]
