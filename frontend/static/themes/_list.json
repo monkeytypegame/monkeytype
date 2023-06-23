@@ -1174,6 +1174,11 @@
     "mainColor": "#ff8f00",
     "subColor": "#651e56",
     "textColor": "#fff"
-  }
+  },
+  {
+    "name": "mv_terminal",
+    "bgColor": "#ffffff",
+    "mainColor": "#ffffff"
+}
 
 ]
