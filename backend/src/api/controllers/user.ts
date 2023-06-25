@@ -53,10 +53,6 @@ export async function createNewUser(
     throw new MonkeyError(400, "Invalid domain");
   }
   
-  if (email.endsWith("@gmil.com") || email.endsWith("@gnail.com") || email.endsWith("gamail.com")) {
-    throw new MonkeyError()
-  }
-  
   const available = await UserDAL.isNameAvailable(name, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
