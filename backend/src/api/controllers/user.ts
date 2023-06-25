@@ -90,7 +90,7 @@ export async function sendVerificationEmail(
   if (userInfo.email !== email) {
     throw new MonkeyError(
       400,
-      "Authenticated email does not match the email found in th database. This might happen if you recently changed your email. Please refresh and try again."
+      "Authenticated email does not match the email found in the database. This might happen if you recently changed your email. Please refresh and try again."
     );
   }
 
