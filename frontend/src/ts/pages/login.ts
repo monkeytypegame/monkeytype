@@ -89,7 +89,10 @@ const checkEmail = (): void => {
     emailIndicator.show("valid");
     // Check if email is .edu domain
     if (email.endsWith(".edu")) {
-      emailIndicator.show("edu");
+      emailIndicator.show(
+        "edu",
+        "Consider using a personal email address for better email functionality."
+      );
     }
   } else {
     emailIndicator.show("invalid");
@@ -185,7 +188,7 @@ const emailIndicator = new InputIndicator(
     },
     edu: {
       icon: "fa-exclamation-triangle",
-      level: 0,
+      level: 1,
     },
   }
 );
