@@ -86,13 +86,13 @@ const checkEmail = (): void => {
 
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   if (emailRegex.test(email)) {
-    emailIndicator.show("valid");
-    // Check if email is .edu domain
-    if (email.endsWith(".edu")) {
+    if (/@.*(education|\.edu$|\.edu\.)/i.test(email)) {
       emailIndicator.show(
         "edu",
         "Consider using a personal email address for better email functionality."
       );
+    } else {
+      emailIndicator.show("valid");
     }
   } else {
     emailIndicator.show("invalid");
