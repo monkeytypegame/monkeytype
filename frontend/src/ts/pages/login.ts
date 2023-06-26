@@ -89,7 +89,7 @@ const checkEmail = (): void => {
     if (/@.*(education|\.edu$|\.edu\.)/i.test(email)) {
       emailIndicator.show(
         "edu",
-        "Consider using a personal email address for better email functionality."
+        "Some education emails will fail to receive our messages. Consider using a personal email address."
       );
     } else {
       emailIndicator.show("valid");
