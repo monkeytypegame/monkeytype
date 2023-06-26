@@ -16,7 +16,7 @@ declare namespace MonkeyTypes {
 
   type Mode = keyof PersonalBests;
 
-  type Mode2<M extends Mode> = keyof PersonalBests[M];
+  type Mode2<M extends Mode> = M extends M ? keyof PersonalBests[M] : never;
 
   type StringNumber = `${number}`;
 
@@ -624,17 +624,17 @@ declare namespace MonkeyTypes {
       custom: boolean;
     };
     words: {
-      10: boolean;
-      25: boolean;
-      50: boolean;
-      100: boolean;
+      "10": boolean;
+      "25": boolean;
+      "50": boolean;
+      "100": boolean;
       custom: boolean;
     };
     time: {
-      15: boolean;
-      30: boolean;
-      60: boolean;
-      120: boolean;
+      "15": boolean;
+      "30": boolean;
+      "60": boolean;
+      "120": boolean;
       custom: boolean;
     };
     quoteLength: {

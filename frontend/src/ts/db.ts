@@ -618,7 +618,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
     };
 
     dbSnapshot.personalBests[mode][mode2] ??=
-      [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+      [] as unknown as MonkeyTypes.PersonalBests[M][MonkeyTypes.Mode2<M>];
 
     (
       dbSnapshot.personalBests[mode][
@@ -697,7 +697,7 @@ export async function getLocalTagPB<M extends MonkeyTypes.Mode>(
     };
 
     filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+      [] as unknown as MonkeyTypes.PersonalBests[M][MonkeyTypes.Mode2<M>];
 
     const personalBests = (filteredtag.personalBests[mode][mode2] ??
       []) as MonkeyTypes.PersonalBest[];
@@ -753,7 +753,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
     };
 
     filteredtag.personalBests[mode][mode2] ??=
-      [] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+      [] as unknown as MonkeyTypes.PersonalBests[M][MonkeyTypes.Mode2<M>];
 
     try {
       let found = false;
@@ -818,7 +818,7 @@ export async function saveLocalTagPB<M extends MonkeyTypes.Mode>(
           timestamp: Date.now(),
           consistency: consistency,
         },
-      ] as unknown as MonkeyTypes.PersonalBests[M][keyof MonkeyTypes.PersonalBests[M]];
+      ] as unknown as MonkeyTypes.PersonalBests[M][MonkeyTypes.Mode2<M>];
     }
   }
 
