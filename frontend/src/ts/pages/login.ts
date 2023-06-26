@@ -87,16 +87,12 @@ const checkEmail = (): void => {
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   if (emailRegex.test(email)) {
     emailIndicator.show("valid");
-  } else {
-    emailIndicator.show("invalid");
-  }
-
-  // Check for .edu domain
-  if (email.includes("@")) {
-    const domain = email.split("@")[1].toLowerCase();
-    if (domain.endsWith(".edu")) {
+    // Check if email is .edu domain
+    if (email.endsWith(".edu")) {
       emailIndicator.show("edu");
     }
+  } else {
+    emailIndicator.show("invalid");
   }
 
   updateSignupButton();
