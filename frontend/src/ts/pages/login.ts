@@ -91,6 +91,14 @@ const checkEmail = (): void => {
     emailIndicator.show("invalid");
   }
 
+  // Check for .edu domain
+  if (email.includes("@")) {
+    const domain = email.split("@")[1].toLowerCase();
+    if (domain.endsWith(".edu")) {
+      emailIndicator.show("edu");
+    }
+  }
+
   updateSignupButton();
 };
 
@@ -178,6 +186,10 @@ const emailIndicator = new InputIndicator(
     invalid: {
       icon: "fa-times",
       level: -1,
+    },
+    edu: {
+      icon: "fa-exclamation-triangle",
+      level: 0,
     },
   }
 );
