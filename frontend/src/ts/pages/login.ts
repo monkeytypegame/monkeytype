@@ -41,7 +41,7 @@ export function hidePreloader(): void {
 export const updateSignupButton = (): void => {
   if (
     nameIndicator.get() !== "available" ||
-    emailIndicator.get() !== "valid" ||
+    (emailIndicator.get() !== "valid" && emailIndicator.get() !== "edu") ||
     verifyEmailIndicator.get() !== "match" ||
     passwordIndicator.get() !== "good" ||
     verifyPasswordIndicator.get() !== "match"
