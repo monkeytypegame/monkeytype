@@ -1,6 +1,34 @@
 import * as Validation from "../../src/utils/validation";
+import { isTagPresetNameValid } from "../../src/utils/validation";
 
 describe("Validation", () => {
+  it("isTagPresetNameValid", () => {
+    const testCases = [
+      {
+        name: "harry_potter",
+        expected: true,
+      },
+      {
+        name: "prof_albus_dumbledore",
+        expected: false,
+      },
+      {
+        name: "",
+        expected: false,
+      },
+      {
+        name: "=",
+        expected: false,
+      },
+    ];
+
+    testCases.forEach((testCase) => {
+      expect(Validation.isTagPresetNameValid(testCase.name)).toBe(
+        testCase.expected
+      );
+    });
+  });
+
   it("inRange", () => {
     const testCases = [
       {
