@@ -56,58 +56,40 @@
       "id": 8
     },
     {
-      "text": "Dankon, amiko!",
-      "source": "Dankon, amiko!, Claude Piron",
-      "length": 14,
-      "id": 9
-    },
-    {
       "text": "Normale mi devus forkuri kun via mono kaj veturbileto sen diri al vi ion ajn. Sed miaj amikaj sentoj tion malhelpas, kaj mi volas skribi adiaŭon al vi. Mi sentas devon instrui vin pri la vivo. Se je la aĝo de 21 jaroj vi ankoraŭ ne komprenis la riskojn, al kiuj vi vin elmetas, iu devas vin lernigi. Ni hazarde renkontiĝis nur antaŭ tri tagoj. Vi sciis nenion pri mi. Tamen vian tutan vivon vi rakontis kaj... montris al mi vian tutan monon.",
       "source": "Dankon, amiko!, Claude Piron",
       "length": 441,
-      "id": 10
-    },
-    {
-      "text": "Malrapide, Rikardo turnis la kapon al la parolinto.",
-      "source": "Dankon, amiko!, Claude Piron",
-      "length": 51,
-      "id": 11
+      "id": 9
     },
     {
       "text": "Kaj nun li sentas sin ema zorgi pri Linda. Ĉu tiu belega knabino ne troviĝas en danĝero? Li amas ŝin, li eĉ amegas ŝin, pli kaj pli, kaj la ideo, ke danĝeraj homoj povus fari ion al ŝi, apenaŭ estas travivebla.",
       "source": "Gerda malaperis, Claude Piron",
       "length": 210,
-      "id": 12
+      "id": 10
     },
     {
       "text": "Kion esperantistoj faru post la milito? Tiun demandon klopodas prilumi Istvan Szabolcs en dua vidpunkta artikolo pri la temo.",
       "source": "Tragedio por Ukrainio kaj katastrofo por Rusio, 2022, Libera folio",
       "length": 125,
-      "id": 13
+      "id": 11
     },
     {
       "text": "En la vilaĝo de Nomen Tuum, antikva cervfontano estas supozata enhavi kuracpovojn. En certaj okazoj personoj estis risanigitaj, sed pliofte ili akiris certan belecon.",
       "source": "Inkubo (1966), Leslie Stevens",
       "length": 166,
-      "id": 14
+      "id": 12
     },
     {
       "text": "Kiam mi eniris la ĉefstraton de la malgranda vilaĝo, ĝi estis tute senhoma, krom ke unu maljunulo per la helpo de marŝbastono malrapide iris en la direkto al la haveno kaj mi sciis, ke la vilaĝanoj troviĝos tie, kien li iras.",
       "source": "La ŝtormo, John S. Dinwoodie",
       "length": 225,
-      "id": 15
+      "id": 13
     },
     {
-      "text": "Ĉu vi scias, kia ŝipeto estas tiu?",
+      "text": "La muroj de la haveno mem kaj la deklivo super ĝi estis kovritaj de grupoj de la vilaĝanoj.",
       "source": "La ŝtormo, John S. Dinwoodie",
-      "length": 34,
-      "id": 16
-    },
-    {
-      "text": "Mi venis al la deklivo super la haveno.",
-      "source": "La ŝtormo, John S. Dinwoodie",
-      "length": 39,
-      "id": 17
+      "length": 91,
+      "id": 14
     }
   ]
 }
