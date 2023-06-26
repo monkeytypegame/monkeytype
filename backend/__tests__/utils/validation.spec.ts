@@ -13,6 +13,14 @@ describe("Validation", () => {
         expected: true,
       },
       {
+        name: "valid-name",
+        expected: true,
+      },
+      {
+        name: "valid.name",
+        expected: true,
+      },
+      {
         name: "thistagnameistoolong",
         expected: false,
       },
