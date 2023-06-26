@@ -1321,6 +1321,7 @@ async function saveResult(
   if (response?.data?.isPb) {
     //new pb
     if (
+      //@ts-expect-error TODO fix this
       DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
     ) {
       Result.showConfetti();

@@ -12,24 +12,21 @@ const CARET_STYLES = [
 ];
 
 const CONFIG_SCHEMA = joi.object({
-  theme: joi.string(),
-  themeLight: joi.string(),
-  themeDark: joi.string(),
+  theme: joi.string().max(50).token(),
+  themeLight: joi.string().max(50).token(),
+  themeDark: joi.string().max(50).token(),
   autoSwitchTheme: joi.boolean(),
   customTheme: joi.boolean(),
-  customThemeId: joi.string().min(0).max(24),
+  customThemeId: joi.string().min(0).max(24).token(),
   customThemeColors: joi
     .array()
     .items(joi.string().pattern(/^#([\da-f]{3}){1,2}$/i))
     .length(10),
-  favThemes: joi.array().items(joi.string()),
+  favThemes: joi.array().items(joi.string().max(50).token()),
   showKeyTips: joi.boolean(),
   showLiveWpm: joi.boolean(),
   showTimerProgress: joi.boolean(),
-  smoothCaret: joi.alternatives().try(
-    joi.boolean(), // remove after a bit
-    joi.string().valid("off", "slow", "medium", "fast")
-  ),
+  smoothCaret: joi.string().valid("off", "slow", "medium", "fast"),
   quickRestart: joi.string().valid("off", "tab", "esc"),
   punctuation: joi.boolean(),
   numbers: joi.boolean(),
@@ -37,11 +34,8 @@ const CONFIG_SCHEMA = joi.object({
   time: joi.number().min(0),
   mode: joi.string().valid("time", "words", "quote", "zen", "custom"),
   quoteLength: joi.array().items(joi.number()),
-  language: joi.string(),
-  fontSize: joi.alternatives().try(
-    joi.string().valid("1", "125", "15", "2", "3", "4"), //remove after a week
-    joi.number().min(0)
-  ),
+  language: joi.string().max(50).token(),
+  fontSize: joi.number().min(0),
   freedomMode: joi.boolean(),
   difficulty: joi.string().valid("normal", "expert", "master"),
   blindMode: joi.boolean(),
@@ -49,8 +43,8 @@ const CONFIG_SCHEMA = joi.object({
   caretStyle: joi.string().valid(...CARET_STYLES),
   paceCaretStyle: joi.string().valid(...CARET_STYLES),
   flipTestColors: joi.boolean(),
-  layout: joi.string(),
-  funbox: joi.string(),
+  layout: joi.string().max(50).token(),
+  funbox: joi.string().max(50).token(),
   confidenceMode: joi.string().valid("off", "on", "max"),
   indicateTypos: joi.string().valid("off", "below", "replace"),
   timerStyle: joi.string().valid("bar", "text", "mini"),
@@ -77,9 +71,9 @@ const CONFIG_SCHEMA = joi.object({
   keymapLegendStyle: joi
     .string()
     .valid("lowercase", "uppercase", "blank", "dynamic"),
-  keymapLayout: joi.string().valid(),
+  keymapLayout: joi.string().valid().max(50).token(),
   keymapShowTopRow: joi.string().valid("always", "layout", "never"),
-  fontFamily: joi.string(),
+  fontFamily: joi.string().max(50).token(),
   smoothLineScroll: joi.boolean(),
   alwaysShowDecimalPlaces: joi.boolean(),
   alwaysShowWordsHistory: joi.boolean(),
@@ -98,9 +92,7 @@ const CONFIG_SCHEMA = joi.object({
   paceCaretCustomSpeed: joi.number().min(0),
   repeatedPace: joi.boolean(),
   pageWidth: joi.string().valid("100", "125", "150", "200", "max"),
-  accountChart: joi.array().items(joi.string()).optional(),
-  chartAccuracy: joi.boolean().optional(), //remove after a bit
-  chartStyle: joi.string().valid("line", "scatter").optional(), //remove after a bit
+  accountChart: joi.array().items(joi.string().valid("on", "off")).optional(),
   minWpm: joi.string().valid("off", "custom"),
   minWpmCustomSpeed: joi.number().min(0),
   highlightMode: joi.string().valid("off", "letter", "word"),
@@ -120,7 +112,7 @@ const CONFIG_SCHEMA = joi.object({
   customBackground: joi.string().uri().allow(""),
   customBackgroundSize: joi.string().valid("cover", "contain", "max"),
   customBackgroundFilter: joi.array().items(joi.number()),
-  customLayoutfluid: joi.string(),
+  customLayoutfluid: joi.string().regex(/^[0-9a-zA-Z_#]+$/),
   monkeyPowerLevel: joi.string().valid("off", "1", "2", "3", "4"),
   minBurst: joi.string().valid("off", "fixed", "flex"),
   minBurstCustomSpeed: joi.number().min(0),
