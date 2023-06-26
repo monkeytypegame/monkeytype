@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
 import * as Skeleton from "../popups/skeleton";
 import * as Misc from "../utils/misc";
+import typo_list from "../utils/misc";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side .button").removeClass("disabled");
@@ -41,7 +42,7 @@ export function hidePreloader(): void {
 export const updateSignupButton = (): void => {
   if (
     nameIndicator.get() !== "available" ||
-    emailIndicator.get() !== "valid" ||
+    (emailIndicator.get() !== "valid" && emailIndicator.get() !== "typo") ||
     verifyEmailIndicator.get() !== "match" ||
     passwordIndicator.get() !== "good" ||
     verifyPasswordIndicator.get() !== "match"
