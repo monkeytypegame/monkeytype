@@ -5,11 +5,15 @@ describe("Validation", () => {
   it("isTagPresetNameValid", () => {
     const testCases = [
       {
-        name: "harry_potter",
+        name: "valid_name",
         expected: true,
       },
       {
-        name: "prof_albus_dumbledore",
+        name: "validname",
+        expected: true,
+      },
+      {
+        name: "thistagnameistoolong",
         expected: false,
       },
       {
@@ -17,7 +21,11 @@ describe("Validation", () => {
         expected: false,
       },
       {
-        name: "=",
+        name: "invalid name",
+        expected: false,
+      },
+      {
+        name: "invalid=name",
         expected: false,
       },
     ];
