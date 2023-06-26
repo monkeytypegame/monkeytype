@@ -379,6 +379,7 @@ export function colorful(tc: boolean): void {
   }
 }
 
+let firefoxClipboardNotificatoinShown = false;
 export async function screenshot(): Promise<void> {
   let revealReplay = false;
 
@@ -483,6 +484,21 @@ export async function screenshot(): Promise<void> {
       } catch (e) {
         console.error("Error while saving image to clipboard", e);
         if (blob) {
+          //check if on firefox
+          if (
+            navigator.userAgent.toLowerCase().indexOf("firefox") > -1 &&
+            !firefoxClipboardNotificatoinShown
+          ) {
+            firefoxClipboardNotificatoinShown = true;
+            Notifications.add(
+              "On Firefox you can enable the asyncClipboard.clipboardItem permission in about:config to enable copying straight to the clipboard",
+              0,
+              {
+                duration: 10,
+              }
+            );
+          }
+
           Notifications.add(
             "Could not save image to clipboard. Opening in new tab instead (make sure popups are allowed)",
             0,
