@@ -1159,24 +1159,28 @@ export async function swapElements(
   return;
 }
 
-export function getMode2(
+export function getMode2<M extends keyof MonkeyTypes.PersonalBests>(
   config: MonkeyTypes.Config,
   randomQuote: MonkeyTypes.Quote
-): string {
+): MonkeyTypes.Mode2<M> {
   const mode = config.mode;
+  let retVal: string;
+
   if (mode === "time") {
-    return config.time.toString();
+    retVal = config.time.toString();
   } else if (mode === "words") {
-    return config.words.toString();
+    retVal = config.words.toString();
   } else if (mode === "custom") {
-    return "custom";
+    retVal = "custom";
   } else if (mode === "zen") {
-    return "zen";
+    retVal = "zen";
   } else if (mode === "quote") {
-    return randomQuote.id.toString();
+    retVal = randomQuote.id.toString();
+  } else {
+    throw new Error("Invalid mode");
   }
 
-  return "";
+  return retVal as MonkeyTypes.Mode2<M>;
 }
 
 export async function downloadResultsCSV(
