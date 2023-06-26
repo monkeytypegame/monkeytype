@@ -308,15 +308,20 @@ async function fillContent(): Promise<void> {
         }
 
         if (result.mode === "time") {
-          let timefilter: MonkeyTypes.Mode2Custom<"time"> = "custom";
+          let timefilter: MonkeyTypes.Mode2<"time"> | "custom" = "custom";
           if (
             ["15", "30", "60", "120"].includes(
               `${result.mode2}` //legacy results could have a number in mode2
             )
           ) {
-            timefilter = `${result.mode2}`;
+            timefilter = `${result.mode2}` as `${number}`;
           }
-          if (!ResultFilters.getFilter("time", timefilter)) {
+          if (
+            !ResultFilters.getFilter(
+              "time",
+              timefilter as "custom" | "15" | "30" | "60" | "120"
+            )
+          ) {
             if (filterDebug) {
               console.log(`skipping result due to time filter`, result);
             }
@@ -329,9 +334,14 @@ async function fillContent(): Promise<void> {
               `${result.mode2}` //legacy results could have a number in mode2
             )
           ) {
-            wordfilter = `${result.mode2}`;
+            wordfilter = `${result.mode2}` as `${number}`;
           }
-          if (!ResultFilters.getFilter("words", wordfilter)) {
+          if (
+            !ResultFilters.getFilter(
+              "words",
+              wordfilter as "custom" | "10" | "25" | "50" | "100"
+            )
+          ) {
             if (filterDebug) {
               console.log(`skipping result due to word filter`, result);
             }
