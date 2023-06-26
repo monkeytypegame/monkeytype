@@ -83,10 +83,11 @@ const checkNameDebounced = debounce(1000, async () => {
 const checkEmail = (): void => {
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const educationRegex = /@.*(education|\.edu$|\.edu\.)/i;
 
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   if (emailRegex.test(email)) {
-    if (/@.*(education|\.edu$|\.edu\.)/i.test(email)) {
+    if (educationRegex.test(email)) {
       emailIndicator.show(
         "edu",
         "Some education emails will fail to receive our messages. Consider using a personal email address."
