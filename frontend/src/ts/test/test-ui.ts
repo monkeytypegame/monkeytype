@@ -469,7 +469,7 @@ export async function screenshot(): Promise<void> {
     canvas.toBlob(async (blob) => {
       try {
         if (blob === null) {
-          throw new Error("Could not create imgage, blob is null");
+          throw new Error("Could not create image, blob is null");
         }
         const clipItem = new ClipboardItem(
           Object.defineProperty({}, blob.type, {
