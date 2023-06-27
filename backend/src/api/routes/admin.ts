@@ -5,10 +5,12 @@ import {
   asyncHandler,
   checkIfUserIsAdmin,
   validateConfiguration,
+  validateRequest,
 } from "../../middlewares/api-utils";
 import * as AdminController from "../controllers/admin";
 import { adminLimit } from "../../middlewares/rate-limit";
 import { toggleBan } from "../controllers/user";
+import joi from "joi";
 
 const router = Router();
 
@@ -38,6 +40,11 @@ router.post(
     noCache: true,
   }),
   checkIfUserIsAdmin(),
+  validateRequest({
+    body: {
+      uid: joi.string().required().token(),
+    },
+  }),
   asyncHandler(toggleBan)
 );
 
