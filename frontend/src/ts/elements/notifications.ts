@@ -44,7 +44,7 @@ class Notification {
     if (type === "banner") {
       this.duration = duration as number;
     } else {
-      if (duration == undefined) {
+      if (duration === undefined) {
         if (level === -1) {
           this.duration = 0;
         } else {
@@ -82,7 +82,7 @@ class Notification {
       cls += " important";
     }
 
-    if (this.customTitle != undefined) {
+    if (this.customTitle !== undefined) {
       title = this.customTitle;
     }
 
@@ -90,7 +90,7 @@ class Notification {
       icon = `<i class="fas fa-fw fa-bullhorn"></i>`;
     }
 
-    if (this.customIcon != undefined) {
+    if (this.customIcon !== undefined) {
       icon = `<i class="fas fa-fw fa-${this.customIcon}"></i>`;
     }
 

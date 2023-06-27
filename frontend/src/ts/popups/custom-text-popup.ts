@@ -103,7 +103,7 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
     $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
   }
   if (
-    $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
+    $(`${popup} textarea`).val() !== CustomText.text.join(CustomText.delimiter)
   ) {
     const currentText = $(`${popup} textarea`).val() as string;
     const currentTextSplit = currentText.split(CustomText.delimiter);
@@ -139,7 +139,7 @@ export function hide(options = {} as HideOptions): void {
         () => {
           if (options.resetState) {
             const newText = CustomText.text.map((word) => {
-              if (word[word.length - 1] == "|") {
+              if (word[word.length - 1] === "|") {
                 word = word.slice(0, -1);
               }
               return word;

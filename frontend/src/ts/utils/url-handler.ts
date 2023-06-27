@@ -146,10 +146,10 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     CustomText.setIsTimeRandom(customTextSettings["isTimeRandom"]);
     CustomText.setIsWordRandom(customTextSettings["isWordRandom"]);
     if (customTextSettings["isTimeRandom"]) {
-      CustomText.setWord(customTextSettings["time"]);
+      CustomText.setTime(customTextSettings["time"]);
     }
     if (customTextSettings["isWordRandom"]) {
-      CustomText.setTime(customTextSettings["word"]);
+      CustomText.setWord(customTextSettings["word"]);
     }
     CustomText.setDelimiter(customTextSettings["delimiter"]);
     applied["custom text settings"] = "";

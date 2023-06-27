@@ -27,23 +27,23 @@ export async function update(
   $("#testConfig .mode .textButton").removeClass("active");
   $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
 
-  // if (current == "time") {
+  // if (current === "time") {
   //   $("#testConfig .punctuationMode").removeClass("hidden");
   //   $("#testConfig .numbersMode").removeClass("hidden");
   //   $("#testConfig .leftSpacer").removeClass("hidden");
-  // } else if (current == "words") {
+  // } else if (current === "words") {
   //   $("#testConfig .punctuationMode").removeClass("hidden");
   //   $("#testConfig .numbersMode").removeClass("hidden");
   //   $("#testConfig .leftSpacer").removeClass("hidden");
-  // } else if (current == "custom") {
+  // } else if (current === "custom") {
   //   $("#testConfig .punctuationMode").removeClass("hidden");
   //   $("#testConfig .numbersMode").removeClass("hidden");
   //   $("#testConfig .leftSpacer").removeClass("hidden");
-  // } else if (current == "quote") {
+  // } else if (current === "quote") {
   //   $("#testConfig .punctuationMode").addClass("hidden");
   //   $("#testConfig .numbersMode").addClass("hidden");
   //   $("#testConfig .leftSpacer").addClass("hidden");
-  // } else if (current == "zen") {
+  // } else if (current === "zen") {
   //   //
   // }
 
@@ -66,8 +66,8 @@ export async function update(
   };
 
   if (
-    puncAndNumVisible[previous] == false &&
-    puncAndNumVisible[current] == true
+    puncAndNumVisible[previous] === false &&
+    puncAndNumVisible[current] === true
   ) {
     //show
 
@@ -86,8 +86,8 @@ export async function update(
         "easeInOutSine"
       );
   } else if (
-    puncAndNumVisible[previous] == true &&
-    puncAndNumVisible[current] == false
+    puncAndNumVisible[previous] === true &&
+    puncAndNumVisible[current] === false
   ) {
     //hide
     $("#testConfig .leftSpacer").addClass("scrolled");
@@ -106,7 +106,7 @@ export async function update(
       );
   }
 
-  if (current == "zen") {
+  if (current === "zen") {
     $("#testConfig .rightSpacer").addClass("scrolled");
   } else {
     $("#testConfig .rightSpacer").removeClass("scrolled");
@@ -127,7 +127,7 @@ export async function update(
   //   $("#testConfig .leftSpacer").addClass("hidden");
   // }
 
-  // if (current == "zen") {
+  // if (current === "zen") {
   //   $("#testConfig .rightSpacer").addClass("hidden");
   // } else {
   //   $("#testConfig .rightSpacer").removeClass("hidden");
@@ -223,7 +223,7 @@ export async function update(
 
   // console.log(submenu[current], animTime, newWidth, currentWidth);
 
-  // if (current == "zen") {
+  // if (current === "zen") {
   //   $(`#testConfig .${submenu[previous]}`).animate(
   //     {
   //       opacity: 0,
@@ -245,7 +245,7 @@ export async function update(
   //   return;
   // }
 
-  // if (previous == "zen") {
+  // if (previous === "zen") {
   //   setTimeout(() => {
   //     $(`#testConfig .${submenu[current]}`).removeClass("hidden");
   //     $(`#testConfig .${submenu[current]}`)
@@ -280,7 +280,7 @@ export function updateExtras(
   key: string,
   value: MonkeyTypes.ConfigValues
 ): void {
-  if (key == "time") {
+  if (key === "time") {
     $("#testConfig .time .textButton").removeClass("active");
     const timeCustom = ![15, 30, 60, 120].includes(value as number)
       ? "custom"
@@ -288,7 +288,7 @@ export function updateExtras(
     $(
       "#testConfig .time .textButton[timeConfig='" + timeCustom + "']"
     ).addClass("active");
-  } else if (key == "words") {
+  } else if (key === "words") {
     $("#testConfig .wordCount .textButton").removeClass("active");
 
     const wordCustom = ![10, 25, 50, 100, 200].includes(value as number)
@@ -298,20 +298,20 @@ export function updateExtras(
     $(
       "#testConfig .wordCount .textButton[wordCount='" + wordCustom + "']"
     ).addClass("active");
-  } else if (key == "quoteLength") {
+  } else if (key === "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
     (value as MonkeyTypes.QuoteLength[]).forEach((ql) => {
       $(
         "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
       ).addClass("active");
     });
-  } else if (key == "numbers") {
+  } else if (key === "numbers") {
     if (!value) {
       $("#testConfig .numbersMode.textButton").removeClass("active");
     } else {
       $("#testConfig .numbersMode.textButton").addClass("active");
     }
-  } else if (key == "punctuation") {
+  } else if (key === "punctuation") {
     if (!value) {
       $("#testConfig .punctuationMode.textButton").removeClass("active");
     } else {

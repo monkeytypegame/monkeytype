@@ -478,7 +478,7 @@ export async function fillSettingsPage(): Promise<void> {
           " "
         )}</option>`;
       }
-      if (layout.toString() != "default") {
+      if (layout.toString() !== "default") {
         keymapElHTML += `<option value='${layout}'>${layout.replace(
           /_/g,
           " "
@@ -673,13 +673,13 @@ export function hideAccountSection(): void {
 
 export function updateDiscordSection(): void {
   //no code and no discord
-  if (Auth?.currentUser == null) {
+  if (!Auth?.currentUser) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
     if (!DB.getSnapshot()) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
-    if (DB.getSnapshot()?.discordId == undefined) {
+    if (DB.getSnapshot()?.discordId === undefined) {
       //show button
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
@@ -766,11 +766,11 @@ function setActiveFunboxButton(): void {
 }
 
 function refreshTagsSettingsSection(): void {
-  if (Auth?.currentUser && DB.getSnapshot() !== null) {
+  if (Auth?.currentUser && DB.getSnapshot()) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot()?.tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
-      // if (tag.pb != undefined && tag.pb > 0) {
+      // if (tag.pb !== undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
       // }
       tagsEl.append(`
@@ -801,7 +801,7 @@ function refreshTagsSettingsSection(): void {
 }
 
 function refreshPresetsSettingsSection(): void {
-  if (Auth?.currentUser && DB.getSnapshot() !== null) {
+  if (Auth?.currentUser && DB.getSnapshot()) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`

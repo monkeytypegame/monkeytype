@@ -357,25 +357,25 @@ export function updateActive(): void {
   function addText(group: MonkeyTypes.Group): string {
     let ret = "";
     ret += "<div class='group'>";
-    if (group == "difficulty") {
+    if (group === "difficulty") {
       ret += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
-    } else if (group == "mode") {
+    } else if (group === "mode") {
       ret += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
-    } else if (group == "punctuation") {
+    } else if (group === "punctuation") {
       ret += `<span aria-label="Punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-at"></i>`;
-    } else if (group == "numbers") {
+    } else if (group === "numbers") {
       ret += `<span aria-label="Numbers" data-balloon-pos="up"><i class="fas fa-fw fa-hashtag"></i>`;
-    } else if (group == "words") {
+    } else if (group === "words") {
       ret += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
-    } else if (group == "time") {
+    } else if (group === "time") {
       ret += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
-    } else if (group == "date") {
+    } else if (group === "date") {
       ret += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
-    } else if (group == "tags") {
+    } else if (group === "tags") {
       ret += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
-    } else if (group == "language") {
+    } else if (group === "language") {
       ret += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
-    } else if (group == "funbox") {
+    } else if (group === "funbox") {
       ret += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
     }
     if (aboveChartDisplay[group]?.all) {
@@ -384,12 +384,12 @@ export function updateActive(): void {
       if (group === "tags") {
         ret += aboveChartDisplay.tags?.array
           ?.map((id) => {
-            if (id == "none") return id;
+            if (id === "none") return id;
             const snapshot = DB.getSnapshot();
             if (snapshot === undefined) return id;
-            const name = snapshot.tags?.filter((t) => t._id == id)[0];
+            const name = snapshot.tags?.filter((t) => t._id === id)[0];
             if (name !== undefined) {
-              return snapshot.tags?.filter((t) => t._id == id)[0].display;
+              return snapshot.tags?.filter((t) => t._id === id)[0].display;
             }
             return name;
           })
