@@ -217,7 +217,7 @@ export const result: ChartWithUpdateColors<
           callbacks: {
             afterLabel: function (ti): string {
               try {
-                $(".wordInputAfter").remove();
+                $(".wordInputHighlight").remove();
 
                 const wordsToHighlight =
                   TestInput.keypressPerSecond[parseInt(ti.label) - 1].words;
@@ -230,7 +230,7 @@ export const result: ChartWithUpdateColors<
                   const input = wordEl.attr("input");
                   if (input !== undefined) {
                     wordEl.append(
-                      `<div class="wordInputAfter">${input
+                      `<div class="wordInputHighlight">${input
                         .replace(/\t/g, "_")
                         .replace(/\n/g, "_")
                         .replace(/</g, "&lt")

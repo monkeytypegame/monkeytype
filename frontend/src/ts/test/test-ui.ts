@@ -1211,11 +1211,11 @@ $(".pageTest #toggleBurstHeatmap").on("click", async () => {
 });
 
 $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
-  $(".wordInputAfter").remove();
+  $(".wordInputHighlight").remove();
 });
 
 $(".pageTest #result #wpmChart").on("mouseleave", () => {
-  $(".wordInputAfter").remove();
+  $(".wordInputHighlight").remove();
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
@@ -1224,7 +1224,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
     if (input !== undefined) {
       $(e.currentTarget).append(
-        `<div class="wordInputAfter">
+        `<div class="wordInputHighlight wordInputHighlight--WithSpeed">
           <div class="text">
           ${input
             .replace(/\t/g, "_")
