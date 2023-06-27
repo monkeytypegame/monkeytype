@@ -409,7 +409,7 @@ $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  const len = parseInt(($(e.currentTarget).attr("quoteLength") as string) ?? 0);
+  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
   if (len === -2) {
     show();
   }
