@@ -306,6 +306,7 @@ function getRelevantUserInfo(
     "lastNameChange",
     "_id",
     "lastResultHashes",
+    "note",
   ]);
 }
 
