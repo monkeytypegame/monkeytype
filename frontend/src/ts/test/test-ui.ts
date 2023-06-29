@@ -895,13 +895,13 @@ async function loadWordsHistory(): Promise<boolean> {
         const correctedChar = !containsKorean
           ? TestInput.corrected.getHistory(i)
           : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
-        wordEl = `<div class='word' burst="${
+        wordEl = `<div class='word nocursor' burst="${
           TestInput.burstHistory[i]
         }" input="${correctedChar
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
-        wordEl = `<div class='word' burst="${
+        wordEl = `<div class='word nocursor' burst="${
           TestInput.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
@@ -928,14 +928,14 @@ async function loadWordsHistory(): Promise<boolean> {
         }
         if (wordstats.incorrect !== 0 || Config.mode !== "time") {
           if (Config.mode !== "zen" && input !== word) {
-            wordEl = `<div class='word error' burst="${
+            wordEl = `<div class='word nocursor error' burst="${
               TestInput.burstHistory[i]
             }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
           }
         }
       } else {
         if (Config.mode !== "zen" && input !== word) {
-          wordEl = `<div class='word error' burst="${
+          wordEl = `<div class='word nocursor error' burst="${
             TestInput.burstHistory[i]
           }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
         }
