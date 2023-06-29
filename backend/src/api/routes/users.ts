@@ -86,8 +86,13 @@ const usernameValidation = joi
       "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ . and - ",
   });
 
-const languageSchema = joi.string().min(1).required();
-const quoteIdSchema = joi.string().min(1).max(5).regex(/\d+/).required();
+const languageSchema = joi
+  .string()
+  .min(1)
+  .max(50)
+  .regex(/[\w+]+/)
+  .required();
+const quoteIdSchema = joi.string().min(1).max(10).regex(/\d+/).required();
 
 router.get(
   "/",
@@ -582,7 +587,7 @@ router.post(
   RateLimit.quoteReportSubmit,
   validateRequest({
     body: {
-      uid: withCustomMessages.regex(/^\w+$/).required(),
+      uid: withCustomMessages.token().max(50).required(),
       reason: joi
         .string()
         .valid(
