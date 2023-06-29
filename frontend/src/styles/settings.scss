@@ -419,7 +419,7 @@
         margin-left: 0;
         grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)) !important;
         gap: 0.5rem;
         margin-top: 0.5rem;
         .button {
