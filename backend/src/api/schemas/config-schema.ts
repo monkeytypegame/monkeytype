@@ -47,7 +47,10 @@ const CONFIG_SCHEMA = joi.object({
   paceCaretStyle: joi.string().valid(...CARET_STYLES),
   flipTestColors: joi.boolean(),
   layout: joi.string().max(50).token(),
-  funbox: joi.string().max(50).token(),
+  funbox: joi
+    .string()
+    .max(100)
+    .regex(/[\w#]+/),
   confidenceMode: joi.string().valid("off", "on", "max"),
   indicateTypos: joi.string().valid("off", "below", "replace"),
   timerStyle: joi.string().valid("bar", "text", "mini"),
