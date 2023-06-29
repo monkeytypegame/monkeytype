@@ -280,9 +280,6 @@
   margin: 0.25em;
   color: var(--sub-color);
   font-variant: no-common-ligatures;
-  // display: flex;
-  // transition: 0.25s
-  /*   margin-bottom: 1px; */
   border-bottom: 2px solid transparent;
   letter {
     display: inline-block;
@@ -296,8 +293,7 @@
     opacity: 0.25;
   }
 
-  // transition: .25s;
-  .wordInputAfter {
+  .wordInputHighlight {
     opacity: 1;
     white-space: nowrap;
     position: absolute;
@@ -315,10 +311,17 @@
     text-shadow: none;
     top: -0.5rem;
     z-index: 10;
-    cursor: text;
-    .speed {
-      font-size: 0.75rem;
+
+    &.withSpeed {
+      .speed {
+        font-size: 0.75rem;
+        color: var(--sub-alt-color);
+      }
     }
+  }
+
+  &.nocursor {
+    cursor: none;
   }
 
   &.error {
