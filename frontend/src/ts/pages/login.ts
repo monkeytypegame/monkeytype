@@ -84,13 +84,23 @@ const checkNameDebounced = debounce(1000, async () => {
 const checkEmail = (): void => {
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const emailTypoRegex =
+    typo_list;
 
   const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   if (emailRegex.test(email)) {
-    emailIndicator.show("valid");
+    if (emailTypoRegex.test(email)) {
+      emailIndicator.show(
+        "emailTypoIndicator",
+        "Please check your email address, as the ending of the email matches a list of common email typos."
+      );
+    }
   } else {
     emailIndicator.show("invalid");
   }
+ } else {
+    emailIndicator.show("valid");
+ }
 
   updateSignupButton();
 };
@@ -180,6 +190,10 @@ const emailIndicator = new InputIndicator(
       icon: "fa-times",
       level: -1,
     },
+    emailTypoIndicator: {
+      icon: "fa-exclamation-triangle",
+      level: 1,
+    }
   }
 );
 
