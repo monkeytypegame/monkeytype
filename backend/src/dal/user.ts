@@ -272,6 +272,12 @@ export async function addTag(
   uid: string,
   name: string
 ): Promise<MonkeyTypes.UserTag> {
+  const user = await getUser(uid, "add tag");
+
+  if ((user?.tags?.length ?? 0) >= 10) {
+    throw new MonkeyError(400, "You can only have up to 10 tags");
+  }
+
   const _id = new ObjectId();
   const toPush = {
     _id,

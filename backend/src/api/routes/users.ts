@@ -86,8 +86,13 @@ const usernameValidation = joi
       "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ . and - ",
   });
 
-const languageSchema = joi.string().min(1).required();
-const quoteIdSchema = joi.string().min(1).max(5).regex(/\d+/).required();
+const languageSchema = joi
+  .string()
+  .min(1)
+  .max(50)
+  .regex(/[\w+]+/)
+  .required();
+const quoteIdSchema = joi.string().min(1).max(10).regex(/\d+/).required();
 
 router.get(
   "/",
@@ -110,8 +115,11 @@ router.post(
     body: {
       email: joi.string().email(),
       name: usernameValidation,
-      uid: joi.string(),
-      captcha: joi.string().required(),
+      uid: joi.string().token(),
+      captcha: joi
+        .string()
+        .regex(/[\w-_]+/)
+        .required(),
     },
   }),
   asyncHandler(UserController.createNewUser)
@@ -247,8 +255,10 @@ router.delete(
 
 router.get(
   "/tags",
-  authenticateRequest(),
-  RateLimit.userTagsGet,
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
+  withApeRateLimiter(RateLimit.userTagsGet),
   asyncHandler(UserController.getTags)
 );
 
@@ -380,9 +390,9 @@ router.post(
   RateLimit.userDiscordLink,
   validateRequest({
     body: {
-      tokenType: joi.string().required(),
-      accessToken: joi.string().required(),
-      state: joi.string().length(20).required(),
+      tokenType: joi.string().token().required(),
+      accessToken: joi.string().token().required(),
+      state: joi.string().length(20).token().required(),
     },
   }),
   asyncHandler(UserController.linkDiscord)
@@ -580,7 +590,7 @@ router.post(
   RateLimit.quoteReportSubmit,
   validateRequest({
     body: {
-      uid: withCustomMessages.regex(/^\w+$/).required(),
+      uid: withCustomMessages.token().max(50).required(),
       reason: joi
         .string()
         .valid(
