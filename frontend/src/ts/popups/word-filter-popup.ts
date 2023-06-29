@@ -232,12 +232,12 @@ async function filter(language: string): Promise<string[]> {
   const minLengthInput = $("#wordFilterPopup .wordMinInput").val() as string;
   let maxLength;
   let minLength;
-  if (maxLengthInput == "") {
+  if (maxLengthInput === "") {
     maxLength = 999;
   } else {
     maxLength = parseInt(maxLengthInput);
   }
-  if (minLengthInput == "") {
+  if (minLengthInput === "") {
     minLength = 1;
   } else {
     minLength = parseInt(minLengthInput);
@@ -247,7 +247,7 @@ async function filter(language: string): Promise<string[]> {
     const test1 = regincl.test(word);
     const test2 = regexcl.test(word);
     if (
-      ((test1 && !test2) || (test1 && filterout == "")) &&
+      ((test1 && !test2) || (test1 && filterout === "")) &&
       word.length <= maxLength &&
       word.length >= minLength
     ) {

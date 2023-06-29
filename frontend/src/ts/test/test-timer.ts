@@ -149,7 +149,7 @@ function checkIfFailed(
 function checkIfTimeIsUp(): void {
   if (timerDebug) console.time("times up check");
   if (
-    Config.mode == "time" ||
+    Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
     if (

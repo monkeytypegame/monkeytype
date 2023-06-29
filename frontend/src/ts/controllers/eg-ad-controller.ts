@@ -54,7 +54,7 @@ export async function refreshVisible(): Promise<void> {
   //   if (!el) continue;
   //   const elParent = el.parentElement as HTMLElement;
   //   if (
-  //     window.getComputedStyle(elParent).getPropertyValue("display") != "none"
+  //     window.getComputedStyle(elParent).getPropertyValue("display") !== "none"
   //   ) {
   //     visibleAdDivs.push(adDivs[i]);
   //   }

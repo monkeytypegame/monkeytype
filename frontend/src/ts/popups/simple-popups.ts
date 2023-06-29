@@ -300,6 +300,7 @@ list["updateEmail"] = new SimplePopup(
   async (_thisPopup, password, email, emailConfirm) => {
     try {
       const user = Auth?.currentUser;
+      if (!Auth) return;
       if (!user) return;
       if (email !== emailConfirm) {
         Notifications.add("Emails don't match", 0);
@@ -325,9 +326,7 @@ list["updateEmail"] = new SimplePopup(
       }
 
       Notifications.add("Email updated", 1);
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+      AccountController.signOut();
     } catch (e) {
       const typedError = e as FirebaseError;
       if (typedError.code === "auth/wrong-password") {

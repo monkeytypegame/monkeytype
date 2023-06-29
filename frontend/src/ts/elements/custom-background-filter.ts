@@ -25,9 +25,9 @@ export function getCSS(): string {
   let ret = "";
   Object.keys(filters).forEach((filterKey) => {
     const key = filterKey as keyof typeof filters;
-    if (filters[key].value != filters[key].default) {
+    if (filters[key].value !== filters[key].default) {
       ret += `${filterKey}(${filters[key].value}${
-        filterKey == "blur" ? "rem" : ""
+        filterKey === "blur" ? "rem" : ""
       }) `;
     }
   });
