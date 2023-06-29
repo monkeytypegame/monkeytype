@@ -6,7 +6,7 @@ const RESULT_SCHEMA = joi
     afkDuration: joi.number().min(0).required(),
     bailedOut: joi.boolean().required(),
     blindMode: joi.boolean().required(),
-    challenge: joi.string().max(100),
+    challenge: joi.string().max(100).token(),
     charStats: joi.array().items(joi.number().min(0)).length(4).required(),
     charTotal: joi.number().min(0),
     chartData: joi
