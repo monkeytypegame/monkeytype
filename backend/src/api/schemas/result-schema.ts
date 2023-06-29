@@ -29,8 +29,12 @@ const RESULT_SCHEMA = joi
       time: joi.number().allow(null),
     }),
     difficulty: joi.string().valid("normal", "expert", "master").required(),
-    funbox: joi.string().max(100).required(),
-    hash: joi.string().max(100).required(),
+    funbox: joi
+      .string()
+      .max(100)
+      .regex(/[\w#]+/)
+      .required(),
+    hash: joi.string().max(100).token().required(),
     incompleteTestSeconds: joi.number().min(0).required(),
     incompleteTests: joi
       .array()
@@ -57,16 +61,23 @@ const RESULT_SCHEMA = joi
     keyOverlap: joi.number().min(0),
     lastKeyToEnd: joi.number().min(0),
     startToFirstKey: joi.number().min(0),
-    language: joi.string().max(100).required(),
+    language: joi
+      .string()
+      .max(100)
+      .regex(/[\w+]+/)
+      .required(),
     lazyMode: joi.boolean().required(),
     mode: joi
       .string()
       .valid("time", "words", "quote", "zen", "custom")
       .required(),
-    mode2: joi.string().required(),
+    mode2: joi
+      .string()
+      .regex(/^(\d)+|custom|zen/)
+      .required(),
     numbers: joi.boolean().required(),
     punctuation: joi.boolean().required(),
-    quoteLength: joi.number(),
+    quoteLength: joi.number().min(0).max(3),
     rawWpm: joi.number().min(0).max(420).required(),
     restartCount: joi.number().required(),
     tags: joi
@@ -75,7 +86,7 @@ const RESULT_SCHEMA = joi
       .required(),
     testDuration: joi.number().required().min(1),
     timestamp: joi.date().timestamp().required(),
-    uid: joi.string().max(100).required(),
+    uid: joi.string().max(100).token().required(),
     wpm: joi.number().min(0).max(420).required(),
     wpmConsistency: joi.number().min(0).max(100).required(),
   })
