@@ -110,8 +110,8 @@ router.post(
     body: {
       email: joi.string().email(),
       name: usernameValidation,
-      uid: joi.string(),
-      captcha: joi.string().required(),
+      uid: joi.string().token(),
+      captcha: joi.string().token().required(),
     },
   }),
   asyncHandler(UserController.createNewUser)
@@ -382,9 +382,9 @@ router.post(
   RateLimit.userDiscordLink,
   validateRequest({
     body: {
-      tokenType: joi.string().required(),
-      accessToken: joi.string().required(),
-      state: joi.string().length(20).required(),
+      tokenType: joi.string().token().required(),
+      accessToken: joi.string().token().required(),
+      state: joi.string().length(20).token().required(),
     },
   }),
   asyncHandler(UserController.linkDiscord)
