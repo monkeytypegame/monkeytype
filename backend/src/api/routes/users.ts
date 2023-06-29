@@ -247,8 +247,10 @@ router.delete(
 
 router.get(
   "/tags",
-  authenticateRequest(),
-  RateLimit.userTagsGet,
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
+  withApeRateLimiter(RateLimit.userTagsGet),
   asyncHandler(UserController.getTags)
 );
 
