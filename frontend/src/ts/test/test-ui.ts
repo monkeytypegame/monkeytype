@@ -1224,7 +1224,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
     if (input !== undefined) {
       $(e.currentTarget).append(
-        `<div class="wordInputHighlight wordInputHighlight--WithSpeed">
+        `<div class="wordInputHighlight withSpeed">
           <div class="text">
           ${input
             .replace(/\t/g, "_")
