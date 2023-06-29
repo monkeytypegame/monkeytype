@@ -498,16 +498,6 @@ export async function addTag(
   const { uid } = req.ctx.decodedToken;
   const { tagName } = req.body;
 
-  const user = await UserDAL.getUser(uid, "add tag");
-
-  if (!user) {
-    throw new MonkeyError(404, "User not found");
-  }
-
-  if ((user?.tags?.length ?? 0) >= 10) {
-    throw new MonkeyError(400, "You can only have up to 10 tags");
-  }
-
   const tag = await UserDAL.addTag(uid, tagName);
   return new MonkeyResponse("Tag updated", tag);
 }
