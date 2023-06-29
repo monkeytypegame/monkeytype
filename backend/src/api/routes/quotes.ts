@@ -108,6 +108,7 @@ router.post(
       language: joi
         .string()
         .regex(/^[\w+]+$/)
+        .max(50)
         .required(),
     },
   }),
@@ -131,7 +132,10 @@ router.post(
   validateRequest({
     body: {
       quoteId: withCustomMessages.regex(/\d+/).required(),
-      quoteLanguage: withCustomMessages.regex(/^[\w+]+$/).required(),
+      quoteLanguage: withCustomMessages
+        .regex(/^[\w+]+$/)
+        .max(50)
+        .required(),
       reason: joi
         .string()
         .valid(
