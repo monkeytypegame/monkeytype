@@ -116,7 +116,10 @@ router.post(
       email: joi.string().email(),
       name: usernameValidation,
       uid: joi.string().token(),
-      captcha: joi.string().token().required(),
+      captcha: joi
+        .string()
+        .regex(/[\w-_]+/)
+        .required(),
     },
   }),
   asyncHandler(UserController.createNewUser)
