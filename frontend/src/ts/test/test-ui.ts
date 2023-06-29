@@ -920,13 +920,13 @@ async function loadWordsHistory(): Promise<boolean> {
         const correctedChar = !containsKorean
           ? TestInput.corrected.getHistory(i)
           : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
-        wordEl = `<div class='word' burst="${
+        wordEl = `<div class='word nocursor' burst="${
           TestInput.burstHistory[i]
         }" input="${correctedChar
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
-        wordEl = `<div class='word' burst="${
+        wordEl = `<div class='word nocursor' burst="${
           TestInput.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
@@ -953,14 +953,14 @@ async function loadWordsHistory(): Promise<boolean> {
         }
         if (wordstats.incorrect !== 0 || Config.mode !== "time") {
           if (Config.mode !== "zen" && input !== word) {
-            wordEl = `<div class='word error' burst="${
+            wordEl = `<div class='word nocursor error' burst="${
               TestInput.burstHistory[i]
             }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
           }
         }
       } else {
         if (Config.mode !== "zen" && input !== word) {
-          wordEl = `<div class='word error' burst="${
+          wordEl = `<div class='word nocursor error' burst="${
             TestInput.burstHistory[i]
           }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
         }
@@ -1236,11 +1236,11 @@ $(".pageTest #toggleBurstHeatmap").on("click", async () => {
 });
 
 $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
-  $(".wordInputAfter").remove();
+  $(".wordInputHighlight").remove();
 });
 
 $(".pageTest #result #wpmChart").on("mouseleave", () => {
-  $(".wordInputAfter").remove();
+  $(".wordInputHighlight").remove();
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
@@ -1249,7 +1249,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
     if (input !== undefined) {
       $(e.currentTarget).append(
-        `<div class="wordInputAfter">
+        `<div class="wordInputHighlight withSpeed">
           <div class="text">
           ${input
             .replace(/\t/g, "_")
