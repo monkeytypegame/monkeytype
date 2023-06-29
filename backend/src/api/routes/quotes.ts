@@ -45,7 +45,10 @@ router.post(
         .string()
         .regex(/^[\w+]+$/)
         .required(),
-      captcha: joi.string().required(),
+      captcha: joi
+        .string()
+        .regex(/[\w-_]+/)
+        .required(),
     },
     validationErrorMessage: "Please fill all the fields",
   }),
