@@ -79,7 +79,10 @@ const CONFIG_SCHEMA = joi.object({
     .valid("lowercase", "uppercase", "blank", "dynamic"),
   keymapLayout: joi.string().valid().max(50).token(),
   keymapShowTopRow: joi.string().valid("always", "layout", "never"),
-  fontFamily: joi.string().max(50).token(),
+  fontFamily: joi
+    .string()
+    .max(50)
+    .regex(/^[a-zA-Z0-9_-+.]+$/),
   smoothLineScroll: joi.boolean(),
   alwaysShowDecimalPlaces: joi.boolean(),
   alwaysShowWordsHistory: joi.boolean(),
