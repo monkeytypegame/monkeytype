@@ -82,7 +82,7 @@ const CONFIG_SCHEMA = joi.object({
   fontFamily: joi
     .string()
     .max(50)
-    .regex(/^[a-zA-Z0-9_-+.]+$/),
+    .regex(/^[a-zA-Z0-9_\-+.]+$/),
   smoothLineScroll: joi.boolean(),
   alwaysShowDecimalPlaces: joi.boolean(),
   alwaysShowWordsHistory: joi.boolean(),
