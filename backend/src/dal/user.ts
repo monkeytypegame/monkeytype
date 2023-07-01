@@ -106,6 +106,7 @@ export async function updateName(
   }
 
   if (name === undefined || previousName === undefined) {
+    //todo remove once the issue is fixed
     Logger.logToDb("update_name_failed", { name, previousName }, uid);
   }
 
