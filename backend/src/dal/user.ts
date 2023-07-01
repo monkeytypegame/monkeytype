@@ -104,6 +104,11 @@ export async function updateName(
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
   }
+
+  if (name === undefined || previousName === undefined) {
+    Logger.logToDb("update_name_failed", { name, previousName }, uid);
+  }
+
   if (
     name.toLowerCase() !== previousName.toLowerCase() &&
     !(await isNameAvailable(name, uid))
