@@ -470,7 +470,7 @@ list["updateName"] = new SimplePopup(
       if (snapshot.needsToChangeName) {
         setTimeout(() => {
           location.reload();
-        }, 3000);
+        }, 1000);
       }
     } catch (e) {
       const typedError = e as FirebaseError;
@@ -492,7 +492,7 @@ list["updateName"] = new SimplePopup(
     }
     if (snapshot.needsToChangeName === true) {
       thisPopup.text =
-        "We've recently identified several issues that allowed users to register with names that were already taken. Accounts which signed up earliest get to keep the duplicated name, and others are forced to change. Unique names are essential for smooth operation of upcoming features like public profiles, multiplayer, and more. Sorry for the inconvenience.";
+        "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed. Sorry for the inconvenience.";
     }
   },
   (_thisPopup) => {

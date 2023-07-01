@@ -144,7 +144,7 @@ export async function getDataAndInit(): Promise<boolean> {
 
   if (snapshot.needsToChangeName) {
     Notifications.addBanner(
-      "Your name was reset. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
+      "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
       -1,
       undefined,
       true,
