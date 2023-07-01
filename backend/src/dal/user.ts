@@ -105,13 +105,8 @@ export async function updateName(
     throw new MonkeyError(400, "Invalid username");
   }
 
-  if (name === undefined || previousName === undefined) {
-    //todo remove once the issue is fixed
-    Logger.logToDb("update_name_failed", { name, previousName }, uid);
-  }
-
   if (
-    name.toLowerCase() !== previousName.toLowerCase() &&
+    name?.toLowerCase() !== previousName?.toLowerCase() &&
     !(await isNameAvailable(name, uid))
   ) {
     throw new MonkeyError(409, "Username already taken", name);
@@ -124,6 +119,13 @@ export async function updateName(
       $unset: { needsToChangeName: "" },
       $push: { nameHistory: previousName },
     }
+  );
+}
+
+export async function flagForNameChange(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    { $set: { needsToChangeName: true } }
   );
 }
 
