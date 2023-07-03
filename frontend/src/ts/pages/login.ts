@@ -205,6 +205,7 @@ const emailIndicator = new InputIndicator(
       icon: "fa-exclamation-triangle",
       level: 1,
     }
+    
     edu: {
       icon: "fa-exclamation-triangle",
       level: 1,
