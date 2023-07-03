@@ -1,3 +1,5 @@
+import * as HighlightController from "./highlight-controller";
+
 import {
   BarController,
   BarElement,
@@ -216,6 +218,7 @@ export const result: ChartWithUpdateColors<
           intersect: false,
           callbacks: {
             afterLabel: function (ti): string {
+              HighlightController.init();
               try {
                 $(".wordInputHighlight").remove();
 
