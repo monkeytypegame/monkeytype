@@ -351,3 +351,4 @@ export const page = new Page(
 $(() => {
   Skeleton.save("pageLogin");
 });
+}
