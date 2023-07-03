@@ -360,6 +360,11 @@ export async function getUser(
     inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
   }
 
+  if (!userInfo.name) {
+    userInfo.needsToChangeName = true;
+    UserDAL.flagForNameChange(uid);
+  }
+
   const userData = {
     ...getRelevantUserInfo(userInfo),
     inboxUnreadSize: inboxUnreadSize,

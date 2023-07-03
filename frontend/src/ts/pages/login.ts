@@ -42,7 +42,7 @@ export function hidePreloader(): void {
 export const updateSignupButton = (): void => {
   if (
     nameIndicator.get() !== "available" ||
-    (emailIndicator.get() !== "valid" && emailIndicator.get() !== "typo") ||
+    ((emailIndicator.get() !== "valid" && emailIndicator.get() !== "typo") && emailIndicator.get() !== "edu") ||
     verifyEmailIndicator.get() !== "match" ||
     passwordIndicator.get() !== "good" ||
     verifyPasswordIndicator.get() !== "match"
@@ -94,6 +94,17 @@ const checkEmail = (): void => {
         "emailTypoIndicator",
         "Please check your email address, as the ending of the email matches a list of common email typos."
       );
+  const educationRegex = /@.*(education|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
+
+  const email = $(".page.pageLogin .register.side .emailInput").val() as string;
+  if (emailRegex.test(email)) {
+    if (educationRegex.test(email)) {
+      emailIndicator.show(
+        "edu",
+        "Some education emails will fail to receive our messages. Consider using a personal email address."
+      );
+    } else {
+      emailIndicator.show("valid");
     }
   } else {
     emailIndicator.show("invalid");
@@ -194,6 +205,10 @@ const emailIndicator = new InputIndicator(
       icon: "fa-exclamation-triangle",
       level: 1,
     }
+    edu: {
+      icon: "fa-exclamation-triangle",
+      level: 1,
+    },
   }
 );
 
