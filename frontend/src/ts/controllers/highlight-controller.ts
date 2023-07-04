@@ -147,11 +147,11 @@ function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
 
   // if wordStart and wordEnd are on the same line
   if (lineIndexOfWordStart == lineIndexOfWordEnd) {
-    return (
-      wordEls[wordEndIndex].offsetLeft -
-      wordEls[wordStartIndex].offsetLeft +
-      wordEls[wordEndIndex].offsetWidth
-    );
+    let bounds = getContainerBounds([
+      wordEls[wordStartIndex],
+      wordEls[wordEndIndex],
+    ]);
+    return bounds[1] - bounds[0];
   }
 
   // if wordStart and wordEnd are on different lines
@@ -201,5 +201,5 @@ function getContainerBounds(elements: HTMLElement[]): any {
     maxY = Math.max(maxY, rect.bottom + scrollTop);
   });
 
-  return [minX - 7.5, maxX + 7.5, minY - 7.5, maxY + 7.5];
+  return [minX, maxX, minY, maxY];
 }
