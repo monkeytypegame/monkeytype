@@ -226,6 +226,13 @@ export const result: ChartWithUpdateColors<
                   TestInput.keypressPerSecond[parseInt(ti.label) - 1].words;
 
                 const unique = [...new Set(wordsToHighlight)];
+                const firstHighlightWordIndex = unique[0];
+                const lastHighlightWordIndex = unique[unique.length - 1];
+                HighlightController.highlight(
+                  firstHighlightWordIndex,
+                  lastHighlightWordIndex
+                );
+
                 unique.forEach((wordIndex) => {
                   const wordEl = $(
                     $("#resultWordsHistory .words .word")[wordIndex]

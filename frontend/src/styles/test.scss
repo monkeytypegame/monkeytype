@@ -1,6 +1,18 @@
 .highlightContainer {
   position: absolute;
+  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.5);
+}
+
+.highlight {
+  margin: 0;
+  padding: 0;
+  height: 20px;
+  position: relative;
+  background-color: rgba(200, 200, 200, 0.5);
 }
 
 #timerWrapper {

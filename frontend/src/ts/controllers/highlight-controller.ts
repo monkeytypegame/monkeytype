@@ -34,17 +34,24 @@
  *
  */
 
+type Line = {
+  firstWordIndex: number;
+  lastWordIndex: number;
+  width: string;
+};
+
 let lines: any[] = [];
 let wordEls: JQuery<HTMLElement>;
 let wordIndexToLineIndexDict: { [wordIndex: number]: number } = {};
+let highlightContainers: HTMLElement[] = [];
+let highlightEls: HTMLElement[] = [];
 
 export function init() {
   // if exists, alert already initialized
   if ($(".highlightContainer").length > 0) {
     // alert("highlighting already initialized");
     // return;
-    $(".highlightContainer").remove();
-    lines = [];
+    return;
   }
 
   // initialize lines array
@@ -104,6 +111,7 @@ export function init() {
     // create highlightContainer element
     let highlightContainer = document.createElement("div");
     highlightContainer.classList.add("highlightContainer");
+    highlightContainers.push(highlightContainer);
 
     // calculate top, left, width, height
     let HC_top = wordEls[line.firstWordIndex].offsetTop - PADDING_OFFSET;
@@ -128,15 +136,27 @@ export function init() {
 
 export function highlight(firstWordIndex: number, lastWordIndex: number) {
   // get all lines that are in range
-  let linesInRange = [];
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
-    if (
-      line.firstWordIndex <= firstWordIndex &&
-      line.lastWordIndex >= lastWordIndex
-    ) {
-      linesInRange.push(line);
+  let highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
+  let offsets = getOffsets(firstWordIndex);
+  console.log(offsets);
+
+  // for each line, set to new width and new
+  if (highlightEls.length === 0) {
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      // create highlight elements, append to corresponding highlight container, add to highlightEls
+      let highlightEl = document.createElement("div");
+      highlightEl.classList.add("highlight");
+      highlightEls.push(highlightEl);
+
+      highlightContainers[lineIndex].append(highlightEl);
     }
+  }
+
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    // set width and left of highlight elements
+    let highlightEl = highlightEls[lineIndex];
+    highlightEl.style.width = highlightWidth + "px";
+    highlightEl.style.left = offsets[lineIndex] + "px";
   }
 }
 
@@ -155,14 +175,37 @@ function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
   }
 
   // if wordStart and wordEnd are on different lines
+  // add first line highlight to width
+  let firstLineBounds = getContainerBounds([
+    wordEls[wordStartIndex],
+    wordEls[lines[lineIndexOfWordStart].lastWordIndex],
+  ]);
+
+  let lastLineBounds = getContainerBounds([
+    wordEls[lines[lineIndexOfWordEnd].firstWordIndex],
+    wordEls[wordEndIndex],
+  ]);
+
+  let width =
+    firstLineBounds[1] -
+    firstLineBounds[0] +
+    lastLineBounds[1] -
+    lastLineBounds[0];
+
+  // add middle line highlights to width
+  for (let i = lineIndexOfWordStart + 1; i < lineIndexOfWordEnd; i++) {
+    width += lines[i].width;
+  }
+
+  return width;
 }
 
-function getOffsets(wordIndex: number): number[] {
-  let lineIndexOfWord = wordIndexToLineIndexDict[wordIndex];
+function getOffsets(firstWordIndex: number): number[] {
+  let lineIndexOfWord = wordIndexToLineIndexDict[firstWordIndex];
   let offsets = new Array(lineIndexOfWord + 1).fill(0);
 
   // calculate offset for this line
-  offsets[lineIndexOfWord] = wordEls[wordIndex].offsetLeft;
+  offsets[lineIndexOfWord] = wordEls[firstWordIndex].offsetLeft;
 
   // calculate offsets for lines above, going from zero to lineIndexOfWord
   for (let i = lineIndexOfWord - 1; i >= 0; i--) {
@@ -172,9 +215,9 @@ function getOffsets(wordIndex: number): number[] {
   // calculate offsets for lines below, going from lineIndexOfWord to lines.length
   if (lineIndexOfWord != lines.length - 1) {
     offsets[lineIndexOfWord + 1] =
-      lines[lineIndexOfWord].width - offsets[lineIndexOfWord];
+      -1 * (lines[lineIndexOfWord].width - offsets[lineIndexOfWord]);
     for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
-      offsets[i] = offsets[i - 1] + lines[i - 1].width;
+      offsets[i] = -1 * (offsets[i - 1] + lines[i - 1].width);
     }
   }
 
