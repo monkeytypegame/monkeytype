@@ -1,3 +1,8 @@
+.highlightContainer {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 #timerWrapper {
   opacity: 0;
   transition: 0.25s;
@@ -334,6 +339,10 @@
       0px 1px 0px var(--bg-color),
       1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
   }
+}
+
+#resultWordsHistory {
+  position: relative;
 }
 
 #words.noErrorBorder,
