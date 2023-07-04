@@ -37,22 +37,24 @@
 type Line = {
   firstWordIndex: number;
   lastWordIndex: number;
-  width: string;
+  width: number;
 };
 
-let lines: any[] = [];
+let lines: Line[] = [];
 let wordEls: JQuery<HTMLElement>;
 let wordIndexToLineIndexDict: { [wordIndex: number]: number } = {};
 let highlightContainers: HTMLElement[] = [];
 let highlightEls: HTMLElement[] = [];
 
+export let isInitialized = false;
+
 export function init() {
   // if exists, alert already initialized
-  if ($(".highlightContainer").length > 0) {
-    // alert("highlighting already initialized");
-    // return;
+  if (isInitialized) {
     return;
   }
+
+  isInitialized = true;
 
   // initialize lines array
   let prevLineEndWordIndex = -1;
@@ -99,24 +101,25 @@ export function init() {
   const PADDING = 0;
   const PADDING_OFFSET = 0;
   let PARENT_CONTAINER = $("#resultWordsHistory");
-  // @ts-ignore -- check out npm install --save @types/jquery
   const RWH_top = PARENT_CONTAINER.offset().top;
-  // @ts-ignore -- check out npm install --save @types/jquery
   const RWH_left = PARENT_CONTAINER.offset().left | 0;
   const RWH_width = $("#resultWordsHistory").width();
   const RWH_height = $("#resultWordsHistory").height();
 
+  // create highlightContainers
   lines.forEach((line) => {
-    // create highlightContainer element
     let highlightContainer = document.createElement("div");
     highlightContainer.classList.add("highlightContainer");
     highlightContainers.push(highlightContainer);
 
     // calculate top, left, width, height
-    let HC_top = wordEls[line.firstWordIndex].offsetTop - PADDING_OFFSET;
-    let HC_left = wordEls[line.firstWordIndex].offsetLeft - PADDING_OFFSET;
+    let HC_top =
+      wordEls && wordEls[line.firstWordIndex].offsetTop - PADDING_OFFSET;
+    let HC_left =
+      wordEls && wordEls[line.firstWordIndex].offsetLeft - PADDING_OFFSET;
     let HC_width = line.width + PADDING;
-    let HC_height = wordEls[line.firstWordIndex].offsetHeight + PADDING;
+    let HC_height =
+      wordEls && wordEls[line.firstWordIndex].offsetHeight + PADDING;
 
     // calculate top, left as % relative to "#resultWordsHistory"
     let HC_top_percent = (HC_top / RWH_height) * 100 + "%";
@@ -134,10 +137,12 @@ export function init() {
 }
 
 export function highlight(firstWordIndex: number, lastWordIndex: number) {
+  if (!isInitialized) {
+    throw Error("highlight controller not initialized");
+  }
   // get all lines that are in range
   let highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
   let offsets = getOffsets(firstWordIndex);
-  console.log(offsets);
 
   // for each line, set to new width and new
   if (highlightEls.length === 0) {
@@ -221,6 +226,21 @@ function getOffsets(firstWordIndex: number): number[] {
   }
 
   return offsets;
+}
+
+export function clear() {
+  $(".highlight").remove();
+  highlightEls = [];
+}
+
+export function destroy() {
+  if (!isInitialized) return;
+  $(".highlightContainer").remove();
+  highlightEls = [];
+  highlightContainers = [];
+  wordIndexToLineIndexDict = {};
+  lines = [];
+  isInitialized = false;
 }
 
 // given array elements, returns tightbound container [left, right, top, bottom]

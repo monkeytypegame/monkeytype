@@ -220,8 +220,6 @@ export const result: ChartWithUpdateColors<
             afterLabel: function (ti): string {
               HighlightController.init();
               try {
-                $(".wordInputHighlight").remove();
-
                 const wordsToHighlight =
                   TestInput.keypressPerSecond[parseInt(ti.label) - 1].words;
 
@@ -232,22 +230,6 @@ export const result: ChartWithUpdateColors<
                   firstHighlightWordIndex,
                   lastHighlightWordIndex
                 );
-
-                // unique.forEach((wordIndex) => {
-                //   const wordEl = $(
-                //     $("#resultWordsHistory .words .word")[wordIndex]
-                //   );
-                //   const input = wordEl.attr("input");
-                //   if (input !== undefined) {
-                //     wordEl.append(
-                //       `<div class="wordInputHighlight">${input
-                //         .replace(/\t/g, "_")
-                //         .replace(/\n/g, "_")
-                //         .replace(/</g, "&lt")
-                //         .replace(/>/g, "&gt")}</div>`
-                //     );
-                //   }
-                // });
               } catch {}
               return "";
             },

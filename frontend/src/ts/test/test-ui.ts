@@ -18,6 +18,7 @@ import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
+import * as HighlightController from "../controllers/highlight-controller";
 
 const debouncedZipfCheck = debounce(250, () => {
   Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
@@ -1215,7 +1216,8 @@ $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
 });
 
 $(".pageTest #result #wpmChart").on("mouseleave", () => {
-  $(".wordInputHighlight").remove();
+  $(".wordInputHighlight").remove(); // don't know if still needed
+  HighlightController.clear();
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
@@ -1241,6 +1243,10 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
       );
     }
   }
+});
+
+addEventListener("resize", () => {
+  HighlightController.destroy();
 });
 
 $("#wordsInput").on("focus", () => {
