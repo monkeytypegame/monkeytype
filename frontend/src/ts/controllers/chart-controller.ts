@@ -233,21 +233,21 @@ export const result: ChartWithUpdateColors<
                   lastHighlightWordIndex
                 );
 
-                unique.forEach((wordIndex) => {
-                  const wordEl = $(
-                    $("#resultWordsHistory .words .word")[wordIndex]
-                  );
-                  const input = wordEl.attr("input");
-                  if (input !== undefined) {
-                    wordEl.append(
-                      `<div class="wordInputHighlight">${input
-                        .replace(/\t/g, "_")
-                        .replace(/\n/g, "_")
-                        .replace(/</g, "&lt")
-                        .replace(/>/g, "&gt")}</div>`
-                    );
-                  }
-                });
+                // unique.forEach((wordIndex) => {
+                //   const wordEl = $(
+                //     $("#resultWordsHistory .words .word")[wordIndex]
+                //   );
+                //   const input = wordEl.attr("input");
+                //   if (input !== undefined) {
+                //     wordEl.append(
+                //       `<div class="wordInputHighlight">${input
+                //         .replace(/\t/g, "_")
+                //         .replace(/\n/g, "_")
+                //         .replace(/</g, "&lt")
+                //         .replace(/>/g, "&gt")}</div>`
+                //     );
+                //   }
+                // });
               } catch {}
               return "";
             },

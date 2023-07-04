@@ -99,7 +99,6 @@ export function init() {
   const PADDING = 0;
   const PADDING_OFFSET = 0;
   let PARENT_CONTAINER = $("#resultWordsHistory");
-  PARENT_CONTAINER.css("background-color", "red");
   // @ts-ignore -- check out npm install --save @types/jquery
   const RWH_top = PARENT_CONTAINER.offset().top;
   // @ts-ignore -- check out npm install --save @types/jquery
@@ -217,7 +216,7 @@ function getOffsets(firstWordIndex: number): number[] {
     offsets[lineIndexOfWord + 1] =
       -1 * (lines[lineIndexOfWord].width - offsets[lineIndexOfWord]);
     for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
-      offsets[i] = -1 * (offsets[i - 1] + lines[i - 1].width);
+      offsets[i] = offsets[i - 1] - lines[i - 1].width;
     }
   }
 
