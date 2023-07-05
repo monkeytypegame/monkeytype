@@ -878,7 +878,7 @@
       "id": 145
     },
     {
-      "text": "Pour dire oui, il faut suer et retrousser ses manches, empoigner la vie à pleines mains et s’en mettre jusqu’aux coudes. C’est facile de dire non, même si on doit mourir, Il n’y a qu’à ne pas bouger et attendre. Attendre pour vivre, attendre même pour qu’on vous tue. C’est trop lâche. C’est une invention des hommes. Tu imagines un monde où les arbres aussi auraient dit non contre la sève, où les bêtes auraient dit non contre l’instinct de la chasse ou de l’amour ? Les bêtes, elles au moins, sont bonnes et simples et dures. Elles vont, se poussant les unes après les autres, courageusement, sur le même chemin, et si elles tombent, les autres passent et il peut s’en perdre autant que l’on veut, il en restera toujours une de chaque espèce prête à refaire des petits et à reprendre le même chemin avec le même courage, toute pareille à celles qui sont passées avant.",
+      "text": "Pour dire oui, il faut suer et retrousser ses manches, empoigner la vie à pleines mains et s’en mettre jusqu’aux coudes. C’est facile de dire non, même si on doit mourir. Il n’y a qu’à ne pas bouger et attendre. Attendre pour vivre, attendre même pour qu’on vous tue. C’est trop lâche. C’est une invention des hommes. Tu imagines un monde où les arbres aussi auraient dit non contre la sève, où les bêtes auraient dit non contre l’instinct de la chasse ou de l’amour ? Les bêtes, elles au moins, sont bonnes et simples et dures. Elles vont, se poussant les unes après les autres, courageusement, sur le même chemin, et si elles tombent, les autres passent et il peut s’en perdre autant que l’on veut, il en restera toujours une de chaque espèce prête à refaire des petits et à reprendre le même chemin avec le même courage, toute pareille à celles qui sont passées avant.",
       "source": "Antigone - Jean Anouilh",
       "length": 871,
       "id": 146
@@ -894,6 +894,18 @@
       "source": "Antigone - Jean Anouilh",
       "length": 743,
       "id": 148
+    },
+    {
+      "text": "Le mai le joli mai en barque sur le Rhin\\nDes dames regardaient du haut de la montagne\\nVous êtes si jolies mais la barque s’éloigne\\nQui donc a fait pleurer les saules riverains ?\\n\\nOr des vergers fleuris se figeaient en arrière\\nLes pétales tombés des cerisiers de mai\\nSont les ongles de celle que j’ai tant aimée\\nLes pétales flétris sont comme ses paupières\\n\\nSur le chemin du bord du fleuve lentement\\nUn ours un singe un chien menés par des tziganes\\nSuivaient une roulotte traînée par un âne\\nTandis que s’éloignait dans les vignes rhénanes\\nSur un fifre lointain un air de régiment\\n\\nLe mai le joli mai a paré les ruines\\nDe lierre de vigne vierge et de rosiers\\nLe vent du Rhin secoue sur le bord les osiers\\nEt les roseaux jaseurs et les fleurs nues des vignes",
+      "source": "Guillaume Apollinaire, Rhénanes, Alcools",
+      "lenght": 736,
+      "id": 149
+    },
+    {
+      "text": "Sous le pont Mirabeau coule la Seine\\nEt nos amours\\nFaut-il qu’il m’en souvienne\\nLa joie venait toujours après la peine\\n\\nVienne la nuit sonne l’heure\\nLes jours s’en vont je demeure\\n\\nLes mains dans les mains restons face à face\\nTandis que sous\\nLe pont de nos bras passe\\nDes éternels regards l’onde si lasse\\n\\nVienne la nuit sonne l’heure\\nLes jours s’en vont je demeure\\n\\nL’amour s’en va comme cette eau courante\\nL’amour s’en va\\nComme la vie est lente\\nEt comme l’Espérance est violente\\n\\nVienne la nuit sonne l’heure\\nLes jours s’en vont je demeure\\n\\nPassent les jours et passent les semaines\\nNi temps passé\\nNi les amours reviennent\\nSous le pont Mirabeau coule la Seine\\n\\nVienne la nuit sonne l’heure\\nLes jours s’en vont je demeure",
+      "source": "Guillaume Apollinaire, Rhénanes, Alcools",
+      "lenght": 707,
+      "id": 150,
     }
   ]
 }
