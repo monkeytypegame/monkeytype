@@ -45,16 +45,64 @@ let wordEls: JQuery<HTMLElement>;
 let wordIndexToLineIndexDict: { [wordIndex: number]: number } = {};
 let highlightContainers: HTMLElement[] = [];
 let highlightEls: HTMLElement[] = [];
+let isInitialized = false;
 
-export let isInitialized = false;
-
-export function init() {
-  // if exists, alert already initialized
-  if (isInitialized) {
-    return;
+export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
+  if (!isInitialized) {
+    let initResponse = init();
+    if (!initResponse) {
+      return false;
+    }
   }
 
-  isInitialized = true;
+  // get all lines that are in range
+  let highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
+  let offsets = getOffsets(firstWordIndex);
+
+  // for each line, set to new width and new
+  if (highlightEls.length === 0) {
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      // create highlight elements, append to corresponding highlight container, add to highlightEls
+      let highlightEl = document.createElement("div");
+      highlightEl.classList.add("highlight");
+      highlightEls.push(highlightEl);
+
+      highlightContainers[lineIndex].append(highlightEl);
+    }
+  }
+
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    // set width and left of highlight elements
+    let highlightEl = highlightEls[lineIndex];
+    highlightEl.style.width = highlightWidth + "px";
+    highlightEl.style.left = offsets[lineIndex] + "px";
+  }
+}
+
+export function clear() {
+  $(".highlight").remove();
+  highlightEls = [];
+}
+
+export function destroy() {
+  if (!isInitialized) return;
+  $(".highlightContainer").remove();
+  highlightEls = [];
+  highlightContainers = [];
+  wordIndexToLineIndexDict = {};
+  lines = [];
+  isInitialized = false;
+}
+
+function init() {
+  // if exists, alert already initialized
+  if (isInitialized) {
+    throw Error("highlight containers already initialized");
+  }
+
+  if ($("#resultWordsHistory .words .word").length === 0) {
+    return false;
+  }
 
   // initialize lines array
   let prevLineEndWordIndex = -1;
@@ -134,34 +182,11 @@ export function init() {
 
     $("#resultWordsHistory").append(highlightContainer);
   });
-}
 
-export function highlight(firstWordIndex: number, lastWordIndex: number) {
-  if (!isInitialized) {
-    throw Error("highlight controller not initialized");
-  }
-  // get all lines that are in range
-  let highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
-  let offsets = getOffsets(firstWordIndex);
+  // update identifier variables
+  isInitialized = true;
 
-  // for each line, set to new width and new
-  if (highlightEls.length === 0) {
-    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      // create highlight elements, append to corresponding highlight container, add to highlightEls
-      let highlightEl = document.createElement("div");
-      highlightEl.classList.add("highlight");
-      highlightEls.push(highlightEl);
-
-      highlightContainers[lineIndex].append(highlightEl);
-    }
-  }
-
-  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-    // set width and left of highlight elements
-    let highlightEl = highlightEls[lineIndex];
-    highlightEl.style.width = highlightWidth + "px";
-    highlightEl.style.left = offsets[lineIndex] + "px";
-  }
+  return true;
 }
 
 function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
@@ -226,21 +251,6 @@ function getOffsets(firstWordIndex: number): number[] {
   }
 
   return offsets;
-}
-
-export function clear() {
-  $(".highlight").remove();
-  highlightEls = [];
-}
-
-export function destroy() {
-  if (!isInitialized) return;
-  $(".highlightContainer").remove();
-  highlightEls = [];
-  highlightContainers = [];
-  wordIndexToLineIndexDict = {};
-  lines = [];
-  isInitialized = false;
 }
 
 // given array elements, returns tightbound container [left, right, top, bottom]

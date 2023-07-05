@@ -218,7 +218,6 @@ export const result: ChartWithUpdateColors<
           intersect: false,
           callbacks: {
             afterLabel: function (ti): string {
-              HighlightController.init();
               try {
                 const wordsToHighlight =
                   TestInput.keypressPerSecond[parseInt(ti.label) - 1].words;
@@ -226,7 +225,7 @@ export const result: ChartWithUpdateColors<
                 const unique = [...new Set(wordsToHighlight)];
                 const firstHighlightWordIndex = unique[0];
                 const lastHighlightWordIndex = unique[unique.length - 1];
-                HighlightController.highlight(
+                HighlightController.highlightWords(
                   firstHighlightWordIndex,
                   lastHighlightWordIndex
                 );
