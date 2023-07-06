@@ -1,15 +1,17 @@
 .highlightContainer {
   position: absolute;
   overflow: hidden;
-  background-color: rgba(200, 200, 200, 0.3);
+  // background-color: rgba(200, 200, 200, 0.3);
   pointer-events: none;
   .highlight {
-    margin: 0;
-    padding: 0;
+    // box-sizing: content-box;
+    margin: 0px;
+    padding: 0px;
     height: 100%;
     position: relative;
-    background: var(--sub-color);
-    color: var(--bg-color);
+    // background-color: var(--sub-color);
+    border: 2px solid var(--sub-color);
+    border-radius: var(--roundness);
     transition: all 0.15s ease;
     z-index: -1;
   }
@@ -344,12 +346,12 @@
   &.error {
     /*   margin-bottom: 1px; */
     border-bottom: 2px solid var(--error-color);
-    text-shadow: 1px 0px 0px var(--bg-color),
-      // 2px 0px 0px var(--bg-color),
-      -1px 0px 0px var(--bg-color),
-      // -2px 0px 0px var(--bg-color),
-      0px 1px 0px var(--bg-color),
-      1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
+    // text-shadow: 1px 0px 0px var(--bg-color),
+    //   // 2px 0px 0px var(--bg-color),
+    //   -1px 0px 0px var(--bg-color),
+    //   // -2px 0px 0px var(--bg-color),
+    //   0px 1px 0px var(--bg-color),
+    //   1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
   }
 }
 

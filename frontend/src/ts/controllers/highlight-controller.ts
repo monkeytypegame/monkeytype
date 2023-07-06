@@ -34,6 +34,11 @@
  *
  */
 
+const PADDING_X = 16;
+const PADDING_Y = 10;
+const PADDING_OFFSET_X = PADDING_X / 2;
+const PADDING_OFFSET_Y = PADDING_Y / 2;
+
 type Line = {
   firstWordIndex: number;
   lastWordIndex: number;
@@ -147,8 +152,6 @@ function init() {
   });
 
   // set top and left as % realtive to "#resultWordsHistory"
-  const PADDING = 0;
-  const PADDING_OFFSET = 0;
   const RWH_width = $("#resultWordsHistory").width()!;
   const RWH_height = $("#resultWordsHistory").height()!;
 
@@ -160,12 +163,12 @@ function init() {
 
     // calculate top, left, width, height
     let HC_top =
-      wordEls && wordEls[line.firstWordIndex].offsetTop - PADDING_OFFSET;
+      wordEls && wordEls[line.firstWordIndex].offsetTop - PADDING_OFFSET_Y;
     let HC_left =
-      wordEls && wordEls[line.firstWordIndex].offsetLeft - PADDING_OFFSET;
-    let HC_width = line.width + PADDING;
+      wordEls && wordEls[line.firstWordIndex].offsetLeft - PADDING_OFFSET_X;
+    let HC_width = line.width + PADDING_X;
     let HC_height =
-      wordEls && wordEls[line.firstWordIndex].offsetHeight + PADDING;
+      wordEls && wordEls[line.firstWordIndex].offsetHeight + PADDING_Y;
 
     // calculate top, left as % relative to "#resultWordsHistory"
     let HC_top_percent = (HC_top / RWH_height) * 100 + "%";
@@ -198,7 +201,7 @@ function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
       wordEls[wordStartIndex],
       wordEls[wordEndIndex],
     ]);
-    return bounds[1] - bounds[0];
+    return bounds[1] - bounds[0] + PADDING_X;
   }
 
   // if wordStart and wordEnd are on different lines
@@ -224,6 +227,9 @@ function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
     width += lines[i].width;
   }
 
+  // account for padding
+  width += 2 * PADDING_X * (lineIndexOfWordEnd - lineIndexOfWordStart);
+
   return width;
 }
 
@@ -236,15 +242,16 @@ function getOffsets(firstWordIndex: number): number[] {
 
   // calculate offsets for lines above, going from zero to lineIndexOfWord
   for (let i = lineIndexOfWord - 1; i >= 0; i--) {
-    offsets[i] = offsets[i + 1] + lines[i].width;
+    offsets[i] = offsets[i + 1] + lines[i].width + PADDING_X;
   }
 
   // calculate offsets for lines below, going from lineIndexOfWord to lines.length
   if (lineIndexOfWord != lines.length - 1) {
     offsets[lineIndexOfWord + 1] =
-      -1 * (lines[lineIndexOfWord].width - offsets[lineIndexOfWord]);
+      -1 *
+      (lines[lineIndexOfWord].width - offsets[lineIndexOfWord] + PADDING_X);
     for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
-      offsets[i] = offsets[i - 1] - lines[i - 1].width;
+      offsets[i] = offsets[i - 1] - lines[i - 1].width + PADDING_X;
     }
   }
 
