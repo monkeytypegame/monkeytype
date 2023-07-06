@@ -77,6 +77,7 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
     highlightEl.style.width = highlightWidth + "px";
     highlightEl.style.left = offsets[lineIndex] + "px";
   }
+  return true;
 }
 
 export function clear() {
@@ -148,11 +149,8 @@ function init() {
   // set top and left as % realtive to "#resultWordsHistory"
   const PADDING = 0;
   const PADDING_OFFSET = 0;
-  let PARENT_CONTAINER = $("#resultWordsHistory");
-  const RWH_top = PARENT_CONTAINER.offset().top;
-  const RWH_left = PARENT_CONTAINER.offset().left | 0;
-  const RWH_width = $("#resultWordsHistory").width();
-  const RWH_height = $("#resultWordsHistory").height();
+  const RWH_width = $("#resultWordsHistory").width()!;
+  const RWH_height = $("#resultWordsHistory").height()!;
 
   // create highlightContainers
   lines.forEach((line) => {
