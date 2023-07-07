@@ -9,11 +9,28 @@
     padding: 0px;
     height: 100%;
     position: relative;
-    // background-color: var(--sub-color);
-    border: 2px solid var(--sub-color);
+    background-color: var(--sub-color);
+    // border: 2px solid var(--sub-color);
     border-radius: var(--roundness);
+
+    overflow: hidden;
     transition: all 0.15s ease;
-    z-index: -1;
+    z-index: 1;
+  }
+
+  .actualInputWord {
+    color: var(--bg-color);
+    top: 0.25rem;
+    position: absolute;
+  }
+
+  .actualInputContainer {
+    position: absolute;
+    transition: all 0.15s ease;
+  }
+
+  .highlightPlaceholder {
+    visibility: 0;
   }
 }
 

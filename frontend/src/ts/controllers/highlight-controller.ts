@@ -35,7 +35,7 @@
  */
 
 const PADDING_X = 16;
-const PADDING_Y = 10;
+const PADDING_Y = 14;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2;
 
@@ -68,11 +68,10 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
   if (highlightEls.length === 0) {
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
       // create highlight elements, append to corresponding highlight container, add to highlightEls
-      let highlightEl = document.createElement("div");
+      let highlightEl = $(".highlightPlaceholder")[0];
+      highlightEl.classList.remove("highlightPlaceholder");
       highlightEl.classList.add("highlight");
       highlightEls.push(highlightEl);
-
-      highlightContainers[lineIndex].append(highlightEl);
     }
   }
 
@@ -81,12 +80,19 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
     let highlightEl = highlightEls[lineIndex];
     highlightEl.style.width = highlightWidth + "px";
     highlightEl.style.left = offsets[lineIndex] + "px";
+
+    if ((highlightEl as HTMLElement).children) {
+      let actualInputContainer = (highlightEl as HTMLElement).children[0];
+      (actualInputContainer as HTMLElement).style.left =
+        Math.min(-1 * offsets[lineIndex]) + "px";
+    }
   }
+
   return true;
 }
 
 export function clear() {
-  $(".highlight").remove();
+  $(".highlight").removeClass("highlight").addClass("highlightPlaceholder");
   highlightEls = [];
 }
 
@@ -180,6 +186,28 @@ function init() {
     highlightContainer.style.top = HC_top_percent;
     highlightContainer.style.left = HC_left_percent;
     highlightContainer.style.height = HC_height_percent;
+
+    // construct highlightPlaceholder w/ userInputWord elements
+    let highlightPlaceholderEl = `<div class="highlightPlaceholder"> <div class="actualInputContainer">`;
+    for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
+      let wordEl = wordEls[i];
+      let userInputString = wordEl.getAttribute("input")!;
+
+      if (!userInputString) {
+        continue;
+      }
+
+      highlightPlaceholderEl += `<div class="actualInputWord" style="left:${
+        wordEl.offsetLeft + PADDING_OFFSET_X
+      }px;">${userInputString
+        .replace(/\t/g, "_")
+        .replace(/\n/g, "_")
+        .replace(/</g, "&lt")
+        .replace(/>/g, "&gt")} </div>`;
+    }
+
+    highlightPlaceholderEl += "</div></div>";
+    highlightContainer.innerHTML = highlightPlaceholderEl;
 
     $("#resultWordsHistory").append(highlightContainer);
   });
