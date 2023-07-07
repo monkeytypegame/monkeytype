@@ -1174,6 +1174,11 @@
     "mainColor": "#ff8f00",
     "subColor": "#651e56",
     "textColor": "#fff"
+  },
+  {
+    "name": "butrin",
+    "bgColor": "#3b3030",
+    "mainColor": "#e39d93"
   }
 
 ]
