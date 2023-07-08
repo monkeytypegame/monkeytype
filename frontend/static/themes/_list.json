@@ -1174,5 +1174,12 @@
     "mainColor": "#ff8f00",
     "subColor": "#651e56",
     "textColor": "#fff"
+  },
+  {
+    "name": "candy_floss",
+    "bgColor": "#8e85de",
+    "mainColor": "#bc9ff5",
+    "subColor": "#8580a1",
+    "textColor": "#4b4678"
   }
 ]
