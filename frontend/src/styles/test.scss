@@ -1,16 +1,14 @@
 .highlightContainer {
   position: absolute;
   overflow: hidden;
-  // background-color: rgba(200, 200, 200, 0.3);
   pointer-events: none;
+
   .highlight {
-    // box-sizing: content-box;
     margin: 0px;
     padding: 0px;
     height: 100%;
     position: relative;
     background-color: var(--sub-color);
-    // border: 2px solid var(--sub-color);
     border-radius: var(--roundness);
 
     overflow: hidden;
@@ -20,8 +18,15 @@
 
   .actualInputWord {
     color: var(--bg-color);
-    top: 0.25rem;
+    border-bottom: 5px solid transparent;
+    font-size: 1em;
+    font-variant: no-common-ligatures;
+    line-height: 1em;
     position: absolute;
+
+    &.invisible {
+      visibility: hidden;
+    }
   }
 
   .actualInputContainer {
@@ -30,7 +35,8 @@
   }
 
   .highlightPlaceholder {
-    visibility: 0;
+    visibility: hidden !important;
+    overflow: hidden !important;
   }
 }
 
