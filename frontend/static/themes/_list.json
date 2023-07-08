@@ -1177,9 +1177,9 @@
   },
   {
     "name": "candy_floss",
-    "bgColor": "#8e85de",
+    "bgColor": "#8f88cd",
     "mainColor": "#bc9ff5",
-    "subColor": "#8580a1",
-    "textColor": "#4b4678"
+    "subColor": "#37334f",
+    "textColor": "#e4ade9"
   }
 ]
