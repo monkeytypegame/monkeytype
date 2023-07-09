@@ -23,10 +23,6 @@
     font-variant: no-common-ligatures;
     line-height: 1em;
     position: absolute;
-
-    &.invisible {
-      visibility: hidden;
-    }
   }
 
   .actualInputContainer {
@@ -35,7 +31,7 @@
   }
 
   .highlightPlaceholder {
-    visibility: hidden !important;
+    opacity: 0;
     overflow: hidden !important;
   }
 }
