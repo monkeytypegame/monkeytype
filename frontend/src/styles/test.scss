@@ -16,7 +16,7 @@
     z-index: 1;
   }
 
-  .actualInputWord {
+  .inputWord {
     color: var(--bg-color);
     border-bottom: 5px solid transparent;
     font-size: 1em;
@@ -25,14 +25,14 @@
     position: absolute;
   }
 
-  .actualInputContainer {
+  .inputWordsContainer {
     position: absolute;
     transition: all 0.15s ease;
   }
 
   .highlightPlaceholder {
     opacity: 0;
-    overflow: hidden !important;
+    overflow: hidden;
   }
 }
 

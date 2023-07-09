@@ -34,8 +34,8 @@
  *
  */
 
-const PADDING_X = 14;
-const PADDING_Y = 10;
+const PADDING_X = 18;
+const PADDING_Y = 14;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2 + 1;
 
@@ -82,8 +82,8 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
     highlightEl.style.left = offsets[lineIndex] + "px";
 
     if ((highlightEl as HTMLElement).children) {
-      let actualInputContainer = (highlightEl as HTMLElement).children[0];
-      (actualInputContainer as HTMLElement).style.left =
+      let inputWordsContainer = (highlightEl as HTMLElement).children[0];
+      (inputWordsContainer as HTMLElement).style.left =
         Math.min(-1 * offsets[lineIndex]) + "px";
     }
   }
@@ -189,7 +189,7 @@ function init() {
     highlightContainer.style.height = HC_height_percent;
 
     // construct highlightPlaceholder w/ userInputWord elements
-    let highlightPlaceholderEl = `<div class="highlightPlaceholder"> <div class="actualInputContainer" style="top:${PADDING_OFFSET_Y}px;">`;
+    let highlightPlaceholderEl = `<div class="highlightPlaceholder"> <div class="inputWordsContainer" style="top:${PADDING_OFFSET_Y}px;">`;
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       let wordEl = wordEls[i];
       let userInputString = wordEl.getAttribute("input")!;
@@ -198,7 +198,7 @@ function init() {
         continue;
       }
 
-      highlightPlaceholderEl += `<div class="actualInputWord" style="left:${
+      highlightPlaceholderEl += `<div class="inputWord" style="left:${
         wordEl.offsetLeft + PADDING_OFFSET_X
       }px;">${userInputString
         .replace(/\t/g, "_")
@@ -213,9 +213,7 @@ function init() {
     $("#resultWordsHistory").append(highlightContainer);
   });
 
-  // update identifier variables
   isInitialized = true;
-
   return true;
 }
 
