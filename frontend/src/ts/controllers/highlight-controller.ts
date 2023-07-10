@@ -6,7 +6,7 @@
 const PADDING_X = 18;
 const PADDING_Y = 14;
 const PADDING_OFFSET_X = PADDING_X / 2;
-const PADDING_OFFSET_Y = PADDING_Y / 2 + 1;
+const PADDING_OFFSET_Y = PADDING_Y / 2 + 0.5;
 
 // Type definition for a Line object, which represents a line of text
 type Line = {
@@ -34,20 +34,23 @@ let highlightEls: HTMLElement[] = [];
 let isInitialized = false;
 
 // Function to highlight a range of words
-export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
+export function highlightWords(
+  firstWordIndex: number,
+  lastWordIndex: number
+): boolean {
   if (!isInitialized) {
-    let initResponse = init();
+    const initResponse = init();
     if (!initResponse) {
       return false;
     }
   }
 
-  let highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
-  let offsets = getOffsets(firstWordIndex);
+  const highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
+  const offsets = getOffsets(firstWordIndex);
 
   if (highlightEls.length === 0) {
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      let highlightEl = $(".highlightPlaceholder")[0];
+      const highlightEl = $(".highlightPlaceholder")[0];
       highlightEl.classList.remove("highlightPlaceholder");
       highlightEl.classList.add("highlight");
       highlightEls.push(highlightEl);
@@ -55,12 +58,12 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
   }
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-    let highlightEl = highlightEls[lineIndex];
-    let highlightWidthStr = highlightWidth + "px";
-    let highlightLeftStr = offsets[lineIndex] + "px";
+    const highlightEl = highlightEls[lineIndex];
+    const highlightWidthStr = highlightWidth + "px";
+    const highlightLeftStr = offsets[lineIndex] + "px";
 
     if ((highlightEl as HTMLElement).children) {
-      let inputWordsContainer = (highlightEl as HTMLElement).children[0];
+      const inputWordsContainer = (highlightEl as HTMLElement).children[0];
       (inputWordsContainer as HTMLElement).style.left =
         -1 * offsets[lineIndex] + "px";
     }
@@ -72,14 +75,14 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
 }
 
 // Function to clear all highlights
-export function clear() {
+export function clear(): void {
   $(".highlight").addClass("highlightPlaceholder");
   $(".highlightPlaceholder").removeClass("highlight");
   highlightEls = [];
 }
 
 // Function to completely destroy the highlight system.
-export function destroy() {
+export function destroy(): void {
   if (!isInitialized) return;
   $(".highlightContainer").remove();
   highlightEls = [];
@@ -90,7 +93,7 @@ export function destroy() {
 }
 
 // Function to initialize the highlight system
-function init() {
+function init(): boolean {
   if (isInitialized) {
     throw Error("highlight containers already initialized");
   }
@@ -108,8 +111,8 @@ function init() {
   // Construct lines array and wordIndexToLineIndexDict
   wordIndexToLineIndexDict[0] = 0;
   for (let i = 1; i < wordEls.length; i++) {
-    let word = wordEls[i];
-    let prevWord = wordEls[i - 1];
+    const word = wordEls[i];
+    const prevWord = wordEls[i - 1];
 
     if (word.offsetTop != prevWord.offsetTop) {
       currLineIndex++;
@@ -145,24 +148,24 @@ function init() {
 
   // Create highlightContainers
   lines.forEach((line) => {
-    let highlightContainer = document.createElement("div");
+    const highlightContainer = document.createElement("div");
     highlightContainer.classList.add("highlightContainer");
     highlightContainers.push(highlightContainer);
 
     // Calculate top, left, width, height
-    let HC_top =
+    const HC_top =
       wordEls && wordEls[line.firstWordIndex].offsetTop - PADDING_OFFSET_Y;
-    let HC_left =
+    const HC_left =
       wordEls && wordEls[line.firstWordIndex].offsetLeft - PADDING_OFFSET_X;
-    let HC_width = line.width + PADDING_X;
-    let HC_height =
+    const HC_width = line.width + PADDING_X;
+    const HC_height =
       wordEls && wordEls[line.firstWordIndex].offsetHeight + PADDING_Y;
 
     // Calculate top, left as % relative to "#resultWordsHistory"
-    let HC_top_percent = (HC_top / RWH_height) * 100 + "%";
-    let HC_left_percent = (HC_left / RWH_width) * 100 + "%";
-    let HC_width_percent = (HC_width / RWH_width) * 100 + "%";
-    let HC_height_percent = (HC_height / RWH_height) * 100 + "%";
+    const HC_top_percent = (HC_top / RWH_height) * 100 + "%";
+    const HC_left_percent = (HC_left / RWH_width) * 100 + "%";
+    const HC_width_percent = (HC_width / RWH_width) * 100 + "%";
+    const HC_height_percent = (HC_height / RWH_height) * 100 + "%";
 
     highlightContainer.style.width = HC_width_percent;
     highlightContainer.style.top = HC_top_percent;
@@ -172,8 +175,8 @@ function init() {
     // Construct highlightPlaceholder w/ inputWord elements
     let highlightPlaceholderEl = `<div class="highlightPlaceholder"> <div class="inputWordsContainer" style="top:${PADDING_OFFSET_Y}px;">`;
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
-      let wordEl = wordEls[i];
-      let userInputString = wordEl.getAttribute("input")!;
+      const wordEl = wordEls[i];
+      const userInputString = wordEl.getAttribute("input")!;
 
       if (!userInputString) {
         continue;
@@ -200,13 +203,16 @@ function init() {
 }
 
 // Function to calculate the width of the highlight for a given range of words
-function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
-  let lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
-  let lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];
+function getHighlightWidth(
+  wordStartIndex: number,
+  wordEndIndex: number
+): number {
+  const lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
+  const lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];
 
   // If highlight is just one line...
   if (lineIndexOfWordStart == lineIndexOfWordEnd) {
-    let bounds = getContainerBounds([
+    const bounds = getContainerBounds([
       wordEls[wordStartIndex],
       wordEls[wordEndIndex],
     ]);
@@ -214,12 +220,12 @@ function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
   }
 
   // Multiple lines
-  let firstLineBounds = getContainerBounds([
+  const firstLineBounds = getContainerBounds([
     wordEls[wordStartIndex],
     wordEls[lines[lineIndexOfWordStart].lastWordIndex],
   ]);
 
-  let lastLineBounds = getContainerBounds([
+  const lastLineBounds = getContainerBounds([
     wordEls[lines[lineIndexOfWordEnd].firstWordIndex],
     wordEls[wordEndIndex],
   ]);
@@ -243,8 +249,8 @@ function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
 
 // Function to calculate the left offsets for a given word index
 function getOffsets(firstWordIndex: number): number[] {
-  let lineIndexOfWord = wordIndexToLineIndexDict[firstWordIndex];
-  let offsets = new Array(lineIndexOfWord + 1).fill(0);
+  const lineIndexOfWord = wordIndexToLineIndexDict[firstWordIndex];
+  const offsets = new Array(lineIndexOfWord + 1).fill(0);
 
   // calculate offset for this line
   offsets[lineIndexOfWord] = wordEls[firstWordIndex].offsetLeft;
@@ -268,18 +274,18 @@ function getOffsets(firstWordIndex: number): number[] {
 }
 
 // Function to get the bounding rectangle of a collection of elements
-function getContainerBounds(elements: HTMLElement[]): any {
+function getContainerBounds(elements: HTMLElement[]): number[] {
   let minX = Infinity,
     minY = Infinity,
     maxX = -Infinity,
     maxY = -Infinity;
 
   elements.forEach((element) => {
-    let rect = element.getBoundingClientRect();
+    const rect = element.getBoundingClientRect();
 
     // Adjust for scrolling
-    let scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-    let scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
 
     minX = Math.min(minX, rect.left + scrollLeft);
     minY = Math.min(minY, rect.top + scrollTop);
