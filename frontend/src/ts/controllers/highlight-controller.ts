@@ -34,24 +34,38 @@
  *
  */
 
+// Constants for padding around the highlights
 const PADDING_X = 18;
 const PADDING_Y = 14;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2 + 1;
 
+// Type definition for a Line object, which represents a line of text
 type Line = {
   firstWordIndex: number;
   lastWordIndex: number;
   width: number;
 };
 
+// Array of Line objects
 let lines: Line[] = [];
+
+// JQuery collection of all word elements
 let wordEls: JQuery<HTMLElement>;
+
+// Dictionary mapping word indices to line indices
 let wordIndexToLineIndexDict: { [wordIndex: number]: number } = {};
+
+// Array of container elements for highlights
 let highlightContainers: HTMLElement[] = [];
+
+// Array of highlight elements
 let highlightEls: HTMLElement[] = [];
+
+// Flag indicating whether the highlight system has been initialized
 let isInitialized = false;
 
+// Function to highlight a range of words
 export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
   if (!isInitialized) {
     let initResponse = init();
@@ -60,14 +74,11 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
     }
   }
 
-  // get all lines that are in range
   let highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
   let offsets = getOffsets(firstWordIndex);
 
-  // for each line, set to new width and new
   if (highlightEls.length === 0) {
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      // create highlight elements, append to corresponding highlight container, add to highlightEls
       let highlightEl = $(".highlightPlaceholder")[0];
       highlightEl.classList.remove("highlightPlaceholder");
       highlightEl.classList.add("highlight");
@@ -76,7 +87,6 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
   }
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-    // set width and left of highlight elements
     let highlightEl = highlightEls[lineIndex];
     highlightEl.style.width = highlightWidth + "px";
     highlightEl.style.left = offsets[lineIndex] + "px";
@@ -91,12 +101,14 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
   return true;
 }
 
+// Function to clear all highlights
 export function clear() {
   $(".highlight").addClass("highlightPlaceholder");
   $(".highlightPlaceholder").removeClass("highlight");
   highlightEls = [];
 }
 
+// Function to completely destroy the highlight system.
 export function destroy() {
   if (!isInitialized) return;
   $(".highlightContainer").remove();
@@ -107,8 +119,8 @@ export function destroy() {
   isInitialized = false;
 }
 
+// Function to initialize the highlight system
 function init() {
-  // if exists, alert already initialized
   if (isInitialized) {
     throw Error("highlight containers already initialized");
   }
@@ -117,14 +129,13 @@ function init() {
     return false;
   }
 
-  // initialize lines array
   let prevLineEndWordIndex = -1;
   let containerBounds;
   let width;
   let currLineIndex = 0;
   wordEls = $("#resultWordsHistory .words .word");
 
-  // construct lines array and wordIndexToLineIndexDict
+  // Construct lines array and wordIndexToLineIndexDict
   wordIndexToLineIndexDict[0] = 0;
   for (let i = 1; i < wordEls.length; i++) {
     let word = wordEls[i];
@@ -158,17 +169,17 @@ function init() {
     width: width,
   });
 
-  // set top and left as % realtive to "#resultWordsHistory"
+  // Set top and left as % realtive to "#resultWordsHistory"
   const RWH_width = $("#resultWordsHistory").width()!;
   const RWH_height = $("#resultWordsHistory").height()!;
 
-  // create highlightContainers
+  // Create highlightContainers
   lines.forEach((line) => {
     let highlightContainer = document.createElement("div");
     highlightContainer.classList.add("highlightContainer");
     highlightContainers.push(highlightContainer);
 
-    // calculate top, left, width, height
+    // Calculate top, left, width, height
     let HC_top =
       wordEls && wordEls[line.firstWordIndex].offsetTop - PADDING_OFFSET_Y;
     let HC_left =
@@ -177,7 +188,7 @@ function init() {
     let HC_height =
       wordEls && wordEls[line.firstWordIndex].offsetHeight + PADDING_Y;
 
-    // calculate top, left as % relative to "#resultWordsHistory"
+    // Calculate top, left as % relative to "#resultWordsHistory"
     let HC_top_percent = (HC_top / RWH_height) * 100 + "%";
     let HC_left_percent = (HC_left / RWH_width) * 100 + "%";
     let HC_width_percent = (HC_width / RWH_width) * 100 + "%";
@@ -188,7 +199,7 @@ function init() {
     highlightContainer.style.left = HC_left_percent;
     highlightContainer.style.height = HC_height_percent;
 
-    // construct highlightPlaceholder w/ userInputWord elements
+    // Construct highlightPlaceholder w/ userInputWord elements
     let highlightPlaceholderEl = `<div class="highlightPlaceholder"> <div class="inputWordsContainer" style="top:${PADDING_OFFSET_Y}px;">`;
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       let wordEl = wordEls[i];
@@ -217,12 +228,12 @@ function init() {
   return true;
 }
 
+// Function to calculate the width of the highlight for a given range of words
 function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
-  // get lineIndexOfWordStart and lineIndexOfWordEnd
   let lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
   let lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];
 
-  // if wordStart and wordEnd are on the same line
+  // If highlight is just one line...
   if (lineIndexOfWordStart == lineIndexOfWordEnd) {
     let bounds = getContainerBounds([
       wordEls[wordStartIndex],
@@ -231,8 +242,7 @@ function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
     return bounds[1] - bounds[0] + PADDING_X;
   }
 
-  // if wordStart and wordEnd are on different lines
-  // add first line highlight to width
+  // Multiple lines
   let firstLineBounds = getContainerBounds([
     wordEls[wordStartIndex],
     wordEls[lines[lineIndexOfWordStart].lastWordIndex],
@@ -249,17 +259,18 @@ function getHighlightWidth(wordStartIndex: number, wordEndIndex: number) {
     lastLineBounds[1] -
     lastLineBounds[0];
 
-  // add middle line highlights to width
+  // Add middle line highlights to width
   for (let i = lineIndexOfWordStart + 1; i < lineIndexOfWordEnd; i++) {
     width += lines[i].width;
   }
 
-  // account for padding
+  // Account for padding
   width += 2 * PADDING_X * (lineIndexOfWordEnd - lineIndexOfWordStart);
 
   return width;
 }
 
+// Function to calculate the left offsets for a given word index
 function getOffsets(firstWordIndex: number): number[] {
   let lineIndexOfWord = wordIndexToLineIndexDict[firstWordIndex];
   let offsets = new Array(lineIndexOfWord + 1).fill(0);
@@ -285,7 +296,7 @@ function getOffsets(firstWordIndex: number): number[] {
   return offsets;
 }
 
-// given array elements, returns tightbound container [left, right, top, bottom]
+// Function to get the bounding rectangle of a collection of elements
 function getContainerBounds(elements: HTMLElement[]): any {
   let minX = Infinity,
     minY = Infinity,
