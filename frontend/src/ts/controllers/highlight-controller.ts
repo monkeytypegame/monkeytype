@@ -169,7 +169,7 @@ function init() {
     highlightContainer.style.left = HC_left_percent;
     highlightContainer.style.height = HC_height_percent;
 
-    // Construct highlightPlaceholder w/ userInputWord elements
+    // Construct highlightPlaceholder w/ inputWord elements
     let highlightPlaceholderEl = `<div class="highlightPlaceholder"> <div class="inputWordsContainer" style="top:${PADDING_OFFSET_Y}px;">`;
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       let wordEl = wordEls[i];
@@ -185,7 +185,8 @@ function init() {
         .replace(/\t/g, "_")
         .replace(/\n/g, "_")
         .replace(/</g, "&lt")
-        .replace(/>/g, "&gt")} </div>`;
+        .replace(/>/g, "&gt")
+        .slice(0, wordEl.childElementCount)} </div>`;
     }
 
     highlightPlaceholderEl += "</div></div>";
