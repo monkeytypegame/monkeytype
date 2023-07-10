@@ -1,38 +1,6 @@
-/**
- * This highlighting system makes use of absolutely positioned, overflow hidden divs
- * that are placed on top of the text to be highlighted. These divs are called
- * ".highlightContainer". The actual highlight element is called ".highlight"
- *
- * export function init(): ()=>void
- *      * initializes highlightContainers
- *      * if destroy() is called, must be called again
- *
- * export function highlight(firstWordIndex, lastWordIndex): (num, num) => void
- *      * given firstWordIndex <= lastWordIndex, highlights the words in the range
- *      * if called back to back, will animate towards second highlight
- *      * will be cleared by clear()
- *
- * export function clear(): ()=>void
- *     * clears all highlights, but keeps highlightContainers
- *
- *
- * export function destroy(): ()=>void
- *    * clears all highlights and removes highlightContainers
- *    * init() must be called in order to use highlight() again
- *
- *
- * line: {
- *      firstWordIndex: number,
- *      lastWordIndex: number,
- *      width: string,
- *
- * }
- *
- * function geLeftOffsets(wordIndex): number[] -- returns [left] offset for each line
- * function getHighlightWidth(startWordIndex, endWordIndex): number
- * function getContainerBounds(elements: JQuery[]): any
- *
- */
+// The code defines the necessary operations for a text highlighting system in a web page.
+// This system utilizes absolutely positioned, overflow hidden divs, known as "highlightContainer",
+// to place a highlight (".highlight") on top of the text to be highlighted.
 
 // Constants for padding around the highlights
 const PADDING_X = 18;
