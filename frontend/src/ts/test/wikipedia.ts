@@ -51,7 +51,7 @@ export async function getSection(language: string): Promise<Section> {
   // get TLD for wikipedia according to language group
   let urlTLD = "en";
 
-  let currentLanguageGroup;
+  let currentLanguageGroup: MonkeyTypes.LanguageGroup | undefined;
   try {
     currentLanguageGroup = await Misc.findCurrentGroup(language);
   } catch (e) {
@@ -108,6 +108,10 @@ export async function getSection(language: string): Promise<Section> {
 
           // Removing whitespace before and after text
           sectionText = sectionText.trim();
+
+          if (urlTLD === "en") {
+            sectionText = sectionText.replace(/[^\x20-\x7E]+/g, "");
+          }
 
           const words = sectionText.split(" ");
 
