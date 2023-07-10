@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
 import * as Skeleton from "../popups/skeleton";
 import * as Misc from "../utils/misc";
+import TypoList from "../utils/typo-list";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side .button").removeClass("disabled");
@@ -41,7 +42,9 @@ export function hidePreloader(): void {
 export const updateSignupButton = (): void => {
   if (
     nameIndicator.get() !== "available" ||
-    (emailIndicator.get() !== "valid" && emailIndicator.get() !== "edu") ||
+    (emailIndicator.get() !== "valid" &&
+      emailIndicator.get() !== "typo" &&
+      emailIndicator.get() !== "edu") ||
     verifyEmailIndicator.get() !== "match" ||
     passwordIndicator.get() !== "good" ||
     verifyPasswordIndicator.get() !== "match"
@@ -81,13 +84,22 @@ const checkNameDebounced = debounce(1000, async () => {
 });
 
 const checkEmail = (): void => {
+  const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   const educationRegex = /@.*(education|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
 
-  const email = $(".page.pageLogin .register.side .emailInput").val() as string;
+  const emailHasTypo = TypoList.some((typo) => {
+    return email.endsWith(typo);
+  });
+
   if (emailRegex.test(email)) {
-    if (educationRegex.test(email)) {
+    if (emailHasTypo) {
+      emailIndicator.show(
+        "typo",
+        "Please check your email address, it may contain a typo."
+      );
+    } else if (educationRegex.test(email)) {
       emailIndicator.show(
         "edu",
         "Some education emails will fail to receive our messages. Consider using a personal email address."
@@ -186,6 +198,10 @@ const emailIndicator = new InputIndicator(
     invalid: {
       icon: "fa-times",
       level: -1,
+    },
+    typo: {
+      icon: "fa-exclamation-triangle",
+      level: 1,
     },
     edu: {
       icon: "fa-exclamation-triangle",
