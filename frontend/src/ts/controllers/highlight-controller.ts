@@ -56,14 +56,16 @@ export function highlightWords(firstWordIndex: number, lastWordIndex: number) {
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
     let highlightEl = highlightEls[lineIndex];
-    highlightEl.style.width = highlightWidth + "px";
-    highlightEl.style.left = offsets[lineIndex] + "px";
+    let highlightWidthStr = highlightWidth + "px";
+    let highlightLeftStr = offsets[lineIndex] + "px";
 
     if ((highlightEl as HTMLElement).children) {
       let inputWordsContainer = (highlightEl as HTMLElement).children[0];
       (inputWordsContainer as HTMLElement).style.left =
-        Math.min(-1 * offsets[lineIndex]) + "px";
+        -1 * offsets[lineIndex] + "px";
     }
+    highlightEl.style.left = highlightLeftStr;
+    highlightEl.style.width = highlightWidthStr;
   }
 
   return true;
