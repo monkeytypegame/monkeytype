@@ -385,7 +385,10 @@ export async function screenshot(): Promise<void> {
   let revealReplay = false;
 
   let revertCookie = false;
-  if (Misc.isElementVisible("#cookiePopupWrapper")) {
+  if (
+    Misc.isElementVisible("#cookiePopupWrapper") ||
+    document.contains(document.querySelector("#cookiePopupWrapper"))
+  ) {
     revertCookie = true;
   }
 

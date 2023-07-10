@@ -104,8 +104,9 @@ export async function updateName(
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
   }
+
   if (
-    name.toLowerCase() !== previousName.toLowerCase() &&
+    name?.toLowerCase() !== previousName?.toLowerCase() &&
     !(await isNameAvailable(name, uid))
   ) {
     throw new MonkeyError(409, "Username already taken", name);
@@ -118,6 +119,13 @@ export async function updateName(
       $unset: { needsToChangeName: "" },
       $push: { nameHistory: previousName },
     }
+  );
+}
+
+export async function flagForNameChange(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    { $set: { needsToChangeName: true } }
   );
 }
 
@@ -272,6 +280,12 @@ export async function addTag(
   uid: string,
   name: string
 ): Promise<MonkeyTypes.UserTag> {
+  const user = await getUser(uid, "add tag");
+
+  if ((user?.tags?.length ?? 0) >= 10) {
+    throw new MonkeyError(400, "You can only have up to 10 tags");
+  }
+
   const _id = new ObjectId();
   const toPush = {
     _id,

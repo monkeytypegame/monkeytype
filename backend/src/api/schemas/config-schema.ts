@@ -34,7 +34,10 @@ const CONFIG_SCHEMA = joi.object({
   time: joi.number().min(0),
   mode: joi.string().valid("time", "words", "quote", "zen", "custom"),
   quoteLength: joi.array().items(joi.number()),
-  language: joi.string().max(50).token(),
+  language: joi
+    .string()
+    .max(50)
+    .pattern(/^[a-zA-Z0-9_+]+$/),
   fontSize: joi.number().min(0),
   freedomMode: joi.boolean(),
   difficulty: joi.string().valid("normal", "expert", "master"),
@@ -44,7 +47,10 @@ const CONFIG_SCHEMA = joi.object({
   paceCaretStyle: joi.string().valid(...CARET_STYLES),
   flipTestColors: joi.boolean(),
   layout: joi.string().max(50).token(),
-  funbox: joi.string().max(50).token(),
+  funbox: joi
+    .string()
+    .max(100)
+    .regex(/[\w#]+/),
   confidenceMode: joi.string().valid("off", "on", "max"),
   indicateTypos: joi.string().valid("off", "below", "replace"),
   timerStyle: joi.string().valid("bar", "text", "mini"),
@@ -73,7 +79,10 @@ const CONFIG_SCHEMA = joi.object({
     .valid("lowercase", "uppercase", "blank", "dynamic"),
   keymapLayout: joi.string().valid().max(50).token(),
   keymapShowTopRow: joi.string().valid("always", "layout", "never"),
-  fontFamily: joi.string().max(50).token(),
+  fontFamily: joi
+    .string()
+    .max(50)
+    .regex(/^[a-zA-Z0-9_\-+.]+$/),
   smoothLineScroll: joi.boolean(),
   alwaysShowDecimalPlaces: joi.boolean(),
   alwaysShowWordsHistory: joi.boolean(),

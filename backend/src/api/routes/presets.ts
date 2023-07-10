@@ -33,7 +33,7 @@ router.post(
     body: {
       name: presetNameSchema,
       config: configSchema.keys({
-        tags: joi.array().items(joi.string()),
+        tags: joi.array().items(joi.string().token().max(50)),
       }),
     },
   }),

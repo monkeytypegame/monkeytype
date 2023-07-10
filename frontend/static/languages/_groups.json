@@ -474,6 +474,10 @@
     "languages": ["frysk", "frysk_1k"]
   },
   {
+    "name": "pashto",
+    "languages": ["pashto"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",

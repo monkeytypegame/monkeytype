@@ -229,6 +229,7 @@ export const result: ChartWithUpdateColors<
                   firstHighlightWordIndex,
                   lastHighlightWordIndex
                 );
+
               } catch {}
               return "";
             },
