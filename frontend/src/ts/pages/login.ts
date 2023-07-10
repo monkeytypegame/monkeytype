@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import { InputIndicator } from "../elements/input-indicator";
 import * as Skeleton from "../popups/skeleton";
 import * as Misc from "../utils/misc";
+import TypoList from "../utils/typo-list";
 
 export function enableSignUpButton(): void {
   $(".page.pageLogin .register.side .button").removeClass("disabled");
@@ -83,40 +84,34 @@ const checkNameDebounced = debounce(1000, async () => {
 });
 
 const checkEmail = (): void => {
+  const email = $(".page.pageLogin .register.side .emailInput").val() as string;
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  const emailTypoRegex = Misc.typo_list;
+  const educationRegex = /@.*(education|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
 
-  const email = $(".page.pageLogin .register.side .emailInput").val() as string;
+  const emailHasTypo = TypoList.some((typo) => {
+    return email.endsWith(typo);
+  });
+
   if (emailRegex.test(email)) {
-    if (emailTypoRegex.test(email)) {
+    if (emailHasTypo) {
       emailIndicator.show(
-        "emailTypoIndicator",
-        "Please check your email address, as the ending of the email matches a list of common email typos."
+        "typo",
+        "Please check your email address, it may contain a typo."
       );
-      const educationRegex = /@.*(education|\.edu$|\.edu\.|\.ac\.|\.sch\.)/i;
-
-      const email = $(
-        ".page.pageLogin .register.side .emailInput"
-      ).val() as string;
-      if (emailRegex.test(email)) {
-        if (educationRegex.test(email)) {
-          emailIndicator.show(
-            "edu",
-            "Some education emails will fail to receive our messages. Consider using a personal email address."
-          );
-        } else {
-          emailIndicator.show("valid");
-        }
-      } else {
-        emailIndicator.show("invalid");
-      }
+    } else if (educationRegex.test(email)) {
+      emailIndicator.show(
+        "edu",
+        "Some education emails will fail to receive our messages. Consider using a personal email address."
+      );
     } else {
       emailIndicator.show("valid");
     }
-
-    updateSignupButton();
+  } else {
+    emailIndicator.show("invalid");
   }
+
+  updateSignupButton();
 };
 
 const checkEmailsMatch = (): void => {
@@ -204,7 +199,7 @@ const emailIndicator = new InputIndicator(
       icon: "fa-times",
       level: -1,
     },
-    emailTypoIndicator: {
+    typo: {
       icon: "fa-exclamation-triangle",
       level: 1,
     },
