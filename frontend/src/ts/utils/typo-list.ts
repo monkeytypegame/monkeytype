@@ -25,4 +25,10 @@ export default [
   "@hottmail.com",
   "@yaho.com",
   "@outllok.com",
+  ".comm",
+  ".con",
+  ".cmo",
+  ".coom",
+  ".cim",
+  ".vom",
 ];
