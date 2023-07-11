@@ -106,4 +106,4 @@ export default [
   "yhoo.de",
   "yahhoo.de",
 ];
-// source(from line 34 - 107): https://github.com/gruns/typo 
+// source(from line 34 - 107): https://github.com/gruns/typo
