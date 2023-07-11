@@ -30,14 +30,17 @@ let highlightContainers: HTMLElement[] = [];
 // Array of highlight elements
 let highlightEls: HTMLElement[] = [];
 
-// Flag indicating whether the highlight system has been initialized
+// Flags
 let isInitialized = false;
+let isHoveringChart = false;
 
-// Function to highlight a range of words
 export function highlightWords(
   firstWordIndex: number,
   lastWordIndex: number
 ): boolean {
+  if (!isHoveringChart) {
+    return false;
+  }
   if (!isInitialized) {
     const initResponse = init();
     if (!initResponse) {
@@ -50,7 +53,9 @@ export function highlightWords(
 
   if (highlightEls.length === 0) {
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      const highlightEl = $(".highlightPlaceholder")[0];
+      const highlightEl: HTMLElement = document.querySelector(
+        ".highlightPlaceholder"
+      )!;
       highlightEl.classList.remove("highlightPlaceholder");
       highlightEl.classList.add("highlight");
       highlightEls.push(highlightEl);
@@ -58,14 +63,14 @@ export function highlightWords(
   }
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-    const highlightEl = highlightEls[lineIndex];
+    const highlightEl: HTMLElement = highlightEls[lineIndex];
     const highlightWidthStr = highlightWidth + "px";
     const highlightLeftStr = offsets[lineIndex] + "px";
 
-    if ((highlightEl as HTMLElement).children) {
-      const inputWordsContainer = (highlightEl as HTMLElement).children[0];
-      (inputWordsContainer as HTMLElement).style.left =
-        -1 * offsets[lineIndex] + "px";
+    if (highlightEl.children.length) {
+      const inputWordsContainer: HTMLElement = highlightEl
+        .children[0] as HTMLElement;
+      inputWordsContainer.style.left = -1 * offsets[lineIndex] + "px";
     }
     highlightEl.style.left = highlightLeftStr;
     highlightEl.style.width = highlightWidthStr;
@@ -74,6 +79,9 @@ export function highlightWords(
   return true;
 }
 
+export function setIsHoverChart(state: boolean) {
+  isHoveringChart = state;
+}
 // Function to clear all highlights
 export function clear(): void {
   $(".highlight").addClass("highlightPlaceholder");
