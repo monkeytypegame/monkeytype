@@ -79,7 +79,7 @@ export function highlightWords(
   return true;
 }
 
-export function setIsHoverChart(state: boolean) {
+export function setIsHoverChart(state: boolean): void {
   isHoveringChart = state;
 }
 // Function to clear all highlights
