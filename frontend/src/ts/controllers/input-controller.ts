@@ -205,6 +205,11 @@ function handleSpace(): void {
       Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
+    if (TestWords.words.currentIndex === TestWords.words.length) {
+      //submitted last word (checking this in case the test doesnt stop automatically on correct last keypress)
+      TestLogic.finish();
+      return;
+    }
   } else {
     if (!nospace) {
       if (!Config.playSoundOnError || Config.blindMode) {
@@ -1158,6 +1163,8 @@ $("#wordsInput").on("input", (event) => {
     setWordsInput(" " + currTestInput);
     return;
   }
+
+  console.log("input", inputValue, currTestInput, realInputValue);
 
   if (realInputValue.length === 0 && currTestInput.length === 0) {
     // fallback for when no Backspace keydown event (mobile)
