@@ -24,13 +24,13 @@ let wordEls: JQuery<HTMLElement>;
 let wordIndexToLineIndexDict: { [wordIndex: number]: number } = {};
 
 // Array of container elements for highlights
-let highlightContainers: HTMLElement[] = [];
+let highlightContainerEls: HTMLElement[] = [];
 
 // Array of highlight elements
 let highlightEls: HTMLElement[] = [];
 
 // Array of user inputs aligned with .word elements
-let inputWords: HTMLElement[] = [];
+let inputWordEls: HTMLElement[] = [];
 
 // Flags
 let isInitialized = false;
@@ -97,7 +97,7 @@ export function destroy(): void {
   if (!isInitialized) return;
   $(".highlightContainer").remove();
   highlightEls = [];
-  highlightContainers = [];
+  highlightContainerEls = [];
   wordIndexToLineIndexDict = {};
   lines = [];
   isInitialized = false;
@@ -162,7 +162,7 @@ function init(): boolean {
   lines.forEach((line) => {
     const highlightContainer = document.createElement("div");
     highlightContainer.classList.add("highlightContainer");
-    highlightContainers.push(highlightContainer);
+    highlightContainerEls.push(highlightContainer);
 
     // Calculate highlightContainer properties
     const HC_rect_top = line.rect.top - PADDING_OFFSET_Y;
@@ -229,7 +229,7 @@ function init(): boolean {
         .slice(0, wordEl.childElementCount);
 
       inputWordsContainerEl.append(inputWordEl);
-      inputWords.push(inputWordEl);
+      inputWordEls.push(inputWordEl);
     }
 
     highlightPlaceholderEl.append(inputWordsContainerEl);
@@ -255,7 +255,13 @@ function getHighlightWidth(
       wordEls[wordStartIndex],
       wordEls[wordEndIndex],
     ]);
-    return highlightRect.width + PADDING_X;
+    const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
+    const lastInputWordElRect =
+      inputWordEls[wordEndIndex].getBoundingClientRect();
+    let width = highlightRect.width + PADDING_X;
+    width -= lastWordElRect.width - lastInputWordElRect.width;
+
+    return width;
   }
 
   // Multiple lines
@@ -278,6 +284,13 @@ function getHighlightWidth(
 
   // Account for padding
   width += 2 * PADDING_X * (lineIndexOfWordEnd - lineIndexOfWordStart);
+
+  // Subtract difference between last wordEl and last inputWordEl
+  const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
+  const lastInputWordElRect =
+    inputWordEls[wordEndIndex].getBoundingClientRect();
+  width -= lastWordElRect.width - lastInputWordElRect.width;
+  console.log(lastWordElRect.width, lastInputWordElRect.width);
 
   return width;
 }
