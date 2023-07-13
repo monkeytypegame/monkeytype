@@ -2,14 +2,14 @@
 // This system utilizes absolutely positioned, overflow hidden divs, known as "highlightContainer",
 // to place a highlight (".highlight") on top of the text to be highlighted.
 // Constants for padding around the highlights
-const PADDING_X = 18;
+const PADDING_X = 16;
 const PADDING_Y = 14;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2;
 
 // Type definition for a Line object, which represents a line of text
 type Line = {
-  lineRect: DOMRect;
+  rect: DOMRect;
   firstWordIndex: number;
   lastWordIndex: number;
 };
@@ -133,7 +133,7 @@ function init(): boolean {
       lines.push({
         firstWordIndex: prevLineEndWordIndex + 1,
         lastWordIndex: i - 1,
-        lineRect,
+        rect: lineRect,
       });
       prevLineEndWordIndex = i - 1;
     }
@@ -148,15 +148,15 @@ function init(): boolean {
   lines.push({
     firstWordIndex: prevLineEndWordIndex + 1,
     lastWordIndex: wordEls.length - 1,
-    lineRect,
+    rect: lineRect,
   });
 
   // Set top and left as % realtive to "#resultWordsHistory"
-  const RWH_width = $("#resultWordsHistory").width()!;
-  const RWH_height = $("#resultWordsHistory").height()!;
-  const RWH_rect_top = $("#resultWordsHistory")[0].getBoundingClientRect().top;
-  const RWH_rect_left = $("#resultWordsHistory")[0].getBoundingClientRect()
-    .left;
+  const RWH = $("#resultWordsHistory");
+  const RWH_width = RWH.width()!;
+  const RWH_height = RWH.height()!;
+  const RWH_rect_top = RWH[0].getBoundingClientRect().top;
+  const RWH_rect_left = RWH[0].getBoundingClientRect().left;
 
   // Create highlightContainers
   lines.forEach((line) => {
@@ -165,28 +165,20 @@ function init(): boolean {
     highlightContainers.push(highlightContainer);
 
     // Calculate highlightContainer properties
-    const HC_rect_top = line.lineRect.top - PADDING_OFFSET_X;
-    const HC_rect_left = line.lineRect.left - PADDING_OFFSET_Y;
+    const HC_rect_top = line.rect.top - PADDING_OFFSET_Y;
+    const HC_rect_left = line.rect.left - PADDING_OFFSET_X;
     const HC_rel_top = HC_rect_top - RWH_rect_top;
     const HC_rel_left = HC_rect_left - RWH_rect_left;
-    const HC_width = line.lineRect.width + PADDING_X;
-    const HC_height = line.lineRect.height + PADDING_Y;
-
-    console.log({
-      HC_rect_top,
-      HC_rect_left,
-      HC_rel_top,
-      HC_rel_left,
-      HC_width,
-      HC_height,
-      RWH_rect_top,
-      RWH_rect_left,
-      RWH_width,
-      RWH_height,
-    });
+    const HC_width = line.rect.width + PADDING_X;
+    const HC_height = line.rect.height + PADDING_Y;
 
     // Calculate inputWordsContainer positions
-    // const IWC_top = wordEls &&
+    const IWC_rect_top = line.rect.top;
+    const IWC_rect_left = line.rect.left;
+    const IWC_rel_top = IWC_rect_top - HC_rect_top;
+    const IWC_rel_left = IWC_rect_left - HC_rect_left;
+    const IWC_width = line.rect.width;
+    const IWC_height = line.rect.height;
 
     // Calculate top, left as % relative to "#resultWordsHistory"
     const HC_top_percent = (HC_rel_top / RWH_height) * 100 + "%";
@@ -199,12 +191,18 @@ function init(): boolean {
     highlightContainer.style.left = HC_left_percent;
     highlightContainer.style.height = HC_height_percent;
 
-    // Construct highlightPlaceholder w/ inputWord elements
+    // Construct and inject highlightPlaceholder elements
     let highlightPlaceholderEl = document.createElement("div");
     let inputWordsContainerEl = document.createElement("div");
 
     highlightPlaceholderEl.className = "highlightPlaceholder";
     inputWordsContainerEl.className = "inputWordsContainer";
+
+    // Calculate inputWordsContainerEl properties relative to highlightContainer
+    inputWordsContainerEl.style.top = line.rect.top - HC_rect_top + "px";
+    inputWordsContainerEl.style.left = line.rect.left - HC_rect_left + "px";
+    inputWordsContainerEl.style.width = IWC_width + "px";
+    inputWordsContainerEl.style.height = IWC_height + "px";
 
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       const wordEl = wordEls[i];
@@ -216,6 +214,12 @@ function init(): boolean {
 
       let inputWordEl = document.createElement("div");
       inputWordEl.className = "inputWord";
+
+      // Calculate inputWordEl properties relative to inputWordsContainerEl
+      const wordRect = wordEl.getBoundingClientRect();
+      inputWordEl.style.top = wordRect.top - IWC_rect_top + "px";
+      inputWordEl.style.left = wordRect.left - IWC_rect_left + "px";
+
       inputWordEl.style.left = wordEl.offsetLeft + PADDING_OFFSET_X + "px";
       inputWordEl.innerHTML = userInputString
         .replace(/\t/g, "_")
@@ -269,7 +273,7 @@ function getHighlightWidth(
 
   // Add middle line highlights to width
   for (let i = lineIndexOfWordStart + 1; i < lineIndexOfWordEnd; i++) {
-    width += lines[i].lineRect.width;
+    width += lines[i].rect.width;
   }
 
   // Account for padding
@@ -288,18 +292,18 @@ function getOffsets(firstWordIndex: number): number[] {
 
   // calculate offsets for lines above, going from zero to lineIndexOfWord
   for (let i = lineIndexOfWord - 1; i >= 0; i--) {
-    offsets[i] = offsets[i + 1] + lines[i].lineRect.width + PADDING_X;
+    offsets[i] = offsets[i + 1] + lines[i].rect.width + PADDING_X;
   }
 
   // calculate offsets for lines below, going from lineIndexOfWord to lines.length
   if (lineIndexOfWord != lines.length - 1) {
     offsets[lineIndexOfWord + 1] =
       -1 *
-      (lines[lineIndexOfWord].lineRect.width -
+      (lines[lineIndexOfWord].rect.width -
         offsets[lineIndexOfWord] +
         PADDING_X);
     for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
-      offsets[i] = offsets[i - 1] - lines[i - 1].lineRect.width + PADDING_X;
+      offsets[i] = offsets[i - 1] - lines[i - 1].rect.width + PADDING_X;
     }
   }
 
