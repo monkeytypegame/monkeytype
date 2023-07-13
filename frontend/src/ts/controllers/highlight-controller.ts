@@ -3,7 +3,7 @@
 // to place a highlight (".highlight") on top of the text to be highlighted.
 // Constants for padding around the highlights
 const PADDING_X = 16;
-const PADDING_Y = 14;
+const PADDING_Y = 12;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2;
 

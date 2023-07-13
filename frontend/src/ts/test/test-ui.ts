@@ -1212,6 +1212,7 @@ $(".pageTest #copyWordsListButton").on("click", async () => {
 
 $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
+  HighlightController.destroy();
 });
 
 $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
