@@ -293,8 +293,8 @@ function getHighlightWidth(
 
 // Function to calculate the left offsets for a given word index
 function getOffsets(firstWordIndex: number): number[] {
-  const OFFSET_LEFT_LIMIT = -1 * lines[0].rect.width;
-  const OFFSET_RIGHT_LIMIT = 2 * lines[0].rect.width;
+  const OFFSET_LEFT_LIMIT = -1 * window.innerWidth;
+  const OFFSET_RIGHT_LIMIT = 2 * window.innerWidth;
   const lineIndexOfWord = wordIndexToLineIndexDict[firstWordIndex];
   const offsets = new Array(lineIndexOfWord + 1).fill(0);
 
