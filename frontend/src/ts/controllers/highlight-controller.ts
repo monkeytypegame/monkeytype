@@ -30,7 +30,7 @@ let highlightContainerEls: HTMLElement[] = [];
 let highlightEls: HTMLElement[] = [];
 
 // Array of user inputs aligned with .word elements
-let inputWordEls: HTMLElement[] = [];
+const inputWordEls: HTMLElement[] = [];
 
 // Flags
 let isInitialized = false;
@@ -190,8 +190,8 @@ function init(): boolean {
     highlightContainer.style.height = HC_height_percent;
 
     // Construct and inject highlightPlaceholder elements
-    let highlightPlaceholderEl = document.createElement("div");
-    let inputWordsContainerEl = document.createElement("div");
+    const highlightPlaceholderEl = document.createElement("div");
+    const inputWordsContainerEl = document.createElement("div");
 
     highlightPlaceholderEl.className = "highlightPlaceholder";
     inputWordsContainerEl.className = "inputWordsContainer";
@@ -210,7 +210,7 @@ function init(): boolean {
         continue;
       }
 
-      let inputWordEl = document.createElement("div");
+      const inputWordEl = document.createElement("div");
       inputWordEl.className = "inputWord";
 
       // Calculate inputWordEl properties relative to inputWordsContainerEl
@@ -352,7 +352,7 @@ function getContainerBounds(elements: HTMLElement[]): DOMRect {
     right: maxX,
     bottom: maxY,
     left: minX,
-    toJSON: function () {
+    toJSON: function (): any {
       return JSON.stringify({
         x: this.x,
         y: this.y,
