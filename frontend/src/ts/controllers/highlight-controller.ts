@@ -258,7 +258,6 @@ function getHighlightWidth(
       inputWordEls[wordEndIndex].getBoundingClientRect();
     let width = highlightRect.width + PADDING_X;
     width -= lastWordElRect.width - lastInputWordElRect.width;
-
     return width;
   }
 
