@@ -26,7 +26,9 @@
 
   .inputWordsContainer {
     position: absolute;
-    transition: all 0.25s ease;
+    &.withAnimation {
+      transition: all 0.25s ease;
+    }
   }
 
   .highlightPlaceholder {

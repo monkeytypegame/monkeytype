@@ -35,6 +35,7 @@ let inputWordEls: HTMLElement[] = [];
 // Flags
 let isInitialized = false;
 let isHoveringChart = false;
+let isFirstHighlight = true;
 
 export function highlightWords(
   firstWordIndex: number,
@@ -73,11 +74,15 @@ export function highlightWords(
       const inputWordsContainer: HTMLElement = highlightEl
         .children[0] as HTMLElement;
       inputWordsContainer.style.left = -1 * offsets[lineIndex] + "px";
+      if (!isFirstHighlight && inputWordsContainer.classList.length === 1) {
+        inputWordsContainer.classList.add("withAnimation");
+      }
     }
     highlightEl.style.left = highlightLeftStr;
     highlightEl.style.width = highlightWidthStr;
   }
 
+  isFirstHighlight = false;
   return true;
 }
 
@@ -102,6 +107,7 @@ export function destroy(): void {
   lines = [];
   inputWordEls = [];
   isInitialized = false;
+  isFirstHighlight = true;
 }
 
 // Function to initialize the highlight system
@@ -174,8 +180,6 @@ function init(): boolean {
     const HC_height = line.rect.height + PADDING_Y;
 
     // Calculate inputWordsContainer positions
-    const IWC_rect_top = line.rect.top;
-    const IWC_rect_left = line.rect.left;
     const IWC_width = line.rect.width;
     const IWC_height = line.rect.height;
 
@@ -194,14 +198,14 @@ function init(): boolean {
     const highlightPlaceholderEl = document.createElement("div");
     const inputWordsContainerEl = document.createElement("div");
 
-    highlightPlaceholderEl.className = "highlightPlaceholder";
-    inputWordsContainerEl.className = "inputWordsContainer";
-
     // Calculate inputWordsContainerEl properties relative to highlightContainer
     inputWordsContainerEl.style.top = line.rect.top - HC_rect_top + "px";
     inputWordsContainerEl.style.left = line.rect.left - HC_rect_left + "px";
     inputWordsContainerEl.style.width = IWC_width + "px";
     inputWordsContainerEl.style.height = IWC_height + "px";
+
+    highlightPlaceholderEl.className = "highlightPlaceholder";
+    inputWordsContainerEl.className = "inputWordsContainer";
 
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       const wordEl = wordEls[i];
@@ -212,13 +216,8 @@ function init(): boolean {
       }
 
       const inputWordEl = document.createElement("div");
-      inputWordEl.className = "inputWord";
 
       // Calculate inputWordEl properties relative to inputWordsContainerEl
-      const wordRect = wordEl.getBoundingClientRect();
-      inputWordEl.style.top = wordRect.top - IWC_rect_top + "px";
-      inputWordEl.style.left = wordRect.left - IWC_rect_left + "px";
-
       inputWordEl.style.left = wordEl.offsetLeft + PADDING_OFFSET_X + "px";
       inputWordEl.innerHTML = userInputString
         .replace(/\t/g, "_")
@@ -227,6 +226,7 @@ function init(): boolean {
         .replace(/>/g, "&gt")
         .slice(0, wordEl.childElementCount);
 
+      inputWordEl.className = "inputWord";
       inputWordsContainerEl.append(inputWordEl);
       inputWordEls.push(inputWordEl);
     }
