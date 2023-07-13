@@ -175,8 +175,6 @@ function init(): boolean {
     // Calculate inputWordsContainer positions
     const IWC_rect_top = line.rect.top;
     const IWC_rect_left = line.rect.left;
-    const IWC_rel_top = IWC_rect_top - HC_rect_top;
-    const IWC_rel_left = IWC_rect_left - HC_rect_left;
     const IWC_width = line.rect.width;
     const IWC_height = line.rect.height;
 
@@ -290,13 +288,13 @@ function getHighlightWidth(
   const lastInputWordElRect =
     inputWordEls[wordEndIndex].getBoundingClientRect();
   width -= lastWordElRect.width - lastInputWordElRect.width;
-  console.log(lastWordElRect.width, lastInputWordElRect.width);
-
   return width;
 }
 
 // Function to calculate the left offsets for a given word index
 function getOffsets(firstWordIndex: number): number[] {
+  const OFFSET_LEFT_LIMIT = -1 * lines[0].rect.width;
+  const OFFSET_RIGHT_LIMIT = 2 * lines[0].rect.width;
   const lineIndexOfWord = wordIndexToLineIndexDict[firstWordIndex];
   const offsets = new Array(lineIndexOfWord + 1).fill(0);
 
@@ -305,7 +303,10 @@ function getOffsets(firstWordIndex: number): number[] {
 
   // calculate offsets for lines above, going from zero to lineIndexOfWord
   for (let i = lineIndexOfWord - 1; i >= 0; i--) {
-    offsets[i] = offsets[i + 1] + lines[i].rect.width + PADDING_X;
+    offsets[i] = Math.min(
+      offsets[i + 1] + lines[i].rect.width + PADDING_X,
+      OFFSET_RIGHT_LIMIT
+    );
   }
 
   // calculate offsets for lines below, going from lineIndexOfWord to lines.length
@@ -316,7 +317,10 @@ function getOffsets(firstWordIndex: number): number[] {
         offsets[lineIndexOfWord] +
         PADDING_X);
     for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
-      offsets[i] = offsets[i - 1] - lines[i - 1].rect.width + PADDING_X;
+      offsets[i] = Math.max(
+        offsets[i - 1] - lines[i - 1].rect.width + PADDING_X,
+        OFFSET_LEFT_LIMIT
+      );
     }
   }
 
