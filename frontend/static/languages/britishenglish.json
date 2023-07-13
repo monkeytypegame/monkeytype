@@ -603,5 +603,7 @@
   ["catalogs", "catalogues"],
   ["cataloged", "catalogued"],
   ["uncataloged", "uncatalogued"],
-  ["catalogers", "cataloguers"]
+  ["catalogers", "cataloguers"],
+  ["discolored", "discoloured"],
+  ["discolor", "discolour"]
 ]
