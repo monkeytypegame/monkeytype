@@ -30,7 +30,7 @@ let highlightContainerEls: HTMLElement[] = [];
 let highlightEls: HTMLElement[] = [];
 
 // Array of user inputs aligned with .word elements
-const inputWordEls: HTMLElement[] = [];
+let inputWordEls: HTMLElement[] = [];
 
 // Flags
 let isInitialized = false;
@@ -100,6 +100,7 @@ export function destroy(): void {
   highlightContainerEls = [];
   wordIndexToLineIndexDict = {};
   lines = [];
+  inputWordEls = [];
   isInitialized = false;
 }
 
