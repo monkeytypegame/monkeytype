@@ -1,18 +1,17 @@
 // The code defines the necessary operations for a text highlighting system in a web page.
 // This system utilizes absolutely positioned, overflow hidden divs, known as "highlightContainer",
 // to place a highlight (".highlight") on top of the text to be highlighted.
-
 // Constants for padding around the highlights
 const PADDING_X = 18;
 const PADDING_Y = 14;
 const PADDING_OFFSET_X = PADDING_X / 2;
-const PADDING_OFFSET_Y = PADDING_Y / 2 + 0.5;
+const PADDING_OFFSET_Y = PADDING_Y / 2;
 
 // Type definition for a Line object, which represents a line of text
 type Line = {
+  lineRect: DOMRect;
   firstWordIndex: number;
   lastWordIndex: number;
-  width: number;
 };
 
 // Array of Line objects
@@ -29,6 +28,9 @@ let highlightContainers: HTMLElement[] = [];
 
 // Array of highlight elements
 let highlightEls: HTMLElement[] = [];
+
+// Array of user inputs aligned with .word elements
+let inputWords: HTMLElement[] = [];
 
 // Flags
 let isInitialized = false;
@@ -82,6 +84,7 @@ export function highlightWords(
 export function setIsHoverChart(state: boolean): void {
   isHoveringChart = state;
 }
+
 // Function to clear all highlights
 export function clear(): void {
   $(".highlight").addClass("highlightPlaceholder");
@@ -111,8 +114,7 @@ function init(): boolean {
   }
 
   let prevLineEndWordIndex = -1;
-  let containerBounds;
-  let width;
+  let lineRect;
   let currLineIndex = 0;
   wordEls = $("#resultWordsHistory .words .word");
 
@@ -124,35 +126,37 @@ function init(): boolean {
 
     if (word.offsetTop != prevWord.offsetTop) {
       currLineIndex++;
-      containerBounds = getContainerBounds([
+      lineRect = getContainerBounds([
         wordEls[prevLineEndWordIndex + 1],
         wordEls[i - 1],
       ]);
-      width = containerBounds[1] - containerBounds[0];
       lines.push({
         firstWordIndex: prevLineEndWordIndex + 1,
         lastWordIndex: i - 1,
-        width: width,
+        lineRect,
       });
       prevLineEndWordIndex = i - 1;
     }
     wordIndexToLineIndexDict[i] = currLineIndex;
   }
 
-  containerBounds = getContainerBounds([
+  // Construct last line
+  lineRect = getContainerBounds([
     wordEls[prevLineEndWordIndex + 1],
     wordEls[wordEls.length - 1],
   ]);
-  width = containerBounds[1] - containerBounds[0];
   lines.push({
     firstWordIndex: prevLineEndWordIndex + 1,
     lastWordIndex: wordEls.length - 1,
-    width: width,
+    lineRect,
   });
 
   // Set top and left as % realtive to "#resultWordsHistory"
   const RWH_width = $("#resultWordsHistory").width()!;
   const RWH_height = $("#resultWordsHistory").height()!;
+  const RWH_rect_top = $("#resultWordsHistory")[0].getBoundingClientRect().top;
+  const RWH_rect_left = $("#resultWordsHistory")[0].getBoundingClientRect()
+    .left;
 
   // Create highlightContainers
   lines.forEach((line) => {
@@ -160,18 +164,33 @@ function init(): boolean {
     highlightContainer.classList.add("highlightContainer");
     highlightContainers.push(highlightContainer);
 
-    // Calculate top, left, width, height
-    const HC_top =
-      wordEls && wordEls[line.firstWordIndex].offsetTop - PADDING_OFFSET_Y;
-    const HC_left =
-      wordEls && wordEls[line.firstWordIndex].offsetLeft - PADDING_OFFSET_X;
-    const HC_width = line.width + PADDING_X;
-    const HC_height =
-      wordEls && wordEls[line.firstWordIndex].offsetHeight + PADDING_Y;
+    // Calculate highlightContainer properties
+    const HC_rect_top = line.lineRect.top - PADDING_OFFSET_X;
+    const HC_rect_left = line.lineRect.left - PADDING_OFFSET_Y;
+    const HC_rel_top = HC_rect_top - RWH_rect_top;
+    const HC_rel_left = HC_rect_left - RWH_rect_left;
+    const HC_width = line.lineRect.width + PADDING_X;
+    const HC_height = line.lineRect.height + PADDING_Y;
+
+    console.log({
+      HC_rect_top,
+      HC_rect_left,
+      HC_rel_top,
+      HC_rel_left,
+      HC_width,
+      HC_height,
+      RWH_rect_top,
+      RWH_rect_left,
+      RWH_width,
+      RWH_height,
+    });
+
+    // Calculate inputWordsContainer positions
+    // const IWC_top = wordEls &&
 
     // Calculate top, left as % relative to "#resultWordsHistory"
-    const HC_top_percent = (HC_top / RWH_height) * 100 + "%";
-    const HC_left_percent = (HC_left / RWH_width) * 100 + "%";
+    const HC_top_percent = (HC_rel_top / RWH_height) * 100 + "%";
+    const HC_left_percent = (HC_rel_left / RWH_width) * 100 + "%";
     const HC_width_percent = (HC_width / RWH_width) * 100 + "%";
     const HC_height_percent = (HC_height / RWH_height) * 100 + "%";
 
@@ -181,7 +200,12 @@ function init(): boolean {
     highlightContainer.style.height = HC_height_percent;
 
     // Construct highlightPlaceholder w/ inputWord elements
-    let highlightPlaceholderEl = `<div class="highlightPlaceholder"> <div class="inputWordsContainer" style="top:${PADDING_OFFSET_Y}px;">`;
+    let highlightPlaceholderEl = document.createElement("div");
+    let inputWordsContainerEl = document.createElement("div");
+
+    highlightPlaceholderEl.className = "highlightPlaceholder";
+    inputWordsContainerEl.className = "inputWordsContainer";
+
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       const wordEl = wordEls[i];
       const userInputString = wordEl.getAttribute("input")!;
@@ -190,19 +214,22 @@ function init(): boolean {
         continue;
       }
 
-      highlightPlaceholderEl += `<div class="inputWord" style="left:${
-        wordEl.offsetLeft + PADDING_OFFSET_X
-      }px;">${userInputString
+      let inputWordEl = document.createElement("div");
+      inputWordEl.className = "inputWord";
+      inputWordEl.style.left = wordEl.offsetLeft + PADDING_OFFSET_X + "px";
+      inputWordEl.innerHTML = userInputString
         .replace(/\t/g, "_")
         .replace(/\n/g, "_")
         .replace(/</g, "&lt")
         .replace(/>/g, "&gt")
-        .slice(0, wordEl.childElementCount)} </div>`;
+        .slice(0, wordEl.childElementCount);
+
+      inputWordsContainerEl.append(inputWordEl);
+      inputWords.push(inputWordEl);
     }
 
-    highlightPlaceholderEl += "</div></div>";
-    highlightContainer.innerHTML = highlightPlaceholderEl;
-
+    highlightPlaceholderEl.append(inputWordsContainerEl);
+    highlightContainer.append(highlightPlaceholderEl);
     $("#resultWordsHistory").append(highlightContainer);
   });
 
@@ -220,11 +247,11 @@ function getHighlightWidth(
 
   // If highlight is just one line...
   if (lineIndexOfWordStart == lineIndexOfWordEnd) {
-    const bounds = getContainerBounds([
+    const highlightRect = getContainerBounds([
       wordEls[wordStartIndex],
       wordEls[wordEndIndex],
     ]);
-    return bounds[1] - bounds[0] + PADDING_X;
+    return highlightRect.width + PADDING_X;
   }
 
   // Multiple lines
@@ -238,15 +265,11 @@ function getHighlightWidth(
     wordEls[wordEndIndex],
   ]);
 
-  let width =
-    firstLineBounds[1] -
-    firstLineBounds[0] +
-    lastLineBounds[1] -
-    lastLineBounds[0];
+  let width = firstLineBounds.width + lastLineBounds.width;
 
   // Add middle line highlights to width
   for (let i = lineIndexOfWordStart + 1; i < lineIndexOfWordEnd; i++) {
-    width += lines[i].width;
+    width += lines[i].lineRect.width;
   }
 
   // Account for padding
@@ -265,16 +288,18 @@ function getOffsets(firstWordIndex: number): number[] {
 
   // calculate offsets for lines above, going from zero to lineIndexOfWord
   for (let i = lineIndexOfWord - 1; i >= 0; i--) {
-    offsets[i] = offsets[i + 1] + lines[i].width + PADDING_X;
+    offsets[i] = offsets[i + 1] + lines[i].lineRect.width + PADDING_X;
   }
 
   // calculate offsets for lines below, going from lineIndexOfWord to lines.length
   if (lineIndexOfWord != lines.length - 1) {
     offsets[lineIndexOfWord + 1] =
       -1 *
-      (lines[lineIndexOfWord].width - offsets[lineIndexOfWord] + PADDING_X);
+      (lines[lineIndexOfWord].lineRect.width -
+        offsets[lineIndexOfWord] +
+        PADDING_X);
     for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
-      offsets[i] = offsets[i - 1] - lines[i - 1].width + PADDING_X;
+      offsets[i] = offsets[i - 1] - lines[i - 1].lineRect.width + PADDING_X;
     }
   }
 
@@ -282,7 +307,7 @@ function getOffsets(firstWordIndex: number): number[] {
 }
 
 // Function to get the bounding rectangle of a collection of elements
-function getContainerBounds(elements: HTMLElement[]): number[] {
+function getContainerBounds(elements: HTMLElement[]): DOMRect {
   let minX = Infinity,
     minY = Infinity,
     maxX = -Infinity,
@@ -291,15 +316,33 @@ function getContainerBounds(elements: HTMLElement[]): number[] {
   elements.forEach((element) => {
     const rect = element.getBoundingClientRect();
 
-    // Adjust for scrolling
-    const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-
-    minX = Math.min(minX, rect.left + scrollLeft);
-    minY = Math.min(minY, rect.top + scrollTop);
-    maxX = Math.max(maxX, rect.right + scrollLeft);
-    maxY = Math.max(maxY, rect.bottom + scrollTop);
+    minX = Math.min(minX, rect.left);
+    minY = Math.min(minY, rect.top);
+    maxX = Math.max(maxX, rect.right);
+    maxY = Math.max(maxY, rect.bottom);
   });
 
-  return [minX, maxX, minY, maxY];
+  // Create a new object with the same properties as a DOMRect
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+    top: minY,
+    right: maxX,
+    bottom: maxY,
+    left: minX,
+    toJSON: function () {
+      return JSON.stringify({
+        x: this.x,
+        y: this.y,
+        width: this.width,
+        height: this.height,
+        top: this.top,
+        right: this.right,
+        bottom: this.bottom,
+        left: this.left,
+      });
+    },
+  };
 }

@@ -2,6 +2,7 @@
   position: absolute;
   overflow: hidden;
   pointer-events: none;
+  background-color: rgba(200, 200, 200, 0.4);
 
   .highlight {
     margin: 0px;
@@ -11,7 +12,7 @@
     background-color: var(--sub-color);
     border-radius: var(--roundness);
 
-    overflow: hidden;
+    // overflow: hidden;
     transition: all 0.25s ease;
     z-index: 1;
   }
@@ -20,7 +21,6 @@
     color: var(--bg-color);
     border-bottom: 5px solid transparent;
     font-size: 1em;
-    font-variant: no-common-ligatures;
     line-height: 1em;
     position: absolute;
   }
