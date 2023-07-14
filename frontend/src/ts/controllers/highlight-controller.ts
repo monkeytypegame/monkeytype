@@ -32,6 +32,8 @@ let highlightEls: HTMLElement[] = [];
 // Array of user inputs aligned with .word elements
 let inputWordEls: HTMLElement[] = [];
 
+let highlightRange: number[] = [];
+
 // Flags
 let isInitialized = false;
 let isHoveringChart = false;
@@ -42,9 +44,20 @@ export function highlightWords(
   firstWordIndex: number,
   lastWordIndex: number
 ): boolean {
+  // Early exit if not hovering over chart
   if (!isHoveringChart) {
     return false;
   }
+
+  // Early exit if highlight range has not changed
+  if (
+    highlightRange &&
+    firstWordIndex === highlightRange[0] &&
+    lastWordIndex === highlightRange[1]
+  ) {
+    return false;
+  }
+
   if (!isInitialized) {
     const initResponse = init();
     if (!initResponse) {
@@ -85,6 +98,7 @@ export function highlightWords(
   }
 
   isFirstHighlight = false;
+  highlightRange = [firstWordIndex, lastWordIndex];
   return true;
 }
 
@@ -99,6 +113,7 @@ export function clear(): void {
     highlightEl.classList.remove("highlight");
     highlightEl.classList.add("highlightPlaceholder");
   }
+  highlightRange = [];
 }
 
 // Function to completely destroy the highlight system.
