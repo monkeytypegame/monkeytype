@@ -1204,8 +1204,6 @@ $("#wordsInput").on("input", (event) => {
     }
   }
 
-  console.log(TestInput.input.current);
-
   setWordsInput(" " + TestInput.input.current);
   updateUI();
   if (Config.tapeMode !== "off") {
