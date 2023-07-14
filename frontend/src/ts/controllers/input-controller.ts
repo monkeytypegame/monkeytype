@@ -1187,7 +1187,8 @@ $("#wordsInput").on("input", (event) => {
     if (!CompositionState.getComposing()) {
       Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
     }
-  } else if (inputValue !== currTestInput) {
+  }
+  if (inputValue !== currTestInput) {
     let diffStart = 0;
     while (inputValue[diffStart] === currTestInput[diffStart]) {
       diffStart++;
@@ -1202,6 +1203,8 @@ $("#wordsInput").on("input", (event) => {
       handleChar(inputValue[i], i - iOffset, realInputValue);
     }
   }
+
+  console.log(TestInput.input.current);
 
   setWordsInput(" " + TestInput.input.current);
   updateUI();
