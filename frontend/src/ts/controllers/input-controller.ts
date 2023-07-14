@@ -1165,8 +1165,6 @@ $("#wordsInput").on("input", (event) => {
     return;
   }
 
-  console.log("input", inputValue, currTestInput, realInputValue);
-
   if (realInputValue.length === 0 && currTestInput.length === 0) {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
