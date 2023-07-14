@@ -2,8 +2,6 @@
 // This system utilizes absolutely positioned, overflow hidden divs, known as "highlightContainer",
 // to place a highlight (".highlight") on top of the text to be highlighted.
 
-import { highlight } from "../observables/keymap-event";
-
 // Constants for padding around the highlights
 const PADDING_X = 16;
 const PADDING_Y = 12;
