@@ -37,6 +37,20 @@ let isInitialized = false;
 let isHoveringChart = false;
 let isFirstHighlight = true;
 
+// Stats counters
+// let numDomManipulations = 0;
+// let numJQueryCalls = 0;
+
+// function updateDom(numManipulations: number) {
+//   numDomManipulations += numManipulations;
+//   console.log("numDomManipulations: " + numDomManipulations);
+// }
+
+// function updateJQuery(numCalls: number) {
+//   numJQueryCalls += numCalls;
+//   console.log("numJQueryCalls: " + numJQueryCalls);
+// }
+
 export function highlightWords(
   firstWordIndex: number,
   lastWordIndex: number
@@ -92,15 +106,26 @@ export function setIsHoverChart(state: boolean): void {
 
 // Function to clear all highlights
 export function clear(): void {
-  $(".highlight").addClass("highlightPlaceholder");
-  $(".highlightPlaceholder").removeClass("highlight");
+  for (let i = 0; i < highlightEls.length; i++) {
+    const highlightEl = highlightEls[i];
+    highlightEl.classList.remove("highlight");
+    highlightEl.classList.add("highlightPlaceholder");
+  }
+
   highlightEls = [];
 }
 
 // Function to completely destroy the highlight system.
 export function destroy(): void {
   if (!isInitialized) return;
-  $(".highlightContainer").remove();
+
+  // Remove highlight containers from DOM
+  for (let i = 0; i < highlightContainerEls.length; i++) {
+    const highlightContainerEl = highlightContainerEls[i];
+    highlightContainerEl.remove();
+  }
+
+  // Reset variables
   highlightEls = [];
   highlightContainerEls = [];
   wordIndexToLineIndexDict = {};
@@ -116,14 +141,15 @@ function init(): boolean {
     throw Error("highlight containers already initialized");
   }
 
-  if ($("#resultWordsHistory .words .word").length === 0) {
+  wordEls = $("#resultWordsHistory .words .word");
+
+  if (wordEls.length === 0) {
     return false;
   }
 
   let prevLineEndWordIndex = -1;
   let lineRect;
   let currLineIndex = 0;
-  wordEls = $("#resultWordsHistory .words .word");
 
   // Construct lines array and wordIndexToLineIndexDict
   wordIndexToLineIndexDict[0] = 0;
@@ -233,7 +259,7 @@ function init(): boolean {
 
     highlightPlaceholderEl.append(inputWordsContainerEl);
     highlightContainer.append(highlightPlaceholderEl);
-    $("#resultWordsHistory").append(highlightContainer);
+    RWH.append(highlightContainer);
   });
 
   isInitialized = true;
