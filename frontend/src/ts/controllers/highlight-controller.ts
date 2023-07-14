@@ -7,7 +7,7 @@ const PADDING_Y = 12;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2;
 
-// Type definition for a Line object, which represents a line of text
+// Type definition for a Line object, each representing a line of text in #resultWordsHistory
 type Line = {
   rect: DOMRect;
   firstWordIndex: number;
@@ -37,20 +37,7 @@ let isInitialized = false;
 let isHoveringChart = false;
 let isFirstHighlight = true;
 
-// Stats counters
-// let numDomManipulations = 0;
-// let numJQueryCalls = 0;
-
-// function updateDom(numManipulations: number) {
-//   numDomManipulations += numManipulations;
-//   console.log("numDomManipulations: " + numDomManipulations);
-// }
-
-// function updateJQuery(numCalls: number) {
-//   numJQueryCalls += numCalls;
-//   console.log("numJQueryCalls: " + numJQueryCalls);
-// }
-
+// Highlights .word elements in range [firstWordIndex, lastWordIndex]
 export function highlightWords(
   firstWordIndex: number,
   lastWordIndex: number
@@ -68,14 +55,15 @@ export function highlightWords(
   const highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
   const offsets = getOffsets(firstWordIndex);
 
-  if (highlightEls.length === 0) {
+  // Convert highlightPlaceholder elements to highlight
+  if (
+    highlightEls &&
+    highlightEls[0].classList.contains("highlightPlaceholder")
+  ) {
     for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      const highlightEl: HTMLElement = document.querySelector(
-        ".highlightPlaceholder"
-      )!;
+      const highlightEl: HTMLElement = highlightEls[lineIndex];
       highlightEl.classList.remove("highlightPlaceholder");
       highlightEl.classList.add("highlight");
-      highlightEls.push(highlightEl);
     }
   }
 
@@ -111,8 +99,6 @@ export function clear(): void {
     highlightEl.classList.remove("highlight");
     highlightEl.classList.add("highlightPlaceholder");
   }
-
-  highlightEls = [];
 }
 
 // Function to completely destroy the highlight system.
@@ -257,6 +243,7 @@ function init(): boolean {
       inputWordEls.push(inputWordEl);
     }
 
+    highlightEls.push(highlightPlaceholderEl);
     highlightPlaceholderEl.append(inputWordsContainerEl);
     highlightContainer.append(highlightPlaceholderEl);
     RWH.append(highlightContainer);
