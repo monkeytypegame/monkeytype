@@ -78,34 +78,35 @@ export function highlightWordsInRange(
   const offsets = getOffsets(firstWordIndex);
   const highlightWidthStr = highlightWidth + "px";
 
-  // Update highlight properties
+  // Update positions for each highlight and its inputWordsContainer
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
     const highlightEl: HTMLElement = highlightEls[lineIndex];
+    const inputWordsContainer: HTMLElement = highlightEl
+      .children[0] as HTMLElement;
     const highlightLeftStr = offsets[lineIndex] + "px";
     highlightEl.classList.remove("highlight-hidden");
 
-    // Update highlight position with animations if not first highlight
+    // Make highlight appear instantly for first highlight
     if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
       highlightEl.classList.add("withAnimation");
     } else {
       highlightEl.classList.remove("withAnimation");
     }
 
-    // Update inputWordsContainer position
-    if (highlightEl.children.length) {
-      const inputWordsContainer: HTMLElement = highlightEl
-        .children[0] as HTMLElement;
-      if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
-        inputWordsContainer.classList.add("withAnimation");
-      } else {
-        inputWordsContainer.classList.remove("withAnimation");
-      }
-      inputWordsContainer.style.left = -1 * offsets[lineIndex] + "px";
+    // Make container appear instantly for first highlight
+    if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
+      inputWordsContainer.classList.add("withAnimation");
+    } else {
+      inputWordsContainer.classList.remove("withAnimation");
     }
+
+    // Update highlight
+    inputWordsContainer.style.left = -1 * offsets[lineIndex] + "px";
     highlightEl.style.left = highlightLeftStr;
     highlightEl.style.width = highlightWidthStr;
   }
 
+  // Update flags and variables
   isFirstHighlightSinceInit = false;
   isFirstHighlightSinceClear = false;
   highlightRange = [firstWordIndex, lastWordIndex];
