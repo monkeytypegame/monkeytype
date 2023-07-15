@@ -36,13 +36,15 @@ let inputWordEls: HTMLElement[] = [];
 // Range of currently highlighted words
 let highlightRange: number[] = [];
 
+// #resultWordsHistory element and its bounding rect
 let RWH_el: HTMLElement;
 let RWH_rect: DOMRect;
 
 // Flags
 let isInitialized = false;
 let isHoveringChart = false;
-let isFirstHighlight = true;
+let isFirstHighlightSinceInit = true;
+let isFirstHighlightSinceClear = true;
 
 // Highlights .word elements in range [firstWordIndex, lastWordIndex]
 export function highlightWords(
@@ -63,46 +65,50 @@ export function highlightWords(
     return false;
   }
 
+  // Initialize highlight system if not already initialized
   if (!isInitialized) {
     const initResponse = init();
     if (!initResponse) {
       return false;
     }
   }
+  console.log("HIGHLIGHT");
 
+  // Get highlight properties
   const highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
   const offsets = getOffsets(firstWordIndex);
+  const highlightWidthStr = highlightWidth + "px";
 
-  // Convert highlightPlaceholder elements to highlight
-  if (
-    highlightEls &&
-    highlightEls[0].classList.contains("highlightPlaceholder")
-  ) {
-    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      const highlightEl: HTMLElement = highlightEls[lineIndex];
-      highlightEl.classList.remove("highlightPlaceholder");
-      highlightEl.classList.add("highlight");
-    }
-  }
-
+  // Update highlight properties
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
     const highlightEl: HTMLElement = highlightEls[lineIndex];
-    const highlightWidthStr = highlightWidth + "px";
     const highlightLeftStr = offsets[lineIndex] + "px";
+    highlightEl.classList.remove("highlight-hidden");
 
+    // Update highlight position with animations if not first highlight
+    if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
+      highlightEl.classList.add("withAnimation");
+    } else {
+      highlightEl.classList.remove("withAnimation");
+    }
+
+    // Update inputWordsContainer position
     if (highlightEl.children.length) {
       const inputWordsContainer: HTMLElement = highlightEl
         .children[0] as HTMLElement;
-      inputWordsContainer.style.left = -1 * offsets[lineIndex] + "px";
-      if (!isFirstHighlight && inputWordsContainer.classList.length === 1) {
+      if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
         inputWordsContainer.classList.add("withAnimation");
+      } else {
+        inputWordsContainer.classList.remove("withAnimation");
       }
+      inputWordsContainer.style.left = -1 * offsets[lineIndex] + "px";
     }
     highlightEl.style.left = highlightLeftStr;
     highlightEl.style.width = highlightWidthStr;
   }
 
-  isFirstHighlight = false;
+  isFirstHighlightSinceInit = false;
+  isFirstHighlightSinceClear = false;
   highlightRange = [firstWordIndex, lastWordIndex];
   return true;
 }
@@ -114,11 +120,12 @@ export function setIsHoverChart(state: boolean): void {
 
 // Function to clear all highlights
 export function clear(): void {
+  console.log("CLEAR");
   for (let i = 0; i < highlightEls.length; i++) {
     const highlightEl = highlightEls[i];
-    highlightEl.classList.remove("highlight");
-    highlightEl.classList.add("highlightPlaceholder");
+    highlightEl.classList.add("highlight-hidden");
   }
+  isFirstHighlightSinceClear = true;
   highlightRange = [];
 }
 
@@ -139,7 +146,8 @@ export function destroy(): void {
   lines = [];
   inputWordEls = [];
   isInitialized = false;
-  isFirstHighlight = true;
+  isFirstHighlightSinceInit = true;
+  isFirstHighlightSinceClear = true;
   highlightRange = [];
 }
 
@@ -229,8 +237,8 @@ function init(): boolean {
     highlightContainer.style.left = HC_left_percent;
     highlightContainer.style.height = HC_height_percent;
 
-    // Construct and inject highlightPlaceholder elements
-    const highlightPlaceholderEl = document.createElement("div");
+    // Construct and inject highlight elements
+    const highlightEl = document.createElement("div");
     const inputWordsContainerEl = document.createElement("div");
 
     // Calculate inputWordsContainerEl properties relative to highlightContainer
@@ -239,7 +247,7 @@ function init(): boolean {
     inputWordsContainerEl.style.width = IWC_width + "px";
     inputWordsContainerEl.style.height = IWC_height + "px";
 
-    highlightPlaceholderEl.className = "highlightPlaceholder";
+    highlightEl.className = "highlight highlight-hidden";
     inputWordsContainerEl.className = "inputWordsContainer";
 
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
@@ -266,9 +274,9 @@ function init(): boolean {
       inputWordEls.push(inputWordEl);
     }
 
-    highlightEls.push(highlightPlaceholderEl);
-    highlightPlaceholderEl.append(inputWordsContainerEl);
-    highlightContainer.append(highlightPlaceholderEl);
+    highlightEls.push(highlightEl);
+    highlightEl.append(inputWordsContainerEl);
+    highlightContainer.append(highlightEl);
     RWH_el.append(highlightContainer);
   });
 

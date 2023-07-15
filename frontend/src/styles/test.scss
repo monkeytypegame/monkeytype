@@ -10,10 +10,19 @@
     position: relative;
     background-color: var(--sub-color);
     border-radius: var(--roundness);
+    opacity: 1;
+    transition: opacity 0.125s linear;
 
     overflow: hidden;
-    transition: all 0.25s ease;
     z-index: 1;
+
+    &.withAnimation {
+      transition: left 0.25s ease, width 0.25s ease, opacity 0.125s linear;
+    }
+
+    &.highlight-hidden {
+      opacity: 0;
+    }
   }
 
   .inputWord {
@@ -29,11 +38,6 @@
     &.withAnimation {
       transition: all 0.25s ease;
     }
-  }
-
-  .highlightPlaceholder {
-    opacity: 0;
-    overflow: hidden;
   }
 }
 
