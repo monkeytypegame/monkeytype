@@ -47,7 +47,7 @@ let isFirstHighlightSinceInit = true;
 let isFirstHighlightSinceClear = true;
 
 // Highlights .word elements in range [firstWordIndex, lastWordIndex]
-export function highlightWords(
+export function highlightWordsInRange(
   firstWordIndex: number,
   lastWordIndex: number
 ): boolean {
