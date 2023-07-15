@@ -72,7 +72,6 @@ export function highlightWords(
       return false;
     }
   }
-  console.log("HIGHLIGHT");
 
   // Get highlight properties
   const highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
@@ -120,7 +119,6 @@ export function setIsHoverChart(state: boolean): void {
 
 // Function to clear all highlights
 export function clear(): void {
-  console.log("CLEAR");
   for (let i = 0; i < highlightEls.length; i++) {
     const highlightEl = highlightEls[i];
     highlightEl.classList.add("highlight-hidden");
