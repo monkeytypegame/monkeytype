@@ -1,4 +1,4 @@
-import * as HighlightController from "./highlight-controller";
+import * as ResultWordHighlight from "../elements/result-word-highlight";
 
 import {
   BarController,
@@ -228,7 +228,7 @@ export const result: ChartWithUpdateColors<
                 const unique = [...new Set(wordsToHighlight)];
                 const firstHighlightWordIndex = unique[0];
                 const lastHighlightWordIndex = unique[unique.length - 1];
-                HighlightController.highlightWordsInRange(
+                ResultWordHighlight.highlightWordsInRange(
                   firstHighlightWordIndex,
                   lastHighlightWordIndex
                 );

@@ -18,7 +18,7 @@ import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
-import * as HighlightController from "../controllers/highlight-controller";
+import * as ResultWordHighlight from "../elements/result-word-highlight";
 
 const debouncedZipfCheck = debounce(250, () => {
   Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
@@ -1212,7 +1212,7 @@ $(".pageTest #copyWordsListButton").on("click", async () => {
 
 $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
-  HighlightController.destroy();
+  ResultWordHighlight.destroy();
 });
 
 $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
@@ -1221,12 +1221,12 @@ $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
 
 $(".pageTest #result #wpmChart").on("mouseleave", () => {
   $(".wordInputHighlight").remove(); // don't know if still needed
-  HighlightController.setIsHoverChart(false);
-  HighlightController.clear();
+  ResultWordHighlight.setIsHoverChart(false);
+  ResultWordHighlight.clear();
 });
 
 $(".pageTest #result #wpmChart").on("mouseenter", () => {
-  HighlightController.setIsHoverChart(true);
+  ResultWordHighlight.setIsHoverChart(true);
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
@@ -1255,7 +1255,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
 });
 
 addEventListener("resize", () => {
-  HighlightController.destroy();
+  ResultWordHighlight.destroy();
 });
 
 $("#wordsInput").on("focus", () => {
