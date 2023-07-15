@@ -81,6 +81,7 @@ class ChartWithUpdateColors<
   }
 }
 
+let prevTi: any = null;
 export const result: ChartWithUpdateColors<
   "line" | "scatter",
   number[],
@@ -218,6 +219,8 @@ export const result: ChartWithUpdateColors<
           intersect: false,
           callbacks: {
             afterLabel: function (ti): string {
+              if (prevTi === ti) return "";
+              prevTi = ti;
               try {
                 const wordsToHighlight =
                   TestInput.keypressPerSecond[parseInt(ti.label) - 1].words;

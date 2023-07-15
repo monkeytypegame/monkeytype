@@ -33,7 +33,11 @@ let highlightEls: HTMLElement[] = [];
 // Array of user inputs aligned with .word elements
 let inputWordEls: HTMLElement[] = [];
 
+// Range of currently highlighted words
 let highlightRange: number[] = [];
+
+let RWH_el: HTMLElement;
+let RWH_rect: DOMRect;
 
 // Flags
 let isInitialized = false;
@@ -103,6 +107,7 @@ export function highlightWords(
   return true;
 }
 
+// Sets isHoveringChart flag
 export function setIsHoverChart(state: boolean): void {
   isHoveringChart = state;
 }
@@ -144,7 +149,9 @@ function init(): boolean {
     throw Error("highlight containers already initialized");
   }
 
-  wordEls = $("#resultWordsHistory .words .word");
+  RWH_el = $("#resultWordsHistory")[0];
+  RWH_rect = RWH_el.getBoundingClientRect();
+  wordEls = $(RWH_el).find(".words .word");
 
   if (wordEls.length === 0) {
     return false;
@@ -188,11 +195,10 @@ function init(): boolean {
   });
 
   // Set top and left as % realtive to "#resultWordsHistory"
-  const RWH = $("#resultWordsHistory");
-  const RWH_width = RWH.width()!;
-  const RWH_height = RWH.height()!;
-  const RWH_rect_top = RWH[0].getBoundingClientRect().top;
-  const RWH_rect_left = RWH[0].getBoundingClientRect().left;
+  const RWH_width = RWH_rect.width;
+  const RWH_height = RWH_rect.height;
+  const RWH_rect_top = RWH_rect.top;
+  const RWH_rect_left = RWH_rect.left;
 
   // Create highlightContainers
   lines.forEach((line) => {
@@ -263,7 +269,7 @@ function init(): boolean {
     highlightEls.push(highlightPlaceholderEl);
     highlightPlaceholderEl.append(inputWordsContainerEl);
     highlightContainer.append(highlightPlaceholderEl);
-    RWH.append(highlightContainer);
+    RWH_el.append(highlightContainer);
   });
 
   isInitialized = true;
@@ -323,8 +329,8 @@ function getHighlightWidth(
 
 // Function to calculate the left offsets for a given word index
 function getOffsets(firstWordIndex: number): number[] {
-  const OFFSET_LEFT_LIMIT = -1 * window.innerWidth;
-  const OFFSET_RIGHT_LIMIT = 2 * window.innerWidth;
+  const OFFSET_LEFT_LIMIT = -1 * RWH_rect.width;
+  const OFFSET_RIGHT_LIMIT = 2 * RWH_rect.width;
   const lineIndexOfWord = wordIndexToLineIndexDict[firstWordIndex];
   const offsets = new Array(lineIndexOfWord + 1).fill(0);
 
