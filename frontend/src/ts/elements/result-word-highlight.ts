@@ -46,76 +46,50 @@ let isHoveringChart = false;
 let isFirstHighlightSinceInit = true;
 let isFirstHighlightSinceClear = true;
 
-// Highlights .word elements in range [firstWordIndex, lastWordIndex]
-export function highlightWordsInRange(
-  firstWordIndex: number,
-  lastWordIndex: number
-): boolean {
-  // Early exit if not hovering over chart
-  if (!isHoveringChart) {
-    return false;
-  }
-
-  // Early exit if highlight range has not changed
-  if (
-    highlightRange &&
-    firstWordIndex === highlightRange[0] &&
-    lastWordIndex === highlightRange[1]
-  ) {
-    return false;
-  }
-
-  // Initialize highlight system if not already initialized
-  if (!isInitialized) {
-    const initResponse = init();
-    if (!initResponse) {
-      return false;
-    }
-  }
-
-  // Get highlight properties
-  const highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
-  const offsets = getOffsets(firstWordIndex);
-  const highlightWidthStr = highlightWidth + "px";
-
-  // Update positions for each highlight and its inputWordsContainer
-  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-    const highlightEl: HTMLElement = highlightEls[lineIndex];
-    const inputWordsContainer: HTMLElement = highlightEl
-      .children[0] as HTMLElement;
-    const highlightLeftStr = offsets[lineIndex] + "px";
-    highlightEl.classList.remove("highlight-hidden");
-
-    // Make highlight appear instantly for first highlight
-    if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
-      highlightEl.classList.add("withAnimation");
-    } else {
-      highlightEl.classList.remove("withAnimation");
-    }
-
-    // Make container appear instantly for first highlight
-    if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
-      inputWordsContainer.classList.add("withAnimation");
-    } else {
-      inputWordsContainer.classList.remove("withAnimation");
-    }
-
-    // Update highlight
-    inputWordsContainer.style.left = -1 * offsets[lineIndex] + "px";
-    highlightEl.style.left = highlightLeftStr;
-    highlightEl.style.width = highlightWidthStr;
-  }
-
-  // Update flags and variables
-  isFirstHighlightSinceInit = false;
-  isFirstHighlightSinceClear = false;
-  highlightRange = [firstWordIndex, lastWordIndex];
-  return true;
-}
-
 // Sets isHoveringChart flag
 export function setIsHoverChart(state: boolean): void {
   isHoveringChart = state;
+}
+
+// Function to get the bounding rectangle of a collection of elements
+function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+
+  elements.forEach((element) => {
+    const rect = element.getBoundingClientRect();
+
+    minX = Math.min(minX, rect.left);
+    minY = Math.min(minY, rect.top);
+    maxX = Math.max(maxX, rect.right);
+    maxY = Math.max(maxY, rect.bottom);
+  });
+
+  // Create a new object with the same properties as a DOMRect
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+    top: minY,
+    right: maxX,
+    bottom: maxY,
+    left: minX,
+    toJSON: function (): any {
+      return JSON.stringify({
+        x: this.x,
+        y: this.y,
+        width: this.width,
+        height: this.height,
+        top: this.top,
+        right: this.right,
+        bottom: this.bottom,
+        left: this.left,
+      });
+    },
+  };
 }
 
 // Function to clear all highlights
@@ -176,7 +150,7 @@ function init(): boolean {
 
     if (word.offsetTop != prevWord.offsetTop) {
       currLineIndex++;
-      lineRect = getContainerBounds([
+      lineRect = getBoundingRectOfElements([
         wordEls[prevLineEndWordIndex + 1],
         wordEls[i - 1],
       ]);
@@ -191,7 +165,7 @@ function init(): boolean {
   }
 
   // Construct last line
-  lineRect = getContainerBounds([
+  lineRect = getBoundingRectOfElements([
     wordEls[prevLineEndWordIndex + 1],
     wordEls[wordEls.length - 1],
   ]);
@@ -284,55 +258,55 @@ function init(): boolean {
 }
 
 // Function to calculate the width of the highlight for a given range of words
-function getHighlightWidth(
-  wordStartIndex: number,
-  wordEndIndex: number
-): number {
-  const lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
-  const lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];
+// function getHighlightWidth(
+//   wordStartIndex: number,
+//   wordEndIndex: number
+// ): number {
+//   const lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
+//   const lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];
 
-  // If highlight is just one line...
-  if (lineIndexOfWordStart == lineIndexOfWordEnd) {
-    const highlightRect = getContainerBounds([
-      wordEls[wordStartIndex],
-      wordEls[wordEndIndex],
-    ]);
-    const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
-    const lastInputWordElRect =
-      inputWordEls[wordEndIndex].getBoundingClientRect();
-    let width = highlightRect.width + PADDING_X;
-    width -= lastWordElRect.width - lastInputWordElRect.width;
-    return width;
-  }
+//   // If highlight is just one line...
+//   if (lineIndexOfWordStart == lineIndexOfWordEnd) {
+//     const highlightRect = getBoundingRectOfElements([
+//       wordEls[wordStartIndex],
+//       wordEls[wordEndIndex],
+//     ]);
+//     const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
+//     const lastInputWordElRect =
+//       inputWordEls[wordEndIndex].getBoundingClientRect();
+//     let width = highlightRect.width + PADDING_X;
+//     width -= lastWordElRect.width - lastInputWordElRect.width;
+//     return width;
+//   }
 
-  // Multiple lines
-  const firstLineBounds = getContainerBounds([
-    wordEls[wordStartIndex],
-    wordEls[lines[lineIndexOfWordStart].lastWordIndex],
-  ]);
+//   // Multiple lines
+//   const firstLineBounds = getBoundingRectOfElements([
+//     wordEls[wordStartIndex],
+//     wordEls[lines[lineIndexOfWordStart].lastWordIndex],
+//   ]);
 
-  const lastLineBounds = getContainerBounds([
-    wordEls[lines[lineIndexOfWordEnd].firstWordIndex],
-    wordEls[wordEndIndex],
-  ]);
+//   const lastLineBounds = getBoundingRectOfElements([
+//     wordEls[lines[lineIndexOfWordEnd].firstWordIndex],
+//     wordEls[wordEndIndex],
+//   ]);
 
-  let width = firstLineBounds.width + lastLineBounds.width;
+//   let width = firstLineBounds.width + lastLineBounds.width;
 
-  // Add middle line highlights to width
-  for (let i = lineIndexOfWordStart + 1; i < lineIndexOfWordEnd; i++) {
-    width += lines[i].rect.width;
-  }
+//   // Add middle line highlights to width
+//   for (let i = lineIndexOfWordStart + 1; i < lineIndexOfWordEnd; i++) {
+//     width += lines[i].rect.width;
+//   }
 
-  // Account for padding
-  width += 2 * PADDING_X * (lineIndexOfWordEnd - lineIndexOfWordStart);
+//   // Account for padding
+//   width += 2 * PADDING_X * (lineIndexOfWordEnd - lineIndexOfWordStart);
 
-  // Subtract difference between last wordEl and last inputWordEl
-  const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
-  const lastInputWordElRect =
-    inputWordEls[wordEndIndex].getBoundingClientRect();
-  width -= lastWordElRect.width - lastInputWordElRect.width;
-  return width;
-}
+//   // Subtract difference between last wordEl and last inputWordEl
+//   const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
+//   const lastInputWordElRect =
+//     inputWordEls[wordEndIndex].getBoundingClientRect();
+//   width -= lastWordElRect.width - lastInputWordElRect.width;
+//   return width;
+// }
 
 // Function to calculate the left offsets for a given word index
 function getOffsets(firstWordIndex: number): number[] {
@@ -370,43 +344,69 @@ function getOffsets(firstWordIndex: number): number[] {
   return offsets;
 }
 
-// Function to get the bounding rectangle of a collection of elements
-function getContainerBounds(elements: HTMLElement[]): DOMRect {
-  let minX = Infinity,
-    minY = Infinity,
-    maxX = -Infinity,
-    maxY = -Infinity;
+// Highlights .word elements in range [firstWordIndex, lastWordIndex]
+export function highlightWordsInRange(
+  firstWordIndex: number,
+  lastWordIndex: number
+): boolean {
+  // Early exit if not hovering over chart
+  if (!isHoveringChart) {
+    return false;
+  }
 
-  elements.forEach((element) => {
-    const rect = element.getBoundingClientRect();
+  // Early exit if highlight range has not changed
+  if (
+    highlightRange &&
+    firstWordIndex === highlightRange[0] &&
+    lastWordIndex === highlightRange[1]
+  ) {
+    return false;
+  }
 
-    minX = Math.min(minX, rect.left);
-    minY = Math.min(minY, rect.top);
-    maxX = Math.max(maxX, rect.right);
-    maxY = Math.max(maxY, rect.bottom);
-  });
+  // Initialize highlight system if not already initialized
+  if (!isInitialized) {
+    const initResponse = init();
+    if (!initResponse) {
+      return false;
+    }
+  }
 
-  // Create a new object with the same properties as a DOMRect
-  return {
-    x: minX,
-    y: minY,
-    width: maxX - minX,
-    height: maxY - minY,
-    top: minY,
-    right: maxX,
-    bottom: maxY,
-    left: minX,
-    toJSON: function (): any {
-      return JSON.stringify({
-        x: this.x,
-        y: this.y,
-        width: this.width,
-        height: this.height,
-        top: this.top,
-        right: this.right,
-        bottom: this.bottom,
-        left: this.left,
-      });
-    },
-  };
+  // Get highlight properties
+  const highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
+  const offsets = getOffsets(firstWordIndex);
+  const highlightWidthStr = highlightWidth + "px";
+
+  // Update positions for each highlight and its inputWordsContainer
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    const highlightEl: HTMLElement = highlightEls[lineIndex];
+    const inputWordsContainer: HTMLElement = highlightEl
+      .children[0] as HTMLElement;
+    const highlightLeftStr = offsets[lineIndex] + "px";
+    highlightEl.classList.remove("highlight-hidden");
+
+    // Make highlight appear instantly for first highlight
+    if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
+      highlightEl.classList.add("withAnimation");
+    } else {
+      highlightEl.classList.remove("withAnimation");
+    }
+
+    // Make container appear instantly for first highlight
+    if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
+      inputWordsContainer.classList.add("withAnimation");
+    } else {
+      inputWordsContainer.classList.remove("withAnimation");
+    }
+
+    // Update highlight
+    inputWordsContainer.style.left = -1 * offsets[lineIndex] + "px";
+    highlightEl.style.left = highlightLeftStr;
+    highlightEl.style.width = highlightWidthStr;
+  }
+
+  // Update flags and variables
+  isFirstHighlightSinceInit = false;
+  isFirstHighlightSinceClear = false;
+  highlightRange = [firstWordIndex, lastWordIndex];
+  return true;
 }
