@@ -308,40 +308,57 @@ function init(): boolean {
 //   return width;
 // }
 
-// Function to calculate the left offsets for a given word index
-function getOffsets(firstWordIndex: number): number[] {
-  const OFFSET_LEFT_LIMIT = -1 * RWH_rect.width;
-  const OFFSET_RIGHT_LIMIT = 2 * RWH_rect.width;
-  const lineIndexOfWord = wordIndexToLineIndexDict[firstWordIndex];
-  const offsets = new Array(lineIndexOfWord + 1).fill(0);
+/////////////////////////////////////////////////////////////////////////////////////////
 
-  // calculate offset for this line
-  offsets[lineIndexOfWord] = wordEls[firstWordIndex].offsetLeft;
+// // Function to calculate the left offsets for a given word index
+// function getOffsets(firstWordIndex: number): number[] {
+//   const OFFSET_LEFT_LIMIT = -1 * RWH_rect.width;
+//   const OFFSET_RIGHT_LIMIT = 2 * RWH_rect.width;
+//   const lineIndexOfWord = wordIndexToLineIndexDict[firstWordIndex];
+//   const offsets = new Array(lineIndexOfWord + 1).fill(0);
 
-  // calculate offsets for lines above, going from zero to lineIndexOfWord
-  for (let i = lineIndexOfWord - 1; i >= 0; i--) {
-    offsets[i] = Math.min(
-      offsets[i + 1] + lines[i].rect.width + PADDING_X,
-      OFFSET_RIGHT_LIMIT
-    );
-  }
+//   // calculate offset for this line
+//   offsets[lineIndexOfWord] = wordEls[firstWordIndex].offsetLeft;
 
-  // calculate offsets for lines below, going from lineIndexOfWord to lines.length
-  if (lineIndexOfWord != lines.length - 1) {
-    offsets[lineIndexOfWord + 1] =
-      -1 *
-      (lines[lineIndexOfWord].rect.width -
-        offsets[lineIndexOfWord] +
-        PADDING_X);
-    for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
-      offsets[i] = Math.max(
-        offsets[i - 1] - lines[i - 1].rect.width + PADDING_X,
-        OFFSET_LEFT_LIMIT
-      );
-    }
-  }
+//   // calculate offsets for lines above, going from zero to lineIndexOfWord
+//   for (let i = lineIndexOfWord - 1; i >= 0; i--) {
+//     offsets[i] = Math.min(
+//       offsets[i + 1] + lines[i].rect.width + PADDING_X,
+//       OFFSET_RIGHT_LIMIT
+//     );
+//   }
 
-  return offsets;
+//   // calculate offsets for lines below, going from lineIndexOfWord to lines.length
+//   if (lineIndexOfWord != lines.length - 1) {
+//     offsets[lineIndexOfWord + 1] =
+//       -1 *
+//       (lines[lineIndexOfWord].rect.width -
+//         offsets[lineIndexOfWord] +
+//         PADDING_X);
+//     for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
+//       offsets[i] = Math.max(
+//         offsets[i - 1] - lines[i - 1].rect.width + PADDING_X,
+//         OFFSET_LEFT_LIMIT
+//       );
+//     }
+//   }
+
+//   return offsets;
+// }
+
+type HighlightPosition = {
+  segmentLeft: number;
+  segmentRight: number;
+  inputContainerLeft: number;
+  inputContainerRight: number;
+};
+
+function getHighlightElementPositions(
+  firstWordIndex: number,
+  lastWordIndex: number,
+  isRTL: boolean = false
+): HighlightPosition[] {
+  return [];
 }
 
 // Highlights .word elements in range [firstWordIndex, lastWordIndex]
@@ -372,36 +389,36 @@ export function highlightWordsInRange(
   }
 
   // Get highlight properties
-  const highlightWidth = getHighlightWidth(firstWordIndex, lastWordIndex);
-  const offsets = getOffsets(firstWordIndex);
-  const highlightWidthStr = highlightWidth + "px";
+  const newHighlightElementPositions = getHighlightElementPositions(
+    firstWordIndex,
+    lastWordIndex
+  );
 
-  // Update positions for each highlight and its inputWordsContainer
+  // For each line...
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
     const highlightEl: HTMLElement = highlightEls[lineIndex];
     const inputWordsContainer: HTMLElement = highlightEl
       .children[0] as HTMLElement;
-    const highlightLeftStr = offsets[lineIndex] + "px";
     highlightEl.classList.remove("highlight-hidden");
 
     // Make highlight appear instantly for first highlight
     if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
       highlightEl.classList.add("withAnimation");
-    } else {
-      highlightEl.classList.remove("withAnimation");
-    }
-
-    // Make container appear instantly for first highlight
-    if (!isFirstHighlightSinceInit && !isFirstHighlightSinceClear) {
       inputWordsContainer.classList.add("withAnimation");
     } else {
+      highlightEl.classList.remove("withAnimation");
       inputWordsContainer.classList.remove("withAnimation");
     }
 
-    // Update highlight
-    inputWordsContainer.style.left = -1 * offsets[lineIndex] + "px";
-    highlightEl.style.left = highlightLeftStr;
-    highlightEl.style.width = highlightWidthStr;
+    // Update highlight element positions
+    inputWordsContainer.style.left =
+      newHighlightElementPositions[lineIndex].inputContainerLeft + "px";
+    highlightEl.style.left =
+      newHighlightElementPositions[lineIndex].segmentLeft + "px";
+    highlightEl.style.right =
+      newHighlightElementPositions[lineIndex].segmentRight + "px";
+    inputWordsContainer.style.right =
+      newHighlightElementPositions[lineIndex].inputContainerRight + "px";
   }
 
   // Update flags and variables
