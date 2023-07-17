@@ -181,8 +181,15 @@ router.patch(
         .string()
         .valid("time", "words", "quote", "zen", "custom")
         .required(),
-      mode2: joi.string().required(),
-      language: joi.string().required(),
+      mode2: joi
+        .string()
+        .regex(/^(\d)+|custom|zen/)
+        .required(),
+      language: joi
+        .string()
+        .max(50)
+        .pattern(/^[a-zA-Z0-9_+]+$/)
+        .required(),
       rank: joi.number().required(),
     },
   }),
@@ -413,8 +420,11 @@ router.get(
   withApeRateLimiter(RateLimit.userGet),
   validateRequest({
     query: {
-      mode: joi.string().required(),
-      mode2: joi.string(),
+      mode: joi
+        .string()
+        .valid("time", "words", "quote", "zen", "custom")
+        .required(),
+      mode2: joi.string().regex(/^(\d)+|custom|zen/),
     },
   }),
   asyncHandler(UserController.getPersonalBests)
