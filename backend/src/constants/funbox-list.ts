@@ -307,6 +307,13 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
     frontendFunctions: ["getWordsFrequencyMode"],
     name: "zipf",
   },
+  {
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters", "noSpace"],
+    frontendFunctions: ["alterText"],
+    name: "morse",
+  },
 ];
 
 export default FunboxList;
