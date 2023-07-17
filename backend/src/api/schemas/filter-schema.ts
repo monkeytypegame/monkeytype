@@ -79,9 +79,12 @@ const FILTER_SCHEMA = {
       all: joi.bool().required(),
     })
     .required(),
-  tags: joi.object().required(),
-  language: joi.object().required(),
-  funbox: joi.object().required(),
+  tags: joi.object().pattern(joi.string().token(), joi.bool()).required(),
+  language: joi
+    .object()
+    .pattern(joi.string().pattern(/^[a-zA-Z0-9_+]+$/), joi.bool())
+    .required(),
+  funbox: joi.object().pattern(/\w+/, joi.bool()).required(),
 };
 
 export default FILTER_SCHEMA;
