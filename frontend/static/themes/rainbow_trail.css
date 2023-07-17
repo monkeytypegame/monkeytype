@@ -1,0 +1,157 @@
+:root {
+  --bg-color: #ffffff;
+  --main-color: #000000;
+  --caret-color: #000000;
+  --sub-color: #000000;
+  --sub-alt-color: #f8f8f8;
+  --text-color: #000000;
+  --error-color: #ff0008;
+  --colorful-error-color: #ff0008;
+}
+
+#top .logo .text {
+  background: linear-gradient(
+    90deg,
+    #33a8c7,
+    #52e3e1,
+    #a0e426,
+    #fdf148,
+    #ffab00,
+    #f77976,
+    #f050ae,
+    #d883ff,
+    #9336fd
+  );
+  background-size: 500% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow-gradient 10s both infinite;
+}
+
+@keyframes rainbow-text {
+  0% {
+    color: #33a8c7;
+  }
+  11.11% {
+    color: #52e3e1;
+  }
+  22.22% {
+    color: #a0e426;
+  }
+  33.33% {
+    color: #fdf148;
+  }
+  44.44% {
+    color: #ffab00;
+  }
+  55.56% {
+    color: #f77976;
+  }
+  66.67% {
+    color: #f050ae;
+  }
+  77.78% {
+    color: #d883ff;
+  }
+  88.89% {
+    color: #9336fd;
+  }
+  100% {
+    color: #ffffff;
+  }
+}
+
+@keyframes rainbow-text-infinite-loop {
+  0% {
+    color: #33a8c7;
+  }
+  11.11% {
+    color: #52e3e1;
+  }
+  22.22% {
+    color: #a0e426;
+  }
+  33.33% {
+    color: #fdf148;
+  }
+  44.44% {
+    color: #ffab00;
+  }
+  55.56% {
+    color: #f77976;
+  }
+  66.67% {
+    color: #f050ae;
+  }
+  77.78% {
+    color: #d883ff;
+  }
+  88.89% {
+    color: #9336fd;
+  }
+  100% {
+    color: #33a8c7;
+  }
+}
+
+@keyframes rainbow-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes error-repeat {
+  0% {
+    color: #f7aaaa;
+  }
+  50% {
+    color: #ff0000;
+  }
+  100% {
+    color: #f7aaaa;
+  }
+}
+
+@keyframes shadow-repeat {
+  0% {
+    color: #ffffff;
+  }
+  50% {
+    color: #000000;
+  }
+  100% {
+    color: #ffffff;
+  }
+}
+
+#liveWpm,
+#timerNumber {
+  color: white;
+}
+
+#top .config .group .buttons .textButton.active,
+#result .stats .group,
+#menu .textButton:hover,
+#top .config .group .buttons .textButton:hover,
+a:hover {
+  animation: shadow-repeat 1s ease-in-out infinite forwards;
+}
+
+#typingTest letter.correct {
+  animation: rainbow-text 5s linear forwards;
+}
+
+.theme.active.button {
+  animation: rainbow-text-infinite-loop 30s ease-in-out infinite;
+}
+
+.word letter.incorrect {
+  animation: error-repeat 1s ease-in-out infinite;
+}
