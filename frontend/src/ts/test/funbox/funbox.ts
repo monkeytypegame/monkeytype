@@ -305,12 +305,14 @@ FunboxList.setFunboxFunctions("layoutfluid", {
         UpdateConfig.setLayout(layouts[index]);
         UpdateConfig.setKeymapLayout(layouts[index]);
       }
-      KeymapEvent.highlight(
-        TestWords.words
-          .getCurrent()
-          .charAt(TestInput.input.current.length)
-          .toString()
-      );
+      setTimeout(() => {
+        KeymapEvent.highlight(
+          TestWords.words
+            .getCurrent()
+            .charAt(TestInput.input.current.length)
+            .toString()
+        );
+      }, 1);
     }
   },
   getResultContent(): string {
@@ -318,15 +320,17 @@ FunboxList.setFunboxFunctions("layoutfluid", {
   },
   restart(): void {
     if (this.applyConfig) this.applyConfig();
-    KeymapEvent.highlight(
-      TestWords.words
-        .getCurrent()
-        .substring(
-          TestInput.input.current.length,
-          TestInput.input.current.length + 1
-        )
-        .toString()
-    );
+    setTimeout(() => {
+      KeymapEvent.highlight(
+        TestWords.words
+          .getCurrent()
+          .substring(
+            TestInput.input.current.length,
+            TestInput.input.current.length + 1
+          )
+          .toString()
+      );
+    }, 1);
   },
 });
 
