@@ -46,11 +46,11 @@ router.patch(
   RateLimit.presetsEdit,
   validateRequest({
     body: {
-      _id: joi.string().required(),
+      _id: joi.string().token().required(),
       name: presetNameSchema,
       config: configSchema
         .keys({
-          tags: joi.array().items(joi.string()),
+          tags: joi.array().items(joi.string().token().max(50)),
         })
         .allow(null),
     },
@@ -64,7 +64,7 @@ router.delete(
   RateLimit.presetsRemove,
   validateRequest({
     params: {
-      presetId: joi.string().required(),
+      presetId: joi.string().token().required(),
     },
   }),
   asyncHandler(PresetController.removePreset)
