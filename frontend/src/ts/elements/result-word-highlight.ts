@@ -380,6 +380,12 @@ function getHighlightElementPositions(
 
   // Find origin coordinate for each line
 
+  let highlightWidth: number = getHighlightWidth(
+    firstWordIndex,
+    lastWordIndex,
+    isRTL
+  );
+
   // Get origin for line highlight starts at
   if (!isRTL) {
     highlightPositions[lineIndexOfFirstWord].highlightLeft =
@@ -399,7 +405,6 @@ function getHighlightElementPositions(
         lines[i].rect.width +
         PADDING_X;
     } else {
-      // width of current line
       highlightPositions[i].highlightRight =
         highlightPositions[i + 1].highlightRight +
         lines[i].rect.width +
