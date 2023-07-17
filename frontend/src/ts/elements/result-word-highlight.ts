@@ -347,10 +347,10 @@ function init(): boolean {
 // }
 
 type HighlightPosition = {
-  segmentLeft: number;
-  segmentRight: number;
-  inputContainerLeft: number;
-  inputContainerRight: number;
+  highlightLeft: string;
+  highlightRight: string;
+  inputContainerLeft: string;
+  inputContainerRight: string;
 };
 
 function getHighlightElementPositions(
@@ -358,6 +358,37 @@ function getHighlightElementPositions(
   lastWordIndex: number,
   isRTL: boolean = false
 ): HighlightPosition[] {
+  const lineIndexOfFirstWord = wordIndexToLineIndexDict[firstWordIndex];
+  const highlightPositions: HighlightPosition[] = new Array(lines.length)
+    .fill(null)
+    .map(() => ({
+      highlightLeft: "0px",
+      highlightRight: "0px",
+      inputContainerLeft: "0px",
+      inputContainerRight: "0px",
+    }));
+
+  // find origin coordinate for each line
+  //    ltr -> highlightLeft  = left of first element
+  //    rtl -> highlightRight = right of first element
+  //
+  // get highlight width
+  //
+  // for each line, set end coordinate
+  //    ltr -> highlightRight = (line_width - highlightLeft) - heighlight_width
+  //    rtl -> highlightLeft  = (parent_width - highlightRight) - highlight_width
+
+  // Find origin coordinate for each line
+
+  // Get origin for line highlight starts at
+  if (!isRTL) {
+    highlightPositions[lineIndexOfFirstWord].highlightLeft =
+      wordEls[firstWordIndex].style.left;
+  } else {
+    highlightPositions[lineIndexOfFirstWord].highlightRight =
+      wordEls[firstWordIndex].style.right;
+  }
+
   return [];
 }
 
@@ -414,9 +445,9 @@ export function highlightWordsInRange(
     inputWordsContainer.style.left =
       newHighlightElementPositions[lineIndex].inputContainerLeft + "px";
     highlightEl.style.left =
-      newHighlightElementPositions[lineIndex].segmentLeft + "px";
+      newHighlightElementPositions[lineIndex].highlightLeft + "px";
     highlightEl.style.right =
-      newHighlightElementPositions[lineIndex].segmentRight + "px";
+      newHighlightElementPositions[lineIndex].highlightRight + "px";
     inputWordsContainer.style.right =
       newHighlightElementPositions[lineIndex].inputContainerRight + "px";
   }
