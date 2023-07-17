@@ -347,10 +347,10 @@ function init(): boolean {
 // }
 
 type HighlightPosition = {
-  highlightLeft: string;
-  highlightRight: string;
-  inputContainerLeft: string;
-  inputContainerRight: string;
+  highlightLeft: number;
+  highlightRight: number;
+  inputContainerLeft: number;
+  inputContainerRight: number;
 };
 
 function getHighlightElementPositions(
@@ -362,10 +362,10 @@ function getHighlightElementPositions(
   const highlightPositions: HighlightPosition[] = new Array(lines.length)
     .fill(null)
     .map(() => ({
-      highlightLeft: "0px",
-      highlightRight: "0px",
-      inputContainerLeft: "0px",
-      inputContainerRight: "0px",
+      highlightLeft: 0,
+      highlightRight: 0,
+      inputContainerLeft: 0,
+      inputContainerRight: 0,
     }));
 
   // find origin coordinate for each line
@@ -383,13 +383,46 @@ function getHighlightElementPositions(
   // Get origin for line highlight starts at
   if (!isRTL) {
     highlightPositions[lineIndexOfFirstWord].highlightLeft =
-      wordEls[firstWordIndex].style.left;
+      wordEls[firstWordIndex].offsetLeft;
   } else {
     highlightPositions[lineIndexOfFirstWord].highlightRight =
-      wordEls[firstWordIndex].style.right;
+      lines[lineIndexOfFirstWord].rect.width -
+      (wordEls[firstWordIndex].offsetLeft +
+        wordEls[firstWordIndex].offsetWidth);
   }
 
-  return [];
+  // Calculate offsets for lines above, going from zero to lineIndexOfWord
+  for (let i = lineIndexOfFirstWord - 1; i >= 0; i--) {
+    if (!isRTL) {
+      highlightPositions[i].highlightLeft =
+        highlightPositions[i + 1].highlightLeft +
+        lines[i].rect.width +
+        PADDING_X;
+    } else {
+      // width of current line
+      highlightPositions[i].highlightRight =
+        highlightPositions[i + 1].highlightRight +
+        lines[i].rect.width +
+        PADDING_X;
+    }
+  }
+
+  // Calculate offsets for lines below, going from lineIndexOfWord to lines.length
+  if (lineIndexOfFirstWord != lines.length - 1) {
+    offsets[lineIndexOfWord + 1] =
+      -1 *
+      (lines[lineIndexOfWord].rect.width -
+        offsets[lineIndexOfWord] +
+        PADDING_X);
+    for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
+      offsets[i] = Math.max(
+        offsets[i - 1] - lines[i - 1].rect.width + PADDING_X,
+        OFFSET_LEFT_LIMIT
+      );
+    }
+  }
+
+  return highlightPositions;
 }
 
 // Highlights .word elements in range [firstWordIndex, lastWordIndex]
