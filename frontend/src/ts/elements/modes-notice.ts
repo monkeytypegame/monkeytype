@@ -79,6 +79,12 @@ export async function update(): Promise<void> {
   }
 
   if (Config.mode !== "zen") {
+    if (
+      Config.mode !== "quote" &&
+      Config.language === Config.timeLanguage.split("_")[0]
+    ) {
+      Config.language = Config.timeLanguage;
+    }
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
         /_/g,

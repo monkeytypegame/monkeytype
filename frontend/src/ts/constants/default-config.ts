@@ -29,6 +29,7 @@ export default <MonkeyTypes.Config>{
   mode: "time",
   quoteLength: [1],
   language: "english",
+  timeLanguage: "english",
   fontSize: 1.5,
   freedomMode: false,
   resultFilters: null,
