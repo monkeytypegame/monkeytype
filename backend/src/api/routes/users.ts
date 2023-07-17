@@ -254,7 +254,7 @@ router.delete(
   RateLimit.userCustomFilterRemove,
   validateRequest({
     params: {
-      presetId: joi.string().required(),
+      presetId: joi.string().token().required(),
     },
   }),
   asyncHandler(UserController.removeResultFilterPreset)
@@ -501,10 +501,14 @@ router.get(
   withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({
     params: {
-      uidOrName: joi.string().required(),
+      uidOrName: joi
+        .alternatives()
+        .try(usernameValidation, joi.string().token().max(50)),
     },
     query: {
-      isUid: joi.string().allow(""),
+      isUid: joi.string().valid("").messages({
+        "any.only": "isUid must be empty",
+      }),
     },
   }),
   asyncHandler(UserController.getProfile)
