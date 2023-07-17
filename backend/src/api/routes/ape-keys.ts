@@ -84,7 +84,7 @@ router.delete(
   checkIfUserCanManageApeKeys,
   validateRequest({
     params: {
-      apeKeyId: joi.string().required(),
+      apeKeyId: joi.string().token().required(),
     },
   }),
   asyncHandler(ApeKeyController.deleteApeKey)
