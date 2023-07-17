@@ -94,12 +94,12 @@ function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
 
 // Function to clear all highlights
 export function clear(): void {
-  for (let i = 0; i < highlightEls.length; i++) {
-    const highlightEl = highlightEls[i];
-    highlightEl.classList.add("highlight-hidden");
-  }
-  isFirstHighlightSinceClear = true;
-  highlightRange = [];
+  // for (let i = 0; i < highlightEls.length; i++) {
+  //   const highlightEl = highlightEls[i];
+  //   highlightEl.classList.add("highlight-hidden");
+  // }
+  // isFirstHighlightSinceClear = true;
+  // highlightRange = [];
 }
 
 // Function to completely destroy the highlight system.
@@ -258,55 +258,55 @@ function init(): boolean {
 }
 
 // Function to calculate the width of the highlight for a given range of words
-// function getHighlightWidth(
-//   wordStartIndex: number,
-//   wordEndIndex: number
-// ): number {
-//   const lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
-//   const lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];
+function getHighlightWidth(
+  wordStartIndex: number,
+  wordEndIndex: number
+): number {
+  const lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
+  const lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];
 
-//   // If highlight is just one line...
-//   if (lineIndexOfWordStart == lineIndexOfWordEnd) {
-//     const highlightRect = getBoundingRectOfElements([
-//       wordEls[wordStartIndex],
-//       wordEls[wordEndIndex],
-//     ]);
-//     const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
-//     const lastInputWordElRect =
-//       inputWordEls[wordEndIndex].getBoundingClientRect();
-//     let width = highlightRect.width + PADDING_X;
-//     width -= lastWordElRect.width - lastInputWordElRect.width;
-//     return width;
-//   }
+  // If highlight is just one line...
+  if (lineIndexOfWordStart == lineIndexOfWordEnd) {
+    const highlightRect = getBoundingRectOfElements([
+      wordEls[wordStartIndex],
+      wordEls[wordEndIndex],
+    ]);
+    const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
+    const lastInputWordElRect =
+      inputWordEls[wordEndIndex].getBoundingClientRect();
+    let width = highlightRect.width + PADDING_X;
+    width -= lastWordElRect.width - lastInputWordElRect.width;
+    return width;
+  }
 
-//   // Multiple lines
-//   const firstLineBounds = getBoundingRectOfElements([
-//     wordEls[wordStartIndex],
-//     wordEls[lines[lineIndexOfWordStart].lastWordIndex],
-//   ]);
+  // Multiple lines
+  const firstLineBounds = getBoundingRectOfElements([
+    wordEls[wordStartIndex],
+    wordEls[lines[lineIndexOfWordStart].lastWordIndex],
+  ]);
 
-//   const lastLineBounds = getBoundingRectOfElements([
-//     wordEls[lines[lineIndexOfWordEnd].firstWordIndex],
-//     wordEls[wordEndIndex],
-//   ]);
+  const lastLineBounds = getBoundingRectOfElements([
+    wordEls[lines[lineIndexOfWordEnd].firstWordIndex],
+    wordEls[wordEndIndex],
+  ]);
 
-//   let width = firstLineBounds.width + lastLineBounds.width;
+  let width = firstLineBounds.width + lastLineBounds.width;
 
-//   // Add middle line highlights to width
-//   for (let i = lineIndexOfWordStart + 1; i < lineIndexOfWordEnd; i++) {
-//     width += lines[i].rect.width;
-//   }
+  // Add middle line highlights to width
+  for (let i = lineIndexOfWordStart + 1; i < lineIndexOfWordEnd; i++) {
+    width += lines[i].rect.width;
+  }
 
-//   // Account for padding
-//   width += 2 * PADDING_X * (lineIndexOfWordEnd - lineIndexOfWordStart);
+  // Account for padding
+  width += 2 * PADDING_X * (lineIndexOfWordEnd - lineIndexOfWordStart);
 
-//   // Subtract difference between last wordEl and last inputWordEl
-//   const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
-//   const lastInputWordElRect =
-//     inputWordEls[wordEndIndex].getBoundingClientRect();
-//   width -= lastWordElRect.width - lastInputWordElRect.width;
-//   return width;
-// }
+  // Subtract difference between last wordEl and last inputWordEl
+  const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
+  const lastInputWordElRect =
+    inputWordEls[wordEndIndex].getBoundingClientRect();
+  width -= lastWordElRect.width - lastInputWordElRect.width;
+  return width;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -380,16 +380,17 @@ function getHighlightElementPositions(
 
   // Find origin coordinate for each line
 
-  let highlightWidth: number = getHighlightWidth(
-    firstWordIndex,
-    lastWordIndex,
-    isRTL
-  );
+  let highlightWidth: number = getHighlightWidth(firstWordIndex, lastWordIndex);
 
   // Get origin for line highlight starts at
   if (!isRTL) {
     highlightPositions[lineIndexOfFirstWord].highlightLeft =
       wordEls[firstWordIndex].offsetLeft;
+    highlightPositions[lineIndexOfFirstWord].highlightRight =
+      lines[lineIndexOfFirstWord].rect.width -
+      (highlightPositions[lineIndexOfFirstWord].highlightLeft +
+        highlightWidth) +
+      PADDING_X;
   } else {
     highlightPositions[lineIndexOfFirstWord].highlightRight =
       lines[lineIndexOfFirstWord].rect.width -
@@ -404,6 +405,10 @@ function getHighlightElementPositions(
         highlightPositions[i + 1].highlightLeft +
         lines[i].rect.width +
         PADDING_X;
+      highlightPositions[i].highlightRight =
+        lines[i].rect.width -
+        (highlightPositions[i].highlightLeft + highlightWidth) +
+        PADDING_X;
     } else {
       highlightPositions[i].highlightRight =
         highlightPositions[i + 1].highlightRight +
@@ -413,17 +418,23 @@ function getHighlightElementPositions(
   }
 
   // Calculate offsets for lines below, going from lineIndexOfWord to lines.length
-  if (lineIndexOfFirstWord != lines.length - 1) {
-    offsets[lineIndexOfWord + 1] =
-      -1 *
-      (lines[lineIndexOfWord].rect.width -
-        offsets[lineIndexOfWord] +
-        PADDING_X);
-    for (let i = lineIndexOfWord + 2; i < lines.length; i++) {
-      offsets[i] = Math.max(
-        offsets[i - 1] - lines[i - 1].rect.width + PADDING_X,
-        OFFSET_LEFT_LIMIT
-      );
+  for (let i = lineIndexOfFirstWord + 1; i < lines.length; i++) {
+    if (!isRTL) {
+      highlightPositions[i].highlightLeft =
+        -1 *
+        (lines[i - 1].rect.width -
+          highlightPositions[i - 1].highlightLeft +
+          PADDING_X);
+      highlightPositions[i].highlightRight =
+        lines[i].rect.width -
+        (highlightPositions[i].highlightLeft + highlightWidth) +
+        PADDING_X;
+    } else {
+      highlightPositions[i].highlightRight =
+        -1 *
+        (lines[i - 1].rect.width -
+          highlightPositions[i - 1].highlightRight +
+          PADDING_X);
     }
   }
 
@@ -480,14 +491,14 @@ export function highlightWordsInRange(
     }
 
     // Update highlight element positions
-    inputWordsContainer.style.left =
-      newHighlightElementPositions[lineIndex].inputContainerLeft + "px";
-    highlightEl.style.left =
-      newHighlightElementPositions[lineIndex].highlightLeft + "px";
     highlightEl.style.right =
       newHighlightElementPositions[lineIndex].highlightRight + "px";
     inputWordsContainer.style.right =
       newHighlightElementPositions[lineIndex].inputContainerRight + "px";
+    inputWordsContainer.style.left =
+      newHighlightElementPositions[lineIndex].inputContainerLeft + "px";
+    highlightEl.style.left =
+      newHighlightElementPositions[lineIndex].highlightLeft + "px";
   }
 
   // Update flags and variables

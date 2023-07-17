@@ -7,17 +7,17 @@
     margin: 0px;
     padding: 0px;
     height: 100%;
-    position: relative;
+    position: absolute;
     background-color: var(--sub-color);
     border-radius: var(--roundness);
-    opacity: 1;
+    opacity: 0.5;
     transition: opacity 0.125s linear;
 
     overflow: hidden;
     z-index: 1;
 
     &.withAnimation {
-      transition: left 0.25s ease, width 0.25s ease, opacity 0.125s linear;
+      transition: left 0.25s ease, right 0.25s ease, opacity 0.125s linear;
     }
 
     &.highlight-hidden {
@@ -34,6 +34,7 @@
   }
 
   .inputWordsContainer {
+    visibility: hidden;
     position: absolute;
     &.withAnimation {
       transition: all 0.25s ease;
