@@ -723,3 +723,9 @@ export async function rememberSettings(): Promise<void> {
     if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
   });
 }
+
+FunboxList.setFunboxFunctions("morse", {
+  alterText(word: string): string {
+    return Misc.convertToMorse(word);
+  },
+});
