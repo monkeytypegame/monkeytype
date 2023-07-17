@@ -1959,8 +1959,6 @@ export function loadFromLocalStorage(): void {
     ) {
       newConfig.language = newConfig.timeLanguage;
     }
-    console.log("language", newConfig.language);
-    console.log("timeLanguage", newConfig.timeLanguage);
     apply(newConfig);
     localStorageConfig = newConfig;
     saveFullConfigToLocalStorage(true);
