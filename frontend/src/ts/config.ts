@@ -1756,10 +1756,6 @@ export function setCustomBackgroundSize(
     return false;
   }
 
-  //todo this might not be needed because of the above check
-  if (value !== "cover" && value !== "contain" && value !== "max") {
-    value = "cover";
-  }
   config.customBackgroundSize = value;
   saveToLocalStorage("customBackgroundSize", nosave);
   ConfigEvent.dispatch("customBackgroundSize", config.customBackgroundSize);
