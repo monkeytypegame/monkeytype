@@ -3,6 +3,9 @@
 // to place a highlight (".highlight") on top of the text to be highlighted.
 // Constants for padding around the highlights
 
+import * as Misc from "../utils/misc";
+import Config from "../config";
+
 const PADDING_X = 14;
 const PADDING_Y = 12;
 const PADDING_OFFSET_X = PADDING_X / 2;
@@ -48,6 +51,8 @@ let isInitialized = false;
 let isHoveringChart = false;
 let isFirstHighlightSinceInit = true;
 let isFirstHighlightSinceClear = true;
+let isLanguageRightToLeft = false;
+let isInitInProgress = false;
 
 // Sets isHoveringChart flag
 export function setIsHoverChart(state: boolean): void {
@@ -129,10 +134,17 @@ export function destroy(): void {
 }
 
 // Function to initialize the highlight system
-function init(): boolean {
-  if (isInitialized) {
-    throw Error("highlight containers already initialized");
+async function init(): Promise<boolean> {
+  if (isInitialized || isInitInProgress) {
+    return false;
   }
+
+  isInitInProgress = true;
+
+  console.log("init called");
+  // Set isLanguageRTL
+  const currentLanguage = await Misc.getCurrentLanguage(Config.language);
+  isLanguageRightToLeft = currentLanguage.rightToLeft;
 
   RWH_el = $("#resultWordsHistory")[0];
   RWH_rect = RWH_el.getBoundingClientRect();
@@ -238,7 +250,8 @@ function init(): boolean {
       const inputWordEl = document.createElement("div");
 
       // For RTL languages, account for difference between highlightContainer left and RWH_el left
-      const RTL_offset = line.rect.left - RWH_rect.left;
+      // const RTL_offset = line.rect.left - RWH_rect.left;
+      const RTL_offset = 0;
 
       // Calculate inputWordEl properties relative to inputWordsContainerEl
       inputWordEl.style.left =
@@ -263,6 +276,7 @@ function init(): boolean {
   });
 
   isInitialized = true;
+  isInitInProgress = false;
   return true;
 }
 
@@ -473,10 +487,10 @@ function getHighlightElementPositions(
 }
 
 // Highlights .word elements in range [firstWordIndex, lastWordIndex]
-export function highlightWordsInRange(
+export async function highlightWordsInRange(
   firstWordIndex: number,
   lastWordIndex: number
-): boolean {
+): Promise<boolean> {
   // Early exit if not hovering over chart
   if (!isHoveringChart) {
     return false;
@@ -493,17 +507,30 @@ export function highlightWordsInRange(
 
   // Initialize highlight system if not already initialized
   if (!isInitialized) {
-    const initResponse = init();
+    const initResponse = await init();
     if (!initResponse) {
       return false;
     }
   }
 
+  // Make sure both indices are valid
+  if (
+    firstWordIndex === undefined ||
+    lastWordIndex === undefined ||
+    firstWordIndex < 0 ||
+    lastWordIndex < 0 ||
+    lastWordIndex < firstWordIndex
+  ) {
+    console.log(firstWordIndex, lastWordIndex);
+    return false;
+  }
+
+  console.log("highlightWordsInRange called: ", firstWordIndex, lastWordIndex);
   // Get highlight properties
   const newHighlightElementPositions = getHighlightElementPositions(
     firstWordIndex,
     lastWordIndex,
-    true
+    isLanguageRightToLeft
   );
 
   // For each line...
