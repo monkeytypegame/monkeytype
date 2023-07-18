@@ -929,7 +929,6 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     delete completedEvent.quoteLength;
   }
 
-  // @ts-ignore TODO fix this
   completedEvent.mode2 = Misc.getMode2(Config, TestWords.randomQuote);
 
   if (Config.mode === "custom") {
