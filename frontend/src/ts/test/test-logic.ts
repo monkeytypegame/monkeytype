@@ -483,7 +483,10 @@ export async function init(): Promise<void> {
 
   let language;
   try {
-    if (Config.mode !== "quote" && Config.language === Config.timeLanguage.split("_")[0]) {
+    if (
+      Config.mode !== "quote" &&
+      Config.language === Config.timeLanguage.split("_")[0]
+    ) {
       Config.language = Config.timeLanguage;
     }
     language = await Misc.getLanguage(Config.language);
