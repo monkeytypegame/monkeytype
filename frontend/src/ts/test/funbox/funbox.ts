@@ -214,8 +214,6 @@ FunboxList.setFunboxFunctions("arrows", {
   async preventDefaultEvent(
     event: JQuery.KeyDownEvent<Document, null, Document, Document>
   ): Promise<boolean> {
-    // TODO What's better?
-    // return /Arrow/i.test(event.key);
     return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
       event.key
     );
