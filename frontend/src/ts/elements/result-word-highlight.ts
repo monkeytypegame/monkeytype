@@ -136,12 +136,12 @@ export function destroy(): void {
 // Function to initialize the highlight system
 async function init(): Promise<boolean> {
   if (isInitialized || isInitInProgress) {
+    console.log("Returning false I");
     return false;
   }
 
   isInitInProgress = true;
 
-  console.log("init called");
   // Set isLanguageRTL
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   isLanguageRightToLeft = currentLanguage.rightToLeft;
@@ -151,6 +151,8 @@ async function init(): Promise<boolean> {
   wordEls = $(RWH_el).find(".words .word");
 
   if (wordEls.length === 0) {
+    console.log("Returning false II");
+    isInitInProgress = false;
     return false;
   }
 
@@ -491,6 +493,7 @@ export async function highlightWordsInRange(
   firstWordIndex: number,
   lastWordIndex: number
 ): Promise<boolean> {
+  console.log("starting ", firstWordIndex, lastWordIndex);
   // Early exit if not hovering over chart
   if (!isHoveringChart) {
     return false;
@@ -505,13 +508,17 @@ export async function highlightWordsInRange(
     return false;
   }
 
+  console.log("start II");
   // Initialize highlight system if not already initialized
   if (!isInitialized) {
     const initResponse = await init();
     if (!initResponse) {
+      console.log("start II, returning false");
       return false;
     }
   }
+
+  console.log("start III");
 
   // Make sure both indices are valid
   if (
@@ -525,7 +532,6 @@ export async function highlightWordsInRange(
     return false;
   }
 
-  console.log("highlightWordsInRange called: ", firstWordIndex, lastWordIndex);
   // Get highlight properties
   const newHighlightElementPositions = getHighlightElementPositions(
     firstWordIndex,
