@@ -1605,3 +1605,12 @@ export function convertToMorse(word: string): string {
   }
   return morseWord;
 }
+
+declare global {
+  interface ObjectConstructor {
+    typedKeys<T>(obj: T): T extends T ? (keyof T)[] : never;
+  }
+}
+
+//@ts-ignore
+Object.typedKeys = Object.keys;
