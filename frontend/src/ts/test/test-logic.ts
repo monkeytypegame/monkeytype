@@ -484,14 +484,7 @@ export async function init(): Promise<void> {
 
   let language;
   try {
-    if (
-      Config.mode !== "quote" &&
-      Config.language === languageBeforeQuoteMode.split("_")[0]
-    ) {
-      Config.language = languageBeforeQuoteMode;
-    }
     language = await Misc.getLanguage(Config.language);
-    UpdateConfig.setLanguage(Config.language);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to load language"),
@@ -530,6 +523,12 @@ export async function init(): Promise<void> {
     ) {
       languageBeforeQuoteMode = Config.language;
       UpdateConfig.setLanguage(group.name);
+    }
+  } else {
+    if (Config.language === languageBeforeQuoteMode.split("_")[0]) {
+      UpdateConfig.setLanguage(languageBeforeQuoteMode);
+      await init();
+      return;
     }
   }
 
