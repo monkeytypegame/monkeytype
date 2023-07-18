@@ -1,6 +1,6 @@
 .highlightContainer {
   position: absolute;
-  overflow: hidden;
+  // overflow: hidden;
   pointer-events: none;
 
   .highlight {
@@ -13,7 +13,7 @@
     opacity: 0.5;
     transition: opacity 0.125s linear;
 
-    overflow: hidden;
+    // overflow: hidden;
     z-index: 1;
 
     &.withAnimation {
@@ -34,8 +34,7 @@
   }
 
   .inputWordsContainer {
-    visibility: hidden;
-    position: absolute;
+    position: relative;
     &.withAnimation {
       transition: all 0.25s ease;
     }

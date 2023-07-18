@@ -1,9 +1,9 @@
 // The code defines the necessary operations for a text highlighting system in a web page.
 // This system utilizes absolutely positioned, overflow hidden divs, known as "highlightContainer",
 // to place a highlight (".highlight") on top of the text to be highlighted.
-
 // Constants for padding around the highlights
-const PADDING_X = 16;
+
+const PADDING_X = 14;
 const PADDING_Y = 12;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2;
@@ -29,6 +29,9 @@ let highlightContainerEls: HTMLElement[] = [];
 
 // Array of highlight elements
 let highlightEls: HTMLElement[] = [];
+
+// Array of input word container elements
+let inputWordsContainerEls: HTMLElement[] = [];
 
 // Array of user inputs aligned with .word elements
 let inputWordEls: HTMLElement[] = [];
@@ -117,6 +120,7 @@ export function destroy(): void {
   highlightContainerEls = [];
   wordIndexToLineIndexDict = {};
   lines = [];
+  inputWordsContainerEls = [];
   inputWordEls = [];
   isInitialized = false;
   isFirstHighlightSinceInit = true;
@@ -144,7 +148,7 @@ function init(): boolean {
 
   // Construct lines array and wordIndexToLineIndexDict
   wordIndexToLineIndexDict[0] = 0;
-  for (let i = 1; i < wordEls.length; i++) {
+  for (let i = 1; i < wordEls.length - 1; i++) {
     const word = wordEls[i];
     const prevWord = wordEls[i - 1];
 
@@ -233,8 +237,12 @@ function init(): boolean {
 
       const inputWordEl = document.createElement("div");
 
+      // For RTL languages, account for difference between highlightContainer left and RWH_el left
+      const RTL_offset = line.rect.left - RWH_rect.left;
+
       // Calculate inputWordEl properties relative to inputWordsContainerEl
-      inputWordEl.style.left = wordEl.offsetLeft + PADDING_OFFSET_X + "px";
+      inputWordEl.style.left =
+        wordEl.offsetLeft + PADDING_OFFSET_X - RTL_offset + "px";
       inputWordEl.innerHTML = userInputString
         .replace(/\t/g, "_")
         .replace(/\n/g, "_")
@@ -247,6 +255,7 @@ function init(): boolean {
       inputWordEls.push(inputWordEl);
     }
 
+    inputWordsContainerEls.push(inputWordsContainerEl);
     highlightEls.push(highlightEl);
     highlightEl.append(inputWordsContainerEl);
     highlightContainer.append(highlightEl);
@@ -368,18 +377,6 @@ function getHighlightElementPositions(
       inputContainerRight: 0,
     }));
 
-  // find origin coordinate for each line
-  //    ltr -> highlightLeft  = left of first element
-  //    rtl -> highlightRight = right of first element
-  //
-  // get highlight width
-  //
-  // for each line, set end coordinate
-  //    ltr -> highlightRight = (line_width - highlightLeft) - heighlight_width
-  //    rtl -> highlightLeft  = (parent_width - highlightRight) - highlight_width
-
-  // Find origin coordinate for each line
-
   let highlightWidth: number = getHighlightWidth(firstWordIndex, lastWordIndex);
 
   // Get origin for line highlight starts at
@@ -392,10 +389,33 @@ function getHighlightElementPositions(
         highlightWidth) +
       PADDING_X;
   } else {
+    const offsetLeftOfHighlightContainer =
+      highlightContainerEls[lineIndexOfFirstWord].offsetLeft;
+
     highlightPositions[lineIndexOfFirstWord].highlightRight =
       lines[lineIndexOfFirstWord].rect.width -
       (wordEls[firstWordIndex].offsetLeft +
-        wordEls[firstWordIndex].offsetWidth);
+        wordEls[firstWordIndex].offsetWidth) +
+      offsetLeftOfHighlightContainer +
+      PADDING_OFFSET_X;
+
+    highlightPositions[lineIndexOfFirstWord].highlightLeft =
+      lines[lineIndexOfFirstWord].rect.width -
+      (highlightPositions[lineIndexOfFirstWord].highlightRight +
+        highlightWidth) +
+      PADDING_X;
+  }
+
+  if (!isRTL) {
+    highlightPositions[lineIndexOfFirstWord].inputContainerLeft =
+      -1 * highlightPositions[lineIndexOfFirstWord].highlightLeft;
+  } else {
+    highlightPositions[lineIndexOfFirstWord].inputContainerLeft =
+      -1 *
+      (inputWordsContainerEls[lineIndexOfFirstWord].getBoundingClientRect()
+        .width -
+        highlightWidth -
+        highlightPositions[lineIndexOfFirstWord].highlightRight);
   }
 
   // Calculate offsets for lines above, going from zero to lineIndexOfWord
@@ -405,15 +425,22 @@ function getHighlightElementPositions(
         highlightPositions[i + 1].highlightLeft +
         lines[i].rect.width +
         PADDING_X;
+
       highlightPositions[i].highlightRight =
         lines[i].rect.width -
         (highlightPositions[i].highlightLeft + highlightWidth) +
         PADDING_X;
+
+      highlightPositions[i].inputContainerLeft =
+        -1 * highlightPositions[i].highlightLeft;
     } else {
       highlightPositions[i].highlightRight =
         highlightPositions[i + 1].highlightRight +
         lines[i].rect.width +
         PADDING_X;
+
+      highlightPositions[i].inputContainerRight =
+        -1 * highlightPositions[i].highlightRight;
     }
   }
 
@@ -425,10 +452,14 @@ function getHighlightElementPositions(
         (lines[i - 1].rect.width -
           highlightPositions[i - 1].highlightLeft +
           PADDING_X);
+
       highlightPositions[i].highlightRight =
         lines[i].rect.width -
         (highlightPositions[i].highlightLeft + highlightWidth) +
         PADDING_X;
+
+      highlightPositions[i].inputContainerLeft =
+        -1 * highlightPositions[i].highlightLeft;
     } else {
       highlightPositions[i].highlightRight =
         -1 *
@@ -471,7 +502,8 @@ export function highlightWordsInRange(
   // Get highlight properties
   const newHighlightElementPositions = getHighlightElementPositions(
     firstWordIndex,
-    lastWordIndex
+    lastWordIndex,
+    true
   );
 
   // For each line...
@@ -493,8 +525,8 @@ export function highlightWordsInRange(
     // Update highlight element positions
     highlightEl.style.right =
       newHighlightElementPositions[lineIndex].highlightRight + "px";
-    inputWordsContainer.style.right =
-      newHighlightElementPositions[lineIndex].inputContainerRight + "px";
+    // inputWordsContainer.style.right = 0 + "px";
+
     inputWordsContainer.style.left =
       newHighlightElementPositions[lineIndex].inputContainerLeft + "px";
     highlightEl.style.left =
