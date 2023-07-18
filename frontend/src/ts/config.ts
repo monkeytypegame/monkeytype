@@ -1493,9 +1493,7 @@ export function setCustomThemeColors(
 
 export function setLanguage(language: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("language", language, ["string"])) return false;
-  if (config.mode !== "quote") {
-    config.timeLanguage = language;
-  }
+
   config.language = language;
   AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
@@ -1952,12 +1950,6 @@ export function loadFromLocalStorage(): void {
       newConfig = JSON.parse(newConfigString);
     } catch (e) {
       newConfig = {} as MonkeyTypes.Config;
-    }
-    if (
-      newConfig.mode !== "quote" &&
-      newConfig.language === newConfig.timeLanguage.split("_")[0]
-    ) {
-      newConfig.language = newConfig.timeLanguage;
     }
     apply(newConfig);
     localStorageConfig = newConfig;

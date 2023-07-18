@@ -458,6 +458,7 @@ export function restart(options = {} as RestartOptions): void {
 
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
+let languageBeforeQuoteMode = "";
 export async function init(): Promise<void> {
   console.debug("Initializing test");
   testReinitCount++;
@@ -485,11 +486,12 @@ export async function init(): Promise<void> {
   try {
     if (
       Config.mode !== "quote" &&
-      Config.language === Config.timeLanguage.split("_")[0]
+      Config.language === languageBeforeQuoteMode.split("_")[0]
     ) {
-      Config.language = Config.timeLanguage;
+      Config.language = languageBeforeQuoteMode;
     }
     language = await Misc.getLanguage(Config.language);
+    UpdateConfig.setLanguage(Config.language);
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to load language"),
@@ -526,6 +528,7 @@ export async function init(): Promise<void> {
       group.name !== "other" &&
       group.name !== Config.language
     ) {
+      languageBeforeQuoteMode = Config.language;
       UpdateConfig.setLanguage(group.name);
     }
   }

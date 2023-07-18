@@ -423,7 +423,6 @@ declare namespace MonkeyTypes {
     mode: Mode;
     quoteLength: QuoteLength[];
     language: string;
-    timeLanguage: string;
     fontSize: number;
     freedomMode: boolean;
     resultFilters?: ResultFilters | null;
