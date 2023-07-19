@@ -332,7 +332,7 @@ type HighlightPosition = {
 function getHighlightElementPositions(
   firstWordIndex: number,
   lastWordIndex: number,
-  isRTL: boolean = false
+  isRTL = false
 ): HighlightPosition[] {
   const lineIndexOfFirstWord = wordIndexToLineIndexDict[firstWordIndex];
   const highlightPositions: HighlightPosition[] = new Array(lines.length)
@@ -344,7 +344,10 @@ function getHighlightElementPositions(
       inputContainerRight: 0,
     }));
 
-  let highlightWidth: number = getHighlightWidth(firstWordIndex, lastWordIndex);
+  const highlightWidth: number = getHighlightWidth(
+    firstWordIndex,
+    lastWordIndex
+  );
 
   // Get origin for line highlight starts at
   if (!isRTL) {
