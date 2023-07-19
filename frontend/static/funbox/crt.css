@@ -2,15 +2,6 @@
   --bg-color-shine: color-mix(in oklab, var(--main-color) 5%, var(--bg-color));
 }
 
-@keyframes lines {
-  0% {
-    background-position: 0px 0px;
-  }
-  100% {
-    background-position: 0px 30px;
-  }
-}
-
 @keyframes scanline {
   0% {
     bottom: 100%;
@@ -42,16 +33,11 @@ body::after {
   opacity: 0.3;
   mix-blend-mode: color-burn;
   pointer-events: none;
-  animation: lines 5s ease-out infinite;
 }
+
 body {
   text-shadow: 3px 0 1px rgba(0, 30, 255, 0.5), -3px 0 1px rgba(255, 0, 80, 0.3),
     0 0 3px;
-}
-
-#centerContent {
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
   background: radial-gradient(
     ellipse,
     var(--bg-color-shine) 0%,
