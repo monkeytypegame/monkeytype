@@ -1,6 +1,6 @@
 .highlightContainer {
   position: absolute;
-  // overflow: hidden;
+  overflow: hidden;
   pointer-events: none;
 
   .highlight {
@@ -13,7 +13,7 @@
     opacity: 1;
     transition: opacity 0.125s linear;
 
-    // overflow: hidden;
+    overflow: hidden;
     z-index: 1;
 
     &.withAnimation {
