@@ -461,6 +461,7 @@ export function restart(options = {} as RestartOptions): void {
 
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
+let languageBeforeQuoteMode: string | undefined;
 export async function init(): Promise<void> {
   console.debug("Initializing test");
   testReinitCount++;
@@ -523,7 +524,18 @@ export async function init(): Promise<void> {
       group.name !== "other" &&
       group.name !== Config.language
     ) {
+      languageBeforeQuoteMode = Config.language;
       UpdateConfig.setLanguage(group.name);
+    }
+  } else {
+    if (
+      languageBeforeQuoteMode &&
+      Config.language === languageBeforeQuoteMode.split("_")[0]
+    ) {
+      UpdateConfig.setLanguage(languageBeforeQuoteMode);
+      languageBeforeQuoteMode = undefined;
+      await init();
+      return;
     }
   }
 
@@ -920,7 +932,6 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     delete completedEvent.quoteLength;
   }
 
-  // @ts-ignore TODO fix this
   completedEvent.mode2 = Misc.getMode2(Config, TestWords.randomQuote);
 
   if (Config.mode === "custom") {
