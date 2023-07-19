@@ -1220,7 +1220,6 @@ $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
 });
 
 $(".pageTest #result #wpmChart").on("mouseleave", () => {
-  $(".wordInputHighlight").remove(); // don't know if still needed
   ResultWordHighlight.setIsHoverChart(false);
   ResultWordHighlight.clear();
 });

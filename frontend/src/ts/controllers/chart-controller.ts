@@ -23,6 +23,7 @@ import {
   type DefaultDataPoint,
   type PluginChartOptions,
   type ScaleChartOptions,
+  TooltipItem,
 } from "chart.js";
 
 import chartAnnotation, {
@@ -81,7 +82,7 @@ class ChartWithUpdateColors<
   }
 }
 
-let prevTi: any = null;
+let prevTi: TooltipItem<"line" | "scatter"> | undefined;
 export const result: ChartWithUpdateColors<
   "line" | "scatter",
   number[],

@@ -59,6 +59,7 @@ export async function highlightWordsInRange(
   firstWordIndex: number,
   lastWordIndex: number
 ): Promise<boolean> {
+  console.log("highlightWordsInRange", firstWordIndex, lastWordIndex);
   // Early exit if not hovering over chart
   if (!isHoveringChart) {
     return false;
@@ -204,7 +205,7 @@ async function init(): Promise<boolean> {
 
     if (word.offsetTop != prevWord.offsetTop) {
       currLineIndex++;
-      lineRect = getBoundingRectOfElements([
+      lineRect = Misc.getBoundingRectOfElements([
         wordEls[prevLineEndWordIndex + 1],
         wordEls[i - 1],
       ]);
@@ -219,7 +220,7 @@ async function init(): Promise<boolean> {
   }
 
   // Construct last line
-  lineRect = getBoundingRectOfElements([
+  lineRect = Misc.getBoundingRectOfElements([
     wordEls[prevLineEndWordIndex + 1],
     wordEls[wordEls.length - 1],
   ]);
@@ -279,7 +280,7 @@ async function init(): Promise<boolean> {
 
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       const wordEl = wordEls[i];
-      const userInputString = wordEl.getAttribute("input")!;
+      const userInputString = wordEl.getAttribute("input");
 
       if (!userInputString) {
         continue;
@@ -471,7 +472,7 @@ function getHighlightWidth(
 
   // If highlight is just one line...
   if (lineIndexOfWordStart == lineIndexOfWordEnd) {
-    const highlightRect = getBoundingRectOfElements([
+    const highlightRect = Misc.getBoundingRectOfElements([
       wordEls[wordStartIndex],
       wordEls[wordEndIndex],
     ]);
@@ -484,12 +485,12 @@ function getHighlightWidth(
   }
 
   // Multiple lines
-  const firstLineBounds = getBoundingRectOfElements([
+  const firstLineBounds = Misc.getBoundingRectOfElements([
     wordEls[wordStartIndex],
     wordEls[lines[lineIndexOfWordStart].lastWordIndex],
   ]);
 
-  const lastLineBounds = getBoundingRectOfElements([
+  const lastLineBounds = Misc.getBoundingRectOfElements([
     wordEls[lines[lineIndexOfWordEnd].firstWordIndex],
     wordEls[wordEndIndex],
   ]);
@@ -510,45 +511,4 @@ function getHighlightWidth(
     inputWordEls[wordEndIndex].getBoundingClientRect();
   width -= lastWordElRect.width - lastInputWordElRect.width;
   return width;
-}
-
-// Function to get the bounding rectangle of a collection of elements
-function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
-  let minX = Infinity,
-    minY = Infinity,
-    maxX = -Infinity,
-    maxY = -Infinity;
-
-  elements.forEach((element) => {
-    const rect = element.getBoundingClientRect();
-
-    minX = Math.min(minX, rect.left);
-    minY = Math.min(minY, rect.top);
-    maxX = Math.max(maxX, rect.right);
-    maxY = Math.max(maxY, rect.bottom);
-  });
-
-  // Create a new object with the same properties as a DOMRect
-  return {
-    x: minX,
-    y: minY,
-    width: maxX - minX,
-    height: maxY - minY,
-    top: minY,
-    right: maxX,
-    bottom: maxY,
-    left: minX,
-    toJSON: function (): any {
-      return JSON.stringify({
-        x: this.x,
-        y: this.y,
-        width: this.width,
-        height: this.height,
-        top: this.top,
-        right: this.right,
-        bottom: this.bottom,
-        left: this.left,
-      });
-    },
-  };
 }
