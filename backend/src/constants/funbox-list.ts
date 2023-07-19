@@ -314,6 +314,13 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
     frontendFunctions: ["alterText"],
     name: "morse",
   },
+  {
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["noLigatures"],
+    frontendFunctions: ["applyCSS"],
+    name: "crt",
+  },
 ];
 
 export default FunboxList;
