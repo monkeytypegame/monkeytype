@@ -488,6 +488,11 @@ function getHighlightElementPositions(
         (lines[i - 1].rect.width -
           highlightPositions[i - 1].highlightRight +
           PADDING_X);
+
+      highlightPositions[i].highlightLeft =
+        lines[i].rect.width -
+        (highlightPositions[i].highlightRight + highlightWidth) +
+        PADDING_X;
     }
   }
 
