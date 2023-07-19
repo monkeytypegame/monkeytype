@@ -6,8 +6,8 @@
 import * as Misc from "../utils/misc";
 import Config from "../config";
 
-const PADDING_X = 14;
-const PADDING_Y = 12;
+const PADDING_X = 10;
+const PADDING_Y = 10;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2;
 
@@ -217,6 +217,8 @@ async function init(): Promise<boolean> {
     const IWC_width = line.rect.width;
     const IWC_height = line.rect.height;
 
+    console.log("IWC_width", IWC_width);
+
     // Calculate top, left as % relative to "#resultWordsHistory"
     const HC_top_percent = (HC_rel_top / RWH_height) * 100 + "%";
     const HC_left_percent = (HC_rel_left / RWH_width) * 100 + "%";
@@ -252,8 +254,12 @@ async function init(): Promise<boolean> {
       const inputWordEl = document.createElement("div");
 
       // For RTL languages, account for difference between highlightContainer left and RWH_el left
-      // const RTL_offset = line.rect.left - RWH_rect.left;
-      const RTL_offset = 0;
+      let RTL_offset;
+      if (isLanguageRightToLeft) {
+        RTL_offset = line.rect.left - RWH_rect.left + PADDING_X;
+      } else {
+        RTL_offset = 0;
+      }
 
       // Calculate inputWordEl properties relative to inputWordsContainerEl
       inputWordEl.style.left =
