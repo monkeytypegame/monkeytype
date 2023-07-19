@@ -67,7 +67,7 @@ router.patch(
   checkIfUserCanManageApeKeys,
   validateRequest({
     params: {
-      apeKeyId: joi.string().required(),
+      apeKeyId: joi.string().token().required(),
     },
     body: {
       name: apeKeyNameSchema,
@@ -84,7 +84,7 @@ router.delete(
   checkIfUserCanManageApeKeys,
   validateRequest({
     params: {
-      apeKeyId: joi.string().required(),
+      apeKeyId: joi.string().token().required(),
     },
   }),
   asyncHandler(ApeKeyController.deleteApeKey)

@@ -261,9 +261,7 @@ function updateWpmAndAcc(): void {
 
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${TestInput.accuracy.incorrect} mistake${
-        TestInput.accuracy.incorrect === 1 ? "" : "s"
-      }`
+      `${TestInput.accuracy.correct} correct / ${TestInput.accuracy.incorrect} incorrect`
     );
   } else {
     //not showing decimal places
@@ -298,9 +296,9 @@ function updateWpmAndAcc(): void {
     $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${result.acc}% (${TestInput.accuracy.incorrect} mistake${
-        TestInput.accuracy.incorrect === 1 ? "" : "s"
-      })`
+      `${result.acc === 100 ? "100" : Misc.roundTo2(result.acc).toFixed(2)}% (${
+        TestInput.accuracy.correct
+      } correct / ${TestInput.accuracy.incorrect} incorrect)`
     );
   }
 }

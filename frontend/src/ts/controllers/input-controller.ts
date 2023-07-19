@@ -205,6 +205,11 @@ function handleSpace(): void {
       Sound.playClick();
     }
     Replay.addReplayEvent("submitCorrectWord");
+    if (TestWords.words.currentIndex === TestWords.words.length) {
+      //submitted last word (checking this in case the test doesnt stop automatically on correct last keypress)
+      TestLogic.finish();
+      return;
+    }
   } else {
     if (!nospace) {
       if (!Config.playSoundOnError || Config.blindMode) {
@@ -1179,7 +1184,8 @@ $("#wordsInput").on("input", (event) => {
     if (!CompositionState.getComposing()) {
       Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
     }
-  } else if (inputValue !== currTestInput) {
+  }
+  if (inputValue !== currTestInput) {
     let diffStart = 0;
     while (inputValue[diffStart] === currTestInput[diffStart]) {
       diffStart++;
