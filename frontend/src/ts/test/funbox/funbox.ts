@@ -587,7 +587,6 @@ export async function clear(): Promise<boolean> {
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
   $("#wordsWrapper").removeClass("hidden");
-  $("#scanline").addClass("hidden");
   MemoryTimer.reset();
   ManualRestart.set();
   return true;
@@ -623,7 +622,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  $("#scanline").addClass("hidden");
+  $("body").removeClass("crtmode");
 
   let language;
   try {
@@ -731,10 +730,7 @@ FunboxList.setFunboxFunctions("morse", {
 });
 
 FunboxList.setFunboxFunctions("crt", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/crt.css`);
-  },
   applyConfig(): void {
-    $("#scanline").removeClass("hidden");
+    $("body").addClass("crtmode");
   },
 });
