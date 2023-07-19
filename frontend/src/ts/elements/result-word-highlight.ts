@@ -59,7 +59,6 @@ export async function highlightWordsInRange(
   firstWordIndex: number,
   lastWordIndex: number
 ): Promise<boolean> {
-  console.log("highlightWordsInRange", firstWordIndex, lastWordIndex);
   // Early exit if not hovering over chart
   if (!isHoveringChart) {
     return false;
