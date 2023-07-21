@@ -1,3 +1,5 @@
+import * as ResultWordHighlight from "../elements/result-word-highlight";
+
 import {
   BarController,
   BarElement,
@@ -21,6 +23,7 @@ import {
   type DefaultDataPoint,
   type PluginChartOptions,
   type ScaleChartOptions,
+  TooltipItem,
 } from "chart.js";
 
 import chartAnnotation, {
@@ -79,6 +82,7 @@ class ChartWithUpdateColors<
   }
 }
 
+let prevTi: TooltipItem<"line" | "scatter"> | undefined;
 export const result: ChartWithUpdateColors<
   "line" | "scatter",
   number[],
@@ -216,28 +220,19 @@ export const result: ChartWithUpdateColors<
           intersect: false,
           callbacks: {
             afterLabel: function (ti): string {
+              if (prevTi === ti) return "";
+              prevTi = ti;
               try {
-                $(".wordInputHighlight").remove();
-
                 const wordsToHighlight =
                   TestInput.keypressPerSecond[parseInt(ti.label) - 1].words;
 
                 const unique = [...new Set(wordsToHighlight)];
-                unique.forEach((wordIndex) => {
-                  const wordEl = $(
-                    $("#resultWordsHistory .words .word")[wordIndex]
-                  );
-                  const input = wordEl.attr("input");
-                  if (input !== undefined) {
-                    wordEl.append(
-                      `<div class="wordInputHighlight">${input
-                        .replace(/\t/g, "_")
-                        .replace(/\n/g, "_")
-                        .replace(/</g, "&lt")
-                        .replace(/>/g, "&gt")}</div>`
-                    );
-                  }
-                });
+                const firstHighlightWordIndex = unique[0];
+                const lastHighlightWordIndex = unique[unique.length - 1];
+                ResultWordHighlight.highlightWordsInRange(
+                  firstHighlightWordIndex,
+                  lastHighlightWordIndex
+                );
               } catch {}
               return "";
             },

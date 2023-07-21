@@ -18,6 +18,7 @@ import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
+import * as ResultWordHighlight from "../elements/result-word-highlight";
 
 const debouncedZipfCheck = debounce(250, () => {
   Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
@@ -1211,6 +1212,7 @@ $(".pageTest #copyWordsListButton").on("click", async () => {
 
 $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
+  ResultWordHighlight.destroy();
 });
 
 $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
@@ -1218,7 +1220,12 @@ $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
 });
 
 $(".pageTest #result #wpmChart").on("mouseleave", () => {
-  $(".wordInputHighlight").remove();
+  ResultWordHighlight.setIsHoverChart(false);
+  ResultWordHighlight.clear();
+});
+
+$(".pageTest #result #wpmChart").on("mouseenter", () => {
+  ResultWordHighlight.setIsHoverChart(true);
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
@@ -1244,6 +1251,10 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
       );
     }
   }
+});
+
+addEventListener("resize", () => {
+  ResultWordHighlight.destroy();
 });
 
 $("#wordsInput").on("focus", () => {
