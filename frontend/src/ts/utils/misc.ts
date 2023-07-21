@@ -1540,6 +1540,46 @@ export function isToday(timestamp: number): boolean {
   return today === date;
 }
 
+// Function to get the bounding rectangle of a collection of elements
+export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+
+  elements.forEach((element) => {
+    const rect = element.getBoundingClientRect();
+
+    minX = Math.min(minX, rect.left);
+    minY = Math.min(minY, rect.top);
+    maxX = Math.max(maxX, rect.right);
+    maxY = Math.max(maxY, rect.bottom);
+  });
+
+  // Create a new object with the same properties as a DOMRect
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+    top: minY,
+    right: maxX,
+    bottom: maxY,
+    left: minX,
+    toJSON: function (): string {
+      return JSON.stringify({
+        x: this.x,
+        y: this.y,
+        width: this.width,
+        height: this.height,
+        top: this.top,
+        right: this.right,
+        bottom: this.bottom,
+        left: this.left,
+      });
+    },
+  };
+}
 export function convertToMorse(word: string): string {
   const morseCode: { [id: string]: string } = {
     a: ".-",

@@ -1,3 +1,46 @@
+.highlightContainer {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+
+  .highlight {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    position: absolute;
+    background-color: var(--sub-color);
+    border-radius: var(--roundness);
+    opacity: 1;
+    transition: opacity 0.125s linear;
+
+    overflow: hidden;
+    z-index: 1;
+
+    &.withAnimation {
+      transition: left 0.25s ease, right 0.25s ease, opacity 0.125s linear;
+    }
+
+    &.highlight-hidden {
+      opacity: 0;
+    }
+  }
+
+  .inputWord {
+    color: var(--bg-color);
+    position: absolute;
+    font-size: 1em;
+    line-height: 1em;
+    font-variant: no-common-ligatures;
+  }
+
+  .inputWordsContainer {
+    position: relative;
+    &.withAnimation {
+      transition: all 0.25s ease;
+    }
+  }
+}
+
 #timerWrapper {
   opacity: 0;
   transition: 0.25s;
@@ -334,6 +377,10 @@
       0px 1px 0px var(--bg-color),
       1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
   }
+}
+
+#resultWordsHistory {
+  position: relative;
 }
 
 #words.noErrorBorder,
