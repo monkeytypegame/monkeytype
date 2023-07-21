@@ -547,15 +547,19 @@ key {
 body.crtmode {
   text-shadow: 3px 0 1px rgba(0, 30, 255, 0.5), -3px 0 1px rgba(255, 0, 80, 0.3),
     0 0 3px;
-  background: radial-gradient(
-    ellipse,
-    var(--bg-color-shine) 0%,
-    var(--bg-color) 90%
-  );
+
+  .customBackground {
+    background: radial-gradient(
+      ellipse,
+      var(--bg-color-shine) 0%,
+      var(--bg-color) 90%
+    );
+  }
 
   &::after {
     content: "";
-    position: absolute;
+    display: block;
+    position: fixed;
     top: 0px;
     left: 0px;
     right: 0px;
