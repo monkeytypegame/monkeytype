@@ -318,7 +318,6 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
     canGetPb: true,
     difficultyLevel: 1,
     properties: ["noLigatures"],
-    frontendFunctions: ["applyCSS"],
     name: "crt",
   },
 ];
