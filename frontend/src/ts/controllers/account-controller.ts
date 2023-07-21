@@ -523,10 +523,18 @@ export async function addPasswordAuth(
 
   const credential = EmailAuthProvider.credential(email, password);
   linkWithCredential(user, credential)
-    .then(function () {
-      Loader.hide();
-      Notifications.add("Password authentication added", 1);
+    .then(async function () {
       Settings.updateAuthSections();
+      const response = await Ape.users.updateEmail(email, user.email as string);
+      Loader.hide();
+      if (response.status !== 200) {
+        return Notifications.add(
+          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
+            response.message,
+          -1
+        );
+      }
+      Notifications.add("Password authentication added", 1);
     })
     .catch(function (error) {
       Loader.hide();
