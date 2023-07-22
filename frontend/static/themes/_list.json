@@ -7,6 +7,13 @@
     "textColor": "#d2dff4"
   },
   {
+    "name": "tokyo_night_darker",
+    "bgColor": "#0a0a0d",
+    "mainColor": "#0da0ba",
+    "subColor": "#646980",
+    "textColor": "#c0caf5"
+  },
+  {
     "name": "viridescent",
     "bgColor": "#2c3333",
     "mainColor": "#95d5b2",
@@ -1175,5 +1182,4 @@
     "subColor": "#651e56",
     "textColor": "#fff"
   }
-
 ]
