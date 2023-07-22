@@ -78,6 +78,7 @@ export async function update(
               $exists: true,
             },
             banned: { $exists: false },
+            lbOptOut: { $exists: false },
             needsToChangeName: { $exists: false },
             timeTyping: {
               $gt: process.env.MODE === "dev" ? 0 : 7200,
@@ -133,7 +134,9 @@ export async function update(
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
   try {
     await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
-  } catch (e) {}
+  } catch {
+    //
+  }
   if (lb && lb.length !== 0) {
     await db
       .collection<MonkeyTypes.LeaderboardEntry>(

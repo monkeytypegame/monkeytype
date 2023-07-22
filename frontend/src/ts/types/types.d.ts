@@ -1,11 +1,24 @@
+type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
+
 declare namespace MonkeyTypes {
+  type PageName =
+    | "loading"
+    | "test"
+    | "settings"
+    | "about"
+    | "account"
+    | "login"
+    | "profile"
+    | "profileSearch"
+    | "404";
+
   type Difficulty = "normal" | "expert" | "master";
 
-  type CustomModes = "custom";
+  type Mode = keyof PersonalBests;
 
-  type Mode = "time" | "words" | "quote" | "zen" | CustomModes;
+  type Mode2<M extends Mode> = M extends M ? keyof PersonalBests[M] : never;
 
-  type Mode2<M extends Mode> = keyof PersonalBests[M];
+  type StringNumber = `${number}`;
 
   type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
 
@@ -18,12 +31,14 @@ declare namespace MonkeyTypes {
 
   interface LanguageObject {
     name: string;
-    leftToRight: boolean;
+    rightToLeft: boolean;
     noLazyMode?: boolean;
     ligatures?: boolean;
+    orderedByFrequency?: boolean;
     words: string[];
     accents: Accents;
     bcp47?: string;
+    originalPunctuation?: boolean;
   }
 
   type WordsModes = number;
@@ -66,13 +81,17 @@ declare namespace MonkeyTypes {
     | "alice"
     | "matrix"
     | "split"
-    | "split_matrix";
+    | "split_matrix"
+    | "steno"
+    | "steno_matrix";
 
   type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
 
   type KeymapShowTopRow = "always" | "layout" | "never";
 
   type ShowAverage = "off" | "wpm" | "acc" | "both";
+
+  type SmoothCaretMode = "off" | "slow" | "medium" | "fast";
 
   type TapeMode = "off" | "letter" | "word";
 
@@ -91,6 +110,8 @@ declare namespace MonkeyTypes {
     9 = sawtooth
     10 = square
     11 = triangle
+    12 = pentatonic
+    13 = wholetone
   */
   type PlaySoundOnClick =
     | "off"
@@ -104,7 +125,9 @@ declare namespace MonkeyTypes {
     | "8"
     | "9"
     | "10"
-    | "11";
+    | "11"
+    | "12"
+    | "13";
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
@@ -112,7 +135,7 @@ declare namespace MonkeyTypes {
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
-  type ChartStyle = "line" | "scatter";
+  type AccountChart = ("off" | "on")[];
 
   type MinimumWordsPerMinute = "off" | "custom";
 
@@ -141,8 +164,6 @@ declare namespace MonkeyTypes {
 
   type MinimumBurst = "off" | "fixed" | "flex";
 
-  type FunboxObjectType = "script" | "style";
-
   type IndicateTypos = "off" | "below" | "replace";
 
   type CustomLayoutFluid = `${string}#${string}#${string}`;
@@ -157,7 +178,7 @@ declare namespace MonkeyTypes {
     wpm: number;
     acc: number;
     mode: string;
-    mode2: string | number;
+    mode2: string;
     punctuation: boolean;
     language: string;
     timestamp: number;
@@ -172,6 +193,11 @@ declare namespace MonkeyTypes {
     errorRate: number;
   }
 
+  interface OtherChartData {
+    x: number;
+    y: number;
+  }
+
   interface ActivityChartDataPoint {
     x: number;
     y: number;
@@ -183,12 +209,69 @@ declare namespace MonkeyTypes {
     display?: string;
   }
 
-  interface FunboxObject {
+  type FunboxWordsFrequency = "normal" | "zipf";
+
+  type FunboxProperty =
+    | "symmetricChars"
+    | "conflictsWithSymmetricChars"
+    | "changesWordsVisibility"
+    | "speaks"
+    | "unspeakable"
+    | "changesLayout"
+    | "ignoresLayout"
+    | "usesLayout"
+    | "ignoresLanguage"
+    | "noLigatures"
+    | "noLetters"
+    | "changesCapitalisation"
+    | "nospace"
+    | `toPush:${number}`
+    | "noInfiniteDuration"
+    | "changesWordsFrequency";
+
+  interface FunboxFunctions {
+    getWord?: (wordset?: Misc.Wordset, wordIndex?: number) => string;
+    punctuateWord?: (word: string) => string;
+    withWords?: (words?: string[]) => Promise<Misc.Wordset>;
+    alterText?: (word: string) => string;
+    applyCSS?: () => void;
+    applyConfig?: () => void;
+    rememberSettings?: () => void;
+    toggleScript?: (params: string[]) => void;
+    pullSection?: (language?: string) => Promise<Misc.Section | false>;
+    handleSpace?: () => void;
+    handleChar?: (char: string) => string;
+    isCharCorrect?: (char: string, originalChar: string) => boolean;
+    preventDefaultEvent?: (
+      event: JQuery.KeyDownEvent<Document, null, Document, Document>
+    ) => Promise<boolean>;
+    handleKeydown?: (
+      event: JQuery.KeyDownEvent<Document, null, Document, Document>
+    ) => Promise<void>;
+    getResultContent?: () => string;
+    start?: () => void;
+    restart?: () => void;
+    getWordHtml?: (char: string, letterTag?: boolean) => string;
+    getWordsFrequencyMode?: () => FunboxWordsFrequency;
+  }
+
+  interface FunboxForcedConfig {
+    [key: string]: ConfigValues[];
+    // punctuation?: boolean;
+    // numbers?: boolean;
+    // highlightMode?: typesSeparatedWithHash<HighlightMode>;
+    // words?: FunboxModeDuration;
+    // time?: FunboxModeDuration;
+  }
+
+  interface FunboxMetadata {
     name: string;
-    type: FunboxObjectType;
     info: string;
+    canGetPb?: boolean;
     alias?: string;
-    affectsWordGeneration?: boolean;
+    forcedConfig?: MonkeyTypes.FunboxForcedConfig;
+    properties?: FunboxProperty[];
+    functions?: FunboxFunctions;
   }
 
   interface CustomText {
@@ -225,24 +308,18 @@ declare namespace MonkeyTypes {
   }
 
   interface PersonalBests {
-    time: {
-      [key: number]: PersonalBest[];
-    };
-    words: {
-      [key: number]: PersonalBest[];
-    };
-    quote: { [quote: string]: PersonalBest[] };
-    custom: { custom: PersonalBest[] };
-    zen: {
-      zen: PersonalBest[];
-    };
+    time: Record<StringNumber, PersonalBest[]>;
+    words: Record<StringNumber, PersonalBest[]>;
+    quote: Record<StringNumber, PersonalBest[]>;
+    custom: Partial<Record<"custom", PersonalBest[]>>;
+    zen: Partial<Record<"zen", PersonalBest[]>>;
   }
 
   interface Tag {
     _id: string;
     name: string;
     display: string;
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
     active?: boolean;
   }
 
@@ -337,7 +414,7 @@ declare namespace MonkeyTypes {
     showKeyTips: boolean;
     showLiveWpm: boolean;
     showTimerProgress: boolean;
-    smoothCaret: boolean;
+    smoothCaret: SmoothCaretMode;
     quickRestart: "off" | "esc" | "tab";
     punctuation: boolean;
     numbers: boolean;
@@ -386,8 +463,7 @@ declare namespace MonkeyTypes {
     paceCaretCustomSpeed: number;
     repeatedPace: boolean;
     pageWidth: PageWidth;
-    chartAccuracy: boolean;
-    chartStyle: ChartStyle;
+    accountChart: AccountChart;
     minWpm: MinimumWordsPerMinute;
     minWpmCustomSpeed: number;
     highlightMode: HighlightMode;
@@ -437,7 +513,7 @@ declare namespace MonkeyTypes {
 
   interface LeaderboardMemory {
     time: {
-      [key in 15 | 60]: {
+      [key in "15" | "60"]: {
         [language: string]: number;
       };
     };
@@ -481,7 +557,7 @@ declare namespace MonkeyTypes {
     quoteRatings?: QuoteRatings;
     results?: Result<Mode>[];
     verified?: boolean;
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
     name: string;
     customThemes: CustomTheme[];
     presets?: Preset[];
@@ -503,6 +579,8 @@ declare namespace MonkeyTypes {
     inboxUnreadSize: number;
     streak: number;
     maxStreak: number;
+    streakHourOffset?: number;
+    lbOptOut?: boolean;
   }
 
   interface UserDetails {
@@ -526,11 +604,6 @@ declare namespace MonkeyTypes {
 
   type FavoriteQuotes = Record<string, string[]>;
 
-  // Converting this to an interface causes a TS error
-  type PartialRecord<K extends keyof any, T> = {
-    [P in K]?: T;
-  };
-
   interface ResultFilters {
     _id: string;
     name: string;
@@ -551,17 +624,17 @@ declare namespace MonkeyTypes {
       custom: boolean;
     };
     words: {
-      10: boolean;
-      25: boolean;
-      50: boolean;
-      100: boolean;
+      "10": boolean;
+      "25": boolean;
+      "50": boolean;
+      "100": boolean;
       custom: boolean;
     };
     time: {
-      15: boolean;
-      30: boolean;
-      60: boolean;
-      120: boolean;
+      "15": boolean;
+      "30": boolean;
+      "60": boolean;
+      "120": boolean;
       custom: boolean;
     };
     quoteLength: {
@@ -585,21 +658,18 @@ declare namespace MonkeyTypes {
       last_3months: boolean;
       all: boolean;
     };
-    tags: {
-      [tagId: string]: boolean;
-    };
-    language: {
-      [language: string]: boolean;
-    };
+    tags: Record<string, boolean>;
+    language: Record<string, boolean>;
     funbox: {
       none?: boolean;
-      [funbox: string]: boolean;
-    };
+    } & Record<string, boolean>;
   }
 
-  type Group = keyof ResultFilters;
+  type Group<G extends keyof ResultFilters> = G extends G
+    ? ResultFilters[G]
+    : never;
 
-  type Filter<G extends Group> = keyof ResultFilters[G];
+  type Filter<G extends Group> = G extends G ? keyof ResultFilters[G] : never;
 
   interface TimerStats {
     dateNow: number;
@@ -622,6 +692,7 @@ declare namespace MonkeyTypes {
     noGoogleNoMo(): void;
     egVideoListener(options: Record<string, string>): void;
     wpmCalculationDebug(): void;
+    toggleDebugLogs(): void;
   }
 
   interface GithubRelease {
@@ -658,7 +729,7 @@ declare namespace MonkeyTypes {
     prerelease: boolean;
     created_at: string;
     published_at: string;
-    assets: any[];
+    assets: unknown[];
     tarball_url: string;
     zipball_url: string;
     body: string;
@@ -680,26 +751,30 @@ declare namespace MonkeyTypes {
     alias?: string;
     input?: boolean;
     visible?: boolean;
+    customStyle?: string;
     defaultValue?: () => string;
     configValue?: string | number | boolean | number[];
     configValueMode?: string;
     exec?: (input?: string) => void;
     hover?: () => void;
     available?: () => void;
-    beforeSubgroup?: () => void;
     shouldFocusTestUI?: boolean;
+    customData?: Record<string, string>;
   }
 
   interface CommandsSubgroup {
     title: string;
     configKey?: keyof Config;
     list: Command[];
+    beforeList?: () => void;
   }
 
   interface Theme {
     name: string;
     bgColor: string;
     mainColor: string;
+    subColor: string;
+    textColor: string;
   }
 
   interface Quote {

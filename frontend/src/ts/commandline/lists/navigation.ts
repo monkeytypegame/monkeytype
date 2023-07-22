@@ -1,4 +1,4 @@
-import { navigate } from "../../observables/navigate-event";
+import { navigate } from "../../controllers/route-controller";
 import { toggleFullscreen } from "../../utils/misc";
 
 const commands: MonkeyTypes.Command[] = [

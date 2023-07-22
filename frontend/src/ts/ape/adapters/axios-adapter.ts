@@ -9,11 +9,9 @@ type AxiosClientMethod = (
 
 type AxiosClientDataMethod = (
   endpoint: string,
-  data: any,
+  data: unknown,
   config: AxiosRequestConfig
 ) => Promise<AxiosResponse>;
-
-type AxiosClientMethods = AxiosClientMethod & AxiosClientDataMethod;
 
 async function adaptRequestOptions(
   options: Ape.RequestOptions
@@ -34,7 +32,7 @@ async function adaptRequestOptions(
 }
 
 function apeifyClientMethod(
-  clientMethod: AxiosClientMethods,
+  clientMethod: AxiosClientMethod | AxiosClientDataMethod,
   methodType: Ape.HttpMethodTypes
 ): Ape.HttpClientMethod {
   return async (
@@ -50,9 +48,12 @@ function apeifyClientMethod(
 
       let response;
       if (methodType === "get" || methodType === "delete") {
-        response = await clientMethod(endpoint, requestOptions);
+        response = await (clientMethod as AxiosClientMethod)(
+          endpoint,
+          requestOptions
+        );
       } else {
-        response = await clientMethod(
+        response = await (clientMethod as AxiosClientDataMethod)(
           endpoint,
           requestOptions.data,
           requestOptions

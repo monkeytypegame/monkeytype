@@ -26,17 +26,17 @@ export const defaultResultFilters: MonkeyTypes.ResultFilters = {
     custom: true,
   },
   words: {
-    10: true,
-    25: true,
-    50: true,
-    100: true,
+    "10": true,
+    "25": true,
+    "50": true,
+    "100": true,
     custom: true,
   },
   time: {
-    15: true,
-    30: true,
-    60: true,
-    120: true,
+    "15": true,
+    "30": true,
+    "60": true,
+    "120": true,
     custom: true,
   },
   quoteLength: {
@@ -77,20 +77,43 @@ function save(): void {
 }
 
 export async function load(): Promise<void> {
-  console.log("loading filters");
   try {
     const newResultFilters = window.localStorage.getItem("resultFilters");
-    if (
-      newResultFilters != undefined &&
-      newResultFilters !== "" &&
-      Object.keys(JSON.parse(newResultFilters)).length >=
-        Object.keys(defaultResultFilters).length
-    ) {
-      filters = JSON.parse(newResultFilters);
-      // save();
-    } else {
+
+    if (!newResultFilters) {
       filters = defaultResultFilters;
-      // save();
+    } else {
+      const newFiltersObject = JSON.parse(newResultFilters);
+
+      let reset = false;
+      for (const key of Object.keys(defaultResultFilters)) {
+        if (reset === true) break;
+        if (newFiltersObject[key] === undefined) {
+          reset = true;
+          break;
+        }
+
+        if (
+          typeof defaultResultFilters[
+            key as keyof typeof defaultResultFilters
+          ] === "object"
+        ) {
+          for (const subKey of Object.keys(
+            defaultResultFilters[key as keyof typeof defaultResultFilters]
+          )) {
+            if (newFiltersObject[key][subKey] === undefined) {
+              reset = true;
+              break;
+            }
+          }
+        }
+      }
+
+      if (reset) {
+        filters = defaultResultFilters;
+      } else {
+        filters = newFiltersObject;
+      }
     }
 
     const newTags: {
@@ -106,7 +129,7 @@ export async function load(): Promise<void> {
     });
 
     filters.tags = newTags;
-    await updateFilterPresets();
+    // await updateFilterPresets();
     save();
   } catch {
     console.log("error in loading result filters");
@@ -116,8 +139,14 @@ export async function load(): Promise<void> {
 }
 
 export async function updateFilterPresets(): Promise<void> {
-  // remove all previous filter preset buttons
-  $(".pageAccount .presetFilterButtons .filterBtns").html("");
+  const parent = document.querySelector(".pageAccount .presetFilterButtons");
+  const buttons = document.querySelector(
+    ".pageAccount .presetFilterButtons .filterBtns"
+  );
+
+  if (!parent || !buttons) return;
+
+  buttons.innerHTML = "";
 
   const filterPresets =
     DB.getSnapshot()?.filterPresets.map((filter) => {
@@ -125,24 +154,22 @@ export async function updateFilterPresets(): Promise<void> {
       return filter;
     }) ?? [];
 
-  // if user has filter presets
   if (filterPresets.length > 0) {
-    // show region
-    $(".pageAccount .presetFilterButtons").show();
+    let html = "";
 
-    // add button for each filter
-    DB.getSnapshot()?.filterPresets.forEach((filter) => {
-      $(".pageAccount .group.presetFilterButtons .filterBtns").append(
-        `<div class="filterPresets">
-          <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
-          <div class="button delete-filter-preset" data-id="${filter._id}">
-            <i class="fas fa-fw fa-trash"></i>
-          </div>
-        </div>`
-      );
-    });
+    for (const filter of filterPresets) {
+      html += `<div class="filterPresets">
+      <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
+      <div class="button delete-filter-preset" data-id="${filter._id}">
+        <i class="fas fa-fw fa-trash"></i>
+      </div>
+    </div>`;
+    }
+
+    buttons.innerHTML = html;
+    parent.classList.remove("hidden");
   } else {
-    $(".pageAccount .presetFilterButtons").hide();
+    parent.classList.add("hidden");
   }
 }
 
@@ -247,7 +274,7 @@ export function getFilters(): MonkeyTypes.ResultFilters {
   return filters;
 }
 
-export function getGroup<G extends MonkeyTypes.Group>(
+function getGroup<G extends keyof MonkeyTypes.ResultFilters>(
   group: G
 ): MonkeyTypes.ResultFilters[G] {
   return filters[group];
@@ -257,19 +284,24 @@ export function getGroup<G extends MonkeyTypes.Group>(
 //   filters[group][filter] = value;
 // }
 
-export function getFilter<G extends MonkeyTypes.Group>(
+export function getFilter<G extends keyof MonkeyTypes.ResultFilters>(
   group: G,
   filter: MonkeyTypes.Filter<G>
 ): MonkeyTypes.ResultFilters[G][MonkeyTypes.Filter<G>] {
   return filters[group][filter];
 }
 
-// export function toggleFilter(group, filter) {
-//   filters[group][filter] = !filters[group][filter];
-// }
+function setAllFilters(
+  group: keyof MonkeyTypes.ResultFilters,
+  value: boolean
+): void {
+  Object.keys(getGroup(group)).forEach((filter) => {
+    filters[group][filter as keyof typeof filters[typeof group]] =
+      value as never;
+  });
+}
 
 export function loadTags(tags: MonkeyTypes.Tag[]): void {
-  console.log("loading tags");
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
@@ -280,14 +312,13 @@ export function reset(): void {
   save();
 }
 
-type AboveChartDisplay = MonkeyTypes.PartialRecord<
-  MonkeyTypes.Group,
-  { all: boolean; array?: string[] }
+type AboveChartDisplay = Partial<
+  Record<keyof MonkeyTypes.ResultFilters, { all: boolean; array?: string[] }>
 >;
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+  Object.typedKeys(getFilters()).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       return;
@@ -297,9 +328,8 @@ export function updateActive(): void {
       all: true,
       array: [],
     };
-    (
-      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-    ).forEach((filter) => {
+
+    Object.typedKeys(getGroup(group)).forEach((filter) => {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
       if (groupAboveChartDisplay === undefined) return;
@@ -329,28 +359,28 @@ export function updateActive(): void {
     });
   });
 
-  function addText(group: MonkeyTypes.Group): string {
+  function addText(group: keyof MonkeyTypes.ResultFilters): string {
     let ret = "";
     ret += "<div class='group'>";
-    if (group == "difficulty") {
+    if (group === "difficulty") {
       ret += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
-    } else if (group == "mode") {
+    } else if (group === "mode") {
       ret += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
-    } else if (group == "punctuation") {
+    } else if (group === "punctuation") {
       ret += `<span aria-label="Punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-at"></i>`;
-    } else if (group == "numbers") {
+    } else if (group === "numbers") {
       ret += `<span aria-label="Numbers" data-balloon-pos="up"><i class="fas fa-fw fa-hashtag"></i>`;
-    } else if (group == "words") {
+    } else if (group === "words") {
       ret += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
-    } else if (group == "time") {
+    } else if (group === "time") {
       ret += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
-    } else if (group == "date") {
+    } else if (group === "date") {
       ret += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
-    } else if (group == "tags") {
+    } else if (group === "tags") {
       ret += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
-    } else if (group == "language") {
+    } else if (group === "language") {
       ret += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
-    } else if (group == "funbox") {
+    } else if (group === "funbox") {
       ret += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
     }
     if (aboveChartDisplay[group]?.all) {
@@ -359,12 +389,12 @@ export function updateActive(): void {
       if (group === "tags") {
         ret += aboveChartDisplay.tags?.array
           ?.map((id) => {
-            if (id == "none") return id;
+            if (id === "none") return id;
             const snapshot = DB.getSnapshot();
             if (snapshot === undefined) return id;
-            const name = snapshot.tags?.filter((t) => t._id == id)[0];
+            const name = snapshot.tags?.filter((t) => t._id === id)[0];
             if (name !== undefined) {
-              return snapshot.tags?.filter((t) => t._id == id)[0].display;
+              return snapshot.tags?.filter((t) => t._id === id)[0].display;
             }
             return name;
           })
@@ -427,7 +457,7 @@ export function updateActive(): void {
   }, 0);
 }
 
-export function toggle<G extends MonkeyTypes.Group>(
+function toggle<G extends keyof MonkeyTypes.ResultFilters>(
   group: G,
   filter: MonkeyTypes.Filter<G>
 ): void {
@@ -436,15 +466,12 @@ export function toggle<G extends MonkeyTypes.Group>(
 
   try {
     if (group === "date") {
-      (Object.keys(getGroup("date")) as MonkeyTypes.Filter<"date">[]).forEach(
-        (date) => {
-          filters["date"][date] = false;
-        }
-      );
+      setAllFilters("date", false);
     }
-    filters[group][filter] = !filters[group][
+    const newValue = !filters[group][
       filter
-    ] as unknown as MonkeyTypes.ResultFilters[G][keyof MonkeyTypes.ResultFilters[G]];
+    ] as unknown as MonkeyTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
+    filters[group][filter] = newValue;
     save();
   } catch (e) {
     Notifications.add(
@@ -458,89 +485,40 @@ export function toggle<G extends MonkeyTypes.Group>(
   }
 }
 
-export function updateTags(): void {
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-  ).empty();
-
-  const snapshot = DB.getSnapshot();
-
-  if ((snapshot?.tags?.length ?? 0) > 0) {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
-      "hidden"
-    );
-    $(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-    ).append(`<div class="button" filter="none">no tag</div>`);
-    snapshot?.tags?.forEach((tag) => {
-      $(
-        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag._id}">${tag.display}</div>`);
-    });
-  } else {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
-      "hidden"
-    );
-  }
-}
-
 $(
   ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
 ).on("click", ".button", (e) => {
   const group = $(e.target)
     .parents(".buttons")
-    .attr("group") as MonkeyTypes.Group;
+    .attr("group") as keyof MonkeyTypes.ResultFilters;
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
-    (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+    Object.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
         return;
       }
 
-      (
-        Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-      ).forEach((filter) => {
-        if (group === "date") {
-          // TODO figure out why "filter" is never
-          // @ts-ignore
-          filters[group][filter] = false;
-        } else if (filters[group] !== undefined) {
-          // @ts-ignore
-          filters[group][filter] = true;
-        }
-      });
+      setAllFilters(group, true);
     });
+    setAllFilters("date", false);
     filters["date"]["all"] = true;
   } else if ($(e.target).hasClass("noFilters")) {
-    (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+    Object.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
         return;
       }
 
       if (group !== "date") {
-        (
-          Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-        ).forEach((filter) => {
-          // TODO figure out why "filter" is never
-          // @ts-ignore
-          filters[group][filter] = false;
-        });
+        setAllFilters(group, false);
       }
     });
   } else if ($(e.target).hasClass("button")) {
     if (e.shiftKey) {
-      (
-        Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-      ).forEach((filter) => {
-        // TODO figure out why "filter" is never
-        // @ts-ignore
-        filters[group][filter] = false;
-      });
-      // TODO figure out why "filter" is never
-      // @ts-ignore
-      filters[group][filter] = true;
+      setAllFilters(group, false);
+      filters[group][filter as keyof typeof filters[typeof group]] =
+        true as never;
     } else {
       toggle(group, filter);
       // filters[group][filter] = !filters[group][filter];
@@ -554,26 +532,17 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
-  (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+  console.log(getFilters());
+
+  Object.typedKeys(getFilters()).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       return;
     }
 
-    (
-      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-    ).forEach((filter) => {
-      if (group === "date") {
-        // TODO figure out why "filter" is never
-        // @ts-ignore
-        filters[group][filter] = false;
-      } else {
-        // TODO figure out why "filter" is never
-        // @ts-ignore
-        filters[group][filter] = true;
-      }
-    });
+    setAllFilters(group, true);
   });
+  setAllFilters("date", false);
   filters["date"]["all"] = true;
   updateActive();
   save();
@@ -583,19 +552,13 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
-  (Object.keys(getFilters()) as MonkeyTypes.Group[]).forEach((group) => {
+  Object.typedKeys(getFilters()).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       return;
     }
 
-    (
-      Object.keys(getGroup(group)) as MonkeyTypes.Filter<typeof group>[]
-    ).forEach((filter) => {
-      // TODO figure out why "filter" is never
-      // @ts-ignore
-      filters[group][filter] = false;
-    });
+    setAllFilters(group, false);
   });
 
   filters["pb"]["no"] = true;
@@ -651,7 +614,9 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   if (Config.funbox === "none") {
     filters.funbox.none = true;
   } else {
-    filters.funbox[Config.funbox] = true;
+    for (const f of Config.funbox.split("#")) {
+      filters.funbox[f] = true;
+    }
   }
 
   filters["tags"]["none"] = true;
@@ -676,46 +641,74 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
 });
 
 export async function appendButtons(): Promise<void> {
-  await Misc.getLanguageList()
-    .then((languages) => {
-      languages.forEach((language) => {
-        $(
-          ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
-        ).append(
-          `<div class="button" filter="${language}">${language.replace(
-            "_",
-            " "
-          )}</div>`
-        );
-      });
-    })
-    .catch((e) => {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to append language buttons")
-      );
-    });
+  let languageList;
+  try {
+    languageList = await Misc.getLanguageList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to append language buttons")
+    );
+  }
+  if (languageList) {
+    let html = "";
+    for (const language of languageList) {
+      html += `<div class="button" filter="${language}">${language.replace(
+        "_",
+        " "
+      )}</div>`;
+    }
+    const el = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+    );
+    if (el) el.innerHTML = html;
+  }
 
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-  ).append(`<div class="button" filter="none">none</div>`);
-  await Misc.getFunboxList()
-    .then((funboxModes) => {
-      funboxModes.forEach((funbox) => {
-        $(
-          ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-        ).append(
-          `<div class="button" filter="${funbox.name}">${funbox.name.replace(
-            /_/g,
-            " "
-          )}</div>`
-        );
-      });
-    })
-    .catch((e) => {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to append funbox buttons")
-      );
-    });
+  let funboxList;
+  try {
+    funboxList = await Misc.getFunboxList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to append funbox buttons")
+    );
+  }
+  if (funboxList) {
+    let html = "";
+    for (const funbox of funboxList) {
+      html += `<div class="button" filter="${
+        funbox.name
+      }">${funbox.name.replace(/_/g, " ")}</div>`;
+    }
+    const el = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+    );
+    if (el) {
+      el.innerHTML = `<div class="button" filter="none">none</div>` + html;
+    }
+  }
+
+  const snapshot = DB.getSnapshot();
+
+  if ((snapshot?.tags?.length ?? 0) > 0) {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
+      "hidden"
+    );
+    let html = `<div class="button" filter="none">no tag</div>`;
+    for (const tag of snapshot?.tags ?? []) {
+      html += `<div class="button" filter="${tag._id}">${tag.display}</div>`;
+    }
+    const el = document.querySelector(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+    );
+    if (el) {
+      el.innerHTML = html;
+    }
+  } else {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
+      "hidden"
+    );
+  }
+
+  updateFilterPresets();
 }
 
 export function removeButtons(): void {
@@ -724,6 +717,9 @@ export function removeButtons(): void {
   ).empty();
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+  ).empty();
+  $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
 }
 

@@ -100,7 +100,12 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 ## Building and Running Monkeytype
 
-Then, you are ready to build and run Monkeytype. If you are using Docker:
+- Run `npm run install-all` in the project root to install all dependencies.
+  - If you are on Windows, use `npm run install-windows`.
+  - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
+  Now you are ready to build and run Monkeytype. 
+  
+### Using Docker:
 
 - Frontend:
   ```
@@ -112,11 +117,7 @@ Then, you are ready to build and run Monkeytype. If you are using Docker:
   cd backend && docker-compose up
   ```
 
-If you are **_not_** using Docker:
-
-- Run `npm run install-all` in the project root to install all dependencies.
-  - If you are on Windows, use `npm run install-windows`.
-  - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
+### **_Without_** Docker:
 
 - Frontend and backend
   ```
@@ -128,7 +129,7 @@ If you are **_not_** using Docker:
   npm run dev-fe
   ```
 
-These commands will start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use `Ctrl+C` to stop it.
+These commands will start a local dev server on [port 3000](http://localhost:3000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>Ctrl+C</kbd> to stop it.
 
 Note: Rebuilding doesn't happen instantaneously and depends on your machine, so be patient for changes to appear.
 

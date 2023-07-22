@@ -5,6 +5,7 @@ import * as Notifications from "../elements/notifications";
 import * as ChartController from "../controllers/chart-controller";
 import * as ConnectionState from "../states/connection";
 import intervalToDuration from "date-fns/intervalToDuration";
+import * as Skeleton from "../popups/skeleton";
 
 function reset(): void {
   $(".pageAbout .contributors").empty();
@@ -13,56 +14,70 @@ function reset(): void {
   ChartController.globalSpeedHistogram.updateColors();
 }
 
-let speedStatsResponseData: any | undefined;
-let typingStatsResponseData: any | undefined;
+interface HistogramData {
+  [key: string]: number;
+}
+
+interface TypingStatsData {
+  type: string;
+  timeTyping: number;
+  testsCompleted: number;
+  testsStarted: number;
+}
+
+let speedHistogramResponseData: HistogramData | undefined;
+let typingStatsResponseData: TypingStatsData | undefined;
 
 function updateStatsAndHistogram(): void {
-  if (!speedStatsResponseData && !typingStatsResponseData) {
-    return;
+  if (speedHistogramResponseData) {
+    ChartController.globalSpeedHistogram.updateColors();
+    const bucketedSpeedStats = getHistogramDataBucketed(
+      speedHistogramResponseData
+    );
+    ChartController.globalSpeedHistogram.data.labels =
+      bucketedSpeedStats.labels;
+    ChartController.globalSpeedHistogram.data.datasets[0].data =
+      bucketedSpeedStats.data;
   }
-  ChartController.globalSpeedHistogram.updateColors();
-  const bucketedSpeedStats = getHistogramDataBucketed(speedStatsResponseData);
-  ChartController.globalSpeedHistogram.data.labels = bucketedSpeedStats.labels;
-  ChartController.globalSpeedHistogram.data.datasets[0].data =
-    bucketedSpeedStats.data;
+  if (typingStatsResponseData) {
+    const secondsRounded = Math.round(typingStatsResponseData.timeTyping);
 
-  const secondsRounded = Math.round(typingStatsResponseData.timeTyping);
+    const timeTypingDuration = intervalToDuration({
+      start: 0,
+      end: secondsRounded * 1000,
+    });
 
-  const timeTypingDuration = intervalToDuration({
-    start: 0,
-    end: secondsRounded * 1000,
-  });
+    $(".pageAbout #totalTimeTypingStat .val").text(
+      timeTypingDuration.years?.toString() ?? ""
+    );
+    $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
+    $(".pageAbout #totalTimeTypingStat").attr(
+      "aria-label",
+      Math.round(secondsRounded / 3600) + " hours"
+    );
 
-  $(".pageAbout #totalTimeTypingStat .val").text(
-    timeTypingDuration.years?.toString() ?? ""
-  );
-  $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
-  $(".pageAbout #totalTimeTypingStat").attr(
-    "aria-label",
-    Math.round(secondsRounded / 3600) + " hours"
-  );
+    $(".pageAbout #totalStartedTestsStat .val").text(
+      Math.round(typingStatsResponseData.testsStarted / 1000000)
+    );
+    $(".pageAbout #totalStartedTestsStat .valSmall").text("million");
+    $(".pageAbout #totalStartedTestsStat").attr(
+      "aria-label",
+      typingStatsResponseData.testsStarted + " tests"
+    );
 
-  $(".pageAbout #totalStartedTestsStat .val").text(
-    Math.round(typingStatsResponseData.testsStarted / 1000000)
-  );
-  $(".pageAbout #totalStartedTestsStat .valSmall").text("million");
-  $(".pageAbout #totalStartedTestsStat").attr(
-    "aria-label",
-    typingStatsResponseData.testsStarted + " tests"
-  );
-
-  $(".pageAbout #totalCompletedTestsStat .val").text(
-    Math.round(typingStatsResponseData.testsCompleted / 1000000)
-  );
-  $(".pageAbout #totalCompletedTestsStat .valSmall").text("million");
-  $(".pageAbout #totalCompletedTestsStat").attr(
-    "aria-label",
-    typingStatsResponseData.testsCompleted + " tests"
-  );
+    $(".pageAbout #totalCompletedTestsStat .val").text(
+      Math.round(typingStatsResponseData.testsCompleted / 1000000)
+    );
+    $(".pageAbout #totalCompletedTestsStat .valSmall").text("million");
+    $(".pageAbout #totalCompletedTestsStat").attr(
+      "aria-label",
+      typingStatsResponseData.testsCompleted + " tests"
+    );
+  }
 }
 
 async function getStatsAndHistogramData(): Promise<void> {
-  if (speedStatsResponseData && typingStatsResponseData) {
+  if (speedHistogramResponseData && typingStatsResponseData) {
     return;
   }
 
@@ -77,7 +92,7 @@ async function getStatsAndHistogramData(): Promise<void> {
     mode2: "60",
   });
   if (speedStats.status >= 200 && speedStats.status < 300) {
-    speedStatsResponseData = speedStats.data;
+    speedHistogramResponseData = speedStats.data;
   } else {
     Notifications.add(
       `Failed to get global speed stats for histogram: ${speedStats.message}`,
@@ -118,38 +133,28 @@ async function fill(): Promise<void> {
     contributors = [];
   }
 
-  await getStatsAndHistogramData();
-  updateStatsAndHistogram();
-
-  supporters.forEach((supporter) => {
-    $(".pageAbout .supporters").append(`
-      <div>${supporter}</div>
-    `);
+  getStatsAndHistogramData().then(() => {
+    updateStatsAndHistogram();
   });
-  contributors.forEach((contributor) => {
-    $(".pageAbout .contributors").append(`
-      <div>${contributor}</div>
-    `);
-  });
-}
 
-export const page = new Page(
-  "about",
-  $(".page.pageAbout"),
-  "/about",
-  async () => {
-    //
-  },
-  async () => {
-    reset();
-  },
-  async () => {
-    fill();
-  },
-  async () => {
-    //
+  const supportersEl = document.querySelector(".pageAbout .supporters");
+  let supportersHTML = "";
+  for (const supporter of supporters) {
+    supportersHTML += `<div>${supporter}</div>`;
   }
-);
+  if (supportersEl) {
+    supportersEl.innerHTML = supportersHTML;
+  }
+
+  const contributorsEl = document.querySelector(".pageAbout .contributors");
+  let contributorsHTML = "";
+  for (const contributor of contributors) {
+    contributorsHTML += `<div>${contributor}</div>`;
+  }
+  if (contributorsEl) {
+    contributorsEl.innerHTML = contributorsHTML;
+  }
+}
 
 /** Convert histogram data to the format required to draw a bar chart. */
 function getHistogramDataBucketed(data: Record<string, number>): {
@@ -169,7 +174,7 @@ function getHistogramDataBucketed(data: Record<string, number>): {
       y: data[bucket],
     });
     labels.push(`${bucket} - ${bucket + 9}`);
-    if (bucket + 10 != parseInt(keys[i + 1], 10)) {
+    if (bucket + 10 !== parseInt(keys[i + 1], 10)) {
       for (let j = bucket + 10; j < parseInt(keys[i + 1], 10); j += 10) {
         histogramChartDataBucketed.push({ x: j, y: 0 });
         labels.push(`${j} - ${j + 9}`);
@@ -178,3 +183,25 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   }
   return { data: histogramChartDataBucketed, labels };
 }
+
+export const page = new Page(
+  "about",
+  $(".page.pageAbout"),
+  "/about",
+  async () => {
+    //
+  },
+  async () => {
+    reset();
+    Skeleton.remove("pageAbout");
+  },
+  async () => {
+    Skeleton.append("pageAbout", "middle");
+    fill();
+  },
+  async () => {
+    //
+  }
+);
+
+Skeleton.save("pageAbout");

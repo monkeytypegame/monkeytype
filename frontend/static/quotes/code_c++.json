@@ -164,12 +164,6 @@
       "id": 26
     },
     {
-      "text": "void Person::display_p() { cout << endl << id << \"\\t\" << name; }",
-      "source": "geeksforgeeks - Inheritance in C++",
-      "length": 64,
-      "id": 27
-    },
-    {
       "text": "class Student : private Person {\\n\\tchar course[50];\\n\\tint fee;\\npublic:\\n\\tvoid set_s();\\n\\tvoid display_s();\\n};",
       "source": "geeksforgeeks - Inheritance in C++",
       "length": 115,

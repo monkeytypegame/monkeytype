@@ -4,11 +4,15 @@
 
   <body>
     <%= compilation.assets["html/warnings.html"].source() %>
-
+    <div id="fpsCounter" class="hidden"></div>
     <div class="customBackground"></div>
     <div id="backgroundLoader" style="display: none"></div>
     <div id="bannerCenter" class="focus"></div>
     <div id="notificationCenter">
+      <div class="clearAll button invisible" style="display: none">
+        <i class="fas fa-times"></i>
+        Clear all
+      </div>
       <div class="history"></div>
     </div>
     <div id="timerWrapper">
@@ -56,15 +60,17 @@
         </div>
       </div>
     </div>
+    <script src="/./js/jquery-3.5.1.min.js"></script>
+    <script src="/./js/jquery.color.min.js"></script>
+    <script src="/./js/easing.min.js"></script>
+    <script src="/./js/html2canvas.min.js"></script>
+    <script src="/./js/select2.min.js"></script>
+    <script
+      src="https://www.google.com/recaptcha/api.js?render=explicit"
+      async
+      defer
+    ></script>
+    <link rel="stylesheet" href="/./themes/serika_dark.css" id="currentTheme" />
+    <link rel="stylesheet" href="" id="funBoxTheme" />
   </body>
-  <script src="/./js/jquery-3.5.1.min.js"></script>
-  <script src="/./js/jquery.color.min.js"></script>
-  <script src="/./js/easing.min.js"></script>
-  <script src="/./js/html2canvas.min.js"></script>
-  <script src="/./js/select2.min.js"></script>
-  <script
-    src="https://www.google.com/recaptcha/api.js?render=explicit"
-    async
-    defer
-  ></script>
 </html>

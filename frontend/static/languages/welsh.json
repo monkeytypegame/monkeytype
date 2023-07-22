@@ -1,6 +1,5 @@
 {
   "name": "welsh",
-  "leftToRight": true,
   "ligatures": false,
   "words": [
     "yn",

@@ -3,6 +3,7 @@
 import "../styles/index.scss";
 import "./firebase";
 
+import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
 import "./controllers/ad-controller";
@@ -19,6 +20,7 @@ import "./popups/support-popup";
 import "./popups/contact-popup";
 import "./popups/version-popup";
 import "./popups/edit-preset-popup";
+import "./popups/set-streak-hour-offset";
 import "./popups/simple-popups";
 import "./controllers/input-controller";
 import "./ready";
@@ -29,12 +31,16 @@ import "./elements/scroll-to-top";
 import "./popups/mobile-test-config-popup";
 import "./popups/edit-tags-popup";
 import "./popups/google-sign-up-popup";
+import "./popups/result-tags-popup";
 import * as Account from "./pages/account";
 import "./elements/leaderboards";
 import "./commandline/index";
 import "./elements/no-css";
 import { egVideoListener } from "./popups/video-ad-popup";
 import "./states/connection";
+import "./test/tts";
+import "./elements/fps-counter";
+import "./controllers/profile-search-controller";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
@@ -63,3 +69,5 @@ extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
 extendedGlobal.egVideoListener = egVideoListener;
 
 extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
+
+extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;

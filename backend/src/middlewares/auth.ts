@@ -17,6 +17,7 @@ interface RequestAuthenticationOptions {
   isPublic?: boolean;
   acceptApeKeys?: boolean;
   requireFreshToken?: boolean;
+  noCache?: boolean;
 }
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
@@ -149,7 +150,10 @@ async function authenticateWithBearerToken(
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   try {
-    const decodedToken = await verifyIdToken(token, options.requireFreshToken);
+    const decodedToken = await verifyIdToken(
+      token,
+      options.requireFreshToken || options.noCache
+    );
 
     if (options.requireFreshToken) {
       const now = Date.now();
@@ -175,13 +179,25 @@ async function authenticateWithBearerToken(
     if (errorCode?.includes("auth/id-token-expired")) {
       throw new MonkeyError(
         401,
-        "Token expired. Please login again.",
+        "Token expired - please login again",
         "authenticateWithBearerToken"
       );
     } else if (errorCode?.includes("auth/id-token-revoked")) {
       throw new MonkeyError(
         401,
-        "Token revoked. Please login again.",
+        "Token revoked - please login again",
+        "authenticateWithBearerToken"
+      );
+    } else if (errorCode?.includes("auth/user-not-found")) {
+      throw new MonkeyError(
+        404,
+        "User not found",
+        "authenticateWithBearerToken"
+      );
+    } else if (errorCode?.includes("auth/argument-error")) {
+      throw new MonkeyError(
+        400,
+        "Incorrect Bearer token format",
         "authenticateWithBearerToken"
       );
     } else {

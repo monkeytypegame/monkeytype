@@ -1,8 +1,11 @@
 import Config from "../config";
 import { randomQuote } from "../test/test-words";
-import { getMode2 } from "../utils/misc";
+import { getMode2, isPopupVisible } from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import { compressToURI } from "lz-ts";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "shareTestSettingsPopupWrapper";
 
 function getCheckboxValue(checkbox: string): boolean {
   return $(`#shareTestSettingsPopupWrapper label.${checkbox} input`).prop(
@@ -96,19 +99,20 @@ function updateSubgroups(): void {
 }
 
 export function show(): void {
-  if ($("#shareTestSettingsPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+  if (!isPopupVisible(wrapperId)) {
     updateURL();
     updateSubgroups();
     $("#shareTestSettingsPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100);
+      .animate({ opacity: 1 }, 125);
   }
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#shareTestSettingsPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#shareTestSettingsPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -116,9 +120,10 @@ export async function hide(): Promise<void> {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#shareTestSettingsPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -136,11 +141,10 @@ $("#shareTestSettingsPopupWrapper").on("mousedown", (e) => {
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#shareTestSettingsPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);

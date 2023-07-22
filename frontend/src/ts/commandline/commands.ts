@@ -65,6 +65,8 @@ import ResultSavingCommands from "./lists/result-saving";
 import NavigationCommands from "./lists/navigation";
 import FontSizeCommands from "./lists/font-size";
 import ResultScreenCommands from "./lists/result-screen";
+import CustomBackgroundSizeCommands from "./lists/background-size";
+import CustomBackgroundFilterCommands from "./lists/background-filter";
 import AddOrRemoveThemeToFavorite from "./lists/add-or-remove-theme-to-favorites";
 
 import TagsCommands from "./lists/tags";
@@ -90,13 +92,15 @@ import KeymapLayoutsCommands, {
 
 import Config, * as UpdateConfig from "../config";
 import * as Misc from "../utils/misc";
-import * as TestLogic from "../test/test-logic";
 import { randomizeTheme } from "../controllers/theme-controller";
 import * as CustomTextPopup from "../popups/custom-text-popup";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
+import * as TestStats from "../test/test-stats";
+import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as FPSCounter from "../elements/fps-counter";
 
 Misc.getLayoutsList()
   .then((layouts) => {
@@ -122,6 +126,11 @@ Misc.getLanguageList()
 Misc.getFunboxList()
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
+    if (FunboxCommands[0].subgroup) {
+      FunboxCommands[0].subgroup.beforeList = (): void => {
+        updateFunboxCommands(funboxes);
+      };
+    }
   })
   .catch((e) => {
     console.error(
@@ -186,7 +195,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         UpdateConfig.setMode("quote");
-        $("#quote-search-button").trigger("click");
+        QuoteSearchPopup.show();
       },
       shouldFocusTestUI: false,
     },
@@ -231,7 +240,6 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );
-        if (Config.funbox === "layoutfluid") TestLogic.restart();
       },
     },
 
@@ -299,6 +307,8 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setCustomBackground(input);
       },
     },
+    ...CustomBackgroundSizeCommands,
+    ...CustomBackgroundFilterCommands,
     ...RandomThemeCommands,
     {
       id: "randomizeTheme",
@@ -377,6 +387,14 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
+      id: "clearNotifications",
+      display: "Clear all notifications",
+      icon: "fa-trash-alt",
+      exec: async (): Promise<void> => {
+        Notifications.clearAllNotifications();
+      },
+    },
+    {
       id: "clearSwCache",
       display: "Clear SW cache",
       icon: "fa-cog",
@@ -394,6 +412,49 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-cog",
       exec: async (): Promise<void> => {
         alert(await caches.keys());
+      },
+    },
+    {
+      id: "copyResultStats",
+      display: "Copy result stats",
+      icon: "fa-cog",
+      visible: false,
+      exec: async (): Promise<void> => {
+        navigator.clipboard
+          .writeText(JSON.stringify(TestStats.getStats()))
+          .then(() => {
+            Notifications.add("Copied to clipboard", 1);
+          })
+          .catch((e) => {
+            Notifications.add("Failed to copy to clipboard: " + e, -1);
+          });
+      },
+    },
+    {
+      id: "fpsCounter",
+      display: "FPS counter...",
+      icon: "fa-cog",
+      visible: false,
+      subgroup: {
+        title: "FPS counter...",
+        list: [
+          {
+            id: "startFpsCounter",
+            display: "show",
+            icon: "fa-cog",
+            exec: (): void => {
+              FPSCounter.start();
+            },
+          },
+          {
+            id: "stopFpsCounter",
+            display: "hide",
+            icon: "fa-cog",
+            exec: (): void => {
+              FPSCounter.stop();
+            },
+          },
+        ],
       },
     },
     {

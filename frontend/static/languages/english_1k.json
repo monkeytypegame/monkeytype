@@ -1,7 +1,7 @@
 {
   "name": "english_1k",
-  "leftToRight": true,
   "noLazyMode": true,
+  "orderedByFrequency": true,
   "words": [
     "the",
     "of",

@@ -1,10 +1,10 @@
 import { mapRange } from "../utils/misc";
 import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 
 ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "monkey" && TestActive.get()) {
+  if (eventKey === "monkey" && TestState.isActive) {
     if (Config.monkey) {
       $("#monkey").removeClass("hidden");
     } else {
@@ -66,13 +66,13 @@ export function updateFastOpacity(num: number): void {
   const opacity = mapRange(num, 130, 180, 0, 1);
   $("#monkey .fast").animate({ opacity: opacity }, 1000);
   let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
-  if (animDuration == 0.25) animDuration = 0;
+  if (animDuration === 0.25) animDuration = 0;
   $("#monkey").css({ animationDuration: animDuration + "s" });
 }
 
 export function type(): void {
   if (!Config.monkey) return;
-  if (!left && last == "right") {
+  if (!left && last === "right") {
     left = true;
     last = "left";
   } else if (!right) {

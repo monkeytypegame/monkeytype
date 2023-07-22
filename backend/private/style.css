@@ -182,3 +182,17 @@ input[type="checkbox"] {
     transform: rotate(360deg);
   }
 }
+
+.tooltip:hover .tooltip-text {
+  display: block;
+}
+
+.tooltip-text {
+  display: none;
+  color: var(--text-color);
+  background-color: var(--sub-alt-color);
+  position: absolute;
+  z-index: 1000;
+  padding: 10px;
+  border-radius: var(--roundness);
+}

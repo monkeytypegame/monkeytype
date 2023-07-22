@@ -25,6 +25,9 @@
   align-content: center;
   height: 100%;
   display: grid;
+  .content {
+    display: grid; //stupid fix for stupid safari
+  }
   .preloader {
     position: absolute;
     z-index: 1;
@@ -232,6 +235,7 @@
     padding: 1rem;
     border-radius: var(--roundness);
     align-content: center;
+    padding-right: 3rem;
 
     // grid-template-columns: 15rem auto 15rem auto 2fr auto auto;
 
@@ -246,7 +250,7 @@
         align-items: center;
         .value {
           font-size: 2rem;
-          line-height: 1.9rem;
+          line-height: 2rem;
         }
       }
     }
@@ -257,7 +261,7 @@
       .typingStats {
         .value {
           font-size: 1.5rem;
-          line-height: 1.3rem;
+          line-height: 1.5rem;
         }
       }
     }
@@ -271,7 +275,7 @@
         align-items: center;
         .value {
           font-size: 2rem;
-          line-height: 1.9rem;
+          line-height: 2rem;
         }
       }
     }
@@ -282,7 +286,7 @@
       .typingStats {
         .value {
           font-size: 1.5rem;
-          line-height: 1.3rem;
+          line-height: 1.5rem;
         }
       }
       .bio,
@@ -333,9 +337,9 @@
           color: var(--sub-color);
         }
         .avatar {
-          height: 100%;
+          height: auto;
           aspect-ratio: 1/1;
-          width: auto;
+          width: 100%;
         }
         div {
           grid-row: 1/2;
@@ -349,7 +353,7 @@
         line-height: 100%;
         width: max-content;
         .bannedIcon {
-          margin-left: 0.5rem;
+          margin-left: 0.5em;
           display: inline-grid;
           font-size: 75%;
           color: var(--error-color);
@@ -438,6 +442,7 @@
       align-self: stretch;
       grid-auto-flow: column;
       width: 100%;
+      height: 100%; //dumb safari fix
     }
     .bioAndKeyboard {
       display: grid;
@@ -456,7 +461,7 @@
     }
     .separator {
       width: 0.5rem;
-      height: 100%;
+      height: auto;
       background: var(--bg-color);
       border-radius: var(--roundness);
     }

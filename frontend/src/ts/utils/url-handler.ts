@@ -19,10 +19,10 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     history.replaceState(null, "", "/");
     const accessToken = fragment.get("access_token") as string;
     const tokenType = fragment.get("token_type") as string;
+    const state = fragment.get("state") as string;
 
     Loader.show();
-
-    const response = await Ape.users.linkDiscord(tokenType, accessToken);
+    const response = await Ape.users.linkDiscord(tokenType, accessToken, state);
     Loader.hide();
 
     if (response.status !== 200) {
@@ -56,14 +56,23 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   const getValue = Misc.findGetParameter("customTheme", getOverride);
   if (getValue === null) return;
 
-  const urlEncoded = getValue.split(",");
-  const base64decoded = JSON.parse(atob(getValue) ?? "");
+  let decoded = null;
+  try {
+    decoded = JSON.parse(atob(getValue));
+  } catch (e) {
+    return Notifications.add("Invalid custom theme ", 0);
+  }
 
   let colorArray = [];
-  if (Array.isArray(urlEncoded) && urlEncoded.length === 10) {
-    colorArray = urlEncoded;
-  } else if (Array.isArray(base64decoded) && base64decoded.length === 10) {
-    colorArray = base64decoded;
+  let image, size, filter;
+  if (Array.isArray(decoded.c) && decoded.c.length === 10) {
+    colorArray = decoded.c;
+    image = decoded.i;
+    size = decoded.s;
+    filter = decoded.f;
+  } else if (Array.isArray(decoded) && decoded.length === 10) {
+    // This is for backward compatibility with old format
+    colorArray = decoded;
   }
 
   if (colorArray.length === 0) {
@@ -75,6 +84,12 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
   try {
     UpdateConfig.setCustomThemeColors(colorArray);
     Notifications.add("Custom theme applied", 1);
+
+    if (image !== undefined) {
+      UpdateConfig.setCustomBackground(image);
+      UpdateConfig.setCustomBackgroundSize(size);
+      UpdateConfig.setCustomBackgroundFilter(filter);
+    }
 
     if (!Config.customTheme) UpdateConfig.setCustomTheme(true);
   } catch (e) {
@@ -124,14 +139,17 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   if (de[2]) {
     const customTextSettings = de[2];
+    CustomText.setPopupTextareaState(
+      customTextSettings["text"].join(customTextSettings["delimiter"])
+    );
     CustomText.setText(customTextSettings["text"]);
     CustomText.setIsTimeRandom(customTextSettings["isTimeRandom"]);
     CustomText.setIsWordRandom(customTextSettings["isWordRandom"]);
     if (customTextSettings["isTimeRandom"]) {
-      CustomText.setWord(customTextSettings["time"]);
+      CustomText.setTime(customTextSettings["time"]);
     }
     if (customTextSettings["isWordRandom"]) {
-      CustomText.setTime(customTextSettings["word"]);
+      CustomText.setWord(customTextSettings["word"]);
     }
     CustomText.setDelimiter(customTextSettings["delimiter"]);
     applied["custom text settings"] = "";
@@ -172,14 +190,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
   });
 
   if (appliedString !== "") {
-    Notifications.add(
-      "Settings applied from URL:<br><br>" + appliedString,
-      1,
-      10,
-      undefined,
-      undefined,
-      undefined,
-      true
-    );
+    Notifications.add("Settings applied from URL:<br><br>" + appliedString, 1, {
+      duration: 10,
+      allowHTML: true,
+    });
   }
 }

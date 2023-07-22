@@ -7,7 +7,7 @@ import {
   getAdditionalUserInfo,
 } from "firebase/auth";
 import Ape from "../ape";
-import { createErrorMessage } from "../utils/misc";
+import { createErrorMessage, isPopupVisible } from "../utils/misc";
 import * as LoginPage from "../pages/login";
 import * as AllTimeStats from "../account/all-time-stats";
 import * as AccountController from "../controllers/account-controller";
@@ -17,11 +17,16 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import { subscribe as subscribeToSignUpEvent } from "../observables/google-sign-up-event";
 import { InputIndicator } from "../elements/input-indicator";
+import * as Skeleton from "./skeleton";
+
+const wrapperId = "googleSignUpPopupWrapper";
 
 let signedInUser: UserCredential | undefined = undefined;
 
 export function show(credential: UserCredential): void {
-  if ($("#googleSignUpPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+
+  if (!isPopupVisible(wrapperId)) {
     CaptchaController.reset("googleSignUpPopup");
     CaptchaController.render(
       $("#googleSignUpPopupWrapper .captcha")[0],
@@ -34,16 +39,18 @@ export function show(credential: UserCredential): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#googleSignUpPopup input").trigger("focus").trigger("select");
       });
   }
 }
 
 export async function hide(): Promise<void> {
-  if (!$("#googleSignUpPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     if (signedInUser !== undefined) {
-      Notifications.add("Sign up process canceled", 0, 5);
+      Notifications.add("Sign up process canceled", 0, {
+        duration: 5,
+      });
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
       if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
@@ -60,9 +67,10 @@ export async function hide(): Promise<void> {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#googleSignUpPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -99,7 +107,7 @@ async function apply(): Promise<void> {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
       AllTimeStats.clear();
-      Notifications.add("Account created", 1, 3);
+      Notifications.add("Account created", 1);
       $("#menu .textButton.account .text").text(name);
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
@@ -199,12 +207,12 @@ const checkNameDebounced = debounce(1000, async () => {
     return;
   }
 
-  if (response.status == 422) {
+  if (response.status === 422) {
     nameIndicator.show("unavailable", response.message);
     return;
   }
 
-  if (response.status == 409) {
+  if (response.status === 409) {
     nameIndicator.show("taken", response.message);
     return;
   }
@@ -218,7 +226,7 @@ const checkNameDebounced = debounce(1000, async () => {
   }
 });
 
-$("#googleSignUpPopup input").on("input", () => {
+$("#googleSignUpPopupWrapper input").on("input", () => {
   setTimeout(() => {
     disableButton();
     const val = $("#googleSignUpPopup input").val() as string;
@@ -231,21 +239,18 @@ $("#googleSignUpPopup input").on("input", () => {
   }, 1);
 });
 
-$("#googleSignUpPopup input").on("keypress", (e) => {
+$("#googleSignUpPopupWrapper input").on("keypress", (e) => {
   if (e.key === "Enter") {
     apply();
   }
 });
 
-$("#googleSignUpPopup .button").on("click", () => {
+$("#googleSignUpPopupWrapper .button").on("click", () => {
   apply();
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#googleSignUpPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }
@@ -256,3 +261,5 @@ subscribeToSignUpEvent((signedInUser, isNewUser) => {
     show(signedInUser);
   }
 });
+
+Skeleton.save(wrapperId);

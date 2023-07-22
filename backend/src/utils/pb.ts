@@ -1,4 +1,5 @@
 import _ from "lodash";
+import FunboxList from "../constants/funbox-list";
 
 interface CheckAndUpdatePbResult {
   isPb: boolean;
@@ -8,22 +9,39 @@ interface CheckAndUpdatePbResult {
 
 type Result = MonkeyTypes.Result<MonkeyTypes.Mode>;
 
+export function canFunboxGetPb(
+  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+): boolean {
+  const funbox = result.funbox;
+  if (!funbox || funbox === "none") return true;
+
+  let ret = true;
+  const resultFunboxes = funbox.split("#");
+  for (const funbox of FunboxList) {
+    if (resultFunboxes.includes(funbox.name)) {
+      if (!funbox.canGetPb) {
+        ret = false;
+      }
+    }
+  }
+
+  return ret;
+}
+
 export function checkAndUpdatePb(
   userPersonalBests: MonkeyTypes.PersonalBests,
   lbPersonalBests: MonkeyTypes.LbPersonalBests | undefined,
   result: Result
 ): CheckAndUpdatePbResult {
   const mode = result.mode;
-  const mode2 = result.mode2 as 15 | 60;
+  const mode2 = result.mode2 as MonkeyTypes.Mode2<"time">;
 
   const userPb = userPersonalBests ?? {};
-  userPb[mode] = userPb[mode] ?? {};
-  userPb[mode][mode2] = userPb[mode][mode2] ?? [];
+  userPb[mode] ??= {};
+  userPb[mode][mode2] ??= [];
 
-  const personalBestMatch: MonkeyTypes.PersonalBest = userPb[mode][mode2].find(
-    (pb: MonkeyTypes.PersonalBest) => {
-      return matchesPersonalBest(result, pb);
-    }
+  const personalBestMatch = userPb[mode][mode2].find(
+    (pb: MonkeyTypes.PersonalBest) => matchesPersonalBest(result, pb)
   );
 
   let isPb = true;

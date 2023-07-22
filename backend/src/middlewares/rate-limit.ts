@@ -98,6 +98,13 @@ export async function incrementBadAuth(
   } catch (error) {}
 }
 
+export const adminLimit = rateLimit({
+  windowMs: 5000,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 // Config Routing
 export const configUpdate = rateLimit({
   windowMs: ONE_HOUR_MS,
@@ -242,7 +249,7 @@ export const resultsGet = rateLimit({
 });
 
 // Results Routing
-export const resultsGet_ape = rateLimit({
+export const resultsGetApe = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
@@ -288,6 +295,13 @@ export const resultsLeaderboardQualificationGet = rateLimit({
 export const userGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const setStreakHourOffset = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 5 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -344,6 +358,13 @@ export const userUpdateEmail = rateLimit({
 export const userClearPB = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userOptOutOfLeaderboards = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 10 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -437,6 +458,20 @@ export const usersTagsEdit = userDiscordLink;
 export const userDiscordUnlink = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 15 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userRequestVerificationEmail = rateLimit({
+  windowMs: ONE_HOUR_MS / 4,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const userForgotPasswordEmail = rateLimit({
+  windowMs: ONE_HOUR_MS / 4,
+  max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });

@@ -1,6 +1,5 @@
 {
   "name": "latin",
-  "leftToRight": true,
   "words": [
     "luna",
     "et",
@@ -359,6 +358,10 @@
     "militis",
     "medius",
     "media",
-    "medium"
+    "medium",
+    "cena",
+    "casa",
+    "navis",
+    "puer"
   ]
 }

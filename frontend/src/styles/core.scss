@@ -1,44 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@600&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Itim:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Coming+Soon:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lalezar:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@300;400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap");
-
-@font-face {
-  font-family: "Boon";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("../webfonts/Boon-400.ttf") format("truetype"),
-    url("../webfonts/Boon-400.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "Open Dyslexic";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("../webfonts/OpenDyslexic.otf") format("opentype");
-}
-
 :root {
   --roundness: 0.5rem;
-  --font: "Roboto Mono", "Vazirmatn";
+  --font: "Roboto Mono", "Vazirmatn", sans-serif;
   // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
   font-weight: 400;
@@ -86,12 +48,13 @@
 html {
   @extend .ffscroll;
   overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 a {
   display: inline-block;
   color: var(--sub-color);
-  transition: 0.25s;
+  transition: 0.125s;
   &:hover {
     color: var(--text-color);
   }
@@ -153,6 +116,7 @@ label.checkbox {
     width: 0;
     height: 0;
     display: none;
+    -webkit-user-select: none;
     user-select: none;
 
     & ~ .customTextCheckbox {
@@ -162,6 +126,7 @@ label.checkbox {
       border-radius: calc(var(--roundness) / 2);
       display: inline-grid;
       margin: 0 0.5rem 0 0;
+      -webkit-user-select: none;
       user-select: none;
       cursor: pointer;
       & .check {
@@ -206,6 +171,10 @@ label.checkbox {
   &.widemax {
     max-width: unset;
   }
+}
+
+#middle {
+  display: grid; //stupid fix for stupid safari
 }
 
 key {
@@ -310,11 +279,11 @@ key {
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
   text-align: center;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   align-content: center;
-  height: min-content;
   height: -moz-min-content;
+  height: min-content;
   line-height: 1.25em;
   appearance: none;
   border: none;
@@ -353,7 +322,8 @@ key {
     outline: none;
   }
   &:focus {
-    outline: 2px solid var(--text-color);
+    box-shadow: 0 0 0 0.15em var(--text-color);
+    // outline: 2px solid var(--text-color);
   }
   &:active {
     background: var(--sub-color);
@@ -368,18 +338,18 @@ key {
   padding: 0.5em;
   border-radius: var(--roundness);
   text-align: center;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   align-content: center;
-  height: min-content;
   height: -moz-min-content;
+  height: min-content;
   line-height: 1.25em;
   appearance: none;
   border: none;
   font-family: inherit;
   font-size: 1em;
-  width: max-content;
   width: -moz-max-content;
+  width: max-content;
   display: grid;
   grid-auto-flow: column;
   gap: 0.25em;
@@ -510,6 +480,7 @@ key {
   color: var(--text-color);
   border-radius: calc(var(--roundness) / 2);
   // padding: 0.15em 0.5em;
+  -webkit-user-select: none;
   user-select: none;
   display: grid;
   grid-template-columns: max-content auto;
@@ -542,4 +513,22 @@ key {
   top: 0.5em;
   box-shadow: 0 0 0 0.5em var(--bg-color);
   transition: 0.125s;
+}
+
+#fpsCounter {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: var(--sub-alt-color);
+  color: rgb(255, 217, 0);
+  padding: 0.25rem;
+  width: 10ch;
+  text-align: center;
+  z-index: 999999999;
+  &.main {
+    color: rgb(30, 255, 0);
+  }
+  &.error {
+    color: red;
+  }
 }

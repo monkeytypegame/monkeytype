@@ -1,4 +1,4 @@
-<div class="page pageAbout hidden">
+<div class="page pageAbout hidden" id="pageAbout">
   <div class="scrollToTopButton invisible">
     <i class="fas fa-angle-double-up"></i>
   </div>
@@ -48,19 +48,26 @@
     <div class="chart" style="height: 200px">
       <canvas id="publicStatsHistogramChart"></canvas>
     </div>
-    <p class="small">distribution of time 60 leaderbord results</p>
+    <p class="small">distribution of time 60 leaderboard results (wpm)</p>
   </div>
   <div class="section">
-    <div class="title">about</div>
-    <!-- <h1>about</h1> -->
-    <p>
-      Monkeytype is a minimalistic typing test, featuring many test modes, an
-      account system to save your typing speed history and user configurable
-      features like themes, a smooth caret and more.
-    </p>
+    <div class="bigtitle">about</div>
+    <h2>
+      Monkeytype is a minimalistic and customizable typing test. It features
+      many test modes, an account system to save your typing speed history, and
+      user-configurable features such as themes, sounds, a smooth caret, and
+      more. Monkeytype attempts to emulate the experience of natural keyboard
+      typing during a typing test, by unobtrusively presenting the text prompts
+      and displaying typed characters in-place, providing straightforward,
+      real-time feedback on typos, speed, and accuracy.
+      <br />
+      <br />
+      Test yourself in various modes, track your progress and improve your
+      speed.
+    </h2>
   </div>
   <div class="section">
-    <h1>word set</h1>
+    <div class="title">word set</div>
     <p>
       By default, this website uses the most common 200 words in the English
       language to generate its tests. You can change to an expanded set (1000
@@ -68,7 +75,7 @@
     </p>
   </div>
   <div class="section">
-    <h1>keybinds</h1>
+    <div class="title">keybinds</div>
     <p>
       You can use
       <key>tab</key>
@@ -90,7 +97,7 @@
     </p>
   </div>
   <div class="section">
-    <h1>stats</h1>
+    <div class="title">stats</div>
     <p>
       wpm - total amount of characters in the correctly typed words (including
       spaces), divided by 5 and normalised to 60 seconds.
@@ -118,7 +125,7 @@
     <div id="ad-about-1-small"></div>
   </div>
   <div class="section">
-    <h1>results screen</h1>
+    <div class="title">results screen</div>
     <p>
       After completing a test you will be able to see your wpm, raw wpm,
       accuracy, character stats, test length, leaderboards info and test info.
@@ -129,7 +136,7 @@
     </p>
   </div>
   <div class="section">
-    <h1>bug report or feature request</h1>
+    <div class="title">bug report or feature request</div>
     <p>
       If you encounter a bug, or have a feature request - join the Discord
       server, send me an email, a direct message on Twitter or create an issue
@@ -137,7 +144,7 @@
     </p>
   </div>
   <div class="section">
-    <div class="title">support</div>
+    <div class="bigtitle">support</div>
     <p>
       Thanks to everyone who has supported this project. It would not be
       possible without you and your continued support.
@@ -181,7 +188,7 @@
     </div>
   </div>
   <div class="section">
-    <div class="title">contact</div>
+    <div class="bigtitle">contact</div>
     <p>
       If you encounter a bug, have a feature request or just want to say hi -
       here are the different ways you can contact me directly.
@@ -195,7 +202,7 @@
         class="button"
         href="https://twitter.com/monkeytypegame"
         target="_blank"
-        rel="noreferrer"
+        rel="noreferrer noopener"
       >
         <div class="fab fa-twitter"></div>
         Twitter
@@ -204,7 +211,7 @@
         class="button"
         href="https://discord.gg/monkeytype"
         target="_blank"
-        rel="noreferrer"
+        rel="noreferrer noopener"
       >
         <div class="fab fa-discord"></div>
         Discord
@@ -213,7 +220,7 @@
         class="button"
         href="https://github.com/monkeytypegame/monkeytype"
         target="_blank"
-        rel="noreferrer"
+        rel="noreferrer noopener"
       >
         <div class="fab fa-github"></div>
         GitHub
@@ -221,28 +228,26 @@
     </div>
   </div>
   <div class="section">
-    <div class="title">credits</div>
+    <div class="bigtitle">credits</div>
     <p>
       <a
         href="https://www.reddit.com/user/montydrei"
         target="_blank"
-        rel="noreferrer"
-        style="margin-right: 0.5rem"
+        rel="noreferrer noopener"
       >
         Montydrei
       </a>
-      for the name suggestion
+      &nbsp;for the name suggestion
     </p>
     <p>
       <a
         href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/"
         target="_blank"
-        rel="noreferrer"
-        style="margin-right: 0.5rem"
+        rel="noreferrer noopener"
       >
         Everyone
       </a>
-      who provided valuable feedback on the original reddit post for the
+      &nbsp;who provided valuable feedback on the original reddit post for the
       prototype of this website
     </p>
     <p>
@@ -253,13 +258,12 @@
       <a
         href="https://github.com/monkeytypegame/monkeytype/graphs/contributors"
         target="_blank"
-        rel="noreferrer"
-        style="margin-right: 0.5rem"
+        rel="noreferrer noopener"
       >
         Contributors
       </a>
-      on GitHub that have helped with implementing various features, adding
-      themes and more
+      &nbsp;on GitHub that have helped with implementing various features,
+      adding themes and more
     </p>
   </div>
   <div id="ad-about-2-wrapper" class="ad advertisement ad-h">
@@ -271,11 +275,11 @@
     <div id="ad-about-2-small"></div>
   </div>
   <div class="section">
-    <h1 id="supporters_title">supporters</h1>
+    <div id="supporters_title" class="bigtitle">supporters</div>
     <div class="supporters"></div>
   </div>
   <div class="section">
-    <h1 id="contributors_title">contributors</h1>
+    <div id="contributors_title" class="bigtitle">contributors</div>
     <div class="contributors"></div>
   </div>
 </div>

@@ -6,8 +6,8 @@
   grid-auto-flow: column;
   gap: 0.5rem;
   // margin-bottom: -0.4rem;
-  width: fit-content;
   width: -moz-fit-content;
+  width: fit-content;
 
   .textButton {
     .text {
@@ -42,10 +42,10 @@
         height: 1.25em;
       }
 
-      .loading,
-      .user {
-        // margin-top: 0.1rem;
-      }
+      // .loading,
+      // .user {
+      //   // margin-top: 0.1rem;
+      // }
 
       .levelAndBar {
         transition: 0.125s;
@@ -152,6 +152,7 @@
   z-index: 2;
   align-items: center;
   gap: 0.5rem;
+  -webkit-user-select: none;
   user-select: none;
 
   .logo {
@@ -180,15 +181,19 @@
         font-size: 0.65rem;
         line-height: 0.65rem;
         color: var(--sub-color);
-        transition: color 0.25s;
+        transition: color 0.25s, opacity 0.25s;
       }
       position: relative;
       font-size: 2rem;
-      margin-top: -0.4rem;
       font-family: "Lexend Deca";
       transition: color 0.25s;
+      font-weight: unset;
+      margin-block-start: unset;
+      margin-block-end: unset;
+      margin-top: -0.2em;
     }
     white-space: nowrap;
+    -webkit-user-select: none;
     user-select: none;
 
     .bottom {

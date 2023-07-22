@@ -18,6 +18,7 @@ export function set(foc: boolean, withCursor = false): void {
     $("#testConfig").addClass("focus");
     $("#mobileTestConfig").addClass("focus");
     $("#bannerCenter").addClass("focus");
+    $("#notificationCenter").addClass("focus");
     $("#capsWarning").addClass("focus");
     $("#ad-vertical-right-wrapper").addClass("focus");
     $("#ad-vertical-left-wrapper").addClass("focus");
@@ -36,6 +37,7 @@ export function set(foc: boolean, withCursor = false): void {
     $("#testConfig").removeClass("focus");
     $("#mobileTestConfig").removeClass("focus");
     $("#bannerCenter").removeClass("focus");
+    $("#notificationCenter").removeClass("focus");
     $("#capsWarning").removeClass("focus");
     $("#app").removeClass("focus");
     $("#ad-vertical-right-wrapper").removeClass("focus");
@@ -50,8 +52,8 @@ export function set(foc: boolean, withCursor = false): void {
 
 $(document).on("mousemove", function (event) {
   if (!state) return;
-  if (ActivePage.get() == "loading") return;
-  if (ActivePage.get() == "account" && state == true) return;
+  if (ActivePage.get() === "loading") return;
+  if (ActivePage.get() === "account" && state === true) return;
   if (
     event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

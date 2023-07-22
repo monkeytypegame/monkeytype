@@ -1,6 +1,5 @@
 {
   "name": "dutch_1k",
-  "leftToRight": true,
   "noLazyMode": true,
   "bcp47": "nl-NL",
   "words": [
@@ -702,7 +701,7 @@
     "schrijven",
     "schudden",
     "seconde",
-    "sex",
+    "seks",
     "signaal",
     "simpel",
     "sinds",

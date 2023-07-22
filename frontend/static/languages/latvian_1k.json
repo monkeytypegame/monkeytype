@@ -1,6 +1,5 @@
 {
   "name": "latvian_1k",
-  "leftToRight": true,
   "ligatures": false,
   "bcp47": "lv",
   "words": [

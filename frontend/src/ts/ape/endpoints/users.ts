@@ -37,6 +37,10 @@ export default class Users {
     return await this.httpClient.patch(`${BASE_PATH}/reset`);
   }
 
+  async optOutOfLeaderboards(): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/optOutOfLeaderboards`);
+  }
+
   async updateName(name: string): Ape.EndpointData {
     return await this.httpClient.patch(`${BASE_PATH}/name`, {
       payload: { name },
@@ -153,9 +157,17 @@ export default class Users {
     return await this.httpClient.post(`${BASE_PATH}/customThemes`, { payload });
   }
 
-  async linkDiscord(tokenType: string, accessToken: string): Ape.EndpointData {
+  async getOauthLink(): Ape.EndpointData {
+    return await this.httpClient.get(`${BASE_PATH}/discord/oauth`);
+  }
+
+  async linkDiscord(
+    tokenType: string,
+    accessToken: string,
+    state: string
+  ): Ape.EndpointData {
     return await this.httpClient.post(`${BASE_PATH}/discord/link`, {
-      payload: { tokenType, accessToken },
+      payload: { tokenType, accessToken, state },
     });
   }
 
@@ -216,5 +228,37 @@ export default class Users {
       mailIdsToMarkRead: options.mailIdsToMarkRead,
     };
     return await this.httpClient.patch(`${BASE_PATH}/inbox`, { payload });
+  }
+
+  async report(
+    uid: string,
+    reason: string,
+    comment: string,
+    captcha: string
+  ): Ape.EndpointData {
+    const payload = {
+      uid,
+      reason,
+      comment,
+      captcha,
+    };
+
+    return await this.httpClient.post(`${BASE_PATH}/report`, { payload });
+  }
+
+  async verificationEmail(): Ape.EndpointData {
+    return await this.httpClient.get(`${BASE_PATH}/verificationEmail`);
+  }
+
+  async forgotPasswordEmail(email: string): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/forgotPasswordEmail`, {
+      payload: { email },
+    });
+  }
+
+  async setStreakHourOffset(hourOffset: number): Ape.EndpointData {
+    return await this.httpClient.post(`${BASE_PATH}/setStreakHourOffset`, {
+      payload: { hourOffset },
+    });
   }
 }

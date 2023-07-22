@@ -293,6 +293,14 @@ async function animateXpBreakdown(
 
   if (skipBreakdown) return;
 
+  if (breakdown["funbox"]) {
+    await Misc.sleep(delay);
+    await append(`funbox +${breakdown["funbox"]}`);
+    total += breakdown["funbox"];
+  }
+
+  if (skipBreakdown) return;
+
   if (breakdown["streak"]) {
     await Misc.sleep(delay);
     await append(`streak +${breakdown["streak"]}`);
@@ -360,7 +368,7 @@ async function animateXpBar(
 
   barEl.css("width", `${(startingLevel % 1) * 100}%`);
 
-  if (endingLevel % 1 == 0) {
+  if (endingLevel % 1 === 0) {
     await Misc.promiseAnimation(
       barEl,
       {

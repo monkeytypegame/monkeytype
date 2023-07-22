@@ -1,22 +1,18 @@
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 export async function update(burst: number): Promise<void> {
   if (!Config.showLiveBurst) return;
-  let number = burst;
-  if (Config.blindMode) {
-    number = 0;
-  }
   (document.querySelector("#miniTimerAndLiveWpm .burst") as Element).innerHTML =
-    number.toString();
+    burst.toString();
   (document.querySelector("#liveBurst") as Element).innerHTML =
-    number.toString();
+    burst.toString();
 }
 
 export function show(): void {
   if (!Config.showLiveBurst) return;
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   if (Config.timerStyle === "mini") {
     if (!$("#miniTimerAndLiveWpm .burst").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .burst")

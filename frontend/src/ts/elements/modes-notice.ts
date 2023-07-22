@@ -182,10 +182,9 @@ export async function update(): Promise<void> {
 
   if (Config.funbox !== "none") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox.replace(
-        /_/g,
-        " "
-      )}</div>`
+      `<div class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox
+        .replace(/_/g, " ")
+        .replace(/#/g, ", ")}</div>`
     );
   }
 
@@ -200,7 +199,7 @@ export async function update(): Promise<void> {
     );
   }
 
-  if (Config.stopOnError != "off") {
+  if (Config.stopOnError !== "off") {
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="stopOnError"><i class="fas fa-hand-paper"></i>stop on ${Config.stopOnError}</div>`
     );

@@ -7,14 +7,28 @@ import * as NotificationEvent from "../observables/notification-event";
 import * as BadgeController from "../controllers/badge-controller";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import { escapeHTML, isPopupVisible } from "../utils/misc";
+import * as Skeleton from "../popups/skeleton";
+
+const wrapperId = "alertsPopupWrapper";
 
 let accountAlerts: MonkeyTypes.MonkeyMail[] = [];
 let maxMail = 0;
 let mailToMarkRead: string[] = [];
 let mailToDelete: string[] = [];
 
+interface State {
+  notifications: { message: string; level: number; customTitle?: string }[];
+  psas: { message: string; level: number }[];
+}
+
+const state: State = {
+  notifications: [],
+  psas: [],
+};
+
 export function hide(): void {
-  if (!$("#alertsPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     setNotificationBubbleVisible(false);
 
     let mailUpdatedPromiseResolve: (value?: unknown) => void;
@@ -84,9 +98,11 @@ export function hide(): void {
                   badgesClaimed.length > 1 ? "s" : ""
                 } unlocked: ${badgesClaimed.join(", ")}`,
                 1,
-                5,
-                "Reward",
-                "gift"
+                {
+                  duration: 5,
+                  customTitle: "Reward",
+                  customIcon: "gift",
+                }
               );
             }
             if (totalXpClaimed > 0) {
@@ -96,13 +112,17 @@ export function hide(): void {
             }
           });
           $("#alertsPopupWrapper").addClass("hidden");
+          $("#alertsPopup .notificationHistory .list").empty();
+          $("#alertsPopup .psas .list").empty();
+          Skeleton.remove(wrapperId);
         }
       );
   }
 }
 
 export async function show(): Promise<void> {
-  if ($("#alertsPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+  if (!isPopupVisible(wrapperId)) {
     $("#alertsPopup").css("marginRight", "-10rem").animate(
       {
         marginRight: 0,
@@ -125,6 +145,9 @@ export async function show(): Promise<void> {
     mailToDelete = [];
     mailToMarkRead = [];
 
+    fillNotifications();
+    fillPSAs();
+
     $("#alertsPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -144,8 +167,6 @@ export async function show(): Promise<void> {
 }
 
 async function getAccountAlerts(): Promise<void> {
-  $("#alertsPopup .accountAlerts .list").empty();
-
   if (!ConnectionState.get()) {
     $("#alertsPopup .accountAlerts .list").html(`
     <div class="nothing">
@@ -194,8 +215,10 @@ async function getAccountAlerts(): Promise<void> {
 
   updateInboxSize();
 
+  $("#alertsPopup .accountAlerts .list").empty();
+
   for (const ie of accountAlerts) {
-    if (!ie.read && ie.rewards.length == 0) {
+    if (!ie.read && ie.rewards.length === 0) {
       mailToMarkRead.push(ie.id);
     }
 
@@ -227,7 +250,7 @@ async function getAccountAlerts(): Promise<void> {
           }
           ${
             (ie.rewards.length > 0 && ie.read === true) ||
-            ie.rewards.length == 0
+            ie.rewards.length === 0
               ? `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
               : ``
           }
@@ -239,63 +262,76 @@ async function getAccountAlerts(): Promise<void> {
 }
 
 export function addPSA(message: string, level: number): void {
-  if ($("#alertsPopup .psas .list .nothing").length > 0) {
-    $("#alertsPopup .psas .list").empty();
-  }
-
-  let levelClass = "";
-  if (level === -1) {
-    levelClass = "error";
-  } else if (level === 1) {
-    levelClass = "main";
-  } else if (level === 0) {
-    levelClass = "sub";
-  }
-  $("#alertsPopup .psas .list").prepend(`
-    <div class="item">
-    <div class="indicator ${levelClass}"></div>
-    <div class="body">
-      ${message}
-    </div>
-  </div>
-  `);
+  state["psas"].push({
+    message,
+    level,
+  });
 }
 
-function addNotification(
-  message: string,
-  level: number,
-  customTitle?: string
-): void {
-  if ($("#alertsPopup .notificationHistory .list .nothing").length > 0) {
+function fillPSAs(): void {
+  if (state["psas"].length === 0) {
+    $("#alertsPopup .psas .list").html(
+      `<div class="nothing">Nothing to show</div>`
+    );
+  } else {
+    $("#alertsPopup .psas .list").empty();
+
+    for (const p of state["psas"]) {
+      const { message, level } = p;
+      let levelClass = "";
+      if (level === -1) {
+        levelClass = "error";
+      } else if (level === 1) {
+        levelClass = "main";
+      } else if (level === 0) {
+        levelClass = "sub";
+      }
+      $("#alertsPopup .psas .list").prepend(`
+        <div class="item">
+        <div class="indicator ${levelClass}"></div>
+        <div class="body">
+          ${escapeHTML(message)}
+        </div>
+      </div>
+      `);
+    }
+  }
+}
+
+function fillNotifications(): void {
+  if (state["notifications"].length === 0) {
+    $("#alertsPopup .notificationHistory .list").html(
+      `<div class="nothing">Nothing to show</div>`
+    );
+  } else {
     $("#alertsPopup .notificationHistory .list").empty();
-  }
 
-  let title = "Notice";
-  let levelClass = "sub";
-  if (level === -1) {
-    levelClass = "error";
-    title = "Error";
-  } else if (level === 1) {
-    levelClass = "main";
-    title = "Success";
-  }
+    for (const n of state["notifications"]) {
+      const { message, level, customTitle } = n;
+      let title = "Notice";
+      let levelClass = "sub";
+      if (level === -1) {
+        levelClass = "error";
+        title = "Error";
+      } else if (level === 1) {
+        levelClass = "main";
+        title = "Success";
+      }
 
-  if (customTitle) {
-    title = customTitle;
-  }
+      if (customTitle) {
+        title = customTitle;
+      }
 
-  $("#alertsPopup .notificationHistory .list").prepend(`
-    <div class="item">
-    <div class="indicator ${levelClass}"></div>
-    <div class="title">${title}</div>
-    <div class="body">
-      ${message}
+      $("#alertsPopup .notificationHistory .list").prepend(`
+      <div class="item">
+      <div class="indicator ${levelClass}"></div>
+      <div class="title">${title}</div>
+      <div class="body">
+        ${escapeHTML(message)}
+      </div>
     </div>
-  </div>
-  `);
-
-  if ($("#alertsPopup .notificationHistory .list").length > 25) {
-    $("#alertsPopup .notificationHistory .list .item:last").remove();
+    `);
+    }
   }
 }
 
@@ -378,7 +414,7 @@ function updateClaimDeleteAllButton(): void {
   }
 }
 
-$("#alertsPopup .accountAlerts").on("click", ".claimAll", () => {
+$("#alertsPopupWrapper .accountAlerts").on("click", ".claimAll", () => {
   for (const ie of accountAlerts) {
     if (ie.read === false && !mailToMarkRead.includes(ie.id)) {
       markReadAlert(ie.id);
@@ -386,7 +422,7 @@ $("#alertsPopup .accountAlerts").on("click", ".claimAll", () => {
   }
 });
 
-$("#alertsPopup .accountAlerts").on("click", ".deleteAll", () => {
+$("#alertsPopupWrapper .accountAlerts").on("click", ".deleteAll", () => {
   for (const ie of accountAlerts) {
     if (!mailToDelete.includes(ie.id)) {
       deleteAlert(ie.id);
@@ -404,11 +440,11 @@ $("#alertsPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#alertsPopup .mobileClose").on("click", () => {
+$("#alertsPopupWrapper .mobileClose").on("click", () => {
   hide();
 });
 
-$("#alertsPopup .accountAlerts .list").on(
+$("#alertsPopupWrapper .accountAlerts .list").on(
   "click",
   ".item .buttons .deleteAlert",
   (e) => {
@@ -417,7 +453,7 @@ $("#alertsPopup .accountAlerts .list").on(
   }
 );
 
-$("#alertsPopup .accountAlerts .list").on(
+$("#alertsPopupWrapper .accountAlerts .list").on(
   "click",
   ".item .buttons .markReadAlert",
   (e) => {
@@ -427,11 +463,20 @@ $("#alertsPopup .accountAlerts .list").on(
 );
 
 $(document).on("keydown", (e) => {
-  if (e.key === "Escape" && !$("#alertsPopupWrapper").hasClass("hidden")) {
+  if (e.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
   }
 });
 
 NotificationEvent.subscribe((message, level, customTitle) => {
-  addNotification(message, level, customTitle);
+  state["notifications"].push({
+    message,
+    level,
+    customTitle,
+  });
+  if (state["notifications"].length > 25) {
+    state["notifications"].shift();
+  }
 });
+
+Skeleton.save(wrapperId);

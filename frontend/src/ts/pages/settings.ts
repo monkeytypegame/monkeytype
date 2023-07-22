@@ -3,7 +3,7 @@ import Config, * as UpdateConfig from "../config";
 import * as Sound from "../controllers/sound-controller";
 import * as Misc from "../utils/misc";
 import * as DB from "../db";
-import * as Funbox from "../test/funbox";
+import { toggleFunbox } from "../test/funbox/funbox";
 import * as TagController from "../controllers/tag-controller";
 import * as PresetController from "../controllers/preset-controller";
 import * as ThemePicker from "../settings/theme-picker";
@@ -15,12 +15,15 @@ import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
 import { Auth } from "../firebase";
+import Ape from "../ape";
+import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
+import * as Skeleton from "../popups/skeleton";
 
-interface SettingsGroups {
-  [key: string]: SettingsGroup;
+interface SettingsGroups<T extends MonkeyTypes.ConfigValues> {
+  [key: string]: SettingsGroup<T>;
 }
 
-export const groups: SettingsGroups = {};
+export const groups: SettingsGroups<MonkeyTypes.ConfigValues> = {};
 
 async function initGroups(): Promise<void> {
   await UpdateConfig.loadPromise;
@@ -28,17 +31,17 @@ async function initGroups(): Promise<void> {
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["difficulty"] = new SettingsGroup(
     "difficulty",
     UpdateConfig.setDifficulty,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["quickRestart"] = new SettingsGroup(
     "quickRestart",
     UpdateConfig.setQuickRestartMode,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showLiveWpm"] = new SettingsGroup(
     "showLiveWpm",
     UpdateConfig.setShowLiveWpm,
@@ -46,27 +49,27 @@ async function initGroups(): Promise<void> {
     () => {
       groups["keymapMode"].updateInput();
     }
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showLiveAcc"] = new SettingsGroup(
     "showLiveAcc",
     UpdateConfig.setShowLiveAcc,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showLiveBurst"] = new SettingsGroup(
     "showLiveBurst",
     UpdateConfig.setShowLiveBurst,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showTimerProgress"] = new SettingsGroup(
     "showTimerProgress",
     UpdateConfig.setShowTimerProgress,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showAverage"] = new SettingsGroup(
     "showAverage",
     UpdateConfig.setShowAverage,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["keymapMode"] = new SettingsGroup(
     "keymapMode",
     UpdateConfig.setKeymapMode,
@@ -87,27 +90,27 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section.keymapShowTopRow").removeClass("hidden");
       }
     }
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["keymapMatrix"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
     UpdateConfig.setKeymapLayout,
     "select"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["keymapLegendStyle"] = new SettingsGroup(
     "keymapLegendStyle",
     UpdateConfig.setKeymapLegendStyle,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["keymapShowTopRow"] = new SettingsGroup(
     "keymapShowTopRow",
     UpdateConfig.setKeymapShowTopRow,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
@@ -120,7 +123,7 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .tip").addClass("hidden");
       }
     }
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
     UpdateConfig.setFreedomMode,
@@ -128,17 +131,17 @@ async function initGroups(): Promise<void> {
     () => {
       groups["confidenceMode"].updateInput();
     }
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["strictSpace"] = new SettingsGroup(
     "strictSpace",
     UpdateConfig.setStrictSpace,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["oppositeShiftMode"] = new SettingsGroup(
     "oppositeShiftMode",
     UpdateConfig.setOppositeShiftMode,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["confidenceMode"] = new SettingsGroup(
     "confidenceMode",
     UpdateConfig.setConfidenceMode,
@@ -147,83 +150,87 @@ async function initGroups(): Promise<void> {
       groups["freedomMode"].updateInput();
       groups["stopOnError"].updateInput();
     }
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["indicateTypos"] = new SettingsGroup(
     "indicateTypos",
     UpdateConfig.setIndicateTypos,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["hideExtraLetters"] = new SettingsGroup(
     "hideExtraLetters",
     UpdateConfig.setHideExtraLetters,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["blindMode"] = new SettingsGroup(
     "blindMode",
     UpdateConfig.setBlindMode,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["quickEnd"] = new SettingsGroup(
     "quickEnd",
     UpdateConfig.setQuickEnd,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["repeatQuotes"] = new SettingsGroup(
     "repeatQuotes",
     UpdateConfig.setRepeatQuotes,
     "button"
-  );
-  groups["ads"] = new SettingsGroup("ads", UpdateConfig.setAds, "button");
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  groups["ads"] = new SettingsGroup(
+    "ads",
+    UpdateConfig.setAds,
+    "button"
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["alwaysShowWordsHistory"] = new SettingsGroup(
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["britishEnglish"] = new SettingsGroup(
     "britishEnglish",
     UpdateConfig.setBritishEnglish,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["singleListCommandLine"] = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["capsLockWarning"] = new SettingsGroup(
     "capsLockWarning",
     UpdateConfig.setCapsLockWarning,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["flipTestColors"] = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showOutOfFocusWarning"] = new SettingsGroup(
     "showOutOfFocusWarning",
     UpdateConfig.setShowOutOfFocusWarning,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["colorfulMode"] = new SettingsGroup(
     "colorfulMode",
     UpdateConfig.setColorfulMode,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["startGraphsAtZero"] = new SettingsGroup(
     "startGraphsAtZero",
     UpdateConfig.setStartGraphsAtZero,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["autoSwitchTheme"] = new SettingsGroup(
     "autoSwitchTheme",
     UpdateConfig.setAutoSwitchTheme,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["randomTheme"] = new SettingsGroup(
     "randomTheme",
     UpdateConfig.setRandomTheme,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["stopOnError"] = new SettingsGroup(
     "stopOnError",
     UpdateConfig.setStopOnError,
@@ -231,12 +238,12 @@ async function initGroups(): Promise<void> {
     () => {
       groups["confidenceMode"].updateInput();
     }
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,
@@ -244,110 +251,110 @@ async function initGroups(): Promise<void> {
     () => {
       if (Config.playSoundOnError) Sound.playError();
     }
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["playSoundOnClick"] = new SettingsGroup(
     "playSoundOnClick",
     UpdateConfig.setPlaySoundOnClick,
     "button",
     () => {
-      if (Config.playSoundOnClick !== "off") Sound.playClick();
+      if (Config.playSoundOnClick !== "off") Sound.playClick("KeyQ");
     }
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showAllLines"] = new SettingsGroup(
     "showAllLines",
     UpdateConfig.setShowAllLines,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["paceCaret"] = new SettingsGroup(
     "paceCaret",
     UpdateConfig.setPaceCaret,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["repeatedPace"] = new SettingsGroup(
     "repeatedPace",
     UpdateConfig.setRepeatedPace,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["minWpm"] = new SettingsGroup(
     "minWpm",
     UpdateConfig.setMinWpm,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["minAcc"] = new SettingsGroup(
     "minAcc",
     UpdateConfig.setMinAcc,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["minBurst"] = new SettingsGroup(
     "minBurst",
     UpdateConfig.setMinBurst,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["smoothLineScroll"] = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["lazyMode"] = new SettingsGroup(
     "lazyMode",
     UpdateConfig.setLazyMode,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["layout"] = new SettingsGroup(
     "layout",
     UpdateConfig.setLayout,
     "select"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["language"] = new SettingsGroup(
     "language",
     UpdateConfig.setLanguage,
     "select"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["pageWidth"] = new SettingsGroup(
     "pageWidth",
     UpdateConfig.setPageWidth,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["caretStyle"] = new SettingsGroup(
     "caretStyle",
     UpdateConfig.setCaretStyle,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["paceCaretStyle"] = new SettingsGroup(
     "paceCaretStyle",
     UpdateConfig.setPaceCaretStyle,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["highlightMode"] = new SettingsGroup(
     "highlightMode",
     UpdateConfig.setHighlightMode,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["tapeMode"] = new SettingsGroup(
     "tapeMode",
     UpdateConfig.setTapeMode,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["timerColor"] = new SettingsGroup(
     "timerColor",
     UpdateConfig.setTimerColor,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["fontFamily"] = new SettingsGroup(
     "fontFamily",
     UpdateConfig.setFontFamily,
@@ -366,22 +373,22 @@ async function initGroups(): Promise<void> {
         customButton.text("Custom");
       }
     }
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["alwaysShowDecimalPlaces"] = new SettingsGroup(
     "alwaysShowDecimalPlaces",
     UpdateConfig.setAlwaysShowDecimalPlaces,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["alwaysShowCPM"] = new SettingsGroup(
     "alwaysShowCPM",
     UpdateConfig.setAlwaysShowCPM,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["customBackgroundSize"] = new SettingsGroup(
     "customBackgroundSize",
     UpdateConfig.setCustomBackgroundSize,
     "button"
-  );
+  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   // groups.customLayoutfluid = new SettingsGroup(
   //   "customLayoutfluid",
   //   UpdateConfig.setCustomLayoutfluid
@@ -407,7 +414,11 @@ export async function fillSettingsPage(): Promise<void> {
   }
 
   // Language Selection Combobox
-  const languageEl = $(".pageSettings .section.language select").empty();
+  const languageEl = document.querySelector(
+    ".pageSettings .section.language select"
+  ) as HTMLSelectElement;
+  languageEl.innerHTML = "";
+  let languageElHTML = "";
 
   let languageGroups;
   try {
@@ -422,7 +433,7 @@ export async function fillSettingsPage(): Promise<void> {
   }
 
   if (languageGroups) {
-    languageGroups.forEach((group) => {
+    for (const group of languageGroups) {
       let langComboBox = `<optgroup label="${group.name}">`;
       group.languages.forEach((language: string) => {
         langComboBox += `<option value="${language}">
@@ -430,17 +441,27 @@ export async function fillSettingsPage(): Promise<void> {
       </option>`;
       });
       langComboBox += `</optgroup>`;
-      languageEl.append(langComboBox);
-    });
+      languageElHTML += langComboBox;
+    }
+    languageEl.innerHTML = languageElHTML;
   }
-  languageEl.select2({
+  $(languageEl).select2({
     width: "100%",
   });
 
-  const layoutEl = $(".pageSettings .section.layout select").empty();
-  layoutEl.append(`<option value='default'>off</option>`);
-  const keymapEl = $(".pageSettings .section.keymapLayout select").empty();
-  keymapEl.append(`<option value='overrideSync'>emulator sync</option>`);
+  await Misc.sleep(0);
+
+  const layoutEl = document.querySelector(
+    ".pageSettings .section.layout select"
+  ) as HTMLSelectElement;
+  layoutEl.innerHTML = `<option value='default'>off</option>`;
+  let layoutElHTML = "";
+
+  const keymapEl = document.querySelector(
+    ".pageSettings .section.keymapLayout select"
+  ) as HTMLSelectElement;
+  keymapEl.innerHTML = `<option value='overrideSync'>emulator sync</option>`;
+  let keymapElHTML = "";
 
   let layoutsList;
   try {
@@ -450,32 +471,43 @@ export async function fillSettingsPage(): Promise<void> {
   }
 
   if (layoutsList) {
-    Object.keys(layoutsList).forEach((layout) => {
+    for (const layout of Object.keys(layoutsList)) {
       if (layout.toString() !== "korean") {
-        layoutEl.append(
-          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-        );
+        layoutElHTML += `<option value='${layout}'>${layout.replace(
+          /_/g,
+          " "
+        )}</option>`;
       }
-      if (layout.toString() != "default") {
-        keymapEl.append(
-          `<option value='${layout}'>${layout.replace(/_/g, " ")}</option>`
-        );
+      if (layout.toString() !== "default") {
+        keymapElHTML += `<option value='${layout}'>${layout.replace(
+          /_/g,
+          " "
+        )}</option>`;
       }
-    });
+    }
+    layoutEl.innerHTML += layoutElHTML;
+    keymapEl.innerHTML += keymapElHTML;
   }
-  layoutEl.select2({
+  $(layoutEl).select2({
     width: "100%",
   });
-  keymapEl.select2({
+  $(keymapEl).select2({
     width: "100%",
   });
 
-  const themeEl1 = $(
+  await Misc.sleep(0);
+
+  const themeEl1 = document.querySelector(
     ".pageSettings .section.autoSwitchThemeInputs select.light"
-  ).empty();
-  const themeEl2 = $(
+  ) as HTMLSelectElement;
+  themeEl1.innerHTML = "";
+  let themeEl1HTML = "";
+
+  const themeEl2 = document.querySelector(
     ".pageSettings .section.autoSwitchThemeInputs select.dark"
-  ).empty();
+  ) as HTMLSelectElement;
+  themeEl2.innerHTML = "";
+  let themeEl2HTML = "";
 
   let themes;
   try {
@@ -488,26 +520,26 @@ export async function fillSettingsPage(): Promise<void> {
 
   if (themes) {
     for (const theme of themes) {
-      themeEl1.append(
-        `<option value='${theme.name}'>${theme.name.replace(
-          /_/g,
-          " "
-        )}</option>`
-      );
-      themeEl2.append(
-        `<option value='${theme.name}'>${theme.name.replace(
-          /_/g,
-          " "
-        )}</option>`
-      );
+      themeEl1HTML += `<option value='${theme.name}'>${theme.name.replace(
+        /_/g,
+        " "
+      )}</option>`;
+      themeEl2HTML += `<option value='${theme.name}'>${theme.name.replace(
+        /_/g,
+        " "
+      )}</option>`;
     }
+    themeEl1.innerHTML = themeEl1HTML;
+    themeEl2.innerHTML = themeEl2HTML;
   }
-  themeEl1.select2({
+  $(themeEl1).select2({
     width: "100%",
   });
-  themeEl2.select2({
+  $(themeEl2).select2({
     width: "100%",
   });
+
+  await Misc.sleep(0);
 
   $(`.pageSettings .section.autoSwitchThemeInputs select.light`)
     .val(Config.themeLight)
@@ -516,73 +548,94 @@ export async function fillSettingsPage(): Promise<void> {
     .val(Config.themeDark)
     .trigger("change.select2");
 
-  const funboxEl = $(".pageSettings .section.funbox .buttons").empty();
-  funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
-  Misc.getFunboxList()
-    .then((funboxModes) => {
-      funboxModes.forEach((funbox) => {
-        if (funbox.name === "mirror") {
-          funboxEl.append(
-            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-              funbox.info
-            }" data-balloon-pos="up" data-balloon-length="fit" type="${
-              funbox.type
-            }" style="transform:scaleX(-1);">${funbox.name.replace(
-              /_/g,
-              " "
-            )}</div>`
-          );
-        } else {
-          funboxEl.append(
-            `<div class="funbox button" funbox='${funbox.name}' aria-label="${
-              funbox.info
-            }" data-balloon-pos="up" data-balloon-length="fit" type="${
-              funbox.type
-            }">${funbox.name.replace(/_/g, " ")}</div>`
-          );
-        }
-      });
-    })
-    .catch((e) => {
-      Notifications.add(
-        Misc.createErrorMessage(e, "Failed to update funbox settings buttons"),
-        -1
-      );
-    });
+  const funboxEl = document.querySelector(
+    ".pageSettings .section.funbox .buttons"
+  ) as HTMLDivElement;
+  funboxEl.innerHTML = `<div class="funbox button" funbox='none'>none</div>`;
+  let funboxElHTML = "";
+
+  let funboxList;
+  try {
+    funboxList = await Misc.getFunboxList();
+  } catch (e) {
+    console.error(Misc.createErrorMessage(e, "Failed to get funbox list"));
+  }
+
+  if (funboxList) {
+    for (const funbox of funboxList) {
+      if (funbox.name === "mirror") {
+        funboxElHTML += `<div class="funbox button" funbox='${
+          funbox.name
+        }' aria-label="${
+          funbox.info
+        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1);">${funbox.name.replace(
+          /_/g,
+          " "
+        )}</div>`;
+      } else if (funbox.name === "upside_down") {
+        funboxElHTML += `<div class="funbox button" funbox='${
+          funbox.name
+        }' aria-label="${
+          funbox.info
+        }" data-balloon-pos="up" data-balloon-length="fit" style="transform:scaleX(-1) scaleY(-1);">${funbox.name.replace(
+          /_/g,
+          " "
+        )}</div>`;
+      } else {
+        funboxElHTML += `<div class="funbox button" funbox='${
+          funbox.name
+        }' aria-label="${
+          funbox.info
+        }" data-balloon-pos="up" data-balloon-length="fit">${funbox.name.replace(
+          /_/g,
+          " "
+        )}</div>`;
+      }
+    }
+    funboxEl.innerHTML = funboxElHTML;
+  }
+
+  await Misc.sleep(0);
 
   let isCustomFont = true;
-  const fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
-  Misc.getFontsList()
-    .then((fonts) => {
-      fonts.forEach((font) => {
-        if (Config.fontFamily === font.name) isCustomFont = false;
-        fontsEl.append(
-          `<div class="button${
-            Config.fontFamily === font.name ? " active" : ""
-          }" style="font-family:${
-            font.display !== undefined ? font.display : font.name
-          }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
+  const fontsEl = document.querySelector(
+    ".pageSettings .section.fontFamily .buttons"
+  ) as HTMLDivElement;
+  fontsEl.innerHTML = "";
+
+  let fontsElHTML = "";
+
+  let fontsList;
+  try {
+    fontsList = await Misc.getFontsList();
+  } catch (e) {
+    console.error(
+      Misc.createErrorMessage(e, "Failed to update fonts settings buttons")
+    );
+  }
+
+  if (fontsList) {
+    for (const font of fontsList) {
+      if (Config.fontFamily === font.name) isCustomFont = false;
+      fontsElHTML += `<div class="button${
+        Config.fontFamily === font.name ? " active" : ""
+      }" style="font-family:${
+        font.display !== undefined ? font.display : font.name
+      }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
         onclick="this.blur();">${
           font.display !== undefined ? font.display : font.name
-        }</div>`
-        );
-      });
+        }</div>`;
+    }
 
-      fontsEl.append(
-        isCustomFont
-          ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
-              /_/g,
-              " "
-            )})</div>`
-          : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>'
-      );
-    })
-    .catch((e) => {
-      Notifications.add(
-        Misc.createErrorMessage(e, "Failed to update fonts settings buttons"),
-        -1
-      );
-    });
+    fontsElHTML += isCustomFont
+      ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+          /_/g,
+          " "
+        )})</div>`
+      : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>';
+
+    fontsEl.innerHTML = fontsElHTML;
+  }
 
   $(".pageSettings .section.customBackgroundSize input").val(
     Config.customBackground
@@ -594,16 +647,18 @@ export async function fillSettingsPage(): Promise<void> {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
+  await Misc.sleep(0);
   setEventDisabled(true);
   if (!groupsInitialized) {
     await initGroups();
     groupsInitialized = true;
   } else {
-    Object.keys(groups).forEach((groupKey) => {
+    for (const groupKey of Object.keys(groups)) {
       groups[groupKey].updateInput();
-    });
+    }
   }
   setEventDisabled(false);
+  await Misc.sleep(0);
   await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;
 }
@@ -618,13 +673,13 @@ export function hideAccountSection(): void {
 
 export function updateDiscordSection(): void {
   //no code and no discord
-  if (Auth?.currentUser == null) {
+  if (!Auth?.currentUser) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
     if (!DB.getSnapshot()) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
-    if (DB.getSnapshot()?.discordId == undefined) {
+    if (DB.getSnapshot()?.discordId === undefined) {
       //show button
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
@@ -690,17 +745,32 @@ export function updateAuthSections(): void {
 
 function setActiveFunboxButton(): void {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
-  $(
-    `.pageSettings .section.funbox .button[funbox='${Config.funbox}']`
-  ).addClass("active");
+  $(`.pageSettings .section.funbox .button`).removeClass("disabled");
+  Misc.getFunboxList().then((funboxModes) => {
+    funboxModes.forEach((funbox) => {
+      if (
+        !areFunboxesCompatible(Config.funbox, funbox.name) &&
+        !Config.funbox.split("#").includes(funbox.name)
+      ) {
+        $(
+          `.pageSettings .section.funbox .button[funbox='${funbox.name}']`
+        ).addClass("disabled");
+      }
+    });
+  });
+  Config.funbox.split("#").forEach((funbox) => {
+    $(`.pageSettings .section.funbox .button[funbox='${funbox}']`).addClass(
+      "active"
+    );
+  });
 }
 
 function refreshTagsSettingsSection(): void {
-  if (Auth?.currentUser && DB.getSnapshot() !== null) {
+  if (Auth?.currentUser && DB.getSnapshot()) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot()?.tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
-      // if (tag.pb != undefined && tag.pb > 0) {
+      // if (tag.pb !== undefined && tag.pb > 0) {
       //   tagPbString = `PB: ${tag.pb}`;
       // }
       tagsEl.append(`
@@ -731,7 +801,7 @@ function refreshTagsSettingsSection(): void {
 }
 
 function refreshPresetsSettingsSection(): void {
-  if (Auth?.currentUser && DB.getSnapshot() !== null) {
+  if (Auth?.currentUser && DB.getSnapshot()) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
@@ -762,21 +832,29 @@ export function showAccountSection(): void {
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
   updateDiscordSection();
+
+  if (DB.getSnapshot()?.lbOptOut === true) {
+    $(".pageSettings .section.optOutOfLeaderboards").remove();
+  }
 }
 
-export function update(): void {
-  Object.keys(groups).forEach((group) => {
-    groups[group].updateInput();
-  });
+export async function update(groupUpdate = true): Promise<void> {
+  // Object.keys(groups).forEach((group) => {
+  if (groupUpdate) {
+    for (const group of Object.keys(groups)) {
+      groups[group].updateInput();
+    }
+  }
 
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
   // LanguagePicker.setActiveGroup(); Shifted from grouped btns to combo-box
   setActiveFunboxButton();
-  ThemePicker.updateActiveTab(true);
-  ThemePicker.setCustomInputs(true);
   updateDiscordSection();
   updateAuthSections();
+  await Misc.sleep(0);
+  ThemePicker.updateActiveTab(true);
+  ThemePicker.setCustomInputs(true);
   // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
@@ -802,6 +880,25 @@ export function update(): void {
     $(".pageSettings .section.customBackgroundFilter").removeClass("hidden");
   } else {
     $(".pageSettings .section.customBackgroundFilter").addClass("hidden");
+  }
+
+  if (Auth?.currentUser) {
+    showAccountSection();
+  } else {
+    hideAccountSection();
+  }
+
+  const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
+    ? "cmd"
+    : "ctrl";
+  if (Config.quickRestart === "esc") {
+    $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (<key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
+  } else {
+    $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (<key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key>)`);
   }
 }
 
@@ -932,8 +1029,7 @@ $(".pageSettings .section.minBurst").on("click", ".button.save", () => {
 //funbox
 $(".pageSettings .section.funbox").on("click", ".button", (e) => {
   const funbox = <string>$(e.currentTarget).attr("funbox");
-  const type = <MonkeyTypes.FunboxObjectType>$(e.currentTarget).attr("type");
-  Funbox.setFunbox(funbox, type);
+  toggleFunbox(funbox);
   setActiveFunboxButton();
 });
 
@@ -1017,7 +1113,9 @@ $(".pageSettings .section.fontSize .inputAndButton .save").on("click", () => {
     )
   );
   if (didConfigSave) {
-    Notifications.add("Saved", 1, 1);
+    Notifications.add("Saved", 1, {
+      duration: 1,
+    });
   }
 });
 
@@ -1031,7 +1129,9 @@ $(".pageSettings .section.fontSize .inputAndButton input").keypress((e) => {
       )
     );
     if (didConfigSave === true) {
-      Notifications.add("Saved", 1, 1);
+      Notifications.add("Saved", 1, {
+        duration: 1,
+      });
     }
   }
 });
@@ -1067,7 +1167,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
   }
 );
 
-$(".quickNav .links a").on("click", (e) => {
+$(".pageSettings .quickNav .links a").on("click", (e) => {
   const settingsGroup = e.target.innerText;
   const isOpen = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
     "slideup"
@@ -1104,6 +1204,15 @@ $(".pageSettings .section.autoSwitchThemeInputs").on(
   }
 );
 
+$(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
+  "click",
+  () => {
+    Ape.users.getOauthLink().then((res) => {
+      window.open(res.data.url, "_self");
+    });
+  }
+);
+
 let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
@@ -1127,13 +1236,19 @@ export const page = new Page(
     //
   },
   async () => {
+    Skeleton.remove("pageSettings");
     reset();
   },
   async () => {
+    Skeleton.append("pageSettings", "middle");
     await fillSettingsPage();
-    update();
+    await update(false);
   },
   async () => {
     //
   }
 );
+
+$(() => {
+  Skeleton.save("pageSettings");
+});

@@ -1,4 +1,4 @@
-<div class="page pageAccount hidden">
+<div class="page pageAccount hidden" id="pageAccount">
   <div class="scrollToTopButton">
     <i class="fas fa-angle-double-up"></i>
   </div>
@@ -33,7 +33,13 @@
             <div class="badges"></div>
             <div class="allBadges"></div>
             <div class="joined" data-balloon-pos="up">-</div>
-            <div class="streak" data-balloon-pos="up">-</div>
+            <div
+              class="streak"
+              data-balloon-pos="up"
+              data-balloon-length="large"
+            >
+              -
+            </div>
           </div>
           <div class="levelAndBar">
             <div class="level" data-balloon-pos="up">-</div>
@@ -81,6 +87,7 @@
             class="editProfileButton button"
             data-balloon-pos="left"
             aria-label="Edit profile"
+            role="button"
           >
             <i class="fas fa-pen"></i>
           </div>
@@ -88,6 +95,7 @@
             class="copyLink button"
             data-balloon-pos="left"
             aria-label="Copy public link"
+            role="button"
           >
             <i class="fas fa-link"></i>
           </div>
@@ -138,6 +146,7 @@
             class="showAllButton button"
             data-balloon-pos="left"
             aria-label="Show all personal bests"
+            role="button"
           >
             <i class="fas fa-ellipsis-v"></i>
           </div>
@@ -177,6 +186,7 @@
             class="showAllButton button"
             data-balloon-pos="left"
             aria-label="Show all personal bests"
+            role="button"
           >
             <i class="fas fa-ellipsis-v"></i>
           </div>
@@ -294,7 +304,7 @@
       <div id="ad-account-1-small"></div>
     </div>
 
-    <div class="group presetFilterButtons" style="display: none">
+    <div class="group presetFilterButtons hidden">
       <div class="buttonsAndTitle">
         <div class="title">filter presets</div>
         <div class="buttons filterBtns" style="grid-column: 1/3"></div>
@@ -430,21 +440,21 @@
       <div class="chart">
         <canvas id="accountHistoryChart"></canvas>
       </div>
+
       <div class="below">
         <div class="text"></div>
         <div class="buttons">
-          <div class="smoothing">
-            <div class="title">smoothing</div>
-            <div class="value">0</div>
-            <input type="range" min="0" max="20" value="0" step="1" />
-          </div>
           <div class="toggleAccuracyOnChart button">
             <i class="fas fa-bullseye"></i>
-            Toggle Accuracy
+            Accuracy
           </div>
-          <div class="toggleChartStyle button">
+          <div class="toggleAverage10OnChart button">
             <i class="fas fa-chart-line"></i>
-            Toggle Chart Style
+            Avg of 10
+          </div>
+          <div class="toggleAverage100OnChart button">
+            <i class="fas fa-chart-line"></i>
+            Avg of 100
           </div>
         </div>
       </div>
@@ -459,6 +469,10 @@
         <canvas id="accountActivityChart"></canvas>
       </div>
     </div>
+    <div class="group estimatedWordsTyped">
+      <div class="title">estimated words typed</div>
+      <div class="val">-</div>
+    </div>
     <div class="triplegroup stats">
       <div class="group testsStarted">
         <div class="title">tests started</div>
@@ -469,8 +483,9 @@
           tests completed
           <span
             data-balloon-length="xlarge"
-            aria-label="Due to the increasing number of results in the database, you can now only see your last 1000 results in detail. Total time spent typing, started and completed tests stats will still be up to date at the top of the page, above the filters."
             data-balloon-pos="up"
+            aria-label="Due to the increasing number of results in the database, you can now only see your last 1000 results in detail. Total time spent typing, started and completed tests stats will still be up to date at the top of the page, above the filters."
+            role="alertdialog"
           >
             <i class="fas fa-question-circle"></i>
           </span>

@@ -99,20 +99,8 @@
       Caps Lock
     </div>
     <div id="memoryTimer">Time left to memorise all words: 0s</div>
+    <div id="layoutfluidTimer">Time left to memorise all words: 0s</div>
     <div id="testModesNotice"></div>
-    <input
-      id="wordsInput"
-      class=""
-      tabindex="0"
-      type="text"
-      autocomplete="off"
-      autocapitalize="off"
-      autocorrect="off"
-      data-gramm="false"
-      data-gramm_editor="false"
-      data-enable-grammarly="false"
-      list="autocompleteOff"
-    />
     <div id="timerNumber" class="timerMain">
       <div>60</div>
     </div>
@@ -124,8 +112,23 @@
     </div>
     <div class="outOfFocusWarning hidden">
       <i class="fas fa-mouse-pointer"></i>
-      Click or press any key to focus
+      Click here or start typing to focus
     </div>
+    <input
+      id="wordsInput"
+      class=""
+      tabindex="0"
+      type="text"
+      autocomplete="off"
+      autocapitalize="off"
+      autocapitalize="none"
+      autocorrect="off"
+      data-gramm="false"
+      data-gramm_editor="false"
+      data-enable-grammarly="false"
+      list="autocompleteOff"
+      spellcheck="false"
+    />
     <div id="wordsWrapper" translate="no">
       <div id="paceCaret" class="default hidden"></div>
       <div id="caret" class="default"></div>
@@ -137,21 +140,22 @@
     </div>
 
     <div id="keymap" class="hidden"></div>
-    <div id="largeLiveWpmAndAcc" class="timerMain">
-      <div id="liveWpm" class="hidden">123</div>
-      <div id="liveAcc" class="hidden">100%%</div>
-      <div id="liveBurst" class="hidden">1</div>
-    </div>
 
     <div
       id="restartTestButton"
       aria-label="Restart Test"
+      role="button"
       data-balloon-pos="down"
       class=""
       tabindex="0"
       onclick="this.blur();"
     >
       <i class="fas fa-fw fa-redo-alt"></i>
+    </div>
+    <div id="largeLiveWpmAndAcc" class="timerMain">
+      <div id="liveWpm" class="hidden">123</div>
+      <div id="liveAcc" class="hidden">100%%</div>
+      <div id="liveBurst" class="hidden">1</div>
     </div>
     <div id="monkey" class="hidden">
       <div class="up"></div>
@@ -198,6 +202,7 @@
               result-id=""
               active-tag-ids=""
               aria-label="Edit tags"
+              role="button"
               data-balloon-pos="right"
             >
               <i class="fas fa-pen fa-fw"></i>
@@ -359,6 +364,7 @@
         <div
           id="nextTestButton"
           aria-label="Next test"
+          role="button"
           data-balloon-pos="down"
           tabindex="0"
           onclick="this.blur();"
@@ -368,6 +374,7 @@
         <div
           id="restartTestButtonWithSameWordset"
           aria-label="Repeat test"
+          role="button"
           data-balloon-pos="down"
           tabindex="0"
           onclick="this.blur();"
@@ -377,6 +384,7 @@
         <div
           id="practiseWordsButton"
           aria-label="Practice words"
+          role="button"
           data-balloon-pos="down"
           tabindex="0"
           onclick="this.blur();"
@@ -386,6 +394,7 @@
         <div
           id="showWordHistoryButton"
           aria-label="Toggle words history"
+          role="button"
           data-balloon-pos="down"
           tabindex="0"
           onclick="this.blur();"
@@ -395,6 +404,7 @@
         <div
           id="watchReplayButton"
           aria-label="Watch replay"
+          role="button"
           data-balloon-pos="down"
           tabindex="0"
           onclick="this.blur();"
@@ -404,6 +414,7 @@
         <div
           id="saveScreenshotButton"
           aria-label="Save screenshot"
+          role="button"
           data-balloon-pos="down"
           tabindex="0"
           onclick="this.blur();"
@@ -413,6 +424,7 @@
         <div
           id="watchVideoAdButton"
           aria-label="Watch video ad"
+          role="button"
           data-balloon-pos="down"
           tabindex="0"
           onclick="this.blur();"

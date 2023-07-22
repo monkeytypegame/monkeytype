@@ -3,6 +3,8 @@ import Config from "../config";
 import * as Misc from "../utils/misc";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
+import * as FunboxList from "./funbox/funbox-list";
+import * as TestState from "./test-state";
 
 interface CharCount {
   spaces: number;
@@ -23,11 +25,10 @@ interface Keypress {
 
 interface KeypressTimings {
   spacing: {
-    current: number;
+    last: number;
     array: number[] | "toolong";
   };
   duration: {
-    current: number;
     array: number[] | "toolong";
   };
 }
@@ -112,7 +113,7 @@ export function getStats(): DebugStats {
     start,
     end,
     wpmHistory: TestInput.wpmHistory,
-    rawHistory: TestInput.wpmHistory,
+    rawHistory: TestInput.rawHistory,
     burstHistory: TestInput.burstHistory,
     keypressPerSecond: TestInput.keypressPerSecond,
     currentKeypress: TestInput.currentKeypress,
@@ -186,16 +187,12 @@ export function setInvalid(): void {
 
 export function calculateTestSeconds(now?: number): number {
   if (now === undefined) {
-    const endAfkSeconds = (end - TestInput.lastKeypress) / 1000;
-    if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
-      return (TestInput.lastKeypress - start) / 1000;
-    } else {
-      return (end - start) / 1000;
-    }
+    return (end - start) / 1000;
   } else {
     return (now - start) / 1000;
   }
 }
+
 let avg = 0;
 export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   const start = performance.now();
@@ -212,11 +209,11 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   for (let i = 0; i < TestInput.input.history.length; i++) {
     const word: string = !containsKorean
       ? //english
-        Config.mode == "zen"
+        Config.mode === "zen"
         ? (TestInput.input.getHistory(i) as string)
         : TestWords.words.get(i)
       : //korean
-      Config.mode == "zen"
+      Config.mode === "zen"
       ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
       : Hangul.disassemble(TestWords.words.get(i)).join("");
 
@@ -241,7 +238,7 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   }
   if (currTestInput !== "") {
     const word =
-      Config.mode == "zen"
+      Config.mode === "zen"
         ? currTestInput
         : !containsKorean
         ? TestWords.words.getCurrent()
@@ -268,22 +265,26 @@ export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
     chars += toAdd.correct;
     chars += toAdd.incorrect;
     chars += toAdd.missed;
-    if (toAdd.incorrect == 0) {
+    if (toAdd.incorrect === 0) {
       //word is correct so far, add chars
       correctWordChars += toAdd.correct;
     }
   }
-  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
+  if (
+    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
+  ) {
     spaces = 0;
   }
   chars += currTestInput.length;
-  const testSeconds = calculateTestSeconds(performance.now());
+  const testSeconds = calculateTestSeconds(
+    TestState.isActive ? performance.now() : end
+  );
   const wpm = Math.round(
     ((correctWordChars + spaces) * (60 / testSeconds)) / 5
   );
   const raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
-  const end = performance.now();
-  avg = (end - start + avg) / 2;
+  const endPerf = performance.now();
+  avg = (endPerf - start + avg) / 2;
   return {
     wpm: wpm,
     raw: raw,
@@ -331,13 +332,13 @@ export function calculateBurst(): number {
   wordLength = !containsKorean
     ? TestInput.input.current.length
     : Hangul.disassemble(TestInput.input.current).length;
-  if (wordLength == 0) {
+  if (wordLength === 0) {
     wordLength = !containsKorean
       ? TestInput.input.getHistoryLast()?.length ?? 0
       : Hangul.disassemble(TestInput.input.getHistoryLast() as string)
           ?.length ?? 0;
   }
-  if (wordLength == 0) return 0;
+  if (wordLength === 0) return 0;
   const speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
   return Math.round(speed);
 }
@@ -370,11 +371,11 @@ function countChars(): CharCount {
     const containsKorean = TestInput.input.getKoreanStatus();
     const word: string = !containsKorean
       ? //english
-        Config.mode == "zen"
+        Config.mode === "zen"
         ? (TestInput.input.getHistory(i) as string)
         : TestWords.words.get(i)
       : //korean
-      Config.mode == "zen"
+      Config.mode === "zen"
       ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
       : Hangul.disassemble(TestWords.words.get(i)).join("");
 
@@ -386,7 +387,7 @@ function countChars(): CharCount {
       ? (TestInput.input.getHistory(i) as string)
       : Hangul.disassemble(TestInput.input.getHistory(i) as string).join("");
 
-    if (historyWord == word) {
+    if (historyWord === word) {
       //the word is correct
       correctWordChars += word.length;
       correctChars += word.length;
@@ -401,7 +402,7 @@ function countChars(): CharCount {
       for (let c = 0; c < historyWord.length; c++) {
         if (c < word.length) {
           //on char that still has a word list pair
-          if (historyWord[c] == word[c]) {
+          if (historyWord[c] === word[c]) {
             correctChars++;
           } else {
             incorrectChars++;
@@ -421,7 +422,7 @@ function countChars(): CharCount {
       for (let c = 0; c < word.length; c++) {
         if (c < historyWord.length) {
           //on char that still has a word list pair
-          if (historyWord[c] == word[c]) {
+          if (historyWord[c] === word[c]) {
             toAdd.correct++;
           } else {
             toAdd.incorrect++;
@@ -433,7 +434,7 @@ function countChars(): CharCount {
       }
       correctChars += toAdd.correct;
       incorrectChars += toAdd.incorrect;
-      if (i === TestInput.input.history.length - 1 && Config.mode == "time") {
+      if (i === TestInput.input.history.length - 1 && Config.mode === "time") {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {
@@ -444,7 +445,9 @@ function countChars(): CharCount {
       spaces++;
     }
   }
-  if (Config.funbox === "nospace" || Config.funbox === "arrows") {
+  if (
+    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
+  ) {
     spaces = 0;
     correctspaces = 0;
   }
@@ -453,7 +456,7 @@ function countChars(): CharCount {
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
     incorrectChars:
-      Config.mode == "zen" ? TestInput.accuracy.incorrect : incorrectChars,
+      Config.mode === "zen" ? TestInput.accuracy.incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,
@@ -466,7 +469,7 @@ export function calculateStats(): Stats {
     console.log("date based time", (end2 - start2) / 1000);
     console.log("performance.now based time", testSeconds);
   }
-  if (Config.mode != "custom") {
+  if (Config.mode !== "custom") {
     testSeconds = Misc.roundTo2(testSeconds);
     if (wpmCalcDebug) {
       console.log("mode is not custom - wounding");

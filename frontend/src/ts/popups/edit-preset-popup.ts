@@ -5,12 +5,19 @@ import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "presetWrapper";
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
+  Skeleton.append(wrapperId);
 
   if (action === "add") {
     $("#presetWrapper #presetEdit").attr("action", "add");
@@ -37,19 +44,19 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit label").addClass("hidden");
   }
 
-  if ($("#presetWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#presetWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         $("#presetWrapper #presetEdit input").trigger("focus");
       });
   }
 }
 
 function hide(): void {
-  if (!$("#presetWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#presetWrapper #presetEdit").attr("action", "");
     $("#presetWrapper #presetEdit").attr("tagid", "");
     $("#presetWrapper")
@@ -59,9 +66,10 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#presetWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -106,7 +114,9 @@ async function apply(): Promise<void> {
         -1
       );
     } else {
-      Notifications.add("Preset added", 1, 2);
+      Notifications.add("Preset added", 1, {
+        duration: 2,
+      });
       snapshotPresets.push({
         name: presetName,
         config: configChanges,
@@ -129,6 +139,7 @@ async function apply(): Promise<void> {
         (preset: MonkeyTypes.Preset) => preset._id === presetId
       )[0];
       preset.name = presetName;
+      preset.display = presetName.replace(/_/g, " ");
       if (updateConfig) {
         preset.config = configChanges;
       }
@@ -183,3 +194,5 @@ $(".pageSettings .section.presets").on("click", ".removeButton", (e) => {
   const name = $(e.currentTarget).siblings(".button").children(".title").text();
   show("remove", presetid, name);
 });
+
+Skeleton.save(wrapperId);

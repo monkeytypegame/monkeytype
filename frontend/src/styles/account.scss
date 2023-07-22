@@ -21,8 +21,6 @@
 }
 
 .pageAccount {
-  display: grid;
-  gap: 1rem;
   height: 100%;
 
   .preloader {
@@ -30,7 +28,8 @@
   }
 
   .content {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
   }
 
@@ -120,6 +119,15 @@
   }
 
   .group {
+    &.estimatedWordsTyped {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .title {
+        margin-right: 1rem;
+      }
+    }
+
     &.noDataError {
       margin: 20rem 0;
       text-align: center;
@@ -222,28 +230,16 @@
         color: var(--sub-color);
         margin-top: 1rem;
         display: grid;
-        grid-template-columns: auto 300px;
+        grid-template-columns: auto 400px;
         align-items: center;
         .text {
           height: min-content;
         }
         .buttons {
+          font-size: 0.75rem;
           display: grid;
           gap: 0.5rem;
-          .smoothing {
-            display: grid;
-            gap: 0.25rem;
-            grid-template-columns: 1fr auto;
-            grid-template-rows: auto auto;
-            justify-items: start;
-            color: var(--text-color);
-            .title {
-              color: var(--text-color);
-            }
-            input[type="range"] {
-              grid-column: 1/3;
-            }
-          }
+          grid-template-columns: 1fr 1fr 1fr;
         }
       }
       .chart {
@@ -373,6 +369,7 @@
 
 .sortable:hover {
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   background-color: var(--sub-alt-color);
 }

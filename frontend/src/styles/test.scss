@@ -1,3 +1,46 @@
+.highlightContainer {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+
+  .highlight {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    position: absolute;
+    background-color: var(--sub-color);
+    border-radius: var(--roundness);
+    opacity: 1;
+    transition: opacity 0.125s linear;
+
+    overflow: hidden;
+    z-index: 1;
+
+    &.withAnimation {
+      transition: left 0.25s ease, right 0.25s ease, opacity 0.125s linear;
+    }
+
+    &.highlight-hidden {
+      opacity: 0;
+    }
+  }
+
+  .inputWord {
+    color: var(--bg-color);
+    position: absolute;
+    font-size: 1em;
+    line-height: 1em;
+    font-variant: no-common-ligatures;
+  }
+
+  .inputWordsContainer {
+    position: relative;
+    &.withAnimation {
+      transition: all 0.25s ease;
+    }
+  }
+}
+
 #timerWrapper {
   opacity: 0;
   transition: 0.25s;
@@ -9,7 +52,6 @@
     top: 0;
     left: 0;
     width: 100vw;
-    /*   height: 0.5rem; */
     height: 0.5rem;
     background: black;
     /*   background: #0f0f0f; */
@@ -133,6 +175,7 @@
   flex-wrap: wrap;
   width: 100%;
   align-content: flex-start;
+  -webkit-user-select: none;
   user-select: none;
   padding-bottom: 1em;
 
@@ -280,9 +323,6 @@
   margin: 0.25em;
   color: var(--sub-color);
   font-variant: no-common-ligatures;
-  // display: flex;
-  // transition: 0.25s
-  /*   margin-bottom: 1px; */
   border-bottom: 2px solid transparent;
   letter {
     display: inline-block;
@@ -296,13 +336,13 @@
     opacity: 0.25;
   }
 
-  // transition: .25s;
-  .wordInputAfter {
+  .wordInputHighlight {
     opacity: 1;
     white-space: nowrap;
     position: absolute;
     background: var(--sub-color);
     color: var(--bg-color);
+    pointer-events: none;
     /* background: red; */
     padding: 0.5rem;
     /* left: .5rem; */
@@ -314,10 +354,17 @@
     text-shadow: none;
     top: -0.5rem;
     z-index: 10;
-    cursor: text;
-    .speed {
-      font-size: 0.75rem;
+
+    &.withSpeed {
+      .speed {
+        font-size: 0.75rem;
+        color: var(--sub-alt-color);
+      }
     }
+  }
+
+  &.nocursor {
+    cursor: none;
   }
 
   &.error {
@@ -330,6 +377,10 @@
       0px 1px 0px var(--bg-color),
       1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
   }
+}
+
+#resultWordsHistory {
+  position: relative;
 }
 
 #words.noErrorBorder,
@@ -400,14 +451,10 @@
   outline: none;
   display: block;
   resize: none;
-  position: fixed;
+  position: absolute;
   z-index: -1;
   cursor: default;
   pointer-events: none;
-  margin-left: 1rem;
-  // left: 50%;
-  // top: 50%;
-  // transform: translate(-50%, -50%);
 }
 
 #capsWarning {
@@ -455,6 +502,13 @@
     display: inline-block;
     font-size: 0.75rem;
     padding-bottom: 0;
+  }
+
+  &.noBalloons {
+    [aria-label][data-balloon-pos]:before,
+    [aria-label][data-balloon-pos]:after {
+      display: none;
+    }
   }
 
   &:focus {
@@ -508,27 +562,15 @@
           place-content: center center;
         }
         .box:nth-child(1) {
-          background: var(--colorful-error-color);
           border-radius: var(--roundness) 0 0 var(--roundness);
         }
-        .box:nth-child(2) {
-          background: var(--colorful-error-color);
-          filter: opacity(0.6);
-        }
-        .box:nth-child(3) {
-          background: var(--sub-color);
-        }
-        .box:nth-child(4) {
-          background: var(--main-color);
-          filter: opacity(0.6);
-        }
         .box:nth-child(5) {
-          background: var(--main-color);
           border-radius: 0 var(--roundness) var(--roundness) 0;
         }
       }
     }
     .title {
+      -webkit-user-select: none;
       user-select: none;
       margin-bottom: 0.25rem;
     }
@@ -537,7 +579,6 @@
       flex-wrap: wrap;
       width: 100%;
       align-content: flex-start;
-      user-select: none;
       .word {
         position: relative;
         margin: 0.18rem 0.6rem 0.15rem 0;
@@ -550,25 +591,8 @@
         letter.incorrect.extra {
           color: var(--error-extra-color);
         }
-        &.unreached letter {
-          filter: opacity(0.2);
-        }
-        &.heatmap0 letter {
-          color: var(--colorful-error-color);
-        }
-        &.heatmap1 letter {
-          color: var(--colorful-error-color);
-          filter: opacity(0.6);
-        }
-        &.heatmap2 letter {
-          color: var(--sub-color);
-        }
-        &.heatmap3 letter {
-          color: var(--main-color);
-          filter: opacity(0.6);
-        }
-        &.heatmap4 letter {
-          color: var(--main-color);
+        &.heatmapInherit letter {
+          color: inherit;
         }
       }
       &.rightToLeftTest {
@@ -585,6 +609,11 @@
         }
       }
     }
+  }
+
+  #resultReplay .words {
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .chart {
@@ -872,13 +901,14 @@
   color: var(--error-color);
   transition: 0.25s;
   cursor: pointer;
-  width: max-content;
   width: -moz-max-content;
+  width: max-content;
   background: var(--colorful-error-color);
   color: var(--bg-color);
   justify-self: center;
   justify-content: center;
   margin: 0 auto 1rem auto;
+  -webkit-user-select: none;
   user-select: none;
 
   &:hover,
@@ -915,8 +945,8 @@
 #koInputVisualContainer {
   position: relative;
   padding-top: 1rem;
-  width: min-content;
   width: -moz-min-content;
+  width: min-content;
   height: 3rem;
   margin: 0 auto;
 
@@ -928,8 +958,8 @@
 
   &.blurred {
     opacity: 0.25;
-    filter: blur(4px);
     -webkit-filter: blur(4px);
+    filter: blur(4px);
   }
 }
 
@@ -1069,7 +1099,8 @@
       );
     }
   }
-  #memoryTimer {
+  #memoryTimer,
+  #layoutfluidTimer {
     background: var(--main-color);
     color: var(--bg-color);
     padding: 1rem;
@@ -1082,6 +1113,7 @@
     position: absolute;
     transform: translateX(-50%);
     top: -6rem;
+    -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
     opacity: 0;
@@ -1092,6 +1124,7 @@
     line-height: 150px;
     z-index: 999;
     position: relative;
+    -webkit-user-select: none;
     user-select: none;
     pointer-events: none;
   }
@@ -1104,6 +1137,7 @@
     margin-bottom: 0.5rem;
     transition: 0.125s;
     justify-content: center;
+    -webkit-user-select: none;
     user-select: none;
 
     .textButton {

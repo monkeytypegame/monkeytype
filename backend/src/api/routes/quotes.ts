@@ -41,8 +41,14 @@ router.post(
     body: {
       text: joi.string().min(60).required(),
       source: joi.string().required(),
-      language: joi.string().required(),
-      captcha: joi.string().required(),
+      language: joi
+        .string()
+        .regex(/^[\w+]+$/)
+        .required(),
+      captcha: joi
+        .string()
+        .regex(/[\w-_]+/)
+        .required(),
     },
     validationErrorMessage: "Please fill all the fields",
   }),
@@ -85,7 +91,10 @@ router.get(
   validateRequest({
     query: {
       quoteId: joi.string().regex(/^\d+$/).required(),
-      language: joi.string().required(),
+      language: joi
+        .string()
+        .regex(/^[\w+]+$/)
+        .required(),
     },
   }),
   asyncHandler(QuoteController.getRating)
@@ -99,11 +108,19 @@ router.post(
     body: {
       quoteId: joi.number().required(),
       rating: joi.number().min(1).max(5).required(),
-      language: joi.string().required(),
+      language: joi
+        .string()
+        .regex(/^[\w+]+$/)
+        .max(50)
+        .required(),
     },
   }),
   asyncHandler(QuoteController.submitRating)
 );
+
+const withCustomMessages = joi.string().messages({
+  "string.pattern.base": "Invalid parameter format",
+});
 
 router.post(
   "/report",
@@ -117,8 +134,11 @@ router.post(
   RateLimit.quoteReportSubmit,
   validateRequest({
     body: {
-      quoteId: joi.string().required(),
-      quoteLanguage: joi.string().required(),
+      quoteId: withCustomMessages.regex(/\d+/).required(),
+      quoteLanguage: withCustomMessages
+        .regex(/^[\w+]+$/)
+        .max(50)
+        .required(),
       reason: joi
         .string()
         .valid(
@@ -128,13 +148,17 @@ router.post(
           "Incorrect source"
         )
         .required(),
-      comment: joi.string().allow("").max(250).required(),
-      captcha: joi.string().required(),
+      comment: withCustomMessages
+        .allow("")
+        .regex(/^([.]|[^/<>])+$/)
+        .max(250)
+        .required(),
+      captcha: withCustomMessages.regex(/[\w-_]+/).required(),
     },
   }),
   checkUserPermissions({
     criteria: (user) => {
-      return !user.cannotReport;
+      return user.canReport !== false;
     },
   }),
   asyncHandler(QuoteController.reportQuote)

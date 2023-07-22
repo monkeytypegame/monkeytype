@@ -81,10 +81,14 @@ export function padNumbers(
   );
 }
 
+export const MILISECONDS_IN_HOUR = 3600000;
 export const MILLISECONDS_IN_DAY = 86400000;
 
-export function getStartOfDayTimestamp(timestamp: number): number {
-  return timestamp - (timestamp % MILLISECONDS_IN_DAY);
+export function getStartOfDayTimestamp(
+  timestamp: number,
+  offsetMilis = 0
+): number {
+  return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
 }
 
 export function getCurrentDayTimestamp(): number {
@@ -165,16 +169,21 @@ export function getOrdinalNumberString(number: number): string {
   return `${number}${suffix}`;
 }
 
-export function isYesterday(timestamp: number): boolean {
-  const yesterday = getStartOfDayTimestamp(Date.now() - MILLISECONDS_IN_DAY);
-  const date = getStartOfDayTimestamp(timestamp);
+export function isYesterday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const yesterday = getStartOfDayTimestamp(
+    Date.now() - MILLISECONDS_IN_DAY,
+    offsetMilis
+  );
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return yesterday === date;
 }
 
-export function isToday(timestamp: number): boolean {
-  const today = getStartOfDayTimestamp(Date.now());
-  const date = getStartOfDayTimestamp(timestamp);
+export function isToday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const today = getStartOfDayTimestamp(Date.now(), offsetMilis);
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return today === date;
 }
@@ -203,4 +212,79 @@ export function mapRange(
   }
 
   return result;
+}
+
+export function getStartOfWeekTimestamp(timestamp: number): number {
+  const date = new Date(getStartOfDayTimestamp(timestamp));
+
+  const monday = date.getDate() - (date.getDay() || 7) + 1;
+  date.setDate(monday);
+
+  return getStartOfDayTimestamp(date.getTime());
+}
+
+export function getCurrentWeekTimestamp(): number {
+  const currentTime = Date.now();
+  return getStartOfWeekTimestamp(currentTime);
+}
+
+type TimeUnit =
+  | "second"
+  | "minute"
+  | "hour"
+  | "day"
+  | "week"
+  | "month"
+  | "year";
+
+export const MINUTE_IN_SECONDS = 1 * 60;
+export const HOUR_IN_SECONDS = 1 * 60 * MINUTE_IN_SECONDS;
+export const DAY_IN_SECONDS = 1 * 24 * HOUR_IN_SECONDS;
+export const WEEK_IN_SECONDS = 1 * 7 * DAY_IN_SECONDS;
+export const MONTH_IN_SECONDS = 1 * 30.4167 * DAY_IN_SECONDS;
+export const YEAR_IN_SECONDS = 1 * 12 * MONTH_IN_SECONDS;
+
+export function formatSeconds(
+  seconds: number
+): `${number} ${TimeUnit}${"s" | ""}` {
+  let unit: TimeUnit;
+  let secondsInUnit: number;
+
+  if (seconds < MINUTE_IN_SECONDS) {
+    unit = "second";
+    secondsInUnit = 1;
+  } else if (seconds < HOUR_IN_SECONDS) {
+    unit = "minute";
+    secondsInUnit = MINUTE_IN_SECONDS;
+  } else if (seconds < DAY_IN_SECONDS) {
+    unit = "hour";
+    secondsInUnit = HOUR_IN_SECONDS;
+  } else if (seconds < WEEK_IN_SECONDS) {
+    unit = "day";
+    secondsInUnit = DAY_IN_SECONDS;
+  } else if (seconds < YEAR_IN_SECONDS) {
+    if (seconds < WEEK_IN_SECONDS * 4) {
+      unit = "week";
+      secondsInUnit = WEEK_IN_SECONDS;
+    } else {
+      unit = "month";
+      secondsInUnit = MONTH_IN_SECONDS;
+    }
+  } else {
+    unit = "year";
+    secondsInUnit = YEAR_IN_SECONDS;
+  }
+
+  const normalized = roundTo2(seconds / secondsInUnit);
+
+  return `${normalized} ${unit}${normalized > 1 ? "s" : ""}`;
+}
+
+export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
+  let t;
+  if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
+  const filtered = a.filter(function (e) {
+    return b.indexOf(e) > -1;
+  });
+  return removeDuplicates ? [...new Set(filtered)] : filtered;
 }

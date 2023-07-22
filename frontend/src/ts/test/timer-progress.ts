@@ -5,12 +5,12 @@ import * as TestWords from "./test-words";
 import * as TestInput from "./test-input";
 import * as Time from "../states/time";
 import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "../states/test-active";
+import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 export function show(): void {
-  const op = Config.showTimerProgress ? Config.timerOpacity : 0;
-  if (Config.mode != "zen" && Config.timerStyle === "bar") {
+  const op = Config.showTimerProgress ? parseFloat(Config.timerOpacity) : 0;
+  if (Config.mode !== "zen" && Config.timerStyle === "bar") {
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
         opacity: op,
@@ -28,7 +28,7 @@ export function show(): void {
         },
         125
       );
-  } else if (Config.mode == "zen" || Config.timerStyle === "mini") {
+  } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
     if (op > 0) {
       $("#miniTimerAndLiveWpm .time")
         .stop(true, true)
@@ -94,6 +94,14 @@ const miniTimerNumberElement = document.querySelector(
   "#miniTimerAndLiveWpm .time"
 );
 
+function getCurrentCount(): number {
+  if (Config.mode === "custom" && CustomText.isSectionRandom) {
+    return TestWords.words.sectionIndexList[TestWords.words.currentIndex] - 1;
+  } else {
+    return TestInput.input.history.length;
+  }
+}
+
 export function update(): void {
   const time = Time.get();
   if (
@@ -144,6 +152,8 @@ export function update(): void {
     if (Config.mode === "custom") {
       if (CustomText.isWordRandom) {
         outof = CustomText.word;
+      } else if (CustomText.isSectionRandom) {
+        outof = CustomText.section;
       } else {
         outof = CustomText.text.length;
       }
@@ -172,21 +182,21 @@ export function update(): void {
       } else {
         if (timerNumberElement !== null) {
           timerNumberElement.innerHTML =
-            "<div>" + `${TestInput.input.history.length}/${outof}` + "</div>";
+            "<div>" + `${getCurrentCount()}/${outof}` + "</div>";
         }
       }
     } else if (Config.timerStyle === "mini") {
-      if (Config.words === 0) {
+      if (outof === 0) {
         if (miniTimerNumberElement !== null) {
           miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}`;
         }
       } else {
         if (miniTimerNumberElement !== null) {
-          miniTimerNumberElement.innerHTML = `${TestInput.input.history.length}/${outof}`;
+          miniTimerNumberElement.innerHTML = `${getCurrentCount()}/${outof}`;
         }
       }
     }
-  } else if (Config.mode == "zen") {
+  } else if (Config.mode === "zen") {
     if (Config.timerStyle === "text") {
       if (timerNumberElement !== null) {
         timerNumberElement.innerHTML =
@@ -201,7 +211,7 @@ export function update(): void {
 }
 
 export function updateStyle(): void {
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   hide();
   update();
   setTimeout(() => {
@@ -211,7 +221,7 @@ export function updateStyle(): void {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "showTimerProgress") {
-    if (eventValue === true && TestActive.get()) {
+    if (eventValue === true && TestState.isActive) {
       show();
     } else {
       hide();

@@ -5,7 +5,6 @@ import Config from "../config";
 import * as DB from "../db";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
-import * as TestActive from "../states/test-active";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
@@ -87,7 +86,7 @@ export async function init(): Promise<void> {
     wpm = Math.round(wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
-  } else if (Config.paceCaret === "last" || TestState.isPaceRepeat == true) {
+  } else if (Config.paceCaret === "last" || TestState.isPaceRepeat === true) {
     wpm = TestStats.lastTestWpm;
   }
   if (wpm === undefined || wpm < 1 || Number.isNaN(wpm)) {
@@ -113,7 +112,7 @@ export async function init(): Promise<void> {
 }
 
 export function update(expectedStepEnd: number): void {
-  if (settings === null || !TestActive.get() || TestUI.resultVisible) {
+  if (settings === null || !TestState.isActive || TestUI.resultVisible) {
     return;
   }
   // if ($("#paceCaret").hasClass("hidden")) {
@@ -219,7 +218,7 @@ export function update(expectedStepEnd: number): void {
         top: newTop - smoothlinescroll,
       });
 
-      if (Config.smoothCaret) {
+      if (Config.smoothCaret !== "off") {
         caret.stop(true, true).animate(
           {
             left: newLeft,

@@ -1,13 +1,13 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "Documentation for the public endpoints provided by the Monketype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints with some endpoints being more strict. Rate limit rates are shared across all ape keys.",
+    "description": "Documentation for the public endpoints provided by the Monkeytype API server.\n\nNote that authentication is performed with the Authorization HTTP header in the format `Authorization: ApeKey YOUR_APE_KEY`\n\nThere is a rate limit of `30 requests per minute` across all endpoints with some endpoints being more strict. Rate limit rates are shared across all ape keys.",
     "version": "1.0.0",
     "title": "Monkeytype API",
     "termsOfService": "https://monkeytype.com/terms-of-service",
     "contact": {
-      "name": "Developer",
-      "email": "jack@monkeytype.com"
+      "name": "Support",
+      "email": "support@monkeytype.com"
     }
   },
   "basePath": "api.monkeytype.com/",
@@ -72,6 +72,20 @@
         }
       }
     },
+    "/users/tags": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's tags data",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Tags"
+            }
+          }
+        }
+      }
+    },
     "/users/:uid/profile": {
       "get": {
         "tags": ["users"],
@@ -98,7 +112,16 @@
     "/results": {
       "get": {
         "tags": ["results"],
-        "summary": "Gets up to 1000 of the most recent results (endpoint limited to 1 request per hour)",
+        "summary": "Gets up to 1000 results (endpoint limited to 1 request per hour)",
+        "parameters": [
+          {
+            "name": "onOrAfterTimestamp",
+            "in": "query",
+            "description": "Get results on or after a Unix timestamp in milliseconds. Must be no earlier than Thu May 14 2020 04:00:00 GMT+0000 (i.e., 1670454228000). If omitted, defaults to the most recent results.",
+            "required": false,
+            "type": "number"
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -445,6 +468,85 @@
           "type": "number",
           "format": "double",
           "example": 3941.6
+        }
+      }
+    },
+    "Tags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "63fde8d39312642481070f5d"
+          },
+          "name": {
+            "type": "string",
+            "example": "example_tag"
+          },
+          "personalBests": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "object",
+                "properties": {
+                  "15": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "30": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "60": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "120": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  }
+                }
+              },
+              "words": {
+                "type": "object",
+                "properties": {
+                  "10": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "25": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "50": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "100": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

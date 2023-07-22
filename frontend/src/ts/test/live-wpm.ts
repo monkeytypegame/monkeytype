@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 const liveWpmElement = document.querySelector("#liveWpm") as Element;
@@ -8,11 +8,6 @@ const miniLiveWpmElement = document.querySelector(
 ) as Element;
 
 export function update(wpm: number, raw: number): void {
-  // if (!TestActive.get() || !Config.showLiveWpm) {
-  //   hideLiveWpm();
-  // } else {
-  //   showLiveWpm();
-  // }
   let number = wpm;
   if (Config.blindMode) {
     number = raw;
@@ -26,10 +21,10 @@ export function update(wpm: number, raw: number): void {
 
 export function show(): void {
   if (!Config.showLiveWpm) return;
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
   if (Config.timerStyle === "mini") {
-    if (!$("#miniTimerAndLiveWpm .wpm").hasClass("hidden")) return;
-    $("#miniTimerAndLiveWpm .wpm")
+    if (!miniLiveWpmElement.classList.contains("hidden")) return;
+    $(miniLiveWpmElement)
       .stop(true, true)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -40,8 +35,8 @@ export function show(): void {
         125
       );
   } else {
-    if (!$("#liveWpm").hasClass("hidden")) return;
-    $("#liveWpm")
+    if (!liveWpmElement.classList.contains("hidden")) return;
+    $(liveWpmElement)
       .stop(true, true)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -55,7 +50,7 @@ export function show(): void {
 }
 
 export function hide(): void {
-  $("#liveWpm")
+  $(liveWpmElement)
     .stop(true, true)
     .animate(
       {
@@ -63,10 +58,10 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#liveWpm").addClass("hidden");
+        liveWpmElement.classList.add("hidden");
       }
     );
-  $("#miniTimerAndLiveWpm .wpm")
+  $(miniLiveWpmElement)
     .stop(true, true)
     .animate(
       {
@@ -74,7 +69,7 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#miniTimerAndLiveWpm .wpm").addClass("hidden");
+        miniLiveWpmElement.classList.add("hidden");
       }
     );
 }

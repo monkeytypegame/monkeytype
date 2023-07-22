@@ -15,7 +15,8 @@ import Konami from "konami";
 ManualRestart.set();
 UpdateConfig.loadFromLocalStorage();
 
-if (window.location.hostname === "localhost") {
+if (Misc.isLocalhost()) {
+  $("head title").text("localhost");
   $("#bottom .version .text").text("localhost");
   $("#bottom #versionGroup").removeClass("hidden");
   $("body").prepend(
@@ -31,23 +32,27 @@ if (window.location.hostname === "localhost") {
 
 Focus.set(true, true);
 $(document).ready(() => {
+  Misc.loadCSS("/./css/select2.min.css", true);
+  Misc.loadCSS("/./css/balloon.min.css", true);
+  Misc.loadCSS("/./css/fa.min.css", true);
+
   CookiePopup.check();
   $("body").css("transition", "all .25s, transform .05s");
   if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
     $("#restartTestButton").addClass("hidden");
   }
-  // if (!window.localStorage.getItem("merchbannerclosed")) {
-  //   Notifications.addBanner(
-  //     `Check out our merchandise, available at <a target="_blank" href="https://monkeytype.store/">monkeytype.store</a>`,
-  //     1,
-  //     "images/merchdropwebsite2.png",
-  //     false,
-  //     () => {
-  //       window.localStorage.setItem("merchbannerclosed", "true");
-  //     },
-  //     true
-  //   );
-  // }
+  if (!window.localStorage.getItem("merchbannerclosed")) {
+    Notifications.addBanner(
+      `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
+      1,
+      "./images/merch2.png",
+      false,
+      () => {
+        window.localStorage.setItem("merchbannerclosed", "true");
+      },
+      true
+    );
+  }
 
   // if (!window.localStorage.getItem("merchbannerclosed2")) {
   //   Notifications.addBanner(
@@ -61,19 +66,6 @@ $(document).ready(() => {
   //     true
   //   );
   // }
-
-  if (!window.localStorage.getItem("merchbannerclosed3")) {
-    Notifications.addBanner(
-      `Limited Monkey Things merch - <a target="_blank" href="https://www.monkeytype.store/listing/monkey-things?product=387/">monkeytype.store</a>`,
-      1,
-      "images/monkeythings2.png",
-      false,
-      () => {
-        window.localStorage.setItem("merchbannerclosed3", "true");
-      },
-      true
-    );
-  }
 
   $("#centerContent")
     .css("opacity", "0")
@@ -90,7 +82,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     // disabling service workers on localhost - they dont really work well with local development
     // and cause issues with hot reloading
-    if (window.location.hostname === "localhost") {
+    if (Misc.isLocalhost()) {
       navigator.serviceWorker.getRegistrations().then(function (registrations) {
         for (const registration of registrations) {
           // if (registration.scope !== "https://monkeytype.com/")
@@ -112,12 +104,12 @@ if ("serviceWorker" in navigator) {
             (event.isUpdate || event2.isUpdate) &&
             updateBannerId === undefined
           ) {
-            updateBannerId = Notifications.addBanner(
-              "Update ready - please refresh",
-              1,
-              "gift",
-              true
-            );
+            // updateBannerId = Notifications.addBanner(
+            //   "Update ready - please refresh",
+            //   1,
+            //   "gift",
+            //   true
+            // );
           }
         });
 

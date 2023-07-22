@@ -30,6 +30,10 @@ declare namespace MonkeyTypes {
     };
     users: {
       signUp: boolean;
+      lastHashesCheck: {
+        enabled: boolean;
+        maxHashes: number;
+      };
       autoBan: {
         enabled: boolean;
         maxCount: number;
@@ -43,6 +47,7 @@ declare namespace MonkeyTypes {
       };
       xp: {
         enabled: boolean;
+        funboxBonus: number;
         gainMultiplier: number;
         maxDailyBonus: number;
         minDailyBonus: number;
@@ -56,6 +61,9 @@ declare namespace MonkeyTypes {
         enabled: boolean;
         maxMail: number;
       };
+    };
+    admin: {
+      endpointsEnabled: boolean;
     };
     apeKeys: {
       endpointsEnabled: boolean;
@@ -76,9 +84,16 @@ declare namespace MonkeyTypes {
       leaderboardExpirationTimeInDays: number;
       maxResults: number;
       validModeRules: ValidModeRule[];
-      dailyLeaderboardCacheSize: number;
+      scheduleRewardsModeRules: ValidModeRule[];
       topResultsToAnnounce: number;
       xpRewardBrackets: RewardBracket[];
+    };
+    leaderboards: {
+      weeklyXp: {
+        enabled: boolean;
+        expirationTimeInDays: number;
+        xpRewardBrackets: RewardBracket[];
+      };
     };
   }
 
@@ -155,14 +170,16 @@ declare namespace MonkeyTypes {
     lbPersonalBests?: LbPersonalBests;
     name: string;
     customThemes?: CustomTheme[];
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
     quoteRatings?: UserQuoteRatings;
     startedTests?: number;
     tags?: UserTag[];
     timeTyping?: number;
     uid: string;
     quoteMod?: boolean;
-    cannotReport?: boolean;
+    configurationMod?: boolean;
+    admin?: boolean;
+    canReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
     favoriteQuotes?: Record<string, string[]>;
@@ -174,12 +191,15 @@ declare namespace MonkeyTypes {
     xp?: number;
     inbox?: MonkeyMail[];
     streak?: UserStreak;
+    lastReultHashes?: string[];
+    lbOptOut?: boolean;
   }
 
   interface UserStreak {
     lastResultTimestamp: number;
     length: number;
     maxLength: number;
+    hourOffset?: number;
   }
 
   interface UserInventory {
@@ -266,7 +286,7 @@ declare namespace MonkeyTypes {
   interface UserTag {
     _id: ObjectId;
     name: string;
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
   }
 
   interface LeaderboardEntry {
@@ -315,9 +335,11 @@ declare namespace MonkeyTypes {
     approved: boolean;
   }
 
-  type Mode = "time" | "words" | "quote" | "zen" | "custom";
+  type Mode = keyof PersonalBests;
 
   type Mode2<M extends Mode> = keyof PersonalBests[M];
+
+  type StringNumber = `${number}`;
 
   type Difficulty = "normal" | "expert" | "master";
 
@@ -334,24 +356,17 @@ declare namespace MonkeyTypes {
   }
 
   interface PersonalBests {
-    time: {
-      [key: number]: PersonalBest[];
-    };
-    words: {
-      [key: number]: PersonalBest[];
-    };
-    quote: { [quote: string]: PersonalBest[] };
-    custom: { custom?: PersonalBest[] };
-    zen: {
-      zen?: PersonalBest[];
-    };
+    time: Record<StringNumber, PersonalBest[]>;
+    words: Record<StringNumber, PersonalBest[]>;
+    quote: Record<StringNumber, PersonalBest[]>;
+    custom: Partial<Record<"custom", PersonalBest[]>>;
+    zen: Partial<Record<"zen", PersonalBest[]>>;
   }
 
   interface ChartData {
     wpm: number[];
     raw: number[];
     err: number[];
-    unsmoothedRaw?: number[];
   }
 
   interface KeyStats {
@@ -404,7 +419,6 @@ declare namespace MonkeyTypes {
     keySpacing: number[] | "toolong";
     keyDuration: number[] | "toolong";
     customText: MonkeyTypes.CustomText;
-    smoothConsistency: number;
     wpmConsistency: number;
     lang: string;
     challenge?: string | null;
@@ -426,7 +440,7 @@ declare namespace MonkeyTypes {
     level?: number;
   }
 
-  type ReportTypes = "quote";
+  type ReportTypes = "quote" | "user";
 
   interface Report {
     _id: ObjectId;
@@ -460,5 +474,14 @@ declare namespace MonkeyTypes {
     quoteId: number;
     ratings: number;
     totalRating: number;
+  }
+
+  interface FunboxMetadata {
+    name: string;
+    canGetPb: boolean;
+    difficultyLevel: number;
+    properties?: string[];
+    frontendForcedConfig?: Record<string, string[] | boolean[]>;
+    frontendFunctions?: string[];
   }
 }

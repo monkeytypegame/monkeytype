@@ -1,7 +1,4 @@
-import {
-  initializeDailyLeaderboardsCache,
-  getDailyLeaderboard,
-} from "../../src/utils/daily-leaderboards";
+import { getDailyLeaderboard } from "../../src/utils/daily-leaderboards";
 
 const dailyLeaderboardsConfig = {
   enabled: true,
@@ -19,17 +16,13 @@ const dailyLeaderboardsConfig = {
       mode2: "\\d+",
     },
   ],
-  dailyLeaderboardCacheSize: 3,
   topResultsToAnnounce: 3,
-  maxXpReward: 0,
-  minXpReward: 0,
   xpRewardBrackets: [],
+  scheduleRewardsModeRules: [],
 };
 
 describe("Daily Leaderboards", () => {
   it("should properly handle valid and invalid modes", () => {
-    initializeDailyLeaderboardsCache(dailyLeaderboardsConfig);
-
     const modeCases = [
       {
         case: {

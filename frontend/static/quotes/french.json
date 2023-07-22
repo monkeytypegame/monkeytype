@@ -68,9 +68,9 @@
       "id": 10
     },
     {
-      "text": "Je suis discrète, mon père m'a dit de ne pas faire de vague. Ma religion, un phare guidant mes pas depuis qu'j'ai mis les voiles. C'est drôle qu'il me surveille mais qu'il fasse tout pour me donner une leçon en m'empêchant d'aller en cours.",
+      "text": "Je suis discrète, mon père m'a dit de ne pas faire de vague. Ma religion, un phare guidant mes pas depuis que j'ai mis les voiles. C'est drôle qu'il me surveille mais qu'il fasse tout pour me donner une leçon en m'empêchant d'aller en cours.",
       "source": "Bigflo et Oli - Je suis",
-      "length": 240,
+      "length": 241,
       "id": 11
     },
     {
@@ -98,9 +98,9 @@
       "id": 15
     },
     {
-      "text": "J'ai jamais eu les pieds sur Terre. J'aimerais mieux être un oiseau. J'suis mal dans ma peau. J'voudrais voir le monde à l'envers. Si jamais c'était plus beau, plus beau vu d'en haut. D'en haut.",
+      "text": "J'ai jamais eu les pieds sur Terre. J'aimerais mieux être un oiseau. Je suis mal dans ma peau. Je voudrais voir le monde à l'envers. Si jamais c'était plus beau, plus beau vu d'en haut. D'en haut.",
       "source": "Daniel Balavoine, S.O.S. d'un terrien en détresse.",
-      "length": 194,
+      "length": 196,
       "id": 16
     },
     {
@@ -224,9 +224,9 @@
       "id": 36
     },
     {
-      "text": "Le meilleur des livres est celui qui ne se contente pas de me procurer un plaisir en venant satisfaire mon attente : au contraire, il la surprend, la dépasse, me tire hors de mon état initial ; et c'est en me dépassant, à sa lecture, que je m'approche de ce que je suis, de ce que je pense, ressens et vis. Par son ouvrage, l'auteur ne m'offre pas qu'un divertissement : il augmente en moi ma propre liberté --- il m'augmente de moi-même, pourrait-on dire. C'est d'ailleurs là le principe même de son autorité : l'auctor est celui dont le propre est d'augere, d'\"augmenter\". Ce que l'auteur fait croître en moi, ce n'est pas seulement un contenu de savoir, une quantité de culture, un capital à entretenir, mais l'être même que je suis.",
+      "text": "Le meilleur des livres est celui qui ne se contente pas de me procurer un plaisir en venant satisfaire mon attente : au contraire, il la surprend, la dépasse, me tire hors de mon état initial ; et c'est en me dépassant, à sa lecture, que je m'approche de ce que je suis, de ce que je pense, ressens et vis. Par son ouvrage, l'auteur ne m'offre pas qu'un divertissement : il augmente en moi ma propre liberté --- il m'augmente de moi-même, pourrait-on dire. C'est d'ailleurs là le principe même de son autorité : l'auctor est celui dont le propre est d'augere, d\"augmenter\". Ce que l'auteur fait croître en moi, ce n'est pas seulement un contenu de savoir, une quantité de culture, un capital à entretenir, mais l'être même que je suis.",
       "source": "François-Xavier Bellamy - Les Déshérités",
-      "length": 736,
+      "length": 735,
       "id": 37
     },
     {
@@ -572,7 +572,7 @@
       "id": 94
     },
     {
-      "text": "Je doute que la Révolution ait, dans les grandes lignes, changé la Russie en quoi que ce soit. En lisant Gogol, ou même Dostoïevski, on se rend compte à quel point le régime soviétique est revenu à la vieille Russie, voire l'a revigorée. Il y a certainement beaucoup plus de Gogol et Dostoievski que de Marx dans le régime soviétique.",
+      "text": "Je doute que la Révolution ait, dans les grandes lignes, changé la Russie en quoi que ce soit. En lisant Gogol, ou même Dostoïevski, on se rend compte à quel point le régime soviétique est revenu à la vieille Russie, voire l'a revigorée. Il y a certainement beaucoup plus de Gogol et Dostoïevski que de Marx dans le régime soviétique.",
       "source": "Malcolm Muggeridge - Like It was",
       "length": 334,
       "id": 95
@@ -602,7 +602,7 @@
       "id": 99
     },
     {
-      "text": "Ce n'est donc pas, comme on me l'a reproché, pour le plaisir puéril de chercher une forme inusitée en littérature, encore moins pour ressusciter d'anciens tours de langage et des expressions vieillies que tout le monde entend et connaît de reste, que je vais m'astreindre au petit travail de conserver au récit d'Étienne Depardieu la couleur qui lui est propre. C'est parce qu'il m'est impossible de le faire parler comme nous, sans dénaturer les opérations auxquelles se livrait son esprit, en s'expliquant sur des points qui ne lui étaient pas familiers, mais où il portait évidemment un grand désir de comprendre et d'être compris.",
+      "text": "Ce n'est donc pas, comme on me l'a reproché, pour le plaisir puéril de chercher une forme inusitée en littérature, encore moins pour ressusciter d'anciens tours de langage et des expressions vieillies que tout le monde entend et connaît de reste, que je vais m'astreindre au petit travail de conserver au récit d'Etienne Depardieu la couleur qui lui est propre. C'est parce qu'il m'est impossible de le faire parler comme nous, sans dénaturer les opérations auxquelles se livrait son esprit, en s'expliquant sur des points qui ne lui étaient pas familiers, mais où il portait évidemment un grand désir de comprendre et d'être compris.",
       "source": "George Sand - Les Maîtres sonneurs",
       "length": 634,
       "id": 100
@@ -704,13 +704,13 @@
       "id": 116
     },
     {
-      "text": "Tu es assis et tu ne veux qu'attendre, attendre seulement jusqu'à ce qu'il n'y ait plus rien à attendre: que vienne la nuit, que sonnent les heures, que les jours s'en aillent, que les souvenirs s'estompent.",
+      "text": "Tu es assis et tu ne veux qu'attendre, attendre seulement jusqu'à ce qu'il n'y ait plus rien à attendre : que vienne la nuit, que sonnent les heures, que les jours s'en aillent, que les souvenirs s'estompent.",
       "source": "Un homme qui dort (1967) de Georges Perec",
-      "length": 207,
+      "length": 208,
       "id": 117
     },
     {
-      "text": "Les plantes par exemple, qui n'ont pas de mains, et pas d'oreilles,elles sentent les choses, les vibrations , elles sont plus aware que les autres species.",
+      "text": "Les plantes par exemple, qui n'ont pas de mains, et pas d'oreilles, elles sentent les choses, les vibrations, elles sont plus aware que les autres species.",
       "source": "Citations cultes de JCVD de Jean-Claude Van Damme",
       "length": 155,
       "id": 118
@@ -722,9 +722,9 @@
       "id": 119
     },
     {
-      "text": "Ta chambre est la plus belle des iles désertes, et Paris est un désert que nul n’a jamais traversé. Tu n’as besoin de rien d’autre que de ce calme, de ce sommeil, que de ce silence, que de cette torpeur. Que les jours commencent et que les jours finissent, que le temps s’écoule, que ta bouche se ferme, que les muscles de ta nuque, de ta machoire, de ton menton, se relachent tout à fait, que seuls les soulèvements de ta cage thoracique, les battements de ton cœur témoignent encore de ta patiente survie.",
+      "text": "Ta chambre est la plus belle des iles désertes, et Paris est un désert que nul n’a jamais traversé. Tu n’as besoin de rien d’autre que de ce calme, de ce sommeil, que de ce silence, que de cette torpeur. Que les jours commencent et que les jours finissent, que le temps s’écoule, que ta bouche se ferme, que les muscles de ta nuque, de ta machoire, de ton menton, se relachent tout à fait, que seuls les soulèvements de ta cage thoracique, les battements de ton coeur témoignent encore de ta patiente survie.",
       "source": "Un homme qui dort de Georges Perec",
-      "length": 507,
+      "length": 508,
       "id": 120
     },
     {
@@ -734,9 +734,9 @@
       "id": 121
     },
     {
-      "text": "Tu as tout à apprendre, tout ce qui ne s'apprend pas: la solitude, l'indifférence, la patience, le silence.",
+      "text": "Tu as tout à apprendre, tout ce qui ne s'apprend pas : la solitude, l'indifférence, la patience, le silence.",
       "source": "Un homme qui dort de Georges Perec",
-      "length": 107,
+      "length": 108,
       "id": 122
     },
     {
@@ -746,9 +746,9 @@
       "id": 123
     },
     {
-      "text": "Même quand je marcherais par la vallée de l'ombre de la mort, je ne craindrai aucun mal; car tu es avec moi: ta houlette et ton bâton, ce sont eux qui me consolent.",
+      "text": "Même quand je marcherais par la vallée de l'ombre de la mort, je ne craindrai aucun mal; car tu es avec moi : ta houlette et ton bâton, ce sont eux qui me consolent.",
       "source": "Psaume 23:4 Bible Darby",
-      "length": 164,
+      "length": 165,
       "id": 124
     },
     {
@@ -786,6 +786,114 @@
       "source": "Dictionnaire français-rosse de Noctuel",
       "length": 120,
       "id": 130
+    },
+    {
+      "text": "Mais, vous savez, moi je ne crois pas qu’il y ait de bonne ou de mauvaise situation. Moi, si je devais résumer ma vie aujourd’hui avec vous, je dirais que c’est d’abord des rencontres, des gens qui m’ont tendu la main, peut-être à un moment où je ne pouvais pas, où j’étais seul chez moi. Et c’est assez curieux de se dire que les hasards, les rencontres forgent une destinée. Parce que quand on a le goût de la chose, quand on a le goût de la chose bien faite, le beau geste, parfois on ne trouve pas l’interlocuteur en face, je dirais, le miroir qui vous aide à avancer. Alors ce n’est pas mon cas, comme je le disais là, puisque moi au contraire, j’ai pu ; et je dis merci à la vie, je lui dis merci, je chante la vie, je danse la vie. Je ne suis qu’amour ! Et finalement, quand beaucoup de gens aujourd’hui me disent : \"Mais comment fais-tu pour avoir cette humanité ?\" Eh bien je leur réponds très simplement, je leur dis que c’est ce goût de l’amour, ce goût donc qui m’a poussé aujourd’hui à entreprendre une construction mécanique, mais demain, qui sait, peut-être simplement à me mettre au service de la communauté, à faire le don, le don de soi.",
+      "source": "Otis - Astérix et Obélix : Mission Cléopâtre",
+      "length": 1155,
+      "id": 131
+    },
+    {
+      "text": "On refuse d'admettre le fait-même de la diversité culturelle; on préfère rejeter hors de la culture, dans la nature, tout ce qui ne se conforme pas à la norme sous laquelle on vit.",
+      "source": "Claude Lévi-Strauss (1908-2009)",
+      "length": 180,
+      "id": 132
+    },
+    {
+      "text": "Pour atteindre la vérité, il faut une fois dans la vie se défaire de toutes les opinions qu'on a reçues, et reconstruire de nouveau tout le système de ses connaissances.",
+      "source": "René Descartes (1596-1650)",
+      "length": 169,
+      "id": 133
+    },
+    {
+      "text": "Je n'aurais jamais dû tenter une telle expérience. Les personnages nés de notre imagination portent en eux toutes nos facettes, les plus claires comme les plus sombres. Tous nos désirs de vie, d'amour, de justice... mais aussi d'orgueil, de bêtise, de meurtre. Je ne veux plus me retrouver face à ceux que j'ai créés. L'angoisse de la page blanche est mille fois préférable au miroir que ces êtres nous tendent.",
+      "source": "Quête Impossible de Ann Rocard",
+      "length": 411,
+      "id": 134
+    },
+    {
+      "text": "Et quand je prends ce que l'on appelle le mic', je marque, autant de points qu'il y a de zéros dans les sapes de marque. Animal animé d'âme, de luminosité, c'est sans nervosité que j'ai clamé moins d'animosité.",
+      "source": "MC Solaar - La La La, La",
+      "length": 210,
+      "id": 135
+    },
+    {
+      "text": "J’ai gâché des péloches, Avenue Foch, c’est moche, loupé le coche deux mioches, sur une roche, main dans les poches.",
+      "source": "MC Solaar - Zoom",
+      "length": 116,
+      "id": 136
+    },
+    {
+      "text": "Ce jour là, l'idée d'aller à l'école déprimait considérablement Punpun. La raison en était simple : sa camarade, et petite vedette de la classe, Miyo s'en allait dans une autre école.",
+      "source": "Bonne nuit Punpun de Inio Asano",
+      "length": 183,
+      "id": 137
+    },
+    {
+      "text": "Qu'est-ce que la mort ? disait le pantin Ole Jensen, en contemplant le ciel. Rien qu'un manque de talent.",
+      "source": "Les mangeurs d'étoiles de Romain Gary",
+      "length": 105,
+      "id": 138
+    },
+    {
+      "text": "C'est propre, la tragédie. C'est reposant, c'est sûr... Dans le drame, avec ces traîtres, avec ces méchants acharnés, cette innocence persécutée, ces vengeurs, ces terre-neuve, ces lueurs d'espoir, cela devient épouvantable de mourir, comme un accident. On aurait peut-être pu se sauver, le bon jeune homme aurait peut-être pu arriver à temps avec les gendarmes. Dans la tragédie, on est tranquille. D'abord, on est entre soi. On est tous innocents, en somme !",
+      "source": "Antigone - Jean Anouilh",
+      "length": 460,
+      "id": 139
+    },
+    {
+      "text": "Et voilà. Maintenant, le ressort est bandé. Cela n'a plus qu'à se dérouler tout seul. C'est cela qui est commode dans la tragédie. On donne le petit coup de pouce pour que cela démarre, rien, un regard pendant une seconde à une fille qui passe et lève les bras dans la rue, une envie d'honneur un beau matin, au réveil, comme de quelque chose qui se mange, une question de trop que l'on se pose un soir... C'est tout. Après, on n'a plus qu'à laisser faire. On est tranquille. Cela roule tout seul. C'est minutieux, bien huilé depuis toujours.",
+      "source": "Antigone - Jean Anouilh",
+      "length": 542,
+      "id": 140
+    },
+    {
+      "text": "La mort, la trahison, le désespoir sont là, tout prêts, et les éclats, et les orages, et les silences, tous les silences : le silence quand le bras du bourreau se lève à la fin, le silence au commencement quand les deux amants sont nus l'un en face de l'autre pour la première fois, sans oser bouger tout de suite, dans la chambre sombre, le silence quand les cris de la foule éclatent autour du vainqueur — et on dirait un film dont le son s'est enrayé, toutes ces bouches ouvertes dont il ne sort rien, toute cette clameur qui n'est qu'une image, et le vainqueur, déjà vaincu, seul au milieu de son silence...",
+      "source": "Antigone - Jean Anouilh",
+      "length": 611,
+      "id": 141
+    },
+    {
+      "text": "Et puis, surtout, c'est reposant, la tragédie, parce qu'on sait qu'il n'y a plus d'espoir, le sale espoir; qu'on est pris, qu'on est enfin pris comme un rat, avec tout le ciel sur son dos, et qu'on n'a plus qu'à crier, — pas à gémir, non, pas à se plaindre, —  à gueuler à pleine voix ce qu'on avait à dire, qu'on n'avait jamais dit et qu'on ne savait peut-être même pas encore. Et pour rien : pour se le dire à soi, pour l'apprendre, soi. Dans le drame, on se débat parce qu'on espère en sortir. C'est ignoble, c'est utilitaire. Là, c'est gratuit. C'est pour les rois. Et il n'y a plus rien à tenter, enfin !",
+      "source": "Antigone - Jean Anouilh",
+      "length": 609,
+      "id": 142
+    },
+    {
+      "text": "L'orchestre attaquait une nouvelle danse, Ismène riait aux éclats, là-bas, au milieu des autres garçons, et voilà, maintenant, lui, il allait être le mari d'Antigone. Il ne savait pas qu'il ne devait jamais exister de mari d'Antigone sur cette terre et que ce titre princier lui donnait seulement le droit de mourir.",
+      "source": "Antigone - Jean Anouilh",
+      "length": 316,
+      "id": 143
+    },
+    {
+      "text": "Tu y crois donc vraiment, toi, à cet enterrement dans les règles ? A cette ombre de ton frère condamnée à errer toujours si on ne jette pas sur le cadavre un petit peu de terre avec la formule du prêtre ? Tu leur a déjà entendu la réciter, aux prêtres de Thèbes, la formule ? Tu as vu ces pauvres têtes d'employés fatigués écourtant les gestes, avalant les mots, bâclant ce mort pour en prendre un autre avant le repas de midi ?",
+      "source": "Antigone - Jean Anouilh",
+      "length": 428,
+      "id": 144
+    },
+    {
+      "text": "Vous me dégoûtez tous avec votre bonheur ! Avec votre vie qu’il faut aimer coûte que coûte. On dirait des chiens qui lèchent tout ce qu’ils trouvent. Et cette petite chance pour tous les jours, si on n’est pas trop exigeant. Moi, je veux tout, tout de suite, – et que ce soit entier,- ou alors je refuse !",
+      "source": "Antigone - Jean Anouilh",
+      "length": 305,
+      "id": 145
+    },
+    {
+      "text": "Pour dire oui, il faut suer et retrousser ses manches, empoigner la vie à pleines mains et s’en mettre jusqu’aux coudes. C’est facile de dire non, même si on doit mourir, Il n’y a qu’à ne pas bouger et attendre. Attendre pour vivre, attendre même pour qu’on vous tue. C’est trop lâche. C’est une invention des hommes. Tu imagines un monde où les arbres aussi auraient dit non contre la sève, où les bêtes auraient dit non contre l’instinct de la chasse ou de l’amour ? Les bêtes, elles au moins, sont bonnes et simples et dures. Elles vont, se poussant les unes après les autres, courageusement, sur le même chemin, et si elles tombent, les autres passent et il peut s’en perdre autant que l’on veut, il en restera toujours une de chaque espèce prête à refaire des petits et à reprendre le même chemin avec le même courage, toute pareille à celles qui sont passées avant.",
+      "source": "Antigone - Jean Anouilh",
+      "length": 871,
+      "id": 146
+    },
+    {
+      "text": "Quel sera-t-il mon bonheur ? Quelle femme heureuse deviendra-t-elle, la petite Antigone ? Quelles pauvretés faudra-t-elle qu'elle fasse elle aussi, jour par jour, pour arracher avec ses dents son petit lambeau de bonheur ? Dites, à qui devra-t-elle mentir, à qui sourire, à qui se vendre ? Qui devra-t-elle laisser mourir en détournant le regard ?",
+      "source": "Antigone - Jean Anouilh",
+      "length": 347,
+      "id": 147
+    },
+    {
+      "text": "Et voilà. Sans la petite Antigone, c’est vrai, ils auraient tous été bien tranquilles. Mais maintenant, c'est fini. Ils sont tout de même tranquilles. Tous ceux qui avaient à mourir sont morts. Ceux qui croyaient une chose, et puis ceux qui croyaient le contraire - même ceux qui ne croyaient rien et qui se sont retrouvés dans l'histoire sans rien y comprendre. Morts pareils, tout, bien raides, bien inutiles, bien pourris. Et ceux qui vivent encore vont commencer tout doucement à les oublier et à confondre leurs noms. C'est fini. Antigone est calmée maintenant, nous ne saurons jamais de quelle fièvre. Son devoir lui est remis. Un grand apaisement triste tombe sur Thèbes et sur le palais vide où Créon va commencer à attendre la mort...",
+      "source": "Antigone - Jean Anouilh",
+      "length": 743,
+      "id": 148
     }
   ]
 }

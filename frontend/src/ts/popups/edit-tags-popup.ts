@@ -1,17 +1,23 @@
 import Ape from "../ape";
-import * as ResultFilters from "../account/result-filters";
 import * as DB from "../db";
 import * as Notifications from "../elements/notifications";
 import * as Loader from "../elements/loader";
 import * as Settings from "../pages/settings";
-import * as ResultTagsPopup from "./result-tags-popup";
 import * as ConnectionState from "../states/connection";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "tagsWrapper";
 
 export function show(action: string, id?: string, name?: string): void {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
+
+  Skeleton.append(wrapperId);
 
   if (action === "add") {
     $("#tagsWrapper #tagsEdit").attr("action", "add");
@@ -40,12 +46,12 @@ export function show(action: string, id?: string, name?: string): void {
     $("#tagsWrapper #tagsEdit input").addClass("hidden");
   }
 
-  if ($("#tagsWrapper").hasClass("hidden")) {
+  if (!isPopupVisible(wrapperId)) {
     $("#tagsWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         console.log("focusing");
         $("#tagsWrapper #tagsEdit input").trigger("focus");
       });
@@ -53,7 +59,7 @@ export function show(action: string, id?: string, name?: string): void {
 }
 
 function hide(): void {
-  if (!$("#tagsWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#tagsWrapper #tagsEdit").attr("action", "");
     $("#tagsWrapper #tagsEdit").attr("tagid", "");
     $("#tagsWrapper")
@@ -63,9 +69,10 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#tagsWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -94,10 +101,15 @@ async function apply(): Promise<void> {
         display: propTagName,
         name: response.data.name,
         _id: response.data._id,
+        personalBests: {
+          time: {},
+          words: {},
+          quote: {},
+          zen: {},
+          custom: {},
+        },
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
-      ResultFilters.updateTags();
     }
   } else if (action === "edit") {
     const response = await Ape.users.editTag(tagId, tagName);
@@ -112,9 +124,7 @@ async function apply(): Promise<void> {
           tag.display = propTagName;
         }
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
-      ResultFilters.updateTags();
     }
   } else if (action === "remove") {
     const response = await Ape.users.deleteTag(tagId);
@@ -128,9 +138,7 @@ async function apply(): Promise<void> {
           DB.getSnapshot()?.tags?.splice(index, 1);
         }
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
-      ResultFilters.updateTags();
     }
   } else if (action === "clearPb") {
     const response = await Ape.users.deleteTagPersonalBest(tagId);
@@ -144,15 +152,13 @@ async function apply(): Promise<void> {
           tag.personalBests = {
             time: {},
             words: {},
-            custom: { custom: [] },
-            zen: { zen: [] },
-            quote: { custom: [] },
+            quote: {},
+            zen: {},
+            custom: {},
           };
         }
       });
-      ResultTagsPopup.updateButtons();
       Settings.update();
-      ResultFilters.updateTags();
     }
   }
   Loader.hide();
@@ -216,3 +222,5 @@ $(".pageSettings .section.tags").on(
     show("remove", tagid, name);
   }
 );
+
+Skeleton.save(wrapperId);

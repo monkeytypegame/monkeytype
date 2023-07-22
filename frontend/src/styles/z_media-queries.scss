@@ -1,4 +1,5 @@
-@media only screen and (max-width: 1450px) {
+//1450px
+@media only screen and (max-width: 90.625rem) {
   #leaderboardsWrapper #leaderboards {
     .mainTitle {
       font-size: 2rem;
@@ -30,7 +31,8 @@
   }
 }
 
-@media only screen and (max-width: 1330px) {
+//1330px
+@media only screen and (max-width: 83.125rem) {
   .ad.ad-v {
     display: none;
   }
@@ -46,7 +48,8 @@
   }
 }
 
-@media only screen and (max-width: 1250px) {
+//1250px
+@media only screen and (max-width: 78.125rem) {
   #leaderboardsWrapper #leaderboards {
     .tables table {
       tr td:nth-child(5) {
@@ -57,9 +60,13 @@
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
     grid-template-columns: 1fr 1fr max-content;
   }
+  // .pageSettings .section.themes .buttons {
+  //   grid-template-columns: 1fr 1fr 1fr;
+  // }
 }
 
-@media only screen and (max-width: 1050px) {
+//1050px
+@media only screen and (max-width: 65.625rem) {
   .profile .pbsWords,
   .profile .pbsTime {
     font-size: 0.8rem;
@@ -72,6 +79,9 @@
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr 1fr;
   }
+  // .pageSettings .section.themes .buttons {
+  //   grid-template-columns: 1fr 1fr;
+  // }
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
     grid-template-columns: 1fr;
   }
@@ -136,7 +146,8 @@
   }
 }
 
-@media only screen and (max-width: 1000px) {
+//1000px
+@media only screen and (max-width: 62.5rem) {
   #quoteRatePopup {
     width: 90vw !important;
   }
@@ -158,7 +169,8 @@
   }
 }
 
-@media only screen and (max-width: 900px) {
+//900px
+@media only screen and (max-width: 56.25rem) {
   #customTextPopupWrapper #customTextPopup {
     grid-template-areas:
       "topButtons topButtons topButtons"
@@ -207,6 +219,9 @@
       "leaderboards"
       "pbsTime"
       "pbsWords";
+    .details .bioAndKeyboard {
+      height: 100%; //dumb safari fix
+    }
     .details.soc {
       grid-template-columns: 1.25fr auto 1fr auto auto;
       .typingStats {
@@ -311,9 +326,15 @@
       }
     }
   }
+  .pageSettings .settingsGroup.quickNav .links {
+    grid-auto-flow: unset;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-items: center;
+  }
 }
 
-@media only screen and (max-width: 800px) {
+//800px
+@media only screen and (max-width: 50rem) {
   #testConfig {
     .spacer {
       display: none;
@@ -381,11 +402,6 @@
       }
     }
   }
-  .pageSettings .settingsGroup.quickNav .links {
-    grid-auto-flow: unset;
-    grid-template-columns: 1fr 1fr 1fr;
-    justify-items: center;
-  }
   #centerContent {
     // #top {
     //   grid-template-areas:
@@ -413,6 +429,12 @@
     grid-template-columns: 1fr;
   }
 
+  .page404 .content {
+    grid-auto-flow: row;
+    grid-template-columns: 300px;
+    gap: 1rem;
+  }
+
   .pageAbout {
     .section {
       .contributors,
@@ -435,6 +457,13 @@
     }
   }
 
+  .pageAccount {
+    .group.chart .below {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+
   .pageSettings {
     .section.themes .tabContent.customTheme {
     }
@@ -446,7 +475,8 @@
   }
 }
 
-@media only screen and (max-width: 750px) {
+//750px
+@media only screen and (max-width: 46.875rem) {
   #leaderboardsWrapper #leaderboards {
     .tables table {
       tr td:nth-child(5) {
@@ -470,7 +500,8 @@
   }
 }
 
-@media only screen and (max-width: 700px) {
+//700px
+@media only screen and (max-width: 43.75rem) {
   .pageAccount .presetFilterButtons .buttons {
     grid-template-columns: 1fr;
   }
@@ -480,10 +511,6 @@
       .emptygroup {
         display: none;
       }
-    }
-    .group.chart .below {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
     }
     .group.topFilters .buttonsAndTitle .buttons {
       display: grid;
@@ -499,6 +526,12 @@
         }
       }
     }
+    .group.estimatedWordsTyped {
+      flex-direction: column;
+      .title {
+        margin-right: unset;
+      }
+    }
   }
   .badge::after,
   .badge::before {
@@ -506,7 +539,8 @@
   }
 }
 
-@media only screen and (max-width: 650px) {
+//650px
+@media only screen and (max-width: 40.625rem) {
   #leaderboardsWrapper #leaderboards {
     width: 85vw;
     .tables .rightTableWrapper,
@@ -592,6 +626,7 @@
         grid-template-columns: 1fr 1fr 1fr;
       }
       .socials {
+        height: 100%; //dumb safari fix
         justify-content: start;
         .title {
           display: block;
@@ -622,6 +657,18 @@
 
     & > .text {
       margin-bottom: 1rem;
+    }
+
+    & .customThemeEdit {
+      .customThemeInputs {
+        grid-template-columns: 1fr 1.5fr;
+      }
+      .spacer {
+        grid-column: span 2;
+      }
+      .customThemeButtons {
+        grid-template-columns: 1fr;
+      }
     }
   }
 
@@ -655,9 +702,13 @@
   .pageSettings .section.fullWidth .buttons {
     grid-template-columns: 1fr 1fr;
   }
+  // .pageSettings .section.themes .buttons {
+  //   grid-template-columns: 1fr;
+  // }
 }
 
-@media only screen and (max-width: 600px) {
+//600px
+@media only screen and (max-width: 37.5rem) {
   .pageAbout .section .supporters,
   .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr;
@@ -705,9 +756,17 @@
   }
 }
 
-@media only screen and (max-width: 550px) {
+//550px
+@media only screen and (max-width: 34.375rem) {
   #commandLineWrapper {
     padding: 5rem 1rem;
+  }
+  .pageSettings .section.themes .customTheme.button.active,
+  .pageSettings .section.themes .theme.button.active {
+    transform: scale(1.025);
+  }
+  .pageSettings .section.themes .buttons div.theme:hover {
+    transform: scale(1.025);
   }
   .profile .pbsWords,
   .profile .pbsTime {
@@ -898,7 +957,8 @@
   }
 }
 
-@media only screen and (max-width: 450px) {
+//450px
+@media only screen and (max-width: 28.125rem) {
   #testConfig {
     display: none;
   }
@@ -917,7 +977,8 @@
   }
 }
 
-@media only screen and (max-width: 400px) {
+//400px
+@media only screen and (max-width: 25rem) {
   #top .config {
     grid-gap: 0.25rem;
     .group .buttons {
@@ -973,9 +1034,13 @@
       height: calc(50vh - 9rem);
     }
   }
+  .page404 .content {
+    grid-template-columns: 1fr;
+  }
 }
 
-@media only screen and (max-width: 350px) {
+//350px
+@media only screen and (max-width: 21.875rem) {
   .ad.ad-h-s {
     display: none;
   }
@@ -999,7 +1064,8 @@
   }
 }
 
-@media (pointer: coarse) and (max-width: 800px) {
+//800px
+@media (pointer: coarse) and (max-width: 50rem) {
   #testConfig {
     display: none;
   }

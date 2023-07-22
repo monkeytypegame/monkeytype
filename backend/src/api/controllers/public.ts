@@ -5,7 +5,11 @@ export async function getPublicSpeedHistogram(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { language, mode, mode2 } = req.query;
-  const data = await PublicDAL.getSpeedHistogram(language, mode, mode2);
+  const data = await PublicDAL.getSpeedHistogram(
+    language as string,
+    mode as string,
+    mode2 as string
+  );
   return new MonkeyResponse("Public speed histogram retrieved", data);
 }
 

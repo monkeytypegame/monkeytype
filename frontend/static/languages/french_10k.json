@@ -1,6 +1,5 @@
 {
   "name": "french_10k",
-  "leftToRight": true,
   "bcp47": "fr-FR",
   "words": [
     "a",
@@ -5207,7 +5206,7 @@
     "mettrait",
     "sangloter",
     "inventions",
-    "crépus)",
+    "crépus",
     "quilles",
     "clauses",
     "ample",

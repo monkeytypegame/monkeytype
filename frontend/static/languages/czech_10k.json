@@ -1,6 +1,5 @@
 {
   "name": "czech_10k",
-  "leftToRight": true,
   "bcp47": "cs-CZ",
   "words": [
     "být",
@@ -4298,7 +4297,6 @@
     "pódium",
     "semeno",
     "vzdělaný",
-    "tý",
     "vyrůstat",
     "poděkovat",
     "sklonit",

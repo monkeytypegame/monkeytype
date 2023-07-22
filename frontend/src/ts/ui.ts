@@ -2,11 +2,12 @@ import Config from "./config";
 import * as Caret from "./test/caret";
 import * as Notifications from "./elements/notifications";
 import * as CustomText from "./test/custom-text";
-import * as TestActive from "./states/test-active";
+import * as TestState from "./test/test-state";
 import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
+import { isLocalhost } from "./utils/misc";
 
 export function updateKeytips(): void {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
@@ -38,7 +39,7 @@ export function updateKeytips(): void {
   }
 }
 
-if (window.location.hostname === "localhost") {
+if (isLocalhost()) {
   window.onerror = function (error): void {
     Notifications.add(error.toString(), -1);
   };
@@ -46,16 +47,6 @@ if (window.location.hostname === "localhost") {
   $("head title").text($("head title").text() + " (localhost)");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
-  );
-  $(".pageSettings .discordIntegration .buttons a").attr(
-    "href",
-    "https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fverify&response_type=token&scope=identify"
-  );
-  $(
-    ".pageSettings .discordIntegration .info #discordButtonGroup #updateDiscordAvatarButton"
-  ).attr(
-    "href",
-    "https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fverify&response_type=token&scope=identify"
   );
 }
 
@@ -84,7 +75,7 @@ window.addEventListener("beforeunload", (event) => {
   ) {
     //ignore
   } else {
-    if (TestActive.get()) {
+    if (TestState.isActive) {
       event.preventDefault();
       // Chrome requires returnValue to be set.
       event.returnValue = "";
@@ -94,15 +85,24 @@ window.addEventListener("beforeunload", (event) => {
 
 const debouncedEvent = debounce(250, async () => {
   Caret.updatePosition();
-  if (
-    Config.tapeMode !== "off" &&
-    getActivePage() === "test" &&
-    !TestUI.resultVisible
-  ) {
-    TestUI.scrollTape();
+  if (getActivePage() === "test" && !TestUI.resultVisible) {
+    if (Config.tapeMode !== "off") {
+      TestUI.scrollTape();
+    } else {
+      const word =
+        document.querySelectorAll<HTMLElement>("#words .word")[
+          TestUI.currentWordElementIndex - 1
+        ];
+      if (word) {
+        const currentTop: number = Math.floor(word.offsetTop);
+        TestUI.lineJump(currentTop);
+      }
+    }
   }
   setTimeout(() => {
-    Caret.show();
+    if ($("#wordsInput").is(":focus")) {
+      Caret.show();
+    }
   }, 250);
 });
 

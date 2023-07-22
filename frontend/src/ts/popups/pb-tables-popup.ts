@@ -1,9 +1,13 @@
 import * as DB from "../db";
 import format from "date-fns/format";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
 
 interface PersonalBest extends MonkeyTypes.PersonalBest {
   mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
 }
+
+const wrapperId = "pbTablesPopupWrapper";
 
 function update(mode: MonkeyTypes.Mode): void {
   $("#pbTablesPopup table tbody").empty();
@@ -12,11 +16,9 @@ function update(mode: MonkeyTypes.Mode): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
 
-  const allmode2 = (
-    snapshot.personalBests === undefined
-      ? undefined
-      : snapshot.personalBests[mode]
-  ) as { [quote: string]: PersonalBest[] } | undefined;
+  const allmode2 = snapshot.personalBests?.[mode] as
+    | Record<string, PersonalBest[]>
+    | undefined;
 
   if (allmode2 === undefined) return;
 
@@ -72,12 +74,13 @@ function update(mode: MonkeyTypes.Mode): void {
         <td>${dateText}</td>
       </tr>
     `);
-    mode2memory = pb.mode2 as never;
+    mode2memory = pb.mode2;
   });
 }
 
 function show(mode: MonkeyTypes.Mode): void {
-  if ($("#pbTablesPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+  if (!isPopupVisible(wrapperId)) {
     update(mode);
 
     $("#pbTablesPopup .title").text(`All ${mode} personal bests`);
@@ -86,12 +89,12 @@ function show(mode: MonkeyTypes.Mode): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100);
+      .animate({ opacity: 1 }, 125);
   }
 }
 
 function hide(): void {
-  if (!$("#pbTablesPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#pbTablesPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -99,10 +102,11 @@ function hide(): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#pbTablesPopupWrapper").addClass("hidden");
           $("#pbTablesPopup table tbody").empty();
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -121,3 +125,12 @@ $(".pageAccount .profile").on("click", ".pbsTime .showAllButton", () => {
 $(".pageAccount .profile").on("click", ".pbsWords .showAllButton", () => {
   show("words");
 });
+
+$(document).on("keydown", (event) => {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
+    hide();
+    event.preventDefault();
+  }
+});
+
+Skeleton.save(wrapperId);

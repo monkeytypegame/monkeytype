@@ -1,5 +1,5 @@
 import { CronJob } from "cron";
-import * as George from "../tasks/george";
+import GeorgeQueue from "../queues/george-queue";
 import * as LeaderboardsDAL from "../dal/leaderboards";
 import { getCachedConfiguration } from "../init/configuration";
 
@@ -52,7 +52,7 @@ async function updateLeaderboardAndNotifyChanges(
   if (newRecords.length > 0) {
     const leaderboardId = `time ${leaderboardTime} english`;
 
-    await George.announceLeaderboardUpdate(newRecords, leaderboardId);
+    await GeorgeQueue.announceLeaderboardUpdate(newRecords, leaderboardId);
   }
 }
 

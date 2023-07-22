@@ -1,13 +1,18 @@
 import * as CaptchaController from "../controllers/captcha-controller";
+import { isPopupVisible } from "../utils/misc";
+import * as Skeleton from "./skeleton";
 
-let resolvePromise: (data?: string) => void;
+const wrapperId = "registerCaptchaPopupWrapper";
+
+let resolvePromise: (token?: string) => void;
 
 export let promise: Promise<string | undefined> = new Promise((resolve) => {
   resolvePromise = resolve;
 });
 
 export function show(): void {
-  if ($("#registerCaptchaPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+  if (!isPopupVisible(wrapperId)) {
     promise = new Promise((resolve) => {
       resolvePromise = resolve;
     });
@@ -15,8 +20,8 @@ export function show(): void {
     CaptchaController.render(
       $("#registerCaptchaPopup .g-recaptcha")[0],
       "register",
-      (data) => {
-        resolvePromise(data);
+      (token) => {
+        resolvePromise(token);
         hide();
       }
     );
@@ -29,7 +34,7 @@ export function show(): void {
 }
 
 export function hide(resolveToUndefined = false): void {
-  if (!$("#registerCaptchaPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     if (resolveToUndefined) resolvePromise();
     $("#registerCaptchaPopupWrapper")
       .stop(true, true)
@@ -38,9 +43,10 @@ export function hide(resolveToUndefined = false): void {
         {
           opacity: 0,
         },
-        100,
+        125,
         () => {
           $("#registerCaptchaPopupWrapper").addClass("hidden");
+          Skeleton.remove(wrapperId);
         }
       );
   }
@@ -51,3 +57,5 @@ $("#registerCaptchaPopupWrapper").on("click", (e) => {
     hide(true);
   }
 });
+
+Skeleton.save(wrapperId);

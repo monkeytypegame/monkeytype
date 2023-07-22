@@ -1,5 +1,5 @@
 import Ape from "../ape";
-import { secondsToString } from "../utils/misc";
+import { isLocalhost, secondsToString } from "../utils/misc";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import * as Alerts from "./alerts";
@@ -21,7 +21,7 @@ function setMemory(id: string): void {
 async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
   const response = await Ape.psas.get();
   if (response.status === 500) {
-    if (window.location.hostname === "localhost") {
+    if (isLocalhost()) {
       Notifications.addBanner(
         "Dev Info: Backend server not running",
         0,
@@ -59,7 +59,7 @@ async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
 export async function show(): Promise<void> {
   const latest = await getLatest();
   if (latest === null) return;
-  if (latest.length == 0) {
+  if (latest.length === 0) {
     clearMemory();
     return;
   }

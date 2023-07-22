@@ -1,6 +1,5 @@
 {
   "name": "code_lua",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "and",
@@ -24,7 +23,6 @@
     "true",
     "until",
     "while",
-
     "assert",
     "collectgarbage",
     "dofile",
@@ -47,6 +45,7 @@
     "rawset",
     "require",
     "select",
+    "self",
     "setfenv",
     "setmetatable",
     "tonumber",
@@ -54,7 +53,6 @@
     "type",
     "unpack",
     "xpcall",
-
     "bit32",
     "coroutine",
     "debug",

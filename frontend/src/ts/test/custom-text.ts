@@ -11,9 +11,16 @@ export let text = [
 ];
 export let isWordRandom = false;
 export let isTimeRandom = false;
+export let isSectionRandom = false;
 export let word = -1;
 export let time = -1;
+export let section = -1;
 export let delimiter = " ";
+export let popupTextareaState = "The quick brown fox jumps over the lazy dog";
+
+export function setPopupTextareaState(value: string): void {
+  popupTextareaState = value;
+}
 
 export function setText(txt: string[]): void {
   text = txt;
@@ -35,12 +42,20 @@ export function setIsTimeRandom(val: boolean): void {
   isTimeRandom = val;
 }
 
+export function setIsSectionRandom(val: boolean): void {
+  isSectionRandom = val;
+}
+
 export function setTime(val: number): void {
   time = val;
 }
 
 export function setWord(val: number): void {
   word = val;
+}
+
+export function setSection(val: number): void {
+  section = val;
 }
 
 export function setDelimiter(val: string): void {

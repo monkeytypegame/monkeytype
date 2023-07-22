@@ -1,6 +1,6 @@
 .pageSettings {
-  display: grid;
-  // grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
 
   .tip {
@@ -13,13 +13,14 @@
     line-height: 2rem;
     cursor: pointer;
     transition: 0.25s;
-
+    display: flex;
+    align-items: baseline;
     &:hover {
       color: var(--text-color);
     }
 
     .fas {
-      margin-left: 0.5rem;
+      margin-right: 0.5em;
 
       &.rotate {
         transform: rotate(-90deg);
@@ -45,14 +46,15 @@
     display: grid;
     // gap: .5rem;
     grid-template-areas:
-      "title title"
+      "title buttons"
       "text buttons";
     grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto 1fr;
     column-gap: 2rem;
     align-items: center;
 
     .button.danger {
-      box-shadow: 0px 0px 0px 2px var(--error-color);
+      box-shadow: 0 0 0 0.15em var(--error-color);
       color: var(--text-color);
       &:hover {
         background: var(--text-color);
@@ -128,11 +130,28 @@
     }
 
     & .customThemeEdit {
-      grid-row: 3;
+      // grid-row: 3;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      justify-items: stretch;
-      gap: 0.5rem 1rem;
+      gap: 1rem;
+      // grid-template-columns: 1fr 1fr 1fr 1fr;
+      // justify-items: stretch;
+      // gap: 0.5rem 1rem;
+
+      .customThemeInputs {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr 1fr 1.5fr;
+        gap: 1rem;
+      }
+
+      .customThemeButtons {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .inputAndButton {
+        grid-template-columns: 1fr auto;
+      }
 
       input {
         width: 100%;
@@ -143,23 +162,41 @@
         place-content: center start;
       }
 
-      & p {
-        grid-area: unset;
-        grid-column: 1 / span 4;
+      & .spacer {
+        grid-column: span 4;
       }
 
-      & .spacer {
-        grid-column: 3 / 5;
+      & .buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-column: 1/5;
+        gap: 0.5rem;
       }
     }
 
-    h1 {
+    .groupTitle {
       font-size: 1rem;
-      line-height: 1rem;
       color: var(--sub-color);
       margin: 0;
       grid-area: title;
       font-weight: 300;
+      display: flex;
+      align-items: baseline;
+      .fab,
+      .fas,
+      .far,
+      .textIcon {
+        margin-right: 0.5em;
+        margin-bottom: 0.5em;
+      }
+    }
+
+    &.themes .groupTitle {
+      .fab,
+      .fas,
+      .far {
+        margin-bottom: 0;
+      }
     }
 
     p {
@@ -172,6 +209,13 @@
       align-self: normal;
       color: var(--text-color);
       grid-area: text;
+      .red {
+        color: var(--error-color);
+      }
+    }
+
+    .inputs {
+      grid-area: buttons;
     }
 
     .buttons {
@@ -304,6 +348,9 @@
             opacity: 1;
           }
         }
+        .delButton {
+          justify-self: end;
+        }
         &:hover {
           transform: scale(1.1);
           .editButton {
@@ -320,7 +367,7 @@
       .customTheme.button,
       .theme.button {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: 1fr auto 1fr;
         .text {
           color: inherit;
         }
@@ -339,6 +386,11 @@
           }
         }
         &.active {
+          box-shadow: 0 0 0 0.2em var(--main-color);
+          transform: scale(1.1);
+          .themeBubbles {
+            opacity: 1;
+          }
           .activeIndicator {
             opacity: 1;
           }
@@ -367,11 +419,33 @@
         margin-left: 0;
         grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)) !important;
         gap: 0.5rem;
         margin-top: 0.5rem;
         .button {
           transition: transform 0.125s;
+          &:hover .themeBubbles {
+            opacity: 1;
+          }
+          .themeBubbles {
+            transition: 0.125s;
+            opacity: 0;
+            display: grid;
+            grid-auto-flow: column;
+            gap: 0.5em;
+            border-radius: 1.25em;
+            height: 1em;
+            margin-top: 0.125em;
+            width: max-content;
+            justify-self: end;
+            // background: var(--bg-color);
+            // outline: 0.25rem solid var(--bg-color);
+            .themeBubble {
+              width: 1em;
+              height: 1em;
+              border-radius: 100%;
+            }
+          }
         }
       }
     }

@@ -106,11 +106,13 @@ dep-graph.png
 
 # TypeScript
 build/
-backend/worker.*
+backend/workers
 
 #scripts
 updateContributors.js
 removeDupes.js
+content-validation.js
 
 ads.txt
 updateContributors.mjs
+copyAnticheatToDev.sh

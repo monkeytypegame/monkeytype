@@ -17,6 +17,10 @@ import { Auth } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
+import * as Skeleton from "./skeleton";
+import { isPopupVisible } from "../utils/misc";
+
+const wrapperId = "quoteSearchPopupWrapper";
 
 export let selectedId = 1;
 
@@ -24,7 +28,7 @@ export function setSelectedId(val: number): void {
   selectedId = val;
 }
 
-const searchServiceCache: Record<string, SearchService<any>> = {};
+const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
 
 function getSearchService<T>(
   language: string,
@@ -32,11 +36,12 @@ function getSearchService<T>(
   textExtractor: TextExtractor<T>
 ): SearchService<T> {
   if (language in searchServiceCache) {
-    return searchServiceCache[language];
+    return searchServiceCache[language] as unknown as SearchService<T>;
   }
 
   const newSearchService = buildSearchService<T>(data, textExtractor);
-  searchServiceCache[language] = newSearchService;
+  searchServiceCache[language] =
+    newSearchService as unknown as typeof searchServiceCache[typeof language];
 
   return newSearchService;
 }
@@ -186,7 +191,9 @@ async function updateResults(searchText: string): Promise<void> {
 }
 
 export async function show(clearText = true): Promise<void> {
-  if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
+  Skeleton.append(wrapperId);
+
+  if (!isPopupVisible(wrapperId)) {
     if (clearText) {
       $("#quoteSearchPopup input").val("");
     }
@@ -240,7 +247,7 @@ export async function show(clearText = true): Promise<void> {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
+      .animate({ opacity: 1 }, 125, () => {
         if (clearText) {
           $("#quoteSearchPopup input").trigger("focus").trigger("select");
         }
@@ -250,7 +257,7 @@ export async function show(clearText = true): Promise<void> {
 }
 
 export function hide(noAnim = false, focusWords = true): void {
-  if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
+  if (isPopupVisible(wrapperId)) {
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -258,7 +265,7 @@ export function hide(noAnim = false, focusWords = true): void {
         {
           opacity: 0,
         },
-        noAnim ? 0 : 100,
+        noAnim ? 0 : 125,
         () => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
 
@@ -266,6 +273,7 @@ export function hide(noAnim = false, focusWords = true): void {
             TestUI.focusWords();
             $("#quoteSearchPopup .quoteLengthFilter").val([]);
             $("#quoteSearchPopup .quoteLengthFilter").trigger("change");
+            Skeleton.remove(wrapperId);
           }
         }
       );
@@ -298,14 +306,14 @@ const searchForQuotes = debounce(250, (): void => {
   updateResults(searchText);
 });
 
-$("#quoteSearchPopup .searchBox").on("keyup", (e) => {
+$("#quoteSearchPopupWrapper .searchBox").on("keyup", (e) => {
   if (e.code === "Escape") return;
   searchForQuotes();
 });
 
-$("#quoteSearchPopup .quoteLengthFilter").on("change", searchForQuotes);
+$("#quoteSearchPopupWrapper .quoteLengthFilter").on("change", searchForQuotes);
 
-$("#quoteSearchPopupWrapper").on("click", (e) => {
+$("#quoteSearchPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
     hide();
   }
@@ -401,18 +409,17 @@ $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
-  if (len == -2) {
+  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
+  if (len === -2) {
     show();
   }
 });
 
 $(document).on("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    !$("#quoteSearchPopupWrapper").hasClass("hidden")
-  ) {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
     event.preventDefault();
   }
 });
+
+Skeleton.save(wrapperId);

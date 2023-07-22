@@ -4,6 +4,8 @@ import * as Profile from "../elements/profile";
 import * as PbTables from "../account/pb-tables";
 import * as Notifications from "../elements/notifications";
 import { checkIfGetParameterExists } from "../utils/misc";
+import * as UserReportPopup from "../popups/user-report-popup";
+import * as Skeleton from "../popups/skeleton";
 
 function reset(): void {
   $(".page.pageProfile .preloader").removeClass("hidden");
@@ -63,6 +65,15 @@ function reset(): void {
         <div class="socials big hidden">
           <div class="title">socials</div>
           <div class="value">-</div>
+        </div>
+        <div class="buttonGroup">
+          <div
+            class="userReportButton button"
+            data-balloon-pos="left"
+            aria-label="Report user"
+          >
+            <i class="fas fa-flag"></i>
+          </div>
         </div>
       </div>
       <div class="leaderboardsPositions">
@@ -140,7 +151,7 @@ function reset(): void {
 
 interface UpdateOptions {
   uidOrName?: string;
-  data?: any;
+  data?: undefined | Profile.ProfileData;
 }
 
 async function update(options: UpdateOptions): Promise<void> {
@@ -170,9 +181,9 @@ async function update(options: UpdateOptions): Promise<void> {
         "Failed to load profile: " + response.message,
         -1
       );
+    } else {
+      window.history.replaceState(null, "", `/profile/${response.data.name}`);
     }
-
-    window.history.replaceState(null, "", `/profile/${response.data.name}`);
 
     Profile.update("profile", response.data);
     PbTables.update(response.data.personalBests, true);
@@ -181,7 +192,14 @@ async function update(options: UpdateOptions): Promise<void> {
   }
 }
 
-export const page = new Page(
+$(".page.pageProfile").on("click", ".profile .userReportButton", () => {
+  const uid = $(".page.pageProfile .profile").attr("uid") ?? "";
+  const name = $(".page.pageProfile .profile").attr("name") ?? "";
+
+  UserReportPopup.show({ uid, name });
+});
+
+export const page = new Page<undefined | Profile.ProfileData>(
   "profile",
   $(".page.pageProfile"),
   "/profile",
@@ -189,9 +207,11 @@ export const page = new Page(
     //
   },
   async () => {
+    Skeleton.remove("pageProfile");
     reset();
   },
   async (options) => {
+    Skeleton.append("pageProfile", "middle");
     const uidOrName = options?.params?.["uidOrName"];
     if (uidOrName) {
       $(".page.pageProfile .preloader").removeClass("hidden");
@@ -200,7 +220,7 @@ export const page = new Page(
       reset();
       update({
         uidOrName,
-        data: options?.["data"],
+        data: options?.data,
       });
     } else {
       $(".page.pageProfile .preloader").addClass("hidden");
@@ -212,3 +232,5 @@ export const page = new Page(
     //
   }
 );
+
+Skeleton.save("pageProfile");
