@@ -1,5 +1,12 @@
 [
   {
+    "name": "dark_violet",
+    "bgColor": "#000000",
+    "mainColor": "#9045e6",
+    "subColor": "#454864",
+    "textColor": "#cdd6f4"
+  },
+  {
     "name": "dark_note",
     "bgColor": "#1f1f1f",
     "mainColor": "#f2c17b",
@@ -1175,5 +1182,4 @@
     "subColor": "#651e56",
     "textColor": "#fff"
   }
-
 ]
