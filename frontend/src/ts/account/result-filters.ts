@@ -318,7 +318,7 @@ type AboveChartDisplay = Partial<
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  Object.typedKeys(getFilters()).forEach((group) => {
+  Misc.typedKeys(getFilters()).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       return;
@@ -329,7 +329,7 @@ export function updateActive(): void {
       array: [],
     };
 
-    Object.typedKeys(getGroup(group)).forEach((filter) => {
+    Misc.typedKeys(getGroup(group)).forEach((filter) => {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
       if (groupAboveChartDisplay === undefined) return;
@@ -493,7 +493,7 @@ $(
     .attr("group") as keyof MonkeyTypes.ResultFilters;
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
-    Object.typedKeys(getFilters()).forEach((group) => {
+    Misc.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
         return;
@@ -504,7 +504,7 @@ $(
     setAllFilters("date", false);
     filters["date"]["all"] = true;
   } else if ($(e.target).hasClass("noFilters")) {
-    Object.typedKeys(getFilters()).forEach((group) => {
+    Misc.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
         return;
@@ -534,7 +534,7 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
 
   console.log(getFilters());
 
-  Object.typedKeys(getFilters()).forEach((group) => {
+  Misc.typedKeys(getFilters()).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       return;
@@ -552,7 +552,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
-  Object.typedKeys(getFilters()).forEach((group) => {
+  Misc.typedKeys(getFilters()).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       return;

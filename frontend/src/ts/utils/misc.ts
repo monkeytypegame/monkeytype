@@ -1646,11 +1646,10 @@ export function convertToMorse(word: string): string {
   return morseWord;
 }
 
-declare global {
-  interface ObjectConstructor {
-    typedKeys<T>(obj: T): T extends T ? (keyof T)[] : never;
-  }
+export function typedKeys<T extends object>(
+  obj: T
+): T extends T ? (keyof T)[] : never {
+  return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
 }
 
-//@ts-ignore
-Object.typedKeys = Object.keys;
+// DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
