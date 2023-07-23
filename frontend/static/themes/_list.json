@@ -1,5 +1,26 @@
 [
   {
+    "name": "tokyo_night_light",
+    "bgColor": "#d5d6db",
+    "mainColor": "#1e9db3",
+    "subColor": "#8a8d97",
+    "textColor": "#262b40"
+  },
+  {
+    "name": "tokyo_night",
+    "bgColor": "#16161e",
+    "mainColor": "#2ac3de",
+    "subColor": "#787c99",
+    "textColor": "#c0caf5"
+  },
+  {
+    "name": "tokyo_night_storm",
+    "bgColor": "#24283b",
+    "mainColor": "#2ac3de",
+    "subColor": "#7982a9",
+    "textColor": "#c0caf5"
+  },
+  {
     "name": "dark_note",
     "bgColor": "#1f1f1f",
     "mainColor": "#f2c17b",
@@ -1175,5 +1196,4 @@
     "subColor": "#651e56",
     "textColor": "#fff"
   }
-
 ]
