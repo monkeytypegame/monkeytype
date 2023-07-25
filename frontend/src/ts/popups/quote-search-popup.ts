@@ -320,12 +320,12 @@ $("#quoteSearchPopupWrapper").on("mousedown", (e) => {
 });
 
 $("#popups").on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", () => {
-  hide(true);
+  hide();
   QuoteSubmitPopup.show(true);
 });
 
 $("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
-  hide(true);
+  hide();
   QuoteApprovePopup.show(true);
 });
 
