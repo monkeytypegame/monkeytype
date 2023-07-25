@@ -10,6 +10,9 @@
   .clearAll.button {
     font-size: 0.75em;
   }
+  &.focus .clearAll {
+    visibility: hidden;
+  }
   &.focus .notif {
     visibility: hidden;
   }
