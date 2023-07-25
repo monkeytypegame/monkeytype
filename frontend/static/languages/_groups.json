@@ -18,14 +18,6 @@
     "languages": ["spanish", "spanish_1k", "spanish_10k", "spanish_650k"]
   },
   {
-    "name": "lorem_ipsum",
-    "languages": ["lorem_ipsum"]
-  },
-  {
-    "name": "nepali",
-    "languages": ["nepali", "nepali_1k"]
-  },
-  {
     "name": "french",
     "languages": [
       "french",
@@ -394,6 +386,10 @@
     "languages": ["sanskrit"]
   },
   {
+    "name": "nepali",
+    "languages": ["nepali", "nepali_1k"]
+  },
+  {
     "name": "santali",
     "languages": ["santali"]
   },
@@ -476,6 +472,10 @@
   {
     "name": "pashto",
     "languages": ["pashto"]
+  },
+  {
+    "name": "lorem_ipsum",
+    "languages": ["lorem_ipsum"]
   },
   {
     "name": "code",
