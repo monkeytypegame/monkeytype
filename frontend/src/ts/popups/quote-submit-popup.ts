@@ -49,18 +49,6 @@ async function submitQuote(): Promise<void> {
 }
 
 export async function show(noAnim = false): Promise<void> {
-  const isSubmissionEnabled = (await Ape.quotes.isSubmissionEnabled()).data
-    .isEnabled;
-  if (!isSubmissionEnabled) {
-    Notifications.add(
-      "Quote submission is disabled temporarily due to a large submission queue.",
-      0,
-      {
-        duration: 5,
-      }
-    );
-    return;
-  }
   Skeleton.append(wrapperId);
 
   if (!Misc.isPopupVisible(wrapperId)) {
