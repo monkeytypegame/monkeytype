@@ -92,6 +92,9 @@ export async function highlightWordsInRange(
     return false;
   }
 
+  // Update lastWordIndex if it is out of bounds
+  lastWordIndex = Math.min(lastWordIndex, wordEls.length - 1);
+
   // Get highlight properties
   const newHighlightElementPositions = getHighlightElementPositions(
     firstWordIndex,
@@ -173,6 +176,7 @@ export function setIsHoverChart(state: boolean): void {
 
 // Function to initialize the highlight system
 async function init(): Promise<boolean> {
+  // Early exit if already initialized or initialization is in progress
   if (isInitialized || isInitInProgress) {
     return false;
   }
@@ -185,7 +189,9 @@ async function init(): Promise<boolean> {
 
   RWH_el = $("#resultWordsHistory")[0];
   RWH_rect = RWH_el.getBoundingClientRect();
-  wordEls = $(RWH_el).find(".words .word");
+  wordEls = $(RWH_el).find(".words .word[input]");
+
+  // remove non-input words
 
   if (wordEls.length === 0) {
     isInitInProgress = false;
@@ -198,7 +204,7 @@ async function init(): Promise<boolean> {
 
   // Construct lines array and wordIndexToLineIndexDict
   wordIndexToLineIndexDict[0] = 0;
-  for (let i = 1; i < wordEls.length - 1; i++) {
+  for (let i = 1; i < wordEls.length; i++) {
     const word = wordEls[i];
     const prevWord = wordEls[i - 1];
 
@@ -476,6 +482,7 @@ function getHighlightWidth(
       wordEls[wordEndIndex],
     ]);
     const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
+
     const lastInputWordElRect =
       inputWordEls[wordEndIndex].getBoundingClientRect();
     let width = highlightRect.width + PADDING_X;
