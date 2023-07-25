@@ -41,7 +41,7 @@ export async function isSubmissionEnabled(
   const { submissionsEnabled } = req.ctx.configuration.quotes;
   return new MonkeyResponse(
     "Quote submission " + (submissionsEnabled ? "enabled" : "disabled"),
-    submissionsEnabled
+    { isEnabled: submissionsEnabled }
   );
 }
 
