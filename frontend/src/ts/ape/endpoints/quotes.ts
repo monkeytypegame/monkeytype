@@ -9,6 +9,10 @@ export default class Quotes {
     return await this.httpClient.get(BASE_PATH);
   }
 
+  async isSubmissionEnabled(): Ape.EndpointData {
+    return await this.httpClient.get(`${BASE_PATH}/isSubmissionEnabled`);
+  }
+
   async submit(
     text: string,
     source: string,
