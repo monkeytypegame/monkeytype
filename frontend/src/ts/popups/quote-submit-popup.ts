@@ -3,16 +3,12 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Misc from "../utils/misc";
-// @ts-ignore eslint-disable-next-line
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Config from "../config";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "quoteSubmitPopupWrapper";
 
 let dropdownReady = false;
-// @ts-ignore eslint-disable-next-line
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function initDropdown(): Promise<void> {
   if (dropdownReady) return;
   const languages = await Misc.getLanguageList();
@@ -59,38 +55,40 @@ async function submitQuote(): Promise<void> {
   CaptchaController.reset("submitQuote");
 }
 
-// @ts-ignore
-// eslint-disable-next-line
 export async function show(noAnim = false): Promise<void> {
-  Notifications.add(
-    "Quote submission is disabled temporarily due to a large submission queue.",
-    0,
-    {
-      duration: 5,
-    }
-  );
-  return;
-  // Skeleton.append(wrapperId);
+  const isSubmissionEnabled = (await Ape.quotes.isSubmissionEnabled()).data
+    .isEnabled;
+  if (!isSubmissionEnabled) {
+    Notifications.add(
+      "Quote submission is disabled temporarily due to a large submission queue.",
+      0,
+      {
+        duration: 5,
+      }
+    );
+    return;
+  }
+  Skeleton.append(wrapperId);
 
-  // if (!isPopupVisible(wrapperId)) {
-  //   CaptchaController.render(
-  //     document.querySelector("#quoteSubmitPopup .g-recaptcha") as HTMLElement,
-  //     "submitQuote"
-  //   );
-  //   await initDropdown();
-  //   $("#quoteSubmitPopup #submitQuoteLanguage").val(
-  //     Config.language.replace(/_\d*k$/g, "")
-  //   );
-  //   $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
-  //   $("#quoteSubmitPopup input").val("");
-  //   $("#quoteSubmitPopupWrapper")
-  //     .stop(true, true)
-  //     .css("opacity", 0)
-  //     .removeClass("hidden")
-  //     .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
-  //       $("#quoteSubmitPopup textarea").trigger("focus").select();
-  //     });
-  // }
+  if (!Misc.isPopupVisible(wrapperId)) {
+    CaptchaController.render(
+      document.querySelector("#quoteSubmitPopup .g-recaptcha") as HTMLElement,
+      "submitQuote"
+    );
+    await initDropdown();
+    $("#quoteSubmitPopup #submitQuoteLanguage").val(
+      Config.language.replace(/_\d*k$/g, "")
+    );
+    $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
+    $("#quoteSubmitPopup input").val("");
+    $("#quoteSubmitPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
+        $("#quoteSubmitPopup textarea").trigger("focus").select();
+      });
+  }
 }
 
 export function hide(): void {
