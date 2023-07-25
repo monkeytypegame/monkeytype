@@ -223,8 +223,9 @@ export const result: ChartWithUpdateColors<
               if (prevTi === ti) return "";
               prevTi = ti;
               try {
+                const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
                 const wordsToHighlight =
-                  TestInput.keypressPerSecond[parseInt(ti.label) - 1].words;
+                  TestInput.keypressPerSecond[keypressIndex].words;
 
                 const unique = [...new Set(wordsToHighlight)];
                 const firstHighlightWordIndex = unique[0];
