@@ -534,6 +534,6 @@ function getHighlightWidth(
   return width;
 }
 
-export function updateToggleWordsHistoryTime() {
+export function updateToggleWordsHistoryTime(): void {
   lastToggleWordsHistoryTime = new Date();
 }
