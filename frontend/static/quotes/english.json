@@ -3386,12 +3386,6 @@
       "length": 216
     },
     {
-      "text": "I'd pull your eyes out of your head, and put them in my own skull, and look around, so I could see the street the way I used to when I was your age.",
-      "source": "Birdman",
-      "id": 578,
-      "length": 148
-    },
-    {
       "text": "Pause you who read this, and think for a moment of the long chain of iron or gold, of thorns or flowers, that would never have bound you, but for the formation of the first link on one memorable day.",
       "source": "Great Expectations",
       "id": 579,
@@ -11460,12 +11454,6 @@
       "source": "Travel and Tolerance",
       "id": 1973,
       "length": 245
-    },
-    {
-      "text": "Well if you think I'm that type of girl, you've got another thing coming, mister. 'Cause I don't do one-night stands, I don't date musicians, and I don't roll over just because you bought in this game. Fair warning - I'll be resisting your every move and enjoying your every mistake. I trust it won't be the first time you made mistakes with the opposite sex.",
-      "source": "Plumbers Don't Wear Ties",
-      "id": 1975,
-      "length": 359
     },
     {
       "text": "I would rather not have upset him, but I couldn't see any reason to change my life. Looking back on it, I wasn't unhappy. When I was a student, I had lots of ambitions like that. But when I had to give up my studies I learned very quickly that none of it really mattered.",
@@ -22196,12 +22184,6 @@
       "length": 308
     },
     {
-      "text": "Everything we hold dear likewise resolves into its original essence: values, principles, goals, and aspirations. If we take them seriously, we will suffer when they are stolen from us, just as the Lord Buddha taught. But if we see that they are all farts in the wind, and let them fly, then we can dwell in the original essence, which is fragrant and sweet, instead of the fart, which is not.",
-      "source": "Zen of Farting",
-      "id": 3857,
-      "length": 392
-    },
-    {
       "text": "I know what you think it means, sonny. To me, it's just a made up word. A politician's word, so young fellas like yourself can wear a suit and a tie, and have a job. What do you really want to know? Am I sorry for what I did?",
       "source": "The Shawshank Redemption",
       "id": 3858,
@@ -23574,12 +23556,6 @@
       "source": "I Am Australian",
       "id": 4096,
       "length": 150
-    },
-    {
-      "text": "And then he calls me a jerk and says the last guy who thought he was a jerk was dead now. So I don't say nothing and he says, \"What do ya think about that?\" So I says, \"Well, that don't sound like too good a deal for him then.\"",
-      "source": "Fargo",
-      "id": 4097,
-      "length": 227
     },
     {
       "text": "Always do your best - your best is going to change from moment to moment; it will be different when you are healthy as opposed to sick. Under any circumstance, simply do your best, and you will avoid self-judgment, self-abuse and regret.",
@@ -30116,18 +30092,6 @@
       "id": 5257
     },
     {
-      "text": "Rainbow drops - suck them and you can spit in six different colors.",
-      "source": "Willy Wonka, Charlie and the Chocolate Factory",
-      "length": 67,
-      "id": 5258
-    },
-    {
-      "text": "The best way to explain it is to do it.",
-      "source": "Dodo, Alice's Adventures in Wonderland",
-      "length": 39,
-      "id": 5259
-    },
-    {
       "text": "Of course they're real people. They're Oompa-Loompas... Imported direct from Loompaland... And oh what a terrible country it is! Nothing but thick jungles infested by the most dangerous beasts in the world - hornswogglers and snozzwangers and those terrible wicked whangdoodles. A whangdoodle would eat ten Oompa-Loompas for breakfast and come galloping back for a second helping.",
       "source": "Willy Wonka, Charlie and the Chocolate Factory",
       "length": 380,
@@ -31052,12 +31016,6 @@
       "id": 5439
     },
     {
-      "text": "And then Keshpeth led his army of ten thousand into the realm beyond the clouds, and they did do battle with the Devourer, may his name be forever unremembered. And then Keshpeth and his ten thousand did craft seven cunning chains out of the bones of Jaspetar, seventh bride of the dread Devourer, may his name be forever unremembered, and bound him within the pearl of the father of oysters, he who dwells under the mirror of salt in the realm under the sea. And Keshpeth ordered that the gates to the far country be sealed forever, lest the dread Devourer, may his name be forever unremembered, find its way back to our world.",
-      "source": "SCP-2317",
-      "length": 628,
-      "id": 5440
-    },
-    {
       "text": "For those who are not aware of our existence, we represent the organization known as the SCP Foundation. Our previous mission centered around the containment and study of anomalous objects, entities, and other assorted phenomena. This mission was the focus of our organization for more than one hundred years. Due to circumstances outside of our control, this directive has now changed. Our new mission will be the extermination of the human race. There will be no further communication.",
       "source": "SCP-5000",
       "length": 487,
@@ -31976,7 +31934,7 @@
       "id": 5639
     },
     {
-      "text": "Where are you? And I'm so sorry, I cannot sleep I cannot dream tonight.",
+      "text": "Where are you? And I'm so sorry, I cannot sleep, I cannot dream tonight.",
       "source": "Blink-182, I Miss You",
       "length": 71,
       "id": 5640
@@ -32127,7 +32085,7 @@
     },
     {
       "text": "You either die a hero, or you live long enough to see yourself become the villain.",
-      "source": "Batman - The Dark Knight.",
+      "source": "Harvey Dent - The Dark Knight",
       "length": 82,
       "id": 5671
     },
@@ -33290,12 +33248,6 @@
       "id": 5882
     },
     {
-      "text": "A key step in your combination skin routine, this toner purifies the skin and prepares it to receive its daily skincare. The skin is immediately clarified, pores are tightened and imperfections are reduced. Use: morning and evening, on cleansed skin, with a cotton pad. Do not rinse. Avoid the eye contour area.",
-      "source": "Caudalie Vinopure",
-      "length": 311,
-      "id": 5883
-    },
-    {
       "text": "We have professional social workers in our service centres and smart centres throughout Australia. Social workers can offer you personal counselling and support in difficult times, such as domestic and family violence, severe financial hardship, homelessness, loss and bereavement. They can refer you to other services and programs like housing, health, emergency relief, legal and/or counselling services and support groups.",
       "source": "ABSTUDY Schooling A",
       "length": 425,
@@ -33660,12 +33612,6 @@
       "source": "The Sympathizer (Viet Thanh Nguyen)",
       "length": 555,
       "id": 5952
-    },
-    {
-      "text": "What had I intuited at last? Namely this: while nothing is more precious than independence and freedom, nothing is also more precious than independence and freedom! These two slogans are almost the same, but not quite. The first inspiring slogan was Ho Chi Min's empty suit, which he no longer wore. How could he? He was dead. The second slogan was the tricky one, the joke. It was Uncle Ho's empty suit turned inside out, a sartorial sensation that only a man of two minds, or a man with no face, dared to wear. This odd suit suited me, for it was of a cutting-edge cut. Wearing this inside-out suit, my seams exposed in an unseemly way, I understood, at last, how our revolution had gone from being the vanguard of political change to the rearguard hoarding power. In this transformation, we were not unusual. Hadn't the French and the Americans done exactly the same? Once revolutionaries themselves, they had become imperialists, colonizing and occupying our defiant little land, taking away our freedom in the name of saving us. Our revolution took considerably longer than theirs, and was considerably bloodier, but we made up for lost time. When it came to learning the worst habits of our French masters and their American replacements, we quickly proved ourselves the best. We, too, could abuse grand ideals! Having liberated ourselves in the name of independence and freedom—I was so tired of saying these words!—we then deprived our defeated brethren of the same.",
-      "source": "The Sympathizer (Viet Thanh Nguyen)",
-      "length": 1474,
-      "id": 5953
     },
     {
       "text": "You were born broken. That's your birthright. And now you can fill your life with projects - your books, and your movies, and your little girlfriends but that won't make you whole. You're BoJack Horseman. There's no cure for that.",
