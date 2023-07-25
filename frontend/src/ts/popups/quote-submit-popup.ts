@@ -11,20 +11,13 @@ const wrapperId = "quoteSubmitPopupWrapper";
 let dropdownReady = false;
 async function initDropdown(): Promise<void> {
   if (dropdownReady) return;
-  const languages = await Misc.getLanguageList();
-  languages.forEach((language) => {
-    if (
-      language === "english_commonly_misspelled" ||
-      language === "hungarian_2.5k"
-    ) {
-      return;
-    }
-    if (!/_\d*k$/g.test(language)) {
-      $("#quoteSubmitPopup #submitQuoteLanguage").append(
-        `<option value="${language}">${language.replace(/_/g, " ")}</option>`
-      );
-    }
-  });
+  const languageGroups = await Misc.getLanguageGroups();
+  for (const group of languageGroups) {
+    if (group.name === "swiss_german") continue;
+    $("#quoteSubmitPopup #submitQuoteLanguage").append(
+      `<option value="${group.name}">${group.name.replace(/_/g, " ")}</option>`
+    );
+  }
   $("#quoteSubmitPopup #submitQuoteLanguage").select2();
   dropdownReady = true;
 }
