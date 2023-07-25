@@ -1,10 +1,10 @@
 :root {
-  --bg-color: #ffffff;
-  --main-color: #000000;
-  --caret-color: #000000;
-  --sub-color: #000000;
-  --sub-alt-color: #f8f8f8;
-  --text-color: #000000;
+  --bg-color: #f5f5f5;
+  --main-color: #363636;
+  --caret-color: #0d0d0d;
+  --sub-color: #4f4f4f;
+  --sub-alt-color: #e0e0e0;
+  --text-color: #1f1f1f;
   --error-color: #ff0008;
   --colorful-error-color: #ff0008;
 }
@@ -12,86 +12,124 @@
 #top .logo .text {
   background: linear-gradient(
     90deg,
-    #33a8c7,
-    #52e3e1,
-    #a0e426,
-    #fdf148,
-    #ffab00,
-    #f77976,
-    #f050ae,
-    #d883ff,
-    #9336fd
+    #60b6ce,
+    #7ce3e1,
+    #b2e259,
+    #f6ee75,
+    #f5b83d,
+    #f49a98,
+    #ed7abd,
+    #dea2fa,
+    #a966f5
   );
   background-size: 500% auto;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: rainbow-gradient 10s both infinite;
+  animation: rainbow-gradient 30s alternate ease-in-out infinite;
 }
 
-@keyframes rainbow-text {
+.textButton:hover,
+#restartTestButton:hover > i,
+#restartTestButton:hover > i,
+#showWordHistoryButton:hover > i,
+#saveScreenshotButton:hover > i,
+#restartTestButtonWithSameWordset:hover > i,
+#nextTestButton:hover > i,
+#practiseWordsButton:hover > i,
+#watchReplayButton:hover > i,
+#watchVideoAdButton:hover > i {
+  background: linear-gradient(
+    90deg,
+    #60b6ce,
+    #7ce3e1,
+    #b2e259,
+    #f6ee75,
+    #f5b83d,
+    #f49a98,
+    #ed7abd,
+    #dea2fa,
+    #a966f5
+  );
+  background-size: 500% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow-gradient 5s alternate ease-in-out infinite;
+  transition: all 1s ease;
+}
+
+.current-theme.textButton {
+  animation: rainbow-infinite-loop 5s alternate ease-in-out infinite;
+}
+
+.current-theme.textButton:hover {
+  -webkit-text-fill-color: initial;
+}
+
+@keyframes rainbow {
   0% {
-    color: #33a8c7;
+    color: #60b6ce;
   }
   11.11% {
-    color: #52e3e1;
+    color: #7ce3e1;
   }
   22.22% {
-    color: #a0e426;
+    color: #b2e259;
   }
   33.33% {
-    color: #fdf148;
+    color: #f6ee75;
   }
   44.44% {
-    color: #ffab00;
+    color: #f5b83d;
   }
   55.56% {
-    color: #f77976;
+    color: #f49a98;
   }
   66.67% {
-    color: #f050ae;
+    color: #ed7abd;
   }
   77.78% {
-    color: #d883ff;
+    color: #dea2fa;
   }
   88.89% {
-    color: #9336fd;
+    color: #a966f5;
   }
   100% {
-    color: #ffffff;
+    color: var(--bg-color);
   }
 }
 
-@keyframes rainbow-text-infinite-loop {
+@keyframes rainbow-infinite-loop {
   0% {
-    color: #33a8c7;
+    color: #60b6ce;
   }
   11.11% {
-    color: #52e3e1;
+    color: #7ce3e1;
   }
   22.22% {
-    color: #a0e426;
+    color: #b2e259;
   }
   33.33% {
-    color: #fdf148;
+    color: #f6ee75;
   }
   44.44% {
-    color: #ffab00;
+    color: #f5b83d;
   }
   55.56% {
-    color: #f77976;
+    color: #f49a98;
   }
   66.67% {
-    color: #f050ae;
+    color: #ed7abd;
   }
   77.78% {
-    color: #d883ff;
+    color: #dea2fa;
   }
   88.89% {
-    color: #9336fd;
+    color: #a966f5;
   }
   100% {
-    color: #33a8c7;
+    color: #60b6ce;
   }
 }
 
@@ -109,26 +147,23 @@
 
 @keyframes error-repeat {
   0% {
-    color: #f7aaaa;
-  }
-  50% {
     color: #ff0000;
   }
   100% {
-    color: #f7aaaa;
+    color: #ff000075;
   }
 }
 
-@keyframes shadow-repeat {
-  0% {
-    color: #ffffff;
-  }
-  50% {
-    color: #000000;
-  }
-  100% {
-    color: #ffffff;
-  }
+#words.flipped .word {
+  animation: rainbow-infinite-loop 30s linear infinite;
+}
+
+#words.flipped .word letter.correct {
+  color: var(--sub-color);
+}
+
+#words:not(.flipped) .word letter.correct {
+  animation: rainbow 7.5s ease-in-out forwards;
 }
 
 #liveWpm,
@@ -136,22 +171,64 @@
   color: white;
 }
 
-#top .config .group .buttons .textButton.active,
-#result .stats .group,
-#menu .textButton:hover,
-#top .config .group .buttons .textButton:hover,
-a:hover {
-  animation: shadow-repeat 1s ease-in-out infinite forwards;
-}
-
-#typingTest letter.correct {
-  animation: rainbow-text 5s linear forwards;
-}
-
-.theme.active.button {
-  animation: rainbow-text-infinite-loop 30s ease-in-out infinite;
-}
-
 .word letter.incorrect {
-  animation: error-repeat 1s ease-in-out infinite;
+  animation: error-repeat 1s alternate ease-in-out infinite;
+}
+
+.button:hover {
+  animation: glowing-button 2s alternate ease-in-out infinite;
+}
+
+@keyframes light-rainbow-infinite-loop {
+  0% {
+    color: #60b6ce;
+  }
+  14% {
+    color: #7ce3e1;
+  }
+  28% {
+    color: #b2e259;
+  }
+  42% {
+    color: #f6ee75;
+  }
+  57% {
+    color: #f5b83d;
+  }
+  71% {
+    color: #f49a98;
+  }
+  85% {
+    color: #ed7abd;
+  }
+  100% {
+    color: #dea2fa;
+  }
+}
+
+@keyframes glowing-button {
+  0% {
+    box-shadow: 0 0 7.5px 2.5px #60b6ce, 0 0 12.5px 2.5px #60b6ce;
+  }
+  14% {
+    box-shadow: 0 0 7.5px 2.5px #7ce3e1, 0 0 12.5px 2.5px #7ce3e1;
+  }
+  28% {
+    box-shadow: 0 0 7.5px 2.5px #b2e259, 0 0 12.5px 2.5px #b2e259;
+  }
+  42% {
+    box-shadow: 0 0 7.5px 2.5px #f6ee75, 0 0 12.5px 2.5px #f6ee75;
+  }
+  57% {
+    box-shadow: 0 0 7.5px 2.5px #f5b83d, 0 0 12.5px 2.5px #f5b83d;
+  }
+  71% {
+    box-shadow: 0 0 7.5px 2.5px #f49a98, 0 0 12.5px 2.5px #f49a98;
+  }
+  85% {
+    box-shadow: 0 0 7.5px 2.5px #ed7abd, 0 0 12.5px 2.5px #ed7abd;
+  }
+  100% {
+    box-shadow: 0 0 7.5px 2.5px #dea2fa, 0 0 12.5px 2.5px #dea2fa;
+  }
 }
