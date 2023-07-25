@@ -35,6 +35,16 @@ export async function getQuotes(
   return new MonkeyResponse("Quote submissions retrieved", data);
 }
 
+export async function isSubmissionEnabled(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { submissionsEnabled } = req.ctx.configuration.quotes;
+  return new MonkeyResponse(
+    "Quote submission " + (submissionsEnabled ? "enabled" : "disabled"),
+    submissionsEnabled
+  );
+}
+
 export async function addQuote(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
