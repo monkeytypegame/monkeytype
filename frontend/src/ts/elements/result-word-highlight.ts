@@ -188,11 +188,14 @@ async function init(): Promise<boolean> {
   isInitInProgress = true;
 
   // Wait for toggle button to fully populate resultWordHighlights before highlighting
-  let timeDiffSinceLastToggle =
+  const TIME_DIFF_SINCE_LAST_TOGGLE =
     new Date().getTime() - lastToggleWordsHistoryTime.getTime();
-  if (timeDiffSinceLastToggle < TOGGLE_RESULT_WORDS_BUFFER) {
+  if (TIME_DIFF_SINCE_LAST_TOGGLE < TOGGLE_RESULT_WORDS_BUFFER) {
     await new Promise((resolve) =>
-      setTimeout(resolve, TOGGLE_RESULT_WORDS_BUFFER - timeDiffSinceLastToggle)
+      setTimeout(
+        resolve,
+        TOGGLE_RESULT_WORDS_BUFFER - TIME_DIFF_SINCE_LAST_TOGGLE
+      )
     );
   }
 
