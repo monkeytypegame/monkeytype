@@ -5,6 +5,7 @@
   scroll-padding-top: 2rem;
   font-weight: 400;
   --bg-color-shine: color-mix(in oklab, var(--main-color) 5%, var(--bg-color));
+  --bg-color-stripe: color-mix(in oklab, black 50%, var(--bg-color));
 }
 
 ::placeholder {
@@ -545,9 +546,6 @@ key {
 }
 
 body.crtmode {
-  text-shadow: 3px 0 1px rgba(0, 30, 255, 0.5), -3px 0 1px rgba(255, 0, 80, 0.3),
-    0 0 3px;
-
   .customBackground {
     background: radial-gradient(
       ellipse,
@@ -567,8 +565,8 @@ body.crtmode {
     z-index: 1000;
     background-image: repeating-linear-gradient(
       0deg,
-      #111 0px,
-      #111 1px,
+      var(--bg-color-stripe) 0px,
+      var(--bg-color-stripe) 1px,
       transparent 2px,
       transparent 5px
     );
@@ -586,5 +584,24 @@ body.crtmode {
       rgba(0, 0, 0, 0.1) 100%
     );
     animation: scanline 10s linear infinite;
+  }
+
+  #top,
+  #middle,
+  #bottom,
+  #result,
+  #popups,
+  #notificationCenter {
+    text-shadow: 3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
+      -3px 0 color-mix(in srgb, currentColor 30%, transparent), 0 0 3px;
+  }
+
+  .word.error {
+    text-shadow: 3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
+      -3px 0 color-mix(in srgb, currentColor 30%, transparent), 0 0 3px;
+  }
+
+  #testConfig {
+    text-shadow: none;
   }
 }
