@@ -1344,6 +1344,9 @@ list["forgotPassword"] = new SimplePopup(
     ).val() as string;
     if (inputValue) {
       thisPopup.inputs[0].initVal = inputValue;
+      setTimeout(() => {
+        $("#simplePopup").find("input")[0].select();
+      }, 1);
     }
   },
   () => {
