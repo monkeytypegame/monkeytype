@@ -162,7 +162,7 @@ function getWordHTML(word: string): string {
     if (funbox?.functions?.getWordHtml) {
       retval += funbox.functions.getWordHtml(word.charAt(c), true);
     } else if (word.charAt(c) === "\t") {
-      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
     } else if (word.charAt(c) === "\n") {
       newlineafter = true;
       retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
@@ -541,7 +541,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
   if (Config.mode === "zen") {
     for (let i = 0; i < TestInput.input.current.length; i++) {
       if (TestInput.input.current[i] === "\t") {
-        ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
       } else if (TestInput.input.current[i] === "\n") {
         newlineafter = true;
         ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
@@ -612,7 +612,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
         }
       } else if (currentLetter === "\t") {
         tabChar = "tabChar";
-        currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
+        currentLetter = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
       } else if (currentLetter === "\n") {
         nlChar = "nlChar";
         currentLetter = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
@@ -674,7 +674,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
       if (funbox?.functions?.getWordHtml) {
         ret += funbox.functions.getWordHtml(currentWord[i], true);
       } else if (currentWord[i] === "\t") {
-        ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
       } else if (currentWord[i] === "\n") {
         ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
