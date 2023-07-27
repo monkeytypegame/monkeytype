@@ -165,7 +165,7 @@ function getWordHTML(word: string): string {
       retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
     } else if (word.charAt(c) === "\n") {
       newlineafter = true;
-      retval += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+      retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
     } else {
       retval += "<letter>" + word.charAt(c) + "</letter>";
     }
@@ -544,7 +544,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
         ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (TestInput.input.current[i] === "\n") {
         newlineafter = true;
-        ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
+        ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
         ret += `<letter class="correct">${TestInput.input.current[i]}</letter>`;
       }
@@ -615,7 +615,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
         currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
       } else if (currentLetter === "\n") {
         nlChar = "nlChar";
-        currentLetter = `<i class="fas fa-angle-down"></i>`;
+        currentLetter = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
       }
 
       if (charCorrect) {
@@ -676,7 +676,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
       } else if (currentWord[i] === "\t") {
         ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (currentWord[i] === "\n") {
-        ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+        ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
         ret +=
           `<letter class="${
