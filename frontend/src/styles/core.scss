@@ -6,6 +6,9 @@
   font-weight: 400;
   --bg-color-shine: color-mix(in oklab, var(--main-color) 5%, var(--bg-color));
   --bg-color-stripe: color-mix(in oklab, black 50%, var(--bg-color));
+  --sub-color-glow: color-mix(in srgb, var(--sub-color) 20%, transparent);
+  --text-color-glow: color-mix(in srgb, var(--text-color) 20%, transparent);
+  --main-color-glow: color-mix(in srgb, var(--main-color) 20%, transparent);
 }
 
 ::placeholder {
@@ -580,7 +583,7 @@ body.crtmode {
     background: linear-gradient(
       0deg,
       rgba(0, 0, 0, 0) 0%,
-      rgba(255, 255, 255, 0.2) 10%,
+      var(--bg-color-shine) 10%,
       rgba(0, 0, 0, 0.1) 100%
     );
     animation: scanline 10s linear infinite;
@@ -591,17 +594,29 @@ body.crtmode {
   #bottom,
   #result,
   #popups,
-  #notificationCenter {
-    text-shadow: 3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
-      -3px 0 color-mix(in srgb, currentColor 30%, transparent), 0 0 3px;
-  }
-
+  #notificationCenter,
   .word.error {
     text-shadow: 3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
       -3px 0 color-mix(in srgb, currentColor 30%, transparent), 0 0 3px;
   }
 
-  #testConfig {
+  #testConfig,
+  #testModesNotice {
     text-shadow: none;
+
+    .textButton {
+      text-shadow: 3px 0 1px var(--sub-color-glow), -3px 0 var(--sub-color-glow),
+        0 0 3px;
+
+      &:hover {
+        text-shadow: 3px 0 1px var(--text-color-glow),
+          -3px 0 var(--text-color-glow), 0 0 3px;
+      }
+
+      &.active {
+        text-shadow: 3px 0 1px var(--main-color-glow),
+          -3px 0 var(--main-color-glow), 0 0 3px;
+      }
+    }
   }
 }
