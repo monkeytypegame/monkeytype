@@ -1043,6 +1043,7 @@ async function loadWordsHistory(): Promise<boolean> {
 
 export function toggleResultWords(noAnimation = false): void {
   if (resultVisible) {
+    ResultWordHighlight.updateToggleWordsHistoryTime();
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
 
