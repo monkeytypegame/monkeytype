@@ -622,6 +622,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
+  $("#scanline").remove();
   $("body").removeClass("crtmode");
 
   let language;
@@ -731,6 +732,9 @@ FunboxList.setFunboxFunctions("morse", {
 
 FunboxList.setFunboxFunctions("crt", {
   applyConfig(): void {
+    if ($("#scanline").length == 0) {
+      $("body").append('<div id="scanline" />');
+    }
     $("body").addClass("crtmode");
   },
 });

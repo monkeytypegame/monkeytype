@@ -1,0 +1,145 @@
+body.crtmode {
+  .customBackground {
+    background: radial-gradient(
+      ellipse,
+      var(--crt-bg-color-shine) 0%,
+      var(--bg-color) 90%
+    );
+  }
+
+  &::after {
+    content: "";
+    display: block;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 999999999;
+    background-image: repeating-linear-gradient(
+      0deg,
+      var(--crt-bg-color-stripe) 0px,
+      var(--crt-bg-color-stripe) 1px,
+      transparent 2px,
+      transparent 5px
+    );
+    background-size: 50% 5px;
+    opacity: 0.3;
+    mix-blend-mode: color-burn;
+    pointer-events: none;
+  }
+
+  #scanline {
+    width: 100%;
+    height: 100px;
+    z-index: 1001;
+    position: absolute;
+    bottom: 100%;
+    opacity: 0.1;
+    pointer-events: none;
+    background: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0) 0%,
+      var(--crt-bg-color-shine) 10%,
+      rgba(0, 0, 0, 0.1) 100%
+    );
+    animation: scanline 10s linear infinite;
+  }
+
+  #top,
+  #middle,
+  #bottom,
+  #result,
+  #popups,
+  #notificationCenter,
+  .word.error,
+  input,
+  textarea {
+    text-shadow: 3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
+      -3px 0 color-mix(in srgb, currentColor 30%, transparent), 0 0 3px;
+  }
+
+  #testConfig,
+  #testModesNotice {
+    text-shadow: none;
+
+    .textButton {
+      text-shadow: 3px 0 1px var(--crt-sub-color-glow),
+        -3px 0 var(--crt-sub-color-glow), 0 0 3px;
+
+      &:hover {
+        text-shadow: 3px 0 1px var(--crt-text-color-glow),
+          -3px 0 var(--crt-text-color-glow), 0 0 3px;
+      }
+
+      &.active {
+        text-shadow: 3px 0 1px var(--crt-main-color-glow),
+          -3px 0 var(--crt-main-color-glow), 0 0 3px;
+      }
+    }
+
+    .row {
+      box-shadow: 3px 0 1px var(--crt-sub-alt-color-glow),
+        -3px 0 var(--crt-sub-alt-color-glow);
+    }
+  }
+
+  #caret {
+    box-shadow: 3px 0 1px var(--crt-caret-color-glow),
+      -3px 0 var(--crt-caret-color-glow);
+  }
+
+  #paceCaret,
+  key {
+    box-shadow: 3px 0 1px var(--crt-sub-color-glow),
+      -3px 0 var(--crt-sub-color-glow);
+  }
+
+  #caret,
+  #paceCaret {
+    &.banana,
+    &.carrot {
+      box-shadow: none;
+    }
+  }
+
+  .logo .icon {
+    filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
+      drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
+  }
+
+  .avatars,
+  #menu .account .avatar,
+  #menu .account .levelAndBar,
+  #top.focus .logo .icon {
+    filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
+      drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
+  }
+
+  .button,
+  .scrollToTopButton {
+    box-shadow: 3px 0 1px var(--crt-sub-alt-color-glow),
+      -3px 0 var(--crt-sub-alt-color-glow),
+      0 0 3px var(--crt-sub-alt-color-glow);
+
+    &.active {
+      box-shadow: 3px 0 1px var(--crt-main-color-glow),
+        -3px 0 var(--crt-main-color-glow), 0 0 3px;
+    }
+
+    &:hover {
+      box-shadow: 3px 0 1px var(--crt-text-color-glow),
+        -3px 0 var(--crt-text-color-glow), 0 0 3px;
+    }
+  }
+
+  #keymap .keymapKey {
+    box-shadow: 3px 0 1px var(--crt-sub-color-glow),
+      -3px 0 var(--crt-sub-color-glow), 0 0 3px;
+
+    &.activeKey {
+      box-shadow: 3px 0 1px var(--crt-main-color-glow),
+        -3px 0 var(--crt-main-color-glow), 0 0 3px;
+    }
+  }
+}
