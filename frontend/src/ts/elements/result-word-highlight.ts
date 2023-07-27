@@ -10,6 +10,7 @@ const PADDING_X = 16;
 const PADDING_Y = 12;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2;
+const TOGGLE_RESULT_WORDS_BUFFER = 250;
 
 // Type definition for a Line object, each representing a line of text in #resultWordsHistory
 type Line = {
@@ -45,6 +46,9 @@ let highlightRange: number[] = [];
 // #resultWordsHistory element and its bounding rect
 let RWH_el: HTMLElement;
 let RWH_rect: DOMRect;
+
+// Last time toggleResultWords was toggled on
+let lastToggleWordsHistoryTime = new Date();
 
 // Flags
 let isInitialized = false;
@@ -183,6 +187,18 @@ async function init(): Promise<boolean> {
 
   isInitInProgress = true;
 
+  // Wait for toggle button to fully populate resultWordHighlights before highlighting
+  const TIME_DIFF_SINCE_LAST_TOGGLE =
+    new Date().getTime() - lastToggleWordsHistoryTime.getTime();
+  if (TIME_DIFF_SINCE_LAST_TOGGLE < TOGGLE_RESULT_WORDS_BUFFER) {
+    await new Promise((resolve) =>
+      setTimeout(
+        resolve,
+        TOGGLE_RESULT_WORDS_BUFFER - TIME_DIFF_SINCE_LAST_TOGGLE
+      )
+    );
+  }
+
   // Set isLanguageRTL
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   isLanguageRightToLeft = currentLanguage.rightToLeft;
@@ -192,7 +208,6 @@ async function init(): Promise<boolean> {
   wordEls = $(RWH_el).find(".words .word[input]");
 
   // remove non-input words
-
   if (wordEls.length === 0) {
     isInitInProgress = false;
     return false;
@@ -517,4 +532,8 @@ function getHighlightWidth(
     inputWordEls[wordEndIndex].getBoundingClientRect();
   width -= lastWordElRect.width - lastInputWordElRect.width;
   return width;
+}
+
+export function updateToggleWordsHistoryTime(): void {
+  lastToggleWordsHistoryTime = new Date();
 }
