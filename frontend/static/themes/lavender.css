@@ -18,7 +18,7 @@
 }
 
 #menu .textButton:hover {
-  color: var(.--bg-color);
+  color: var(--bg-color);
 }
 
 body.crtmode {
