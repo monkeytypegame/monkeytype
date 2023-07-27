@@ -7,8 +7,14 @@
   --bg-color-shine: color-mix(in oklab, var(--main-color) 5%, var(--bg-color));
   --bg-color-stripe: color-mix(in oklab, black 50%, var(--bg-color));
   --sub-color-glow: color-mix(in srgb, var(--sub-color) 20%, transparent);
+  --sub-alt-color-glow: color-mix(
+    in srgb,
+    var(--sub-alt-color) 20%,
+    transparent
+  );
   --text-color-glow: color-mix(in srgb, var(--text-color) 20%, transparent);
   --main-color-glow: color-mix(in srgb, var(--main-color) 20%, transparent);
+  --caret-color-glow: color-mix(in srgb, var(--caret-color) 20%, transparent);
 }
 
 ::placeholder {
@@ -565,7 +571,7 @@ body.crtmode {
     left: 0px;
     right: 0px;
     bottom: 0px;
-    z-index: 1000;
+    z-index: 999999999;
     background-image: repeating-linear-gradient(
       0deg,
       var(--bg-color-stripe) 0px,
@@ -595,7 +601,8 @@ body.crtmode {
   #result,
   #popups,
   #notificationCenter,
-  .word.error {
+  .word.error,
+  input {
     text-shadow: 3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
       -3px 0 color-mix(in srgb, currentColor 30%, transparent), 0 0 3px;
   }
@@ -617,6 +624,47 @@ body.crtmode {
         text-shadow: 3px 0 1px var(--main-color-glow),
           -3px 0 var(--main-color-glow), 0 0 3px;
       }
+    }
+
+    .row {
+      box-shadow: 3px 0 1px var(--sub-alt-color-glow),
+        -3px 0 var(--sub-alt-color-glow), 0 0 3px var(--sub-alt-color-glow);
+    }
+  }
+
+  #caret {
+    box-shadow: 3px 0 1px var(--caret-color-glow),
+      -3px 0 var(--caret-color-glow), 0 0 3px;
+  }
+
+  #paceCaret,
+  key {
+    box-shadow: 3px 0 1px var(--sub-color-glow), -3px 0 var(--sub-color-glow),
+      0 0 3px;
+  }
+  #caret,
+  #paceCaret {
+    &.banana,
+    &.carrot {
+      box-shadow: none;
+    }
+  }
+  .logo .icon {
+    filter: drop-shadow(3px 0px 1px var(--main-color-glow));
+  }
+
+  .button,
+  .scrollToTopButton {
+    box-shadow: 3px 0 1px var(--sub-alt-color-glow),
+      -3px 0 var(--sub-alt-color-glow), 0 0 3px var(--sub-alt-color-glow);
+
+    &.active {
+      box-shadow: 3px 0 1px var(--main-color-glow),
+        -3px 0 var(--main-color-glow), 0 0 3px;
+    }
+    &:hover {
+      box-shadow: 3px 0 1px var(--text-color-glow),
+        -3px 0 var(--text-color-glow), 0 0 3px;
     }
   }
 }
