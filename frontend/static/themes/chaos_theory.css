@@ -186,4 +186,9 @@ body.crtmode {
     filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
       drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
   }
+
+  #top.focus #menu .textButton {
+    box-shadow: 3px 0 1px var(--crt-sub-color-glow),
+      -3px 0 var(--crt-sub-color-glow);
+  }
 }

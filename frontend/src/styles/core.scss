@@ -615,7 +615,8 @@ body.crtmode {
   #popups,
   #notificationCenter,
   .word.error,
-  input {
+  input,
+  textarea {
     text-shadow: 3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
       -3px 0 color-mix(in srgb, currentColor 30%, transparent), 0 0 3px;
   }
@@ -667,6 +668,14 @@ body.crtmode {
   .logo .icon {
     filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
       drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
+  }
+
+  .avatars,
+  #menu .account .avatar,
+  #menu .account .levelAndBar,
+  #top.focus .logo .icon {
+    filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
+      drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
   }
 
   .button,

@@ -85,4 +85,9 @@ body.crtmode {
     box-shadow: 3px 0 1px color-mix(in srgb, #a692d7 20%, transparent),
       -3px 0 color-mix(in srgb, #a692d7 30%, transparent), 0 0 3px;
   }
+
+  #top.focus #menu .textButton {
+    box-shadow: 3px 0 1px color-mix(in srgb, #99989f 20%, transparent),
+      -3px 0 color-mix(in srgb, #99989f 30%, transparent), 0 0 3px;
+  }
 }
