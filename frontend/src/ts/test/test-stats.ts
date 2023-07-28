@@ -54,10 +54,12 @@ export function getStats(): unknown {
     lastResult,
     start,
     end,
+    afkHistory: TestInput.afkHistory,
+    errorHistory: TestInput.errorHistory,
     wpmHistory: TestInput.wpmHistory,
     rawHistory: TestInput.rawHistory,
     burstHistory: TestInput.burstHistory,
-    keypressPerSecond: TestInput.keypressCountHistory,
+    keypressCountHistory: TestInput.keypressCountHistory,
     currentBurstStart: TestInput.currentBurstStart,
     lastSecondNotRound,
     missedWords: TestInput.missedWords,
@@ -68,25 +70,29 @@ export function getStats(): unknown {
 
   try {
     // @ts-ignore
-    ret.keySpacingStats = {
-      average:
-        (TestInput.keypressTimings.spacing.array as number[]).reduce(
-          (previous, current) => (current += previous)
-        ) / TestInput.keypressTimings.spacing.array.length,
-      sd: Misc.stdDev(TestInput.keypressTimings.spacing.array as number[]),
-    };
+    ret.keypressTimings.spacing.average =
+      (TestInput.keypressTimings.spacing.array as number[]).reduce(
+        (previous, current) => (current += previous)
+      ) / TestInput.keypressTimings.spacing.array.length;
+
+    // @ts-ignore
+    ret.keypressTimings.spacing.sd = Misc.stdDev(
+      TestInput.keypressTimings.spacing.array as number[]
+    );
   } catch (e) {
     //
   }
   try {
     // @ts-ignore
-    ret.keyDurationStats = {
-      average:
-        (TestInput.keypressTimings.duration.array as number[]).reduce(
-          (previous, current) => (current += previous)
-        ) / TestInput.keypressTimings.duration.array.length,
-      sd: Misc.stdDev(TestInput.keypressTimings.duration.array as number[]),
-    };
+    ret.keypressTimings.duration.average =
+      (TestInput.keypressTimings.duration.array as number[]).reduce(
+        (previous, current) => (current += previous)
+      ) / TestInput.keypressTimings.duration.array.length;
+
+    // @ts-ignore
+    ret.keypressTimings.duration.sd = Misc.stdDev(
+      TestInput.keypressTimings.duration.array as number[]
+    );
   } catch (e) {
     //
   }
