@@ -35,12 +35,6 @@ export let start: number, end: number;
 export let start2: number, end2: number;
 export let lastSecondNotRound = false;
 
-export let lastTestWpm = 0;
-
-export function setLastTestWpm(wpm: number): void {
-  lastTestWpm = wpm;
-}
-
 export let lastResult: MonkeyTypes.Result<MonkeyTypes.Mode>;
 
 export function setLastResult(
