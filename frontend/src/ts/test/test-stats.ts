@@ -16,51 +16,6 @@ interface CharCount {
   correctSpaces: number;
 }
 
-interface Keypress {
-  count: number;
-  errors: number;
-  words: number[];
-  afk: boolean;
-}
-
-interface KeypressTimings {
-  spacing: {
-    last: number;
-    array: number[] | "toolong";
-  };
-  duration: {
-    array: number[] | "toolong";
-  };
-}
-
-interface DebugStats {
-  lastResult?: MonkeyTypes.Result<MonkeyTypes.Mode>;
-  start: number;
-  end: number;
-  wpmHistory: number[];
-  rawHistory: number[];
-  burstHistory: number[];
-  keypressPerSecond: Keypress[];
-  currentBurstStart: number;
-  lastSecondNotRound: boolean;
-  missedWords: {
-    [word: string]: number;
-  };
-  accuracy: {
-    correct: number;
-    incorrect: number;
-  };
-  keypressTimings: KeypressTimings;
-  keySpacingStats?: {
-    average: number;
-    sd: number;
-  };
-  keyDurationStats?: {
-    average: number;
-    sd: number;
-  };
-}
-
 interface Stats {
   wpm: number;
   wpmRaw: number;
@@ -100,8 +55,8 @@ export function wpmCalculationDebug(): void {
   wpmCalcDebug = true;
 }
 
-export function getStats(): DebugStats {
-  const ret: DebugStats = {
+export function getStats(): unknown {
+  const ret = {
     lastResult,
     start,
     end,
@@ -114,9 +69,11 @@ export function getStats(): DebugStats {
     missedWords: TestInput.missedWords,
     accuracy: TestInput.accuracy,
     keypressTimings: TestInput.keypressTimings,
+    keyOverlap: TestInput.keyOverlap,
   };
 
   try {
+    // @ts-ignore
     ret.keySpacingStats = {
       average:
         (TestInput.keypressTimings.spacing.array as number[]).reduce(
@@ -128,6 +85,7 @@ export function getStats(): DebugStats {
     //
   }
   try {
+    // @ts-ignore
     ret.keyDurationStats = {
       average:
         (TestInput.keypressTimings.duration.array as number[]).reduce(
