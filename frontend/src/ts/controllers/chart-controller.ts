@@ -1,4 +1,5 @@
 import {
+  _adapters,
   BarController,
   BarElement,
   CategoryScale,
@@ -26,15 +27,6 @@ import chartAnnotation, {
   type AnnotationOptions,
   type LabelOptions,
 } from "chartjs-plugin-annotation";
-import chartTrendline from "chartjs-plugin-trendline";
-
-// TODO: find out why the import from chartjs-plugin-trendline does not apply this
-declare module "chart.js" {
-  // eslint-disable-next-line
-  interface ChartDatasetProperties<TType extends ChartType, TData> {
-    trendlineLinear?: TrendlineLinearPlugin.TrendlineLinearOptions;
-  }
-}
 
 import * as ActivePage from "../states/active-page";
 
@@ -51,7 +43,6 @@ Chart.register(
   TimeScale,
   TimeSeriesScale,
   Tooltip,
-  chartTrendline,
   chartAnnotation
 );
 
@@ -61,7 +52,11 @@ Chart.register(
 Chart.defaults.elements.line.tension = 0.3;
 Chart.defaults.elements.line.fill = "origin";
 
-import "chartjs-adapter-date-fns";
+//@ts-ignore fix based on https://github.com/chartjs/chartjs-adapter-date-fns/issues/58#issuecomment-1375844810
+import { dateFnsAdapter } from "../../../static/js/chartjs-adapter-date-fns";
+
+_adapters._date.override(dateFnsAdapter);
+
 import format from "date-fns/format";
 import Config from "../config";
 import * as ThemeColors from "../elements/theme-colors";
@@ -537,11 +532,6 @@ export const accountActivity: ChartWithUpdateColors<
         yAxisID: "count",
         label: "Seconds",
         data: [],
-        trendlineLinear: {
-          style: "rgba(255,105,180, .8)",
-          lineStyle: "dotted",
-          width: 2,
-        },
         order: 3,
       },
       {
@@ -1032,10 +1022,15 @@ export async function updateColors<
   const textcolor = await ThemeColors.get("text");
 
   //@ts-ignore
-  chart.data.datasets[0].borderColor = (ctx): string => {
-    const isPb = ctx.raw?.["isPb"];
-    const color = isPb ? textcolor : maincolor;
-    return color;
+  chart.data.datasets[0].borderColor = (_ctx): string => {
+    return "red";
+    // const isPb = ctx.raw?.["isPb"];
+    // console.log(isPb);
+    // const color = isPb ? textcolor : maincolor;
+
+    // console.log("color", color);
+
+    // return color;
   };
 
   if (chart.data.datasets[1]) {
@@ -1147,13 +1142,6 @@ export async function updateColors<
     axis.ticks.color = subcolor;
     axis.title.color = subcolor;
   });
-
-  try {
-    (
-      chart.data.datasets[0]
-        .trendlineLinear as TrendlineLinearPlugin.TrendlineLinearOptions
-    ).style = subcolor;
-  } catch {}
 
   (
     (chart.options as PluginChartOptions<TType>).plugins.annotation
