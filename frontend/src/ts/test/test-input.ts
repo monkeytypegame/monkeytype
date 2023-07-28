@@ -219,7 +219,7 @@ export const input = new Input();
 export const corrected = new Corrected();
 
 export let keypressPerSecond: Keypress[] = [];
-export let currentKeypress: Keypress = {
+let currentSecondKeypressData: Keypress = {
   count: 0,
   errors: 0,
   words: [],
@@ -262,19 +262,19 @@ export function enableSpacingDebug(): void {
 }
 
 export function incrementKeypressCount(): void {
-  currentKeypress.count++;
+  currentSecondKeypressData.count++;
 }
 
 export function setKeypressNotAfk(): void {
-  currentKeypress.afk = false;
+  currentSecondKeypressData.afk = false;
 }
 
 export function incrementKeypressErrors(): void {
-  currentKeypress.errors++;
+  currentSecondKeypressData.errors++;
 }
 
 export function pushKeypressWord(wordIndex: number): void {
-  currentKeypress.words.push(wordIndex);
+  currentSecondKeypressData.words.push(wordIndex);
 }
 
 export function setBurstStart(time: number): void {
@@ -282,8 +282,8 @@ export function setBurstStart(time: number): void {
 }
 
 export function pushKeypressesToHistory(): void {
-  keypressPerSecond.push(currentKeypress);
-  currentKeypress = {
+  keypressPerSecond.push(currentSecondKeypressData);
+  currentSecondKeypressData = {
     count: 0,
     errors: 0,
     words: [],
@@ -478,7 +478,7 @@ export function restart(): void {
   rawHistory = [];
   burstHistory = [];
   keypressPerSecond = [];
-  currentKeypress = {
+  currentSecondKeypressData = {
     count: 0,
     errors: 0,
     words: [],

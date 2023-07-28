@@ -41,12 +41,6 @@ interface DebugStats {
   rawHistory: number[];
   burstHistory: number[];
   keypressPerSecond: Keypress[];
-  currentKeypress: {
-    count: number;
-    errors: number;
-    words: number[];
-    afk: boolean;
-  };
   currentBurstStart: number;
   lastSecondNotRound: boolean;
   missedWords: {
@@ -115,7 +109,6 @@ export function getStats(): DebugStats {
     rawHistory: TestInput.rawHistory,
     burstHistory: TestInput.burstHistory,
     keypressPerSecond: TestInput.keypressPerSecond,
-    currentKeypress: TestInput.currentKeypress,
     currentBurstStart: TestInput.currentBurstStart,
     lastSecondNotRound,
     missedWords: TestInput.missedWords,
