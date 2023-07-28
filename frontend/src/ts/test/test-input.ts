@@ -72,10 +72,6 @@ const keysToTrack = [
   "NoCode", //android (smells) and some keyboards might send no location data - need to use this as a fallback
 ];
 
-interface Keypress {
-  count: number;
-}
-
 interface KeypressTimings {
   spacing: {
     first: number;
@@ -220,10 +216,8 @@ let keyDownData: Record<string, Keydata> = {};
 export const input = new Input();
 export const corrected = new Corrected();
 
-export let keypressPerSecond: Keypress[] = [];
-let currentSecondKeypressData: Keypress = {
-  count: 0,
-};
+export let keypressPerSecond: number[] = [];
+let currentSecondKeypressData = 0;
 export let currentBurstStart = 0;
 export let missedWords: {
   [word: string]: number;
@@ -265,7 +259,7 @@ export function enableSpacingDebug(): void {
 }
 
 export function incrementKeypressCount(): void {
-  currentSecondKeypressData.count++;
+  currentSecondKeypressData++;
 }
 
 export function setCurrentNotAfk(): void {
@@ -286,9 +280,7 @@ export function setBurstStart(time: number): void {
 
 export function pushKeypressesToHistory(): void {
   keypressPerSecond.push(currentSecondKeypressData);
-  currentSecondKeypressData = {
-    count: 0,
-  };
+  currentSecondKeypressData = 0;
 }
 
 export function pushAfkToHistory(): void {
@@ -491,9 +483,7 @@ export function restart(): void {
   rawHistory = [];
   burstHistory = [];
   keypressPerSecond = [];
-  currentSecondKeypressData = {
-    count: 0,
-  };
+  currentSecondKeypressData = 0;
   afkHistory = [];
   currentAfk = true;
   errorHistory = [];

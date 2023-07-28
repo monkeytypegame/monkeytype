@@ -869,8 +869,8 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   }
 
   //consistency
-  const rawPerSecond = TestInput.keypressPerSecond.map((f) =>
-    Math.round((f.count / 5) * 60)
+  const rawPerSecond = TestInput.keypressPerSecond.map((count) =>
+    Math.round((count / 5) * 60)
   );
 
   //adjust last second if last second is not round
