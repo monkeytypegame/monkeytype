@@ -260,7 +260,7 @@ export function calculateAfkSeconds(testSeconds: number): number {
     //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
     // );
   }
-  const ret = TestInput.keypressPerSecond.filter((x) => x.afk).length;
+  const ret = TestInput.afkHistory.filter((afk) => afk === true).length;
   return ret + extraAfk;
 }
 

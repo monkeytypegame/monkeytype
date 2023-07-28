@@ -196,6 +196,7 @@ export function restart(options = {} as RestartOptions): void {
     if (TestState.savingEnabled) {
       TestInput.pushKeypressesToHistory();
       TestInput.pushErrorToHistory();
+      TestInput.pushAfkToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
       let tt = Misc.roundTo2(testSeconds - afkseconds);
@@ -864,6 +865,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
     TestInput.pushErrorToHistory();
+    TestInput.pushAfkToHistory();
   }
 
   //consistency
@@ -1043,8 +1045,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ///////// completed event ready
 
   //afk check
-  const kps = TestInput.keypressPerSecond.slice(-5);
-  let afkDetected = kps.every((second) => second.afk);
+  const kps = TestInput.afkHistory.slice(-5);
+  let afkDetected = kps.every((afk) => afk === true);
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
@@ -1402,6 +1404,7 @@ export function fail(reason: string): void {
   // corrected.pushHistory();
   TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
+  TestInput.pushAfkToHistory();
   finish(true);
   if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
