@@ -1021,18 +1021,6 @@ export async function updateColors<
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
 
-  //@ts-ignore
-  chart.data.datasets[0].borderColor = (_ctx): string => {
-    return "red";
-    // const isPb = ctx.raw?.["isPb"];
-    // console.log(isPb);
-    // const color = isPb ? textcolor : maincolor;
-
-    // console.log("color", color);
-
-    // return color;
-  };
-
   if (chart.data.datasets[1]) {
     chart.data.datasets[1].borderColor = subcolor;
   }
