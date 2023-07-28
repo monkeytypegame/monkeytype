@@ -195,6 +195,7 @@ export function restart(options = {} as RestartOptions): void {
 
     if (TestState.savingEnabled) {
       TestInput.pushKeypressesToHistory();
+      TestInput.pushErrorToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
       let tt = Misc.roundTo2(testSeconds - afkseconds);
@@ -862,6 +863,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
     TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
+    TestInput.pushErrorToHistory();
   }
 
   //consistency
@@ -921,8 +923,8 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   );
 
   completedEvent.chartData.err = [];
-  for (let i = 0; i < TestInput.keypressPerSecond.length; i++) {
-    completedEvent.chartData.err.push(TestInput.keypressPerSecond[i].errors);
+  for (let i = 0; i < TestInput.errorHistory.length; i++) {
+    completedEvent.chartData.err.push(TestInput.errorHistory[i].count);
   }
 
   if (Config.mode === "quote") {
@@ -1399,6 +1401,7 @@ export function fail(reason: string): void {
   // input.pushHistory();
   // corrected.pushHistory();
   TestInput.pushKeypressesToHistory();
+  TestInput.pushErrorToHistory();
   finish(true);
   if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());

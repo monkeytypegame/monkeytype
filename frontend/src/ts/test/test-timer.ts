@@ -125,6 +125,7 @@ function checkIfFailed(
 ): void {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
+  TestInput.pushErrorToHistory();
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
