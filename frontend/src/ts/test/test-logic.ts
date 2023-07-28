@@ -270,7 +270,7 @@ export function restart(options = {} as RestartOptions): void {
   LiveBurst.hide();
   TimerProgress.hide();
   Replay.pauseReplay();
-  TestInput.setBailout(false);
+  TestState.setBailedOut(false);
   PaceCaret.reset();
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
@@ -808,7 +808,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
-    bailedOut: TestInput.bailout,
+    bailedOut: TestState.bailedOut,
     chartData: {
       wpm: TestInput.wpmHistory,
       raw: undefined,
@@ -977,7 +977,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
-  if ((Config.mode === "zen" || TestInput.bailout) && endAfkSeconds < 7) {
+  if ((Config.mode === "zen" || TestState.bailedOut) && endAfkSeconds < 7) {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
@@ -1004,7 +1004,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   //remove afk from zen
-  if (Config.mode === "zen" || TestInput.bailout) {
+  if (Config.mode === "zen" || TestState.bailedOut) {
     TestStats.removeAfkData();
   }
 
@@ -1043,7 +1043,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   //afk check
   const kps = TestInput.keypressPerSecond.slice(-5);
   let afkDetected = kps.every((second) => second.afk);
-  if (TestInput.bailout) afkDetected = false;
+  if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
 
@@ -1141,7 +1141,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
-      TestInput.bailout ||
+      TestState.bailedOut ||
       TestInput.input.history.length < TestWords.words.length
     ) {
       // They bailed out

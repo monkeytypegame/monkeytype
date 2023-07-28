@@ -928,7 +928,7 @@ $(document).keydown(async (event) => {
             );
           }
         } else {
-          TestInput.setBailout(true);
+          TestState.setBailedOut(true);
           TestLogic.finish();
         }
       }
