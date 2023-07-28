@@ -179,6 +179,14 @@
   animation: glowing-button 2s alternate ease-in-out infinite;
 }
 
+.row .textButton:not(.active) {
+  color: #999999;
+}
+
+.textButton.active {
+  color: #111111;
+}
+
 @keyframes light-rainbow-infinite-loop {
   0% {
     color: #60b6ce;
