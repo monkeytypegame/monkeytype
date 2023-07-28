@@ -845,7 +845,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   if (stats.time % 1 !== 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
-  TestStats.setLastTestWpm(stats.wpm);
+  PaceCaret.setLastTestWpm(stats.wpm);
   completedEvent.wpm = stats.wpm;
   completedEvent.rawWpm = stats.wpmRaw;
   completedEvent.charStats = [
