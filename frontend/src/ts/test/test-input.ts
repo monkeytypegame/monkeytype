@@ -74,8 +74,6 @@ const keysToTrack = [
 
 interface Keypress {
   count: number;
-  errors: number;
-  words: number[];
   afk: boolean;
 }
 
@@ -93,6 +91,11 @@ interface KeypressTimings {
 interface Keydata {
   timestamp: number;
   index: number;
+}
+
+interface ErrorHistoryObject {
+  count: number;
+  words: number[];
 }
 
 class Input {
@@ -221,8 +224,6 @@ export const corrected = new Corrected();
 export let keypressPerSecond: Keypress[] = [];
 let currentSecondKeypressData: Keypress = {
   count: 0,
-  errors: 0,
-  words: [],
   afk: true,
 };
 export let currentBurstStart = 0;
@@ -250,6 +251,11 @@ export let keyOverlap = {
 export let wpmHistory: number[] = [];
 export let rawHistory: number[] = [];
 export let burstHistory: number[] = [];
+export let errorHistory: ErrorHistoryObject[] = [];
+let currentErrorHistory: ErrorHistoryObject = {
+  count: 0,
+  words: [],
+};
 
 export let spacingDebug = false;
 export function enableSpacingDebug(): void {
@@ -266,11 +272,11 @@ export function setKeypressNotAfk(): void {
 }
 
 export function incrementKeypressErrors(): void {
-  currentSecondKeypressData.errors++;
+  currentErrorHistory.count++;
 }
 
 export function pushKeypressWord(wordIndex: number): void {
-  currentSecondKeypressData.words.push(wordIndex);
+  currentErrorHistory.words.push(wordIndex);
 }
 
 export function setBurstStart(time: number): void {
@@ -281,9 +287,15 @@ export function pushKeypressesToHistory(): void {
   keypressPerSecond.push(currentSecondKeypressData);
   currentSecondKeypressData = {
     count: 0,
-    errors: 0,
-    words: [],
     afk: true,
+  };
+}
+
+export function pushErrorToHistory(): void {
+  errorHistory.push(currentErrorHistory);
+  currentErrorHistory = {
+    count: 0,
+    words: [],
   };
 }
 
@@ -476,9 +488,12 @@ export function restart(): void {
   keypressPerSecond = [];
   currentSecondKeypressData = {
     count: 0,
-    errors: 0,
-    words: [],
     afk: true,
+  };
+  errorHistory = [];
+  currentErrorHistory = {
+    count: 0,
+    words: [],
   };
   currentBurstStart = 0;
   missedWords = {};
