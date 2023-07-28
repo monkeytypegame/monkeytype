@@ -57,7 +57,7 @@ export function getStats(): unknown {
     wpmHistory: TestInput.wpmHistory,
     rawHistory: TestInput.rawHistory,
     burstHistory: TestInput.burstHistory,
-    keypressPerSecond: TestInput.keypressPerSecond,
+    keypressPerSecond: TestInput.keypressCountHistory,
     currentBurstStart: TestInput.currentBurstStart,
     lastSecondNotRound,
     missedWords: TestInput.missedWords,
@@ -248,9 +248,10 @@ export function calculateAfkSeconds(testSeconds: number): number {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
     if (Config.mode === "time") {
-      extraAfk = Math.round(testSeconds) - TestInput.keypressPerSecond.length;
+      extraAfk =
+        Math.round(testSeconds) - TestInput.keypressCountHistory.length;
     } else {
-      extraAfk = Math.ceil(testSeconds) - TestInput.keypressPerSecond.length;
+      extraAfk = Math.ceil(testSeconds) - TestInput.keypressCountHistory.length;
     }
     if (extraAfk < 0) extraAfk = 0;
     // console.log("-- extra afk debug");
@@ -296,7 +297,7 @@ export function calculateAccuracy(): number {
 
 export function removeAfkData(): void {
   const testSeconds = calculateTestSeconds();
-  TestInput.keypressPerSecond.splice(testSeconds);
+  TestInput.keypressCountHistory.splice(testSeconds);
   TestInput.wpmHistory.splice(testSeconds);
   TestInput.burstHistory.splice(testSeconds);
   TestInput.rawHistory.splice(testSeconds);

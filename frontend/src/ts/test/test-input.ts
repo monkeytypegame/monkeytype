@@ -216,8 +216,8 @@ let keyDownData: Record<string, Keydata> = {};
 export const input = new Input();
 export const corrected = new Corrected();
 
-export let keypressPerSecond: number[] = [];
-let currentSecondKeypressData = 0;
+export let keypressCountHistory: number[] = [];
+let currentKeypressCount = 0;
 export let currentBurstStart = 0;
 export let missedWords: {
   [word: string]: number;
@@ -259,7 +259,7 @@ export function enableSpacingDebug(): void {
 }
 
 export function incrementKeypressCount(): void {
-  currentSecondKeypressData++;
+  currentKeypressCount++;
 }
 
 export function setCurrentNotAfk(): void {
@@ -279,8 +279,8 @@ export function setBurstStart(time: number): void {
 }
 
 export function pushKeypressesToHistory(): void {
-  keypressPerSecond.push(currentSecondKeypressData);
-  currentSecondKeypressData = 0;
+  keypressCountHistory.push(currentKeypressCount);
+  currentKeypressCount = 0;
 }
 
 export function pushAfkToHistory(): void {
@@ -482,8 +482,8 @@ export function restart(): void {
   wpmHistory = [];
   rawHistory = [];
   burstHistory = [];
-  keypressPerSecond = [];
-  currentSecondKeypressData = 0;
+  keypressCountHistory = [];
+  currentKeypressCount = 0;
   afkHistory = [];
   currentAfk = true;
   errorHistory = [];

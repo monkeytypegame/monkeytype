@@ -869,7 +869,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   }
 
   //consistency
-  const rawPerSecond = TestInput.keypressPerSecond.map((count) =>
+  const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
     Math.round((count / 5) * 60)
   );
 
