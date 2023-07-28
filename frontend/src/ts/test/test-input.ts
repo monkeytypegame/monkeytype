@@ -74,7 +74,6 @@ const keysToTrack = [
 
 interface Keypress {
   count: number;
-  afk: boolean;
 }
 
 interface KeypressTimings {
@@ -224,7 +223,6 @@ export const corrected = new Corrected();
 export let keypressPerSecond: Keypress[] = [];
 let currentSecondKeypressData: Keypress = {
   count: 0,
-  afk: true,
 };
 export let currentBurstStart = 0;
 export let missedWords: {
@@ -257,6 +255,9 @@ let currentErrorHistory: ErrorHistoryObject = {
   words: [],
 };
 
+export let afkHistory: boolean[] = [];
+let currentAfk = true;
+
 export let spacingDebug = false;
 export function enableSpacingDebug(): void {
   spacingDebug = true;
@@ -267,8 +268,8 @@ export function incrementKeypressCount(): void {
   currentSecondKeypressData.count++;
 }
 
-export function setKeypressNotAfk(): void {
-  currentSecondKeypressData.afk = false;
+export function setCurrentNotAfk(): void {
+  currentAfk = false;
 }
 
 export function incrementKeypressErrors(): void {
@@ -287,8 +288,12 @@ export function pushKeypressesToHistory(): void {
   keypressPerSecond.push(currentSecondKeypressData);
   currentSecondKeypressData = {
     count: 0,
-    afk: true,
   };
+}
+
+export function pushAfkToHistory(): void {
+  afkHistory.push(currentAfk);
+  currentAfk = true;
 }
 
 export function pushErrorToHistory(): void {
@@ -488,8 +493,9 @@ export function restart(): void {
   keypressPerSecond = [];
   currentSecondKeypressData = {
     count: 0,
-    afk: true,
   };
+  afkHistory = [];
+  currentAfk = true;
   errorHistory = [];
   currentErrorHistory = {
     count: 0,

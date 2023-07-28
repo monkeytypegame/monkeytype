@@ -871,7 +871,7 @@ $(document).keydown(async (event) => {
     return;
   }
 
-  TestInput.setKeypressNotAfk();
+  TestInput.setCurrentNotAfk();
 
   //blocking firefox from going back in history with backspace
   if (event.key === "Backspace") {
@@ -1109,7 +1109,7 @@ $("#wordsInput").on("input", (event) => {
   const popupVisible = Misc.isAnyPopupVisible();
   if (popupVisible) return;
 
-  TestInput.setKeypressNotAfk();
+  TestInput.setCurrentNotAfk();
 
   if (
     (Config.layout === "default" || Config.layout === "korean") &&
