@@ -250,10 +250,6 @@ export let keyOverlap = {
 export let wpmHistory: number[] = [];
 export let rawHistory: number[] = [];
 export let burstHistory: number[] = [];
-export let bailout = false;
-export function setBailout(tf: boolean): void {
-  bailout = tf;
-}
 
 export let spacingDebug = false;
 export function enableSpacingDebug(): void {
