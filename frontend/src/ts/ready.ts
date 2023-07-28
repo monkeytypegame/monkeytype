@@ -9,6 +9,7 @@ import * as CookiePopup from "./popups/cookie-popup";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
 import { Workbox } from "workbox-window";
+import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-ignore
 import Konami from "konami";
 
@@ -66,6 +67,10 @@ $(document).ready(() => {
   //     true
   //   );
   // }
+
+  FunboxList.get(Config.funbox).forEach((it) =>
+    it.functions?.applyGlobalCSS?.()
+  );
 
   $("#centerContent")
     .css("opacity", "0")

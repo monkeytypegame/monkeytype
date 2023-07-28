@@ -236,6 +236,7 @@ declare namespace MonkeyTypes {
     alterText?: (word: string) => string;
     applyCSS?: () => void;
     applyConfig?: () => void;
+    applyGlobalCSS?: () => void;
     rememberSettings?: () => void;
     toggleScript?: (params: string[]) => void;
     pullSection?: (language?: string) => Promise<Misc.Section | false>;
