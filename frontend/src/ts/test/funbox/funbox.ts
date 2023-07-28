@@ -557,6 +557,9 @@ export function toggleScript(...params: string[]): void {
 }
 
 export function setFunbox(funbox: string): boolean {
+  if (funbox === "none") {
+    FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
+  }
   FunboxMemory.load();
   UpdateConfig.setFunbox(funbox, false);
   return true;
@@ -578,16 +581,20 @@ export function toggleFunbox(funbox: string): boolean {
   }
   FunboxMemory.load();
   const e = UpdateConfig.toggleFunbox(funbox, false);
+
+  if (!Config.funbox.includes(funbox)) {
+    FunboxList.get(funbox).forEach((f) => f.functions?.clearGlobal?.());
+  } else {
+    FunboxList.get(funbox).forEach((f) => f.functions?.applyGlobalCSS?.());
+  }
+
+  //todo find out what the hell this means
   if (e === false || e === true) return false;
   return true;
 }
 
 export async function clear(): Promise<boolean> {
-  if (
-    !FunboxList.get(Config.funbox).some((it) => it.functions?.applyGlobalCSS)
-  ) {
-    $("#funBoxTheme").attr("href", ``);
-  }
+  $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
   $("#wordsWrapper").removeClass("hidden");
@@ -623,15 +630,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   MemoryTimer.reset();
   $("#wordsWrapper").removeClass("hidden");
-  if (
-    !FunboxList.get(Config.funbox).some((it) => it.functions?.applyGlobalCSS)
-  ) {
-    $("#funBoxTheme").attr("href", ``);
-  }
+  $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   $("#words").removeClass("arrows");
-  $("#scanline").remove();
-  $("body").removeClass("crtmode");
 
   let language;
   try {
@@ -739,19 +740,14 @@ FunboxList.setFunboxFunctions("morse", {
 });
 
 FunboxList.setFunboxFunctions("crt", {
-  applyConfig(): void {
-    if ($("#scanline").length == 0) {
-      $("body").append('<div id="scanline" />');
-    }
-    $("body").addClass("crtmode");
-  },
-  applyCSS(): void {
-    if ($("#funBoxTheme").attr("href") != "funbox/crt.css") {
-      $("#funBoxTheme").attr("href", `funbox/crt.css`);
-    }
-  },
   applyGlobalCSS(): void {
-    this.applyConfig?.();
-    this.applyCSS?.();
+    $("body").append('<div id="scanline" />');
+    $("body").addClass("crtmode");
+    $("#globalFunBoxTheme").attr("href", `funbox/crt.css`);
+  },
+  clearGlobal(): void {
+    $("#scanline").remove();
+    $("body").removeClass("crtmode");
+    $("#globalFunBoxTheme").attr("href", ``);
   },
 });
