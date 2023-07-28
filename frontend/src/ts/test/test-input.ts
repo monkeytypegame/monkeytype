@@ -225,7 +225,6 @@ export let currentKeypress: Keypress = {
   words: [],
   afk: true,
 };
-export let lastKeypress: number;
 export let currentBurstStart = 0;
 export let missedWords: {
   [word: string]: number;
@@ -260,10 +259,6 @@ export let spacingDebug = false;
 export function enableSpacingDebug(): void {
   spacingDebug = true;
   console.clear();
-}
-
-export function updateLastKeypress(): void {
-  lastKeypress = performance.now();
 }
 
 export function incrementKeypressCount(): void {

@@ -268,7 +268,6 @@ function handleSpace(): void {
     }
     Replay.addReplayEvent("submitErrorWord");
   }
-  TestInput.updateLastKeypress();
 
   let wordLength: number;
   if (Config.mode === "zen") {
@@ -586,7 +585,6 @@ function handleChar(
   }
 
   TestInput.incrementKeypressCount();
-  TestInput.updateLastKeypress();
   TestInput.pushKeypressWord(TestWords.words.currentIndex);
 
   if (
