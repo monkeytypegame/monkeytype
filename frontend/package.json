@@ -80,7 +80,7 @@
     "lz-ts": "1.1.2",
     "object-hash": "3.0.0",
     "seedrandom": "3.0.5",
-    "socket.io-client": "4.6.1",
+    "socket.io-client": "4.7.1",
     "stemmer": "2.0.0",
     "throttle-debounce": "3.0.1",
     "workbox-window": "6.5.4"
