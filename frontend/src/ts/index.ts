@@ -68,6 +68,4 @@ extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
 
 extendedGlobal.egVideoListener = egVideoListener;
 
-extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
-
 extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;
