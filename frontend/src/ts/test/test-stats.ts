@@ -136,98 +136,22 @@ export function calculateTestSeconds(now?: number): number {
   }
 }
 
-let avg = 0;
-export function calculateWpmAndRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
-  const start = performance.now();
-  const containsKorean = TestInput.input.getKoreanStatus();
-  let chars = 0;
-  let correctWordChars = 0;
-  let spaces = 0;
-
-  const currTestInput = !containsKorean
-    ? TestInput.input.current
-    : Hangul.disassemble(TestInput.input.current);
-
-  //check input history
-  for (let i = 0; i < TestInput.input.history.length; i++) {
-    const word: string = !containsKorean
-      ? //english
-        Config.mode === "zen"
-        ? (TestInput.input.getHistory(i) as string)
-        : TestWords.words.get(i)
-      : //korean
-      Config.mode === "zen"
-      ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
-      : Hangul.disassemble(TestWords.words.get(i)).join("");
-
-    const historyWord: string = !containsKorean
-      ? (TestInput.input.getHistory(i) as string)
-      : Hangul.disassemble(TestInput.input.getHistory(i) as string).join("");
-
-    if (historyWord === word) {
-      //the word is correct
-      //+1 for space
-      correctWordChars += word.length;
-      if (
-        i < TestInput.input.history.length - 1 &&
-        Misc.getLastChar(TestInput.input.getHistory(i) as string) !== "\n"
-      ) {
-        spaces++;
-      }
-    }
-    chars += !containsKorean
-      ? TestInput.input.getHistory(i).length
-      : Hangul.disassemble(TestInput.input.getHistory(i) as string).length;
-  }
-  if (currTestInput !== "") {
-    const word =
-      Config.mode === "zen"
-        ? currTestInput
-        : !containsKorean
-        ? TestWords.words.getCurrent()
-        : Hangul.disassemble(TestWords.words.getCurrent() ?? "");
-    //check whats currently typed
-    const toAdd = {
-      correct: 0,
-      incorrect: 0,
-      missed: 0,
-    };
-    for (let c = 0; c < word.length; c++) {
-      if (c < currTestInput.length) {
-        //on char that still has a word list pair
-        if (currTestInput[c] === word[c]) {
-          toAdd.correct++;
-        } else {
-          toAdd.incorrect++;
-        }
-      } else {
-        //on char that is extra
-        toAdd.missed++;
-      }
-    }
-    chars += toAdd.correct;
-    chars += toAdd.incorrect;
-    chars += toAdd.missed;
-    if (toAdd.incorrect === 0) {
-      //word is correct so far, add chars
-      correctWordChars += toAdd.correct;
-    }
-  }
-  if (
-    FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
-  ) {
-    spaces = 0;
-  }
-  chars += currTestInput.length;
+export function calculateWpmAndRaw(): MonkeyTypes.WpmAndRaw {
   const testSeconds = calculateTestSeconds(
     TestState.isActive ? performance.now() : end
   );
+  const chars = countChars();
   const wpm = Math.round(
-    ((correctWordChars + spaces) * (60 / testSeconds)) / 5
+    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
-  const raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
-  const endPerf = performance.now();
-  avg = (endPerf - start + avg) / 2;
+  const raw = Math.round(
+    ((chars.allCorrectChars +
+      chars.spaces +
+      chars.incorrectChars +
+      chars.extraChars) *
+      (60 / testSeconds)) /
+      5
+  );
   return {
     wpm: wpm,
     raw: raw,
@@ -311,8 +235,13 @@ function countChars(): CharCount {
   let missedChars = 0;
   let spaces = 0;
   let correctspaces = 0;
+
+  const containsKorean = TestInput.input.getKoreanStatus();
+  const currTestInput = !containsKorean
+    ? TestInput.input.current
+    : Hangul.disassemble(TestInput.input.current);
+
   for (let i = 0; i < TestInput.input.history.length; i++) {
-    const containsKorean = TestInput.input.getKoreanStatus();
     const word: string = !containsKorean
       ? //english
         Config.mode === "zen"
@@ -389,6 +318,40 @@ function countChars(): CharCount {
       spaces++;
     }
   }
+  if (currTestInput !== "") {
+    const word =
+      Config.mode === "zen"
+        ? currTestInput
+        : !containsKorean
+        ? TestWords.words.getCurrent()
+        : Hangul.disassemble(TestWords.words.getCurrent() ?? "");
+    //check whats currently typed
+    const toAdd = {
+      correct: 0,
+      incorrect: 0,
+      missed: 0,
+    };
+    for (let c = 0; c < word.length; c++) {
+      if (c < currTestInput.length) {
+        //on char that still has a word list pair
+        if (currTestInput[c] === word[c]) {
+          toAdd.correct++;
+        } else {
+          toAdd.incorrect++;
+        }
+      } else {
+        //on char that is extra
+        toAdd.missed++;
+      }
+    }
+    correctChars += toAdd.correct;
+    incorrectChars += toAdd.incorrect;
+    missedChars += toAdd.missed;
+    if (toAdd.incorrect === 0) {
+      //word is correct so far, add chars
+      correctWordChars += toAdd.correct;
+    }
+  }
   if (
     FunboxList.get(Config.funbox).find((f) => f.properties?.includes("nospace"))
   ) {
@@ -425,30 +388,11 @@ export function calculateStats(): Stats {
     );
   }
   const chars = countChars();
-  const wpm = Misc.roundTo2(
-    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
-  );
-  const wpmraw = Misc.roundTo2(
-    ((chars.allCorrectChars +
-      chars.spaces +
-      chars.incorrectChars +
-      chars.extraChars) *
-      (60 / testSeconds)) /
-      5
-  );
-  if (wpmCalcDebug) {
-    console.log("chars", chars);
-    console.log(
-      "wpm",
-      ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
-    );
-    console.log("wpm rounded to 2", wpm);
-    console.log("wpmraw", wpmraw);
-  }
+  const { wpm, raw } = calculateWpmAndRaw();
   const acc = Misc.roundTo2(calculateAccuracy());
-  return {
+  const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
-    wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
+    wpmRaw: isNaN(raw) ? 0 : raw,
     acc: acc,
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars,
@@ -464,4 +408,5 @@ export function calculateStats(): Stats {
     correctSpaces: chars.correctSpaces,
   };
   console.debug("Result stats", ret);
+  return ret;
 }
