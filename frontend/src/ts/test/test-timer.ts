@@ -223,7 +223,7 @@ async function timerStep(): Promise<void> {
     TestInput.input.getHistory().length === 0 &&
     TestInput.input.current === ""
   ) {
-    if (TestInput.keypressPerSecond.every((kp) => kp.afk === true)) {
+    if (TestInput.afkHistory.every((afk) => afk === true)) {
       TimerEvent.dispatch("finish");
     }
   }
