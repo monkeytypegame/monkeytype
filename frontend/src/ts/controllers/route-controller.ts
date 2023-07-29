@@ -10,14 +10,7 @@ import * as PageTribe from "../pages/tribe";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import * as NavigateEvent from "../observables/navigate-event";
 import { Auth } from "../firebase";
-import * as Tribe from "../tribe/tribe";
-import * as TribeState from "../tribe/tribe-state";
-import tribeSocket from "../tribe/tribe-socket";
-
-//this is the only one that is using nav (through navigation event) - maybe consider removing this circular somehow to get rid of the nav event
-import * as PageProfileSearch from "../pages/profile-search";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -25,7 +18,8 @@ import * as PageProfileSearch from "../pages/profile-search";
 interface NavigateOptions {
   tribeOverride?: boolean;
   force?: boolean;
-  data?: any;
+  empty: boolean;
+  data?: unknown;
 }
 
 function pathToRegex(path: string): RegExp {
@@ -52,6 +46,13 @@ interface Route {
     navigateOptions: NavigateOptions
   ) => void;
 }
+
+const route404: Route = {
+  path: "404",
+  load: (): void => {
+    PageController.change("404");
+  },
+};
 
 const routes: Route[] = [
   {
@@ -82,7 +83,7 @@ const routes: Route[] = [
   {
     path: "/verify",
     load: (): void => {
-      PageController.change(PageTest.page);
+      PageController.change("test");
     },
   },
   // {
@@ -97,37 +98,37 @@ const routes: Route[] = [
   {
     path: "/about",
     load: (): void => {
-      PageController.change(PageAbout.page);
+      PageController.change("about");
     },
   },
   {
     path: "/settings",
     load: (): void => {
-      PageController.change(PageSettings.page);
+      PageController.change("settings");
     },
   },
   {
     path: "/login",
     load: (): void => {
       if (!Auth) {
-        nav("/");
+        navigate("/");
         return;
       }
       if (Auth.currentUser) {
-        nav("/account");
+        navigate("/account");
         return;
       }
-      PageController.change(PageLogin.page);
+      PageController.change("login");
     },
   },
   {
     path: "/account",
     load: (_params, options): void => {
       if (!Auth) {
-        nav("/");
+        navigate("/");
         return;
       }
-      PageController.change(PageAccount.page, {
+      PageController.change("account", {
         data: options.data,
       });
     },
@@ -135,13 +136,13 @@ const routes: Route[] = [
   {
     path: "/profile",
     load: (_params): void => {
-      PageController.change(PageProfileSearch.page);
+      PageController.change("profileSearch");
     },
   },
   {
     path: "/profile/:uidOrName",
     load: (params, options): void => {
-      PageController.change(PageProfile.page, {
+      PageController.change("profile", {
         force: true,
         params: {
           uidOrName: params["uidOrName"],
@@ -185,7 +186,7 @@ const routes: Route[] = [
   },
 ];
 
-function nav(
+export function navigate(
   url = window.location.pathname + window.location.search,
   options = {} as NavigateOptions
 ): void {
@@ -223,7 +224,7 @@ async function router(options = {} as NavigateOptions): Promise<void> {
   };
 
   if (!match) {
-    PageController.change(Page404.page);
+    route404.load({}, {});
     return;
   }
 
@@ -239,19 +240,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = e?.target as HTMLLinkElement;
     if (target.matches("[router-link]") && target?.href) {
       e.preventDefault();
-      nav(target.href);
+      navigate(target.href);
     }
   });
 });
 
 $("#top .logo").on("click", () => {
-  nav("/");
+  navigate("/");
 });
 
 $("#popups").on("click", "#leaderboards a.entryName", () => {
   Leaderboards.hide();
-});
-
-NavigateEvent.subscribe((url, options) => {
-  nav(url, options);
 });

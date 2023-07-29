@@ -300,6 +300,7 @@ list["updateEmail"] = new SimplePopup(
   async (_thisPopup, password, email, emailConfirm) => {
     try {
       const user = Auth?.currentUser;
+      if (!Auth) return;
       if (!user) return;
       if (email !== emailConfirm) {
         Notifications.add("Emails don't match", 0);
@@ -325,9 +326,7 @@ list["updateEmail"] = new SimplePopup(
       }
 
       Notifications.add("Email updated", 1);
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+      AccountController.signOut();
     } catch (e) {
       const typedError = e as FirebaseError;
       if (typedError.code === "auth/wrong-password") {
@@ -471,7 +470,7 @@ list["updateName"] = new SimplePopup(
       if (snapshot.needsToChangeName) {
         setTimeout(() => {
           location.reload();
-        }, 3000);
+        }, 1000);
       }
     } catch (e) {
       const typedError = e as FirebaseError;
@@ -493,7 +492,7 @@ list["updateName"] = new SimplePopup(
     }
     if (snapshot.needsToChangeName === true) {
       thisPopup.text =
-        "We've recently identified several issues that allowed users to register with names that were already taken. Accounts which signed up earliest get to keep the duplicated name, and others are forced to change. Unique names are essential for smooth operation of upcoming features like public profiles, multiplayer, and more. Sorry for the inconvenience.";
+        "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed. Sorry for the inconvenience.";
     }
   },
   (_thisPopup) => {
@@ -1345,6 +1344,9 @@ list["forgotPassword"] = new SimplePopup(
     ).val() as string;
     if (inputValue) {
       thisPopup.inputs[0].initVal = inputValue;
+      setTimeout(() => {
+        $("#simplePopup").find("input")[0].select();
+      }, 1);
     }
   },
   () => {

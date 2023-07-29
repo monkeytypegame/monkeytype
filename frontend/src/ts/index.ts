@@ -12,7 +12,6 @@ import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
-import * as TestInput from "./test/test-input";
 import * as Tribe from "./tribe/tribe";
 import * as TribeState from "./tribe/tribe-state";
 import * as TribeCarets from "./tribe/tribe-carets";
@@ -47,6 +46,7 @@ import "./test/tts";
 import "./elements/fps-counter";
 import "./popups/tribe-room-code-popup";
 import "./popups/tribe-browse-public-rooms-popup";
+import "./controllers/profile-search-controller";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
@@ -70,8 +70,6 @@ extendedGlobal.getTimerStats = TestTimer.getTimerStats;
 
 extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 
-extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
-
 extendedGlobal.egVideoListener = egVideoListener;
 
 //@ts-ignore
@@ -85,7 +83,5 @@ extendedGlobal.tribeCarets = TribeCarets;
 
 //@ts-ignore
 extendedGlobal.createTribeRoom = TribeSocket.default.out.room.create;
-
-extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
 
 extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;

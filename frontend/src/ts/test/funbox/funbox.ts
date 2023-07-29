@@ -21,6 +21,7 @@ import {
 } from "./funbox-validation";
 import * as TribeConfigSyncEvent from "../../observables/tribe-config-sync-event";
 import { Wordset } from "../wordset";
+import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 
 const prefixSize = 2;
 
@@ -90,7 +91,7 @@ class PseudolangWordGenerator extends Wordset {
       }
       // Pick a random char from the distribution that comes after `prefix`.
       const nextChar = charDistribution.randomChar();
-      if (nextChar == " ") {
+      if (nextChar === " ") {
         // A space marks the end of the word, so stop generating and return.
         break;
       }
@@ -147,7 +148,7 @@ FunboxList.setFunboxFunctions("tts", {
     save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
   },
   toggleScript(params: string[]): void {
-    if (window.speechSynthesis == undefined) {
+    if (window.speechSynthesis === undefined) {
       Notifications.add("Failed to load text-to-speech script", -1);
       return;
     }
@@ -216,8 +217,6 @@ FunboxList.setFunboxFunctions("arrows", {
   async preventDefaultEvent(
     event: JQuery.KeyDownEvent<Document, null | undefined, Document, Document>
   ): Promise<boolean> {
-    // TODO What's better?
-    // return /Arrow/i.test(event.key);
     return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
       event.key
     );
@@ -252,7 +251,7 @@ FunboxList.setFunboxFunctions("rAnDoMcAsE", {
   alterText(word: string): string {
     let randomcaseword = word[0];
     for (let i = 1; i < word.length; i++) {
-      if (randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase()) {
+      if (randomcaseword[i - 1] === randomcaseword[i - 1].toUpperCase()) {
         randomcaseword += word[i].toLowerCase();
       } else {
         randomcaseword += word[i].toUpperCase();
@@ -295,24 +294,40 @@ FunboxList.setFunboxFunctions("layoutfluid", {
       const layouts: string[] = Config.customLayoutfluid
         ? Config.customLayoutfluid.split("#")
         : ["qwerty", "dvorak", "colemak"];
-      let index = 0;
       const outOf: number = TestWords.words.length;
-      index = Math.floor(
-        (TestInput.input.history.length + 1) / (outOf / layouts.length)
+      const wordsPerLayout = Math.floor(outOf / layouts.length);
+      const index = Math.floor(
+        (TestInput.input.history.length + 1) / wordsPerLayout
       );
-      if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
-        Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
+      const mod =
+        wordsPerLayout - ((TestWords.words.currentIndex + 1) % wordsPerLayout);
+
+      console.log(wordsPerLayout);
+      console.log(mod);
+
+      if (layouts[index + 1]) {
+        if (mod <= 3) {
+          LayoutfluidFunboxTimer.show();
+          LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1]);
+        }
+        if (mod === wordsPerLayout) {
+          UpdateConfig.setLayout(layouts[index]);
+          UpdateConfig.setKeymapLayout(layouts[index]);
+          if (mod > 3) {
+            LayoutfluidFunboxTimer.hide();
+          }
+        }
+      } else {
+        LayoutfluidFunboxTimer.hide();
       }
-      if (layouts[index]) {
-        UpdateConfig.setLayout(layouts[index]);
-        UpdateConfig.setKeymapLayout(layouts[index]);
-      }
-      KeymapEvent.highlight(
-        TestWords.words
-          .getCurrent()
-          .charAt(TestInput.input.current.length)
-          .toString()
-      );
+      setTimeout(() => {
+        KeymapEvent.highlight(
+          TestWords.words
+            .getCurrent()
+            .charAt(TestInput.input.current.length)
+            .toString()
+        );
+      }, 1);
     }
   },
   getResultContent(): string {
@@ -320,15 +335,17 @@ FunboxList.setFunboxFunctions("layoutfluid", {
   },
   restart(): void {
     if (this.applyConfig) this.applyConfig();
-    KeymapEvent.highlight(
-      TestWords.words
-        .getCurrent()
-        .substring(
-          TestInput.input.current.length,
-          TestInput.input.current.length + 1
-        )
-        .toString()
-    );
+    setTimeout(() => {
+      KeymapEvent.highlight(
+        TestWords.words
+          .getCurrent()
+          .substring(
+            TestInput.input.current.length,
+            TestInput.input.current.length + 1
+          )
+          .toString()
+      );
+    }, 1);
   },
 });
 
@@ -566,7 +583,7 @@ export function setFunbox(funbox: string, tribeOverride = false): boolean {
 }
 
 export function toggleFunbox(funbox: string): boolean {
-  if (funbox == "none") setFunbox("none");
+  if (funbox === "none") setFunbox("none");
   if (
     !areFunboxesCompatible(Config.funbox, funbox) &&
     !Config.funbox.split("#").includes(funbox)
@@ -598,7 +615,7 @@ export async function clear(): Promise<boolean> {
 export async function activate(funbox?: string): Promise<boolean | undefined> {
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
-  } else if (Config.funbox != funbox) {
+  } else if (Config.funbox !== funbox) {
     Config.funbox = funbox;
   }
 
@@ -724,3 +741,9 @@ export async function rememberSettings(): Promise<void> {
     if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
   });
 }
+
+FunboxList.setFunboxFunctions("morse", {
+  alterText(word: string): string {
+    return Misc.convertToMorse(word);
+  },
+});

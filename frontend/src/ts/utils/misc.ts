@@ -118,7 +118,7 @@ export async function getLanguage(
   lang: string
 ): Promise<MonkeyTypes.LanguageObject> {
   // try {
-  if (currentLanguage == undefined || currentLanguage.name !== lang) {
+  if (currentLanguage === undefined || currentLanguage.name !== lang) {
     currentLanguage = await cachedFetchJson<MonkeyTypes.LanguageObject>(
       `/./languages/${lang}.json`
     );
@@ -183,7 +183,7 @@ export async function getFunbox(
 ): Promise<MonkeyTypes.FunboxMetadata | undefined> {
   const list: MonkeyTypes.FunboxMetadata[] = await getFunboxList();
   return list.find(function (element) {
-    return element.name == funbox;
+    return element.name === funbox;
   });
 }
 
@@ -274,17 +274,17 @@ function hexToRgb(hex: string):
       b: number;
     }
   | undefined {
-  if (hex.length != 4 && hex.length != 7 && !hex.startsWith("#")) {
+  if (hex.length !== 4 && hex.length !== 7 && !hex.startsWith("#")) {
     return undefined;
   }
   let r: number;
   let g: number;
   let b: number;
-  if (hex.length == 4) {
+  if (hex.length === 4) {
     r = ("0x" + hex[1] + hex[1]) as unknown as number;
     g = ("0x" + hex[2] + hex[2]) as unknown as number;
     b = ("0x" + hex[3] + hex[3]) as unknown as number;
-  } else if (hex.length == 7) {
+  } else if (hex.length === 7) {
     r = ("0x" + hex[1] + hex[2]) as unknown as number;
     g = ("0x" + hex[3] + hex[4]) as unknown as number;
     b = ("0x" + hex[5] + hex[6]) as unknown as number;
@@ -320,11 +320,11 @@ function hexToHSL(hex: string): {
   let r: number;
   let g: number;
   let b: number;
-  if (hex.length == 4) {
+  if (hex.length === 4) {
     r = ("0x" + hex[1] + hex[1]) as unknown as number;
     g = ("0x" + hex[2] + hex[2]) as unknown as number;
     b = ("0x" + hex[3] + hex[3]) as unknown as number;
-  } else if (hex.length == 7) {
+  } else if (hex.length === 7) {
     r = ("0x" + hex[1] + hex[2]) as unknown as number;
     g = ("0x" + hex[3] + hex[4]) as unknown as number;
     b = ("0x" + hex[5] + hex[6]) as unknown as number;
@@ -344,9 +344,9 @@ function hexToHSL(hex: string): {
   let s = 0;
   let l = 0;
 
-  if (delta == 0) h = 0;
-  else if (cmax == r) h = ((g - b) / delta) % 6;
-  else if (cmax == g) h = (b - r) / delta + 2;
+  if (delta === 0) h = 0;
+  else if (cmax === r) h = ((g - b) / delta) % 6;
+  else if (cmax === g) h = (b - r) / delta + 2;
   else h = (r - g) / delta + 4;
 
   h = Math.round(h * 60);
@@ -354,7 +354,7 @@ function hexToHSL(hex: string): {
   if (h < 0) h += 360;
 
   l = (cmax + cmin) / 2;
-  s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+  s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
   s = +(s * 100).toFixed(1);
   l = +(l * 100).toFixed(1);
 
@@ -604,7 +604,7 @@ export function secondsToString(
   if (days > 0 && showDays) {
     ret += daysString;
     if (delimiter === "text") {
-      if (days == 1) {
+      if (days === 1) {
         ret += " day ";
       } else {
         ret += " days ";
@@ -616,7 +616,7 @@ export function secondsToString(
   if (hours > 0 || alwaysShowHours) {
     ret += hoursString;
     if (delimiter === "text") {
-      if (hours == 1) {
+      if (hours === 1) {
         ret += " hour ";
       } else {
         ret += " hours ";
@@ -628,7 +628,7 @@ export function secondsToString(
   if (minutes > 0 || hours > 0 || alwaysShowMinutes) {
     ret += minutesString;
     if (delimiter === "text") {
-      if (minutes == 1) {
+      if (minutes === 1) {
         ret += " minute ";
       } else {
         ret += " minutes ";
@@ -640,7 +640,7 @@ export function secondsToString(
   if (showSeconds) {
     ret += secondsString;
     if (delimiter === "text") {
-      if (seconds == 1) {
+      if (seconds === 1) {
         ret += " second";
       } else {
         ret += " seconds";
@@ -802,13 +802,13 @@ export function getPositionString(number: number): string {
   let numend = "th";
   const t = number % 10;
   const h = number % 100;
-  if (t == 1 && h != 11) {
+  if (t === 1 && h !== 11) {
     numend = "st";
   }
-  if (t == 2 && h != 12) {
+  if (t === 2 && h !== 12) {
     numend = "nd";
   }
-  if (t == 3 && h != 13) {
+  if (t === 3 && h !== 13) {
     numend = "rd";
   }
   return number + numend;
@@ -1017,7 +1017,7 @@ export function canQuickRestart(
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
   const timeLong = mode === "time" && (time >= 900 || time === 0);
-  const customTextLong = mode === "custom" && customTextIsLong == true;
+  const customTextLong = mode === "custom" && customTextIsLong === true;
   const customTextRandomWordsLong =
     mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
   const customTextRandomTimeLong =
@@ -1167,24 +1167,28 @@ export async function swapElements(
   return;
 }
 
-export function getMode2(
+export function getMode2<M extends keyof MonkeyTypes.PersonalBests>(
   config: MonkeyTypes.Config,
   randomQuote: MonkeyTypes.Quote
-): string {
+): MonkeyTypes.Mode2<M> {
   const mode = config.mode;
+  let retVal: string;
+
   if (mode === "time") {
-    return config.time.toString();
+    retVal = config.time.toString();
   } else if (mode === "words") {
-    return config.words.toString();
+    retVal = config.words.toString();
   } else if (mode === "custom") {
-    return "custom";
+    retVal = "custom";
   } else if (mode === "zen") {
-    return "zen";
+    retVal = "zen";
   } else if (mode === "quote") {
-    return randomQuote.id.toString();
+    retVal = randomQuote.id.toString();
+  } else {
+    throw new Error("Invalid mode");
   }
 
-  return "";
+  return retVal as MonkeyTypes.Mode2<M>;
 }
 
 export async function downloadResultsCSV(
@@ -1543,3 +1547,117 @@ export function isToday(timestamp: number): boolean {
 
   return today === date;
 }
+
+// Function to get the bounding rectangle of a collection of elements
+export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity;
+
+  elements.forEach((element) => {
+    const rect = element.getBoundingClientRect();
+
+    minX = Math.min(minX, rect.left);
+    minY = Math.min(minY, rect.top);
+    maxX = Math.max(maxX, rect.right);
+    maxY = Math.max(maxY, rect.bottom);
+  });
+
+  // Create a new object with the same properties as a DOMRect
+  return {
+    x: minX,
+    y: minY,
+    width: maxX - minX,
+    height: maxY - minY,
+    top: minY,
+    right: maxX,
+    bottom: maxY,
+    left: minX,
+    toJSON: function (): string {
+      return JSON.stringify({
+        x: this.x,
+        y: this.y,
+        width: this.width,
+        height: this.height,
+        top: this.top,
+        right: this.right,
+        bottom: this.bottom,
+        left: this.left,
+      });
+    },
+  };
+}
+export function convertToMorse(word: string): string {
+  const morseCode: { [id: string]: string } = {
+    a: ".-",
+    b: "-...",
+    c: "-.-.",
+    d: "-..",
+    e: ".",
+    f: "..-.",
+    g: "--.",
+    h: "....",
+    i: "..",
+    j: ".---",
+    k: "-.-",
+    l: ".-..",
+    m: "--",
+    n: "-.",
+    o: "---",
+    p: ".--.",
+    q: "--.-",
+    r: ".-.",
+    s: "...",
+    t: "-",
+    u: "..-",
+    v: "...-",
+    w: ".--",
+    x: "-..-",
+    y: "-.--",
+    z: "--..",
+    "0": "-----",
+    "1": ".----",
+    "2": "..---",
+    "3": "...--",
+    "4": "....-",
+    "5": ".....",
+    "6": "-....",
+    "7": "--...",
+    "8": "---..",
+    "9": "----.",
+    ".": ".-.-.-",
+    ",": "--..--",
+    "?": "..--..",
+    "'": ".----.",
+    "/": "-..-.",
+    "(": "-.--.",
+    ")": "-.--.-",
+    "&": ".-...",
+    ":": "---...",
+    ";": "-.-.-.",
+    "=": "-...-",
+    "+": ".-.-.",
+    "-": "-....-",
+    _: "..--.-",
+    '"': ".-..-.",
+    $: "...-..-",
+    "!": "-.-.--",
+    "@": ".--.-.",
+  };
+
+  let morseWord = "";
+
+  for (let i = 0; i < word.length; i++) {
+    morseWord += morseCode[word.toLowerCase()[i]] + "/";
+  }
+  return morseWord;
+}
+
+export function typedKeys<T extends object>(
+  obj: T
+): T extends T ? (keyof T)[] : never {
+  return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
+}
+
+// DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

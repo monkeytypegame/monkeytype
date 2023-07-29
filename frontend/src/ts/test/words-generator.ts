@@ -37,19 +37,19 @@ export async function punctuateWord(
     return funbox.functions.punctuateWord(word);
   }
   if (
-    currentLanguage != "code" &&
-    currentLanguage != "georgian" &&
-    (index == 0 || shouldCapitalize(lastChar))
+    currentLanguage !== "code" &&
+    currentLanguage !== "georgian" &&
+    (index === 0 || shouldCapitalize(lastChar))
   ) {
     //always capitalise the first word or if there was a dot unless using a code alphabet or the Georgian language
 
     word = Misc.capitalizeFirstLetterOfEachWord(word);
 
-    if (currentLanguage == "turkish") {
+    if (currentLanguage === "turkish") {
       word = word.replace(/I/g, "İ");
     }
 
-    if (currentLanguage == "spanish" || currentLanguage == "catalan") {
+    if (currentLanguage === "spanish" || currentLanguage === "catalan") {
       const rand = Random.get();
       if (rand > 0.9) {
         word = "¿" + word;
@@ -61,20 +61,20 @@ export async function punctuateWord(
     }
   } else if (
     (Random.get() < 0.1 &&
-      lastChar != "." &&
-      lastChar != "," &&
-      index != maxindex - 2) ||
-    index == maxindex - 1
+      lastChar !== "." &&
+      lastChar !== "," &&
+      index !== maxindex - 2) ||
+    index === maxindex - 1
   ) {
-    if (currentLanguage == "spanish" || currentLanguage == "catalan") {
-      if (spanishSentenceTracker == "?" || spanishSentenceTracker == "!") {
+    if (currentLanguage === "spanish" || currentLanguage === "catalan") {
+      if (spanishSentenceTracker === "?" || spanishSentenceTracker === "!") {
         word += spanishSentenceTracker;
         spanishSentenceTracker = "";
       }
     } else {
       const rand = Random.get();
       if (rand <= 0.8) {
-        if (currentLanguage == "kurdish") {
+        if (currentLanguage === "kurdish") {
           word += ".";
         } else if (currentLanguage === "nepali") {
           word += "।";
@@ -82,22 +82,22 @@ export async function punctuateWord(
           word += ".";
         }
       } else if (rand > 0.8 && rand < 0.9) {
-        if (currentLanguage == "french") {
+        if (currentLanguage === "french") {
           word = "?";
         } else if (
-          currentLanguage == "arabic" ||
-          currentLanguage == "persian" ||
-          currentLanguage == "urdu" ||
-          currentLanguage == "kurdish"
+          currentLanguage === "arabic" ||
+          currentLanguage === "persian" ||
+          currentLanguage === "urdu" ||
+          currentLanguage === "kurdish"
         ) {
           word += "؟";
-        } else if (currentLanguage == "greek") {
+        } else if (currentLanguage === "greek") {
           word += ";";
         } else {
           word += "?";
         }
       } else {
-        if (currentLanguage == "french") {
+        if (currentLanguage === "french") {
           word = "!";
         } else {
           word += "!";
@@ -106,22 +106,22 @@ export async function punctuateWord(
     }
   } else if (
     Random.get() < 0.01 &&
-    lastChar != "," &&
-    lastChar != "." &&
+    lastChar !== "," &&
+    lastChar !== "." &&
     currentLanguage !== "russian"
   ) {
     word = `"${word}"`;
   } else if (
     Random.get() < 0.011 &&
-    lastChar != "," &&
-    lastChar != "." &&
+    lastChar !== "," &&
+    lastChar !== "." &&
     currentLanguage !== "russian" &&
     currentLanguage !== "ukrainian" &&
     currentLanguage !== "slovak"
   ) {
     word = `'${word}'`;
-  } else if (Random.get() < 0.012 && lastChar != "," && lastChar != ".") {
-    if (currentLanguage == "code") {
+  } else if (Random.get() < 0.012 && lastChar !== "," && lastChar !== ".") {
+    if (currentLanguage === "code") {
       const r = Random.get();
       if (r < 0.25) {
         word = `(${word})`;
@@ -137,55 +137,55 @@ export async function punctuateWord(
     }
   } else if (
     Random.get() < 0.013 &&
-    lastChar != "," &&
-    lastChar != "." &&
-    lastChar != ";" &&
-    lastChar != "؛" &&
-    lastChar != ":"
+    lastChar !== "," &&
+    lastChar !== "." &&
+    lastChar !== ";" &&
+    lastChar !== "؛" &&
+    lastChar !== ":"
   ) {
-    if (currentLanguage == "french") {
+    if (currentLanguage === "french") {
       word = ":";
-    } else if (currentLanguage == "greek") {
+    } else if (currentLanguage === "greek") {
       word = "·";
     } else {
       word += ":";
     }
   } else if (
     Random.get() < 0.014 &&
-    lastChar != "," &&
-    lastChar != "." &&
-    previousWord != "-"
+    lastChar !== "," &&
+    lastChar !== "." &&
+    previousWord !== "-"
   ) {
     word = "-";
   } else if (
     Random.get() < 0.015 &&
-    lastChar != "," &&
-    lastChar != "." &&
-    lastChar != ";" &&
-    lastChar != "؛" &&
-    lastChar != ":"
+    lastChar !== "," &&
+    lastChar !== "." &&
+    lastChar !== ";" &&
+    lastChar !== "؛" &&
+    lastChar !== ":"
   ) {
-    if (currentLanguage == "french") {
+    if (currentLanguage === "french") {
       word = ";";
-    } else if (currentLanguage == "greek") {
+    } else if (currentLanguage === "greek") {
       word = "·";
-    } else if (currentLanguage == "arabic" || currentLanguage == "kurdish") {
+    } else if (currentLanguage === "arabic" || currentLanguage === "kurdish") {
       word += "؛";
     } else {
       word += ";";
     }
-  } else if (Random.get() < 0.2 && lastChar != ",") {
+  } else if (Random.get() < 0.2 && lastChar !== ",") {
     if (
-      currentLanguage == "arabic" ||
-      currentLanguage == "urdu" ||
-      currentLanguage == "persian" ||
-      currentLanguage == "kurdish"
+      currentLanguage === "arabic" ||
+      currentLanguage === "urdu" ||
+      currentLanguage === "persian" ||
+      currentLanguage === "kurdish"
     ) {
       word += "،";
     } else {
       word += ",";
     }
-  } else if (Random.get() < 0.25 && currentLanguage == "code") {
+  } else if (Random.get() < 0.25 && currentLanguage === "code") {
     const specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
     const specialsC = [
       "{",
@@ -276,7 +276,7 @@ async function getFunboxSection(limit: number): Promise<string[]> {
       if (section === undefined) continue;
 
       for (const word of section.words) {
-        if (ret.length >= Config.words && Config.mode == "words") {
+        if (ret.length >= Config.words && Config.mode === "words") {
           break;
         }
         ret.push(word);
@@ -341,7 +341,7 @@ export function getWordsLimit(): number {
         limit = CustomText.text.length;
       }
     }
-    if (Config.mode == "words") {
+    if (Config.mode === "words") {
       limit = Config.words;
     }
   }
@@ -432,7 +432,7 @@ export async function generateWords(
   const limit = getWordsLimit();
 
   let wordList = language.words;
-  if (Config.mode == "custom") {
+  if (Config.mode === "custom") {
     wordList = CustomText.text;
   }
   const wordset = await Wordset.withWords(wordList);
@@ -632,14 +632,14 @@ export async function getNextWord(
     if (Config.mode === "quote") {
       randomWord = currentQuote[wordIndex];
     } else if (
-      Config.mode == "custom" &&
+      Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
       !CustomText.isSectionRandom
     ) {
       randomWord = CustomText.text[sectionIndex];
     } else if (
-      Config.mode == "custom" &&
+      Config.mode === "custom" &&
       (CustomText.isWordRandom ||
         CustomText.isTimeRandom ||
         CustomText.isSectionRandom) &&
@@ -665,11 +665,11 @@ export async function getNextWord(
       let firstAfterSplit = randomWord.split(" ")[0].toLowerCase();
       while (
         regenarationCount < 100 &&
-        (previousWordRaw == firstAfterSplit ||
-          previousWord2Raw == firstAfterSplit ||
+        (previousWordRaw === firstAfterSplit ||
+          previousWord2Raw === firstAfterSplit ||
           (Config.mode !== "custom" &&
             !Config.punctuation &&
-            randomWord == "I") ||
+            randomWord === "I") ||
           (Config.mode !== "custom" &&
             !Config.punctuation &&
             !Config.language.startsWith("code") &&

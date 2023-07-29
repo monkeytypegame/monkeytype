@@ -10,7 +10,7 @@ import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 
 type ProfileViewPaths = "profile" | "account";
 
-interface ProfileData extends MonkeyTypes.Snapshot {
+export interface ProfileData extends MonkeyTypes.Snapshot {
   allTimeLbs: MonkeyTypes.LeaderboardMemory;
   uid: string;
 }
@@ -86,12 +86,14 @@ export async function update(
       );
   }
 
-  updateNameFontSize(where);
+  setTimeout(() => {
+    updateNameFontSize(where);
+  }, 10);
 
   const joinedText = "Joined " + format(profile.addedAt ?? 0, "dd MMM yyyy");
   const creationDate = new Date(profile.addedAt);
   const diffDays = differenceInDays(new Date(), creationDate);
-  const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
+  const balloonText = `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
   let hoverText = "";

@@ -1,5 +1,3 @@
-import { CLIENT_VERSION } from "../../version";
-
 const BASE_PATH = "/psas";
 
 export default class Psas {
@@ -8,10 +6,6 @@ export default class Psas {
   }
 
   async get(): Ape.EndpointData {
-    return await this.httpClient.get(BASE_PATH, {
-      headers: {
-        "Client-Version": CLIENT_VERSION,
-      },
-    });
+    return await this.httpClient.get(BASE_PATH);
   }
 }

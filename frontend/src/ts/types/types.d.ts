@@ -1,11 +1,22 @@
 type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
 
 declare namespace MonkeyTypes {
+  type PageName =
+    | "loading"
+    | "test"
+    | "settings"
+    | "about"
+    | "account"
+    | "login"
+    | "profile"
+    | "profileSearch"
+    | "404";
+
   type Difficulty = "normal" | "expert" | "master";
 
   type Mode = keyof PersonalBests;
 
-  type Mode2<M extends Mode> = keyof PersonalBests[M];
+  type Mode2<M extends Mode> = M extends M ? keyof PersonalBests[M] : never;
 
   type StringNumber = `${number}`;
 
@@ -618,17 +629,17 @@ declare namespace MonkeyTypes {
       custom: boolean;
     };
     words: {
-      10: boolean;
-      25: boolean;
-      50: boolean;
-      100: boolean;
+      "10": boolean;
+      "25": boolean;
+      "50": boolean;
+      "100": boolean;
       custom: boolean;
     };
     time: {
-      15: boolean;
-      30: boolean;
-      60: boolean;
-      120: boolean;
+      "15": boolean;
+      "30": boolean;
+      "60": boolean;
+      "120": boolean;
       custom: boolean;
     };
     quoteLength: {
@@ -652,21 +663,18 @@ declare namespace MonkeyTypes {
       last_3months: boolean;
       all: boolean;
     };
-    tags: {
-      [tagId: string]: boolean;
-    };
-    language: {
-      [language: string]: boolean;
-    };
+    tags: Record<string, boolean>;
+    language: Record<string, boolean>;
     funbox: {
       none?: boolean;
-      [funbox: string]: boolean;
-    };
+    } & Record<string, boolean>;
   }
 
-  type Group = keyof ResultFilters;
+  type Group<G extends keyof ResultFilters> = G extends G
+    ? ResultFilters[G]
+    : never;
 
-  type Filter<G extends Group> = keyof ResultFilters[G];
+  type Filter<G extends Group> = G extends G ? keyof ResultFilters[G] : never;
 
   interface TimerStats {
     dateNow: number;
@@ -822,7 +830,7 @@ declare namespace MonkeyTypes {
     row5: string[];
   }
 
-  interface WordsPerMinuteAndRaw {
+  interface WpmAndRaw {
     wpm: number;
     raw: number;
   }

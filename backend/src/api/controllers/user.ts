@@ -87,6 +87,13 @@ export async function sendVerificationEmail(
 
   const userInfo = await UserDAL.getUser(uid, "request verification email");
 
+  if (userInfo.email !== email) {
+    throw new MonkeyError(
+      400,
+      "Authenticated email does not match the email found in the database. This might happen if you recently changed your email. Please refresh and try again."
+    );
+  }
+
   let link = "";
   try {
     link = await FirebaseAdmin()
@@ -299,6 +306,7 @@ function getRelevantUserInfo(
     "lastNameChange",
     "_id",
     "lastResultHashes",
+    "note",
   ]);
 }
 
@@ -350,6 +358,11 @@ export async function getUser(
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
     inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+  }
+
+  if (!userInfo.name) {
+    userInfo.needsToChangeName = true;
+    UserDAL.flagForNameChange(uid);
   }
 
   const userData = {

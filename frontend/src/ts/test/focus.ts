@@ -52,8 +52,8 @@ export function set(foc: boolean, withCursor = false): void {
 
 $(document).on("mousemove", function (event) {
   if (!state) return;
-  if (ActivePage.get() == "loading") return;
-  if (ActivePage.get() == "account" && state == true) return;
+  if (ActivePage.get() === "loading") return;
+  if (ActivePage.get() === "account" && state === true) return;
   if (
     event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

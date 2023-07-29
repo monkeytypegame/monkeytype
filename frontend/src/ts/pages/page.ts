@@ -1,6 +1,6 @@
-interface Options {
+interface Options<T> {
   params?: Record<string, string>;
-  data?: any;
+  data?: T;
   tribeOverride?: boolean;
 }
 
@@ -9,21 +9,21 @@ interface PageFunctionOptions {
   tribeOverride?: boolean;
 }
 
-export default class Page {
-  public name: string;
+export default class Page<T> {
+  public name: MonkeyTypes.PageName;
   public element: JQuery;
   public pathname: string;
   public beforeHide: (options: PageFunctionOptions) => Promise<void>;
   public afterHide: () => Promise<void>;
-  public beforeShow: (options: Options) => Promise<void>;
+  public beforeShow: (options: Options<T>) => Promise<void>;
   public afterShow: () => Promise<void>;
   constructor(
-    name: string,
+    name: MonkeyTypes.PageName,
     element: JQuery,
     pathname: string,
     beforeHide: (options: PageFunctionOptions) => Promise<void>,
     afterHide: () => Promise<void>,
-    beforeShow: (options: Options) => Promise<void>,
+    beforeShow: (options: Options<T>) => Promise<void>,
     afterShow: () => Promise<void>
   ) {
     this.name = name;

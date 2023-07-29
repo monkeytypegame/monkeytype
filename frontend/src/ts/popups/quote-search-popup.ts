@@ -319,13 +319,31 @@ $("#quoteSearchPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#popups").on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", () => {
-  hide(true);
-  QuoteSubmitPopup.show(true);
-});
+$("#popups").on(
+  "click",
+  "#quoteSearchPopup #gotoSubmitQuoteButton",
+  async () => {
+    Loader.show();
+    const isSubmissionEnabled = (await Ape.quotes.isSubmissionEnabled()).data
+      .isEnabled;
+    Loader.hide();
+    if (!isSubmissionEnabled) {
+      Notifications.add(
+        "Quote submission is disabled temporarily due to a large submission queue.",
+        0,
+        {
+          duration: 5,
+        }
+      );
+      return;
+    }
+    hide();
+    QuoteSubmitPopup.show(true);
+  }
+);
 
 $("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
-  hide(true);
+  hide();
   QuoteApprovePopup.show(true);
 });
 
@@ -409,8 +427,8 @@ $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
-  if (len == -2) {
+  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
+  if (len === -2) {
     show();
   }
 });

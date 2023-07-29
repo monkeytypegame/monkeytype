@@ -19,7 +19,7 @@ export let adBlock: boolean;
 export let cookieBlocker: boolean;
 
 // export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
-export const choice: "eg" | "pw" = "eg";
+export const choice: "eg" | "pw" = "pw";
 
 // console.log("AB choice: " + choice);
 
@@ -297,12 +297,12 @@ $(window).on("resize", () => {
 
 ConfigEvent.subscribe((event, value) => {
   if (event === "ads") {
-    if (value == "off") {
+    if (value === "off") {
       removeAll();
-    } else if (value == "result") {
+    } else if (value === "result") {
       removeSellout();
       removeOn();
-    } else if (value == "on") {
+    } else if (value === "on") {
       removeSellout();
     }
   }

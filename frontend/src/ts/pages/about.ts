@@ -174,7 +174,7 @@ function getHistogramDataBucketed(data: Record<string, number>): {
       y: data[bucket],
     });
     labels.push(`${bucket} - ${bucket + 9}`);
-    if (bucket + 10 != parseInt(keys[i + 1], 10)) {
+    if (bucket + 10 !== parseInt(keys[i + 1], 10)) {
       for (let j = bucket + 10; j < parseInt(keys[i + 1], 10); j += 10) {
         histogramChartDataBucketed.push({ x: j, y: 0 });
         labels.push(`${j} - ${j + 9}`);

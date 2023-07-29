@@ -14,6 +14,7 @@ import * as Focus from "./focus";
 import * as Funbox from "./funbox/funbox";
 import * as Keymap from "../elements/keymap";
 import * as ThemeController from "../controllers/theme-controller";
+import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
 import * as LiveWpm from "./live-wpm";
@@ -164,7 +165,7 @@ export function restart(options = {} as RestartOptions): void {
     event?.preventDefault();
     return;
   }
-  if (ActivePage.get() == "test" && !TestUI.resultVisible) {
+  if (ActivePage.get() === "test" && !TestUI.resultVisible) {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") event?.preventDefault();
       if (
@@ -211,6 +212,8 @@ export function restart(options = {} as RestartOptions): void {
 
     if (TestState.savingEnabled) {
       TestInput.pushKeypressesToHistory();
+      TestInput.pushErrorToHistory();
+      TestInput.pushAfkToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
       let tt = Misc.roundTo2(testSeconds - afkseconds);
@@ -222,7 +225,7 @@ export function restart(options = {} as RestartOptions): void {
     }
   }
 
-  if (Config.mode == "zen") {
+  if (Config.mode === "zen") {
     $("#words").empty();
   }
 
@@ -287,7 +290,7 @@ export function restart(options = {} as RestartOptions): void {
   LiveBurst.hide();
   TimerProgress.hide();
   Replay.pauseReplay();
-  TestInput.setBailout(false);
+  TestState.setBailedOut(false);
   PaceCaret.reset();
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
@@ -297,7 +300,7 @@ export function restart(options = {} as RestartOptions): void {
   $("#restartTestButton").blur();
   MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
-  // if (ActivePage.get() == "test" && window.scrollY > 0) {
+  // if (ActivePage.get() === "test" && window.scrollY > 0) {
   // window.scrollTo({ top: 0, behavior: "smooth" });
   // }
   $("#wordsInput").val(" ");
@@ -335,7 +338,7 @@ export function restart(options = {} as RestartOptions): void {
     },
     options.noAnim ? 0 : 125,
     async () => {
-      if (ActivePage.get() == "test") {
+      if (ActivePage.get() === "test") {
         AdController.updateTestPageAds(false);
         if (TribeState.getState() < 5) {
           Focus.set(false);
@@ -480,10 +483,13 @@ export function restart(options = {} as RestartOptions): void {
         );
     }
   );
+
+  ResultWordHighlight.destroy();
 }
 
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
+let languageBeforeQuoteMode: string | undefined;
 export async function init(): Promise<void> {
   console.debug("Initializing test");
   if (TribeState.getState() > 5 && TribeState.getRoom()) {
@@ -528,7 +534,7 @@ export async function init(): Promise<void> {
     return;
   }
 
-  if (ActivePage.get() == "test") {
+  if (ActivePage.get() === "test") {
     await Funbox.activate();
   }
 
@@ -551,7 +557,18 @@ export async function init(): Promise<void> {
       group.name !== "other" &&
       group.name !== Config.language
     ) {
+      languageBeforeQuoteMode = Config.language;
       UpdateConfig.setLanguage(group.name);
+    }
+  } else {
+    if (
+      languageBeforeQuoteMode &&
+      Config.language === languageBeforeQuoteMode.split("_")[0]
+    ) {
+      UpdateConfig.setLanguage(languageBeforeQuoteMode);
+      languageBeforeQuoteMode = undefined;
+      await init();
+      return;
     }
   }
 
@@ -659,7 +676,7 @@ export async function addWord(): Promise<void> {
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
       TestWords.words.length >= CustomText.word &&
-      CustomText.word != 0) ||
+      CustomText.word !== 0) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
@@ -672,7 +689,7 @@ export async function addWord(): Promise<void> {
       CustomText.isSectionRandom &&
       WordsGenerator.sectionIndex >= CustomText.section &&
       WordsGenerator.currentSection.length === 0 &&
-      CustomText.section != 0)
+      CustomText.section !== 0)
   ) {
     return;
   }
@@ -701,7 +718,7 @@ export async function addWord(): Promise<void> {
       let wordCount = 0;
       for (let i = 0; i < section.words.length; i++) {
         const word = section.words[i];
-        if (wordCount >= Config.words && Config.mode == "words") {
+        if (wordCount >= Config.words && Config.mode === "words") {
           break;
         }
         wordCount++;
@@ -830,7 +847,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
-    bailedOut: TestInput.bailout,
+    bailedOut: TestState.bailedOut,
     chartData: {
       wpm: TestInput.wpmHistory,
       raw: undefined,
@@ -863,10 +880,10 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   // stats
   const stats = TestStats.calculateStats();
-  if (stats.time % 1 != 0 && Config.mode !== "time") {
+  if (stats.time % 1 !== 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
-  TestStats.setLastTestWpm(stats.wpm);
+  PaceCaret.setLastTestWpm(stats.wpm);
   completedEvent.wpm = stats.wpm;
   completedEvent.rawWpm = stats.wpmRaw;
   completedEvent.charStats = [
@@ -884,11 +901,13 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
     TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
+    TestInput.pushErrorToHistory();
+    TestInput.pushAfkToHistory();
   }
 
   //consistency
-  const rawPerSecond = TestInput.keypressPerSecond.map((f) =>
-    Math.round((f.count / 5) * 60)
+  const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
+    Math.round((count / 5) * 60)
   );
 
   //adjust last second if last second is not round
@@ -943,8 +962,8 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   );
 
   completedEvent.chartData.err = [];
-  for (let i = 0; i < TestInput.keypressPerSecond.length; i++) {
-    completedEvent.chartData.err.push(TestInput.keypressPerSecond[i].errors);
+  for (let i = 0; i < TestInput.errorHistory.length; i++) {
+    completedEvent.chartData.err.push(TestInput.errorHistory[i].count);
   }
 
   if (Config.mode === "quote") {
@@ -954,7 +973,6 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     delete completedEvent.quoteLength;
   }
 
-  // @ts-ignore TODO fix this
   completedEvent.mode2 = Misc.getMode2(Config, TestWords.randomQuote);
 
   if (Config.mode === "custom") {
@@ -979,7 +997,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   } catch (e) {}
   completedEvent.tags = activeTagsIds;
 
-  if (completedEvent.mode != "custom") delete completedEvent.customText;
+  if (completedEvent.mode !== "custom") delete completedEvent.customText;
 
   return <CompletedEvent>completedEvent;
 }
@@ -998,7 +1016,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestStats.setEnd(now);
 
   await Misc.sleep(1); //this is needed to make sure the last keypress is registered
-  if (TestInput.input.current.length != 0) {
+  if (TestInput.input.current.length !== 0) {
     TestInput.input.pushHistory();
     TestInput.corrected.pushHistory();
     Replay.replayGetWordsList(TestInput.input.history);
@@ -1011,7 +1029,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
-  if ((Config.mode == "zen" || TestInput.bailout) && endAfkSeconds < 7) {
+  if ((Config.mode === "zen" || TestState.bailedOut) && endAfkSeconds < 7) {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
@@ -1040,7 +1058,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   //remove afk from zen
-  if (Config.mode == "zen" || TestInput.bailout) {
+  if (Config.mode === "zen" || TestState.bailedOut) {
     TestStats.removeAfkData();
   }
 
@@ -1077,9 +1095,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ///////// completed event ready
 
   //afk check
-  const kps = TestInput.keypressPerSecond.slice(-5);
-  let afkDetected = kps.every((second) => second.afk);
-  if (TestInput.bailout) afkDetected = false;
+  const kps = TestInput.afkHistory.slice(-5);
+  let afkDetected = kps.every((afk) => afk === true);
+  if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
 
@@ -1151,11 +1169,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   } else if (
     completedEvent.wpm < 0 ||
     (completedEvent.wpm > 350 &&
-      completedEvent.mode != "words" &&
-      completedEvent.mode2 != "10") ||
+      completedEvent.mode !== "words" &&
+      completedEvent.mode2 !== "10") ||
     (completedEvent.wpm > 420 &&
-      completedEvent.mode == "words" &&
-      completedEvent.mode2 == "10")
+      completedEvent.mode === "words" &&
+      completedEvent.mode2 === "10")
   ) {
     Notifications.add("Test invalid - wpm", 0);
     TestStats.setInvalid();
@@ -1164,11 +1182,11 @@ export async function finish(difficultyFailed = false): Promise<void> {
   } else if (
     completedEvent.rawWpm < 0 ||
     (completedEvent.rawWpm > 350 &&
-      completedEvent.mode != "words" &&
-      completedEvent.mode2 != "10") ||
+      completedEvent.mode !== "words" &&
+      completedEvent.mode2 !== "10") ||
     (completedEvent.rawWpm > 420 &&
-      completedEvent.mode == "words" &&
-      completedEvent.mode2 == "10")
+      completedEvent.mode === "words" &&
+      completedEvent.mode2 === "10")
   ) {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
@@ -1201,7 +1219,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
-      TestInput.bailout ||
+      TestState.bailedOut ||
       TestInput.input.history.length < TestWords.words.length
     ) {
       // They bailed out
@@ -1464,6 +1482,7 @@ async function saveResult(
   if (response?.data?.isPb) {
     //new pb
     if (
+      //@ts-expect-error TODO fix this
       DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
     ) {
       Result.showConfetti();
@@ -1544,6 +1563,8 @@ export function fail(reason: string): void {
   // input.pushHistory();
   // corrected.pushHistory();
   TestInput.pushKeypressesToHistory();
+  TestInput.pushErrorToHistory();
+  TestInput.pushAfkToHistory();
   finish(true);
   if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
@@ -1615,7 +1636,7 @@ $(".pageTest").on("click", "#readyButton", () => {
 });
 
 $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
-  if (Config.mode == "zen") {
+  if (Config.mode === "zen") {
     Notifications.add("Repeat test disabled in zen mode");
     return;
   }
@@ -1626,7 +1647,7 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 });
 
 $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
-  if (Config.mode == "zen") {
+  if (Config.mode === "zen") {
     Notifications.add("Repeat test disabled in zen mode");
     return;
   }
@@ -1650,7 +1671,7 @@ $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
 $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const wrd = $(e.currentTarget).attr("wordCount") ?? "15";
-  if (wrd != "custom") {
+  if (wrd !== "custom") {
     UpdateConfig.setWordCount(parseInt(wrd));
     ManualRestart.set();
     restart();
@@ -1660,7 +1681,7 @@ $(".pageTest").on("click", "#testConfig .wordCount .textButton", (e) => {
 $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
   if (TestUI.testRestarting) return;
   const mode = $(e.currentTarget).attr("timeConfig") ?? "10";
-  if (mode != "custom") {
+  if (mode !== "custom") {
     UpdateConfig.setTimeConfig(parseInt(mode));
     ManualRestart.set();
     restart();
@@ -1672,8 +1693,8 @@ $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
     MonkeyTypes.QuoteLength
   >parseInt($(e.currentTarget).attr("quoteLength") ?? "1");
-  if (len != -2) {
-    if (len == -1) {
+  if (len !== -2) {
+    if (len === -1) {
       len = [0, 1, 2, 3];
     }
     UpdateConfig.setQuoteLength(len, false, e.shiftKey);

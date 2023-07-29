@@ -43,9 +43,9 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import { navigate } from "../observables/navigate-event";
 import { update as updateTagsCommands } from "../commandline/lists/tags";
 import * as ConnectionState from "../states/connection";
+import { navigate } from "./route-controller";
 
 let signedOutThisSession = false;
 
@@ -109,7 +109,7 @@ export async function getDataAndInit(): Promise<boolean> {
     $("#top #menu .account").css("opacity", 1);
     return false;
   }
-  if (ActivePage.get() == "loading") {
+  if (ActivePage.get() === "loading") {
     LoadingPage.updateBar(100);
   } else {
     LoadingPage.updateBar(45);
@@ -144,7 +144,7 @@ export async function getDataAndInit(): Promise<boolean> {
 
   if (snapshot.needsToChangeName) {
     Notifications.addBanner(
-      "Your name was reset. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
+      "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
       -1,
       undefined,
       true,
@@ -207,7 +207,7 @@ export async function getDataAndInit(): Promise<boolean> {
         UpdateConfig.apply(snapshot.config);
         Settings.update();
         UpdateConfig.saveFullConfigToLocalStorage(true);
-        if (ActivePage.get() == "test") {
+        if (ActivePage.get() === "test") {
           TestLogic.restart({
             nosave: true,
           });
@@ -302,7 +302,7 @@ if (Auth && ConnectionState.get()) {
       await loadUser(user);
     } else {
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
-      if (window.location.pathname == "/account") {
+      if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
       PageTransition.set(false);
@@ -339,7 +339,7 @@ if (Auth && ConnectionState.get()) {
     const search = window.location.search;
     const hash = window.location.hash;
     $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
-    if (window.location.pathname == "/account") {
+    if (window.location.pathname === "/account") {
       window.history.replaceState("", "", "/login");
     }
     PageTransition.set(false);
@@ -523,10 +523,18 @@ export async function addPasswordAuth(
 
   const credential = EmailAuthProvider.credential(email, password);
   linkWithCredential(user, credential)
-    .then(function () {
-      Loader.hide();
-      Notifications.add("Password authentication added", 1);
+    .then(async function () {
       Settings.updateAuthSections();
+      const response = await Ape.users.updateEmail(email, user.email as string);
+      Loader.hide();
+      if (response.status !== 200) {
+        return Notifications.add(
+          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
+            response.message,
+          -1
+        );
+      }
+      Notifications.add("Password authentication added", 1);
     })
     .catch(function (error) {
       Loader.hide();

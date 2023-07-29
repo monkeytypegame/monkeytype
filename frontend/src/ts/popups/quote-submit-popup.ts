@@ -3,32 +3,21 @@ import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Misc from "../utils/misc";
-// @ts-ignore eslint-disable-next-line
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Config from "../config";
 import * as Skeleton from "./skeleton";
 
 const wrapperId = "quoteSubmitPopupWrapper";
 
 let dropdownReady = false;
-// @ts-ignore eslint-disable-next-line
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function initDropdown(): Promise<void> {
   if (dropdownReady) return;
-  const languages = await Misc.getLanguageList();
-  languages.forEach((language) => {
-    if (
-      language === "english_commonly_misspelled" ||
-      language === "hungarian_2.5k"
-    ) {
-      return;
-    }
-    if (!/_\d*k$/g.test(language)) {
-      $("#quoteSubmitPopup #submitQuoteLanguage").append(
-        `<option value="${language}">${language.replace(/_/g, " ")}</option>`
-      );
-    }
-  });
+  const languageGroups = await Misc.getLanguageGroups();
+  for (const group of languageGroups) {
+    if (group.name === "swiss_german") continue;
+    $("#quoteSubmitPopup #submitQuoteLanguage").append(
+      `<option value="${group.name}">${group.name.replace(/_/g, " ")}</option>`
+    );
+  }
   $("#quoteSubmitPopup #submitQuoteLanguage").select2();
   dropdownReady = true;
 }
@@ -59,38 +48,28 @@ async function submitQuote(): Promise<void> {
   CaptchaController.reset("submitQuote");
 }
 
-// @ts-ignore
-// eslint-disable-next-line
 export async function show(noAnim = false): Promise<void> {
-  Notifications.add(
-    "Quote submission is disabled temporarily due to a large submission queue.",
-    0,
-    {
-      duration: 5,
-    }
-  );
-  return;
-  // Skeleton.append(wrapperId);
+  Skeleton.append(wrapperId);
 
-  // if (!isPopupVisible(wrapperId)) {
-  //   CaptchaController.render(
-  //     document.querySelector("#quoteSubmitPopup .g-recaptcha") as HTMLElement,
-  //     "submitQuote"
-  //   );
-  //   await initDropdown();
-  //   $("#quoteSubmitPopup #submitQuoteLanguage").val(
-  //     Config.language.replace(/_\d*k$/g, "")
-  //   );
-  //   $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
-  //   $("#quoteSubmitPopup input").val("");
-  //   $("#quoteSubmitPopupWrapper")
-  //     .stop(true, true)
-  //     .css("opacity", 0)
-  //     .removeClass("hidden")
-  //     .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
-  //       $("#quoteSubmitPopup textarea").trigger("focus").select();
-  //     });
-  // }
+  if (!Misc.isPopupVisible(wrapperId)) {
+    CaptchaController.render(
+      document.querySelector("#quoteSubmitPopup .g-recaptcha") as HTMLElement,
+      "submitQuote"
+    );
+    await initDropdown();
+    $("#quoteSubmitPopup #submitQuoteLanguage").val(
+      Config.language.replace(/_\d*k$/g, "")
+    );
+    $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
+    $("#quoteSubmitPopup input").val("");
+    $("#quoteSubmitPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, noAnim ? 0 : 125, () => {
+        $("#quoteSubmitPopup textarea").trigger("focus").select();
+      });
+  }
 }
 
 export function hide(): void {

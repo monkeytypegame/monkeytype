@@ -54,7 +54,7 @@ function updateTimer(): void {
   if (timerDebug) console.timeEnd("timer progress update");
 }
 
-function calculateWpmRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
+function calculateWpmRaw(): MonkeyTypes.WpmAndRaw {
   if (timerDebug) console.time("calculate wpm and raw");
   const wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
@@ -68,7 +68,7 @@ function calculateWpmRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   return wpmAndRaw;
 }
 
-function monkey(wpmAndRaw: MonkeyTypes.WordsPerMinuteAndRaw): void {
+function monkey(wpmAndRaw: MonkeyTypes.WpmAndRaw): void {
   if (timerDebug) console.time("update monkey");
   const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
   Monkey.updateFastOpacity(num);
@@ -103,11 +103,11 @@ function layoutfluid(): void {
 
     if (flooredSwitchTimes.includes(time + 3)) {
       LayoutfluidFunboxTimer.show();
-      LayoutfluidFunboxTimer.update(3, layouts[index + 1]);
+      LayoutfluidFunboxTimer.updateTime(3, layouts[index + 1]);
     } else if (flooredSwitchTimes.includes(time + 2)) {
-      LayoutfluidFunboxTimer.update(2, layouts[index + 1]);
+      LayoutfluidFunboxTimer.updateTime(2, layouts[index + 1]);
     } else if (flooredSwitchTimes.includes(time + 1)) {
-      LayoutfluidFunboxTimer.update(1, layouts[index + 1]);
+      LayoutfluidFunboxTimer.updateTime(1, layouts[index + 1]);
     }
 
     if (Config.layout !== layout && layout !== undefined) {
@@ -119,12 +119,11 @@ function layoutfluid(): void {
   if (timerDebug) console.timeEnd("layoutfluid");
 }
 
-function checkIfFailed(
-  wpmAndRaw: MonkeyTypes.WordsPerMinuteAndRaw,
-  acc: number
-): void {
+function checkIfFailed(wpmAndRaw: MonkeyTypes.WpmAndRaw, acc: number): void {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
+  TestInput.pushErrorToHistory();
+  TestInput.pushAfkToHistory();
   if (
     Config.minWpm === "custom" &&
     wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
@@ -149,7 +148,7 @@ function checkIfFailed(
 function checkIfTimeIsUp(): void {
   if (timerDebug) console.time("times up check");
   if (
-    Config.mode == "time" ||
+    Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
   ) {
     if (

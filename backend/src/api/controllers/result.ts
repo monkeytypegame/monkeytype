@@ -214,7 +214,8 @@ export async function addResult(
     if (
       !validateResult(
         result,
-        req.headers["client-version"] as string,
+        (req.headers["x-client-version"] ||
+          req.headers["client-version"]) as string,
         JSON.stringify(new UAParser(req.headers["user-agent"]).getResult()),
         user.lbOptOut === true
       )
