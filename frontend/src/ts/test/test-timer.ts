@@ -54,7 +54,7 @@ function updateTimer(): void {
   if (timerDebug) console.timeEnd("timer progress update");
 }
 
-function calculateWpmRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
+function calculateWpmRaw(): MonkeyTypes.WpmAndRaw {
   if (timerDebug) console.time("calculate wpm and raw");
   const wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
@@ -68,7 +68,7 @@ function calculateWpmRaw(): MonkeyTypes.WordsPerMinuteAndRaw {
   return wpmAndRaw;
 }
 
-function monkey(wpmAndRaw: MonkeyTypes.WordsPerMinuteAndRaw): void {
+function monkey(wpmAndRaw: MonkeyTypes.WpmAndRaw): void {
   if (timerDebug) console.time("update monkey");
   const num = Config.blindMode ? wpmAndRaw.raw : wpmAndRaw.wpm;
   Monkey.updateFastOpacity(num);
@@ -119,10 +119,7 @@ function layoutfluid(): void {
   if (timerDebug) console.timeEnd("layoutfluid");
 }
 
-function checkIfFailed(
-  wpmAndRaw: MonkeyTypes.WordsPerMinuteAndRaw,
-  acc: number
-): void {
+function checkIfFailed(wpmAndRaw: MonkeyTypes.WpmAndRaw, acc: number): void {
   if (timerDebug) console.time("fail conditions");
   TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
