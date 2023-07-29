@@ -252,12 +252,6 @@ let currentErrorHistory: ErrorHistoryObject = {
 export let afkHistory: boolean[] = [];
 let currentAfk = true;
 
-export let spacingDebug = false;
-export function enableSpacingDebug(): void {
-  spacingDebug = true;
-  console.clear();
-}
-
 export function incrementKeypressCount(): void {
   currentKeypressCount++;
 }
@@ -334,17 +328,8 @@ export function recordKeyupTime(now: number, key: string): void {
 
   const diff = Math.abs(keyDownData[key].timestamp - now);
   keypressTimings.duration.array[keyDownData[key].index] = diff;
-  if (spacingDebug) {
-    console.log(
-      "spacing debug",
-      "recorded",
-      key,
-      "durating array",
-      keypressTimings.duration.array.length,
-      "val",
-      roundTo2(diff)
-    );
-  }
+
+  console.debug("Keyup recorded", key, diff);
   delete keyDownData[key];
 
   updateOverlap(now);
@@ -352,15 +337,7 @@ export function recordKeyupTime(now: number, key: string): void {
 
 export function recordKeydownTime(now: number, key: string): void {
   if (!keysToTrack.includes(key)) {
-    if (spacingDebug) {
-      console.log(
-        "spacing debug",
-        "key not tracked",
-        key,
-        "spacing array",
-        keypressTimings.spacing.array.length
-      );
-    }
+    console.debug("Key not tracked", key);
     return;
   }
 
@@ -370,15 +347,7 @@ export function recordKeydownTime(now: number, key: string): void {
   }
 
   if (keyDownData[key] !== undefined) {
-    if (spacingDebug) {
-      console.log(
-        "spacing debug",
-        "key already down",
-        key,
-        "spacing array",
-        keypressTimings.spacing.array.length
-      );
-    }
+    console.debug("Key already down", key);
     return;
   }
 
@@ -393,24 +362,12 @@ export function recordKeydownTime(now: number, key: string): void {
   if (keypressTimings.spacing.last !== -1) {
     const diff = Math.abs(now - keypressTimings.spacing.last);
     keypressTimings.spacing.array.push(roundTo2(diff));
-    if (spacingDebug) {
-      console.log(
-        "spacing debug",
-        "recorded",
-        key,
-        "spacing array",
-        keypressTimings.spacing.array.length,
-        "val",
-        roundTo2(diff)
-      );
-    }
+    console.debug("Keydown recorded", key, diff);
   }
   keypressTimings.spacing.last = now;
   if (keypressTimings.spacing.first === -1) {
     keypressTimings.spacing.first = now;
-    if (spacingDebug) {
-      console.log("spacing debug", "saved first", now);
-    }
+    console.debug("First keydown recorded", key, now);
   }
 }
 
@@ -445,12 +402,7 @@ export function resetKeypressTimings(): void {
   };
   keyDownData = {};
   noCodeIndex = 0;
-  if (spacingDebug) {
-    console.clear();
-    if (spacingDebug) {
-      console.log("spacing debug", "reset keypress timings");
-    }
-  }
+  console.debug("Keypress timings reset");
 }
 
 export function pushMissedWord(word: string): void {
@@ -507,7 +459,4 @@ export function restart(): void {
       array: [],
     },
   };
-  if (spacingDebug) {
-    console.log("spacing debug", "restart");
-  }
 }
