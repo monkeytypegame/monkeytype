@@ -43,12 +43,6 @@ export function setLastResult(
   lastResult = result;
 }
 
-let wpmCalcDebug = false;
-export function wpmCalculationDebug(): void {
-  console.log("wpm calculation debug enabled");
-  wpmCalcDebug = true;
-}
-
 export function getStats(): unknown {
   const ret = {
     lastResult,
@@ -414,17 +408,21 @@ function countChars(): CharCount {
 }
 
 export function calculateStats(): Stats {
+  console.debug("Calculating result stats");
   let testSeconds = calculateTestSeconds();
-  if (wpmCalcDebug) {
-    console.log("date based time", (end2 - start2) / 1000);
-    console.log("performance.now based time", testSeconds);
-  }
+  console.debug(
+    "Test seconds",
+    testSeconds,
+    " (date based) ",
+    (end2 - start2) / 1000,
+    " (performance.now based)"
+  );
   if (Config.mode !== "custom") {
     testSeconds = Misc.roundTo2(testSeconds);
-    if (wpmCalcDebug) {
-      console.log("mode is not custom - wounding");
-      console.log("new time", testSeconds);
-    }
+    console.debug(
+      "Mode is not custom - rounding to 2. New time: ",
+      testSeconds
+    );
   }
   const chars = countChars();
   const wpm = Misc.roundTo2(
@@ -465,4 +463,5 @@ export function calculateStats(): Stats {
     spaces: chars.spaces,
     correctSpaces: chars.correctSpaces,
   };
+  console.debug("Result stats", ret);
 }
