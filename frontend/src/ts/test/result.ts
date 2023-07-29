@@ -57,7 +57,7 @@ async function updateGraph(): Promise<void> {
     }
   }
   resultScaleOptions["wpm"].title.text = Config.alwaysShowCPM
-    ? "Character per Minute"
+    ? "Characters per Minute"
     : "Words per Minute";
   const chartData1 = [
     ...(Config.alwaysShowCPM
