@@ -392,7 +392,7 @@ export function calculateStats(): Stats {
   const acc = Misc.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) || !isFinite(wpm) ? 0 : wpm,
-    wpmRaw: isNaN(raw) || !isFinite(wpmraw) ? 0 : raw,
+    wpmRaw: isNaN(raw) || !isFinite(raw) ? 0 : raw,
     acc: acc,
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars,
