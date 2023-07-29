@@ -10,7 +10,8 @@ declare namespace MonkeyTypes {
     | "login"
     | "profile"
     | "profileSearch"
-    | "404";
+    | "404"
+    | "tribe";
 
   type Difficulty = "normal" | "expert" | "master";
 

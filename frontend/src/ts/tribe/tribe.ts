@@ -18,7 +18,6 @@ import * as TribeStartRacePopup from "../popups/tribe-start-race-popup";
 import * as TribeChartController from "./tribe-chart-controller";
 import * as TribeDelta from "./tribe-delta";
 import * as TestState from "../test/test-state";
-import { navigate } from "../observables/navigate-event";
 import * as Random from "../utils/random";
 import TribeSocket from "./tribe-socket";
 import * as ActivePage from "../states/active-page";
@@ -29,6 +28,7 @@ import * as TestWords from "../test/test-words";
 import * as TestStats from "../test/test-stats";
 import * as TestInput from "../test/test-input";
 import * as TribeCarets from "./tribe-carets";
+import { navigate } from "../controllers/route-controller";
 
 const defaultName = "Guest";
 let name = "Guest";
@@ -627,7 +627,7 @@ TribeSocket.in.room.progressUpdate((data) => {
       progress,
       wordIndex: TestWords.words.currentIndex,
       letterIndex: inputLen - 1,
-      afk: TestInput.currentKeypress.afk,
+      afk: TestInput.afkHistory[TestInput.afkHistory.length - 1],
     });
   }
 

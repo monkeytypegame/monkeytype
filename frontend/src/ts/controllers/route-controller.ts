@@ -1,16 +1,11 @@
 import * as PageController from "./page-controller";
-import * as PageTest from "../pages/test";
-import * as PageAbout from "../pages/about";
-import * as PageSettings from "../pages/settings";
-import * as PageAccount from "../pages/account";
-import * as PageLogin from "../pages/login";
-import * as Page404 from "../pages/404";
-import * as PageProfile from "../pages/profile";
-import * as PageTribe from "../pages/tribe";
+import * as TribeState from "../tribe/tribe-state";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
 import { Auth } from "../firebase";
+import tribeSocket from "../tribe/tribe-socket";
+import { setAutoJoin } from "../tribe/tribe";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
 // https://www.youtube.com/watch?v=OstALBk-jTc
@@ -18,7 +13,6 @@ import { Auth } from "../firebase";
 interface NavigateOptions {
   tribeOverride?: boolean;
   force?: boolean;
-  empty: boolean;
   data?: unknown;
 }
 
@@ -59,7 +53,7 @@ const routes: Route[] = [
     path: "/",
     load: (_params, navigateOptions): void => {
       if (navigateOptions?.tribeOverride === true) {
-        PageController.change(PageTest.page, {
+        PageController.change("test", {
           tribeOverride: navigateOptions?.tribeOverride ?? false,
           force: navigateOptions?.force ?? false,
         });
@@ -70,10 +64,10 @@ const routes: Route[] = [
         if (TribeState.getState() == 22 && TribeState.getSelf()?.isLeader) {
           tribeSocket.out.room.backToLobby();
         } else {
-          nav("/tribe", navigateOptions);
+          navigate("/tribe", navigateOptions);
         }
       } else {
-        PageController.change(PageTest.page, {
+        PageController.change("test", {
           tribeOverride: navigateOptions?.tribeOverride ?? false,
           force: navigateOptions?.force ?? false,
         });
@@ -155,7 +149,7 @@ const routes: Route[] = [
     path: "/tribe",
     load: (params, navigateOptions): void => {
       if (navigateOptions?.tribeOverride === true) {
-        PageController.change(PageTribe.page, {
+        PageController.change("tribe", {
           tribeOverride: navigateOptions?.tribeOverride ?? false,
           force: navigateOptions?.force ?? false,
           params,
@@ -166,7 +160,7 @@ const routes: Route[] = [
       if (TribeState.getState() == 22 && TribeState.getSelf()?.isLeader) {
         tribeSocket.out.room.backToLobby();
       } else {
-        PageController.change(PageTribe.page, {
+        PageController.change("tribe", {
           tribeOverride: navigateOptions?.tribeOverride ?? false,
           force: navigateOptions?.force ?? false,
           params,
@@ -177,8 +171,8 @@ const routes: Route[] = [
   {
     path: "/tribe/:roomId",
     load: (params): void => {
-      Tribe.setAutoJoin(params["roomId"]);
-      PageController.change(PageTribe.page, {
+      setAutoJoin(params["roomId"]);
+      PageController.change("tribe", {
         force: true,
         params,
       });
