@@ -1,0 +1,14 @@
+:root {
+  --bg-color: #000000; /* Black */
+  --main-color: #8B0000; /* Strong Dark Red */
+  --caret-color: #8B0000; /* Strong Dark Red */
+  --sub-color: #20B2AA; /* Mystic Green */
+  --sub-alt-color: #DAA520; /* Deep Gold */
+  --text-color: #ffffff; /* White */
+  --error-color: #8B0000; /* Strong Dark Red */
+  --error-extra-color: #DAA520; /* Deep Gold */
+  --colorful-error-color: #FFD700; /* Another shade of Gold */
+  --colorful-error-extra-color: #20B2AA; /* Mystic Green */
+}
+
+

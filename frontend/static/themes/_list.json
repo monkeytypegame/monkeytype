@@ -1175,5 +1175,11 @@
     "subColor": "#651e56",
     "textColor": "#fff"
   }
-
+  ,{
+    "name": "mask",
+    "bgColor": "#000000",
+    "mainColor": "#8B0000",
+    "subColor": "#20B2AA",
+    "textColor": "ffffff"
+  }
 ]
