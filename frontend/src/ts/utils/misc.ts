@@ -514,7 +514,7 @@ export function convertTypingSpeedWithUnitSuffix(
   return roundTo2(convertTypingSpeed(unit, wpm)).toFixed(2) + " " + unit;
 }
 
-export function translateTypingSpeed(
+export function getFullSpeedUnitString(
   unit: MonkeyTypes.TypingSpeedUnit
 ): string {
   switch (unit) {

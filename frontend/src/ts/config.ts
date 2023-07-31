@@ -417,8 +417,9 @@ export function setTypingSpeedUnit(
     !isConfigValueValid("typing speed unit", val, [
       ["wpm", "cpm", "wps", "cps"],
     ])
-  )
+  ) {
     return false;
+  }
   config.typingSpeedUnit = val;
   saveToLocalStorage("typingSpeedUnit", nosave);
   ConfigEvent.dispatch("typingSpeedUnit", config.typingSpeedUnit, nosave);
@@ -1981,6 +1982,11 @@ function replaceLegacyValues(
   //@ts-ignore
   if (configObj.swapEscAndTab === true) {
     configObj.quickRestart = "esc";
+  }
+
+  //@ts-ignore
+  if (configObj.alwaysShowCPM === true) {
+    configObj.typingSpeedUnit = "cpm";
   }
 
   return configObj;

@@ -57,7 +57,7 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  resultScaleOptions["wpm"].title.text = Misc.translateTypingSpeed(
+  resultScaleOptions["wpm"].title.text = Misc.getFullSpeedUnitString(
     Config.typingSpeedUnit
   );
   const chartData1 = [

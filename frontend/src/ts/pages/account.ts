@@ -736,7 +736,7 @@ async function fillContent(): Promise<void> {
     ChartController.accountHistory.options as ScaleChartOptions<"line">
   ).scales;
 
-  accountHistoryScaleOptions["wpm"].title.text = Misc.translateTypingSpeed(
+  accountHistoryScaleOptions["wpm"].title.text = Misc.getFullSpeedUnitString(
     Config.typingSpeedUnit
   );
 
@@ -861,9 +861,9 @@ async function fillContent(): Promise<void> {
     highestSpeed = Math.round(highestSpeed);
   }
 
-  const wpmCpm = Config.typingSpeedUnit;
+  const speedUnit = Config.typingSpeedUnit;
 
-  $(".pageAccount .highestWpm .title").text(`highest ${wpmCpm}`);
+  $(".pageAccount .highestWpm .title").text(`highest ${speedUnit}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
 
   let averageSpeed: number | string = Misc.convertTypingSpeed(
@@ -876,7 +876,7 @@ async function fillContent(): Promise<void> {
     averageSpeed = Math.round(averageSpeed / testCount);
   }
 
-  $(".pageAccount .averageWpm .title").text(`average ${wpmCpm}`);
+  $(".pageAccount .averageWpm .title").text(`average ${speedUnit}`);
   $(".pageAccount .averageWpm .val").text(averageSpeed);
 
   let averageSpeedLast10: number | string = Misc.convertTypingSpeed(
@@ -890,7 +890,7 @@ async function fillContent(): Promise<void> {
   }
 
   $(".pageAccount .averageWpm10 .title").text(
-    `average ${wpmCpm} (last 10 tests)`
+    `average ${speedUnit} (last 10 tests)`
   );
   $(".pageAccount .averageWpm10 .val").text(averageSpeedLast10);
 
@@ -904,7 +904,7 @@ async function fillContent(): Promise<void> {
     highestRawSpeed = Math.round(highestRawSpeed);
   }
 
-  $(".pageAccount .highestRaw .title").text(`highest raw ${wpmCpm}`);
+  $(".pageAccount .highestRaw .title").text(`highest raw ${speedUnit}`);
   $(".pageAccount .highestRaw .val").text(highestRawSpeed);
 
   let averageRawSpeed: number | string = Misc.convertTypingSpeed(
@@ -917,7 +917,7 @@ async function fillContent(): Promise<void> {
     averageRawSpeed = Math.round(averageRawSpeed / rawWpm.count);
   }
 
-  $(".pageAccount .averageRaw .title").text(`average raw ${wpmCpm}`);
+  $(".pageAccount .averageRaw .title").text(`average raw ${speedUnit}`);
   $(".pageAccount .averageRaw .val").text(averageRawSpeed);
 
   let averageRawSpeedLast10: number | string = Misc.convertTypingSpeed(
@@ -935,7 +935,7 @@ async function fillContent(): Promise<void> {
   }
 
   $(".pageAccount .averageRaw10 .title").text(
-    `average raw ${wpmCpm} (last 10 tests)`
+    `average raw ${speedUnit} (last 10 tests)`
   );
   $(".pageAccount .averageRaw10 .val").text(averageRawSpeedLast10);
 

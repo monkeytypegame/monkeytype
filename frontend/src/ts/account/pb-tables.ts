@@ -128,7 +128,7 @@ function buildPbHtml(
   let retval = "";
   let dateText = "";
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
-  const wpmCpm = Config.typingSpeedUnit;
+  const speedUnit = Config.typingSpeedUnit;
   try {
     const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
     const date = new Date(pbData.timestamp);
@@ -136,16 +136,16 @@ function buildPbHtml(
       dateText = format(date, "dd MMM yyyy");
     }
 
-    let wpmString: number | string = Misc.convertTypingSpeed(
+    let speedString: number | string = Misc.convertTypingSpeed(
       Config.typingSpeedUnit,
       pbData.wpm
     );
     if (Config.alwaysShowDecimalPlaces) {
-      wpmString = Misc.roundTo2(wpmString).toFixed(2);
+      speedString = Misc.roundTo2(speedString).toFixed(2);
     } else {
-      wpmString = Math.round(wpmString);
+      speedString = Math.round(speedString);
     }
-    wpmString += ` ${wpmCpm}`;
+    speedString += ` ${speedUnit}`;
 
     let rawString: number | string = Misc.convertTypingSpeed(
       Config.typingSpeedUnit,
@@ -193,7 +193,7 @@ function buildPbHtml(
     </div>
     <div class="fullTest">
       <div>${modeString}</div>
-      <div>${wpmString}</div>
+      <div>${speedString}</div>
       <div>${rawString}</div>
       <div>${accString}</div>
       <div>${conString}</div>
