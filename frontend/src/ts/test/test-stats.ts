@@ -136,15 +136,17 @@ export function calculateTestSeconds(now?: number): number {
   }
 }
 
-export function calculateWpmAndRaw(): MonkeyTypes.WpmAndRaw {
+export function calculateWpmAndRaw(
+  withDecimalPoints?: true
+): MonkeyTypes.WpmAndRaw {
   const testSeconds = calculateTestSeconds(
     TestState.isActive ? performance.now() : end
   );
   const chars = countChars();
-  const wpm = Math.round(
+  const wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
-  const raw = Math.round(
+  const raw = Misc.roundTo2(
     ((chars.allCorrectChars +
       chars.spaces +
       chars.incorrectChars +
@@ -153,8 +155,8 @@ export function calculateWpmAndRaw(): MonkeyTypes.WpmAndRaw {
       5
   );
   return {
-    wpm: wpm,
-    raw: raw,
+    wpm: withDecimalPoints ? wpm : Math.round(wpm),
+    raw: withDecimalPoints ? raw : Math.round(raw),
   };
 }
 
