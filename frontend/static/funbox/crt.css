@@ -54,7 +54,8 @@ body.crtmode {
   #notificationCenter,
   .word.error,
   input,
-  textarea {
+  textarea,
+  #bannerCenter .banner {
     text-shadow: 3px 0 1px color-mix(in srgb, currentColor 20%, transparent),
       -3px 0 color-mix(in srgb, currentColor 30%, transparent), 0 0 3px;
   }
@@ -90,7 +91,8 @@ body.crtmode {
   }
 
   #paceCaret,
-  key {
+  key,
+  #bannerCenter .banner {
     box-shadow: 3px 0 1px var(--crt-sub-color-glow),
       -3px 0 var(--crt-sub-color-glow);
   }
