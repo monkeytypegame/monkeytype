@@ -166,9 +166,10 @@
   animation: rainbow 7.5s ease-in-out forwards;
 }
 
-#liveWpm,
-#timerNumber {
-  color: white;
+#timerNumber.timerMain,
+#largeLiveWpmAndAcc.timerMain,
+#miniTimerAndLiveWpm.timerMain {
+  animation: rainbow-infinite-loop 30s linear infinite;
 }
 
 .word letter.incorrect {
