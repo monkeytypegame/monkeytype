@@ -390,7 +390,7 @@ export function calculateStats(): Stats {
     );
   }
   const chars = countChars();
-  const { wpm, raw } = calculateWpmAndRaw();
+  const { wpm, raw } = calculateWpmAndRaw(true);
   const acc = Misc.roundTo2(calculateAccuracy());
   const ret = {
     wpm: isNaN(wpm) ? 0 : wpm,
