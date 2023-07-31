@@ -4,6 +4,30 @@
   // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
   font-weight: 400;
+  --crt-bg-color-shine: color-mix(
+    in oklab,
+    var(--main-color) 5%,
+    var(--bg-color)
+  );
+  --crt-bg-color-stripe: color-mix(in oklab, black 50%, var(--bg-color));
+  --crt-sub-color-glow: color-mix(in srgb, var(--sub-color) 20%, transparent);
+  --crt-sub-alt-color-glow: color-mix(
+    in srgb,
+    var(--sub-alt-color) 20%,
+    transparent
+  );
+  --crt-text-color-glow: color-mix(in srgb, var(--text-color) 20%, transparent);
+  --crt-main-color-glow: color-mix(in srgb, var(--main-color) 20%, transparent);
+  --crt-error-color-glow: color-mix(
+    in srgb,
+    var(--error-color) 20%,
+    transparent
+  );
+  --crt-caret-color-glow: color-mix(
+    in srgb,
+    var(--caret-color) 20%,
+    transparent
+  );
 }
 
 ::placeholder {
