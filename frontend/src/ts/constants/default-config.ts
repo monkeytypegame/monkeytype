@@ -73,7 +73,7 @@ export default <MonkeyTypes.Config>{
   minWpm: "off",
   minWpmCustomSpeed: 100,
   highlightMode: "letter",
-  alwaysShowCPM: false,
+  typingSpeedUnit: "wpm", //TODO: change to wpm
   ads: "result",
   hideExtraLetters: false,
   strictSpace: false,

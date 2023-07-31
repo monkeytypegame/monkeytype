@@ -467,7 +467,7 @@ declare namespace MonkeyTypes {
     minWpm: MinimumWordsPerMinute;
     minWpmCustomSpeed: number;
     highlightMode: HighlightMode;
-    alwaysShowCPM: boolean;
+    typingSpeedUnit: TypingSpeedUnit;
     ads: Ads;
     hideExtraLetters: boolean;
     strictSpace: boolean;
@@ -879,4 +879,6 @@ declare namespace MonkeyTypes {
   }
 
   type AllRewards = XpReward | BadgeReward;
+
+  type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps";
 }

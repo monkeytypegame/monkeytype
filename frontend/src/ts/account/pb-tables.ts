@@ -127,9 +127,8 @@ function buildPbHtml(
 ): string {
   let retval = "";
   let dateText = "";
-  const multiplier = Config.alwaysShowCPM ? 5 : 1;
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
-  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
+  const wpmCpm = Config.typingSpeedUnit;
   try {
     const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
     const date = new Date(pbData.timestamp);
@@ -137,7 +136,10 @@ function buildPbHtml(
       dateText = format(date, "dd MMM yyyy");
     }
 
-    let wpmString: number | string = pbData.wpm * multiplier;
+    let wpmString: number | string = Misc.convertTypingSpeed(
+      Config.typingSpeedUnit,
+      pbData.wpm
+    );
     if (Config.alwaysShowDecimalPlaces) {
       wpmString = Misc.roundTo2(wpmString).toFixed(2);
     } else {
@@ -145,7 +147,10 @@ function buildPbHtml(
     }
     wpmString += ` ${wpmCpm}`;
 
-    let rawString: number | string = pbData.raw * multiplier;
+    let rawString: number | string = Misc.convertTypingSpeed(
+      Config.typingSpeedUnit,
+      pbData.raw
+    );
     if (Config.alwaysShowDecimalPlaces) {
       rawString = Misc.roundTo2(rawString).toFixed(2);
     } else {
@@ -179,7 +184,9 @@ function buildPbHtml(
 
     retval = `<div class="quick">
       <div class="test">${modeString}</div>
-      <div class="wpm">${Math.round(pbData.wpm * multiplier)}</div>
+      <div class="wpm">${Math.round(
+        Misc.convertTypingSpeed(Config.typingSpeedUnit, pbData.wpm)
+      )}</div>
       <div class="acc">${
         pbData.acc === undefined ? "-" : Math.floor(pbData.acc) + "%"
       }</div>

@@ -49,6 +49,7 @@ let resultScaleOptions = (
 
 async function updateGraph(): Promise<void> {
   const labels = [];
+
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
       labels.push(Misc.roundTo2(result.testDuration).toString());
@@ -56,21 +57,21 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  resultScaleOptions["wpm"].title.text = Config.alwaysShowCPM
-    ? "Characters per Minute"
-    : "Words per Minute";
+  resultScaleOptions["wpm"].title.text = Misc.translateTypingSpeed(
+    Config.typingSpeedUnit
+  );
   const chartData1 = [
-    ...(Config.alwaysShowCPM
-      ? TestInput.wpmHistory.map((a) => a * 5)
-      : TestInput.wpmHistory),
+    ...TestInput.wpmHistory.map((a) =>
+      Misc.convertTypingSpeed(Config.typingSpeedUnit, a)
+    ),
   ];
 
   if (result.chartData === "toolong") return;
 
   const chartData2 = [
-    ...(Config.alwaysShowCPM
-      ? result.chartData.raw.map((a) => a * 5)
-      : result.chartData.raw),
+    ...result.chartData.raw.map((a) =>
+      Misc.convertTypingSpeed(Config.typingSpeedUnit, a)
+    ),
   ];
 
   if (
@@ -92,10 +93,7 @@ async function updateGraph(): Promise<void> {
   ChartController.result.data.labels = labels;
   ChartController.result.data.datasets[0].data = chartData1;
   ChartController.result.data.datasets[1].data = smoothedRawData;
-
-  ChartController.result.data.datasets[0].label = Config.alwaysShowCPM
-    ? "cpm"
-    : "wpm";
+  ChartController.result.data.datasets[0].label = Config.typingSpeedUnit;
 
   maxChartVal = Math.max(
     ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
@@ -169,9 +167,9 @@ export async function updateGraphPBLine(): Promise<void> {
     result.funbox ?? "none"
   );
   if (lpb === 0) return;
-  const chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(
-    2
-  );
+  const chartlpb = Misc.roundTo2(
+    Misc.convertTypingSpeed(Config.typingSpeedUnit, lpb)
+  ).toFixed(2);
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -214,39 +212,25 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
   if (Config.alwaysShowDecimalPlaces) {
-    if (Config.alwaysShowCPM === false) {
-      $("#result .stats .wpm .top .text").text("wpm");
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(
-          Misc.roundTo2(result.wpm).toFixed(2)
-        );
-      }
-      $("#result .stats .raw .bottom").text(
-        Misc.roundTo2(result.rawWpm).toFixed(2)
-      );
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(result.wpm * 5).toFixed(2) + " cpm"
-      );
+    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
+    if (inf) {
+      $("#result .stats .wpm .bottom").text("Infinite");
     } else {
-      $("#result .stats .wpm .top .text").text("cpm");
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(
-          Misc.roundTo2(result.wpm * 5).toFixed(2)
-        );
-      }
-      $("#result .stats .raw .bottom").text(
-        Misc.roundTo2(result.rawWpm * 5).toFixed(2)
-      );
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(result.wpm).toFixed(2) + " wpm"
+      $("#result .stats .wpm .bottom").text(
+        Misc.roundTo2(
+          Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm)
+        ).toFixed(2)
       );
     }
+    $("#result .stats .raw .bottom").text(
+      Misc.roundTo2(
+        Misc.convertTypingSpeed(Config.typingSpeedUnit, result.rawWpm)
+      ).toFixed(2)
+    );
+    $("#result .stats .wpm .bottom").attr(
+      "aria-label",
+      Misc.convertTypingSpeedWithUnitSuffix(Config.typingSpeedUnit, result.wpm)
+    );
 
     $("#result .stats .acc .bottom").text(
       result.acc === 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
@@ -265,33 +249,25 @@ function updateWpmAndAcc(): void {
     );
   } else {
     //not showing decimal places
-    if (Config.alwaysShowCPM === false) {
-      $("#result .stats .wpm .top .text").text("wpm");
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        result.wpm + ` (${Misc.roundTo2(result.wpm * 5)} cpm)`
-      );
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Math.round(result.wpm));
-      }
-      $("#result .stats .raw .bottom").text(Math.round(result.rawWpm));
-      $("#result .stats .raw .bottom").attr("aria-label", result.rawWpm);
+    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
+    $("#result .stats .wpm .bottom").attr(
+      "aria-label",
+      Misc.convertTypingSpeedWithUnitSuffix(Config.typingSpeedUnit, result.wpm)
+    );
+    if (inf) {
+      $("#result .stats .wpm .bottom").text("Infinite");
     } else {
-      $("#result .stats .wpm .top .text").text("cpm");
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(result.wpm * 5) + ` (${Misc.roundTo2(result.wpm)} wpm)`
+      $("#result .stats .wpm .bottom").text(
+        Math.round(Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm))
       );
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Math.round(result.wpm * 5));
-      }
-      $("#result .stats .raw .bottom").text(Math.round(result.rawWpm * 5));
-      $("#result .stats .raw .bottom").attr("aria-label", result.rawWpm * 5);
     }
+    $("#result .stats .raw .bottom").text(
+      Math.round(Misc.convertTypingSpeed(Config.typingSpeedUnit, result.rawWpm))
+    );
+    $("#result .stats .raw .bottom").attr(
+      "aria-label",
+      Misc.convertTypingSpeed(Config.typingSpeedUnit, result.rawWpm)
+    );
 
     $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
     $("#result .stats .acc .bottom").attr(
@@ -517,7 +493,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
           type: "line",
           id: "tpb",
           scaleID: "wpm",
-          value: Config.alwaysShowCPM ? tpb * 5 : tpb,
+          value: Misc.convertTypingSpeed(Config.typingSpeedUnit, tpb),
           borderColor: themecolors["sub"],
           borderWidth: 1,
           borderDash: [2, 2],
@@ -537,7 +513,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             xAdjust: labelAdjust,
             enabled: true,
             content: `${tag.display} PB: ${Misc.roundTo2(
-              Config.alwaysShowCPM ? tpb * 5 : tpb
+              Misc.convertTypingSpeed(Config.typingSpeedUnit, tpb)
             ).toFixed(2)}`,
           },
         });

@@ -478,7 +478,7 @@ export const accountHistory: ChartWithUpdateColors<
                 tooltipItem.dataIndex
               ] as MonkeyTypes.HistoryChartData;
               let label =
-                `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${resultData.wpm}` +
+                `${Config.typingSpeedUnit}: ${resultData.wpm}` +
                 "\n" +
                 `raw: ${resultData.raw}` +
                 "\n" +
@@ -652,9 +652,9 @@ export const accountActivity: ChartWithUpdateColors<
                     true
                   )}\nTests Completed: ${resultData.amount}`;
                 case 1:
-                  return `Average ${
-                    Config.alwaysShowCPM ? "Cpm" : "Wpm"
-                  }: ${Misc.roundTo2(resultData.y)}`;
+                  return `Average ${Config.typingSpeedUnit}: ${Misc.roundTo2(
+                    resultData.y
+                  )}`;
                 default:
                   return "";
               }
@@ -755,7 +755,7 @@ export const accountHistogram: ChartWithUpdateColors<
           //         )}\nTests Completed: ${resultData.amount}`;
           //       case 1:
           //         return `Average ${
-          //           Config.alwaysShowCPM ? "Cpm" : "Wpm"
+          //           Config.typingSpeedUnit
           //         }: ${Misc.roundTo2(resultData.y)}`;
           //       default:
           //         return "";

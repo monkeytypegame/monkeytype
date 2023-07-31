@@ -185,14 +185,16 @@ function updateFooter(lb: LbKey): void {
     <tr>
     <td>${entry.rank}</td>
     <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
-    <td class="alignRight">${(Config.alwaysShowCPM
-      ? entry.wpm * 5
-      : entry.wpm
-    ).toFixed(2)}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${(Config.alwaysShowCPM
-      ? entry.raw * 5
-      : entry.raw
-    ).toFixed(2)}<br><div class="sub">${
+    <td class="alignRight">${Misc.convertTypingSpeed(
+      Config.typingSpeedUnit,
+      entry.wpm
+    ).toFixed(2)}<br>
+    <div class="sub">${entry.acc.toFixed(2)}%</div></td>
+    <td class="alignRight">${Misc.convertTypingSpeed(
+      Config.typingSpeedUnit,
+      entry.raw
+    ).toFixed(2)}<br>
+    <div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"
         : entry.consistency.toFixed(2) + "%"
@@ -342,14 +344,16 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>
-    <td class="alignRight">${(Config.alwaysShowCPM
-      ? entry.wpm * 5
-      : entry.wpm
-    ).toFixed(2)}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${(Config.alwaysShowCPM
-      ? entry.raw * 5
-      : entry.raw
-    ).toFixed(2)}<br><div class="sub">${
+    <td class="alignRight">${Misc.convertTypingSpeed(
+      Config.typingSpeedUnit,
+      entry.wpm
+    ).toFixed(2)}<br>
+    <div class="sub">${entry.acc.toFixed(2)}%</div></td>
+    <td class="alignRight">${Misc.convertTypingSpeed(
+      Config.typingSpeedUnit,
+      entry.raw
+    ).toFixed(2)}<br>
+    <div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"
         : entry.consistency.toFixed(2) + "%"
@@ -608,15 +612,9 @@ export function show(): void {
         "disabled"
       );
     }
-    if (Config.alwaysShowCPM) {
-      $("#leaderboards table thead tr td:nth-child(3)").html(
-        'cpm<br><div class="sub">accuracy</div>'
-      );
-    } else {
-      $("#leaderboards table thead tr td:nth-child(3)").html(
-        'wpm<br><div class="sub">accuracy</div>'
-      );
-    }
+    $("#leaderboards table thead tr td:nth-child(3)").html(
+      Config.typingSpeedUnit + '<br><div class="sub">accuracy</div>'
+    );
     $("#leaderboardsWrapper")
       .stop(true, true)
       .css("opacity", 0)

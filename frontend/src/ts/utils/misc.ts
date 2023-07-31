@@ -491,6 +491,44 @@ export function roundTo2(num: number): number {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
+export function convertTypingSpeed(
+  unit: MonkeyTypes.TypingSpeedUnit,
+  wpm: number
+): number {
+  switch (unit) {
+    case "wpm":
+      return wpm;
+    case "cpm":
+      return wpm * 5;
+    case "wps":
+      return wpm / 60;
+    case "cps":
+      return (wpm * 5) / 60;
+  }
+}
+
+export function convertTypingSpeedWithUnitSuffix(
+  unit: MonkeyTypes.TypingSpeedUnit,
+  wpm: number
+): string {
+  return roundTo2(convertTypingSpeed(unit, wpm)).toFixed(2) + " " + unit;
+}
+
+export function translateTypingSpeed(
+  unit: MonkeyTypes.TypingSpeedUnit
+): string {
+  switch (unit) {
+    case "wpm":
+      return "Words per Minute";
+    case "cpm":
+      return "Characters per Minute";
+    case "wps":
+      return "Words per Second";
+    case "cps":
+      return "Characters per Second";
+  }
+}
+
 export function findLineByLeastSquares(values_y: number[]): number[][] {
   let sum_x = 0;
   let sum_y = 0;

@@ -7,6 +7,7 @@ import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
+import * as Misc from "../utils/misc";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -21,7 +22,7 @@ ConfigEvent.subscribe((eventKey) => {
       "confidenceMode",
       "layout",
       "showAverage",
-      "alwaysShowCPM",
+      "typingSpeedUnit",
     ].includes(eventKey)
   ) {
     update();
@@ -143,9 +144,7 @@ export async function update(): Promise<void> {
 
     if (Auth?.currentUser && avgWPM > 0) {
       const avgWPMText = ["wpm", "both"].includes(Config.showAverage)
-        ? Config.alwaysShowCPM
-          ? `${Math.round(avgWPM * 5)} cpm`
-          : `${avgWPM} wpm`
+        ? Misc.convertTypingSpeedWithUnitSuffix(Config.typingSpeedUnit, avgWPM)
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)

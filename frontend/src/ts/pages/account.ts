@@ -49,9 +49,10 @@ function loadMoreLines(lineIndex?: number): void {
 
     let raw;
     try {
-      raw = Config.alwaysShowCPM
-        ? (result.rawWpm * 5).toFixed(2)
-        : result.rawWpm.toFixed(2);
+      raw = Misc.convertTypingSpeed(
+        Config.typingSpeedUnit,
+        result.rawWpm
+      ).toFixed(2);
       if (raw === undefined) {
         raw = "-";
       }
@@ -159,7 +160,9 @@ function loadMoreLines(lineIndex?: number): void {
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
-    <td>${(Config.alwaysShowCPM ? result.wpm * 5 : result.wpm).toFixed(2)}</td>
+    <td>${Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm).toFixed(
+      2
+    )}</td>
     <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>
     <td>${consistency}</td>
@@ -616,8 +619,12 @@ async function fillContent(): Promise<void> {
 
       chartData.push({
         x: filteredResults.length,
-        y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
-        wpm: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
+        y: Misc.roundTo2(
+          Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm)
+        ),
+        wpm: Misc.roundTo2(
+          Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm)
+        ),
         acc: result.acc,
         mode: result.mode,
         mode2: result.mode2,
@@ -625,9 +632,9 @@ async function fillContent(): Promise<void> {
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
-        raw: Config.alwaysShowCPM
-          ? Misc.roundTo2(result.rawWpm * 5)
-          : result.rawWpm,
+        raw: Misc.roundTo2(
+          Misc.convertTypingSpeed(Config.typingSpeedUnit, result.rawWpm)
+        ),
         isPb: result.isPb ?? false,
       });
 
@@ -656,11 +663,9 @@ async function fillContent(): Promise<void> {
     }
   );
 
-  if (Config.alwaysShowCPM) {
-    $(".pageAccount .group.history table thead tr td:nth-child(2)").text("cpm");
-  } else {
-    $(".pageAccount .group.history table thead tr td:nth-child(2)").text("wpm");
-  }
+  $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
+    Config.typingSpeedUnit
+  );
 
   await Misc.sleep(0);
   loadMoreLines();
@@ -684,10 +689,9 @@ async function fillContent(): Promise<void> {
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Misc.roundTo2(
-        (Config.alwaysShowCPM
-          ? activityChartData[dateInt].totalWpm * 5
-          : activityChartData[dateInt].totalWpm) /
-          activityChartData[dateInt].amount
+        Misc.roundTo2(
+          Misc.convertTypingSpeed(Config.typingSpeedUnit, totalWpm)
+        ) / activityChartData[dateInt].amount
       ),
     });
     // lastTimestamp = date;
@@ -697,11 +701,8 @@ async function fillContent(): Promise<void> {
     ChartController.accountActivity.options as ScaleChartOptions<"bar" | "line">
   ).scales;
 
-  if (Config.alwaysShowCPM) {
-    accountActivityScaleOptions["avgWpm"].title.text = "Average Cpm";
-  } else {
-    accountActivityScaleOptions["avgWpm"].title.text = "Average Wpm";
-  }
+  accountActivityScaleOptions["avgWpm"].title.text =
+    "Average" + Config.typingSpeedUnit;
 
   ChartController.accountActivity.data.datasets[0].data =
     activityChartData_time;
@@ -735,11 +736,9 @@ async function fillContent(): Promise<void> {
     ChartController.accountHistory.options as ScaleChartOptions<"line">
   ).scales;
 
-  if (Config.alwaysShowCPM) {
-    accountHistoryScaleOptions["wpm"].title.text = "Characters per Minute";
-  } else {
-    accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
-  }
+  accountHistoryScaleOptions["wpm"].title.text = Misc.translateTypingSpeed(
+    Config.typingSpeedUnit
+  );
 
   if (chartData.length > 0) {
     // get pb points
@@ -852,25 +851,25 @@ async function fillContent(): Promise<void> {
     Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
-  let highestSpeed: number | string = topWpm;
-  if (Config.alwaysShowCPM) {
-    highestSpeed = topWpm * 5;
-  }
+  let highestSpeed: number | string = Misc.convertTypingSpeed(
+    Config.typingSpeedUnit,
+    topWpm
+  );
   if (Config.alwaysShowDecimalPlaces) {
     highestSpeed = Misc.roundTo2(highestSpeed).toFixed(2);
   } else {
     highestSpeed = Math.round(highestSpeed);
   }
 
-  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
+  const wpmCpm = Config.typingSpeedUnit;
 
   $(".pageAccount .highestWpm .title").text(`highest ${wpmCpm}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
 
-  let averageSpeed: number | string = totalWpm;
-  if (Config.alwaysShowCPM) {
-    averageSpeed = totalWpm * 5;
-  }
+  let averageSpeed: number | string = Misc.convertTypingSpeed(
+    Config.typingSpeedUnit,
+    totalWpm
+  );
   if (Config.alwaysShowDecimalPlaces) {
     averageSpeed = Misc.roundTo2(averageSpeed / testCount).toFixed(2);
   } else {
@@ -880,10 +879,10 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .averageWpm .title").text(`average ${wpmCpm}`);
   $(".pageAccount .averageWpm .val").text(averageSpeed);
 
-  let averageSpeedLast10: number | string = wpmLast10total;
-  if (Config.alwaysShowCPM) {
-    averageSpeedLast10 = wpmLast10total * 5;
-  }
+  let averageSpeedLast10: number | string = Misc.convertTypingSpeed(
+    Config.typingSpeedUnit,
+    wpmLast10total
+  );
   if (Config.alwaysShowDecimalPlaces) {
     averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2);
   } else {
@@ -895,10 +894,10 @@ async function fillContent(): Promise<void> {
   );
   $(".pageAccount .averageWpm10 .val").text(averageSpeedLast10);
 
-  let highestRawSpeed: number | string = rawWpm.max;
-  if (Config.alwaysShowCPM) {
-    highestRawSpeed = rawWpm.max * 5;
-  }
+  let highestRawSpeed: number | string = Misc.convertTypingSpeed(
+    Config.typingSpeedUnit,
+    rawWpm.max
+  );
   if (Config.alwaysShowDecimalPlaces) {
     highestRawSpeed = Misc.roundTo2(highestRawSpeed).toFixed(2);
   } else {
@@ -908,10 +907,10 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .highestRaw .title").text(`highest raw ${wpmCpm}`);
   $(".pageAccount .highestRaw .val").text(highestRawSpeed);
 
-  let averageRawSpeed: number | string = rawWpm.total;
-  if (Config.alwaysShowCPM) {
-    averageRawSpeed = rawWpm.total * 5;
-  }
+  let averageRawSpeed: number | string = Misc.convertTypingSpeed(
+    Config.typingSpeedUnit,
+    rawWpm.total
+  );
   if (Config.alwaysShowDecimalPlaces) {
     averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2);
   } else {
@@ -921,10 +920,10 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .averageRaw .title").text(`average raw ${wpmCpm}`);
   $(".pageAccount .averageRaw .val").text(averageRawSpeed);
 
-  let averageRawSpeedLast10: number | string = rawWpm.last10Total;
-  if (Config.alwaysShowCPM) {
-    averageRawSpeedLast10 = rawWpm.last10Total * 5;
-  }
+  let averageRawSpeedLast10: number | string = Misc.convertTypingSpeed(
+    Config.typingSpeedUnit,
+    rawWpm.last10Total
+  );
   if (Config.alwaysShowDecimalPlaces) {
     averageRawSpeedLast10 = Misc.roundTo2(
       averageRawSpeedLast10 / rawWpm.last10Count
@@ -1031,9 +1030,9 @@ async function fillContent(): Promise<void> {
     `Speed change per hour spent typing: ${
       plus +
       Misc.roundTo2(
-        Config.alwaysShowCPM ? wpmChangePerHour * 5 : wpmChangePerHour
+        Misc.convertTypingSpeed(Config.typingSpeedUnit, wpmChangePerHour)
       )
-    } ${Config.alwaysShowCPM ? "cpm" : "wpm"}`
+    } ${Config.typingSpeedUnit}`
   );
 
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
