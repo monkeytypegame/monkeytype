@@ -99,22 +99,11 @@ class PseudolangWordGenerator extends Wordset {
   }
 }
 
-FunboxList.setFunboxFunctions("nausea", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/nausea.css`);
-  },
-});
+FunboxList.setFunboxFunctions("nausea", {});
 
-FunboxList.setFunboxFunctions("round_round_baby", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/round_round_baby.css`);
-  },
-});
+FunboxList.setFunboxFunctions("round_round_baby", {});
 
 FunboxList.setFunboxFunctions("simon_says", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-  },
   applyConfig(): void {
     UpdateConfig.setKeymapMode("next", true);
   },
@@ -123,22 +112,11 @@ FunboxList.setFunboxFunctions("simon_says", {
   },
 });
 
-FunboxList.setFunboxFunctions("mirror", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/mirror.css`);
-  },
-});
+FunboxList.setFunboxFunctions("mirror", {});
 
-FunboxList.setFunboxFunctions("upside_down", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/upside_down.css`);
-  },
-});
+FunboxList.setFunboxFunctions("upside_down", {});
 
 FunboxList.setFunboxFunctions("tts", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-  },
   applyConfig(): void {
     UpdateConfig.setKeymapMode("off", true);
   },
@@ -154,18 +132,11 @@ FunboxList.setFunboxFunctions("tts", {
   },
 });
 
-FunboxList.setFunboxFunctions("choo_choo", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
-  },
-});
+FunboxList.setFunboxFunctions("choo_choo", {});
 
 FunboxList.setFunboxFunctions("arrows", {
   getWord(_wordset, wordIndex): string {
     return Misc.chart2Word(wordIndex === 0);
-  },
-  applyConfig(): void {
-    $("#words").addClass("arrows");
   },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
@@ -347,17 +318,9 @@ FunboxList.setFunboxFunctions("layoutfluid", {
   },
 });
 
-FunboxList.setFunboxFunctions("earthquake", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
-  },
-});
+FunboxList.setFunboxFunctions("earthquake", {});
 
-FunboxList.setFunboxFunctions("space_balls", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
-  },
-});
+FunboxList.setFunboxFunctions("space_balls", {});
 
 FunboxList.setFunboxFunctions("gibberish", {
   getWord(): string {
@@ -425,27 +388,18 @@ FunboxList.setFunboxFunctions("specials", {
 });
 
 FunboxList.setFunboxFunctions("read_ahead_easy", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
-  },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
 });
 
 FunboxList.setFunboxFunctions("read_ahead", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
-  },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
 });
 
 FunboxList.setFunboxFunctions("read_ahead_hard", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
-  },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
@@ -479,9 +433,6 @@ FunboxList.setFunboxFunctions("memory", {
 });
 
 FunboxList.setFunboxFunctions("nospace", {
-  applyConfig(): void {
-    $("#words").addClass("nospace");
-  },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
@@ -609,9 +560,8 @@ export function toggleFunbox(funbox: string): boolean {
 }
 
 export async function clear(): Promise<boolean> {
-  $("#funBoxTheme").attr("href", ``);
-  $("#words").removeClass("nospace");
-  $("#words").removeClass("arrows");
+  await setFunboxBodyClasses();
+  await applyFunboxCSS();
   $("#wordsWrapper").removeClass("hidden");
   MemoryTimer.reset();
   ManualRestart.set();
@@ -644,10 +594,10 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   MemoryTimer.reset();
+  await setFunboxBodyClasses();
+  await applyFunboxCSS();
+
   $("#wordsWrapper").removeClass("hidden");
-  $("#funBoxTheme").attr("href", ``);
-  $("#words").removeClass("nospace");
-  $("#words").removeClass("arrows");
 
   let language;
   try {
@@ -735,8 +685,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   ManualRestart.set();
   FunboxList.get(Config.funbox).forEach(async (funbox) => {
-    if (funbox.functions?.applyCSS) funbox.functions.applyCSS();
-    if (funbox.functions?.applyConfig) funbox.functions.applyConfig();
+    funbox.functions?.applyConfig?.();
   });
   // ModesNotice.update();
   return true;
@@ -766,3 +715,48 @@ FunboxList.setFunboxFunctions("crt", {
     $("#globalFunBoxTheme").attr("href", ``);
   },
 });
+
+async function setFunboxBodyClasses(): Promise<boolean> {
+  const $body = $("body");
+
+  const activeFbNames = FunboxList.get(Config.funbox).map(
+    (it) => "fb-" + it.name.replaceAll("_", "-")
+  );
+  const currentFbClasses =
+    $body
+      ?.attr("class")
+      ?.split(/\s+/)
+      ?.filter((it) => it.startsWith("fb-")) || [];
+
+  currentFbClasses
+    .filter((it) => !activeFbNames.includes(it))
+    .forEach((it) => $body?.removeClass(it));
+
+  activeFbNames
+    .filter((it) => !currentFbClasses.includes(it))
+    .forEach((it) => $body?.addClass(it));
+
+  return true;
+}
+
+async function applyFunboxCSS(): Promise<boolean> {
+  const $theme = $("#funBoxTheme");
+
+  //currently we only support one active funbox with hasCSS
+  const activeFunboxWithTheme = FunboxList.get(Config.funbox).find(
+    (it) => it.hasCSS == true
+  );
+
+  const activeTheme =
+    activeFunboxWithTheme != null
+      ? "funbox/" + activeFunboxWithTheme.name + ".css"
+      : "";
+
+  const currentTheme = $theme.attr("href") || null;
+
+  if (activeTheme != currentTheme) {
+    $theme.attr("href", activeTheme);
+  }
+
+  return true;
+}

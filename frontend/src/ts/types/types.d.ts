@@ -234,7 +234,6 @@ declare namespace MonkeyTypes {
     punctuateWord?: (word: string) => string;
     withWords?: (words?: string[]) => Promise<Misc.Wordset>;
     alterText?: (word: string) => string;
-    applyCSS?: () => void;
     applyConfig?: () => void;
     applyGlobalCSS?: () => void;
     clearGlobal?: () => void;
@@ -274,6 +273,7 @@ declare namespace MonkeyTypes {
     forcedConfig?: MonkeyTypes.FunboxForcedConfig;
     properties?: FunboxProperty[];
     functions?: FunboxFunctions;
+    hasCSS?: boolean;
   }
 
   interface CustomText {
