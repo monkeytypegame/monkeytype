@@ -529,6 +529,21 @@ export function getFullSpeedUnitString(
   }
 }
 
+export function getHistogramDataBucketSize(
+  unit: MonkeyTypes.TypingSpeedUnit
+): number {
+  switch (unit) {
+    case "wpm":
+      return 10;
+    case "cpm":
+      return 50;
+    case "wps":
+      return 1;
+    case "cps":
+      return 5;
+  }
+}
+
 export function findLineByLeastSquares(values_y: number[]): number[][] {
   let sum_x = 0;
   let sum_y = 0;

@@ -541,7 +541,15 @@ async function fillContent(): Promise<void> {
         };
       }
 
-      const bucket = Math.floor(Math.round(result.wpm) / 10) * 10;
+      const bucketSize = Misc.getHistogramDataBucketSize(
+        Config.typingSpeedUnit
+      );
+      const bucket =
+        Math.floor(
+          Math.round(
+            Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm)
+          ) / bucketSize
+        ) * bucketSize;
 
       if (Object.keys(histogramChartData).includes(String(bucket))) {
         histogramChartData[bucket]++;
@@ -713,21 +721,29 @@ async function fillContent(): Promise<void> {
   const histogramChartDataBucketed: { x: number; y: number }[] = [];
   const labels: string[] = [];
 
+  const bucketSize = Misc.getHistogramDataBucketSize(Config.typingSpeedUnit);
   const keys = Object.keys(histogramChartData);
+
   for (let i = 0; i < keys.length; i++) {
     const bucket = parseInt(keys[i]);
-    labels.push(`${bucket} - ${bucket + 9}`);
+    labels.push(`${bucket} - ${bucket + bucketSize - 1}`);
     histogramChartDataBucketed.push({
       x: bucket,
       y: histogramChartData[bucket],
     });
-    if (bucket + 10 !== parseInt(keys[i + 1])) {
-      for (let j = bucket + 10; j < parseInt(keys[i + 1]); j += 10) {
+    if (bucket + bucketSize !== parseInt(keys[i + 1])) {
+      for (
+        let j = bucket + bucketSize;
+        j < parseInt(keys[i + 1]);
+        j += bucketSize
+      ) {
         histogramChartDataBucketed.push({ x: j, y: 0 });
-        labels.push(`${j} - ${j + 9}`);
+        labels.push(`${j} - ${j + bucketSize - 1}`);
       }
     }
   }
+
+  console.log(labels);
 
   ChartController.accountHistogram.data.labels = labels;
   ChartController.accountHistogram.data.datasets[0].data =
