@@ -403,7 +403,7 @@ export async function updateCrown(): Promise<void> {
   pbDiff = Math.abs(result.wpm - lpb);
   $("#result .stats .wpm .crown").attr(
     "aria-label",
-    "+" + Misc.roundTo2(pbDiff)
+    "+" + Misc.roundTo2(Misc.convertTypingSpeed(Config.typingSpeedUnit, pbDiff))
   );
 }
 

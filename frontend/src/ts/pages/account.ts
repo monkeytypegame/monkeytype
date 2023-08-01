@@ -689,8 +689,9 @@ async function fillContent(): Promise<void> {
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Misc.roundTo2(
-        Misc.roundTo2(
-          Misc.convertTypingSpeed(Config.typingSpeedUnit, totalWpm)
+        Misc.convertTypingSpeed(
+          Config.typingSpeedUnit,
+          activityChartData[dateInt].totalWpm
         ) / activityChartData[dateInt].amount
       ),
     });
@@ -702,7 +703,7 @@ async function fillContent(): Promise<void> {
   ).scales;
 
   accountActivityScaleOptions["avgWpm"].title.text =
-    "Average" + Config.typingSpeedUnit;
+    "Average " + Config.typingSpeedUnit;
 
   ChartController.accountActivity.data.datasets[0].data =
     activityChartData_time;
