@@ -743,8 +743,6 @@ async function fillContent(): Promise<void> {
     }
   }
 
-  console.log(labels);
-
   ChartController.accountHistogram.data.labels = labels;
   ChartController.accountHistogram.data.datasets[0].data =
     histogramChartDataBucketed;
