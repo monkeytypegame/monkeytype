@@ -190,7 +190,7 @@
     {
       "text": "func (c *Client) GetRole(ctx context.Context, params *GetRoleInput, optFns ...func(*Options)) (*GetRoleOutput, error) {\n\tif params == nil {\n\t\tparams = &GetRoleInput{}\n\t}\n\n\tresult, metadata, err := c.invokeOperation(ctx, \"GetRole\", params, optFns, c.addOperationGetRoleMiddlewares)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\tout := result.(*GetRoleOutput)\n\tout.ResultMetadata = metadata\n\treturn out, nil\n}",
       "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
-      "length": 400,
+      "length": 401,
       "id": 31
     },
     {
@@ -208,13 +208,13 @@
     {
       "text": "func roleExistsStateRetryable(ctx context.Context, input *GetRoleInput, output *GetRoleOutput, err error) (bool, error) {\n\n\tif err == nil {\n\t\treturn false, nil\n\t}\n\n\tif err != nil {\n\t\tvar apiErr smithy.APIError\n\t\tok := errors.As(err, &apiErr)\n\t\tif !ok {\n\t\t\treturn false, fmt.Errorf(\"expected err to be of type smithy.APIError, got %w\", err)\n\t\t}\n\n\t\tif \"NoSuchEntity\" == apiErr.ErrorCode() {\n\t\t\treturn true, nil\n\t\t}\n\t}\n\n\treturn true, nil\n}",
       "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
-      "length": 435,
+      "length": 436,
       "id": 34
     },
     {
       "text": "func VerifyChart(path, keyring string) (*provenance.Verification, error) {\n\t// For now, error out if it's not a tar file.\n\tswitch fi, err := os.Stat(path); {\n\tcase err != nil:\n\t\treturn nil, err\n\tcase fi.IsDir():\n\t\treturn nil, errors.New(\"unpacked charts cannot be verified\")\n\tcase !isTar(path):\n\t\treturn nil, errors.New(\"chart must be a tgz file\")\n\t}\n\n\tprovfile := path + \".prov\"\n\tif _, err := os.Stat(provfile); err != nil {\n\t\treturn nil, errors.Wrapf(err, \"could not load provenance file %s\", provfile)\n\t}\n\n\tsig, err := provenance.NewFromKeyring(keyring, \"\")\n\tif err != nil {\n\t\treturn nil, errors.Wrap(err, \"failed to load keyring\")\n\t}\n\treturn sig.Verify(path, provfile)\n}",
       "source": "helm/helm - pkg/downloader/chart_downloader.go",
-      "length": 675,
+      "length": 674,
       "id": 35
     },
     {
@@ -226,7 +226,7 @@
     {
       "text": "func (f files) Glob(pattern string) files {\n\tg, err := glob.Compile(pattern, '/')\n\tif err != nil {\n\t\tg, _ = glob.Compile(\"**\")\n\t}\n\n\tnf := newFiles(nil)\n\tfor name, contents := range f {\n\t\tif g.Match(name) {\n\t\t\tnf[name] = contents\n\t\t}\n\t}\n\n\treturn nf\n}",
       "source": "helm/helm - pkg/engine/files.go",
-      "length": 250,
+      "length": 249,
       "id": 37
     },
     {
@@ -238,7 +238,7 @@
     {
       "text": "func (f files) Lines(path string) []string {\n\tif f == nil || f[path] == nil {\n\t\treturn []string{}\n\t}\n\ts := string(f[path])\n\tif s[len(s)-1] == '\\\\n' {\n\t\ts = s[:len(s)-1]\n\t}\n\treturn strings.Split(s, \"\\\\n\")\n}",
       "source": "helm/helm - pkg/engine/files.go",
-      "length": 203,
+      "length": 205,
       "id": 39
     },
     {
@@ -280,7 +280,7 @@
     {
       "text": "func (gb *GraphBuilder) IsSynced(logger klog.Logger) bool {\n\tgb.monitorLock.Lock()\n\tdefer gb.monitorLock.Unlock()\n\n\tif len(gb.monitors) == 0 {\n\t\tlogger.V(4).Info(\"garbage controller monitor not synced: no monitors\")\n\t\treturn false\n\t}\n\n\tfor resource, monitor := range gb.monitors {\n\t\tif !monitor.controller.HasSynced() {\n\t\t\tlogger.V(4).Info(\"garbage controller monitor not yet synced\", \"resource\", resource)\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}",
       "source": "kubernetes/kubernetes - pkg/controller/garbagecollector/graph_builder.go",
-      "length": 563,
+      "length": 444,
       "id": 46
     },
     {
@@ -304,7 +304,7 @@
     {
       "text": "func MD5All(root string) (map[string][md5.\"length\"]byte, error) {\n\tdone := make(chan struct{})\n\tdefer close(done)\n\n\tc, errc := sumFiles(done, root)\n\n\tm := make(map[string][md5.\"length\"]byte)\n\tfor r := range c {\n\t\tif r.err != nil {\n\t\t\treturn nil, r.err\n\t\t}\n\t\tm[r.path] = r.sum\n\t}\n\tif err := <-errc; err != nil {\n\t\treturn nil, err\n\t}\n\treturn m, nil\n}",
       "source": "tmrts/go-patterns - concurrency/bounded_parallelism.go",
-      "length": 340,
+      "length": 348,
       "id": 50
     }
   ]
