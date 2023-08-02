@@ -747,6 +747,28 @@
       "row5": [" "]
     }
   },
+  "middlemak": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["qQ", "wW", "lL", "dD", "gG", "jJ", "fF", "oO", "uU", ";:", "[{", "]}", "\\|"],
+      "row3": ["aA", "sS", "rR", "tT", "pP", "yY", "nN", "eE", "iI", "hH", "'\""],
+      "row4": ["zZ", "xX", "cC", "vV", "bB", "kK", "mM", ",<", ",>", "/?"],
+      "row5": [" "]
+    }
+  },
+  "middlemak-nh": {
+    "keymapShowTopRow": false,
+    "type": "ansi",
+    "keys": {
+      "row1": ["`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+"],
+      "row2": ["qQ", "wW", "lL", "dD", "gG", "jJ", "fF", "oO", "uU", ";:", "[{", "]}", "\\|"],
+      "row3": ["nN", "sS", "rR", "tT", "pP", "yY", "hH", "eE", "iI", "aA", "'\""],
+      "row4": ["zZ", "xX", "cC", "vV", "bB", "kK", "mM", ",<", ",>", "/?"],
+      "row5": [" "]
+    }
+  },
   "hindi_inscript": {
     "keymapShowTopRow": true,
     "type": "ansi",
