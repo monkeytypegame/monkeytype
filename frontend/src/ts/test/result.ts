@@ -213,18 +213,6 @@ function updateWpmAndAcc(): void {
   if (result.wpm >= 1000) {
     inf = true;
   }
-  let wpmHover = Misc.convertTypingSpeedWithUnitSuffix(
-    Config.typingSpeedUnit,
-    result.wpm
-  );
-  let rawWpmHover = Misc.convertTypingSpeedWithUnitSuffix(
-    Config.typingSpeedUnit,
-    result.rawWpm
-  );
-  if (Config.typingSpeedUnit != "wpm") {
-    wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
-    rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
-  }
 
   if (Config.alwaysShowDecimalPlaces) {
     $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
@@ -244,8 +232,14 @@ function updateWpmAndAcc(): void {
     );
 
     if (Config.typingSpeedUnit != "wpm") {
-      $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
-      $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
+      $("#result .stats .wpm .bottom").attr(
+        "aria-label",
+        result.wpm.toFixed(2) + " wpm"
+      );
+      $("#result .stats .raw .bottom").attr(
+        "aria-label",
+        result.rawWpm.toFixed(2) + " wpm"
+      );
     } else {
       $("#result .stats .wpm .bottom").removeAttr("aria-label");
       $("#result .stats .raw .bottom").removeAttr("aria-label");
@@ -267,6 +261,19 @@ function updateWpmAndAcc(): void {
     );
   } else {
     //not showing decimal places
+    let wpmHover = Misc.convertTypingSpeedWithUnitSuffix(
+      Config.typingSpeedUnit,
+      result.wpm
+    );
+    let rawWpmHover = Misc.convertTypingSpeedWithUnitSuffix(
+      Config.typingSpeedUnit,
+      result.rawWpm
+    );
+    if (Config.typingSpeedUnit != "wpm") {
+      wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
+      rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
+    }
+
     $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
     $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
     if (inf) {
