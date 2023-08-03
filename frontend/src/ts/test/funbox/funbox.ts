@@ -99,10 +99,6 @@ class PseudolangWordGenerator extends Wordset {
   }
 }
 
-FunboxList.setFunboxFunctions("nausea", {});
-
-FunboxList.setFunboxFunctions("round_round_baby", {});
-
 FunboxList.setFunboxFunctions("simon_says", {
   applyConfig(): void {
     UpdateConfig.setKeymapMode("next", true);
@@ -111,10 +107,6 @@ FunboxList.setFunboxFunctions("simon_says", {
     save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
   },
 });
-
-FunboxList.setFunboxFunctions("mirror", {});
-
-FunboxList.setFunboxFunctions("upside_down", {});
 
 FunboxList.setFunboxFunctions("tts", {
   applyConfig(): void {
@@ -131,8 +123,6 @@ FunboxList.setFunboxFunctions("tts", {
     TTSEvent.dispatch(params[0]);
   },
 });
-
-FunboxList.setFunboxFunctions("choo_choo", {});
 
 FunboxList.setFunboxFunctions("arrows", {
   getWord(_wordset, wordIndex): string {
@@ -317,10 +307,6 @@ FunboxList.setFunboxFunctions("layoutfluid", {
     }, 1);
   },
 });
-
-FunboxList.setFunboxFunctions("earthquake", {});
-
-FunboxList.setFunboxFunctions("space_balls", {});
 
 FunboxList.setFunboxFunctions("gibberish", {
   getWord(): string {
@@ -560,8 +546,9 @@ export function toggleFunbox(funbox: string): boolean {
 }
 
 export async function clear(): Promise<boolean> {
-  await setFunboxBodyClasses();
-  await applyFunboxCSS();
+  $("body").attr("class", "");
+  $("#funBoxTheme").removeAttr("href");
+
   $("#wordsWrapper").removeClass("hidden");
   MemoryTimer.reset();
   ManualRestart.set();
