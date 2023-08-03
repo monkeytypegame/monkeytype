@@ -197,8 +197,7 @@ export async function updateGraphPBLine(): Promise<void> {
       content: `PB: ${chartlpb}`,
     },
   });
-  //TODO: define the limit (20) either per speedUnit or as a percentage
-  const lpbRange = maxChartVal * 0.1;
+  const lpbRange = Misc.convertTypingSpeed(Config.typingSpeedUnit, 20);
   if (
     maxChartVal >= parseFloat(chartlpb) - lpbRange &&
     maxChartVal <= parseFloat(chartlpb) + lpbRange

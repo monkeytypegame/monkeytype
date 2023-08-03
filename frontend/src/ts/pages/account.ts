@@ -805,13 +805,17 @@ async function fillContent(): Promise<void> {
 
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
-  const maxWpmChartVal = Math.ceil(Math.max(...wpms) * 1.1);
+  const maxWpmChartVal = Math.max(...wpms);
+  const maxChartValRange = Misc.convertTypingSpeed(Config.typingSpeedUnit, 10);
+  const maxWpmChartValWithBuffer =
+    Math.floor(maxWpmChartVal) +
+    (maxChartValRange - (Math.floor(maxWpmChartVal) % maxChartValRange));
 
   // let accuracies = accChartData.map((r) => r.y);
-  accountHistoryScaleOptions["wpm"].max = maxWpmChartVal;
-  accountHistoryScaleOptions["pb"].max = maxWpmChartVal;
-  accountHistoryScaleOptions["wpmAvgTen"].max = maxWpmChartVal;
-  accountHistoryScaleOptions["wpmAvgHundred"].max = maxWpmChartVal;
+  accountHistoryScaleOptions["wpm"].max = maxWpmChartValWithBuffer;
+  accountHistoryScaleOptions["pb"].max = maxWpmChartValWithBuffer;
+  accountHistoryScaleOptions["wpmAvgTen"].max = maxWpmChartValWithBuffer;
+  accountHistoryScaleOptions["wpmAvgHundred"].max = maxWpmChartValWithBuffer;
 
   if (!Config.startGraphsAtZero) {
     const minWpmChartValFloor = Math.floor(minWpmChartVal);
