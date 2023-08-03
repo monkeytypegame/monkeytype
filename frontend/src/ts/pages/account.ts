@@ -16,7 +16,7 @@ import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
-import type { ScaleChartOptions } from "chart.js";
+import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import { Auth } from "../firebase";
 
 let filterDebug = false;
@@ -735,7 +735,10 @@ async function fillContent(): Promise<void> {
     ChartController.accountHistory.options as ScaleChartOptions<"line">
   ).scales;
 
-  accountHistoryScaleOptions["wpm"].title.text = Misc.getFullSpeedUnitString(
+  const accountHistoryWpmOptions = accountHistoryScaleOptions[
+    "wpm"
+  ] as LinearScaleOptions;
+  accountHistoryWpmOptions.title.text = Misc.getFullSpeedUnitString(
     Config.typingSpeedUnit
   );
 
@@ -801,15 +804,16 @@ async function fillContent(): Promise<void> {
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
   const maxWpmChartVal = Math.max(...wpms);
-  const maxChartValRange = Math.ceil(
-    Misc.convertTypingSpeed(Config.typingSpeedUnit, 10)
-  );
+  const wpmStepSize = Misc.getHistoryStepSize(Config.typingSpeedUnit);
   const maxWpmChartValWithBuffer =
     Math.floor(maxWpmChartVal) +
-    (maxChartValRange - (Math.floor(maxWpmChartVal) % maxChartValRange));
+    (wpmStepSize - (Math.floor(maxWpmChartVal) % wpmStepSize));
 
   // let accuracies = accChartData.map((r) => r.y);
-  accountHistoryScaleOptions["wpm"].max = maxWpmChartValWithBuffer;
+  accountHistoryWpmOptions.max = maxWpmChartValWithBuffer;
+
+  accountHistoryWpmOptions.ticks.stepSize = wpmStepSize;
+
   accountHistoryScaleOptions["pb"].max = maxWpmChartValWithBuffer;
   accountHistoryScaleOptions["wpmAvgTen"].max = maxWpmChartValWithBuffer;
   accountHistoryScaleOptions["wpmAvgHundred"].max = maxWpmChartValWithBuffer;
@@ -817,12 +821,12 @@ async function fillContent(): Promise<void> {
   if (!Config.startGraphsAtZero) {
     const minWpmChartValFloor = Math.floor(minWpmChartVal);
 
-    accountHistoryScaleOptions["wpm"].min = minWpmChartValFloor;
+    accountHistoryWpmOptions.min = minWpmChartValFloor;
     accountHistoryScaleOptions["pb"].min = minWpmChartValFloor;
     accountHistoryScaleOptions["wpmAvgTen"].min = minWpmChartValFloor;
     accountHistoryScaleOptions["wpmAvgHundred"].min = minWpmChartValFloor;
   } else {
-    accountHistoryScaleOptions["wpm"].min = 0;
+    accountHistoryWpmOptions.min = 0;
     accountHistoryScaleOptions["pb"].min = 0;
     accountHistoryScaleOptions["wpmAvgTen"].min = 0;
     accountHistoryScaleOptions["wpmAvgHundred"].min = 0;

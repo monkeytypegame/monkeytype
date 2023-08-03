@@ -343,6 +343,7 @@ export const accountHistory: ChartWithUpdateColors<
         },
         wpm: {
           axis: "y",
+          type: "linear",
           beginAtZero: true,
           min: 0,
           ticks: {
