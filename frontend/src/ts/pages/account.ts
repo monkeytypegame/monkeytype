@@ -267,13 +267,8 @@ async function fillContent(): Promise<void> {
     };
   }
 
-  interface HistogramChartData {
-    [key: string]: number;
-  }
-
   const activityChartData: ActivityChartData = {};
-
-  const histogramChartData: HistogramChartData = {};
+  const histogramChartData: Array<number> = new Array(0);
 
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
@@ -548,11 +543,13 @@ async function fillContent(): Promise<void> {
         Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm) / bucketSize
       );
 
-      if (Object.keys(histogramChartData).includes(String(bucket))) {
-        histogramChartData[bucket]++;
-      } else {
-        histogramChartData[bucket] = 1;
+      //grow array if needed
+      if (histogramChartData.length <= bucket) {
+        for (let i = histogramChartData.length; i <= bucket; i++) {
+          histogramChartData.push(0);
+        }
       }
+      histogramChartData[bucket]++;
 
       let tt = 0;
       if (
@@ -720,17 +717,15 @@ async function fillContent(): Promise<void> {
 
   const bucketSize = Misc.getHistogramDataBucketSize(Config.typingSpeedUnit);
   const bucketSizeUpperBound = bucketSize - (bucketSize <= 1 ? 0.01 : 1);
-  const numOfBuckets =
-    Math.max(...Object.keys(histogramChartData).map((it) => parseInt(it))) + 1;
 
-  for (let i = 0; i < numOfBuckets; i++) {
+  histogramChartData.forEach((amount: number, i: number) => {
     const bucket = i * bucketSize;
     labels.push(`${bucket} - ${bucket + bucketSizeUpperBound}`);
     histogramChartDataBucketed.push({
       x: bucket,
-      y: histogramChartData[i],
+      y: amount,
     });
-  }
+  });
 
   ChartController.accountHistogram.data.labels = labels;
   ChartController.accountHistogram.data.datasets[0].data =
