@@ -804,7 +804,7 @@ async function fillContent(): Promise<void> {
   const maxChartValRange = Misc.convertTypingSpeed(Config.typingSpeedUnit, 10);
   const maxWpmChartValWithBuffer =
     Math.floor(maxWpmChartVal) +
-    (maxChartValRange - (Math.floor(maxWpmChartVal) % maxChartValRange));
+    (maxChartValRange - (Math.ceil(maxWpmChartVal) % maxChartValRange));
 
   // let accuracies = accChartData.map((r) => r.y);
   accountHistoryScaleOptions["wpm"].max = maxWpmChartValWithBuffer;
