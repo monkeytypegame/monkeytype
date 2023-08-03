@@ -89,7 +89,7 @@ declare namespace MonkeyTypes {
 
   type KeymapShowTopRow = "always" | "layout" | "never";
 
-  type ShowAverage = "off" | "wpm" | "acc" | "both";
+  type ShowAverage = "off" | "speed" | "acc" | "both";
 
   type SmoothCaretMode = "off" | "slow" | "medium" | "fast";
 

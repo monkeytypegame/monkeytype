@@ -143,7 +143,7 @@ export async function update(): Promise<void> {
     }
 
     if (Auth?.currentUser && avgWPM > 0) {
-      const avgWPMText = ["wpm", "both"].includes(Config.showAverage)
+      const avgWPMText = ["speed", "both"].includes(Config.showAverage)
         ? Misc.convertTypingSpeedWithUnitSuffix(Config.typingSpeedUnit, avgWPM)
         : "";
 

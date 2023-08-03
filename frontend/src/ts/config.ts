@@ -896,7 +896,9 @@ export function setShowAverage(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("show average", value, [["off", "wpm", "acc", "both"]])
+    !isConfigValueValid("show average", value, [
+      ["off", "speed", "acc", "both"],
+    ])
   ) {
     return false;
   }
@@ -1987,6 +1989,11 @@ function replaceLegacyValues(
   //@ts-ignore
   if (configObj.alwaysShowCPM === true) {
     configObj.typingSpeedUnit = "cpm";
+  }
+
+  //@ts-ignore
+  if (configObj.showAverage === "wpm") {
+    configObj.showAverage = "speed";
   }
 
   return configObj;
