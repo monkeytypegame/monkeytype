@@ -723,10 +723,11 @@ async function fillContent(): Promise<void> {
 
   const bucketSize = Misc.getHistogramDataBucketSize(Config.typingSpeedUnit);
   const keys = Object.keys(histogramChartData);
+  const bucketSizeUpperBound = bucketSize - (bucketSize <= 1 ? 0.01 : 1);
 
   for (let i = 0; i < keys.length; i++) {
     const bucket = parseInt(keys[i]);
-    labels.push(`${bucket} - ${bucket + bucketSize - 1}`);
+    labels.push(`${bucket} - ${bucket + bucketSizeUpperBound}`);
     histogramChartDataBucketed.push({
       x: bucket,
       y: histogramChartData[bucket],
@@ -738,7 +739,7 @@ async function fillContent(): Promise<void> {
         j += bucketSize
       ) {
         histogramChartDataBucketed.push({ x: j, y: 0 });
-        labels.push(`${j} - ${j + bucketSize - 1}`);
+        labels.push(`${j} - ${j + bucketSizeUpperBound}`);
       }
     }
   }
@@ -816,17 +817,13 @@ async function fillContent(): Promise<void> {
 
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
-  const maxWpmChartVal = Math.max(...wpms);
+  const maxWpmChartVal = Math.ceil(Math.max(...wpms) * 1.1);
 
   // let accuracies = accChartData.map((r) => r.y);
-  accountHistoryScaleOptions["wpm"].max =
-    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
-  accountHistoryScaleOptions["pb"].max =
-    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
-  accountHistoryScaleOptions["wpmAvgTen"].max =
-    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
-  accountHistoryScaleOptions["wpmAvgHundred"].max =
-    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+  accountHistoryScaleOptions["wpm"].max = maxWpmChartVal;
+  accountHistoryScaleOptions["pb"].max = maxWpmChartVal;
+  accountHistoryScaleOptions["wpmAvgTen"].max = maxWpmChartVal;
+  accountHistoryScaleOptions["wpmAvgHundred"].max = maxWpmChartVal;
 
   if (!Config.startGraphsAtZero) {
     const minWpmChartValFloor = Math.floor(minWpmChartVal);

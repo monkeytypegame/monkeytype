@@ -538,7 +538,7 @@ export function getHistogramDataBucketSize(
     case "cpm":
       return 50;
     case "wps":
-      return 1;
+      return 0.5;
     case "cps":
       return 5;
   }

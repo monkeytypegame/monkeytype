@@ -98,6 +98,7 @@ async function updateGraph(): Promise<void> {
   maxChartVal = Math.max(
     ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
   );
+
   if (!Config.startGraphsAtZero) {
     const minChartVal = Math.min(
       ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
@@ -196,14 +197,16 @@ export async function updateGraphPBLine(): Promise<void> {
       content: `PB: ${chartlpb}`,
     },
   });
+  //TODO: define the limit (20) either per speedUnit or as a percentage
+  const lpbRange = maxChartVal * 0.1;
   if (
-    maxChartVal >= parseFloat(chartlpb) - 20 &&
-    maxChartVal <= parseFloat(chartlpb) + 20
+    maxChartVal >= parseFloat(chartlpb) - lpbRange &&
+    maxChartVal <= parseFloat(chartlpb) + lpbRange
   ) {
-    maxChartVal = parseFloat(chartlpb) + 15;
+    maxChartVal = Math.round(parseFloat(chartlpb) + lpbRange);
   }
-  resultScaleOptions["wpm"].max = Math.round(maxChartVal + 5);
-  resultScaleOptions["raw"].max = Math.round(maxChartVal + 5);
+  resultScaleOptions["wpm"].max = maxChartVal;
+  resultScaleOptions["raw"].max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
@@ -211,6 +214,19 @@ function updateWpmAndAcc(): void {
   if (result.wpm >= 1000) {
     inf = true;
   }
+  let wpmHover = Misc.convertTypingSpeedWithUnitSuffix(
+    Config.typingSpeedUnit,
+    result.wpm
+  );
+  let rawWpmHover = Misc.convertTypingSpeedWithUnitSuffix(
+    Config.typingSpeedUnit,
+    result.rawWpm
+  );
+  if (Config.typingSpeedUnit != "wpm") {
+    wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
+    rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
+  }
+
   if (Config.alwaysShowDecimalPlaces) {
     $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
     if (inf) {
@@ -227,10 +243,14 @@ function updateWpmAndAcc(): void {
         Misc.convertTypingSpeed(Config.typingSpeedUnit, result.rawWpm)
       ).toFixed(2)
     );
-    $("#result .stats .wpm .bottom").attr(
-      "aria-label",
-      Misc.convertTypingSpeedWithUnitSuffix(Config.typingSpeedUnit, result.wpm)
-    );
+
+    if (Config.typingSpeedUnit != "wpm") {
+      $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
+      $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
+    } else {
+      $("#result .stats .wpm .bottom").removeAttr("aria-label");
+      $("#result .stats .raw .bottom").removeAttr("aria-label");
+    }
 
     $("#result .stats .acc .bottom").text(
       result.acc === 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
@@ -240,7 +260,6 @@ function updateWpmAndAcc(): void {
       time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
-    $("#result .stats .raw .bottom").removeAttr("aria-label");
     // $("#result .stats .acc .bottom").removeAttr("aria-label");
 
     $("#result .stats .acc .bottom").attr(
@@ -250,10 +269,7 @@ function updateWpmAndAcc(): void {
   } else {
     //not showing decimal places
     $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
-    $("#result .stats .wpm .bottom").attr(
-      "aria-label",
-      Misc.convertTypingSpeedWithUnitSuffix(Config.typingSpeedUnit, result.wpm)
-    );
+    $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
     if (inf) {
       $("#result .stats .wpm .bottom").text("Infinite");
     } else {
@@ -264,10 +280,7 @@ function updateWpmAndAcc(): void {
     $("#result .stats .raw .bottom").text(
       Math.round(Misc.convertTypingSpeed(Config.typingSpeedUnit, result.rawWpm))
     );
-    $("#result .stats .raw .bottom").attr(
-      "aria-label",
-      Misc.convertTypingSpeed(Config.typingSpeedUnit, result.rawWpm)
-    );
+    $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
     $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
     $("#result .stats .acc .bottom").attr(
