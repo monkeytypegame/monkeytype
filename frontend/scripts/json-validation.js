@@ -404,14 +404,16 @@ function validateQuotes() {
         quoteIdsAllGood = false;
         quoteIdsErrors = quoteIdsValidator.errors;
       }
-      const incorrectQuoteLength = quoteData.quotes
-        .filter((quote) => quote.text.length !== quote.length)
+      const incorrectQuoteLength = quoteData.quotes.filter(
+        (quote) => quote.text.length !== quote.length
+      );
       if (incorrectQuoteLength.length !== 0) {
         console.log("Some length fields are \u001b[31mincorrect\u001b[0m");
-        incorrectQuoteLength
-          .map((quote) => { console.log(
+        incorrectQuoteLength.map((quote) => {
+          console.log(
             `Quote ${quotefilename} ID ${quote.id}: expected length ${quote.text.length}`
-          )});
+          );
+        });
         quoteFilesAllGood = false;
         incorrectQuoteLength.map((quote) => {
           quoteLengthErrors.push(
