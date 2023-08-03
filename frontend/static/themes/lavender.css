@@ -13,10 +13,17 @@
 
 #menu .textButton {
   border-radius: 10rem !important;
-  background: #2f2a41;
-  color: #e4e3e9;
+  background: var(--text-color);
+  color: var(--main-color);
 }
 
 #menu .textButton:hover {
-  color: #ada6c2;
+  color: var(--bg-color);
+}
+
+body.crtmode {
+  #menu .textButton {
+    box-shadow: 3px 0 1px var(--crt-text-color-glow),
+      -3px 0 var(--crt-text-color-glow), 0 0 3px;
+  }
 }

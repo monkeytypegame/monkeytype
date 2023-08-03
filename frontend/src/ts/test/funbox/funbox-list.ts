@@ -229,6 +229,11 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     info: "-.../././.--./ -.../---/---/.--./-.-.--/ ",
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters", "nospace"],
   },
+  {
+    name: "crt",
+    info: "Go back to the 1980s",
+    properties: ["noLigatures"],
+  },
 ];
 
 export function getAll(): MonkeyTypes.FunboxMetadata[] {
