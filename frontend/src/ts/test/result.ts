@@ -62,7 +62,7 @@ async function updateGraph(): Promise<void> {
   );
   const chartData1 = [
     ...TestInput.wpmHistory.map((a) =>
-      Misc.convertTypingSpeed(Config.typingSpeedUnit, a)
+      Misc.roundTo2(Misc.convertTypingSpeed(Config.typingSpeedUnit, a))
     ),
   ];
 
@@ -70,7 +70,7 @@ async function updateGraph(): Promise<void> {
 
   const chartData2 = [
     ...result.chartData.raw.map((a) =>
-      Misc.convertTypingSpeed(Config.typingSpeedUnit, a)
+      Misc.roundTo2(Misc.convertTypingSpeed(Config.typingSpeedUnit, a))
     ),
   ];
 
