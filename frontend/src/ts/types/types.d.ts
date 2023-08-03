@@ -882,5 +882,5 @@ declare namespace MonkeyTypes {
 
   type AllRewards = XpReward | BadgeReward;
 
-  type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps";
+  type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
 }

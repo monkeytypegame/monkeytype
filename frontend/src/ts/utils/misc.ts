@@ -504,6 +504,8 @@ export function convertTypingSpeed(
       return wpm / 60;
     case "cps":
       return (wpm * 5) / 60;
+    case "wph":
+      return wpm * 60;
   }
 }
 
@@ -526,6 +528,8 @@ export function getFullSpeedUnitString(
       return "Words per Second";
     case "cps":
       return "Characters per Second";
+    case "wph":
+      return "Words per Hour";
   }
 }
 
@@ -541,6 +545,8 @@ export function getHistogramDataBucketSize(
       return 0.5;
     case "cps":
       return 5;
+    case "wph":
+      return 60;
   }
 }
 

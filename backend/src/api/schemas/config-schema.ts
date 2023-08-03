@@ -106,7 +106,7 @@ const CONFIG_SCHEMA = joi.object({
   minWpmCustomSpeed: joi.number().min(0),
   highlightMode: joi.string().valid("off", "letter", "word"),
   tapeMode: joi.string().valid("off", "letter", "word"),
-  typingSpeedUnit: joi.string().valid("wpm", "cpm", "wps", "cps"),
+  typingSpeedUnit: joi.string().valid("wpm", "cpm", "wps", "cps", "wph"),
   enableAds: joi.string().valid("off", "on", "max"),
   ads: joi.string().valid("off", "result", "on", "sellout"),
   hideExtraLetters: joi.boolean(),

@@ -268,7 +268,7 @@ async function fillContent(): Promise<void> {
   }
 
   const activityChartData: ActivityChartData = {};
-  const histogramChartData: Array<number> = new Array(0);
+  const histogramChartData: number[] = [];
 
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
@@ -801,10 +801,12 @@ async function fillContent(): Promise<void> {
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
   const maxWpmChartVal = Math.max(...wpms);
-  const maxChartValRange = Misc.convertTypingSpeed(Config.typingSpeedUnit, 10);
+  const maxChartValRange = Math.ceil(
+    Misc.convertTypingSpeed(Config.typingSpeedUnit, 10)
+  );
   const maxWpmChartValWithBuffer =
     Math.floor(maxWpmChartVal) +
-    (maxChartValRange - (Math.ceil(maxWpmChartVal) % maxChartValRange));
+    (maxChartValRange - (Math.floor(maxWpmChartVal) % maxChartValRange));
 
   // let accuracies = accChartData.map((r) => r.y);
   accountHistoryScaleOptions["wpm"].max = maxWpmChartValWithBuffer;

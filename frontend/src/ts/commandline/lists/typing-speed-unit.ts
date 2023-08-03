@@ -36,6 +36,14 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         UpdateConfig.setTypingSpeedUnit("cps");
       },
     },
+    {
+      id: "setTypingSpeedUnitWph",
+      display: "wph",
+      configValue: "wph",
+      exec: (): void => {
+        UpdateConfig.setTypingSpeedUnit("wph");
+      },
+    },
   ],
 };
 
