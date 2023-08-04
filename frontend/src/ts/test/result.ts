@@ -25,6 +25,7 @@ import * as TestInput from "./test-input";
 import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
+import * as ConfigEvent from "../observables/config-event";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -874,5 +875,24 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
       }
       dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
     }
+  }
+});
+
+ConfigEvent.subscribe(async (eventKey) => {
+  if (eventKey === "typingSpeedUnit" && TestUI.resultVisible) {
+    resultScaleOptions = (
+      ChartController.result.options as ScaleChartOptions<"line" | "scatter">
+    ).scales;
+    resultAnnotation = [];
+
+    updateWpmAndAcc();
+    await updateGraph();
+    await updateGraphPBLine();
+
+    ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
+      .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
+      resultAnnotation;
+    ChartController.result.updateColors();
+    ChartController.result.resize();
   }
 });
