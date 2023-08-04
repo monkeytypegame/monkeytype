@@ -2,7 +2,7 @@ import Config from "../config";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
-const liveWpmElement = document.querySelector("#liveWpm") as Element;
+const liveSpeedElement = document.querySelector("#liveSpeed") as Element;
 const miniLiveSpeedElement = document.querySelector(
   "#miniTimerAndLiveSpeed .wpm"
 ) as Element;
@@ -16,7 +16,7 @@ export function update(wpm: number, raw: number): void {
     number = Math.round(number * 5);
   }
   miniLiveSpeedElement.innerHTML = number.toString();
-  liveWpmElement.innerHTML = number.toString();
+  liveSpeedElement.innerHTML = number.toString();
 }
 
 export function show(): void {
@@ -35,8 +35,8 @@ export function show(): void {
         125
       );
   } else {
-    if (!liveWpmElement.classList.contains("hidden")) return;
-    $(liveWpmElement)
+    if (!liveSpeedElement.classList.contains("hidden")) return;
+    $(liveSpeedElement)
       .stop(true, true)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -50,7 +50,7 @@ export function show(): void {
 }
 
 export function hide(): void {
-  $(liveWpmElement)
+  $(liveSpeedElement)
     .stop(true, true)
     .animate(
       {
@@ -58,7 +58,7 @@ export function hide(): void {
       },
       125,
       () => {
-        liveWpmElement.classList.add("hidden");
+        liveSpeedElement.classList.add("hidden");
       }
     );
   $(miniLiveSpeedElement)

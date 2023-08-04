@@ -43,7 +43,7 @@ export function show(): void {
 }
 
 export function hide(): void {
-  // $("#liveWpm").css("opacity", 0);
+  // $("#liveSpeed").css("opacity", 0);
   // $("#miniTimerAndLiveSpeed .wpm").css("opacity", 0);
   $("#liveAcc")
     .stop(true, false)

@@ -94,7 +94,7 @@ export function startTest(now: number): boolean {
   TestInput.resetKeypressTimings();
   TimerProgress.restart();
   TimerProgress.show();
-  $("#liveWpm").text("0");
+  $("#liveSpeed").text("0");
   LiveSpeed.show();
   LiveAcc.show();
   LiveBurst.show();
@@ -403,7 +403,7 @@ export function restart(options = {} as RestartOptions): void {
       (<HTMLElement>(
         document.querySelector("#miniTimerAndLiveSpeed .burst")
       )).innerHTML = "0";
-      (<HTMLElement>document.querySelector("#liveWpm")).innerHTML = "0";
+      (<HTMLElement>document.querySelector("#liveSpeed")).innerHTML = "0";
       (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
       (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
