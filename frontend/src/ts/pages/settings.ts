@@ -17,6 +17,8 @@ import Page from "./page";
 import { Auth } from "../firebase";
 import Ape from "../ape";
 import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+
 import * as Skeleton from "../popups/skeleton";
 
 interface SettingsGroups<T extends MonkeyTypes.ConfigValues> {
@@ -862,8 +864,9 @@ export async function update(groupUpdate = true): Promise<void> {
       Config.paceCaretCustomSpeed
     )
   );
+
   $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
-    Config.minWpmCustomSpeed
+    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(Config.minWpmCustomSpeed)
   );
   $(".pageSettings .section.minAcc input.customMinAcc").val(
     Config.minAccCustom
@@ -978,22 +981,24 @@ $(".pageSettings .section.minWpm").on(
   "focusout",
   "input.customMinWpmSpeed",
   () => {
-    UpdateConfig.setMinWpmCustomSpeed(
-      parseInt(
-        $(
-          ".pageSettings .section.minWpm input.customMinWpmSpeed"
-        ).val() as string
-      )
+    const inputValue = parseInt(
+      $(".pageSettings .section.minWpm input.customMinWpmSpeed").val() as string
     );
+    const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+      inputValue
+    );
+    UpdateConfig.setMinWpmCustomSpeed(newConfigValue);
   }
 );
 
 $(".pageSettings .section.minWpm").on("click", ".button.save", () => {
-  UpdateConfig.setMinWpmCustomSpeed(
-    parseInt(
-      $(".pageSettings .section.minWpm input.customMinWpmSpeed").val() as string
-    )
+  const inputValue = parseInt(
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").val() as string
   );
+  const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+    inputValue
+  );
+  UpdateConfig.setMinWpmCustomSpeed(newConfigValue);
 });
 
 $(".pageSettings .section.minAcc").on("focusout", "input.customMinAcc", () => {
