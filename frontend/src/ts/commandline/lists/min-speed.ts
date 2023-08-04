@@ -9,7 +9,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "off",
       configValue: "off",
       exec: (): void => {
-        UpdateConfig.setMinWpm("off");
+        UpdateConfig.setMinSpeed("off");
       },
     },
     {
@@ -19,8 +19,8 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
-        UpdateConfig.setMinWpmCustomSpeed(parseInt(input));
-        UpdateConfig.setMinWpm("custom");
+        UpdateConfig.setMinSpeedCustom(parseInt(input));
+        UpdateConfig.setMinSpeed("custom");
       },
     },
   ],

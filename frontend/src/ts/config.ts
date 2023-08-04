@@ -493,7 +493,7 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
 }
 
 //min wpm
-export function setMinWpm(
+export function setMinSpeed(
   minwpm: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
 ): boolean {
@@ -506,7 +506,7 @@ export function setMinWpm(
   return true;
 }
 
-export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
+export function setMinSpeedCustom(val: number, nosave?: boolean): boolean {
   if (!isConfigValueValid("min WPM custom speed", val, ["number"])) {
     return false;
   }
@@ -1894,8 +1894,8 @@ export function apply(
     setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
-    setMinWpm(configObj.minWpm, true);
-    setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
+    setMinSpeed(configObj.minWpm, true);
+    setMinSpeedCustom(configObj.minWpmCustomSpeed, true);
     setMinAcc(configObj.minAcc, true);
     setMinAccCustom(configObj.minAccCustom, true);
     setNumbers(configObj.numbers, true);

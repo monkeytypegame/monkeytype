@@ -277,7 +277,7 @@ async function initGroups(): Promise<void> {
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["minWpm"] = new SettingsGroup(
     "minWpm",
-    UpdateConfig.setMinWpm,
+    UpdateConfig.setMinSpeed,
     "button"
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["minAcc"] = new SettingsGroup(
@@ -970,7 +970,7 @@ $(".pageSettings .section.minWpm").on(
   "focusout",
   "input.customMinWpmSpeed",
   () => {
-    UpdateConfig.setMinWpmCustomSpeed(
+    UpdateConfig.setMinSpeedCustom(
       parseInt(
         $(
           ".pageSettings .section.minWpm input.customMinWpmSpeed"
@@ -981,7 +981,7 @@ $(".pageSettings .section.minWpm").on(
 );
 
 $(".pageSettings .section.minWpm").on("click", ".button.save", () => {
-  UpdateConfig.setMinWpmCustomSpeed(
+  UpdateConfig.setMinSpeedCustom(
     parseInt(
       $(".pageSettings .section.minWpm input.customMinWpmSpeed").val() as string
     )
