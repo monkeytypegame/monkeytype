@@ -37,7 +37,7 @@ import OutOfFocusWarningCommands from "./lists/out-of-focus-warning";
 import SingleListCommandlineCommands from "./lists/single-list-commandline";
 import CapsLockWarningCommands from "./lists/caps-lock-warning";
 import SoundOnClickCommands from "./lists/sound-on-click";
-import MinWpmCommands from "./lists/min-wpm";
+import MinWpmCommands from "./lists/min-speed";
 import MinAccCommands from "./lists/min-acc";
 import MinBurstCommands from "./lists/min-burst";
 import CustomThemeCommands from "./lists/custom-theme";
