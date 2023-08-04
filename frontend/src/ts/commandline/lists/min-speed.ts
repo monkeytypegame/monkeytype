@@ -28,7 +28,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 
 const commands: MonkeyTypes.Command[] = [
   {
-    id: "changeMinWpm",
+    id: "changeMinSpeed",
     display: "Minimum speed...",
     alias: "minimum",
     icon: "fa-bomb",
