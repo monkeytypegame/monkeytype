@@ -862,7 +862,7 @@ export function setShowTimerProgress(
 }
 
 export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live WPM", live, ["boolean"])) return false;
+  if (!isConfigValueValid("show live speed", live, ["boolean"])) return false;
 
   config.showLiveWpm = live;
   saveToLocalStorage("showLiveWpm", nosave);

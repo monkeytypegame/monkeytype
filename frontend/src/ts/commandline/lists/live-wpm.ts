@@ -1,7 +1,7 @@
 import * as UpdateConfig from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
-  title: "Live WPM...",
+  title: "Live speed...",
   configKey: "showLiveWpm",
   list: [
     {
@@ -26,7 +26,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 const commands: MonkeyTypes.Command[] = [
   {
     id: "changeLiveWpm",
-    display: "Live WPM...",
+    display: "Live speed...",
     icon: "fa-tachometer-alt",
     subgroup,
   },
