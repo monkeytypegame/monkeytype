@@ -494,12 +494,12 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
 
 //min wpm
 export function setMinSpeed(
-  minwpm: MonkeyTypes.MinimumWordsPerMinute,
+  val: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("min WPM", minwpm, [["off", "custom"]])) return false;
+  if (!isConfigValueValid("min WPM", val, [["off", "custom"]])) return false;
 
-  config.minSpeed = minwpm;
+  config.minSpeed = val;
   saveToLocalStorage("minSpeed", nosave);
   ConfigEvent.dispatch("minSpeed", config.minSpeed, nosave);
 
