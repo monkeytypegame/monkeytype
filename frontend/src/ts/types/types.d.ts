@@ -466,8 +466,8 @@ declare namespace MonkeyTypes {
     repeatedPace: boolean;
     pageWidth: PageWidth;
     accountChart: AccountChart;
-    minWpm: MinimumWordsPerMinute;
-    minWpmCustomSpeed: number;
+    minSpeed: MinimumWordsPerMinute;
+    minSpeedCustom: number;
     highlightMode: HighlightMode;
     alwaysShowCPM: boolean;
     ads: Ads;
