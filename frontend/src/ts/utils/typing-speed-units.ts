@@ -4,7 +4,7 @@ const typingSpeedUnits: Record<
   MonkeyTypes.TypingSpeedUnitSettings
 > = {
   wpm: {
-    convert: (wpm: number) => wpm,
+    fromWpm: (wpm: number) => wpm,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("wpm", wpm);
     },
@@ -14,7 +14,7 @@ const typingSpeedUnits: Record<
     historyStepSize: 10,
   },
   cpm: {
-    convert: (wpm: number) => wpm * 5,
+    fromWpm: (wpm: number) => wpm * 5,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("cpm", wpm);
     },
@@ -23,7 +23,7 @@ const typingSpeedUnits: Record<
     historyStepSize: 100,
   },
   wps: {
-    convert: (wpm: number) => wpm / 60,
+    fromWpm: (wpm: number) => wpm / 60,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("wps", wpm);
     },
@@ -32,7 +32,7 @@ const typingSpeedUnits: Record<
     historyStepSize: 2,
   },
   cps: {
-    convert: (wpm: number) => (wpm * 5) / 60,
+    fromWpm: (wpm: number) => (wpm * 5) / 60,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("cps", wpm);
     },
@@ -41,7 +41,7 @@ const typingSpeedUnits: Record<
     historyStepSize: 5,
   },
   wph: {
-    convert: (wpm: number) => wpm * 60,
+    fromWpm: (wpm: number) => wpm * 60,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("wph", wpm);
     },
@@ -62,5 +62,5 @@ function convertTypingSpeedWithUnitSuffix(
   unit: MonkeyTypes.TypingSpeedUnit,
   wpm: number
 ): string {
-  return roundTo2(get(unit).convert(wpm)).toFixed(2) + " " + unit;
+  return roundTo2(get(unit).fromWpm(wpm)).toFixed(2) + " " + unit;
 }
