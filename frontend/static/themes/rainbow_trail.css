@@ -167,8 +167,8 @@
 }
 
 #timerNumber.timerMain,
-#largeLiveWpmAndAcc.timerMain,
-#miniTimerAndLiveWpm.timerMain {
+#largeLiveSpeedAndAcc.timerMain,
+#miniTimerAndLiveSpeed.timerMain {
   animation: rainbow-infinite-loop 30s linear infinite;
 }
 

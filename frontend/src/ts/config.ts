@@ -987,29 +987,29 @@ export function setTimerColor(
   $("#timerNumber").removeClass("timerText");
   $("#timerNumber").removeClass("timerMain");
 
-  $("#largeLiveWpmAndAcc").removeClass("timerSub");
-  $("#largeLiveWpmAndAcc").removeClass("timerText");
-  $("#largeLiveWpmAndAcc").removeClass("timerMain");
+  $("#largeLiveSpeedAndAcc").removeClass("timerSub");
+  $("#largeLiveSpeedAndAcc").removeClass("timerText");
+  $("#largeLiveSpeedAndAcc").removeClass("timerMain");
 
-  $("#miniTimerAndLiveWpm").removeClass("timerSub");
-  $("#miniTimerAndLiveWpm").removeClass("timerText");
-  $("#miniTimerAndLiveWpm").removeClass("timerMain");
+  $("#miniTimerAndLiveSpeed").removeClass("timerSub");
+  $("#miniTimerAndLiveSpeed").removeClass("timerText");
+  $("#miniTimerAndLiveSpeed").removeClass("timerMain");
 
   if (color === "main") {
     $("#timer").addClass("timerMain");
     $("#timerNumber").addClass("timerMain");
-    $("#largeLiveWpmAndAcc").addClass("timerMain");
-    $("#miniTimerAndLiveWpm").addClass("timerMain");
+    $("#largeLiveSpeedAndAcc").addClass("timerMain");
+    $("#miniTimerAndLiveSpeed").addClass("timerMain");
   } else if (color === "sub") {
     $("#timer").addClass("timerSub");
     $("#timerNumber").addClass("timerSub");
-    $("#largeLiveWpmAndAcc").addClass("timerSub");
-    $("#miniTimerAndLiveWpm").addClass("timerSub");
+    $("#largeLiveSpeedAndAcc").addClass("timerSub");
+    $("#miniTimerAndLiveSpeed").addClass("timerSub");
   } else if (color === "text") {
     $("#timer").addClass("timerText");
     $("#timerNumber").addClass("timerText");
-    $("#largeLiveWpmAndAcc").addClass("timerText");
-    $("#miniTimerAndLiveWpm").addClass("timerText");
+    $("#largeLiveSpeedAndAcc").addClass("timerText");
+    $("#miniTimerAndLiveSpeed").addClass("timerText");
   }
 
   saveToLocalStorage("timerColor", nosave);
@@ -1685,7 +1685,7 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
 
   config.fontSize = fontSize;
 
-  $("#words, #caret, #paceCaret, #miniTimerAndLiveWpm").css(
+  $("#words, #caret, #paceCaret, #miniTimerAndLiveSpeed").css(
     "fontSize",
     fontSize + "rem"
   );

@@ -30,7 +30,7 @@ export function show(): void {
       );
   } else if (Config.mode === "zen" || Config.timerStyle === "mini") {
     if (op > 0) {
-      $("#miniTimerAndLiveWpm .time")
+      $("#miniTimerAndLiveSpeed .time")
         .stop(true, true)
         .removeClass("hidden")
         .animate(
@@ -50,7 +50,7 @@ export function hide(): void {
     },
     125
   );
-  $("#miniTimerAndLiveWpm .time")
+  $("#miniTimerAndLiveSpeed .time")
     .stop(true, true)
     .animate(
       {
@@ -58,7 +58,7 @@ export function hide(): void {
       },
       125,
       () => {
-        $("#miniTimerAndLiveWpm .time").addClass("hidden");
+        $("#miniTimerAndLiveSpeed .time").addClass("hidden");
       }
     );
   $("#timerNumber").stop(true, true).animate(
@@ -91,7 +91,7 @@ export function restart(): void {
 
 const timerNumberElement = document.querySelector("#timerNumber");
 const miniTimerNumberElement = document.querySelector(
-  "#miniTimerAndLiveWpm .time"
+  "#miniTimerAndLiveSpeed .time"
 );
 
 function getCurrentCount(): number {

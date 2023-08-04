@@ -109,7 +109,7 @@
     transition: none;
   }
 
-  #largeLiveWpmAndAcc {
+  #largeLiveSpeedAndAcc {
     font-size: 10rem;
     color: black;
     width: 100%;
@@ -140,7 +140,7 @@
     }
   }
 
-  #largeLiveWpmAndAcc.timerMain,
+  #largeLiveSpeedAndAcc.timerMain,
   #timerNumber.timerMain {
     color: var(--main-color);
   }
@@ -149,7 +149,7 @@
     background: var(--main-color);
   }
 
-  #largeLiveWpmAndAcc.timerSub,
+  #largeLiveSpeedAndAcc.timerSub,
   #timerNumber.timerSub {
     color: var(--sub-color);
   }
@@ -158,7 +158,7 @@
     background: var(--sub-color);
   }
 
-  #largeLiveWpmAndAcc.timerText,
+  #largeLiveSpeedAndAcc.timerText,
   #timerNumber.timerText {
     color: var(--text-color);
   }
@@ -1151,7 +1151,7 @@
       margin-right: 0.5rem;
     }
   }
-  #miniTimerAndLiveWpm {
+  #miniTimerAndLiveSpeed {
     height: 0;
     margin-left: 0.25em;
     display: flex;

@@ -3,8 +3,8 @@ import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 const liveWpmElement = document.querySelector("#liveWpm") as Element;
-const miniLiveWpmElement = document.querySelector(
-  "#miniTimerAndLiveWpm .wpm"
+const miniLiveSpeedElement = document.querySelector(
+  "#miniTimerAndLiveSpeed .wpm"
 ) as Element;
 
 export function update(wpm: number, raw: number): void {
@@ -15,7 +15,7 @@ export function update(wpm: number, raw: number): void {
   if (Config.alwaysShowCPM) {
     number = Math.round(number * 5);
   }
-  miniLiveWpmElement.innerHTML = number.toString();
+  miniLiveSpeedElement.innerHTML = number.toString();
   liveWpmElement.innerHTML = number.toString();
 }
 
@@ -23,8 +23,8 @@ export function show(): void {
   if (!Config.liveSpeed) return;
   if (!TestState.isActive) return;
   if (Config.timerStyle === "mini") {
-    if (!miniLiveWpmElement.classList.contains("hidden")) return;
-    $(miniLiveWpmElement)
+    if (!miniLiveSpeedElement.classList.contains("hidden")) return;
+    $(miniLiveSpeedElement)
       .stop(true, true)
       .removeClass("hidden")
       .css("opacity", 0)
@@ -61,7 +61,7 @@ export function hide(): void {
         liveWpmElement.classList.add("hidden");
       }
     );
-  $(miniLiveWpmElement)
+  $(miniLiveSpeedElement)
     .stop(true, true)
     .animate(
       {
@@ -69,7 +69,7 @@ export function hide(): void {
       },
       125,
       () => {
-        miniLiveWpmElement.classList.add("hidden");
+        miniLiveSpeedElement.classList.add("hidden");
       }
     );
 }

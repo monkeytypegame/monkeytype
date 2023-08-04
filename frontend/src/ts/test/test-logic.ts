@@ -395,13 +395,13 @@ export function restart(options = {} as RestartOptions): void {
         Keymap.hide();
       }
       (<HTMLElement>(
-        document.querySelector("#miniTimerAndLiveWpm .wpm")
+        document.querySelector("#miniTimerAndLiveSpeed .wpm")
       )).innerHTML = "0";
       (<HTMLElement>(
-        document.querySelector("#miniTimerAndLiveWpm .acc")
+        document.querySelector("#miniTimerAndLiveSpeed .acc")
       )).innerHTML = "100%";
       (<HTMLElement>(
-        document.querySelector("#miniTimerAndLiveWpm .burst")
+        document.querySelector("#miniTimerAndLiveSpeed .burst")
       )).innerHTML = "0";
       (<HTMLElement>document.querySelector("#liveWpm")).innerHTML = "0";
       (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
