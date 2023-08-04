@@ -138,7 +138,7 @@ function buildPbHtml(
       dateText = format(date, "dd MMM yyyy");
     }
 
-    let speedString: number | string = typingSpeedUnit.convert(pbData.wpm);
+    let speedString: number | string = typingSpeedUnit.fromWpm(pbData.wpm);
     if (Config.alwaysShowDecimalPlaces) {
       speedString = Misc.roundTo2(speedString).toFixed(2);
     } else {
@@ -146,7 +146,7 @@ function buildPbHtml(
     }
     speedString += ` ${speedUnit}`;
 
-    let rawString: number | string = typingSpeedUnit.convert(pbData.raw);
+    let rawString: number | string = typingSpeedUnit.fromWpm(pbData.raw);
     if (Config.alwaysShowDecimalPlaces) {
       rawString = Misc.roundTo2(rawString).toFixed(2);
     } else {
@@ -180,7 +180,7 @@ function buildPbHtml(
 
     retval = `<div class="quick">
       <div class="test">${modeString}</div>
-      <div class="wpm">${Math.round(typingSpeedUnit.convert(pbData.wpm))}</div>
+      <div class="wpm">${Math.round(typingSpeedUnit.fromWpm(pbData.wpm))}</div>
       <div class="acc">${
         pbData.acc === undefined ? "-" : Math.floor(pbData.acc) + "%"
       }</div>

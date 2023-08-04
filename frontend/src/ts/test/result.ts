@@ -64,7 +64,7 @@ async function updateGraph(): Promise<void> {
 
   const chartData1 = [
     ...TestInput.wpmHistory.map((a) =>
-      Misc.roundTo2(typingSpeedUnit.convert(a))
+      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
   ];
 
@@ -72,7 +72,7 @@ async function updateGraph(): Promise<void> {
 
   const chartData2 = [
     ...result.chartData.raw.map((a) =>
-      Misc.roundTo2(typingSpeedUnit.convert(a))
+      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
     ),
   ];
 
@@ -171,7 +171,7 @@ export async function updateGraphPBLine(): Promise<void> {
   );
   if (lpb === 0) return;
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const chartlpb = Misc.roundTo2(typingSpeedUnit.convert(lpb)).toFixed(2);
+  const chartlpb = Misc.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -198,7 +198,7 @@ export async function updateGraphPBLine(): Promise<void> {
       content: `PB: ${chartlpb}`,
     },
   });
-  const lpbRange = typingSpeedUnit.convert(20);
+  const lpbRange = typingSpeedUnit.fromWpm(20);
   if (
     maxChartVal >= parseFloat(chartlpb) - lpbRange &&
     maxChartVal <= parseFloat(chartlpb) + lpbRange
@@ -222,11 +222,11 @@ function updateWpmAndAcc(): void {
       $("#result .stats .wpm .bottom").text("Infinite");
     } else {
       $("#result .stats .wpm .bottom").text(
-        Misc.roundTo2(typingSpeedUnit.convert(result.wpm)).toFixed(2)
+        Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)).toFixed(2)
       );
     }
     $("#result .stats .raw .bottom").text(
-      Misc.roundTo2(typingSpeedUnit.convert(result.rawWpm)).toFixed(2)
+      Misc.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)).toFixed(2)
     );
 
     if (Config.typingSpeedUnit != "wpm") {
@@ -272,11 +272,11 @@ function updateWpmAndAcc(): void {
       $("#result .stats .wpm .bottom").text("Infinite");
     } else {
       $("#result .stats .wpm .bottom").text(
-        Math.round(typingSpeedUnit.convert(result.wpm))
+        Math.round(typingSpeedUnit.fromWpm(result.wpm))
       );
     }
     $("#result .stats .raw .bottom").text(
-      Math.round(typingSpeedUnit.convert(result.rawWpm))
+      Math.round(typingSpeedUnit.fromWpm(result.rawWpm))
     );
     $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
@@ -415,7 +415,7 @@ export async function updateCrown(): Promise<void> {
   pbDiff = Math.abs(result.wpm - lpb);
   $("#result .stats .wpm .crown").attr(
     "aria-label",
-    "+" + Misc.roundTo2(typingSpeedUnit.convert(pbDiff))
+    "+" + Misc.roundTo2(typingSpeedUnit.fromWpm(pbDiff))
   );
 }
 
@@ -506,7 +506,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
           type: "line",
           id: "tpb",
           scaleID: "wpm",
-          value: typingSpeedUnit.convert(tpb),
+          value: typingSpeedUnit.fromWpm(tpb),
           borderColor: themecolors["sub"],
           borderWidth: 1,
           borderDash: [2, 2],
@@ -526,7 +526,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             xAdjust: labelAdjust,
             enabled: true,
             content: `${tag.display} PB: ${Misc.roundTo2(
-              typingSpeedUnit.convert(tpb)
+              typingSpeedUnit.fromWpm(tpb)
             ).toFixed(2)}`,
           },
         });
