@@ -860,7 +860,7 @@ export async function update(groupUpdate = true): Promise<void> {
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
     Config.paceCaretCustomSpeed
   );
-  $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
+  $(".pageSettings .section.minWpm input.minSpeedCustom").val(
     Config.minSpeedCustom
   );
   $(".pageSettings .section.minAcc input.customMinAcc").val(
@@ -968,13 +968,11 @@ $(".pageSettings .section.paceCaret").on("click", ".button.save", () => {
 
 $(".pageSettings .section.minWpm").on(
   "focusout",
-  "input.customMinWpmSpeed",
+  "input.minSpeedCustom",
   () => {
     UpdateConfig.setMinSpeedCustom(
       parseInt(
-        $(
-          ".pageSettings .section.minWpm input.customMinWpmSpeed"
-        ).val() as string
+        $(".pageSettings .section.minWpm input.minSpeedCustom").val() as string
       )
     );
   }
@@ -983,7 +981,7 @@ $(".pageSettings .section.minWpm").on(
 $(".pageSettings .section.minWpm").on("click", ".button.save", () => {
   UpdateConfig.setMinSpeedCustom(
     parseInt(
-      $(".pageSettings .section.minWpm input.customMinWpmSpeed").val() as string
+      $(".pageSettings .section.minWpm input.minSpeedCustom").val() as string
     )
   );
 });
