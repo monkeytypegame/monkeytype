@@ -18,6 +18,8 @@ import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
 import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
+import * as ConfigEvent from "../observables/config-event";
+import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 
 let filterDebug = false;
@@ -1283,6 +1285,12 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
       alert("Failed to copy using the Clipboard API. Here's the link: " + url);
     }
   );
+});
+
+ConfigEvent.subscribe((eventKey) => {
+  if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
+    update();
+  }
 });
 
 export const page = new Page(
