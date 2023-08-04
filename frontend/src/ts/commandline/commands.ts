@@ -9,7 +9,7 @@ import NumbersCommands from "./lists/numbers";
 import SmoothCaretCommands from "./lists/smooth-caret";
 import QuickRestartCommands from "./lists/quick-restart";
 import RepeatQuotesCommands from "./lists/repeat-quotes";
-import LiveWpmCommands from "./lists/live-wpm";
+import LiveWpmCommands from "./lists/live-speed";
 import LiveAccCommands from "./lists/live-acc";
 import LiveBurstCommands from "./lists/live-burst";
 import ShowAverageCommands from "./lists/show-average";
