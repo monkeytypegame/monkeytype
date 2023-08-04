@@ -44,7 +44,7 @@ async function initGroups(): Promise<void> {
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showLiveWpm"] = new SettingsGroup(
     "showLiveWpm",
-    UpdateConfig.setShowLiveWpm,
+    UpdateConfig.setLiveSpeed,
     "button",
     () => {
       groups["keymapMode"].updateInput();

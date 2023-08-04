@@ -853,7 +853,7 @@ export function setShowTimerProgress(
   return true;
 }
 
-export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
+export function setLiveSpeed(live: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("show live WPM", live, ["boolean"])) return false;
 
   config.showLiveWpm = live;
@@ -1870,7 +1870,7 @@ export function apply(
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
-    setShowLiveWpm(configObj.showLiveWpm, true);
+    setLiveSpeed(configObj.showLiveWpm, true);
     setShowLiveAcc(configObj.showLiveAcc, true);
     setShowLiveBurst(configObj.showLiveBurst, true);
     setShowTimerProgress(configObj.showTimerProgress, true);

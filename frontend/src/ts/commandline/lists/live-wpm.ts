@@ -9,7 +9,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "off",
       configValue: false,
       exec: (): void => {
-        UpdateConfig.setShowLiveWpm(false);
+        UpdateConfig.setLiveSpeed(false);
       },
     },
     {
@@ -17,7 +17,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "on",
       configValue: true,
       exec: (): void => {
-        UpdateConfig.setShowLiveWpm(true);
+        UpdateConfig.setLiveSpeed(true);
       },
     },
   ],
