@@ -1,6 +1,6 @@
 import * as Caret from "./caret";
 import * as ActivePage from "../states/active-page";
-import * as LiveWpm from "./live-wpm";
+import * as LiveWpm from "./live-speed";
 import * as LiveBurst from "./live-burst";
 import * as LiveAcc from "./live-acc";
 

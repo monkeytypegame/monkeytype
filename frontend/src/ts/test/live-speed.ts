@@ -1,5 +1,5 @@
 import Config from "../config";
-import * as TestState from "../test/test-state";
+import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
 
 const liveWpmElement = document.querySelector("#liveWpm") as Element;

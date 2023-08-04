@@ -4,7 +4,7 @@
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
-import * as LiveWpm from "./live-wpm";
+import * as LiveWpm from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";

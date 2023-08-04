@@ -17,7 +17,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
-import * as LiveWpm from "./live-wpm";
+import * as LiveWpm from "./live-speed";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
