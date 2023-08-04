@@ -14,7 +14,7 @@ export function update(wpm: number, raw: number): void {
     number = raw;
   }
   number = Math.round(
-    getTypingSpeedUnit(Config.typingSpeedUnit).convert(number)
+    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(number)
   );
   miniLiveWpmElement.innerHTML = number.toString();
   liveWpmElement.innerHTML = number.toString();

@@ -187,9 +187,9 @@ function updateFooter(lb: LbKey): void {
     <tr>
     <td>${entry.rank}</td>
     <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
-    <td class="alignRight">${typingSpeedUnit.convert(entry.wpm).toFixed(2)}<br>
+    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${typingSpeedUnit.convert(entry.raw).toFixed(2)}<br>
+    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
     <div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"
@@ -341,9 +341,9 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>
-    <td class="alignRight">${typingSpeedUnit.convert(entry.wpm).toFixed(2)}<br>
+    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${typingSpeedUnit.convert(entry.raw).toFixed(2)}<br>
+    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
     <div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"

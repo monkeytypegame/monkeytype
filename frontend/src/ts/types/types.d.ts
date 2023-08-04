@@ -884,7 +884,7 @@ declare namespace MonkeyTypes {
 
   type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
   interface TypingSpeedUnitSettings {
-    convert: (number) => number;
+    fromWpm: (number) => number;
     convertWithUnitSuffix: (number) => string;
     fullUnitString: string;
     histogramDataBucketSize: number;

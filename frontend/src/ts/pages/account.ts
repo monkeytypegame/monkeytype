@@ -53,7 +53,7 @@ function loadMoreLines(lineIndex?: number): void {
 
     let raw;
     try {
-      raw = typingSpeedUnit.convert(result.rawWpm).toFixed(2);
+      raw = typingSpeedUnit.fromWpm(result.rawWpm).toFixed(2);
       if (raw === undefined) {
         raw = "-";
       }
@@ -161,7 +161,7 @@ function loadMoreLines(lineIndex?: number): void {
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
-    <td>${typingSpeedUnit.convert(result.wpm).toFixed(2)}</td>
+    <td>${typingSpeedUnit.fromWpm(result.wpm).toFixed(2)}</td>
     <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>
     <td>${consistency}</td>
@@ -538,7 +538,7 @@ async function fillContent(): Promise<void> {
 
       const bucketSize = typingSpeedUnit.histogramDataBucketSize;
       const bucket = Math.floor(
-        typingSpeedUnit.convert(result.wpm) / bucketSize
+        typingSpeedUnit.fromWpm(result.wpm) / bucketSize
       );
 
       //grow array if needed
@@ -619,8 +619,8 @@ async function fillContent(): Promise<void> {
 
       chartData.push({
         x: filteredResults.length,
-        y: Misc.roundTo2(typingSpeedUnit.convert(result.wpm)),
-        wpm: Misc.roundTo2(typingSpeedUnit.convert(result.wpm)),
+        y: Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
+        wpm: Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)),
         acc: result.acc,
         mode: result.mode,
         mode2: result.mode2,
@@ -628,7 +628,7 @@ async function fillContent(): Promise<void> {
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
-        raw: Misc.roundTo2(typingSpeedUnit.convert(result.rawWpm)),
+        raw: Misc.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)),
         isPb: result.isPb ?? false,
       });
 
@@ -683,7 +683,7 @@ async function fillContent(): Promise<void> {
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Misc.roundTo2(
-        typingSpeedUnit.convert(activityChartData[dateInt].totalWpm) /
+        typingSpeedUnit.fromWpm(activityChartData[dateInt].totalWpm) /
           activityChartData[dateInt].amount
       ),
     });
@@ -844,7 +844,7 @@ async function fillContent(): Promise<void> {
     Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
-  let highestSpeed: number | string = typingSpeedUnit.convert(topWpm);
+  let highestSpeed: number | string = typingSpeedUnit.fromWpm(topWpm);
 
   if (Config.alwaysShowDecimalPlaces) {
     highestSpeed = Misc.roundTo2(highestSpeed).toFixed(2);
@@ -857,7 +857,7 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .highestWpm .title").text(`highest ${speedUnit}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
 
-  let averageSpeed: number | string = typingSpeedUnit.convert(totalWpm);
+  let averageSpeed: number | string = typingSpeedUnit.fromWpm(totalWpm);
   if (Config.alwaysShowDecimalPlaces) {
     averageSpeed = Misc.roundTo2(averageSpeed / testCount).toFixed(2);
   } else {
@@ -868,7 +868,7 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .averageWpm .val").text(averageSpeed);
 
   let averageSpeedLast10: number | string =
-    typingSpeedUnit.convert(wpmLast10total);
+    typingSpeedUnit.fromWpm(wpmLast10total);
   if (Config.alwaysShowDecimalPlaces) {
     averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2);
   } else {
@@ -880,7 +880,7 @@ async function fillContent(): Promise<void> {
   );
   $(".pageAccount .averageWpm10 .val").text(averageSpeedLast10);
 
-  let highestRawSpeed: number | string = typingSpeedUnit.convert(rawWpm.max);
+  let highestRawSpeed: number | string = typingSpeedUnit.fromWpm(rawWpm.max);
   if (Config.alwaysShowDecimalPlaces) {
     highestRawSpeed = Misc.roundTo2(highestRawSpeed).toFixed(2);
   } else {
@@ -890,7 +890,7 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .highestRaw .title").text(`highest raw ${speedUnit}`);
   $(".pageAccount .highestRaw .val").text(highestRawSpeed);
 
-  let averageRawSpeed: number | string = typingSpeedUnit.convert(rawWpm.total);
+  let averageRawSpeed: number | string = typingSpeedUnit.fromWpm(rawWpm.total);
   if (Config.alwaysShowDecimalPlaces) {
     averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2);
   } else {
@@ -900,7 +900,7 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .averageRaw .title").text(`average raw ${speedUnit}`);
   $(".pageAccount .averageRaw .val").text(averageRawSpeed);
 
-  let averageRawSpeedLast10: number | string = typingSpeedUnit.convert(
+  let averageRawSpeedLast10: number | string = typingSpeedUnit.fromWpm(
     rawWpm.last10Total
   );
   if (Config.alwaysShowDecimalPlaces) {
@@ -1007,7 +1007,7 @@ async function fillContent(): Promise<void> {
 
   $(".pageAccount .group.chart .below .text").text(
     `Speed change per hour spent typing: ${
-      plus + Misc.roundTo2(typingSpeedUnit.convert(wpmChangePerHour))
+      plus + Misc.roundTo2(typingSpeedUnit.fromWpm(wpmChangePerHour))
     } ${Config.typingSpeedUnit}`
   );
 

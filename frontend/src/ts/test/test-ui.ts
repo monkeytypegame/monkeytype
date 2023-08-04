@@ -1268,7 +1268,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
           </div>
           <div class="speed">
           ${Math.round(
-            getTypingSpeedUnit(Config.typingSpeedUnit).convert(burst)
+            getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst)
           )}${Config.typingSpeedUnit}
           </div>
           </div>`

@@ -5,7 +5,7 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 export async function update(burst: number): Promise<void> {
   if (!Config.showLiveBurst) return;
-  burst = Math.round(getTypingSpeedUnit(Config.typingSpeedUnit).convert(burst));
+  burst = Math.round(getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst));
   (document.querySelector("#miniTimerAndLiveWpm .burst") as Element).innerHTML =
     burst.toString();
   (document.querySelector("#liveBurst") as Element).innerHTML =
