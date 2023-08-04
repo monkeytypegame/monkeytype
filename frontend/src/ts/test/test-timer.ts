@@ -4,7 +4,7 @@
 import Config, * as UpdateConfig from "../config";
 import * as CustomText from "./custom-text";
 import * as TimerProgress from "./timer-progress";
-import * as LiveWpm from "./live-speed";
+import * as LiveSpeed from "./live-speed";
 import * as TestStats from "./test-stats";
 import * as TestInput from "./test-input";
 import * as TestWords from "./test-words";
@@ -59,7 +59,7 @@ function calculateWpmRaw(): MonkeyTypes.WpmAndRaw {
   const wpmAndRaw = TestStats.calculateWpmAndRaw();
   if (timerDebug) console.timeEnd("calculate wpm and raw");
   if (timerDebug) console.time("update live wpm");
-  LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
+  LiveSpeed.update(wpmAndRaw.wpm, wpmAndRaw.raw);
   if (timerDebug) console.timeEnd("update live wpm");
   if (timerDebug) console.time("push to history");
   TestInput.pushToWpmHistory(wpmAndRaw.wpm);

@@ -17,7 +17,7 @@ import * as ThemeController from "../controllers/theme-controller";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
-import * as LiveWpm from "./live-speed";
+import * as LiveSpeed from "./live-speed";
 import * as LiveAcc from "./live-acc";
 import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
@@ -95,7 +95,7 @@ export function startTest(now: number): boolean {
   TimerProgress.restart();
   TimerProgress.show();
   $("#liveWpm").text("0");
-  LiveWpm.show();
+  LiveSpeed.show();
   LiveAcc.show();
   LiveBurst.show();
   TimerProgress.update();
@@ -267,7 +267,7 @@ export function restart(options = {} as RestartOptions): void {
   Caret.hide();
   TestState.setActive(false);
   Replay.stopReplayRecording();
-  LiveWpm.hide();
+  LiveSpeed.hide();
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
@@ -990,7 +990,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   Replay.stopReplayRecording();
   Focus.set(false);
   Caret.hide();
-  LiveWpm.hide();
+  LiveSpeed.hide();
   PbCrown.hide();
   LiveAcc.hide();
   LiveBurst.hide();
