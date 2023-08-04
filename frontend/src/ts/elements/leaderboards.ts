@@ -2,6 +2,7 @@ import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
@@ -150,6 +151,7 @@ function updateFooter(lb: LbKey): void {
     return;
   }
 
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (DB.getSnapshot()?.lbOptOut === true) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
@@ -185,15 +187,9 @@ function updateFooter(lb: LbKey): void {
     <tr>
     <td>${entry.rank}</td>
     <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
-    <td class="alignRight">${Misc.convertTypingSpeed(
-      Config.typingSpeedUnit,
-      entry.wpm
-    ).toFixed(2)}<br>
+    <td class="alignRight">${typingSpeedUnit.convert(entry.wpm).toFixed(2)}<br>
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${Misc.convertTypingSpeed(
-      Config.typingSpeedUnit,
-      entry.raw
-    ).toFixed(2)}<br>
+    <td class="alignRight">${typingSpeedUnit.convert(entry.raw).toFixed(2)}<br>
     <div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"
@@ -266,6 +262,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     );
   }
 
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const loggedInUserName = DB.getSnapshot()?.name;
 
   const snap = DB.getSnapshot();
@@ -344,15 +341,9 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>
-    <td class="alignRight">${Misc.convertTypingSpeed(
-      Config.typingSpeedUnit,
-      entry.wpm
-    ).toFixed(2)}<br>
+    <td class="alignRight">${typingSpeedUnit.convert(entry.wpm).toFixed(2)}<br>
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${Misc.convertTypingSpeed(
-      Config.typingSpeedUnit,
-      entry.raw
-    ).toFixed(2)}<br>
+    <td class="alignRight">${typingSpeedUnit.convert(entry.raw).toFixed(2)}<br>
     <div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"

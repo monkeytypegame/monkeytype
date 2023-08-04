@@ -883,4 +883,11 @@ declare namespace MonkeyTypes {
   type AllRewards = XpReward | BadgeReward;
 
   type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
+  interface TypingSpeedUnitSettings {
+    convert: (number) => number;
+    convertWithUnitSuffix: (number) => string;
+    fullUnitString: string;
+    histogramDataBucketSize: number;
+    historyStepSize: number;
+  }
 }

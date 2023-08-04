@@ -7,7 +7,7 @@ import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
-import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -144,7 +144,9 @@ export async function update(): Promise<void> {
 
     if (Auth?.currentUser && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
-        ? Misc.convertTypingSpeedWithUnitSuffix(Config.typingSpeedUnit, avgWPM)
+        ? getTypingSpeedUnit(Config.typingSpeedUnit).convertWithUnitSuffix(
+            avgWPM
+          )
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)

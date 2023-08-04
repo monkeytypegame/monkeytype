@@ -12,6 +12,7 @@ import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
@@ -32,6 +33,7 @@ let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (!filteredResults || filteredResults.length === 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
@@ -49,10 +51,7 @@ function loadMoreLines(lineIndex?: number): void {
 
     let raw;
     try {
-      raw = Misc.convertTypingSpeed(
-        Config.typingSpeedUnit,
-        result.rawWpm
-      ).toFixed(2);
+      raw = typingSpeedUnit.convert(result.rawWpm).toFixed(2);
       if (raw === undefined) {
         raw = "-";
       }
@@ -160,9 +159,7 @@ function loadMoreLines(lineIndex?: number): void {
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
-    <td>${Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm).toFixed(
-      2
-    )}</td>
+    <td>${typingSpeedUnit.convert(result.wpm).toFixed(2)}</td>
     <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>
     <td>${consistency}</td>
@@ -269,6 +266,7 @@ async function fillContent(): Promise<void> {
 
   const activityChartData: ActivityChartData = {};
   const histogramChartData: number[] = [];
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
 
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
@@ -536,11 +534,9 @@ async function fillContent(): Promise<void> {
         };
       }
 
-      const bucketSize = Misc.getHistogramDataBucketSize(
-        Config.typingSpeedUnit
-      );
+      const bucketSize = typingSpeedUnit.histogramDataBucketSize;
       const bucket = Math.floor(
-        Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm) / bucketSize
+        typingSpeedUnit.convert(result.wpm) / bucketSize
       );
 
       //grow array if needed
@@ -621,12 +617,8 @@ async function fillContent(): Promise<void> {
 
       chartData.push({
         x: filteredResults.length,
-        y: Misc.roundTo2(
-          Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm)
-        ),
-        wpm: Misc.roundTo2(
-          Misc.convertTypingSpeed(Config.typingSpeedUnit, result.wpm)
-        ),
+        y: Misc.roundTo2(typingSpeedUnit.convert(result.wpm)),
+        wpm: Misc.roundTo2(typingSpeedUnit.convert(result.wpm)),
         acc: result.acc,
         mode: result.mode,
         mode2: result.mode2,
@@ -634,9 +626,7 @@ async function fillContent(): Promise<void> {
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
-        raw: Misc.roundTo2(
-          Misc.convertTypingSpeed(Config.typingSpeedUnit, result.rawWpm)
-        ),
+        raw: Misc.roundTo2(typingSpeedUnit.convert(result.rawWpm)),
         isPb: result.isPb ?? false,
       });
 
@@ -691,10 +681,8 @@ async function fillContent(): Promise<void> {
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Misc.roundTo2(
-        Misc.convertTypingSpeed(
-          Config.typingSpeedUnit,
-          activityChartData[dateInt].totalWpm
-        ) / activityChartData[dateInt].amount
+        typingSpeedUnit.convert(activityChartData[dateInt].totalWpm) /
+          activityChartData[dateInt].amount
       ),
     });
     // lastTimestamp = date;
@@ -715,7 +703,7 @@ async function fillContent(): Promise<void> {
   const histogramChartDataBucketed: { x: number; y: number }[] = [];
   const labels: string[] = [];
 
-  const bucketSize = Misc.getHistogramDataBucketSize(Config.typingSpeedUnit);
+  const bucketSize = typingSpeedUnit.histogramDataBucketSize;
   const bucketSizeUpperBound = bucketSize - (bucketSize <= 1 ? 0.01 : 1);
 
   histogramChartData.forEach((amount: number, i: number) => {
@@ -738,9 +726,7 @@ async function fillContent(): Promise<void> {
   const accountHistoryWpmOptions = accountHistoryScaleOptions[
     "wpm"
   ] as LinearScaleOptions;
-  accountHistoryWpmOptions.title.text = Misc.getFullSpeedUnitString(
-    Config.typingSpeedUnit
-  );
+  accountHistoryWpmOptions.title.text = typingSpeedUnit.fullUnitString;
 
   if (chartData.length > 0) {
     // get pb points
@@ -804,7 +790,7 @@ async function fillContent(): Promise<void> {
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
   const maxWpmChartVal = Math.max(...wpms);
-  const wpmStepSize = Misc.getHistoryStepSize(Config.typingSpeedUnit);
+  const wpmStepSize = typingSpeedUnit.historyStepSize;
   const maxWpmChartValWithBuffer =
     Math.floor(maxWpmChartVal) +
     (wpmStepSize - (Math.floor(maxWpmChartVal) % wpmStepSize));
@@ -856,10 +842,8 @@ async function fillContent(): Promise<void> {
     Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
-  let highestSpeed: number | string = Misc.convertTypingSpeed(
-    Config.typingSpeedUnit,
-    topWpm
-  );
+  let highestSpeed: number | string = typingSpeedUnit.convert(topWpm);
+
   if (Config.alwaysShowDecimalPlaces) {
     highestSpeed = Misc.roundTo2(highestSpeed).toFixed(2);
   } else {
@@ -871,10 +855,7 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .highestWpm .title").text(`highest ${speedUnit}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
 
-  let averageSpeed: number | string = Misc.convertTypingSpeed(
-    Config.typingSpeedUnit,
-    totalWpm
-  );
+  let averageSpeed: number | string = typingSpeedUnit.convert(totalWpm);
   if (Config.alwaysShowDecimalPlaces) {
     averageSpeed = Misc.roundTo2(averageSpeed / testCount).toFixed(2);
   } else {
@@ -884,10 +865,8 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .averageWpm .title").text(`average ${speedUnit}`);
   $(".pageAccount .averageWpm .val").text(averageSpeed);
 
-  let averageSpeedLast10: number | string = Misc.convertTypingSpeed(
-    Config.typingSpeedUnit,
-    wpmLast10total
-  );
+  let averageSpeedLast10: number | string =
+    typingSpeedUnit.convert(wpmLast10total);
   if (Config.alwaysShowDecimalPlaces) {
     averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2);
   } else {
@@ -899,10 +878,7 @@ async function fillContent(): Promise<void> {
   );
   $(".pageAccount .averageWpm10 .val").text(averageSpeedLast10);
 
-  let highestRawSpeed: number | string = Misc.convertTypingSpeed(
-    Config.typingSpeedUnit,
-    rawWpm.max
-  );
+  let highestRawSpeed: number | string = typingSpeedUnit.convert(rawWpm.max);
   if (Config.alwaysShowDecimalPlaces) {
     highestRawSpeed = Misc.roundTo2(highestRawSpeed).toFixed(2);
   } else {
@@ -912,10 +888,7 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .highestRaw .title").text(`highest raw ${speedUnit}`);
   $(".pageAccount .highestRaw .val").text(highestRawSpeed);
 
-  let averageRawSpeed: number | string = Misc.convertTypingSpeed(
-    Config.typingSpeedUnit,
-    rawWpm.total
-  );
+  let averageRawSpeed: number | string = typingSpeedUnit.convert(rawWpm.total);
   if (Config.alwaysShowDecimalPlaces) {
     averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2);
   } else {
@@ -925,8 +898,7 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .averageRaw .title").text(`average raw ${speedUnit}`);
   $(".pageAccount .averageRaw .val").text(averageRawSpeed);
 
-  let averageRawSpeedLast10: number | string = Misc.convertTypingSpeed(
-    Config.typingSpeedUnit,
+  let averageRawSpeedLast10: number | string = typingSpeedUnit.convert(
     rawWpm.last10Total
   );
   if (Config.alwaysShowDecimalPlaces) {
@@ -1033,10 +1005,7 @@ async function fillContent(): Promise<void> {
 
   $(".pageAccount .group.chart .below .text").text(
     `Speed change per hour spent typing: ${
-      plus +
-      Misc.roundTo2(
-        Misc.convertTypingSpeed(Config.typingSpeedUnit, wpmChangePerHour)
-      )
+      plus + Misc.roundTo2(typingSpeedUnit.convert(wpmChangePerHour))
     } ${Config.typingSpeedUnit}`
   );
 

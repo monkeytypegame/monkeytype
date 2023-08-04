@@ -1,6 +1,7 @@
 import Config from "../config";
 import format from "date-fns/format";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
@@ -129,6 +130,7 @@ function buildPbHtml(
   let dateText = "";
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
   const speedUnit = Config.typingSpeedUnit;
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   try {
     const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
     const date = new Date(pbData.timestamp);
@@ -136,10 +138,7 @@ function buildPbHtml(
       dateText = format(date, "dd MMM yyyy");
     }
 
-    let speedString: number | string = Misc.convertTypingSpeed(
-      Config.typingSpeedUnit,
-      pbData.wpm
-    );
+    let speedString: number | string = typingSpeedUnit.convert(pbData.wpm);
     if (Config.alwaysShowDecimalPlaces) {
       speedString = Misc.roundTo2(speedString).toFixed(2);
     } else {
@@ -147,10 +146,7 @@ function buildPbHtml(
     }
     speedString += ` ${speedUnit}`;
 
-    let rawString: number | string = Misc.convertTypingSpeed(
-      Config.typingSpeedUnit,
-      pbData.raw
-    );
+    let rawString: number | string = typingSpeedUnit.convert(pbData.raw);
     if (Config.alwaysShowDecimalPlaces) {
       rawString = Misc.roundTo2(rawString).toFixed(2);
     } else {
@@ -184,9 +180,7 @@ function buildPbHtml(
 
     retval = `<div class="quick">
       <div class="test">${modeString}</div>
-      <div class="wpm">${Math.round(
-        Misc.convertTypingSpeed(Config.typingSpeedUnit, pbData.wpm)
-      )}</div>
+      <div class="wpm">${Math.round(typingSpeedUnit.convert(pbData.wpm))}</div>
       <div class="acc">${
         pbData.acc === undefined ? "-" : Math.floor(pbData.acc) + "%"
       }</div>
