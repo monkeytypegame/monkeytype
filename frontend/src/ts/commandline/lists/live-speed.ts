@@ -5,7 +5,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   configKey: "liveSpeed",
   list: [
     {
-      id: "setLiveWpmOff",
+      id: "setLiveSpeedOff",
       display: "off",
       configValue: false,
       alias: "live wpm",
@@ -14,7 +14,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       },
     },
     {
-      id: "setLiveWpmOn",
+      id: "setLiveSpeedOn",
       display: "on",
       configValue: true,
       alias: "live wpm",
@@ -27,7 +27,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 
 const commands: MonkeyTypes.Command[] = [
   {
-    id: "changeLiveWpm",
+    id: "changeLiveSpeed",
     display: "Live speed...",
     icon: "fa-tachometer-alt",
     subgroup,
