@@ -479,7 +479,7 @@ const lists = {
   lazyMode: LazyModeCommands[0].subgroup,
   paceCaretMode: PaceCaretModeCommands[0].subgroup,
   showAverage: ShowAverageCommands[0].subgroup,
-  minWpm: MinWpmCommands[0].subgroup,
+  minSpeed: MinWpmCommands[0].subgroup,
   minAcc: MinAccCommands[0].subgroup,
   minBurst: MinBurstCommands[0].subgroup,
   funbox: FunboxCommands[0].subgroup,

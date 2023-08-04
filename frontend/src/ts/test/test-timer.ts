@@ -125,8 +125,8 @@ function checkIfFailed(wpmAndRaw: MonkeyTypes.WpmAndRaw, acc: number): void {
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
   if (
-    Config.minWpm === "custom" &&
-    wpmAndRaw.wpm < Config.minWpmCustomSpeed &&
+    Config.minSpeed === "custom" &&
+    wpmAndRaw.wpm < Config.minSpeedCustom &&
     TestWords.words.currentIndex > 3
   ) {
     if (timer !== null) clearTimeout(timer);

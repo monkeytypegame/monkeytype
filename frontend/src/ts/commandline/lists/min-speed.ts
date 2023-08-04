@@ -2,7 +2,7 @@ import * as UpdateConfig from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change min wpm mode...",
-  configKey: "minWpm",
+  configKey: "minSpeed",
   list: [
     {
       id: "setMinWpmOff",

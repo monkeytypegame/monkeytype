@@ -499,9 +499,9 @@ export function setMinSpeed(
 ): boolean {
   if (!isConfigValueValid("min WPM", minwpm, [["off", "custom"]])) return false;
 
-  config.minWpm = minwpm;
-  saveToLocalStorage("minWpm", nosave);
-  ConfigEvent.dispatch("minWpm", config.minWpm, nosave);
+  config.minSpeed = minwpm;
+  saveToLocalStorage("minSpeed", nosave);
+  ConfigEvent.dispatch("minSpeed", config.minSpeed, nosave);
 
   return true;
 }
@@ -511,9 +511,9 @@ export function setMinSpeedCustom(val: number, nosave?: boolean): boolean {
     return false;
   }
 
-  config.minWpmCustomSpeed = val;
-  saveToLocalStorage("minWpmCustomSpeed", nosave);
-  ConfigEvent.dispatch("minWpmCustomSpeed", config.minWpmCustomSpeed);
+  config.minSpeedCustom = val;
+  saveToLocalStorage("minSpeedCustom", nosave);
+  ConfigEvent.dispatch("minSpeedCustom", config.minSpeedCustom);
 
   return true;
 }
@@ -1894,8 +1894,8 @@ export function apply(
     setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
-    setMinSpeed(configObj.minWpm, true);
-    setMinSpeedCustom(configObj.minWpmCustomSpeed, true);
+    setMinSpeed(configObj.minSpeed, true);
+    setMinSpeedCustom(configObj.minSpeedCustom, true);
     setMinAcc(configObj.minAcc, true);
     setMinAccCustom(configObj.minAccCustom, true);
     setNumbers(configObj.numbers, true);
@@ -1979,6 +1979,11 @@ function replaceLegacyValues(
   //@ts-ignore
   if (configObj.showLiveWpm === true) {
     configObj.liveSpeed = true;
+  }
+
+  //@ts-ignore
+  if (configObj.minWpm === "custom") {
+    configObj.minSpeed = "custom";
   }
 
   return configObj;

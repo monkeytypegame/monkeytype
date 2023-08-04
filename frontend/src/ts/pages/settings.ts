@@ -275,8 +275,8 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setRepeatedPace,
     "button"
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
-  groups["minWpm"] = new SettingsGroup(
-    "minWpm",
+  groups["minSpeed"] = new SettingsGroup(
+    "minSpeed",
     UpdateConfig.setMinSpeed,
     "button"
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
@@ -861,7 +861,7 @@ export async function update(groupUpdate = true): Promise<void> {
     Config.paceCaretCustomSpeed
   );
   $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
-    Config.minWpmCustomSpeed
+    Config.minSpeedCustom
   );
   $(".pageSettings .section.minAcc input.customMinAcc").val(
     Config.minAccCustom

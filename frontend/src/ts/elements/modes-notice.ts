@@ -15,7 +15,7 @@ ConfigEvent.subscribe((eventKey) => {
       "blindMode",
       "stopOnError",
       "paceCaret",
-      "minWpm",
+      "minSpeed",
       "minAcc",
       "minBurst",
       "confidenceMode",
@@ -160,9 +160,9 @@ export async function update(): Promise<void> {
     }
   }
 
-  if (Config.minWpm !== "off") {
+  if (Config.minSpeed !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Config.minWpmCustomSpeed} wpm</div>`
+      `<div class="textButton" commands="minSpeed"><i class="fas fa-bomb"></i>min ${Config.minSpeedCustom} wpm</div>`
     );
   }
 
