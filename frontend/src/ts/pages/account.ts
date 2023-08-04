@@ -12,11 +12,14 @@ import * as TodayTracker from "../test/today-tracker";
 import * as Notifications from "../elements/notifications";
 import Page from "./page";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Profile from "../elements/profile";
 import format from "date-fns/format";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
-import type { ScaleChartOptions } from "chart.js";
+import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
+import * as ConfigEvent from "../observables/config-event";
+import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 
 let filterDebug = false;
@@ -32,6 +35,7 @@ let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (!filteredResults || filteredResults.length === 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
@@ -49,9 +53,7 @@ function loadMoreLines(lineIndex?: number): void {
 
     let raw;
     try {
-      raw = Config.alwaysShowCPM
-        ? (result.rawWpm * 5).toFixed(2)
-        : result.rawWpm.toFixed(2);
+      raw = typingSpeedUnit.convert(result.rawWpm).toFixed(2);
       if (raw === undefined) {
         raw = "-";
       }
@@ -159,7 +161,7 @@ function loadMoreLines(lineIndex?: number): void {
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
-    <td>${(Config.alwaysShowCPM ? result.wpm * 5 : result.wpm).toFixed(2)}</td>
+    <td>${typingSpeedUnit.convert(result.wpm).toFixed(2)}</td>
     <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>
     <td>${consistency}</td>
@@ -264,13 +266,9 @@ async function fillContent(): Promise<void> {
     };
   }
 
-  interface HistogramChartData {
-    [key: string]: number;
-  }
-
   const activityChartData: ActivityChartData = {};
-
-  const histogramChartData: HistogramChartData = {};
+  const histogramChartData: number[] = [];
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
 
   filteredResults = [];
   $(".pageAccount .history table tbody").empty();
@@ -538,13 +536,18 @@ async function fillContent(): Promise<void> {
         };
       }
 
-      const bucket = Math.floor(Math.round(result.wpm) / 10) * 10;
+      const bucketSize = typingSpeedUnit.histogramDataBucketSize;
+      const bucket = Math.floor(
+        typingSpeedUnit.convert(result.wpm) / bucketSize
+      );
 
-      if (Object.keys(histogramChartData).includes(String(bucket))) {
-        histogramChartData[bucket]++;
-      } else {
-        histogramChartData[bucket] = 1;
+      //grow array if needed
+      if (histogramChartData.length <= bucket) {
+        for (let i = histogramChartData.length; i <= bucket; i++) {
+          histogramChartData.push(0);
+        }
       }
+      histogramChartData[bucket]++;
 
       let tt = 0;
       if (
@@ -616,8 +619,8 @@ async function fillContent(): Promise<void> {
 
       chartData.push({
         x: filteredResults.length,
-        y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
-        wpm: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
+        y: Misc.roundTo2(typingSpeedUnit.convert(result.wpm)),
+        wpm: Misc.roundTo2(typingSpeedUnit.convert(result.wpm)),
         acc: result.acc,
         mode: result.mode,
         mode2: result.mode2,
@@ -625,9 +628,7 @@ async function fillContent(): Promise<void> {
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
-        raw: Config.alwaysShowCPM
-          ? Misc.roundTo2(result.rawWpm * 5)
-          : result.rawWpm,
+        raw: Misc.roundTo2(typingSpeedUnit.convert(result.rawWpm)),
         isPb: result.isPb ?? false,
       });
 
@@ -656,11 +657,9 @@ async function fillContent(): Promise<void> {
     }
   );
 
-  if (Config.alwaysShowCPM) {
-    $(".pageAccount .group.history table thead tr td:nth-child(2)").text("cpm");
-  } else {
-    $(".pageAccount .group.history table thead tr td:nth-child(2)").text("wpm");
-  }
+  $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
+    Config.typingSpeedUnit
+  );
 
   await Misc.sleep(0);
   loadMoreLines();
@@ -684,9 +683,7 @@ async function fillContent(): Promise<void> {
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Misc.roundTo2(
-        (Config.alwaysShowCPM
-          ? activityChartData[dateInt].totalWpm * 5
-          : activityChartData[dateInt].totalWpm) /
+        typingSpeedUnit.convert(activityChartData[dateInt].totalWpm) /
           activityChartData[dateInt].amount
       ),
     });
@@ -697,11 +694,8 @@ async function fillContent(): Promise<void> {
     ChartController.accountActivity.options as ScaleChartOptions<"bar" | "line">
   ).scales;
 
-  if (Config.alwaysShowCPM) {
-    accountActivityScaleOptions["avgWpm"].title.text = "Average Cpm";
-  } else {
-    accountActivityScaleOptions["avgWpm"].title.text = "Average Wpm";
-  }
+  accountActivityScaleOptions["avgWpm"].title.text =
+    "Average " + Config.typingSpeedUnit;
 
   ChartController.accountActivity.data.datasets[0].data =
     activityChartData_time;
@@ -711,21 +705,17 @@ async function fillContent(): Promise<void> {
   const histogramChartDataBucketed: { x: number; y: number }[] = [];
   const labels: string[] = [];
 
-  const keys = Object.keys(histogramChartData);
-  for (let i = 0; i < keys.length; i++) {
-    const bucket = parseInt(keys[i]);
-    labels.push(`${bucket} - ${bucket + 9}`);
+  const bucketSize = typingSpeedUnit.histogramDataBucketSize;
+  const bucketSizeUpperBound = bucketSize - (bucketSize <= 1 ? 0.01 : 1);
+
+  histogramChartData.forEach((amount: number, i: number) => {
+    const bucket = i * bucketSize;
+    labels.push(`${bucket} - ${bucket + bucketSizeUpperBound}`);
     histogramChartDataBucketed.push({
       x: bucket,
-      y: histogramChartData[bucket],
+      y: amount,
     });
-    if (bucket + 10 !== parseInt(keys[i + 1])) {
-      for (let j = bucket + 10; j < parseInt(keys[i + 1]); j += 10) {
-        histogramChartDataBucketed.push({ x: j, y: 0 });
-        labels.push(`${j} - ${j + 9}`);
-      }
-    }
-  }
+  });
 
   ChartController.accountHistogram.data.labels = labels;
   ChartController.accountHistogram.data.datasets[0].data =
@@ -735,11 +725,10 @@ async function fillContent(): Promise<void> {
     ChartController.accountHistory.options as ScaleChartOptions<"line">
   ).scales;
 
-  if (Config.alwaysShowCPM) {
-    accountHistoryScaleOptions["wpm"].title.text = "Characters per Minute";
-  } else {
-    accountHistoryScaleOptions["wpm"].title.text = "Words per Minute";
-  }
+  const accountHistoryWpmOptions = accountHistoryScaleOptions[
+    "wpm"
+  ] as LinearScaleOptions;
+  accountHistoryWpmOptions.title.text = typingSpeedUnit.fullUnitString;
 
   if (chartData.length > 0) {
     // get pb points
@@ -803,26 +792,29 @@ async function fillContent(): Promise<void> {
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
   const maxWpmChartVal = Math.max(...wpms);
+  const wpmStepSize = typingSpeedUnit.historyStepSize;
+  const maxWpmChartValWithBuffer =
+    Math.floor(maxWpmChartVal) +
+    (wpmStepSize - (Math.floor(maxWpmChartVal) % wpmStepSize));
 
   // let accuracies = accChartData.map((r) => r.y);
-  accountHistoryScaleOptions["wpm"].max =
-    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
-  accountHistoryScaleOptions["pb"].max =
-    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
-  accountHistoryScaleOptions["wpmAvgTen"].max =
-    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
-  accountHistoryScaleOptions["wpmAvgHundred"].max =
-    Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+  accountHistoryWpmOptions.max = maxWpmChartValWithBuffer;
+
+  accountHistoryWpmOptions.ticks.stepSize = wpmStepSize;
+
+  accountHistoryScaleOptions["pb"].max = maxWpmChartValWithBuffer;
+  accountHistoryScaleOptions["wpmAvgTen"].max = maxWpmChartValWithBuffer;
+  accountHistoryScaleOptions["wpmAvgHundred"].max = maxWpmChartValWithBuffer;
 
   if (!Config.startGraphsAtZero) {
     const minWpmChartValFloor = Math.floor(minWpmChartVal);
 
-    accountHistoryScaleOptions["wpm"].min = minWpmChartValFloor;
+    accountHistoryWpmOptions.min = minWpmChartValFloor;
     accountHistoryScaleOptions["pb"].min = minWpmChartValFloor;
     accountHistoryScaleOptions["wpmAvgTen"].min = minWpmChartValFloor;
     accountHistoryScaleOptions["wpmAvgHundred"].min = minWpmChartValFloor;
   } else {
-    accountHistoryScaleOptions["wpm"].min = 0;
+    accountHistoryWpmOptions.min = 0;
     accountHistoryScaleOptions["pb"].min = 0;
     accountHistoryScaleOptions["wpmAvgTen"].min = 0;
     accountHistoryScaleOptions["wpmAvgHundred"].min = 0;
@@ -852,38 +844,31 @@ async function fillContent(): Promise<void> {
     Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
   );
 
-  let highestSpeed: number | string = topWpm;
-  if (Config.alwaysShowCPM) {
-    highestSpeed = topWpm * 5;
-  }
+  let highestSpeed: number | string = typingSpeedUnit.convert(topWpm);
+
   if (Config.alwaysShowDecimalPlaces) {
     highestSpeed = Misc.roundTo2(highestSpeed).toFixed(2);
   } else {
     highestSpeed = Math.round(highestSpeed);
   }
 
-  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
+  const speedUnit = Config.typingSpeedUnit;
 
-  $(".pageAccount .highestWpm .title").text(`highest ${wpmCpm}`);
+  $(".pageAccount .highestWpm .title").text(`highest ${speedUnit}`);
   $(".pageAccount .highestWpm .val").text(highestSpeed);
 
-  let averageSpeed: number | string = totalWpm;
-  if (Config.alwaysShowCPM) {
-    averageSpeed = totalWpm * 5;
-  }
+  let averageSpeed: number | string = typingSpeedUnit.convert(totalWpm);
   if (Config.alwaysShowDecimalPlaces) {
     averageSpeed = Misc.roundTo2(averageSpeed / testCount).toFixed(2);
   } else {
     averageSpeed = Math.round(averageSpeed / testCount);
   }
 
-  $(".pageAccount .averageWpm .title").text(`average ${wpmCpm}`);
+  $(".pageAccount .averageWpm .title").text(`average ${speedUnit}`);
   $(".pageAccount .averageWpm .val").text(averageSpeed);
 
-  let averageSpeedLast10: number | string = wpmLast10total;
-  if (Config.alwaysShowCPM) {
-    averageSpeedLast10 = wpmLast10total * 5;
-  }
+  let averageSpeedLast10: number | string =
+    typingSpeedUnit.convert(wpmLast10total);
   if (Config.alwaysShowDecimalPlaces) {
     averageSpeedLast10 = Misc.roundTo2(averageSpeedLast10 / last10).toFixed(2);
   } else {
@@ -891,40 +876,33 @@ async function fillContent(): Promise<void> {
   }
 
   $(".pageAccount .averageWpm10 .title").text(
-    `average ${wpmCpm} (last 10 tests)`
+    `average ${speedUnit} (last 10 tests)`
   );
   $(".pageAccount .averageWpm10 .val").text(averageSpeedLast10);
 
-  let highestRawSpeed: number | string = rawWpm.max;
-  if (Config.alwaysShowCPM) {
-    highestRawSpeed = rawWpm.max * 5;
-  }
+  let highestRawSpeed: number | string = typingSpeedUnit.convert(rawWpm.max);
   if (Config.alwaysShowDecimalPlaces) {
     highestRawSpeed = Misc.roundTo2(highestRawSpeed).toFixed(2);
   } else {
     highestRawSpeed = Math.round(highestRawSpeed);
   }
 
-  $(".pageAccount .highestRaw .title").text(`highest raw ${wpmCpm}`);
+  $(".pageAccount .highestRaw .title").text(`highest raw ${speedUnit}`);
   $(".pageAccount .highestRaw .val").text(highestRawSpeed);
 
-  let averageRawSpeed: number | string = rawWpm.total;
-  if (Config.alwaysShowCPM) {
-    averageRawSpeed = rawWpm.total * 5;
-  }
+  let averageRawSpeed: number | string = typingSpeedUnit.convert(rawWpm.total);
   if (Config.alwaysShowDecimalPlaces) {
     averageRawSpeed = Misc.roundTo2(averageRawSpeed / rawWpm.count).toFixed(2);
   } else {
     averageRawSpeed = Math.round(averageRawSpeed / rawWpm.count);
   }
 
-  $(".pageAccount .averageRaw .title").text(`average raw ${wpmCpm}`);
+  $(".pageAccount .averageRaw .title").text(`average raw ${speedUnit}`);
   $(".pageAccount .averageRaw .val").text(averageRawSpeed);
 
-  let averageRawSpeedLast10: number | string = rawWpm.last10Total;
-  if (Config.alwaysShowCPM) {
-    averageRawSpeedLast10 = rawWpm.last10Total * 5;
-  }
+  let averageRawSpeedLast10: number | string = typingSpeedUnit.convert(
+    rawWpm.last10Total
+  );
   if (Config.alwaysShowDecimalPlaces) {
     averageRawSpeedLast10 = Misc.roundTo2(
       averageRawSpeedLast10 / rawWpm.last10Count
@@ -936,7 +914,7 @@ async function fillContent(): Promise<void> {
   }
 
   $(".pageAccount .averageRaw10 .title").text(
-    `average raw ${wpmCpm} (last 10 tests)`
+    `average raw ${speedUnit} (last 10 tests)`
   );
   $(".pageAccount .averageRaw10 .val").text(averageRawSpeedLast10);
 
@@ -1029,11 +1007,8 @@ async function fillContent(): Promise<void> {
 
   $(".pageAccount .group.chart .below .text").text(
     `Speed change per hour spent typing: ${
-      plus +
-      Misc.roundTo2(
-        Config.alwaysShowCPM ? wpmChangePerHour * 5 : wpmChangePerHour
-      )
-    } ${Config.alwaysShowCPM ? "cpm" : "wpm"}`
+      plus + Misc.roundTo2(typingSpeedUnit.convert(wpmChangePerHour))
+    } ${Config.typingSpeedUnit}`
   );
 
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
@@ -1310,6 +1285,12 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
       alert("Failed to copy using the Clipboard API. Here's the link: " + url);
     }
   );
+});
+
+ConfigEvent.subscribe((eventKey) => {
+  if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
+    update();
+  }
 });
 
 export const page = new Page(

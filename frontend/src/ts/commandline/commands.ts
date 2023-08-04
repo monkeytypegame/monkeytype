@@ -28,7 +28,7 @@ import SoundVolumeCommands from "./lists/sound-volume";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
 import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
-import AlwaysShowCpmCommands from "./lists/always-show-cpm";
+import TypingSpeedUnitCommands from "./lists/typing-speed-unit";
 import StartGraphsAtZeroCommands from "./lists/start-graphs-at-zero";
 import LazyModeCommands from "./lists/lazy-mode";
 import ShowAllLinesCommands from "./lists/show-all-lines";
@@ -275,7 +275,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...TapeModeCommands,
     ...SmoothLineScrollCommands,
     ...ShowAllLinesCommands,
-    ...AlwaysShowCpmCommands,
+    ...TypingSpeedUnitCommands,
     ...AlwaysShowDecimalCommands,
     ...StartGraphsAtZeroCommands,
     ...FontSizeCommands,
