@@ -117,7 +117,11 @@ export async function update(): Promise<void> {
   ) {
     let speed = "";
     try {
-      speed = ` (${Math.round(PaceCaret.settings?.wpm ?? 0)} wpm)`;
+      speed = ` (${roundTo2(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+          PaceCaret.settings?.wpm ?? 0
+        )
+      )} ${Config.typingSpeedUnit})`;
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${

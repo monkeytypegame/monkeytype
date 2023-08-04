@@ -860,7 +860,9 @@ export async function update(groupUpdate = true): Promise<void> {
   // ThemePicker.updateActiveButton();
 
   $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
-    Config.paceCaretCustomSpeed
+    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+      Config.paceCaretCustomSpeed
+    )
   );
 
   $(".pageSettings .section.minSpeed input.minSpeedCustom").val(
@@ -951,24 +953,28 @@ $(".pageSettings .section.paceCaret").on(
   "focusout",
   "input.customPaceCaretSpeed",
   () => {
-    UpdateConfig.setPaceCaretCustomSpeed(
-      parseInt(
-        $(
-          ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-        ).val() as string
-      )
+    const inputValue = parseInt(
+      $(
+        ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+      ).val() as string
     );
+    const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+      inputValue
+    );
+    UpdateConfig.setPaceCaretCustomSpeed(newConfigValue);
   }
 );
 
 $(".pageSettings .section.paceCaret").on("click", ".button.save", () => {
-  UpdateConfig.setPaceCaretCustomSpeed(
-    parseInt(
-      $(
-        ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-      ).val() as string
-    )
+  const inputValue = parseInt(
+    $(
+      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+    ).val() as string
   );
+  const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+    inputValue
+  );
+  UpdateConfig.setPaceCaretCustomSpeed(newConfigValue);
 });
 
 $(".pageSettings .section.minSpeed").on(
