@@ -5,6 +5,7 @@ const typingSpeedUnits: Record<
 > = {
   wpm: {
     fromWpm: (wpm: number) => wpm,
+    toWpm: (wpm: number) => wpm,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("wpm", wpm);
     },
@@ -15,6 +16,7 @@ const typingSpeedUnits: Record<
   },
   cpm: {
     fromWpm: (wpm: number) => wpm * 5,
+    toWpm: (cpm: number) => cpm / 5,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("cpm", wpm);
     },
@@ -24,6 +26,7 @@ const typingSpeedUnits: Record<
   },
   wps: {
     fromWpm: (wpm: number) => wpm / 60,
+    toWpm: (wps: number) => wps * 60,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("wps", wpm);
     },
@@ -33,6 +36,7 @@ const typingSpeedUnits: Record<
   },
   cps: {
     fromWpm: (wpm: number) => (wpm * 5) / 60,
+    toWpm: (cps: number) => (cps * 60) / 5,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("cps", wpm);
     },
@@ -42,6 +46,7 @@ const typingSpeedUnits: Record<
   },
   wph: {
     fromWpm: (wpm: number) => wpm * 60,
+    toWpm: (wph: number) => wph / 60,
     convertWithUnitSuffix: (wpm: number) => {
       return convertTypingSpeedWithUnitSuffix("wph", wpm);
     },
