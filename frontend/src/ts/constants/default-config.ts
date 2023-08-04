@@ -18,7 +18,7 @@ export default <MonkeyTypes.Config>{
   ],
   favThemes: [],
   showKeyTips: true,
-  showLiveWpm: false,
+  liveSpeed: false,
   showTimerProgress: true,
   smoothCaret: "medium",
   quickRestart: "off",

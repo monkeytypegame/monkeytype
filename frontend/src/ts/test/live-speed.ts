@@ -20,7 +20,7 @@ export function update(wpm: number, raw: number): void {
 }
 
 export function show(): void {
-  if (!Config.showLiveWpm) return;
+  if (!Config.liveSpeed) return;
   if (!TestState.isActive) return;
   if (Config.timerStyle === "mini") {
     if (!miniLiveWpmElement.classList.contains("hidden")) return;
@@ -75,5 +75,5 @@ export function hide(): void {
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showLiveWpm") eventValue ? show() : hide();
+  if (eventKey === "liveSpeed") eventValue ? show() : hide();
 });

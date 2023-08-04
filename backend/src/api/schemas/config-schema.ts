@@ -24,7 +24,7 @@ const CONFIG_SCHEMA = joi.object({
     .length(10),
   favThemes: joi.array().items(joi.string().max(50).token()),
   showKeyTips: joi.boolean(),
-  showLiveWpm: joi.boolean(),
+  liveSpeed: joi.boolean(),
   showTimerProgress: joi.boolean(),
   smoothCaret: joi.string().valid("off", "slow", "medium", "fast"),
   quickRestart: joi.string().valid("off", "tab", "esc"),

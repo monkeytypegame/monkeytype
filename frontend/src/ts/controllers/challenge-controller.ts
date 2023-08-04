@@ -337,7 +337,7 @@ ConfigEvent.subscribe((eventKey) => {
       "funbox",
       "paceCaret",
       "showAllLines",
-      "showLiveWpm",
+      "liveSpeed",
       "highlightMode",
       "time",
       "words",

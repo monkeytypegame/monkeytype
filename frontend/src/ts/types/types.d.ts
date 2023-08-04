@@ -414,7 +414,7 @@ declare namespace MonkeyTypes {
     customThemeColors: string[];
     favThemes: string[];
     showKeyTips: boolean;
-    showLiveWpm: boolean;
+    liveSpeed: boolean;
     showTimerProgress: boolean;
     smoothCaret: SmoothCaretMode;
     quickRestart: "off" | "esc" | "tab";

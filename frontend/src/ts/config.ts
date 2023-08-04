@@ -854,11 +854,11 @@ export function setShowTimerProgress(
 }
 
 export function setLiveSpeed(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live WPM", live, ["boolean"])) return false;
+  if (!isConfigValueValid("live speed", live, ["boolean"])) return false;
 
-  config.showLiveWpm = live;
-  saveToLocalStorage("showLiveWpm", nosave);
-  ConfigEvent.dispatch("showLiveWpm", config.showLiveWpm);
+  config.liveSpeed = live;
+  saveToLocalStorage("liveSpeed", nosave);
+  ConfigEvent.dispatch("liveSpeed", config.liveSpeed);
 
   return true;
 }
@@ -1870,7 +1870,7 @@ export function apply(
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
-    setLiveSpeed(configObj.showLiveWpm, true);
+    setLiveSpeed(configObj.liveSpeed, true);
     setShowLiveAcc(configObj.showLiveAcc, true);
     setShowLiveBurst(configObj.showLiveBurst, true);
     setShowTimerProgress(configObj.showTimerProgress, true);
@@ -1974,6 +1974,11 @@ function replaceLegacyValues(
   //@ts-ignore
   if (configObj.swapEscAndTab === true) {
     configObj.quickRestart = "esc";
+  }
+
+  //@ts-ignore
+  if (configObj.showLiveWpm === true) {
+    configObj.liveSpeed = true;
   }
 
   return configObj;

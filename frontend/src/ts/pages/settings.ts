@@ -42,8 +42,8 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setQuickRestartMode,
     "button"
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
-  groups["showLiveWpm"] = new SettingsGroup(
-    "showLiveWpm",
+  groups["liveSpeed"] = new SettingsGroup(
+    "liveSpeed",
     UpdateConfig.setLiveSpeed,
     "button",
     () => {
@@ -75,7 +75,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setKeymapMode,
     "button",
     () => {
-      groups["showLiveWpm"].updateInput();
+      groups["liveSpeed"].updateInput();
     },
     () => {
       if (Config.keymapMode === "off") {

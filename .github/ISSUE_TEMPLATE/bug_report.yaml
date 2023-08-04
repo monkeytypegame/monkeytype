@@ -77,7 +77,7 @@ body:
       description: If your issue only happens when logged in, please provide your config. To export your config, go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
       placeholder: |
         Miodec
-        {"theme":"cyberspace","showKeyTips":false,"showLiveWpm":false,"showTimerProgress":false, ... "smoothCaret":true}
+        {"theme":"cyberspace","showKeyTips":false,"liveSpeed":false,"showTimerProgress":false, ... "smoothCaret":true}
     validations:
       required: false
 

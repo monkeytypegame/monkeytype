@@ -143,7 +143,7 @@
         "exact": 60
       },
       "config": {
-        "showLiveWpm": false,
+        "liveSpeed": false,
         "paceCaret": "off"
       }
     }

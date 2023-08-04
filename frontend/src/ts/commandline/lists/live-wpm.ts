@@ -1,8 +1,8 @@
 import * as UpdateConfig from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
-  title: "Live WPM...",
-  configKey: "showLiveWpm",
+  title: "Live speed...",
+  configKey: "liveSpeed",
   list: [
     {
       id: "setLiveWpmOff",
