@@ -179,9 +179,13 @@ export async function update(): Promise<void> {
 
   if (Config.minBurst !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${
-        Config.minBurstCustomSpeed
-      } burst ${Config.minBurst === "flex" ? "(flex)" : ""}</div>`
+      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${roundTo2(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+          Config.minBurstCustomSpeed
+        )
+      )} ${Config.typingSpeedUnit} burst ${
+        Config.minBurst === "flex" ? "(flex)" : ""
+      }</div>`
     );
   }
 
