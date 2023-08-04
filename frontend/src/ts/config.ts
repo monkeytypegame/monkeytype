@@ -492,7 +492,7 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-//min wpm
+//min speed
 export function setMinSpeed(
   val: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
