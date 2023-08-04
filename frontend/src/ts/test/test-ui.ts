@@ -9,6 +9,7 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
@@ -1244,9 +1245,9 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${Math.round(Config.alwaysShowCPM ? burst * 5 : burst)}${
-          Config.alwaysShowCPM ? "cpm" : "wpm"
-        }
+          ${Math.round(
+            getTypingSpeedUnit(Config.typingSpeedUnit).convert(burst)
+          )}${Config.typingSpeedUnit}
           </div>
           </div>`
       );

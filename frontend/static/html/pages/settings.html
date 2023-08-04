@@ -1584,31 +1584,44 @@
         </div>
       </div>
     </div>
-    <div class="section alwaysShowCPM">
+    <div class="section typingSpeedUnit">
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
-        <span>always show cpm</span>
+        <span>typing speed unit</span>
       </div>
-      <div class="text">
-        Always shows characters per minute calculation instead of the default
-        words per minute calculation.
-      </div>
+      <div class="text">Display typing speed in the specified unit.</div>
       <div class="buttons">
         <div
           class="button"
-          alwaysShowCPM="false"
+          typingSpeedUnit="wpm"
           tabindex="0"
           onclick="this.blur();"
         >
-          off
+          wpm
         </div>
         <div
           class="button"
-          alwaysShowCPM="true"
+          typingSpeedUnit="cpm"
           tabindex="0"
           onclick="this.blur();"
         >
-          on
+          cpm
+        </div>
+        <div
+          class="button"
+          typingSpeedUnit="wps"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          wps
+        </div>
+        <div
+          class="button"
+          typingSpeedUnit="cps"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          cps
         </div>
       </div>
     </div>
@@ -2584,11 +2597,11 @@
         </div>
         <div
           class="button"
-          showAverage="wpm"
+          showAverage="speed"
           tabindex="0"
           onclick="this.blur();"
         >
-          wpm
+          speed
         </div>
         <div
           class="button"

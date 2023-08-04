@@ -1,9 +1,11 @@
 import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 export async function update(burst: number): Promise<void> {
   if (!Config.showLiveBurst) return;
+  burst = Math.round(getTypingSpeedUnit(Config.typingSpeedUnit).convert(burst));
   (document.querySelector("#miniTimerAndLiveWpm .burst") as Element).innerHTML =
     burst.toString();
   (document.querySelector("#liveBurst") as Element).innerHTML =
