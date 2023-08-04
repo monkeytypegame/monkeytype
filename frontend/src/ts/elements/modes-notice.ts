@@ -8,6 +8,7 @@ import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import { roundTo2 } from "../utils/misc";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -163,7 +164,11 @@ export async function update(): Promise<void> {
 
   if (Config.minSpeed !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minSpeed"><i class="fas fa-bomb"></i>min ${Config.minSpeedCustom} wpm</div>`
+      `<div class="textButton" commands="minSpeed"><i class="fas fa-bomb"></i>min ${roundTo2(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+          Config.minSpeedCustom
+        )
+      )} ${Config.typingSpeedUnit}</div>`
     );
   }
 
