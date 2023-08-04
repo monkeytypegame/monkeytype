@@ -869,7 +869,9 @@ export async function update(groupUpdate = true): Promise<void> {
     Config.minAccCustom
   );
   $(".pageSettings .section.minBurst input.customMinBurst").val(
-    Config.minBurstCustomSpeed
+    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+      Config.minBurstCustomSpeed
+    )
   );
 
   if (Config.autoSwitchTheme) {
@@ -1014,22 +1016,24 @@ $(".pageSettings .section.minBurst").on(
   "focusout",
   "input.customMinBurst",
   () => {
-    UpdateConfig.setMinBurstCustomSpeed(
-      parseInt(
-        $(
-          ".pageSettings .section.minBurst input.customMinBurst"
-        ).val() as string
-      )
+    const inputValue = parseInt(
+      $(".pageSettings .section.minBurst input.customMinBurst").val() as string
     );
+    const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+      inputValue
+    );
+    UpdateConfig.setMinBurstCustomSpeed(newConfigValue);
   }
 );
 
 $(".pageSettings .section.minBurst").on("click", ".button.save", () => {
-  UpdateConfig.setMinBurstCustomSpeed(
-    parseInt(
-      $(".pageSettings .section.minBurst input.customMinBurst").val() as string
-    )
+  const inputValue = parseInt(
+    $(".pageSettings .section.minBurst input.customMinBurst").val() as string
   );
+  const newConfigValue = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+    inputValue
+  );
+  UpdateConfig.setMinBurstCustomSpeed(newConfigValue);
 });
 
 //funbox
