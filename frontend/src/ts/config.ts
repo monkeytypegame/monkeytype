@@ -497,7 +497,7 @@ export function setMinSpeed(
   val: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("min WPM", val, [["off", "custom"]])) return false;
+  if (!isConfigValueValid("min speed", val, [["off", "custom"]])) return false;
 
   config.minSpeed = val;
   saveToLocalStorage("minSpeed", nosave);
@@ -507,7 +507,7 @@ export function setMinSpeed(
 }
 
 export function setMinSpeedCustom(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("min WPM custom speed", val, ["number"])) {
+  if (!isConfigValueValid("min speed custom", val, ["number"])) {
     return false;
   }
 
