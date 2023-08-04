@@ -1,6 +1,7 @@
 import Config from "../config";
 import * as TestState from "./test-state";
 import * as ConfigEvent from "../observables/config-event";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 const liveSpeedElement = document.querySelector("#liveSpeed") as Element;
 const miniLiveSpeedElement = document.querySelector(
@@ -12,9 +13,9 @@ export function update(wpm: number, raw: number): void {
   if (Config.blindMode) {
     number = raw;
   }
-  if (Config.alwaysShowCPM) {
-    number = Math.round(number * 5);
-  }
+  number = Math.round(
+    getTypingSpeedUnit(Config.typingSpeedUnit).convert(number)
+  );
   miniLiveSpeedElement.innerHTML = number.toString();
   liveSpeedElement.innerHTML = number.toString();
 }
