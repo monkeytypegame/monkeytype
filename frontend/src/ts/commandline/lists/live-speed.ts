@@ -8,6 +8,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setLiveWpmOff",
       display: "off",
       configValue: false,
+      alias: "live wpm",
       exec: (): void => {
         UpdateConfig.setLiveSpeed(false);
       },
@@ -16,6 +17,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setLiveWpmOn",
       display: "on",
       configValue: true,
+      alias: "live wpm",
       exec: (): void => {
         UpdateConfig.setLiveSpeed(true);
       },
