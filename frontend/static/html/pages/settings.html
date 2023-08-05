@@ -2894,48 +2894,69 @@
         </div>
       </div>
     </div>
-    <div class="section resetAccount needsAccount hidden">
+    <div class="section deAuthAllSessions needsAccount hidden">
       <div class="groupTitle">
-        <i class="fas fa-redo-alt"></i>
-        <span>reset account</span>
+        <i class="fas fa-bomb"></i>
+        <span>sign-out of all sessions</span>
       </div>
       <div class="text">
-        Completely resets your account to a blank state.
+        Signs out all sessions that your account is signed into.
         <br />
-        <span class="red">You can't undo this action!</span>
-      </div>
-      <div class="buttons">
-        <div
-          class="button danger"
-          id="resetAccount"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          reset account
+        <span class="red">Will also sign this device you are using out.</span>
+        <div class="buttons">
+          <div
+            class="button danger"
+            id="deAuthAllSessionsButton"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            signout all
+          </div>
         </div>
       </div>
-    </div>
-    <div class="section deleteAccount needsAccount hidden">
-      <div class="groupTitle">
-        <i class="fas fa-trash"></i>
-        <span>delete account</span>
-      </div>
-      <div class="text">
-        Deletes your account and all data connected to it.
-        <br />
-        <span class="red">You can't undo this action!</span>
-      </div>
-      <div class="buttons">
-        <div
-          class="button danger"
-          id="deleteAccount"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          delete account
+      <div class="section resetAccount needsAccount hidden">
+        <div class="groupTitle">
+          <i class="fas fa-redo-alt"></i>
+          <span>reset account</span>
+        </div>
+        <div class="text">
+          Completely resets your account to a blank state.
+          <br />
+          <span class="red">You can't undo this action!</span>
+        </div>
+        <div class="buttons">
+          <div
+            class="button danger"
+            id="resetAccount"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            reset account
+          </div>
         </div>
       </div>
+      <div class="section deleteAccount needsAccount hidden">
+        <div class="groupTitle">
+          <i class="fas fa-trash"></i>
+          <span>delete account</span>
+        </div>
+        <div class="text">
+          Deletes your account and all data connected to it.
+          <br />
+          <span class="red">You can't undo this action!</span>
+        </div>
+        <div class="buttons">
+          <div
+            class="button danger"
+            id="deleteAccount"
+            tabindex="0"
+            onclick="this.blur();"
+          >
+            delete account
+          </div>
+        </div>
+      </div>
+      <div class="sectionSpacer"></div>
     </div>
-    <div class="sectionSpacer"></div>
   </div>
 </div>
