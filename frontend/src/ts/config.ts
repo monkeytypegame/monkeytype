@@ -409,12 +409,20 @@ export function setAlwaysShowDecimalPlaces(
   return true;
 }
 
-export function setAlwaysShowCPM(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("always show CPM", val, ["boolean"])) return false;
-
-  config.alwaysShowCPM = val;
-  saveToLocalStorage("alwaysShowCPM", nosave);
-  ConfigEvent.dispatch("alwaysShowCPM", config.alwaysShowCPM);
+export function setTypingSpeedUnit(
+  val: MonkeyTypes.TypingSpeedUnit,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("typing speed unit", val, [
+      ["wpm", "cpm", "wps", "cps", "wph"],
+    ])
+  ) {
+    return false;
+  }
+  config.typingSpeedUnit = val;
+  saveToLocalStorage("typingSpeedUnit", nosave);
+  ConfigEvent.dispatch("typingSpeedUnit", config.typingSpeedUnit, nosave);
 
   return true;
 }
@@ -888,7 +896,9 @@ export function setShowAverage(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("show average", value, [["off", "wpm", "acc", "both"]])
+    !isConfigValueValid("show average", value, [
+      ["off", "speed", "acc", "both"],
+    ])
   ) {
     return false;
   }
@@ -1901,7 +1911,7 @@ export function apply(
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
-    setAlwaysShowCPM(configObj.alwaysShowCPM, true);
+    setTypingSpeedUnit(configObj.typingSpeedUnit, true);
     setHideExtraLetters(configObj.hideExtraLetters, true);
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
@@ -1974,6 +1984,16 @@ function replaceLegacyValues(
   //@ts-ignore
   if (configObj.swapEscAndTab === true) {
     configObj.quickRestart = "esc";
+  }
+
+  //@ts-ignore
+  if (configObj.alwaysShowCPM === true) {
+    configObj.typingSpeedUnit = "cpm";
+  }
+
+  //@ts-ignore
+  if (configObj.showAverage === "wpm") {
+    configObj.showAverage = "speed";
   }
 
   return configObj;

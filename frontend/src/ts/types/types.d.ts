@@ -89,7 +89,7 @@ declare namespace MonkeyTypes {
 
   type KeymapShowTopRow = "always" | "layout" | "never";
 
-  type ShowAverage = "off" | "wpm" | "acc" | "both";
+  type ShowAverage = "off" | "speed" | "acc" | "both";
 
   type SmoothCaretMode = "off" | "slow" | "medium" | "fast";
 
@@ -236,6 +236,8 @@ declare namespace MonkeyTypes {
     alterText?: (word: string) => string;
     applyCSS?: () => void;
     applyConfig?: () => void;
+    applyGlobalCSS?: () => void;
+    clearGlobal?: () => void;
     rememberSettings?: () => void;
     toggleScript?: (params: string[]) => void;
     pullSection?: (language?: string) => Promise<Misc.Section | false>;
@@ -467,7 +469,7 @@ declare namespace MonkeyTypes {
     minWpm: MinimumWordsPerMinute;
     minWpmCustomSpeed: number;
     highlightMode: HighlightMode;
-    alwaysShowCPM: boolean;
+    typingSpeedUnit: TypingSpeedUnit;
     ads: Ads;
     hideExtraLetters: boolean;
     strictSpace: boolean;
@@ -879,4 +881,14 @@ declare namespace MonkeyTypes {
   }
 
   type AllRewards = XpReward | BadgeReward;
+
+  type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
+  interface TypingSpeedUnitSettings {
+    fromWpm: (number) => number;
+    toWpm: (number) => number;
+    convertWithUnitSuffix: (number) => string;
+    fullUnitString: string;
+    histogramDataBucketSize: number;
+    historyStepSize: number;
+  }
 }
