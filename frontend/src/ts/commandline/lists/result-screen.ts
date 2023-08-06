@@ -117,7 +117,7 @@ const commands: MonkeyTypes.Command[] = [
   },
   {
     id: "saveScreenshot",
-    display: "Save screenshot",
+    display: "Copy screenshot to clipboard",
     icon: "fa-image",
     alias: "ss picture",
     exec: (): void => {
