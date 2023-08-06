@@ -404,7 +404,7 @@
   },
   {
     "name": "uzbek",
-    "languages": ["uzbek", "uzbek_1k"]
+    "languages": ["uzbek", "uzbek_1k", "uzbek_70k"]
   },
   {
     "name": "belarusian",

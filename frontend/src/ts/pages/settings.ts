@@ -379,9 +379,9 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setAlwaysShowDecimalPlaces,
     "button"
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
-  groups["alwaysShowCPM"] = new SettingsGroup(
-    "alwaysShowCPM",
-    UpdateConfig.setAlwaysShowCPM,
+  groups["typingSpeedUnit"] = new SettingsGroup(
+    "typingSpeedUnit",
+    UpdateConfig.setTypingSpeedUnit,
     "button"
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["customBackgroundSize"] = new SettingsGroup(
