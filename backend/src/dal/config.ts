@@ -2,14 +2,31 @@ import { UpdateResult } from "mongodb";
 import * as db from "../init/db";
 import _ from "lodash";
 
+const configLegacyProperties = [
+  "swapEscAndTab",
+  "quickTab",
+  "chartStyle",
+  "chartAverage10",
+  "chartAverage100",
+];
+
 export async function saveConfig(
   uid: string,
   config: object
 ): Promise<UpdateResult> {
   const configChanges = _.mapKeys(config, (_value, key) => `config.${key}`);
+
+  const unset = _.fromPairs(
+    _.map(configLegacyProperties, (key) => [`config.${key}`, ""])
+  );
+
   return await db
     .collection<any>("configs")
-    .updateOne({ uid }, { $set: configChanges }, { upsert: true });
+    .updateOne(
+      { uid },
+      { $set: configChanges, $unset: unset },
+      { upsert: true }
+    );
 }
 
 export async function getConfig(uid: string): Promise<any> {
