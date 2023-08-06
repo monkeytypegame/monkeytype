@@ -29,6 +29,10 @@
   animation: rainbow-gradient 30s alternate ease-in-out infinite;
 }
 
+#top .logo .top {
+  -webkit-text-fill-color: initial;
+}
+
 .textButton:hover,
 #restartTestButton:hover > i,
 #restartTestButton:hover > i,
