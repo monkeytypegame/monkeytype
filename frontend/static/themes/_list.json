@@ -1181,6 +1181,12 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "tailwind",
+    "bgColor": "#0d1628",
+    "mainColor": "#38bdf8",
+    "subColor": "#94a3b8",
+    "textColor": "#e5e7eb"
   }
-
 ]
