@@ -5352,7 +5352,7 @@ backend/anticheat
                   </div>
                   <div
                     id="saveScreenshotButton"
-                    aria-label="Copy screenshot to clipboard"
+                    aria-label="Save screenshot"
                     data-balloon-pos="down"
                     tabindex="0"
                     onclick="this.blur();"
