@@ -52,7 +52,7 @@ const typingSpeedUnits: Record<
     },
 
     fullUnitString: "Words per Hour",
-    histogramDataBucketSize: 60,
+    histogramDataBucketSize: 250,
     historyStepSize: 1000,
   },
 };
