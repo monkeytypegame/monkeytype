@@ -119,7 +119,7 @@ const commands: MonkeyTypes.Command[] = [
     id: "saveScreenshot",
     display: "Copy screenshot to clipboard",
     icon: "fa-image",
-    alias: "ss picture",
+    alias: "save",
     exec: (): void => {
       setTimeout(() => {
         TestUI.screenshot();
