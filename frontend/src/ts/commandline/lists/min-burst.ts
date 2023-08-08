@@ -1,4 +1,5 @@
-import * as UpdateConfig from "../../config";
+import Config, * as UpdateConfig from "../../config";
+import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change min burst mode...",
@@ -20,7 +21,10 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       exec: (input): void => {
         if (!input) return;
         UpdateConfig.setMinBurst("fixed");
-        UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
+        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+          parseInt(input)
+        );
+        UpdateConfig.setMinBurstCustomSpeed(newVal);
       },
     },
     {
@@ -31,7 +35,10 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       exec: (input): void => {
         if (!input) return;
         UpdateConfig.setMinBurst("flex");
-        UpdateConfig.setMinBurstCustomSpeed(parseInt(input));
+        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+          parseInt(input)
+        );
+        UpdateConfig.setMinBurstCustomSpeed(newVal);
       },
     },
   ],
