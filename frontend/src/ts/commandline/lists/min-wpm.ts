@@ -1,7 +1,8 @@
-import * as UpdateConfig from "../../config";
+import Config, * as UpdateConfig from "../../config";
+import { get as getTypingSpeedUnit } from "../../utils/typing-speed-units";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
-  title: "Change min wpm mode...",
+  title: "Change min speed mode...",
   configKey: "minWpm",
   list: [
     {
@@ -19,7 +20,10 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       input: true,
       exec: (input): void => {
         if (!input) return;
-        UpdateConfig.setMinWpmCustomSpeed(parseInt(input));
+        const newVal = getTypingSpeedUnit(Config.typingSpeedUnit).toWpm(
+          parseInt(input)
+        );
+        UpdateConfig.setMinWpmCustomSpeed(newVal);
         UpdateConfig.setMinWpm("custom");
       },
     },
@@ -29,7 +33,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 const commands: MonkeyTypes.Command[] = [
   {
     id: "changeMinWpm",
-    display: "Minimum wpm...",
+    display: "Minimum speed...",
     alias: "minimum",
     icon: "fa-bomb",
     subgroup,

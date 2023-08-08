@@ -304,17 +304,6 @@
   &.tape .word {
     margin: 0.25em 0.5em 0.75em 0;
   }
-
-  &.nospace .word {
-    margin: 0.5em 0;
-  }
-
-  &.arrows .word {
-    margin: 0.5em 0;
-    letter {
-      margin: 0 0.25em;
-    }
-  }
 }
 
 .word {
@@ -1223,5 +1212,22 @@
 #middle.focus .pageTest {
   #testModesNotice {
     opacity: 0 !important;
+  }
+}
+
+/* funbox nospace */
+body.fb-nospace {
+  #words .word {
+    margin: 0.5em 0;
+  }
+}
+
+/* funbox arrows */
+body.fb-arrows {
+  #words .word {
+    margin: 0.5em 0;
+    letter {
+      margin: 0 0.25em;
+    }
   }
 }

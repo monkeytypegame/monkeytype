@@ -668,6 +668,8 @@ async function fillContent(): Promise<void> {
   const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
   const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
   const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
+  const wpmStepSize = typingSpeedUnit.historyStepSize;
+
   // let lastTimestamp = 0;
   Object.keys(activityChartData).forEach((date) => {
     const dateInt = parseInt(date);
@@ -694,8 +696,12 @@ async function fillContent(): Promise<void> {
     ChartController.accountActivity.options as ScaleChartOptions<"bar" | "line">
   ).scales;
 
-  accountActivityScaleOptions["avgWpm"].title.text =
-    "Average " + Config.typingSpeedUnit;
+  const accountActivityAvgWpmOptions = accountActivityScaleOptions[
+    "avgWpm"
+  ] as LinearScaleOptions;
+
+  accountActivityAvgWpmOptions.title.text = "Average " + Config.typingSpeedUnit;
+  accountActivityAvgWpmOptions.ticks.stepSize = wpmStepSize;
 
   ChartController.accountActivity.data.datasets[0].data =
     activityChartData_time;
@@ -792,7 +798,6 @@ async function fillContent(): Promise<void> {
   const wpms = chartData.map((r) => r.y);
   const minWpmChartVal = Math.min(...wpms);
   const maxWpmChartVal = Math.max(...wpms);
-  const wpmStepSize = typingSpeedUnit.historyStepSize;
   const maxWpmChartValWithBuffer =
     Math.floor(maxWpmChartVal) +
     (wpmStepSize - (Math.floor(maxWpmChartVal) % wpmStepSize));
@@ -807,7 +812,8 @@ async function fillContent(): Promise<void> {
   accountHistoryScaleOptions["wpmAvgHundred"].max = maxWpmChartValWithBuffer;
 
   if (!Config.startGraphsAtZero) {
-    const minWpmChartValFloor = Math.floor(minWpmChartVal);
+    const minWpmChartValFloor =
+      Math.floor(minWpmChartVal / wpmStepSize) * wpmStepSize;
 
     accountHistoryWpmOptions.min = minWpmChartValFloor;
     accountHistoryScaleOptions["pb"].min = minWpmChartValFloor;
