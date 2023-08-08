@@ -182,6 +182,10 @@
     "languages": ["tamil", "tamil_1k", "tanglish"]
   },
   {
+    "name": "kannada",
+    "languages": ["kannada"]
+  },
+  {
     "name": "telugu",
     "languages": ["telugu", "telugu_1k"]
   },

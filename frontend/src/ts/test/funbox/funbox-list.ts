@@ -2,10 +2,12 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "nausea",
     info: "I think I'm gonna be sick.",
+    hasCSS: true,
   },
   {
     name: "round_round_baby",
     info: "...right round, like a record baby. Right, round round round.",
+    hasCSS: true,
   },
   {
     name: "simon_says",
@@ -14,14 +16,17 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "mirror",
     info: "Everything is mirrored!",
+    hasCSS: true,
   },
   {
     name: "upside_down",
     info: "Everything is upside down!",
+    hasCSS: true,
   },
   {
     name: "tts",
@@ -30,11 +35,13 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "choo_choo",
     info: "All the letters are spinning!",
     properties: ["noLigatures", "conflictsWithSymmetricChars"],
+    hasCSS: true,
   },
   {
     name: "arrows",
@@ -71,10 +78,12 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     name: "earthquake",
     info: "Everybody get down! The words are shaking!",
     properties: ["noLigatures"],
+    hasCSS: true,
   },
   {
     name: "space_balls",
     info: "In a galaxy far far away.",
+    hasCSS: true,
   },
   {
     name: "gibberish",
@@ -129,6 +138,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "read_ahead",
@@ -137,6 +147,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "read_ahead_hard",
@@ -145,6 +156,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "memory",
