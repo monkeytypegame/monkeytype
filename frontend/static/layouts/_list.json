@@ -318,7 +318,7 @@
       "row5": [" "]
     }
   },
-  "prime_prog_dvorak": {
+  "prog_dvorak_prime": {
     "keymapShowTopRow": true,
     "type": "ansi",
     "keys": {
