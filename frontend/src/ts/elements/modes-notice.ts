@@ -8,6 +8,7 @@ import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import { roundTo2 } from "../utils/misc";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -116,7 +117,11 @@ export async function update(): Promise<void> {
   ) {
     let speed = "";
     try {
-      speed = ` (${Math.round(PaceCaret.settings?.wpm ?? 0)} wpm)`;
+      speed = ` (${roundTo2(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+          PaceCaret.settings?.wpm ?? 0
+        )
+      )} ${Config.typingSpeedUnit})`;
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
@@ -163,7 +168,11 @@ export async function update(): Promise<void> {
 
   if (Config.minWpm !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Config.minWpmCustomSpeed} wpm</div>`
+      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${roundTo2(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+          Config.minWpmCustomSpeed
+        )
+      )} ${Config.typingSpeedUnit}</div>`
     );
   }
 
@@ -175,9 +184,13 @@ export async function update(): Promise<void> {
 
   if (Config.minBurst !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${
-        Config.minBurstCustomSpeed
-      } burst ${Config.minBurst === "flex" ? "(flex)" : ""}</div>`
+      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${roundTo2(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+          Config.minBurstCustomSpeed
+        )
+      )} ${Config.typingSpeedUnit} burst ${
+        Config.minBurst === "flex" ? "(flex)" : ""
+      }</div>`
     );
   }
 
