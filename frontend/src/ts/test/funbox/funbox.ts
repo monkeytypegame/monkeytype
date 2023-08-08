@@ -546,7 +546,15 @@ export function toggleFunbox(funbox: string): boolean {
 }
 
 export async function clear(): Promise<boolean> {
-  $("body").attr("class", "");
+  $("body").attr(
+    "class",
+    $("body")
+      ?.attr("class")
+      ?.split(/\s+/)
+      ?.filter((it) => !it.startsWith("fb-"))
+      ?.join(" ") || ""
+  );
+
   $("#funBoxTheme").removeAttr("href");
 
   $("#wordsWrapper").removeClass("hidden");
@@ -706,22 +714,17 @@ FunboxList.setFunboxFunctions("crt", {
 async function setFunboxBodyClasses(): Promise<boolean> {
   const $body = $("body");
 
-  const activeFbNames = FunboxList.get(Config.funbox).map(
+  const activeFbClasses = FunboxList.get(Config.funbox).map(
     (it) => "fb-" + it.name.replaceAll("_", "-")
   );
-  const currentFbClasses =
+
+  const currentClasses =
     $body
       ?.attr("class")
       ?.split(/\s+/)
-      ?.filter((it) => it.startsWith("fb-")) || [];
+      ?.filter((it) => !it.startsWith("fb-")) || [];
 
-  currentFbClasses
-    .filter((it) => !activeFbNames.includes(it))
-    .forEach((it) => $body?.removeClass(it));
-
-  activeFbNames
-    .filter((it) => !currentFbClasses.includes(it))
-    .forEach((it) => $body?.addClass(it));
+  $body.attr("class", [...currentClasses, ...activeFbClasses].join(" "));
 
   return true;
 }
