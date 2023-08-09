@@ -33,6 +33,13 @@ let currentRank: {
   "60": {},
 };
 
+let minRank: {
+  [key in LbKey]: number | null;
+} = {
+  "15": null,
+  "60": null,
+};
+
 const requesting = {
   "15": false,
   "60": false,
@@ -162,7 +169,10 @@ function updateFooter(lb: LbKey): void {
   } else {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
-      <td colspan="6" style="text-align:center;">Not qualified</>
+      <td colspan="6" style="text-align:center;">Not qualified ${
+        minRank[lb] !== null &&
+        `(min speed required: ${minRank[lb]?.toString()}wpm)`
+      }</>
     </tr>
     `);
   }
@@ -479,8 +489,15 @@ async function update(): Promise<void> {
 
   currentData["15"] = lb15Data;
   currentData["60"] = lb60Data;
-  currentRank["15"] = lb15Rank;
-  currentRank["60"] = lb60Rank;
+  currentRank["15"] = lb15Rank?.min_rank === undefined ? lb15Rank : null;
+  currentRank["60"] = lb60Rank?.min_rank === undefined ? lb15Rank : null;
+
+  if (getDailyLeaderboardQuery().isDaily) {
+    minRank["15"] =
+      lb15Rank?.min_rank === undefined ? null : lb15Rank?.min_rank;
+    minRank["60"] =
+      lb60Rank?.min_rank === undefined ? null : lb60Rank?.min_rank;
+  }
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 

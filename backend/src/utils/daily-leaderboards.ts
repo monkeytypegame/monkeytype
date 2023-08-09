@@ -18,6 +18,10 @@ interface DailyLeaderboardEntry {
   badgeId?: number;
 }
 
+interface DailyLeaderboardMinRank {
+  min_rank: number;
+}
+
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
 const resultsNamespace = `${dailyLeaderboardNamespace}:results`;
@@ -147,7 +151,7 @@ export class DailyLeaderboard {
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry | null> {
+  ): Promise<DailyLeaderboardEntry | DailyLeaderboardMinRank | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return null;
@@ -156,15 +160,18 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    const [[, rank], [, count], [, result]] = await connection
+    const [[, rank], [, count], [, result], [, least_score]] = await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)
       .zcard(leaderboardScoresKey)
       .hget(leaderboardResultsKey, uid)
+      .zrange(leaderboardScoresKey, 0, 1, "WITHSCORES")
       .exec();
 
+    const min_rank =
+      least_score.length > 0 ? parseInt(least_score[1].slice(1, 4)) : 0;
     if (rank === null) {
-      return null;
+      return { min_rank };
     }
 
     return {
@@ -173,6 +180,8 @@ export class DailyLeaderboard {
       ...JSON.parse(result ?? "null"),
     };
   }
+
+  public async getMinRank(req: MonkeyTypes.Request) {}
 }
 
 export async function purgeUserFromDailyLeaderboards(
