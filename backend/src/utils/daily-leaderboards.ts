@@ -180,8 +180,6 @@ export class DailyLeaderboard {
       ...JSON.parse(result ?? "null"),
     };
   }
-
-  public async getMinRank(req: MonkeyTypes.Request) {}
 }
 
 export async function purgeUserFromDailyLeaderboards(
