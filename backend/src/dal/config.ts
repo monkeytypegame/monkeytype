@@ -8,6 +8,7 @@ const configLegacyProperties = [
   "chartStyle",
   "chartAverage10",
   "chartAverage100",
+  "alwaysShowCPM",
 ];
 
 export async function saveConfig(
