@@ -64,7 +64,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventKey === "theme") applyBurstHeatmap();
 
-  if (eventValue === undefined || typeof eventValue !== "boolean") return;
+  if (eventValue === undefined) return;
+  if (eventKey === "highlightMode") {
+    highlightMode(eventValue as MonkeyTypes.HighlightMode);
+  }
+
+  if (typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
   if (eventKey === "highlightMode") updateWordElement(eventValue);
@@ -1181,6 +1186,19 @@ export async function applyBurstHeatmap(): Promise<void> {
 export function highlightBadWord(index: number, showError: boolean): void {
   if (!showError) return;
   $($("#words .word")[index]).addClass("error");
+}
+
+export function highlightMode(mode?: MonkeyTypes.HighlightMode): void {
+  const existing =
+    $("#words")
+      ?.attr("class")
+      ?.split(/\s+/)
+      ?.filter((it) => !it.startsWith("highlight-")) || [];
+  if (mode != null) {
+    existing.push("highlight-" + mode.replaceAll("_", "-"));
+  }
+
+  $("#words").attr("class", existing.join(" "));
 }
 
 $(".pageTest").on("click", "#saveScreenshotButton", () => {

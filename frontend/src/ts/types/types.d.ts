@@ -139,7 +139,13 @@ declare namespace MonkeyTypes {
 
   type MinimumWordsPerMinute = "off" | "custom";
 
-  type HighlightMode = "off" | "letter" | "word";
+  type HighlightMode =
+    | "off"
+    | "letter"
+    | "word"
+    | "next_word"
+    | "next_two_words"
+    | "next_three_words";
 
   type Ads = "off" | "result" | "on" | "sellout";
 
@@ -500,6 +506,7 @@ declare namespace MonkeyTypes {
     | boolean
     | string[]
     | MonkeyTypes.QuoteLength[]
+    | MonkeyTypes.HighlightMode
     | MonkeyTypes.ResultFilters
     | MonkeyTypes.CustomBackgroundFilter
     | null

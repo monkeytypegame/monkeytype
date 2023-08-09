@@ -1,3 +1,27 @@
+@mixin highlightMode($color) {
+  &.highlight-next-word {
+    .word.active,
+    .word.active + .word {
+      color: $color;
+    }
+  }
+  &.highlight-next-two-words {
+    .word.active,
+    .word.active + .word,
+    .word.active + .word + .word {
+      color: $color;
+    }
+  }
+  &.highlight-next-three-words {
+    .word.active,
+    .word.active + .word,
+    .word.active + .word + .word,
+    .word.active + .word + .word + .word {
+      color: $color;
+    }
+  }
+}
+
 .highlightContainer {
   position: absolute;
   overflow: hidden;
@@ -239,6 +263,8 @@
         border-right: 2px dotted var(--main-color);
       }
     }
+
+    @include highlightMode(var(--sub-color));
   }
 
   &.colorfulMode {
@@ -268,6 +294,8 @@
         color: var(--colorful-error-extra-color);
       }
     }
+
+    @include highlightMode(var(--main-color));
   }
 
   &.flipped.colorfulMode {
@@ -299,11 +327,15 @@
         color: var(--colorful-error-extra-color);
       }
     }
+
+    @include highlightMode(var(--sub-color));
   }
 
   &.tape .word {
     margin: 0.25em 0.5em 0.75em 0;
   }
+
+  @include highlightMode(var(--text-color));
 }
 
 .word {

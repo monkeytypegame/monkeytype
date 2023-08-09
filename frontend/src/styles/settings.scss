@@ -469,7 +469,8 @@
       }
     }
 
-    &.randomTheme .buttons {
+    &.randomTheme .buttons,
+    &.highlightMode .buttons {
       grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     }
   }
