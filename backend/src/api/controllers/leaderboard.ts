@@ -117,8 +117,6 @@ export async function getDailyLeaderboard(
     req.ctx.configuration.dailyLeaderboards
   );
 
-  const minRankInDailyLeaderboard = await dailyLeaderboard.getMinRank(req);
-
   return new MonkeyResponse("Daily leaderboard retrieved", topResults);
 }
 
