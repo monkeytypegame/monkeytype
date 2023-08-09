@@ -1,0 +1,7 @@
+/* #words {
+  opacity: 0 !important;
+} */
+
+#words .word {
+  color: transparent !important;
+}

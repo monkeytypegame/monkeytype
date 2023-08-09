@@ -70,7 +70,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 const commands: MonkeyTypes.Command[] = [
   {
     id: "setCustomBackgroundFilter",
-    display: "custom background filter...",
+    display: "Custom background filter...",
     icon: "fa-image",
     subgroup,
   },

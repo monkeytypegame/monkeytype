@@ -29456,12 +29456,6 @@
       "id": 5148
     },
     {
-      "text": "I can't do shorthand and typewriting and double-entrance book-keeping, or whatever it's called. I tell you, I am utterly incompetent. I never earn anything. I'm the parasite of the British oak, like the mistletoe. The blue bird doesn't flutter round my feet. Perhaps they're too big and trampling.",
-      "source": "D.H. Lawrence, Two blue birds",
-      "length": 297,
-      "id": 5148
-    },
-    {
       "text": "\"Thank you, my dear, for your offer,\" said the wife, rising, \"but I'm afraid no man can expect two blue birds of happiness to flutter round his feet, tearing out their little feathers!\"",
       "source": "D.H. Lawrence, Two blue birds",
       "length": 185,
@@ -34413,7 +34407,7 @@
       "text": "The world isn't perfect. But it's there for us, doing the best it can... that's what makes it so damn beautiful.",
       "source": "Roy Mustang - Full Metal Alchemist",
       "length": 112,
-      "id": 6206
+      "id": 6203
     },
     {
       "text": "To know sorrow is not terrifying. What is terrifying is to know you can't go back to happiness you could have.",
@@ -39209,6 +39203,12 @@
       "source": "Attack on Titan",
       "length": 278,
       "id": 6986
+    },
+    {
+      "text": "I can't do shorthand and typewriting and double-entrance book-keeping, or whatever it's called. I tell you, I am utterly incompetent. I never earn anything. I'm the parasite of the British oak, like the mistletoe. The blue bird doesn't flutter round my feet. Perhaps they're too big and trampling.",
+      "source": "D.H. Lawrence, Two blue birds",
+      "length": 297,
+      "id": 6987
     }
   ]
 }
