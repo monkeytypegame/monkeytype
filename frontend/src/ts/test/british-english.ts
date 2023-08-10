@@ -40,8 +40,6 @@ export async function replace(
       word.match(RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))
     );
 
-    console.log(list);
-
     if (!replacement) return word;
 
     if (
