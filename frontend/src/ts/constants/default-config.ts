@@ -31,7 +31,6 @@ export default <MonkeyTypes.Config>{
   language: "english",
   fontSize: 1.5,
   freedomMode: false,
-  resultFilters: null,
   difficulty: "normal",
   blindMode: false,
   quickEnd: false,

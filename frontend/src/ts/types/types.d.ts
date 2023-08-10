@@ -433,7 +433,6 @@ declare namespace MonkeyTypes {
     language: string;
     fontSize: number;
     freedomMode: boolean;
-    resultFilters?: ResultFilters | null;
     difficulty: Difficulty;
     blindMode: boolean;
     quickEnd: boolean;
