@@ -53,7 +53,6 @@ function resetCaretPosition(): void {
 }
 
 export async function init(): Promise<void> {
-  console.log("init pace caret");
   $("#paceCaret").addClass("hidden");
   const mode2 = Misc.getMode2(
     Config,
