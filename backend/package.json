@@ -12,8 +12,8 @@
     "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly"
   },
   "engines": {
-    "node": "16.13.2",
-    "npm": "8.1.2"
+    "node": "18.17.1",
+    "npm": "9.6.7"
   },
   "dependencies": {
     "bcrypt": "5.0.1",
