@@ -4,7 +4,7 @@ import * as Skeleton from "./skeleton";
 
 const wrapperId = "versionHistoryWrapper";
 
-export function show(): void {
+function show(): void {
   Skeleton.append(wrapperId);
   $("#versionHistory").html(`
     <div class="preloader">

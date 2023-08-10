@@ -10,9 +10,9 @@ import * as Loader from "../elements/loader";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { debounce } from "throttle-debounce";
 
-let isPreviewingTheme = false;
 export let randomTheme: string | null = null;
-export let randomThemeIndex = 0;
+let isPreviewingTheme = false;
+let randomThemeIndex = 0;
 
 export const colorVars = [
   "--bg-color",
@@ -360,7 +360,7 @@ export async function randomizeTheme(): Promise<void> {
   }
 }
 
-export function clearRandom(): void {
+function clearRandom(): void {
   if (randomTheme === null) return;
   randomTheme = null;
   if (Config.customTheme) {
@@ -370,7 +370,7 @@ export function clearRandom(): void {
   }
 }
 
-export function applyCustomBackgroundSize(): void {
+function applyCustomBackgroundSize(): void {
   if (Config.customBackgroundSize === "max") {
     $(".customBackground img").css({
       // width: "calc(100%)",
@@ -384,7 +384,7 @@ export function applyCustomBackgroundSize(): void {
   }
 }
 
-export function applyCustomBackground(): void {
+function applyCustomBackground(): void {
   // $(".customBackground").css({
   //   backgroundImage: `url(${Config.customBackground})`,
   //   backgroundAttachment: "fixed",

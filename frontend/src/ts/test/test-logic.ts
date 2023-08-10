@@ -78,9 +78,6 @@ export function startTest(now: number): boolean {
   if (PageTransition.get()) {
     return false;
   }
-  if (!UpdateConfig.dbConfigLoaded) {
-    UpdateConfig.setChangedBeforeDb(true);
-  }
 
   if (Auth?.currentUser) {
     AnalyticsController.log("testStarted");

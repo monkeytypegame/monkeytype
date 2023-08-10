@@ -72,7 +72,7 @@ export async function show(noAnim = false): Promise<void> {
   }
 }
 
-export function hide(): void {
+function hide(): void {
   if (Misc.isPopupVisible(wrapperId)) {
     $("#quoteSubmitPopupWrapper")
       .stop(true, true)

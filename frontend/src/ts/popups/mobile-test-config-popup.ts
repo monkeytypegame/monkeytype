@@ -13,7 +13,7 @@ const wrapperId = "mobileTestConfigPopupWrapper";
 
 const el = $("#mobileTestConfigPopup");
 
-export function update(): void {
+function update(): void {
   el.find(".button").removeClass("active");
 
   el.find(`.modeGroup .button[mode='${Config.mode}']`).addClass("active");

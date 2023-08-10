@@ -104,7 +104,16 @@ const CONFIG_SCHEMA = joi.object({
   accountChart: joi.array().items(joi.string().valid("on", "off")).optional(),
   minWpm: joi.string().valid("off", "custom"),
   minWpmCustomSpeed: joi.number().min(0),
-  highlightMode: joi.string().valid("off", "letter", "word"),
+  highlightMode: joi
+    .string()
+    .valid(
+      "off",
+      "letter",
+      "word",
+      "next_word",
+      "next_two_words",
+      "next_three_words"
+    ),
   tapeMode: joi.string().valid("off", "letter", "word"),
   typingSpeedUnit: joi.string().valid("wpm", "cpm", "wps", "cps", "wph"),
   enableAds: joi.string().valid("off", "on", "max"),

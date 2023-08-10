@@ -111,7 +111,7 @@ export function show(): void {
   }
 }
 
-export async function hide(): Promise<void> {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     $("#shareTestSettingsPopupWrapper")
       .stop(true, true)

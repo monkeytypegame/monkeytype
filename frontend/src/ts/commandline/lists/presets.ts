@@ -56,4 +56,3 @@ function update(): void {
 }
 
 export default commands;
-export { update };

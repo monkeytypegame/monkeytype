@@ -11,10 +11,12 @@
     "build-live": "export COMMIT_HASH=`git rev-parse --short HEAD` && npx gulp build-production",
     "dev": "concurrently \"webpack serve --config=./webpack/config.dev.js\" \"npx gulp watch\"",
     "deploy-live": "npm run build-live && firebase deploy -P live --only hosting",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "knip": "knip"
   },
   "engines": {
-    "npm": "8.1.2"
+    "node": "18.17.1",
+    "npm": "9.6.7"
   },
   "devDependencies": {
     "@types/canvas-confetti": "1.4.3",

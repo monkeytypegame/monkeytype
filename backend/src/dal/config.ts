@@ -9,6 +9,17 @@ const configLegacyProperties = [
   "chartAverage10",
   "chartAverage100",
   "alwaysShowCPM",
+  "resultFilters",
+  "chartAccuracy",
+  "liveSpeed",
+  "extraTestColor",
+  "savedLayout",
+  "showTimerBar",
+  "showDiscordDot",
+  "maxConfidence",
+  "capsLockBackspace",
+  "showAvg",
+  "enableAds",
 ];
 
 export async function saveConfig(
