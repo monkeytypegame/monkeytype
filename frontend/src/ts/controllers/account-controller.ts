@@ -10,11 +10,9 @@ import * as TestLogic from "../test/test-logic";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
-import * as TestState from "../test/test-state";
 import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
-import * as PaceCaret from "../test/pace-caret";
 import * as TagController from "./tag-controller";
 import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
 import * as URLHandler from "../utils/url-handler";
@@ -212,11 +210,6 @@ export async function getDataAndInit(): Promise<boolean> {
       DB.saveConfig(Config).then(() => {
         AccountButton.loading(false);
       });
-    }
-  }
-  if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-    if (!TestState.isActive) {
-      PaceCaret.init();
     }
   }
   AccountButton.loading(false);
