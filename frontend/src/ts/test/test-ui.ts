@@ -1190,7 +1190,6 @@ export function highlightBadWord(index: number, showError: boolean): void {
 }
 
 export function highlightMode(mode?: MonkeyTypes.HighlightMode): void {
-  Notifications.add("highlightMode", 1, { important: true });
   const existing =
     $("#words")
       ?.attr("class")
