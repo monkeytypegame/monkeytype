@@ -199,7 +199,6 @@ export async function getDataAndInit(): Promise<boolean> {
   AccountButton.loading(false);
   updateTagsCommands();
   TagController.loadActiveFromLocalStorage();
-  Settings.showAccountSection();
   if (window.location.pathname === "/account") {
     LoadingPage.updateBar(90);
     await Account.downloadResults();
