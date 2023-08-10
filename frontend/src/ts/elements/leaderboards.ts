@@ -492,15 +492,8 @@ async function update(): Promise<void> {
   currentRank["15"] = lb15Rank?.min_rank === undefined ? lb15Rank : null;
   currentRank["60"] = lb60Rank?.min_rank === undefined ? lb15Rank : null;
 
-  if (getDailyLeaderboardQuery().isDaily) {
-    minRank["15"] =
-      lb15Rank?.min_rank === undefined ? null : lb15Rank?.min_rank;
-    minRank["60"] =
-      lb60Rank?.min_rank === undefined ? null : lb60Rank?.min_rank;
-  }
-
-  minRank["15"] = null;
-  minRank["60"] = null;
+  minRank["15"] = lb15Rank?.min_rank === undefined ? null : lb15Rank?.min_rank;
+  minRank["60"] = lb60Rank?.min_rank === undefined ? null : lb60Rank?.min_rank;
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
