@@ -9,7 +9,8 @@
     "clean": "tsc --build --clean",
     "start": "npm run build && node ./build/server.js",
     "test": "jest --verbose --collect-coverage --runInBand",
-    "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly"
+    "dev": "ts-node-dev ./src/server.ts -- --inspect --transpileOnly",
+    "knip": "knip"
   },
   "engines": {
     "node": "18.17.1",
