@@ -20,12 +20,12 @@ interface ClickSounds {
 let errorSound: Howler.Howl | null = null;
 let clickSounds: ClickSounds | null = null;
 
-export function initErrorSound(): void {
+function initErrorSound(): void {
   if (errorSound !== null) return;
   errorSound = new Howl({ src: ["../sound/error.wav"] });
 }
 
-export function init(): void {
+function init(): void {
   if (clickSounds !== null) return;
   clickSounds = {
     1: [
@@ -403,7 +403,7 @@ export const scaleConfigurations: Record<
   },
 };
 
-export function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
+function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
   if (audioCtx === undefined) {
     initAudioContext();
   }
@@ -510,13 +510,11 @@ export function playError(): void {
   (errorSound as Howler.Howl).play();
 }
 
-export function setVolume(val: string): void {
-  // not sure why it complains but it works
-  // @ts-ignore
+function setVolume(val: number): void {
   Howler.Howler.volume(val);
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "playSoundOnClick" && eventValue !== "off") init();
-  if (eventKey === "soundVolume") setVolume(eventValue as string);
+  if (eventKey === "soundVolume") setVolume(parseFloat(eventValue as string));
 });

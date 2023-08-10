@@ -47,6 +47,6 @@ async function updateElement(fps: string): Promise<void> {
   }
 }
 
-export function getAverageFps(): number {
+function _getAverageFps(): number {
   return frameCount / (performance.now() - startTime);
 }

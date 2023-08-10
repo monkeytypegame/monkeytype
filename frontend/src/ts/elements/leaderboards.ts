@@ -581,7 +581,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   hideLoader(lb);
 }
 
-export function show(): void {
+function show(): void {
   if (!ConnectionState.get()) {
     Notifications.add("You can't view leaderboards while offline", 0);
     return;
