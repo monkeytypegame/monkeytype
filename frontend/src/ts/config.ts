@@ -30,7 +30,6 @@ const config = {
 
 let configToSend = {} as MonkeyTypes.Config;
 const saveToDatabase = debounce(1000, () => {
-  delete configToSend.resultFilters;
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
     DB.saveConfig(configToSend).then(() => {
@@ -48,7 +47,6 @@ async function saveToLocalStorage(
   if (nosave) return;
 
   const localToSave = config;
-  delete localToSave.resultFilters;
 
   const localToSaveStringified = JSON.stringify(localToSave);
   window.localStorage.setItem("config", localToSaveStringified);
@@ -64,7 +62,6 @@ export async function saveFullConfigToLocalStorage(
 ): Promise<void> {
   console.log("saving full config to localStorage");
   const save = config;
-  delete save.resultFilters;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
   if (!noDbCheck) {
