@@ -24,6 +24,25 @@ If you're looking to make deeper code changes that affect functionality, or will
 
 Below are a set of general guidelines for different types of changes.
 
+### Commit Guidelines
+
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for our commit messages. This allows us to automatically generate changelogs and version releases. Please follow the guidelines below when writing commit messages. If you are using VSCode, you can install the [Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits) extension to help you write commit messages.
+
+For commit types, we use the following:
+
+- `feat`: A new feature
+- `enhance`: An enhancement to an existing feature
+- `fix`: A bug fix
+- `docs`: Documentation only changes
+- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- `refactor`: A code change that neither fixes a bug nor adds a feature, but makes the code easier to read, understand, or improve
+- `perf`: A code change that improves performance
+- `test`: Adding missing tests or correcting existing tests
+- `build`: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+- `ci`: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+- `revise`: A change that revises a previous commit
+- `chore`: Other changes that don't apply to any of the above
+
 ### Theme Guidelines
 
 <!-- TODO: add screenshots to provide examples for dos and don'ts -->
