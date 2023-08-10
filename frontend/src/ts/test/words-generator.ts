@@ -307,9 +307,12 @@ function applyFunboxesToWord(word: string): string {
   return word;
 }
 
-async function applyBritishEnglishToWord(word: string): Promise<string> {
+async function applyBritishEnglishToWord(
+  word: string,
+  previousWord: string
+): Promise<string> {
   if (Config.britishEnglish && /english/.test(Config.language)) {
-    word = await BritishEnglish.replace(word);
+    word = await BritishEnglish.replace(word, previousWord);
   }
   return word;
 }
@@ -718,7 +721,7 @@ export async function getNextWord(
   randomWord = randomWord.replace(/ +/gm, " ");
   randomWord = randomWord.replace(/(^ )|( $)/gm, "");
   randomWord = applyLazyModeToWord(randomWord, language);
-  randomWord = await applyBritishEnglishToWord(randomWord);
+  randomWord = await applyBritishEnglishToWord(randomWord, previousWordRaw);
 
   if (Config.language === "swiss_german") {
     randomWord = randomWord.replace(/ß/g, "ss");
