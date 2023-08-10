@@ -17,19 +17,9 @@ import {
 } from "./test/funbox/funbox-validation";
 
 export let localStorageConfig: MonkeyTypes.Config;
-export let dbConfigLoaded = false;
-export let changedBeforeDb = false;
 
 export function setLocalStorageConfig(val: MonkeyTypes.Config): void {
   localStorageConfig = val;
-}
-
-export function setDbConfigLoaded(val: boolean): void {
-  dbConfigLoaded = val;
-}
-
-export function setChangedBeforeDb(val: boolean): void {
-  changedBeforeDb = val;
 }
 
 let loadDone: (value?: unknown) => void;
@@ -55,10 +45,6 @@ async function saveToLocalStorage(
   nosave = false,
   noDbCheck = false
 ): Promise<void> {
-  if (!dbConfigLoaded && !noDbCheck && !nosave) {
-    setChangedBeforeDb(true);
-  }
-
   if (nosave) return;
 
   const localToSave = config;
@@ -77,9 +63,6 @@ export async function saveFullConfigToLocalStorage(
   noDbCheck = false
 ): Promise<void> {
   console.log("saving full config to localStorage");
-  if (!dbConfigLoaded && !noDbCheck) {
-    setChangedBeforeDb(true);
-  }
   const save = config;
   delete save.resultFilters;
   const stringified = JSON.stringify(save);
