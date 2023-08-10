@@ -24,7 +24,7 @@ module.exports = {
         "ci",
         "docs",
         "feat",
-        "enhance",
+        "impr",
         "fix",
         "perf",
         "refactor",
@@ -44,9 +44,9 @@ module.exports = {
             title: "Features",
             emoji: "✨",
           },
-          enhance: {
-            description: "Enhancements to existing features",
-            title: "Enhancements",
+          impr: {
+            description: "Improvements to an existing feature",
+            title: "Improvements",
             emoji: "👌",
           },
           fix: {
