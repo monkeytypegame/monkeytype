@@ -1035,7 +1035,7 @@ function updateAverage100(updateChart = true): void {
   if (updateChart) accountHistory.updateColors();
 }
 
-export async function updateColors<
+async function updateColors<
   TType extends ChartType = "bar" | "line" | "scatter",
   TData =
     | MonkeyTypes.HistoryChartData[]
@@ -1184,7 +1184,7 @@ export async function updateColors<
   chart.update("none");
 }
 
-export function setDefaultFontFamily(font: string): void {
+function setDefaultFontFamily(font: string): void {
   Chart.defaults.font.family = font.replace(/_/g, " ");
 }
 

@@ -191,7 +191,7 @@ async function updateChartColors(): Promise<void> {
   await Misc.sleep(0);
 }
 
-export function reset(): void {
+function reset(): void {
   $(".pageAccount .history table tbody").empty();
   ChartController.accountHistogram.data.datasets[0].data = [];
   ChartController.accountActivity.data.datasets[0].data = [];
@@ -1060,7 +1060,7 @@ export async function downloadResults(): Promise<void> {
   }
 }
 
-export async function update(): Promise<void> {
+async function update(): Promise<void> {
   LoadingPage.updateBar(0, true);
   if (DB.getSnapshot() === null) {
     Notifications.add(`Missing account data. Please refresh.`, -1);

@@ -18,10 +18,6 @@ import {
 
 export let localStorageConfig: MonkeyTypes.Config;
 
-export function setLocalStorageConfig(val: MonkeyTypes.Config): void {
-  localStorageConfig = val;
-}
-
 let loadDone: (value?: unknown) => void;
 
 const config = {
@@ -291,7 +287,7 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setAccountChart(
+function setAccountChart(
   array: MonkeyTypes.AccountChart,
   nosave?: boolean
 ): boolean {

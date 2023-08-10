@@ -33,7 +33,7 @@ export function show(): void {
   }
 }
 
-export function hide(resolveToUndefined = false): void {
+function hide(resolveToUndefined = false): void {
   if (isPopupVisible(wrapperId)) {
     if (resolveToUndefined) resolvePromise();
     $("#registerCaptchaPopupWrapper")

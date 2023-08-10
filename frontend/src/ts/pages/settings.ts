@@ -397,7 +397,7 @@ async function initGroups(): Promise<void> {
   // );
 }
 
-export function reset(): void {
+function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
@@ -408,7 +408,7 @@ export function reset(): void {
 }
 
 let groupsInitialized = false;
-export async function fillSettingsPage(): Promise<void> {
+async function fillSettingsPage(): Promise<void> {
   if (Config.showKeyTips) {
     $(".pageSettings .tip").removeClass("hidden");
   } else {
@@ -827,7 +827,7 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
-export function showAccountSection(): void {
+function showAccountSection(): void {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
   $(`.pageSettings .section.needsAccount`).removeClass("hidden");

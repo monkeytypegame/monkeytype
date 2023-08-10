@@ -49,7 +49,7 @@ let signedOutThisSession = false;
 
 export const gmailProvider = new GoogleAuthProvider();
 
-export async function sendVerificationEmail(): Promise<void> {
+async function sendVerificationEmail(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
@@ -71,7 +71,7 @@ export async function sendVerificationEmail(): Promise<void> {
   }
 }
 
-export async function getDataAndInit(): Promise<boolean> {
+async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     if (window.location.pathname !== "/account") {
@@ -297,7 +297,7 @@ if (Auth && ConnectionState.get()) {
   });
 }
 
-export async function signIn(): Promise<void> {
+async function signIn(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1);
     return;
@@ -353,7 +353,7 @@ export async function signIn(): Promise<void> {
     });
 }
 
-export async function signInWithGoogle(): Promise<void> {
+async function signInWithGoogle(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
@@ -405,7 +405,7 @@ export async function signInWithGoogle(): Promise<void> {
     });
 }
 
-export async function addGoogleAuth(): Promise<void> {
+async function addGoogleAuth(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
