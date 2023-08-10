@@ -491,6 +491,8 @@ async function update(): Promise<void> {
   currentData["60"] = lb60Data;
   currentRank["15"] = lb15Rank?.min_rank === undefined ? lb15Rank : null;
   currentRank["60"] = lb60Rank?.min_rank === undefined ? lb15Rank : null;
+  minRank["15"] = null;
+  minRank["60"] = null;
 
   minRank["15"] = lb15Rank?.min_rank === undefined ? null : lb15Rank?.min_rank;
   minRank["60"] = lb60Rank?.min_rank === undefined ? null : lb60Rank?.min_rank;
