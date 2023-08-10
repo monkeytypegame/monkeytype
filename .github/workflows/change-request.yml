@@ -1,0 +1,40 @@
+name: Change Request Label
+
+on:
+  pull_request:
+    types:
+      - synchronize
+
+jobs:
+  manage_changes_requested_label:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: check
+        id: check_changes_requested
+        run: echo "::set-output name=changes_requested::$(jq -r '.review.state' $GITHUB_EVENT_PATH)"
+
+      - name: update-label
+        if: steps.check_changes_requested.outputs.changes_requested == 'changes_requested'
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const { data: reviews } = await github.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const hasChangesRequested = reviews.some(review => review.state === 'CHANGES_REQUESTED');
+            if (hasChangesRequested) {
+              github.issues.addLabels({
+                issue_number: context.issue.number,
+                labels: ['changes requested']
+              });
+            } else {
+              github.issues.removeLabel({
+                issue_number: context.issue.number,
+                name: 'changes requested'
+              });
+            }
+          token: ${{ secrets.GITHUB_TOKEN }}
