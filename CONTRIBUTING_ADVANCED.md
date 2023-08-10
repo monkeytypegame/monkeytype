@@ -91,8 +91,8 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 2. Setup the database server
 
-| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                                                             |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory (this is also how you start the backend server)</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your database visually.
@@ -103,15 +103,14 @@ Follow these steps if you want to work on anything involving the database/accoun
 - Run `npm run install-all` in the project root to install all dependencies.
   - If you are on Windows, use `npm run install-windows`.
   - If neither works, you will have to run `npm install` in root, frontend, and backend directories.
-  Now you are ready to build and run Monkeytype. 
-  
+    Now you are ready to build and run Monkeytype.
+
 ### Using Docker:
 
 - Frontend:
   ```
   cd frontend && docker-compose up
   ```
-  
 - Backend (in another terminal window):
   ```
   cd backend && docker-compose up
@@ -123,7 +122,6 @@ Follow these steps if you want to work on anything involving the database/accoun
   ```
   npm run dev
   ```
-  
 - Only frontend (if you skipped the Backend section):
   ```
   npm run dev-fe
@@ -137,7 +135,7 @@ Note: Rebuilding doesn't happen instantaneously and depends on your machine, so 
 
 Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit.
 
-For guidelines on adding themes, languages or quotes, pleases refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
+For guidelines on commit messages, adding themes, languages or quotes, pleases refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 
 ## Questions
 

@@ -31,7 +31,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) fo
 For commit types, we use the following:
 
 - `feat`: A new feature
-- `enhance`: An enhancement to an existing feature
+- `impr`: An improvement to an existing feature
 - `fix`: A bug fix
 - `docs`: Documentation only changes
 - `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
@@ -40,8 +40,42 @@ For commit types, we use the following:
 - `test`: Adding missing tests or correcting existing tests
 - `build`: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
 - `ci`: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
-- `revise`: A change that revises a previous commit
+- `revert`: Reverts a previous commit
 - `chore`: Other changes that don't apply to any of the above
+
+For example:
+
+```
+feat: add freedom mode
+
+Added freedom mode which allows the user to backspace to previous words, even if they are typed correctly
+```
+
+```
+feat(theme): add superuser
+```
+
+```
+feat(language): add english language
+```
+
+```
+feat(quote): add five spanish quotes
+```
+
+```
+fix: funbox not persisting
+
+Fixed a bug where the fubox styling would not persist across pages due mistakenly removing all classes from the body element
+
+Fixes #123
+```
+
+```
+impr: add more highlight modes
+
+Added a few more highlight modes: next word, next two words, next three words
+```
 
 ### Theme Guidelines
 
