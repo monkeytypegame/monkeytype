@@ -1,7 +1,7 @@
 name: Monkey CI
 
 env:
-  NODE_VERSION: "16.13.2"
+  NODE_VERSION: "18.17.1"
 
 permissions:
   contents: read
