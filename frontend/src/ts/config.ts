@@ -24,7 +24,7 @@ export function setLocalStorageConfig(val: MonkeyTypes.Config): void {
 
 let loadDone: (value?: unknown) => void;
 
-let config = {
+const config = {
   ...DefaultConfig,
 };
 
