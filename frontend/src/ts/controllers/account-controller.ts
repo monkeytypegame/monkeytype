@@ -150,51 +150,19 @@ export async function getDataAndInit(): Promise<boolean> {
       true
     );
   }
-  if (!UpdateConfig.localStorageConfig && snapshot.config) {
-    console.log("no local config, applying db");
+
+  const areConfigsEqual =
+    JSON.stringify(Config) === JSON.stringify(snapshot.config);
+
+  if (
+    snapshot.config &&
+    (!UpdateConfig.localStorageConfig || !areConfigsEqual)
+  ) {
+    console.log(
+      "no local config or local and db configs are different - applying db"
+    );
     UpdateConfig.apply(snapshot.config);
     UpdateConfig.saveFullConfigToLocalStorage(true);
-  } else if (snapshot.config !== undefined) {
-    //loading db config, keep for now
-    let configsDifferent = false;
-    Object.keys(Config).forEach((ke) => {
-      const key = ke as keyof typeof Config;
-      if (configsDifferent) return;
-      try {
-        if (key !== "resultFilters") {
-          if (Array.isArray(Config[key])) {
-            (Config[key] as string[]).forEach((arrval, index) => {
-              const arrayValue = (
-                snapshot?.config?.[key] as
-                  | string[]
-                  | MonkeyTypes.QuoteLength[]
-                  | MonkeyTypes.CustomBackgroundFilter
-              )[index];
-              if (arrval != arrayValue) {
-                configsDifferent = true;
-                console.log(`.config is different: ${arrval} != ${arrayValue}`);
-              }
-            });
-          } else {
-            if (Config[key] != snapshot?.config?.[key]) {
-              configsDifferent = true;
-              console.log(
-                `..config is different ${key}: ${Config[key]} != ${snapshot?.config?.[key]}`
-              );
-            }
-          }
-        }
-      } catch (e) {
-        console.log(e);
-        configsDifferent = true;
-        console.log(`...config is different`);
-      }
-    });
-    if (configsDifferent) {
-      console.log("configs are different, applying config from db");
-      UpdateConfig.apply(snapshot.config);
-      UpdateConfig.saveFullConfigToLocalStorage(true);
-    }
   }
   AccountButton.loading(false);
   updateTagsCommands();
