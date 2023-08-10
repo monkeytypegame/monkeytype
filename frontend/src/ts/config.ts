@@ -2005,10 +2005,6 @@ export function getConfigChanges(): MonkeyTypes.PresetConfig {
   return configChanges;
 }
 
-export function setConfig(newConfig: MonkeyTypes.Config): void {
-  config = newConfig;
-}
-
 export const loadPromise = new Promise((v) => {
   loadDone = v;
 });
