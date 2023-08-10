@@ -9,7 +9,7 @@ import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
 import { isLocalhost } from "./utils/misc";
 
-export function updateKeytips(): void {
+function updateKeytips(): void {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
     ? "cmd"
     : "ctrl";
