@@ -150,7 +150,7 @@ export async function getDataAndInit(): Promise<boolean> {
       true
     );
   }
-  if (UpdateConfig.localStorageConfig === null && snapshot.config) {
+  if (!UpdateConfig.localStorageConfig && snapshot.config) {
     console.log("no local config, applying db");
     AccountButton.loading(false);
     UpdateConfig.apply(snapshot.config);
