@@ -38,7 +38,7 @@ interface Input {
 
 let activePopup: SimplePopup | null = null;
 
-export const list: { [key: string]: SimplePopup } = {};
+const list: { [key: string]: SimplePopup } = {};
 class SimplePopup {
   parameters: string[];
   wrapper: JQuery;
@@ -239,7 +239,7 @@ class SimplePopup {
   }
 }
 
-export function hide(): void {
+function hide(): void {
   if (activePopup) return activePopup.hide();
   $("#simplePopupWrapper")
     .stop(true, true)

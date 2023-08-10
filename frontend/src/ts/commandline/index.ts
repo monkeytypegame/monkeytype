@@ -49,7 +49,7 @@ function showInput(
   }
 }
 
-export function isSingleListCommandLineActive(): boolean {
+function isSingleListCommandLineActive(): boolean {
   return state["usingSingleList"];
 }
 
@@ -223,7 +223,7 @@ function updateSuggested(): void {
   updateActiveEntry();
 }
 
-export let show = (): void => {
+let show = (): void => {
   themeChosen = false;
   activeIndex = 0;
   commandLineMouseMode = false;
