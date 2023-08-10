@@ -14,7 +14,8 @@
     "tsc": "tsc"
   },
   "engines": {
-    "npm": "8.1.2"
+    "node": "18.17.1",
+    "npm": "9.6.7"
   },
   "devDependencies": {
     "@types/canvas-confetti": "1.4.3",
