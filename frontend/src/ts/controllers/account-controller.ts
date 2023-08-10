@@ -152,7 +152,6 @@ export async function getDataAndInit(): Promise<boolean> {
   }
   if (!UpdateConfig.localStorageConfig && snapshot.config) {
     console.log("no local config, applying db");
-    AccountButton.loading(false);
     UpdateConfig.apply(snapshot.config);
     UpdateConfig.saveFullConfigToLocalStorage(true);
   } else if (snapshot.config !== undefined) {
@@ -193,10 +192,8 @@ export async function getDataAndInit(): Promise<boolean> {
     });
     if (configsDifferent) {
       console.log("configs are different, applying config from db");
-      AccountButton.loading(false);
       UpdateConfig.apply(snapshot.config);
       UpdateConfig.saveFullConfigToLocalStorage(true);
-      AccountButton.loading(true);
     }
   }
   AccountButton.loading(false);
