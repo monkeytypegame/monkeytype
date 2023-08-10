@@ -197,9 +197,6 @@ export async function getDataAndInit(): Promise<boolean> {
       UpdateConfig.apply(snapshot.config);
       UpdateConfig.saveFullConfigToLocalStorage(true);
       AccountButton.loading(true);
-      DB.saveConfig(Config).then(() => {
-        AccountButton.loading(false);
-      });
     }
   }
   AccountButton.loading(false);
