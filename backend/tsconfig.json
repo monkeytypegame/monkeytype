@@ -17,6 +17,7 @@
   "ts-node": {
     "files": true
   },
+  "files": ["./src/types/types.d.ts"],
   "include": ["./src/**/*"],
   "exclude": [
     "node_modules",
