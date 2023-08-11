@@ -39,6 +39,7 @@
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
+    "@release-it/conventional-changelog": "7.0.0",
     "@typescript-eslint/eslint-plugin": "5.59.11",
     "@typescript-eslint/parser": "5.59.11",
     "concurrently": "7.2.1",

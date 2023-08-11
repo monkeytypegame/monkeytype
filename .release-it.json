@@ -16,5 +16,10 @@
   "npm": {
     "publish": false,
     "ignoreVersion": true
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": "angular"
+    }
   }
 }
