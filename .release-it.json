@@ -19,7 +19,10 @@
   },
   "plugins": {
     "@release-it/conventional-changelog": {
-      "preset": "angular"
+      "preset": "conventionalcommits",
+      "writerOpts": {
+        "headerPartial": "Thank you to all the contributors!"
+      }
     }
   }
 }
