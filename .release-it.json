@@ -1,4 +1,12 @@
 {
+  "hooks": {
+    "before:init": ["npm run lint", "npm run test-be"],
+    "before:release": [
+      "sh ./bin/deployBackend.sh",
+      "cd frontend && npm run deploy-live",
+      "sh ./bin/purgeCfCache.sh"
+    ]
+  },
   "git": {
     "commitMessage": "chore: release v${version}"
   },
