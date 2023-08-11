@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "pre-commit": "pretty-quick --staged",
+    "pre-commit": "lint-staged",
     "lint": "npm run lint-be && npm run lint-fe",
     "lint-be": "eslint \"./backend/**/*.ts\"",
     "lint-fe": "eslint \"./frontend/**/*.ts\"",
@@ -48,9 +48,15 @@
     "eslint-plugin-require-path-exists": "1.1.9",
     "husky": "8.0.1",
     "knip": "2.19.2",
+    "lint-staged": "13.2.3",
     "prettier": "2.5.1",
-    "pretty-quick": "3.1.0",
     "release-it": "16.1.4",
     "typescript": "4.9.5"
+  },
+  "lint-staged": {
+    "*.{ts,js,json,css,html}": [
+      "prettier --write",
+      "eslint"
+    ]
   }
 }
