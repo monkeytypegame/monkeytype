@@ -18,7 +18,7 @@
     "dev-fe": "cd frontend && npm run dev",
     "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
     "audit-fe": "cd frontend && npm run audit",
-    "deploy-live": "cd frontend && npm run deploy-live",
+    "release": "release-it",
     "build-fe": "cd ./frontend && npm run build-live",
     "pretty": "prettier --check \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./frontend/static/**/*.{json,html,css}\"",
     "pretty-code": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\" \"./frontend/**/*.{ts,js}\" \"./frontend/src/**/*.scss\"",
@@ -49,6 +49,7 @@
     "knip": "2.19.2",
     "prettier": "2.5.1",
     "pretty-quick": "3.1.0",
+    "release-it": "16.1.4",
     "typescript": "4.5.5"
   }
 }
