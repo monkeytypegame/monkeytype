@@ -29,7 +29,13 @@
   animation: rainbow-gradient 30s alternate ease-in-out infinite;
 }
 
-#top .logo .top {
+#top .logo .top, 
+.account .levelAndBar .level,
+#copyWordsListButton:hover,
+#toggleBurstHeatmap:hover,
+#playpauseReplayButton:hover,
+#editTagsButton:hover,
+#deleteAlertButton:hover {
   -webkit-text-fill-color: initial;
 }
 
@@ -42,7 +48,12 @@
 #nextTestButton:hover > i,
 #practiseWordsButton:hover > i,
 #watchReplayButton:hover > i,
-#watchVideoAdButton:hover > i {
+#watchVideoAdButton:hover > i,
+#copyWordsListButton:hover > i, 
+#toggleBurstHeatmap:hover > i,
+#playpauseReplayButton:hover > i,
+#editTagsButton:hover > i,
+#deleteAlertButton:hover > i {
   background: linear-gradient(
     90deg,
     #60b6ce,

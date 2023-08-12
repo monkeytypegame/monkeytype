@@ -251,7 +251,7 @@ async function getAccountAlerts(): Promise<void> {
           ${
             (ie.rewards.length > 0 && ie.read === true) ||
             ie.rewards.length === 0
-              ? `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
+              ? `<div id="deleteAlertButton" class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
               : ``
           }
         </div>
