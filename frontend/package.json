@@ -52,6 +52,7 @@
     "jsonschema": "1.4.0",
     "madge": "5.0.1",
     "mini-css-extract-plugin": "2.6.0",
+    "normalize.css": "8.0.1",
     "postcss": "8.4.27",
     "postcss-loader": "7.3.3",
     "postcss-scss": "4.0.6",
