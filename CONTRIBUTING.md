@@ -24,11 +24,11 @@ If you're looking to make deeper code changes that affect functionality, or will
 
 Below are a set of general guidelines for different types of changes.
 
-### Commit Guidelines
+### Pull Request Naming Guidelines
 
-We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for our commit messages. This allows us to automatically generate changelogs and version releases. Please follow the guidelines below when writing commit messages. If you are using VSCode, you can install the [Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits) extension to help you write commit messages.
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for our pull request titles (and commit messages on the master branch). lease follow the guidelines below when naming pull requests.
 
-For commit types, we use the following:
+For types, we use the following:
 
 - `feat`: A new feature
 - `impr`: An improvement to an existing feature
@@ -42,40 +42,6 @@ For commit types, we use the following:
 - `ci`: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
 - `revert`: Reverts a previous commit
 - `chore`: Other changes that don't apply to any of the above
-
-For example:
-
-```
-feat: add freedom mode
-
-Added freedom mode which allows the user to backspace to previous words, even if they are typed correctly
-```
-
-```
-feat(theme): add superuser
-```
-
-```
-feat(language): add english language
-```
-
-```
-feat(quote): add five spanish quotes
-```
-
-```
-fix: funbox not persisting
-
-Fixed a bug where the fubox styling would not persist across pages due mistakenly removing all classes from the body element
-
-Fixes #123
-```
-
-```
-impr: add more highlight modes
-
-Added a few more highlight modes: next word, next two words, next three words
-```
 
 ### Theme Guidelines
 
