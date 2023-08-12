@@ -367,64 +367,6 @@
     }
   }
 
-  #top {
-    .logo {
-      .text {
-        font-size: 1.9rem !important;
-      }
-      .bottom {
-        font-size: 1.9rem;
-        line-height: 1.9rem;
-        margin-top: 0;
-      }
-    }
-    #menu {
-      gap: 0.1rem;
-      font-size: 0.75rem;
-      .textButton {
-        // padding: 0.25rem;
-        // font-size: 0.8rem;
-        // line-height: 0.8rem;
-        &.account {
-          // margin-top: 0.05rem;
-          & > .text {
-            display: none;
-          }
-          .avatar {
-            // width: 1rem;
-            // height: 1rem;
-          }
-          .levelAndBar {
-            font-size: 1rem;
-            // line-height: 0.8rem;
-          }
-        }
-      }
-    }
-  }
-  #centerContent {
-    // #top {
-    //   grid-template-areas:
-    //     "logo config"
-    //     "menu config";
-    //   grid-template-columns: auto auto;
-    //   .logo {
-    //     margin-bottom: 0;
-    //   }
-    // }
-
-    // #menu {
-    //   gap: 0.5rem;
-    //   font-size: 0.8rem;
-    //   line-height: 0.8rem;
-    //   margin-top: -0.5rem;
-
-    //   .textButton {
-    //     padding: 0.25rem;
-    //   }
-    // }
-  }
-
   #contactPopupWrapper #contactPopup .buttons {
     grid-template-columns: 1fr;
   }
@@ -464,10 +406,6 @@
     }
   }
 
-  .pageSettings {
-    .section.themes .tabContent.customTheme {
-    }
-  }
   #customTextPopupWrapper #customTextPopup {
     .buttonsTop {
       grid-template-columns: 1fr;
