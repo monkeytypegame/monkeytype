@@ -303,6 +303,9 @@
     }
   }
   .pageSettings {
+    .settingsGroup .section {
+      grid-template-columns: 1.5fr 1fr;
+    }
     .section.autoSwitchThemeInputs {
       grid-template-columns: 1fr 3fr;
     }
@@ -609,7 +612,7 @@
         "id length length" !important;
     }
   }
-  .pageSettings .section {
+  .pageSettings .settingsGroup .section {
     grid-template-columns: 1fr;
     grid-template-areas:
       "title"
