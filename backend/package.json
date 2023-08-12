@@ -58,7 +58,7 @@
     "@types/jest": "27.5.0",
     "@types/lodash": "4.14.178",
     "@types/mustache": "4.2.2",
-    "@types/node": "17.0.18",
+    "@types/node": "18.17.1",
     "@types/node-fetch": "2.6.1",
     "@types/nodemailer": "6.4.7",
     "@types/object-hash": "2.2.1",
