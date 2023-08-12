@@ -31,9 +31,6 @@ ConfigEvent.subscribe((eventKey) => {
 });
 
 export async function update(): Promise<void> {
-  let anim = false;
-  if ($(".pageTest #testModesNotice").text() === "") anim = true;
-
   $(".pageTest #testModesNotice").empty();
 
   if (TestState.isRepeated && Config.mode !== "quote") {
@@ -253,19 +250,4 @@ export async function update(): Promise<void> {
       );
     }
   } catch {}
-
-  if (anim) {
-    $(".pageTest #testModesNotice")
-      .css("transition", "none")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        125,
-        () => {
-          $(".pageTest #testModesNotice").css("transition", ".125s");
-        }
-      );
-  }
 }
