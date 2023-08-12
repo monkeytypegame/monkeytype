@@ -51,6 +51,7 @@
     grid-template-columns: 2fr 1fr;
     grid-template-rows: auto 1fr;
     column-gap: 2rem;
+    row-gap: 0.5rem;
     align-items: center;
 
     .button.danger {
@@ -187,7 +188,6 @@
       .far,
       .textIcon {
         margin-right: 0.5em;
-        margin-bottom: 0.5em;
       }
     }
 
@@ -210,6 +210,7 @@
       color: var(--text-color);
       grid-area: text;
       .red {
+        line-height: 2rem;
         color: var(--error-color);
       }
     }
@@ -421,7 +422,6 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)) !important;
         gap: 0.5rem;
-        margin-top: 0.5rem;
         .button {
           transition: transform 0.125s;
           &:hover .themeBubbles {
@@ -465,7 +465,6 @@
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 0.5rem;
-        margin-top: 0.5rem;
       }
     }
 
