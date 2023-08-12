@@ -18,6 +18,9 @@
     "node": "18.17.1",
     "npm": "9.6.7"
   },
+  "browserslist": [
+    "defaults"
+  ],
   "devDependencies": {
     "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",
@@ -29,6 +32,7 @@
     "@types/select2": "4.0.55",
     "@types/throttle-debounce": "2.1.0",
     "@types/tinycolor2": "1.4.3",
+    "autoprefixer": "10.4.14",
     "buffer": "6.0.3",
     "circular-dependency-plugin": "5.2.2",
     "concurrently": "7.4.0",
@@ -48,11 +52,14 @@
     "jsonschema": "1.4.0",
     "madge": "5.0.1",
     "mini-css-extract-plugin": "2.6.0",
-    "sass": "1.49.9",
+    "postcss": "8.4.27",
+    "postcss-loader": "7.3.3",
+    "postcss-scss": "4.0.6",
     "sass-loader": "12.6.0",
     "serve": "13.0.2",
     "stream-browserify": "3.0.0",
     "string-replace-loader": "3.1.0",
+    "style-loader": "3.3.3",
     "ts-loader": "9.2.6",
     "webpack": "5.72.0",
     "webpack-bundle-analyzer": "4.5.0",
