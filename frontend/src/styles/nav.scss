@@ -176,21 +176,21 @@
     .text {
       .top {
         position: absolute;
-        left: 0.25rem;
-        top: -0.1rem;
-        font-size: 0.65rem;
-        line-height: 0.65rem;
+        left: 0.35em;
+        font-size: 0.325em;
+        line-height: 0.325em;
         color: var(--sub-color);
         transition: color 0.25s, opacity 0.25s;
       }
       position: relative;
       font-size: 2rem;
+      line-height: 2rem;
       font-family: "Lexend Deca";
       transition: color 0.25s;
       font-weight: unset;
       margin-block-start: unset;
       margin-block-end: unset;
-      margin-top: -0.2em;
+      margin-top: -0.23em;
     }
     white-space: nowrap;
     -webkit-user-select: none;
