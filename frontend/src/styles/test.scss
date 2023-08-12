@@ -1008,8 +1008,10 @@
   height: max-content;
   width: 100%;
   justify-content: space-around;
-  transition: 0.125s;
   margin-bottom: 1rem;
+  .textButton {
+    transition: none;
+  }
   .puncAndNum {
     // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
     overflow: hidden;
@@ -1029,7 +1031,6 @@
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
     margin: 0.5rem 0;
-    transition: 0.25s;
     &.scrolled {
       width: 0;
       margin: auto 0;
@@ -1057,7 +1058,6 @@
     grid-auto-flow: column;
 
     .textButton {
-      transition: 0.125s;
       padding: 0.75rem 0.5rem 0.7rem 0.5rem;
 
       &:first-child {
