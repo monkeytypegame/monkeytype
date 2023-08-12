@@ -62,6 +62,7 @@
     "@types/node-fetch": "2.6.1",
     "@types/nodemailer": "6.4.7",
     "@types/object-hash": "2.2.1",
+    "@types/string-similarity": "4.0.0",
     "@types/supertest": "2.0.12",
     "@types/swagger-stats": "0.95.4",
     "@types/swagger-ui-express": "4.1.3",
