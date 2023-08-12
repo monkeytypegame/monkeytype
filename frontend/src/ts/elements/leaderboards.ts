@@ -33,7 +33,7 @@ let currentRank: {
   "60": {},
 };
 
-let minRank: {
+const minRank: {
   [key in LbKey]: number | null;
 } = {
   "15": null,
@@ -170,8 +170,8 @@ function updateFooter(lb: LbKey): void {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;">Not qualified ${
-        minRank[lb] !== null &&
-        `(min speed required: ${minRank[lb]?.toString()}wpm)`
+        minRank[lb] !== null ?
+        `(min speed required: ${minRank[lb]?.toString()}wpm)` : ``
       }</>
     </tr>
     `);
