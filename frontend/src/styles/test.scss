@@ -1007,6 +1007,7 @@
   grid-auto-flow: column;
   height: max-content;
   width: 100%;
+  transition: opacity 0.125s;
   justify-content: space-around;
   margin-bottom: 1rem;
   .textButton {
@@ -1156,7 +1157,7 @@
     color: var(--sub-color);
     text-align: center;
     margin-bottom: 0.5rem;
-    transition: 0.125s;
+    transition: opacity 0.125s;
     justify-content: center;
     -webkit-user-select: none;
     user-select: none;
