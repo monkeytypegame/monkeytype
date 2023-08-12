@@ -335,6 +335,14 @@
 
 //800px
 @media only screen and (max-width: 50rem) {
+  #top .logo .text {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    margin-top: -0.1em;
+  }
+  #menu {
+    gap: 0;
+  }
   #testConfig {
     .spacer {
       display: none;
@@ -365,6 +373,9 @@
         }
       }
     }
+  }
+  #testModesNotice {
+    font-size: 0.75rem;
   }
 
   #contactPopupWrapper #contactPopup .buttons {
@@ -479,6 +490,18 @@
 
 //650px
 @media only screen and (max-width: 40.625rem) {
+  #top {
+    #menu {
+      .textButton.account {
+        .text {
+          display: none;
+        }
+        .levelAndBar {
+          display: none;
+        }
+      }
+    }
+  }
   #leaderboardsWrapper #leaderboards {
     width: 85vw;
     .tables .rightTableWrapper,
@@ -696,6 +719,24 @@
 
 //550px
 @media only screen and (max-width: 34.375rem) {
+  #top {
+    .logo {
+      grid-template-columns: auto;
+      .text {
+        display: none;
+      }
+    }
+    // #menu {
+    //   .textButton.account {
+    //     .text {
+    //       display: none;
+    //     }
+    //     .levelAndBar {
+    //       display: none;
+    //     }
+    //   }
+    // }
+  }
   #commandLineWrapper {
     padding: 5rem 1rem;
   }
@@ -742,9 +783,6 @@
     .leaderboardsPositions {
       grid-template-areas: "title" "t15" "t60";
     }
-  }
-  #testModesNotice {
-    font-size: 0.75rem;
   }
   #cookiePopupWrapper {
     #cookiePopup,
@@ -834,12 +872,6 @@
   }
 
   #top {
-    .logo {
-      grid-template-columns: auto;
-      .text {
-        display: none;
-      }
-    }
     #menu {
       font-size: 1rem;
     }
