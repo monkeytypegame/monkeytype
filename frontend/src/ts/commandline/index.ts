@@ -223,7 +223,7 @@ function updateSuggested(): void {
   updateActiveEntry();
 }
 
-let show = (): void => {
+function show(): void {
   themeChosen = false;
   activeIndex = 0;
   commandLineMouseMode = false;
@@ -254,7 +254,7 @@ let show = (): void => {
   $("#commandLine input").val("");
   updateSuggested();
   $("#commandLine input").trigger("focus");
-};
+}
 
 function hide(shouldFocusTestUI = true): void {
   UpdateConfig.previewFontFamily(Config.fontFamily);
@@ -413,14 +413,9 @@ function generateSingleListOfCommands(): {
   list: MonkeyTypes.Command[];
 } {
   const allCommands: MonkeyTypes.Command[] = [];
-  const oldShowCommandLine = show;
-  show = (): void => {
-    //
-  };
   CommandlineLists.commands.list.forEach((c) =>
     addChildCommands(allCommands, c)
   );
-  show = oldShowCommandLine;
   return {
     title: "All Commands",
     list: allCommands,
