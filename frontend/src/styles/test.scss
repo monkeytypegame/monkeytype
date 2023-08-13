@@ -122,19 +122,21 @@
     left: 0;
     width: 100%;
     position: relative;
-    font-size: 10rem;
+    font-size: clamp(1rem, 12vw, 10rem);
+
     opacity: 0;
     width: 0;
     height: 0;
     margin: 0 auto;
     display: grid;
     justify-content: center;
-    bottom: 6rem;
+    bottom: clamp(2rem, 12vw, 6rem);
+
     transition: none;
   }
 
   #largeLiveWpmAndAcc {
-    font-size: 10rem;
+    font-size: clamp(1rem, 12vw, 10rem);
     color: black;
     width: 100%;
     left: 0;
@@ -142,12 +144,12 @@
     z-index: -1;
     height: 0;
     line-height: 0;
-    top: 5rem;
+    top: clamp(1rem, 10vw, 5rem);
     position: relative;
     display: grid;
     grid-auto-flow: column;
     justify-content: center;
-    gap: 5rem;
+    gap: clamp(1rem, 8vw, 5rem);
     width: 0;
     margin: 0 auto;
 
