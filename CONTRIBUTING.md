@@ -26,7 +26,7 @@ Below are a set of general guidelines for different types of changes.
 
 ### Pull Request Naming Guidelines
 
-We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for our pull request titles (and commit messages on the master branch). lease follow the guidelines below when naming pull requests.
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for our pull request titles (and commit messages on the master branch). Please follow the guidelines below when naming pull requests.
 
 For types, we use the following:
 

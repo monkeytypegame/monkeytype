@@ -303,6 +303,9 @@
     }
   }
   .pageSettings {
+    .settingsGroup .section {
+      grid-template-columns: 1.5fr 1fr;
+    }
     .section.autoSwitchThemeInputs {
       grid-template-columns: 1fr 3fr;
     }
@@ -335,6 +338,14 @@
 
 //800px
 @media only screen and (max-width: 50rem) {
+  #top .logo .text {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    margin-top: -0.1em;
+  }
+  #menu {
+    gap: 0;
+  }
   #testConfig {
     .spacer {
       display: none;
@@ -366,63 +377,8 @@
       }
     }
   }
-
-  #top {
-    .logo {
-      .text {
-        font-size: 1.9rem !important;
-      }
-      .bottom {
-        font-size: 1.9rem;
-        line-height: 1.9rem;
-        margin-top: 0;
-      }
-    }
-    #menu {
-      gap: 0.1rem;
-      font-size: 0.75rem;
-      .textButton {
-        // padding: 0.25rem;
-        // font-size: 0.8rem;
-        // line-height: 0.8rem;
-        &.account {
-          // margin-top: 0.05rem;
-          & > .text {
-            display: none;
-          }
-          .avatar {
-            // width: 1rem;
-            // height: 1rem;
-          }
-          .levelAndBar {
-            font-size: 1rem;
-            // line-height: 0.8rem;
-          }
-        }
-      }
-    }
-  }
-  #centerContent {
-    // #top {
-    //   grid-template-areas:
-    //     "logo config"
-    //     "menu config";
-    //   grid-template-columns: auto auto;
-    //   .logo {
-    //     margin-bottom: 0;
-    //   }
-    // }
-
-    // #menu {
-    //   gap: 0.5rem;
-    //   font-size: 0.8rem;
-    //   line-height: 0.8rem;
-    //   margin-top: -0.5rem;
-
-    //   .textButton {
-    //     padding: 0.25rem;
-    //   }
-    // }
+  #testModesNotice {
+    font-size: 0.75rem;
   }
 
   #contactPopupWrapper #contactPopup .buttons {
@@ -464,10 +420,6 @@
     }
   }
 
-  .pageSettings {
-    .section.themes .tabContent.customTheme {
-    }
-  }
   #customTextPopupWrapper #customTextPopup {
     .buttonsTop {
       grid-template-columns: 1fr;
@@ -541,6 +493,18 @@
 
 //650px
 @media only screen and (max-width: 40.625rem) {
+  #top {
+    #menu {
+      .textButton.account {
+        .text {
+          display: none;
+        }
+        .levelAndBar {
+          display: none;
+        }
+      }
+    }
+  }
   #leaderboardsWrapper #leaderboards {
     width: 85vw;
     .tables .rightTableWrapper,
@@ -648,7 +612,7 @@
         "id length length" !important;
     }
   }
-  .pageSettings .section {
+  .pageSettings .settingsGroup .section {
     grid-template-columns: 1fr;
     grid-template-areas:
       "title"
@@ -758,6 +722,24 @@
 
 //550px
 @media only screen and (max-width: 34.375rem) {
+  #top {
+    .logo {
+      grid-template-columns: auto;
+      .text {
+        display: none;
+      }
+    }
+    // #menu {
+    //   .textButton.account {
+    //     .text {
+    //       display: none;
+    //     }
+    //     .levelAndBar {
+    //       display: none;
+    //     }
+    //   }
+    // }
+  }
   #commandLineWrapper {
     padding: 5rem 1rem;
   }
@@ -804,9 +786,6 @@
     .leaderboardsPositions {
       grid-template-areas: "title" "t15" "t60";
     }
-  }
-  #testModesNotice {
-    font-size: 0.75rem;
   }
   #cookiePopupWrapper {
     #cookiePopup,
@@ -896,12 +875,6 @@
   }
 
   #top {
-    .logo {
-      grid-template-columns: auto;
-      .text {
-        display: none;
-      }
-    }
     #menu {
       font-size: 1rem;
     }

@@ -20,7 +20,24 @@
   },
   "plugins": {
     "@release-it/conventional-changelog": {
-      "preset": "conventionalcommits",
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          {
+            "type": "feat",
+            "section": "Features"
+          },
+          {
+            "type": "impr",
+            "section": "Improvements"
+          },
+          {
+            "type": "fix",
+            "section": "Fixes"
+          },
+          {}
+        ]
+      },
       "writerOpts": {
         "headerPartial": "Thank you to all the contributors!"
       }

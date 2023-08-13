@@ -536,8 +536,11 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export function updateWordElement(showError = !Config.blindMode): void {
-  const input = TestInput.input.current;
+export function updateWordElement(
+  showError = !Config.blindMode,
+  inputOverride?: string
+): void {
+  const input = inputOverride || TestInput.input.current;
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
