@@ -681,6 +681,7 @@ $(document).on("keydown", (e) => {
     commandLineMouseMode = false;
     if (e.key === ">" && Config.singleListCommandLine === "manual") {
       if (!isSingleListCommandLineActive()) {
+        state["usingSingleList"] = true;
         useSingleListCommandLine(false);
         return;
       } else if ($("#commandLine input").val() === ">") {
@@ -699,6 +700,7 @@ $(document).on("keydown", (e) => {
           inputVal[0] !== ">"
         ) {
           restoreOldCommandLine(false);
+          updateSuggested();
         }
       }, 1);
     }
