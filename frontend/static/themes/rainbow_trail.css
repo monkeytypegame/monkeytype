@@ -31,8 +31,7 @@
 
 #top .logo .top, 
 .account .levelAndBar .level,
-div.textButton::after,
-span.textButton::after {
+[aria-label][data-balloon-pos]::after {
   -webkit-text-fill-color: initial;
 }
 
