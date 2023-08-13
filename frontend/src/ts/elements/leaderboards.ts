@@ -33,7 +33,7 @@ let currentRank: {
   "60": {},
 };
 
-const minRank: {
+const minWpm: {
   [key in LbKey]: number | null;
 } = {
   "15": null,
@@ -166,15 +166,6 @@ function updateFooter(lb: LbKey): void {
     </tr>
     `);
     return;
-  } else {
-    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
-    <tr>
-      <td colspan="6" style="text-align:center;">Not qualified ${
-        minRank[lb] !== null ?
-        `(min speed required: ${minRank[lb]?.toString()}wpm)` : ``
-      }</>
-    </tr>
-    `);
   }
 
   let toppercent;
@@ -209,6 +200,20 @@ function updateFooter(lb: LbKey): void {
     <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>
   `);
+  } else if (currentTimeRange === "daily") {
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td colspan="6" style="text-align:center;">Not qualified ${`(min speed required: ${minWpm[
+        lb
+      ]?.toString()}wpm)`}</>
+    </tr>
+    `);
+  } else {
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td colspan="6" style="text-align:center;">Not qualified</>
+    </tr>
+    `);
   }
 }
 
@@ -489,11 +494,11 @@ async function update(): Promise<void> {
 
   currentData["15"] = lb15Data;
   currentData["60"] = lb60Data;
-  currentRank["15"] = lb15Rank?.min_rank === undefined ? lb15Rank : null;
-  currentRank["60"] = lb60Rank?.min_rank === undefined ? lb15Rank : null;
+  currentRank["15"] = lb15Rank?.minWpm === undefined ? lb15Rank : null;
+  currentRank["60"] = lb60Rank?.minWpm === undefined ? lb60Rank : null;
 
-  minRank["15"] = lb15Rank?.min_rank === undefined ? null : lb15Rank?.min_rank;
-  minRank["60"] = lb60Rank?.min_rank === undefined ? null : lb60Rank?.min_rank;
+  minWpm["15"] = lb15Rank?.minWpm === undefined ? null : lb15Rank?.minWpm;
+  minWpm["60"] = lb60Rank?.minWpm === undefined ? null : lb60Rank?.minWpm;
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
@@ -594,7 +599,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   hideLoader(lb);
 }
 
-function show(): void {
+export function show(): void {
   if (!ConnectionState.get()) {
     Notifications.add("You can't view leaderboards while offline", 0);
     return;
