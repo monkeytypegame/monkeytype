@@ -31,11 +31,8 @@
 
 #top .logo .top, 
 .account .levelAndBar .level,
-#copyWordsListButton:hover,
-#toggleBurstHeatmap:hover,
-#playpauseReplayButton:hover,
-#editTagsButton:hover,
-#deleteAlertButton:hover {
+div.textButton::after,
+span.textButton::after {
   -webkit-text-fill-color: initial;
 }
 
@@ -48,12 +45,7 @@
 #nextTestButton:hover > i,
 #practiseWordsButton:hover > i,
 #watchReplayButton:hover > i,
-#watchVideoAdButton:hover > i,
-#copyWordsListButton:hover > i, 
-#toggleBurstHeatmap:hover > i,
-#playpauseReplayButton:hover > i,
-#editTagsButton:hover > i,
-#deleteAlertButton:hover > i {
+#watchVideoAdButton:hover > i {
   background: linear-gradient(
     90deg,
     #60b6ce,
