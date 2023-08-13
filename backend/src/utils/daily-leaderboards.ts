@@ -19,7 +19,7 @@ interface DailyLeaderboardEntry {
 }
 
 interface DailyLeaderboardMinRank {
-  min_rank: number;
+  minWpm: number;
 }
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
@@ -160,7 +160,7 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    const [[, rank], [, count], [, result], [, least_score]] = await connection
+    const [[, rank], [, count], [, result], [, minScore]] = await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)
       .zcard(leaderboardScoresKey)
@@ -168,10 +168,9 @@ export class DailyLeaderboard {
       .zrange(leaderboardScoresKey, 0, 1, "WITHSCORES")
       .exec();
 
-    const min_rank =
-      least_score.length > 0 ? parseInt(least_score[1].slice(1, 4)) : 0;
+    const minWpm = minScore.length > 0 ? parseInt(minScore[1].slice(1, 4)) : 0;
     if (rank === null) {
-      return { min_rank };
+      return { minWpm };
     }
 
     return {
