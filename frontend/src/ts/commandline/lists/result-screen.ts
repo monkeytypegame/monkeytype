@@ -36,7 +36,6 @@ const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "practiseWordsMissed",
       display: "missed",
-      noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, false);
         TestLogic.restart({
@@ -47,7 +46,6 @@ const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "practiseWordsSlow",
       display: "slow",
-      noIcon: true,
       exec: (): void => {
         PractiseWords.init(false, true);
         TestLogic.restart({
@@ -58,7 +56,6 @@ const practiceSubgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "practiseWordsBoth",
       display: "both",
-      noIcon: true,
       exec: (): void => {
         PractiseWords.init(true, true);
         TestLogic.restart({
