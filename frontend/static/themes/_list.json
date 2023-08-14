@@ -1181,6 +1181,13 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "lady_jam",
+    "bgColor": "#202c39",
+    "mainColor": "#8e94f2",
+    "subColor": "#b8b08d",
+    "textColor": "#f29559"
   }
 
 ]
