@@ -20,7 +20,7 @@ export function show(): void {
   }
 }
 
-export function hide(): void {
+function hide(): void {
   if (isPopupVisible(wrapperId)) {
     $("#customWordAmountPopupWrapper")
       .stop(true, true)

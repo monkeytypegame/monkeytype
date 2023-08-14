@@ -17,30 +17,15 @@ import {
 } from "./test/funbox/funbox-validation";
 
 export let localStorageConfig: MonkeyTypes.Config;
-export let dbConfigLoaded = false;
-export let changedBeforeDb = false;
-
-export function setLocalStorageConfig(val: MonkeyTypes.Config): void {
-  localStorageConfig = val;
-}
-
-export function setDbConfigLoaded(val: boolean): void {
-  dbConfigLoaded = val;
-}
-
-export function setChangedBeforeDb(val: boolean): void {
-  changedBeforeDb = val;
-}
 
 let loadDone: (value?: unknown) => void;
 
-let config = {
+const config = {
   ...DefaultConfig,
 };
 
 let configToSend = {} as MonkeyTypes.Config;
 const saveToDatabase = debounce(1000, () => {
-  delete configToSend.resultFilters;
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
     DB.saveConfig(configToSend).then(() => {
@@ -55,14 +40,9 @@ async function saveToLocalStorage(
   nosave = false,
   noDbCheck = false
 ): Promise<void> {
-  if (!dbConfigLoaded && !noDbCheck && !nosave) {
-    setChangedBeforeDb(true);
-  }
-
   if (nosave) return;
 
   const localToSave = config;
-  delete localToSave.resultFilters;
 
   const localToSaveStringified = JSON.stringify(localToSave);
   window.localStorage.setItem("config", localToSaveStringified);
@@ -77,11 +57,7 @@ export async function saveFullConfigToLocalStorage(
   noDbCheck = false
 ): Promise<void> {
   console.log("saving full config to localStorage");
-  if (!dbConfigLoaded && !noDbCheck) {
-    setChangedBeforeDb(true);
-  }
   const save = config;
-  delete save.resultFilters;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
   if (!noDbCheck) {
@@ -311,7 +287,7 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setAccountChart(
+function setAccountChart(
   array: MonkeyTypes.AccountChart,
   nosave?: boolean
 ): boolean {
@@ -917,7 +893,16 @@ export function setHighlightMode(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("highlight mode", mode, [["off", "letter", "word"]])
+    !isConfigValueValid("highlight mode", mode, [
+      [
+        "off",
+        "letter",
+        "word",
+        "next_word",
+        "next_two_words",
+        "next_three_words",
+      ],
+    ])
   ) {
     return false;
   }
@@ -2011,10 +1996,6 @@ export function getConfigChanges(): MonkeyTypes.PresetConfig {
       (configChanges[key] as typeof config[typeof key]) = config[key];
     });
   return configChanges;
-}
-
-export function setConfig(newConfig: MonkeyTypes.Config): void {
-  config = newConfig;
 }
 
 export const loadPromise = new Promise((v) => {

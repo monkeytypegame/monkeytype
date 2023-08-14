@@ -17,7 +17,7 @@ export function toggleDebugLogs(): void {
   localStorage.setItem("debugLogs", debugLogs.toString());
 }
 
-export function info(...args: unknown[]): void {
+function info(...args: unknown[]): void {
   nativeLog(
     "%cINFO",
     "background:#4CAF50;color: #111;padding:0 5px;border-radius:10px",
@@ -26,7 +26,7 @@ export function info(...args: unknown[]): void {
   );
 }
 
-export function warn(...args: unknown[]): void {
+function warn(...args: unknown[]): void {
   nativeWarn(
     "%cWRN",
     "background:#FFC107;color: #111;padding:0 5px;border-radius:10px",
@@ -34,7 +34,7 @@ export function warn(...args: unknown[]): void {
   );
 }
 
-export function error(...args: unknown[]): void {
+function error(...args: unknown[]): void {
   nativeError(
     "%cERR",
     "background:#F44336;color: #111;padding:0 5px;border-radius:10px",
@@ -42,7 +42,7 @@ export function error(...args: unknown[]): void {
   );
 }
 
-export function debug(...args: unknown[]): void {
+function debug(...args: unknown[]): void {
   if (!debugLogs) return;
   nativeLog(
     "%cDEBG",

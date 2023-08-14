@@ -504,7 +504,7 @@
   ["misbehavior", "misbehaviour"],
   ["behavior", "behaviour"],
   ["color", "colour"],
-  ["tire", "tyre"],
+  ["tire", "tyre", ["will"]],
   ["gray", "grey"],
   ["grays", "greys"],
   ["theater", "theatre"],

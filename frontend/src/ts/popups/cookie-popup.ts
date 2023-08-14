@@ -66,7 +66,7 @@ export function show(): void {
   }
 }
 
-export async function hide(): Promise<void> {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     focusWords();
     $("#cookiePopupWrapper")

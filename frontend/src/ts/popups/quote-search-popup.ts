@@ -256,7 +256,7 @@ export async function show(clearText = true): Promise<void> {
   }
 }
 
-export function hide(noAnim = false, focusWords = true): void {
+function hide(noAnim = false, focusWords = true): void {
   if (isPopupVisible(wrapperId)) {
     $("#quoteSearchPopupWrapper")
       .stop(true, true)

@@ -3,7 +3,7 @@ import * as ChallengeController from "../../controllers/challenge-controller";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
 
-export const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Load challenge...",
   list: [],
 };

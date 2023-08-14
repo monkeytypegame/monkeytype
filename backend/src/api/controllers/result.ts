@@ -40,6 +40,7 @@ import FunboxList from "../../constants/funbox-list";
 import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
+import { canFunboxGetPb } from "../../utils/pb";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -421,13 +422,9 @@ export async function addResult(
 
   let dailyLeaderboardRank = -1;
 
-  const { funbox, bailedOut } = result;
   const validResultCriteria =
-    (funbox === "none" ||
-      funbox === "plus_one" ||
-      funbox === "plus_two" ||
-      funbox === "plus_three") &&
-    !bailedOut &&
+    canFunboxGetPb(result) &&
+    !result.bailedOut &&
     user.banned !== true &&
     user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);

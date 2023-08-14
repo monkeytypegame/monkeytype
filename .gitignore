@@ -90,7 +90,6 @@ backend/server.version
 #cloudflare y
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
-purgeCfCache.sh
 
 frontend/static/adtest.html
 backend/lastId.txt
