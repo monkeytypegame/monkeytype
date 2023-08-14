@@ -33,6 +33,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -179,7 +180,9 @@ function handleSpace(): void {
 
   const burst: number = TestStats.calculateBurst();
   LiveBurst.update(Math.round(burst));
-  TestInput.pushBurstToHistory(burst);
+  TestInput.pushBurstToHistory(Math.round(
+    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst)
+  ));
 
   const nospace =
     FunboxList.get(Config.funbox).find((f) =>
