@@ -180,9 +180,9 @@ function handleSpace(): void {
 
   const burst: number = TestStats.calculateBurst();
   LiveBurst.update(Math.round(burst));
-  TestInput.pushBurstToHistory(Math.round(
-    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst)
-  ));
+  TestInput.pushBurstToHistory(
+    Math.round(getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst)),
+  );
 
   const nospace =
     FunboxList.get(Config.funbox).find((f) =>
