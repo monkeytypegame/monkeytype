@@ -155,7 +155,7 @@ export function restart(options = {} as RestartOptions): void {
           Config.words,
           Config.time,
           CustomText,
-          CustomTextState.isCustomTextLong() ?? false
+          CustomTextState.isCustomTextLong() ?? false,
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -170,7 +170,7 @@ export function restart(options = {} as RestartOptions): void {
           {
             duration: 4,
             important: true,
-          }
+          },
         );
         return;
       }
@@ -239,7 +239,7 @@ export function restart(options = {} as RestartOptions): void {
       CustomText.setWord(PractiseWords.before.customText.word);
       CustomText.setTime(PractiseWords.before.customText.time);
       CustomText.setPopupTextareaState(
-        PractiseWords.before.customText.text.join(CustomText.delimiter)
+        PractiseWords.before.customText.text.join(CustomText.delimiter),
       );
     }
 
@@ -375,9 +375,9 @@ export function restart(options = {} as RestartOptions): void {
               .getCurrent()
               .substring(
                 TestInput.input.current.length,
-                TestInput.input.current.length + 1
+                TestInput.input.current.length + 1,
               )
-              .toString()
+              .toString(),
           );
         }
         Funbox.toggleScript(TestWords.words.getCurrent());
@@ -421,7 +421,10 @@ export function restart(options = {} as RestartOptions): void {
         fbtext = " " + Config.funbox.split("#").join(" ");
       }
       $(".pageTest #premidTestMode").text(
-        `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
+        `${Config.mode} ${mode2} ${Config.language.replace(
+          /_/g,
+          " ",
+        )}${fbtext}`,
       );
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
@@ -451,9 +454,9 @@ export function restart(options = {} as RestartOptions): void {
             }
             // ChartController.result.update();
             PageTransition.set(false);
-          }
+          },
         );
-    }
+    },
   );
 
   ResultWordHighlight.destroy();
@@ -472,7 +475,7 @@ export async function init(): Promise<void> {
       -1,
       {
         important: true,
-      }
+      },
     );
     return;
   }
@@ -491,7 +494,7 @@ export async function init(): Promise<void> {
   } catch (e) {
     Notifications.add(
       Misc.createErrorMessage(e, "Failed to load language"),
-      -1
+      -1,
     );
   }
 
@@ -514,7 +517,7 @@ export async function init(): Promise<void> {
       group = await Misc.findCurrentGroup(Config.language);
     } catch (e) {
       console.error(
-        Misc.createErrorMessage(e, "Failed to find current language group")
+        Misc.createErrorMessage(e, "Failed to find current language group"),
       );
       return;
     }
@@ -578,7 +581,7 @@ export async function init(): Promise<void> {
         -1,
         {
           important: true,
-        }
+        },
       );
     }
 
@@ -613,7 +616,7 @@ export async function init(): Promise<void> {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     KeymapEvent.highlight(
-      Misc.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
+      Misc.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string,
     );
   }
   Funbox.toggleScript(TestWords.words.getCurrent());
@@ -623,7 +626,7 @@ export async function init(): Promise<void> {
   console.debug("Test initialized with words", generatedWords);
   console.debug(
     "Test initialized with section indexes",
-    generatedSectionIndexes
+    generatedSectionIndexes,
   );
 }
 
@@ -662,18 +665,18 @@ export async function addWord(): Promise<void> {
   }
 
   const sectionFunbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.pullSection
+    (f) => f.functions?.pullSection,
   );
   if (sectionFunbox?.functions?.pullSection) {
     if (TestWords.words.length - TestWords.words.currentIndex < 20) {
       const section = await sectionFunbox.functions.pullSection(
-        Config.language
+        Config.language,
       );
 
       if (section === false) {
         Notifications.add(
           "Error while getting section. Please try again later",
-          -1
+          -1,
         );
         UpdateConfig.toggleFunbox(sectionFunbox.name);
         restart();
@@ -711,7 +714,7 @@ export async function addWord(): Promise<void> {
     language,
     bound,
     TestWords.words.get(TestWords.words.length - 1),
-    TestWords.words.get(TestWords.words.length - 2)
+    TestWords.words.get(TestWords.words.length - 2),
   );
 
   TestWords.words.push(randomWord.word, randomWord.sectionIndex);
@@ -755,7 +758,7 @@ export async function retrySavingResult(): Promise<void> {
       {
         duration: 5,
         important: true,
-      }
+      },
     );
 
     return;
@@ -820,7 +823,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   };
 
   const stfk = Misc.roundTo2(
-    TestInput.keypressTimings.spacing.first - TestStats.start
+    TestInput.keypressTimings.spacing.first - TestStats.start,
   );
 
   if (stfk < 0) {
@@ -830,7 +833,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   }
 
   const lkte = Misc.roundTo2(
-    TestStats.end - TestInput.keypressTimings.spacing.last
+    TestStats.end - TestInput.keypressTimings.spacing.last,
   );
 
   if (lkte < 0 || Config.mode === "zen") {
@@ -868,7 +871,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   //consistency
   const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
-    Math.round((count / 5) * 60)
+    Math.round((count / 5) * 60),
   );
 
   //adjust last second if last second is not round
@@ -882,7 +885,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
     //multiply last element of rawBefore by scale, and round it
     rawPerSecond[rawPerSecond.length - 1] = Math.round(
-      rawPerSecond[rawPerSecond.length - 1] * timescale
+      rawPerSecond[rawPerSecond.length - 1] * timescale,
     );
   }
 
@@ -893,13 +896,13 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   if (keyConsistencyArray.length > 0) {
     keyConsistencyArray = keyConsistencyArray.slice(
       0,
-      keyConsistencyArray.length - 1
+      keyConsistencyArray.length - 1,
     );
   }
   let keyConsistency = Misc.roundTo2(
     Misc.kogasa(
-      Misc.stdDev(keyConsistencyArray) / Misc.mean(keyConsistencyArray)
-    )
+      Misc.stdDev(keyConsistencyArray) / Misc.mean(keyConsistencyArray),
+    ),
   );
   if (!consistency || isNaN(consistency)) {
     consistency = 0;
@@ -919,7 +922,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   completedEvent.testDuration = parseFloat(stats.time.toString());
   completedEvent.afkDuration = TestStats.calculateAfkSeconds(
-    completedEvent.testDuration
+    completedEvent.testDuration,
   );
 
   completedEvent.chartData.err = [];
@@ -1022,7 +1025,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     } else if (typeof input === "object" && input !== null) {
       return Object.values(input).reduce(
         (a, b) => a + countUndefined(b),
-        0
+        0,
       ) as number;
     } else {
       return 0;
@@ -1035,7 +1038,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     console.log(ce);
     Notifications.add(
       "Failed to build result object: One of the fields is undefined or NaN",
-      -1
+      -1,
     );
     dontSave = true;
   }
@@ -1181,7 +1184,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
         (TestStats.incompleteSeconds < 0
           ? 0
           : Misc.roundTo2(TestStats.incompleteSeconds)) -
-        completedEvent.afkDuration
+        completedEvent.afkDuration,
     );
     Result.updateTodayTracker();
   }
@@ -1212,7 +1215,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestState.isRepeated,
     tooShort,
     TestWords.randomQuote,
-    dontSave
+    dontSave,
   );
 
   if (completedEvent.chartData !== "toolong") {
@@ -1251,7 +1254,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
 async function saveResult(
   completedEvent: CompletedEvent,
-  isRetrying: boolean
+  isRetrying: boolean,
 ): Promise<void> {
   if (!TestState.savingEnabled) {
     Notifications.add("Result not saved: disabled by user", -1, {
@@ -1302,7 +1305,7 @@ async function saveResult(
 
   $("#result .stats .tags .editTagsButton").attr(
     "result-id",
-    response.data.insertedId
+    response.data.insertedId,
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
@@ -1311,7 +1314,7 @@ async function saveResult(
     AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
-      response.data.xpBreakdown
+      response.data.xpBreakdown,
     );
     DB.addXp(response.data.xp);
   }
@@ -1330,7 +1333,7 @@ async function saveResult(
       completedEvent.incompleteTests.length + 1,
       completedEvent.testDuration +
         completedEvent.incompleteTestSeconds -
-        completedEvent.afkDuration
+        completedEvent.afkDuration,
     );
   }
 
@@ -1356,7 +1359,7 @@ async function saveResult(
       completedEvent.wpm,
       completedEvent.acc,
       completedEvent.rawWpm,
-      completedEvent.consistency
+      completedEvent.consistency,
     );
   }
 
@@ -1385,10 +1388,10 @@ async function saveResult(
           // maxWidth: "10rem",
           opacity: 1,
         },
-        500
+        500,
       );
     $("#result .stats .dailyLeaderboard .bottom").html(
-      Misc.getPositionString(response.data.dailyLeaderboardRank)
+      Misc.getPositionString(response.data.dailyLeaderboardRank),
     );
   }
 
@@ -1578,7 +1581,7 @@ $("#popups").on(
     const sid = parseInt($(e.currentTarget).attr("id") ?? "");
     QuoteSearchPopup.setSelectedId(sid);
     if (QuoteSearchPopup.apply(sid) === true) restart();
-  }
+  },
 );
 
 $("#top").on("click", "#menu #startTestButton, .logo", () => {

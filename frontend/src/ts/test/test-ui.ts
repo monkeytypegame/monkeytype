@@ -26,23 +26,23 @@ const debouncedZipfCheck = debounce(250, () => {
     if (supports === "no") {
       Notifications.add(
         `${Misc.capitalizeFirstLetter(
-          Config.language.replace(/_/g, " ")
+          Config.language.replace(/_/g, " "),
         )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
         0,
         {
           duration: 7,
-        }
+        },
       );
     }
     if (supports === "unknown") {
       Notifications.add(
         `${Misc.capitalizeFirstLetter(
-          Config.language.replace(/_/g, " ")
+          Config.language.replace(/_/g, " "),
         )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
         0,
         {
           duration: 7,
-        }
+        },
       );
     }
   });
@@ -128,7 +128,7 @@ export function focusWords(): void {
 
 export function updateActiveElement(
   backspace?: boolean,
-  initial = false
+  initial = false,
 ): void {
   const active = document.querySelector("#words .active");
   if (Config.mode === "zen" && backspace) {
@@ -163,7 +163,7 @@ function getWordHTML(word: string): string {
   let newlineafter = false;
   let retval = `<div class='word'>`;
   const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.getWordHtml
+    (f) => f.functions?.getWordHtml,
   );
   for (let c = 0; c < word.length; c++) {
     if (funbox?.functions?.getWordHtml) {
@@ -229,7 +229,7 @@ export function updateWordsInputPosition(initial = false): void {
   if (Config.tapeMode !== "off" && !initial) return;
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
-    "#words .active"
+    "#words .active",
   ) as HTMLElement | null;
 
   if (!activeWord) {
@@ -430,14 +430,14 @@ export async function screenshot(): Promise<void> {
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
   $(".pageTest .ssWatermark").text(
-    format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
+    format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com ",
   );
   if (Auth?.currentUser) {
     $(".pageTest .ssWatermark").text(
       DB.getSnapshot()?.name +
         " | " +
         format(dateNow, "dd MMM yyyy HH:mm") +
-        " | monkeytype.com  "
+        " | monkeytype.com  ",
     );
   }
   $(".pageTest .buttons").addClass("hidden");
@@ -486,7 +486,7 @@ export async function screenshot(): Promise<void> {
           Object.defineProperty({}, blob.type, {
             value: blob,
             enumerable: true,
-          })
+          }),
         );
         await navigator.clipboard.write([clipItem]);
         Notifications.add("Copied to clipboard", 1, {
@@ -506,7 +506,7 @@ export async function screenshot(): Promise<void> {
               0,
               {
                 duration: 10,
-              }
+              },
             );
           }
 
@@ -515,13 +515,13 @@ export async function screenshot(): Promise<void> {
             0,
             {
               duration: 5,
-            }
+            },
           );
           open(URL.createObjectURL(blob));
         } else {
           Notifications.add(
             Misc.createErrorMessage(e, "Error saving image to clipboard"),
-            -1
+            -1,
           );
         }
       }
@@ -538,7 +538,7 @@ export async function screenshot(): Promise<void> {
 
 export function updateWordElement(
   showError = !Config.blindMode,
-  inputOverride?: string
+  inputOverride?: string,
 ): void {
   const input = inputOverride || TestInput.input.current;
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
@@ -581,7 +581,7 @@ export function updateWordElement(
       const koCurrentWord: string = Hangul.disassemble(currentWord).join("");
       const koInput: string = Hangul.disassemble(input).join("");
       const inputWithoutComposeLength: number = Misc.trailingComposeChars.test(
-        input
+        input,
       )
         ? input.search(Misc.trailingComposeChars)
         : koInput.length;
@@ -602,7 +602,7 @@ export function updateWordElement(
     }
 
     const funbox = FunboxList.get(Config.funbox).find(
-      (f) => f.functions?.getWordHtml
+      (f) => f.functions?.getWordHtml,
     );
     for (let i = 0; i < input.length; i++) {
       const charCorrect = currentWord[i] === input[i];
@@ -743,7 +743,7 @@ export function scrollTape(): void {
         const words = document.querySelectorAll("#words .word");
         currentWordWidth +=
           $(
-            words[currentWordElementIndex].querySelectorAll("letter")[i]
+            words[currentWordElementIndex].querySelectorAll("letter")[i],
           ).outerWidth(true) ?? 0;
       }
     }
@@ -756,7 +756,7 @@ export function scrollTape(): void {
         {
           marginLeft: newMargin,
         },
-        SlowTimer.get() ? 0 : 125
+        SlowTimer.get() ? 0 : 125,
       );
   } else {
     $("#words").css("margin-left", `${newMargin}px`);
@@ -793,12 +793,12 @@ export function lineJump(currentTop: number): void {
       const smoothScroller = $("#words .smoothScroller");
       if (smoothScroller.length === 0) {
         $("#words").prepend(
-          `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
+          `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`,
         );
       } else {
         smoothScroller.css(
           "height",
-          `${(smoothScroller.outerHeight(true) ?? 0) + wordHeight}px`
+          `${(smoothScroller.outerHeight(true) ?? 0) + wordHeight}px`,
         );
       }
       $("#words .smoothScroller")
@@ -810,7 +810,7 @@ export function lineJump(currentTop: number): void {
           SlowTimer.get() ? 0 : 125,
           () => {
             $("#words .smoothScroller").remove();
-          }
+          },
         );
       $("#paceCaret")
         .stop(true, false)
@@ -820,7 +820,7 @@ export function lineJump(currentTop: number): void {
               (<HTMLElement>document.querySelector("#paceCaret"))?.offsetTop -
               wordHeight,
           },
-          SlowTimer.get() ? 0 : 125
+          SlowTimer.get() ? 0 : 125,
         );
 
       const newCss: { [key: string]: string } = {
@@ -894,10 +894,10 @@ async function loadWordsHistory(): Promise<boolean> {
     const word = TestWords.words.get(i);
     const containsKorean =
       input?.match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
       ) ||
       word?.match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
       );
     let wordEl = "";
     try {
@@ -1037,7 +1037,7 @@ export function toggleResultWords(noAnimation = false): void {
 
       if (!$("#showWordHistoryButton").hasClass("loaded")) {
         $("#words").html(
-          `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
+          `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`,
         );
         loadWordsHistory().then(() => {
           if (Config.burstHeatmap) {
@@ -1111,7 +1111,7 @@ export async function applyBurstHeatmap(): Promise<void> {
         Misc.blendTwoHexColors(
           themeColors.colorfulError,
           themeColors.text,
-          0.5
+          0.5,
         ),
         themeColors.sub,
         Misc.blendTwoHexColors(themeColors.sub, themeColors.text, 0.5),
@@ -1156,7 +1156,7 @@ export async function applyBurstHeatmap(): Promise<void> {
       }
 
       $("#resultWordsHistory .heatmapLegend .box" + index).html(
-        `<div>${string}</div>`
+        `<div>${string}</div>`,
       );
     });
 
@@ -1269,7 +1269,7 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
           <div class="speed">
           ${burst}${Config.typingSpeedUnit}
           </div>
-          </div>`
+          </div>`,
       );
     }
   }
