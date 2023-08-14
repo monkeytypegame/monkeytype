@@ -63,18 +63,18 @@ function updateUI(): void {
         TestWords.words
           .getCurrent()
           .charAt(TestInput.input.current.length)
-          .toString()
+          .toString(),
       );
     } else {
       //word [가다]
       //Get the current korean word and group it [[ㄱ,ㅏ],[ㄷ,ㅏ]].
       const koCurrWord: string[][] = Hangul.disassemble(
         TestWords.words.getCurrent(),
-        true
+        true,
       );
       const koCurrInput: string[][] = Hangul.disassemble(
         TestInput.input.current,
-        true
+        true,
       );
       const inputGroupLength: number = koCurrInput.length - 1;
       if (koCurrInput[inputGroupLength]) {
@@ -185,8 +185,8 @@ function handleSpace(): void {
   );
 
   const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
+    FunboxList.get(Config.funbox).find(
+      (f) => f.properties?.includes("nospace"),
     ) !== undefined;
 
   //correct word or in zen mode
@@ -302,14 +302,14 @@ function handleSpace(): void {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
         TestUI.currentWordElementIndex - 1
-      ].offsetTop
+      ].offsetTop,
     );
     let nextTop: number;
     try {
       nextTop = Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
           TestUI.currentWordElementIndex
-        ].offsetTop
+        ].offsetTop,
       );
     } catch (e) {
       nextTop = 0;
@@ -362,7 +362,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   if (TestInput.input.getKoreanStatus()) {
     //disassembles Korean current Test word to check against char Input
     const koWordArray: string[] = Hangul.disassemble(
-      TestWords.words.getCurrent()
+      TestWords.words.getCurrent(),
     );
     const koOriginalChar: string = koWordArray[charIndex];
 
@@ -376,7 +376,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   }
 
   const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.isCharCorrect
+    (f) => f.functions?.isCharCorrect,
   );
   if (funbox?.functions?.isCharCorrect) {
     return funbox.functions.isCharCorrect(char, originalChar);
@@ -424,7 +424,7 @@ function isCharCorrect(char: string, charIndex: number): boolean {
 function handleChar(
   char: string,
   charIndex: number,
-  realInputValue?: string
+  realInputValue?: string,
 ): void {
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
@@ -448,8 +448,8 @@ function handleChar(
   }
 
   const nospace =
-    FunboxList.get(Config.funbox).find((f) =>
-      f.properties?.includes("nospace")
+    FunboxList.get(Config.funbox).find(
+      (f) => f.properties?.includes("nospace"),
     ) !== undefined;
 
   if (char !== "\n" && char !== "\t" && /\s/.test(char)) {
@@ -546,7 +546,7 @@ function handleChar(
 
   WeakSpot.updateScore(
     Config.mode === "zen" ? char : TestWords.words.getCurrent()[charIndex],
-    thisCharCorrect
+    thisCharCorrect,
   );
 
   if (thisCharCorrect) {
@@ -604,7 +604,7 @@ function handleChar(
 
   Replay.addReplayEvent(
     thisCharCorrect ? "correctLetter" : "incorrectLetter",
-    char
+    char,
   );
 
   const testInputLength: number = !isCharKorean
@@ -613,7 +613,7 @@ function handleChar(
   //update the active word top, but only once
   if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
     TestUI.setActiveWordTop(
-      (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
+      (<HTMLElement>document.querySelector("#words .active"))?.offsetTop,
     );
   }
 
@@ -650,13 +650,13 @@ function handleChar(
   }
 
   const activeWordTopBeforeJump = document.querySelector<HTMLElement>(
-    "#words .word.active"
+    "#words .word.active",
   )?.offsetTop as number;
   TestUI.updateWordElement();
 
   if (!Config.hideExtraLetters) {
     const newActiveTop = document.querySelector<HTMLElement>(
-      "#words .word.active"
+      "#words .word.active",
     )?.offsetTop as number;
     //stop the word jump by slicing off the last character, update word again
     if (
@@ -668,7 +668,7 @@ function handleChar(
         const currentTop = Math.floor(
           document.querySelectorAll<HTMLElement>("#words .word")[
             TestUI.currentWordElementIndex - 1
-          ]?.offsetTop
+          ]?.offsetTop,
         ) as number;
         if (!Config.showAllLines) TestUI.lineJump(currentTop);
       } else {
@@ -918,7 +918,7 @@ $(document).keydown(async (event) => {
           Config.words,
           Config.time,
           CustomText,
-          CustomTextState.isCustomTextLong() ?? false
+          CustomTextState.isCustomTextLong() ?? false,
         )
       ) {
         const delay = Date.now() - lastBailoutAttempt;
@@ -931,7 +931,7 @@ $(document).keydown(async (event) => {
               {
                 important: true,
                 duration: 5,
-              }
+              },
             );
           }
         } else {
@@ -952,7 +952,7 @@ $(document).keydown(async (event) => {
   if (event.key === "Dead" && !CompositionState.getComposing()) {
     Sound.playClick();
     const word: HTMLElement | null = document.querySelector<HTMLElement>(
-      "#words .word.active"
+      "#words .word.active",
     );
     const len: number = TestInput.input.current.length; // have to do this because prettier wraps the line and causes an error
 
@@ -970,7 +970,7 @@ $(document).keydown(async (event) => {
       Config.keymapLayout !== "overrideSync"
     ) {
       const keymapLayout = await Misc.getLayout(Config.keymapLayout).catch(
-        () => undefined
+        () => undefined,
       );
       if (keymapLayout === undefined) {
         Notifications.add("Failed to load keymap layout", -1);
@@ -989,7 +989,7 @@ $(document).keydown(async (event) => {
   }
 
   const funbox = FunboxList.get(Config.funbox).find(
-    (f) => f.functions?.preventDefaultEvent
+    (f) => f.functions?.preventDefaultEvent,
   );
   if (funbox?.functions?.preventDefaultEvent) {
     if (await funbox.functions.preventDefaultEvent(event)) {
@@ -1031,7 +1031,7 @@ $("#wordsInput").keydown((event) => {
       "spacing debug keydown STOPPED - repeat",
       event.key,
       event.code,
-      event.which
+      event.which,
     );
     return;
   }
@@ -1060,7 +1060,7 @@ $("#wordsInput").keyup((event) => {
       "spacing debug keydown STOPPED - repeat",
       event.key,
       event.code,
-      event.which
+      event.which,
     );
     return;
   }
@@ -1118,7 +1118,7 @@ $("#wordsInput").on("input", (event) => {
     (event.target as HTMLInputElement).value
       .normalize()
       .match(
-        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
+        /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g,
       )
   ) {
     TestInput.input.setKoreanStatus(true);
@@ -1227,11 +1227,11 @@ $("#wordsInput").on("input", (event) => {
       (event.target as HTMLInputElement).selectionStart !==
         (event.target as HTMLInputElement).value.length &&
       (!Misc.trailingComposeChars.test(
-        (event.target as HTMLInputElement).value
+        (event.target as HTMLInputElement).value,
       ) ||
         ((event.target as HTMLInputElement).selectionStart ?? 0) <
           (event.target as HTMLInputElement).value.search(
-            Misc.trailingComposeChars
+            Misc.trailingComposeChars,
           ))
     ) {
       (event.target as HTMLInputElement).selectionStart = (
