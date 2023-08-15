@@ -56,6 +56,7 @@ import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Wordset from "./wordset";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -1001,7 +1002,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
     const burst = TestStats.calculateBurst();
-    TestInput.pushBurstToHistory(burst);
+    TestInput.pushBurstToHistory(
+      Math.round(getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst))
+    );
   }
 
   //remove afk from zen
