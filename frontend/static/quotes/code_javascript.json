@@ -270,6 +270,12 @@
       "source": "Mark Stosberg - parse-coordinates sourcecode",
       "length": 373,
       "id": 44
+    },
+    {
+      "text": "/** @type {import('postcss-load-config').Config} */\n const config = { parser: \"postcss-scss\", plugins: [require(\"autoprefixer\")], };\n module.exports = config;",
+      "source": "Monkeytype Sourcecode",
+      "length": 158,
+      "id": 45
     }
   ]
 }
