@@ -15,6 +15,7 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
+import { applyBurstHeatmap } from "./test/test-ui";
 
 export let localStorageConfig: MonkeyTypes.Config;
 
@@ -399,6 +400,7 @@ export function setTypingSpeedUnit(
   config.typingSpeedUnit = val;
   saveToLocalStorage("typingSpeedUnit", nosave);
   ConfigEvent.dispatch("typingSpeedUnit", config.typingSpeedUnit, nosave);
+  applyBurstHeatmap();
 
   return true;
 }

@@ -9,6 +9,7 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
@@ -1079,6 +1080,12 @@ export async function applyBurstHeatmap(): Promise<void> {
     burstlist = burstlist.filter((x) => x !== Infinity);
     burstlist = burstlist.filter((x) => x < 350);
 
+    burstlist.forEach((burst, index) => {
+      burstlist[index] = Math.round(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst)
+      );
+    });
+
     if (
       TestInput.input.getHistory(TestInput.input.getHistory().length - 1)
         ?.length !== TestWords.words.getCurrent()?.length
@@ -1164,7 +1171,10 @@ export async function applyBurstHeatmap(): Promise<void> {
       if (wordBurstAttr === undefined) {
         $(word).css("color", unreachedColor);
       } else {
-        const wordBurstVal = parseInt(<string>wordBurstAttr);
+        let wordBurstVal = parseInt(<string>wordBurstAttr);
+        wordBurstVal = Math.round(
+          getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(wordBurstVal)
+        );
         steps.forEach((step) => {
           if (wordBurstVal >= step.val) {
             $(word).addClass("heatmapInherit");
@@ -1266,7 +1276,9 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${burst}${Config.typingSpeedUnit}
+          ${Math.round(
+            getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst)
+          )}${Config.typingSpeedUnit}
           </div>
           </div>`
       );
