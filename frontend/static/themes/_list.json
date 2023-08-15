@@ -1184,10 +1184,10 @@
   },
   {
     "name": "lady_jam",
-    "bgColor": "#202c39",
+    "bgColor": "#635bff",
     "mainColor": "#8e94f2",
-    "subColor": "#b8b08d",
-    "textColor": "#f29559"
+    "subColor": "#ffffff",
+    "textColor": "#76df47"
   }
 
 ]
