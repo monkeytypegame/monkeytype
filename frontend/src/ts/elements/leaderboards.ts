@@ -497,8 +497,8 @@ async function update(): Promise<void> {
   currentRank["15"] = lb15Rank?.minWpm === undefined ? lb15Rank : null;
   currentRank["60"] = lb60Rank?.minWpm === undefined ? lb60Rank : null;
 
-  minWpm["15"] = lb15Rank?.minWpm === undefined ? null : lb15Rank?.minWpm;
-  minWpm["60"] = lb60Rank?.minWpm === undefined ? null : lb60Rank?.minWpm;
+  minWpm["15"] = lb15Rank?.minWpm;
+  minWpm["60"] = lb60Rank?.minWpm;
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
