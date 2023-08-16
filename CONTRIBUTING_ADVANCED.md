@@ -24,9 +24,9 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
 
 #### NodeJS and NPM
 
-Currently, the project is using version `16.13.2 LTS`.
+Currently, the project is using version `18.17.1 LTS`.
 
-If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version) to use the version of Node.js in the `.nvmrc` file.
+If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 18.17.1` then `nvm use 18.17.1`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 

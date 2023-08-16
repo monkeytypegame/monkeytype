@@ -889,6 +889,7 @@ declare namespace MonkeyTypes {
   type AllRewards = XpReward | BadgeReward;
 
   type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
+
   interface TypingSpeedUnitSettings {
     fromWpm: (number) => number;
     toWpm: (number) => number;
