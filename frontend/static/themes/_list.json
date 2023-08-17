@@ -1181,6 +1181,12 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "flashbang",
+    "bgColor": "#1e1c11",
+    "mainColor": "#6a633c",
+    "subColor": "#cbe2bf",
+    "textColor": "#e1fbd3"
   }
-
 ]

@@ -1,0 +1,31 @@
+:root {
+  --bg-color: #1e1c11;
+  --main-color: #6a633c;
+  --caret-color: #6a633c;
+  --sub-color: #cbe2bf;
+  --sub-alt-color: #9daf93;
+  --text-color: #e1fbd3;
+  --error-color: #e56d46;
+  --error-extra-color: #b25436;
+  --colorful-error-color: #b25436;
+  --colorful-error-extra-color: #7e3b26;
+}
+
+@keyframes flashbang {
+  0% {
+    background: var(--bg-color);
+  }
+  90% {
+    background: var(--bg-color);
+  }
+  91% {
+    background: white;
+  }
+  100% {
+    background: var(--bg-color);
+  }
+}
+
+body {
+  animation: flashbang 30s linear infinite;
+}
