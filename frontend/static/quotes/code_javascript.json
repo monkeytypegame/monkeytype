@@ -272,9 +272,9 @@
       "id": 44
     },
     {
-      "text": "/** @type {import('postcss-load-config').Config} */\n const config = { parser: \"postcss-scss\", plugins: [require(\"autoprefixer\")], };\n module.exports = config;",
+      "text": "/** @type {import('postcss-load-config').Config} */\nconst config = {\n\tparser: \"postcss-scss\",\n\tplugins: [require(\"autoprefixer\")],\n};\n\nmodule.exports = config;",
       "source": "Monkeytype Sourcecode",
-      "length": 158,
+      "length": 160,
       "id": 45
     }
   ]
