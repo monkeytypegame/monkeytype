@@ -21,8 +21,8 @@ const stream = conventionalChangelog(
 );
 
 const header =
-  "Thank you to all the contributors who made this release possible!\n\n---";
-const footer = `\n### Other\n\nVarious style, documentation, refactoring, performance, or build improvements.`;
+  "Thank you to all the contributors who made this release possible!";
+const footer = `\n### Other\n\n- Various style, documentation, refactoring, performance, or build improvements`;
 
 let log = "";
 for await (const chunk of stream) {
