@@ -1080,11 +1080,9 @@ export async function applyBurstHeatmap(): Promise<void> {
     burstlist = burstlist.filter((x) => x !== Infinity);
     burstlist = burstlist.filter((x) => x < 350);
 
-    let typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+    const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     burstlist.forEach((burst, index) => {
-      burstlist[index] = Math.round(
-        typingSpeedUnit.fromWpm(burst)
-      );
+      burstlist[index] = Math.round(typingSpeedUnit.fromWpm(burst));
     });
 
     if (
