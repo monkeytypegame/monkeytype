@@ -144,6 +144,36 @@
       "id": 23,
       "source": "Geeks For Geeks - Array.GetValue() Method in C# with Examples",
       "length": 206
+    },
+     {
+      "text": "static public void Main() {\n\t\t string[] @for = {\"C#\", \"PHP\", \"Java\", \"Python\"};\n\t\t foreach (string @as in @for) {\n\t\t\t Console.WriteLine(\"Element of Array: {0}\", @as); \n\t\t\t} \n\t\t}",
+      "id": 24,
+      "source": "Geeks For Geeks - C# | Verbatim String Literal",
+      "length": 177
+    },
+    {
+      "text": "public void StartTheQuiz() {\n\t addend1 = randomizer.Next(51);\n\t addend2 = randomizer.Next(51);\n\t plusLeftLabel.Text = addend1.ToString();\n\t plusRightLabel.Text = addend2.ToString();\n\t sum.Value = 0;\n\t}",
+      "id": 25,
+      "source": "Microsoft Learn - Add math problems to a math quiz WinForms app",
+      "length": 201
+    },
+    {
+      "text": "private void label1_Click(object sender, EventArgs e) {\n\t Label clickedLabel = sender as Label;\n if (clickedLabel != null) {\n\t\t if (clickedLabel.ForeColor == Color.Black) \n\t\t\t return; \n\t\t if (firstClicked == null) {\n\t\t\t firstClicked = clickedLabel;\n\t\t\t firstClicked.ForeColor = Color.Black;\n\t\t\t return;\n\t\t\t }\n\t\t }\n\t }",
+      "id": 26,
+      "source": "Microsoft Learn - Add reference variables and a timer control to your matching game WinForms app",
+      "length": 317
+    },
+    {
+      "text": "public static T MidPoint<T>(IEnumerable<T> sequence) {\n\t if (sequence is IList<T> list) {\n\t\t return list[list.Count / 2];\n\t }\n\t else if (sequence is null) {\n\t\t throw new ArgumentNullException(nameof(sequence), \"Sequence can't be null.\");\n\t }\n\t else {\n\t\t int halfLength = sequence.Count() / 2 - 1;\n\t\t if (halfLength < 0)\n\t\t\t halfLength = 0;\n\t\t return sequence.Skip(halfLength).First();\n\t\t }\n\t }",
+      "id": 27,
+      "source": "Microsoft Learn - Pattern Matching",
+      "length": 393
+    },
+    {
+      "text": "class ExecuteRectangle { \n\t static void Main(string[] args) { \n\t\t Rectangle r = new Rectangle();\n\t\t r.length = 4.5;\n\t\t r.width = 3.5;\n\t\t r.Display();\n\t\t Console.ReadLine();\n\t\t }\n\t }",
+      "id": 28,
+      "source": "Tutorialspoint (C# - Encapsulation)",
+      "length": 181
     }
   ]
 }
