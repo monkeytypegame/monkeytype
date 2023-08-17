@@ -268,10 +268,6 @@ function authenticateGithubWebhook(): Handler {
 
     const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
 
-    console.log(webhookSecret);
-    console.log(authHeader);
-    console.log(JSON.stringify(req.body));
-
     try {
       if (!webhookSecret) {
         throw new MonkeyError(500, "Missing Github Webhook Secret");
@@ -285,9 +281,6 @@ function authenticateGithubWebhook(): Handler {
         const trusted = Buffer.from(`sha256=${signature}`, "ascii");
         const untrusted = Buffer.from(authHeader as string, "ascii");
         const isSignatureValid = crypto.timingSafeEqual(trusted, untrusted);
-
-        console.log(trusted.toString());
-        console.log(untrusted.toString());
 
         if (!isSignatureValid) {
           throw new MonkeyError(401, "Github webhook signature invalid");
