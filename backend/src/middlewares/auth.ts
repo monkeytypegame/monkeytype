@@ -11,6 +11,7 @@ import {
   recordRequestCountry,
   // recordRequestForUid,
 } from "../utils/prometheus";
+import crypto from "crypto";
 import { performance } from "perf_hooks";
 
 interface RequestAuthenticationOptions {
@@ -256,4 +257,48 @@ async function authenticateWithApeKey(
   }
 }
 
-export { authenticateRequest };
+function authenticateGithubWebhook(): Handler {
+  return async (
+    req: MonkeyTypes.Request,
+    _res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    //authorize github webhook
+    const { "x-hub-signature-256": authHeader } = req.headers;
+
+    const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
+
+    console.log(webhookSecret);
+    console.log(authHeader);
+    console.log(JSON.stringify(req.body));
+
+    try {
+      if (!webhookSecret) {
+        throw new MonkeyError(500, "Missing Github Webhook Secret");
+      } else if (!authHeader) {
+        throw new MonkeyError(401, "Missing Github signature header");
+      } else {
+        const signature = crypto
+          .createHmac("sha256", webhookSecret)
+          .update(JSON.stringify(req.body))
+          .digest("hex");
+        const trusted = Buffer.from(`sha256=${signature}`, "ascii");
+        const untrusted = Buffer.from(authHeader as string, "ascii");
+        const isSignatureValid = crypto.timingSafeEqual(trusted, untrusted);
+
+        console.log(trusted.toString());
+        console.log(untrusted.toString());
+
+        if (!isSignatureValid) {
+          throw new MonkeyError(401, "Github webhook signature invalid");
+        }
+      }
+    } catch (e) {
+      return next(e);
+    }
+
+    next();
+  };
+}
+
+export { authenticateRequest, authenticateGithubWebhook };
