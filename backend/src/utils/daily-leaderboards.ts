@@ -168,7 +168,8 @@ export class DailyLeaderboard {
       .zrange(leaderboardScoresKey, 0, 1, "WITHSCORES")
       .exec();
 
-    const minWpm = minScore.length > 0 ? parseInt(minScore[1].slice(1, 4)) : 0;
+    const minWpm = minScore.length > 0 ? (parseInt(minScore[1].slice(1, 6)) / 100) : 0;
+    console.log(minWpm)
     if (rank === null) {
       return { minWpm };
     }
