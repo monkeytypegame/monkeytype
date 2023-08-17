@@ -68,12 +68,6 @@
       "length": 69
     },
     {
-      "text": "Perhaps if you know you are insane then you are not insane.",
-      "source": "The Man in the High Castle",
-      "id": 11,
-      "length": 59
-    },
-    {
       "text": "You can't use the fire exit because you're not made of fire.",
       "source": "Undertale",
       "id": 12,
@@ -186,12 +180,6 @@
       "source": "The Republic",
       "id": 30,
       "length": 81
-    },
-    {
-      "text": "For all the things you've done, for the things you might have done, and for the only thing you have left.",
-      "source": "V for Vendetta",
-      "id": 31,
-      "length": 105
     },
     {
       "text": "You can't convince me what I want and what I need are separate things.",
@@ -920,12 +908,6 @@
       "length": 300
     },
     {
-      "text": "It's not a question but a lesson learned in time. It's something unpredictable, but in the end it's right. I hope you had the time of your life.",
-      "source": "Good Riddance (Time of Your Life)",
-      "id": 159,
-      "length": 144
-    },
-    {
       "text": "If you think that you are going to love something, give it a try. You're going to kick yourself in the butt for the rest of your life if you don't.",
       "source": "What it Takes to Make More Money than Your Parents",
       "id": 160,
@@ -1320,12 +1302,6 @@
       "source": "Life of Pi",
       "id": 226,
       "length": 140
-    },
-    {
-      "text": "I've dreamt in my life dreams that have stayed with me ever after, and changed my ideas: they've gone through and through me, like wine through water, and altered the color of my mind.",
-      "source": "Wuthering Heights",
-      "id": 227,
-      "length": 184
     },
     {
       "text": "I was once like you are now, and I know that it's not easy to be calm when you've found something going on. But take your time, think a lot. I think of everything you've got, for you will still be here tomorrow but your dreams may not.",
@@ -2150,12 +2126,6 @@
       "length": 200
     },
     {
-      "text": "The man who lies to himself and listens to his own lie comes to a point that he cannot distinguish the truth within him, or around him, and so loses all respect for himself and for others.",
-      "source": "The Brothers Karamazov",
-      "id": 367,
-      "length": 188
-    },
-    {
       "text": "Apparently, it only appears to those people who are pure of heart and have a strong desire to see it.",
       "source": "Pokemon Gold Version",
       "id": 368,
@@ -2208,12 +2178,6 @@
       "source": "My Heart Will Go On",
       "id": 377,
       "length": 169
-    },
-    {
-      "text": "We speak of something carried and something carrying, of something led and something leading, of something seen and something seeing, and you understand that these things are all different from one another and how they differ? So there is also something loved and - a different thing - something loving.",
-      "source": "Plato: Five Dialogues",
-      "id": 378,
-      "length": 303
     },
     {
       "text": "I still see your shadows in my room, can't take back the love that I gave you. It's to the point where I love and I hate you, and I cannot change you so I must replace you. Easier said than done, I thought you were the one. Listening to my heart, instead of my head. You found another one, but I am the better one. I won't let you forget me.",
@@ -2618,12 +2582,6 @@
       "length": 201
     },
     {
-      "text": "San Francisco in the middle sixties was a very special time and place to be a part of. But no explanation, no mix of words or music or memories can touch that sense of knowing that you were there and alive in that corner of time and the world.",
-      "source": "Fear and Loathing in Las Vegas",
-      "id": 447,
-      "length": 243
-    },
-    {
       "text": "Sometimes I wondered if I was seeing the same things through my eyes that the rest of the world was seeing through theirs. Maybe there was a glitch in my brain.",
       "source": "Twilight",
       "id": 448,
@@ -2856,12 +2814,6 @@
       "source": "Never Too Late",
       "id": 487,
       "length": 118
-    },
-    {
-      "text": "We were the people who were not in the papers. We lived in the blank white spaces at the edges of print.",
-      "source": "The Handmaid's Tale",
-      "id": 488,
-      "length": 104
     },
     {
       "text": "We never get to change the past. We never get to know the future. No reason to wish for one place rather than another; no reason to say I wish I were home, or I wish I were in an exotic new place that is not my home. They will all be the same as this place. Here the experience of existing comes clear. This world is our body.",
@@ -3468,12 +3420,6 @@
       "source": "Let's Never Be Apart Again",
       "id": 592,
       "length": 197
-    },
-    {
-      "text": "When you think about it, we're all different people all through our lives. And that's okay, that's good, you've got to keep moving, so long as you remember all the people that you used to be. I will not forget one line of this. Not one day, I swear. I will always remember when the Doctor was me.",
-      "source": "Doctor Who",
-      "id": 593,
-      "length": 296
     },
     {
       "text": "Anywhere can be paradise, as long as you have the will to live. After all, you are alive, so you will always have the chance to be happy.",
@@ -4394,12 +4340,6 @@
       "length": 593
     },
     {
-      "text": "I always loved you, and if one loves anyone, one loves the whole person, just as they are and not as one would like them to be.",
-      "source": "Anna Karenina",
-      "id": 752,
-      "length": 127
-    },
-    {
       "text": "In your heart I see the start of every night and every day. In your eyes I get lost, I get washed away. Just as long as I'm here in your arms I could be in no better place.",
       "source": "The Best",
       "id": 753,
@@ -4554,12 +4494,6 @@
       "source": "The Complete Calvin and Hobbes",
       "id": 780,
       "length": 215
-    },
-    {
-      "text": "When we conceive of the sweetest being ever, we are conceiving of the being that exists both in the mind and in reality. Since the ninja is that being than which nothing sweeter can be conceived and that being exists in the mind and in reality, the ninja exists in reality.",
-      "source": "REAL Ultimate Power: The Official Ninja Book",
-      "id": 781,
-      "length": 273
     },
     {
       "text": "But I believe in true love, you know? I don't believe that everybody gets to keep their eyes or not get sick or whatever, but everybody should have true love, and it should last at least as long as your life does.",
@@ -5444,12 +5378,6 @@
       "length": 186
     },
     {
-      "text": "And when he rode past I seen he was carryin' fire in a horn the way people used to do and I could see the horn from the light inside of it. About the color of the moon. And in the dream I knew that he was goin' on ahead and that he was fixin' to make a fire somewhere out there in all that dark and all that cold, and I knew that whenever I got there he would be there. Out there up ahead.",
-      "source": "No Country for Old Men",
-      "id": 936,
-      "length": 389
-    },
-    {
       "text": "Making your way in the world today takes everything you've got. Taking a break from all your worries sure would help a lot. Wouldn't you like to get away? Sometimes you want to go where everybody knows your name and they're always glad you came. You wanna be where you can see our troubles are all the same. You wanna be where everybody knows your name.",
       "source": "Cheers",
       "id": 937,
@@ -5916,12 +5844,6 @@
       "source": "White Nights",
       "id": 1015,
       "length": 250
-    },
-    {
-      "text": "Just because there are things I don't remember doesn't make my actions meaningless. The world doesn't just disappear when you close your eyes, does it?",
-      "source": "Memento",
-      "id": 1016,
-      "length": 151
     },
     {
       "text": "You must know that there is nothing higher and stronger and more wholesome and good for life in the future than some good memory, especially a memory of childhood, of home. People talk to you a great deal about your education, but some good, sacred memory, preserved from childhood, is perhaps the best education. If a man carries many such memories with him into life, he is safe to the end of his days, and if one has only one good memory left in one's heart, even that may sometime be the means of saving us.",
@@ -6552,12 +6474,6 @@
       "source": "So Far Away",
       "id": 1125,
       "length": 170
-    },
-    {
-      "text": "Each man is tortured by this dream, but the dream gives meaning to his life. Even if the dream ruins his life, man cannot allow himself to leave it behind.",
-      "source": "Berserk",
-      "id": 1126,
-      "length": 155
     },
     {
       "text": "It was a strange and passionate time. Some of our dreams dissolved into thin air. They almost seem comical now. But some of our dreams are lasting and real.",
@@ -8660,12 +8576,6 @@
       "length": 383
     },
     {
-      "text": "I felt the urge to reassure him that I was like everybody else, just like everybody else. But really there wasn't much point, and I gave up the idea out of laziness.",
-      "source": "The Stranger",
-      "id": 1493,
-      "length": 165
-    },
-    {
       "text": "It's too late to articulate it, that empty feeling. You share the same fate as the people you hate. You build yourself up against others' feelings, and it left you feeling empty as a car coasting downhill. I have become such a negative person.",
       "source": "Drunk Drivers/Killer Whales",
       "id": 1494,
@@ -8720,22 +8630,10 @@
       "length": 299
     },
     {
-      "text": "Last night I dreamt I went to Manderley again. It seemed to me I stood by the iron gate leading to the drive, and for a while I could not enter, for the way was barred to me. There was a padlock and a chain upon the gate. I called in my dream to the lodge-keeper, and had no answer, and peering closer through the rusted spokes of the gate I saw that the lodge was uninhabited.",
-      "source": "Rebecca",
-      "id": 1503,
-      "length": 377
-    },
-    {
       "text": "Don't know much about history. Don't know much biology. Don't know much about a science book. Don't know much about the French I took. But I do know that I love you, and I know that if you love me too, what a wonderful world this would be.",
       "source": "Wonderful World",
       "id": 1504,
       "length": 239
-    },
-    {
-      "text": "I see in your eyes the same fear that would take the heart of me. A day may come when the courage of men fails, when we forsake our friends and break all bonds of fellowship, but it is not this day. An hour of woes and shattered shields, when the age of men comes crashing down! But it is not this day! This day we fight!",
-      "source": "Lord of the Rings: The Return of the King",
-      "id": 1505,
-      "length": 321
     },
     {
       "text": "I see something of God each hour of the twenty-four, and each moment then, in the faces of men and women I see God, and in my own face in the glass; I find letters from God dropped in the street, and every one is signed by God's name, and I leave them where they are, for I know that others will punctually come forever and ever.",
@@ -9228,12 +9126,6 @@
       "source": "Crave",
       "id": 1592,
       "length": 263
-    },
-    {
-      "text": "That night they heard no noises. But either in his dreams or out of them, he could not tell which, Frodo heard a sweet singing running in his mind: a song that seemed to come like a pale light behind a grey rain-curtain, and growing stronger to turn the veil all to glass and silver, until at last it was rolled back, and a far green country opened before him under a swift sunrise.",
-      "source": "The Lord of The Rings",
-      "id": 1593,
-      "length": 382
     },
     {
       "text": "Do you know, this morning, I was on a train that went through a city that wouldn't exist if it wasn't for you. I bought a ticket from a man who would likely be dead if it wasn't for you. I read up on my work, a whole field of scientific inquiry that only exists because of you. Now, if you wish you could have been normal, I can promise you, I do not. The world is an infinitely better place precisely because you weren't. Do you... Do you really think that? I think that sometimes it is the people who no one imagines anything of who do the things that no one can imagine.",
@@ -10754,12 +10646,6 @@
       "length": 258
     },
     {
-      "text": "I can touch what my heart used to dream of long before I knew someone warm like you.",
-      "source": "For Once in My Life",
-      "id": 1855,
-      "length": 84
-    },
-    {
       "text": "She hangs her head and cries on my shirt. She must be hurt very badly. Tell me what's making you sad, Li? Open your door, don't hide in the dark. You're lost in the dark, you can trust me 'cause you know that's how it must be.",
       "source": "Sad Lisa",
       "id": 1856,
@@ -11894,12 +11780,6 @@
       "length": 143
     },
     {
-      "text": "You are too concerned with what was and what will be. There is a saying: Yesterday is history, tomorrow is a mystery, but today is a gift. That is why it is called the present.",
-      "source": "Kung Fu Panda",
-      "id": 2053,
-      "length": 176
-    },
-    {
       "text": "Well, the problem is, it's not easy for me to think of ways to improve myself, because I'm pretty much one of the best people I know.",
       "source": "Diary of a Wimpy Kid",
       "id": 2054,
@@ -12866,12 +12746,6 @@
       "length": 326
     },
     {
-      "text": "I just want to tell you how I'm feeling. Gotta make you understand. Never gonna give you up, never gonna let you down, never gonna run around and desert you. Never gonna make you cry, never gonna say goodbye, never gonna tell a lie and hurt you.",
-      "source": "Never Gonna Give You Up",
-      "id": 2222,
-      "length": 245
-    },
-    {
       "text": "Look Dave, I can see you're really upset about this. I honestly think you ought to sit down calmly, take a stress pill, and think things over. I know I've made some very poor decisions recently, but I can give you my complete assurance that my work will be back to normal.",
       "source": "2001 - A Space Odyssey",
       "id": 2223,
@@ -13328,12 +13202,6 @@
       "length": 426
     },
     {
-      "text": "So, I must be taken as I have been made. The success is not mine, the failure is not mine, but the two together make me.",
-      "source": "Great Expectations",
-      "id": 2301,
-      "length": 120
-    },
-    {
       "text": "I'm happy here. You know, someone once told me my life is a dream with an anklet attached. If I wake up tomorrow and that anklet is still on, I have a good job, a wonderful home, a partner and a best friend. A family. But to wake up and answer only to myself, that would mean everything.",
       "source": "White Collar",
       "id": 2302,
@@ -13512,18 +13380,6 @@
       "source": "Pushing Daisies",
       "id": 2333,
       "length": 66
-    },
-    {
-      "text": "How many times have you seen the leader of a race have a mechanical problem with only a few laps to go? You will never be able to take advantage of their problems if you are not close. You have to be close to take advantage of luck.",
-      "source": "Speed Secrets: Professional Race Driving Techniques",
-      "id": 2334,
-      "length": 232
-    },
-    {
-      "text": "Well the years start coming and they don't stop coming. Fed to the rules and I hit the ground running. Didn't make sense not to live for fun. Your brain gets smart but your head gets dumb. So much to do, so much to see. So what's wrong with taking the back streets? You'll never know if you don't go. You'll never shine if you don't glow.",
-      "source": "All Star",
-      "id": 2335,
-      "length": 338
     },
     {
       "text": "I was never more hated than when I tried to be honest. Or when, even as just now I've tried to articulate exactly what I felt to be the truth. No one was satisfied.",
@@ -14150,12 +14006,6 @@
       "length": 207
     },
     {
-      "text": "People say these things because everyone holds fond memories of their time in high school; however, I doubt that every high school student would want to remember their school life that way. For example, if neither studying, nor sports, nor socializing are of interest to someone, what then?",
-      "source": "Hyouka",
-      "id": 2446,
-      "length": 290
-    },
-    {
       "text": "I know you're into banks and Wall Street, but everyone knows you're the final word, you're like the Supreme Court. All I want to do is protect you from these guys and your lawyers can't do that.",
       "source": "The Godfather: Part III",
       "id": 2447,
@@ -14634,12 +14484,6 @@
       "source": "Almagest",
       "id": 2531,
       "length": 236
-    },
-    {
-      "text": "Everyone puts on their biggest smile and people line the streets and cheer. A booming voice announces the show for that evening.",
-      "source": "Sawdust and Tinsel",
-      "id": 2532,
-      "length": 128
     },
     {
       "text": "Excuse me. You have one of the largest auras I've ever seen. Green and black. It's been taking up this whole room. I just... I had to say something. You must have had hundreds of lives.",
@@ -15536,12 +15380,6 @@
       "length": 243
     },
     {
-      "text": "You're waiting for a train, a train that will take you far away. You know where you hope this train will take you, but you don't know for sure.",
-      "source": "Inception",
-      "id": 2692,
-      "length": 143
-    },
-    {
       "text": "She said let's change our luck, this night is all we've got. Drive fast until we crash... This dead-end life... Sweet dreams that won't come true, I'd leave it all for you. Brick walls are closing in, let's make... A run tonight.",
       "source": "Skyway Avenue",
       "id": 2693,
@@ -15600,12 +15438,6 @@
       "source": "Mastering Computer Typing (1995)",
       "id": 2702,
       "length": 212
-    },
-    {
-      "text": "The time has come for man to set himself a goal. The time has come for man to plant the seed of his highest hope. His soil is still rich enough. But one day this soil will be poor and domesticated, and no tall tree will be able to grow in it.",
-      "source": "Thus Spoke Zarathustra: A Book for None and All",
-      "id": 2703,
-      "length": 242
     },
     {
       "text": "You know how you throw your jacket on a chair at the end of the day? Well, like that - only, instead of a chair, it's a pile of garbage. And instead of a jacket, it's a pile of garbage. And instead of the end of the day, it's the end of time and garbage is all that has survived!",
@@ -16586,12 +16418,6 @@
       "length": 586
     },
     {
-      "text": "Sometimes I think the surest sign that intelligent life exists elsewhere in the universe is that none of it has tried to contact us.",
-      "source": "The Complete Calvin and Hobbes",
-      "id": 2877,
-      "length": 132
-    },
-    {
       "text": "Hence, instead of determining the measure of formal agreement of the symbols of Logic with those of Number generally, it is more immediately suggested to us to compare them with symbols of quantity admitting only of the values 0 and 1.",
       "source": "An Investigation of the Laws of Thought",
       "id": 2878,
@@ -17142,12 +16968,6 @@
       "source": "All Star",
       "id": 2973,
       "length": 527
-    },
-    {
-      "text": "They got an apartment with deep pile carpet and a couple of paintings from Sears. A big waterbed that they bought with the bread they had saved for a couple of years.",
-      "source": "Scenes from an Italian Restaurant",
-      "id": 2974,
-      "length": 166
     },
     {
       "text": "Yes, the Simpsons have come a long way since an old drunk made humans out of his rabbit characters to pay off his gambling debts. Who knows what adventures they'll have between now and the time the show becomes unprofitable?",
@@ -18110,12 +17930,6 @@
       "length": 260
     },
     {
-      "text": "The world is so exquisite, with so much love and moral depth, that there is no reason to deceive ourselves with pretty stories for which there's little good evidence. Far better, it seems to me, in our vulnerability, is to look Death in the eye and to be grateful every day for the brief but magnificent opportunity that life provides.",
-      "source": "Billions & Billions: Thoughts on Life and Death at the Brink of the Millennium",
-      "id": 3146,
-      "length": 335
-    },
-    {
       "text": "Now that you're out of high school, which means you're technically an adult, don't you think it's time you move on from primitive constructs such as popularity?",
       "source": "Stranger Things",
       "id": 3147,
@@ -18374,12 +18188,6 @@
       "length": 240
     },
     {
-      "text": "Woke up, fell out of bed, dragged a comb across my head. Found my way downstairs and drank a cup, and looking up I noticed I was late. Found my coat and grabbed my hat. Made the bus in seconds flat. Found my way upstairs and had a smoke, and somebody spoke and I went into a dream.",
-      "source": "A Day in the Life",
-      "id": 3191,
-      "length": 281
-    },
-    {
       "text": "Poets claim that we recapture for a moment the self that we were long ago when we enter some house or garden in which we used to live in our youth. But these are most hazardous pilgrimages, which end as often in disappointment as in success. It is in ourselves that we should rather seek to find those fixed places, contemporaneous with different years.",
       "source": "In Search of Lost Time",
       "id": 3192,
@@ -18512,16 +18320,10 @@
       "length": 261
     },
     {
-      "text": "Keying text quickly is important, but it is more important to be able to make it look professional. Making the text readable involves positioning, style, and size.",
-      "source": "Keyboarding Made Simple (1985)",
-      "id": 3217,
-      "length": 163
-    },
-    {
-      "text": "After removal from the oven, the pizza is sliced and plated quickly in a flat cardboard box, which is immediately closed and often taped shut. There is no physical separation after the slicing, so that edge can be ignored and we can treat the pizza, for thermal purposes, as an infinite plane.",
+      "text": "After removal from the oven, the pizza is sliced and plated quickly in a flat cardboard box, which is immediately closed and often taped shut. There is no physical separation after the slicing, so that edge can be ignored and we can treat the pizza, for thermal purposes, as an infinite plane. The procedure reduces the heat-transfer problem to one dimension represented by a vector normal to the pizza surface.",
       "source": "The Thermodynamics of Pizza",
       "id": 3218,
-      "length": 293
+      "length": 411
     },
     {
       "text": "City of stars, are you shining just for me? City of stars, there's so much that I can't see. Who knows? Is this the start of something wonderful and new? Or one more dream that I cannot make true?",
@@ -19112,12 +18914,6 @@
       "length": 354
     },
     {
-      "text": "Do not go gentle into that good night. Rage, rage against the dying of the light.",
-      "source": "Dylan Thomas",
-      "id": 3322,
-      "length": 81
-    },
-    {
       "text": "This is as brave as I know how to be. I know it's gonna hurt you, but please... be a little proud of me. Goodbye, Doctor.",
       "source": "Doctor Who",
       "id": 3323,
@@ -19568,12 +19364,6 @@
       "length": 179
     },
     {
-      "text": "Who is evil? Who is righteous? These terms have changed throughout history. Kids who have never seen peace and kids who have never seen war have different values. Those who stand at the top determine what's wrong and what's right, this very place is neutral ground. Justice will prevail, you say? But of course it will. Whoever wins this war becomes justice!",
-      "source": "One Piece",
-      "id": 3403,
-      "length": 358
-    },
-    {
       "text": "Between me and the other world there is ever an unasked question: unasked by some through feelings of delicacy; by others through the difficulty of rightly framing it. How does it feel to be a problem?",
       "source": "The Souls of Black Folk",
       "id": 3404,
@@ -19848,12 +19638,6 @@
       "source": "The Nineties",
       "id": 3451,
       "length": 273
-    },
-    {
-      "text": "I know what it's like to lose. To feel so desperately that you're right, yet to fail nonetheless. It's frightening. Turns the legs to jelly. I ask you, to what end? Dread it. Run from it. Destiny arrives all the same. And now, it's here. Or should I say, I am.",
-      "source": "Avengers: Infinity War",
-      "id": 3452,
-      "length": 260
     },
     {
       "text": "Is getting rid of all the thorns in someone's path really what's best for them?",
@@ -20168,18 +19952,6 @@
       "length": 556
     },
     {
-      "text": "Luke, you do not yet realize your importance. You have only begun to discover your power. Join me, and I will complete your training. With our combined strength, we can end this destructive conflict and bring order to the galaxy.",
-      "source": "The Empire Strikes Back",
-      "id": 3508,
-      "length": 229
-    },
-    {
-      "text": "I don't know why I'm here. I mean, I do. I'm nervous, I guess. Anxious. I don't sleep that well. And my hands... they're fine now. It's like when you have a problem with your car and you go to a mechanic and it's not doing it anymore. Not that you're a mechanic. I guess a lot of people must come here worried about the bomb. Is that true? It's a common nightmare, people say. I read it in a magazine. My mother always told me that it wasn't polite to talk about yourself. She passed away recently. I guess I already said that.",
-      "source": "Mad Men",
-      "id": 3509,
-      "length": 527
-    },
-    {
       "text": "Sometimes you remind me a lot of James. He called it my 'furry little problem' in company. Many people were under the impression that I owned a badly behaved rabbit.",
       "source": "Harry Potter and the Half-Blood Prince",
       "id": 3510,
@@ -20280,12 +20052,6 @@
       "source": "Network",
       "id": 3527,
       "length": 493
-    },
-    {
-      "text": "First of all, you must be comfortable, otherwise it will be overly tiring and very difficult to concentrate. Many races have been lost simply because a driver lost concentration due to discomfort from a poorly fitted seat.",
-      "source": "Speed Secrets: Professional Race Driving Techniques",
-      "id": 3528,
-      "length": 222
     },
     {
       "text": "I was proud of my work. And the buildings went up. When they were finished the damnedest thing happened. It was like the buildings were too good for us. Nobody told us that. It just felt uncomfortable, that's all.",
@@ -21092,12 +20858,6 @@
       "length": 169
     },
     {
-      "text": "Perhaps love is like a resting place, a shelter from the storm. It exists to give you comfort. It is there to keep you warm.",
-      "source": "Perhaps Love",
-      "id": 3674,
-      "length": 124
-    },
-    {
       "text": "There are few people in the world who have more opportunity for getting close to the hot, interesting things of one's time than the special correspondent of a great paper. He is enabled to see \"the wheels go round;\" has the chance of getting his knowledge at first hand. In stirring times the drama of life is to him like the first night of a play. There are no preconceived opinions for him to go by; he ought not to, at least, be influenced by any prejudices; and the account of the performance is to some extent like that of the dramatic critic, in as much as that the verdict of the public or of history has either to confirm or reverse his own judgment.",
       "source": "Impressions of a War Correspondent",
       "id": 3675,
@@ -21312,12 +21072,6 @@
       "source": "Joan of Arcadia",
       "id": 3711,
       "length": 178
-    },
-    {
-      "text": "Convection also plays a minor role because of the relative thinness of the air layer and the presence of the upper cardboard heat shield. The insulation properties of the cardboard play a major role, since they serve to minimize the temperature gradient across the airspace.",
-      "source": "The Thermodynamics of Pizza",
-      "id": 3712,
-      "length": 274
     },
     {
       "text": "I'll tell you a secret. Something they don't teach you in your temple. The Gods envy us. They envy us because we're mortal, because any moment might be our last. Everything is more beautiful because we're doomed. You will never be lovelier than you are now. We will never be here again.",
@@ -22316,12 +22070,6 @@
       "length": 152
     },
     {
-      "text": "The beginner writes just twenty pieces. The professional writes three times what's needed, rewrites, discards, rewrites some more, then finally settles on the twenty which work best for that specific audience.",
-      "source": "Comedy Writing Secrets",
-      "id": 3884,
-      "length": 209
-    },
-    {
       "text": "You never read a book on psychology, Tippy. You didn't need to. You knew by some divine instinct that you can make more friends in two months by becoming genuinely interested in other people than you can in two years by trying to get other people interested in you.",
       "source": "How to Win Friends and Influence People",
       "id": 3885,
@@ -22782,12 +22530,6 @@
       "source": "Indiana Jones and the Last Crusade",
       "id": 3962,
       "length": 289
-    },
-    {
-      "text": "Focus your attention on the Now and tell me what problem you have at this moment. I am not getting any answer because it is impossible to have a problem when your attention is fully in the Now.",
-      "source": "The Power of Now",
-      "id": 3963,
-      "length": 193
     },
     {
       "text": "Do you know I've been sitting here thinking to myself: that if I didn't believe in life, if I lost faith in the woman I love, lost faith in the order of things, were convinced in fact that everything is a disorderly, damnable, and perhaps devil-ridden chaos, if I were struck by every horror of man's disillusionment - still I should want to live.",
@@ -23288,12 +23030,6 @@
       "length": 102
     },
     {
-      "text": "One day you're in a funk about things, telling a friend that years of evidence point to the conclusion that you will be single for the rest of your life. That night you meet someone, and a year later you're engaged to be married.",
-      "source": "Urban Tribes: A Generation Redefines Friendship, Family, and Commitment",
-      "id": 4052,
-      "length": 229
-    },
-    {
       "text": "Poverty is a peculiar, insidious thing: a cause whose effects then cause the original cause, or an effect whose causes are caused by the effect. It depends on where in the cycle the analysis begins.",
       "source": "The Working Poor: Invisible in America",
       "id": 4053,
@@ -23508,12 +23244,6 @@
       "source": "This Is the Zodiac Speaking: Into the Mind of a Serial Killer",
       "id": 4089,
       "length": 420
-    },
-    {
-      "text": "There is no physical separation after the slicing, so that edge can be ignored and we can treat the pizza, for thermal purposes, as an infinite plane. The procedure reduces the heat-transfer problem to one dimension represented by a vector normal to the pizza surface.",
-      "source": "The Thermodynamics of Pizza",
-      "id": 4092,
-      "length": 268
     },
     {
       "text": "Goodbye to you my trusted friend, we've known each other since we were nine or ten. Together we've climbed hills and trees, learned of love and ABCs. Skinned our hearts and skinned our knees. Goodbye my friend, it's hard to die when all the birds are singing in the sky. Now that spring is in the air, pretty girls are everywhere. Think of me and I'll be there.",
@@ -24074,12 +23804,6 @@
       "length": 687
     },
     {
-      "text": "There are still some places where you can get all you can eat for a fixed price. Fried chicken is the best and the easiest to pocket, or should we say bag. Another trick is to pour your second free cup of hot coffee into the plastic bag sewed inside your pocket and take it with you.",
-      "source": "Steal This Book",
-      "id": 4192,
-      "length": 283
-    },
-    {
       "text": "I walked away and left him standing there in the moonlight watching over nothing.",
       "source": "The Great Gatsby",
       "id": 4193,
@@ -24482,12 +24206,6 @@
       "length": 223
     },
     {
-      "text": "And what haunts me is that in all the faces of all the bears that Treadwell ever filmed, I discover no kinship, no understanding, no mercy. I see only the overwhelming indifference of nature. To me, there is no such thing as a secret world of the bears. And this blank stare speaks only of a half-bored interest in food. But for Timothy Treadwell, this bear was a friend, a savior.",
-      "source": "Grizzly Man",
-      "id": 4265,
-      "length": 381
-    },
-    {
       "text": "And if I'm flying solo, at least I'm flying free. To those who ground me take a message back from me - tell them how I am defying gravity. I'm flying high defying gravity, and soon I'll match them in renown. And nobody in all of Oz, no wizard that there is or was, is ever gonna bring me down!",
       "source": "Defying Gravity",
       "id": 4266,
@@ -24872,12 +24590,6 @@
       "length": 500
     },
     {
-      "text": "Since you've gone I've been lost without a trace. I dream at night, I can only see your face. I look around but it's you I can't replace.",
-      "source": "Every Breath You Take",
-      "id": 4331,
-      "length": 137
-    },
-    {
       "text": "Everyone said I was daft to build a castle on a swamp, but I built it all the same, just to show them. It sank into the swamp. So I built a second one. That sank into the swamp. So I built a third. That burned down, fell over, then sank into the swamp. But the fourth one stayed up. And that's what you're going to get, Lad, the strongest castle in all of England.",
       "source": "Monty Python and The Holy Grail",
       "id": 4332,
@@ -25046,12 +24758,6 @@
       "length": 111
     },
     {
-      "text": "I often see racers, particularly at the back of the pack in amateur races, trying to go fast, with their arms flailing around, banging off shifts, jerking the steering into a turn with feet stabbing at the pedals. If the driver would only slow down, the car would actually go faster. It reminds me of the saying, \"never confuse movement for action.\"",
-      "source": "Speed Secrets: Professional Race Driving Techniques",
-      "id": 4363,
-      "length": 349
-    },
-    {
       "text": "Quit, don't quit. Noodles, don't noodles. You are too concerned with what was and what will be. There's a saying: \"Yesterday is history, tomorrow is a mystery, but today is a gift. That is why it is called the present.\"",
       "source": "Kung Fu Panda",
       "id": 4364,
@@ -25136,12 +24842,6 @@
       "length": 243
     },
     {
-      "text": "Some drivers actually perform best when there is a little extra incentive - like chasing another car. But be careful you don't get too caught up in what the competition is doing. Focus on your own performance rather than on the competition.",
-      "source": "Speed Secrets: Professional Race Driving Techniques",
-      "id": 4378,
-      "length": 240
-    },
-    {
       "text": "The general who became a slave. The slave who became a gladiator. The gladiator who defied an emperor. Striking story! But now, the people want to know how the story ends. Only a famous death will do. And what could be more glorious than to challenge the Emperor himself in the great arena?",
       "source": "The Gladiator",
       "id": 4379,
@@ -25164,12 +24864,6 @@
       "source": "Beautiful Day",
       "id": 4383,
       "length": 114
-    },
-    {
-      "text": "I can already hear your tune calling me across the room. When the world and his wife are on my back again, not enough pleasure too much pain. When the world is too much with me, please leave, just go away. Before I lose my mind completely, please leave, just go now.",
-      "source": "Swamp Thing",
-      "id": 4384,
-      "length": 266
     },
     {
       "text": "Can't hold on much longer. But I will never let go! I know it's a one way track. Tell me now how long this'll last! I'm not gonna think this way. Nor will I count on others! Close my eyes and feel it burn. Now I see what I gotta do! Open your heart, it's gonna be alright.",
@@ -26204,12 +25898,6 @@
       "length": 656
     },
     {
-      "text": "You're here because you know something. What you know you can't explain, but you feel it. You've felt it your entire life, that there's something wrong with the world. You don't know what it is, but it's there, like a splinter in your mind, driving you mad. It is this feeling that has brought you to me.",
-      "source": "The Matrix",
-      "id": 4570,
-      "length": 304
-    },
-    {
       "text": "Use the power of your word in the direction of truth and love.",
       "source": "The Four Agreements: A Practical Guide to Personal Freedom, A Toltec Wisdom Book",
       "id": 4571,
@@ -26384,12 +26072,6 @@
       "length": 552
     },
     {
-      "text": "Hence the saying: If you know the enemy and know yourself, you need not fear the result of a hundred battles. If you know yourself but not the enemy, for every victory gained you will also suffer a defeat. If you know neither the enemy nor yourself, you will succumb in every battle.",
-      "source": "The Art of War",
-      "id": 4602,
-      "length": 283
-    },
-    {
       "text": "Picture yourself in a boat on a river, with tangerine trees and marmalade skies. Somebody calls you, you answer quite slowly - a girl with kaleidoscope eyes. Cellophane flowers of yellow and green, towering over your head. Look for the girl with the sun in her eyes and she's gone.",
       "source": "Lucy in the Sky With Diamonds",
       "id": 4603,
@@ -26472,12 +26154,6 @@
       "source": "Heroes",
       "id": 4616,
       "length": 437
-    },
-    {
-      "text": "Why are we still here? Just to suffer? Every night, I can feel my leg... and my arm... even my fingers. The body I've lost... the comrades I've lost... won't stop hurting... It's like they're all still there. You feel it too, don't you? I'm gonna make them give back our past.",
-      "source": "Metal Gear Solid V: The Phantom Pain",
-      "id": 4617,
-      "length": 276
     },
     {
       "text": "Hating the Empire, getting revenge... It's all I ever thought about. But I never did anything about it. I mean, I realized there was nothing I could do. It made me feel hollow, alone. And then... I'd miss my brother. I'd say stuff like \"I'm gonna be a sky pirate\", or some other stupid thing. Just anything to keep my mind off it. I was just... I was running away. I needed to get away from his death.",
@@ -27000,12 +26676,6 @@
       "source": "For Whom The Bell Tolls",
       "id": 4708,
       "length": 389
-    },
-    {
-      "text": "Races are not won in the first corner; however, they are often lost there. It's usually best to run as quick as you can for the first few laps, then settle into a comfortable, consistent pace - all the while ready to take advantage of any opportunity to pass.",
-      "source": "Speed Secrets: Professional Race Driving Techniques",
-      "id": 4709,
-      "length": 259
     },
     {
       "text": "Uh, no, there's more. One time I accidentally drank an entire bottle of vinegar. I thought it was terrible wine. Once, I went out with a guy who wore 3D glasses the entire evening. Oh, one time I rode in a sidecar on a guy's motorcycle, and the sidecar detached and went down a flight of stairs. Another time I went to a really boring movie with a guy, and while I was asleep he tried to pull out one of my teeth. I literally woke up with his hand in my mouth. We went out a couple times after that but then he got weird.",
@@ -27774,12 +27444,6 @@
       "source": "The Hitchhiker's Guide to the Galaxy",
       "id": 4849,
       "length": 373
-    },
-    {
-      "text": "And in the dream I knew that he was goin' on ahead and that he was fixin' to make a fire somewhere out there in all that dark and all that cold, and I knew that whenever I got there he would be there. Out there up ahead.",
-      "source": "No Country for Old Men",
-      "id": 4850,
-      "length": 220
     },
     {
       "text": "Most of his visitors, brash emissaries of a new ruling class, barely aware of their own youthful hubris, did not completely grasp the layered meaning of the couplet they had been offered, like a snack to be washed down by a thimble-sized cup of thick, sweet tea. They understood of course that it was a dirge for a fallen empire whose international borders had shrunk to a grimy ghetto circumscribed by the ruined walls of an old city.",
@@ -28616,12 +28280,6 @@
       "length": 180
     },
     {
-      "text": "There's no such thing as a painlessness lesson, they just don't exist. Sacrifices are necessary. You can't gain anything without losing something first. Although... if you can endure that pain and walk away from it, you'll find that you now have a heart strong enough to overcome any obstacle. Yeah... a heart made fullmetal.",
-      "source": "Edward Elric - Fullmetal Alchemist Brotherhood",
-      "id": 5001,
-      "length": 325
-    },
-    {
       "text": "Nothing comes from nothing, Thieflet; no story comes from nowhere; new stories are born from old - it is the new combinations that make them new.",
       "source": "Haroun and the Sea of Stories",
       "id": 5002,
@@ -28716,12 +28374,6 @@
       "source": "Harry Potter and the Philosopher's Stone",
       "id": 5018,
       "length": 531
-    },
-    {
-      "text": "It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.",
-      "source": "Harry Potter and the Philosopher's Stone",
-      "id": 5019,
-      "length": 105
     },
     {
       "text": "There are all kinds of courage, said Dumbledore, smiling. It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.",
@@ -29814,12 +29466,6 @@
       "source": "William Golding, Lord of the Flies",
       "length": 172,
       "id": 5213
-    },
-    {
-      "text": "Which is better - to have rules and agree, or to hunt and kill?",
-      "source": "Piggy, Lord of the Flies",
-      "length": 63,
-      "id": 5214
     },
     {
       "text": "Ralph wept for the end of innocence, the darkness of man's heart, and the fall through the air of a true, wise friend called Piggy.",
@@ -31088,12 +30734,6 @@
       "id": 5472
     },
     {
-      "text": "Nothing in life is easy, but that's no reason to give up. You'll be surprised what you can accomplish when you set your mind to it.",
-      "source": "Holes",
-      "length": 131,
-      "id": 5476
-    },
-    {
       "text": "You may have done some bad things, but that doesn't mean you're a bad kid.",
       "source": "Holes",
       "length": 74,
@@ -32318,12 +31958,6 @@
       "id": 5720
     },
     {
-      "text": "In view, a humble vaudevillian veteran, cast vicariously as both victim and villain by the vicissitudes of Fate. This visage, no mere veneer of vanity, is a vestige of the vox populi, now vacant, vanished. However, this valorous visitation of a bygone vexation stands vivified, and has vowed to vanquish these venal and virulent vermin vanguarding vice and vouchsafing the violently vicious and voracious violation of volition! The only verdict is vengeance; a vendetta held as a votive, not in vain, for the value and veracity of such shall one day vindicate the vigilant and the virtuous. Verily, this vichyssoise of verbiage veers most verbose, so let me simply add that it's my very good honor to meet you and you may call me V.",
-      "source": "V for Vendetta",
-      "length": 732,
-      "id": 5721
-    },
-    {
       "text": "When I was younger, I left a trail of broken hearts like a rockstar. I'm not proud of it.",
       "source": "Modern Family",
       "length": 89,
@@ -32370,12 +32004,6 @@
       "source": "Edward Snowden",
       "length": 181,
       "id": 5729
-    },
-    {
-      "text": "There's no such thing as a painless lesson. They just don't exist. Sacrifices are necessary. You can't gain anything without losing something first. Although... if you can endure that pain and walk away from it, you'll find that you now have a heart strong enough to overcome any obstacle. Yeah... a heart made Fullmetal.",
-      "source": "Fullmetal Alchemist Brotherhood",
-      "length": 321,
-      "id": 5730
     },
     {
       "text": "In case you haven't noticed, I'm weird. I'm a weirdo. I don't fit in. And I don't want to fit in. Have you ever seen me without this stupid hat on? That's weird.",
@@ -32600,12 +32228,6 @@
       "id": 5769
     },
     {
-      "text": "Don't ever, for any reason, do anything to anyone for any reason ever, no matter what, no matter where, or who, or who you are with, or where you are going, or where you've been... ever, for any reason whatsoever.",
-      "source": "The Office",
-      "length": 213,
-      "id": 5770
-    },
-    {
       "text": "Toby is in HR, which technically means he works for corporate. So he's really not a part of our family. Also, he's divorced, so he's really not a part of his family.",
       "source": "The Office",
       "length": 165,
@@ -32784,12 +32406,6 @@
       "source": "Phone Guy - Five Nights at Freddy's",
       "length": 2925,
       "id": 5807
-    },
-    {
-      "text": "\"I'm like you,\" he said. \"I remember everything.\" I stopped for a second. If you remember everything, I wanted to say, and if you are really like me, then before you leave tomorrow, or when you're just ready to shut the door of the taxi and have already said goodbye to everyone else and there's not a thing left to say in this life, then, just this once, turn to me, even in jest, or as an afterthought, which would have meant everything to me when we were together, and, as you did back then, look me in the face, hold my gaze, and call me by your name.",
-      "source": "Call Me By Your Name",
-      "length": 555,
-      "id": 5808
     },
     {
       "text": "Do you come from a land down under? Where women glow and men plunder. Can't you hear, can't you hear the thunder? You better run, you better take cover.",
@@ -33192,12 +32808,6 @@
       "source": "On the Origin of Species",
       "length": 763,
       "id": 5879
-    },
-    {
-      "text": "In the first place, I have collected so large a body of facts, and made so many experiments, showing, in accordance with the almost universal belief of breeders, that with animals and plants a cross between different varieties, or between individuals of the same variety but of another strain, gives vigour and fertility to the offspring; and on the other hand, that close interbreeding diminishes vigour and fertility; that these facts alone incline me to believe that it is a general law of nature that no organic being fertilises itself for a perpetuity of generations; but that a cross with another individual is occasionally - perhaps at long intervals of time - indispensable.",
-      "source": "On the Origin of Species",
-      "length": 682,
-      "id": 5880
     },
     {
       "text": "Our classifications are often plainly influenced by chains of affinities. Nothing can be easier than to define a number of characters common to all birds; but with crustaceans, any such definition has hitherto been found impossible. There are crustaceans at the opposite ends of the series, which have hardly a character in common; yet the species at both ends, from being plainly allied to others, and these to others, and so onwards, can be recognised as unequivocally belonging to this, and to no other class of the Articulata.",
@@ -33633,12 +33243,6 @@
       "source": "Barack Obama",
       "length": 193,
       "id": 6069
-    },
-    {
-      "text": "The best and most beautiful things in the world cannot be seen or even touched — they must be felt with the heart.",
-      "source": "Helen Keller",
-      "length": 114,
-      "id": 6070
     },
     {
       "text": "Life is ten percent what happens to you and ninety percent how you respond to it.",
@@ -34410,12 +34014,6 @@
       "id": 6204
     },
     {
-      "text": "We are all like fireworks: We climb, we shine and always go our separate ways and become further apart. But even when that time comes, let's not disappear like a firework and continue to shine… forever.",
-      "source": "Hitsugaya Toshiro - Bleach",
-      "length": 202,
-      "id": 6205
-    },
-    {
       "text": "Whatever you lose, you'll find it again. But what you throw away you'll never get back.",
       "source": "Kenshin Himura - Rurouni Kenshin: Meiji Kenkaku Romantan",
       "length": 87,
@@ -35112,13 +34710,6 @@
       "id": 6319
     },
     {
-      "text": "\"In this world, wherever there is light - there are also shadows. As long as the concept of winners exists, there must also be losers. The selfish desire of wanting to maintain peace causes wars, and hatred is born to protect love.\"",
-      "source": "Madara Uchiha, Naruto",
-      "length": 232,
-      "approvedBy": "Smithster",
-      "id": 6321
-    },
-    {
       "text": "The dark side of the Force is a pathway to many abilities some consider to be unnatural.",
       "source": "Star Wars Episode III: Revenge of the Sith",
       "length": 88,
@@ -35299,13 +34890,6 @@
       "length": 124,
       "approvedBy": "Smithster",
       "id": 6351
-    },
-    {
-      "text": "I don't like sand. It's coarse and rough and irritating and it gets everywhere.",
-      "source": "Anakin Skywalker, Star Wars: Episode II - Attack of the Clones",
-      "length": 79,
-      "approvedBy": "Smithster",
-      "id": 6352
     },
     {
       "text": "It was impossible to expect a moral awakening from humankind itself, just like it was impossible to expect humans to lift off the earth by pulling up on their own hair. To achieve moral awakening required a force outside the human race.",
@@ -36202,13 +35786,6 @@
       "length": 366,
       "approvedBy": "Smithster",
       "id": 6490
-    },
-    {
-      "text": "I wish there was a way to know you're in the good old days before you've actually left them.",
-      "source": "The Office",
-      "length": 92,
-      "approvedBy": "Smithster",
-      "id": 6491
     },
     {
       "text": "I knew you'd linger like a tattoo-kiss. I knew you'd haunt all of my what-ifs. The smell of smoke would hang around this long 'cause I knew everything when I was young. I knew I'd curse you for the longest time, chasing shadows in the grocery line. I knew you'd miss me once the thrill expired, and you'd be standing in my front porch light and I knew you'd come back to me.",
@@ -38653,12 +38230,6 @@
       "length": 345
     },
     {
-      "text": "Look again at that dot. That's here. That's home. That's us. On it, everyone you love, everyone you know, everyone you ever heard, every human being who ever was, lived out their lives. The aggregate of our joy and suffering, thousands of confident religions, ideologies, and economic doctrines, every hunter and forager, every hero and coward, every creator and destroyer of civilization, every king and peasant, every young couple in love, every mother and father, hopeful child, inventor and explorer, every teacher or morals, every corrupt politician, every superstar, every supreme leader, every saint and sinner in the history of our species lived there-on a mote of dust suspended in a sunbeam.",
-      "source": "Carl Sagan, Pale Blue Dot: A Vision of the Human Future in Space",
-      "id": 6896,
-      "length": 701
-    },
-    {
       "text": "Equipped with his five senses, man explores the universe around him and calls the adventure Science.",
       "source": "Edwin Hubble",
       "id": 6897,
@@ -38771,12 +38342,6 @@
       "source": "Carl Sandburg",
       "length": 122,
       "id": 6915
-    },
-    {
-      "text": "You only live life once; but if you live it right, once is enough.",
-      "source": "Adam Marshall",
-      "length": 66,
-      "id": 6916
     },
     {
       "text": "Don't throw away the old bucket until you know whether the new one holds water.",
@@ -39143,18 +38708,6 @@
       "source": "Mark Twain",
       "length": 67,
       "id": 6977
-    },
-    {
-      "text": "If one advances confidently in the direction of his dreams, and endeavors to live the life which he has imagined, he will meet with a success unexpected in common hours.",
-      "source": "Henry David Thoreau",
-      "length": 169,
-      "id": 6978
-    },
-    {
-      "text": "You're healed when you get to the point where you've grasped the moral of the story.",
-      "source": "Jordan Peterson",
-      "length": 84,
-      "id": 6979
     },
     {
       "text": "To come to acceptance with things and feelings is rare and to accept them completely is a miracle. It's impossible to make that moment come faster by yourself. Someday it comes unexpectedly. In order to not become warped or heartless, let it go in a natural way. Let yourself feel sad when you are, and let yourself forget when you do.",
