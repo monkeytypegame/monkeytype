@@ -61,3 +61,16 @@
 #top.focus #menu .textButton.discord::after {
   border-color: transparent;
 }
+
+body.crtmode {
+  #menu .textButton:nth-child(1),
+  #menu .textButton:nth-child(2),
+  #menu .textButton:nth-child(3),
+  #menu .textButton:nth-child(4) {
+    box-shadow: 3px 0 1px color-mix(in srgb, #c69f68 20%, transparent),
+      -3px 0 color-mix(in srgb, #c69f68 30%, transparent), 0 0 3px;
+  }
+  #top.focus #menu .textButton {
+    box-shadow: none;
+  }
+}

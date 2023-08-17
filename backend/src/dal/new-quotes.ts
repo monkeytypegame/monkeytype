@@ -42,6 +42,17 @@ export async function add(
     throw new MonkeyError(500, `Invalid language name`, language);
   }
 
+  const count = await db
+    .collection("new-quotes")
+    .countDocuments({ language: language });
+
+  if (count >= 100) {
+    throw new MonkeyError(
+      409,
+      "There are already 100 quotes in the queue for this language."
+    );
+  }
+
   //check for duplicate first
   const fileDir = path.join(
     __dirname,

@@ -10,6 +10,7 @@ const PADDING_X = 16;
 const PADDING_Y = 12;
 const PADDING_OFFSET_X = PADDING_X / 2;
 const PADDING_OFFSET_Y = PADDING_Y / 2;
+const TOGGLE_RESULT_WORDS_BUFFER = 250;
 
 // Type definition for a Line object, each representing a line of text in #resultWordsHistory
 type Line = {
@@ -45,6 +46,9 @@ let highlightRange: number[] = [];
 // #resultWordsHistory element and its bounding rect
 let RWH_el: HTMLElement;
 let RWH_rect: DOMRect;
+
+// Last time toggleResultWords was toggled on
+let lastToggleWordsHistoryTime = new Date();
 
 // Flags
 let isInitialized = false;
@@ -91,6 +95,9 @@ export async function highlightWordsInRange(
   ) {
     return false;
   }
+
+  // Update lastWordIndex if it is out of bounds
+  lastWordIndex = Math.min(lastWordIndex, wordEls.length - 1);
 
   // Get highlight properties
   const newHighlightElementPositions = getHighlightElementPositions(
@@ -173,11 +180,24 @@ export function setIsHoverChart(state: boolean): void {
 
 // Function to initialize the highlight system
 async function init(): Promise<boolean> {
+  // Early exit if already initialized or initialization is in progress
   if (isInitialized || isInitInProgress) {
     return false;
   }
 
   isInitInProgress = true;
+
+  // Wait for toggle button to fully populate resultWordHighlights before highlighting
+  const TIME_DIFF_SINCE_LAST_TOGGLE =
+    new Date().getTime() - lastToggleWordsHistoryTime.getTime();
+  if (TIME_DIFF_SINCE_LAST_TOGGLE < TOGGLE_RESULT_WORDS_BUFFER) {
+    await new Promise((resolve) =>
+      setTimeout(
+        resolve,
+        TOGGLE_RESULT_WORDS_BUFFER - TIME_DIFF_SINCE_LAST_TOGGLE
+      )
+    );
+  }
 
   // Set isLanguageRTL
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
@@ -185,8 +205,9 @@ async function init(): Promise<boolean> {
 
   RWH_el = $("#resultWordsHistory")[0];
   RWH_rect = RWH_el.getBoundingClientRect();
-  wordEls = $(RWH_el).find(".words .word");
+  wordEls = $(RWH_el).find(".words .word[input]");
 
+  // remove non-input words
   if (wordEls.length === 0) {
     isInitInProgress = false;
     return false;
@@ -198,7 +219,7 @@ async function init(): Promise<boolean> {
 
   // Construct lines array and wordIndexToLineIndexDict
   wordIndexToLineIndexDict[0] = 0;
-  for (let i = 1; i < wordEls.length - 1; i++) {
+  for (let i = 1; i < wordEls.length; i++) {
     const word = wordEls[i];
     const prevWord = wordEls[i - 1];
 
@@ -476,6 +497,7 @@ function getHighlightWidth(
       wordEls[wordEndIndex],
     ]);
     const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
+
     const lastInputWordElRect =
       inputWordEls[wordEndIndex].getBoundingClientRect();
     let width = highlightRect.width + PADDING_X;
@@ -510,4 +532,8 @@ function getHighlightWidth(
     inputWordEls[wordEndIndex].getBoundingClientRect();
   width -= lastWordElRect.width - lastInputWordElRect.width;
   return width;
+}
+
+export function updateToggleWordsHistoryTime(): void {
+  lastToggleWordsHistoryTime = new Date();
 }

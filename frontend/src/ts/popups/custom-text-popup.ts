@@ -16,7 +16,7 @@ const skeletonId = "customTextPopupWrapper";
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
 
-export function updateLongTextWarning(): void {
+function updateLongTextWarning(): void {
   if (CustomTextState.isCustomTextLong() === true) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
     $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
@@ -123,7 +123,7 @@ interface HideOptions {
   resetState?: boolean | undefined;
 }
 
-export function hide(options = {} as HideOptions): void {
+function hide(options = {} as HideOptions): void {
   if (options.noAnim === undefined) options.noAnim = false;
   if (options.resetState === undefined) options.resetState = true;
 

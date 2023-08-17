@@ -14,11 +14,11 @@ type PossibleType =
 
 type PossibleTypeAsync = "layoutfluid";
 
-export function isConfigKeyValid(name: string): boolean {
-  if (name === null || name === undefined || name === "") return false;
-  if (name.length > 30) return false;
-  return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
-}
+// function isConfigKeyValid(name: string): boolean {
+//   if (name === null || name === undefined || name === "") return false;
+//   if (name.length > 30) return false;
+//   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
+// }
 
 function invalid(key: string, val: unknown, customMessage?: string): void {
   if (customMessage === undefined) {

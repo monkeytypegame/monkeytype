@@ -26,6 +26,15 @@ router.get(
   asyncHandler(QuoteController.getQuotes)
 );
 
+router.get(
+  "/isSubmissionEnabled",
+  authenticateRequest({
+    isPublic: true,
+  }),
+  RateLimit.newQuotesIsSubmissionEnabled,
+  asyncHandler(QuoteController.isSubmissionEnabled)
+);
+
 router.post(
   "/",
   validateConfiguration({

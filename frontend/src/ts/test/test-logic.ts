@@ -78,9 +78,6 @@ export function startTest(now: number): boolean {
   if (PageTransition.get()) {
     return false;
   }
-  if (!UpdateConfig.dbConfigLoaded) {
-    UpdateConfig.setChangedBeforeDb(true);
-  }
 
   if (Auth?.currentUser) {
     AnalyticsController.log("testStarted");
@@ -195,6 +192,8 @@ export function restart(options = {} as RestartOptions): void {
 
     if (TestState.savingEnabled) {
       TestInput.pushKeypressesToHistory();
+      TestInput.pushErrorToHistory();
+      TestInput.pushAfkToHistory();
       const testSeconds = TestStats.calculateTestSeconds(performance.now());
       const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
       let tt = Misc.roundTo2(testSeconds - afkseconds);
@@ -270,7 +269,7 @@ export function restart(options = {} as RestartOptions): void {
   LiveBurst.hide();
   TimerProgress.hide();
   Replay.pauseReplay();
-  TestInput.setBailout(false);
+  TestState.setBailedOut(false);
   PaceCaret.reset();
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
@@ -808,7 +807,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     consistency: undefined,
     keyConsistency: undefined,
     funbox: Config.funbox,
-    bailedOut: TestInput.bailout,
+    bailedOut: TestState.bailedOut,
     chartData: {
       wpm: TestInput.wpmHistory,
       raw: undefined,
@@ -844,7 +843,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   if (stats.time % 1 !== 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
-  TestStats.setLastTestWpm(stats.wpm);
+  PaceCaret.setLastTestWpm(stats.wpm);
   completedEvent.wpm = stats.wpm;
   completedEvent.rawWpm = stats.wpmRaw;
   completedEvent.charStats = [
@@ -862,11 +861,13 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
     TestInput.pushToWpmHistory(wpmAndRaw.wpm);
     TestInput.pushToRawHistory(wpmAndRaw.raw);
     TestInput.pushKeypressesToHistory();
+    TestInput.pushErrorToHistory();
+    TestInput.pushAfkToHistory();
   }
 
   //consistency
-  const rawPerSecond = TestInput.keypressPerSecond.map((f) =>
-    Math.round((f.count / 5) * 60)
+  const rawPerSecond = TestInput.keypressCountHistory.map((count) =>
+    Math.round((count / 5) * 60)
   );
 
   //adjust last second if last second is not round
@@ -921,8 +922,8 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   );
 
   completedEvent.chartData.err = [];
-  for (let i = 0; i < TestInput.keypressPerSecond.length; i++) {
-    completedEvent.chartData.err.push(TestInput.keypressPerSecond[i].errors);
+  for (let i = 0; i < TestInput.errorHistory.length; i++) {
+    completedEvent.chartData.err.push(TestInput.errorHistory[i].count);
   }
 
   if (Config.mode === "quote") {
@@ -977,7 +978,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestInput.forceKeyup(now); //this ensures that the last keypress(es) are registered
 
   const endAfkSeconds = (now - TestInput.keypressTimings.spacing.last) / 1000;
-  if ((Config.mode === "zen" || TestInput.bailout) && endAfkSeconds < 7) {
+  if ((Config.mode === "zen" || TestState.bailedOut) && endAfkSeconds < 7) {
     TestStats.setEnd(TestInput.keypressTimings.spacing.last);
   }
 
@@ -1004,7 +1005,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   //remove afk from zen
-  if (Config.mode === "zen" || TestInput.bailout) {
+  if (Config.mode === "zen" || TestState.bailedOut) {
     TestStats.removeAfkData();
   }
 
@@ -1041,9 +1042,9 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ///////// completed event ready
 
   //afk check
-  const kps = TestInput.keypressPerSecond.slice(-5);
-  let afkDetected = kps.every((second) => second.afk);
-  if (TestInput.bailout) afkDetected = false;
+  const kps = TestInput.afkHistory.slice(-5);
+  let afkDetected = kps.every((afk) => afk === true);
+  if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
 
@@ -1141,7 +1142,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     // Let's update the custom text progress
     if (
-      TestInput.bailout ||
+      TestState.bailedOut ||
       TestInput.input.history.length < TestWords.words.length
     ) {
       // They bailed out
@@ -1399,6 +1400,8 @@ export function fail(reason: string): void {
   // input.pushHistory();
   // corrected.pushHistory();
   TestInput.pushKeypressesToHistory();
+  TestInput.pushErrorToHistory();
+  TestInput.pushAfkToHistory();
   finish(true);
   if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());

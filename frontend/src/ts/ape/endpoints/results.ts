@@ -1,5 +1,3 @@
-import { CLIENT_VERSION } from "../../version";
-
 const BASE_PATH = "/results";
 
 export default class Results {
@@ -14,7 +12,6 @@ export default class Results {
   async save(result: MonkeyTypes.Result<MonkeyTypes.Mode>): Ape.EndpointData {
     return await this.httpClient.post(BASE_PATH, {
       payload: { result },
-      headers: { "Client-Version": CLIENT_VERSION },
     });
   }
 

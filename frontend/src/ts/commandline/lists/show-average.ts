@@ -14,10 +14,10 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     },
     {
       id: "setShowAverageSpeed",
-      display: "wpm",
-      configValue: "wpm",
+      display: "speed",
+      configValue: "speed",
       exec: (): void => {
-        UpdateConfig.setShowAverage("wpm");
+        UpdateConfig.setShowAverage("speed");
       },
     },
     {

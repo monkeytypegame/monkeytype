@@ -271,7 +271,7 @@ export function areFunboxesCompatible(
         f.functions?.pullSection
     ).length <= 1;
   const oneApplyCSSMax =
-    funboxesToCheck.filter((f) => f.functions?.applyCSS).length <= 1;
+    funboxesToCheck.filter((f) => f.hasCSS == true).length <= 1;
   const onePunctuateWordMax =
     funboxesToCheck.filter((f) => f.functions?.punctuateWord).length <= 1;
   const oneCharCheckerMax =

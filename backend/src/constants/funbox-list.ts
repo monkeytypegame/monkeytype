@@ -302,7 +302,7 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
   },
   {
     canGetPb: false,
-    difficultyLevel: 1,
+    difficultyLevel: 0,
     properties: ["changesWordsFrequency"],
     frontendFunctions: ["getWordsFrequencyMode"],
     name: "zipf",
@@ -313,6 +313,12 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
     properties: ["ignoresLanguage", "ignoresLayout", "noLetters", "noSpace"],
     frontendFunctions: ["alterText"],
     name: "morse",
+  },
+  {
+    canGetPb: true,
+    difficultyLevel: 0,
+    properties: ["noLigatures"],
+    name: "crt",
   },
 ];
 

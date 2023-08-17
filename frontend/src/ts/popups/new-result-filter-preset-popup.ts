@@ -6,7 +6,7 @@ const wrapperId = "newResultFilterPresetPopupWrapper";
 // the function to call after name is inputed by user
 let callbackFunc: ((name: string) => void) | null = null;
 
-export function show(): void {
+function show(): void {
   Skeleton.append(wrapperId);
 
   if (!isPopupVisible(wrapperId)) {
@@ -22,7 +22,7 @@ export function show(): void {
   }
 }
 
-export function hide(): void {
+function hide(): void {
   if (isPopupVisible(wrapperId)) {
     $("#newResultFilterPresetPopupWrapper")
       .stop(true, true)

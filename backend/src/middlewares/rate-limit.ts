@@ -136,6 +136,13 @@ export const newQuotesGet = rateLimit({
   handler: customHandler,
 });
 
+export const newQuotesIsSubmissionEnabled = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const newQuotesAdd = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,

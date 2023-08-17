@@ -19,7 +19,7 @@ export let adBlock: boolean;
 export let cookieBlocker: boolean;
 
 // export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
-export const choice: "eg" | "pw" = "pw";
+const choice: "eg" | "pw" = "pw";
 
 // console.log("AB choice: " + choice);
 
@@ -32,7 +32,7 @@ export const choice: "eg" | "pw" = "pw";
 //   console.log("AB choice forced: " + choice);
 // }
 
-export function init(): void {
+function init(): void {
   if (choice === "eg") {
     EG.init();
   } else {
@@ -53,13 +53,13 @@ export function init(): void {
   initialised = true;
 }
 
-export function removeAll(): void {
+function removeAll(): void {
   removeSellout();
   removeOn();
   removeResult();
 }
 
-export function removeSellout(): void {
+function removeSellout(): void {
   $("#ad-footer-wrapper").remove();
   $("#ad-footer-small-wrapper").remove();
   $("#ad-about-1-wrapper").remove();
@@ -78,12 +78,12 @@ export function removeSellout(): void {
   $("#ad-account-2-small-wrapper").remove();
 }
 
-export function removeOn(): void {
+function removeOn(): void {
   $("#ad-vertical-right-wrapper").remove();
   $("#ad-vertical-left-wrapper").remove();
 }
 
-export function removeResult(): void {
+function removeResult(): void {
   $("#ad-result-wrapper").remove();
   $("#ad-result-small-wrapper").remove();
 }
@@ -130,7 +130,7 @@ function updateBreakpoint2(noReinstate = false): void {
   }
 }
 
-export async function refreshVisible(): Promise<void> {
+async function _refreshVisible(): Promise<void> {
   if (choice === "eg") {
     await EG.refreshVisible();
   } else {

@@ -1174,6 +1174,13 @@
     "mainColor": "#ff8f00",
     "subColor": "#651e56",
     "textColor": "#fff"
+  },
+  {
+    "name": "rainbow_trail",
+    "bgColor": "#f5f5f5",
+    "mainColor": "#363636",
+    "subColor": "#4f4f4f",
+    "textColor": "#1f1f1f"
   }
 
 ]

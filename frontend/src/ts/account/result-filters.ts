@@ -70,7 +70,7 @@ export const defaultResultFilters: MonkeyTypes.ResultFilters = {
 };
 
 // current activated filter
-export let filters = defaultResultFilters;
+let filters = defaultResultFilters;
 
 function save(): void {
   window.localStorage.setItem("resultFilters", JSON.stringify(filters));
@@ -138,7 +138,7 @@ export async function load(): Promise<void> {
   }
 }
 
-export async function updateFilterPresets(): Promise<void> {
+async function updateFilterPresets(): Promise<void> {
   const parent = document.querySelector(".pageAccount .presetFilterButtons");
   const buttons = document.querySelector(
     ".pageAccount .presetFilterButtons .filterBtns"
@@ -229,7 +229,7 @@ async function createFilterPresetCallback(name: string): Promise<void> {
 }
 
 // shows popup for user to select name
-export async function startCreateFilterPreset(): Promise<void> {
+async function startCreateFilterPreset(): Promise<void> {
   showNewResultFilterPresetPopup(async (name: string) =>
     createFilterPresetCallback(name)
   );
@@ -248,7 +248,7 @@ function removeFilterPresetFromSnapshot(id: string): void {
 }
 
 // deletes the currently selected filter preset
-export async function deleteFilterPreset(id: string): Promise<void> {
+async function deleteFilterPreset(id: string): Promise<void> {
   Loader.show();
   const result = await Ape.users.removeResultFilterPreset(id);
   Loader.hide();
@@ -270,7 +270,7 @@ function deSelectFilterPreset(): void {
   ).removeClass("active");
 }
 
-export function getFilters(): MonkeyTypes.ResultFilters {
+function getFilters(): MonkeyTypes.ResultFilters {
   return filters;
 }
 
@@ -318,7 +318,7 @@ type AboveChartDisplay = Partial<
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  Object.typedKeys(getFilters()).forEach((group) => {
+  Misc.typedKeys(getFilters()).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       return;
@@ -329,7 +329,7 @@ export function updateActive(): void {
       array: [],
     };
 
-    Object.typedKeys(getGroup(group)).forEach((filter) => {
+    Misc.typedKeys(getGroup(group)).forEach((filter) => {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
       if (groupAboveChartDisplay === undefined) return;
@@ -493,7 +493,7 @@ $(
     .attr("group") as keyof MonkeyTypes.ResultFilters;
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
-    Object.typedKeys(getFilters()).forEach((group) => {
+    Misc.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
         return;
@@ -504,7 +504,7 @@ $(
     setAllFilters("date", false);
     filters["date"]["all"] = true;
   } else if ($(e.target).hasClass("noFilters")) {
-    Object.typedKeys(getFilters()).forEach((group) => {
+    Misc.typedKeys(getFilters()).forEach((group) => {
       // id and name field do not correspond to any ui elements, no need to update
       if (group === "_id" || group === "name") {
         return;
@@ -534,7 +534,7 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
 
   console.log(getFilters());
 
-  Object.typedKeys(getFilters()).forEach((group) => {
+  Misc.typedKeys(getFilters()).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       return;
@@ -552,7 +552,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
-  Object.typedKeys(getFilters()).forEach((group) => {
+  Misc.typedKeys(getFilters()).forEach((group) => {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
       return;

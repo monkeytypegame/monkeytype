@@ -504,7 +504,7 @@
   ["misbehavior", "misbehaviour"],
   ["behavior", "behaviour"],
   ["color", "colour"],
-  ["tire", "tyre"],
+  ["tire", "tyre", ["will"]],
   ["gray", "grey"],
   ["grays", "greys"],
   ["theater", "theatre"],
@@ -605,5 +605,10 @@
   ["uncataloged", "uncatalogued"],
   ["catalogers", "cataloguers"],
   ["discolored", "discoloured"],
-  ["discolor", "discolour"]
+  ["discolor", "discolour"],
+  ["encyclopedias", "encyclopaedias"],
+  ["endeavored", "endeavoured"],
+  ["endeavors", "endeavours"],
+  ["endeavoring", "endeavouring"],
+  ["judgments", "judgements"]
 ]

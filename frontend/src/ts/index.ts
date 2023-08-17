@@ -12,7 +12,6 @@ import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
 import * as TestTimer from "./test/test-timer";
 import * as Result from "./test/result";
-import * as TestInput from "./test/test-input";
 import "./controllers/account-controller";
 import { enable } from "./states/glarses-mode";
 import "./test/caps-warning";
@@ -64,10 +63,6 @@ extendedGlobal.getTimerStats = TestTimer.getTimerStats;
 
 extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 
-extendedGlobal.enableSpacingDebug = TestInput.enableSpacingDebug;
-
 extendedGlobal.egVideoListener = egVideoListener;
-
-extendedGlobal.wpmCalculationDebug = TestStats.wpmCalculationDebug;
 
 extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;

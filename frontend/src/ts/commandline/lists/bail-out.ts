@@ -1,7 +1,7 @@
 import Config from "../../config";
 import * as CustomText from "../../test/custom-text";
 import * as TestLogic from "../../test/test-logic";
-import * as TestInput from "../../test/test-input";
+import * as TestState from "../../test/test-state";
 import * as CustomTextState from "../../states/custom-text-name";
 
 function canBailOut(): boolean {
@@ -38,7 +38,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "bailOutForSure",
       display: "Yes, I am sure",
       exec: (): void => {
-        TestInput.setBailout(true);
+        TestState.setBailedOut(true);
         TestLogic.finish();
       },
       available: (): boolean => {

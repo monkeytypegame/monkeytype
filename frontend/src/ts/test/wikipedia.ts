@@ -4,7 +4,7 @@ import { Section } from "../utils/misc";
 
 export async function getTLD(
   languageGroup: MonkeyTypes.LanguageGroup
-): Promise<"en" | "es" | "fr" | "de" | "pt" | "it" | "nl"> {
+): Promise<"en" | "es" | "fr" | "de" | "pt" | "it" | "nl" | "pl"> {
   // language group to tld
   switch (languageGroup.name) {
     case "english":
@@ -27,6 +27,9 @@ export async function getTLD(
 
     case "dutch":
       return "nl";
+
+    case "polish":
+      return "pl";
 
     default:
       return "en";

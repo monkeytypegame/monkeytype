@@ -170,5 +170,10 @@
     "name": "morse",
     "info": "-.../././.--./ -.../---/---/.--./-.-.--/ ",
     "canGetPb": false
+  },
+  {
+    "name": "crt",
+    "info": "Go back to the 1980s",
+    "canGetPb": true
   }
 ]

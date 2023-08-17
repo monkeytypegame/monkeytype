@@ -27,7 +27,7 @@ const state: State = {
   psas: [],
 };
 
-export function hide(): void {
+function hide(): void {
   if (isPopupVisible(wrapperId)) {
     setNotificationBubbleVisible(false);
 
@@ -120,7 +120,7 @@ export function hide(): void {
   }
 }
 
-export async function show(): Promise<void> {
+async function show(): Promise<void> {
   Skeleton.append(wrapperId);
   if (!isPopupVisible(wrapperId)) {
     $("#alertsPopup").css("marginRight", "-10rem").animate(

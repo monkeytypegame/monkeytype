@@ -1282,6 +1282,20 @@
     @extend .ffscroll;
     overflow-y: scroll;
 
+    hr {
+      background: var(--sub-alt-color);
+      height: 0.25rem;
+      border: none;
+      border-radius: var(--roundness);
+      margin: 1rem 0;
+    }
+
+    h3 {
+      color: var(--sub-color);
+      font-size: 1.25rem;
+      margin: 0 0 0.5rem 0;
+    }
+
     .preloader {
       color: var(--main-color);
       display: grid;
