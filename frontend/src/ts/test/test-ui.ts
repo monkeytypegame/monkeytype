@@ -1080,6 +1080,11 @@ export async function applyBurstHeatmap(): Promise<void> {
     burstlist = burstlist.filter((x) => x !== Infinity);
     burstlist = burstlist.filter((x) => x < 350);
 
+    const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+    burstlist.forEach((burst, index) => {
+      burstlist[index] = Math.round(typingSpeedUnit.fromWpm(burst));
+    });
+
     if (
       TestInput.input.getHistory(TestInput.input.getHistory().length - 1)
         ?.length !== TestWords.words.getCurrent()?.length
@@ -1165,7 +1170,10 @@ export async function applyBurstHeatmap(): Promise<void> {
       if (wordBurstAttr === undefined) {
         $(word).css("color", unreachedColor);
       } else {
-        const wordBurstVal = parseInt(<string>wordBurstAttr);
+        let wordBurstVal = parseInt(wordBurstAttr as string);
+        wordBurstVal = Math.round(
+          getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(wordBurstVal)
+        );
         steps.forEach((step) => {
           if (wordBurstVal >= step.val) {
             $(word).addClass("heatmapInherit");
