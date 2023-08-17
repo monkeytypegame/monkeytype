@@ -1640,8 +1640,11 @@ export function convertToMorse(word: string): string {
 
   let morseWord = "";
 
-  for (let i = 0; i < word.length; i++) {
-    morseWord += morseCode[word.toLowerCase()[i]] + "/";
+  const deAccentedWord = replaceSpecialChars(word);
+  console.log(deAccentedWord);
+  for (let i = 0; i < deAccentedWord.length; i++) {
+    const letter = morseCode[deAccentedWord.toLowerCase()[i]];
+    morseWord += letter ? letter + "/" : "";
   }
   return morseWord;
 }
@@ -1650,6 +1653,11 @@ export function typedKeys<T extends object>(
   obj: T
 ): T extends T ? (keyof T)[] : never {
   return Object.keys(obj) as unknown as T extends T ? (keyof T)[] : never;
+}
+
+//https://ricardometring.com/javascript-replace-special-characters
+export function replaceSpecialChars(str: string): string {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove accents
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
