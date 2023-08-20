@@ -165,11 +165,11 @@ export class DailyLeaderboard {
       .zrevrank(leaderboardScoresKey, uid)
       .zcard(leaderboardScoresKey)
       .hget(leaderboardResultsKey, uid)
-      .zrange(leaderboardScoresKey, 0, 1, "WITHSCORES")
+      .zrange(leaderboardScoresKey, 0, 0, "WITHSCORES")
       .exec();
 
     const minWpm =
-      minScore.length > 0 ? parseInt(minScore[1].slice(1, 6)) / 100 : 0;
+      minScore.length > 0 ? parseInt(minScore[1]?.slice(1, 6)) / 100 : 0;
     if (rank === null) {
       return { minWpm };
     }
