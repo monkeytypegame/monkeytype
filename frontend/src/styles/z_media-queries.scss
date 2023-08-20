@@ -167,6 +167,11 @@
       }
     }
   }
+  .pageSettings .settingsGroup.quickNav .links {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-flow: unset;
+    justify-items: center;
+  }
 }
 
 //900px
@@ -303,7 +308,7 @@
     }
   }
   .pageSettings {
-    .settingsGroup .section {
+    .section {
       grid-template-columns: 1.5fr 1fr;
     }
     .section.autoSwitchThemeInputs {
@@ -331,7 +336,7 @@
   }
   .pageSettings .settingsGroup.quickNav .links {
     grid-auto-flow: unset;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     justify-items: center;
   }
 }
@@ -612,7 +617,7 @@
         "id length length" !important;
     }
   }
-  .pageSettings .settingsGroup .section {
+  .pageSettings .section {
     grid-template-columns: 1fr;
     grid-template-areas:
       "title"
@@ -834,9 +839,6 @@
   }
 
   .pageSettings {
-    .settingsGroup.quickNav {
-      display: none;
-    }
     .section.fullWidth .buttons {
       grid-template-columns: 1fr;
     }
@@ -1014,6 +1016,9 @@
 
 //350px
 @media only screen and (max-width: 21.875rem) {
+  .pageSettings .settingsGroup.quickNav .links {
+    grid-template-columns: 1fr;
+  }
   .ad.ad-h-s {
     display: none;
   }
