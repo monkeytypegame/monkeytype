@@ -29,7 +29,7 @@
   animation: rainbow-gradient 30s alternate ease-in-out infinite;
 }
 
-#top .logo .top, 
+#top .logo .top,
 .account .levelAndBar .level,
 [aria-label][data-balloon-pos]::after {
   -webkit-text-fill-color: initial;
