@@ -87,6 +87,7 @@ function apeifyClientMethod(
     return {
       status: 500,
       message: errorMessage,
+      data: null,
     };
   };
 }
