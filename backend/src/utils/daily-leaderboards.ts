@@ -11,15 +11,16 @@ interface DailyLeaderboardEntry {
   acc: number;
   consistency: number;
   timestamp: number;
-  rank?: number;
-  count?: number;
   discordAvatar?: string;
   discordId?: string;
   badgeId?: number;
 }
 
-interface DailyLeaderboardMinRank {
+interface GetRankResponse {
   minWpm: number;
+  count: number;
+  rank: number | null;
+  entry: DailyLeaderboardEntry | null;
 }
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
@@ -151,7 +152,7 @@ export class DailyLeaderboard {
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry | DailyLeaderboardMinRank | null> {
+  ): Promise<GetRankResponse | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return null;
@@ -171,13 +172,21 @@ export class DailyLeaderboard {
     const minWpm =
       minScore.length > 0 ? parseInt(minScore[1]?.slice(1, 6)) / 100 : 0;
     if (rank === null) {
-      return { minWpm };
+      return {
+        minWpm,
+        count: count ?? 0,
+        rank: null,
+        entry: null,
+      };
     }
 
     return {
-      rank: rank + 1,
+      minWpm,
       count: count ?? 0,
-      ...JSON.parse(result ?? "null"),
+      rank: rank + 1,
+      entry: {
+        ...JSON.parse(result ?? "null"),
+      },
     };
   }
 }
