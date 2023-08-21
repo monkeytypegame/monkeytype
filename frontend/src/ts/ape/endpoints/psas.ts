@@ -5,7 +5,7 @@ export default class Psas {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointData {
+  async get(): Ape.EndpointResponse {
     return await this.httpClient.get(BASE_PATH);
   }
 }
