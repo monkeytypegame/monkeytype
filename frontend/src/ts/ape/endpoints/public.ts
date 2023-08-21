@@ -11,13 +11,13 @@ export default class Public {
     this.httpClient = httpClient;
   }
 
-  async getSpeedHistogram(searchQuery: SpeedStatsQuery): Ape.Endpoint {
+  async getSpeedHistogram(searchQuery: SpeedStatsQuery): Ape.EndpointResponse {
     return await this.httpClient.get(`${BASE_PATH}/speedHistogram`, {
       searchQuery,
     });
   }
 
-  async getTypingStats(): Ape.Endpoint {
+  async getTypingStats(): Ape.EndpointResponse {
     return await this.httpClient.get(`${BASE_PATH}/typingStats`);
   }
 }
