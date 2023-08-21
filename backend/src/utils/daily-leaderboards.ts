@@ -23,6 +23,10 @@ interface GetRankResponse {
   entry: DailyLeaderboardEntry | null;
 }
 
+interface LbEntryWithRank extends DailyLeaderboardEntry {
+  rank: number;
+}
+
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
 const resultsNamespace = `${dailyLeaderboardNamespace}:results`;
@@ -120,7 +124,7 @@ export class DailyLeaderboard {
     minRank: number,
     maxRank: number,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry[]> {
+  ): Promise<LbEntryWithRank[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return [];
@@ -139,7 +143,7 @@ export class DailyLeaderboard {
       "false"
     );
 
-    const resultsWithRanks: DailyLeaderboardEntry[] = results.map(
+    const resultsWithRanks: LbEntryWithRank[] = results.map(
       (resultJSON, index) => ({
         ...JSON.parse(resultJSON),
         rank: minRank + index + 1,
