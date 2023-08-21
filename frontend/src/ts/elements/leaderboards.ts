@@ -26,18 +26,18 @@ let currentData: {
   "60": [],
 };
 
+interface GetRankResponse {
+  minWpm: number;
+  count: number;
+  rank: number | null;
+  entry: MonkeyTypes.LeaderboardEntry | null;
+}
+
 let currentRank: {
-  [key in LbKey]: MonkeyTypes.LeaderboardEntry | Record<string, never>;
+  [key in LbKey]: GetRankResponse | Record<string, never>;
 } = {
   "15": {},
   "60": {},
-};
-
-const minWpm: {
-  [key in LbKey]: Record<number, null> | null;
-} = {
-  "15": null,
-  "60": null,
 };
 
 const requesting = {
@@ -168,10 +168,26 @@ function updateFooter(lb: LbKey): void {
     return;
   }
 
+  const lbRank = currentRank[lb];
+
+  if (
+    currentTimeRange === "daily" &&
+    lbRank !== null &&
+    lbRank.minWpm === undefined
+  ) {
+    //old response format
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td colspan="6" style="text-align:center;">Looks like the server returned data in a new format, please refresh</>
+    </tr>
+    `);
+    return;
+  }
+
   let toppercent;
-  if (currentTimeRange === "allTime" && currentRank[lb]) {
+  if (currentTimeRange === "allTime" && lbRank && lbRank?.rank) {
     const num = Misc.roundTo2(
-      (currentRank[lb]["rank"] / (currentRank[lb].count as number)) * 100
+      (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
     if (currentRank[lb]["rank"] === 1) {
       toppercent = "GOAT";
@@ -181,12 +197,12 @@ function updateFooter(lb: LbKey): void {
     toppercent = `<br><span class="sub">${toppercent}</span>`;
   }
 
-  if (currentRank[lb]) {
-    const entry = currentRank[lb];
+  const entry = lbRank?.entry;
+  if (entry) {
     const date = new Date(entry.timestamp);
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
-    <td>${entry.rank}</td>
+    <td>${lbRank.rank}</td>
     <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
@@ -203,9 +219,7 @@ function updateFooter(lb: LbKey): void {
   } else if (currentTimeRange === "daily") {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
-      <td colspan="6" style="text-align:center;">Not qualified ${`(min speed required: ${minWpm[
-        lb
-      ]?.toString()}wpm)`}</>
+      <td colspan="6" style="text-align:center;">Not qualified ${`(min speed required: ${currentRank[lb]?.minWpm} wpm)`}</>
     </tr>
     `);
   } else {
@@ -229,10 +243,11 @@ function checkLbMemory(lb: LbKey): void {
 
   const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"] ?? 0;
 
-  if (currentRank[lb]) {
-    const difference = memory - currentRank[lb].rank;
+  const rank = currentRank[lb]?.rank;
+  if (rank) {
+    const difference = memory - rank;
     if (difference > 0) {
-      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      DB.updateLbMemory("time", lb, "english", rank, true);
       if (memory !== 0) {
         $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
           ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
@@ -241,7 +256,7 @@ function checkLbMemory(lb: LbKey): void {
         );
       }
     } else if (difference < 0) {
-      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      DB.updateLbMemory("time", lb, "english", rank, true);
       if (memory !== 0) {
         $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
           ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
@@ -488,17 +503,15 @@ async function update(): Promise<void> {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [lb15Data, lb60Data, lb15Rank, lb60Rank] = responses.map(
     (response) => response.data
   );
 
   currentData["15"] = lb15Data;
   currentData["60"] = lb60Data;
-  currentRank["15"] = lb15Rank?.minWpm === undefined ? lb15Rank : null;
-  currentRank["60"] = lb60Rank?.minWpm === undefined ? lb60Rank : null;
-
-  minWpm["15"] = lb15Rank?.minWpm;
-  minWpm["60"] = lb60Rank?.minWpm;
+  currentRank["15"] = lb15Rank;
+  currentRank["60"] = lb60Rank;
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
