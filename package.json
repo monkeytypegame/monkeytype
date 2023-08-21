@@ -19,6 +19,7 @@
     "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
     "audit-fe": "cd frontend && npm run audit",
     "release": "release-it",
+    "hotfix": "cd frontend && npm run deploy-live && cd .. && sh ./bin/purgeCfCache.sh",
     "build-fe": "cd ./frontend && npm run build-live",
     "pretty": "prettier --check \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./frontend/static/**/*.{json,html,css}\"",
     "pretty-code": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\" \"./frontend/**/*.{ts,js}\" \"./frontend/src/**/*.scss\"",
