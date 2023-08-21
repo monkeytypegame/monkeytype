@@ -10,11 +10,9 @@ import * as TestLogic from "../test/test-logic";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
-import * as TestState from "../test/test-state";
 import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
-import * as PaceCaret from "../test/pace-caret";
 import * as TagController from "./tag-controller";
 import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
 import * as URLHandler from "../utils/url-handler";
@@ -51,7 +49,7 @@ let signedOutThisSession = false;
 
 export const gmailProvider = new GoogleAuthProvider();
 
-export async function sendVerificationEmail(): Promise<void> {
+async function sendVerificationEmail(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
@@ -73,7 +71,7 @@ export async function sendVerificationEmail(): Promise<void> {
   }
 }
 
-export async function getDataAndInit(): Promise<boolean> {
+async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     if (window.location.pathname !== "/account") {
@@ -152,86 +150,23 @@ export async function getDataAndInit(): Promise<boolean> {
       true
     );
   }
-  if (!UpdateConfig.changedBeforeDb) {
-    //config didnt change before db loaded
-    if (UpdateConfig.localStorageConfig === null && snapshot.config) {
-      console.log("no local config, applying db");
-      AccountButton.loading(false);
-      UpdateConfig.apply(snapshot.config);
-      Settings.update();
-      UpdateConfig.saveFullConfigToLocalStorage(true);
-      TestLogic.restart({
-        nosave: true,
-      });
-    } else if (snapshot.config !== undefined) {
-      //loading db config, keep for now
-      let configsDifferent = false;
-      Object.keys(Config).forEach((ke) => {
-        const key = ke as keyof typeof Config;
-        if (configsDifferent) return;
-        try {
-          if (key !== "resultFilters") {
-            if (Array.isArray(Config[key])) {
-              (Config[key] as string[]).forEach((arrval, index) => {
-                const arrayValue = (
-                  snapshot?.config?.[key] as
-                    | string[]
-                    | MonkeyTypes.QuoteLength[]
-                    | MonkeyTypes.CustomBackgroundFilter
-                )[index];
-                if (arrval != arrayValue) {
-                  configsDifferent = true;
-                  console.log(
-                    `.config is different: ${arrval} != ${arrayValue}`
-                  );
-                }
-              });
-            } else {
-              if (Config[key] != snapshot?.config?.[key]) {
-                configsDifferent = true;
-                console.log(
-                  `..config is different ${key}: ${Config[key]} != ${snapshot?.config?.[key]}`
-                );
-              }
-            }
-          }
-        } catch (e) {
-          console.log(e);
-          configsDifferent = true;
-          console.log(`...config is different`);
-        }
-      });
-      if (configsDifferent) {
-        console.log("configs are different, applying config from db");
-        AccountButton.loading(false);
-        UpdateConfig.apply(snapshot.config);
-        Settings.update();
-        UpdateConfig.saveFullConfigToLocalStorage(true);
-        if (ActivePage.get() === "test") {
-          TestLogic.restart({
-            nosave: true,
-          });
-        }
-        AccountButton.loading(true);
-        DB.saveConfig(Config).then(() => {
-          AccountButton.loading(false);
-        });
-      }
-    }
-    UpdateConfig.setDbConfigLoaded(true);
-  } else {
-    console.log("config changed before db");
-    AccountButton.loading(false);
-  }
-  if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-    if (!TestState.isActive) {
-      PaceCaret.init();
-    }
+
+  const areConfigsEqual =
+    JSON.stringify(Config) === JSON.stringify(snapshot.config);
+
+  if (
+    snapshot.config &&
+    (!UpdateConfig.localStorageConfig || !areConfigsEqual)
+  ) {
+    console.log(
+      "no local config or local and db configs are different - applying db"
+    );
+    UpdateConfig.apply(snapshot.config);
+    UpdateConfig.saveFullConfigToLocalStorage(true);
   }
   AccountButton.loading(false);
   updateTagsCommands();
   TagController.loadActiveFromLocalStorage();
-  Settings.showAccountSection();
   if (window.location.pathname === "/account") {
     LoadingPage.updateBar(90);
     await Account.downloadResults();
@@ -362,7 +297,7 @@ if (Auth && ConnectionState.get()) {
   });
 }
 
-export async function signIn(): Promise<void> {
+async function signIn(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1);
     return;
@@ -374,7 +309,6 @@ export async function signIn(): Promise<void> {
     return;
   }
 
-  UpdateConfig.setChangedBeforeDb(false);
   authListener();
   LoginPage.showPreloader();
   LoginPage.disableInputs();
@@ -419,7 +353,7 @@ export async function signIn(): Promise<void> {
     });
 }
 
-export async function signInWithGoogle(): Promise<void> {
+async function signInWithGoogle(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
@@ -433,7 +367,6 @@ export async function signInWithGoogle(): Promise<void> {
     return;
   }
 
-  UpdateConfig.setChangedBeforeDb(false);
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
@@ -472,7 +405,7 @@ export async function signInWithGoogle(): Promise<void> {
     });
 }
 
-export async function addGoogleAuth(): Promise<void> {
+async function addGoogleAuth(): Promise<void> {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
@@ -730,23 +663,19 @@ async function signUp(): Promise<void> {
 
 $(".pageLogin .login input").keyup((e) => {
   if (e.key === "Enter") {
-    UpdateConfig.setChangedBeforeDb(false);
     signIn();
   }
 });
 
 $(".pageLogin .login .button.signIn").on("click", () => {
-  UpdateConfig.setChangedBeforeDb(false);
   signIn();
 });
 
 $(".pageLogin .login .button.signInWithGoogle").on("click", () => {
-  UpdateConfig.setChangedBeforeDb(false);
   signInWithGoogle();
 });
 
 // $(".pageLogin .login .button.signInWithGitHub").on("click",(e) => {
-// UpdateConfig.setChangedBeforeDb(false);
 // signInWithGitHub();
 // });
 

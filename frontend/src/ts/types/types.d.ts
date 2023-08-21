@@ -90,7 +90,7 @@ declare namespace MonkeyTypes {
 
   type KeymapShowTopRow = "always" | "layout" | "never";
 
-  type ShowAverage = "off" | "wpm" | "acc" | "both";
+  type ShowAverage = "off" | "speed" | "acc" | "both";
 
   type SmoothCaretMode = "off" | "slow" | "medium" | "fast";
 
@@ -140,7 +140,13 @@ declare namespace MonkeyTypes {
 
   type MinimumWordsPerMinute = "off" | "custom";
 
-  type HighlightMode = "off" | "letter" | "word";
+  type HighlightMode =
+    | "off"
+    | "letter"
+    | "word"
+    | "next_word"
+    | "next_two_words"
+    | "next_three_words";
 
   type Ads = "off" | "result" | "on" | "sellout";
 
@@ -238,8 +244,9 @@ declare namespace MonkeyTypes {
     punctuateWord?: (word: string) => string;
     withWords?: (words?: string[]) => Promise<Misc.Wordset>;
     alterText?: (word: string) => string;
-    applyCSS?: () => void;
     applyConfig?: () => void;
+    applyGlobalCSS?: () => void;
+    clearGlobal?: () => void;
     rememberSettings?: () => void;
     toggleScript?: (params: string[]) => void;
     pullSection?: (language?: string) => Promise<Misc.Section | false>;
@@ -276,6 +283,7 @@ declare namespace MonkeyTypes {
     forcedConfig?: MonkeyTypes.FunboxForcedConfig;
     properties?: FunboxProperty[];
     functions?: FunboxFunctions;
+    hasCSS?: boolean;
   }
 
   interface CustomText {
@@ -429,7 +437,6 @@ declare namespace MonkeyTypes {
     language: string;
     fontSize: number;
     freedomMode: boolean;
-    resultFilters?: ResultFilters | null;
     difficulty: Difficulty;
     blindMode: boolean;
     quickEnd: boolean;
@@ -471,7 +478,7 @@ declare namespace MonkeyTypes {
     minWpm: MinimumWordsPerMinute;
     minWpmCustomSpeed: number;
     highlightMode: HighlightMode;
-    alwaysShowCPM: boolean;
+    typingSpeedUnit: TypingSpeedUnit;
     ads: Ads;
     hideExtraLetters: boolean;
     strictSpace: boolean;
@@ -504,6 +511,7 @@ declare namespace MonkeyTypes {
     | boolean
     | string[]
     | MonkeyTypes.QuoteLength[]
+    | MonkeyTypes.HighlightMode
     | MonkeyTypes.ResultFilters
     | MonkeyTypes.CustomBackgroundFilter
     | null
@@ -891,4 +899,15 @@ declare namespace MonkeyTypes {
   }
 
   type AllRewards = XpReward | BadgeReward;
+
+  type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
+
+  interface TypingSpeedUnitSettings {
+    fromWpm: (number) => number;
+    toWpm: (number) => number;
+    convertWithUnitSuffix: (number) => string;
+    fullUnitString: string;
+    histogramDataBucketSize: number;
+    historyStepSize: number;
+  }
 }

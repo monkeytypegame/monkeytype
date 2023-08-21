@@ -8,8 +8,6 @@ services:
     restart: on-failure
     volumes:
       - redis-data:/data
-    networks:
-      - test-network
 
   monkeytype-mongodb:
     container_name: monkeytype-mongodb
@@ -19,11 +17,7 @@ services:
       - mongo-data:/data/db
     ports:
       - "${DOCKER_DB_PORT:-27017}:${DOCKER_DB_PORT:-27017}"
-    networks:
-      - test-network
 
 volumes:
   mongo-data:
   redis-data:
-networks:
-  test-network:

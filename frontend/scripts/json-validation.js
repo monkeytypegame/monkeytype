@@ -404,19 +404,20 @@ function validateQuotes() {
         quoteIdsAllGood = false;
         quoteIdsErrors = quoteIdsValidator.errors;
       }
-      const incorrectQuoteLength = quoteData.quotes
-        .filter((quote) => quote.text.length !== quote.length)
-        .map((quote) => quote.id);
+      const incorrectQuoteLength = quoteData.quotes.filter(
+        (quote) => quote.text.length !== quote.length
+      );
       if (incorrectQuoteLength.length !== 0) {
-        console.log(
-          `Quote ${quotefilename} ID(s) ${incorrectQuoteLength.join(
-            ","
-          )} length fields are \u001b[31mincorrect\u001b[0m`
-        );
+        console.log("Some length fields are \u001b[31mincorrect\u001b[0m");
+        incorrectQuoteLength.map((quote) => {
+          console.log(
+            `Quote ${quotefilename} ID ${quote.id}: expected length ${quote.text.length}`
+          );
+        });
         quoteFilesAllGood = false;
-        incorrectQuoteLength.map((id) => {
+        incorrectQuoteLength.map((quote) => {
           quoteLengthErrors.push(
-            `${quotefilename} ${id} length field is incorrect`
+            `${quotefilename} ${quote.id} length field is incorrect`
           );
         });
       }

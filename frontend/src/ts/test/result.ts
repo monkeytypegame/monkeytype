@@ -17,6 +17,7 @@ import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as FunboxList from "./funbox/funbox-list";
 import * as PbCrown from "./pb-crown";
 import * as TestConfig from "./test-config";
@@ -31,6 +32,7 @@ import * as TribeUserList from "../tribe/tribe-user-list";
 import * as TribeButtons from "../tribe/tribe-buttons";
 import * as TribeChat from "../tribe/tribe-chat";
 import * as TribeChartController from "../tribe/tribe-chart-controller";
+import * as ConfigEvent from "../observables/config-event";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -54,7 +56,9 @@ let resultScaleOptions = (
 ).scales;
 
 async function updateGraph(): Promise<void> {
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const labels = [];
+
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
       labels.push(Misc.roundTo2(result.testDuration).toString());
@@ -62,21 +66,20 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  resultScaleOptions["wpm"].title.text = Config.alwaysShowCPM
-    ? "Character per Minute"
-    : "Words per Minute";
+  resultScaleOptions["wpm"].title.text = typingSpeedUnit.fullUnitString;
+
   const chartData1 = [
-    ...(Config.alwaysShowCPM
-      ? TestInput.wpmHistory.map((a) => a * 5)
-      : TestInput.wpmHistory),
+    ...TestInput.wpmHistory.map((a) =>
+      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
   ];
 
   if (result.chartData === "toolong") return;
 
   const chartData2 = [
-    ...(Config.alwaysShowCPM
-      ? result.chartData.raw.map((a) => a * 5)
-      : result.chartData.raw),
+    ...result.chartData.raw.map((a) =>
+      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
   ];
 
   if (
@@ -98,14 +101,12 @@ async function updateGraph(): Promise<void> {
   ChartController.result.data.labels = labels;
   ChartController.result.data.datasets[0].data = chartData1;
   ChartController.result.data.datasets[1].data = smoothedRawData;
-
-  ChartController.result.data.datasets[0].label = Config.alwaysShowCPM
-    ? "cpm"
-    : "wpm";
+  ChartController.result.data.datasets[0].label = Config.typingSpeedUnit;
 
   maxChartVal = Math.max(
     ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
   );
+
   if (!Config.startGraphsAtZero) {
     const minChartVal = Math.min(
       ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
@@ -175,9 +176,8 @@ export async function updateGraphPBLine(): Promise<void> {
     result.funbox ?? "none"
   );
   if (lpb === 0) return;
-  const chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(
-    2
-  );
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+  const chartlpb = Misc.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -204,54 +204,49 @@ export async function updateGraphPBLine(): Promise<void> {
       content: `PB: ${chartlpb}`,
     },
   });
+  const lpbRange = typingSpeedUnit.fromWpm(20);
   if (
-    maxChartVal >= parseFloat(chartlpb) - 20 &&
-    maxChartVal <= parseFloat(chartlpb) + 20
+    maxChartVal >= parseFloat(chartlpb) - lpbRange &&
+    maxChartVal <= parseFloat(chartlpb) + lpbRange
   ) {
-    maxChartVal = parseFloat(chartlpb) + 15;
+    maxChartVal = Math.round(parseFloat(chartlpb) + lpbRange);
   }
-  resultScaleOptions["wpm"].max = Math.round(maxChartVal + 5);
-  resultScaleOptions["raw"].max = Math.round(maxChartVal + 5);
+  resultScaleOptions["wpm"].max = maxChartVal;
+  resultScaleOptions["raw"].max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
   let inf = false;
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (result.wpm >= 1000) {
     inf = true;
   }
+
   if (Config.alwaysShowDecimalPlaces) {
-    if (Config.alwaysShowCPM === false) {
-      $("#result .stats .wpm .top .text").text("wpm");
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(
-          Misc.roundTo2(result.wpm).toFixed(2)
-        );
-      }
-      $("#result .stats .raw .bottom").text(
-        Misc.roundTo2(result.rawWpm).toFixed(2)
+    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
+    if (inf) {
+      $("#result .stats .wpm .bottom").text("Infinite");
+    } else {
+      $("#result .stats .wpm .bottom").text(
+        Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)).toFixed(2)
       );
+    }
+    $("#result .stats .raw .bottom").text(
+      Misc.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)).toFixed(2)
+    );
+
+    if (Config.typingSpeedUnit != "wpm") {
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        Misc.roundTo2(result.wpm * 5).toFixed(2) + " cpm"
+        result.wpm.toFixed(2) + " wpm"
+      );
+      $("#result .stats .raw .bottom").attr(
+        "aria-label",
+        result.rawWpm.toFixed(2) + " wpm"
       );
     } else {
-      $("#result .stats .wpm .top .text").text("cpm");
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(
-          Misc.roundTo2(result.wpm * 5).toFixed(2)
-        );
-      }
-      $("#result .stats .raw .bottom").text(
-        Misc.roundTo2(result.rawWpm * 5).toFixed(2)
-      );
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(result.wpm).toFixed(2) + " wpm"
-      );
+      $("#result .stats .wpm .bottom").removeAttr("aria-label");
+      $("#result .stats .raw .bottom").removeAttr("aria-label");
     }
 
     $("#result .stats .acc .bottom").text(
@@ -262,7 +257,6 @@ function updateWpmAndAcc(): void {
       time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
-    $("#result .stats .raw .bottom").removeAttr("aria-label");
     // $("#result .stats .acc .bottom").removeAttr("aria-label");
 
     $("#result .stats .acc .bottom").attr(
@@ -271,33 +265,26 @@ function updateWpmAndAcc(): void {
     );
   } else {
     //not showing decimal places
-    if (Config.alwaysShowCPM === false) {
-      $("#result .stats .wpm .top .text").text("wpm");
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        result.wpm + ` (${Misc.roundTo2(result.wpm * 5)} cpm)`
-      );
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Math.round(result.wpm));
-      }
-      $("#result .stats .raw .bottom").text(Math.round(result.rawWpm));
-      $("#result .stats .raw .bottom").attr("aria-label", result.rawWpm);
-    } else {
-      $("#result .stats .wpm .top .text").text("cpm");
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(result.wpm * 5) + ` (${Misc.roundTo2(result.wpm)} wpm)`
-      );
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Math.round(result.wpm * 5));
-      }
-      $("#result .stats .raw .bottom").text(Math.round(result.rawWpm * 5));
-      $("#result .stats .raw .bottom").attr("aria-label", result.rawWpm * 5);
+    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm);
+    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(result.rawWpm);
+    if (Config.typingSpeedUnit != "wpm") {
+      wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
+      rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
+
+    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
+    $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
+    if (inf) {
+      $("#result .stats .wpm .bottom").text("Infinite");
+    } else {
+      $("#result .stats .wpm .bottom").text(
+        Math.round(typingSpeedUnit.fromWpm(result.wpm))
+      );
+    }
+    $("#result .stats .raw .bottom").text(
+      Math.round(typingSpeedUnit.fromWpm(result.rawWpm))
+    );
+    $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
     $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
     $("#result .stats .acc .bottom").attr(
@@ -430,10 +417,11 @@ export async function updateCrown(): Promise<void> {
     Config.lazyMode,
     Config.funbox
   );
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   pbDiff = Math.abs(result.wpm - lpb);
   $("#result .stats .wpm .crown").attr(
     "aria-label",
-    "+" + Misc.roundTo2(pbDiff)
+    "+" + Misc.roundTo2(typingSpeedUnit.fromWpm(pbDiff))
   );
 }
 
@@ -488,6 +476,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     $("#result .stats .tags .bottom").append(`
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
     `);
+    const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
     if (
       Config.mode !== "quote" &&
       !dontSave &&
@@ -523,7 +512,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
           type: "line",
           id: "tpb",
           scaleID: "wpm",
-          value: Config.alwaysShowCPM ? tpb * 5 : tpb,
+          value: typingSpeedUnit.fromWpm(tpb),
           borderColor: themecolors["sub"],
           borderWidth: 1,
           borderDash: [2, 2],
@@ -543,7 +532,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
             xAdjust: labelAdjust,
             enabled: true,
             content: `${tag.display} PB: ${Misc.roundTo2(
-              Config.alwaysShowCPM ? tpb * 5 : tpb
+              typingSpeedUnit.fromWpm(tpb)
             ).toFixed(2)}`,
           },
         });
@@ -926,5 +915,25 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
       }
       dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
     }
+  }
+});
+
+ConfigEvent.subscribe(async (eventKey) => {
+  if (eventKey === "typingSpeedUnit" && TestUI.resultVisible) {
+    resultScaleOptions = (
+      ChartController.result.options as ScaleChartOptions<"line" | "scatter">
+    ).scales;
+    resultAnnotation = [];
+
+    updateWpmAndAcc();
+    await updateGraph();
+    await updateGraphPBLine();
+    TestUI.applyBurstHeatmap();
+
+    ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
+      .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
+      resultAnnotation;
+    ChartController.result.updateColors();
+    ChartController.result.resize();
   }
 });

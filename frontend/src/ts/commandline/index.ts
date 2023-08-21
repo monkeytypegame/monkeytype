@@ -51,7 +51,7 @@ function showInput(
   }
 }
 
-export function isSingleListCommandLineActive(): boolean {
+function isSingleListCommandLineActive(): boolean {
   return state["usingSingleList"];
 }
 
@@ -225,7 +225,7 @@ function updateSuggested(): void {
   updateActiveEntry();
 }
 
-export let show = (): void => {
+function show(): void {
   themeChosen = false;
   activeIndex = 0;
   commandLineMouseMode = false;
@@ -256,7 +256,7 @@ export let show = (): void => {
   $("#commandLine input").val("");
   updateSuggested();
   $("#commandLine input").trigger("focus");
-};
+}
 
 function hide(shouldFocusTestUI = true): void {
   UpdateConfig.previewFontFamily(Config.fontFamily);
@@ -329,85 +329,66 @@ function trigger(command: string): void {
   }
 }
 
-//todo rewrite this mess
-function addChildCommands(
-  unifiedCommands: MonkeyTypes.Command[],
-  commandItem: MonkeyTypes.Command | MonkeyTypes.CommandsSubgroup,
-  parentCommandDisplay = "",
-  parentCommand?: MonkeyTypes.CommandsSubgroup
-): void {
-  let commandItemDisplay = (commandItem as MonkeyTypes.Command).display;
-
-  if ((commandItem as MonkeyTypes.Command)?.input !== true) {
-    commandItemDisplay = (commandItem as MonkeyTypes.Command).display.replace(
-      /\s?\.\.\.$/g,
-      ""
-    );
-  }
-
-  let icon = `<i class="fas fa-fw"></i>`;
-  if (
-    (commandItem as MonkeyTypes.Command).configValue !== undefined &&
-    Config[parentCommand?.configKey as keyof MonkeyTypes.Config] ===
-      (commandItem as MonkeyTypes.Command).configValue
-  ) {
-    icon = `<i class="fas fa-fw fa-check"></i>`;
-  }
-  if (
-    (commandItem as MonkeyTypes.Command).noIcon ||
-    (commandItem as MonkeyTypes.Command).input === true
-  ) {
-    icon = "";
-  }
-
-  if (parentCommandDisplay) {
-    commandItemDisplay =
-      parentCommandDisplay + " > " + icon + commandItemDisplay;
-  }
-  if ((commandItem as MonkeyTypes.Command).subgroup) {
-    const command = commandItem as MonkeyTypes.Command;
-    if (command.subgroup?.beforeList) command.subgroup.beforeList();
-    try {
-      (
-        (commandItem as MonkeyTypes.Command)
-          ?.subgroup as MonkeyTypes.CommandsSubgroup
-      ).list?.forEach((cmd) => {
-        (commandItem as MonkeyTypes.CommandsSubgroup).configKey = (
-          (commandItem as MonkeyTypes.Command)
-            .subgroup as MonkeyTypes.CommandsSubgroup
-        ).configKey;
-        addChildCommands(
-          unifiedCommands,
-          cmd,
-          commandItemDisplay,
-          commandItem as MonkeyTypes.CommandsSubgroup
-        );
-      });
-      // commandItem.exec();
-      // const currentCommandsIndex = CommandlineLists.current.length - 1;
-      // CommandlineLists.current[currentCommandsIndex].list.forEach((cmd) => {
-      //   if (cmd.alias === undefined) cmd.alias = commandItem.alias;
-      //   addChildCommands(unifiedCommands, cmd, commandItemDisplay);
-      // });
-      // CommandlineLists.current.pop();
-    } catch (e) {}
-  } else {
-    const tempCommandItem: MonkeyTypes.Command = {
-      ...(commandItem as MonkeyTypes.Command),
+function getCommands(
+  command: MonkeyTypes.Command,
+  parentCommand?: MonkeyTypes.Command
+): MonkeyTypes.Command[] {
+  const ret: MonkeyTypes.Command[] = [];
+  if (command.subgroup) {
+    const currentCommand = {
+      ...command,
+      subgroup: {
+        ...command.subgroup,
+        list: [],
+      },
     };
+    for (const cmd of command.subgroup.list) {
+      ret.push(...getCommands(cmd, currentCommand));
+    }
+  } else {
     if (parentCommand) {
-      (tempCommandItem as MonkeyTypes.Command).icon = (
-        parentCommand as unknown as MonkeyTypes.Command
-      ).icon;
+      const parentCommandDisplay = parentCommand.display.replace(
+        /\s?\.\.\.$/g,
+        ""
+      );
+      let configIcon = "";
+      const parentKey = parentCommand.subgroup?.configKey;
+      const currentValue = command.configValue;
+      if (parentKey !== undefined && currentValue !== undefined) {
+        if (
+          (command.configValueMode === "include" &&
+            (Config[parentKey] as unknown[]).includes(currentValue)) ||
+          Config[parentKey] === currentValue
+        ) {
+          configIcon = `<i class="fas fa-fw fa-check"></i>`;
+        } else {
+          configIcon = `<i class="fas fa-fw"></i>`;
+        }
+      }
+      const displayString =
+        parentCommandDisplay +
+        " > " +
+        (command.noIcon ? "" : configIcon) +
+        command.display;
+      const newCommand = {
+        ...command,
+        display: displayString,
+        icon: parentCommand.icon,
+        alias: (parentCommand.alias ?? "") + " " + (command.alias ?? ""),
+        visible: (parentCommand.visible ?? true) && (command.visible ?? true),
+        available: (): boolean => {
+          return (
+            (parentCommand?.available?.() ?? true) &&
+            (command?.available?.() ?? true)
+          );
+        },
+      };
+      ret.push(newCommand);
+    } else {
+      ret.push(command);
     }
-    if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
-    //@ts-ignore
-    if (parentCommand?.available) {
-      //@ts-ignore
-      tempCommandItem.available = parentCommand.available;
-    }
-    unifiedCommands.push(tempCommandItem);
   }
+  return ret;
 }
 
 function generateSingleListOfCommands(): {
@@ -415,14 +396,10 @@ function generateSingleListOfCommands(): {
   list: MonkeyTypes.Command[];
 } {
   const allCommands: MonkeyTypes.Command[] = [];
-  const oldShowCommandLine = show;
-  show = (): void => {
-    //
-  };
-  CommandlineLists.commands.list.forEach((c) =>
-    addChildCommands(allCommands, c)
-  );
-  show = oldShowCommandLine;
+  for (const command of CommandlineLists.commands.list) {
+    allCommands.push(...getCommands(command));
+  }
+
   return {
     title: "All Commands",
     list: allCommands,
@@ -683,6 +660,7 @@ $(document).on("keydown", (e) => {
     commandLineMouseMode = false;
     if (e.key === ">" && Config.singleListCommandLine === "manual") {
       if (!isSingleListCommandLineActive()) {
+        state["usingSingleList"] = true;
         useSingleListCommandLine(false);
         return;
       } else if ($("#commandLine input").val() === ">") {
@@ -701,6 +679,7 @@ $(document).on("keydown", (e) => {
           inputVal[0] !== ">"
         ) {
           restoreOldCommandLine(false);
+          updateSuggested();
         }
       }, 1);
     }

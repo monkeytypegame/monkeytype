@@ -104,9 +104,18 @@ const CONFIG_SCHEMA = joi.object({
   accountChart: joi.array().items(joi.string().valid("on", "off")).optional(),
   minWpm: joi.string().valid("off", "custom"),
   minWpmCustomSpeed: joi.number().min(0),
-  highlightMode: joi.string().valid("off", "letter", "word"),
+  highlightMode: joi
+    .string()
+    .valid(
+      "off",
+      "letter",
+      "word",
+      "next_word",
+      "next_two_words",
+      "next_three_words"
+    ),
   tapeMode: joi.string().valid("off", "letter", "word"),
-  alwaysShowCPM: joi.boolean(),
+  typingSpeedUnit: joi.string().valid("wpm", "cpm", "wps", "cps", "wph"),
   enableAds: joi.string().valid("off", "on", "max"),
   ads: joi.string().valid("off", "result", "on", "sellout"),
   hideExtraLetters: joi.boolean(),
@@ -128,7 +137,7 @@ const CONFIG_SCHEMA = joi.object({
   burstHeatmap: joi.boolean(),
   britishEnglish: joi.boolean(),
   lazyMode: joi.boolean(),
-  showAverage: joi.string().valid("off", "wpm", "acc", "both"),
+  showAverage: joi.string().valid("off", "speed", "acc", "both"),
 });
 
 export default CONFIG_SCHEMA;

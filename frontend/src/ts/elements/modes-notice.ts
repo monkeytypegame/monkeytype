@@ -7,6 +7,8 @@ import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import { roundTo2 } from "../utils/misc";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -21,7 +23,7 @@ ConfigEvent.subscribe((eventKey) => {
       "confidenceMode",
       "layout",
       "showAverage",
-      "alwaysShowCPM",
+      "typingSpeedUnit",
     ].includes(eventKey)
   ) {
     update();
@@ -29,9 +31,6 @@ ConfigEvent.subscribe((eventKey) => {
 });
 
 export async function update(): Promise<void> {
-  let anim = false;
-  if ($(".pageTest #testModesNotice").text() === "") anim = true;
-
   $(".pageTest #testModesNotice").empty();
 
   if (TestState.isRepeated && Config.mode !== "quote") {
@@ -115,7 +114,11 @@ export async function update(): Promise<void> {
   ) {
     let speed = "";
     try {
-      speed = ` (${Math.round(PaceCaret.settings?.wpm ?? 0)} wpm)`;
+      speed = ` (${roundTo2(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+          PaceCaret.settings?.wpm ?? 0
+        )
+      )} ${Config.typingSpeedUnit})`;
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
@@ -142,10 +145,10 @@ export async function update(): Promise<void> {
     }
 
     if (Auth?.currentUser && avgWPM > 0) {
-      const avgWPMText = ["wpm", "both"].includes(Config.showAverage)
-        ? Config.alwaysShowCPM
-          ? `${Math.round(avgWPM * 5)} cpm`
-          : `${avgWPM} wpm`
+      const avgWPMText = ["speed", "both"].includes(Config.showAverage)
+        ? getTypingSpeedUnit(Config.typingSpeedUnit).convertWithUnitSuffix(
+            avgWPM
+          )
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
@@ -162,7 +165,11 @@ export async function update(): Promise<void> {
 
   if (Config.minWpm !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${Config.minWpmCustomSpeed} wpm</div>`
+      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${roundTo2(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+          Config.minWpmCustomSpeed
+        )
+      )} ${Config.typingSpeedUnit}</div>`
     );
   }
 
@@ -174,9 +181,13 @@ export async function update(): Promise<void> {
 
   if (Config.minBurst !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${
-        Config.minBurstCustomSpeed
-      } burst ${Config.minBurst === "flex" ? "(flex)" : ""}</div>`
+      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${roundTo2(
+        getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
+          Config.minBurstCustomSpeed
+        )
+      )} ${Config.typingSpeedUnit} burst ${
+        Config.minBurst === "flex" ? "(flex)" : ""
+      }</div>`
     );
   }
 
@@ -239,19 +250,4 @@ export async function update(): Promise<void> {
       );
     }
   } catch {}
-
-  if (anim) {
-    $(".pageTest #testModesNotice")
-      .css("transition", "none")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        125,
-        () => {
-          $(".pageTest #testModesNotice").css("transition", ".125s");
-        }
-      );
-  }
 }

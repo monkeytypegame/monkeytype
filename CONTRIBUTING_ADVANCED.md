@@ -24,9 +24,9 @@ Git is optional but we recommend you utilize it. Monkeytype uses the Git source 
 
 #### NodeJS and NPM
 
-Currently, the project is using version `16.13.2 LTS`.
+Currently, the project is using version `18.17.1 LTS`.
 
-If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version) to use the version of Node.js in the `.nvmrc` file.
+If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 18.17.1` then `nvm use 18.17.1`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 
@@ -135,7 +135,7 @@ Note: Rebuilding doesn't happen instantaneously and depends on your machine, so 
 
 Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit.
 
-For guidelines on adding themes, languages or quotes, pleases refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
+For guidelines on commit messages, adding themes, languages or quotes, pleases refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 
 ## Questions
 

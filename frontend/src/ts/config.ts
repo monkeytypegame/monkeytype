@@ -19,30 +19,15 @@ import * as TribeState from "./tribe/tribe-state";
 import * as TribeConfigSyncEvent from "./observables/tribe-config-sync-event";
 
 export let localStorageConfig: MonkeyTypes.Config;
-export let dbConfigLoaded = false;
-export let changedBeforeDb = false;
-
-export function setLocalStorageConfig(val: MonkeyTypes.Config): void {
-  localStorageConfig = val;
-}
-
-export function setDbConfigLoaded(val: boolean): void {
-  dbConfigLoaded = val;
-}
-
-export function setChangedBeforeDb(val: boolean): void {
-  changedBeforeDb = val;
-}
 
 let loadDone: (value?: unknown) => void;
 
-let config = {
+const config = {
   ...DefaultConfig,
 };
 
 let configToSend = {} as MonkeyTypes.Config;
 const saveToDatabase = debounce(1000, () => {
-  delete configToSend.resultFilters;
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
     DB.saveConfig(configToSend).then(() => {
@@ -57,14 +42,9 @@ async function saveToLocalStorage(
   nosave = false,
   noDbCheck = false
 ): Promise<void> {
-  if (!dbConfigLoaded && !noDbCheck && !nosave) {
-    setChangedBeforeDb(true);
-  }
-
   if (nosave) return;
 
   const localToSave = config;
-  delete localToSave.resultFilters;
 
   const localToSaveStringified = JSON.stringify(localToSave);
   window.localStorage.setItem("config", localToSaveStringified);
@@ -79,11 +59,7 @@ export async function saveFullConfigToLocalStorage(
   noDbCheck = false
 ): Promise<void> {
   console.log("saving full config to localStorage");
-  if (!dbConfigLoaded && !noDbCheck) {
-    setChangedBeforeDb(true);
-  }
   const save = config;
-  delete save.resultFilters;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
   if (!noDbCheck) {
@@ -343,7 +319,7 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setAccountChart(
+function setAccountChart(
   array: MonkeyTypes.AccountChart,
   nosave?: boolean
 ): boolean {
@@ -444,12 +420,20 @@ export function setAlwaysShowDecimalPlaces(
   return true;
 }
 
-export function setAlwaysShowCPM(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("always show CPM", val, ["boolean"])) return false;
-
-  config.alwaysShowCPM = val;
-  saveToLocalStorage("alwaysShowCPM", nosave);
-  ConfigEvent.dispatch("alwaysShowCPM", config.alwaysShowCPM);
+export function setTypingSpeedUnit(
+  val: MonkeyTypes.TypingSpeedUnit,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("typing speed unit", val, [
+      ["wpm", "cpm", "wps", "cps", "wph"],
+    ])
+  ) {
+    return false;
+  }
+  config.typingSpeedUnit = val;
+  saveToLocalStorage("typingSpeedUnit", nosave);
+  ConfigEvent.dispatch("typingSpeedUnit", config.typingSpeedUnit, nosave);
 
   return true;
 }
@@ -533,7 +517,9 @@ export function setMinWpm(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  if (!isConfigValueValid("min WPM", minwpm, [["off", "custom"]])) return false;
+  if (!isConfigValueValid("min speed", minwpm, [["off", "custom"]])) {
+    return false;
+  }
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.minWpm = minwpm;
@@ -549,7 +535,7 @@ export function setMinWpmCustomSpeed(
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
-  if (!isConfigValueValid("min WPM custom speed", val, ["number"])) {
+  if (!isConfigValueValid("min speed custom", val, ["number"])) {
     return false;
   }
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
@@ -916,7 +902,7 @@ export function setShowTimerProgress(
 }
 
 export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live WPM", live, ["boolean"])) return false;
+  if (!isConfigValueValid("show live speed", live, ["boolean"])) return false;
 
   config.showLiveWpm = live;
   saveToLocalStorage("showLiveWpm", nosave);
@@ -950,7 +936,9 @@ export function setShowAverage(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("show average", value, [["off", "wpm", "acc", "both"]])
+    !isConfigValueValid("show average", value, [
+      ["off", "speed", "acc", "both"],
+    ])
   ) {
     return false;
   }
@@ -967,7 +955,16 @@ export function setHighlightMode(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("highlight mode", mode, [["off", "letter", "word"]])
+    !isConfigValueValid("highlight mode", mode, [
+      [
+        "off",
+        "letter",
+        "word",
+        "next_word",
+        "next_two_words",
+        "next_three_words",
+      ],
+    ])
   ) {
     return false;
   }
@@ -2017,7 +2014,7 @@ export function apply(
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
-    setAlwaysShowCPM(configObj.alwaysShowCPM, true);
+    setTypingSpeedUnit(configObj.typingSpeedUnit, true);
     setHideExtraLetters(configObj.hideExtraLetters, true);
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
@@ -2095,6 +2092,16 @@ function replaceLegacyValues(
     configObj.quickRestart = "esc";
   }
 
+  //@ts-ignore
+  if (configObj.alwaysShowCPM === true) {
+    configObj.typingSpeedUnit = "cpm";
+  }
+
+  //@ts-ignore
+  if (configObj.showAverage === "wpm") {
+    configObj.showAverage = "speed";
+  }
+
   return configObj;
 }
 
@@ -2108,10 +2115,6 @@ export function getConfigChanges(): MonkeyTypes.PresetConfig {
       (configChanges[key] as typeof config[typeof key]) = config[key];
     });
   return configChanges;
-}
-
-export function setConfig(newConfig: MonkeyTypes.Config): void {
-  config = newConfig;
 }
 
 export const loadPromise = new Promise((v) => {

@@ -10,7 +10,7 @@ import { getSnapshot, setSnapshot } from "../db";
 
 const wrapperId = "streakHourOffsetPopupWrapper";
 
-export function show(): void {
+function show(): void {
   if (!ConnectionState.get()) {
     Notifications.add("You are offline", 0, {
       duration: 2,
