@@ -706,8 +706,9 @@ FunboxList.setFunboxFunctions("crt", {
       const versionMatch = navigator.userAgent.match(
         /.*Version\/([0-9]*)\.([0-9]*).*/
       );
-      const mainVersion = versionMatch != null ? parseInt(versionMatch[1]) : 0;
-      const minorVersion = versionMatch != null ? parseInt(versionMatch[2]) : 0;
+      const mainVersion = versionMatch !== null ? parseInt(versionMatch[1]) : 0;
+      const minorVersion =
+        versionMatch !== null ? parseInt(versionMatch[2]) : 0;
       if (mainVersion <= 16 && minorVersion <= 5) {
         Notifications.add(
           "funbox CRT is currently not available on Safari version 16.5 or earlier."
