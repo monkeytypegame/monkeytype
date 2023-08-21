@@ -1,10 +1,10 @@
-type ShouldRetryCallback = (
+type ShouldRetryCallback<ResponseDataType> = (
   statusCode: number,
-  response?: Ape.HttpClientResponse
+  response?: Ape.HttpClientResponse<ResponseDataType>
 ) => boolean;
 
-interface RetryOptions {
-  shouldRetry?: ShouldRetryCallback;
+interface RetryOptions<ResponseDataType> {
+  shouldRetry?: ShouldRetryCallback<ResponseDataType>;
   retryAttempts?: number;
   retryDelayMs?: number;
 }
@@ -12,21 +12,21 @@ interface RetryOptions {
 const wait = async (delay: number): Promise<number> =>
   new Promise((resolve) => window.setTimeout(resolve, delay));
 
-const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
+const DEFAULT_RETRY_OPTIONS: Required<RetryOptions<any>> = {
   shouldRetry: (statusCode: number): boolean =>
     statusCode >= 500 && statusCode !== 503,
   retryAttempts: 3,
   retryDelayMs: 3000,
 };
 
-export async function withRetry(
-  fn: () => Ape.EndpointData,
-  opts?: RetryOptions
+export async function withRetry<ResponseDataType = any>(
+  fn: () => Ape.EndpointData<ResponseDataType>,
+  opts?: RetryOptions<ResponseDataType>
 ): Ape.EndpointData {
   const retry = async (
-    previousData: Ape.HttpClientResponse,
-    completeOpts: Required<RetryOptions>
-  ): Promise<Ape.HttpClientResponse> => {
+    previousData: Ape.HttpClientResponse<ResponseDataType>,
+    completeOpts: Required<RetryOptions<ResponseDataType>>
+  ): Promise<Ape.HttpClientResponse<ResponseDataType>> => {
     const { retryAttempts, shouldRetry, retryDelayMs } = completeOpts;
 
     if (retryAttempts <= 0 || !shouldRetry(previousData.status, previousData)) {
