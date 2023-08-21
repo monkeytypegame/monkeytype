@@ -711,7 +711,11 @@ FunboxList.setFunboxFunctions("crt", {
         versionMatch !== null ? parseInt(versionMatch[2]) : 0;
       if (mainVersion <= 16 && minorVersion <= 5) {
         Notifications.add(
-          "funbox CRT is currently not available on Safari version 16.5 or earlier."
+          "CRT is not available on Safari 16.5 or earlier.",
+          0,
+          {
+            duration: 5,
+          }
         );
         toggleFunbox("crt");
         return;
