@@ -62,7 +62,7 @@ function apeifyClientMethod(
         );
       }
 
-      const { message, data } = response.data as Ape.ApiResponse;
+      const { message, data } = response.data;
 
       return {
         status: response.status,

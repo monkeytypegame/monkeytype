@@ -27,9 +27,4 @@ declare namespace Ape {
   }
 
   type HttpMethodTypes = keyof HttpClient;
-
-  interface ApiResponse {
-    message: string;
-    data: any | null;
-  }
 }
