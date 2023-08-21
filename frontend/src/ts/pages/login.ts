@@ -66,6 +66,8 @@ const checkNameDebounced = debounce(1000, async () => {
   }
   const response = await Ape.users.getNameAvailability(val);
 
+  console.log(response);
+
   if (response.status === 200) {
     nameIndicator.show("available", response.message);
   } else if (response.status === 422) {

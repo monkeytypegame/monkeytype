@@ -11,7 +11,7 @@ declare namespace Ape {
     data: DataType | null;
   }
 
-  type EndpointData<ResponseDataType = any> = Promise<
+  type Endpoint<ResponseDataType = any> = Promise<
     HttpClientResponse<ResponseDataType>
   >;
 

@@ -40,7 +40,7 @@ function apeifyClientMethod(
   return async (
     endpoint: string,
     options: Ape.RequestOptions = {}
-  ): Ape.EndpointData => {
+  ): Ape.Endpoint => {
     let errorMessage = "";
 
     try {

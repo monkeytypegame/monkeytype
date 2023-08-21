@@ -5,11 +5,11 @@ export default class ApeKeys {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointData {
+  async get(): Ape.Endpoint {
     return await this.httpClient.get(BASE_PATH);
   }
 
-  async generate(name: string, enabled: boolean): Ape.EndpointData {
+  async generate(name: string, enabled: boolean): Ape.Endpoint {
     const payload = { name, enabled };
     return await this.httpClient.post(BASE_PATH, { payload });
   }
@@ -17,12 +17,12 @@ export default class ApeKeys {
   async update(
     apeKeyId: string,
     updates: { name?: string; enabled?: boolean }
-  ): Ape.EndpointData {
+  ): Ape.Endpoint {
     const payload = { ...updates };
     return await this.httpClient.patch(`${BASE_PATH}/${apeKeyId}`, { payload });
   }
 
-  async delete(apeKeyId: string): Ape.EndpointData {
+  async delete(apeKeyId: string): Ape.Endpoint {
     return await this.httpClient.delete(`${BASE_PATH}/${apeKeyId}`);
   }
 }
