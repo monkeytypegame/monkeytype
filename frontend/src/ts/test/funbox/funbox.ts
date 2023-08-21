@@ -700,6 +700,27 @@ FunboxList.setFunboxFunctions("morse", {
 
 FunboxList.setFunboxFunctions("crt", {
   applyGlobalCSS(): void {
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isSafari) {
+      //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
+      const versionMatch = navigator.userAgent.match(
+        /.*Version\/([0-9]*)\.([0-9]*).*/
+      );
+      const mainVersion = versionMatch !== null ? parseInt(versionMatch[1]) : 0;
+      const minorVersion =
+        versionMatch !== null ? parseInt(versionMatch[2]) : 0;
+      if (mainVersion <= 16 && minorVersion <= 5) {
+        Notifications.add(
+          "CRT is not available on Safari 16.5 or earlier.",
+          0,
+          {
+            duration: 5,
+          }
+        );
+        toggleFunbox("crt");
+        return;
+      }
+    }
     $("body").append('<div id="scanline" />');
     $("body").addClass("crtmode");
     $("#globalFunBoxTheme").attr("href", `funbox/crt.css`);
