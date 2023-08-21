@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import stringSimilarity from "string-similarity";
 import path from "path";
 import { existsSync, writeFileSync } from "fs";
-import { readFile } from 'node:fs/promises'
+import { readFile } from "node:fs/promises";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 
