@@ -815,7 +815,7 @@ export function findGetParameter(
   }
 
   search
-    .substr(1)
+    .slice(1)
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
@@ -837,7 +837,7 @@ export function checkIfGetParameterExists(
   }
 
   search
-    .substr(1)
+    .slice(1)
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");

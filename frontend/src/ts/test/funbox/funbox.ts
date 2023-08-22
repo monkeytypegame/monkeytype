@@ -71,7 +71,7 @@ class PseudolangWordGenerator extends Wordset {
           this.ngrams[prefix] = new CharDistribution();
         }
         this.ngrams[prefix].addChar(c);
-        prefix = (prefix + c).substr(-prefixSize);
+        prefix = (prefix + c).slice(-prefixSize);
       }
     }
   }
@@ -79,7 +79,7 @@ class PseudolangWordGenerator extends Wordset {
   public override randomWord(): string {
     let word = "";
     for (;;) {
-      const prefix = word.substr(-prefixSize);
+      const prefix = word.slice(-prefixSize);
       const charDistribution = this.ngrams[prefix];
       if (!charDistribution) {
         // This shouldn't happen if this.ngrams is complete. If it does
