@@ -27,8 +27,10 @@ export async function get(
   return preset;
 }
 
-interface RankReturn extends MonkeyTypes.LeaderboardEntry {
-  count?: number;
+interface GetRankResponse {
+  count: number;
+  rank: number | null;
+  entry: MonkeyTypes.LeaderboardEntry | null;
 }
 
 export async function getRank(
@@ -36,19 +38,22 @@ export async function getRank(
   mode2: string,
   language: string,
   uid: string
-): Promise<RankReturn | false | void> {
+): Promise<GetRankResponse | false | void> {
   if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
-  const res: RankReturn | null = await db
+  const entry = await db
     .collection<MonkeyTypes.LeaderboardEntry>(
       `leaderboards.${language}.${mode}.${mode2}`
     )
     .findOne({ uid });
-  if (res) {
-    res.count = await db
-      .collection(`leaderboards.${language}.${mode}.${mode2}`)
-      .estimatedDocumentCount();
-    return res;
-  }
+  const count = await db
+    .collection(`leaderboards.${language}.${mode}.${mode2}`)
+    .estimatedDocumentCount();
+
+  return {
+    count,
+    rank: entry ? entry.rank : null,
+    entry,
+  };
 }
 
 export async function update(
