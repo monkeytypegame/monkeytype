@@ -208,7 +208,7 @@ export async function update(
             twitter
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
-          )}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
+          )}" data-balloon-pos="up"><i class="fa-brands fa-x-twitter"></i></a>`
         );
       }
 

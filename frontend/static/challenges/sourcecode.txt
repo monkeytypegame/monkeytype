@@ -8387,7 +8387,7 @@ backend/anticheat
                 target="_blank"
                 rel="noreferrer"
               >
-                <i class="fab fa-fw fa-twitter"></i>
+                <i class="fa-brands fa-x-twitter"></i>
                 <div class="text">Twitter</div>
               </a>
               <a href="terms-of-service.html" target="_blank">
