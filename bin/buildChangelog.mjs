@@ -31,8 +31,9 @@ for await (const chunk of stream) {
 
 log = log.replace(/^\*/gm, "-");
 
-console.log(header + log + footer);
+// console.log(log);
 
+// console.log(header + log + footer);
 //i might come back to the approach below at some point
 
 async function getLog() {
@@ -51,15 +52,51 @@ async function getLog() {
 }
 
 function itemIsAddingQuotes(item) {
-  return (
-    (item.scope?.includes("quote") ||
-      item.scope?.includes("quotes") ||
-      item.message?.includes("quote")) &&
-    (item.message.includes("add") ||
-      item.message.includes("added") ||
-      item.message.includes("adding") ||
-      item.message.includes("adds"))
-  );
+  const scopeIsQuote =
+    item.scope?.includes("quote") ||
+    item.scope?.includes("quotes") ||
+    item.message?.includes("quote");
+
+  const messageAdds =
+    item.message.includes("add") ||
+    item.message.includes("added") ||
+    item.message.includes("adding") ||
+    item.message.includes("adds");
+
+  return scopeIsQuote && messageAdds;
+}
+
+const titles = {
+  feat: "Features",
+  impr: "Improvements",
+  fix: "Fixes",
+};
+
+function getPrLink(pr) {
+  const prNum = pr.replace("#", "");
+  return `[#${prNum}](https://github.com/monkeytypegame/monkeytype/issues/${prNum})`;
+}
+
+function getCommitLink(hash, longHash) {
+  return `[${hash}](https://github.com/monkeytypegame/monkeytype/commit/${longHash})`;
+}
+
+function buildSection(type, allItems) {
+  let ret = `### ${titles[type]}\n\n`;
+
+  const items = allItems.filter((item) => item.type === type);
+
+  for (let item of items) {
+    const scope = item.scope ? `**${item.scope}:** ` : "";
+    const usernames =
+      item.usernames.length > 0 ? ` (${item.usernames.join(", ")})` : "";
+    const pr = item.pr ? ` (${getPrLink(item.pr)})` : "";
+    const hash = ` (${getCommitLink(item.shortHash, item.hash)})`;
+
+    ret += `- ${scope}${item.message}${usernames}${pr}${hash}\n`;
+  }
+
+  return ret;
 }
 
 async function main() {
@@ -76,9 +113,18 @@ async function main() {
 
     //split message using regex based on fix(language): spelling mistakes in Nepali wordlist and quotes (sapradhan) (#4528)
     //scope is optional, username is optional, pr number is optional
-    const [__, type, scope, message, username, pr] = fullMessage.split(
-      /^([^\s()]+)(?:\(([^\s()]+)\))?:\s(.*?)(?:\(([^\s()]+)\))?(?:\s\((#\d+)\))?$/
+    const [__, type, scope, message, message2, message3] = fullMessage.split(
+      /^(\w+)(?:\(([^)]+)\))?:\s+(.+?)\s*(?:\(([^)]+)\))?(?:\s+\(([^)]+)\))?(?:\s+\(([^)]+)\))?$/
     );
+
+    const usernames = message2 && message3 ? message2.split(", ") : [];
+
+    let pr;
+    if (message2 && message3) {
+      pr = message3;
+    } else if (message2 && !message3) {
+      pr = message2;
+    }
 
     if (type && message) {
       log.push({
@@ -87,7 +133,7 @@ async function main() {
         type,
         scope,
         message,
-        username,
+        usernames,
         pr,
       });
     } else {
@@ -101,9 +147,24 @@ async function main() {
 
   let quoteAddCommits = log.filter((item) => itemIsAddingQuotes(item));
 
-  console.log(quoteAddCommits);
+  if (quoteAddCommits.length > 0) {
+    throw new Error("TODO");
+  }
 
-  // console.log(log);
+  let final = "";
+
+  final += header + "\n\n";
+
+  const sections = [];
+  for (const type of Object.keys(titles)) {
+    sections.push(buildSection(type, log));
+  }
+
+  final += sections.join("\n\n");
+
+  final += "\n" + footer;
+
+  console.log(final);
 }
 
-// main();
+main();
