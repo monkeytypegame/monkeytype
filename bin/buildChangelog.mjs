@@ -141,7 +141,7 @@ async function main() {
     }
   }
 
-  log = log.filter((item) => ["feat", "fix", "impr"].includes(item.type));
+  log = log.filter((item) => Object.keys(titles).includes(item.type));
 
   log = log.filter((item) => !itemIsAddingQuotes(item));
 
