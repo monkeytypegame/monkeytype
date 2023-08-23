@@ -1032,6 +1032,7 @@
 .pageTest {
   #wordsWrapper {
     position: relative;
+    max-width: calc(100vw - 4rem);
     &.tape {
       -webkit-mask-image: linear-gradient(
         90deg,

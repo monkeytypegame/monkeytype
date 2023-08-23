@@ -170,7 +170,8 @@ function getWordHTML(word: string): string {
     }
   }
   retval += "</div>";
-  if (newlineafter) retval += "<div class='newline'></div>";
+  if (newlineafter)
+    retval += "<div class='newline'></div><div class='after-newline'></div>";
   return retval;
 }
 
@@ -206,6 +207,7 @@ export function showWords(): void {
   $("#words").html(wordsHTML);
 
   updateWordsHeight(true);
+  updateNewlineIndent();
   updateActiveElement(undefined, true);
   Caret.updatePosition();
   updateWordsInputPosition(true);
@@ -302,44 +304,30 @@ function updateWordsHeight(force = false): void {
     }
     $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
-    let finalWordsHeight: number, finalWrapperHeight: number;
-
-    if (Config.tapeMode !== "off") {
-      finalWordsHeight = wordHeight * 2;
-      finalWrapperHeight = wordHeight;
-    } else {
-      let lines = 0;
-      let lastHeight = 0;
-      let wordIndex = 0;
-      const words = document.querySelectorAll("#words .word");
-      let wrapperHeight = 0;
-
-      const wordComputedStyle = window.getComputedStyle(words[0]);
-      const wordTopMargin = parseInt(wordComputedStyle.marginTop);
-      const wordBottomMargin = parseInt(wordComputedStyle.marginBottom);
-
-      while (lines < 3) {
-        const word = words[wordIndex] as HTMLElement | null;
-        if (!word) break;
-        const height = word.offsetTop;
-        if (height > lastHeight) {
-          lines++;
-          wrapperHeight += word.offsetHeight + wordTopMargin + wordBottomMargin;
-          lastHeight = height;
-        }
-        wordIndex++;
+    let lines = 0;
+    let lastHeight = 0;
+    let wordIndex = 0;
+    const words = document.querySelectorAll("#words .word");
+    let wrapperHeight = 0;
+    const wordComputedStyle = window.getComputedStyle(words[0]);
+    const wordTopMargin = parseInt(wordComputedStyle.marginTop);
+    const wordBottomMargin = parseInt(wordComputedStyle.marginBottom);
+    while (lines < 3) {
+      const word = words[wordIndex] as HTMLElement | null;
+      if (!word) break;
+      const height = word.offsetTop;
+      if (height > lastHeight) {
+        lines++;
+        wrapperHeight += word.offsetHeight + wordTopMargin + wordBottomMargin;
+        lastHeight = height;
       }
-
-      if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
-
-      const wordsHeight = (wrapperHeight / 3) * 4;
-
-      finalWordsHeight = wordsHeight;
-      finalWrapperHeight = wrapperHeight;
+      wordIndex++;
     }
+    if (lines < 3) wrapperHeight = wrapperHeight * (3 / lines);
+    const wordsHeight = (wrapperHeight / 3) * 4;
 
     $("#words")
-      .css("height", finalWordsHeight + "px")
+      .css("height", wordsHeight + "px")
       .css("overflow", "hidden");
 
     if (Config.tapeMode !== "off") {
@@ -349,13 +337,41 @@ function updateWordsHeight(force = false): void {
     }
 
     $("#wordsWrapper")
-      .css("height", finalWrapperHeight + "px")
+      .css("height", wrapperHeight + "px")
       .css("overflow", "hidden");
-    $(".outOfFocusWarning").css("line-height", finalWrapperHeight + "px");
+    $(".outOfFocusWarning").css("line-height", wrapperHeight + "px");
   }
 
   if (Config.mode === "zen") {
     $(<Element>document.querySelector(".word")).remove();
+  }
+}
+
+export function updateNewlineIndent(): void {
+  const children = $("#words").children();
+  let leftSize = 0;
+  let hadNl = false;
+  let foundWord = false;
+  const shiftForNlChar = 30;
+  for (let i = 0; i < children.length; i++) {
+    if (!foundWord) {
+      if ($(children[i]).hasClass("word")) {
+        leftSize += $(children[i]).outerWidth(true) ?? 0;
+        foundWord = true;
+      } else {
+        $(children[i]).remove();
+      }
+    } else {
+      if ($(children[i]).hasClass("newline")) {
+        hadNl = true;
+      } else if (hadNl) {
+        leftSize -= shiftForNlChar;
+        $(children[i]).css("margin-left", leftSize);
+        hadNl = false;
+      } else {
+        leftSize += $(children[i]).outerWidth(true) ?? 0;
+      }
+    }
   }
 }
 
@@ -676,7 +692,10 @@ export function updateWordElement(showError = !Config.blindMode): void {
     }
   }
   wordAtIndex.innerHTML = ret;
-  if (newlineafter) $("#words").append("<div class='newline'></div>");
+  if (newlineafter)
+    $("#words").append(
+      "<div class='newline'></div><div class='after-newline'></div>"
+    );
 }
 
 export function scrollTape(): void {
@@ -702,6 +721,7 @@ export function scrollTape(): void {
       currentWordElementIndex -= toHide.length;
       toHide.forEach((e) => e.remove());
       fullWordsWidth -= widthToHide;
+      updateNewlineIndent();
       const currentMargin = parseInt($("#words").css("margin-left"), 10);
       $("#words").css("margin-left", `${currentMargin + widthToHide}px`);
     }
