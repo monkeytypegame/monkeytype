@@ -40,7 +40,7 @@ function apeifyClientMethod(
   return async (
     endpoint: string,
     options: Ape.RequestOptions = {}
-  ): Ape.EndpointData => {
+  ): Ape.EndpointResponse => {
     let errorMessage = "";
 
     try {
@@ -62,7 +62,7 @@ function apeifyClientMethod(
         );
       }
 
-      const { message, data } = response.data as Ape.ApiResponse;
+      const { message, data } = response.data;
 
       return {
         status: response.status,
@@ -87,6 +87,7 @@ function apeifyClientMethod(
     return {
       status: 500,
       message: errorMessage,
+      data: null,
     };
   };
 }

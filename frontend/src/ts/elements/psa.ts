@@ -20,6 +20,7 @@ function setMemory(id: string): void {
 
 async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
   const response = await Ape.psas.get();
+
   if (response.status === 500) {
     if (isLocalhost()) {
       Notifications.addBanner(

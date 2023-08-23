@@ -91,7 +91,7 @@ export async function initSnapshot(): Promise<
       configResponse,
       tagsResponse,
       presetsResponse,
-    ].map((response: Ape.HttpClientResponse) => response.data);
+    ].map((response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
