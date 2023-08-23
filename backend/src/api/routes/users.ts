@@ -86,8 +86,13 @@ const usernameValidation = joi
       "Username invalid. Name cannot use special characters or contain more than 16 characters. Can include _ . and - ",
   });
 
-const languageSchema = joi.string().min(1).required();
-const quoteIdSchema = joi.string().min(1).max(5).regex(/\d+/).required();
+const languageSchema = joi
+  .string()
+  .min(1)
+  .max(50)
+  .regex(/[\w+]+/)
+  .required();
+const quoteIdSchema = joi.string().min(1).max(10).regex(/\d+/).required();
 
 router.get(
   "/",
@@ -110,8 +115,11 @@ router.post(
     body: {
       email: joi.string().email(),
       name: usernameValidation,
-      uid: joi.string(),
-      captcha: joi.string().required(),
+      uid: joi.string().token(),
+      captcha: joi
+        .string()
+        .regex(/[\w-_]+/)
+        .required(),
     },
   }),
   asyncHandler(UserController.createNewUser)
@@ -173,8 +181,15 @@ router.patch(
         .string()
         .valid("time", "words", "quote", "zen", "custom")
         .required(),
-      mode2: joi.string().required(),
-      language: joi.string().required(),
+      mode2: joi
+        .string()
+        .regex(/^(\d)+|custom|zen/)
+        .required(),
+      language: joi
+        .string()
+        .max(50)
+        .pattern(/^[a-zA-Z0-9_+]+$/)
+        .required(),
       rank: joi.number().required(),
     },
   }),
@@ -239,7 +254,7 @@ router.delete(
   RateLimit.userCustomFilterRemove,
   validateRequest({
     params: {
-      presetId: joi.string().required(),
+      presetId: joi.string().token().required(),
     },
   }),
   asyncHandler(UserController.removeResultFilterPreset)
@@ -247,8 +262,10 @@ router.delete(
 
 router.get(
   "/tags",
-  authenticateRequest(),
-  RateLimit.userTagsGet,
+  authenticateRequest({
+    acceptApeKeys: true,
+  }),
+  withApeRateLimiter(RateLimit.userTagsGet),
   asyncHandler(UserController.getTags)
 );
 
@@ -380,9 +397,9 @@ router.post(
   RateLimit.userDiscordLink,
   validateRequest({
     body: {
-      tokenType: joi.string().required(),
-      accessToken: joi.string().required(),
-      state: joi.string().length(20).required(),
+      tokenType: joi.string().token().required(),
+      accessToken: joi.string().token().required(),
+      state: joi.string().length(20).token().required(),
     },
   }),
   asyncHandler(UserController.linkDiscord)
@@ -403,8 +420,11 @@ router.get(
   withApeRateLimiter(RateLimit.userGet),
   validateRequest({
     query: {
-      mode: joi.string().required(),
-      mode2: joi.string(),
+      mode: joi
+        .string()
+        .valid("time", "words", "quote", "zen", "custom")
+        .required(),
+      mode2: joi.string().regex(/^(\d)+|custom|zen/),
     },
   }),
   asyncHandler(UserController.getPersonalBests)
@@ -417,6 +437,18 @@ router.get(
   }),
   withApeRateLimiter(RateLimit.userGet),
   asyncHandler(UserController.getStats)
+);
+
+router.post(
+  "/setStreakHourOffset",
+  authenticateRequest(),
+  RateLimit.setStreakHourOffset,
+  validateRequest({
+    body: {
+      hourOffset: joi.number().min(-11).max(12).required(),
+    },
+  }),
+  asyncHandler(UserController.setStreakHourOffset)
 );
 
 router.get(
@@ -469,10 +501,14 @@ router.get(
   withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({
     params: {
-      uidOrName: joi.string().required(),
+      uidOrName: joi
+        .alternatives()
+        .try(usernameValidation, joi.string().token().max(50)),
     },
     query: {
-      isUid: joi.string().allow(""),
+      isUid: joi.string().valid("").messages({
+        "any.only": "isUid must be empty",
+      }),
     },
   }),
   asyncHandler(UserController.getProfile)
@@ -568,7 +604,7 @@ router.post(
   RateLimit.quoteReportSubmit,
   validateRequest({
     body: {
-      uid: withCustomMessages.regex(/^\w+$/).required(),
+      uid: withCustomMessages.token().max(50).required(),
       reason: joi
         .string()
         .valid(

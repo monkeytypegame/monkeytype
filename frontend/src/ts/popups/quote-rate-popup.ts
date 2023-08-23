@@ -85,13 +85,13 @@ async function updateRatingStats(): Promise<void> {
 function updateData(): void {
   if (!currentQuote) return;
   let lengthDesc;
-  if (currentQuote.group == 0) {
+  if (currentQuote.group === 0) {
     lengthDesc = "short";
-  } else if (currentQuote.group == 1) {
+  } else if (currentQuote.group === 1) {
     lengthDesc = "medium";
-  } else if (currentQuote.group == 2) {
+  } else if (currentQuote.group === 2) {
     lengthDesc = "long";
-  } else if (currentQuote.group == 3) {
+  } else if (currentQuote.group === 3) {
     lengthDesc = "thicc";
   }
   $(`#quoteRatePopup .quote .text`).text(currentQuote.text);
@@ -101,7 +101,7 @@ function updateData(): void {
   updateRatingStats();
 }
 
-export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
+function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
   Skeleton.append(wrapperId);
 
   if (!isPopupVisible(wrapperId)) {

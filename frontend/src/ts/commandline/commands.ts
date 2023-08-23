@@ -28,7 +28,7 @@ import SoundVolumeCommands from "./lists/sound-volume";
 import FlipTestColorsCommands from "./lists/flip-test-colors";
 import SmoothLineScrollCommands from "./lists/smooth-line-scroll";
 import AlwaysShowDecimalCommands from "./lists/always-show-decimal";
-import AlwaysShowCpmCommands from "./lists/always-show-cpm";
+import TypingSpeedUnitCommands from "./lists/typing-speed-unit";
 import StartGraphsAtZeroCommands from "./lists/start-graphs-at-zero";
 import LazyModeCommands from "./lists/lazy-mode";
 import ShowAllLinesCommands from "./lists/show-all-lines";
@@ -100,6 +100,7 @@ import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
+import * as FPSCounter from "../elements/fps-counter";
 
 Misc.getLayoutsList()
   .then((layouts) => {
@@ -274,7 +275,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
     ...TapeModeCommands,
     ...SmoothLineScrollCommands,
     ...ShowAllLinesCommands,
-    ...AlwaysShowCpmCommands,
+    ...TypingSpeedUnitCommands,
     ...AlwaysShowDecimalCommands,
     ...StartGraphsAtZeroCommands,
     ...FontSizeCommands,
@@ -427,6 +428,33 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
           .catch((e) => {
             Notifications.add("Failed to copy to clipboard: " + e, -1);
           });
+      },
+    },
+    {
+      id: "fpsCounter",
+      display: "FPS counter...",
+      icon: "fa-cog",
+      visible: false,
+      subgroup: {
+        title: "FPS counter...",
+        list: [
+          {
+            id: "startFpsCounter",
+            display: "show",
+            icon: "fa-cog",
+            exec: (): void => {
+              FPSCounter.start();
+            },
+          },
+          {
+            id: "stopFpsCounter",
+            display: "hide",
+            icon: "fa-cog",
+            exec: (): void => {
+              FPSCounter.stop();
+            },
+          },
+        ],
       },
     },
     {

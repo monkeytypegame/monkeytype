@@ -33,7 +33,7 @@ export function show(callbackOnHide: () => void): void {
   }
 }
 
-export function hide(): void {
+function hide(): void {
   if (isPopupVisible(wrapperId)) {
     callbackFuncOnHide && callbackFuncOnHide();
     $("#editProfilePopupWrapper")

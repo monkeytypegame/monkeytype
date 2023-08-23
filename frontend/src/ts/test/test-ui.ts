@@ -9,6 +9,7 @@ import * as Caret from "./caret";
 import * as OutOfFocus from "./out-of-focus";
 import * as Replay from "./replay";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as SlowTimer from "../states/slow-timer";
 import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
@@ -18,6 +19,7 @@ import { Auth } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
+import * as ResultWordHighlight from "../elements/result-word-highlight";
 
 const debouncedZipfCheck = debounce(250, () => {
   Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
@@ -62,7 +64,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventKey === "theme") applyBurstHeatmap();
 
-  if (eventValue === undefined || typeof eventValue !== "boolean") return;
+  if (eventValue === undefined) return;
+  if (eventKey === "highlightMode") {
+    highlightMode(eventValue as MonkeyTypes.HighlightMode);
+    updateActiveElement();
+  }
+
+  if (typeof eventValue !== "boolean") return;
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
   if (eventKey === "highlightMode") updateWordElement(eventValue);
@@ -123,10 +131,10 @@ export function updateActiveElement(
   initial = false
 ): void {
   const active = document.querySelector("#words .active");
-  if (Config.mode == "zen" && backspace) {
+  if (Config.mode === "zen" && backspace) {
     active?.remove();
   } else if (active !== null) {
-    if (Config.highlightMode == "word") {
+    if (Config.highlightMode === "word") {
       active.querySelectorAll("letter").forEach((e) => {
         e.classList.remove("correct");
       });
@@ -140,7 +148,7 @@ export function updateActiveElement(
     activeWord.classList.remove("error");
     activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
       .offsetTop;
-    if (Config.highlightMode == "word") {
+    if (Config.highlightMode === "word") {
       activeWord.querySelectorAll("letter").forEach((e) => {
         e.classList.add("correct");
       });
@@ -161,10 +169,10 @@ function getWordHTML(word: string): string {
     if (funbox?.functions?.getWordHtml) {
       retval += funbox.functions.getWordHtml(word.charAt(c), true);
     } else if (word.charAt(c) === "\t") {
-      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
     } else if (word.charAt(c) === "\n") {
       newlineafter = true;
-      retval += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+      retval += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
     } else {
       retval += "<letter>" + word.charAt(c) + "</letter>";
     }
@@ -287,8 +295,8 @@ function updateWordsHeight(force = false): void {
   );
   if (
     Config.showAllLines &&
-    Config.mode != "time" &&
-    !(CustomText.isWordRandom && CustomText.word == 0) &&
+    Config.mode !== "time" &&
+    !(CustomText.isWordRandom && CustomText.word === 0) &&
     !CustomText.isTimeRandom
   ) {
     $("#words")
@@ -396,11 +404,15 @@ export function colorful(tc: boolean): void {
   }
 }
 
+let firefoxClipboardNotificatoinShown = false;
 export async function screenshot(): Promise<void> {
   let revealReplay = false;
 
   let revertCookie = false;
-  if (Misc.isElementVisible("#cookiePopupWrapper")) {
+  if (
+    Misc.isElementVisible("#cookiePopupWrapper") ||
+    document.contains(document.querySelector("#cookiePopupWrapper"))
+  ) {
     revertCookie = true;
   }
 
@@ -485,7 +497,7 @@ export async function screenshot(): Promise<void> {
     canvas.toBlob(async (blob) => {
       try {
         if (blob === null) {
-          throw new Error("Could not create imgage, blob is null");
+          throw new Error("Could not create image, blob is null");
         }
         const clipItem = new ClipboardItem(
           Object.defineProperty({}, blob.type, {
@@ -500,6 +512,21 @@ export async function screenshot(): Promise<void> {
       } catch (e) {
         console.error("Error while saving image to clipboard", e);
         if (blob) {
+          //check if on firefox
+          if (
+            navigator.userAgent.toLowerCase().indexOf("firefox") > -1 &&
+            !firefoxClipboardNotificatoinShown
+          ) {
+            firefoxClipboardNotificatoinShown = true;
+            Notifications.add(
+              "On Firefox you can enable the asyncClipboard.clipboardItem permission in about:config to enable copying straight to the clipboard",
+              0,
+              {
+                duration: 10,
+              }
+            );
+          }
+
           Notifications.add(
             "Could not save image to clipboard. Opening in new tab instead (make sure popups are allowed)",
             0,
@@ -526,8 +553,11 @@ export async function screenshot(): Promise<void> {
   }, 3000);
 }
 
-export function updateWordElement(showError = !Config.blindMode): void {
-  const input = TestInput.input.current;
+export function updateWordElement(
+  showError = !Config.blindMode,
+  inputOverride?: string
+): void {
+  const input = inputOverride || TestInput.input.current;
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
@@ -538,10 +568,10 @@ export function updateWordElement(showError = !Config.blindMode): void {
   if (Config.mode === "zen") {
     for (let i = 0; i < TestInput.input.current.length; i++) {
       if (TestInput.input.current[i] === "\t") {
-        ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
       } else if (TestInput.input.current[i] === "\n") {
         newlineafter = true;
-        ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
+        ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
         ret += `<letter class="correct">${TestInput.input.current[i]}</letter>`;
       }
@@ -592,10 +622,10 @@ export function updateWordElement(showError = !Config.blindMode): void {
       (f) => f.functions?.getWordHtml
     );
     for (let i = 0; i < input.length; i++) {
-      const charCorrect = currentWord[i] == input[i];
+      const charCorrect = currentWord[i] === input[i];
 
       let correctClass = "correct";
-      if (Config.highlightMode == "off") {
+      if (Config.highlightMode === "off") {
         correctClass = "";
       }
 
@@ -604,20 +634,20 @@ export function updateWordElement(showError = !Config.blindMode): void {
       let nlChar = "";
       if (funbox?.functions?.getWordHtml) {
         const cl = funbox.functions.getWordHtml(currentLetter);
-        if (cl != "") {
+        if (cl !== "") {
           currentLetter = cl;
         }
       } else if (currentLetter === "\t") {
         tabChar = "tabChar";
-        currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
+        currentLetter = `<i class="fas fa-long-arrow-alt-right fa-fw"></i>`;
       } else if (currentLetter === "\n") {
         nlChar = "nlChar";
-        currentLetter = `<i class="fas fa-angle-down"></i>`;
+        currentLetter = `<i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i>`;
       }
 
       if (charCorrect) {
         ret += `<letter class="${
-          Config.highlightMode == "word"
+          Config.highlightMode === "word"
             ? wordHighlightClassString
             : correctClass
         } ${tabChar}${nlChar}">${currentLetter}</letter>`;
@@ -628,12 +658,12 @@ export function updateWordElement(showError = !Config.blindMode): void {
         !(containsKorean && !correctSoFar)
       ) {
         ret += `<letter class="${
-          Config.highlightMode == "word" ? wordHighlightClassString : ""
+          Config.highlightMode === "word" ? wordHighlightClassString : ""
         } dead">${currentLetter}</letter>`;
       } else if (!showError) {
         if (currentLetter !== undefined) {
           ret += `<letter class="${
-            Config.highlightMode == "word"
+            Config.highlightMode === "word"
               ? wordHighlightClassString
               : correctClass
           } ${tabChar}${nlChar}">${currentLetter}</letter>`;
@@ -641,11 +671,11 @@ export function updateWordElement(showError = !Config.blindMode): void {
       } else if (currentLetter === undefined) {
         if (!Config.hideExtraLetters) {
           let letter = input[i];
-          if (letter == " " || letter == "\t" || letter == "\n") {
+          if (letter === " " || letter === "\t" || letter === "\n") {
             letter = "_";
           }
           ret += `<letter class="${
-            Config.highlightMode == "word"
+            Config.highlightMode === "word"
               ? wordHighlightClassString
               : "incorrect"
           } extra ${tabChar}${nlChar}">${letter}</letter>`;
@@ -653,12 +683,12 @@ export function updateWordElement(showError = !Config.blindMode): void {
       } else {
         ret +=
           `<letter class="${
-            Config.highlightMode == "word"
+            Config.highlightMode === "word"
               ? wordHighlightClassString
               : "incorrect"
           } ${tabChar}${nlChar}">` +
           (Config.indicateTypos === "replace"
-            ? input[i] == " "
+            ? input[i] === " "
               ? "_"
               : input[i]
             : currentLetter) +
@@ -671,13 +701,13 @@ export function updateWordElement(showError = !Config.blindMode): void {
       if (funbox?.functions?.getWordHtml) {
         ret += funbox.functions.getWordHtml(currentWord[i], true);
       } else if (currentWord[i] === "\t") {
-        ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
       } else if (currentWord[i] === "\n") {
-        ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+        ret += `<letter class='nlChar'><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
         ret +=
           `<letter class="${
-            Config.highlightMode == "word" ? wordHighlightClassString : ""
+            Config.highlightMode === "word" ? wordHighlightClassString : ""
           }">` +
           currentWord[i] +
           "</letter>";
@@ -687,7 +717,7 @@ export function updateWordElement(showError = !Config.blindMode): void {
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
       if (input.length > currentWord.length && !Config.blindMode) {
         wordAtIndex.classList.add("error");
-      } else if (input.length == currentWord.length) {
+      } else if (input.length === currentWord.length) {
         wordAtIndex.classList.remove("error");
       }
     }
@@ -901,13 +931,13 @@ async function loadWordsHistory(): Promise<boolean> {
         const correctedChar = !containsKorean
           ? TestInput.corrected.getHistory(i)
           : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
-        wordEl = `<div class='word' burst="${
+        wordEl = `<div class='word nocursor' burst="${
           TestInput.burstHistory[i]
         }" input="${correctedChar
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
-        wordEl = `<div class='word' burst="${
+        wordEl = `<div class='word nocursor' burst="${
           TestInput.burstHistory[i]
         }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
@@ -918,11 +948,11 @@ async function loadWordsHistory(): Promise<boolean> {
           incorrect: 0,
           missed: 0,
         };
-        const length = Config.mode == "zen" ? input.length : word.length;
+        const length = Config.mode === "zen" ? input.length : word.length;
         for (let c = 0; c < length; c++) {
           if (c < input.length) {
             //on char that still has a word list pair
-            if (Config.mode == "zen" || input[c] == word[c]) {
+            if (Config.mode === "zen" || input[c] === word[c]) {
               wordstats.correct++;
             } else {
               wordstats.incorrect++;
@@ -933,22 +963,22 @@ async function loadWordsHistory(): Promise<boolean> {
           }
         }
         if (wordstats.incorrect !== 0 || Config.mode !== "time") {
-          if (Config.mode != "zen" && input !== word) {
-            wordEl = `<div class='word error' burst="${
+          if (Config.mode !== "zen" && input !== word) {
+            wordEl = `<div class='word nocursor error' burst="${
               TestInput.burstHistory[i]
             }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
           }
         }
       } else {
-        if (Config.mode != "zen" && input !== word) {
-          wordEl = `<div class='word error' burst="${
+        if (Config.mode !== "zen" && input !== word) {
+          wordEl = `<div class='word nocursor error' burst="${
             TestInput.burstHistory[i]
           }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
         }
       }
 
       let loop;
-      if (Config.mode == "zen" || input.length > word.length) {
+      if (Config.mode === "zen" || input.length > word.length) {
         //input is longer - extra characters possible (loop over input)
         loop = input.length;
       } else {
@@ -975,8 +1005,8 @@ async function loadWordsHistory(): Promise<boolean> {
         ) {
           extraCorrected = "extraCorrected";
         }
-        if (Config.mode == "zen" || word[c] !== undefined) {
-          if (Config.mode == "zen" || input[c] === word[c]) {
+        if (Config.mode === "zen" || word[c] !== undefined) {
+          if (Config.mode === "zen" || input[c] === word[c]) {
             if (correctedChar === input[c] || correctedChar === undefined) {
               wordEl += `<letter class="correct ${extraCorrected}">${input[c]}</letter>`;
             } else {
@@ -1023,6 +1053,7 @@ async function loadWordsHistory(): Promise<boolean> {
 
 export function toggleResultWords(noAnimation = false): void {
   if (resultVisible) {
+    ResultWordHighlight.updateToggleWordsHistoryTime();
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
 
@@ -1070,6 +1101,11 @@ export async function applyBurstHeatmap(): Promise<void> {
 
     burstlist = burstlist.filter((x) => x !== Infinity);
     burstlist = burstlist.filter((x) => x < 350);
+
+    const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+    burstlist.forEach((burst, index) => {
+      burstlist[index] = Math.round(typingSpeedUnit.fromWpm(burst));
+    });
 
     if (
       TestInput.input.getHistory(TestInput.input.getHistory().length - 1)
@@ -1156,7 +1192,10 @@ export async function applyBurstHeatmap(): Promise<void> {
       if (wordBurstAttr === undefined) {
         $(word).css("color", unreachedColor);
       } else {
-        const wordBurstVal = parseInt(<string>wordBurstAttr);
+        let wordBurstVal = parseInt(wordBurstAttr as string);
+        wordBurstVal = Math.round(
+          getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(wordBurstVal)
+        );
         steps.forEach((step) => {
           if (wordBurstVal >= step.val) {
             $(word).addClass("heatmapInherit");
@@ -1183,6 +1222,19 @@ export function highlightBadWord(index: number, showError: boolean): void {
   $($("#words .word")[index]).addClass("error");
 }
 
+export function highlightMode(mode?: MonkeyTypes.HighlightMode): void {
+  const existing =
+    $("#words")
+      ?.attr("class")
+      ?.split(/\s+/)
+      ?.filter((it) => !it.startsWith("highlight-")) || [];
+  if (mode != null) {
+    existing.push("highlight-" + mode.replaceAll("_", "-"));
+  }
+
+  $("#words").attr("class", existing.join(" "));
+}
+
 $(".pageTest").on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
@@ -1196,7 +1248,7 @@ $("#saveScreenshotButton").on("keypress", (e) => {
 $(".pageTest #copyWordsListButton").on("click", async () => {
   try {
     let words;
-    if (Config.mode == "zen") {
+    if (Config.mode === "zen") {
       words = TestInput.input.history.join(" ");
     } else {
       words = (<string[]>TestWords.words.get())
@@ -1214,23 +1266,29 @@ $(".pageTest #copyWordsListButton").on("click", async () => {
 
 $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
+  ResultWordHighlight.destroy();
 });
 
 $(".pageTest #resultWordsHistory").on("mouseleave", ".words .word", () => {
-  $(".wordInputAfter").remove();
+  $(".wordInputHighlight").remove();
 });
 
 $(".pageTest #result #wpmChart").on("mouseleave", () => {
-  $(".wordInputAfter").remove();
+  ResultWordHighlight.setIsHoverChart(false);
+  ResultWordHighlight.clear();
+});
+
+$(".pageTest #result #wpmChart").on("mouseenter", () => {
+  ResultWordHighlight.setIsHoverChart(true);
 });
 
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
   if (resultVisible) {
     const input = $(e.currentTarget).attr("input");
     const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
-    if (input != undefined) {
+    if (input !== undefined) {
       $(e.currentTarget).append(
-        `<div class="wordInputAfter">
+        `<div class="wordInputHighlight withSpeed">
           <div class="text">
           ${input
             .replace(/\t/g, "_")
@@ -1239,14 +1297,18 @@ $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${Math.round(Config.alwaysShowCPM ? burst * 5 : burst)}${
-          Config.alwaysShowCPM ? "cpm" : "wpm"
-        }
+          ${Math.round(
+            getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst)
+          )}${Config.typingSpeedUnit}
           </div>
           </div>`
       );
     }
   }
+});
+
+addEventListener("resize", () => {
+  ResultWordHighlight.destroy();
 });
 
 $("#wordsInput").on("focus", () => {

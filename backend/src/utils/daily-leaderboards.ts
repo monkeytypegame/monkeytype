@@ -11,11 +11,20 @@ interface DailyLeaderboardEntry {
   acc: number;
   consistency: number;
   timestamp: number;
-  rank?: number;
-  count?: number;
   discordAvatar?: string;
   discordId?: string;
   badgeId?: number;
+}
+
+interface GetRankResponse {
+  minWpm: number;
+  count: number;
+  rank: number | null;
+  entry: DailyLeaderboardEntry | null;
+}
+
+interface LbEntryWithRank extends DailyLeaderboardEntry {
+  rank: number;
 }
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
@@ -115,7 +124,7 @@ export class DailyLeaderboard {
     minRank: number,
     maxRank: number,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry[]> {
+  ): Promise<LbEntryWithRank[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return [];
@@ -134,7 +143,7 @@ export class DailyLeaderboard {
       "false"
     );
 
-    const resultsWithRanks: DailyLeaderboardEntry[] = results.map(
+    const resultsWithRanks: LbEntryWithRank[] = results.map(
       (resultJSON, index) => ({
         ...JSON.parse(resultJSON),
         rank: minRank + index + 1,
@@ -147,7 +156,7 @@ export class DailyLeaderboard {
   public async getRank(
     uid: string,
     dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
-  ): Promise<DailyLeaderboardEntry | null> {
+  ): Promise<GetRankResponse | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
       return null;
@@ -156,21 +165,32 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    const [[, rank], [, count], [, result]] = await connection
+    const [[, rank], [, count], [, result], [, minScore]] = await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)
       .zcard(leaderboardScoresKey)
       .hget(leaderboardResultsKey, uid)
+      .zrange(leaderboardScoresKey, 0, 0, "WITHSCORES")
       .exec();
 
+    const minWpm =
+      minScore.length > 0 ? parseInt(minScore[1]?.slice(1, 6)) / 100 : 0;
     if (rank === null) {
-      return null;
+      return {
+        minWpm,
+        count: count ?? 0,
+        rank: null,
+        entry: null,
+      };
     }
 
     return {
-      rank: rank + 1,
+      minWpm,
       count: count ?? 0,
-      ...JSON.parse(result ?? "null"),
+      rank: rank + 1,
+      entry: {
+        ...JSON.parse(result ?? "null"),
+      },
     };
   }
 }

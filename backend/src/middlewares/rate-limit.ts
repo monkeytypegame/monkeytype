@@ -98,6 +98,13 @@ export async function incrementBadAuth(
   } catch (error) {}
 }
 
+export const adminLimit = rateLimit({
+  windowMs: 5000,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 // Config Routing
 export const configUpdate = rateLimit({
   windowMs: ONE_HOUR_MS,
@@ -125,6 +132,13 @@ export const leaderboardsGet = rateLimit({
 export const newQuotesGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 500 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const newQuotesIsSubmissionEnabled = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -288,6 +302,13 @@ export const resultsLeaderboardQualificationGet = rateLimit({
 export const userGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const setStreakHourOffset = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 5 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -501,6 +522,13 @@ export const apeKeysGet = rateLimit({
 export const apeKeysGenerate = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 15 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const webhookLimit = rateLimit({
+  windowMs: 1000,
+  max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });

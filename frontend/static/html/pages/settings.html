@@ -343,16 +343,16 @@
     <div class="section minWpm" section="">
       <div class="groupTitle">
         <i class="fas fa-bomb"></i>
-        <span>min wpm</span>
+        <span>min speed</span>
       </div>
       <div class="text">
-        Automatically fails a test if your WPM falls below a threshold.
+        Automatically fails a test if your speed falls below a threshold.
       </div>
       <div class="inputs">
         <div class="inputAndButton">
           <input
             type="number"
-            placeholder="min wpm"
+            placeholder="min speed"
             class="input customMinWpmSpeed"
             tabindex="0"
             min="0"
@@ -1071,7 +1071,7 @@
       <div class="buttons">
         <div
           class="button"
-          smoothCaret="false"
+          smoothCaret="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1079,11 +1079,27 @@
         </div>
         <div
           class="button"
-          smoothCaret="true"
+          smoothCaret="slow"
           tabindex="0"
           onclick="this.blur();"
         >
-          on
+          slow
+        </div>
+        <div
+          class="button"
+          smoothCaret="medium"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          medium
+        </div>
+        <div
+          class="button"
+          smoothCaret="fast"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          fast
         </div>
       </div>
     </div>
@@ -1342,7 +1358,7 @@
         <span>timer/progress color</span>
       </div>
       <div class="text">
-        Change the color of the timer/progress number/bar and live wpm number.
+        Change the color of the timer/progress number/bar and live speed number.
       </div>
       <div class="buttons">
         <div
@@ -1385,7 +1401,8 @@
         <span>timer/progress opacity</span>
       </div>
       <div class="text">
-        Change the opacity of the timer/progress number/bar and live wpm number.
+        Change the opacity of the timer/progress number/bar and live speed
+        number.
       </div>
       <div class="buttons">
         <div
@@ -1422,7 +1439,7 @@
         </div>
       </div>
     </div>
-    <div class="section highlightMode" section="">
+    <div class="section highlightMode fullWidth" section="">
       <div class="groupTitle">
         <i class="fas fa-highlighter"></i>
         <span>highlight mode</span>
@@ -1452,6 +1469,30 @@
           onclick="this.blur();"
         >
           word
+        </div>
+        <div
+          class="button"
+          highlightMode="next_word"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          next word
+        </div>
+        <div
+          class="button"
+          highlightMode="next_two_words"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          next two words
+        </div>
+        <div
+          class="button"
+          highlightMode="next_three_words"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          next three words
         </div>
       </div>
     </div>
@@ -1518,8 +1559,8 @@
       <div class="text">
         When enabled, the website will show all lines for word, custom and quote
         mode tests - otherwise the lines will be limited to 3, and will
-        automatically scroll. Using this could cause the timer text and live wpm
-        to not be visible.
+        automatically scroll. Using this could cause the timer text and live
+        speed to not be visible.
       </div>
       <div class="buttons">
         <div
@@ -1568,31 +1609,44 @@
         </div>
       </div>
     </div>
-    <div class="section alwaysShowCPM">
+    <div class="section typingSpeedUnit">
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
-        <span>always show cpm</span>
+        <span>typing speed unit</span>
       </div>
-      <div class="text">
-        Always shows characters per minute calculation instead of the default
-        words per minute calculation.
-      </div>
+      <div class="text">Display typing speed in the specified unit.</div>
       <div class="buttons">
         <div
           class="button"
-          alwaysShowCPM="false"
+          typingSpeedUnit="wpm"
           tabindex="0"
           onclick="this.blur();"
         >
-          off
+          wpm
         </div>
         <div
           class="button"
-          alwaysShowCPM="true"
+          typingSpeedUnit="cpm"
           tabindex="0"
           onclick="this.blur();"
         >
-          on
+          cpm
+        </div>
+        <div
+          class="button"
+          typingSpeedUnit="wps"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          wps
+        </div>
+        <div
+          class="button"
+          typingSpeedUnit="cps"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          cps
         </div>
       </div>
     </div>
@@ -2367,10 +2421,10 @@
     <div class="section showLiveWpm">
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
-        <span>live wpm</span>
+        <span>live speed</span>
       </div>
       <div class="text">
-        Displays a live WPM speed during the test. Updates once every second.
+        Displays a live speed during the test. Updates once every second.
       </div>
       <div class="buttons">
         <div
@@ -2555,7 +2609,7 @@
         <span>average</span>
       </div>
       <div class="text">
-        Displays your average wpm and/or accuracy over the last 10 tests.
+        Displays your average speed and/or accuracy over the last 10 tests.
       </div>
       <div class="buttons">
         <div
@@ -2568,11 +2622,11 @@
         </div>
         <div
           class="button"
-          showAverage="wpm"
+          showAverage="speed"
           tabindex="0"
           onclick="this.blur();"
         >
-          wpm
+          speed
         </div>
         <div
           class="button"
@@ -2695,6 +2749,29 @@
       </div>
       <div class="buttons">
         <div class="button" tabindex="0" onclick="this.blur();">open</div>
+      </div>
+    </div>
+    <div class="section setStreakHourOffset needsAccount hidden">
+      <div class="groupTitle">
+        <i class="fas fa-clock"></i>
+        <span>set streak hour offset</span>
+      </div>
+      <div class="text">
+        Streaks reset at midnight UTC by default. If this is not convenient for
+        you (for example if it means that streaks reset in the middle of the
+        day), you can change the hour offset here.
+        <br />
+        <span class="red">You can only do this once!</span>
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="setStreakHourOffset"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          update hour offset
+        </div>
       </div>
     </div>
     <div class="section updateAccountName needsAccount hidden">

@@ -1,4 +1,3 @@
-import * as TestStats from "./test-stats";
 import * as TestWords from "./test-words";
 import * as TestUI from "./test-ui";
 import Config from "../config";
@@ -20,6 +19,12 @@ interface Settings {
 }
 
 export let settings: Settings | null = null;
+
+let lastTestWpm = 0;
+
+export function setLastTestWpm(wpm: number): void {
+  lastTestWpm = wpm;
+}
 
 function resetCaretPosition(): void {
   if (Config.paceCaret === "off" && !TestState.isPaceRepeat) return;
@@ -86,8 +91,8 @@ export async function init(): Promise<void> {
     wpm = Math.round(wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
-  } else if (Config.paceCaret === "last" || TestState.isPaceRepeat == true) {
-    wpm = TestStats.lastTestWpm;
+  } else if (Config.paceCaret === "last" || TestState.isPaceRepeat === true) {
+    wpm = lastTestWpm;
   }
   if (wpm === undefined || wpm < 1 || Number.isNaN(wpm)) {
     settings = null;
@@ -218,7 +223,7 @@ export function update(expectedStepEnd: number): void {
         top: newTop - smoothlinescroll,
       });
 
-      if (Config.smoothCaret) {
+      if (Config.smoothCaret !== "off") {
         caret.stop(true, true).animate(
           {
             left: newLeft,

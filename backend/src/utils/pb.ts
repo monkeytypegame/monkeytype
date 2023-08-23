@@ -1,5 +1,5 @@
 import _ from "lodash";
-import FunboxesMetadata from "../constants/funbox";
+import FunboxList from "../constants/funbox-list";
 
 interface CheckAndUpdatePbResult {
   isPb: boolean;
@@ -15,9 +15,17 @@ export function canFunboxGetPb(
   const funbox = result.funbox;
   if (!funbox || funbox === "none") return true;
 
-  return funbox
-    .split("#")
-    .every((funboxName) => FunboxesMetadata[funboxName]?.canGetPb === true);
+  let ret = true;
+  const resultFunboxes = funbox.split("#");
+  for (const funbox of FunboxList) {
+    if (resultFunboxes.includes(funbox.name)) {
+      if (!funbox.canGetPb) {
+        ret = false;
+      }
+    }
+  }
+
+  return ret;
 }
 
 export function checkAndUpdatePb(
@@ -25,16 +33,15 @@ export function checkAndUpdatePb(
   lbPersonalBests: MonkeyTypes.LbPersonalBests | undefined,
   result: Result
 ): CheckAndUpdatePbResult {
-  // TODO: find a better way to type this
-  const mode = result.mode as "time";
+  const mode = result.mode;
   const mode2 = result.mode2 as MonkeyTypes.Mode2<"time">;
 
   const userPb = userPersonalBests ?? {};
   userPb[mode] ??= {};
   userPb[mode][mode2] ??= [];
 
-  const personalBestMatch = userPb[mode][mode2].find((pb) =>
-    matchesPersonalBest(result, pb)
+  const personalBestMatch = userPb[mode][mode2].find(
+    (pb: MonkeyTypes.PersonalBest) => matchesPersonalBest(result, pb)
   );
 
   let isPb = true;

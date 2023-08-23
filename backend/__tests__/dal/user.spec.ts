@@ -615,22 +615,140 @@ describe("UserDal", () => {
   it("updateStreak should update streak", async () => {
     await UserDAL.addUser("testStack", "test email", "TestID");
 
-    Date.now = jest.fn(() => 1662372000000);
+    const testSteps = [
+      {
+        date: "2023/06/07 21:00:00 UTC",
+        expectedStreak: 1,
+      },
+      {
+        date: "2023/06/07 23:00:00 UTC",
+        expectedStreak: 1,
+      },
+      {
+        date: "2023/06/08 00:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/08 23:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/09 00:00:00 UTC",
+        expectedStreak: 3,
+      },
+      {
+        date: "2023/06/11 00:00:00 UTC",
+        expectedStreak: 1,
+      },
+    ];
 
-    const streak1 = await updateStreak("TestID", 1662372000000);
+    for (const { date, expectedStreak } of testSteps) {
+      const milis = new Date(date).getTime();
+      Date.now = jest.fn(() => milis);
 
-    await expect(streak1).toBe(1);
+      const streak = await updateStreak("TestID", milis);
 
-    Date.now = jest.fn(() => 1662458400000);
+      await expect(streak).toBe(expectedStreak);
+    }
+  });
 
-    const streak2 = await updateStreak("TestID", 1662458400000);
+  it("positive streak offset should award streak correctly", async () => {
+    await UserDAL.addUser("testStack", "test email", "TestID");
 
-    await expect(streak2).toBe(2);
+    await UserDAL.setStreakHourOffset("TestID", 10);
 
-    Date.now = jest.fn(() => 1999969721000000);
+    const testSteps = [
+      {
+        date: "2023/06/06 21:00:00 UTC",
+        expectedStreak: 1,
+      },
+      {
+        date: "2023/06/07 01:00:00 UTC",
+        expectedStreak: 1,
+      },
+      {
+        date: "2023/06/07 09:00:00 UTC",
+        expectedStreak: 1,
+      },
+      {
+        date: "2023/06/07 10:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/07 23:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/08 00:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/08 01:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/08 09:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/08 10:00:00 UTC",
+        expectedStreak: 3,
+      },
+      {
+        date: "2023/06/10 10:00:00 UTC",
+        expectedStreak: 1,
+      },
+    ];
 
-    const streak3 = await updateStreak("TestID", 1999969721000);
+    for (const { date, expectedStreak } of testSteps) {
+      const milis = new Date(date).getTime();
+      Date.now = jest.fn(() => milis);
 
-    await expect(streak3).toBe(1);
+      const streak = await updateStreak("TestID", milis);
+
+      await expect(streak).toBe(expectedStreak);
+    }
+  });
+
+  it("negative streak offset should award streak correctly", async () => {
+    await UserDAL.addUser("testStack", "test email", "TestID");
+
+    await UserDAL.setStreakHourOffset("TestID", -4);
+
+    const testSteps = [
+      {
+        date: "2023/06/06 19:00:00 UTC",
+        expectedStreak: 1,
+      },
+      {
+        date: "2023/06/06 20:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/07 01:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/07 19:00:00 UTC",
+        expectedStreak: 2,
+      },
+      {
+        date: "2023/06/07 20:00:00 UTC",
+        expectedStreak: 3,
+      },
+      {
+        date: "2023/06/09 23:00:00 UTC",
+        expectedStreak: 1,
+      },
+    ];
+
+    for (const { date, expectedStreak } of testSteps) {
+      const milis = new Date(date).getTime();
+      Date.now = jest.fn(() => milis);
+
+      const streak = await updateStreak("TestID", milis);
+
+      await expect(streak).toBe(expectedStreak);
+    }
   });
 });

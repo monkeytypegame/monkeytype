@@ -25,17 +25,15 @@ function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
   try {
-    if ($(".activeKey") != undefined) {
-      $(".activeKey").removeClass("activeKey");
-    }
+    $(".activeKey").removeClass("activeKey");
 
     let highlightKey;
     if (Config.language.startsWith("korean")) {
       currentKey = Hangul.disassemble(currentKey)[0];
     }
-    if (currentKey == " ") {
+    if (currentKey === " ") {
       highlightKey = "#keymap .keySpace, #keymap .keySplitSpace";
-    } else if (currentKey == '"') {
+    } else if (currentKey === '"') {
       highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
     } else {
       highlightKey = `#keymap .keymapKey[data-key*="${currentKey}"]`;
@@ -52,11 +50,11 @@ function highlightKey(currentKey: string): void {
 }
 
 async function flashKey(key: string, correct?: boolean): Promise<void> {
-  if (key == undefined) return;
+  if (key === undefined) return;
   //console.log("key", key);
-  if (key == " ") {
+  if (key === " ") {
     key = "#keymap .keySpace, #keymap .keySplitSpace";
-  } else if (key == '"') {
+  } else if (key === '"') {
     key = `#keymap .keymapKey[data-key*='${key}']`;
   } else {
     key = `#keymap .keymapKey[data-key*="${key}"]`;

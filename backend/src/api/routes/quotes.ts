@@ -26,6 +26,15 @@ router.get(
   asyncHandler(QuoteController.getQuotes)
 );
 
+router.get(
+  "/isSubmissionEnabled",
+  authenticateRequest({
+    isPublic: true,
+  }),
+  RateLimit.newQuotesIsSubmissionEnabled,
+  asyncHandler(QuoteController.isSubmissionEnabled)
+);
+
 router.post(
   "/",
   validateConfiguration({
@@ -45,7 +54,10 @@ router.post(
         .string()
         .regex(/^[\w+]+$/)
         .required(),
-      captcha: joi.string().required(),
+      captcha: joi
+        .string()
+        .regex(/[\w-_]+/)
+        .required(),
     },
     validationErrorMessage: "Please fill all the fields",
   }),
@@ -108,6 +120,7 @@ router.post(
       language: joi
         .string()
         .regex(/^[\w+]+$/)
+        .max(50)
         .required(),
     },
   }),
@@ -131,7 +144,10 @@ router.post(
   validateRequest({
     body: {
       quoteId: withCustomMessages.regex(/\d+/).required(),
-      quoteLanguage: withCustomMessages.regex(/^[\w+]+$/).required(),
+      quoteLanguage: withCustomMessages
+        .regex(/^[\w+]+$/)
+        .max(50)
+        .required(),
       reason: joi
         .string()
         .valid(
