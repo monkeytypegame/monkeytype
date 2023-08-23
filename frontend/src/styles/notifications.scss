@@ -7,6 +7,12 @@
   right: 1rem;
   top: 1rem;
   transition: 0.125s opacity;
+  .clearAll.button {
+    font-size: 0.75em;
+  }
+  &.focus .clearAll {
+    visibility: hidden;
+  }
   &.focus .notif {
     visibility: hidden;
   }

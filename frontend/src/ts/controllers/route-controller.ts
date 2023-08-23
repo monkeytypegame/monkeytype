@@ -1,16 +1,7 @@
 import * as PageController from "./page-controller";
-import * as PageTest from "../pages/test";
-import * as PageAbout from "../pages/about";
-import * as PageSettings from "../pages/settings";
-import * as PageAccount from "../pages/account";
-import * as PageLogin from "../pages/login";
-import * as Page404 from "../pages/404";
-import * as PageProfile from "../pages/profile";
-import * as PageProfileSearch from "../pages/profile-search";
 import * as Leaderboards from "../elements/leaderboards";
 import * as TestUI from "../test/test-ui";
 import * as PageTransition from "../states/page-transition";
-import * as NavigateEvent from "../observables/navigate-event";
 import { Auth } from "../firebase";
 
 //source: https://www.youtube.com/watch?v=OstALBk-jTc
@@ -19,7 +10,7 @@ import { Auth } from "../firebase";
 //this will be used in tribe
 interface NavigateOptions {
   empty?: boolean;
-  data?: any;
+  data?: unknown;
 }
 
 function pathToRegex(path: string): RegExp {
@@ -47,17 +38,24 @@ interface Route {
   ) => void;
 }
 
+const route404: Route = {
+  path: "404",
+  load: (): void => {
+    PageController.change("404");
+  },
+};
+
 const routes: Route[] = [
   {
     path: "/",
     load: (): void => {
-      PageController.change(PageTest.page);
+      PageController.change("test");
     },
   },
   {
     path: "/verify",
     load: (): void => {
-      PageController.change(PageTest.page);
+      PageController.change("test");
     },
   },
   // {
@@ -72,37 +70,37 @@ const routes: Route[] = [
   {
     path: "/about",
     load: (): void => {
-      PageController.change(PageAbout.page);
+      PageController.change("about");
     },
   },
   {
     path: "/settings",
     load: (): void => {
-      PageController.change(PageSettings.page);
+      PageController.change("settings");
     },
   },
   {
     path: "/login",
     load: (): void => {
       if (!Auth) {
-        nav("/");
+        navigate("/");
         return;
       }
       if (Auth.currentUser) {
-        nav("/account");
+        navigate("/account");
         return;
       }
-      PageController.change(PageLogin.page);
+      PageController.change("login");
     },
   },
   {
     path: "/account",
     load: (_params, options): void => {
       if (!Auth) {
-        nav("/");
+        navigate("/");
         return;
       }
-      PageController.change(PageAccount.page, {
+      PageController.change("account", {
         data: options.data,
       });
     },
@@ -110,13 +108,13 @@ const routes: Route[] = [
   {
     path: "/profile",
     load: (_params): void => {
-      PageController.change(PageProfileSearch.page);
+      PageController.change("profileSearch");
     },
   },
   {
     path: "/profile/:uidOrName",
     load: (params, options): void => {
-      PageController.change(PageProfile.page, {
+      PageController.change("profile", {
         force: true,
         params: {
           uidOrName: params["uidOrName"],
@@ -127,7 +125,7 @@ const routes: Route[] = [
   },
 ];
 
-function nav(
+export function navigate(
   url = window.location.pathname + window.location.search,
   options = {} as NavigateOptions
 ): void {
@@ -158,7 +156,7 @@ async function router(options = {} as NavigateOptions): Promise<void> {
   };
 
   if (!match) {
-    PageController.change(Page404.page);
+    route404.load({}, {});
     return;
   }
 
@@ -174,19 +172,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const target = e?.target as HTMLLinkElement;
     if (target.matches("[router-link]") && target?.href) {
       e.preventDefault();
-      nav(target.href);
+      navigate(target.href);
     }
   });
 });
 
 $("#top .logo").on("click", () => {
-  nav("/");
+  navigate("/");
 });
 
 $("#popups").on("click", "#leaderboards a.entryName", () => {
   Leaderboards.hide();
-});
-
-NavigateEvent.subscribe((url, options) => {
-  nav(url, options);
 });

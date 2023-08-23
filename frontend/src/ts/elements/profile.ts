@@ -10,7 +10,7 @@ import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 
 type ProfileViewPaths = "profile" | "account";
 
-interface ProfileData extends MonkeyTypes.Snapshot {
+export interface ProfileData extends MonkeyTypes.Snapshot {
   allTimeLbs: MonkeyTypes.LeaderboardMemory;
   uid: string;
 }
@@ -86,12 +86,14 @@ export async function update(
       );
   }
 
-  updateNameFontSize(where);
+  setTimeout(() => {
+    updateNameFontSize(where);
+  }, 10);
 
   const joinedText = "Joined " + format(profile.addedAt ?? 0, "dd MMM yyyy");
   const creationDate = new Date(profile.addedAt);
   const diffDays = differenceInDays(new Date(), creationDate);
-  const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
+  const balloonText = `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
   let hoverText = "";
@@ -117,19 +119,31 @@ export async function update(
     const lastResult = results?.[0];
 
     const dayInMilis = 1000 * 60 * 60 * 24;
+    const milisOffset = (profile.streakHourOffset ?? 0) * 3600000;
     const timeDif = formatDistanceToNowStrict(
-      Misc.getCurrentDayTimestamp() + dayInMilis
+      Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset
     );
 
     if (lastResult) {
       //check if the last result is from today
       const isToday = Misc.isToday(lastResult.timestamp);
+
+      const offsetString = profile.streakHourOffset
+        ? `(${profile.streakHourOffset > 0 ? "+" : ""}${
+            profile.streakHourOffset
+          } offset)`
+        : "";
+
       if (isToday) {
         hoverText += `\nClaimed today: yes`;
-        hoverText += `\nCome back in: ${timeDif}`;
+        hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
       } else {
         hoverText += `\nClaimed today: no`;
-        hoverText += `\nStreak lost in: ${timeDif}`;
+        hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+      }
+
+      if (profile.streakHourOffset === undefined) {
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
       }
     }
   }

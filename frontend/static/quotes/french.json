@@ -68,9 +68,9 @@
       "id": 10
     },
     {
-      "text": "Je suis discrète, mon père m'a dit de ne pas faire de vague. Ma religion, un phare guidant mes pas depuis qu'j'ai mis les voiles. C'est drôle qu'il me surveille mais qu'il fasse tout pour me donner une leçon en m'empêchant d'aller en cours.",
+      "text": "Je suis discrète, mon père m'a dit de ne pas faire de vague. Ma religion, un phare guidant mes pas depuis que j'ai mis les voiles. C'est drôle qu'il me surveille mais qu'il fasse tout pour me donner une leçon en m'empêchant d'aller en cours.",
       "source": "Bigflo et Oli - Je suis",
-      "length": 240,
+      "length": 241,
       "id": 11
     },
     {
@@ -98,9 +98,9 @@
       "id": 15
     },
     {
-      "text": "J'ai jamais eu les pieds sur Terre. J'aimerais mieux être un oiseau. J'suis mal dans ma peau. J'voudrais voir le monde à l'envers. Si jamais c'était plus beau, plus beau vu d'en haut. D'en haut.",
+      "text": "J'ai jamais eu les pieds sur Terre. J'aimerais mieux être un oiseau. Je suis mal dans ma peau. Je voudrais voir le monde à l'envers. Si jamais c'était plus beau, plus beau vu d'en haut. D'en haut.",
       "source": "Daniel Balavoine, S.O.S. d'un terrien en détresse.",
-      "length": 194,
+      "length": 196,
       "id": 16
     },
     {
@@ -224,9 +224,9 @@
       "id": 36
     },
     {
-      "text": "Le meilleur des livres est celui qui ne se contente pas de me procurer un plaisir en venant satisfaire mon attente : au contraire, il la surprend, la dépasse, me tire hors de mon état initial ; et c'est en me dépassant, à sa lecture, que je m'approche de ce que je suis, de ce que je pense, ressens et vis. Par son ouvrage, l'auteur ne m'offre pas qu'un divertissement : il augmente en moi ma propre liberté --- il m'augmente de moi-même, pourrait-on dire. C'est d'ailleurs là le principe même de son autorité : l'auctor est celui dont le propre est d'augere, d'\"augmenter\". Ce que l'auteur fait croître en moi, ce n'est pas seulement un contenu de savoir, une quantité de culture, un capital à entretenir, mais l'être même que je suis.",
+      "text": "Le meilleur des livres est celui qui ne se contente pas de me procurer un plaisir en venant satisfaire mon attente : au contraire, il la surprend, la dépasse, me tire hors de mon état initial ; et c'est en me dépassant, à sa lecture, que je m'approche de ce que je suis, de ce que je pense, ressens et vis. Par son ouvrage, l'auteur ne m'offre pas qu'un divertissement : il augmente en moi ma propre liberté --- il m'augmente de moi-même, pourrait-on dire. C'est d'ailleurs là le principe même de son autorité : l'auctor est celui dont le propre est d'augere, d\"augmenter\". Ce que l'auteur fait croître en moi, ce n'est pas seulement un contenu de savoir, une quantité de culture, un capital à entretenir, mais l'être même que je suis.",
       "source": "François-Xavier Bellamy - Les Déshérités",
-      "length": 736,
+      "length": 735,
       "id": 37
     },
     {
@@ -488,9 +488,9 @@
       "id": 80
     },
     {
-      "text": "Chaque jour, dans des moments de méditation, je m'efforce de demander à Dieu de m'aider. Je lui dis : Si la confiance des hommes m'impose de telles responsabilités, au niveau desquelles je dois exercer une action, si, dans l'accomplissement de ma lourde tâche, vous pensez que la force et l'influence qui découlent de la confiance de mes frères m'entraineront à commettre des injustices, à piétiner le droit des faibles, alors, mon Dieu, faites en sorte que cette confiance disparaisse, que mes responsabilités disparaissent et que je m'en retoume à Yamoussoukro, mon petit village, à ma petite case.",
+      "text": "Chaque jour, dans des moments de méditation, je m'efforce de demander à Dieu de m'aider. Je lui dis : Si la confiance des hommes m'impose de telles responsabilités, au niveau desquelles je dois exercer une action, si, dans l'accomplissement de ma lourde tâche, vous pensez que la force et l'influence qui découlent de la confiance de mes frères m'entraineront à commettre des injustices, à piétiner le droit des faibles, alors, mon Dieu, faites en sorte que cette confiance disparaisse, que mes responsabilités disparaissent et que je m'en retourne à Yamoussoukro, mon petit village, à ma petite case.",
       "source": "Félix Houphouët-Boigny - Le sphinx",
-      "length": 600,
+      "length": 601,
       "id": 81
     },
     {
@@ -572,7 +572,7 @@
       "id": 94
     },
     {
-      "text": "Je doute que la Révolution ait, dans les grandes lignes, changé la Russie en quoi que ce soit. En lisant Gogol, ou même Dostoïevski, on se rend compte à quel point le régime soviétique est revenu à la vieille Russie, voire l'a revigorée. Il y a certainement beaucoup plus de Gogol et Dostoievski que de Marx dans le régime soviétique.",
+      "text": "Je doute que la Révolution ait, dans les grandes lignes, changé la Russie en quoi que ce soit. En lisant Gogol, ou même Dostoïevski, on se rend compte à quel point le régime soviétique est revenu à la vieille Russie, voire l'a revigorée. Il y a certainement beaucoup plus de Gogol et Dostoïevski que de Marx dans le régime soviétique.",
       "source": "Malcolm Muggeridge - Like It was",
       "length": 334,
       "id": 95
@@ -824,7 +824,7 @@
       "id": 136
     },
     {
-      "text": "Ce jour là, l'idée d'aller à l'école déprimait considérablement Punpun. La raison en était simple : sa camarade, et petite vedette de la calsse, Miyo s'en allait dans une autre école.",
+      "text": "Ce jour là, l'idée d'aller à l'école déprimait considérablement Punpun. La raison en était simple : sa camarade, et petite vedette de la classe, Miyo s'en allait dans une autre école.",
       "source": "Bonne nuit Punpun de Inio Asano",
       "length": 183,
       "id": 137
@@ -878,15 +878,15 @@
       "id": 145
     },
     {
-      "text": "Pour dire oui, il faut suer et retrousser ses manches, empoigner la vie à pleines mains et s’en mettre jusqu’aux coudes. C’est facile de dire non, même si on doit mourir, Il n’y a qu’à ne pas bouger et attendre. Attendre pour vivre, attendre même pour qu’on vous tue. C’est trop lâche. C’est une invention des hommes. Tu imagines un monde où les arbres aussi auraient dit non contre la sève, où les bêtes auraient dit non contre l’instinct de la chasse ou de l’amour ? Les bêtes, elles au moins, sont bonnes et simples et dures. Elles vont, se poussant les unes après les autres, courageusement, sur Je même chemin, et si elles tombent, les autres passent et il peut s’en perdre autant que l’on veut, il en restera toujours une de chaque espèce prête à refaire des petits et à reprendre Je même chemin avec le même courage, toute pareille à celles qui sont passées avant.",
+      "text": "Pour dire oui, il faut suer et retrousser ses manches, empoigner la vie à pleines mains et s’en mettre jusqu’aux coudes. C’est facile de dire non, même si on doit mourir, Il n’y a qu’à ne pas bouger et attendre. Attendre pour vivre, attendre même pour qu’on vous tue. C’est trop lâche. C’est une invention des hommes. Tu imagines un monde où les arbres aussi auraient dit non contre la sève, où les bêtes auraient dit non contre l’instinct de la chasse ou de l’amour ? Les bêtes, elles au moins, sont bonnes et simples et dures. Elles vont, se poussant les unes après les autres, courageusement, sur le même chemin, et si elles tombent, les autres passent et il peut s’en perdre autant que l’on veut, il en restera toujours une de chaque espèce prête à refaire des petits et à reprendre le même chemin avec le même courage, toute pareille à celles qui sont passées avant.",
       "source": "Antigone - Jean Anouilh",
       "length": 871,
       "id": 146
     },
     {
-      "text": "Quel sera-t-il mon bonheur ? Quelle femme heureuse deviendra-t-elle, la petite Antigone ? Quelles pauvretés faudra-t-elle qu'elle fasse elle aussi, jour par jour, pour arracher avec ses dents son petit lambeau de bonheur ? Dites, à qui devra-t-elle mentir, à qui sourire, à qui se vendre ? Qui devra-t-elle laisser mourrir en détournant le regard ?",
+      "text": "Quel sera-t-il mon bonheur ? Quelle femme heureuse deviendra-t-elle, la petite Antigone ? Quelles pauvretés faudra-t-elle qu'elle fasse elle aussi, jour par jour, pour arracher avec ses dents son petit lambeau de bonheur ? Dites, à qui devra-t-elle mentir, à qui sourire, à qui se vendre ? Qui devra-t-elle laisser mourir en détournant le regard ?",
       "source": "Antigone - Jean Anouilh",
-      "length": 348,
+      "length": 347,
       "id": 147
     },
     {

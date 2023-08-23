@@ -103,7 +103,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
 
   if (item.action === "correctLetter") {
     if (!nosound) playSound();
-    activeWord.children[curPos].classList.add("correct");
+    activeWord.children[curPos]?.classList.add("correct");
     curPos++;
   } else if (item.action === "incorrectLetter") {
     if (!nosound) playSound(true);
@@ -111,12 +111,12 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     if (curPos >= activeWord.children.length) {
       //if letter is an extra
       myElement = document.createElement("letter");
-      myElement.classList.add("extra");
+      myElement?.classList.add("extra");
       myElement.innerHTML = item.value?.toString() ?? "";
       activeWord.appendChild(myElement);
     }
     myElement = activeWord.children[curPos];
-    myElement.classList.add("incorrect");
+    myElement?.classList.add("incorrect");
     curPos++;
   } else if (
     item.action === "setLetterIndex" &&
@@ -126,7 +126,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     curPos = item.value;
     // remove all letters from cursor to end of word
     for (const myElement of [...activeWord.children].slice(curPos)) {
-      if (myElement.classList.contains("extra")) {
+      if (myElement?.classList.contains("extra")) {
         myElement.remove();
       } else {
         myElement.className = "";
@@ -138,7 +138,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     curPos = 0;
   } else if (item.action === "submitErrorWord") {
     if (!nosound) playSound(true);
-    activeWord.classList.add("error");
+    activeWord?.classList.add("error");
     wordPos++;
     curPos = 0;
   } else if (item.action === "backWord") {
@@ -151,7 +151,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
 
     curPos = activeWord.children.length;
     while (activeWord.children[curPos - 1].className === "") curPos--;
-    activeWord.classList.remove("error");
+    activeWord?.classList.remove("error");
   }
 }
 

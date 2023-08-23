@@ -72,6 +72,20 @@
         }
       }
     },
+    "/users/tags": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Gets a user's tags data",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Tags"
+            }
+          }
+        }
+      }
+    },
     "/users/:uid/profile": {
       "get": {
         "tags": ["users"],
@@ -454,6 +468,85 @@
           "type": "number",
           "format": "double",
           "example": 3941.6
+        }
+      }
+    },
+    "Tags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "63fde8d39312642481070f5d"
+          },
+          "name": {
+            "type": "string",
+            "example": "example_tag"
+          },
+          "personalBests": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "object",
+                "properties": {
+                  "15": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "30": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "60": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "120": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  }
+                }
+              },
+              "words": {
+                "type": "object",
+                "properties": {
+                  "10": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "25": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "50": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  },
+                  "100": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/PersonalBest"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

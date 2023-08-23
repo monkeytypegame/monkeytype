@@ -23,7 +23,7 @@ const wrapperId = "googleSignUpPopupWrapper";
 
 let signedInUser: UserCredential | undefined = undefined;
 
-export function show(credential: UserCredential): void {
+function show(credential: UserCredential): void {
   Skeleton.append(wrapperId);
 
   if (!isPopupVisible(wrapperId)) {
@@ -45,7 +45,7 @@ export function show(credential: UserCredential): void {
   }
 }
 
-export async function hide(): Promise<void> {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     if (signedInUser !== undefined) {
       Notifications.add("Sign up process canceled", 0, {
@@ -207,12 +207,12 @@ const checkNameDebounced = debounce(1000, async () => {
     return;
   }
 
-  if (response.status == 422) {
+  if (response.status === 422) {
     nameIndicator.show("unavailable", response.message);
     return;
   }
 
-  if (response.status == 409) {
+  if (response.status === 409) {
     nameIndicator.show("taken", response.message);
     return;
   }

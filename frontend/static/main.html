@@ -4,11 +4,15 @@
 
   <body>
     <%= compilation.assets["html/warnings.html"].source() %>
-
+    <div id="fpsCounter" class="hidden"></div>
     <div class="customBackground"></div>
     <div id="backgroundLoader" style="display: none"></div>
     <div id="bannerCenter" class="focus"></div>
     <div id="notificationCenter">
+      <div class="clearAll button invisible" style="display: none">
+        <i class="fas fa-times"></i>
+        Clear all
+      </div>
       <div class="history"></div>
     </div>
     <div id="timerWrapper">
@@ -68,5 +72,6 @@
     ></script>
     <link rel="stylesheet" href="/./themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
+    <link rel="stylesheet" href="" id="globalFunBoxTheme" type="text/css" />
   </body>
 </html>

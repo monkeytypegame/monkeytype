@@ -11,7 +11,7 @@ import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
 import * as ActivePage from "../states/active-page";
 
-export function updateActiveButton(): void {
+function updateActiveButton(): void {
   let activeThemeName = Config.theme;
   if (
     Config.randomTheme !== "off" &&
@@ -278,7 +278,7 @@ function toggleFavourite(themeName: string): void {
   UpdateConfig.saveFullConfigToLocalStorage();
 }
 
-export function saveCustomThemeColors(): void {
+function saveCustomThemeColors(): void {
   const newColors: string[] = [];
   for (const color of ThemeController.colorVars) {
     newColors.push(
@@ -335,7 +335,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   $target.addClass("active");
   // setCustomInputs();
   //test
-  if ($target.attr("tab") == "preset") {
+  if ($target.attr("tab") === "preset") {
     UpdateConfig.setCustomTheme(false);
   } else {
     UpdateConfig.setCustomTheme(true);
