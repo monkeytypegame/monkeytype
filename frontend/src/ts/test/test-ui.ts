@@ -170,8 +170,9 @@ function getWordHTML(word: string): string {
     }
   }
   retval += "</div>";
-  if (newlineafter)
+  if (newlineafter) {
     retval += "<div class='newline'></div><div class='after-newline'></div>";
+  }
   return retval;
 }
 
@@ -692,10 +693,11 @@ export function updateWordElement(showError = !Config.blindMode): void {
     }
   }
   wordAtIndex.innerHTML = ret;
-  if (newlineafter)
+  if (newlineafter) {
     $("#words").append(
       "<div class='newline'></div><div class='after-newline'></div>"
     );
+  }
 }
 
 export function scrollTape(): void {
