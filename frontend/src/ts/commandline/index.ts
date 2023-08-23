@@ -340,6 +340,7 @@ function getCommands(
         list: [],
       },
     };
+    command.subgroup.beforeList?.();
     for (const cmd of command.subgroup.list) {
       ret.push(...getCommands(cmd, currentCommand));
     }
