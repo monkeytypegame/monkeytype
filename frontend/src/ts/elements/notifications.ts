@@ -13,6 +13,7 @@ function updateMargin(): void {
   $("#notificationCenter").css("margin-top", height + "px");
 }
 
+let visibleStickyNotifications = 0;
 let id = 0;
 class Notification {
   id: number;
@@ -44,7 +45,7 @@ class Notification {
     if (type === "banner") {
       this.duration = duration as number;
     } else {
-      if (duration == undefined) {
+      if (duration === undefined) {
         if (level === -1) {
           this.duration = 0;
         } else {
@@ -82,7 +83,7 @@ class Notification {
       cls += " important";
     }
 
-    if (this.customTitle != undefined) {
+    if (this.customTitle !== undefined) {
       title = this.customTitle;
     }
 
@@ -90,12 +91,16 @@ class Notification {
       icon = `<i class="fas fa-fw fa-bullhorn"></i>`;
     }
 
-    if (this.customIcon != undefined) {
+    if (this.customIcon !== undefined) {
       icon = `<i class="fas fa-fw fa-${this.customIcon}"></i>`;
     }
 
     if (this.type === "notification") {
       // moveCurrentToHistory();
+      if (this.duration === 0) {
+        visibleStickyNotifications++;
+        updateClearAllButton();
+      }
       const oldHeight = $("#notificationCenter .history").height() as number;
       $("#notificationCenter .history").prepend(`
           
@@ -141,6 +146,10 @@ class Notification {
             $(`#notificationCenter .notif[id='${this.id}']`).on("click", () => {
               this.hide();
               this.closeCallback();
+              if (this.duration === 0) {
+                visibleStickyNotifications--;
+              }
+              updateClearAllButton();
             });
           }
         );
@@ -239,6 +248,16 @@ class Notification {
   }
 }
 
+function updateClearAllButton(): void {
+  if (visibleStickyNotifications > 1) {
+    $("#notificationCenter .clearAll").removeClass("invisible");
+    $("#notificationCenter .clearAll").slideDown(125);
+  } else if (visibleStickyNotifications < 1) {
+    $("#notificationCenter .clearAll").addClass("invisible");
+    $("#notificationCenter .clearAll").slideUp(125);
+  }
+}
+
 interface AddNotificationOptions {
   important?: boolean;
   duration?: number;
@@ -299,4 +318,12 @@ const debouncedMarginUpdate = debounce(100, updateMargin);
 
 $(window).on("resize", () => {
   debouncedMarginUpdate();
+});
+
+$("#notificationCenter .clearAll").on("click", () => {
+  $("#notificationCenter .notif.bad").each((_, element) => {
+    $(element)[0].click();
+  });
+  visibleStickyNotifications = 0;
+  updateClearAllButton();
 });

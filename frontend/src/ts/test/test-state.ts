@@ -3,6 +3,7 @@ export let isPaceRepeat = false;
 export let isActive = false;
 export let activeChallenge: null | MonkeyTypes.Challenge = null;
 export let savingEnabled = true;
+export let bailedOut = false;
 
 export function setRepeated(tf: boolean): void {
   isRepeated = tf;
@@ -22,4 +23,8 @@ export function setActiveChallenge(val: null | MonkeyTypes.Challenge): void {
 
 export function setSaving(val: boolean): void {
   savingEnabled = val;
+}
+
+export function setBailedOut(tf: boolean): void {
+  bailedOut = tf;
 }

@@ -15,15 +15,7 @@
   },
   {
     "name": "spanish",
-    "languages": ["spanish", "spanish_1k", "spanish_10k"]
-  },
-  {
-    "name": "lorem_ipsum",
-    "languages": ["lorem_ipsum"]
-  },
-  {
-    "name": "nepali",
-    "languages": ["nepali", "nepali_1k"]
+    "languages": ["spanish", "spanish_1k", "spanish_10k", "spanish_650k"]
   },
   {
     "name": "french",
@@ -164,7 +156,13 @@
   },
   {
     "name": "greeklish",
-    "languages": ["greeklish", "greeklish_1k", "greeklish_5k", "greeklish_10k", "greeklish_25k"]
+    "languages": [
+      "greeklish",
+      "greeklish_1k",
+      "greeklish_5k",
+      "greeklish_10k",
+      "greeklish_25k"
+    ]
   },
 
   {
@@ -181,7 +179,11 @@
   },
   {
     "name": "tamil",
-    "languages": ["tamil", "tamil_1k"]
+    "languages": ["tamil", "tamil_1k", "tanglish"]
+  },
+  {
+    "name": "kannada",
+    "languages": ["kannada"]
   },
   {
     "name": "telugu",
@@ -388,6 +390,10 @@
     "languages": ["sanskrit"]
   },
   {
+    "name": "nepali",
+    "languages": ["nepali", "nepali_1k"]
+  },
+  {
     "name": "santali",
     "languages": ["santali"]
   },
@@ -402,7 +408,7 @@
   },
   {
     "name": "uzbek",
-    "languages": ["uzbek", "uzbek_1k"]
+    "languages": ["uzbek", "uzbek_1k", "uzbek_70k"]
   },
   {
     "name": "belarusian",
@@ -462,6 +468,18 @@
   {
     "name": "yiddish",
     "languages": ["yiddish"]
+  },
+  {
+    "name": "frysk",
+    "languages": ["frysk", "frysk_1k"]
+  },
+  {
+    "name": "pashto",
+    "languages": ["pashto"]
+  },
+  {
+    "name": "lorem_ipsum",
+    "languages": ["lorem_ipsum"]
   },
   {
     "name": "code",

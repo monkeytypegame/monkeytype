@@ -28,7 +28,7 @@ export function setSelectedId(val: number): void {
   selectedId = val;
 }
 
-const searchServiceCache: Record<string, SearchService<any>> = {};
+const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
 
 function getSearchService<T>(
   language: string,
@@ -36,11 +36,12 @@ function getSearchService<T>(
   textExtractor: TextExtractor<T>
 ): SearchService<T> {
   if (language in searchServiceCache) {
-    return searchServiceCache[language];
+    return searchServiceCache[language] as unknown as SearchService<T>;
   }
 
   const newSearchService = buildSearchService<T>(data, textExtractor);
-  searchServiceCache[language] = newSearchService;
+  searchServiceCache[language] =
+    newSearchService as unknown as typeof searchServiceCache[typeof language];
 
   return newSearchService;
 }
@@ -255,7 +256,7 @@ export async function show(clearText = true): Promise<void> {
   }
 }
 
-export function hide(noAnim = false, focusWords = true): void {
+function hide(noAnim = false, focusWords = true): void {
   if (isPopupVisible(wrapperId)) {
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
@@ -318,13 +319,31 @@ $("#quoteSearchPopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#popups").on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", () => {
-  hide(true);
-  QuoteSubmitPopup.show(true);
-});
+$("#popups").on(
+  "click",
+  "#quoteSearchPopup #gotoSubmitQuoteButton",
+  async () => {
+    Loader.show();
+    const isSubmissionEnabled = (await Ape.quotes.isSubmissionEnabled()).data
+      .isEnabled;
+    Loader.hide();
+    if (!isSubmissionEnabled) {
+      Notifications.add(
+        "Quote submission is disabled temporarily due to a large submission queue.",
+        0,
+        {
+          duration: 5,
+        }
+      );
+      return;
+    }
+    hide();
+    QuoteSubmitPopup.show(true);
+  }
+);
 
 $("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
-  hide(true);
+  hide();
   QuoteApprovePopup.show(true);
 });
 
@@ -408,8 +427,8 @@ $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
-  if (len == -2) {
+  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
+  if (len === -2) {
     show();
   }
 });

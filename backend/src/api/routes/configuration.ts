@@ -2,26 +2,27 @@ import joi from "joi";
 import { Router } from "express";
 import {
   asyncHandler,
-  checkUserPermissions,
+  checkIfUserIsAdmin,
   useInProduction,
   validateRequest,
 } from "../../middlewares/api-utils";
 import * as ConfigurationController from "../controllers/configuration";
 import { authenticateRequest } from "../../middlewares/auth";
+import { adminLimit } from "../../middlewares/rate-limit";
 
 const router = Router();
-
-const checkIfUserIsConfigurationMod = checkUserPermissions({
-  criteria: (user) => {
-    return !!user.configurationMod;
-  },
-});
 
 router.get("/", asyncHandler(ConfigurationController.getConfiguration));
 
 router.patch(
   "/",
-  useInProduction([authenticateRequest(), checkIfUserIsConfigurationMod]),
+  adminLimit,
+  useInProduction([
+    authenticateRequest({
+      noCache: true,
+    }),
+    checkIfUserIsAdmin(),
+  ]),
   validateRequest({
     body: {
       configuration: joi.object(),
@@ -32,7 +33,13 @@ router.patch(
 
 router.get(
   "/schema",
-  useInProduction([authenticateRequest(), checkIfUserIsConfigurationMod]),
+  adminLimit,
+  useInProduction([
+    authenticateRequest({
+      noCache: true,
+    }),
+    checkIfUserIsAdmin(),
+  ]),
   asyncHandler(ConfigurationController.getSchema)
 );
 

@@ -1,3 +1,70 @@
+@mixin highlightMode($color) {
+  &.highlight-next-word {
+    .word.active,
+    .word.active + .word {
+      color: $color;
+    }
+  }
+  &.highlight-next-two-words {
+    .word.active,
+    .word.active + .word,
+    .word.active + .word + .word {
+      color: $color;
+    }
+  }
+  &.highlight-next-three-words {
+    .word.active,
+    .word.active + .word,
+    .word.active + .word + .word,
+    .word.active + .word + .word + .word {
+      color: $color;
+    }
+  }
+}
+
+.highlightContainer {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+
+  .highlight {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    position: absolute;
+    background-color: var(--sub-color);
+    border-radius: var(--roundness);
+    opacity: 1;
+    transition: opacity 0.125s linear;
+
+    overflow: hidden;
+    z-index: 1;
+
+    &.withAnimation {
+      transition: left 0.25s ease, right 0.25s ease, opacity 0.125s linear;
+    }
+
+    &.highlight-hidden {
+      opacity: 0;
+    }
+  }
+
+  .inputWord {
+    color: var(--bg-color);
+    position: absolute;
+    font-size: 1em;
+    line-height: 1em;
+    font-variant: no-common-ligatures;
+  }
+
+  .inputWordsContainer {
+    position: relative;
+    &.withAnimation {
+      transition: all 0.25s ease;
+    }
+  }
+}
+
 #timerWrapper {
   opacity: 0;
   transition: 0.25s;
@@ -55,19 +122,21 @@
     left: 0;
     width: 100%;
     position: relative;
-    font-size: 10rem;
+    font-size: clamp(1rem, 12vw, 10rem);
+
     opacity: 0;
     width: 0;
     height: 0;
     margin: 0 auto;
     display: grid;
     justify-content: center;
-    bottom: 6rem;
+    bottom: clamp(2rem, 12vw, 6rem);
+
     transition: none;
   }
 
   #largeLiveWpmAndAcc {
-    font-size: 10rem;
+    font-size: clamp(1rem, 12vw, 10rem);
     color: black;
     width: 100%;
     left: 0;
@@ -75,12 +144,12 @@
     z-index: -1;
     height: 0;
     line-height: 0;
-    top: 5rem;
+    top: clamp(1rem, 10vw, 5rem);
     position: relative;
     display: grid;
     grid-auto-flow: column;
     justify-content: center;
-    gap: 5rem;
+    gap: clamp(1rem, 8vw, 5rem);
     width: 0;
     margin: 0 auto;
 
@@ -196,6 +265,8 @@
         border-right: 2px dotted var(--main-color);
       }
     }
+
+    @include highlightMode(var(--sub-color));
   }
 
   &.colorfulMode {
@@ -225,6 +296,8 @@
         color: var(--colorful-error-extra-color);
       }
     }
+
+    @include highlightMode(var(--main-color));
   }
 
   &.flipped.colorfulMode {
@@ -256,22 +329,15 @@
         color: var(--colorful-error-extra-color);
       }
     }
+
+    @include highlightMode(var(--sub-color));
   }
 
   &.tape .word {
     margin: 0.25em 0.5em 0.75em 0;
   }
 
-  &.nospace .word {
-    margin: 0.5em 0;
-  }
-
-  &.arrows .word {
-    margin: 0.5em 0;
-    letter {
-      margin: 0 0.25em;
-    }
-  }
+  @include highlightMode(var(--text-color));
 }
 
 .word {
@@ -280,9 +346,6 @@
   margin: 0.25em;
   color: var(--sub-color);
   font-variant: no-common-ligatures;
-  // display: flex;
-  // transition: 0.25s
-  /*   margin-bottom: 1px; */
   border-bottom: 2px solid transparent;
   letter {
     display: inline-block;
@@ -296,8 +359,7 @@
     opacity: 0.25;
   }
 
-  // transition: .25s;
-  .wordInputAfter {
+  .wordInputHighlight {
     opacity: 1;
     white-space: nowrap;
     position: absolute;
@@ -315,10 +377,17 @@
     text-shadow: none;
     top: -0.5rem;
     z-index: 10;
-    cursor: text;
-    .speed {
-      font-size: 0.75rem;
+
+    &.withSpeed {
+      .speed {
+        font-size: 0.75rem;
+        color: var(--sub-alt-color);
+      }
     }
+  }
+
+  &.nocursor {
+    cursor: none;
   }
 
   &.error {
@@ -331,6 +400,10 @@
       0px 1px 0px var(--bg-color),
       1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
   }
+}
+
+#resultWordsHistory {
+  position: relative;
 }
 
 #words.noErrorBorder,
@@ -936,9 +1009,12 @@
   grid-auto-flow: column;
   height: max-content;
   width: 100%;
+  transition: opacity 0.125s;
   justify-content: space-around;
-  transition: 0.125s;
   margin-bottom: 1rem;
+  .textButton {
+    transition: none;
+  }
   .puncAndNum {
     // transition: 0.25s cubic-bezier(0.37, 0, 0.63, 1);
     overflow: hidden;
@@ -958,7 +1034,6 @@
     border-radius: calc(var(--roundness) / 2);
     background: var(--bg-color);
     margin: 0.5rem 0;
-    transition: 0.25s;
     &.scrolled {
       width: 0;
       margin: auto 0;
@@ -986,7 +1061,6 @@
     grid-auto-flow: column;
 
     .textButton {
-      transition: 0.125s;
       padding: 0.75rem 0.5rem 0.7rem 0.5rem;
 
       &:first-child {
@@ -1086,7 +1160,7 @@
     color: var(--sub-color);
     text-align: center;
     margin-bottom: 0.5rem;
-    transition: 0.125s;
+    transition: opacity 0.125s;
     justify-content: center;
     -webkit-user-select: none;
     user-select: none;
@@ -1174,5 +1248,22 @@
 #middle.focus .pageTest {
   #testModesNotice {
     opacity: 0 !important;
+  }
+}
+
+/* funbox nospace */
+body.fb-nospace {
+  #words .word {
+    margin: 0.5em 0;
+  }
+}
+
+/* funbox arrows */
+body.fb-arrows {
+  #words .word {
+    margin: 0.5em 0;
+    letter {
+      margin: 0 0.25em;
+    }
   }
 }

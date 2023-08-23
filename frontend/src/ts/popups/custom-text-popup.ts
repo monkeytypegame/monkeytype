@@ -16,7 +16,7 @@ const skeletonId = "customTextPopupWrapper";
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
 
-export function updateLongTextWarning(): void {
+function updateLongTextWarning(): void {
   if (CustomTextState.isCustomTextLong() === true) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
     $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
@@ -34,6 +34,23 @@ export function show(noAnim = false): void {
   Skeleton.append(skeletonId);
   if (!Misc.isElementVisible(wrapper)) {
     updateLongTextWarning();
+
+    if (
+      CustomText.isSectionRandom ||
+      CustomText.isTimeRandom ||
+      CustomText.isWordRandom
+    ) {
+      $(`${popup} .randomWordsCheckbox input`).prop("checked", true);
+    } else {
+      $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
+    }
+
+    if (CustomText.delimiter === "|") {
+      $(`${popup} .delimiterCheck input`).prop("checked", true);
+    } else {
+      $(`${popup} .delimiterCheck input`).prop("checked", false);
+    }
+
     if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
     } else {
@@ -86,7 +103,7 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
     $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
   }
   if (
-    $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
+    $(`${popup} textarea`).val() !== CustomText.text.join(CustomText.delimiter)
   ) {
     const currentText = $(`${popup} textarea`).val() as string;
     const currentTextSplit = currentText.split(CustomText.delimiter);
@@ -106,7 +123,7 @@ interface HideOptions {
   resetState?: boolean | undefined;
 }
 
-export function hide(options = {} as HideOptions): void {
+function hide(options = {} as HideOptions): void {
   if (options.noAnim === undefined) options.noAnim = false;
   if (options.resetState === undefined) options.resetState = true;
 
@@ -122,7 +139,7 @@ export function hide(options = {} as HideOptions): void {
         () => {
           if (options.resetState) {
             const newText = CustomText.text.map((word) => {
-              if (word[word.length - 1] == "|") {
+              if (word[word.length - 1] === "|") {
                 word = word.slice(0, -1);
               }
               return word;
@@ -212,6 +229,13 @@ function apply(): void {
 
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
+
+  //replace any characters that look like a space with an actual space
+  text = text.replace(/[\u2000-\u200A\u202F\u205F\u00A0]/g, " ");
+
+  //replace zero width characters
+  text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+
   text = text.replace(/\\\\t/gm, "\t");
   text = text.replace(/\\\\n/gm, "\n");
   text = text.replace(/\\t/gm, "\t");
@@ -241,8 +265,6 @@ function apply(): void {
       text = text.replace(/ +/gm, " ");
     }
   }
-  // text = Misc.remove_non_ascii(text);
-  text = text.replace(/[\u2060]/g, "");
 
   CustomText.setText(text.split(CustomText.delimiter));
 

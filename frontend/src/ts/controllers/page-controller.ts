@@ -10,18 +10,17 @@ import * as PageProfile from "../pages/profile";
 import * as PageProfileSearch from "../pages/profile-search";
 import * as Page404 from "../pages/404";
 import * as PageTransition from "../states/page-transition";
-import type Page from "../pages/page";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 
 interface ChangeOptions {
   force?: boolean;
   params?: { [key: string]: string };
-  data?: any;
+  data?: unknown;
 }
 
 export async function change(
-  page: Page,
+  pageName: MonkeyTypes.PageName,
   options = {} as ChangeOptions
 ): Promise<boolean> {
   const defaultOptions = {
@@ -33,19 +32,19 @@ export async function change(
   return new Promise((resolve) => {
     if (PageTransition.get()) {
       console.debug(
-        `change page to ${page.name} stopped, page transition is true`
+        `change page to ${pageName} stopped, page transition is true`
       );
       return resolve(false);
     }
 
-    if (!options.force && ActivePage.get() === page.name) {
-      console.debug(`change page ${page.name} stoped, page already active`);
+    if (!options.force && ActivePage.get() === pageName) {
+      console.debug(`change page ${pageName} stoped, page already active`);
       return resolve(false);
     } else {
-      console.log(`changing page ${page.name}`);
+      console.log(`changing page ${pageName}`);
     }
 
-    const pages: Record<string, Page> = {
+    const pages = {
       loading: PageLoading.page,
       test: PageTest.page,
       settings: Settings.page,
@@ -58,7 +57,7 @@ export async function change(
     };
 
     const previousPage = pages[ActivePage.get()];
-    const nextPage = page;
+    const nextPage = pages[pageName];
 
     previousPage?.beforeHide();
     PageTransition.set(true);
@@ -80,6 +79,7 @@ export async function change(
         previousPage?.afterHide();
         await nextPage?.beforeShow({
           params: options.params,
+          // @ts-expect-error
           data: options.data,
         });
       }

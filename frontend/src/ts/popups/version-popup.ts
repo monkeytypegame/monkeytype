@@ -4,7 +4,7 @@ import * as Skeleton from "./skeleton";
 
 const wrapperId = "versionHistoryWrapper";
 
-export function show(): void {
+function show(): void {
   Skeleton.append(wrapperId);
   $("#versionHistory").html(`
     <div class="preloader">
@@ -15,6 +15,22 @@ export function show(): void {
     $("#versionHistory").html(`<div class="releases"></div`);
     releases.forEach((release: MonkeyTypes.GithubRelease) => {
       if (!release.draft && !release.prerelease) {
+        let body = release.body;
+
+        body = body.replace(/\r\n/g, "<br>");
+        //replace ### title with h3 title h3
+        body = body.replace(/### (.*?)<br>/g, "<h3>$1</h3>");
+        body = body.replace(/<\/h3><br>/gi, "</h3>");
+        //remove - at the start of a line
+        body = body.replace(/^- /gm, "");
+        //replace **bold** with bold
+        body = body.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+        //replace links with a tags
+        body = body.replace(
+          /\[(.*?)\]\((.*?)\)/g,
+          '<a href="$2" target="_blank">$1</a>'
+        );
+
         $("#versionHistory .releases").append(`
         <div class="release">
           <div class="title">${release.name}</div>
@@ -22,7 +38,7 @@ export function show(): void {
             new Date(release.published_at),
             "dd MMM yyyy"
           )}</div>
-          <div class="body">${release.body.replace(/\r\n/g, "<br>")}</div>
+          <div class="body">${body}</div>
         </div>
       `);
       }

@@ -68,12 +68,6 @@
       "id": 10
     },
     {
-      "text": "Mía o de la muerte, entre la muerte y yo, un paso más para acercarme a ella, sería perderla; y dejarla llorar en abandono, era un suplicio superior a mis fuerzas.",
-      "source": "Jorge Isaacs, María",
-      "length": 162,
-      "id": 11
-    },
-    {
       "text": "La naturaleza es la más amorosa de las madres cuando el dolor se ha adueñado de nuestra alma; y si la felicidad nos acaricia, ella nos sonríe.",
       "source": "Jorge Isaacs, María",
       "length": 142,
@@ -308,9 +302,9 @@
       "id": 50
     },
     {
-      "text": "Dar el ejemplo no es la principal manera de influir sobre los demás; es la única manera",
+      "text": "Dar el ejemplo no es la principal manera de influir sobre los demás; es la única manera.",
       "source": "Albert Einstein",
-      "length": 87,
+      "length": 88,
       "id": 51
     },
     {
@@ -674,7 +668,7 @@
       "id": 112
     },
     {
-      "text": "Yo soy el que sostiene el arma. Yo apunto. Yo pongo el cargador, y deslizo la cámara. Yo soy el que quita el seguro. Pero... tu eres la que en realidad los mata. Así que, ¿Qué harás? Dame mi orden, Sir Hellsing.",
+      "text": "Yo soy el que sostiene el arma. Yo apunto. Yo pongo el cargador, y deslizo la cámara. Yo soy el que quita el seguro. Pero... tú eres la que en realidad los mata. Así que, ¿Qué harás? Dame mi orden, Sir Hellsing.",
       "source": "Alucard - Hellsing Ultimate",
       "length": 211,
       "id": 113
@@ -704,9 +698,9 @@
       "id": 117
     },
     {
-      "text": "Mi nombre es Sasuke Uchiha me disgustan muchas cosas y no me gusta nada en particular, lo que yo tengo no es un sueño porque va a convertirse en realidad, voy a reestablecer mi clan y a destruir a alguien en específico.",
+      "text": "Mi nombre es Sasuke Uchiha me disgustan muchas cosas y no me gusta nada en particular, lo que yo tengo no es un sueño porque va a convertirse en realidad, voy a restablecer mi clan y a destruir a alguien en específico.",
       "source": "Sasuke Uchiha - Naruto",
-      "length": 219,
+      "length": 218,
       "id": 118
     },
     {
@@ -800,9 +794,9 @@
       "id": 133
     },
     {
-      "text": "Puedo escribir los versos más triste esta noche. Escribir, por ejemplo: \"La noche está estrellada, y tiritan, azules, los astros, a lo lejos\". El viento de la noche gira en el cielo y canta. Puedo escribir los versos más tristes esta noche. Yo la quise, y a veces ella me quiso. En las noches como esta la tuve entre mis brazos. La besé tantas veces bajo el cielo infinito. Ella me quiso, a veces yo también la quería. Cómo no haber amado sus grandes ojos fijos. Puedo escribir los versos más triste esta noche. Pensar que no la tengo. Sentir que la he perdido.",
+      "text": "Puedo escribir los versos más tristes esta noche. Escribir, por ejemplo: \"La noche está estrellada, y tiritan, azules, los astros, a lo lejos\". El viento de la noche gira en el cielo y canta. Puedo escribir los versos más tristes esta noche. Yo la quise, y a veces ella me quiso. En las noches como esta la tuve entre mis brazos. La besé tantas veces bajo el cielo infinito. Ella me quiso, a veces yo también la quería. Cómo no haber amado sus grandes ojos fijos. Puedo escribir los versos más tristes esta noche. Pensar que no la tengo. Sentir que la he perdido.",
       "source": "Pablo Neruda - Poema 20",
-      "length": 561,
+      "length": 563,
       "id": 134
     },
     {
@@ -842,7 +836,7 @@
       "id": 140
     },
     {
-      "text": "Ser Pobre No Te Hace Humilde, Ser Humilde No Significa Que Seas Pobre.",
+      "text": "Ser pobre no te hace humilde, ser humilde no significa que seas pobre.",
       "source": "Pablo Escobar",
       "length": 70,
       "id": 141
