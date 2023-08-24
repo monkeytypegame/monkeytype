@@ -803,10 +803,28 @@
       }
     }
 
-    #extraResults {
-      text-align: center;
-      color: var(--sub-color);
+    #quoteSearchPageNavigator {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
     }
+
+    .prevPage,
+    .nextPage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    #pageInfo {
+      flex: 1;
+      text-align: center;
+      max-width: 20rem;
+      color: var(--sub-color);
+      padding: 0.5rem 1.5rem;
+    }
+
     #quoteSearchResults {
       display: grid;
       gap: 0.5rem;
