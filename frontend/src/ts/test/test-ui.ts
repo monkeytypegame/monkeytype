@@ -216,7 +216,9 @@ export function showWords(): void {
   $("#words").html(wordsHTML);
 
   updateWordsHeight(true);
-  updateNewlineIndent();
+  if (Config.tapeMode !== "off") {
+    updateNewlineIndent();
+  }
   updateActiveElement(undefined, true);
   Caret.updatePosition();
   updateWordsInputPosition(true);
