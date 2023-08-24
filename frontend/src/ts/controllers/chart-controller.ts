@@ -343,6 +343,7 @@ export const accountHistory: ChartWithUpdateColors<
         },
         wpm: {
           axis: "y",
+          type: "linear",
           beginAtZero: true,
           min: 0,
           ticks: {
@@ -478,7 +479,7 @@ export const accountHistory: ChartWithUpdateColors<
                 tooltipItem.dataIndex
               ] as MonkeyTypes.HistoryChartData;
               let label =
-                `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${resultData.wpm}` +
+                `${Config.typingSpeedUnit}: ${resultData.wpm}` +
                 "\n" +
                 `raw: ${resultData.raw}` +
                 "\n" +
@@ -652,9 +653,9 @@ export const accountActivity: ChartWithUpdateColors<
                     true
                   )}\nTests Completed: ${resultData.amount}`;
                 case 1:
-                  return `Average ${
-                    Config.alwaysShowCPM ? "Cpm" : "Wpm"
-                  }: ${Misc.roundTo2(resultData.y)}`;
+                  return `Average ${Config.typingSpeedUnit}: ${Misc.roundTo2(
+                    resultData.y
+                  )}`;
                 default:
                   return "";
               }
@@ -755,7 +756,7 @@ export const accountHistogram: ChartWithUpdateColors<
           //         )}\nTests Completed: ${resultData.amount}`;
           //       case 1:
           //         return `Average ${
-          //           Config.alwaysShowCPM ? "Cpm" : "Wpm"
+          //           Config.typingSpeedUnit
           //         }: ${Misc.roundTo2(resultData.y)}`;
           //       default:
           //         return "";
@@ -1034,7 +1035,7 @@ function updateAverage100(updateChart = true): void {
   if (updateChart) accountHistory.updateColors();
 }
 
-export async function updateColors<
+async function updateColors<
   TType extends ChartType = "bar" | "line" | "scatter",
   TData =
     | MonkeyTypes.HistoryChartData[]
@@ -1183,7 +1184,7 @@ export async function updateColors<
   chart.update("none");
 }
 
-export function setDefaultFontFamily(font: string): void {
+function setDefaultFontFamily(font: string): void {
   Chart.defaults.font.family = font.replace(/_/g, " ");
 }
 

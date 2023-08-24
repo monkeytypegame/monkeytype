@@ -91,7 +91,7 @@ export async function initSnapshot(): Promise<
       configResponse,
       tagsResponse,
       presetsResponse,
-    ].map((response: Ape.HttpClientResponse) => response.data);
+    ].map((response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -120,7 +120,6 @@ export async function initSnapshot(): Promise<
     };
     snap.quoteMod = userData.quoteMod;
     snap.favoriteQuotes = userData.favoriteQuotes ?? {};
-    snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.quoteRatings = userData.quoteRatings;
     snap.favouriteThemes =
       userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
@@ -272,7 +271,7 @@ export async function getUserResults(): Promise<boolean> {
   }
 }
 
-export function getCustomThemeById(
+function _getCustomThemeById(
   themeID: string
 ): MonkeyTypes.CustomTheme | undefined {
   return dbSnapshot?.customThemes.find((t) => t._id === themeID);
@@ -358,7 +357,7 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   return true;
 }
 
-export async function getUserHighestWpm<M extends MonkeyTypes.Mode>(
+async function _getUserHighestWpm<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
   punctuation: boolean,

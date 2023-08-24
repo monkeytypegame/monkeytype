@@ -29,6 +29,12 @@
   animation: rainbow-gradient 30s alternate ease-in-out infinite;
 }
 
+#top .logo .top,
+.account .levelAndBar .level,
+[aria-label][data-balloon-pos]::after {
+  -webkit-text-fill-color: initial;
+}
+
 .textButton:hover,
 #restartTestButton:hover > i,
 #restartTestButton:hover > i,
@@ -70,33 +76,42 @@
 @keyframes rainbow {
   0% {
     color: #60b6ce;
+    opacity: 1;
   }
   11.11% {
     color: #7ce3e1;
+    opacity: 1;
   }
   22.22% {
     color: #b2e259;
+    opacity: 1;
   }
   33.33% {
     color: #f6ee75;
+    opacity: 1;
   }
   44.44% {
     color: #f5b83d;
+    opacity: 1;
   }
   55.56% {
     color: #f49a98;
+    opacity: 1;
   }
   66.67% {
     color: #ed7abd;
+    opacity: 1;
   }
   77.78% {
     color: #dea2fa;
+    opacity: 1;
   }
   88.89% {
     color: #a966f5;
+    opacity: 1;
   }
   100% {
-    color: var(--bg-color);
+    opacity: 0;
   }
 }
 

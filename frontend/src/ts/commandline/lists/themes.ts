@@ -2,7 +2,7 @@ import Config, * as UpdateConfig from "../../config";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
 import * as ThemeController from "../../controllers/theme-controller";
 
-export const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Theme...",
   configKey: "theme",
   list: [],

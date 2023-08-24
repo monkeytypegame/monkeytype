@@ -186,6 +186,126 @@
       "source": "GeekForGeeks - Unidirectional Channel in Golang",
       "length": 341,
       "id": 30
+    },
+    {
+      "text": "func (c *Client) GetRole(ctx context.Context, params *GetRoleInput, optFns ...func(*Options)) (*GetRoleOutput, error) {\n\tif params == nil {\n\t\tparams = &GetRoleInput{}\n\t}\n\n\tresult, metadata, err := c.invokeOperation(ctx, \"GetRole\", params, optFns, c.addOperationGetRoleMiddlewares)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\tout := result.(*GetRoleOutput)\n\tout.ResultMetadata = metadata\n\treturn out, nil\n}",
+      "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
+      "length": 401,
+      "id": 31
+    },
+    {
+      "text": "type GetRoleAPIClient interface {\n\tGetRole(context.Context, *GetRoleInput, ...func(*Options)) (*GetRoleOutput, error)\n}\n\nvar _ GetRoleAPIClient = (*Client)(nil)",
+      "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
+      "length": 160,
+      "id": 32
+    },
+    {
+      "text": "func NewRoleExistsWaiter(client GetRoleAPIClient, optFns ...func(*RoleExistsWaiterOptions)) *RoleExistsWaiter {\n\toptions := RoleExistsWaiterOptions{}\n\toptions.MinDelay = 1 * time.Second\n\toptions.MaxDelay = 120 * time.Second\n\toptions.Retryable = roleExistsStateRetryable\n\n\tfor _, fn := range optFns {\n\t\tfn(&options)\n\t}\n\treturn &RoleExistsWaiter{\n\t\tclient:  client,\n\t\toptions: options,\n\t}\n}",
+      "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
+      "length": 388,
+      "id": 33
+    },
+    {
+      "text": "func roleExistsStateRetryable(ctx context.Context, input *GetRoleInput, output *GetRoleOutput, err error) (bool, error) {\n\n\tif err == nil {\n\t\treturn false, nil\n\t}\n\n\tif err != nil {\n\t\tvar apiErr smithy.APIError\n\t\tok := errors.As(err, &apiErr)\n\t\tif !ok {\n\t\t\treturn false, fmt.Errorf(\"expected err to be of type smithy.APIError, got %w\", err)\n\t\t}\n\n\t\tif \"NoSuchEntity\" == apiErr.ErrorCode() {\n\t\t\treturn true, nil\n\t\t}\n\t}\n\n\treturn true, nil\n}",
+      "source": "aws/aws-sdk-go-v2 - service/iam/api_op_GetRole.go",
+      "length": 436,
+      "id": 34
+    },
+    {
+      "text": "func VerifyChart(path, keyring string) (*provenance.Verification, error) {\n\t// For now, error out if it's not a tar file.\n\tswitch fi, err := os.Stat(path); {\n\tcase err != nil:\n\t\treturn nil, err\n\tcase fi.IsDir():\n\t\treturn nil, errors.New(\"unpacked charts cannot be verified\")\n\tcase !isTar(path):\n\t\treturn nil, errors.New(\"chart must be a tgz file\")\n\t}\n\n\tprovfile := path + \".prov\"\n\tif _, err := os.Stat(provfile); err != nil {\n\t\treturn nil, errors.Wrapf(err, \"could not load provenance file %s\", provfile)\n\t}\n\n\tsig, err := provenance.NewFromKeyring(keyring, \"\")\n\tif err != nil {\n\t\treturn nil, errors.Wrap(err, \"failed to load keyring\")\n\t}\n\treturn sig.Verify(path, provfile)\n}",
+      "source": "helm/helm - pkg/downloader/chart_downloader.go",
+      "length": 674,
+      "id": 35
+    },
+    {
+      "text": "func loadRepoConfig(file string) (*repo.File, error) {\n\tr, err := repo.LoadFile(file)\n\tif err != nil && !os.IsNotExist(errors.Cause(err)) {\n\t\treturn nil, err\n\t}\n\treturn r, nil\n}",
+      "source": "helm/helm - pkg/downloader/chart_downloader.go",
+      "length": 177,
+      "id": 36
+    },
+    {
+      "text": "func (f files) Glob(pattern string) files {\n\tg, err := glob.Compile(pattern, '/')\n\tif err != nil {\n\t\tg, _ = glob.Compile(\"**\")\n\t}\n\n\tnf := newFiles(nil)\n\tfor name, contents := range f {\n\t\tif g.Match(name) {\n\t\t\tnf[name] = contents\n\t\t}\n\t}\n\n\treturn nf\n}",
+      "source": "helm/helm - pkg/engine/files.go",
+      "length": 249,
+      "id": 37
+    },
+    {
+      "text": "func (f files) AsConfig() string {\n\tif f == nil {\n\t\treturn \"\"\n\t}\n\n\tm := make(map[string]string)\n\n\tfor k, v := range f {\n\t\tm[path.Base(k)] = string(v)\n\t}\n\n\treturn toYAML(m)\n}",
+      "source": "helm/helm - pkg/engine/files.go",
+      "length": 173,
+      "id": 38
+    },
+    {
+      "text": "func (f files) Lines(path string) []string {\n\tif f == nil || f[path] == nil {\n\t\treturn []string{}\n\t}\n\ts := string(f[path])\n\tif s[len(s)-1] == '\\\\n' {\n\t\ts = s[:len(s)-1]\n\t}\n\treturn strings.Split(s, \"\\\\n\")\n}",
+      "source": "helm/helm - pkg/engine/files.go",
+      "length": 205,
+      "id": 39
+    },
+    {
+      "text": "func fromYAML(str string) map[string]interface{} {\n\tm := map[string]interface{}{}\n\n\tif err := yaml.Unmarshal([]byte(str), &m); err != nil {\n\t\tm[\"Error\"] = err.Error()\n\t}\n\treturn m\n}",
+      "source": "helm/helm - pkg/engine/funcs.go",
+      "length": 181,
+      "id": 40
+    },
+    {
+      "text": "func getPlatformCommand(cmds []PlatformCommand) []string {\n\tvar command []string\n\teq := strings.EqualFold\n\tfor _, c := range cmds {\n\t\tif eq(c.OperatingSystem, runtime.GOOS) {\n\t\t\tcommand = strings.Split(os.ExpandEnv(c.Command), \" \")\n\t\t}\n\t\tif eq(c.OperatingSystem, runtime.GOOS) && eq(c.Architecture, runtime.GOARCH) {\n\t\t\treturn strings.Split(os.ExpandEnv(c.Command), \" \")\n\t\t}\n\t}\n\treturn command\n}",
+      "source": "helm/helm - pkg/plugin/plugin.go",
+      "length": 395,
+      "id": 41
+    },
+    {
+      "text": "func FindPlugins(plugdirs string) ([]*Plugin, error) {\n\tfound := []*Plugin{}\n\tfor _, p := range filepath.SplitList(plugdirs) {\n\t\tmatches, err := LoadAll(p)\n\t\tif err != nil {\n\t\t\treturn matches, err\n\t\t}\n\t\tfound = append(found, matches...)\n\t}\n\treturn found, nil\n}",
+      "source": "helm/helm - pkg/plugin/plugin.go",
+      "length": 260,
+      "id": 42
+    },
+    {
+      "text": "func LoadAll(basedir string) ([]*Plugin, error) {\n\tplugins := []*Plugin{}\n\tscanpath := filepath.Join(basedir, \"*\", PluginFileName)\n\tmatches, err := filepath.Glob(scanpath)\n\tif err != nil {\n\t\treturn plugins, errors.Wrapf(err, \"failed to find plugins in %q\", scanpath)\n\t}\n\tif matches == nil {\n\t\treturn plugins, nil\n\t}\n\n\tfor _, yaml := range matches {\n\t\tdir := filepath.Dir(yaml)\n\t\tp, err := LoadDir(dir)\n\t\tif err != nil {\n\t\t\treturn plugins, err\n\t\t}\n\t\tplugins = append(plugins, p)\n\t}\n\treturn plugins, detectDuplicates(plugins)\n}",
+      "source": "helm/helm - pkg/plugin/plugin.go",
+      "length": 525,
+      "id": 43
+    },
+    {
+      "text": "func PodCompleted(event watch.Event) (bool, error) {\n\tswitch event.Type {\n\tcase watch.Deleted:\n\t\treturn false, errors.NewNotFound(schema.GroupResource{Resource: \"pods\"}, \"\")\n\t}\n\tswitch t := event.Object.(type) {\n\tcase *v1.Pod:\n\t\tswitch t.Status.Phase {\n\t\tcase v1.PodFailed, v1.PodSucceeded:\n\t\t\treturn true, nil\n\t\t}\n\t}\n\treturn false, nil\n}",
+      "source": "kubernetes/kubernetes - pkg/client/conditions/conditions.go",
+      "length": 338,
+      "id": 44
+    },
+    {
+      "text": "func (gb *GraphBuilder) startMonitors(logger klog.Logger) {\n\tgb.monitorLock.Lock()\n\tdefer gb.monitorLock.Unlock()\n\n\tif !gb.running {\n\t\treturn\n\t}\n\n\t<-gb.informersStarted\n\n\tmonitors := gb.monitors\n\tstarted := 0\n\tfor _, monitor := range monitors {\n\t\tif monitor.stopCh == nil {\n\t\t\tmonitor.stopCh = make(chan struct{})\n\t\t\tgb.sharedInformers.Start(gb.stopCh)\n\t\t\tgo monitor.Run()\n\t\t\tstarted++\n\t\t}\n\t}\n\tlogger.V(4).Info(\"started new monitors\", \"new\", started, \"current\", len(monitors))\n}",
+      "source": "kubernetes/kubernetes - pkg/controller/garbagecollector/graph_builder.go",
+      "length": 478,
+      "id": 45
+    },
+    {
+      "text": "func (gb *GraphBuilder) IsSynced(logger klog.Logger) bool {\n\tgb.monitorLock.Lock()\n\tdefer gb.monitorLock.Unlock()\n\n\tif len(gb.monitors) == 0 {\n\t\tlogger.V(4).Info(\"garbage controller monitor not synced: no monitors\")\n\t\treturn false\n\t}\n\n\tfor resource, monitor := range gb.monitors {\n\t\tif !monitor.controller.HasSynced() {\n\t\t\tlogger.V(4).Info(\"garbage controller monitor not yet synced\", \"resource\", resource)\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}",
+      "source": "kubernetes/kubernetes - pkg/controller/garbagecollector/graph_builder.go",
+      "length": 444,
+      "id": 46
+    },
+    {
+      "text": "func (gb *GraphBuilder) Run(ctx context.Context) {\n\tlogger := klog.FromContext(ctx)\n\tlogger.Info(\"Running\", \"component\", \"GraphBuilder\")\n\tdefer logger.Info(\"Stopping\", \"component\", \"GraphBuilder\")\n\n\tgb.monitorLock.Lock()\n\tgb.stopCh = ctx.Done()\n\tgb.running = true\n\tgb.monitorLock.Unlock()\n\n\tgb.startMonitors(logger)\n\twait.Until(func() { gb.runProcessGraphChanges(logger) }, 1*time.Second, ctx.Done())\n\n\tgb.monitorLock.Lock()\n\tdefer gb.monitorLock.Unlock()\n\tmonitors := gb.monitors\n\tstopped := 0\n\tfor _, monitor := range monitors {\n\t\tif monitor.stopCh != nil {\n\t\t\tstopped++\n\t\t\tclose(monitor.stopCh)\n\t\t}\n\t}\n\n\tgb.monitors = nil\n\tlogger.Info(\"stopped monitors\", \"stopped\", stopped, \"total\", len(monitors))\n}",
+      "source": "kubernetes/kubernetes - pkg/controller/garbagecollector/graph_builder.go",
+      "length": 703,
+      "id": 47
+    },
+    {
+      "text": "func (gb *GraphBuilder) addUnblockedOwnersToDeleteQueue(logger klog.Logger, removed []metav1.OwnerReference, changed []ownerRefPair) {\n\tfor _, ref := range removed {\n\t\tif ref.BlockOwnerDeletion != nil && *ref.BlockOwnerDeletion {\n\t\t\tnode, found := gb.uidToNode.Read(ref.UID)\n\t\t\tif !found {\n\t\t\t\tlogger.V(5).Info(\"cannot find uid in uidToNode\", \"uid\", ref.UID)\n\t\t\t\tcontinue\n\t\t\t}\n\t\t\tgb.attemptToDelete.Add(node)\n\t\t}\n\t}\n\tfor _, c := range changed {\n\t\twasBlocked := c.oldRef.BlockOwnerDeletion != nil && *c.oldRef.BlockOwnerDeletion\n\t\tisUnblocked := c.newRef.BlockOwnerDeletion == nil || (c.newRef.BlockOwnerDeletion != nil && !*c.newRef.BlockOwnerDeletion)\n\t\tif wasBlocked && isUnblocked {\n\t\t\tnode, found := gb.uidToNode.Read(c.newRef.UID)\n\t\t\tif !found {\n\t\t\t\tlogger.V(5).Info(\"cannot find uid in uidToNode\", \"uid\", c.newRef.UID)\n\t\t\t\tcontinue\n\t\t\t}\n\t\t\tgb.attemptToDelete.Add(node)\n\t\t}\n\t}\n}",
+      "source": "kubernetes/kubernetes - pkg/controller/garbagecollector/graph_builder.go",
+      "length": 883,
+      "id": 48
+    },
+    {
+      "text": "func walkFiles(done <-chan struct{}, root string) (<-chan string, <-chan error) {\n\tpaths := make(chan string)\n\terrc := make(chan error, 1)\n\tgo func() {\n\t\tdefer close(paths)\n\n\t\terrc <- filepath.Walk(root, func(path string, info os.FileInfo, err error) error {\n\t\t\tif err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t\tif !info.Mode().IsRegular() {\n\t\t\t\treturn nil\n\t\t\t}\n\t\t\tselect {\n\t\t\tcase paths <- path:\n\t\t\tcase <-done:\n\t\t\t\treturn errors.New(\"walk canceled\")\n\t\t\t}\n\t\t\treturn nil\n\t\t})\n\t}()\n\treturn paths, errc\n}",
+      "source": "tmrts/go-patterns - concurrency/bounded_parallelism.go",
+      "length": 491,
+      "id": 49
+    },
+    {
+      "text": "func MD5All(root string) (map[string][md5.\"length\"]byte, error) {\n\tdone := make(chan struct{})\n\tdefer close(done)\n\n\tc, errc := sumFiles(done, root)\n\n\tm := make(map[string][md5.\"length\"]byte)\n\tfor r := range c {\n\t\tif r.err != nil {\n\t\t\treturn nil, r.err\n\t\t}\n\t\tm[r.path] = r.sum\n\t}\n\tif err := <-errc; err != nil {\n\t\treturn nil, err\n\t}\n\treturn m, nil\n}",
+      "source": "tmrts/go-patterns - concurrency/bounded_parallelism.go",
+      "length": 348,
+      "id": 50
     }
   ]
 }

@@ -21,7 +21,7 @@ const filters = {
   },
 };
 
-export function getCSS(): string {
+function getCSS(): string {
   let ret = "";
   Object.keys(filters).forEach((filterKey) => {
     const key = filterKey as keyof typeof filters;
@@ -75,7 +75,7 @@ function updateNumbers(): void {
   );
 }
 
-export function loadConfig(config: number[]): void {
+function loadConfig(config: number[]): void {
   filters.blur.value = config[0];
   filters.brightness.value = config[1];
   filters.saturate.value = config[2];

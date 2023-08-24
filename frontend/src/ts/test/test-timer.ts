@@ -132,7 +132,7 @@ function checkIfFailed(wpmAndRaw: MonkeyTypes.WpmAndRaw, acc: number): void {
     if (timer !== null) clearTimeout(timer);
     SlowTimer.clear();
     slowTimerCount = 0;
-    TimerEvent.dispatch("fail", "min wpm");
+    TimerEvent.dispatch("fail", "min speed");
     return;
   }
   if (Config.minAcc === "custom" && acc < Config.minAccCustom) {

@@ -526,6 +526,13 @@ export const apeKeysGenerate = rateLimit({
   handler: customHandler,
 });
 
+export const webhookLimit = rateLimit({
+  windowMs: 1000,
+  max: 1 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const apeKeysUpdate = apeKeysGenerate;
 
 export const apeKeysDelete = apeKeysGenerate;

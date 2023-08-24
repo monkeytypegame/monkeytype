@@ -504,7 +504,7 @@
   ["misbehavior", "misbehaviour"],
   ["behavior", "behaviour"],
   ["color", "colour"],
-  ["tire", "tyre"],
+  ["tire", "tyre", ["will"]],
   ["gray", "grey"],
   ["grays", "greys"],
   ["theater", "theatre"],
@@ -608,5 +608,9 @@
   ["discolor", "discolour"],
   ["encyclopedias", "encyclopaedias"],
   ["endeavored", "endeavoured"],
-  ["endeavors", "endeavours"]
+  ["endeavors", "endeavours"],
+  ["endeavoring", "endeavouring"],
+  ["judgments", "judgements"],
+  ["paneling", "panelling"],
+  ["defenses", "defences"]
 ]

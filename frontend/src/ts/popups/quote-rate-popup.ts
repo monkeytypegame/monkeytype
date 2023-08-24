@@ -101,7 +101,7 @@ function updateData(): void {
   updateRatingStats();
 }
 
-export function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
+function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
   Skeleton.append(wrapperId);
 
   if (!isPopupVisible(wrapperId)) {

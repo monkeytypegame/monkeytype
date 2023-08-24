@@ -70,7 +70,7 @@ export const defaultResultFilters: MonkeyTypes.ResultFilters = {
 };
 
 // current activated filter
-export let filters = defaultResultFilters;
+let filters = defaultResultFilters;
 
 function save(): void {
   window.localStorage.setItem("resultFilters", JSON.stringify(filters));
@@ -138,7 +138,7 @@ export async function load(): Promise<void> {
   }
 }
 
-export async function updateFilterPresets(): Promise<void> {
+async function updateFilterPresets(): Promise<void> {
   const parent = document.querySelector(".pageAccount .presetFilterButtons");
   const buttons = document.querySelector(
     ".pageAccount .presetFilterButtons .filterBtns"
@@ -229,7 +229,7 @@ async function createFilterPresetCallback(name: string): Promise<void> {
 }
 
 // shows popup for user to select name
-export async function startCreateFilterPreset(): Promise<void> {
+async function startCreateFilterPreset(): Promise<void> {
   showNewResultFilterPresetPopup(async (name: string) =>
     createFilterPresetCallback(name)
   );
@@ -248,7 +248,7 @@ function removeFilterPresetFromSnapshot(id: string): void {
 }
 
 // deletes the currently selected filter preset
-export async function deleteFilterPreset(id: string): Promise<void> {
+async function deleteFilterPreset(id: string): Promise<void> {
   Loader.show();
   const result = await Ape.users.removeResultFilterPreset(id);
   Loader.hide();
@@ -270,7 +270,7 @@ function deSelectFilterPreset(): void {
   ).removeClass("active");
 }
 
-export function getFilters(): MonkeyTypes.ResultFilters {
+function getFilters(): MonkeyTypes.ResultFilters {
   return filters;
 }
 

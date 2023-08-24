@@ -5,11 +5,11 @@ export default class Quotes {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointData {
+  async get(): Ape.EndpointResponse {
     return await this.httpClient.get(BASE_PATH);
   }
 
-  async isSubmissionEnabled(): Ape.EndpointData {
+  async isSubmissionEnabled(): Ape.EndpointResponse {
     return await this.httpClient.get(`${BASE_PATH}/isSubmissionEnabled`);
   }
 
@@ -18,7 +18,7 @@ export default class Quotes {
     source: string,
     language: string,
     captcha: string
-  ): Ape.EndpointData {
+  ): Ape.EndpointResponse {
     const payload = {
       text,
       source,
@@ -33,7 +33,7 @@ export default class Quotes {
     quoteSubmissionId: string,
     editText?: string,
     editSource?: string
-  ): Ape.EndpointData {
+  ): Ape.EndpointResponse {
     const payload = {
       quoteId: quoteSubmissionId,
       editText,
@@ -43,13 +43,13 @@ export default class Quotes {
     return await this.httpClient.post(`${BASE_PATH}/approve`, { payload });
   }
 
-  async rejectSubmission(quoteSubmissionId: string): Ape.EndpointData {
+  async rejectSubmission(quoteSubmissionId: string): Ape.EndpointResponse {
     return await this.httpClient.post(`${BASE_PATH}/reject`, {
       payload: { quoteId: quoteSubmissionId },
     });
   }
 
-  async getRating(quote: MonkeyTypes.Quote): Ape.EndpointData {
+  async getRating(quote: MonkeyTypes.Quote): Ape.EndpointResponse {
     const searchQuery = {
       quoteId: quote.id,
       language: quote.language,
@@ -58,7 +58,10 @@ export default class Quotes {
     return await this.httpClient.get(`${BASE_PATH}/rating`, { searchQuery });
   }
 
-  async addRating(quote: MonkeyTypes.Quote, rating: number): Ape.EndpointData {
+  async addRating(
+    quote: MonkeyTypes.Quote,
+    rating: number
+  ): Ape.EndpointResponse {
     const payload = {
       quoteId: quote.id,
       rating,
@@ -74,7 +77,7 @@ export default class Quotes {
     reason: string,
     comment: string,
     captcha: string
-  ): Ape.EndpointData {
+  ): Ape.EndpointResponse {
     const payload = {
       quoteId,
       quoteLanguage,

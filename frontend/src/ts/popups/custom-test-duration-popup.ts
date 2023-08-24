@@ -86,7 +86,7 @@ export function show(): void {
   previewDuration();
 }
 
-export function hide(): void {
+function hide(): void {
   if (isPopupVisible(wrapperId)) {
     $("#customTestDurationPopupWrapper")
       .stop(true, true)
