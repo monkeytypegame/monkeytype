@@ -229,6 +229,13 @@ function apply(): void {
 
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
+
+  //replace any characters that look like a space with an actual space
+  text = text.replace(/[\u2000-\u200A\u202F\u205F\u00A0]/g, " ");
+
+  //replace zero width characters
+  text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+
   text = text.replace(/\\\\t/gm, "\t");
   text = text.replace(/\\\\n/gm, "\n");
   text = text.replace(/\\t/gm, "\t");
@@ -258,8 +265,6 @@ function apply(): void {
       text = text.replace(/ +/gm, " ");
     }
   }
-  // text = Misc.remove_non_ascii(text);
-  text = text.replace(/[\u2060]/g, "");
 
   CustomText.setText(text.split(CustomText.delimiter));
 

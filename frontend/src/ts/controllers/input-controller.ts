@@ -504,12 +504,7 @@ function handleChar(
     TestInput.setBurstStart(now);
   }
 
-  if (!isCharKorean && !Config.language.startsWith("korean")) {
-    resultingWord =
-      TestInput.input.current.substring(0, charIndex) +
-      char +
-      TestInput.input.current.substring(charIndex + 1);
-  } else {
+  if (isCharKorean || Config.language.startsWith("korean")) {
     // Get real input from #WordsInput char call.
     // This is because the chars can't be confirmed correctly.
     // With chars alone this happens when a previous symbol is completed
@@ -518,6 +513,11 @@ function handleChar(
     const realInput: string = (realInputValue ?? "").slice(1);
     resultingWord = realInput;
     koInputVisual.innerText = resultingWord.slice(-1);
+  } else {
+    resultingWord =
+      TestInput.input.current.substring(0, charIndex) +
+      char +
+      TestInput.input.current.substring(charIndex + 1);
   }
 
   // If a trailing composed char is used, ignore it when counting accuracy
@@ -1166,15 +1166,15 @@ $("#wordsInput").on("input", (event) => {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
-    if (!containsKorean) {
-      TestInput.input.current = inputValue;
-    } else {
+    if (containsKorean) {
       const realInput = (event.target as HTMLInputElement).value
         .normalize()
         .slice(1);
 
       TestInput.input.current = realInput;
       koInputVisual.innerText = realInput.slice(-1);
+    } else {
+      TestInput.input.current = inputValue;
     }
 
     TestUI.updateWordElement();
