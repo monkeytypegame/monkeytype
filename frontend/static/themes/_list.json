@@ -1181,6 +1181,13 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "banana",
+    "bgColor": "#fffc00",
+    "mainColor": "#3c1606",
+    "subColor": "#94510c",
+    "textColor": "#1b1c1f"
   }
 
 ]
