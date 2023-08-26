@@ -159,6 +159,9 @@
     }
 
     &.history {
+      table td {
+        -webkit-appearance: unset;
+      }
       .active {
         animation: flashHighlight 4s linear 0s 1;
       }

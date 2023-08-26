@@ -888,6 +888,7 @@ ConfigEvent.subscribe(async (eventKey) => {
     updateWpmAndAcc();
     await updateGraph();
     await updateGraphPBLine();
+    TestUI.applyBurstHeatmap();
 
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
       .plugins.annotation.annotations as AnnotationOptions<"line">[]) =

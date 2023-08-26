@@ -1,6 +1,6 @@
 {
   "name": "monkeytype",
-  "version": "1.14.3",
+  "version": "1.17.10",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
@@ -19,6 +19,7 @@
     "live": "concurrently --kill-others \"cd frontend && npm run live\" \"cd backend && npm run start\"",
     "audit-fe": "cd frontend && npm run audit",
     "release": "release-it",
+    "hotfix": "cd frontend && npm run deploy-live && cd .. && sh ./bin/purgeCfCache.sh",
     "build-fe": "cd ./frontend && npm run build-live",
     "pretty": "prettier --check \"./backend/**/*.{ts,json,js,css,html}\" \"./frontend/**/*.{ts,js,scss}\" \"./frontend/static/**/*.{json,html,css}\"",
     "pretty-code": "prettier --check \"./backend/**/*.{ts,js,json,css,html}\" \"./frontend/**/*.{ts,js}\" \"./frontend/src/**/*.scss\"",
@@ -43,6 +44,7 @@
     "@typescript-eslint/eslint-plugin": "5.59.11",
     "@typescript-eslint/parser": "5.59.11",
     "concurrently": "7.2.1",
+    "conventional-changelog": "4.0.0",
     "eslint": "8.42.0",
     "eslint-plugin-json": "2.1.2",
     "eslint-plugin-require-path-exists": "1.1.9",
@@ -54,7 +56,10 @@
     "typescript": "4.9.5"
   },
   "lint-staged": {
-    "*.{ts,js,json,css,html}": [
+    "*.{json,scss,css,html}": [
+      "prettier --write"
+    ],
+    "*.{ts,js}": [
       "prettier --write",
       "eslint"
     ]

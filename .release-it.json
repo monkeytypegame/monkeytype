@@ -9,7 +9,8 @@
   },
   "git": {
     "commitMessage": "chore: release v${version}",
-    "requireCleanWorkingDir": true
+    "requireCleanWorkingDir": true,
+    "changelog": "node bin/buildChangelog.mjs"
   },
   "github": {
     "release": true
@@ -17,30 +18,5 @@
   "npm": {
     "publish": false,
     "ignoreVersion": true
-  },
-  "plugins": {
-    "@release-it/conventional-changelog": {
-      "preset": {
-        "name": "conventionalcommits",
-        "types": [
-          {
-            "type": "feat",
-            "section": "Features"
-          },
-          {
-            "type": "impr",
-            "section": "Improvements"
-          },
-          {
-            "type": "fix",
-            "section": "Fixes"
-          },
-          {}
-        ]
-      },
-      "writerOpts": {
-        "headerPartial": "Thank you to all the contributors!"
-      }
-    }
   }
 }
