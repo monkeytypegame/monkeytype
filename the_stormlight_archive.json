@@ -1,0 +1,96 @@
+{
+  "language": "English",
+  "groups": [
+    [0, 50],
+    [51, 150],
+    [151, 250],
+    [251, 999]
+  ],
+  "quotes": [
+    {
+      "id": 1,
+      "text": "The most important step a man can take. It's not the first one, is it? It's the next one.",
+      "author": "Dalinar Kholin",
+      "book": "The Stormlight Archive",
+      "word_length": 19
+    },
+    {
+      "id": 2,
+      "text": "The purpose of a storyteller is not to tell you how to think, but to give you questions to think upon.",
+      "author": "Wit (Hoid)",
+      "book": "The Stormlight Archive",
+      "word_length": 20
+    },
+    {
+      "id": 3,
+      "text": "The destination is important, but so is the journey. And what you learn along the way.",
+      "author": "Kaladin Stormblessed",
+      "book": "The Stormlight Archive",
+      "word_length": 18
+    },
+    {
+      "id": 4,
+      "text": "Words are where most change begins.",
+      "author": "Navani Kholin",
+      "book": "The Stormlight Archive",
+      "word_length": 6
+    },
+    {
+      "id": 5,
+      "text": "Journey before destination.",
+      "author": "The First Ideal of the Knights Radiant",
+      "book": "The Stormlight Archive",
+      "word_length": 3
+    },
+    {
+      "id": 6,
+      "text": "Life breaks us, Teft. Then we fill the cracks with something stronger.",
+      "author": "Rock",
+      "book": "The Stormlight Archive",
+      "word_length": 14
+    },
+    {
+      "id": 7,
+      "text": "The pain is what shapes us, after all.",
+      "author": "Moash",
+      "book": "The Stormlight Archive",
+      "word_length": 7
+    },
+    {
+      "id": 8,
+      "text": "The most important step a man can take. It's not the first one, is it? It's the next one.",
+      "author": "Dalinar Kholin",
+      "book": "The Stormlight Archive",
+      "word_length": 19
+    },
+    {
+      "id": 9,
+      "text": "The stars are beautiful, because of a flower that cannot be seen.",
+      "author": "Szeth-son-son-Vallano",
+      "book": "The Stormlight Archive",
+      "word_length": 14
+    },
+    {
+      "id": 10,
+      "text": "The only thing that changes is how we perceive it.",
+      "author": "Lopen",
+      "book": "The Stormlight Archive",
+      "word_length": 9
+    },
+    {
+      "id": 11,
+      "text": "Expectation is the mother of disappointment.",
+      "author": "Wit (Hoid)",
+      "book": "The Stormlight Archive",
+      "word_length": 6
+    },
+    {
+      "id": 12,
+      "text": "I will protect those who cannot protect themselves.",
+      "author": "The Second Ideal of the Windrunners",
+      "book": "The Stormlight Archive",
+      "word_length": 8
+    }
+  ]
+}
+
