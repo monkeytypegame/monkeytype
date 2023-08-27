@@ -2,7 +2,8 @@ import simpleGit from "simple-git";
 import { ObjectId } from "mongodb";
 import stringSimilarity from "string-similarity";
 import path from "path";
-import fs from "fs";
+import { existsSync, writeFileSync } from "fs";
+import { readFile } from "node:fs/promises";
 import * as db from "../init/db";
 import MonkeyError from "../utils/error";
 
@@ -60,8 +61,8 @@ export async function add(
   );
   let duplicateId = -1;
   let similarityScore = -1;
-  if (fs.existsSync(fileDir)) {
-    const quoteFile = fs.readFileSync(fileDir);
+  if (existsSync(fileDir)) {
+    const quoteFile = await readFile(fileDir);
     const quoteFileJSON = JSON.parse(quoteFile.toString());
     quoteFileJSON.quotes.every((old) => {
       if (stringSimilarity.compareTwoStrings(old.text, quote.text) > 0.9) {
@@ -155,8 +156,8 @@ export async function approve(
     `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`
   );
   await git.pull("upstream", "master");
-  if (fs.existsSync(fileDir)) {
-    const quoteFile = fs.readFileSync(fileDir);
+  if (existsSync(fileDir)) {
+    const quoteFile = await readFile(fileDir);
     const quoteObject = JSON.parse(quoteFile.toString());
     quoteObject.quotes.every((old) => {
       if (stringSimilarity.compareTwoStrings(old.text, quote.text) > 0.8) {
@@ -171,12 +172,12 @@ export async function approve(
     });
     quote.id = maxid + 1;
     quoteObject.quotes.push(quote);
-    fs.writeFileSync(fileDir, JSON.stringify(quoteObject, null, 2));
+    writeFileSync(fileDir, JSON.stringify(quoteObject, null, 2));
     message = `Added quote to ${language}.json.`;
   } else {
     //file doesnt exist, create it
     quote.id = 1;
-    fs.writeFileSync(
+    writeFileSync(
       fileDir,
       JSON.stringify({
         language: language,

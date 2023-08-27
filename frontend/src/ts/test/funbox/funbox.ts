@@ -71,7 +71,7 @@ class PseudolangWordGenerator extends Wordset {
           this.ngrams[prefix] = new CharDistribution();
         }
         this.ngrams[prefix].addChar(c);
-        prefix = (prefix + c).substr(-prefixSize);
+        prefix = (prefix + c).slice(-prefixSize);
       }
     }
   }
@@ -79,7 +79,7 @@ class PseudolangWordGenerator extends Wordset {
   public override randomWord(): string {
     let word = "";
     for (;;) {
-      const prefix = word.substr(-prefixSize);
+      const prefix = word.slice(-prefixSize);
       const charDistribution = this.ngrams[prefix];
       if (!charDistribution) {
         // This shouldn't happen if this.ngrams is complete. If it does
@@ -700,6 +700,27 @@ FunboxList.setFunboxFunctions("morse", {
 
 FunboxList.setFunboxFunctions("crt", {
   applyGlobalCSS(): void {
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isSafari) {
+      //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
+      const versionMatch = navigator.userAgent.match(
+        /.*Version\/([0-9]*)\.([0-9]*).*/
+      );
+      const mainVersion = versionMatch !== null ? parseInt(versionMatch[1]) : 0;
+      const minorVersion =
+        versionMatch !== null ? parseInt(versionMatch[2]) : 0;
+      if (mainVersion <= 16 && minorVersion <= 5) {
+        Notifications.add(
+          "CRT is not available on Safari 16.5 or earlier.",
+          0,
+          {
+            duration: 5,
+          }
+        );
+        toggleFunbox("crt");
+        return;
+      }
+    }
     $("body").append('<div id="scanline" />');
     $("body").addClass("crtmode");
     $("#globalFunBoxTheme").attr("href", `funbox/crt.css`);

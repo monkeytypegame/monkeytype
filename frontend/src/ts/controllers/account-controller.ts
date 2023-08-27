@@ -41,7 +41,6 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import { update as updateTagsCommands } from "../commandline/lists/tags";
 import * as ConnectionState from "../states/connection";
 import { navigate } from "./route-controller";
 
@@ -165,7 +164,6 @@ async function getDataAndInit(): Promise<boolean> {
     UpdateConfig.saveFullConfigToLocalStorage(true);
   }
   AccountButton.loading(false);
-  updateTagsCommands();
   TagController.loadActiveFromLocalStorage();
   if (window.location.pathname === "/account") {
     LoadingPage.updateBar(90);
