@@ -39,7 +39,7 @@ export function update(): void {
   DB.getSnapshot()?.customThemes.forEach((theme) => {
     subgroup.list.push({
       id: "setCustomThemeId" + theme._id,
-      display: theme.name,
+      display: theme.name.replace(/_/gi, " "),
       configValue: theme._id,
       hover: (): void => {
         ThemeController.preview(theme._id, true);
