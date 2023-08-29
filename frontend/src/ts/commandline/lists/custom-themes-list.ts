@@ -33,10 +33,10 @@ export function update(): void {
 
   if (!snapshot) return;
 
-  if (DB.getSnapshot()?.customThemes.length === 0) {
+  if (snapshot.customThemes.length === 0) {
     return;
   }
-  DB.getSnapshot()?.customThemes.forEach((theme) => {
+  snapshot.customThemes.forEach((theme) => {
     subgroup.list.push({
       id: "setCustomThemeId" + theme._id,
       display: theme.name.replace(/_/gi, " "),
