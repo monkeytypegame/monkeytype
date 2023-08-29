@@ -1326,7 +1326,7 @@ list["forgotPassword"] = new SimplePopup(
   "Send",
   async (_thisPopup, email) => {
     Loader.show();
-    const result = await Ape.users.forgotPasswordEmail(email);
+    const result = await Ape.users.forgotPasswordEmail(email.trim());
     if (result.status !== 200) {
       Loader.hide();
       Notifications.add(
