@@ -35,7 +35,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
         },
         hover: (): void => {
           // previewTheme(theme.name);
-          ThemeController.preview(theme.name, false);
+          ThemeController.preview(theme.name);
         },
         exec: (): void => {
           UpdateConfig.setTheme(theme.name);
@@ -55,7 +55,7 @@ function update(themes: MonkeyTypes.Theme[]): void {
         },
         hover: (): void => {
           // previewTheme(theme.name);
-          ThemeController.preview(theme.name, false);
+          ThemeController.preview(theme.name);
         },
         exec: (): void => {
           UpdateConfig.setTheme(theme.name);

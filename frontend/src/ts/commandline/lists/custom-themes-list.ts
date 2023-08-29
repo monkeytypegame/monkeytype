@@ -42,12 +42,12 @@ export function update(): void {
       display: theme.name.replace(/_/gi, " "),
       configValue: theme._id,
       hover: (): void => {
-        ThemeController.preview(theme._id, true);
+        ThemeController.preview("custom", theme.colors);
       },
       exec: (): void => {
         // UpdateConfig.setCustomThemeId(theme._id);
         UpdateConfig.setCustomTheme(true);
-        ThemeController.set(theme._id, true);
+        UpdateConfig.setCustomThemeColors(theme.colors);
       },
     });
   });
