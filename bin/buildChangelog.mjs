@@ -86,12 +86,21 @@ function buildSection(type, allItems) {
 
   const items = allItems.filter((item) => item.type === type);
 
+  if (items.length === 0) {
+    return "";
+  }
+
   for (let item of items) {
     const scope = item.scope ? `**${item.scope}:** ` : "";
     const usernames =
       item.usernames.length > 0 ? ` (${item.usernames.join(", ")})` : "";
-    const pr = item.pr ? ` (${getPrLink(item.pr)})` : "";
-    const hash = ` (${getCommitLink(item.shortHash, item.hash)})`;
+    const pr =
+      item.prs.length > 0
+        ? ` (${item.prs.map((p) => getPrLink(p)).join(", ")})`
+        : "";
+    const hash = ` (${item.hashes
+      .map((h) => getCommitLink(h.short, h.full))
+      .join(", ")})`;
 
     ret += `- ${scope}${item.message}${usernames}${pr}${hash}\n`;
   }
@@ -126,38 +135,51 @@ async function main() {
       pr = message2;
     }
 
+    const prs = pr ? pr.split(", ") : [];
+
     if (type && message) {
       log.push({
-        hash,
-        shortHash,
+        hashes: [
+          {
+            short: shortHash,
+            full: hash,
+          },
+        ],
         type,
         scope,
         message,
         usernames,
-        pr,
+        prs,
       });
     } else {
       console.warn("skipping line due to invalid format: " + line);
     }
   }
 
-  log = log.filter((item) => Object.keys(titles).includes(item.type));
-
+  let quoteAddCommits = log.filter((item) => itemIsAddingQuotes(item));
   log = log.filter((item) => !itemIsAddingQuotes(item));
 
-  let quoteAddCommits = log.filter((item) => itemIsAddingQuotes(item));
-
   if (quoteAddCommits.length > 0) {
-    throw new Error("TODO");
+    log.push({
+      hashes: quoteAddCommits.map((item) => item.hashes).flat(),
+      type: "impr",
+      scope: "quote",
+      message: "add quotes in various languages",
+      usernames: quoteAddCommits.map((item) => item.usernames).flat(),
+      prs: quoteAddCommits.map((item) => item.prs).flat(),
+    });
   }
 
   let final = "";
 
-  final += header + "\n\n";
+  final += header + "\n\n\n";
 
   const sections = [];
   for (const type of Object.keys(titles)) {
-    sections.push(buildSection(type, log));
+    const section = buildSection(type, log);
+    if (section) {
+      sections.push(section);
+    }
   }
 
   final += sections.join("\n\n");
