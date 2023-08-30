@@ -15,6 +15,7 @@ const skeletonId = "customTextPopupWrapper";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
+const MAX_TEXT_LENGTH = 4096;
 
 function updateLongTextWarning(): void {
   if (CustomTextState.isCustomTextLong() === true) {
@@ -382,6 +383,42 @@ $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
 
 $(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
   $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
+});
+
+$(`#fileInput`).on("change", () => {
+  const file = ($(`#fileInput`)[0] as HTMLInputElement).files?.[0];
+  if (file) {
+    if (file.type !== "text/plain") {
+      Notifications.add("File is not a text file", -1, {
+        duration: 5,
+      });
+      return;
+    }
+    if (file.size > MAX_TEXT_LENGTH) {
+      Notifications.add(
+        `File is too big. Max size ${MAX_TEXT_LENGTH / 1024}KB`,
+        -1,
+        {
+          duration: 5,
+        }
+      );
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+
+    reader.onload = (readerEvent): void => {
+      const content = readerEvent.target?.result as string;
+      $(`${popup} textarea`).val(content);
+      $(`#fileInput`).val("");
+    };
+    reader.onerror = (): void => {
+      Notifications.add("Failed to read file", -1, {
+        duration: 5,
+      });
+    };
+  }
 });
 
 Skeleton.save(skeletonId);
