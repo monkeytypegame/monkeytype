@@ -146,7 +146,7 @@ function reset(): void {
             <div class="acc">-</div>
           </div>
         </div>
-      </div>`);
+      </div><div class="lbOptOutReminder hidden"></div>`);
 }
 
 interface UpdateOptions {

@@ -877,3 +877,11 @@ export async function toggleBan(
     banned: !user.banned,
   });
 }
+
+export async function revokeAllTokens(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  await FirebaseAdmin().auth().revokeRefreshTokens(uid);
+  return new MonkeyResponse("All tokens revoked");
+}
