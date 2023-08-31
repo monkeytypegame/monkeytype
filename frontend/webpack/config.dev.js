@@ -25,7 +25,9 @@ const DEV_CONFIG = {
   ],
 };
 
-if (!fs.existsSync(resolve(__dirname, "../src/constants/firebase-config.ts"))) {
+if (
+  !fs.existsSync(resolve(__dirname, "../src/ts/constants/firebase-config.ts"))
+) {
   const msg = `File firebase-config.ts is missing! Please duplicate firebase-config-example.ts and rename it to firebase-config.ts. If you are using Firebase, fill in the values in the config file. If not, you can leave the fields blank.`;
   throw new Error(msg);
 }
