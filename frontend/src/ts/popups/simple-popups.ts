@@ -991,6 +991,73 @@ list["resetSettings"] = new SimplePopup(
   }
 );
 
+list["revokeAllTokens"] = new SimplePopup(
+  "revokeAllTokens",
+  "text",
+  "Revoke All Tokens",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "Are you sure you want to this? This will log you out of all devices.",
+  "revoke all",
+  async (_thisPopup, password) => {
+    try {
+      const user = Auth?.currentUser;
+      const snapshot = DB.getSnapshot();
+      if (!user || !snapshot) return;
+
+      if (user.providerData.find((p) => p?.providerId === "password")) {
+        const credential = EmailAuthProvider.credential(
+          user.email as string,
+          password
+        );
+        await reauthenticateWithCredential(user, credential);
+      } else {
+        await reauthenticateWithPopup(user, AccountController.gmailProvider);
+      }
+      Loader.show();
+      const response = await Ape.users.revokeAllTokens();
+      Loader.hide();
+
+      if (response.status !== 200) {
+        return Notifications.add(
+          "Failed to revoke all tokens: " + response.message,
+          -1
+        );
+      }
+
+      Notifications.add("All tokens revoked", 1);
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    } catch (e) {
+      Loader.hide();
+      const typedError = e as FirebaseError;
+      if (typedError.code === "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
+    }
+  },
+  (thisPopup) => {
+    const user = Auth?.currentUser;
+    const snapshot = DB.getSnapshot();
+    if (!user || !snapshot) return;
+    if (!user.providerData.find((p) => p?.providerId === "password")) {
+      thisPopup.inputs[0].hidden = true;
+      thisPopup.buttonText = "reauthenticate to revoke all tokens";
+    }
+  },
+  (_thisPopup) => {
+    //
+  }
+);
+
 list["unlinkDiscord"] = new SimplePopup(
   "unlinkDiscord",
   "text",
@@ -1383,6 +1450,14 @@ $("#resetSettingsButton").on("click", () => {
     return;
   }
   list["resetSettings"].show();
+});
+
+$("#revokeAllTokens").on("click", () => {
+  if (!ConnectionState.get()) {
+    Notifications.add("You are offline", 0, { duration: 2 });
+    return;
+  }
+  list["revokeAllTokens"].show();
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
