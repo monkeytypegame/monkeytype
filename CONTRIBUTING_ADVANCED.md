@@ -36,6 +36,7 @@ Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) 
 
 Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
 
+- If you do now wish to have user accounts, you can leave the fields in the file blank and continue to the next section.
 - If you are looking to create user accounts, set up a Firebase project as mentioned in the [Firebase](#firebase-optional) Section and complete the following steps:
   1. Navigate to `Project Settings > General > Your apps`
   2. If there are no apps in your project, create a new web app
