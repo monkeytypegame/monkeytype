@@ -5,8 +5,9 @@
 - [Prerequisites](#prerequisites)
   - [Git](#git)
   - [NodeJS and NPM](#nodejs-and-npm)
-  - [Firebase](#firebase)
+  - [Config File](#config-file)
   - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
+  - [Firebase](#firebase)
   - [Backend (optional)](#backend-optional)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
 - [Standards and Guidelines](#standards-and-guidelines)
@@ -29,6 +30,18 @@ Currently, the project is using version `18.17.1 LTS`.
 If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 18.17.1` then `nvm use 18.17.1`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
+
+
+### Config file
+
+Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
+
+- If you are looking to create user accounts, set up a Firebase project as mentioned in the [Firebase](#firebase-optional) Section and complete the following steps:
+  1. Navigate to `Project Settings > General > Your apps`
+  2. If there are no apps in your project, create a new web app
+  3. In the `SDK setup and configuration` section, select `npm`
+  4. The Firebase config will be visible below
+  5. Paste the config into `firebase-config.ts`
 
 ### Docker (Recommended but Optional)
 
@@ -70,18 +83,6 @@ The account system will not let you create an account without a Firebase project
         }
     }
    ```
-
-### Config file
-
-Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
-
-- If you skipped the Firebase step, you can leave the fields blank
-- Otherwise:
-  1. Navigate to `Project Settings > General > Your apps`
-  2. If there are no apps in your project, create a new web app
-  3. In the `SDK setup and configuration` section, select `npm`
-  4. The Firebase config will be visible below
-  5. Paste the config into `firebase-config.ts`
 
 ### Backend (optional)
 
