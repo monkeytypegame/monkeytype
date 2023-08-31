@@ -5,6 +5,7 @@
 - [Prerequisites](#prerequisites)
   - [Git](#git)
   - [NodeJS and NPM](#nodejs-and-npm)
+  - [Config File](#config-file)
   - [Firebase](#firebase)
   - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
   - [Backend (optional)](#backend-optional)
@@ -16,13 +17,13 @@
 
 This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 16.13.2. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
-#### Git
+### Git
 
 **IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before cloning this repo to prevent CRLF errors.**
 
 Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management (SCM) system for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Using a Git client such as Sourcetree won't give you access to the full functionality of Git, but provides an easy to understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
-#### NodeJS and NPM
+### NodeJS and NPM
 
 Currently, the project is using version `18.17.1 LTS`.
 
@@ -30,11 +31,24 @@ If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/corey
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
 
-#### Docker (Recommended but Optional)
+
+### Config file
+
+Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
+
+- If you skipped the Firebase step, you can leave the fields blank
+- Otherwise:
+  1. Navigate to `Project Settings > General > Your apps`
+  2. If there are no apps in your project, create a new web app
+  3. In the `SDK setup and configuration` section, select `npm`
+  4. The Firebase config will be visible below
+  5. Paste the config into `firebase-config.ts`
+
+### Docker (Recommended but Optional)
 
 You can use docker to run the frontend and backend. This will take care of OS specific problems, but might be a bit more resource intensive. You can download it from the [Docker website](https://www.docker.com/get-started/#h_installation).
 
-#### Firebase (optional)
+### Firebase (optional)
 
 The account system will not let you create an account without a Firebase project. You can skip this if you don't think you will need it (you can always set it up later)
 
@@ -71,19 +85,7 @@ The account system will not let you create an account without a Firebase project
     }
    ```
 
-#### Config file
-
-Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-example.ts`, rename it to `firebase-config.ts`
-
-- If you skipped the Firebase step, you can leave the fields blank
-- Otherwise:
-  1. Navigate to `Project Settings > General > Your apps`
-  2. If there are no apps in your project, create a new web app
-  3. In the `SDK setup and configuration` section, select `npm`
-  4. The Firebase config will be visible below
-  5. Paste the config into `firebase-config.ts`
-
-#### Backend (optional)
+### Backend (optional)
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.
 
