@@ -7,7 +7,7 @@
   - [NodeJS and NPM](#nodejs-and-npm)
   - [Config File](#config-file)
   - [Docker (Recommended but Optional)](#docker-recommended-but-optional)
-  - [Firebase](#firebase)
+  - [Firebase (optional)](#firebase-optional)
   - [Backend (optional)](#backend-optional)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
 - [Standards and Guidelines](#standards-and-guidelines)
@@ -30,7 +30,6 @@ Currently, the project is using version `18.17.1 LTS`.
 If you use `nvm` (if you use Windows, use [nvm-windows](https://github.com/coreybutler/nvm-windows)) then you can run `nvm install` and `nvm use` (you might need to specify the exact version eg: `nvm install 18.17.1` then `nvm use 18.17.1`) to use the version of Node.js in the `.nvmrc` file.
 
 Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) to download it from there.
-
 
 ### Config file
 
