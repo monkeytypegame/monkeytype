@@ -618,9 +618,11 @@ function handleChar(
   if (
     (Config.mode === "zen" && charIndex < 30) ||
     (Config.mode !== "zen" &&
-      charIndex < TestWords.words.getCurrent().length + 20)
+      resultingWord.length < TestWords.words.getCurrent().length + 20)
   ) {
     TestInput.input.current = resultingWord;
+  } else {
+    console.error("Hitting word limit");
   }
 
   if (!thisCharCorrect && Config.difficulty === "master") {
