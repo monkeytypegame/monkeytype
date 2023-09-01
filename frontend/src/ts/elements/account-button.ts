@@ -108,20 +108,20 @@ export async function update(
       });
     }
     if (discordAvatar && discordId) {
-      const discordAvatarUrl = await Misc.getDiscordAvatarUrl(
-        discordId,
-        discordAvatar
-      );
-      if (discordAvatarUrl) {
-        $("#top #menu .account .avatar").css(
-          "background-image",
-          `url(${discordAvatarUrl})`
-        );
-        usingAvatar = true;
+      Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
+        (discordAvatarUrl) => {
+          if (discordAvatarUrl) {
+            $("#top #menu .account .avatar").css(
+              "background-image",
+              `url(${discordAvatarUrl})`
+            );
+            usingAvatar = true;
 
-        $("#top #menu .account .user").addClass("hidden");
-        $("#top #menu .account .avatar").removeClass("hidden");
-      }
+            $("#top #menu .account .user").addClass("hidden");
+            $("#top #menu .account .avatar").removeClass("hidden");
+          }
+        }
+      );
     } else {
       $("#top #menu .account .avatar").addClass("hidden");
       $("#top #menu .account .user").removeClass("hidden");

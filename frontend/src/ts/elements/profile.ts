@@ -38,16 +38,16 @@ export async function update(
 
   details.find(".placeholderAvatar").removeClass("hidden");
   if (profile.discordAvatar && profile.discordId && !banned) {
-    const avatarUrl = await Misc.getDiscordAvatarUrl(
+    Misc.getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
       256
-    );
-
-    if (avatarUrl) {
-      details.find(".placeholderAvatar").addClass("hidden");
-      details.find(".avatar").css("background-image", `url(${avatarUrl})`);
-    }
+    ).then((avatarUrl) => {
+      if (avatarUrl) {
+        details.find(".placeholderAvatar").addClass("hidden");
+        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
+      }
+    });
   } else {
     details.find(".avatar").removeAttr("style");
   }
