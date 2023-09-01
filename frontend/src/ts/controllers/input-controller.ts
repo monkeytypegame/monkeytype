@@ -43,8 +43,6 @@ const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
 function setWordsInput(value: string): void {
-  console.log("setting words input to", value);
-
   // Only change #wordsInput if it's not already the wanted value
   // Avoids Safari triggering unneeded events, causing issues with
   // dead keys.
@@ -617,10 +615,6 @@ function handleChar(
   }
 
   //max length of the input is 20 unless in zen mode then its 30
-  console.log("char index", charIndex);
-  console.log("res word len", resultingWord.length);
-  console.log("cur word len", TestWords.words.getCurrent().length);
-
   if (
     (Config.mode === "zen" && charIndex < 30) ||
     (Config.mode !== "zen" &&
