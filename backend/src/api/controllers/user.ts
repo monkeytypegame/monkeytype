@@ -282,7 +282,9 @@ export async function updateEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { newEmail } = req.body;
+  let { newEmail } = req.body;
+
+  newEmail = newEmail.toLowerCase();
 
   try {
     await UserDAL.updateEmail(uid, newEmail);
