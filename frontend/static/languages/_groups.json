@@ -249,7 +249,7 @@
   },
   {
     "name": "malay",
-    "languages": ["malay"]
+    "languages": ["malay", "malay_1k"]
   },
   {
     "name": "romanian",
