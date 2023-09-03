@@ -108,33 +108,48 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
 export function getHTMLById(
   id: number,
   noText = false,
-  noBalloon = false
+  noBalloon = false,
+  showUnknown = false
 ): string {
-  const badge = badges[id];
-  if (!badge) {
+  const badge = badges[id] as MonkeyTypes.UserBadge | undefined;
+
+  if (!badge && !showUnknown) {
     return "";
   }
+
   let style = "";
-  if (badge.background) {
+  if (badge?.background) {
     style += `background: ${badge.background};`;
   }
-  if (badge.color) {
+  if (badge?.color) {
     style += `color: ${badge.color};`;
   }
-  if (badge.customStyle) {
+  if (badge?.customStyle) {
     style += badge.customStyle;
   }
 
-  const balloonText = (noText ? badge.name + ": " : "") + badge.description;
+  const badgeName = badge?.name ?? "Badge Name Missing";
+  const badgeDescription = badge?.description ?? "Badge Description Missing";
+
+  const balloonText = (noText ? badgeName + ": " : "") + badgeDescription;
 
   let balloon = "";
   if (!noBalloon) {
     balloon = `aria-label="${balloonText}" data-balloon-pos="right"`;
   }
 
-  return `<div class="badge" ${balloon} style="${style}">${
-    badge.icon ? `<i class="fas ${badge.icon}"></i>` : ""
-  }${noText ? "" : `<div class="text">${badge.name}</div>`}</div>`;
+  let icon = "";
+  if (badge?.icon) {
+    icon = `<i class="fas ${badge.icon}"></i>`;
+  } else {
+    icon = `<i class="fas fa-question"></i>`;
+  }
+
+  const text = `<div class="text">${badgeName}</div>`;
+
+  return `<div class="badge" ${balloon} style="${style}">${icon}${
+    noText ? "" : text
+  }</div>`;
 }
 
 export function getById(id: number): MonkeyTypes.UserBadge {
