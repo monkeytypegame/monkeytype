@@ -103,6 +103,14 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     color: "white",
     customStyle: "animation: rgb-bg 10s linear infinite;",
   },
+  14: {
+    id: 14,
+    name: "All Year Long",
+    description: "Reached a streak of 365 days",
+    icon: "fa-fire",
+    color: "var(--bg-color)",
+    background: "var(--main-color)",
+  },
 };
 
 export function getHTMLById(

@@ -452,6 +452,25 @@ export async function addResult(
 
   const streak = await UserDAL.updateStreak(uid, result.timestamp);
 
+  const shouldGetBadge =
+    streak >= 365 &&
+    user.inventory?.badges?.find((b) => b.id === 14) === undefined;
+  if (shouldGetBadge) {
+    const mail = buildMonkeyMail({
+      subject: "Badge",
+      body: "Congratulations for reaching a 365 day streak! You have been awarded a special badge. Now, go touch some grass.",
+      rewards: [
+        {
+          type: "badge",
+          item: {
+            id: 14,
+          },
+        },
+      ],
+    });
+    UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+  }
+
   const xpGained = await calculateXp(
     result,
     req.ctx.configuration.users.xp,
