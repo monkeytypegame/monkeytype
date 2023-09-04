@@ -518,12 +518,12 @@ async function update(): Promise<void> {
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
-  leaderboardKeys.forEach((leaderboardTime: LbKey) => {
-    hideLoader(leaderboardTime);
-    clearBody(leaderboardTime);
-    updateFooter(leaderboardTime);
-    checkLbMemory(leaderboardTime);
-    fillTable(leaderboardTime);
+  leaderboardKeys.forEach((lbKey) => {
+    hideLoader(lbKey);
+    clearBody(lbKey);
+    updateFooter(lbKey);
+    checkLbMemory(lbKey);
+    fillTable(lbKey);
   });
 
   $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
