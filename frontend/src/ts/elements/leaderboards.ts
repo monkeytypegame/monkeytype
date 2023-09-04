@@ -569,6 +569,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
 
   if (response.status !== 200 || data.length === 0) {
     hideLoader(lb);
+    requesting[lb] = false;
     return;
   }
   if (prepend) {
