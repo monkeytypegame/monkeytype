@@ -10,6 +10,7 @@ import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
+import { debounce } from "throttle-debounce";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -718,9 +719,11 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    requestMore("15", true);
+    debouncedRequestMore("15", true);
   }
 });
+
+const debouncedRequestMore = debounce(500, requestMore);
 
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
@@ -729,7 +732,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round(elem.outerHeight() as number) + 50
   ) {
-    requestMore("15");
+    debouncedRequestMore("15");
   }
 });
 
@@ -739,7 +742,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   if (!rightScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    requestMore("60", true);
+    debouncedRequestMore("60", true);
   }
 });
 
@@ -749,7 +752,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round((elem.outerHeight() as number) + 50)
   ) {
-    requestMore("60");
+    debouncedRequestMore("60");
   }
 });
 
