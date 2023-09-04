@@ -38,16 +38,16 @@ export async function update(
 
   details.find(".placeholderAvatar").removeClass("hidden");
   if (profile.discordAvatar && profile.discordId && !banned) {
-    const avatarUrl = await Misc.getDiscordAvatarUrl(
+    Misc.getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
       256
-    );
-
-    if (avatarUrl) {
-      details.find(".placeholderAvatar").addClass("hidden");
-      details.find(".avatar").css("background-image", `url(${avatarUrl})`);
-    }
+    ).then((avatarUrl) => {
+      if (avatarUrl) {
+        details.find(".placeholderAvatar").addClass("hidden");
+        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
+      }
+    });
   } else {
     details.find(".avatar").removeAttr("style");
   }
@@ -84,6 +84,17 @@ export async function update(
       .append(
         `<div class="bannedIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
       );
+
+    if (where === "profile") {
+      profileElement
+        .find(".lbOptOutReminder")
+        .removeClass("hidden")
+        .text(
+          "Note: This account has opted out of the leaderboards, meaning their results aren't verified by the anticheat system and may not be legitimate."
+        );
+    } else {
+      profileElement.find(".lbOptOutReminder").addClass("hidden");
+    }
   }
 
   setTimeout(() => {

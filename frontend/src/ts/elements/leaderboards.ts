@@ -279,7 +279,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     return;
   }
 
-  let side;
+  let side: string;
   if (lb === "15") {
     side = "left";
   } else {
@@ -317,16 +317,6 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     );
   });
 
-  const avatarUrls = (await Promise.allSettled(avatarUrlPromises)).map(
-    (promise) => {
-      if (promise.status === "fulfilled") {
-        return promise.value;
-      }
-
-      return null;
-    }
-  );
-
   let a = currentData[lb].length - leaderboardSingleLimit;
   let b = currentData[lb].length;
   if (a < 0) a = 0;
@@ -351,12 +341,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
       entry.rank = i + 1;
     }
 
-    let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
-
-    const currentEntryAvatarUrl = avatarUrls[i];
-    if (currentEntryAvatarUrl !== null) {
-      avatar = `<div class="avatar" style="background-image:url(${currentEntryAvatarUrl})"></div>`;
-    }
+    const avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
     html += `
     <tr ${meClassString}>
@@ -390,6 +375,25 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   } else {
     $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
   }
+
+  const elements = $(
+    `#leaderboardsWrapper table.${side} tbody .avatarPlaceholder`
+  );
+  Promise.allSettled(avatarUrlPromises).then((promises) => {
+    const urls = promises.map((promise) => {
+      if (promise.status === "fulfilled") {
+        return promise.value;
+      }
+      return null;
+    });
+    urls.forEach((url, index) => {
+      if (url !== null) {
+        $(elements[index + a]).replaceWith(
+          `<div class="avatar" style="background-image:url(${url})"></div>`
+        );
+      }
+    });
+  });
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");

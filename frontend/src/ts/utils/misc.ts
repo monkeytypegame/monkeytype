@@ -1354,7 +1354,9 @@ export async function getDiscordAvatarUrl(
   try {
     const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
 
-    const response = await fetch(avatarUrl);
+    const response = await fetch(avatarUrl, {
+      method: "HEAD",
+    });
     if (!response.ok) {
       return null;
     }

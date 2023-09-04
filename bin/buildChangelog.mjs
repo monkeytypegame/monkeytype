@@ -66,6 +66,17 @@ function itemIsAddingQuotes(item) {
   return scopeIsQuote && messageAdds;
 }
 
+function itemIsAddressingQuoteReports(item) {
+  const scopeIsQuote =
+    item.scope?.includes("quote") || item.scope?.includes("quotes");
+
+  const messageReport =
+    item.message.includes("quote") &&
+    (item.message.includes("report") || item.message.includes("reports"));
+
+  return scopeIsQuote && messageReport;
+}
+
 const titles = {
   feat: "Features",
   impr: "Improvements",
@@ -159,6 +170,11 @@ async function main() {
   let quoteAddCommits = log.filter((item) => itemIsAddingQuotes(item));
   log = log.filter((item) => !itemIsAddingQuotes(item));
 
+  let quoteReportCommits = log.filter((item) =>
+    itemIsAddressingQuoteReports(item)
+  );
+  log = log.filter((item) => !itemIsAddressingQuoteReports(item));
+
   if (quoteAddCommits.length > 0) {
     log.push({
       hashes: quoteAddCommits.map((item) => item.hashes).flat(),
@@ -167,6 +183,17 @@ async function main() {
       message: "add quotes in various languages",
       usernames: quoteAddCommits.map((item) => item.usernames).flat(),
       prs: quoteAddCommits.map((item) => item.prs).flat(),
+    });
+  }
+
+  if (quoteReportCommits.length > 0) {
+    log.push({
+      hashes: quoteReportCommits.map((item) => item.hashes).flat(),
+      type: "fix",
+      scope: "quote",
+      message: "update or remove quotes reported by users",
+      usernames: quoteReportCommits.map((item) => item.usernames).flat(),
+      prs: quoteReportCommits.map((item) => item.prs).flat(),
     });
   }
 

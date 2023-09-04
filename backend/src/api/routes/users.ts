@@ -650,4 +650,14 @@ router.post(
   asyncHandler(UserController.sendForgotPasswordEmail)
 );
 
+router.post(
+  "/revokeAllTokens",
+  RateLimit.userRevokeAllTokens,
+  authenticateRequest({
+    requireFreshToken: true,
+    noCache: true,
+  }),
+  asyncHandler(UserController.revokeAllTokens)
+);
+
 export default router;
