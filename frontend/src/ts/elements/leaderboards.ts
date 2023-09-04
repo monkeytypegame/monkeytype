@@ -41,6 +41,13 @@ let currentRank: {
   "60": {},
 };
 
+let currentAvatars: {
+  [key in LbKey]: (string | null)[];
+} = {
+  "15": [],
+  "60": [],
+};
+
 const requesting = {
   "15": false,
   "60": false,
@@ -75,6 +82,11 @@ function reset(): void {
   currentRank = {
     "15": {},
     "60": {},
+  };
+
+  currentAvatars = {
+    "15": [],
+    "60": [],
   };
 }
 
@@ -275,7 +287,7 @@ function checkLbMemory(lb: LbKey): void {
   }
 }
 
-async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
+async function fillTable(lb: LbKey): Promise<void> {
   if (!currentData[lb]) {
     return;
   }
@@ -296,37 +308,8 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const loggedInUserName = DB.getSnapshot()?.name;
 
-  const snap = DB.getSnapshot();
-
-  const avatarUrlPromises = currentData[lb].map(async (entry) => {
-    const isCurrentUser =
-      Auth?.currentUser &&
-      entry.uid === Auth?.currentUser.uid &&
-      snap &&
-      snap.discordAvatar &&
-      snap.discordId;
-
-    const entryHasAvatar = entry.discordAvatar && entry.discordId;
-
-    const avatarSource: Partial<
-      MonkeyTypes.Snapshot | MonkeyTypes.LeaderboardEntry
-    > = (isCurrentUser && snap) || (entryHasAvatar && entry) || {};
-
-    return Misc.getDiscordAvatarUrl(
-      avatarSource.discordId,
-      avatarSource.discordAvatar
-    );
-  });
-
-  let a = currentData[lb].length - leaderboardSingleLimit;
-  let b = currentData[lb].length;
-  if (a < 0) a = 0;
-  if (prepend) {
-    a = 0;
-    b = prepend;
-  }
   let html = "";
-  for (let i = a; i < b; i++) {
+  for (let i = 0; i < currentData[lb].length; i++) {
     const entry = currentData[lb][i] as MonkeyTypes.LeaderboardEntry;
     if (!entry) {
       break;
@@ -342,7 +325,11 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
       entry.rank = i + 1;
     }
 
-    const avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
+    let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
+
+    if (entry.discordAvatar) {
+      avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
+    }
 
     html += `
     <tr ${meClassString}>
@@ -350,7 +337,8 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
     <td>
-    <div class="avatarNameBadge">${avatar}
+    <div class="avatarNameBadge">
+      <div class="lbav">${avatar}</div>
       <a href="${location.origin}/profile/${
       entry.uid
     }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
@@ -370,31 +358,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   </tr>
   `;
   }
-
-  if (!prepend) {
-    $(`#leaderboardsWrapper table.${side} tbody`).append(html);
-  } else {
-    $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
-  }
-
-  const elements = $(
-    `#leaderboardsWrapper table.${side} tbody .avatarPlaceholder`
-  );
-  Promise.allSettled(avatarUrlPromises).then((promises) => {
-    const urls = promises.map((promise) => {
-      if (promise.status === "fulfilled") {
-        return promise.value;
-      }
-      return null;
-    });
-    urls.forEach((url, index) => {
-      if (url !== null) {
-        $(elements[index + a]).replaceWith(
-          `<div class="avatar" style="background-image:url(${url})"></div>`
-        );
-      }
-    });
-  });
+  $(`#leaderboardsWrapper table.${side} tbody`).html(html);
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
@@ -525,6 +489,11 @@ async function update(): Promise<void> {
     updateFooter(lbKey);
     checkLbMemory(lbKey);
     fillTable(lbKey);
+
+    getAvatarUrls(currentData[lbKey]).then((urls) => {
+      currentAvatars[lbKey] = urls;
+      fillAvatars(lbKey);
+    });
   });
 
   $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
@@ -581,7 +550,17 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   if (prepend && !limitVal) {
     limitVal = leaderboardSingleLimit - 1;
   }
-  await fillTable(lb, limitVal);
+  await fillTable(lb);
+
+  getAvatarUrls(data).then((urls) => {
+    if (prepend) {
+      currentAvatars[lb].unshift(...urls);
+    } else {
+      currentAvatars[lb].push(...urls);
+    }
+    fillAvatars(lb);
+  });
+
   hideLoader(lb);
   requesting[lb] = false;
 }
@@ -608,13 +587,53 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 
   clearBody(lb);
   currentData[lb] = [];
+  currentAvatars[lb] = [];
   if (response.status !== 200 || data.length === 0) {
     hideLoader(lb);
     return;
   }
   currentData[lb] = data;
   await fillTable(lb);
+
+  getAvatarUrls(data).then((urls) => {
+    currentAvatars[lb] = urls;
+    fillAvatars(lb);
+  });
+
   hideLoader(lb);
+}
+
+async function getAvatarUrls(
+  data: MonkeyTypes.LeaderboardEntry[]
+): Promise<(string | null)[]> {
+  return Promise.allSettled(
+    data.map(async (entry) =>
+      Misc.getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
+    )
+  ).then((promises) => {
+    return promises.map((promise) => {
+      if (promise.status === "fulfilled") {
+        return promise.value;
+      }
+      return null;
+    });
+  });
+}
+
+function fillAvatars(lb: LbKey): void {
+  const side = lb === "15" ? "left" : "right";
+  const elements = $(`#leaderboardsWrapper table.${side} tbody .lbav`);
+  currentAvatars[lb].forEach((url, index) => {
+    if (url !== null) {
+      $(elements[index]).html(
+        `<div class="avatar" style="background-image:url(${url})"></div>`
+      );
+    } else {
+      $(elements[index]).html(
+        `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`
+      );
+    }
+  });
 }
 
 export function show(): void {
