@@ -507,7 +507,6 @@ async function update(): Promise<void> {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [lb15Data, lb60Data, lb15Rank, lb60Rank] = responses.map(
     (response) => response.data
   );
