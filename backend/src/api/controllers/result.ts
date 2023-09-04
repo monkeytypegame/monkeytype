@@ -454,7 +454,15 @@ export async function addResult(
 
   const shouldGetBadge =
     streak >= 365 &&
-    user.inventory?.badges?.find((b) => b.id === 14) === undefined;
+    user.inventory?.badges?.find((b) => b.id === 14) === undefined &&
+    (
+      user.inbox
+        ?.map((i) =>
+          (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
+        )
+        .flat() ?? []
+    ).includes(14) === false;
+
   if (shouldGetBadge) {
     const mail = buildMonkeyMail({
       subject: "Badge",
