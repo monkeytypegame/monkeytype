@@ -7226,12 +7226,6 @@
       "length": 198
     },
     {
-      "text": "You don't know what's in store, but you know what you're here for. Close your eyes, lay yourself beside me. Hold tight for this ride, we don't need no protection. Come alone, we don't need attention.",
-      "source": "High For This",
-      "id": 1257,
-      "length": 199
-    },
-    {
       "text": "Most of the people in the industry were young because the guys who had any real experience were too smart to get involved in all these crazy little machines.",
       "source": "Triumph of the Nerds",
       "id": 1258,
@@ -7548,12 +7542,6 @@
       "source": "Hope mikaelson",
       "id": 1313,
       "length": 188
-    },
-    {
-      "text": "There's something we need to find, something hidden here in the castle and it may help us defeat You Know Who. Right what is it? We don't know. Where is it? We don't know that either, I realize that's not much to go on. That's nothing to go on.",
-      "source": "Harry Potter and the Deathly Hallows",
-      "id": 1314,
-      "length": 244
     },
     {
       "text": "I don't know what you're talking about. I don't agree with what you're saying. And you're trying to wind me up. But I'm very, very angry, and I want this conversation to stop right away.",
@@ -17966,10 +17954,10 @@
       "length": 180
     },
     {
-      "text": "So they're gonna dump the unions so they can come here and hire us at scab wages and then for that privilege we get to pay their taxes.",
+      "text": "So they're gonna dump the union, so they can come here and hire us at scab wages and then for that privilege... we get to pay their taxes?",
       "source": "Roseanne",
       "id": 3156,
-      "length": 135
+      "length": 138
     },
     {
       "text": "If you're a spirit and you can travel to other dimensions and galaxies and find out the mysteries of the universe, you think she's going to want to hang around Drexler's funeral home on Ocean Parkway?",
@@ -28545,7 +28533,7 @@
     },
     {
       "text": "Harry was left to ponder in silence the depths to which girls would sink to get revenge.",
-      "source": "Harry Potter and the Deathly Hallows",
+      "source": "Harry Potter and the Half-Blood Prince",
       "id": 5053,
       "length": 88
     },
@@ -34302,7 +34290,7 @@
       "id": 6262
     },
     {
-      "text": "Well, well! Look at the city slicker pulling up on his fancy German car.",
+      "text": "Well, well! Look at the city slicker pulling up in his fancy German car.",
       "source": "The Simpsons",
       "length": 72,
       "id": 6263
@@ -38596,7 +38584,7 @@
       "id": 6966
     },
     {
-      "text": "The unintelligable is not necessarily unintelligent. Life must not be limited solely to what we understand.",
+      "text": "The unintelligible is not necessarily unintelligent. Life must not be limited solely to what we understand.",
       "source": "Fat Tony",
       "length": 107,
       "id": 6967
