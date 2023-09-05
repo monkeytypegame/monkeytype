@@ -492,7 +492,7 @@ list["updateName"] = new SimplePopup(
     }
     if (snapshot.needsToChangeName === true) {
       thisPopup.text =
-        "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed. Sorry for the inconvenience.";
+        "You need to change your account name. This might be because you have a duplicate name, no account name or your name is not allowed (contains whitespace or invalid characters). Sorry for the inconvenience.";
     }
   },
   (_thisPopup) => {
