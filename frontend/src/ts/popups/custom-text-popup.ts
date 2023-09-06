@@ -15,7 +15,6 @@ const skeletonId = "customTextPopupWrapper";
 
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
-const MAX_TEXT_LENGTH = 4096;
 
 function updateLongTextWarning(): void {
   if (CustomTextState.isCustomTextLong() === true) {
@@ -392,16 +391,6 @@ $(`#fileInput`).on("change", () => {
       Notifications.add("File is not a text file", -1, {
         duration: 5,
       });
-      return;
-    }
-    if (file.size > MAX_TEXT_LENGTH) {
-      Notifications.add(
-        `File is too big. Max size ${MAX_TEXT_LENGTH / 1024}KB`,
-        -1,
-        {
-          duration: 5,
-        }
-      );
       return;
     }
 
