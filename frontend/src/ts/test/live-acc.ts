@@ -12,11 +12,13 @@ export function update(acc: number): void {
   (document.querySelector("#liveAcc") as Element).innerHTML = number + "%";
 }
 
+let state = false;
+
 export function show(): void {
   if (!Config.showLiveAcc) return;
   if (!TestState.isActive) return;
+  if (state) return;
   if (Config.timerStyle === "mini") {
-    if (!$("#miniTimerAndLiveWpm .acc").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .acc")
       .stop(true, false)
       .removeClass("hidden")
@@ -28,7 +30,6 @@ export function show(): void {
         125
       );
   } else {
-    if (!$("#liveAcc").hasClass("hidden")) return;
     $("#liveAcc")
       .stop(true, false)
       .removeClass("hidden")
@@ -40,11 +41,13 @@ export function show(): void {
         125
       );
   }
+  state = true;
 }
 
 export function hide(): void {
   // $("#liveWpm").css("opacity", 0);
   // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
+  if (!state) return;
   $("#liveAcc")
     .stop(true, false)
     .animate(
@@ -67,6 +70,7 @@ export function hide(): void {
         $("#miniTimerAndLiveWpm .acc").addClass("hidden");
       }
     );
+  state = false;
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

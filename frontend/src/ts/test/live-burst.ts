@@ -12,11 +12,13 @@ export async function update(burst: number): Promise<void> {
     burst.toString();
 }
 
+let state = false;
+
 export function show(): void {
   if (!Config.showLiveBurst) return;
   if (!TestState.isActive) return;
+  if (state) return;
   if (Config.timerStyle === "mini") {
-    if (!$("#miniTimerAndLiveWpm .burst").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .burst")
       .stop(true, false)
       .removeClass("hidden")
@@ -28,7 +30,6 @@ export function show(): void {
         125
       );
   } else {
-    if (!$("#liveBurst").hasClass("hidden")) return;
     $("#liveBurst")
       .stop(true, false)
       .removeClass("hidden")
@@ -43,6 +44,7 @@ export function show(): void {
 }
 
 export function hide(): void {
+  if (!state) return;
   $("#liveBurst")
     .stop(true, false)
     .animate(
@@ -65,6 +67,7 @@ export function hide(): void {
         $("#miniTimerAndLiveWpm .burst").addClass("hidden");
       }
     );
+  state = false;
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
