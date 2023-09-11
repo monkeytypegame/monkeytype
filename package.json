@@ -11,7 +11,7 @@
     "lint-fe": "eslint \"./frontend/**/*.ts\"",
     "install-all": "sh ./bin/install.sh",
     "install-windows": ".\\bin\\install.cmd",
-    "docker": "cd backend && docker-compose up",
+    "docker": "cd backend && docker compose up",
     "test-be": "cd backend && npm run test",
     "dev": "concurrently --kill-others \"npm run dev-fe\" \"npm run dev-be\"",
     "dev-be": "cd backend && npm run dev",

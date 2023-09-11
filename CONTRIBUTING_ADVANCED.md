@@ -93,7 +93,7 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 | Local Server                                                                                                                                             | Docker (recommended)                                                                                                                                                                                                   |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker-compose up` from the `./backend` directory (this is also how you start the backend server)</li></ol> |
+| <ol><li>Install [MongoDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/)</li><li>Make sure it is running</li></ol> | <ol><li>Install [Docker](http://www.docker.io/gettingstarted/#h_installation) on your machine</li><li>Run `docker compose up` from the `./backend` directory (this is also how you start the backend server)</li></ol> |
 
 3. (Optional) Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your database visually.
    - To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The Monkeytype database will be created and shown after the server is started.
@@ -109,11 +109,11 @@ Follow these steps if you want to work on anything involving the database/accoun
 
 - Frontend:
   ```
-  cd frontend && docker-compose up
+  cd frontend && docker compose up
   ```
 - Backend (in another terminal window):
   ```
-  cd backend && docker-compose up
+  cd backend && docker compose up
   ```
 
 ### **_Without_** Docker:
