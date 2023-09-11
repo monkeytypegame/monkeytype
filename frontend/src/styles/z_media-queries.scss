@@ -63,6 +63,9 @@
   // .pageSettings .section.themes .buttons {
   //   grid-template-columns: 1fr 1fr 1fr;
   // }
+  #customTextPopupWrapper #customTextPopup .buttonsTop {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 //1050px
