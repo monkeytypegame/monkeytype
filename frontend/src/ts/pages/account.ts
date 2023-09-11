@@ -679,7 +679,7 @@ async function fillContent(): Promise<void> {
     });
     activityChartData_time.push({
       x: dateInt,
-      y: Misc.roundTo2(activityChartData[dateInt].time),
+      y: activityChartData[dateInt].time / 60,
       amount: activityChartData[dateInt].amount,
     });
     activityChartData_avgWpm.push({
