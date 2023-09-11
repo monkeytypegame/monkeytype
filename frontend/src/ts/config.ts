@@ -1248,7 +1248,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
   config.fontFamily = font;
   document.documentElement.style.setProperty(
     "--font",
-    `"${font.replace(/_/g, " ")}", "Roboto Mono", "Vazirmatn"`
+    `"${font.replace(/_/g, " ")}", "Roboto Mono", "Vazirmatn", monospace`
   );
   saveToLocalStorage("fontFamily", nosave);
   ConfigEvent.dispatch("fontFamily", config.fontFamily);

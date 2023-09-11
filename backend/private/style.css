@@ -12,7 +12,7 @@
 }
 
 body {
-  font-family: "Roboto Mono", sans-serif;
+  font-family: "Roboto Mono", monospace;
   margin: 0;
   padding: 0;
   background: var(--bg-color);
@@ -62,7 +62,7 @@ body {
   cursor: pointer;
   font-size: 1rem;
   margin-right: 1rem;
-  font-family: "Roboto Mono";
+  font-family: "Roboto Mono", monospace;
 }
 
 .array-input {
@@ -117,7 +117,7 @@ label {
   transition: all 0.2s ease-in-out;
   font-size: 1rem;
   padding: 0.25rem;
-  font-family: "Roboto Mono";
+  font-family: "Roboto Mono", monospace;
 }
 
 input[type="checkbox"] {
