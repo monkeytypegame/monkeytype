@@ -603,7 +603,7 @@ export const accountActivity: ChartWithUpdateColors<
           display: true,
           title: {
             display: true,
-            text: "Time Typing",
+            text: "Time typing (minutes)",
           },
         },
         avgWpm: {
