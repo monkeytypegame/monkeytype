@@ -130,6 +130,7 @@ export async function initSnapshot(): Promise<
     snap.inboxUnreadSize = userData.inboxUnreadSize ?? 0;
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
+    snap.filterPresets = userData.resultFilterPresets ?? [];
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
