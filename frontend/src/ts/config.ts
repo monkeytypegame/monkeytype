@@ -391,7 +391,7 @@ export function setTypingSpeedUnit(
 ): boolean {
   if (
     !isConfigValueValid("typing speed unit", val, [
-      ["wpm", "cpm", "wps", "cps", "wph"],
+      ["wpm", "cpm", "wps", "cps", "wph", "stt"],
     ])
   ) {
     return false;
