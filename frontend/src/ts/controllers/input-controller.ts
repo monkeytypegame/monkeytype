@@ -38,6 +38,7 @@ let dontInsertSpace = false;
 let correctShiftUsed = true;
 let isKoCompiling = false;
 let isBackspace: boolean;
+let incorrectShiftsInARow = 0;
 
 const wordsInput = document.getElementById("wordsInput") as HTMLInputElement;
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -561,7 +562,20 @@ function handleChar(
     KeymapEvent.flash(char, thisCharCorrect);
   }
 
-  if (!correctShiftUsed && Config.difficulty !== "master") return;
+  if (Config.difficulty !== "master") {
+    if (!correctShiftUsed) {
+      incorrectShiftsInARow++;
+      if (incorrectShiftsInARow >= 5) {
+        Notifications.add("Reminder: Opposite shift mode is on.", 0, {
+          important: true,
+        });
+      }
+      return;
+    } else {
+      incorrectShiftsInARow = 0;
+      console.log("correct shift used");
+    }
+  }
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
   if (TestInput.corrected.current === "") {
