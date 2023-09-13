@@ -113,28 +113,13 @@
   &.matrix {
     .r1,
     .r2,
-    .r3 {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
-
+    .r3,
     .r4 {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r5 {
-      grid-template-columns: 3fr 4fr 3fr;
-    }
-
-    .r1,
-    .r2,
-    .r3 {
-      :nth-child(13) {
-        opacity: 0;
-      }
-
-      :nth-child(14) {
-        opacity: 0;
-      }
+      grid-template-columns: 1fr 3fr 4fr 3fr 1fr;
     }
   }
   &.split {
@@ -187,37 +172,16 @@
     }
     .r1,
     .r2,
-    .r3 {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    }
-
+    .r3,
     .r4 {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r5 {
-      grid-template-columns: 2fr 3fr 1fr 3fr 2fr;
+      grid-template-columns: 1fr 2fr 3fr 1fr 3fr 2fr 1fr;
     }
     .keySplitSpace {
       opacity: 1;
-    }
-
-    .r1 {
-      :nth-child(12) {
-        opacity: 0;
-      }
-    }
-
-    .r1,
-    .r2,
-    .r3 {
-      :nth-child(13) {
-        opacity: 0;
-      }
-
-      :nth-child(14) {
-        opacity: 0;
-      }
     }
   }
   &.steno,
@@ -473,87 +437,6 @@
       opacity: 1;
     }
 
-    // div#KeyE.keymapKey,
-    // div#KeyD.keymapKey {
-    //   margin-top: 6px;
-    // }
-    // div#KeyC.keymapKey {
-    //   margin-top: 8px;
-    // }
-    // div#KeyR.keymapKey,
-    // div#KeyF.keymapKey {
-    //   margin-top: 12px;
-    // }
-    // div#KeyV.keymapKey {
-    //   margin-top: 14px;
-    // }
-    // div#KeyT.keymapKey,
-    // div#KeyG.keymapKey {
-    //   margin-top: 18px;
-    // }
-    // div#KeyB.keymapKey {
-    //   margin-top: 20px;
-    // }
-    // div#KeyY.keymapKey,
-    // div#KeyU.keymapKey,
-    // div#KeyI.keymapKey,
-    // div#KeyO.keymapKey {
-    //   transform: rotate(-10deg);
-    //   margin-left: -25%;
-    // }
-    // div#KeyH.keymapKey,
-    // div#KeyJ.keymapKey,
-    // div#KeyK.keymapKey,
-    // div#KeyL.keymapKey {
-    //   transform: rotate(-10deg);
-    //   margin-left: -35%;
-    // }
-    // div#KeyN.keymapKey,
-    // div#KeyM.keymapKey,
-    // div#KeyComma.keymapKey {
-    //   transform: rotate(-10deg);
-    //   margin-left: -16%;
-    // }
-    // div#KeyP.keymapKey,
-    // div#KeyLeftBracket.keymapKey,
-    // div#KeyRightBracket.keymapKey {
-    //   margin-left: 5%;
-    // }
-    // div#KeySemicolon.keymapKey,
-    // div#KeyQuote.keymapKey {
-    //   margin-left: -25%;
-    // }
-    // div#KeyPeriod.keymapKey,
-    // div#KeySlash.keymapKey {
-    //   margin-left: -3px;
-    // }
-    // div#KeyO.keymapKey,
-    // div#KeyComma.keymapKey {
-    //   margin-top: 3px;
-    // }
-    // div#KeyL.keymapKey {
-    //   margin-top: 1px;
-    // }
-    // div#KeyI.keymapKey,
-    // div#KeyM.keymapKey {
-    //   margin-top: 9px;
-    // }
-    // div#KeyK.keymapKey {
-    //   margin-top: 7px;
-    // }
-    // div#KeyU.keymapKey,
-    // div#KeyN.keymapKey {
-    //   margin-top: 15px;
-    // }
-    // div#KeyJ.keymapKey {
-    //   margin-top: 13px;
-    // }
-    // div#KeyY.keymapKey {
-    //   margin-top: 21px;
-    // }
-    // div#KeyH.keymapKey {
-    //   margin-top: 19px;
-    // }
     div.keySpace {
       transform: rotate(10deg);
       margin-left: -5%;
@@ -585,13 +468,5 @@
       height: 2rem;
       position: relative;
     }
-    // div#KeySpace.keymapKey:after {
-    //     content: 'Alice';
-    //     text-indent: 0;
-    //     font-weight: 600!important;
-    //     margin: auto;
-    //     font-size: 0.9rem;
-    //     color: var(--bg-color)
-    // }
   }
 }

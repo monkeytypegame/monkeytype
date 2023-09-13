@@ -818,6 +818,7 @@ declare namespace MonkeyTypes {
 
   interface Layout {
     keymapShowTopRow: boolean;
+    matrixShowRightColumn?: boolean;
     type: "iso" | "ansi" | "ortho" | "matrix";
     keys: Keys;
   }

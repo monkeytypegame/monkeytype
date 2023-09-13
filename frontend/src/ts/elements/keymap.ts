@@ -183,6 +183,14 @@ export async function refresh(
           rowElement += "<div></div>";
         }
 
+        if (isMatrix) {
+          if (row !== "row5") {
+            rowElement += `<div class="keymapKey"></div>`;
+          } else {
+            rowElement += `<div></div>`;
+          }
+        }
+
         if (row === "row5") {
           if (isSteno) return;
           const layoutDisplay = layoutString.replace(/_/g, " ");
@@ -201,10 +209,16 @@ export async function refresh(
         } else {
           for (let i = 0; i < rowKeys.length; i++) {
             if (row === "row2" && i === 12) continue;
+
+            let colLimit = 10;
+            if (lts.matrixShowRightColumn) {
+              colLimit = 11;
+            }
+
             if (
               (Config.keymapStyle === "matrix" ||
                 Config.keymapStyle === "split_matrix") &&
-              i >= 10
+              i >= colLimit
             ) {
               continue;
             }
