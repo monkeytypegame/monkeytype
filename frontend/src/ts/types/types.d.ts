@@ -818,7 +818,6 @@ declare namespace MonkeyTypes {
 
   interface Layout {
     keymapShowTopRow: boolean;
-    matrixShowRightColumn?: boolean;
     type: "iso" | "ansi" | "ortho" | "matrix";
     keys: Keys;
   }
@@ -889,7 +888,7 @@ declare namespace MonkeyTypes {
 
   type AllRewards = XpReward | BadgeReward;
 
-  type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
+  type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph" | "stt";
 
   interface TypingSpeedUnitSettings {
     fromWpm: (number) => number;
