@@ -22,7 +22,7 @@ class Unit implements MonkeyTypes.TypingSpeedUnitSettings {
   }
 
   fromWpm(wpm: number): number {
-    if ((this.unit = "stt")) {
+    if ((this.unit === "stt")) {
       return this.convertFactor / wpm;
     } else {
       return wpm / this.convertFactor;
