@@ -22,14 +22,11 @@ class Unit implements MonkeyTypes.TypingSpeedUnitSettings {
   }
 
   fromWpm(wpm: number): number {
-    if (this.unit = "stt") {
-      return this.convertFactor / wpm
+    if ((this.unit = "stt")) {
+      return this.convertFactor / wpm;
+    } else {
+      return wpm / this.convertFactor;
     }
-
-    else {
-    return wpm / this.convertFactor;
-    }
-
   }
 
   toWpm(val: number): number {
@@ -47,17 +44,17 @@ const typingSpeedUnits: Record<MonkeyTypes.TypingSpeedUnit, Unit> = {
   wps: new Unit("wps", 1 / 60, "Words per Second", 0.5, 2),
   cps: new Unit("cps", 5 / 60, "Characters per Second", 5, 5),
   wph: new Unit("wph", 60, "Words per Hour", 250, 1000),
-  stt: new class extends Unit{
-    constructor(){
-      super("stt", 0,  "Seconds to Type 100", 1,1);
+  stt: new (class extends Unit {
+    constructor() {
+      super("stt", 0, "Seconds to Type 100", 1, 1);
     }
     override fromWpm(wpm: number): number {
-      return 6000/wpm;
+      return 6000 / wpm;
     }
-    override toWpm(stt: number):number  {
-      return 6000/stt;
+    override toWpm(stt: number): number {
+      return 6000 / stt;
     }
-  },
+  })(),
 };
 
 export function get(
