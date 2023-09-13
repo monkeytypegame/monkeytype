@@ -46,21 +46,20 @@ export function replaceAccents(
 ): string {
   if (!word) return word;
 
-  const accentMap = new Map(accentsOverride || accents);
-
+  const accentsArray = accentsOverride || accents;
   const uppercased = word.toUpperCase();
   const cases = Array(word.length);
-
-  for (let i = 0; i < word.length; i++) {
-    cases[i] = word[i] === uppercased[i] ? 1 : 0;
-  }
-
   const newWordArray: string[] = [];
 
   for (let i = 0; i < word.length; i++) {
     const char = word[i];
-    if (accentMap.has(char)) {
-      newWordArray.push(accentMap.get(char) as string);
+    const uppercasedChar = uppercased[i];
+    cases[i] = char === uppercasedChar ? 1 : 0;
+    const accent = accentsArray.find((accent) =>
+      accent[0].includes(char.toLowerCase())
+    );
+    if (accent) {
+      newWordArray.push(accent[1]);
     } else {
       newWordArray.push(char);
     }
