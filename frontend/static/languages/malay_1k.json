@@ -1,6 +1,6 @@
 {
   "name": "malay_1k",
-  "rightToLeft": true,
+  "rightToLeft": false,
   "ligatures": false,
   "bcp47": "ms",
   "words": [
