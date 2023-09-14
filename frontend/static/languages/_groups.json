@@ -41,7 +41,7 @@
   },
   {
     "name": "arabic",
-    "languages": ["arabic", "arabic_10k"]
+    "languages": ["arabic", "arabic_diacritics", "arabic_10k"]
   },
   {
     "name": "italian",
