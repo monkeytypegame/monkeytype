@@ -573,7 +573,6 @@ function handleChar(
       return;
     } else {
       incorrectShiftsInARow = 0;
-      console.log("correct shift used");
     }
   }
 
