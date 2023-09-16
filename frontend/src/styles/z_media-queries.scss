@@ -63,6 +63,9 @@
   // .pageSettings .section.themes .buttons {
   //   grid-template-columns: 1fr 1fr 1fr;
   // }
+  #customTextPopupWrapper #customTextPopup .buttonsTop {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 //1050px
@@ -805,6 +808,13 @@
       height: 1.25rem;
     }
     .keymapKey {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 0.3rem;
+      font-size: 0.6rem;
+    }
+
+    &.split_matrix .keymapSplitSpacer {
       width: 1.25rem;
       height: 1.25rem;
       border-radius: 0.3rem;

@@ -348,7 +348,20 @@ $(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
   if ($(e.target).hasClass("delButton")) return;
   if ($(e.target).hasClass("editButton")) return;
   const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
-  ThemeController.set(customThemeId, true);
+  const theme = DB.getSnapshot()?.customThemes.find(
+    (e) => e._id === customThemeId
+  );
+
+  if (theme === undefined) {
+    //this shouldnt happen but typescript needs this check
+    console.error(
+      "Could not find custom theme in snapshot for id ",
+      customThemeId
+    );
+    return;
+  }
+
+  UpdateConfig.setCustomThemeColors(theme.colors);
 });
 
 // Handle click on favorite preset theme button

@@ -264,4 +264,8 @@ export default class Users {
       payload: { hourOffset },
     });
   }
+
+  async revokeAllTokens(): Ape.EndpointResponse {
+    return await this.httpClient.post(`${BASE_PATH}/revokeAllTokens`);
+  }
 }

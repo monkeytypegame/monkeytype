@@ -1,7 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
-import Config, * as UpdateConfig from "../config";
+import Config from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -213,15 +213,14 @@ export async function loadStyle(name: string): Promise<void> {
 //   UpdateConfig.setCustomThemeColors(colors, nosave);
 // }
 
-function apply(themeName: string, isCustom: boolean, isPreview = false): void {
+function apply(
+  themeName: string,
+  customColorsOverride?: string[],
+  isPreview = false
+): void {
   clearCustomTheme();
 
-  let name = "serika_dark";
-  if (!isCustom) {
-    name = themeName;
-  } else {
-    name = "custom";
-  }
+  const name = customColorsOverride ? "custom" : themeName;
 
   ThemeColors.reset();
 
@@ -229,27 +228,16 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
   // $("#currentTheme").attr("href", `themes/${name}.css`);
   loadStyle(name).then(() => {
     ThemeColors.update();
-    if (isCustom) {
-      let colorValues = Config.customThemeColors;
-      const snapshot = DB.getSnapshot();
-      if (isCustom && !isPreview && snapshot) {
-        const customColors =
-          snapshot.customThemes.find((e) => e._id === themeName)?.colors ?? [];
-        if (customColors.length > 0) {
-          UpdateConfig.setCustomThemeColors(customColors);
-        }
-      }
-      if (themeName !== "custom" && snapshot) {
-        const customThemes = snapshot.customThemes;
-        const customThemeById = customThemes.find((e) => e._id === themeName);
-        colorValues = customThemeById?.colors as string[];
-      }
+
+    if ((Config.customTheme && !isPreview) || customColorsOverride) {
+      const colors = customColorsOverride ?? Config.customThemeColors;
+
       colorVars.forEach((e, index) => {
-        document.documentElement.style.setProperty(e, colorValues[index]);
+        document.documentElement.style.setProperty(e, colors[index]);
       });
     }
 
-    AnalyticsController.log("changedTheme", { theme: themeName });
+    AnalyticsController.log("changedTheme", { theme: name });
     // if (!isPreview) {
     ThemeColors.getAll().then((colors) => {
       $(".keymapKey").attr("style", "");
@@ -259,30 +247,35 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
       $("#metaThemeColor").attr("content", colors.bg);
     });
     // }
-    $(".current-theme .text").text(
-      isCustom ? "custom" : themeName.replace(/_/g, " ")
-    );
+    updateFooterThemeName(isPreview ? themeName : undefined);
   });
+}
+
+function updateFooterThemeName(nameOverride?: string): void {
+  let str = Config.theme;
+  if (Config.customTheme) str = "custom";
+  if (nameOverride) str = nameOverride;
+  str = str.replace(/_/g, " ");
+  $(".current-theme .text").text(str);
 }
 
 export function preview(
   themeIdentifier: string,
-  isCustom: boolean,
-  randomTheme = false
+  customColorsOverride?: string[]
 ): void {
-  debouncedPreview(themeIdentifier, isCustom, randomTheme);
+  debouncedPreview(themeIdentifier, customColorsOverride);
 }
 
 const debouncedPreview = debounce(
   250,
-  (themeIdenfitier, isCustom, randomTheme) => {
+  (themeIdenfitier, customColorsOverride) => {
     isPreviewingTheme = true;
-    apply(themeIdenfitier, isCustom, !randomTheme);
+    apply(themeIdenfitier, customColorsOverride, true);
   }
 );
 
-export function set(themeIdentifier: string, isCustom: boolean): void {
-  apply(themeIdentifier, isCustom);
+function set(themeIdentifier: string): void {
+  apply(themeIdentifier);
 }
 
 export function clearPreview(applyTheme = true): void {
@@ -291,9 +284,9 @@ export function clearPreview(applyTheme = true): void {
     randomTheme = null;
     if (applyTheme) {
       if (Config.customTheme) {
-        apply("custom", true);
+        apply("custom");
       } else {
-        apply(Config.theme, false);
+        apply(Config.theme);
       }
     }
   }
@@ -346,7 +339,17 @@ export async function randomizeTheme(): Promise<void> {
     randomThemeIndex = 0;
   }
 
-  preview(randomTheme, Config.randomTheme === "custom");
+  let colorsOverride: string[] | undefined;
+
+  if (Config.randomTheme === "custom") {
+    const theme = DB.getSnapshot()?.customThemes.find(
+      (ct) => ct._id === randomTheme
+    );
+    colorsOverride = theme?.colors;
+    randomTheme = "custom";
+  }
+
+  preview(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
     let name = randomTheme.replace(/_/g, " ");
@@ -364,9 +367,9 @@ function clearRandom(): void {
   if (randomTheme === null) return;
   randomTheme = null;
   if (Config.customTheme) {
-    apply("custom", true);
+    apply("custom");
   } else {
-    apply(Config.theme, false);
+    apply(Config.theme);
   }
 }
 
@@ -409,9 +412,9 @@ window
   ?.addEventListener?.("change", (event) => {
     if (!Config.autoSwitchTheme || Config.customTheme) return;
     if (event.matches) {
-      set(Config.themeDark, false);
+      set(Config.themeDark);
     } else {
-      set(Config.themeLight, false);
+      set(Config.themeLight);
     }
   });
 
@@ -420,31 +423,31 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     changeThemeList();
   }
   if (eventKey === "customTheme") {
-    eventValue ? set("custom", true) : set(Config.theme, false);
+    eventValue ? set("custom") : set(Config.theme);
   }
   if (eventKey === "customThemeColors") {
-    nosave ? preview("custom", true) : set("custom", true);
+    nosave ? preview("custom") : set("custom");
   }
   if (eventKey === "theme") {
     clearPreview(false);
-    set(eventValue as string, false);
+    set(eventValue as string);
   }
   if (eventKey === "setThemes") {
     clearPreview(false);
     if (eventValue) {
-      set("custom", true);
+      set("custom");
     } else {
       if (Config.autoSwitchTheme) {
         if (
           window.matchMedia &&
           window.matchMedia("(prefers-color-scheme: dark)").matches
         ) {
-          set(Config.themeDark, false);
+          set(Config.themeDark);
         } else {
-          set(Config.themeLight, false);
+          set(Config.themeLight);
         }
       } else {
-        set(Config.theme, false);
+        set(Config.theme);
       }
     }
   }
@@ -457,12 +460,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
       ) {
-        set(Config.themeDark, false);
+        set(Config.themeDark);
       } else {
-        set(Config.themeLight, false);
+        set(Config.themeLight);
       }
     } else {
-      set(Config.theme, false);
+      set(Config.theme);
     }
   }
   if (
@@ -474,7 +477,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     ) &&
     !nosave
   ) {
-    set(Config.themeLight, false);
+    set(Config.themeLight);
   }
   if (
     eventKey === "themeDark" &&
@@ -483,6 +486,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     window.matchMedia("(prefers-color-scheme: dark)").matches &&
     !nosave
   ) {
-    set(Config.themeDark, false);
+    set(Config.themeDark);
   }
 });

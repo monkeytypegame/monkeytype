@@ -483,6 +483,13 @@ export const userForgotPasswordEmail = rateLimit({
   handler: customHandler,
 });
 
+export const userRevokeAllTokens = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 10 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const userProfileGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 100 * REQUEST_MULTIPLIER,

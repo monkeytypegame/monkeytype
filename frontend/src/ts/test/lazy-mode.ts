@@ -44,13 +44,34 @@ export function replaceAccents(
   word: string,
   accentsOverride?: MonkeyTypes.Accents
 ): string {
-  let newWord = word;
-  if (!accents && !accentsOverride) return newWord;
-  let regex;
-  const list = accentsOverride || accents;
-  for (let i = 0; i < list.length; i++) {
-    regex = new RegExp(`[${list[i][0]}]`, "gi");
-    newWord = newWord.replace(regex, list[i][1]);
+  if (!word) return word;
+
+  const accentsArray = accentsOverride || accents;
+  const uppercased = word.toUpperCase();
+  const cases = Array(word.length);
+  const newWordArray: string[] = [];
+
+  for (let i = 0; i < word.length; i++) {
+    const char = word[i];
+    const uppercasedChar = uppercased[i];
+    cases[i] = char === uppercasedChar ? 1 : 0;
+    const accent = accentsArray.find((accent) =>
+      accent[0].includes(char.toLowerCase())
+    );
+    if (accent) {
+      newWordArray.push(accent[1]);
+    } else {
+      newWordArray.push(char);
+    }
   }
-  return newWord;
+
+  if (cases.includes(1)) {
+    for (let i = 0; i < cases.length; i++) {
+      if (cases[i] === 1) {
+        newWordArray[i] = newWordArray[i].toUpperCase();
+      }
+    }
+  }
+
+  return newWordArray.join("");
 }

@@ -598,12 +598,12 @@ export const accountActivity: ChartWithUpdateColors<
           ticks: {
             autoSkip: true,
             autoSkipPadding: 20,
-            stepSize: 10,
+            stepSize: 1,
           },
           display: true,
           title: {
             display: true,
-            text: "Time Typing",
+            text: "Time typing (minutes)",
           },
         },
         avgWpm: {
@@ -648,7 +648,7 @@ export const accountActivity: ChartWithUpdateColors<
               switch (tooltipItem.datasetIndex) {
                 case 0:
                   return `Time Typing: ${Misc.secondsToString(
-                    Math.round(resultData.y),
+                    Math.round(resultData.y * 60),
                     true,
                     true
                   )}\nTests Completed: ${resultData.amount}`;

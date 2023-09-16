@@ -384,4 +384,30 @@ $(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
   $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
 });
 
+$(`#fileInput`).on("change", () => {
+  const file = ($(`#fileInput`)[0] as HTMLInputElement).files?.[0];
+  if (file) {
+    if (file.type !== "text/plain") {
+      Notifications.add("File is not a text file", -1, {
+        duration: 5,
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+
+    reader.onload = (readerEvent): void => {
+      const content = readerEvent.target?.result as string;
+      $(`${popup} textarea`).val(content);
+      $(`#fileInput`).val("");
+    };
+    reader.onerror = (): void => {
+      Notifications.add("Failed to read file", -1, {
+        duration: 5,
+      });
+    };
+  }
+});
+
 Skeleton.save(skeletonId);
