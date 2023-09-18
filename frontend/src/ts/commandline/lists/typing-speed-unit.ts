@@ -1,4 +1,4 @@
-import { roundTo2 } from "../utils/misc";
+import { roundTo2 } from "../../utils/misc";
 
 class Unit implements MonkeyTypes.TypingSpeedUnitSettings {
   unit: MonkeyTypes.TypingSpeedUnit;
