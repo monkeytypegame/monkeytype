@@ -390,21 +390,14 @@ list["removeGoogleAuth"] = new SimplePopup(
         await reauthenticateWithCredential(user, credential);
       }
       Loader.show();
-      unlink(user, "google.com")
-        .then(() => {
-          Loader.hide();
-          Notifications.add("Google authentication removed", 1);
-          Settings.updateAuthSections();
-          return true;
-        })
-        .catch((error) => {
-          Loader.hide();
-          Notifications.add("Something went wrong: " + error.message, -1);
-          return false;
-        });
+      await unlink(user, "google.com");
+      Loader.hide();
+      Notifications.add("Google authentication removed", 1);
+      Settings.updateAuthSections();
       setTimeout(() => {
         window.location.reload();
       }, 3000);
+      return true;
     } catch (e) {
       const typedError = e as FirebaseError;
       if (typedError.code === "auth/wrong-password") {
