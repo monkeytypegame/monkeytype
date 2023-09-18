@@ -15,12 +15,20 @@ import { Auth } from "../firebase";
 import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
+  User,
+  linkWithCredential,
   reauthenticateWithCredential,
   reauthenticateWithPopup,
   unlink,
   updatePassword,
 } from "firebase/auth";
-import { isElementVisible, isLocalhost, isPasswordStrong } from "../utils/misc";
+import {
+  createErrorMessage,
+  isElementVisible,
+  isLocalhost,
+  isPasswordStrong,
+  reloadAfter,
+} from "../utils/misc";
 import * as CustomTextState from "../states/custom-text-name";
 import * as Skeleton from "./skeleton";
 import * as ThemeController from "../controllers/theme-controller";
@@ -38,6 +46,13 @@ interface Input {
 
 let activePopup: SimplePopup | null = null;
 
+interface ExecReturn {
+  status: 1 | 0 | -1;
+  message: string;
+  showNotification?: false;
+  notificationOptions?: MonkeyTypes.AddNotificationOptions;
+}
+
 const list: { [key: string]: SimplePopup } = {};
 class SimplePopup {
   parameters: string[];
@@ -49,7 +64,7 @@ class SimplePopup {
   inputs: Input[];
   text: string;
   buttonText: string;
-  execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<boolean>;
+  execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<ExecReturn>;
   beforeInitFn: (thisPopup: SimplePopup) => void;
   beforeShowFn: (thisPopup: SimplePopup) => void;
   canClose: boolean;
@@ -61,7 +76,10 @@ class SimplePopup {
     inputs: Input[] = [],
     text = "",
     buttonText = "Confirm",
-    execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<boolean>,
+    execFn: (
+      thisPopup: SimplePopup,
+      ...params: string[]
+    ) => Promise<ExecReturn>,
     beforeInitFn: (thisPopup: SimplePopup) => void,
     beforeShowFn: (thisPopup: SimplePopup) => void
   ) {
@@ -200,12 +218,25 @@ class SimplePopup {
         vals.push($(el).val() as string);
       }
     });
+
+    if (vals.some((v) => v === undefined || v === "")) {
+      Notifications.add("Please fill in all fields", 0);
+      return;
+    }
+
     this.disableInputs();
+    Loader.show();
     this.execFn(this, ...vals).then((res) => {
-      if (res) {
-        this.hide();
+      Loader.hide();
+      if (res.showNotification ?? true) {
+        Notifications.add(res.message, res.status, res.notificationOptions);
       }
-      this.enableInputs();
+      if (res.status === 1) {
+        this.hide();
+      } else {
+        this.enableInputs();
+        $($("#simplePopup").find("input")[0]).trigger("focus");
+      }
     });
   }
 
@@ -291,6 +322,83 @@ $("#popups").on("keyup", "#simplePopupWrapper input", (e) => {
   }
 });
 
+type ReauthMethod = "passwordOnly" | "passwordFirst";
+
+interface ReauthSuccess {
+  status: 1;
+  message: string;
+  user: User;
+}
+
+interface ReauthFailed {
+  status: -1 | 0;
+  message: string;
+}
+
+async function reauthenticate(
+  method: ReauthMethod,
+  password: string
+): Promise<ReauthSuccess | ReauthFailed> {
+  if (!Auth) {
+    return {
+      status: -1,
+      message: "Authentication is not initialized",
+    };
+  }
+  const user = Auth.currentUser;
+  if (!user) {
+    return {
+      status: -1,
+      message: "User is not signed in",
+    };
+  }
+
+  try {
+    const passwordAuthEnabled = user.providerData.some(
+      (p) => p?.providerId === "password"
+    );
+
+    if (!passwordAuthEnabled && method === "passwordOnly") {
+      return {
+        status: -1,
+        message:
+          "Failed to reauthenticate in password only mode: password authentication is not enabled on this account",
+      };
+    }
+
+    if (passwordAuthEnabled) {
+      const credential = EmailAuthProvider.credential(
+        user.email as string,
+        password
+      );
+      await reauthenticateWithCredential(user, credential);
+    } else if (method === "passwordFirst") {
+      await reauthenticateWithPopup(user, AccountController.gmailProvider);
+    }
+
+    return {
+      status: 1,
+      message: "Reauthenticated",
+      user,
+    };
+  } catch (e) {
+    const typedError = e as FirebaseError;
+    if (typedError.code === "auth/wrong-password") {
+      return {
+        status: 0,
+        message: "Incorrect password",
+      };
+    } else {
+      return {
+        status: -1,
+        message:
+          "Failed to reauthenticate: " +
+          (typedError?.message || JSON.stringify(e)),
+      };
+    }
+  }
+}
+
 list["updateEmail"] = new SimplePopup(
   "updateEmail",
   "text",
@@ -313,43 +421,39 @@ list["updateEmail"] = new SimplePopup(
   "",
   "Update",
   async (_thisPopup, password, email, emailConfirm) => {
-    try {
-      const user = Auth?.currentUser;
-      if (!Auth) return true;
-      if (!user) return true;
-      if (email !== emailConfirm) {
-        Notifications.add("Emails don't match", 0);
-        return false;
-      }
-      if (user.providerData.find((p) => p?.providerId === "password")) {
-        const credential = EmailAuthProvider.credential(
-          user.email as string,
-          password
-        );
-        await reauthenticateWithCredential(user, credential);
-      }
-
-      Loader.show();
-      const response = await Ape.users.updateEmail(email, user.email as string);
-      Loader.hide();
-
-      if (response.status !== 200) {
-        Notifications.add("Failed to update email: " + response.message, -1);
-        return false;
-      }
-
-      Notifications.add("Email updated", 1);
-      AccountController.signOut();
-    } catch (e) {
-      const typedError = e as FirebaseError;
-      if (typedError.code === "auth/wrong-password") {
-        Notifications.add("Incorrect password", -1);
-      } else {
-        Notifications.add("Something went wrong: " + e, -1);
-      }
-      return false;
+    if (email !== emailConfirm) {
+      return {
+        status: 0,
+        message: "Emails don't match",
+      };
     }
-    return true;
+
+    const reauth = await reauthenticate("passwordOnly", password);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
+    }
+
+    const response = await Ape.users.updateEmail(
+      email,
+      reauth.user.email as string
+    );
+
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to update email: " + response.message,
+      };
+    }
+
+    AccountController.signOut();
+
+    return {
+      status: 1,
+      message: "Email updated",
+    };
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -379,35 +483,31 @@ list["removeGoogleAuth"] = new SimplePopup(
   "",
   "Remove",
   async (_thisPopup, password) => {
-    try {
-      const user = Auth?.currentUser;
-      if (!user) return true;
-      if (user.providerData.find((p) => p?.providerId === "password")) {
-        const credential = EmailAuthProvider.credential(
-          user.email as string,
-          password
-        );
-        await reauthenticateWithCredential(user, credential);
-      }
-      Loader.show();
-      await unlink(user, "google.com");
-      Loader.hide();
-      Notifications.add("Google authentication removed", 1);
-      Settings.updateAuthSections();
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
-      return true;
-    } catch (e) {
-      const typedError = e as FirebaseError;
-      if (typedError.code === "auth/wrong-password") {
-        Notifications.add("Incorrect password", -1);
-      } else {
-        Notifications.add("Something went wrong: " + e, -1);
-      }
-      return false;
+    const reauth = await reauthenticate("passwordOnly", password);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
     }
-    return true;
+
+    try {
+      await unlink(reauth.user, "google.com");
+    } catch (e) {
+      const message = createErrorMessage(e, "Failed to unlink Google account");
+      return {
+        status: -1,
+        message,
+      };
+    }
+
+    Settings.updateAuthSections();
+
+    reloadAfter(3);
+    return {
+      status: 1,
+      message: "Google authentication removed",
+    };
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -442,67 +542,49 @@ list["updateName"] = new SimplePopup(
   "",
   "Update",
   async (_thisPopup, pass, newName) => {
-    try {
-      const user = Auth?.currentUser;
-      const snapshot = DB.getSnapshot();
-      if (!user || !snapshot) return true;
-
-      if (!pass || !newName) {
-        Notifications.add("Please fill in all fields", 0);
-        return false;
-      }
-      Loader.show();
-
-      if (user.providerData.find((p) => p?.providerId === "password")) {
-        const credential = EmailAuthProvider.credential(
-          user.email as string,
-          pass
-        );
-        await reauthenticateWithCredential(user, credential);
-      } else {
-        await reauthenticateWithPopup(user, AccountController.gmailProvider);
-      }
-
-      const checkNameResponse = await Ape.users.getNameAvailability(newName);
-      if (checkNameResponse.status !== 200) {
-        Loader.hide();
-        Notifications.add(
-          "Failed to check name: " + checkNameResponse.message,
-          -1
-        );
-        return false;
-      }
-
-      const updateNameResponse = await Ape.users.updateName(newName);
-      if (updateNameResponse.status !== 200) {
-        Loader.hide();
-        Notifications.add(
-          "Failed to update name: " + updateNameResponse.message,
-          -1
-        );
-        return false;
-      }
-
-      Notifications.add("Name updated", 1);
-      snapshot.name = newName;
-      $("#menu .textButton.account .text").text(newName);
-      if (snapshot.needsToChangeName) {
-        setTimeout(() => {
-          location.reload();
-        }, 1000);
-      }
-    } catch (e) {
-      const typedError = e as FirebaseError;
-      if (typedError.code === "auth/wrong-password") {
-        Notifications.add("Incorrect password", -1);
-      } else {
-        Notifications.add("Something went wrong: " + e, -1);
-      }
-      Loader.hide();
-      return false;
+    const reauth = await reauthenticate("passwordFirst", pass);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
     }
-    Loader.hide();
-    return true;
+
+    const checkNameResponse = await Ape.users.getNameAvailability(newName);
+
+    if (checkNameResponse.status === 409) {
+      return {
+        status: 0,
+        message: "Name not available",
+      };
+    } else if (checkNameResponse.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to check name: " + checkNameResponse.message,
+      };
+    }
+
+    const updateNameResponse = await Ape.users.updateName(newName);
+    if (updateNameResponse.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to update name: " + updateNameResponse.message,
+      };
+    }
+
+    const snapshot = DB.getSnapshot();
+    if (snapshot) {
+      snapshot.name = newName;
+      if (snapshot.needsToChangeName) {
+        reloadAfter(2);
+      }
+    }
+    $("#menu .textButton.account .text").text(newName);
+
+    return {
+      status: 1,
+      message: "Name updated",
+    };
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -546,46 +628,46 @@ list["updatePassword"] = new SimplePopup(
   "",
   "Update",
   async (_thisPopup, previousPass, newPass, newPassConfirm) => {
-    try {
-      const user = Auth?.currentUser;
-      if (!user) return true;
-      const credential = EmailAuthProvider.credential(
-        user.email as string,
-        previousPass
-      );
-      if (newPass !== newPassConfirm) {
-        Notifications.add("New passwords don't match", 0);
-        return false;
-      }
-      if (!isLocalhost() && !isPasswordStrong(newPass)) {
-        Notifications.add(
-          "New password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
-          0,
-          {
-            duration: 4,
-          }
-        );
-        return false;
-      }
-      Loader.show();
-      await reauthenticateWithCredential(user, credential);
-      await updatePassword(user, newPass);
-      Loader.hide();
-      Notifications.add("Password updated", 1);
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
-      return true;
-    } catch (e) {
-      const typedError = e as FirebaseError;
-      Loader.hide();
-      if (typedError.code === "auth/wrong-password") {
-        Notifications.add("Incorrect password", -1);
-      } else {
-        Notifications.add("Something went wrong: " + e, -1);
-      }
-      return false;
+    if (newPass !== newPassConfirm) {
+      Notifications.add("New passwords don't match", 0);
+      return {
+        status: 0,
+        message: "New passwords don't match",
+      };
     }
+
+    if (!isLocalhost() && !isPasswordStrong(newPass)) {
+      return {
+        status: 0,
+        message:
+          "New password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
+      };
+    }
+
+    const reauth = await reauthenticate("passwordOnly", previousPass);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
+    }
+
+    try {
+      await updatePassword(reauth.user, newPass);
+    } catch (e) {
+      const message = createErrorMessage(e, "Failed to update password");
+      return {
+        status: -1,
+        message,
+      };
+    }
+
+    reloadAfter(3);
+
+    return {
+      status: 1,
+      message: "Password updated",
+    };
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -631,17 +713,59 @@ list["addPasswordAuth"] = new SimplePopup(
   "Add",
   async (_thisPopup, email, emailConfirm, pass, passConfirm) => {
     if (email !== emailConfirm) {
-      Notifications.add("Emails don't match", 0);
-      return false;
+      return {
+        status: 0,
+        message: "Emails don't match",
+      };
     }
 
     if (pass !== passConfirm) {
-      Notifications.add("Passwords don't match", 0);
-      return false;
+      return {
+        status: 0,
+        message: "Passwords don't match",
+      };
     }
 
-    await AccountController.addPasswordAuth(email, pass);
-    return true;
+    const reauth = await reauthenticate("passwordFirst", pass);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
+    }
+
+    try {
+      const credential = EmailAuthProvider.credential(email, pass);
+      await linkWithCredential(reauth.user, credential);
+    } catch (e) {
+      const message = createErrorMessage(
+        e,
+        "Failed to add password authentication"
+      );
+      return {
+        status: -1,
+        message,
+      };
+    }
+
+    const response = await Ape.users.updateEmail(
+      email,
+      reauth.user.email as string
+    );
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message:
+          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
+          response.message,
+      };
+    }
+
+    Settings.updateAuthSections();
+    return {
+      status: 1,
+      message: "Password authentication added",
+    };
   },
   () => {
     //
@@ -664,66 +788,52 @@ list["deleteAccount"] = new SimplePopup(
   ],
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Delete",
-  async (_thisPopup, password: string) => {
-    try {
-      const user = Auth?.currentUser;
-      if (!user) return true;
-      if (user.providerData.find((p) => p?.providerId === "password")) {
-        const credential = EmailAuthProvider.credential(
-          user.email as string,
-          password
-        );
-        await reauthenticateWithCredential(user, credential);
-      } else {
-        await reauthenticateWithPopup(user, AccountController.gmailProvider);
-      }
-      Loader.show();
-      Notifications.add("Deleting stats...", 0);
-      const usersResponse = await Ape.users.delete();
-      Loader.hide();
-
-      if (usersResponse.status !== 200) {
-        Notifications.add(
-          "Failed to delete user stats: " + usersResponse.message,
-          -1
-        );
-        return false;
-      }
-
-      Loader.show();
-      Notifications.add("Deleting results...", 0);
-      const resultsResponse = await Ape.results.deleteAll();
-      Loader.hide();
-
-      if (resultsResponse.status !== 200) {
-        Notifications.add(
-          "Failed to delete user results: " + resultsResponse.message,
-          -1
-        );
-        return false;
-      }
-
-      Notifications.add("Deleting login information...", 0);
-      await Auth?.currentUser?.delete();
-
-      Notifications.add("Goodbye", 1, {
-        duration: 5,
-      });
-
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
-      return true;
-    } catch (e) {
-      const typedError = e as FirebaseError;
-      Loader.hide();
-      if (typedError.code === "auth/wrong-password") {
-        Notifications.add("Incorrect password", -1);
-      } else {
-        Notifications.add("Something went wrong: " + e, -1);
-      }
-      return false;
+  async (_thisPopup, password) => {
+    const reauth = await reauthenticate("passwordFirst", password);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
     }
+
+    Notifications.add("Deleting stats...", 0);
+    const usersResponse = await Ape.users.delete();
+
+    if (usersResponse.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to delete user stats: " + usersResponse.message,
+      };
+    }
+
+    Notifications.add("Deleting results...", 0);
+    const resultsResponse = await Ape.results.deleteAll();
+
+    if (resultsResponse.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to delete results: " + resultsResponse.message,
+      };
+    }
+
+    Notifications.add("Deleting login information...", 0);
+    try {
+      await reauth.user.delete();
+    } catch (e) {
+      const message = createErrorMessage(e, "Failed to delete auth user");
+      return {
+        status: -1,
+        message,
+      };
+    }
+
+    reloadAfter(3);
+
+    return {
+      status: 1,
+      message: "Account deleted, goodbye",
+    };
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -751,49 +861,33 @@ list["resetAccount"] = new SimplePopup(
   ],
   "This is the last time you can change your mind. After pressing the button everything is gone.",
   "Reset",
-  async (_thisPopup, password: string) => {
-    try {
-      const user = Auth?.currentUser;
-      if (!user) return true;
-      if (user.providerData.find((p) => p?.providerId === "password")) {
-        const credential = EmailAuthProvider.credential(
-          user.email as string,
-          password
-        );
-        await reauthenticateWithCredential(user, credential);
-      } else {
-        await reauthenticateWithPopup(user, AccountController.gmailProvider);
-      }
-      Notifications.add("Resetting settings...", 0);
-      UpdateConfig.reset();
-      Loader.show();
-      Notifications.add("Resetting account...", 0);
-      const response = await Ape.users.reset();
-
-      if (response.status !== 200) {
-        Loader.hide();
-        Notifications.add(
-          "There was an error resetting your account. Please try again.",
-          -1
-        );
-        return false;
-      }
-      Loader.hide();
-      Notifications.add("Reset complete", 1);
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
-      return true;
-    } catch (e) {
-      const typedError = e as FirebaseError;
-      Loader.hide();
-      if (typedError.code === "auth/wrong-password") {
-        Notifications.add("Incorrect password", -1);
-      } else {
-        Notifications.add("Something went wrong: " + e, -1);
-      }
-      return false;
+  async (_thisPopup, password) => {
+    const reauth = await reauthenticate("passwordFirst", password);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
     }
+
+    Notifications.add("Resetting settings...", 0);
+    UpdateConfig.reset();
+
+    Notifications.add("Resetting account...", 0);
+    const response = await Ape.users.reset();
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to reset account: " + response.message,
+      };
+    }
+
+    reloadAfter(3);
+
+    return {
+      status: 1,
+      message: "Account reset",
+    };
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -821,47 +915,29 @@ list["optOutOfLeaderboards"] = new SimplePopup(
   ],
   "Are you sure you want to opt out of leaderboards?",
   "Opt out",
-  async (_thisPopup, password: string) => {
-    try {
-      const user = Auth?.currentUser;
-      if (!user) return true;
-      if (user.providerData.find((p) => p?.providerId === "password")) {
-        const credential = EmailAuthProvider.credential(
-          user.email as string,
-          password
-        );
-        await reauthenticateWithCredential(user, credential);
-      } else {
-        await reauthenticateWithPopup(user, AccountController.gmailProvider);
-      }
-
-      Loader.show();
-      const response = await Ape.users.optOutOfLeaderboards();
-
-      if (response.status !== 200) {
-        Loader.hide();
-        Notifications.add(
-          `Failed to opt out of leaderboards: ${response.message}`,
-          -1
-        );
-        return false;
-      }
-      Loader.hide();
-      Notifications.add("Leaderboard opt out successful", 1);
-      setTimeout(() => {
-        location.reload();
-      }, 3000);
-      return true;
-    } catch (e) {
-      const typedError = e as FirebaseError;
-      Loader.hide();
-      if (typedError.code === "auth/wrong-password") {
-        Notifications.add("Incorrect password", -1);
-      } else {
-        Notifications.add("Something went wrong: " + e, -1);
-      }
-      return false;
+  async (_thisPopup, password) => {
+    const reauth = await reauthenticate("passwordFirst", password);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
     }
+
+    const response = await Ape.users.optOutOfLeaderboards();
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to opt out: " + response.message,
+      };
+    }
+
+    reloadAfter(3);
+
+    return {
+      status: 1,
+      message: "Leaderboards opt out successful",
+    };
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -885,21 +961,22 @@ list["clearTagPb"] = new SimplePopup(
   "Clear",
   async (thisPopup) => {
     const tagId = thisPopup.parameters[0];
-    Loader.show();
     const response = await Ape.users.deleteTagPersonalBest(tagId);
-    Loader.hide();
-
     if (response.status !== 200) {
-      Notifications.add("Failed to delete tag's PB: " + response.message);
-      return false;
+      return {
+        status: -1,
+        message: "Failed to clear tag PB: " + response.message,
+      };
     }
 
     if (response.data.resultCode === 1) {
       const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
 
       if (tag === undefined) {
-        Notifications.add("Something went wrong: tag not found", -1);
-        return false;
+        return {
+          status: -1,
+          message: "Tag not found",
+        };
       }
       tag.personalBests = {
         time: {},
@@ -911,11 +988,15 @@ list["clearTagPb"] = new SimplePopup(
       $(
         `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
       ).attr("aria-label", "No PB found");
-      Notifications.add("Tag PB cleared.", 0);
-      return true;
+      return {
+        status: 1,
+        message: "Tag PB cleared",
+      };
     } else {
-      Notifications.add("Something went wrong: " + response.message, -1);
-      return false;
+      return {
+        status: -1,
+        message: "Failed to clear tag PB: " + response.data.message,
+      };
     }
   },
   (thisPopup) => {
@@ -933,13 +1014,13 @@ list["applyCustomFont"] = new SimplePopup(
   [{ placeholder: "Font name", initVal: "" }],
   "Make sure you have the font installed on your computer before applying",
   "Apply",
-  async (_thisPopup, fontName: string) => {
-    if (fontName === "") {
-      Notifications.add("Please enter a font name", 0);
-      return false;
-    }
+  async (_thisPopup, fontName) => {
     Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
-    return true;
+
+    return {
+      status: 1,
+      message: "Font applied",
+    };
   },
   () => {
     //
@@ -962,46 +1043,43 @@ list["resetPersonalBests"] = new SimplePopup(
   ],
   "",
   "Reset",
-  async (_thisPopup, password: string) => {
-    try {
-      const user = Auth?.currentUser;
-      const snapshot = DB.getSnapshot();
-      if (!user || !snapshot) return true;
-      if (user.providerData.find((p) => p?.providerId === "password")) {
-        const credential = EmailAuthProvider.credential(
-          user.email as string,
-          password
-        );
-        await reauthenticateWithCredential(user, credential);
-      } else {
-        await reauthenticateWithPopup(user, AccountController.gmailProvider);
-      }
-      Loader.show();
-      const response = await Ape.users.deletePersonalBests();
-      Loader.hide();
-
-      if (response.status !== 200) {
-        Notifications.add(
-          "Failed to reset personal bests: " + response.message,
-          -1
-        );
-        return false;
-      }
-
-      Notifications.add("Personal bests have been reset", 1);
-      snapshot.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
+  async (_thisPopup, password) => {
+    const reauth = await reauthenticate("passwordFirst", password);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
       };
-      return true;
-    } catch (e) {
-      Loader.hide();
-      Notifications.add(e as string, -1);
-      return false;
     }
+
+    const response = await Ape.users.deletePersonalBests();
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to reset personal bests: " + response.message,
+      };
+    }
+
+    const snapshot = DB.getSnapshot();
+    if (!snapshot) {
+      return {
+        status: -1,
+        message: "Failed to reset personal bests: no snapshot",
+      };
+    }
+
+    snapshot.personalBests = {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    };
+
+    return {
+      status: 1,
+      message: "Personal bests reset",
+    };
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -1025,10 +1103,10 @@ list["resetSettings"] = new SimplePopup(
   "Reset",
   async () => {
     UpdateConfig.reset();
-    return true;
-    // setTimeout(() => {
-    //   location.reload();
-    // }, 3000);
+    return {
+      status: 1,
+      message: "Settings reset",
+    };
   },
   () => {
     //
@@ -1052,47 +1130,28 @@ list["revokeAllTokens"] = new SimplePopup(
   "Are you sure you want to this? This will log you out of all devices.",
   "revoke all",
   async (_thisPopup, password) => {
-    try {
-      const user = Auth?.currentUser;
-      const snapshot = DB.getSnapshot();
-      if (!user || !snapshot) return true;
-
-      if (user.providerData.find((p) => p?.providerId === "password")) {
-        const credential = EmailAuthProvider.credential(
-          user.email as string,
-          password
-        );
-        await reauthenticateWithCredential(user, credential);
-      } else {
-        await reauthenticateWithPopup(user, AccountController.gmailProvider);
-      }
-      Loader.show();
-      const response = await Ape.users.revokeAllTokens();
-      Loader.hide();
-
-      if (response.status !== 200) {
-        Notifications.add(
-          "Failed to revoke all tokens: " + response.message,
-          -1
-        );
-        return false;
-      }
-
-      Notifications.add("All tokens revoked", 1);
-      setTimeout(() => {
-        location.reload();
-      }, 1000);
-      return true;
-    } catch (e) {
-      Loader.hide();
-      const typedError = e as FirebaseError;
-      if (typedError.code === "auth/wrong-password") {
-        Notifications.add("Incorrect password", -1);
-      } else {
-        Notifications.add("Something went wrong: " + e, -1);
-      }
-      return false;
+    const reauth = await reauthenticate("passwordFirst", password);
+    if (reauth.status !== 1) {
+      return {
+        status: reauth.status,
+        message: reauth.message,
+      };
     }
+
+    const response = await Ape.users.revokeAllTokens();
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to revoke tokens: " + response.message,
+      };
+    }
+
+    reloadAfter(3);
+
+    return {
+      status: 1,
+      message: "Tokens revoked",
+    };
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -1117,23 +1176,31 @@ list["unlinkDiscord"] = new SimplePopup(
   "Unlink",
   async () => {
     const snap = DB.getSnapshot();
-    if (!snap) return true;
-    Loader.show();
-    const response = await Ape.users.unlinkDiscord();
-    Loader.hide();
-
-    if (response.status !== 200) {
-      Notifications.add("Failed to unlink Discord: " + response.message, -1);
-      return false;
+    if (!snap) {
+      return {
+        status: -1,
+        message: "Failed to unlink Discord: no snapshot",
+      };
     }
 
-    Notifications.add("Accounts unlinked", 1);
+    const response = await Ape.users.unlinkDiscord();
+    if (response.status !== 200) {
+      return {
+        status: -1,
+        message: "Failed to unlink Discord: " + response.message,
+      };
+    }
+
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
     AccountButton.update();
     DB.setSnapshot(snap);
     Settings.updateDiscordSection();
-    return true;
+
+    return {
+      status: 1,
+      message: "Discord unlinked",
+    };
   },
   () => {
     //
@@ -1156,18 +1223,21 @@ list["generateApeKey"] = new SimplePopup(
   "",
   "Generate",
   async (_thisPopup, name) => {
-    Loader.show();
     const response = await Ape.apeKeys.generate(name, false);
-    Loader.hide();
-
     if (response.status !== 200) {
-      Notifications.add("Failed to generate key: " + response.message, -1);
-      return false;
-    } else {
-      const data = response.data;
-      list["viewApeKey"].show([data.apeKey]);
-      return true;
+      return {
+        status: -1,
+        message: "Failed to generate key: " + response.message,
+      };
     }
+
+    const data = response.data;
+    list["viewApeKey"].show([data.apeKey]);
+
+    return {
+      status: 1,
+      message: "Key generated",
+    };
   },
   () => {
     //
@@ -1193,7 +1263,10 @@ list["viewApeKey"] = new SimplePopup(
   "Close",
   async (_thisPopup) => {
     ApeKeysPopup.show();
-    return true;
+    return {
+      status: 1,
+      message: "Key generated",
+    };
   },
   (_thisPopup) => {
     _thisPopup.inputs[0].initVal = _thisPopup.parameters[0];
@@ -1217,18 +1290,20 @@ list["deleteApeKey"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    Loader.show();
     const response = await Ape.apeKeys.delete(_thisPopup.parameters[0]);
-    Loader.hide();
-
     if (response.status !== 200) {
-      Notifications.add("Failed to delete key: " + response.message, -1);
-      return false;
+      return {
+        status: -1,
+        message: "Failed to delete key: " + response.message,
+      };
     }
 
-    Notifications.add("Key deleted", 1);
     ApeKeysPopup.show();
-    return true;
+
+    return {
+      status: 1,
+      message: "Key deleted",
+    };
   },
   (_thisPopup) => {
     //
@@ -1251,20 +1326,22 @@ list["editApeKey"] = new SimplePopup(
   "",
   "Edit",
   async (_thisPopup, input) => {
-    Loader.show();
     const response = await Ape.apeKeys.update(_thisPopup.parameters[0], {
       name: input,
     });
-    Loader.hide();
-
     if (response.status !== 200) {
-      Notifications.add("Failed to update key: " + response.message, -1);
-      return false;
+      return {
+        status: -1,
+        message: "Failed to update key: " + response.message,
+      };
     }
 
-    Notifications.add("Key updated", 1);
     ApeKeysPopup.show();
-    return true;
+
+    return {
+      status: 1,
+      message: "Key updated",
+    };
   },
   (_thisPopup) => {
     //
@@ -1283,10 +1360,13 @@ list["deleteCustomText"] = new SimplePopup(
   "Delete",
   async (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0]);
-    Notifications.add("Custom text deleted", 1);
     CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show(true);
-    return true;
+
+    return {
+      status: 1,
+      message: "Custom text deleted",
+    };
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
@@ -1305,10 +1385,13 @@ list["deleteCustomTextLong"] = new SimplePopup(
   "Delete",
   async (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0], true);
-    Notifications.add("Custom text deleted", 1);
     CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show(true);
-    return true;
+
+    return {
+      status: 1,
+      message: "Custom text deleted",
+    };
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
@@ -1327,12 +1410,14 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   "Reset",
   async (_thisPopup) => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
-    Notifications.add("Custom text progress reset", 1);
     SavedTextsPopup.show(true);
     CustomText.setPopupTextareaState(
       CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
     );
-    return true;
+    return {
+      status: 1,
+      message: "Custom text progress reset",
+    };
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
@@ -1362,14 +1447,21 @@ list["updateCustomTheme"] = new SimplePopup(
   "Update",
   async (_thisPopup, name, updateColors) => {
     const snapshot = DB.getSnapshot();
-    if (!snapshot) return true;
+    if (!snapshot) {
+      return {
+        status: -1,
+        message: "Failed to update custom theme: no snapshot",
+      };
+    }
 
     const customTheme = snapshot.customThemes.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (customTheme === undefined) {
-      Notifications.add("Custom theme does not exist", -1);
-      return false;
+      return {
+        status: -1,
+        message: "Failed to update custom theme: theme not found",
+      };
     }
 
     let newColors: string[] = [];
@@ -1389,14 +1481,20 @@ list["updateCustomTheme"] = new SimplePopup(
       name: name.replaceAll(" ", "_"),
       colors: newColors,
     };
-    Loader.show();
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
-    Loader.hide();
-    if (!validation) return true;
+    if (!validation) {
+      return {
+        status: -1,
+        message: "Failed to update custom theme",
+      };
+    }
     UpdateConfig.setCustomThemeColors(newColors);
-    Notifications.add("Custom theme updated", 1);
     ThemePicker.refreshButtons();
-    return true;
+
+    return {
+      status: 1,
+      message: "Custom theme updated",
+    };
   },
   (_thisPopup) => {
     const snapshot = DB.getSnapshot();
@@ -1421,12 +1519,13 @@ list["deleteCustomTheme"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    Loader.show();
     await DB.deleteCustomTheme(_thisPopup.parameters[0]);
-    Loader.hide();
-    Notifications.add("Custom theme deleted", 1);
     ThemePicker.refreshButtons();
-    return true;
+
+    return {
+      status: 1,
+      message: "Custom theme deleted",
+    };
   },
   (_thisPopup) => {
     //
@@ -1450,20 +1549,18 @@ list["forgotPassword"] = new SimplePopup(
   "",
   "Send",
   async (_thisPopup, email) => {
-    Loader.show();
     const result = await Ape.users.forgotPasswordEmail(email.trim());
     if (result.status !== 200) {
-      Loader.hide();
-      Notifications.add(
-        "Failed to request password reset email: " + result.message,
-        5000
-      );
-      return false;
-    } else {
-      Loader.hide();
-      Notifications.add("Password reset email sent", 1);
-      return true;
+      return {
+        status: -1,
+        message: "Failed to send password reset email: " + result.message,
+      };
     }
+
+    return {
+      status: 1,
+      message: "Password reset email sent",
+    };
   },
   (thisPopup) => {
     const inputValue = $(

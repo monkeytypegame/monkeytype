@@ -19,7 +19,6 @@ import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
 import {
-  EmailAuthProvider,
   GoogleAuthProvider,
   browserSessionPersistence,
   browserLocalPersistence,
@@ -29,8 +28,6 @@ import {
   setPersistence,
   updateProfile,
   linkWithPopup,
-  linkWithCredential,
-  reauthenticateWithPopup,
   getAdditionalUserInfo,
   User as UserType,
   Unsubscribe,
@@ -422,55 +419,6 @@ async function addGoogleAuth(): Promise<void> {
       Loader.hide();
       Notifications.add(
         "Failed to add Google authentication: " + error.message,
-        -1
-      );
-    });
-}
-
-export async function addPasswordAuth(
-  email: string,
-  password: string
-): Promise<void> {
-  if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
-    return;
-  }
-  Loader.show();
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "google.com")
-  ) {
-    try {
-      await reauthenticateWithPopup(user, gmailProvider);
-    } catch (e) {
-      Loader.hide();
-      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
-      return Notifications.add(message, -1);
-    }
-  }
-
-  const credential = EmailAuthProvider.credential(email, password);
-  linkWithCredential(user, credential)
-    .then(async function () {
-      Settings.updateAuthSections();
-      const response = await Ape.users.updateEmail(email, user.email as string);
-      Loader.hide();
-      if (response.status !== 200) {
-        return Notifications.add(
-          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
-            response.message,
-          -1
-        );
-      }
-      Notifications.add("Password authentication added", 1);
-    })
-    .catch(function (error) {
-      Loader.hide();
-      Notifications.add(
-        "Failed to add password authentication: " + error.message,
         -1
       );
     });
