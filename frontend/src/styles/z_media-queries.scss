@@ -462,6 +462,14 @@
 
 //700px
 @media only screen and (max-width: 43.75rem) {
+  #wordFilterPopupWrapper #wordFilterPopup {
+    .divider {
+      width: 100%;
+      height: 0.25rem;
+    }
+    grid-template-areas: "top" "right" "divider" "left" "bottom";
+    grid-template-columns: 1fr;
+  }
   .pageAccount .presetFilterButtons .buttons {
     grid-template-columns: 1fr;
   }

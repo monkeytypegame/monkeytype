@@ -223,6 +223,7 @@
 }
 
 #wordFilterPopupWrapper {
+  padding: 2rem;
   #wordFilterPopup {
     color: var(--sub-color);
     background: var(--bg-color);
@@ -232,7 +233,9 @@
     grid-template-areas: "top top top" "left divider right" "bottom bottom bottom";
     grid-template-columns: 1fr auto 1fr;
     gap: 2rem;
-    width: 800px;
+    max-width: 800px;
+    overflow-y: scroll;
+    max-height: 100%;
 
     .top {
       grid-area: top;

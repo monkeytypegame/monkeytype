@@ -184,7 +184,7 @@ export async function refresh(
         }
 
         if (isMatrix) {
-          if (row !== "row5") {
+          if (row !== "row5" && lts.matrixShowRightColumn) {
             rowElement += `<div class="keymapKey"></div>`;
           } else {
             rowElement += `<div></div>`;

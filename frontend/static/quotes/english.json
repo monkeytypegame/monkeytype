@@ -12392,10 +12392,10 @@
       "length": 237
     },
     {
-      "text": "This was the first salmon I had seen and perfectly convinced me that we were on the waters of the Pacific Ocean.",
+      "text": "This was the first salmon I had seen and it perfectly convinced me that we were on the waters of the Pacific Ocean.",
       "source": "The Journals of Lewis and Clark",
       "id": 2164,
-      "length": 112
+      "length": 115
     },
     {
       "text": "Little bird, tell me, where do you go to get those colors of blue and gold, where do you find such beautiful clothes? Oh, little bird, tell me, where do you go? Are you up there in the silver clouds, or hopping here and there down on the ground? Are you gazing at the stars as you weave your yarn? Little bird, how do you do dressed so fine in gold and blue? Those feathers look delightful on you, I can't tell if they're old or new.",
@@ -13640,10 +13640,10 @@
       "length": 83
     },
     {
-      "text": "Okay everybody, gather round. I want you to watch me pay these bills.",
+      "text": "Okay everybody, gather 'round. I want you to watch me pay these bills.",
       "source": "Married... with Children",
       "id": 2388,
-      "length": 69
+      "length": 70
     },
     {
       "text": "I'm pretty sure there's a lot more to life than being really, really good-looking. And I plan on finding out what that is.",
@@ -29937,7 +29937,7 @@
     },
     {
       "text": "All warfare is based on deception. Hence, when we are able to attack, we must seem unable; when using our forces, we must appear inactive; when we are near, we must make the enemy believe we are far away; when far away, we must make him believe we are near.",
-      "source": "Sunt Tzu, The Art Of War",
+      "source": "Sun Tzu, The Art Of War",
       "length": 257,
       "id": 5315
     },
@@ -33179,7 +33179,7 @@
       "id": 6067
     },
     {
-      "text": "Today, I consider myself the luckiest man on the face of the earth.",
+      "text": "Today, I consider myself the luckiest man on the face of the Earth.",
       "source": "The Pride of the Yankees",
       "length": 67,
       "id": 6068
@@ -33276,7 +33276,7 @@
       "id": 6085
     },
     {
-      "text": "I took a deep breath. I .. I want to write like you, I began nervously, twisting the napkin in my hands as I decided to answer him as truthfully as I could. But I don't know what to write. I am inspired by the world around me, but I am still in search of a story that can change the lives of people. My words sounded hesitant to my ears and I wished I hadn't spoken them.",
+      "text": "I took a deep breath. I... I want to write like you, I began nervously, twisting the napkin in my hands as I decided to answer him as truthfully as I could. But I don't know what to write. I am inspired by the world around me, but I am still in search of a story that can change the lives of people. My words sounded hesitant to my ears and I wished I hadn't spoken them.",
       "source": "Everyone has a story - Savi Sharma",
       "length": 371,
       "id": 6087
@@ -33316,12 +33316,6 @@
       "source": "Tirukkurral",
       "length": 118,
       "id": 6093
-    },
-    {
-      "text": "You are willing to die, you coward, but not to live.",
-      "source": "Steppenwolf",
-      "length": 52,
-      "id": 6094
     },
     {
       "text": "They let me pick. Did I ever tell you that? Choose whichever Spartan I wanted. You know me. I did my research, watched as you became the soldier we needed you to be. Like the others, you were strong and swift and brave. A natural leader. But you had something they didn't. Something no one saw but me. Can you guess? Luck... Was I wrong?",
