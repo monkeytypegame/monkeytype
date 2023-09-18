@@ -1073,7 +1073,10 @@ async function update(): Promise<void> {
       await fillContent();
     } catch (e) {
       console.error(e);
-      Notifications.add(`Something went wrong: ${e}`, -1);
+      Notifications.add(
+        `Something went wrong when updating the account page: ${e}`,
+        -1
+      );
     }
   }
 }
