@@ -15,6 +15,7 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
+import { reloadAfter } from "./utils/misc";
 
 export let localStorageConfig: MonkeyTypes.Config;
 
@@ -634,9 +635,7 @@ export function setAds(val: MonkeyTypes.Ads, nosave?: boolean): boolean {
   config.ads = val;
   saveToLocalStorage("ads", nosave);
   if (!nosave) {
-    setTimeout(() => {
-      location.reload();
-    }, 3000);
+    reloadAfter(3);
     Notifications.add("Ad settings changed. Refreshing...", 0);
   }
   ConfigEvent.dispatch("ads", config.ads);
