@@ -49,10 +49,7 @@ class SimplePopup {
   inputs: Input[];
   text: string;
   buttonText: string;
-  execFn: (
-    thisPopup: SimplePopup,
-    ...params: string[]
-  ) => boolean | Promise<boolean>;
+  execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<boolean>;
   beforeInitFn: (thisPopup: SimplePopup) => void;
   beforeShowFn: (thisPopup: SimplePopup) => void;
   canClose: boolean;
@@ -64,18 +61,14 @@ class SimplePopup {
     inputs: Input[] = [],
     text = "",
     buttonText = "Confirm",
-    execFn: (
-      thisPopup: SimplePopup,
-      ...params: string[]
-    ) => boolean | Promise<boolean>,
+    execFn: (thisPopup: SimplePopup, ...params: string[]) => Promise<boolean>,
     beforeInitFn: (thisPopup: SimplePopup) => void,
     beforeShowFn: (thisPopup: SimplePopup) => void
   ) {
     this.parameters = [];
     this.id = id;
     this.type = type;
-    this.execFn = (thisPopup, ...vals): Promise<boolean> | boolean =>
-      execFn(thisPopup, ...vals);
+    this.execFn = execFn;
     this.title = title;
     this.inputs = inputs;
     this.text = text;
@@ -208,15 +201,12 @@ class SimplePopup {
       }
     });
     this.disableInputs();
-    const res = this.execFn(this, ...vals);
-    if (res instanceof Promise) {
-      res.then((result) => {
-        this.enableInputs();
-        if (result) this.hide();
-      });
-    } else if (res) {
-      this.hide();
-    }
+    this.execFn(this, ...vals).then((res) => {
+      if (res) {
+        this.hide();
+      }
+      this.enableInputs();
+    });
   }
 
   disableInputs(): void {
@@ -950,7 +940,7 @@ list["applyCustomFont"] = new SimplePopup(
   [{ placeholder: "Font name", initVal: "" }],
   "Make sure you have the font installed on your computer before applying",
   "Apply",
-  (_thisPopup, fontName: string) => {
+  async (_thisPopup, fontName: string) => {
     if (fontName === "") {
       Notifications.add("Please enter a font name", 0);
       return false;
@@ -1040,7 +1030,7 @@ list["resetSettings"] = new SimplePopup(
   [],
   "Are you sure you want to reset all your settings?",
   "Reset",
-  () => {
+  async () => {
     UpdateConfig.reset();
     return true;
     // setTimeout(() => {
@@ -1208,7 +1198,7 @@ list["viewApeKey"] = new SimplePopup(
   ],
   "This is your new Ape Key. Please keep it safe. You will only see it once!",
   "Close",
-  (_thisPopup) => {
+  async (_thisPopup) => {
     ApeKeysPopup.show();
     return true;
   },
@@ -1298,7 +1288,7 @@ list["deleteCustomText"] = new SimplePopup(
   [],
   "Are you sure?",
   "Delete",
-  (_thisPopup) => {
+  async (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0]);
     Notifications.add("Custom text deleted", 1);
     CustomTextState.setCustomTextName("", undefined);
@@ -1320,7 +1310,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   [],
   "Are you sure?",
   "Delete",
-  (_thisPopup) => {
+  async (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0], true);
     Notifications.add("Custom text deleted", 1);
     CustomTextState.setCustomTextName("", undefined);
@@ -1342,7 +1332,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   [],
   "Are you sure?",
   "Reset",
-  (_thisPopup) => {
+  async (_thisPopup) => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
     Notifications.add("Custom text progress reset", 1);
     SavedTextsPopup.show(true);
