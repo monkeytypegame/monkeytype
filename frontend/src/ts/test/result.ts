@@ -200,6 +200,7 @@ export async function updateGraphPBLine(): Promise<void> {
   });
   const lpbRange = typingSpeedUnit.fromWpm(20);
   if (
+    parseFloat(chartlpb) > maxChartVal &&
     maxChartVal >= parseFloat(chartlpb) - lpbRange &&
     maxChartVal <= parseFloat(chartlpb) + lpbRange
   ) {
