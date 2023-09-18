@@ -49,7 +49,10 @@ class SimplePopup {
   inputs: Input[];
   text: string;
   buttonText: string;
-  execFn: (thisPopup: SimplePopup, ...params: string[]) => void | Promise<void>;
+  execFn: (
+    thisPopup: SimplePopup,
+    ...params: string[]
+  ) => boolean | Promise<boolean>;
   beforeInitFn: (thisPopup: SimplePopup) => void;
   beforeShowFn: (thisPopup: SimplePopup) => void;
   canClose: boolean;
@@ -64,14 +67,14 @@ class SimplePopup {
     execFn: (
       thisPopup: SimplePopup,
       ...params: string[]
-    ) => void | Promise<void>,
+    ) => boolean | Promise<boolean>,
     beforeInitFn: (thisPopup: SimplePopup) => void,
     beforeShowFn: (thisPopup: SimplePopup) => void
   ) {
     this.parameters = [];
     this.id = id;
     this.type = type;
-    this.execFn = (thisPopup, ...vals): Promise<void> | void =>
+    this.execFn = (thisPopup, ...vals): Promise<boolean> | boolean =>
       execFn(thisPopup, ...vals);
     this.title = title;
     this.inputs = inputs;
@@ -204,8 +207,30 @@ class SimplePopup {
         vals.push($(el).val() as string);
       }
     });
-    this.execFn(this, ...vals);
-    this.hide();
+    this.disableInputs();
+    const res = this.execFn(this, ...vals);
+    if (res instanceof Promise) {
+      res.then((result) => {
+        this.enableInputs();
+        if (result) this.hide();
+      });
+    } else if (res) {
+      this.hide();
+    }
+  }
+
+  disableInputs(): void {
+    $("#simplePopup input").prop("disabled", true);
+    $("#simplePopup textarea").prop("disabled", true);
+    $("#simplePopup .checkbox").addClass("disabled");
+    $("#simplePopup .button").addClass("disabled");
+  }
+
+  enableInputs(): void {
+    $("#simplePopup input").prop("disabled", false);
+    $("#simplePopup textarea").prop("disabled", false);
+    $("#simplePopup .checkbox").removeClass("disabled");
+    $("#simplePopup .button").removeClass("disabled");
   }
 
   show(parameters: string[] = [], noAnimation = false): void {
@@ -300,11 +325,11 @@ list["updateEmail"] = new SimplePopup(
   async (_thisPopup, password, email, emailConfirm) => {
     try {
       const user = Auth?.currentUser;
-      if (!Auth) return;
-      if (!user) return;
+      if (!Auth) return true;
+      if (!user) return true;
       if (email !== emailConfirm) {
         Notifications.add("Emails don't match", 0);
-        return;
+        return false;
       }
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
@@ -319,10 +344,8 @@ list["updateEmail"] = new SimplePopup(
       Loader.hide();
 
       if (response.status !== 200) {
-        return Notifications.add(
-          "Failed to update email: " + response.message,
-          -1
-        );
+        Notifications.add("Failed to update email: " + response.message, -1);
+        return false;
       }
 
       Notifications.add("Email updated", 1);
@@ -334,7 +357,9 @@ list["updateEmail"] = new SimplePopup(
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
+      return false;
     }
+    return true;
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -366,7 +391,7 @@ list["removeGoogleAuth"] = new SimplePopup(
   async (_thisPopup, password) => {
     try {
       const user = Auth?.currentUser;
-      if (!user) return;
+      if (!user) return true;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -380,10 +405,12 @@ list["removeGoogleAuth"] = new SimplePopup(
           Loader.hide();
           Notifications.add("Google authentication removed", 1);
           Settings.updateAuthSections();
+          return true;
         })
         .catch((error) => {
           Loader.hide();
           Notifications.add("Something went wrong: " + error.message, -1);
+          return false;
         });
       setTimeout(() => {
         window.location.reload();
@@ -395,7 +422,9 @@ list["removeGoogleAuth"] = new SimplePopup(
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
+      return false;
     }
+    return true;
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -439,6 +468,7 @@ list["updateName"] = new SimplePopup(
         Notifications.add("Please fill in all fields", 0);
         return false;
       }
+      Loader.show();
 
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
@@ -449,24 +479,25 @@ list["updateName"] = new SimplePopup(
       } else {
         await reauthenticateWithPopup(user, AccountController.gmailProvider);
       }
-      Loader.show();
 
       const checkNameResponse = await Ape.users.getNameAvailability(newName);
       if (checkNameResponse.status !== 200) {
         Loader.hide();
-        return Notifications.add(
+        Notifications.add(
           "Failed to check name: " + checkNameResponse.message,
           -1
         );
+        return false;
       }
 
       const updateNameResponse = await Ape.users.updateName(newName);
       if (updateNameResponse.status !== 200) {
         Loader.hide();
-        return Notifications.add(
+        Notifications.add(
           "Failed to update name: " + updateNameResponse.message,
           -1
         );
+        return false;
       }
 
       Notifications.add("Name updated", 1);
@@ -484,8 +515,11 @@ list["updateName"] = new SimplePopup(
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
+      Loader.hide();
+      return false;
     }
     Loader.hide();
+    return true;
   },
   (thisPopup) => {
     const user = Auth?.currentUser;
@@ -531,14 +565,14 @@ list["updatePassword"] = new SimplePopup(
   async (_thisPopup, previousPass, newPass, newPassConfirm) => {
     try {
       const user = Auth?.currentUser;
-      if (!user) return;
+      if (!user) return true;
       const credential = EmailAuthProvider.credential(
         user.email as string,
         previousPass
       );
       if (newPass !== newPassConfirm) {
         Notifications.add("New passwords don't match", 0);
-        return;
+        return false;
       }
       if (!isLocalhost() && !isPasswordStrong(newPass)) {
         Notifications.add(
@@ -548,7 +582,7 @@ list["updatePassword"] = new SimplePopup(
             duration: 4,
           }
         );
-        return;
+        return false;
       }
       Loader.show();
       await reauthenticateWithCredential(user, credential);
@@ -558,6 +592,7 @@ list["updatePassword"] = new SimplePopup(
       setTimeout(() => {
         window.location.reload();
       }, 3000);
+      return true;
     } catch (e) {
       const typedError = e as FirebaseError;
       Loader.hide();
@@ -566,6 +601,7 @@ list["updatePassword"] = new SimplePopup(
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
+      return false;
     }
   },
   (thisPopup) => {
@@ -613,15 +649,16 @@ list["addPasswordAuth"] = new SimplePopup(
   async (_thisPopup, email, emailConfirm, pass, passConfirm) => {
     if (email !== emailConfirm) {
       Notifications.add("Emails don't match", 0);
-      return;
+      return false;
     }
 
     if (pass !== passConfirm) {
       Notifications.add("Passwords don't match", 0);
-      return;
+      return false;
     }
 
     await AccountController.addPasswordAuth(email, pass);
+    return true;
   },
   () => {
     //
@@ -647,7 +684,7 @@ list["deleteAccount"] = new SimplePopup(
   async (_thisPopup, password: string) => {
     try {
       const user = Auth?.currentUser;
-      if (!user) return;
+      if (!user) return true;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -663,10 +700,11 @@ list["deleteAccount"] = new SimplePopup(
       Loader.hide();
 
       if (usersResponse.status !== 200) {
-        return Notifications.add(
+        Notifications.add(
           "Failed to delete user stats: " + usersResponse.message,
           -1
         );
+        return false;
       }
 
       Loader.show();
@@ -675,10 +713,11 @@ list["deleteAccount"] = new SimplePopup(
       Loader.hide();
 
       if (resultsResponse.status !== 200) {
-        return Notifications.add(
+        Notifications.add(
           "Failed to delete user results: " + resultsResponse.message,
           -1
         );
+        return false;
       }
 
       Notifications.add("Deleting login information...", 0);
@@ -691,6 +730,7 @@ list["deleteAccount"] = new SimplePopup(
       setTimeout(() => {
         location.reload();
       }, 3000);
+      return true;
     } catch (e) {
       const typedError = e as FirebaseError;
       Loader.hide();
@@ -699,6 +739,7 @@ list["deleteAccount"] = new SimplePopup(
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
+      return false;
     }
   },
   (thisPopup) => {
@@ -730,7 +771,7 @@ list["resetAccount"] = new SimplePopup(
   async (_thisPopup, password: string) => {
     try {
       const user = Auth?.currentUser;
-      if (!user) return;
+      if (!user) return true;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -748,16 +789,18 @@ list["resetAccount"] = new SimplePopup(
 
       if (response.status !== 200) {
         Loader.hide();
-        return Notifications.add(
+        Notifications.add(
           "There was an error resetting your account. Please try again.",
           -1
         );
+        return false;
       }
       Loader.hide();
       Notifications.add("Reset complete", 1);
       setTimeout(() => {
         location.reload();
       }, 3000);
+      return true;
     } catch (e) {
       const typedError = e as FirebaseError;
       Loader.hide();
@@ -766,6 +809,7 @@ list["resetAccount"] = new SimplePopup(
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
+      return false;
     }
   },
   (thisPopup) => {
@@ -797,7 +841,7 @@ list["optOutOfLeaderboards"] = new SimplePopup(
   async (_thisPopup, password: string) => {
     try {
       const user = Auth?.currentUser;
-      if (!user) return;
+      if (!user) return true;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -813,16 +857,18 @@ list["optOutOfLeaderboards"] = new SimplePopup(
 
       if (response.status !== 200) {
         Loader.hide();
-        return Notifications.add(
+        Notifications.add(
           `Failed to opt out of leaderboards: ${response.message}`,
           -1
         );
+        return false;
       }
       Loader.hide();
       Notifications.add("Leaderboard opt out successful", 1);
       setTimeout(() => {
         location.reload();
       }, 3000);
+      return true;
     } catch (e) {
       const typedError = e as FirebaseError;
       Loader.hide();
@@ -831,6 +877,7 @@ list["optOutOfLeaderboards"] = new SimplePopup(
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
+      return false;
     }
   },
   (thisPopup) => {
@@ -860,15 +907,17 @@ list["clearTagPb"] = new SimplePopup(
     Loader.hide();
 
     if (response.status !== 200) {
-      return Notifications.add(
-        "Failed to delete tag's PB: " + response.message
-      );
+      Notifications.add("Failed to delete tag's PB: " + response.message);
+      return false;
     }
 
     if (response.data.resultCode === 1) {
       const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
 
-      if (tag === undefined) return;
+      if (tag === undefined) {
+        Notifications.add("Something went wrong: tag not found", -1);
+        return false;
+      }
       tag.personalBests = {
         time: {},
         words: {},
@@ -880,8 +929,10 @@ list["clearTagPb"] = new SimplePopup(
         `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
       ).attr("aria-label", "No PB found");
       Notifications.add("Tag PB cleared.", 0);
+      return true;
     } else {
       Notifications.add("Something went wrong: " + response.message, -1);
+      return false;
     }
   },
   (thisPopup) => {
@@ -900,8 +951,12 @@ list["applyCustomFont"] = new SimplePopup(
   "Make sure you have the font installed on your computer before applying",
   "Apply",
   (_thisPopup, fontName: string) => {
-    if (fontName === "") return;
+    if (fontName === "") {
+      Notifications.add("Please enter a font name", 0);
+      return false;
+    }
     Settings.groups["fontFamily"]?.setValue(fontName.replace(/\s/g, "_"));
+    return true;
   },
   () => {
     //
@@ -928,7 +983,7 @@ list["resetPersonalBests"] = new SimplePopup(
     try {
       const user = Auth?.currentUser;
       const snapshot = DB.getSnapshot();
-      if (!user || !snapshot) return;
+      if (!user || !snapshot) return true;
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
           user.email as string,
@@ -943,10 +998,11 @@ list["resetPersonalBests"] = new SimplePopup(
       Loader.hide();
 
       if (response.status !== 200) {
-        return Notifications.add(
+        Notifications.add(
           "Failed to reset personal bests: " + response.message,
           -1
         );
+        return false;
       }
 
       Notifications.add("Personal bests have been reset", 1);
@@ -957,9 +1013,11 @@ list["resetPersonalBests"] = new SimplePopup(
         zen: {},
         custom: {},
       };
+      return true;
     } catch (e) {
       Loader.hide();
       Notifications.add(e as string, -1);
+      return false;
     }
   },
   (thisPopup) => {
@@ -984,6 +1042,7 @@ list["resetSettings"] = new SimplePopup(
   "Reset",
   () => {
     UpdateConfig.reset();
+    return true;
     // setTimeout(() => {
     //   location.reload();
     // }, 3000);
@@ -1013,7 +1072,7 @@ list["revokeAllTokens"] = new SimplePopup(
     try {
       const user = Auth?.currentUser;
       const snapshot = DB.getSnapshot();
-      if (!user || !snapshot) return;
+      if (!user || !snapshot) return true;
 
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
@@ -1029,16 +1088,18 @@ list["revokeAllTokens"] = new SimplePopup(
       Loader.hide();
 
       if (response.status !== 200) {
-        return Notifications.add(
+        Notifications.add(
           "Failed to revoke all tokens: " + response.message,
           -1
         );
+        return false;
       }
 
       Notifications.add("All tokens revoked", 1);
       setTimeout(() => {
         location.reload();
       }, 1000);
+      return true;
     } catch (e) {
       Loader.hide();
       const typedError = e as FirebaseError;
@@ -1047,6 +1108,7 @@ list["revokeAllTokens"] = new SimplePopup(
       } else {
         Notifications.add("Something went wrong: " + e, -1);
       }
+      return false;
     }
   },
   (thisPopup) => {
@@ -1072,16 +1134,14 @@ list["unlinkDiscord"] = new SimplePopup(
   "Unlink",
   async () => {
     const snap = DB.getSnapshot();
-    if (!snap) return;
+    if (!snap) return true;
     Loader.show();
     const response = await Ape.users.unlinkDiscord();
     Loader.hide();
 
     if (response.status !== 200) {
-      return Notifications.add(
-        "Failed to unlink Discord: " + response.message,
-        -1
-      );
+      Notifications.add("Failed to unlink Discord: " + response.message, -1);
+      return false;
     }
 
     Notifications.add("Accounts unlinked", 1);
@@ -1090,6 +1150,7 @@ list["unlinkDiscord"] = new SimplePopup(
     AccountButton.update();
     DB.setSnapshot(snap);
     Settings.updateDiscordSection();
+    return true;
   },
   () => {
     //
@@ -1117,13 +1178,12 @@ list["generateApeKey"] = new SimplePopup(
     Loader.hide();
 
     if (response.status !== 200) {
-      return Notifications.add(
-        "Failed to generate key: " + response.message,
-        -1
-      );
+      Notifications.add("Failed to generate key: " + response.message, -1);
+      return false;
     } else {
       const data = response.data;
       list["viewApeKey"].show([data.apeKey]);
+      return true;
     }
   },
   () => {
@@ -1150,6 +1210,7 @@ list["viewApeKey"] = new SimplePopup(
   "Close",
   (_thisPopup) => {
     ApeKeysPopup.show();
+    return true;
   },
   (_thisPopup) => {
     _thisPopup.inputs[0].initVal = _thisPopup.parameters[0];
@@ -1178,11 +1239,13 @@ list["deleteApeKey"] = new SimplePopup(
     Loader.hide();
 
     if (response.status !== 200) {
-      return Notifications.add("Failed to delete key: " + response.message, -1);
+      Notifications.add("Failed to delete key: " + response.message, -1);
+      return false;
     }
 
     Notifications.add("Key deleted", 1);
     ApeKeysPopup.show();
+    return true;
   },
   (_thisPopup) => {
     //
@@ -1212,11 +1275,13 @@ list["editApeKey"] = new SimplePopup(
     Loader.hide();
 
     if (response.status !== 200) {
-      return Notifications.add("Failed to update key: " + response.message, -1);
+      Notifications.add("Failed to update key: " + response.message, -1);
+      return false;
     }
 
     Notifications.add("Key updated", 1);
     ApeKeysPopup.show();
+    return true;
   },
   (_thisPopup) => {
     //
@@ -1238,6 +1303,7 @@ list["deleteCustomText"] = new SimplePopup(
     Notifications.add("Custom text deleted", 1);
     CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show(true);
+    return true;
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
@@ -1259,6 +1325,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
     Notifications.add("Custom text deleted", 1);
     CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show(true);
+    return true;
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to delete custom text ${_thisPopup.parameters[0]}?`;
@@ -1282,6 +1349,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
     CustomText.setPopupTextareaState(
       CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
     );
+    return true;
   },
   (_thisPopup) => {
     _thisPopup.text = `Are you sure you want to reset your progress for custom text ${_thisPopup.parameters[0]}?`;
@@ -1311,14 +1379,14 @@ list["updateCustomTheme"] = new SimplePopup(
   "Update",
   async (_thisPopup, name, updateColors) => {
     const snapshot = DB.getSnapshot();
-    if (!snapshot) return;
+    if (!snapshot) return true;
 
     const customTheme = snapshot.customThemes.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (customTheme === undefined) {
       Notifications.add("Custom theme does not exist", -1);
-      return;
+      return false;
     }
 
     let newColors: string[] = [];
@@ -1341,10 +1409,11 @@ list["updateCustomTheme"] = new SimplePopup(
     Loader.show();
     const validation = await DB.editCustomTheme(customTheme._id, newTheme);
     Loader.hide();
-    if (!validation) return;
+    if (!validation) return true;
     UpdateConfig.setCustomThemeColors(newColors);
     Notifications.add("Custom theme updated", 1);
     ThemePicker.refreshButtons();
+    return true;
   },
   (_thisPopup) => {
     const snapshot = DB.getSnapshot();
@@ -1374,6 +1443,7 @@ list["deleteCustomTheme"] = new SimplePopup(
     Loader.hide();
     Notifications.add("Custom theme deleted", 1);
     ThemePicker.refreshButtons();
+    return true;
   },
   (_thisPopup) => {
     //
@@ -1405,9 +1475,11 @@ list["forgotPassword"] = new SimplePopup(
         "Failed to request password reset email: " + result.message,
         5000
       );
+      return false;
     } else {
       Loader.hide();
       Notifications.add("Password reset email sent", 1);
+      return true;
     }
   },
   (thisPopup) => {
