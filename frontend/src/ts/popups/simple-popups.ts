@@ -433,7 +433,12 @@ list["updateName"] = new SimplePopup(
     try {
       const user = Auth?.currentUser;
       const snapshot = DB.getSnapshot();
-      if (!user || !snapshot) return;
+      if (!user || !snapshot) return true;
+
+      if (!pass || !newName) {
+        Notifications.add("Please fill in all fields", 0);
+        return false;
+      }
 
       if (user.providerData.find((p) => p?.providerId === "password")) {
         const credential = EmailAuthProvider.credential(
