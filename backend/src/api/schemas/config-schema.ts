@@ -115,7 +115,7 @@ const CONFIG_SCHEMA = joi.object({
       "next_three_words"
     ),
   tapeMode: joi.string().valid("off", "letter", "word"),
-  typingSpeedUnit: joi.string().valid("wpm", "cpm", "wps", "cps", "wph"),
+  typingSpeedUnit: joi.string().valid("wpm", "cpm", "wps", "cps", "wph", "stt"),
   enableAds: joi.string().valid("off", "on", "max"),
   ads: joi.string().valid("off", "result", "on", "sellout"),
   hideExtraLetters: joi.boolean(),
