@@ -41,12 +41,6 @@ $("#popups").on("click", "#supportMeWrapper a.button", () => {
   hide();
 });
 
-$(document).on("keypress", "#supportMeButton, #supportMeAboutButton", (e) => {
-  if (e.key === "Enter") {
-    $(e.currentTarget).trigger("click");
-  }
-});
-
 $(document).on("keydown", (e) => {
   if (e.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();
