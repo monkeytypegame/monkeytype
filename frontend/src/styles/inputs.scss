@@ -10,6 +10,9 @@ textarea {
   font-family: var(--font);
   caret-color: var(--main-color);
   line-height: 1.25em;
+  &:focus-visible {
+    box-shadow: 0 0 0 0.15em var(--text-color);
+  }
 }
 
 textarea {
@@ -52,6 +55,9 @@ input[type="range"] {
     &:active {
       cursor: grabbing;
     }
+  }
+  &:focus-visible {
+    box-shadow: 0 0 0 0.15em var(--text-color);
   }
 }
 
