@@ -8,6 +8,8 @@
   // margin-bottom: -0.4rem;
   width: -moz-fit-content;
   width: fit-content;
+  width: 100%;
+  grid-template-columns: auto auto auto auto 1fr auto;
 
   .textButton {
     .text {
