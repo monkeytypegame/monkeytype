@@ -346,9 +346,9 @@ key {
     background: var(--text-color);
     outline: none;
   }
-  &:focus {
+  &:focus-visible {
     box-shadow: 0 0 0 0.15em var(--text-color);
-    // outline: 2px solid var(--text-color);
+    outline: none;
   }
   &:active {
     background: var(--sub-color);
