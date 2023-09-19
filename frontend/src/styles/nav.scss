@@ -160,6 +160,12 @@
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.5rem;
+    transition: none;
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 0.35rem 0.25rem;
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
 
     .icon {
       width: 2.5rem;
@@ -200,6 +206,14 @@
       color: var(--main-color);
       transition: 0.25s;
       cursor: pointer;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+      border-radius: var(--roundness);
+      .text .top {
+        opacity: 0;
+      }
     }
   }
 
