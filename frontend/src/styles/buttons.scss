@@ -27,7 +27,7 @@ input[type="submit"] {
   text-align: center;
   color: var(--text-color);
   cursor: pointer;
-  transition: background 0.125s, color 0.125s;
+  transition: background 0.125s, color 0.125s, opacity 0.125s;
   padding: 0.5em;
   border-radius: var(--roundness);
   background: var(--sub-alt-color);
@@ -98,7 +98,7 @@ button.text,
 .textButton {
   color: var(--sub-color);
   cursor: pointer;
-  transition: background 0.125s, color 0.125s;
+  transition: background 0.125s, color 0.125s, opacity 0.125s;
   padding: 0.5em;
   border-radius: var(--roundness);
   background: none;
