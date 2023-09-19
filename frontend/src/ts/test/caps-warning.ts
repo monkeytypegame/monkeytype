@@ -1,6 +1,7 @@
 import Config from "../config";
 
 const el = document.querySelector("#capsWarning") as HTMLElement;
+const isMacOs = navigator.platform.startsWith("Mac");
 
 export let capsState = false;
 
@@ -20,14 +21,11 @@ function hide(): void {
   }
 }
 
-$(document).on("keydown", function (event) {
-  if (
-    event?.originalEvent?.getModifierState &&
-    event?.originalEvent?.getModifierState("CapsLock")
-  ) {
-    capsState = true;
+function update(event: JQuery.KeyDownEvent | JQuery.KeyUpEvent): void {
+  if (event?.originalEvent?.key === "CapsLock" && capsState !== null) {
+    capsState = !capsState;
   } else {
-    capsState = false;
+    capsState = event?.originalEvent?.getModifierState("CapsLock") || false;
   }
 
   try {
@@ -37,26 +35,10 @@ $(document).on("keydown", function (event) {
       hide();
     }
   } catch {}
-});
+}
 
-$(document).on("keyup", function (event) {
-  setTimeout(() => {
-    if (
-      event?.originalEvent?.getModifierState &&
-      event?.originalEvent?.getModifierState("CapsLock")
-    ) {
-      //filthy fix but optional chaining refues to work
-      capsState = true;
-    } else {
-      capsState = false;
-    }
+$(document).on("keyup", update);
 
-    try {
-      if (Config.capsLockWarning && capsState) {
-        show();
-      } else {
-        hide();
-      }
-    } catch {}
-  }, 1); // weird fix to make sure the caps warning doesnt get stuck on linux
+$(document).on("keydown", (event) => {
+  if (isMacOs) update(event);
 });
