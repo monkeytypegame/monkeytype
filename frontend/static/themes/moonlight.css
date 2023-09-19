@@ -14,9 +14,9 @@
 #menu {
   gap: 0.5rem;
 }
-#top.focus #menu .textButton,
-#top.focus #menu:before,
-#top.focus #menu:after {
+header.focus #menu .textButton,
+header.focus #menu:before,
+header.focus #menu:after {
   background: var(--bg-color);
 }
 #menu .textButton:nth-child(1),
@@ -58,7 +58,7 @@
 #menu .textButton:nth-child(8) {
   background: #c69f68;
 } */
-#top.focus #menu .textButton.discord::after {
+header.focus #menu .textButton.discord::after {
   border-color: transparent;
 }
 
@@ -70,7 +70,7 @@ body.crtmode {
     box-shadow: 3px 0 1px color-mix(in srgb, #c69f68 20%, transparent),
       -3px 0 color-mix(in srgb, #c69f68 30%, transparent), 0 0 3px;
   }
-  #top.focus #menu .textButton {
+  header.focus #menu .textButton {
     box-shadow: none;
   }
 }

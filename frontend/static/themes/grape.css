@@ -55,16 +55,16 @@
   animation: pastel-bg 5s linear infinite;
 }
 
-#top.focus .button.discord::after,
-#top .button.discord.dotHidden::after {
+header.focus .button.discord::after,
+header .button.discord.dotHidden::after {
   animation-name: none !important;
 }
 
 .logo .bottom,
-#top .config .group .buttons .textButton.active,
+header .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
 #menu .textButton:hover,
-#top .config .group .buttons .textButton:hover,
+header .config .group .buttons .textButton:hover,
 a:hover,
 #words.flipped .word {
   animation: pastel 5s linear infinite;

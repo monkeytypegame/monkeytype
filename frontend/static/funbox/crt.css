@@ -42,7 +42,7 @@ body.crtmode #scanline {
   );
   animation: scanline 10s linear infinite;
 }
-body.crtmode #top,
+body.crtmode header,
 body.crtmode #middle,
 body.crtmode #bottom,
 body.crtmode #result,
@@ -102,7 +102,7 @@ body.crtmode .logo .icon {
 body.crtmode .avatars,
 body.crtmode #menu .account .avatar,
 body.crtmode #menu .account .levelAndBar,
-body.crtmode #top.focus .logo .icon {
+body.crtmode header.focus .logo .icon {
   filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
 }

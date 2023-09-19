@@ -15,15 +15,15 @@
   gap: 0.5rem;
 }
 
-#top.focus #menu .textButton {
+header.focus #menu .textButton {
   background: var(--bg-color);
   size: 1rem;
 }
-#top.focus #menu .textButton:nth-child(1) {
+header.focus #menu .textButton:nth-child(1) {
   background: #e34c6c;
 }
-#top.focus #menu:before,
-#top.focus #menu:after {
+header.focus #menu:before,
+header.focus #menu:after {
   background: var(--sub-color);
 }
 
@@ -39,7 +39,7 @@ body.crtmode {
       -3px 0 var(--crt-main-color-glow), 0 0 3px;
   }
 
-  #top.focus #menu .textButton {
+  header.focus #menu .textButton {
     box-shadow: none;
     &:nth-child(1) {
       box-shadow: 3px 0 1px color-mix(in srgb, #e34c6c 20%, transparent),

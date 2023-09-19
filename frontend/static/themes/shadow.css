@@ -11,11 +11,11 @@
   --colorful-error-extra-color: #d8d8d8;
 }
 
-#top .logo .icon {
+header .logo .icon {
   color: #8c3230;
 }
 
-#top .logo .text {
+header .logo .text {
   color: #557d8d;
 }
 
@@ -39,10 +39,10 @@
   color: white;
 }
 
-#top .config .group .buttons .textButton.active,
+header .config .group .buttons .textButton.active,
 #result .stats .group,
 #menu .textButton:hover,
-#top .config .group .buttons .textButton:hover,
+header .config .group .buttons .textButton:hover,
 a:hover {
   animation: shadow-repeat 3s linear infinite forwards;
 }

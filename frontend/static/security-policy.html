@@ -37,7 +37,7 @@
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <style>
-      #top {
+      header {
         font-size: 2.5rem;
       }
 
@@ -65,7 +65,7 @@
 
   <body>
     <div id="centerContent">
-      <div id="top">
+      <header>
         <div class="logo">
           <div class="icon">
             <svg
@@ -111,7 +111,7 @@
             <span style="color: var(--main-color)">Security Policy</span>
           </div>
         </div>
-      </div>
+      </header>
       <div id="middle">
         <p>
           We take the security and integrity of Monkeytype very seriously. If
@@ -176,7 +176,7 @@
       }
     }
 
-    document.querySelector("#top").addEventListener("click", () => {
+    document.querySelector("header").addEventListener("click", () => {
       window.location = "/";
     });
   </script>

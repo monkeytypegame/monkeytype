@@ -43,6 +43,6 @@
   }
 }
 
-#top > div.logo > div.icon > svg path {
+header > div.logo > div.icon > svg path {
   animation: 10s linear infinite 0.1s rgb;
 }

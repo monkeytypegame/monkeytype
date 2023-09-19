@@ -100,7 +100,7 @@ async function getDataAndInit(): Promise<boolean> {
     const msg = e.message || e;
     Notifications.add("Failed to get user data: " + msg, -1);
 
-    $("#top #menu .account").css("opacity", 1);
+    $("header #menu .account").css("opacity", 1);
     return false;
   }
   if (ActivePage.get() === "loading") {
@@ -194,7 +194,9 @@ export async function loadUser(user: UserType): Promise<void> {
   // var providerData = user.providerData;
   LoginPage.hidePreloader();
 
-  $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-out-alt"></i>`);
+  $("header .signInOut .icon").html(
+    `<i class="fas fa-fw fa-sign-out-alt"></i>`
+  );
 
   // showFavouriteThemesAtTheTop();
 
@@ -226,12 +228,12 @@ if (Auth && ConnectionState.get()) {
     console.log(`auth state changed, user ${user ? true : false}`);
     console.debug(user);
     if (user) {
-      $("#top .signInOut .icon").html(
+      $("header .signInOut .icon").html(
         `<i class="fas fa-fw fa-sign-out-alt"></i>`
       );
       await loadUser(user);
     } else {
-      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
+      $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
@@ -268,7 +270,7 @@ if (Auth && ConnectionState.get()) {
     // await UpdateConfig.loadPromise;
     const search = window.location.search;
     const hash = window.location.hash;
-    $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
+    $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
     if (window.location.pathname === "/account") {
       window.history.replaceState("", "", "/login");
     }
@@ -439,7 +441,7 @@ export function signOut(): void {
       DB.setSnapshot(undefined);
       LoginPage.enableSignUpButton();
       LoginPage.enableInputs();
-      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
+      $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
       }, 125);
@@ -613,7 +615,7 @@ $(".pageLogin .login button.signInWithGoogle").on("click", () => {
 // signInWithGitHub();
 // });
 
-$("#top .signInOut").on("click", () => {
+$("header .signInOut").on("click", () => {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,

@@ -44,7 +44,7 @@
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <style>
-      #top {
+      header {
         font-size: 2.5rem;
       }
 
@@ -97,7 +97,7 @@
 
   <body>
     <div id="centerContent">
-      <div id="top">
+      <div header>
         <div class="logo">
           <div class="icon">
             <svg
@@ -453,7 +453,7 @@
       false
     );
 
-    document.querySelector("#top").addEventListener("click", () => {
+    document.querySelector("header").addEventListener("click", () => {
       window.location = "/";
     });
   </script>

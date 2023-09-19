@@ -15,9 +15,9 @@
   gap: 0.5rem;
 }
 
-#top.focus #menu .textButton,
-#top.focus #menu:before,
-#top.focus #menu:after {
+header.focus #menu .textButton,
+header.focus #menu:before,
+header.focus #menu:after {
   background: #99989f;
 }
 
@@ -50,7 +50,7 @@
   background: #a692d7;
 }
 
-#top.focus #menu .textButton.discord::after {
+header.focus #menu .textButton.discord::after {
   border-color: transparent;
 }
 
@@ -86,7 +86,7 @@ body.crtmode {
       -3px 0 color-mix(in srgb, #a692d7 30%, transparent), 0 0 3px;
   }
 
-  #top.focus #menu .textButton {
+  header.focus #menu .textButton {
     box-shadow: 3px 0 1px color-mix(in srgb, #99989f 20%, transparent),
       -3px 0 color-mix(in srgb, #99989f 30%, transparent), 0 0 3px;
   }

@@ -11,11 +11,11 @@
   --colorful-error-extra-color: #667c91;
 }
 
-#top .logo .bottom {
+header .logo .bottom {
   color: #8fadc9;
 }
 
-#top .config .group .buttons .textButton.active {
+header .config .group .buttons .textButton.active {
   color: #daa99b;
 }
 

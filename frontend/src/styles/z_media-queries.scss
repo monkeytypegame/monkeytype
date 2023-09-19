@@ -346,7 +346,7 @@
 
 //800px
 @media only screen and (max-width: 50rem) {
-  #top .logo .text {
+  header .logo .text {
     font-size: 1.5rem;
     line-height: 1.5rem;
     margin-top: -0.1em;
@@ -509,7 +509,7 @@
 
 //650px
 @media only screen and (max-width: 40.625rem) {
-  #top {
+  header {
     #menu {
       .textButton.account {
         .text {
@@ -693,7 +693,7 @@
   .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr;
   }
-  #top .logo .bottom {
+  header .logo .bottom {
     margin-top: 0;
   }
   .pageLogin {
@@ -738,7 +738,7 @@
 
 //550px
 @media only screen and (max-width: 34.375rem) {
-  #top {
+  header {
     .logo {
       grid-template-columns: auto;
       .text {
@@ -894,7 +894,7 @@
     }
   }
 
-  #top {
+  header {
     #menu {
       font-size: 1rem;
     }
@@ -916,7 +916,7 @@
     }
   }
   #centerContent {
-    #top {
+    header {
       // grid-template-columns: 1fr auto;
       .desktopConfig {
         display: none;
@@ -972,7 +972,7 @@
 
 //400px
 @media only screen and (max-width: 25rem) {
-  #top .config {
+  header .config {
     grid-gap: 0.25rem;
     .group .buttons {
       font-size: 0.65rem;
@@ -980,7 +980,7 @@
     }
   }
 
-  #top #menu {
+  header #menu {
     font-size: 0.75rem;
   }
 

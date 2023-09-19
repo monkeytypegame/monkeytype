@@ -2,11 +2,11 @@ import * as ConfigEvent from "../observables/config-event";
 // import * as Misc from "../utils/misc";
 
 // export function show() {
-//   $("#top .config").removeClass("hidden").css("opacity", 1);
+//   $("header .config").removeClass("hidden").css("opacity", 1);
 // }
 
 // export function hide() {
-//   $("#top .config").css("opacity", 0).addClass("hidden");
+//   $("header .config").css("opacity", 0).addClass("hidden");
 // }
 
 export function show(): void {

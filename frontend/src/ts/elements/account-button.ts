@@ -13,11 +13,13 @@ export function skipXpBreakdown(): void {
 
 export function loading(state: boolean): void {
   if (state) {
-    $("#top #menu .account").css("opacity", 1).css("pointer-events", "none");
+    $("header #menu .account").css("opacity", 1).css("pointer-events", "none");
 
     if (usingAvatar) {
-      $("#top #menu .account .loading").css("opacity", 1).removeClass("hidden");
-      $("#top #menu .account .avatar")
+      $("header #menu .account .loading")
+        .css("opacity", 1)
+        .removeClass("hidden");
+      $("header #menu .account .avatar")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -26,11 +28,11 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("#top #menu .account .avatar").addClass("hidden");
+            $("header #menu .account .avatar").addClass("hidden");
           }
         );
     } else {
-      $("#top #menu .account .loading")
+      $("header #menu .account .loading")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -40,7 +42,7 @@ export function loading(state: boolean): void {
           },
           100
         );
-      $("#top #menu .account .user")
+      $("header #menu .account .user")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -49,16 +51,16 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("#top #menu .account .user").addClass("hidden");
+            $("header #menu .account .user").addClass("hidden");
           }
         );
     }
   } else {
-    $("#top #menu .account").css("opacity", 1).css("pointer-events", "auto");
+    $("header #menu .account").css("opacity", 1).css("pointer-events", "auto");
 
     if (usingAvatar) {
-      $("#top #menu .account .loading").css("opacity", 1).addClass("hidden");
-      $("#top #menu .account .avatar")
+      $("header #menu .account .loading").css("opacity", 1).addClass("hidden");
+      $("header #menu .account .avatar")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -69,7 +71,7 @@ export function loading(state: boolean): void {
           100
         );
     } else {
-      $("#top #menu .account .loading")
+      $("header #menu .account .loading")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -78,10 +80,10 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("#top #menu .account .loading").addClass("hidden");
+            $("header #menu .account .loading").addClass("hidden");
           }
         );
-      $("#top #menu .account .user")
+      $("header #menu .account .user")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -102,8 +104,8 @@ export async function update(
 ): Promise<void> {
   if (Auth?.currentUser) {
     if (xp !== undefined) {
-      $("#top #menu .level").text(Math.floor(Misc.getLevel(xp)));
-      $("#top #menu .bar").css({
+      $("header #menu .level").text(Math.floor(Misc.getLevel(xp)));
+      $("header #menu .bar").css({
         width: (Misc.getLevel(xp) % 1) * 100 + "%",
       });
     }
@@ -111,20 +113,20 @@ export async function update(
       Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
         (discordAvatarUrl) => {
           if (discordAvatarUrl) {
-            $("#top #menu .account .avatar").css(
+            $("header #menu .account .avatar").css(
               "background-image",
               `url(${discordAvatarUrl})`
             );
             usingAvatar = true;
 
-            $("#top #menu .account .user").addClass("hidden");
-            $("#top #menu .account .avatar").removeClass("hidden");
+            $("header #menu .account .user").addClass("hidden");
+            $("header #menu .account .avatar").removeClass("hidden");
           }
         }
       );
     } else {
-      $("#top #menu .account .avatar").addClass("hidden");
-      $("#top #menu .account .user").removeClass("hidden");
+      $("header #menu .account .avatar").addClass("hidden");
+      $("header #menu .account .user").removeClass("hidden");
     }
     $("#menu .textButton.account")
       .removeClass("hidden")

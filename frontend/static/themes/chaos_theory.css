@@ -12,17 +12,17 @@
   --colorful-error-extra-color: #b03c47;
 }
 
-#top .logo .text {
+header .logo .text {
   -webkit-transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   transition: 0.5s;
 }
 
-#top .logo .top {
+header .logo .top {
   font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
-#top .logo .icon {
+header .logo .icon {
   -webkit-transform: rotateX(180deg);
   transition: 0.5s;
 }
@@ -73,23 +73,23 @@
   align-content: right;
 }
 
-#top.focus #menu .textButton,
-#top.focus #menu:before,
-#top.focus #menu:after {
+header.focus #menu .textButton,
+header.focus #menu:before,
+header.focus #menu:after {
   background: var(--sub-color);
   -webkit-transform: rotateY(180deg) !important;
 }
 
-#top.focus .logo .text,
-#top.focus .logo:before,
-#top.focus .logo:after {
+header.focus .logo .text,
+header.focus .logo:before,
+header.focus .logo:after {
   -webkit-transform: rotateY(0deg);
   direction: ltr;
 }
 
-#top.focus .logo .icon,
-#top.focus .logo:before,
-#top.focus .logo:after {
+header.focus .logo .icon,
+header.focus .logo:before,
+header.focus .logo:after {
   -webkit-transform: rotateX(0deg);
   direction: ltr;
 }
@@ -187,7 +187,7 @@ body.crtmode {
       drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
   }
 
-  #top.focus #menu .textButton {
+  header.focus #menu .textButton {
     box-shadow: 3px 0 1px var(--crt-sub-color-glow),
       -3px 0 var(--crt-sub-color-glow);
   }
