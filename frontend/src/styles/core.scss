@@ -83,6 +83,11 @@ a {
   &:hover {
     color: var(--text-color);
   }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 0.1em var(--bg-color), 0 0 0 0.2em var(--text-color);
+    border-radius: var(--roundness);
+  }
 }
 
 a[router-link] * {
