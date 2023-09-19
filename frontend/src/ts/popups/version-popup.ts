@@ -61,11 +61,11 @@ function hide(): void {
     });
 }
 
-$("#bottom").on("click", "#newVersionIndicator", () => {
+$("footer").on("click", "#newVersionIndicator", () => {
   $("#newVersionIndicator").addClass("hidden");
 });
 
-$("#bottom").on("click", ".version", (e) => {
+$("footer").on("click", ".version", (e) => {
   if (e.shiftKey) return;
   show();
 });

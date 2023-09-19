@@ -33,7 +33,7 @@ header .logo .icon {
   direction: rtl;
 }
 
-#bottom .leftright .right .current-theme .text {
+footer .leftright .right .current-theme .text {
   /* font-family: "Comic Sans MS", "Comic Sans", cursive; */
 }
 
@@ -94,7 +94,7 @@ header.focus .logo:after {
   direction: ltr;
 }
 
-#bottom .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
+footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
   -webkit-transform: rotateY(180deg);
   transition: 0.5s;
 }

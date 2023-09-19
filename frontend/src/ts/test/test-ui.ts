@@ -411,7 +411,7 @@ export async function screenshot(): Promise<void> {
     $(".pageTest .buttons").removeClass("hidden");
     $("noscript").removeClass("hidden");
     $("#nocss").removeClass("hidden");
-    $("header, #bottom").removeClass("invisible");
+    $("header, footer").removeClass("invisible");
     $("#result").removeClass("noBalloons");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
@@ -450,7 +450,7 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-small-wrapper").addClass("hidden");
   $("#testConfig").addClass("hidden");
   $(".page.pageTest").prepend("<div class='screenshotSpacer'></div>");
-  $("header, #bottom").addClass("invisible");
+  $("header, footer").addClass("invisible");
   $("#result").addClass("noBalloons");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
 

@@ -1038,9 +1038,9 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 
   config.showKeyTips = keyTips;
   if (config.showKeyTips) {
-    $("#bottom .keyTips").removeClass("hidden");
+    $("footer .keyTips").removeClass("hidden");
   } else {
-    $("#bottom .keyTips").addClass("hidden");
+    $("footer .keyTips").addClass("hidden");
   }
   saveToLocalStorage("showKeyTips", nosave);
   ConfigEvent.dispatch("showKeyTips", config.showKeyTips);

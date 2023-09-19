@@ -787,7 +787,7 @@ $(".pageTest").on("click", "#testModesNotice .textButton", (event) => {
   }
 });
 
-$("#bottom").on("click", ".leftright .right .current-theme", (e) => {
+$("footer").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
       if (Auth?.currentUser) {

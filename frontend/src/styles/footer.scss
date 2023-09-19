@@ -1,4 +1,4 @@
-#bottom {
+footer {
   position: relative;
   text-align: center;
   line-height: 1rem;
@@ -101,7 +101,7 @@
   }
 }
 
-#bottom.focus {
+footer.focus {
   .keyTips {
     opacity: 0 !important;
   }

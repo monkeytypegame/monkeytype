@@ -44,7 +44,7 @@ body.crtmode #scanline {
 }
 body.crtmode header,
 body.crtmode #middle,
-body.crtmode #bottom,
+body.crtmode footer,
 body.crtmode #result,
 body.crtmode #popups,
 body.crtmode #notificationCenter,

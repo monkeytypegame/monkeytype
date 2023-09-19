@@ -25,15 +25,15 @@ function updateKeytips(): void {
   }
 
   if (Config.quickRestart === "esc") {
-    $("#bottom .keyTips").html(`
+    $("footer .keyTips").html(`
     <key>esc</key> - restart test<br>
     <key>tab</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   } else if (Config.quickRestart === "tab") {
-    $("#bottom .keyTips").html(`
+    $("footer .keyTips").html(`
     <key>tab</key> - restart test<br>
       <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   } else {
-    $("#bottom .keyTips").html(`
+    $("footer .keyTips").html(`
     <key>tab</key> + <key>enter</key> - restart test<br>
     <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   }
