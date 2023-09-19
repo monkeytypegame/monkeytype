@@ -1662,4 +1662,10 @@ export function replaceSpecialChars(str: string): string {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove accents
 }
 
+export function reloadAfter(seconds: number): void {
+  setTimeout(() => {
+    window.location.reload();
+  }, seconds * 1000);
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
