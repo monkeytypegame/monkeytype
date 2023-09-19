@@ -701,7 +701,7 @@
     gap: 5rem;
     grid-auto-flow: unset;
   }
-  #middle {
+  main {
     #result {
       grid-template-areas:
         "stats stats"
@@ -928,7 +928,7 @@
     gap: 1rem;
     padding: 1rem;
   }
-  #middle {
+  main {
     #result {
       .stats {
         grid-template-areas:

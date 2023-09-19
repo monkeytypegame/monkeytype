@@ -12,7 +12,7 @@ export const page = new Page(
     Skeleton.remove("page404");
   },
   async () => {
-    Skeleton.append("page404", "middle");
+    Skeleton.append("page404", "main");
   },
   async () => {
     //

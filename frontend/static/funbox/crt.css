@@ -43,7 +43,7 @@ body.crtmode #scanline {
   animation: scanline 10s linear infinite;
 }
 body.crtmode header,
-body.crtmode #middle,
+body.crtmode main,
 body.crtmode footer,
 body.crtmode #result,
 body.crtmode #popups,

@@ -1314,7 +1314,7 @@ export const page = new Page(
     Skeleton.remove("pageAccount");
   },
   async () => {
-    Skeleton.append("pageAccount", "middle");
+    Skeleton.append("pageAccount", "main");
     await ResultFilters.appendButtons();
     ResultFilters.updateActive();
     await Misc.sleep(0);

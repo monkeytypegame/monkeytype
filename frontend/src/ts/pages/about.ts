@@ -196,7 +196,7 @@ export const page = new Page(
     Skeleton.remove("pageAbout");
   },
   async () => {
-    Skeleton.append("pageAbout", "middle");
+    Skeleton.append("pageAbout", "main");
     fill();
   },
   async () => {

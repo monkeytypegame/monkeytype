@@ -331,7 +331,7 @@ export const page = new Page(
     Skeleton.remove("pageLogin");
   },
   async () => {
-    Skeleton.append("pageLogin", "middle");
+    Skeleton.append("pageLogin", "main");
     enableInputs();
     enableSignUpButton();
   },

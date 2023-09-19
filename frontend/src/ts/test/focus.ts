@@ -14,7 +14,7 @@ export function set(foc: boolean, withCursor = false): void {
     $("header").addClass("focus");
     $("footer").addClass("focus");
     if (!withCursor) $("body").css("cursor", "none");
-    $("#middle").addClass("focus");
+    $("main").addClass("focus");
     $("#testConfig").addClass("focus");
     $("#mobileTestConfig").addClass("focus");
     $("#bannerCenter").addClass("focus");
@@ -33,7 +33,7 @@ export function set(foc: boolean, withCursor = false): void {
     $("header").removeClass("focus");
     $("footer").removeClass("focus");
     $("body").css("cursor", "default");
-    $("#middle").removeClass("focus");
+    $("main").removeClass("focus");
     $("#testConfig").removeClass("focus");
     $("#mobileTestConfig").removeClass("focus");
     $("#bannerCenter").removeClass("focus");

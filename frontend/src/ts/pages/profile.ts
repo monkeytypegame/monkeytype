@@ -211,7 +211,7 @@ export const page = new Page<undefined | Profile.ProfileData>(
     reset();
   },
   async (options) => {
-    Skeleton.append("pageProfile", "middle");
+    Skeleton.append("pageProfile", "main");
     const uidOrName = options?.params?.["uidOrName"];
     if (uidOrName) {
       $(".page.pageProfile .preloader").removeClass("hidden");

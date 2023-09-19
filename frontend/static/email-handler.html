@@ -48,7 +48,7 @@
         font-size: 2.5rem;
       }
 
-      #middle {
+      main {
         color: var(--text-color);
         display: grid;
         justify-content: center;
@@ -144,7 +144,7 @@
           </div>
         </div>
       </div>
-      <div id="middle">
+      <main>
         <div class="preloader">
           <div class="icon">
             <i class="fas fa-fw fa-spin fa-circle-notch"></i>
@@ -161,7 +161,7 @@
           />
           <div class="button">Change</div>
         </div>
-      </div>
+      </main>
     </div>
   </body>
   <script src="js/jquery-3.5.1.min.js"></script>
@@ -193,19 +193,15 @@
         .then((resp) => {
           // Email address has been verified.
 
-          $("#middle .preloader .icon").html(
-            `<i class="fas fa-fw fa-check"></i>`
-          );
-          $("#middle .preloader .text").text(
+          $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
+          $("main .preloader .text").text(
             `Your email address has been verified`
           );
-          $("#middle .preloader .subText").text(`You can now close this tab`);
+          $("main .preloader .subText").text(`You can now close this tab`);
         })
         .catch((error) => {
-          $("#middle .preloader .icon").html(
-            `<i class="fas fa-fw fa-times"></i>`
-          );
-          $("#middle .preloader .text").text(error.message);
+          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+          $("main .preloader .text").text(error.message);
 
           // Code is invalid or expired. Ask the user to verify their email address
           // again.
@@ -213,14 +209,14 @@
     }
 
     function showResetPassword() {
-      $("#middle .preloader").addClass("hidden");
-      $("#middle .resetPassword").removeClass("hidden");
-      $("#middle .resetPassword input").trigger("focus");
+      $("main .preloader").addClass("hidden");
+      $("main .resetPassword").removeClass("hidden");
+      $("main .resetPassword input").trigger("focus");
     }
 
     function hideResetPassword() {
-      $("#middle .preloader").removeClass("hidden");
-      $("#middle .resetPassword").addClass("hidden");
+      $("main .preloader").removeClass("hidden");
+      $("main .resetPassword").addClass("hidden");
     }
 
     function handleResetPassword(actionCode, continueUrl) {
@@ -232,10 +228,8 @@
         .then((email) => {
           var accountEmail = email;
 
-          var newPassword = $("#middle .resetPassword .pwd").val();
-          var newPasswordConfirm = $(
-            "#middle .resetPassword .pwd-confirm"
-          ).val();
+          var newPassword = $("main .resetPassword .pwd").val();
+          var newPasswordConfirm = $("main .resetPassword .pwd-confirm").val();
 
           if (newPassword !== newPasswordConfirm) {
             alert("Passwords do not match");
@@ -257,35 +251,29 @@
             .confirmPasswordReset(actionCode, newPassword)
             .then((resp) => {
               // Password reset has been confirmed and new password updated.
-              $("#middle .preloader .icon").html(
+              $("main .preloader .icon").html(
                 `<i class="fas fa-fw fa-check"></i>`
               );
-              $("#middle .preloader .text").text(
-                `Your password has been changed`
-              );
-              $("#middle .preloader .subText").text(
-                `You can now close this tab`
-              );
+              $("main .preloader .text").text(`Your password has been changed`);
+              $("main .preloader .subText").text(`You can now close this tab`);
 
               firebase
                 .auth()
                 .signInWithEmailAndPassword(accountEmail, newPassword);
             })
             .catch((error) => {
-              $("#middle .preloader .icon").html(
+              $("main .preloader .icon").html(
                 `<i class="fas fa-fw fa-times"></i>`
               );
-              $("#middle .preloader .text").text(error.message);
+              $("main .preloader .text").text(error.message);
               // Error occurred during confirmation. The code might have expired or the
               // password is too weak.
             });
         })
         .catch((error) => {
-          $("#middle .preloader .icon").html(
-            `<i class="fas fa-fw fa-times"></i>`
-          );
-          $("#middle .preloader .text").text(error.message);
-          // $("#middle .preloader .subText").text(error);
+          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+          $("main .preloader .text").text(error.message);
+          // $("main .preloader .subText").text(error);
 
           // Invalid or expired action code. Ask user to try to reset the password
           // again.
@@ -308,19 +296,15 @@
           return auth.applyActionCode(actionCode);
         })
         .then(() => {
-          $("#middle .preloader .icon").html(
-            `<i class="fas fa-fw fa-check"></i>`
-          );
-          $("#middle .preloader .text").text(
-            `Your account email was reverted.`
-          );
-          $("#middle .preloader .subText").text(``);
+          $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
+          $("main .preloader .text").text(`Your account email was reverted.`);
+          $("main .preloader .subText").text(``);
 
-          $("#middle .preloader").append(`
+          $("main .preloader").append(`
           <br>
           In case you believe your account was compromised, please request a password reset email:
           `);
-          $("#middle .preloader").append(`
+          $("main .preloader").append(`
           <br>
           <div class="button" onclick="sendPasswordResetEmail('${restoredEmail}')">Send Password Reset Email</div>
           `);
@@ -333,10 +317,8 @@
           // in case the account was compromised:
         })
         .catch((error) => {
-          $("#middle .preloader .icon").html(
-            `<i class="fas fa-fw fa-times"></i>`
-          );
-          $("#middle .preloader .text").text(error.message);
+          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+          $("main .preloader .text").text(error.message);
         });
     }
 
@@ -344,17 +326,13 @@
       auth
         .sendPasswordResetEmail(email)
         .then(() => {
-          $("#middle .preloader .icon").html(
-            `<i class="fas fa-fw fa-check"></i>`
-          );
-          $("#middle .preloader .text").text(`Password reset email sent`);
-          $("#middle .preloader .subText").text(`Please check your inbox`);
+          $("main .preloader .icon").html(`<i class="fas fa-fw fa-check"></i>`);
+          $("main .preloader .text").text(`Password reset email sent`);
+          $("main .preloader .subText").text(`Please check your inbox`);
         })
         .catch((error) => {
-          $("#middle .preloader .icon").html(
-            `<i class="fas fa-fw fa-times"></i>`
-          );
-          $("#middle .preloader .text").text(error.message);
+          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+          $("main .preloader .text").text(error.message);
         });
     }
 
@@ -390,20 +368,18 @@
           // var auth = firebase.auth();
 
           if (!mode) {
-            $("#middle .preloader .icon").html(
+            $("main .preloader .icon").html(
               `<i class="fas fa-fw fa-times"></i>`
             );
-            $("#middle .preloader .text").text(`Mode parameter not found`);
+            $("main .preloader .text").text(`Mode parameter not found`);
             return;
           }
 
           if (!actionCode) {
-            $("#middle .preloader .icon").html(
+            $("main .preloader .icon").html(
               `<i class="fas fa-fw fa-times"></i>`
             );
-            $("#middle .preloader .text").text(
-              `Action code parameter not found`
-            );
+            $("main .preloader .text").text(`Action code parameter not found`);
             return;
           }
 
@@ -426,26 +402,24 @@
               handleVerifyEmail(actionCode, continueUrl);
               break;
             default:
-              $("#middle .preloader .icon").html(
+              $("main .preloader .icon").html(
                 `<i class="fas fa-fw fa-times"></i>`
               );
-              $("#middle .preloader .text").text(`Invalid mode`);
+              $("main .preloader .text").text(`Invalid mode`);
               console.error("no mode found");
             // Error: invalid mode.
           }
 
-          $("#middle .resetPassword .button").on("click", () => {
+          $("main .resetPassword .button").on("click", () => {
             handleResetPassword(actionCode, continueUrl);
           });
 
-          $("#middle .resetPassword input").on("keypress", (e) => {
+          $("main .resetPassword input").on("keypress", (e) => {
             if (e.key === "Enter") handleResetPassword(actionCode, continueUrl);
           });
         } catch (e) {
-          $("#middle .preloader .icon").html(
-            `<i class="fas fa-fw fa-times"></i>`
-          );
-          $("#middle .preloader .text").text(
+          $("main .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+          $("main .preloader .text").text(
             `Fatal error: ${e.message}. If this issue persists, please report it.`
           );
         }
