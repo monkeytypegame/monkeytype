@@ -1043,8 +1043,12 @@
   #keymap {
     display: none !important;
   }
-  .pageLogin .side input {
-    width: 90vw;
+  .pageLogin .side {
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 90vw;
+    }
   }
   .page404 {
     .content {

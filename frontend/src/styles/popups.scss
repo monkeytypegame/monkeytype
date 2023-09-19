@@ -617,9 +617,6 @@
     .settings {
       display: grid;
       gap: 1rem;
-      .customTextCheckbox {
-        background: var(--sub-color);
-      }
       .cookie label {
         display: grid;
         gap: 0 1rem;
@@ -634,9 +631,10 @@
         .description {
           grid-area: description;
         }
-        .customTextCheckbox {
-          place-self: center;
+        input[type="checkbox"] {
+          align-self: center;
           grid-area: check;
+          font-size: 2em;
         }
       }
       .cookie.ads label {
@@ -1433,15 +1431,6 @@
       display: grid;
       gap: 1rem;
       grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    .checkbox {
-      display: flex;
-      align-items: center;
-    }
-
-    .checkbox input[type="checkbox"] {
-      margin-right: 0.5em;
     }
 
     .title {

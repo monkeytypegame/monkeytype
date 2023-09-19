@@ -98,11 +98,6 @@
             store any personal information and are required.
           </div>
           <input type="checkbox" checked disabled />
-          <div class="customTextCheckbox" style="cursor: default; opacity: 0.5">
-            <div class="check">
-              <i class="fas fa-fw fa-check"></i>
-            </div>
-          </div>
         </label>
       </div>
       <div class="cookie analytics">
@@ -113,11 +108,6 @@
             website and use this data to improve our site design.
           </div>
           <input type="checkbox" />
-          <div class="customTextCheckbox">
-            <div class="check">
-              <i class="fas fa-fw fa-check"></i>
-            </div>
-          </div>
         </label>
       </div>
       <div class="cookie ads">
@@ -140,83 +130,43 @@
 <div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
   <div id="shareTestSettingsPopup">
     <div class="title">Share test settings</div>
-    <label class="checkbox mode">
+    <label class="checkboxWithSub mode">
       <input type="checkbox" setting="mode" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
-      Mode
-      <span>Time, Words, Quote, Zen, Custom</span>
+      <div>Mode</div>
+      <div class="sub">Time, Words, Quote, Zen, Custom</div>
     </label>
-    <label class="checkbox mode2 subgroup hidden">
+    <label class="checkboxWithSub mode2 subgroup hidden">
       <input type="checkbox" setting="mode2" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
-      Mode2
-      <span>Test seconds, Test words, Quote Id</span>
+      <div>Mode2</div>
+      <div class="sub">Test seconds, Test words, Quote Id</div>
     </label>
     <label class="checkbox customText subgroup hidden">
       <input type="checkbox" setting="customText" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Custom text
       <span></span>
     </label>
     <label class="checkbox punctuation">
       <input type="checkbox" setting="punctuation" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Punctuation
       <span></span>
     </label>
     <label class="checkbox numbers">
       <input type="checkbox" setting="numbers" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Numbers
       <span></span>
     </label>
     <label class="checkbox language">
       <input type="checkbox" setting="language" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Language
       <span></span>
     </label>
     <label class="checkbox difficulty">
       <input type="checkbox" setting="difficulty" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Difficulty
       <span></span>
     </label>
     <label class="checkbox funbox">
       <input type="checkbox" setting="funbox" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Funbox
       <span></span>
     </label>
@@ -460,17 +410,12 @@
       <textarea class="textarea"></textarea>
     </div>
     <div class="inputs">
-      <label class="checkbox randomWordsCheckbox">
+      <label class="checkboxWithSub randomWordsCheckbox">
         <input type="checkbox" />
-        <div class="customTextCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
-        </div>
-        Random
-        <span>
+        <div>Random</div>
+        <div class="sub">
           Randomize the above words, and control how many words are generated.
-        </span>
+        </div>
       </label>
       <div class="randomInputFields disabled">
         <label class="wordcount">
@@ -488,43 +433,28 @@
         </label>
         <!-- <div style="color: var(--sub-color)">or</div> -->
       </div>
-      <label class="checkbox typographyCheck">
+      <label class="checkboxWithSub typographyCheck">
         <input type="checkbox" checked />
-        <div class="customTextCheckbox customTextTypographyCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
-        </div>
-        Remove Fancy Typography
-        <span>
+        <div>Remove Fancy Typography</div>
+        <div class="sub">
           Standardises typography symbols (for example “ and ” become ")
-        </span>
-      </label>
-      <label class="checkbox delimiterCheck">
-        <input type="checkbox" />
-        <div class="customTextCheckbox customTextDelimiterCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
         </div>
-        Pipe Delimiter
-        <span>
+      </label>
+      <label class="checkboxWithSub delimiterCheck">
+        <input type="checkbox" />
+        <div>Pipe Delimiter</div>
+        <div class="sub">
           Change how words are separated. Using the pipe delimiter allows you to
           randomize groups of words.
-        </span>
-      </label>
-      <label class="checkbox replaceNewlineWithSpace">
-        <input type="checkbox" />
-        <div class="customTextCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
         </div>
-        Replace new lines with spaces
-        <span>
+      </label>
+      <label class="checkboxWithSub replaceNewlineWithSpace">
+        <input type="checkbox" />
+        <div>Replace new lines with spaces</div>
+        <div class="sub">
           Replace all new line characters with spaces. Can automatically add
           periods to the end of lines if you wish.
-        </span>
+        </div>
       </label>
       <div class="replaceNewLinesButtons">
         <div class="buttonGroup">
@@ -549,19 +479,14 @@
     <div class="title">Save custom text</div>
     <input class="textName" type="text" placeholder="name" />
     <div>
-      <label class="checkbox">
+      <label class="checkboxWithSub">
         <input type="checkbox" class="isLongText" />
-        <div class="customTextCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
-        </div>
-        Long text (book mode)
-        <span>
+        <div>Long text (book mode)</div>
+        <div class="sub">
           Disables editing this text but allows you to save progress by pressing
           shift + enter or bailing out. You can then load this text again to
           continue where you left off.
-        </span>
+        </div>
       </label>
     </div>
     <div class="button save">save</div>
@@ -888,11 +813,6 @@
     <input type="text" class="text" title="presets" />
     <label class="checkbox">
       <input type="checkbox" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Change preset to current settings
     </label>
     <div class="button"><i class="fas fa-plus"></i></div>
@@ -903,11 +823,6 @@
     <div class="title">Share Custom Theme</div>
     <label class="checkbox">
       <input type="checkbox" id="includeBackground" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Include background information
     </label>
     <div class="button copy-button">copy link to clipboard</div>

@@ -123,46 +123,6 @@ body {
   z-index: 9999;
 }
 
-label.checkbox {
-  span {
-    display: block;
-    font-size: 0.76rem;
-    color: var(--sub-color);
-    margin-left: 1.5rem;
-  }
-
-  input {
-    margin: 0 !important;
-    cursor: pointer;
-    width: 0;
-    height: 0;
-    display: none;
-    -webkit-user-select: none;
-    user-select: none;
-
-    & ~ .customTextCheckbox {
-      width: 1.25rem;
-      height: 1.25rem;
-      background: var(--sub-alt-color);
-      border-radius: calc(var(--roundness) / 2);
-      display: inline-grid;
-      margin: 0 0.5rem 0 0;
-      -webkit-user-select: none;
-      user-select: none;
-      cursor: pointer;
-      & .check {
-        opacity: 0;
-        color: var(--main-color);
-        transition: 0.125s;
-      }
-    }
-
-    &:checked ~ .customTextCheckbox .check {
-      opacity: 1;
-    }
-  }
-}
-
 #centerContent {
   max-width: 1000px;
   // min-width: 500px;
