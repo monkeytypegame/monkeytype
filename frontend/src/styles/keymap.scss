@@ -16,11 +16,11 @@
 
   .keymapKey {
     display: flex;
-    background-color: transparent;
+    background-color: var(--sub-alt-color);
     color: var(--sub-color);
     border-radius: var(--roundness);
-    border: 0.05rem solid;
-    border-color: var(--sub-color);
+    // border: 0.05rem solid;
+    // border-color: var(--sub-color);
     text-align: center;
     justify-content: center;
     align-items: center;
@@ -29,13 +29,13 @@
     position: relative;
 
     .bump {
-      width: 0.75rem;
-      height: 0.05rem;
-      background: var(--sub-color);
+      width: 0.5em;
+      height: 0.1em;
+      background: var(--bg-color);
       position: absolute;
-      border-radius: var(--roundness);
+      border-radius: 0.1em;
       // margin-top: 1.5rem;
-      bottom: 0.15rem;
+      bottom: 0.2em;
     }
 
     &.activeKey {

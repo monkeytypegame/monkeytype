@@ -89,7 +89,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
       .animate(
         {
           color: themecolors.sub,
-          backgroundColor: "transparent",
+          backgroundColor: themecolors.subAlt,
           borderColor: themecolors.sub,
         },
         SlowTimer.get() ? 0 : 500,
