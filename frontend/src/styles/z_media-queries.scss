@@ -462,6 +462,14 @@
 
 //700px
 @media only screen and (max-width: 43.75rem) {
+  #wordFilterPopupWrapper #wordFilterPopup {
+    .divider {
+      width: 100%;
+      height: 0.25rem;
+    }
+    grid-template-areas: "top" "right" "divider" "left" "bottom";
+    grid-template-columns: 1fr;
+  }
   .pageAccount .presetFilterButtons .buttons {
     grid-template-columns: 1fr;
   }
@@ -1035,8 +1043,12 @@
   #keymap {
     display: none !important;
   }
-  .pageLogin .side input {
-    width: 90vw;
+  .pageLogin .side {
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 90vw;
+    }
   }
   .page404 {
     .content {

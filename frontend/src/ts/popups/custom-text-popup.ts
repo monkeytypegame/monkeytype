@@ -266,7 +266,8 @@ function apply(): void {
     }
   }
 
-  CustomText.setText(text.split(CustomText.delimiter));
+  const words = text.split(CustomText.delimiter).filter((word) => word !== "");
+  CustomText.setText(words);
 
   CustomText.setWord(
     parseInt(($(`${popup} .wordcount input`).val() as string) || "-1")

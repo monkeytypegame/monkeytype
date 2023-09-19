@@ -1121,7 +1121,10 @@ $("#wordsInput").on("input", (event) => {
   }
 
   const popupVisible = Misc.isAnyPopupVisible();
-  if (popupVisible) return;
+  if (popupVisible) {
+    event.preventDefault();
+    return;
+  }
 
   TestInput.setCurrentNotAfk();
 

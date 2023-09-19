@@ -8,27 +8,21 @@ import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
 
 export function enableSignUpButton(): void {
-  $(".page.pageLogin .register.side .button").removeClass("disabled");
+  $(".page.pageLogin .register.side button").prop("disabled", false);
 }
 
 export function disableSignUpButton(): void {
-  $(".page.pageLogin .register.side .button").addClass("disabled");
-}
-
-export function enableSignInButton(): void {
-  $(".page.pageLogin .login.side .button").removeClass("disabled");
-}
-
-export function disableSignInButton(): void {
-  $(".page.pageLogin .login.side .button").addClass("disabled");
+  $(".page.pageLogin .register.side button").prop("disabled", true);
 }
 
 export function enableInputs(): void {
   $(".pageLogin input").prop("disabled", false);
+  $(".pageLogin button").prop("disabled", false);
 }
 
 export function disableInputs(): void {
   $(".pageLogin input").prop("disabled", true);
+  $(".pageLogin button").prop("disabled", true);
 }
 
 export function showPreloader(): void {
@@ -338,8 +332,8 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageLogin", "middle");
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    enableInputs();
+    enableSignUpButton();
   },
   async () => {
     //

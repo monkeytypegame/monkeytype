@@ -19,7 +19,6 @@ import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
 import {
-  EmailAuthProvider,
   GoogleAuthProvider,
   browserSessionPersistence,
   browserLocalPersistence,
@@ -29,8 +28,6 @@ import {
   setPersistence,
   updateProfile,
   linkWithPopup,
-  linkWithCredential,
-  reauthenticateWithPopup,
   getAdditionalUserInfo,
   User as UserType,
   Unsubscribe,
@@ -311,7 +308,6 @@ async function signIn(): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  LoginPage.disableSignInButton();
   const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
   const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
@@ -320,7 +316,6 @@ async function signIn(): Promise<void> {
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.enableSignUpButton();
-    LoginPage.enableSignInButton();
     return;
   }
 
@@ -346,7 +341,6 @@ async function signIn(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      LoginPage.enableSignInButton();
       LoginPage.updateSignupButton();
     });
 }
@@ -368,7 +362,6 @@ async function signInWithGoogle(): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  LoginPage.disableSignInButton();
   authListener();
   const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
     ? browserLocalPersistence
@@ -398,7 +391,6 @@ async function signInWithGoogle(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      LoginPage.enableSignInButton();
       LoginPage.updateSignupButton();
     });
 }
@@ -427,55 +419,6 @@ async function addGoogleAuth(): Promise<void> {
     });
 }
 
-export async function addPasswordAuth(
-  email: string,
-  password: string
-): Promise<void> {
-  if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
-    return;
-  }
-  Loader.show();
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "google.com")
-  ) {
-    try {
-      await reauthenticateWithPopup(user, gmailProvider);
-    } catch (e) {
-      Loader.hide();
-      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
-      return Notifications.add(message, -1);
-    }
-  }
-
-  const credential = EmailAuthProvider.credential(email, password);
-  linkWithCredential(user, credential)
-    .then(async function () {
-      Settings.updateAuthSections();
-      const response = await Ape.users.updateEmail(email, user.email as string);
-      Loader.hide();
-      if (response.status !== 200) {
-        return Notifications.add(
-          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
-            response.message,
-          -1
-        );
-      }
-      Notifications.add("Password authentication added", 1);
-    })
-    .catch(function (error) {
-      Loader.hide();
-      Notifications.add(
-        "Failed to add password authentication: " + error.message,
-        -1
-      );
-    });
-}
-
 export function signOut(): void {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
@@ -494,8 +437,8 @@ export function signOut(): void {
       AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
-      $(".pageLogin .button").removeClass("disabled");
-      $(".pageLogin input").prop("disabled", false);
+      LoginPage.enableSignUpButton();
+      LoginPage.enableInputs();
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
@@ -613,8 +556,6 @@ async function signUp(): Promise<void> {
     await sendVerificationEmail();
     AllTimeStats.clear();
     $("#menu .textButton.account .text").text(nname);
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
@@ -659,17 +600,12 @@ async function signUp(): Promise<void> {
   }
 }
 
-$(".pageLogin .login input").keyup((e) => {
-  if (e.key === "Enter") {
-    signIn();
-  }
-});
-
-$(".pageLogin .login .button.signIn").on("click", () => {
+$(".pageLogin .login form").on("submit", (e) => {
+  e.preventDefault();
   signIn();
 });
 
-$(".pageLogin .login .button.signInWithGoogle").on("click", () => {
+$(".pageLogin .login button.signInWithGoogle").on("click", () => {
   signInWithGoogle();
 });
 
@@ -692,15 +628,8 @@ $("#top .signInOut").on("click", () => {
   }
 });
 
-$(".pageLogin .register input").keyup((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  if (e.key === "Enter") {
-    signUp();
-  }
-});
-
-$(".pageLogin .register .button").on("click", () => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
+$(".pageLogin .register form").on("submit", (e) => {
+  e.preventDefault();
   signUp();
 });
 

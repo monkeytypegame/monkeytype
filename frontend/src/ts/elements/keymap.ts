@@ -89,7 +89,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
       .animate(
         {
           color: themecolors.sub,
-          backgroundColor: "transparent",
+          backgroundColor: themecolors.subAlt,
           borderColor: themecolors.sub,
         },
         SlowTimer.get() ? 0 : 500,
@@ -184,7 +184,7 @@ export async function refresh(
         }
 
         if (isMatrix) {
-          if (row !== "row5") {
+          if (row !== "row5" && lts.matrixShowRightColumn) {
             rowElement += `<div class="keymapKey"></div>`;
           } else {
             rowElement += `<div></div>`;

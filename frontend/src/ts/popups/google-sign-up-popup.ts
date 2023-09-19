@@ -140,7 +140,6 @@ async function apply(): Promise<void> {
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
-    LoginPage.enableSignInButton();
     LoginPage.enableSignUpButton();
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();

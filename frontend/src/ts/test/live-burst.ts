@@ -41,6 +41,7 @@ export function show(): void {
         125
       );
   }
+  state = true;
 }
 
 export function hide(): void {
