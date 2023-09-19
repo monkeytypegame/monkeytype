@@ -887,10 +887,4 @@ $("header #menu").on("click", ".textButton", (e) => {
   }
 });
 
-$(document).on("keypress", "header #menu .textButton", (e) => {
-  if (e.key === "Enter") {
-    $(e.currentTarget).trigger("click");
-  }
-});
-
 Skeleton.save(wrapperId);
