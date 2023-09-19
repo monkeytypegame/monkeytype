@@ -11,35 +11,35 @@
   --colorful-error-extra-color: #306230;
 }
 
-#menu {
+nav {
   gap: 0.5rem;
 }
 
-header.focus #menu .textButton {
+header.focus nav .textButton {
   background: var(--bg-color);
   size: 1rem;
 }
-header.focus #menu .textButton:nth-child(1) {
+header.focus nav .textButton:nth-child(1) {
   background: #e34c6c;
 }
-header.focus #menu:before,
-header.focus #menu:after {
+header.focus nav:before,
+header.focus nav:after {
   background: var(--sub-color);
 }
 
-#menu .textButton {
+nav .textButton {
   border-radius: 10rem !important;
   color: var(--bg-color);
   background: var(--main-color);
 }
 
 body.crtmode {
-  #menu .textButton {
+  nav .textButton {
     box-shadow: 3px 0 1px var(--crt-main-color-glow),
       -3px 0 var(--crt-main-color-glow), 0 0 3px;
   }
 
-  header.focus #menu .textButton {
+  header.focus nav .textButton {
     box-shadow: none;
     &:nth-child(1) {
       box-shadow: 3px 0 1px color-mix(in srgb, #e34c6c 20%, transparent),

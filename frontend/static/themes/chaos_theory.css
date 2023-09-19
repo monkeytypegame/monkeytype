@@ -73,9 +73,9 @@ footer .leftright .right .current-theme .text {
   align-content: right;
 }
 
-header.focus #menu .textButton,
-header.focus #menu:before,
-header.focus #menu:after {
+header.focus nav .textButton,
+header.focus nav:before,
+header.focus nav:after {
   background: var(--sub-color);
   -webkit-transform: rotateY(180deg) !important;
 }
@@ -98,85 +98,85 @@ footer .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
   -webkit-transform: rotateY(180deg);
   transition: 0.5s;
 }
-#menu {
+nav {
   gap: 0.5rem;
 }
 
-#menu .textButton {
+nav .textButton {
   border-radius: 10rem i !important;
   color: var(--bg-color);
   transition: 0.5s;
 }
 
-#menu .textButton:nth-child(1) {
+nav .textButton:nth-child(1) {
   background: #ab92e1;
 }
 
-#menu .textButton:nth-child(2) {
+nav .textButton:nth-child(2) {
   background: #f3ea5d;
 }
 
-#menu .textButton:nth-child(3) {
+nav .textButton:nth-child(3) {
   background: #7ae1bf;
 }
 
-#menu .textButton:nth-child(4) {
+nav .textButton:nth-child(4) {
   background: #ff5869;
 }
 
-#menu .textButton:nth-child(5) {
+nav .textButton:nth-child(5) {
   background: #fc76d9;
 }
 
-#menu .textButton:nth-child(6) {
+nav .textButton:nth-child(6) {
   background: #fc76d9;
 }
 
-#menu .textButton:nth-child(7) {
+nav .textButton:nth-child(7) {
   background: #ab92e1;
 }
 
-#menu .textButton:nth-child(8) {
+nav .textButton:nth-child(8) {
   background: #f3ea5d;
 }
 
 body.crtmode {
-  #menu .textButton:nth-child(1) {
+  nav .textButton:nth-child(1) {
     box-shadow: 3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
       -3px 0 color-mix(in srgb, #ab92e1 30%, transparent), 0 0 3px;
   }
 
-  #menu .textButton:nth-child(2) {
+  nav .textButton:nth-child(2) {
     box-shadow: 3px 0 1px color-mix(in srgb, #f3ea5d 20%, transparent),
       -3px 0 color-mix(in srgb, #f3ea5d 30%, transparent), 0 0 3px;
   }
 
-  #menu .textButton:nth-child(3) {
+  nav .textButton:nth-child(3) {
     box-shadow: 3px 0 1px color-mix(in srgb, #7ae1bf 20%, transparent),
       -3px 0 color-mix(in srgb, #7ae1bf 30%, transparent), 0 0 3px;
   }
 
-  #menu .textButton:nth-child(4) {
+  nav .textButton:nth-child(4) {
     box-shadow: 3px 0 1px color-mix(in srgb, #ff5869 20%, transparent),
       -3px 0 color-mix(in srgb, #ff5869 30%, transparent), 0 0 3px;
   }
 
-  #menu .textButton:nth-child(5) {
+  nav .textButton:nth-child(5) {
     box-shadow: 3px 0 1px color-mix(in srgb, #fc76d9 20%, transparent),
       -3px 0 color-mix(in srgb, #fc76d9 30%, transparent), 0 0 3px;
   }
 
-  #menu .textButton:nth-child(6) {
+  nav .textButton:nth-child(6) {
     box-shadow: 3px 0 1px color-mix(in srgb, #fc76d9 20%, transparent),
       -3px 0 color-mix(in srgb, #fc76d9 30%, transparent), 0 0 3px;
   }
 
-  #menu .textButton:nth-child(7) {
+  nav .textButton:nth-child(7) {
     box-shadow: 3px 0 1px color-mix(in srgb, #ab92e1 20%, transparent),
       -3px 0 color-mix(in srgb, #ab92e1 30%, transparent), 0 0 3px;
   }
 
-  #menu .textButton:nth-child(8) {
+  nav .textButton:nth-child(8) {
     box-shadow: 3px 0 1px color-mix(in srgb, #f3ea5d 20%, transparent),
       -3px 0 color-mix(in srgb, #f3ea5d 30%, transparent), 0 0 3px;
   }
@@ -187,7 +187,7 @@ body.crtmode {
       drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
   }
 
-  header.focus #menu .textButton {
+  header.focus nav .textButton {
     box-shadow: 3px 0 1px var(--crt-sub-color-glow),
       -3px 0 var(--crt-sub-color-glow);
   }

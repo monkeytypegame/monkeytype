@@ -337,9 +337,9 @@ function fillNotifications(): void {
 
 export function setNotificationBubbleVisible(tf: boolean): void {
   if (tf) {
-    $("header #menu .showAlerts .notificationBubble").removeClass("hidden");
+    $("header nav .showAlerts .notificationBubble").removeClass("hidden");
   } else {
-    $("header #menu .showAlerts .notificationBubble").addClass("hidden");
+    $("header nav .showAlerts .notificationBubble").addClass("hidden");
   }
 }
 
@@ -430,7 +430,7 @@ $("#alertsPopupWrapper .accountAlerts").on("click", ".deleteAll", () => {
   }
 });
 
-$("header #menu .showAlerts").on("click", () => {
+$("header nav .showAlerts").on("click", () => {
   show();
 });
 

@@ -19,19 +19,19 @@ header .config .group .buttons .textButton.active {
   color: #daa99b;
 }
 
-/* #menu .textButton:nth-child(1){
+/* nav .textButton:nth-child(1){
     color: #daa99b;
 }
 
-#menu .textButton:nth-child(2){
+nav .textButton:nth-child(2){
     color: #daa99b;
 }
 
-#menu .textButton:nth-child(3){
+nav .textButton:nth-child(3){
     color: #8fadc9;
 }
 
-#menu .textButton:nth-child(4),
-#menu .textButton:nth-child(5){
+nav .textButton:nth-child(4),
+nav .textButton:nth-child(5){
     color: #8fadc9;
 } */

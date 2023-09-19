@@ -41,7 +41,7 @@ header .logo .text {
 
 header .config .group .buttons .textButton.active,
 #result .stats .group,
-#menu .textButton:hover,
+nav .textButton:hover,
 header .config .group .buttons .textButton:hover,
 a:hover {
   animation: shadow-repeat 3s linear infinite forwards;

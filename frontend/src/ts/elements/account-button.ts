@@ -13,13 +13,11 @@ export function skipXpBreakdown(): void {
 
 export function loading(state: boolean): void {
   if (state) {
-    $("header #menu .account").css("opacity", 1).css("pointer-events", "none");
+    $("header nav .account").css("opacity", 1).css("pointer-events", "none");
 
     if (usingAvatar) {
-      $("header #menu .account .loading")
-        .css("opacity", 1)
-        .removeClass("hidden");
-      $("header #menu .account .avatar")
+      $("header nav .account .loading").css("opacity", 1).removeClass("hidden");
+      $("header nav .account .avatar")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -28,11 +26,11 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("header #menu .account .avatar").addClass("hidden");
+            $("header nav .account .avatar").addClass("hidden");
           }
         );
     } else {
-      $("header #menu .account .loading")
+      $("header nav .account .loading")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -42,7 +40,7 @@ export function loading(state: boolean): void {
           },
           100
         );
-      $("header #menu .account .user")
+      $("header nav .account .user")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -51,16 +49,16 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("header #menu .account .user").addClass("hidden");
+            $("header nav .account .user").addClass("hidden");
           }
         );
     }
   } else {
-    $("header #menu .account").css("opacity", 1).css("pointer-events", "auto");
+    $("header nav .account").css("opacity", 1).css("pointer-events", "auto");
 
     if (usingAvatar) {
-      $("header #menu .account .loading").css("opacity", 1).addClass("hidden");
-      $("header #menu .account .avatar")
+      $("header nav .account .loading").css("opacity", 1).addClass("hidden");
+      $("header nav .account .avatar")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -71,7 +69,7 @@ export function loading(state: boolean): void {
           100
         );
     } else {
-      $("header #menu .account .loading")
+      $("header nav .account .loading")
         .stop(true, true)
         .css({ opacity: 1 })
         .animate(
@@ -80,10 +78,10 @@ export function loading(state: boolean): void {
           },
           100,
           () => {
-            $("header #menu .account .loading").addClass("hidden");
+            $("header nav .account .loading").addClass("hidden");
           }
         );
-      $("header #menu .account .user")
+      $("header nav .account .user")
         .stop(true, true)
         .removeClass("hidden")
         .css({ opacity: 0 })
@@ -104,8 +102,8 @@ export async function update(
 ): Promise<void> {
   if (Auth?.currentUser) {
     if (xp !== undefined) {
-      $("header #menu .level").text(Math.floor(Misc.getLevel(xp)));
-      $("header #menu .bar").css({
+      $("header nav .level").text(Math.floor(Misc.getLevel(xp)));
+      $("header nav .bar").css({
         width: (Misc.getLevel(xp) % 1) * 100 + "%",
       });
     }
@@ -113,22 +111,22 @@ export async function update(
       Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
         (discordAvatarUrl) => {
           if (discordAvatarUrl) {
-            $("header #menu .account .avatar").css(
+            $("header nav .account .avatar").css(
               "background-image",
               `url(${discordAvatarUrl})`
             );
             usingAvatar = true;
 
-            $("header #menu .account .user").addClass("hidden");
-            $("header #menu .account .avatar").removeClass("hidden");
+            $("header nav .account .user").addClass("hidden");
+            $("header nav .account .avatar").removeClass("hidden");
           }
         }
       );
     } else {
-      $("header #menu .account .avatar").addClass("hidden");
-      $("header #menu .account .user").removeClass("hidden");
+      $("header nav .account .avatar").addClass("hidden");
+      $("header nav .account .user").removeClass("hidden");
     }
-    $("#menu .textButton.account")
+    $("nav .textButton.account")
       .removeClass("hidden")
       .css({ opacity: 0 })
       .animate(
@@ -138,7 +136,7 @@ export async function update(
         125
       );
   } else {
-    $("#menu .textButton.account")
+    $("nav .textButton.account")
       .css({ opacity: 1 })
       .animate(
         {
@@ -146,7 +144,7 @@ export async function update(
         },
         125,
         () => {
-          $("#menu .textButton.account").addClass("hidden");
+          $("nav .textButton.account").addClass("hidden");
         }
       );
   }
@@ -165,12 +163,12 @@ export async function updateXpBar(
   if (!snapshot) return;
 
   if (skipBreakdown) {
-    $("#menu .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
-    $("#menu .xpBar")
+    $("nav .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
+    $("nav .xpBar")
       .stop(true, true)
       .css("opacity", 1)
       .animate({ opacity: 0 }, SlowTimer.get() ? 0 : 250, () => {
-        $("#menu .xpBar .xpGain").text(``);
+        $("nav .xpBar .xpGain").text(``);
       });
     return;
   }
@@ -180,12 +178,12 @@ export async function updateXpBar(
 
   await Promise.all([xpBarPromise, xpBreakdownPromise]);
   await Misc.sleep(2000);
-  $("#menu .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
-  $("#menu .xpBar")
+  $("nav .level").text(Math.floor(Misc.getLevel(snapshot.xp)));
+  $("nav .xpBar")
     .stop(true, true)
     .css("opacity", 1)
     .animate({ opacity: 0 }, SlowTimer.get() ? 0 : 250, () => {
-      $("#menu .xpBar .xpGain").text(``);
+      $("nav .xpBar .xpGain").text(``);
     });
 }
 
@@ -194,13 +192,13 @@ async function animateXpBreakdown(
   breakdown?: Record<string, number>
 ): Promise<void> {
   if (!breakdown) {
-    $("#menu .xpBar .xpGain").text(`+${addedXp}`);
+    $("nav .xpBar .xpGain").text(`+${addedXp}`);
     return;
   }
   const delay = 1000;
   let total = 0;
-  const xpGain = $("#menu .xpBar .xpGain");
-  const xpBreakdown = $("#menu .xpBar .xpBreakdown");
+  const xpGain = $("nav .xpBar .xpGain");
+  const xpBreakdown = $("nav .xpBar .xpBreakdown");
   xpBreakdown.empty();
 
   async function append(string: string): Promise<void> {
@@ -355,10 +353,10 @@ async function animateXpBar(
 ): Promise<void> {
   const difference = endingLevel - startingLevel;
 
-  $("#menu .xpBar").stop(true, true).css("opacity", 0);
+  $("nav .xpBar").stop(true, true).css("opacity", 0);
 
   await Misc.promiseAnimation(
-    $("#menu .xpBar"),
+    $("nav .xpBar"),
     {
       opacity: "1",
     },
@@ -366,7 +364,7 @@ async function animateXpBar(
     "linear"
   );
 
-  const barEl = $("#menu .xpBar .bar");
+  const barEl = $("nav .xpBar .bar");
 
   barEl.css("width", `${(startingLevel % 1) * 100}%`);
 
@@ -444,7 +442,7 @@ async function animateXpBar(
 
 async function flashLevel(): Promise<void> {
   const themecolors = await getAll();
-  const barEl = $("#menu .level");
+  const barEl = $("nav .level");
 
   barEl.text(parseInt(barEl.text()) + 1);
 

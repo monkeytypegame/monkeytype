@@ -351,7 +351,7 @@
     line-height: 1.5rem;
     margin-top: -0.1em;
   }
-  #menu {
+  nav {
     gap: 0;
   }
   #testConfig {
@@ -510,7 +510,7 @@
 //650px
 @media only screen and (max-width: 40.625rem) {
   header {
-    #menu {
+    nav {
       .textButton.account {
         .text {
           display: none;
@@ -745,7 +745,7 @@
         display: none;
       }
     }
-    // #menu {
+    // nav {
     //   .textButton.account {
     //     .text {
     //       display: none;
@@ -895,7 +895,7 @@
   }
 
   header {
-    #menu {
+    nav {
       font-size: 1rem;
     }
   }
@@ -980,7 +980,7 @@
     }
   }
 
-  header #menu {
+  header nav {
     font-size: 0.75rem;
   }
 

@@ -16,7 +16,7 @@ const commands: MonkeyTypes.Command[] = [
     display: "View Leaderboards",
     icon: "fa-crown",
     exec: (): void => {
-      $("header #menu .textButton.view-leaderboards").trigger("click");
+      $("header nav .textButton.view-leaderboards").trigger("click");
     },
   },
   {
@@ -42,7 +42,7 @@ const commands: MonkeyTypes.Command[] = [
     icon: "fa-user",
     alias: "stats",
     exec: (): void => {
-      $("header #menu .textButton.view-account").hasClass("hidden")
+      $("header nav .textButton.view-account").hasClass("hidden")
         ? navigate("/login")
         : navigate("/account");
     },

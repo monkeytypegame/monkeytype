@@ -100,7 +100,7 @@ async function getDataAndInit(): Promise<boolean> {
     const msg = e.message || e;
     Notifications.add("Failed to get user data: " + msg, -1);
 
-    $("header #menu .account").css("opacity", 1);
+    $("header nav .account").css("opacity", 1);
     return false;
   }
   if (ActivePage.get() === "loading") {
@@ -110,7 +110,7 @@ async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
-  $("#menu .textButton.account > .text").text(snapshot.name);
+  $("nav .textButton.account > .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -264,7 +264,7 @@ if (Auth && ConnectionState.get()) {
     }
   });
 } else {
-  $("#menu .signInOut").addClass("hidden");
+  $("nav .signInOut").addClass("hidden");
 
   $("document").ready(async () => {
     // await UpdateConfig.loadPromise;
@@ -557,7 +557,7 @@ async function signUp(): Promise<void> {
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendVerificationEmail();
     AllTimeStats.clear();
-    $("#menu .textButton.account .text").text(nname);
+    $("nav .textButton.account .text").text(nname);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {

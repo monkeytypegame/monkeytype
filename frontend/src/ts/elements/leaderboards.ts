@@ -881,7 +881,7 @@ $(document).on("keydown", (event) => {
   }
 });
 
-$("header #menu").on("click", ".textButton", (e) => {
+$("header nav").on("click", ".textButton", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
     show();
   }

@@ -63,7 +63,7 @@ header .button.discord.dotHidden::after {
 .logo .bottom,
 header .config .group .buttons .textButton.active,
 #result .stats .group .bottom,
-#menu .textButton:hover,
+nav .textButton:hover,
 header .config .group .buttons .textButton:hover,
 a:hover,
 #words.flipped .word {

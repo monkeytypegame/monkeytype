@@ -579,7 +579,7 @@ list["updateName"] = new SimplePopup(
         reloadAfter(2);
       }
     }
-    $("#menu .textButton.account .text").text(newName);
+    $("nav .textButton.account .text").text(newName);
 
     return {
       status: 1,
