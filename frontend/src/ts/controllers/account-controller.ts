@@ -634,15 +634,8 @@ $("#top .signInOut").on("click", () => {
   }
 });
 
-$(".pageLogin .register input").keyup((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  if (e.key === "Enter") {
-    signUp();
-  }
-});
-
-$(".pageLogin .register .button").on("click", () => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
+$(".pageLogin .register form").on("submit", (e) => {
+  e.preventDefault();
   signUp();
 });
 
