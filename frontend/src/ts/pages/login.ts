@@ -16,11 +16,11 @@ export function disableSignUpButton(): void {
 }
 
 export function enableSignInButton(): void {
-  $(".page.pageLogin .login.side .button").removeClass("disabled");
+  $(".page.pageLogin .login.side button").prop("disabled", false);
 }
 
 export function disableSignInButton(): void {
-  $(".page.pageLogin .login.side .button").addClass("disabled");
+  $(".page.pageLogin .login.side button").prop("disabled", true);
 }
 
 export function enableInputs(): void {
@@ -338,8 +338,9 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageLogin", "middle");
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    enableInputs();
+    enableSignInButton();
+    enableSignUpButton();
   },
   async () => {
     //

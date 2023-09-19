@@ -442,8 +442,9 @@ export function signOut(): void {
       AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
-      $(".pageLogin .button").removeClass("disabled");
-      $(".pageLogin input").prop("disabled", false);
+      LoginPage.enableSignInButton();
+      LoginPage.enableSignUpButton();
+      LoginPage.enableInputs();
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
@@ -561,8 +562,6 @@ async function signUp(): Promise<void> {
     await sendVerificationEmail();
     AllTimeStats.clear();
     $("#menu .textButton.account .text").text(nname);
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
@@ -607,17 +606,12 @@ async function signUp(): Promise<void> {
   }
 }
 
-$(".pageLogin .login input").keyup((e) => {
-  if (e.key === "Enter") {
-    signIn();
-  }
-});
-
-$(".pageLogin .login .button.signIn").on("click", () => {
+$(".pageLogin .login form").on("submit", (e) => {
+  e.preventDefault();
   signIn();
 });
 
-$(".pageLogin .login .button.signInWithGoogle").on("click", () => {
+$(".pageLogin .login button.signInWithGoogle").on("click", () => {
   signInWithGoogle();
 });
 
