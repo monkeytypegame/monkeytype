@@ -148,7 +148,7 @@ export function getHTMLById(
 
   let icon = "";
   if (badge?.icon) {
-    icon = `<i class="fas ${badge.icon}"></i>`;
+    icon = `<i class="fas ${noText ? "fa-fw" : ""} ${badge.icon}"></i>`;
   } else {
     icon = `<i class="fas fa-question"></i>`;
   }
