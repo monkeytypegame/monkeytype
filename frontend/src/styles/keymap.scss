@@ -456,11 +456,9 @@
       transform: rotate(-10deg) !important;
       margin-left: -7px !important;
       display: flex;
-      background-color: transparent;
+      background-color: var(--sub-alt-color);
       color: var(--sub-color);
       border-radius: var(--roundness);
-      border: 0.05rem solid;
-      border-color: var(--sub-color);
       text-align: center;
       justify-content: center;
       align-items: center;
