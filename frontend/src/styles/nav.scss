@@ -118,26 +118,6 @@
   }
 }
 
-#top.focus #menu {
-  color: transparent !important;
-  .notificationBubble {
-    opacity: 0 !important;
-  }
-}
-
-#top.focus #menu .textButton,
-#top.focus #menu button {
-  color: transparent !important;
-}
-
-#top.focus #menu .textButton.account .avatar {
-  opacity: 0 !important;
-}
-
-#top.focus #menu .levelAndBar {
-  opacity: 0 !important;
-}
-
 #top {
   grid-template-areas: "logo menu";
   line-height: 2.3rem;
@@ -298,6 +278,19 @@
 
     .config {
       opacity: 0 !important;
+    }
+
+    #menu {
+      color: transparent;
+
+      .textButton,
+      button {
+        color: transparent;
+      }
+      .avatar,
+      .levelAndBar {
+        opacity: 0 !important;
+      }
     }
   }
 }
