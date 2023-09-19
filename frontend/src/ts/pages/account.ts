@@ -796,8 +796,10 @@ async function fillContent(): Promise<void> {
   }
 
   const wpms = chartData.map((r) => r.y);
-  const minWpmChartVal = Math.min(...wpms);
-  const maxWpmChartVal = Math.max(...wpms);
+  const minWpm = Math.min(...wpms);
+  const maxWpm = Math.max(...wpms);
+  const minWpmChartVal = isFinite(minWpm) ? minWpm : 0;
+  const maxWpmChartVal = isFinite(maxWpm) ? maxWpm : 0;
   const maxWpmChartValWithBuffer =
     Math.floor(maxWpmChartVal) +
     (wpmStepSize - (Math.floor(maxWpmChartVal) % wpmStepSize));
