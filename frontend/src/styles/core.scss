@@ -79,7 +79,7 @@ html {
 a {
   display: inline-block;
   color: var(--sub-color);
-  transition: 0.125s;
+  transition: color 0.125s, opacity 0.125s, background 0.125s;
   &:hover {
     color: var(--text-color);
   }
