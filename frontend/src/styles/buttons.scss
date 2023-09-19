@@ -1,0 +1,129 @@
+a.button {
+  text-decoration: none;
+}
+
+.button {
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background 0.125s, color 0.125s;
+  padding: 0.5em;
+  border-radius: var(--roundness);
+  background: var(--sub-alt-color);
+  text-align: center;
+  -webkit-user-select: none;
+  user-select: none;
+  align-content: center;
+  height: -moz-min-content;
+  height: min-content;
+  line-height: 1.25em;
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1em;
+
+  &.active {
+    background: var(--main-color);
+    color: var(--bg-color);
+    &:hover {
+      background: var(--text-color);
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.33;
+    cursor: default;
+    pointer-events: none;
+    &:hover {
+      background: var(--text-color);
+      outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
+
+  &:hover {
+    color: var(--bg-color);
+    background: var(--text-color);
+    outline: none;
+  }
+  &:focus-visible {
+    box-shadow: 0 0 0 0.15em var(--text-color);
+    outline: none;
+  }
+  &:active {
+    background: var(--sub-color);
+    color: var(--bg-color);
+  }
+}
+
+.textButton {
+  color: var(--sub-color);
+  cursor: pointer;
+  transition: background 0.125s, color 0.125s;
+  padding: 0.5em;
+  border-radius: var(--roundness);
+  text-align: center;
+  -webkit-user-select: none;
+  user-select: none;
+  align-content: center;
+  height: -moz-min-content;
+  height: min-content;
+  line-height: 1.25em;
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  font-size: 1em;
+  width: -moz-max-content;
+  width: max-content;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 0.25em;
+  text-decoration: none;
+
+  .fas,
+  .far {
+    display: grid;
+    place-content: center center;
+  }
+
+  &.active {
+    color: var(--main-color);
+    &:hover {
+      color: var(--text-color);
+    }
+    &:active {
+      color: var(--sub-color);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.33;
+    cursor: default;
+    pointer-events: none;
+    &:hover {
+      background: var(--text-color);
+      outline: none;
+    }
+    &:active {
+      background: var(--sub-color);
+      color: var(--bg-color);
+    }
+  }
+
+  &:hover {
+    color: var(--text-color);
+  }
+  &:focus {
+    color: var(--text-color);
+    outline: none;
+  }
+  &:active {
+    color: var(--sub-color);
+  }
+}
