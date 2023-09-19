@@ -34,6 +34,7 @@
     &.account {
       position: relative;
       align-items: center;
+      gap: 0.25em;
       .loading,
       .user,
       .avatar {
