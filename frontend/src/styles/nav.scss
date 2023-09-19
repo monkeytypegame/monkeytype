@@ -35,6 +35,8 @@
       position: relative;
       align-items: center;
       gap: 0.25em;
+      display: grid;
+      grid-auto-flow: column;
       .loading,
       .user,
       .avatar {
