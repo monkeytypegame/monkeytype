@@ -15,14 +15,6 @@ export function disableSignUpButton(): void {
   $(".page.pageLogin .register.side button").prop("disabled", true);
 }
 
-export function enableSignInButton(): void {
-  $(".page.pageLogin .login.side button").prop("disabled", false);
-}
-
-export function disableSignInButton(): void {
-  $(".page.pageLogin .login.side button").prop("disabled", true);
-}
-
 export function enableInputs(): void {
   $(".pageLogin input").prop("disabled", false);
   $(".pageLogin button").prop("disabled", false);

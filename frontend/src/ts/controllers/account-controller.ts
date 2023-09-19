@@ -308,7 +308,6 @@ async function signIn(): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  LoginPage.disableSignInButton();
   const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
   const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
@@ -317,7 +316,6 @@ async function signIn(): Promise<void> {
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.enableSignUpButton();
-    LoginPage.enableSignInButton();
     return;
   }
 
@@ -343,7 +341,6 @@ async function signIn(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      LoginPage.enableSignInButton();
       LoginPage.updateSignupButton();
     });
 }
@@ -365,7 +362,6 @@ async function signInWithGoogle(): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  LoginPage.disableSignInButton();
   authListener();
   const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
     ? browserLocalPersistence
@@ -395,7 +391,6 @@ async function signInWithGoogle(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      LoginPage.enableSignInButton();
       LoginPage.updateSignupButton();
     });
 }
@@ -442,7 +437,6 @@ export function signOut(): void {
       AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
-      LoginPage.enableSignInButton();
       LoginPage.enableSignUpButton();
       LoginPage.enableInputs();
       $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
