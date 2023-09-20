@@ -17,13 +17,6 @@ footer {
     }
   }
 
-  #supportMeButton {
-    &:hover {
-      color: var(--text-color);
-      cursor: pointer;
-    }
-  }
-
   #commandLineMobileButton {
     display: none;
     top: -4rem;
