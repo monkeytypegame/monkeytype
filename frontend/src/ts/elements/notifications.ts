@@ -153,7 +153,7 @@ class Notification {
             });
           }
         );
-      $(`#notificationCenter .notif[id='${this.id}']`).hover(() => {
+      $(`#notificationCenter .notif[id='${this.id}']`).on("hover", () => {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
       });
     } else if (this.type === "banner") {

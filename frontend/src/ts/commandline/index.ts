@@ -698,7 +698,7 @@ $(document).on("keydown", (e) => {
         (e.key === "p" || e.key === "n" || e.key === "j" || e.key === "k"))
     ) {
       e.preventDefault();
-      $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
+      $("#commandLineWrapper #commandLine .suggestions .entry").off(
         "mouseenter mouseleave"
       );
       const entries = $(".suggestions .entry");
