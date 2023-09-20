@@ -96,20 +96,20 @@ footer {
       transition: 0.125s;
     }
   }
-}
 
-footer.focus {
-  .keyTips {
-    opacity: 0 !important;
-  }
-  .textButton {
-    opacity: 0 !important;
-  }
-  #newVersionIndicator {
-    opacity: 0 !important;
-  }
-  #commandLineMobileButton {
-    opacity: 0 !important;
-    pointer-events: none !important;
+  &.focus {
+    .keyTips {
+      opacity: 0 !important;
+    }
+    .textButton {
+      opacity: 0 !important;
+    }
+    #newVersionIndicator {
+      opacity: 0 !important;
+    }
+    #commandLineMobileButton {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
   }
 }
