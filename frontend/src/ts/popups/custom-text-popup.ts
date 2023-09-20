@@ -236,10 +236,6 @@ function apply(): void {
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
-  text = text.replace(/\\\\t/gm, "\t");
-  text = text.replace(/\\\\n/gm, "\n");
-  text = text.replace(/\\t/gm, "\t");
-  text = text.replace(/\\n/gm, "\n");
   text = text.replace(/ +/gm, " ");
   // text = text.replace(/(\r\n)+/g, "\r\n");
   // text = text.replace(/(\n)+/g, "\n");
