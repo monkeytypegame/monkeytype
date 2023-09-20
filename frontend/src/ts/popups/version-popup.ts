@@ -65,7 +65,7 @@ $("footer").on("click", "#newVersionIndicator", () => {
   $("#newVersionIndicator").addClass("hidden");
 });
 
-$("footer").on("click", ".version", (e) => {
+$("footer").on("click", "button.currentVersion", (e) => {
   if (e.shiftKey) return;
   show();
 });

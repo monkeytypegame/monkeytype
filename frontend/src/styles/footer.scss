@@ -83,9 +83,11 @@ footer {
     }
   }
 
-  #versionGroup {
+  .currentVersion {
     display: flex;
     #newVersionIndicator {
+      margin: 0;
+      font-size: unset;
       background-color: var(--main-color);
       border-radius: calc(var(--roundness) / 2);
       color: var(--bg-color);
