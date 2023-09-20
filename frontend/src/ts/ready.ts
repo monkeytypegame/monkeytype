@@ -15,15 +15,15 @@ import Konami from "konami";
 
 if (Misc.isLocalhost()) {
   $("head title").text("localhost");
-  $("#bottom .version .text").text("localhost");
-  $("#bottom #versionGroup").removeClass("hidden");
+  $("footer .version .text").text("localhost");
+  $("footer #versionGroup").removeClass("hidden");
   $("body").prepend(
     `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
   Misc.getLatestReleaseFromGitHub().then((v) => {
-    $("#bottom .version .text").text(v);
-    $("#bottom #versionGroup").removeClass("hidden");
+    $("footer .version .text").text(v);
+    $("footer #versionGroup").removeClass("hidden");
     NewVersionNotification.show(v);
   });
 }

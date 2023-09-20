@@ -1,4 +1,4 @@
-#menu {
+nav {
   font-size: 1rem;
   line-height: 1rem;
   color: var(--sub-color);
@@ -8,11 +8,12 @@
   // margin-bottom: -0.4rem;
   width: -moz-fit-content;
   width: fit-content;
+  width: 100%;
+  grid-template-columns: auto auto auto auto 1fr auto;
 
   .textButton {
     .text {
       font-size: 0.65em;
-      line-height: 0rem;
       align-self: center;
     }
 
@@ -33,6 +34,9 @@
     &.account {
       position: relative;
       align-items: center;
+      gap: 0.25em;
+      display: grid;
+      grid-auto-flow: column;
       .loading,
       .user,
       .avatar {
@@ -116,36 +120,13 @@
   }
 }
 
-#top.focus #menu .textButton.discord::after {
-  background: transparent;
-}
-
-#top.focus #menu {
-  color: transparent !important;
-  .notificationBubble {
-    opacity: 0 !important;
-  }
-}
-
-#top.focus #menu .textButton {
-  color: transparent !important;
-}
-
-#top.focus #menu .textButton.account .avatar {
-  opacity: 0 !important;
-}
-
-#top.focus #menu .levelAndBar {
-  opacity: 0 !important;
-}
-
-#top {
+header {
   grid-template-areas: "logo menu";
   line-height: 2.3rem;
   font-size: 2.3rem;
   /* text-align: center; */
   // transition: 0.25s;
-  padding: 0 5px;
+  // padding: 0 5px;
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: auto 1fr;
@@ -161,6 +142,12 @@
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.5rem;
+    transition: none;
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 0.35rem 0.25rem;
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
 
     .icon {
       width: 2.5rem;
@@ -180,7 +167,7 @@
         font-size: 0.325em;
         line-height: 0.325em;
         color: var(--sub-color);
-        transition: color 0.25s, opacity 0.25s;
+        transition: color 0.125s, opacity 0.125s;
       }
       position: relative;
       font-size: 2rem;
@@ -201,6 +188,15 @@
       color: var(--main-color);
       transition: 0.25s;
       cursor: pointer;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+      border-radius: var(--roundness);
+      .text .top {
+        opacity: 0;
+        transition: none;
+      }
     }
   }
 
@@ -284,6 +280,19 @@
 
     .config {
       opacity: 0 !important;
+    }
+
+    nav {
+      color: transparent;
+
+      .textButton,
+      button {
+        color: transparent;
+      }
+      .avatar,
+      .levelAndBar {
+        opacity: 0 !important;
+      }
     }
   }
 }

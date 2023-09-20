@@ -27,6 +27,15 @@ declare namespace MonkeyTypes {
     languages: string[];
   }
 
+  interface AddNotificationOptions {
+    important?: boolean;
+    duration?: number;
+    customTitle?: string;
+    customIcon?: string;
+    closeCallback?: () => void;
+    allowHTML?: boolean;
+  }
+
   type Accents = [string, string][];
 
   interface LanguageObject {
@@ -818,6 +827,7 @@ declare namespace MonkeyTypes {
 
   interface Layout {
     keymapShowTopRow: boolean;
+    matrixShowRightColumn?: boolean;
     type: "iso" | "ansi" | "ortho" | "matrix";
     keys: Keys;
   }

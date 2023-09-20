@@ -759,8 +759,8 @@ export async function update(
   }
 
   if (GlarsesMode.get()) {
-    $("#middle #result .noStressMessage").remove();
-    $("#middle #result").prepend(`
+    $("main #result .noStressMessage").remove();
+    $("main #result").prepend(`
 
       <div class='noStressMessage' style="
         text-align: center;
@@ -772,28 +772,28 @@ export async function update(
       </div>
 
     `);
-    $("#middle #result .stats").addClass("hidden");
-    $("#middle #result .chart").addClass("hidden");
-    $("#middle #result #resultWordsHistory").addClass("hidden");
-    $("#middle #result #resultReplay").addClass("hidden");
-    $("#middle #result .loginTip").addClass("hidden");
-    $("#middle #result #showWordHistoryButton").addClass("hidden");
-    $("#middle #result #watchReplayButton").addClass("hidden");
-    $("#middle #result #saveScreenshotButton").addClass("hidden");
+    $("main #result .stats").addClass("hidden");
+    $("main #result .chart").addClass("hidden");
+    $("main #result #resultWordsHistory").addClass("hidden");
+    $("main #result #resultReplay").addClass("hidden");
+    $("main #result .loginTip").addClass("hidden");
+    $("main #result #showWordHistoryButton").addClass("hidden");
+    $("main #result #watchReplayButton").addClass("hidden");
+    $("main #result #saveScreenshotButton").addClass("hidden");
 
     console.log(
       `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`
     );
   } else {
-    $("#middle #result .stats").removeClass("hidden");
-    $("#middle #result .chart").removeClass("hidden");
-    // $("#middle #result #resultWordsHistory").removeClass("hidden");
+    $("main #result .stats").removeClass("hidden");
+    $("main #result .chart").removeClass("hidden");
+    // $("main #result #resultWordsHistory").removeClass("hidden");
     if (!Auth?.currentUser) {
-      $("#middle #result .loginTip").removeClass("hidden");
+      $("main #result .loginTip").removeClass("hidden");
     }
-    $("#middle #result #showWordHistoryButton").removeClass("hidden");
-    $("#middle #result #watchReplayButton").removeClass("hidden");
-    $("#middle #result #saveScreenshotButton").removeClass("hidden");
+    $("main #result #showWordHistoryButton").removeClass("hidden");
+    $("main #result #watchReplayButton").removeClass("hidden");
+    $("main #result #saveScreenshotButton").removeClass("hidden");
   }
 
   if (window.scrollY > 0) {

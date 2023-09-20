@@ -1,11 +1,11 @@
-#bottom {
+footer {
   position: relative;
   text-align: center;
   line-height: 1rem;
   font-size: 0.75rem;
   color: var(--sub-color);
   // transition: 0.25s;
-  padding: 0 5px;
+  // padding: 0 5px;
 
   // margin-bottom: 2rem;
   .keyTips {
@@ -101,7 +101,7 @@
   }
 }
 
-#bottom.focus {
+footer.focus {
   .keyTips {
     opacity: 0 !important;
   }

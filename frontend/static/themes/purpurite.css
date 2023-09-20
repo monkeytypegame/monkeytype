@@ -11,14 +11,14 @@
   --colorful-error-extra-color: #ff6666;
 }
 
-#menu .textButton {
+nav .textButton {
   color: #99ffdd;
 }
 
-#bottom .leftright div {
+footer .leftright div {
   color: #99ffdd;
 }
 
-#bottom .leftright i {
+footer .leftright i {
   color: #99ffdd;
 }

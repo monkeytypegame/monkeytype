@@ -881,15 +881,9 @@ $(document).on("keydown", (event) => {
   }
 });
 
-$("#top #menu").on("click", ".textButton", (e) => {
+$("header nav").on("click", ".textButton", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
     show();
-  }
-});
-
-$(document).on("keypress", "#top #menu .textButton", (e) => {
-  if (e.key === "Enter") {
-    $(e.currentTarget).trigger("click");
   }
 });
 

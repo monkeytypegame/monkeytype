@@ -154,7 +154,7 @@
   #quoteRatePopup {
     width: 90vw !important;
   }
-  #bottom {
+  footer {
     .leftright {
       .left {
         gap: 0.25rem 1rem;
@@ -346,12 +346,12 @@
 
 //800px
 @media only screen and (max-width: 50rem) {
-  #top .logo .text {
+  header .logo .text {
     font-size: 1.5rem;
     line-height: 1.5rem;
     margin-top: -0.1em;
   }
-  #menu {
+  nav {
     gap: 0;
   }
   #testConfig {
@@ -462,6 +462,14 @@
 
 //700px
 @media only screen and (max-width: 43.75rem) {
+  #wordFilterPopupWrapper #wordFilterPopup {
+    .divider {
+      width: 100%;
+      height: 0.25rem;
+    }
+    grid-template-areas: "top" "right" "divider" "left" "bottom";
+    grid-template-columns: 1fr;
+  }
   .pageAccount .presetFilterButtons .buttons {
     grid-template-columns: 1fr;
   }
@@ -501,8 +509,8 @@
 
 //650px
 @media only screen and (max-width: 40.625rem) {
-  #top {
-    #menu {
+  header {
+    nav {
       .textButton.account {
         .text {
           display: none;
@@ -685,7 +693,7 @@
   .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr;
   }
-  #top .logo .bottom {
+  header .logo .bottom {
     margin-top: 0;
   }
   .pageLogin {
@@ -693,7 +701,7 @@
     gap: 5rem;
     grid-auto-flow: unset;
   }
-  #middle {
+  main {
     #result {
       grid-template-areas:
         "stats stats"
@@ -730,14 +738,14 @@
 
 //550px
 @media only screen and (max-width: 34.375rem) {
-  #top {
+  header {
     .logo {
       grid-template-columns: auto;
       .text {
         display: none;
       }
     }
-    // #menu {
+    // nav {
     //   .textButton.account {
     //     .text {
     //       display: none;
@@ -813,6 +821,13 @@
       border-radius: 0.3rem;
       font-size: 0.6rem;
     }
+
+    &.split_matrix .keymapSplitSpacer {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 0.3rem;
+      font-size: 0.6rem;
+    }
   }
 
   #contactPopupWrapper #contactPopup .buttons .button .text {
@@ -879,12 +894,12 @@
     }
   }
 
-  #top {
-    #menu {
+  header {
+    nav {
       font-size: 1rem;
     }
   }
-  #bottom {
+  footer {
     .leftright {
       .left {
         gap: 0.25rem 1rem;
@@ -901,7 +916,7 @@
     }
   }
   #centerContent {
-    #top {
+    header {
       // grid-template-columns: 1fr auto;
       .desktopConfig {
         display: none;
@@ -913,7 +928,7 @@
     gap: 1rem;
     padding: 1rem;
   }
-  #middle {
+  main {
     #result {
       .stats {
         grid-template-areas:
@@ -957,7 +972,7 @@
 
 //400px
 @media only screen and (max-width: 25rem) {
-  #top .config {
+  header .config {
     grid-gap: 0.25rem;
     .group .buttons {
       font-size: 0.65rem;
@@ -965,11 +980,11 @@
     }
   }
 
-  #top #menu {
+  header nav {
     font-size: 0.75rem;
   }
 
-  #bottom {
+  footer {
     font-size: 0.65rem;
     .leftright {
       grid-template-columns: 1fr 1fr;
@@ -1028,8 +1043,12 @@
   #keymap {
     display: none !important;
   }
-  .pageLogin .side input {
-    width: 90vw;
+  .pageLogin .side {
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 90vw;
+    }
   }
   .page404 {
     .content {

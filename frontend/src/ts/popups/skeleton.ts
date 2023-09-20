@@ -16,10 +16,12 @@ export function remove(id: string): void {
   }
 }
 
-export function append(id: string, parentOverride = ""): void {
+type ParentOverride = "main";
+
+export function append(id: string, parentOverride?: ParentOverride): void {
   const popup = skeletons.get(id) as HTMLElement;
   if (parentOverride) {
-    (<HTMLElement>document.getElementById(parentOverride)).append(popup);
+    (<HTMLElement>document.querySelector(parentOverride)).append(popup);
   } else {
     parent.append(popup);
   }

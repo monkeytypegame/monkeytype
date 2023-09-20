@@ -1,5 +1,5 @@
-<div id="top">
-  <div class="logo">
+<header>
+  <a class="logo" href="/" router-link>
     <div class="icon">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -42,12 +42,11 @@
       <div class="top">monkey see</div>
       monkeytype
     </h1>
-  </div>
-  <div id="menu">
+  </a>
+  <nav>
     <a
       id="startTestButton"
       class="textButton view-start"
-      tabindex="2"
       href="/"
       onclick="this.blur();"
       router-link
@@ -57,19 +56,17 @@
         <i class="fas fa-fw fa-keyboard"></i>
       </div>
     </a>
-    <a
+    <button
       class="textButton leaderboards view-leaderboards"
-      tabindex="2"
       onclick="this.blur();"
       title="leaderboard"
     >
       <div class="icon">
         <i class="fas fa-fw fa-crown"></i>
       </div>
-    </a>
+    </button>
     <a
       class="textButton view-about"
-      tabindex="2"
       href="/about"
       onclick="this.blur();"
       router-link
@@ -81,7 +78,6 @@
     </a>
     <!-- <a
       class="textButton discord"
-      tabindex="2"
       href="https://discord.gg/yENzqcB"
       onclick="this.blur();"
       target="_blank"
@@ -93,7 +89,6 @@
     </a> -->
     <a
       class="textButton view-settings"
-      tabindex="2"
       href="/settings"
       onclick="this.blur();"
       router-link
@@ -106,7 +101,6 @@
     <div></div>
     <a
       class="textButton hidden account view-account"
-      tabindex="2"
       href="/account"
       onclick="this.blur();"
       router-link
@@ -128,24 +122,16 @@
         </div>
       </div>
     </a>
-    <div class="textButton showAlerts" tabindex="2" onclick="this.blur();">
+    <button class="text showAlerts" onclick="this.blur();">
       <div class="icon">
         <i class="fas fa-fw fa-bell"></i>
       </div>
       <div class="notificationBubble hidden">5</div>
-    </div>
-    <div class="textButton signInOut" tabindex="2" onclick="this.blur();">
+    </button>
+    <button class="text signInOut" onclick="this.blur();">
       <div class="icon">
         <i class="fas fa-fw fa-sign-in-alt"></i>
       </div>
-    </div>
-  </div>
-  <!-- <div
-    class="signOut hidden"
-    style="grid-column: 3/4; grid-row: 1/2"
-    tabindex="0"
-  >
-    <i class="fas fa-sign-out-alt"></i>
-    sign out
-  </div> -->
-</div>
+    </button>
+  </nav>
+</header>

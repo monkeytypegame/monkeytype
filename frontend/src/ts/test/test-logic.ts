@@ -1578,7 +1578,7 @@ $("#popups").on(
   }
 );
 
-$("#top").on("click", "#menu #startTestButton, .logo", () => {
+$("header").on("click", "nav #startTestButton, .logo", () => {
   if (ActivePage.get() === "test") restart();
 });
 

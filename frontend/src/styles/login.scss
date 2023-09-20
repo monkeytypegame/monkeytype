@@ -12,7 +12,9 @@
     justify-content: center;
     grid-template-columns: 1fr;
 
-    input {
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
       width: 15rem;
     }
 

@@ -177,10 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-$("#top .logo").on("click", () => {
-  navigate("/");
-});
-
 $("#popups").on("click", "#leaderboards a.entryName", () => {
   Leaderboards.hide();
 });

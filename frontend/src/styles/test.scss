@@ -1098,11 +1098,6 @@
   grid-template-rows: 1fr auto 1fr;
 }
 
-#menu {
-  width: 100%;
-  grid-template-columns: auto auto auto 1fr auto;
-}
-
 .pageTest {
   #wordsWrapper {
     position: relative;
@@ -1244,7 +1239,7 @@
   }
 }
 
-#middle.focus .pageTest {
+main.focus .pageTest {
   #testModesNotice {
     opacity: 0 !important;
   }

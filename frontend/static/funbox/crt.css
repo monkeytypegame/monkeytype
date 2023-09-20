@@ -42,9 +42,9 @@ body.crtmode #scanline {
   );
   animation: scanline 10s linear infinite;
 }
-body.crtmode #top,
-body.crtmode #middle,
-body.crtmode #bottom,
+body.crtmode header,
+body.crtmode main,
+body.crtmode footer,
 body.crtmode #result,
 body.crtmode #popups,
 body.crtmode #notificationCenter,
@@ -100,9 +100,9 @@ body.crtmode .logo .icon {
     drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
 }
 body.crtmode .avatars,
-body.crtmode #menu .account .avatar,
-body.crtmode #menu .account .levelAndBar,
-body.crtmode #top.focus .logo .icon {
+body.crtmode nav .account .avatar,
+body.crtmode nav .account .levelAndBar,
+body.crtmode header.focus .logo .icon {
   filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
 }

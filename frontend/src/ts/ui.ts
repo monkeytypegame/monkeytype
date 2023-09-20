@@ -25,15 +25,15 @@ function updateKeytips(): void {
   }
 
   if (Config.quickRestart === "esc") {
-    $("#bottom .keyTips").html(`
+    $("footer .keyTips").html(`
     <key>esc</key> - restart test<br>
     <key>tab</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   } else if (Config.quickRestart === "tab") {
-    $("#bottom .keyTips").html(`
+    $("footer .keyTips").html(`
     <key>tab</key> - restart test<br>
       <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   } else {
-    $("#bottom .keyTips").html(`
+    $("footer .keyTips").html(`
     <key>tab</key> + <key>enter</key> - restart test<br>
     <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   }
@@ -43,7 +43,7 @@ if (isLocalhost()) {
   window.onerror = function (error): void {
     Notifications.add(error.toString(), -1);
   };
-  $("#top .logo .top").text("localhost");
+  $("header .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`

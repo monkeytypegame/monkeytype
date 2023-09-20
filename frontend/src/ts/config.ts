@@ -15,6 +15,7 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
+import { reloadAfter } from "./utils/misc";
 
 export let localStorageConfig: MonkeyTypes.Config;
 
@@ -634,9 +635,7 @@ export function setAds(val: MonkeyTypes.Ads, nosave?: boolean): boolean {
   config.ads = val;
   saveToLocalStorage("ads", nosave);
   if (!nosave) {
-    setTimeout(() => {
-      location.reload();
-    }, 3000);
+    reloadAfter(3);
     Notifications.add("Ad settings changed. Refreshing...", 0);
   }
   ConfigEvent.dispatch("ads", config.ads);
@@ -1039,9 +1038,9 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 
   config.showKeyTips = keyTips;
   if (config.showKeyTips) {
-    $("#bottom .keyTips").removeClass("hidden");
+    $("footer .keyTips").removeClass("hidden");
   } else {
-    $("#bottom .keyTips").addClass("hidden");
+    $("footer .keyTips").addClass("hidden");
   }
   saveToLocalStorage("showKeyTips", nosave);
   ConfigEvent.dispatch("showKeyTips", config.showKeyTips);

@@ -16,7 +16,7 @@ body {
   background-position: center;
 }
 
-#middle {
+main {
   transform: rotateX(35deg);
 }
 

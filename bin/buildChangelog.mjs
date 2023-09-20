@@ -128,7 +128,7 @@ async function main() {
     //split line based on the format: d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 style: adjusted testConfig and modesNotice.
     //use regex to split
     const [_, hash, shortHash, fullMessage] = line.split(
-      /(\w{40}) (\w{9}) (.*)/
+      /(\w{40}) (\w{9,10}) (.*)/
     );
 
     //split message using regex based on fix(language): spelling mistakes in Nepali wordlist and quotes (sapradhan) (#4528)

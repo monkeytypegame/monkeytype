@@ -1255,7 +1255,7 @@ export const page = new Page(
     reset();
   },
   async () => {
-    Skeleton.append("pageSettings", "middle");
+    Skeleton.append("pageSettings", "main");
     await fillSettingsPage();
     await update(false);
   },

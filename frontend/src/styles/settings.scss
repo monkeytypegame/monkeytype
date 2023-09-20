@@ -54,18 +54,9 @@
     row-gap: 0.5rem;
     align-items: center;
 
-    .button.danger {
-      box-shadow: 0 0 0 0.15em var(--error-color);
-      color: var(--text-color);
-      &:hover {
-        background: var(--text-color);
-        color: var(--bg-color);
-      }
-    }
-
     .inputAndButton {
       display: grid;
-      grid-template-columns: 8fr 1fr;
+      grid-template-columns: auto min-content;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
 
@@ -263,7 +254,7 @@
       }
 
       .tag {
-        grid-template-columns: 6fr 1fr 1fr 1fr;
+        grid-template-columns: auto min-content min-content min-content;
         margin-bottom: 0.5rem;
       }
     }
@@ -274,7 +265,7 @@
       }
 
       .preset {
-        grid-template-columns: 7fr 1fr 1fr;
+        grid-template-columns: auto min-content min-content;
         margin-bottom: 0.5rem;
       }
     }
