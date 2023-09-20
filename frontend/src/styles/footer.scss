@@ -4,14 +4,12 @@ footer {
   line-height: 1rem;
   font-size: 0.75rem;
   color: var(--sub-color);
-  // transition: 0.25s;
-  // padding: 0 5px;
+  margin: -0.5em;
 
-  // margin-bottom: 2rem;
   .keyTips {
     transition: 0.125s;
-    margin-bottom: 2rem;
-    line-height: 1.25rem;
+    margin-bottom: 2em;
+    line-height: 2;
     key {
       margin: 0 0.25rem;
     }
@@ -40,12 +38,11 @@ footer {
     user-select: none;
     display: grid;
     grid-template-columns: auto auto;
-    gap: 1rem;
     .textButton {
       text-decoration: none;
       font-size: 0.75rem;
       line-height: 1rem;
-      padding: 0;
+      padding: 0.25em 0.5em;
     }
     .left {
       text-align: left;
@@ -53,7 +50,6 @@ footer {
       grid-auto-flow: column;
       width: -moz-fit-content;
       width: fit-content;
-      gap: 1rem;
     }
     .right {
       text-align: right;
@@ -62,7 +58,6 @@ footer {
       width: -moz-fit-content;
       width: fit-content;
       justify-self: right;
-      gap: 1rem;
       // align-items: center;
     }
     .left .textButton,
