@@ -17,11 +17,6 @@ footer {
     }
   }
 
-  .left .textButton,
-  .right .textButton {
-    transition: 0.125s;
-  }
-
   #supportMeButton {
     &:hover {
       color: var(--text-color);
