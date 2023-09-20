@@ -202,12 +202,6 @@ $(document).on("keydown", (event) => {
   }
 });
 
-$(document).on("keypress", "#practiseWordsButton", (event) => {
-  if (event.key === "Enter") {
-    showPopup(true);
-  }
-});
-
 $(".pageTest").on("click", "#practiseWordsButton", () => {
   showPopup();
 });

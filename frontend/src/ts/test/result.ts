@@ -814,7 +814,6 @@ export async function update(
       $("#words").empty();
       ChartController.result.resize();
 
-      $("#result").trigger("focus");
       window.scrollTo({ top: 0 });
       $("#testModesNotice").addClass("hidden");
     },

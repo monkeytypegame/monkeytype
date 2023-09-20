@@ -317,12 +317,6 @@ $("#replayWords").on("click", "letter", (event) => {
   loadOldReplay();
 });
 
-$(document).on("keypress", "#watchReplayButton", (event) => {
-  if (event.key === "Enter") {
-    toggleReplayDisplay();
-  }
-});
-
 $(".pageTest").on("click", "#watchReplayButton", () => {
   toggleReplayDisplay();
 });
