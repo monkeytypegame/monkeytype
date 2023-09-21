@@ -11,6 +11,6 @@
   --colorful-error-extra-color: #d996ac;
 }
 
-header .logo .bottom {
+header #logo .bottom {
   color: #962f7e;
 }

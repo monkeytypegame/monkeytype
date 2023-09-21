@@ -344,7 +344,7 @@
 
 //800px
 @media only screen and (max-width: 50rem) {
-  header .logo .text {
+  header #logo .text {
     font-size: 1.5rem;
     line-height: 1.5rem;
     margin-top: -0.1em;
@@ -691,7 +691,7 @@
   .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr;
   }
-  header .logo .bottom {
+  header #logo .bottom {
     margin-top: 0;
   }
   .pageLogin {
@@ -737,7 +737,7 @@
 //550px
 @media only screen and (max-width: 34.375rem) {
   header {
-    .logo {
+    #logo {
       grid-template-columns: auto;
       .text {
         display: none;

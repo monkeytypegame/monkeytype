@@ -136,7 +136,7 @@ header {
   -webkit-user-select: none;
   user-select: none;
 
-  .logo {
+  #logo {
     // margin-bottom: 0.6rem;
     cursor: pointer;
     display: grid;
@@ -269,12 +269,12 @@ header {
       fill: var(--sub-color) !important;
     }
 
-    .logo .text {
+    #logo .text {
       color: var(--sub-color) !important;
       // opacity: 0 !important;
     }
 
-    .logo .top {
+    #logo .top {
       opacity: 0 !important;
     }
 

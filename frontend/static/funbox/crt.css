@@ -95,14 +95,14 @@ body.crtmode #paceCaret.banana,
 body.crtmode #paceCaret.carrot {
   box-shadow: none;
 }
-body.crtmode .logo .icon {
+body.crtmode #logo .icon {
   filter: drop-shadow(3px 0px 1px var(--crt-main-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-main-color-glow));
 }
 body.crtmode .avatars,
 body.crtmode nav .account .avatar,
 body.crtmode nav .account .levelAndBar,
-body.crtmode header.focus .logo .icon {
+body.crtmode header.focus #logo .icon {
   filter: drop-shadow(3px 0px 1px var(--crt-sub-color-glow))
     drop-shadow(-3px 0px 0px var(--crt-sub-color-glow));
 }
