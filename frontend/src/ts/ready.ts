@@ -73,7 +73,7 @@ $(document).ready(() => {
     );
   }, 500); //this approach will probably bite me in the ass at some point
 
-  $("#centerContent")
+  $("#contentWrapper")
     .css("opacity", "0")
     .removeClass("hidden")
     .stop(true, true)
