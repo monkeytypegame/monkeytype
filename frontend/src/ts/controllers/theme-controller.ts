@@ -27,128 +27,32 @@ export const colorVars = [
   "--colorful-error-extra-color",
 ];
 
-async function updateFavicon(size: number, curveSize: number): Promise<void> {
+async function updateFavicon(): Promise<void> {
   setTimeout(async () => {
     let maincolor, bgcolor;
     bgcolor = await ThemeColors.get("bg");
     maincolor = await ThemeColors.get("main");
     if (Misc.isLocalhost()) {
-      const swap = maincolor;
-      maincolor = bgcolor;
-      bgcolor = swap;
+      [maincolor, bgcolor] = [bgcolor, maincolor];
     }
     if (bgcolor === maincolor) {
       bgcolor = "#111";
       maincolor = "#eee";
     }
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-    const scale = size / 500;
-    // const moffset = [71 * scale,188 * scale];
-    const currentPos = [0, 0];
+    const svgPre = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    #bg{fill:${bgcolor};}
+    path{fill:${maincolor};}
+  </style>
+  <g>
+    <path id="bg" d="M0 16Q0 0 16 0h32q16 0 16 16v32q0 16-16 16H16Q0 64 0 48"/>
+    <path d="M9.09 24.1v21.2h5.12V33.1q.256-4.61 4.48-4.61 3.46.384 3.46 3.84v12.9h5.12v-11.5q-.128-5.25 4.48-5.25 3.46.384 3.46 3.84v12.9h5.12v-12.2q0-9.47-7.04-9.47-4.22 0-7.04 3.46-2.18-3.46-6.02-3.46-3.46 0-6.02 2.43v-2.05M47 18.9v5.12h-4.61v5.12H47v16.1h5.12v-16.1h4.61v-5.12h-4.61V18.9"/>
+  </g>
+</svg>`;
 
-    function mRelativeMove(x: number, y: number): void {
-      currentPos[0] += x * scale;
-      currentPos[1] += y * scale;
-      ctx.moveTo(currentPos[0], currentPos[1]);
-    }
-
-    function mRelativeLine(x: number, y: number): void {
-      currentPos[0] += x * scale;
-      currentPos[1] += y * scale;
-      ctx.lineTo(currentPos[0], currentPos[1]);
-    }
-
-    function mRelativeCurve(
-      cpx: number,
-      cpy: number,
-      x: number,
-      y: number
-    ): void {
-      currentPos[0] += x * scale;
-      currentPos[1] += y * scale;
-      ctx.quadraticCurveTo(
-        currentPos[0] + cpx * scale,
-        currentPos[1] + cpy * scale,
-        currentPos[0],
-        currentPos[1]
-      );
-    }
-
-    ctx.beginPath();
-    ctx.moveTo(0, curveSize);
-    //top left
-    ctx.quadraticCurveTo(0, 0, curveSize, 0);
-    ctx.lineTo(size - curveSize, 0);
-    //top right
-    ctx.quadraticCurveTo(size, 0, size, curveSize);
-    ctx.lineTo(size, size - curveSize);
-    ctx.quadraticCurveTo(size, size, size - curveSize, size);
-    ctx.lineTo(curveSize, size);
-    ctx.quadraticCurveTo(0, size, 0, size - curveSize);
-    ctx.fillStyle = bgcolor;
-    ctx.fill();
-    // ctx.font = "900 " + (size / 2) * 1.2 + "px Lexend Deca";
-    // ctx.textAlign = "center";
-    // ctx.fillStyle = maincolor;
-    // ctx.fillText("mt", size / 2 + 1, (size / 3) * 2.1);
-
-    ctx.beginPath();
-    mRelativeMove(71, 188);
-    mRelativeLine(0, 166);
-    mRelativeLine(40, 0);
-    mRelativeLine(0, -95);
-
-    mRelativeCurve(-33, 0, 35, -36);
-    mRelativeCurve(0, -27, 27, 30);
-    mRelativeLine(0, 101);
-    mRelativeLine(40, 0);
-    mRelativeLine(0, -90);
-
-    mRelativeCurve(-36, 0, 35, -41);
-    mRelativeCurve(0, -27, 27, 30);
-    mRelativeLine(0, 101);
-    mRelativeLine(40, 0);
-    mRelativeLine(0, -95);
-
-    mRelativeCurve(55, 0, -55, -74);
-    mRelativeCurve(22, -27, -55, 27);
-
-    mRelativeCurve(30, 0, -47, -27);
-    mRelativeCurve(20, -19, -47, 19);
-
-    mRelativeLine(0, -16);
-
-    ctx.fillStyle = maincolor;
-
-    ctx.fill();
-    ctx.closePath();
-
-    ctx.beginPath();
-    mRelativeMove(256, -40);
-    mRelativeLine(0, 40);
-    mRelativeLine(-36, 0);
-    mRelativeLine(0, 40);
-    mRelativeLine(36, 0);
-
-    mRelativeLine(0, 126);
-    mRelativeLine(40, 0);
-    mRelativeLine(0, -126);
-
-    mRelativeLine(36, 0);
-    mRelativeLine(0, -40);
-    mRelativeLine(-36, 0);
-    mRelativeLine(0, -40);
-
-    ctx.fillStyle = maincolor;
-
-    ctx.fill();
-
-    // $("body").prepend(canvas);
-    $("#favicon").attr("href", canvas.toDataURL("image/png"));
+    $("#favicon").attr("href", "data:image/svg+xml;base64," + btoa(svgPre));
   }, 125);
 }
 
@@ -242,8 +146,7 @@ function apply(
     ThemeColors.getAll().then((colors) => {
       $(".keymapKey").attr("style", "");
       ChartController.updateAllChartColors();
-      const size = 64;
-      updateFavicon(size, size / 4);
+      updateFavicon();
       $("#metaThemeColor").attr("content", colors.bg);
     });
     // }
