@@ -276,7 +276,7 @@ export function restart(options = {} as RestartOptions): void {
   LayoutfluidFunboxTimer.hide();
 
   $("#showWordHistoryButton").removeClass("loaded");
-  $("#restartTestButton").blur();
+  $("#restartTestButton").trigger("blur");
   MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
   // if (ActivePage.get() === "test" && window.scrollY > 0) {

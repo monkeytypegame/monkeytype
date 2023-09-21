@@ -173,9 +173,7 @@ FunboxList.setFunboxFunctions("arrows", {
     }
     return false;
   },
-  async preventDefaultEvent(
-    event: JQuery.KeyDownEvent<Document, null, Document, Document>
-  ): Promise<boolean> {
+  async preventDefaultEvent(event: JQuery.KeyDownEvent): Promise<boolean> {
     return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
       event.key
     );

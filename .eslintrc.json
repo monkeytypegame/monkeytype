@@ -16,7 +16,8 @@
     "backend/setup-tests.ts",
     "backend/jest.config.ts",
     "**/*.css",
-    "**/*.scss"
+    "**/*.scss",
+    "frontend/static/js/*"
   ],
   "extends": [
     "eslint:recommended",

@@ -719,7 +719,7 @@ export async function update(
   $(".pageTest #result #rateQuoteButton").addClass("hidden");
   $("#testModesNotice").css("opacity", 0);
   $("#words").removeClass("blurred");
-  $("#wordsInput").blur();
+  $("#wordsInput").trigger("blur");
   $("#result .stats .time .bottom .afk").text("");
   if (Auth?.currentUser) {
     $("#result .loginTip").addClass("hidden");
