@@ -28,7 +28,7 @@ jobs:
       assets-json: ${{ steps.export-changes.outputs.assets-json }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.assets-json == 'true'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: filter
         with:
@@ -159,7 +159,7 @@ jobs:
     needs: [ci-be, ci-fe, ci-assets]
     if: ${{ always() && contains(needs.*.result, 'failure') && github.ref != 'refs/heads/master' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Save the PR number in an artifact
         shell: bash
         env:
