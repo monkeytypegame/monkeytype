@@ -6,7 +6,7 @@ $(document).on("click", ".scrollToTopButton", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-$(window).scroll(() => {
+$(window).on("scroll", () => {
   const page = ActivePage.get();
   if (page === "test") return;
   if (page === "about" || page === "settings" || page === "account") {

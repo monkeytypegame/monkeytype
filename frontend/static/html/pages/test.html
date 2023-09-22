@@ -117,7 +117,6 @@
     <input
       id="wordsInput"
       class=""
-      tabindex="0"
       type="text"
       autocomplete="off"
       autocapitalize="off"
@@ -141,17 +140,15 @@
 
     <div id="keymap" class="hidden"></div>
 
-    <div
+    <button
       id="restartTestButton"
       aria-label="Restart Test"
-      role="button"
       data-balloon-pos="down"
-      class=""
-      tabindex="0"
+      class="text"
       onclick="this.blur();"
     >
       <i class="fas fa-fw fa-redo-alt"></i>
-    </div>
+    </button>
     <div id="largeLiveWpmAndAcc" class="timerMain">
       <div id="liveWpm" class="hidden">123</div>
       <div id="liveAcc" class="hidden">100%%</div>
@@ -172,7 +169,7 @@
     <div id="premidTestMode" class="hidden"></div>
     <div id="premidSecondsLeft" class="hidden"></div>
   </div>
-  <div id="result" tabindex="0" class="hidden">
+  <div id="result" class="hidden">
     <div class="stats">
       <!-- <div class="info">words 10<br>punctuation</div> -->
 
@@ -295,10 +292,6 @@
       <!-- <div class="title">wpm over time</div> -->
       <canvas id="wpmChart"></canvas>
     </div>
-    <div class="loginTip">
-      <a href="/login" tabindex="2" router-link>Sign in</a>
-      to save your result
-    </div>
     <div class="bottom" style="grid-column: 1/3">
       <div id="resultWordsHistory" class="hidden">
         <div class="title">
@@ -351,86 +344,85 @@
           <div id="replayWords" class="words"></div>
         </div>
       </div>
-      <div
+      <button
         id="retrySavingResultButton"
-        class="hidden"
-        tabindex="0"
+        class="danger hidden"
         onclick="this.blur();"
       >
         <i class="fas fa-redo"></i>
         Retry saving result
-      </div>
+      </button>
       <div class="buttons">
-        <div
+        <button
+          class="text"
           id="nextTestButton"
           aria-label="Next test"
           role="button"
           data-balloon-pos="down"
-          tabindex="0"
           onclick="this.blur();"
         >
           <i class="fas fa-fw fa-chevron-right"></i>
-        </div>
-        <div
+        </button>
+        <button
+          class="text"
           id="restartTestButtonWithSameWordset"
           aria-label="Repeat test"
           role="button"
           data-balloon-pos="down"
-          tabindex="0"
           onclick="this.blur();"
         >
           <i class="fas fa-fw fa-sync-alt"></i>
-        </div>
-        <div
+        </button>
+        <button
+          class="text"
           id="practiseWordsButton"
           aria-label="Practice words"
           role="button"
           data-balloon-pos="down"
-          tabindex="0"
           onclick="this.blur();"
         >
           <i class="fas fa-fw fa-exclamation-triangle"></i>
-        </div>
-        <div
+        </button>
+        <button
+          class="text"
           id="showWordHistoryButton"
           aria-label="Toggle words history"
           role="button"
           data-balloon-pos="down"
-          tabindex="0"
           onclick="this.blur();"
         >
           <i class="fas fa-fw fa-align-left"></i>
-        </div>
-        <div
+        </button>
+        <button
+          class="text"
           id="watchReplayButton"
           aria-label="Watch replay"
           role="button"
           data-balloon-pos="down"
-          tabindex="0"
           onclick="this.blur();"
         >
           <i class="fas fa-fw fa-backward"></i>
-        </div>
-        <div
+        </button>
+        <button
+          class="text"
           id="saveScreenshotButton"
           aria-label="Copy screenshot to clipboard"
           role="button"
           data-balloon-pos="down"
-          tabindex="0"
           onclick="this.blur();"
         >
           <i class="far fa-fw fa-image"></i>
-        </div>
-        <div
+        </button>
+        <button
+          class="text"
           id="watchVideoAdButton"
           aria-label="Watch video ad"
           role="button"
           data-balloon-pos="down"
-          tabindex="0"
           onclick="this.blur();"
         >
           <i class="fas fa-fw fa-ad"></i>
-        </div>
+        </button>
       </div>
       <div id="ad-result-wrapper" class="ad advertisement ad-h">
         <div class="iconAndText">
@@ -443,6 +435,10 @@
         <div class="icon small"><i class="fas fa-ad"></i></div>
         <div id="ad-result-small"></div>
       </div>
+    </div>
+    <div class="loginTip">
+      <a href="/login" router-link>Sign in</a>
+      to save your result
     </div>
     <div class="ssWatermark hidden">monkeytype.com</div>
   </div>

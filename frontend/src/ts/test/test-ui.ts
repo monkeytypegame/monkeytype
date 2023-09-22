@@ -1217,12 +1217,6 @@ $(".pageTest").on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
-$("#saveScreenshotButton").on("keypress", (e) => {
-  if (e.key === "Enter") {
-    screenshot();
-  }
-});
-
 $(".pageTest #copyWordsListButton").on("click", async () => {
   try {
     let words;
@@ -1301,12 +1295,6 @@ $("#wordsInput").on("focusout", () => {
     OutOfFocus.show();
   }
   Caret.hide();
-});
-
-$(document).on("keypress", "#showWordHistoryButton", (event) => {
-  if (event.key === "Enter") {
-    toggleResultWords();
-  }
 });
 
 $(".pageTest").on("click", "#showWordHistoryButton", () => {

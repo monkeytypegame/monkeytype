@@ -157,7 +157,6 @@
   footer {
     .leftright {
       .left {
-        gap: 0.25rem 1rem;
         display: grid;
         grid-template-rows: 1fr 1fr;
         grid-auto-flow: row;
@@ -166,7 +165,6 @@
       .right {
         display: grid;
         grid-template-rows: 1fr 1fr;
-        gap: 0.25rem 1rem;
       }
     }
   }
@@ -902,7 +900,6 @@
   footer {
     .leftright {
       .left {
-        gap: 0.25rem 1rem;
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
         grid-template-columns: auto auto auto;
@@ -911,7 +908,6 @@
       .right {
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
-        gap: 0.25rem 1rem;
       }
     }
   }
@@ -994,10 +990,7 @@
         grid-auto-flow: row;
       }
       .right {
-        // justify-self: left;
-        // grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr 1fr;
-        gap: 0.25rem 1rem;
       }
     }
   }

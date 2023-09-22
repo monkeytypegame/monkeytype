@@ -1109,7 +1109,8 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
   }
 );
 
-$(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
+$(".pageSettings .section.customBackgroundSize .inputAndButton input").on(
+  "keypress",
   (e) => {
     if (e.key === "Enter") {
       UpdateConfig.setCustomBackground(
@@ -1134,22 +1135,25 @@ $(".pageSettings .section.fontSize .inputAndButton .save").on("click", () => {
   }
 });
 
-$(".pageSettings .section.fontSize .inputAndButton input").keypress((e) => {
-  if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setFontSize(
-      parseFloat(
-        $(
-          ".pageSettings .section.fontSize .inputAndButton input"
-        ).val() as string
-      )
-    );
-    if (didConfigSave === true) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
+$(".pageSettings .section.fontSize .inputAndButton input").on(
+  "keypress",
+  (e) => {
+    if (e.key === "Enter") {
+      const didConfigSave = UpdateConfig.setFontSize(
+        parseFloat(
+          $(
+            ".pageSettings .section.fontSize .inputAndButton input"
+          ).val() as string
+        )
+      );
+      if (didConfigSave === true) {
+        Notifications.add("Saved", 1, {
+          duration: 1,
+        });
+      }
     }
   }
-});
+);
 
 $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
@@ -1166,7 +1170,8 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   }
 );
 
-$(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
+$(".pageSettings .section.customLayoutfluid .inputAndButton .input").on(
+  "keypress",
   (e) => {
     if (e.key === "Enter") {
       UpdateConfig.setCustomLayoutfluid(

@@ -276,7 +276,7 @@ export function restart(options = {} as RestartOptions): void {
   LayoutfluidFunboxTimer.hide();
 
   $("#showWordHistoryButton").removeClass("loaded");
-  $("#restartTestButton").blur();
+  $("#restartTestButton").trigger("blur");
   MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
   // if (ActivePage.get() === "test" && window.scrollY > 0) {
@@ -1418,12 +1418,6 @@ $(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
   restart();
 });
 
-$(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.key === "Enter") {
-    restart();
-  }
-});
-
 $(".pageTest").on("click", "#restartTestButton", () => {
   ManualRestart.set();
   if (TestUI.resultCalculating) return;
@@ -1442,12 +1436,6 @@ $(".pageTest").on("click", "#restartTestButton", () => {
 
 $(".pageTest").on("click", "#retrySavingResultButton", retrySavingResult);
 
-$(document).on("keypress", "#nextTestButton", (event) => {
-  if (event.key === "Enter") {
-    restart();
-  }
-});
-
 $(".pageTest").on("click", "#nextTestButton", () => {
   ManualRestart.set();
   restart();
@@ -1462,18 +1450,6 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
   restart({
     withSameWordset: true,
   });
-});
-
-$(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
-  if (Config.mode === "zen") {
-    Notifications.add("Repeat test disabled in zen mode");
-    return;
-  }
-  if (event.key === "Enter") {
-    restart({
-      withSameWordset: true,
-    });
-  }
 });
 
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {

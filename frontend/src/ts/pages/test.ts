@@ -17,7 +17,7 @@ export const page = new Page(
     TestLogic.restart();
     Funbox.clear();
     ModesNotice.update();
-    $("#wordsInput").focusout();
+    $("#wordsInput").trigger("focusout");
   },
   async () => {
     updateTestPageAds(true);

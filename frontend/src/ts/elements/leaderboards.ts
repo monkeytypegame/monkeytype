@@ -734,7 +734,7 @@ languageSelector.on("select2:select", (e) => {
 
 let leftScrollEnabled = true;
 
-$("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
@@ -744,7 +744,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
 
 const debouncedRequestMore = debounce(500, requestMore);
 
-$("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (
@@ -757,7 +757,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
 
 let rightScrollEnabled = true;
 
-$("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
   if (!rightScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
@@ -765,7 +765,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   }
 });
 
-$("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
   const elem = $(e.currentTarget);
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
