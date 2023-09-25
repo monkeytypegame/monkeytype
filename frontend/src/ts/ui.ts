@@ -43,7 +43,7 @@ if (isLocalhost()) {
   window.onerror = function (error): void {
     Notifications.add(error.toString(), -1);
   };
-  $("header .logo .top").text("localhost");
+  $("header #logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`

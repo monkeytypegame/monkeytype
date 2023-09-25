@@ -19,7 +19,7 @@ nav .textButton:hover {
   color: #c6915e;
 }
 
-header .logo .text {
+header #logo .text {
   background-color: #ffffff; /* fallback */
   background: -webkit-linear-gradient(
     #2d2076,
@@ -36,7 +36,7 @@ header .logo .text {
   -webkit-text-fill-color: transparent;
 }
 
-header .logo .text .top {
+header #logo .text .top {
   /* prevent it from being transparent */
   -webkit-text-fill-color: #385eca;
 }

@@ -11,11 +11,11 @@
   --colorful-error-extra-color: #d8d8d8;
 }
 
-header .logo .icon {
+header #logo .icon {
   color: #8c3230;
 }
 
-header .logo .text {
+header #logo .text {
   color: #557d8d;
 }
 

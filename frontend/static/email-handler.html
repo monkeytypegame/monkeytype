@@ -96,9 +96,9 @@
   </head>
 
   <body>
-    <div id="centerContent">
-      <div header>
-        <div class="logo">
+    <div id="contentWrapper">
+      <header>
+        <div id="logo">
           <div class="icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +143,7 @@
             <span style="color: var(--main-color)">Email Handler</span>
           </div>
         </div>
-      </div>
+      </header>
       <main>
         <div class="preloader">
           <div class="icon">
@@ -387,7 +387,7 @@
           switch (mode) {
             case "resetPassword":
               // Display reset password handler and UI.
-              $(".logo .text span").text("Reset Password");
+              $("#logo .text span").text("Reset Password");
               document.title = "Reset Password | Monkeytype";
               showResetPassword();
               break;
@@ -396,7 +396,7 @@
               handleRecoverEmail(actionCode);
               break;
             case "verifyEmail":
-              $(".logo .text span").text("Verify Email");
+              $("#logo .text span").text("Verify Email");
               document.title = "Verify Email | Monkeytype";
               // Display email verification handler and UI.
               handleVerifyEmail(actionCode, continueUrl);

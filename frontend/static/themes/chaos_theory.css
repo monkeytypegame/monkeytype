@@ -12,17 +12,17 @@
   --colorful-error-extra-color: #b03c47;
 }
 
-header .logo .text {
+header #logo .text {
   -webkit-transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   transition: 0.5s;
 }
 
-header .logo .top {
+header #logo .top {
   font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
-header .logo .icon {
+header #logo .icon {
   -webkit-transform: rotateX(180deg);
   transition: 0.5s;
 }
@@ -80,16 +80,16 @@ header.focus nav:after {
   -webkit-transform: rotateY(180deg) !important;
 }
 
-header.focus .logo .text,
-header.focus .logo:before,
-header.focus .logo:after {
+header.focus #logo .text,
+header.focus #logo:before,
+header.focus #logo:after {
   -webkit-transform: rotateY(0deg);
   direction: ltr;
 }
 
-header.focus .logo .icon,
-header.focus .logo:before,
-header.focus .logo:after {
+header.focus #logo .icon,
+header.focus #logo:before,
+header.focus #logo:after {
   -webkit-transform: rotateX(0deg);
   direction: ltr;
 }

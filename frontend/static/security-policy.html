@@ -45,7 +45,7 @@
         color: var(--text-color);
       }
 
-      #centerContent {
+      #contentWrapper {
         align-items: flex-start;
       }
 
@@ -64,9 +64,9 @@
   </head>
 
   <body>
-    <div id="centerContent">
+    <div id="contentWrapper">
       <header>
-        <div class="logo">
+        <div id="logo">
           <div class="icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +169,7 @@
   <script defer>
     function copyUserName() {
       if (true) {
-        navigator.clipboard.writeText("Miodec#1512");
+        navigator.clipboard.writeText("@miodec");
         alert("Copied To Clipboard!");
       } else {
         alert("Unable to copy username");

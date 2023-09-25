@@ -722,17 +722,17 @@ export function setPageWidth(
   }
 
   config.pageWidth = val;
-  $("#centerContent").removeClass("wide125");
-  $("#centerContent").removeClass("wide150");
-  $("#centerContent").removeClass("wide200");
-  $("#centerContent").removeClass("widemax");
+  $("#contentWrapper").removeClass("wide125");
+  $("#contentWrapper").removeClass("wide150");
+  $("#contentWrapper").removeClass("wide200");
+  $("#contentWrapper").removeClass("widemax");
   $("#app").removeClass("wide125");
   $("#app").removeClass("wide150");
   $("#app").removeClass("wide200");
   $("#app").removeClass("widemax");
 
   if (val !== "100") {
-    $("#centerContent").addClass("wide" + val);
+    $("#contentWrapper").addClass("wide" + val);
     $("#app").addClass("wide" + val);
   }
   saveToLocalStorage("pageWidth", nosave);
