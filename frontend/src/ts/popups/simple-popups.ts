@@ -314,7 +314,10 @@ function hide(): void {
 
 $("#simplePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
-    if (activePopup) return activePopup.hide();
+    if (activePopup) {
+      activePopup.hide();
+      return;
+    }
     $("#simplePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
