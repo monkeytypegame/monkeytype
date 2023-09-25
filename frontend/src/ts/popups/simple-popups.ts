@@ -51,6 +51,7 @@ interface ExecReturn {
   message: string;
   showNotification?: false;
   notificationOptions?: MonkeyTypes.AddNotificationOptions;
+  afterHide?: () => void;
 }
 
 const list: { [key: string]: SimplePopup } = {};
@@ -232,7 +233,11 @@ class SimplePopup {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }
       if (res.status === 1) {
-        this.hide();
+        this.hide().then(() => {
+          if (res.afterHide) {
+            res.afterHide();
+          }
+        });
       } else {
         this.enableInputs();
         $($("#simplePopup").find("input")[0]).trigger("focus");
@@ -271,22 +276,33 @@ class SimplePopup {
       });
   }
 
-  hide(): void {
-    if (!this.canClose) return;
-    activePopup = null;
-    this.wrapper
-      .stop(true, true)
-      .css("opacity", 1)
-      .removeClass("hidden")
-      .animate({ opacity: 0 }, this.noAnimation ? 0 : 125, () => {
-        this.wrapper.addClass("hidden");
-        Skeleton.remove(wrapperId);
-      });
+  async hide(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.canClose) {
+        reject(new Error("Cannot close popup"));
+        return;
+      }
+
+      activePopup = null;
+
+      this.wrapper
+        .stop(true, true)
+        .css("opacity", 1)
+        .removeClass("hidden")
+        .animate({ opacity: 0 }, this.noAnimation ? 0 : 125, () => {
+          this.wrapper.addClass("hidden");
+          Skeleton.remove(wrapperId);
+          resolve();
+        });
+    });
   }
 }
 
 function hide(): void {
-  if (activePopup) return activePopup.hide();
+  if (activePopup) {
+    activePopup.hide();
+    return;
+  }
   $("#simplePopupWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -1232,11 +1248,13 @@ list["generateApeKey"] = new SimplePopup(
     }
 
     const data = response.data;
-    list["viewApeKey"].show([data.apeKey]);
 
     return {
       status: 1,
       message: "Key generated",
+      afterHide: (): void => {
+        list["viewApeKey"].show([data.apeKey]);
+      },
     };
   },
   () => {
@@ -1278,7 +1296,7 @@ list["viewApeKey"] = new SimplePopup(
     setTimeout(() => {
       _thisPopup.canClose = true;
       $("#simplePopup .button").removeClass("hidden");
-    }, 3000);
+    }, 5000);
   }
 );
 
