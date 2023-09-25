@@ -236,7 +236,7 @@ function apply(): void {
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
-  if ($(`${popup} .replaceEscapedCharacters input`).prop("checked")) {
+  if ($(`${popup} .replaceControlCharacters input`).prop("checked")) {
     text = text.replace(/\\\\t/gm, "\t");
     text = text.replace(/\\\\n/gm, "\n");
     text = text.replace(/\\t/gm, "\t");
