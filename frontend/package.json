@@ -1,6 +1,5 @@
 {
   "name": "monkeytype-frontend",
-  "version": "1.14.3",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {

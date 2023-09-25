@@ -1,6 +1,5 @@
 {
   "name": "monkeytype",
-  "version": "1.17.13",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
@@ -41,6 +40,7 @@
   "devDependencies": {
     "@commitlint/cli": "17.7.1",
     "@commitlint/config-conventional": "17.7.0",
+    "@csmith/release-it-calver-plugin": "2023.9.0",
     "@release-it/conventional-changelog": "7.0.0",
     "@typescript-eslint/eslint-plugin": "5.59.11",
     "@typescript-eslint/parser": "5.59.11",
@@ -64,5 +64,6 @@
       "prettier --write",
       "eslint"
     ]
-  }
+  },
+  "version": "1.17.14"
 }

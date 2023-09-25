@@ -9,7 +9,7 @@
   },
   "git": {
     "commitMessage": "chore: release v${version}",
-    "requireCleanWorkingDir": true,
+    "requireCleanWorkingDir": false,
     "changelog": "node bin/buildChangelog.mjs"
   },
   "github": {
