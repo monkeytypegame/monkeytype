@@ -212,8 +212,7 @@
 
     .buttons {
       display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
       gap: 0.5rem;
       grid-area: buttons;
       &.vertical {
@@ -452,16 +451,10 @@
 
       .buttons {
         margin-left: 0;
-        grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
         gap: 0.5rem;
       }
-    }
-
-    &.randomTheme .buttons,
-    &.highlightMode .buttons {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     }
   }
 }

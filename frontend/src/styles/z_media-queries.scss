@@ -60,9 +60,6 @@
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
     grid-template-columns: 1fr 1fr max-content;
   }
-  // .pageSettings .section.themes .buttons {
-  //   grid-template-columns: 1fr 1fr 1fr;
-  // }
   #customTextPopupWrapper #customTextPopup .buttonsTop {
     grid-template-columns: 1fr 1fr;
   }
@@ -79,12 +76,6 @@
       font-size: 0.75rem;
     }
   }
-  .pageSettings .section.fullWidth .buttons {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  // .pageSettings .section.themes .buttons {
-  //   grid-template-columns: 1fr 1fr;
-  // }
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
     grid-template-columns: 1fr;
   }
@@ -676,13 +667,6 @@
       }
     }
   }
-
-  .pageSettings .section.fullWidth .buttons {
-    grid-template-columns: 1fr 1fr;
-  }
-  // .pageSettings .section.themes .buttons {
-  //   grid-template-columns: 1fr;
-  // }
 }
 
 //600px
@@ -855,12 +839,6 @@
   }
 
   .pageSettings {
-    .section.fullWidth .buttons {
-      grid-template-columns: 1fr;
-    }
-    .section .buttons {
-      grid-auto-flow: row;
-    }
     .section.customBackgroundFilter .groups .group {
       grid-template-columns: auto 1fr;
       .title {
