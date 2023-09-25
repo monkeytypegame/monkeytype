@@ -17,5 +17,11 @@
   "npm": {
     "publish": false,
     "ignoreVersion": true
+  },
+  "plugins": {
+    "@csmith/release-it-calver-plugin": {
+      "format": "0y.0w.minor",
+      "increment": "calendar.minor"
+    }
   }
 }
