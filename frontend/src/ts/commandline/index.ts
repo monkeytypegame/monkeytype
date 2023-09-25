@@ -161,7 +161,9 @@ function showFound(): void {
     } catch (e) {}
   }
   $("#commandLine .listTitle").remove();
-  scrollSelectedLanguageToView();
+  if (!$("#commandLine input").val()) {
+    scrollSelectedLanguageToView();
+  }
 }
 
 function scrollSelectedLanguageToView(): void {
@@ -172,13 +174,19 @@ function scrollSelectedLanguageToView(): void {
     const suggestionsOffset = suggestions.offset();
     const scrollTargetOffset = scrollTarget.offset();
     if (suggestionsOffset && scrollTargetOffset) {
-      $(".suggestions").animate(
-        {
-          scrollTop:
-            scrollTargetOffset.top - suggestionsOffset.top - paddingOffset,
-        },
-        500
-      );
+      if (!$("#commandLine input").val()) {
+        $(".suggestions").animate(
+          {
+            scrollTop:
+              scrollTargetOffset.top - suggestionsOffset.top - paddingOffset,
+          },
+          500
+        );
+      } else {
+        $(".suggestions").scrollTop(
+          scrollTargetOffset.top - suggestionsOffset.top - paddingOffset
+        );
+      }
     }
   }
 }
