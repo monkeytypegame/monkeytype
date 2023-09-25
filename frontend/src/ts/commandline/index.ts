@@ -161,6 +161,26 @@ function showFound(): void {
     } catch (e) {}
   }
   $("#commandLine .listTitle").remove();
+  scrollSelectedLanguageToView();
+}
+
+function scrollSelectedLanguageToView(): void {
+  const suggestions = $(".suggestions");
+  const scrollTarget = $(".suggestions .entry .icon i.fa-check");
+  if (suggestions.length && scrollTarget.length) {
+    const paddingOffset = 8;
+    const suggestionsOffset = suggestions.offset();
+    const scrollTargetOffset = scrollTarget.offset();
+    if (suggestionsOffset && scrollTargetOffset) {
+      $(".suggestions").animate(
+        {
+          scrollTop:
+            scrollTargetOffset.top - suggestionsOffset.top - paddingOffset,
+        },
+        500
+      );
+    }
+  }
 }
 
 function updateSuggested(): void {
