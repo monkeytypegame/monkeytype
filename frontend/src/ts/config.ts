@@ -363,6 +363,7 @@ export function setStopOnError(
     config.confidenceMode = "off";
   }
   saveToLocalStorage("stopOnError", nosave);
+  saveToLocalStorage("confidenceMode", nosave);
   ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
 
   return true;
@@ -1286,6 +1287,7 @@ export function setConfidenceMode(
     config.stopOnError = "off";
   }
   saveToLocalStorage("confidenceMode", nosave);
+  saveToLocalStorage("stopOnError", nosave);
   ConfigEvent.dispatch("confidenceMode", config.confidenceMode, nosave);
 
   return true;
