@@ -9,22 +9,16 @@
 
   .sectionGroupTitle {
     font-size: 2rem;
-    color: var(--sub-color);
-    line-height: 2rem;
-    cursor: pointer;
-    transition: 0.25s;
-    display: flex;
-    align-items: baseline;
-    &:hover {
-      color: var(--text-color);
-    }
+    width: max-content;
+    margin: -0.25em;
+    padding: 0.25em;
 
     .fas {
-      margin-right: 0.5em;
+      transition: transform 0.25s;
+    }
 
-      &.rotate {
-        transform: rotate(-90deg);
-      }
+    &.rotateIcon .fas {
+      transform: rotate(-90deg);
     }
   }
 

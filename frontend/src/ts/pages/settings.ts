@@ -912,42 +912,16 @@ export async function update(groupUpdate = true): Promise<void> {
 }
 
 function toggleSettingsGroup(groupName: string): void {
-  $(`.pageSettings .settingsGroup.${groupName}`)
-    .stop(true, true)
-    .slideToggle(250)
-    .toggleClass("slideup");
-  if ($(`.pageSettings .settingsGroup.${groupName}`).hasClass("slideup")) {
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}] .fas`)
-      .stop(true, true)
-      .animate(
-        {
-          deg: -90,
-        },
-        {
-          duration: 250,
-          step: function (now) {
-            $(this).css({
-              transform: "rotate(" + now + "deg)",
-            });
-          },
-        }
-      );
+  const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
+  groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
+  if (groupEl.hasClass("slideup")) {
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
+      "rotateIcon"
+    );
   } else {
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}] .fas`)
-      .stop(true, true)
-      .animate(
-        {
-          deg: 0,
-        },
-        {
-          duration: 250,
-          step: function (now) {
-            $(this).css({
-              transform: "rotate(" + now + "deg)",
-            });
-          },
-        }
-      );
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
+      "rotateIcon"
+    );
   }
 }
 
