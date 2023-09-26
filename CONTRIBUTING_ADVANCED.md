@@ -14,7 +14,7 @@
 
 ## Prerequisites
 
-This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 16.13.2. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 18.17.1. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
 ### Git
 

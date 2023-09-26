@@ -496,7 +496,6 @@ router.get(
   requireProfilesEnabled,
   authenticateRequest({
     isPublic: true,
-    acceptApeKeys: true,
   }),
   withApeRateLimiter(RateLimit.userProfileGet),
   validateRequest({

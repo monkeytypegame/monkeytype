@@ -1,0 +1,7 @@
+#words {
+  direction: rtl;
+}
+
+#words.rightToLeftTest {
+  direction: rtl;
+}
