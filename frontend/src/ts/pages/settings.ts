@@ -673,6 +673,19 @@ export function hideAccountSection(): void {
   $(`.pageSettings .section.needsAccount`).addClass("hidden");
 }
 
+function showAccountSection(): void {
+  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
+  $(`.settingsGroup.account`).removeClass("hidden");
+  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
+  refreshTagsSettingsSection();
+  refreshPresetsSettingsSection();
+  updateDiscordSection();
+
+  if (DB.getSnapshot()?.lbOptOut === true) {
+    $(".pageSettings .section.optOutOfLeaderboards").remove();
+  }
+}
+
 export function updateDiscordSection(): void {
   //no code and no discord
   if (!Auth?.currentUser) {
@@ -824,19 +837,6 @@ function refreshPresetsSettingsSection(): void {
     $(".pageSettings .section.presets").removeClass("hidden");
   } else {
     $(".pageSettings .section.presets").addClass("hidden");
-  }
-}
-
-function showAccountSection(): void {
-  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
-  $(`.settingsGroup.account`).removeClass("hidden");
-  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
-  refreshTagsSettingsSection();
-  refreshPresetsSettingsSection();
-  updateDiscordSection();
-
-  if (DB.getSnapshot()?.lbOptOut === true) {
-    $(".pageSettings .section.optOutOfLeaderboards").remove();
   }
 }
 
