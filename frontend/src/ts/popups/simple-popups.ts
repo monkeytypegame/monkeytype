@@ -101,10 +101,12 @@ class SimplePopup {
   }
   reset(): void {
     this.element.html(`
+    <form>
     <div class="title"></div>
     <div class="inputs"></div>
     <div class="text"></div>
-    <div class="button"></div>`);
+    <button type="submit" class="submitButton"></button>
+    </form>`);
   }
 
   init(): void {
@@ -119,9 +121,9 @@ class SimplePopup {
     this.initInputs();
 
     if (this.buttonText === "") {
-      el.find(".button").remove();
+      el.find(".submitButton").remove();
     } else {
-      el.find(".button").text(this.buttonText);
+      el.find(".submitButton").text(this.buttonText);
     }
 
     if (this.text === "") {
@@ -247,16 +249,16 @@ class SimplePopup {
 
   disableInputs(): void {
     $("#simplePopup input").prop("disabled", true);
+    $("#simplePopup button").prop("disabled", true);
     $("#simplePopup textarea").prop("disabled", true);
     $("#simplePopup .checkbox").addClass("disabled");
-    $("#simplePopup .button").addClass("disabled");
   }
 
   enableInputs(): void {
     $("#simplePopup input").prop("disabled", false);
+    $("#simplePopup button").prop("disabled", false);
     $("#simplePopup textarea").prop("disabled", false);
     $("#simplePopup .checkbox").removeClass("disabled");
-    $("#simplePopup .button").removeClass("disabled");
   }
 
   show(parameters: string[] = [], noAnimation = false): void {
@@ -332,17 +334,10 @@ $("#simplePopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#popups").on("click", "#simplePopupWrapper .button", () => {
+$("#popups").on("submit", "#simplePopupWrapper form", (e) => {
+  e.preventDefault();
   const id = $("#simplePopup").attr("popupId") ?? "";
   list[id].exec();
-});
-
-$("#popups").on("keyup", "#simplePopupWrapper input", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const id = $("#simplePopup").attr("popupId") ?? "";
-    list[id].exec();
-  }
 });
 
 type ReauthMethod = "passwordOnly" | "passwordFirst";
@@ -1813,3 +1808,5 @@ $(document).on("keydown", (event) => {
 });
 
 Skeleton.save(wrapperId);
+
+console.log(list);
