@@ -648,10 +648,16 @@ list["updatePassword"] = new SimplePopup(
   "Update",
   async (_thisPopup, previousPass, newPass, newPassConfirm) => {
     if (newPass !== newPassConfirm) {
-      Notifications.add("New passwords don't match", 0);
       return {
         status: 0,
         message: "New passwords don't match",
+      };
+    }
+
+    if (newPass === previousPass) {
+      return {
+        status: 0,
+        message: "New password must be different from previous password",
       };
     }
 
