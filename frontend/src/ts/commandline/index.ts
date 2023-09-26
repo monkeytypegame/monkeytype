@@ -161,32 +161,28 @@ function showFound(): void {
     } catch (e) {}
   }
   $("#commandLine .listTitle").remove();
-  if (!$("#commandLine input").val()) {
-    scrollSelectedLanguageToView();
-  }
 }
 
 function scrollSelectedLanguageToView(): void {
-  const suggestions = $(".suggestions");
-  const scrollTarget = $(".suggestions .entry .icon i.fa-check");
-  if (suggestions.length && scrollTarget.length) {
-    const paddingOffset = 8;
+  if ($("#commandLine input").val()) {
+    $(".suggestions").scrollTop(0);
+  } else {
+    const suggestions = $(".suggestions");
+    const scrollTarget = $(".suggestions .entry .icon i.fa-check");
+
     const suggestionsOffset = suggestions.offset();
     const scrollTargetOffset = scrollTarget.offset();
-    if (suggestionsOffset && scrollTargetOffset) {
-      if (!$("#commandLine input").val()) {
-        $(".suggestions").animate(
-          {
-            scrollTop:
-              scrollTargetOffset.top - suggestionsOffset.top - paddingOffset,
-          },
-          500
-        );
-      } else {
-        $(".suggestions").scrollTop(
-          scrollTargetOffset.top - suggestionsOffset.top - paddingOffset
-        );
-      }
+
+    if (scrollTargetOffset && suggestionsOffset) {
+      $(".suggestions").animate(
+        {
+          scrollTop:
+            scrollTargetOffset.top -
+            suggestionsOffset.top -
+            ($(".entry").parent().height() as number) / 2,
+        },
+        0
+      );
     }
   }
 }
@@ -248,6 +244,7 @@ function updateSuggested(): void {
   showFound();
   activeIndex = 0;
   updateActiveEntry();
+  scrollSelectedLanguageToView();
 }
 
 function show(): void {
