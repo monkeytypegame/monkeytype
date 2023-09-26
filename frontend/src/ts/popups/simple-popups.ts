@@ -272,7 +272,11 @@ class SimplePopup {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, noAnimation ? 0 : 125, () => {
-        $($("#simplePopup").find("input")[0]).trigger("focus");
+        if (this.inputs.length > 0) {
+          $($("#simplePopup").find("input")[0]).trigger("focus");
+        } else {
+          $("#simplePopup button").trigger("focus");
+        }
       });
   }
 
