@@ -37,7 +37,7 @@ $(document).ready(() => {
 
   CookiePopup.check();
 
-  $("body").css("transition", "all .25s, transform .05s");
+  $("body").css("transition", "background .25s, transform .05s");
   if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
     $("#restartTestButton").addClass("hidden");
   }
