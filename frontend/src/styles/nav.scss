@@ -11,6 +11,10 @@ nav {
   width: 100%;
   grid-template-columns: auto auto auto auto 1fr auto;
 
+  button.showAlerts {
+    position: relative;
+  }
+
   .textButton {
     .text {
       font-size: 0.65em;
@@ -25,10 +29,6 @@ nav {
       // background: red;
       display: grid;
       place-content: center center;
-    }
-
-    &.showAlerts {
-      position: relative;
     }
 
     &.account {
