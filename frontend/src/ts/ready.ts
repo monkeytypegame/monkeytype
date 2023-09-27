@@ -14,7 +14,6 @@ import * as FunboxList from "./test/funbox/funbox-list";
 import Konami from "konami";
 
 if (Misc.isLocalhost()) {
-  $("head title").text("localhost");
   $("footer .currentVersion .text").text("localhost");
   $("body").prepend(
     `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`

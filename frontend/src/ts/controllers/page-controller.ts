@@ -74,6 +74,14 @@ export async function change(
         AdController.reinstate();
       },
       async () => {
+        if (nextPage.name === "test") {
+          Misc.updateTitle();
+        } else {
+          Misc.updateTitle(
+            Misc.capitalizeFirstLetterOfEachWord(nextPage.name) +
+              " | Monkeytype"
+          );
+        }
         Focus.set(false);
         ActivePage.set(nextPage.name);
         previousPage?.afterHide();
