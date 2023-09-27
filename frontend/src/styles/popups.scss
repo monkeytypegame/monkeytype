@@ -415,9 +415,12 @@
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
-    display: grid;
-    gap: 1rem;
     width: 400px;
+
+    form {
+      display: grid;
+      gap: 1rem;
+    }
 
     .title {
       font-size: 1.5rem;

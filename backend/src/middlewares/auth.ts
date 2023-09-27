@@ -45,18 +45,18 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
     const { authorization: authHeader } = req.headers;
 
     try {
-      if (authHeader) {
-        token = await authenticateWithAuthHeader(
-          authHeader,
-          req.ctx.configuration,
-          options
-        );
-      } else if (options.isPublic) {
+      if (options.isPublic === true) {
         token = {
           type: "None",
           uid: "",
           email: "",
         };
+      } else if (authHeader) {
+        token = await authenticateWithAuthHeader(
+          authHeader,
+          req.ctx.configuration,
+          options
+        );
       } else if (process.env.MODE === "dev") {
         token = authenticateWithBody(req.body);
       } else {

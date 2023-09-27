@@ -175,5 +175,10 @@
     "name": "crt",
     "info": "Go back to the 1980s",
     "canGetPb": true
+  },
+  {
+    "name": "backwards",
+    "info": "...sdrawkcab epyt ot yrt woN",
+    "canGetPb": true
   }
 ]

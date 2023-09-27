@@ -261,6 +261,10 @@ header {
   &.focus {
     color: var(--sub-color) !important;
 
+    .notificationBubble {
+      opacity: 0;
+    }
+
     .result {
       opacity: 0 !important;
     }

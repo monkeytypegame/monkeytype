@@ -1268,6 +1268,16 @@ $("#wordsInput").on("copy paste", (event) => {
   event.preventDefault();
 });
 
+$("#wordsInput").on("select selectstart", (event) => {
+  event.preventDefault();
+});
+
+$("#wordsInput").on("keydown", (event) => {
+  if (event.key.startsWith("Arrow")) {
+    event.preventDefault();
+  }
+});
+
 // Composing events
 $("#wordsInput").on("compositionstart", () => {
   if (Config.layout !== "default") return;
