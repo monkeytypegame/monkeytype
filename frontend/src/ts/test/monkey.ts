@@ -105,5 +105,7 @@ export function hide(): void {
     .css("opacity", 1)
     .animate({ opacity: 1 }, 125, () => {
       $("#monkey").addClass("hidden");
+      $("#monkey .fast").stop(true, true).css("opacity", 0);
+      $("#monkey").stop(true, true).css({ animationDuration: "0s" });
     });
 }

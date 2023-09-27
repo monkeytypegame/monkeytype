@@ -23,7 +23,6 @@ import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 
-import * as PbCrown from "./pb-crown";
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "../elements/account-button";
@@ -173,19 +172,26 @@ export function restart(options = {} as RestartOptions): void {
         );
         return;
       }
-      // }else{
-      //   return;
-      // }
     }
   }
-  if (TestState.isActive) {
-    if (
-      Config.repeatQuotes === "typing" &&
-      Config.mode === "quote" &&
-      Config.language.startsWith(TestWords.randomQuote.language)
-    ) {
-      options.withSameWordset = true;
+
+  if (options.withSameWordset) {
+    const funboxToPush = FunboxList.get(Config.funbox)
+      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+      ?.properties?.find((fp) => fp.startsWith("toPush:"));
+    if (funboxToPush) {
+      Notifications.add(
+        "You can't repeat a test with currently active funboxes",
+        0,
+        {
+          important: true,
+        }
+      );
+      options.withSameWordset = false;
     }
+  }
+
+  if (TestState.isActive) {
     if (TestState.isRepeated) {
       options.withSameWordset = true;
     }
@@ -205,17 +211,14 @@ export function restart(options = {} as RestartOptions): void {
     }
   }
 
-  if (Config.mode === "zen") {
-    $("#words").empty();
-  }
-
-  if (Config.language.startsWith("korean")) {
-    koInputVisual.innerText = " ";
-    Config.mode !== "zen"
-      ? $("#koInputVisualContainer").show()
-      : $("#koInputVisualContainer").hide();
-  } else {
-    $("#koInputVisualContainer").hide();
+  if (
+    Config.mode === "quote" &&
+    TestWords.randomQuote &&
+    Config.language.startsWith(TestWords.randomQuote.language) &&
+    Config.repeatQuotes === "typing" &&
+    (TestState.isActive || failReason !== "")
+  ) {
+    options.withSameWordset = true;
   }
 
   if (
@@ -246,15 +249,6 @@ export function restart(options = {} as RestartOptions): void {
     PractiseWords.resetBefore();
   }
 
-  let repeatWithPace = false;
-  if (TestUI.resultVisible && Config.repeatedPace && options.withSameWordset) {
-    repeatWithPace = true;
-  }
-
-  $("#words").stop(true, true);
-  $("#words .smoothScroller").stop(true, true).remove();
-
-  testReinitCount = 0;
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
@@ -274,19 +268,21 @@ export function restart(options = {} as RestartOptions): void {
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
   LayoutfluidFunboxTimer.hide();
-
-  $("#showWordHistoryButton").removeClass("loaded");
-  $("#restartTestButton").trigger("blur");
   MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
-  // if (ActivePage.get() === "test" && window.scrollY > 0) {
-  // window.scrollTo({ top: 0, behavior: "smooth" });
-  // }
-  $("#wordsInput").val(" ");
-
   TestUI.reset();
 
-  $("#timerNumber").css("opacity", 0);
+  if (TestUI.resultVisible) {
+    if (Config.randomTheme !== "off") {
+      ThemeController.randomizeTheme();
+    }
+    AccountButton.skipXpBreakdown();
+  }
+
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
+
   let el = null;
   if (TestUI.resultVisible) {
     //results are being displayed
@@ -294,19 +290,6 @@ export function restart(options = {} as RestartOptions): void {
   } else {
     //words are being displayed
     el = $("#typingTest");
-  }
-  if (TestUI.resultVisible) {
-    if (
-      Config.randomTheme !== "off" &&
-      !PageTransition.get()
-      // && Config.customThemeId === ""
-    ) {
-      ThemeController.randomizeTheme();
-    }
-    AccountButton.skipXpBreakdown();
-  }
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
   }
   TestUI.setResultVisible(false);
   PageTransition.set(true);
@@ -317,44 +300,37 @@ export function restart(options = {} as RestartOptions): void {
     },
     options.noAnim ? 0 : 125,
     async () => {
+      $("#result").addClass("hidden");
+      $("#typingTest").css("opacity", 0).removeClass("hidden");
+      $("#wordsInput").val(" ");
+
+      if (Config.language.startsWith("korean")) {
+        koInputVisual.innerText = " ";
+        Config.mode !== "zen"
+          ? $("#koInputVisualContainer").show()
+          : $("#koInputVisualContainer").hide();
+      } else {
+        $("#koInputVisualContainer").hide();
+      }
+
+      Focus.set(false);
       if (ActivePage.get() === "test") {
         AdController.updateFooterAndVerticalAds(false);
       }
       TestConfig.show();
-      TestUI.focusWords();
-      $("#monkey .fast").stop(true, true).css("opacity", 0);
-      $("#monkey").stop(true, true).css({ animationDuration: "0s" });
-      $("#typingTest").css("opacity", 0).removeClass("hidden");
-      $("#wordsInput").val(" ");
       AdController.destroyResult();
-      $("#resultWordsHistory .words").empty();
-      $("#resultReplay #replayWords").empty();
-      let shouldQuoteRepeat = false;
-      if (
-        Config.mode === "quote" &&
-        Config.repeatQuotes === "typing" &&
-        failReason !== ""
-      ) {
-        shouldQuoteRepeat = true;
-      }
 
       await Funbox.rememberSettings();
 
-      if (options.withSameWordset) {
-        const funboxToPush = FunboxList.get(Config.funbox)
-          .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-          ?.properties?.find((fp) => fp.startsWith("toPush:"));
-        if (funboxToPush) {
-          const toPushCount = +funboxToPush.split(":")[1];
-          const toPush = [];
-          for (let i = 0; i < toPushCount; i++) {
-            toPush.push(TestWords.words.get(i));
-          }
-          TestWords.words.reset();
-          toPush.forEach((word, index) => TestWords.words.push(word, index));
-        }
+      testReinitCount = 0;
+      failReason = "";
+
+      let repeatWithPace = false;
+      if (Config.repeatedPace && options.withSameWordset) {
+        repeatWithPace = true;
       }
-      if (!options.withSameWordset && !shouldQuoteRepeat) {
+
+      if (!options.withSameWordset) {
         TestState.setRepeated(false);
         TestState.setPaceRepeat(repeatWithPace);
         await init();
@@ -362,7 +338,6 @@ export function restart(options = {} as RestartOptions): void {
       } else {
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
-        TestState.setActive(false);
         Replay.stopReplayRecording();
         TestWords.words.resetCurrentIndex();
         TestInput.input.reset();
@@ -381,27 +356,16 @@ export function restart(options = {} as RestartOptions): void {
         Funbox.toggleScript(TestWords.words.getCurrent());
         await PaceCaret.init();
       }
-      failReason = "";
+
       if (Config.mode === "quote") {
         TestState.setRepeated(false);
       }
+
       if (Config.keymapMode !== "off") {
         Keymap.show();
       } else {
         Keymap.hide();
       }
-      (<HTMLElement>(
-        document.querySelector("#miniTimerAndLiveWpm .wpm")
-      )).innerHTML = "0";
-      (<HTMLElement>(
-        document.querySelector("#miniTimerAndLiveWpm .acc")
-      )).innerHTML = "100%";
-      (<HTMLElement>(
-        document.querySelector("#miniTimerAndLiveWpm .burst")
-      )).innerHTML = "0";
-      (<HTMLElement>document.querySelector("#liveWpm")).innerHTML = "0";
-      (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
-      (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
       for (const f of FunboxList.get(Config.funbox)) {
         if (f.functions?.restart) f.functions.restart();
@@ -411,25 +375,10 @@ export function restart(options = {} as RestartOptions): void {
         Last10Average.update().then(() => {
           ModesNotice.update();
         });
+      } else {
+        ModesNotice.update();
       }
 
-      const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
-      let fbtext = "";
-      if (Config.funbox !== "none") {
-        fbtext = " " + Config.funbox.split("#").join(" ");
-      }
-      $(".pageTest #premidTestMode").text(
-        `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
-      );
-      $(".pageTest #premidSecondsLeft").text(Config.time);
-
-      $("#result").addClass("hidden");
-      $("#testModesNotice").removeClass("hidden").css({
-        opacity: 1,
-      });
-      // resetPaceCaret();
-      ModesNotice.update();
-      ManualRestart.reset();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -440,14 +389,24 @@ export function restart(options = {} as RestartOptions): void {
           },
           options.noAnim ? 0 : 125,
           () => {
+            (<HTMLElement>(
+              document.querySelector("#miniTimerAndLiveWpm .wpm")
+            )).innerHTML = "0";
+            (<HTMLElement>(
+              document.querySelector("#miniTimerAndLiveWpm .acc")
+            )).innerHTML = "100%";
+            (<HTMLElement>(
+              document.querySelector("#miniTimerAndLiveWpm .burst")
+            )).innerHTML = "0";
+            (<HTMLElement>document.querySelector("#liveWpm")).innerHTML = "0";
+            (<HTMLElement>document.querySelector("#liveAcc")).innerHTML =
+              "100%";
+            (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
+
             TestUI.setTestRestarting(false);
-            // resetPaceCaret();
-            PbCrown.hide();
-            TestTimer.clear();
-            if (!Misc.isPopupVisible("commandLineWrapper")) {
-              TestUI.focusWords();
-            }
-            // ChartController.result.update();
+            TestUI.focusWords();
+            TestUI.updatePremid();
+            ManualRestart.reset();
             PageTransition.set(false);
           }
         );
@@ -475,7 +434,6 @@ export async function init(): Promise<void> {
     return;
   }
 
-  TestState.setActive(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
@@ -984,10 +942,8 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestUI.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
-  Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
-  PbCrown.hide();
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();

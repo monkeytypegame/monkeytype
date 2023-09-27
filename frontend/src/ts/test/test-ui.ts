@@ -763,6 +763,18 @@ export function scrollTape(): void {
   }
 }
 
+export function updatePremid(): void {
+  const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
+  let fbtext = "";
+  if (Config.funbox !== "none") {
+    fbtext = " " + Config.funbox.split("#").join(" ");
+  }
+  $(".pageTest #premidTestMode").text(
+    `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
+  );
+  $(".pageTest #premidSecondsLeft").text(Config.time);
+}
+
 let currentLinesAnimating = 0;
 
 export function lineJump(currentTop: number): void {
