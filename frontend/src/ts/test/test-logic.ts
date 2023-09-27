@@ -318,8 +318,7 @@ export function restart(options = {} as RestartOptions): void {
     options.noAnim ? 0 : 125,
     async () => {
       if (ActivePage.get() === "test") {
-        AdController.updateTestPageAds(false);
-        Focus.set(false);
+        AdController.updateFooterAndVerticalAds(false);
       }
       TestConfig.show();
       TestUI.focusWords();
