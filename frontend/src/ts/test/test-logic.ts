@@ -344,13 +344,10 @@ export function restart(options = {} as RestartOptions): void {
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
           KeymapEvent.highlight(
-            TestWords.words
-              .getCurrent()
-              .substring(
-                TestInput.input.current.length,
-                TestInput.input.current.length + 1
-              )
-              .toString()
+            Misc.nthElementFromArray(
+              [...TestWords.words.getCurrent()],
+              0
+            ) as string
           );
         }
         Funbox.toggleScript(TestWords.words.getCurrent());
@@ -359,12 +356,6 @@ export function restart(options = {} as RestartOptions): void {
 
       if (Config.mode === "quote") {
         TestState.setRepeated(false);
-      }
-
-      if (Config.keymapMode !== "off") {
-        Keymap.show();
-      } else {
-        Keymap.hide();
       }
 
       for (const f of FunboxList.get(Config.funbox)) {
@@ -1519,13 +1510,27 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (ActivePage.get() === "test") {
     if (eventKey === "difficulty" && !nosave) restart();
     if (eventKey === "showAllLines" && !nosave) restart();
-    if (eventKey === "keymapMode" && !nosave) restart();
     if (eventKey === "tapeMode" && !nosave) restart();
     if (
       eventKey === "customLayoutFluid" &&
       Config.funbox.includes("layoutfluid")
     ) {
       restart();
+    }
+
+    if (
+      eventKey === "keymapMode" &&
+      eventValue === "next" &&
+      Config.mode !== "zen"
+    ) {
+      setTimeout(() => {
+        KeymapEvent.highlight(
+          Misc.nthElementFromArray(
+            [...TestWords.words.getCurrent()],
+            0
+          ) as string
+        );
+      }, 0);
     }
   }
   if (eventKey === "lazyMode" && eventValue === false && !nosave) {
