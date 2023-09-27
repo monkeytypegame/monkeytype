@@ -1,13 +1,6 @@
+import Config from "../config";
 import * as ConfigEvent from "../observables/config-event";
-// import * as Misc from "../utils/misc";
-
-// export function show() {
-//   $("header .config").removeClass("hidden").css("opacity", 1);
-// }
-
-// export function hide() {
-//   $("header .config").css("opacity", 0).addClass("hidden");
-// }
+import * as ActivePage from "../states/active-page";
 
 export function show(): void {
   $("#testConfig").removeClass("invisible");
@@ -19,6 +12,66 @@ export function hide(): void {
   $("#mobileTestConfig").addClass("invisible");
 }
 
+export async function instantUpdate(): Promise<void> {
+  $("#testConfig .mode .textButton").removeClass("active");
+  $("#testConfig .mode .textButton[mode='" + Config.mode + "']").addClass(
+    "active"
+  );
+
+  $("#testConfig .puncAndNum").css({
+    maxWidth: 0,
+    opacity: 0,
+  });
+  $("#testConfig .spacer").addClass("scrolled");
+  $("#testConfig .time").addClass("hidden");
+  $("#testConfig .wordCount").addClass("hidden");
+  $("#testConfig .customText").addClass("hidden");
+  $("#testConfig .quoteLength").addClass("hidden");
+  $("#testConfig .zen").addClass("hidden");
+
+  if (Config.mode === "time") {
+    $("#testConfig .puncAndNum").css({
+      maxWidth: "",
+      opacity: 1,
+    });
+    $("#testConfig .leftSpacer").removeClass("scrolled");
+    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .time").removeClass("hidden");
+
+    updateExtras("time", Config.time);
+  } else if (Config.mode === "words") {
+    $("#testConfig .puncAndNum").css({
+      maxWidth: "",
+      opacity: 1,
+    });
+
+    $("#testConfig .leftSpacer").removeClass("scrolled");
+    $("#testConfig .rightSpacer").removeClass("scrolled");
+
+    $("#testConfig .wordCount").removeClass("hidden");
+
+    updateExtras("words", Config.words);
+  } else if (Config.mode === "quote") {
+    $("#testConfig .rightSpacer").removeClass("scrolled");
+    $("#testConfig .quoteLength").removeClass("hidden");
+
+    updateExtras("quoteLength", Config.quoteLength);
+  } else if (Config.mode === "custom") {
+    $("#testConfig .puncAndNum").css({
+      maxWidth: "",
+      opacity: 1,
+    });
+
+    $("#testConfig .leftSpacer").removeClass("scrolled");
+    $("#testConfig .rightSpacer").removeClass("scrolled");
+
+    $("#testConfig .customText").removeClass("hidden");
+  }
+
+  updateExtras("numbers", Config.numbers);
+  updateExtras("punctuation", Config.punctuation);
+}
+
 export async function update(
   previous: MonkeyTypes.Mode,
   current: MonkeyTypes.Mode
@@ -26,26 +79,6 @@ export async function update(
   if (previous === current) return;
   $("#testConfig .mode .textButton").removeClass("active");
   $("#testConfig .mode .textButton[mode='" + current + "']").addClass("active");
-
-  // if (current === "time") {
-  //   $("#testConfig .punctuationMode").removeClass("hidden");
-  //   $("#testConfig .numbersMode").removeClass("hidden");
-  //   $("#testConfig .leftSpacer").removeClass("hidden");
-  // } else if (current === "words") {
-  //   $("#testConfig .punctuationMode").removeClass("hidden");
-  //   $("#testConfig .numbersMode").removeClass("hidden");
-  //   $("#testConfig .leftSpacer").removeClass("hidden");
-  // } else if (current === "custom") {
-  //   $("#testConfig .punctuationMode").removeClass("hidden");
-  //   $("#testConfig .numbersMode").removeClass("hidden");
-  //   $("#testConfig .leftSpacer").removeClass("hidden");
-  // } else if (current === "quote") {
-  //   $("#testConfig .punctuationMode").addClass("hidden");
-  //   $("#testConfig .numbersMode").addClass("hidden");
-  //   $("#testConfig .leftSpacer").addClass("hidden");
-  // } else if (current === "zen") {
-  //   //
-  // }
 
   const submenu = {
     time: "time",
@@ -56,6 +89,16 @@ export async function update(
   };
 
   const animTime = 250;
+  const easing = {
+    both: "easeInOutSine",
+    in: "easeInSine",
+    out: "easeOutSine",
+  };
+  // const easing = {
+  //   both: "linear",
+  //   in: "linear",
+  //   out: "linear",
+  // };
 
   const puncAndNumVisible = {
     time: true,
@@ -65,14 +108,22 @@ export async function update(
     zen: false,
   };
 
+  const puncAndNumEl = $("#testConfig .puncAndNum");
+
   if (
     puncAndNumVisible[previous] === false &&
     puncAndNumVisible[current] === true
   ) {
     //show
 
+    puncAndNumEl.css("maxWidth", "");
+
+    const puncAndNumWidth = Math.round(
+      puncAndNumEl[0]?.getBoundingClientRect().width ?? 224
+    );
+
     $("#testConfig .leftSpacer").removeClass("scrolled");
-    $("#testConfig .puncAndNum")
+    puncAndNumEl
       .css({
         opacity: 0,
         maxWidth: 0,
@@ -80,10 +131,10 @@ export async function update(
       .animate(
         {
           opacity: 1,
-          maxWidth: "14rem",
+          maxWidth: puncAndNumWidth,
         },
         animTime,
-        "easeInOutSine"
+        easing.both
       );
   } else if (
     puncAndNumVisible[previous] === true &&
@@ -91,10 +142,10 @@ export async function update(
   ) {
     //hide
     $("#testConfig .leftSpacer").addClass("scrolled");
-    $("#testConfig .puncAndNum")
+    puncAndNumEl
       .css({
         opacity: 1,
-        maxWidth: "14rem",
+        maxWidth: "",
       })
       .animate(
         {
@@ -102,7 +153,7 @@ export async function update(
           maxWidth: "0",
         },
         animTime,
-        "easeInOutSine"
+        easing.both
       );
   }
 
@@ -112,52 +163,30 @@ export async function update(
     $("#testConfig .rightSpacer").removeClass("scrolled");
   }
 
-  // const currentWidth = Math.round(
-  //   document.querySelector("#testConfig .row")?.getBoundingClientRect().width ??
-  //     0
-  // );
-
-  // if (puncAndNumVisible[current]) {
-  //   $("#testConfig .punctuationMode").removeClass("hidden");
-  //   $("#testConfig .numbersMode").removeClass("hidden");
-  //   $("#testConfig .leftSpacer").removeClass("hidden");
-  // } else {
-  //   $("#testConfig .punctuationMode").addClass("hidden");
-  //   $("#testConfig .numbersMode").addClass("hidden");
-  //   $("#testConfig .leftSpacer").addClass("hidden");
-  // }
-
-  // if (current === "zen") {
-  //   $("#testConfig .rightSpacer").addClass("hidden");
-  // } else {
-  //   $("#testConfig .rightSpacer").removeClass("hidden");
-  // }
+  const currentEl = $(`#testConfig .${submenu[current]}`);
+  const previousEl = $(`#testConfig .${submenu[previous]}`);
 
   const previousWidth = Math.round(
-    document
-      .querySelector(`#testConfig .${submenu[previous]}`)
-      ?.getBoundingClientRect().width ?? 0
+    previousEl[0]?.getBoundingClientRect().width ?? 0
   );
 
-  $(`#testConfig .${submenu[previous]}`).addClass("hidden");
+  previousEl.addClass("hidden");
 
-  $(`#testConfig .${submenu[current]}`).removeClass("hidden");
+  currentEl.removeClass("hidden");
 
   const currentWidth = Math.round(
-    document
-      .querySelector(`#testConfig .${submenu[current]}`)
-      ?.getBoundingClientRect().width ?? 0
+    currentEl[0]?.getBoundingClientRect().width ?? 0
   );
 
-  $(`#testConfig .${submenu[previous]}`).removeClass("hidden");
+  previousEl.removeClass("hidden");
 
-  $(`#testConfig .${submenu[current]}`).addClass("hidden");
+  currentEl.addClass("hidden");
 
   const widthDifference = currentWidth - previousWidth;
 
   const widthStep = widthDifference / 2;
 
-  $(`#testConfig .${submenu[previous]}`)
+  previousEl
     .css({
       opacity: 1,
       width: previousWidth,
@@ -168,15 +197,15 @@ export async function update(
         opacity: 0,
       },
       animTime / 2,
-      "easeInSine",
+      easing.in,
       () => {
-        $(`#testConfig .${submenu[previous]}`)
+        previousEl
           .css({
             opacity: 1,
             width: "unset",
           })
           .addClass("hidden");
-        $(`#testConfig .${submenu[current]}`)
+        currentEl
           .css({
             opacity: 0,
             width: previousWidth + widthStep,
@@ -188,92 +217,13 @@ export async function update(
               width: currentWidth,
             },
             animTime / 2,
-            "easeOutSine",
+            easing.out,
             () => {
-              $(`#testConfig .${submenu[current]}`).css("width", "unset");
+              currentEl.css("width", "unset");
             }
           );
       }
     );
-
-  // $(`#testConfig .${submenu[current]}`)
-  //   .css({
-  //     opacity: 0,
-  //     maxWidth: previousWidth,
-  //   })
-  //   .removeClass("hidden")
-  //   .animate(
-  //     {
-  //       maxWidth: currentWidth,
-  //       opacity: 1,
-  //     },
-  //     250,
-  //     () => {
-  //       $(`#testConfig .${submenu[current]}`).css({
-  //         opacity: 1,
-  //         maxWidth: "unset",
-  //       });
-  //     }
-  //   );
-
-  // const newWidth = Math.round(
-  //   document.querySelector("#testConfig .row")?.getBoundingClientRect().width ??
-  //     0
-  // );
-
-  // console.log(submenu[current], animTime, newWidth, currentWidth);
-
-  // if (current === "zen") {
-  //   $(`#testConfig .${submenu[previous]}`).animate(
-  //     {
-  //       opacity: 0,
-  //     },
-  //     animTime / 2,
-  //     () => {
-  //       $(`#testConfig .${submenu[previous]}`).addClass("hidden");
-  //     }
-  //   );
-  //   $(`#testConfig .puncAndNum`).animate(
-  //     {
-  //       opacity: 0,
-  //     },
-  //     animTime / 2,
-  //     () => {
-  //       $(`#testConfig .puncAndNum`).addClass("hidden");
-  //     }
-  //   );
-  //   return;
-  // }
-
-  // if (previous === "zen") {
-  //   setTimeout(() => {
-  //     $(`#testConfig .${submenu[current]}`).removeClass("hidden");
-  //     $(`#testConfig .${submenu[current]}`)
-  //       .css({ opacity: 0 })
-  //       .animate(
-  //         {
-  //           opacity: 1,
-  //         },
-  //         animTime / 2
-  //       );
-  //     $(`#testConfig .puncAndNum`).removeClass("hidden");
-  //     $(`#testConfig .puncAndNum`)
-  //       .css({ opacity: 0 })
-  //       .animate(
-  //         {
-  //           opacity: 1,
-  //         },
-  //         animTime / 2
-  //       );
-  //   }, animTime / 2);
-  //   return;
-  // }
-
-  // Misc.swapElements(
-  //   $("#testConfig ." + submenu[previous]),
-  //   $("#testConfig ." + submenu[current]),
-  //   animTime
-  // );
 }
 
 export function updateExtras(
@@ -329,11 +279,24 @@ export function hideFavoriteQuoteLength(): void {
 }
 
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
+  if (ActivePage.get() !== "test") return;
   if (eventKey === "mode") {
     update(
       eventPreviousValue as MonkeyTypes.Mode,
       eventValue as MonkeyTypes.Mode
     );
+
+    let m2;
+
+    if (Config.mode === "time") {
+      m2 = Config.time;
+    } else if (Config.mode === "words") {
+      m2 = Config.words;
+    } else if (Config.mode === "quote") {
+      m2 = Config.quoteLength;
+    }
+
+    updateExtras(Config.mode, m2);
   } else if (
     ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
       eventKey

@@ -948,10 +948,7 @@
   display: none;
   height: max-content;
   margin-bottom: 1rem;
-  transition: 0.125s;
-  &.focus {
-    opacity: 0;
-  }
+  transition: opacity 0.125s;
 }
 
 #testConfig {
@@ -1035,9 +1032,6 @@
   }
   .customText {
     display: grid;
-  }
-  &.focus {
-    opacity: 0;
   }
 }
 
@@ -1190,6 +1184,12 @@
 
 main.focus .pageTest {
   #testModesNotice {
+    opacity: 0 !important;
+  }
+  #testConfig {
+    opacity: 0 !important;
+  }
+  #mobileTestConfig {
     opacity: 0 !important;
   }
 }
