@@ -1324,6 +1324,15 @@ export function setAutoSwitchTheme(
   return true;
 }
 
+export function setAutoSwitchThemeOff(): void {
+  if (!config.autoSwitchTheme) return;
+  config.autoSwitchTheme = false;
+  saveToLocalStorage("autoSwitchTheme", undefined);
+  ConfigEvent.dispatch("autoSwitchTheme", config.autoSwitchTheme);
+  Notifications.add("Auto switch theme disabled", 0);
+  return;
+}
+
 export function setCustomTheme(boolean: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("custom theme", boolean, ["boolean"])) return false;
 
