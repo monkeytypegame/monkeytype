@@ -1050,7 +1050,7 @@ export function toggleResultWords(noAnimation = false): void {
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
 
-      if (!$("#showWordHistoryButton").hasClass("loaded")) {
+      if ($("#resultWordsHistory .words .word").length === 0) {
         $("#words").html(
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
