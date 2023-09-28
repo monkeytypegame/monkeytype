@@ -12,6 +12,7 @@ import { Workbox } from "workbox-window";
 import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-ignore
 import Konami from "konami";
+import { log } from "./controllers/analytics-controller";
 
 if (Misc.isLocalhost()) {
   $("footer .currentVersion .text").text("localhost");
@@ -141,3 +142,15 @@ if ("serviceWorker" in navigator) {
     }
   });
 }
+
+window.onerror = function (message, url, line, column, error): void {
+  log("error", {
+    error: error?.stack ?? "",
+  });
+};
+
+window.onunhandledrejection = function (e): void {
+  log("error", {
+    error: e.reason.stack ?? "",
+  });
+};
