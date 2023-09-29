@@ -8,7 +8,6 @@ import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as Keymap from "../elements/keymap";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
@@ -711,6 +710,7 @@ export async function update(
   ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
+  $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")
@@ -828,7 +828,6 @@ export async function update(
       if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
         TestUI.toggleResultWords(true);
       }
-      Keymap.hide();
       AdController.updateFooterAndVerticalAds(true);
     }
   );
