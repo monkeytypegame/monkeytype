@@ -10,15 +10,33 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "off",
       configValue: false,
       exec: (): void => {
-        UpdateConfig.setPlaySoundOnError(false);
+        UpdateConfig.setPlaySoundOnError("off");
       },
     },
     {
-      id: "setPlaySoundOnErrorOn",
+      id: "setPlaySoundOnError1",
       display: "on",
       configValue: true,
       exec: (): void => {
-        UpdateConfig.setPlaySoundOnError(true);
+        UpdateConfig.setPlaySoundOnError("1");
+        SoundController.playError();
+      },
+    },
+    {
+      id: "setPlaySoundOnError2",
+      display: "on",
+      configValue: true,
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnError("2");
+        SoundController.playError();
+      },
+    },
+    {
+      id: "setPlaySoundOnError3",
+      display: "on",
+      configValue: true,
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnError("3");
         SoundController.playError();
       },
     },
