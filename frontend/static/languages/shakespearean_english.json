@@ -2,6 +2,7 @@
   "name": "shakespearean_english",
   "noLazyMode": true,
   "words": [
+    "hark",
     "thou",
     "thy",
     "thine",
@@ -19,6 +20,8 @@
     "quaint",
     "alas",
     "betray",
+    "trouble",
+    "toil",
     "o'er-raught",
     "o'er-wrought",
     "abhor",
@@ -182,7 +185,6 @@
     "villain",
     "virtue",
     "victory",
-    "vile",
     "violence",
     "warrant",
     "weep",
@@ -191,5 +193,7 @@
     "wonder",
     "worship",
     "wrath"
+    "lord",
+    "lady"
   ]
 }
