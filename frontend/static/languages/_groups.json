@@ -483,6 +483,10 @@
     "languages": ["lorem_ipsum"]
   },
   {
+    "name": "shakespearean_english",
+    "languages": ["shakespearean_english"]
+  }
+  {
     "name": "code",
     "languages": [
       "code_python",
