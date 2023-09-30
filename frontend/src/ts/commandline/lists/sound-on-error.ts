@@ -15,8 +15,8 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     },
     {
       id: "setPlaySoundOnError1",
-      display: "on",
-      configValue: true,
+      display: "damage",
+      configValue: "1",
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("1");
         SoundController.playError();
@@ -24,8 +24,8 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     },
     {
       id: "setPlaySoundOnError2",
-      display: "on",
-      configValue: true,
+      display: "triangle",
+      configValue: "2",
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("2");
         SoundController.playError();
@@ -33,8 +33,8 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     },
     {
       id: "setPlaySoundOnError3",
-      display: "on",
-      configValue: true,
+      display: "square",
+      configValue: "3",
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("3");
         SoundController.playError();
