@@ -92,7 +92,7 @@
       "id": 14
     },
     {
-      "text": "void print(const Student &s) {\\n\\tcout << s.name << \"  \" << s.address << \"  \" << s.rollNo << '\\n';\\n}",
+      "text": "void print(const Student &s) {\\n\\tcout << s.name << \"  \" << s.address << \"  \" << s.rollNo << '\\\\n';\\n}",
       "source": "geeksforgeeks - References",
       "length": 101,
       "id": 15
