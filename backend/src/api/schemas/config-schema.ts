@@ -88,7 +88,7 @@ const CONFIG_SCHEMA = joi.object({
   alwaysShowWordsHistory: joi.boolean(),
   singleListCommandLine: joi.string().valid("manual", "on"),
   capsLockWarning: joi.boolean(),
-  playSoundOnError: joi.boolean(),
+  playSoundOnError: joi.string().valid("off", ..._.range(1, 4).map(_.toString)),
   playSoundOnClick: joi
     .string()
     .valid("off", ..._.range(1, 14).map(_.toString)),
