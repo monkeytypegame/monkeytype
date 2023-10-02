@@ -163,30 +163,6 @@ function showFound(): void {
   $("#commandLine .listTitle").remove();
 }
 
-function scrollSelectedLanguageToView(): void {
-  if ($("#commandLine input").val()) {
-    $(".suggestions").scrollTop(0);
-  } else {
-    const suggestions = $(".suggestions");
-    const scrollTarget = $(".suggestions .entry .icon i.fa-check");
-
-    const suggestionsOffset = suggestions.offset();
-    const scrollTargetOffset = scrollTarget.offset();
-
-    if (scrollTargetOffset && suggestionsOffset) {
-      $(".suggestions").animate(
-        {
-          scrollTop:
-            scrollTargetOffset.top -
-            suggestionsOffset.top -
-            ($(".entry").parent().height() as number) / 2,
-        },
-        0
-      );
-    }
-  }
-}
-
 function updateSuggested(): void {
   const inputVal = ($("#commandLine input").val() as string)
     .toLowerCase()
@@ -253,7 +229,7 @@ function updateSuggested(): void {
   }
 
   updateActiveEntry();
-  scrollSelectedLanguageToView();
+  keepActiveEntryInView();
 }
 
 function show(): void {
