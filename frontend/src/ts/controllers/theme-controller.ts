@@ -177,7 +177,7 @@ const debouncedPreview = debounce(
 );
 
 function set(themeIdentifier: string, isAutoSwitch = false): void {
-  apply(themeIdentifier, undefined, true);
+  apply(themeIdentifier, undefined, isAutoSwitch);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setAutoSwitchTheme(false);
