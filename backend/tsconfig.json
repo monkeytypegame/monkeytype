@@ -4,8 +4,8 @@
     "module": "commonjs",
     "target": "es6",
     "sourceMap": false,
-    "allowJs": true,
-    "checkJs": true,
+    "allowJs": false,
+    "checkJs": false,
     "outDir": "build",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -17,6 +17,7 @@
   "ts-node": {
     "files": true
   },
+  "files": ["./src/types/types.d.ts"],
   "include": ["./src/**/*"],
   "exclude": [
     "node_modules",

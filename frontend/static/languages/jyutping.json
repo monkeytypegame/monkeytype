@@ -1,6 +1,5 @@
 {
   "name": "jyutping",
-  "leftToRight": true,
   "ligatures": false,
   "bcp47": "zh-Hant",
   "words": [

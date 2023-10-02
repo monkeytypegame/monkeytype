@@ -60,8 +60,8 @@
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
     grid-template-columns: 1fr 1fr max-content;
   }
-  .pageSettings .section.themes .buttons {
-    grid-template-columns: 1fr 1fr 1fr;
+  #customTextPopupWrapper #customTextPopup .buttonsTop {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -75,12 +75,6 @@
     .bioAndKeyboard .value {
       font-size: 0.75rem;
     }
-  }
-  .pageSettings .section.fullWidth .buttons {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  .pageSettings .section.themes .buttons {
-    grid-template-columns: 1fr 1fr;
   }
   #quoteSearchPopupWrapper #quoteSearchPopup #quoteSearchControlsWrapper {
     grid-template-columns: 1fr;
@@ -151,10 +145,9 @@
   #quoteRatePopup {
     width: 90vw !important;
   }
-  #bottom {
+  footer {
     .leftright {
       .left {
-        gap: 0.25rem 1rem;
         display: grid;
         grid-template-rows: 1fr 1fr;
         grid-auto-flow: row;
@@ -163,9 +156,13 @@
       .right {
         display: grid;
         grid-template-rows: 1fr 1fr;
-        gap: 0.25rem 1rem;
       }
     }
+  }
+  .pageSettings .settingsGroup.quickNav .links {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-auto-flow: unset;
+    justify-items: center;
   }
 }
 
@@ -219,6 +216,9 @@
       "leaderboards"
       "pbsTime"
       "pbsWords";
+    .details .bioAndKeyboard {
+      height: 100%; //dumb safari fix
+    }
     .details.soc {
       grid-template-columns: 1.25fr auto 1fr auto auto;
       .typingStats {
@@ -300,6 +300,9 @@
     }
   }
   .pageSettings {
+    .section {
+      grid-template-columns: 1.5fr 1fr;
+    }
     .section.autoSwitchThemeInputs {
       grid-template-columns: 1fr 3fr;
     }
@@ -325,13 +328,21 @@
   }
   .pageSettings .settingsGroup.quickNav .links {
     grid-auto-flow: unset;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     justify-items: center;
   }
 }
 
 //800px
 @media only screen and (max-width: 50rem) {
+  header #logo .text {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    margin-top: -0.1em;
+  }
+  nav {
+    gap: 0;
+  }
   #testConfig {
     .spacer {
       display: none;
@@ -363,67 +374,18 @@
       }
     }
   }
-
-  #top {
-    .logo {
-      .text {
-        font-size: 1.9rem !important;
-      }
-      .bottom {
-        font-size: 1.9rem;
-        line-height: 1.9rem;
-        margin-top: 0;
-      }
-    }
-    #menu {
-      gap: 0.1rem;
-      font-size: 0.75rem;
-      .textButton {
-        // padding: 0.25rem;
-        // font-size: 0.8rem;
-        // line-height: 0.8rem;
-        &.account {
-          // margin-top: 0.05rem;
-          & > .text {
-            display: none;
-          }
-          .avatar {
-            // width: 1rem;
-            // height: 1rem;
-          }
-          .levelAndBar {
-            font-size: 1rem;
-            // line-height: 0.8rem;
-          }
-        }
-      }
-    }
-  }
-  #centerContent {
-    // #top {
-    //   grid-template-areas:
-    //     "logo config"
-    //     "menu config";
-    //   grid-template-columns: auto auto;
-    //   .logo {
-    //     margin-bottom: 0;
-    //   }
-    // }
-
-    // #menu {
-    //   gap: 0.5rem;
-    //   font-size: 0.8rem;
-    //   line-height: 0.8rem;
-    //   margin-top: -0.5rem;
-
-    //   .textButton {
-    //     padding: 0.25rem;
-    //   }
-    // }
+  #testModesNotice {
+    font-size: 0.75rem;
   }
 
   #contactPopupWrapper #contactPopup .buttons {
     grid-template-columns: 1fr;
+  }
+
+  .page404 .content {
+    grid-auto-flow: row;
+    grid-template-columns: 300px;
+    gap: 1rem;
   }
 
   .pageAbout {
@@ -455,10 +417,6 @@
     }
   }
 
-  .pageSettings {
-    .section.themes .tabContent.customTheme {
-    }
-  }
   #customTextPopupWrapper #customTextPopup {
     .buttonsTop {
       grid-template-columns: 1fr;
@@ -493,6 +451,14 @@
 
 //700px
 @media only screen and (max-width: 43.75rem) {
+  #wordFilterPopupWrapper #wordFilterPopup {
+    .divider {
+      width: 100%;
+      height: 0.25rem;
+    }
+    grid-template-areas: "top" "right" "divider" "left" "bottom";
+    grid-template-columns: 1fr;
+  }
   .pageAccount .presetFilterButtons .buttons {
     grid-template-columns: 1fr;
   }
@@ -532,6 +498,18 @@
 
 //650px
 @media only screen and (max-width: 40.625rem) {
+  header {
+    nav {
+      .textButton.account {
+        .text {
+          display: none;
+        }
+        .levelAndBar {
+          display: none;
+        }
+      }
+    }
+  }
   #leaderboardsWrapper #leaderboards {
     width: 85vw;
     .tables .rightTableWrapper,
@@ -617,6 +595,7 @@
         grid-template-columns: 1fr 1fr 1fr;
       }
       .socials {
+        height: 100%; //dumb safari fix
         justify-content: start;
         .title {
           display: block;
@@ -688,13 +667,6 @@
       }
     }
   }
-
-  .pageSettings .section.fullWidth .buttons {
-    grid-template-columns: 1fr 1fr;
-  }
-  .pageSettings .section.themes .buttons {
-    grid-template-columns: 1fr;
-  }
 }
 
 //600px
@@ -703,7 +675,7 @@
   .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr;
   }
-  #top .logo .bottom {
+  header #logo .bottom {
     margin-top: 0;
   }
   .pageLogin {
@@ -711,7 +683,7 @@
     gap: 5rem;
     grid-auto-flow: unset;
   }
-  #middle {
+  main {
     #result {
       grid-template-areas:
         "stats stats"
@@ -748,8 +720,33 @@
 
 //550px
 @media only screen and (max-width: 34.375rem) {
+  header {
+    #logo {
+      grid-template-columns: auto;
+      .text {
+        display: none;
+      }
+    }
+    // nav {
+    //   .textButton.account {
+    //     .text {
+    //       display: none;
+    //     }
+    //     .levelAndBar {
+    //       display: none;
+    //     }
+    //   }
+    // }
+  }
   #commandLineWrapper {
     padding: 5rem 1rem;
+  }
+  .pageSettings .section.themes .customTheme.button.active,
+  .pageSettings .section.themes .theme.button.active {
+    transform: scale(1.025);
+  }
+  .pageSettings .section.themes .buttons div.theme:hover {
+    transform: scale(1.025);
   }
   .profile .pbsWords,
   .profile .pbsTime {
@@ -788,9 +785,6 @@
       grid-template-areas: "title" "t15" "t60";
     }
   }
-  #testModesNotice {
-    font-size: 0.75rem;
-  }
   #cookiePopupWrapper {
     #cookiePopup,
     .extensionMessage {
@@ -804,6 +798,13 @@
       height: 1.25rem;
     }
     .keymapKey {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 0.3rem;
+      font-size: 0.6rem;
+    }
+
+    &.split_matrix .keymapSplitSpacer {
       width: 1.25rem;
       height: 1.25rem;
       border-radius: 0.3rem;
@@ -838,15 +839,6 @@
   }
 
   .pageSettings {
-    .settingsGroup.quickNav {
-      display: none;
-    }
-    .section.fullWidth .buttons {
-      grid-template-columns: 1fr;
-    }
-    .section .buttons {
-      grid-auto-flow: row;
-    }
     .section.customBackgroundFilter .groups .group {
       grid-template-columns: auto 1fr;
       .title {
@@ -878,21 +870,14 @@
     }
   }
 
-  #top {
-    .logo {
-      grid-template-columns: auto;
-      .text {
-        display: none;
-      }
-    }
-    #menu {
+  header {
+    nav {
       font-size: 1rem;
     }
   }
-  #bottom {
+  footer {
     .leftright {
       .left {
-        gap: 0.25rem 1rem;
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
         grid-template-columns: auto auto auto;
@@ -901,12 +886,11 @@
       .right {
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
-        gap: 0.25rem 1rem;
       }
     }
   }
-  #centerContent {
-    #top {
+  #contentWrapper {
+    header {
       // grid-template-columns: 1fr auto;
       .desktopConfig {
         display: none;
@@ -918,7 +902,7 @@
     gap: 1rem;
     padding: 1rem;
   }
-  #middle {
+  main {
     #result {
       .stats {
         grid-template-areas:
@@ -962,7 +946,7 @@
 
 //400px
 @media only screen and (max-width: 25rem) {
-  #top .config {
+  header .config {
     grid-gap: 0.25rem;
     .group .buttons {
       font-size: 0.65rem;
@@ -970,11 +954,11 @@
     }
   }
 
-  #top #menu {
+  header nav {
     font-size: 0.75rem;
   }
 
-  #bottom {
+  footer {
     font-size: 0.65rem;
     .leftright {
       grid-template-columns: 1fr 1fr;
@@ -984,10 +968,7 @@
         grid-auto-flow: row;
       }
       .right {
-        // justify-self: left;
-        // grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr 1fr 1fr;
-        gap: 0.25rem 1rem;
       }
     }
   }
@@ -1017,18 +998,28 @@
       height: calc(50vh - 9rem);
     }
   }
+  .page404 .content {
+    grid-template-columns: 1fr;
+  }
 }
 
 //350px
 @media only screen and (max-width: 21.875rem) {
+  .pageSettings .settingsGroup.quickNav .links {
+    grid-template-columns: 1fr;
+  }
   .ad.ad-h-s {
     display: none;
   }
   #keymap {
     display: none !important;
   }
-  .pageLogin .side input {
-    width: 90vw;
+  .pageLogin .side {
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      width: 90vw;
+    }
   }
   .page404 {
     .content {

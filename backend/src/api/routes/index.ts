@@ -9,6 +9,7 @@ import results from "./results";
 import presets from "./presets";
 import apeKeys from "./ape-keys";
 import admin from "./admin";
+import webhooks from "./webhooks";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
@@ -39,6 +40,7 @@ const API_ROUTE_MAP = {
   "/quotes": quotes,
   "/ape-keys": apeKeys,
   "/admin": admin,
+  "/webhooks": webhooks,
 };
 
 function addApiRoutes(app: Application): void {
@@ -66,7 +68,8 @@ function addApiRoutes(app: Application): void {
       }
 
       if (req.path === "/psas") {
-        const clientVersion = req.headers["client-version"];
+        const clientVersion =
+          req.headers["x-client-version"] || req.headers["client-version"];
         recordClientVersion(clientVersion?.toString() ?? "unknown");
       }
 

@@ -19,7 +19,7 @@ export let adBlock: boolean;
 export let cookieBlocker: boolean;
 
 // export let choice: "eg" | "pw" = Math.random() < 0.5 ? "eg" : "pw";
-export const choice: "eg" | "pw" = "eg";
+const choice: "eg" | "pw" = "pw";
 
 // console.log("AB choice: " + choice);
 
@@ -32,7 +32,7 @@ export const choice: "eg" | "pw" = "eg";
 //   console.log("AB choice forced: " + choice);
 // }
 
-export function init(): void {
+function init(): void {
   if (choice === "eg") {
     EG.init();
   } else {
@@ -53,13 +53,13 @@ export function init(): void {
   initialised = true;
 }
 
-export function removeAll(): void {
+function removeAll(): void {
   removeSellout();
   removeOn();
   removeResult();
 }
 
-export function removeSellout(): void {
+function removeSellout(): void {
   $("#ad-footer-wrapper").remove();
   $("#ad-footer-small-wrapper").remove();
   $("#ad-about-1-wrapper").remove();
@@ -78,12 +78,12 @@ export function removeSellout(): void {
   $("#ad-account-2-small-wrapper").remove();
 }
 
-export function removeOn(): void {
+function removeOn(): void {
   $("#ad-vertical-right-wrapper").remove();
   $("#ad-vertical-left-wrapper").remove();
 }
 
-export function removeResult(): void {
+function removeResult(): void {
   $("#ad-result-wrapper").remove();
   $("#ad-result-small-wrapper").remove();
 }
@@ -104,6 +104,7 @@ function updateBreakpoint(noReinstate = false): void {
     widerThanBreakpoint = false;
   }
   if (noReinstate) return;
+  if (Config.ads === "off" || !initialised) return;
   if (beforeUpdate !== widerThanBreakpoint) {
     if (choice === "eg") {
       EG.reinstate();
@@ -123,12 +124,13 @@ function updateBreakpoint2(noReinstate = false): void {
     widerThanBreakpoint2 = false;
   }
   if (noReinstate) return;
+  if (Config.ads === "off" || !initialised) return;
   if (beforeUpdate !== widerThanBreakpoint2) {
     PW.reinstate();
   }
 }
 
-export async function refreshVisible(): Promise<void> {
+async function _refreshVisible(): Promise<void> {
   if (choice === "eg") {
     await EG.refreshVisible();
   } else {
@@ -249,7 +251,7 @@ export async function renderResult(): Promise<void> {
   }
 }
 
-export function updateTestPageAds(visible: boolean): void {
+export function updateFooterAndVerticalAds(visible: boolean): void {
   if (visible) {
     $("#ad-vertical-left-wrapper").removeClass("testPage");
     $("#ad-vertical-right-wrapper").removeClass("testPage");
@@ -295,12 +297,12 @@ $(window).on("resize", () => {
 
 ConfigEvent.subscribe((event, value) => {
   if (event === "ads") {
-    if (value == "off") {
+    if (value === "off") {
       removeAll();
-    } else if (value == "result") {
+    } else if (value === "result") {
       removeSellout();
       removeOn();
-    } else if (value == "on") {
+    } else if (value === "on") {
       removeSellout();
     }
   }

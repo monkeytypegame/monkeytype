@@ -26,12 +26,12 @@ export class Poem extends Section {
         }
       }
 
-      if (scrubbed == "") continue;
+      if (scrubbed === "") continue;
 
       scrubbedWords.push(scrubbed);
       count++;
 
-      if (count == maxWords) break;
+      if (count === maxWords) break;
     }
 
     this.words = scrubbedWords;

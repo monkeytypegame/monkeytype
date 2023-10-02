@@ -102,7 +102,16 @@ export async function sendEmail<M extends EmailType>(
     html: template,
   };
 
-  const result = await transporter.sendMail(mailOptions);
+  let result;
+  try {
+    result = await transporter.sendMail(mailOptions);
+  } catch (e) {
+    recordEmail(templateName, "fail");
+    return {
+      success: false,
+      message: e.message,
+    };
+  }
 
   recordEmail(templateName, result.accepted.length === 0 ? "fail" : "success");
 

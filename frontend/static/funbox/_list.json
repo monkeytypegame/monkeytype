@@ -165,5 +165,20 @@
     "name": "zipf",
     "info": "Words are generated according to Zipf's law. (not all languages will produce Zipfy results, use with caution)",
     "canGetPb": false
+  },
+  {
+    "name": "morse",
+    "info": "-.../././.--./ -.../---/---/.--./-.-.--/ ",
+    "canGetPb": false
+  },
+  {
+    "name": "crt",
+    "info": "Go back to the 1980s",
+    "canGetPb": true
+  },
+  {
+    "name": "backwards",
+    "info": "...sdrawkcab epyt ot yrt woN",
+    "canGetPb": true
   }
 ]

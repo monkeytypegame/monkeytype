@@ -1,18 +1,17 @@
 .pageAbout {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
 
   h2 {
     font-size: 1rem;
     margin: 0;
+    font-weight: unset;
   }
 
   .created {
     text-align: center;
     color: var(--sub-color);
-    a {
-      text-decoration: none;
-    }
   }
 
   .section {
@@ -40,14 +39,10 @@
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 1rem;
+      button,
       .button {
-        text-decoration: none;
         font-size: 1.5rem;
         padding: 2rem 0;
-        .fas,
-        .fab {
-          margin-right: 1rem;
-        }
       }
     }
 

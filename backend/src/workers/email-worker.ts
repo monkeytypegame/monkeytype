@@ -21,6 +21,12 @@ async function jobHandler(job: Job): Promise<void> {
   const result = await sendEmail(type, email, ctx);
 
   if (!result.success) {
+    Logger.logToDb("error_sending_email", {
+      type,
+      email,
+      ctx: JSON.stringify(ctx),
+      error: result.message,
+    });
     throw new Error(result.message);
   }
 

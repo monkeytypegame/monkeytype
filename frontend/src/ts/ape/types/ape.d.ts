@@ -5,13 +5,13 @@ declare namespace Ape {
     payload?: any;
   }
 
-  interface HttpClientResponse {
+  interface HttpClientResponse<Data> {
     status: number;
     message: string;
-    data?: any;
+    data: Data | null;
   }
 
-  type EndpointData = Promise<HttpClientResponse>;
+  type EndpointResponse<Data = any> = Promise<HttpClientResponse<Data>>;
 
   type HttpClientMethod = (
     endpoint: string,
@@ -27,9 +27,4 @@ declare namespace Ape {
   }
 
   type HttpMethodTypes = keyof HttpClient;
-
-  interface ApiResponse {
-    message: string;
-    data: any | null;
-  }
 }

@@ -9,35 +9,35 @@ import * as CookiePopup from "./popups/cookie-popup";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
 import { Workbox } from "workbox-window";
+import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-ignore
 import Konami from "konami";
-
-ManualRestart.set();
-UpdateConfig.loadFromLocalStorage();
+import { log } from "./controllers/analytics-controller";
 
 if (Misc.isLocalhost()) {
-  $("head title").text("localhost");
-  $("#bottom .version .text").text("localhost");
-  $("#bottom #versionGroup").removeClass("hidden");
+  $("footer .currentVersion .text").text("localhost");
   $("body").prepend(
     `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
   Misc.getLatestReleaseFromGitHub().then((v) => {
-    $("#bottom .version .text").text(v);
-    $("#bottom #versionGroup").removeClass("hidden");
+    $("footer .currentVersion .text").text(v);
     NewVersionNotification.show(v);
   });
 }
 
+ManualRestart.set();
+UpdateConfig.loadFromLocalStorage();
 Focus.set(true, true);
+
 $(document).ready(() => {
   Misc.loadCSS("/./css/select2.min.css", true);
   Misc.loadCSS("/./css/balloon.min.css", true);
   Misc.loadCSS("/./css/fa.min.css", true);
 
   CookiePopup.check();
-  $("body").css("transition", "all .25s, transform .05s");
+
+  $("body").css("transition", "background .25s, transform .05s");
   if (Config.quickRestart === "tab" || Config.quickRestart === "esc") {
     $("#restartTestButton").addClass("hidden");
   }
@@ -67,7 +67,13 @@ $(document).ready(() => {
   //   );
   // }
 
-  $("#centerContent")
+  setTimeout(() => {
+    FunboxList.get(Config.funbox).forEach((it) =>
+      it.functions?.applyGlobalCSS?.()
+    );
+  }, 500); //this approach will probably bite me in the ass at some point
+
+  $("#contentWrapper")
     .css("opacity", "0")
     .removeClass("hidden")
     .stop(true, true)
@@ -136,3 +142,15 @@ if ("serviceWorker" in navigator) {
     }
   });
 }
+
+window.onerror = function (message, url, line, column, error): void {
+  log("error", {
+    error: error?.stack ?? "",
+  });
+};
+
+window.onunhandledrejection = function (e): void {
+  log("error", {
+    error: e.reason.stack ?? "",
+  });
+};

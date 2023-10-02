@@ -20,6 +20,7 @@ function setMemory(id: string): void {
 
 async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
   const response = await Ape.psas.get();
+
   if (response.status === 500) {
     if (isLocalhost()) {
       Notifications.addBanner(
@@ -59,7 +60,7 @@ async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
 export async function show(): Promise<void> {
   const latest = await getLatest();
   if (latest === null) return;
-  if (latest.length == 0) {
+  if (latest.length === 0) {
     clearMemory();
     return;
   }

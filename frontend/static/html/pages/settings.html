@@ -13,10 +13,9 @@
     <key>esc</key>
     )
   </div>
-  <!-- <div class="sectionGroupTitle">quick navigation</div> -->
   <div class="settingsGroup quickNav">
     <div class="links">
-      <a class="textButton" href="#group_account">account</a>
+      <a class="textButton accountTitleLink" href="#group_account">account</a>
       <a class="textButton" href="#group_behavior">behavior</a>
       <a class="textButton" href="#group_input">input</a>
       <a class="textButton" href="#group_sound">sound</a>
@@ -37,10 +36,14 @@
     <div id="ad-settings-1-small"></div>
   </div>
 
-  <div id="group_account" class="sectionGroupTitle hidden" group="account">
+  <button
+    id="group_account"
+    class="text sectionGroupTitle hidden"
+    group="account"
+  >
     <i class="fas fa-chevron-down"></i>
     <span>account</span>
-  </div>
+  </button>
   <div class="settingsGroup account hidden">
     <div class="section discordIntegration">
       <div class="groupTitle">
@@ -101,7 +104,7 @@
             </div>
           </div>
         </div>
-        <div class="button addTagButton"><i class="fas fa-plus"></i></div>
+        <div class="button addTagButton fullWidth">add tag</div>
       </div>
     </div>
     <div class="section presets">
@@ -127,16 +130,30 @@
             </div>
           </div>
         </div>
-        <div class="button addPresetButton"><i class="fas fa-plus"></i></div>
+        <div class="button addPresetButton fullWidth">add preset</div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="groupTitle">
+        <i class="fas fa-user"></i>
+        <span>more account settings</span>
+      </div>
+      <div class="text">
+        You can access more account settings (such as changing your name,
+        password, resetting or deleting your account) in the danger zone
+        section.
+      </div>
+      <div class="buttons">
+        <a class="button" href="#group_dangerZone">go to the danger zone</a>
       </div>
     </div>
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_behavior" class="sectionGroupTitle" group="behavior">
+  <button id="group_behavior" class="text sectionGroupTitle" group="behavior">
     <i class="fas fa-chevron-down"></i>
     <span>behavior</span>
-  </div>
+  </button>
   <div class="settingsGroup behavior">
     <div class="section difficulty">
       <div class="groupTitle">
@@ -343,16 +360,16 @@
     <div class="section minWpm" section="">
       <div class="groupTitle">
         <i class="fas fa-bomb"></i>
-        <span>min wpm</span>
+        <span>min speed</span>
       </div>
       <div class="text">
-        Automatically fails a test if your WPM falls below a threshold.
+        Automatically fails a test if your speed falls below a threshold.
       </div>
       <div class="inputs">
         <div class="inputAndButton">
           <input
             type="number"
-            placeholder="min wpm"
+            placeholder="min speed"
             class="input customMinWpmSpeed"
             tabindex="0"
             min="0"
@@ -545,10 +562,10 @@
     </div>
     <div class="sectionSpacer"></div>
   </div>
-  <div id="group_input" class="sectionGroupTitle" group="input">
+  <button id="group_input" class="text sectionGroupTitle" group="input">
     <i class="fas fa-chevron-down"></i>
     input
-  </div>
+  </button>
   <div class="settingsGroup input">
     <div class="section freedomMode">
       <div class="groupTitle">
@@ -865,10 +882,10 @@
     <div id="ad-settings-2-small"></div>
   </div>
 
-  <div id="group_sound" class="sectionGroupTitle" group="sound">
+  <button id="group_sound" class="text sectionGroupTitle" group="sound">
     <i class="fas fa-chevron-down"></i>
     sound
-  </div>
+  </button>
   <div class="settingsGroup sound">
     <div class="section soundVolume">
       <div class="groupTitle">
@@ -1024,7 +1041,7 @@
         </div>
       </div>
     </div>
-    <div class="section playSoundOnError">
+    <div class="section playSoundOnError fullWidth">
       <div class="groupTitle">
         <i class="fas fa-volume-mute"></i>
         <span>play sound on error</span>
@@ -1036,7 +1053,7 @@
       <div class="buttons">
         <div
           class="button"
-          playSoundOnError="false"
+          playSoundOnError="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1044,21 +1061,37 @@
         </div>
         <div
           class="button"
-          playSoundOnError="true"
+          playSoundOnError="1"
           tabindex="0"
           onclick="this.blur();"
         >
-          on
+          damage
+        </div>
+        <div
+          class="button"
+          playSoundOnError="2"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          triangle
+        </div>
+        <div
+          class="button"
+          playSoundOnError="3"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          square
         </div>
       </div>
     </div>
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_caret" class="sectionGroupTitle" group="caret">
+  <button id="group_caret" class="text sectionGroupTitle" group="caret">
     <i class="fas fa-chevron-down"></i>
     caret
-  </div>
+  </button>
   <div class="settingsGroup caret">
     <div class="section smoothCaret" section="">
       <div class="groupTitle">
@@ -1071,7 +1104,7 @@
       <div class="buttons">
         <div
           class="button"
-          smoothCaret="false"
+          smoothCaret="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1079,11 +1112,27 @@
         </div>
         <div
           class="button"
-          smoothCaret="true"
+          smoothCaret="slow"
           tabindex="0"
           onclick="this.blur();"
         >
-          on
+          slow
+        </div>
+        <div
+          class="button"
+          smoothCaret="medium"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          medium
+        </div>
+        <div
+          class="button"
+          smoothCaret="fast"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          fast
         </div>
       </div>
     </div>
@@ -1296,10 +1345,14 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_appearance" class="sectionGroupTitle" group="appearance">
+  <button
+    id="group_appearance"
+    class="text sectionGroupTitle"
+    group="appearance"
+  >
     <i class="fas fa-chevron-down"></i>
     appearance
-  </div>
+  </button>
   <div class="settingsGroup appearance">
     <div class="section timerStyle" section="">
       <div class="groupTitle">
@@ -1342,7 +1395,7 @@
         <span>timer/progress color</span>
       </div>
       <div class="text">
-        Change the color of the timer/progress number/bar and live wpm number.
+        Change the color of the timer/progress number/bar and live speed number.
       </div>
       <div class="buttons">
         <div
@@ -1385,7 +1438,8 @@
         <span>timer/progress opacity</span>
       </div>
       <div class="text">
-        Change the opacity of the timer/progress number/bar and live wpm number.
+        Change the opacity of the timer/progress number/bar and live speed
+        number.
       </div>
       <div class="buttons">
         <div
@@ -1422,7 +1476,7 @@
         </div>
       </div>
     </div>
-    <div class="section highlightMode" section="">
+    <div class="section highlightMode fullWidth" section="">
       <div class="groupTitle">
         <i class="fas fa-highlighter"></i>
         <span>highlight mode</span>
@@ -1452,6 +1506,30 @@
           onclick="this.blur();"
         >
           word
+        </div>
+        <div
+          class="button"
+          highlightMode="next_word"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          next word
+        </div>
+        <div
+          class="button"
+          highlightMode="next_two_words"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          next two words
+        </div>
+        <div
+          class="button"
+          highlightMode="next_three_words"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          next three words
         </div>
       </div>
     </div>
@@ -1518,8 +1596,8 @@
       <div class="text">
         When enabled, the website will show all lines for word, custom and quote
         mode tests - otherwise the lines will be limited to 3, and will
-        automatically scroll. Using this could cause the timer text and live wpm
-        to not be visible.
+        automatically scroll. Using this could cause the timer text and live
+        speed to not be visible.
       </div>
       <div class="buttons">
         <div
@@ -1568,31 +1646,44 @@
         </div>
       </div>
     </div>
-    <div class="section alwaysShowCPM">
+    <div class="section typingSpeedUnit">
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
-        <span>always show cpm</span>
+        <span>typing speed unit</span>
       </div>
-      <div class="text">
-        Always shows characters per minute calculation instead of the default
-        words per minute calculation.
-      </div>
+      <div class="text">Display typing speed in the specified unit.</div>
       <div class="buttons">
         <div
           class="button"
-          alwaysShowCPM="false"
+          typingSpeedUnit="wpm"
           tabindex="0"
           onclick="this.blur();"
         >
-          off
+          wpm
         </div>
         <div
           class="button"
-          alwaysShowCPM="true"
+          typingSpeedUnit="cpm"
           tabindex="0"
           onclick="this.blur();"
         >
-          on
+          cpm
+        </div>
+        <div
+          class="button"
+          typingSpeedUnit="wps"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          wps
+        </div>
+        <div
+          class="button"
+          typingSpeedUnit="cps"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          cps
         </div>
       </div>
     </div>
@@ -1877,10 +1968,10 @@
     <div id="ad-settings-3-small"></div>
   </div>
 
-  <div id="group_theme" class="sectionGroupTitle" group="theme">
+  <button id="group_theme" class="text sectionGroupTitle" group="theme">
     <i class="fas fa-chevron-down"></i>
     theme
-  </div>
+  </button>
   <div class="settingsGroup theme">
     <div class="section flipTestColors">
       <div class="groupTitle">
@@ -2026,7 +2117,7 @@
       </div>
       <div class="text">
         Enabling this will automatically switch the theme between light and dark
-        depending on the system theme (this will not override custom theme).
+        depending on the system theme.
       </div>
       <div class="buttons">
         <div
@@ -2359,18 +2450,22 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_hideElements" class="sectionGroupTitle" group="hideElements">
+  <button
+    id="group_hideElements"
+    class="text sectionGroupTitle"
+    group="hideElements"
+  >
     <i class="fas fa-chevron-down"></i>
     hide elements
-  </div>
+  </button>
   <div class="settingsGroup hideElements">
     <div class="section showLiveWpm">
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
-        <span>live wpm</span>
+        <span>live speed</span>
       </div>
       <div class="text">
-        Displays a live WPM speed during the test. Updates once every second.
+        Displays a live speed during the test. Updates once every second.
       </div>
       <div class="buttons">
         <div
@@ -2555,7 +2650,7 @@
         <span>average</span>
       </div>
       <div class="text">
-        Displays your average wpm and/or accuracy over the last 10 tests.
+        Displays your average speed and/or accuracy over the last 10 tests.
       </div>
       <div class="buttons">
         <div
@@ -2568,11 +2663,11 @@
         </div>
         <div
           class="button"
-          showAverage="wpm"
+          showAverage="speed"
           tabindex="0"
           onclick="this.blur();"
         >
-          wpm
+          speed
         </div>
         <div
           class="button"
@@ -2595,10 +2690,14 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_dangerZone" class="sectionGroupTitle" group="dangerZone">
+  <button
+    id="group_dangerZone"
+    class="text sectionGroupTitle"
+    group="dangerZone"
+  >
     <i class="fas fa-chevron-down"></i>
     danger zone
-  </div>
+  </button>
   <div class="settingsGroup dangerZone">
     <div class="section importexportSettings">
       <div class="groupTitle">
@@ -2697,6 +2796,29 @@
         <div class="button" tabindex="0" onclick="this.blur();">open</div>
       </div>
     </div>
+    <div class="section setStreakHourOffset needsAccount hidden">
+      <div class="groupTitle">
+        <i class="fas fa-clock"></i>
+        <span>set streak hour offset</span>
+      </div>
+      <div class="text">
+        Streaks reset at midnight UTC by default. If this is not convenient for
+        you (for example if it means that streaks reset in the middle of the
+        day), you can change the hour offset here.
+        <br />
+        <span class="red">You can only do this once!</span>
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="setStreakHourOffset"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          update hour offset
+        </div>
+      </div>
+    </div>
     <div class="section updateAccountName needsAccount hidden">
       <div class="groupTitle">
         <i class="fas fa-user"></i>
@@ -2774,6 +2896,28 @@
           onclick="this.blur();"
         >
           remove google authentication
+        </div>
+      </div>
+    </div>
+    <div class="section revokeAllTokens">
+      <div class="groupTitle">
+        <i class="fas fa-user-slash"></i>
+        <span>revoke all tokens</span>
+      </div>
+      <div class="text">
+        Revokes all tokens connected to your account. Do this if you think
+        someone else has access to your account.
+        <br />
+        <span class="red">This will log you out of all devices.</span>
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="revokeAllTokens"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          revoke all tokens
         </div>
       </div>
     </div>

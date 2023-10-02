@@ -1,6 +1,5 @@
 {
   "name": "swiss_german",
-  "leftToRight": true,
   "bcp47": "de-CH",
   "words": [
     "ich",

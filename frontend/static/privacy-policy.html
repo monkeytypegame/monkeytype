@@ -24,7 +24,7 @@
       content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
     />
     <meta name="author" content="Miodec" />
-    <meta property="og:title" content="Monkeytype" />
+    <meta property="og:title" content="Privacy Policy | Monkeytype" />
     <meta property="og:url" content="https://monkeytype.com/" />
     <meta property="og:type" content="website" />
     <meta
@@ -33,15 +33,15 @@
     />
     <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
-    <meta name="twitter:title" content="Monkeytype" />
+    <meta name="twitter:title" content="Privacy Policy | Monkeytype" />
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <style>
-      #top {
+      header {
         font-size: 2.5rem;
       }
 
-      #middle {
+      main {
         color: var(--text-color);
       }
 
@@ -60,9 +60,9 @@
   </head>
 
   <body>
-    <div id="centerContent">
-      <div id="top">
-        <div class="logo">
+    <div id="contentWrapper">
+      <header>
+        <div id="logo">
           <div class="icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -107,14 +107,14 @@
             <span style="color: var(--main-color)">Privacy Policy</span>
           </div>
         </div>
-      </div>
-      <div id="middle">
+      </header>
+      <main>
         <p>
           <!-- make sure to update this date every time the policy is changed -->
         </p>
 
         <p>Effective date: September 8, 2021</p>
-        <p>Last updated: February 13, 2023</p>
+        <p>Last updated: Jun 27, 2023</p>
         <p>
           Thanks for trusting Monkeytype ('Monkeytype', 'we', 'us', 'our') with
           your personal information! We take our responsibility to you very
@@ -323,8 +323,7 @@
         <p>
           <i>
             This section only applies for the duration of Monkeytype's
-            Advertiser A/B Test, beginning sometime in the second half on
-            February 2023.
+            Advertiser A/B Test, beginning on the 26th of June 2023.
           </i>
         </p>
         <p><i>Common ID Cookie</i></p>
@@ -369,7 +368,11 @@
         </p>
         <p>
           For further information, see
-          <a href="https://en.wikipedia.org/wiki/HTTP_cookie" target="_blank">
+          <a
+            href="https://en.wikipedia.org/wiki/HTTP_cookie"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             HTTP cookie
           </a>
           on Wikipedia.
@@ -453,22 +456,22 @@
           data-balloon-pos="up"
           onclick="copyUserName()"
         >
-          Miodec#1512
+          @miodec
         </span>
-      </div>
+      </main>
     </div>
   </body>
   <script defer>
     function copyUserName() {
       if (true) {
-        navigator.clipboard.writeText("Miodec#1512");
+        navigator.clipboard.writeText("@miodec");
         alert("Copied To Clipboard!");
       } else {
         alert("Unable to copy username");
       }
     }
 
-    document.querySelector("#top").addEventListener("click", () => {
+    document.querySelector("header").addEventListener("click", () => {
       window.location = "/";
     });
   </script>

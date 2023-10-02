@@ -1,6 +1,5 @@
 {
   "name": "danish",
-  "leftToRight": true,
   "bcp47": "da-DK",
   "words": [
     "ville",
