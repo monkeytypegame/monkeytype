@@ -8,7 +8,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     {
       id: "setPlaySoundOnErrorOff",
       display: "off",
-      configValue: false,
+      configValue: "off",
       exec: (): void => {
         UpdateConfig.setPlaySoundOnError("off");
       },
