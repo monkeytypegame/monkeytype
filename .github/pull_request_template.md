@@ -1,14 +1,22 @@
 <!-- Adding a language or a theme?
 For languages, make sure to edit the `_list.json`, `_groups.json` files, and add the `language.json` file as well.
- For themes, make sure to add the `theme.css` file. It will not work if you don't follow these steps!
+For themes, make sure to add the `theme.css` file. It will not work if you don't follow these steps!
 
 If your change is visual (mainly themes) it would be extra awesome if you could include a screenshot.
 
- -->
+-->
 
 ### Description
 
+
 <!-- Please describe the change(s) made in your PR -->
+
+### Checks
+
+- [ ] Check if any open issues are related to this PR; if so, be sure to tag them below. 
+- [ ] Visit https://www.conventionalcommits.org and include your PR name. If not already done, ensure your commit messages also follow it. 
+
+<!-- I know I know they seem boring but please do them, they help us and you will find out it also helps you.-->
 
 Closes #
 
