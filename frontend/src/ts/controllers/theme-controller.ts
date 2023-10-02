@@ -1,7 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
-import Config, { setAutoSwitchThemeOff } from "../config";
+import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -179,8 +179,8 @@ const debouncedPreview = debounce(
 function set(themeIdentifier: string, isAutoSwitch = false): void {
   apply(themeIdentifier, undefined, true);
 
-  if (!isAutoSwitch) {
-    setAutoSwitchThemeOff();
+  if (!isAutoSwitch && Config.autoSwitchTheme) {
+    setAutoSwitchTheme(false);
   }
 }
 
