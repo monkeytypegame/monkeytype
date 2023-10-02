@@ -1555,10 +1555,12 @@
 
 #tagsWrapper,
 #newResultFilterPresetPopupWrapper,
-#editProfilePopupWrapper {
+#editProfilePopupWrapper,
+#batchTagUpdatePopupWrapper {
   #tagsEdit,
   #newResultFilterPresetPopup,
-  #editProfilePopup {
+  #editProfilePopup,
+  #batchTagUpdatePopup {
     max-height: 90vh;
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -1792,5 +1794,16 @@
         }
       }
     }
+  }
+}
+
+#batchTagUpdatePopup {
+  width: 100%;
+  max-width: 600px;
+
+  .buttons {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }

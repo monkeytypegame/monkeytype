@@ -21,8 +21,10 @@ import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
+import * as BatchUpdateTagsPopup from "../popups/batch-update-tags";
 
 let filterDebug = false;
+let toggleBatchUpdateTags = false;
 //toggle filterdebug
 export function toggleFilterDebug(): void {
   filterDebug = !filterDebug;
@@ -160,6 +162,11 @@ function loadMoreLines(lineIndex?: number): void {
     const date = new Date(result.timestamp);
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
+    <td>${
+      toggleBatchUpdateTags
+        ? `<input class="tagCheckbox" type="checkbox" value="${result._id}" />`
+        : ""
+    }</td>
     <td>${pb}</td>
     <td>${typingSpeedUnit.fromWpm(result.wpm).toFixed(2)}</td>
     <td>${raw}</td>
@@ -1278,6 +1285,36 @@ $(".pageAccount .group.presetFilterButtons").on(
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
   Misc.downloadResultsCSV(filteredResults);
 });
+
+$(".pageAccount .content .group.aboveHistory .batchTagUpdate").on(
+  "click",
+  (e) => {
+    if (toggleBatchUpdateTags) {
+      toggleBatchUpdateTags = false;
+    } else {
+      $(
+        ".pageAccount .content .group.history .saveBatchUpdateTags"
+      ).removeClass("hidden");
+      $(e.target).addClass("active");
+      toggleBatchUpdateTags = true;
+    }
+    update();
+  }
+);
+
+$(".pageAccount .content .group.history .saveBatchUpdateTags").on(
+  "click",
+  () => {
+    BatchUpdateTagsPopup.show(() => {
+      toggleBatchUpdateTags = false;
+      $(
+        ".pageAccount .content .group.aboveHistory .batchTagUpdate"
+      ).removeClass("active");
+      update();
+    });
+    toggleBatchUpdateTags = false;
+  }
+);
 
 $(".pageAccount .profile").on("click", ".details .copyLink", () => {
   const snapshot = DB.getSnapshot();
