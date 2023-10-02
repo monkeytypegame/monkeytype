@@ -134,11 +134,10 @@
     }
 
     &.aboveHistory {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      .exportCSV {
-        grid-column: 3/4;
-      }
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
     }
 
     &.createdDate {
