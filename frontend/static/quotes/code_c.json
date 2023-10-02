@@ -14,63 +14,63 @@
       "id": 1
     },
     {
-      "text": "void reverse(char s[]) {\\n\\tint c, i, j;\\n\\tfor ( i = 0, j = strlen(s)-1; i < j; i++, j--) {\\n\\t\\tc = s[i];\\n\\t\\ts[i] = s[j];\\n\\t\\ts[j] = c;\\n\\t}\\n}\\nvoid itoa(int n, char s[], int width) {\\n\\tint i, sign;\\n\\tif ((sign = n) < 0)\\n\\t\\tn = -n;\\n\\ti = 0;\\n\\tdo {\\n\\t\\ts[i++] = n % 10 + '0';\\n\\t\\tprintf(\"%d %% %d + '0' = %d\\\\n\", n, 10, s[i-1]);\\n\\t} while ((n /= 10) > 0);\\n\\tif (sign < 0)\\n\\t\\ts[i++] = '-';\\n\\twhile (i < width)\\n\\t\\ts[i++] = ' ';\\n\\ts[i] = '\\\\0';\\n\\treverse(s);\\n}",
+      "text": "void reverse(char s[]) {\n\tint c, i, j;\n\tfor ( i = 0, j = strlen(s)-1; i < j; i++, j--) {\n\t\tc = s[i];\n\t\ts[i] = s[j];\n\t\ts[j] = c;\n\t}\n}\nvoid itoa(int n, char s[], int width) {\n\tint i, sign;\n\tif ((sign = n) < 0)\n\t\tn = -n;\n\ti = 0;\n\tdo {\n\t\ts[i++] = n % 10 + '0';\n\t\tprintf(\"%d %% %d + '0' = %d\n\", n, 10, s[i-1]);\n\t} while ((n /= 10) > 0);\n\tif (sign < 0)\n\t\ts[i++] = '-';\n\twhile (i < width)\n\t\ts[i++] = ' ';\n\ts[i] = '\\\\0';\n\treverse(s);\n}",
       "source": "clc-wiki - atoi",
-      "length": 480,
+      "length": 427,
       "id": 2
     },
     {
-      "text": "int hexalpha_to_int(int c)\\n{\\n\\tchar hexalpha[] = \"aAbBcCdDeEfF\";\\n\\tint i;\\n\\tint answer = 0;\\n\\tfor(i = 0; answer == 0 && hexalpha[i] != '\\\\0'; i++)\\n\\t{\\n\\t\\tif(hexalpha[i] == c)\\n\\t\\t{\\n\\t\\t\\tanswer = 10 + (i / 2);\\n\\t\\t}\\n\\t}\\n\\treturn answer;\\n}\\nunsigned int htoi(const char s[])\\n{\\n\\tunsigned int answer = 0;\\n\\tint i = 0;\\n\\tint valid = 1;\\n\\tint hexit;\\n\\n\\tif(s[i] == '0')\\n\\t{\\n\\t\\t++i;\\n\\t\\tif(s[i] == 'x' || s[i] == 'X')\\n\\t\\t{\\n\\t\\t\\t++i;\\n\\t\\t}\\n\\t}\\n\\twhile(valid && s[i] != '\\\\0')\\n\\t{\\n\\t\\tanswer = answer * 16;\\n\\t\\tif(s[i] >= '0' && s[i] <= '9')\\n\\t\\t{\\n\\t\\t\\tanswer = answer + (s[i] - '0');\\n\\t\\t}\\n\\t\\telse\\n\\t\\t{\\n\\t\\t\\thexit = hexalpha_to_int(s[i]);\\n\\t\\t\\tif(hexit == 0)\\n\\t\\t\\t{\\n\\t\\t\\t\\tvalid = 0;\\n\\t\\t\\t}\\n\\t\\t\\telse\\n\\t\\t\\t{\\n\\t\\t\\t\\tanswer = answer + hexit;\\n\\t\\t\\t}\\n\\t\\t}\\n\\t\\t++i;\\n\\t}\\n\\tif(!valid)\\n\\t{\\n\\t\\tanswer = 0;\\n\\t}\\n\\treturn answer;\\n}",
+      "text": "int hexalpha_to_int(int c)\n{\n\tchar hexalpha[] = \"aAbBcCdDeEfF\";\n\tint i;\n\tint answer = 0;\n\tfor(i = 0; answer == 0 && hexalpha[i] != '\\\\0'; i++)\n\t{\n\t\tif(hexalpha[i] == c)\n\t\t{\n\t\t\tanswer = 10 + (i / 2);\n\t\t}\n\t}\n\treturn answer;\n}\nunsigned int htoi(const char s[])\n{\n\tunsigned int answer = 0;\n\tint i = 0;\n\tint valid = 1;\n\tint hexit;\n\n\tif(s[i] == '0')\n\t{\n\t\t++i;\n\t\tif(s[i] == 'x' || s[i] == 'X')\n\t\t{\n\t\t\t++i;\n\t\t}\n\t}\n\twhile(valid && s[i] != '\\\\0')\n\t{\n\t\tanswer = answer * 16;\n\t\tif(s[i] >= '0' && s[i] <= '9')\n\t\t{\n\t\t\tanswer = answer + (s[i] - '0');\n\t\t}\n\t\telse\n\t\t{\n\t\t\thexit = hexalpha_to_int(s[i]);\n\t\t\tif(hexit == 0)\n\t\t\t{\n\t\t\t\tvalid = 0;\n\t\t\t}\n\t\t\telse\n\t\t\t{\n\t\t\t\tanswer = answer + hexit;\n\t\t\t}\n\t\t}\n\t\t++i;\n\t}\n\tif(!valid)\n\t{\n\t\tanswer = 0;\n\t}\n\treturn answer;\n}",
       "source": "clc-wiki - htoi",
-      "length": 884,
+      "length": 738,
       "id": 3
     },
     {
-      "text": "unsigned rightrot(unsigned x, unsigned n)\\n{\\n\\twhile (n > 0) {\\n\\t\\tif ((x & 1) == 1)\\n\\t\\t\\tx = (x >> 1) | ~(~0U >> 1);\\n\\t\\telse\\n\\t\\t\\tx = (x >> 1);\\n\\t\\tn--;\\n\\t}\\n\\treturn x;\\n}",
+      "text": "unsigned rightrot(unsigned x, unsigned n)\n{\n\twhile (n > 0) {\n\t\tif ((x & 1) == 1)\n\t\t\tx = (x >> 1) | ~(~0U >> 1);\n\t\telse\n\t\t\tx = (x >> 1);\n\t\tn--;\n\t}\n\treturn x;\n}",
       "source": "clc-wiki - rightrot",
-      "length": 183,
+      "length": 158,
       "id": 4
     },
     {
-      "text": "#include <stdio.h>\\nint fib(int n)\\n{\\n\\tif (n <= 1)\\n\\t\\treturn n;\\n\\treturn fib(n - 1) + fib(n - 2);\\n}\\nint main()\\n{\\n\\tint n = 9;\\n\\tprintf(\"%d\", fib(n));\\n\\tgetchar();\\n\\treturn 0;\\n}",
+      "text": "#include <stdio.h>\nint fib(int n)\n{\n\tif (n <= 1)\n\t\treturn n;\n\treturn fib(n - 1) + fib(n - 2);\n}\nint main()\n{\n\tint n = 9;\n\tprintf(\"%d\", fib(n));\n\tgetchar();\n\treturn 0;\n}",
       "source": "Geeks for Geeks - C Program For Fibonacci Numbers",
-      "length": 189,
+      "length": 168,
       "id": 5
     },
     {
-      "text": "int\\nmain(int argc, char **argv)\\n{\\n\\tstruct api_signature *sig = NULL;\\n\\tint load_type, load_unit, load_slice, load_partition;\\n\\tint i;\\n\\tconst char *ldev;",
+      "text": "int\nmain(int argc, char **argv)\n{\n\tstruct api_signature *sig = NULL;\n\tint load_type, load_unit, load_slice, load_partition;\n\tint i;\n\tconst char *ldev;",
       "source": "FreeBSD Boot Sequence",
-      "length": 160,
+      "length": 150,
       "id": 6
     },
     {
-      "text": "tree\\nc_sizeof (exp)\\n\\ttree exp;\\n{\\n\\tif (pedantic)\\n\\t{\\n\\t\\tenum tree_code code = TREE_CODE (TREE_TYPE (exp));\\n\\t\\tif (code == FUNCTION_TYPE)\\n\\t\\t\\twarning (\"sizeof applied to a value of function type\");\\n\\t\\tif (code == VOID_TYPE)\\n\\t\\t\\twarning (\"sizeof applied to a value of void type\");\\n\\t}\\n\\treturn size_in_bytes (exp);\\n}",
+      "text": "tree\nc_sizeof (exp)\n\ttree exp;\n{\n\tif (pedantic)\n\t{\n\t\tenum tree_code code = TREE_CODE (TREE_TYPE (exp));\n\t\tif (code == FUNCTION_TYPE)\n\t\t\twarning (\"sizeof applied to a value of function type\");\n\t\tif (code == VOID_TYPE)\n\t\t\twarning (\"sizeof applied to a value of void type\");\n\t}\n\treturn size_in_bytes (exp);\n}",
       "source": "GCC Version 0.9",
-      "length": 335,
+      "length": 305,
       "id": 7
     },
     {
-      "text": "static int initialized;\\nstatic void PyThread__init_thread(void); /* Forward */\\nvoid\\nPyThread_init_thread(void)\\n{\\n#ifdef Py_DEBUG\\n\\tconst char *p = Py_GETENV(\"PYTHONTHREADDEBUG\");\\n\\tif (p) {\\n\\t\\tif (*p)\\n\\t\\t\\tthread_debug = atoi(p);\\n\\t\\telse\\n\\t\\t\\tthread_debug = 1;\\n\\t}\\n#endif /* Py_DEBUG */\\n\\tif (initialized)\\n\\t\\treturn;\\n\\tinitialized = 1;\\n\\tdprintf((\"PyThread_init_thread called\"));\\n\\tPyThread__init_thread();\\n}",
+      "text": "static int initialized;\nstatic void PyThread__init_thread(void); /* Forward */\nvoid\nPyThread_init_thread(void)\n{\n#ifdef Py_DEBUG\n\tconst char *p = Py_GETENV(\"PYTHONTHREADDEBUG\");\n\tif (p) {\n\t\tif (*p)\n\t\t\tthread_debug = atoi(p);\n\t\telse\n\t\t\tthread_debug = 1;\n\t}\n#endif /* Py_DEBUG */\n\tif (initialized)\n\t\treturn;\n\tinitialized = 1;\n\tdprintf((\"PyThread_init_thread called\"));\n\tPyThread__init_thread();\n}",
       "source": "Python 3.10.8 Source Code",
-      "length": 432,
+      "length": 394,
       "id": 8
     },
     {
-      "text": "static bool read_shader(struct vkd3d_shader_code *shader, FILE *f)\\n{\\n\\tsize_t size = 4096;\\n\\tstruct stat st;\\n\\tsize_t pos = 0;\\n\\tuint8_t *data;\\n\\tsize_t ret;\\n\\tmemset(shader, 0, sizeof(*shader));\\n\\tif (fstat(fileno(f), &st) == -1)\\n\\t{\\n\\t\\tfprintf(stderr, \"Could not stat input.\");\\n\\t\\treturn false;\\n\\t}\\n\\tif (S_ISREG(st.st_mode))\\n\\t\\tsize = st.st_size;\\n\\tif (!(data = malloc(size)))\\n\\t{\\n\\t\\tfprintf(stderr, \"Out of memory.\");\\n\\t\\treturn false;\\n\\t}\\n\\tfor (;;)\\n\\t{\\n\\t\\tif (pos >= size)\\n\\t\\t{\\n\\t\\t\\tif (size > SIZE_MAX / 2 || !(data = realloc(data, size * 2)))\\n\\t\\t\\t{\\n\\t\\t\\t\\tfprintf(stderr, \"Out of memory.\");\\n\\t\\t\\t\\tfree(data);\\n\\t\\t\\t\\treturn false;\\n\\t\\t\\t}\\n\\t\\t\\tsize *= 2;\\n\\t\\t}\\n\\t\\tif (!(ret = fread(&data[pos], 1, size - pos, f)))\\n\\t\\t\\tbreak;\\n\\t\\tpos += ret;\\n\\t}\\n\\tif (!feof(f))\\n\\t{\\n\\t\\tfree(data);\\n\\t\\treturn false;\\n\\t}\\n\\tshader->code = data;\\n\\tshader->size = pos;\\n\\treturn true;\\n}",
+      "text": "static bool read_shader(struct vkd3d_shader_code *shader, FILE *f)\n{\n\tsize_t size = 4096;\n\tstruct stat st;\n\tsize_t pos = 0;\n\tuint8_t *data;\n\tsize_t ret;\n\tmemset(shader, 0, sizeof(*shader));\n\tif (fstat(fileno(f), &st) == -1)\n\t{\n\t\tfprintf(stderr, \"Could not stat input.\");\n\t\treturn false;\n\t}\n\tif (S_ISREG(st.st_mode))\n\t\tsize = st.st_size;\n\tif (!(data = malloc(size)))\n\t{\n\t\tfprintf(stderr, \"Out of memory.\");\n\t\treturn false;\n\t}\n\tfor (;;)\n\t{\n\t\tif (pos >= size)\n\t\t{\n\t\t\tif (size > SIZE_MAX / 2 || !(data = realloc(data, size * 2)))\n\t\t\t{\n\t\t\t\tfprintf(stderr, \"Out of memory.\");\n\t\t\t\tfree(data);\n\t\t\t\treturn false;\n\t\t\t}\n\t\t\tsize *= 2;\n\t\t}\n\t\tif (!(ret = fread(&data[pos], 1, size - pos, f)))\n\t\t\tbreak;\n\t\tpos += ret;\n\t}\n\tif (!feof(f))\n\t{\n\t\tfree(data);\n\t\treturn false;\n\t}\n\tshader->code = data;\n\tshader->size = pos;\n\treturn true;\n}",
       "source": "vkd3d 3D Graphics Library",
-      "length": 932,
+      "length": 815,
       "id": 9
     },
     {
-      "text": "struct nlist *lookup(char *);\\nchar *strdup(char *);\\n\\nstruct nlist *install(char *name, char *defn)\\n{\\n\\tstruct nlist *np;\\n\\tunsigned hashval;\\n\\tif ((np = lookup(name)) == NULL) {\\n\\t\\tnp = (struct nlist *) malloc(sizeof(*np));\\n\\t\\tif (np == NULL || (np->name = strdup(name)) == NULL)\\n\\t\\t\\treturn NULL;\\n\\t\\thashval = hash(name);\\n\\t\\tnp->next = hashtab[hashval];\\n\\t\\thashtab[hashval] = np;\\n\\t} else\\n\\t\\tfree((void *) np->defn);\\n\\tif ((np->defn = strdup(defn)) == NULL)\\n\\t\\treturn NULL;\\n\\treturn np;\\n}",
+      "text": "struct nlist *lookup(char *);\nchar *strdup(char *);\n\nstruct nlist *install(char *name, char *defn)\n{\n\tstruct nlist *np;\n\tunsigned hashval;\n\tif ((np = lookup(name)) == NULL) {\n\t\tnp = (struct nlist *) malloc(sizeof(*np));\n\t\tif (np == NULL || (np->name = strdup(name)) == NULL)\n\t\t\treturn NULL;\n\t\thashval = hash(name);\n\t\tnp->next = hashtab[hashval];\n\t\thashtab[hashval] = np;\n\t} else\n\t\tfree((void *) np->defn);\n\tif ((np->defn = strdup(defn)) == NULL)\n\t\treturn NULL;\n\treturn np;\n}",
       "source": "The C Programming Language (K&R)",
-      "length": 516,
+      "length": 474,
       "id": 10
     },
     {
-      "text": "int strcmp(char *s, char *t)\\n{\\n\\tfor ( ; *s == *t; s++, t++)\\n\\t\\tif (*s == '\\0')\\n\\t\\t\\treturn 0;\\n\\treturn *s - *t;\\n}",
+      "text": "int strcmp(char *s, char *t)\n{\n\tfor ( ; *s == *t; s++, t++)\n\t\tif (*s == '\\0')\n\t\t\treturn 0;\n\treturn *s - *t;\n}",
       "source": "The C Programming Language (K&R)",
-      "length": 122,
+      "length": 109,
       "id": 11
     }
   ]
