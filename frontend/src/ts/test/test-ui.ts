@@ -20,6 +20,7 @@ import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
+import * as ActivePage from "../states/active-page";
 
 const debouncedZipfCheck = debounce(250, () => {
   Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
@@ -226,6 +227,7 @@ function shouldUpdateWordsInputPosition(): boolean {
 }
 
 export function updateWordsInputPosition(initial = false): void {
+  if (ActivePage.get() !== "test") return;
   if (Config.tapeMode !== "off" && !initial) return;
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
@@ -282,6 +284,7 @@ export function updateWordsInputPosition(initial = false): void {
 }
 
 function updateWordsHeight(force = false): void {
+  if (ActivePage.get() !== "test") return;
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
@@ -763,6 +766,18 @@ export function scrollTape(): void {
   }
 }
 
+export function updatePremid(): void {
+  const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
+  let fbtext = "";
+  if (Config.funbox !== "none") {
+    fbtext = " " + Config.funbox.split("#").join(" ");
+  }
+  $(".pageTest #premidTestMode").text(
+    `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
+  );
+  $(".pageTest #premidSecondsLeft").text(Config.time);
+}
+
 let currentLinesAnimating = 0;
 
 export function lineJump(currentTop: number): void {
@@ -1035,7 +1050,7 @@ export function toggleResultWords(noAnimation = false): void {
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
 
-      if (!$("#showWordHistoryButton").hasClass("loaded")) {
+      if ($("#resultWordsHistory .words .word").length === 0) {
         $("#words").html(
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );

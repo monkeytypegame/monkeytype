@@ -251,7 +251,7 @@ export async function renderResult(): Promise<void> {
   }
 }
 
-export function updateTestPageAds(visible: boolean): void {
+export function updateFooterAndVerticalAds(visible: boolean): void {
   if (visible) {
     $("#ad-vertical-left-wrapper").removeClass("testPage");
     $("#ad-vertical-right-wrapper").removeClass("testPage");

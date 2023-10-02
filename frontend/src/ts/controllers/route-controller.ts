@@ -134,6 +134,13 @@ export function navigate(
     TestUI.resultCalculating ||
     PageTransition.get()
   ) {
+    console.debug(
+      `navigate: ${url} ignored, page is busy (testRestarting: ${
+        TestUI.testRestarting
+      }, resultCalculating: ${
+        TestUI.resultCalculating
+      }, pageTransition: ${PageTransition.get()})`
+    );
     return;
   }
   url = url.replace(/\/$/, "");

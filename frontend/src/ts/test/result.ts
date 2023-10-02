@@ -8,7 +8,6 @@ import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as Keymap from "../elements/keymap";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
@@ -26,6 +25,7 @@ import * as TestStats from "./test-stats";
 import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
 import * as ConfigEvent from "../observables/config-event";
+import * as Focus from "./focus";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -710,6 +710,7 @@ export async function update(
   ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
+  $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")
@@ -717,7 +718,6 @@ export async function update(
     .addClass("far");
   $(".pageTest #result #rateQuoteButton .rating").text("");
   $(".pageTest #result #rateQuoteButton").addClass("hidden");
-  $("#testModesNotice").css("opacity", 0);
   $("#words").removeClass("blurred");
   $("#wordsInput").trigger("blur");
   $("#result .stats .time .bottom .afk").text("");
@@ -816,9 +816,9 @@ export async function update(
       ChartController.result.resize();
 
       window.scrollTo({ top: 0 });
-      $("#testModesNotice").addClass("hidden");
     },
     async () => {
+      Focus.set(false);
       $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
         {
           opacity: 1,
@@ -828,8 +828,7 @@ export async function update(
       if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
         TestUI.toggleResultWords(true);
       }
-      Keymap.hide();
-      AdController.updateTestPageAds(true);
+      AdController.updateFooterAndVerticalAds(true);
     }
   );
 }

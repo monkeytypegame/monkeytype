@@ -4,9 +4,10 @@ import * as ManualRestart from "../test/manual-restart-tracker";
 import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox/funbox";
 import Page from "./page";
-import { updateTestPageAds } from "../controllers/ad-controller";
+import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
+import * as TestConfig from "../test/test-config";
 
 export const page = new Page(
   "test",
@@ -20,15 +21,16 @@ export const page = new Page(
     $("#wordsInput").trigger("focusout");
   },
   async () => {
-    updateTestPageAds(true);
+    updateFooterAndVerticalAds(true);
   },
   async () => {
-    updateTestPageAds(false);
+    updateFooterAndVerticalAds(false);
     TestStats.resetIncomplete();
     ManualRestart.set();
     TestLogic.restart({
       noAnim: true,
     });
+    TestConfig.instantUpdate();
     Funbox.activate();
     Keymap.refresh();
   },
