@@ -141,14 +141,6 @@ export function setPlaySoundOnError(
   val: MonkeyTypes.PlaySoundOnError,
   nosave?: boolean
 ): boolean {
-  // compatability for previous users of this feature
-  if (typeof val === "boolean") {
-    if (val === true) {
-      val = "1";
-    } else {
-      val = "off";
-    }
-  }
   if (
     !isConfigValueValid("play sound on error", val, [["off", "1", "2", "3"]])
   ) {
@@ -1996,6 +1988,10 @@ function replaceLegacyValues(
   //@ts-ignore
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
+  }
+
+  if (typeof configObj.playSoundOnError === "boolean") {
+    configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
   }
 
   return configObj;
