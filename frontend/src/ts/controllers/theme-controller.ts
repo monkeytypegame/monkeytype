@@ -1,7 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
-import Config from "../config";
+import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -123,7 +123,6 @@ function apply(
   isPreview = false
 ): void {
   clearCustomTheme();
-
   const name = customColorsOverride ? "custom" : themeName;
 
   ThemeColors.reset();
@@ -177,8 +176,12 @@ const debouncedPreview = debounce(
   }
 );
 
-function set(themeIdentifier: string): void {
-  apply(themeIdentifier);
+function set(themeIdentifier: string, isAutoSwitch = false): void {
+  apply(themeIdentifier, undefined, true);
+
+  if (!isAutoSwitch && Config.autoSwitchTheme) {
+    setAutoSwitchTheme(false);
+  }
 }
 
 export function clearPreview(applyTheme = true): void {
@@ -315,9 +318,9 @@ window
   ?.addEventListener?.("change", (event) => {
     if (!Config.autoSwitchTheme || Config.customTheme) return;
     if (event.matches) {
-      set(Config.themeDark);
+      set(Config.themeDark, true);
     } else {
-      set(Config.themeLight);
+      set(Config.themeLight, true);
     }
   });
 
@@ -337,18 +340,18 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   }
   if (eventKey === "setThemes") {
     clearPreview(false);
-    if (eventValue) {
-      set("custom");
+    if (Config.autoSwitchTheme) {
+      if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        set(Config.themeDark, true);
+      } else {
+        set(Config.themeLight, true);
+      }
     } else {
-      if (Config.autoSwitchTheme) {
-        if (
-          window.matchMedia &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches
-        ) {
-          set(Config.themeDark);
-        } else {
-          set(Config.themeLight);
-        }
+      if (eventValue) {
+        set("custom");
       } else {
         set(Config.theme);
       }
@@ -363,9 +366,9 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
       ) {
-        set(Config.themeDark);
+        set(Config.themeDark, true);
       } else {
-        set(Config.themeLight);
+        set(Config.themeLight, true);
       }
     } else {
       set(Config.theme);
@@ -380,7 +383,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     ) &&
     !nosave
   ) {
-    set(Config.themeLight);
+    set(Config.themeLight, true);
   }
   if (
     eventKey === "themeDark" &&
@@ -389,6 +392,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     window.matchMedia("(prefers-color-scheme: dark)").matches &&
     !nosave
   ) {
-    set(Config.themeDark);
+    set(Config.themeDark, true);
   }
 });
