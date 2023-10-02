@@ -156,9 +156,9 @@
   {
     "name": "nord",
     "bgColor": "#242933",
-    "mainColor": "#d8dee9",
-    "subColor": "#617b94",
-    "textColor": "#d8dee9"
+    "mainColor": "#88C0D0",
+    "subColor": "#2E3440",
+    "textColor": "#88C0D0"
   },
   {
     "name": "mr_sleeves",
@@ -1127,11 +1127,11 @@
     "textColor": "#e6c7a8"
   },
   {
-    "name": "purpurite",
-    "bgColor": "#1f2533",
-    "mainColor": "#9999ff",
-    "subColor": "#ccddff",
-    "textColor": "#9999ff"
+    "name": "purpleish",
+    "bgColor": "#1e1e32",
+    "mainColor": "#7a52cc",
+    "subColor": "#3d3d66",
+    "textColor": "#7a52cc"
   },
   {
     "name": "nord_light",
