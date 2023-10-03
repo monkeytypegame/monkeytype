@@ -71,7 +71,7 @@
 
 html {
   @extend .ffscroll;
-  overflow-y: scroll;
+  overflow-y: auto;
   scroll-behavior: smooth;
   line-height: 1.25;
 }
