@@ -8,13 +8,13 @@ If your change is visual (mainly themes) it would be extra awesome if you could 
 
 ### Description
 
-
 <!-- Please describe the change(s) made in your PR -->
 
 ### Checks
 
-- [ ] Check if any open issues are related to this PR; if so, be sure to tag them below. 
-- [ ] Visit https://www.conventionalcommits.org and include your PR name. If not already done, ensure your commit messages also follow it. 
+- [ ] Check if any open issues are related to this PR; if so, be sure to tag them below.
+- [ ] Make sure the PR title follows the Conventional Commits standard. (https://www.conventionalcommits.org for more info)
+- [ ] Make sure to include your GitHub username inside round brackets at the end of the PR title
 
 <!-- I know I know they seem boring but please do them, they help us and you will find out it also helps you.-->
 
