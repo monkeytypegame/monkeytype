@@ -1,100 +1,81 @@
 #notificationCenter {
-  width: 350px;
-  z-index: 99999999;
-  display: grid;
-  gap: 1rem;
-  position: fixed;
-  right: 1rem;
-  top: 1rem;
-  transition: 0.125s opacity;
-  .clearAll.button {
-    font-size: 0.75em;
-  }
-  &.focus .clearAll {
-    visibility: hidden;
-  }
-  &.focus .notif {
-    visibility: hidden;
-  }
-  &.focus .notif.important {
-    visibility: visible;
-  }
-  .history {
-    display: grid;
-    gap: 1rem;
-  }
-  .notif {
-    -webkit-user-select: none;
-    user-select: none;
-    .icon {
-      color: var(--sub-color);
-      padding: 1rem 1rem;
-      align-items: center;
-      display: grid;
-      font-size: 1.25em;
-    }
-    .message {
-      padding: 1rem 1rem 1rem 0;
-      color: var(--text-color);
-      .title {
-        color: var(--sub-color);
-        font-size: 0.75em;
-      }
-    }
+	width: 350px;
+	z-index: 99999999;
+	display: grid;
+	gap: 1rem;
+	position: fixed;
+	right: 1rem;
+	top: 1rem;
+	transition: 0.32s opacity ease-in-out;
 
-    position: relative;
-    background: var(--sub-alt-color);
-    color: var(--sub-color);
-    display: grid;
-    grid-template-columns: min-content auto min-content;
-    border-radius: var(--roundness);
-    // outline-width: 0.25em;
-    // outline-style: solid;
-    // outline-color: var(--sub-color);
-    box-shadow: 0 0 0 0.2em var(--sub-color);
+	.clearAll.button {
+	  font-size: 0.75em;
+	}
+	&.focus .clearAll {
+	  visibility: hidden;
+	}
+	&.focus .notif {
+	  visibility: hidden;
+	}
+	&.focus .notif.important {
+	  visibility: visible;
+	}
+	.history {
+	  display: grid;
+	  gap: 1rem;
+	}
 
-    &.bad {
-      // background-color: var(--error-color);
-      box-shadow: 0 0 0 0.2em var(--error-color);
-      color: var(--error-color);
-      .icon {
-        color: var(--error-color);
-      }
-    }
+	.notif {
+	  --notif-border-color: rgba(0, 77, 148, 0.71);
+	  --notif-background-color: rgba(0, 77, 148, 0.7);
+	  --notif-icon-color: rgba(255, 255, 255);
 
-    &.good {
-      box-shadow: 0 0 0 0.2em var(--main-color);
-      color: var(--main-color);
-      .icon {
-        color: var(--main-color);
-      }
-    }
+	  -webkit-user-select: none;
+	  user-select: none;
 
-    &:hover {
-      // opacity: .5;
-      // box-shadow: 0 0 20px rgba(0,0,0,.25);
-      cursor: pointer;
-      &::after {
-        opacity: 1;
-      }
-    }
-    &::after {
-      transition: 0.125s;
-      font-family: "Font Awesome 5 Free";
-      background: rgba(0, 0, 0, 0.5);
-      opacity: 0;
-      font-weight: 900;
-      content: "\f00d";
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      // color: inherit;
-      font-size: 2.5rem;
-      display: grid;
-      /* align-self: center; */
-      align-items: center;
-      text-align: center;
-      border-radius: var(--roundness);
-    }
+	  .icon {
+		color: var(--notif-icon-color);
+		padding: 1rem 1rem;
+		font-size: 1rem;
+	  }
+
+	  .message {
+		padding: 1rem 1rem 1rem 0;
+		color: #fff;
+		font-size: 14px;
+
+		.title {
+		  color: #fff;
+		  padding-bottom: 0.25rem;
+		}
+	  }
+
+	  border-radius: 12px;
+	  border: 1px solid var(--notif-border-color);
+	  background: var(--notif-background-color);
+	  color: #fff;
+
+	  box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.08);
+
+	  position: relative;
+	  display: grid;
+	  grid-template-columns: min-content auto min-content;
+
+	  &.bad {
+		--notif-border-color: rgba(241, 90, 34, 0.71);
+		--notif-background-color: rgba(138, 46, 12, 0.7);
+		--notif-icon-color: rgba(243, 190, 63, 1);
+	  }
+
+	  &.good {
+		--notif-border-color: rgba(100, 206, 100, 0.71);
+		--notif-background-color: rgba(0, 148, 0, 0.52);
+		--notif-icon-color: rgba(255, 255, 255);
+	  }
+
+	  &:hover {
+		opacity: 0.9;
+		cursor: pointer;
+	  }
+	}
   }
-}
