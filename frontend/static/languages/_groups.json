@@ -10,7 +10,8 @@
       "english_450k",
       "english_commonly_misspelled",
       "english_contractions",
-      "english_doubleletter"
+      "english_doubleletter",
+      "english_shakespearean"
     ]
   },
   {
@@ -481,10 +482,6 @@
   {
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
-  },
-  {
-    "name": "shakespearean_english",
-    "languages": ["shakespearean_english"]
   },
   {
     "name": "code",
