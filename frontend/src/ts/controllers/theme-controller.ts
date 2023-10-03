@@ -181,6 +181,7 @@ function set(themeIdentifier: string, isAutoSwitch = false): void {
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setAutoSwitchTheme(false);
+    Notifications.add("Auto switch theme disabled", 0);
   }
 }
 

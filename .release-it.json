@@ -21,7 +21,7 @@
   },
   "plugins": {
     "@csmith/release-it-calver-plugin": {
-      "format": "0y.0w.minor",
+      "format": "yy.ww.minor",
       "increment": "calendar.minor"
     }
   }
