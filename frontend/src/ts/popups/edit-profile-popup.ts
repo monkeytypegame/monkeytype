@@ -134,7 +134,6 @@ async function updateProfile(): Promise<void> {
 
   // check for length resctrictions before sending server requests
   const githubLengthLimit = 39;
-  const twitterLengthLimit = 20;
   if (
     updates.socialProfiles.github &&
     updates.socialProfiles.github.length > githubLengthLimit
@@ -146,6 +145,7 @@ async function updateProfile(): Promise<void> {
     return;
   }
 
+  const twitterLengthLimit = 20;
   if (
     updates.socialProfiles.twitter &&
     updates.socialProfiles.twitter.length > twitterLengthLimit
