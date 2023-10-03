@@ -26,6 +26,4 @@ Closes #
 
 <!-- pro tip: you can mention an issue, PR, or discussion on GitHub by referencing its hash number e.g: [#1234](https://github.com/monkeytypegame/monkeytype/pull/1234) -->
 
-<!-- CI tip: The ci will check for messages in commits/pull request title following the "https://www.conventionalcommits.org" please try to follow it. -->
-
 <!-- pro tip: you can press . (dot or period) in the code tab of any GitHub repo to get access to GitHub's VS Code web editor Enjoy! :) -->
