@@ -59,7 +59,7 @@ export default <MonkeyTypes.Config>{
   alwaysShowWordsHistory: false,
   singleListCommandLine: "manual",
   capsLockWarning: true,
-  playSoundOnError: false,
+  playSoundOnError: "off",
   playSoundOnClick: "off",
   soundVolume: "0.5",
   startGraphsAtZero: true,

@@ -237,16 +237,13 @@ function apply(): void {
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
   if ($(`${popup} .replaceControlCharacters input`).prop("checked")) {
-    text = text.replace(/\\\\t/gm, "\t");
-    text = text.replace(/\\\\n/gm, "\n");
-    text = text.replace(/\\t/gm, "\t");
-    text = text.replace(/\\n/gm, "\n");
+    text = text.replace(/(?<!\\)\\t/gm, "\t");
+    text = text.replace(/(?<!\\)\\n/gm, "\n");
+    text = text.replace(/\\\\t/gm, "\\t");
+    text = text.replace(/\\\\n/gm, "\\n");
   }
 
   text = text.replace(/ +/gm, " ");
-  // text = text.replace(/(\r\n)+/g, "\r\n");
-  // text = text.replace(/(\n)+/g, "\n");
-  // text = text.replace(/(\r)+/g, "\r");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   if ($(`${popup} .typographyCheck input`).prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
