@@ -70,6 +70,14 @@
       async
       defer
     ></script>
+    <script type="text/javascript">
+      window.MONKEY_CONFIG = {
+        IS_DEVELOPMENT: JSON.parse(
+          "<%= htmlWebpackPlugin.options.config.IS_DEVELOPMENT %>"
+        ),
+        BACKEND_URL: "<%= htmlWebpackPlugin.options.config.BACKEND_URL %>",
+      };
+    </script>
     <link rel="stylesheet" href="/./themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link rel="stylesheet" href="" id="globalFunBoxTheme" type="text/css" />

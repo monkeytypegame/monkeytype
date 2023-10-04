@@ -3,6 +3,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const os = require("os");
 
 let circularImports = 0;
 
@@ -18,6 +19,19 @@ const htmlWebpackPlugins = [
     inject: false,
   });
 });
+
+let BACKEND_URL = "https://api.monkeytype.com";
+if (process.env.NODE_ENV === "development") {
+  const interfaces = Object.values(os.networkInterfaces())
+    .flatMap((it) => it)
+    .filter((it) => it.family === "IPv4" && !it.address.startsWith("127"));
+
+  if (interfaces.length > 0) {
+    BACKEND_URL = "http://" + interfaces[0].address + ":5005";
+  } else {
+    BACKEND_URL = "http://127.0.0.1:5005";
+  }
+}
 
 /** @type { import('webpack').Configuration } */
 const BASE_CONFIG = {
@@ -112,6 +126,10 @@ const BASE_CONFIG = {
       filename: "./index.html",
       template: resolve(__dirname, "../static/main.html"),
       inject: "body",
+      config: {
+        IS_DEVELOPMENT: JSON.stringify(process.env.NODE_ENV === "development"),
+        BACKEND_URL,
+      },
     }),
     ...htmlWebpackPlugins,
     new MiniCssExtractPlugin({
