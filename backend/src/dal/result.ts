@@ -140,7 +140,7 @@ export async function batchUpdateTags(
 
     const updatedResult = await db
       .collection<MonkeyTypesResult>("results")
-      .updateOne({ _id: new ObjectId(resultId), uid }, { $set: tags });
+      .updateOne({ _id: new ObjectId(resultId), uid }, { $set: { tags } });
     updatedResults.push(updatedResult);
   }
 
