@@ -218,8 +218,18 @@ function updateSuggested(): void {
     });
   }
   showFound();
-  activeIndex = 0;
+
+  // display background hover effect for selected language
+  const scrollTarget = $(".suggestions .entry .icon i.fa-check");
+  const entryIndex = scrollTarget.parent().parent().attr("index");
+  if (entryIndex !== undefined) {
+    activeIndex = parseInt(entryIndex);
+  } else {
+    activeIndex = 0;
+  }
+
   updateActiveEntry();
+  keepActiveEntryInView();
 }
 
 function show(): void {

@@ -564,10 +564,6 @@ async function generateQuoteWords(
 
   rq.language = Config.language.replace(/_\d*k$/g, "");
   rq.text = rq.text.replace(/ +/gm, " ");
-  rq.text = rq.text.replace(/\\\\t/gm, "\t");
-  rq.text = rq.text.replace(/\\\\n/gm, "\n");
-  rq.text = rq.text.replace(/\\t/gm, "\t");
-  rq.text = rq.text.replace(/\\n/gm, "\n");
   rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   rq.text = rq.text.replace(/…/g, "...");
   rq.text = rq.text.trim();

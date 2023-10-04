@@ -138,6 +138,8 @@ declare namespace MonkeyTypes {
     | "12"
     | "13";
 
+  type PlaySoundOnError = "off" | "1" | "2" | "3";
+
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
   type PaceCaret = "off" | "average" | "pb" | "last" | "custom" | "daily";
@@ -470,7 +472,7 @@ declare namespace MonkeyTypes {
     alwaysShowWordsHistory: boolean;
     singleListCommandLine: SingleListCommandLine;
     capsLockWarning: boolean;
-    playSoundOnError: boolean;
+    playSoundOnError: PlaySoundOnError;
     playSoundOnClick: PlaySoundOnClick;
     soundVolume: SoundVolume;
     startGraphsAtZero: boolean;

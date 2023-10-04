@@ -216,7 +216,7 @@ function handleSpace(): void {
     }
   } else {
     if (!nospace) {
-      if (!Config.playSoundOnError || Config.blindMode) {
+      if (Config.playSoundOnError === "off" || Config.blindMode) {
         Sound.playClick();
       } else {
         Sound.playError();
@@ -550,7 +550,7 @@ function handleChar(
   if (thisCharCorrect) {
     Sound.playClick();
   } else {
-    if (!Config.playSoundOnError || Config.blindMode) {
+    if (Config.playSoundOnError === "off" || Config.blindMode) {
       Sound.playClick();
     } else {
       Sound.playError();

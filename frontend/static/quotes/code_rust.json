@@ -21,9 +21,9 @@
     },
     {
       "id": 3,
-      "length": 35,
+      "length": 34,
       "source": "my_age - programming-idioms.org",
-      "text": "print!(\"{}\", \"Hello\\n\".repeat(10));"
+      "text": "print!(\"{}\", \"Hello\n\".repeat(10));"
     },
     {
       "id": 4,
@@ -1317,9 +1317,9 @@
     },
     {
       "id": 220,
-      "length": 168,
+      "length": 163,
       "source": "Quine program - programming-idioms.org",
-      "text": "fn main() {\n\tlet x = \"fn main() {\\n\tlet x = \";\n\tlet y = \"print!(\\\"{}{:?};\\n\tlet y = {:?};\\n\t{}\\\", x, x, y, y)\\n}\\n\";\n\tprint!(\"{}{:?};\n\tlet y = {:?};\n\t{}\", x, x, y, y)\n}"
+      "text": "fn main() {\n\tlet x = \"fn main() {\n\tlet x = \";\n\tlet y = \"print!(\\\"{}{:?};\n\tlet y = {:?};\n\t{}\\\", x, x, y, y)\n}\n\";\n\tprint!(\"{}{:?};\n\tlet y = {:?};\n\t{}\", x, x, y, y)\n}"
     },
     {
       "id": 221,
@@ -1479,9 +1479,9 @@
     },
     {
       "id": 247,
-      "length": 265,
+      "length": 264,
       "source": "Create a Zip archive - programming-idioms.org",
-      "text": "use zip::write::FileOptions;\nlet path = std::path::Path::new(_name);\nlet file = std::fs::File::create(&path).unwrap();\nlet mut zip = zip::ZipWriter::new(file); zip.start_file(\"readme.txt\", FileOptions::default())?;\nzip.write_all(b\"Hello, World!\\n\")?;\nzip.finish()?;"
+      "text": "use zip::write::FileOptions;\nlet path = std::path::Path::new(_name);\nlet file = std::fs::File::create(&path).unwrap();\nlet mut zip = zip::ZipWriter::new(file); zip.start_file(\"readme.txt\", FileOptions::default())?;\nzip.write_all(b\"Hello, World!\n\")?;\nzip.finish()?;"
     },
     {
       "id": 248,

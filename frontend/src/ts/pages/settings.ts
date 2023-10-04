@@ -251,7 +251,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setPlaySoundOnError,
     "button",
     () => {
-      if (Config.playSoundOnError) Sound.playError();
+      if (Config.playSoundOnError !== "off") Sound.playError();
     }
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["playSoundOnClick"] = new SettingsGroup(

@@ -8,10 +8,10 @@
   ],
   "quotes": [
     {
-      "text": "public class Main {\\npublic static void main(String[] args) {\\n\\tSystem.out.println(\"Hello World\");\\n\\t}\\n}",
+      "text": "public class Main {\npublic static void main(String[] args) {\n\tSystem.out.println(\"Hello World\");\n\t}\n}",
       "source": "W3Schools - Java Getting Started",
       "id": 1,
-      "length": 107
+      "length": 101
     },
     {
       "text": "void finish(String name){\n\tSystem.out.println(\"My job here is done. Goodbye \" + name);\n}",

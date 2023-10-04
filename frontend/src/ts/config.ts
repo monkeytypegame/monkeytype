@@ -137,8 +137,13 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
   return true;
 }
 
-export function setPlaySoundOnError(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("play sound on error", val, ["boolean"])) {
+export function setPlaySoundOnError(
+  val: MonkeyTypes.PlaySoundOnError,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("play sound on error", val, [["off", "1", "2", "3"]])
+  ) {
     return false;
   }
 
@@ -1983,6 +1988,10 @@ function replaceLegacyValues(
   //@ts-ignore
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
+  }
+
+  if (typeof configObj.playSoundOnError === "boolean") {
+    configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
   }
 
   return configObj;
