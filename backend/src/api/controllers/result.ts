@@ -752,3 +752,38 @@ async function calculateXp(
     breakdown,
   };
 }
+
+export async function batchUpdateTags(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { resultIds, tagIds } = req.body;
+  const user = await getUser(uid, "update tags");
+
+  await ResultDAL.batchUpdateTags(uid, resultIds, tagIds);
+  const tagPbs: Array<string[]> = [];
+  for (const resultId of resultIds) {
+    const result = await ResultDAL.getResult(uid, resultId);
+    if (!result.difficulty) {
+      result.difficulty = "normal";
+    }
+    if (!result.language) {
+      result.language = "english";
+    }
+    if (!result.funbox) {
+      result.funbox = "none";
+    }
+    if (!result.lazyMode) {
+      result.lazyMode = false;
+    }
+    if (!result.punctuation) {
+      result.punctuation = false;
+    }
+    const tagPb = await checkIfTagPb(uid, user, result);
+    tagPbs.push(tagPb);
+  }
+
+  return new MonkeyResponse("Result tags updated", {
+    tagPbs,
+  });
+}

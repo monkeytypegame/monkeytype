@@ -115,3 +115,34 @@ export async function getResults(
   if (!results) throw new MonkeyError(404, "Result not found");
   return results;
 }
+
+export async function batchUpdateTags(
+  uid: string,
+  resultIds: string[],
+  tags: string[]
+): Promise<UpdateResult[]> {
+  const userTags = await getTags(uid);
+  const userTagIds = userTags.map((tag) => tag._id.toString());
+  let validTags = true;
+  tags.forEach((tagId) => {
+    if (!userTagIds.includes(tagId)) validTags = false;
+  });
+  if (!validTags) {
+    throw new MonkeyError(422, "One of the tag id's is not valid");
+  }
+
+  const updatedResults: UpdateResult[] = [];
+  for (const resultId of resultIds) {
+    const result = await db
+      .collection<MonkeyTypesResult>("results")
+      .findOne({ _id: new ObjectId(resultId), uid });
+    if (!result) throw new MonkeyError(404, "Result not found");
+
+    const updatedResult = await db
+      .collection<MonkeyTypesResult>("results")
+      .updateOne({ _id: new ObjectId(resultId), uid }, { $set: tags });
+    updatedResults.push(updatedResult);
+  }
+
+  return updatedResults;
+}

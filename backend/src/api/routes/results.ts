@@ -82,4 +82,23 @@ router.get(
   asyncHandler(ResultController.getLastResult)
 );
 
+router.patch(
+  "/tags/batch",
+  authenticateRequest(),
+  RateLimit.resultsTagsUpdate,
+  validateRequest({
+    body: {
+      resultIds: joi
+        .array()
+        .items(joi.string().regex(/^[a-f\d]{24}$/i))
+        .required(),
+      tagIds: joi
+        .array()
+        .items(joi.string().regex(/^[a-f\d]{24}$/i))
+        .required(),
+    },
+  }),
+  asyncHandler(ResultController.batchUpdateTags)
+);
+
 export default router;
