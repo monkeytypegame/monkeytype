@@ -26,4 +26,13 @@ export default class Results {
   async deleteAll(): Ape.EndpointResponse {
     return await this.httpClient.delete(BASE_PATH);
   }
+
+  async batchUpdateTags(
+    resultIds: string[],
+    tagIds: string[]
+  ): Ape.EndpointResponse {
+    return await this.httpClient.patch(`${BASE_PATH}/tags/batch`, {
+      payload: { resultIds, tagIds },
+    });
+  }
 }

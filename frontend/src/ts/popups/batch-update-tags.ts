@@ -2,6 +2,9 @@ import * as ConnectionState from "../states/connection";
 import * as Notifications from "../elements/notifications";
 import * as Skeleton from "./skeleton";
 import * as DB from "../db";
+import * as Loader from "../elements/loader";
+import Ape from "../ape";
+
 import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "batchTagUpdatePopupWrapper";
@@ -47,17 +50,7 @@ function updateButtons(): void {
   });
 }
 
-$("#popups").on("click", "#batchTagUpdatePopupWrapper .button.tag", (e) => {
-  $(e.target).toggleClass("active");
-});
-
-$(`#${wrapperId}`).on("click", (e) => {
-  if ($(e.target).attr("id") === wrapperId) {
-    hide();
-  }
-});
-
-$("#batchTagUpdatePopup .submitBatchUpdateTags").on("click", () => {
+async function updateTags(): Promise<void> {
   const tagsSelected: string[] = [];
   $.each($("#batchTagUpdatePopup .buttons .button"), (_, obj) => {
     const tagid = $(obj).attr("tagid") ?? "";
@@ -72,19 +65,57 @@ $("#batchTagUpdatePopup .submitBatchUpdateTags").on("click", () => {
   }
 
   const resultsSelected: string[] = [];
-  const checkedResults = $(".tagCheckbox:checkbox:checked").each(
-    (_, checkedResult) => {
-      const resultId = $(checkedResult).attr("value") ?? "";
+  $(".tagCheckbox:checkbox:checked").each((_, checkedResult) => {
+    const resultId = $(checkedResult).attr("value") ?? "";
+    if (resultId) {
       resultsSelected.push(resultId);
     }
-  );
+  });
 
-  if (checkedResults.length === 0) {
+  if (resultsSelected.length === 0) {
     Notifications.add("Please select at least 1 result to apply tags", 0, {
       duration: 200,
     });
     return;
   }
+
+  Loader.show();
+  const response = await Ape.results.batchUpdateTags(
+    resultsSelected,
+    tagsSelected
+  );
+
+  Loader.hide();
+  if (response.status !== 200) {
+    return Notifications.add("Failed to updated tags " + response?.message, -1);
+  }
+
+  DB.getSnapshot()?.results?.forEach(
+    (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
+      if (resultsSelected.includes(result._id)) {
+        result.tags = tagsSelected;
+      }
+    }
+  );
+
+  hide();
+  Notifications.add("Tags updated", 1, {
+    duration: 2,
+  });
+}
+
+$("#popups").on("click", "#batchTagUpdatePopupWrapper .button.tag", (e) => {
+  $(e.target).toggleClass("active");
+});
+
+$(`#${wrapperId}`).on("click", (e) => {
+  if ($(e.target).attr("id") === wrapperId) {
+    hide();
+  }
+});
+
+$("#batchTagUpdatePopup .submitBatchUpdateTags").on("click", async () => {
+  await updateTags();
 });
 
 $(document).on("keydown", (event) => {

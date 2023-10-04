@@ -1307,6 +1307,9 @@ $(".pageAccount .content .group.history .saveBatchUpdateTags").on(
   () => {
     BatchUpdateTagsPopup.show(() => {
       toggleBatchUpdateTags = false;
+      $(".pageAccount .content .group.history .saveBatchUpdateTags").addClass(
+        "hidden"
+      );
       $(
         ".pageAccount .content .group.aboveHistory .batchTagUpdate"
       ).removeClass("active");
