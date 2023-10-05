@@ -17,7 +17,8 @@ import { log } from "./controllers/analytics-controller";
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
   $("body").prepend(
-    `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
+    // @ts-ignore
+    `<a class='button configureAPI' href='${window.MONKEY_CONFIG.BACKEND_URL}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
   Misc.getLatestReleaseFromGitHub().then((v) => {

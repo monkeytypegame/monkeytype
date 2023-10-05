@@ -52,6 +52,11 @@ function addApiRoutes(app: Application): void {
   app.use("/configuration", configuration);
 
   if (process.env.MODE === "dev") {
+    //disable csp to allow assets to load from unsecured http
+    app.use((req, res, next) => {
+      res.setHeader("Content-Security-Policy", "");
+      return next();
+    });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
   }
 
