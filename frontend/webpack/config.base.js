@@ -4,7 +4,7 @@ const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
-const os = require("os");
+require("dotenv").config();
 
 let circularImports = 0;
 
@@ -23,14 +23,10 @@ const htmlWebpackPlugins = [
 
 let BACKEND_URL = "https://api.monkeytype.com";
 if (process.env.NODE_ENV === "development") {
-  const interfaces = Object.values(os.networkInterfaces())
-    .flatMap((it) => it)
-    .filter((it) => it.family === "IPv4" && !it.address.startsWith("127"));
-
-  if (interfaces.length > 0) {
-    BACKEND_URL = "http://" + interfaces[0].address + ":5005";
+  if (process.env.BACKEND_URL) {
+    BACKEND_URL = process.env.BACKEND_URL;
   } else {
-    BACKEND_URL = "http://127.0.0.1:5005";
+    BACKEND_URL = "http://localhost:5005";
   }
 }
 

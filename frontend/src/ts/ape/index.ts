@@ -1,9 +1,9 @@
 import endpoints from "./endpoints";
 import { buildHttpClient } from "./adapters/axios-adapter";
-import { config } from "../constants/config";
+import { envConfig } from "../constants/env-config";
 
 const API_PATH = "";
-const BASE_URL = config.backendUrl;
+const BASE_URL = envConfig.backendUrl;
 const API_URL = `${BASE_URL}${API_PATH}`;
 
 const httpClient = buildHttpClient(API_URL, 10000);

@@ -13,12 +13,12 @@ import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-ignore
 import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
-import { config } from "./constants/config";
+import { envConfig } from "./constants/env-config";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
   $("body").prepend(
-    `<a class='button configureAPI' href='${config.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
+    `<a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
   Misc.getLatestReleaseFromGitHub().then((v) => {

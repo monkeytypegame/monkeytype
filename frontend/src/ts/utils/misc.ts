@@ -1,6 +1,6 @@
 import * as Loader from "../elements/loader";
 import { normal as normalBlend } from "color-blend";
-import { config } from "../constants/config";
+import { envConfig } from "../constants/env-config";
 
 async function fetchJson<T>(url: string): Promise<T> {
   try {
@@ -1489,7 +1489,7 @@ export function loadCSS(href: string, prepend = false): void {
 }
 
 export function isDevEnvironment(): boolean {
-  return config.isDevelopment;
+  return envConfig.isDevelopment;
 }
 
 export function getBinary(): string {
