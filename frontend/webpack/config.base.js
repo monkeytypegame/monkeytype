@@ -3,6 +3,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
 const os = require("os");
 
 let circularImports = 0;
@@ -91,6 +92,10 @@ const BASE_CONFIG = {
     },
   },
   plugins: [
+    new webpack.DefinePlugin({
+      BACKEND_URL: JSON.stringify(BACKEND_URL),
+      IS_DEVELOPMENT: JSON.stringify(process.env.NODE_ENV === "development"),
+    }),
     new CircularDependencyPlugin({
       exclude: /node_modules/,
       include: /./,
@@ -126,10 +131,6 @@ const BASE_CONFIG = {
       filename: "./index.html",
       template: resolve(__dirname, "../static/main.html"),
       inject: "body",
-      config: {
-        IS_DEVELOPMENT: JSON.stringify(process.env.NODE_ENV === "development"),
-        BACKEND_URL,
-      },
     }),
     ...htmlWebpackPlugins,
     new MiniCssExtractPlugin({

@@ -1,9 +1,9 @@
 import endpoints from "./endpoints";
 import { buildHttpClient } from "./adapters/axios-adapter";
+import { config } from "../constants/config";
 
 const API_PATH = "";
-// @ts-ignore
-const BASE_URL = window.MONKEY_CONFIG.BACKEND_URL;
+const BASE_URL = config.backendUrl;
 const API_URL = `${BASE_URL}${API_PATH}`;
 
 const httpClient = buildHttpClient(API_URL, 10000);
