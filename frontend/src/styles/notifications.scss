@@ -27,7 +27,7 @@
 
   .notif {
     --notif-border-color: rgba(0, 77, 148, 0.71);
-    --notif-background-color: rgba(0, 77, 148, 0.7);
+    --notif-background-color: rgba(0, 77, 148, 0.9);
     --notif-icon-color: rgba(255, 255, 255);
 
     -webkit-user-select: none;
@@ -63,13 +63,13 @@
 
     &.bad {
       --notif-border-color: rgba(241, 90, 34, 0.71);
-      --notif-background-color: rgba(138, 46, 12, 0.7);
+      --notif-background-color: rgba(138, 46, 12, 0.9);
       --notif-icon-color: rgba(243, 190, 63, 1);
     }
 
     &.good {
       --notif-border-color: rgba(100, 206, 100, 0.71);
-      --notif-background-color: rgba(0, 148, 0, 0.52);
+      --notif-background-color: rgba(0, 148, 0, 0.9);
       --notif-icon-color: rgba(255, 255, 255);
     }
 
