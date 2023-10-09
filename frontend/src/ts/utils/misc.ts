@@ -1679,4 +1679,35 @@ export function updateTitle(title?: string): void {
   }
 }
 
+export function getNumberWithMagnitude(num: number): {
+  rounded: number;
+  roundedTo2: number;
+  orderOfMagnitude: string;
+} {
+  const units = [
+    "",
+    "thousand",
+    "million",
+    "billion",
+    "trillion",
+    "quadrillion",
+    "quintillion",
+  ];
+  let unitIndex = 0;
+  let roundedNum = num;
+
+  while (roundedNum >= 1000) {
+    roundedNum /= 1000;
+    unitIndex++;
+  }
+
+  const unit = units[unitIndex];
+
+  return {
+    rounded: Math.round(roundedNum),
+    roundedTo2: roundTo2(roundedNum),
+    orderOfMagnitude: unit,
+  };
+}
+
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
