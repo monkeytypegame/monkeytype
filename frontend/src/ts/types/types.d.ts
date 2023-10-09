@@ -228,6 +228,8 @@ declare namespace MonkeyTypes {
 
   type FunboxWordsFrequency = "normal" | "zipf";
 
+  type FunboxWordOrder = "normal" | "reverse";
+
   type FunboxProperty =
     | "symmetricChars"
     | "conflictsWithSymmetricChars"
@@ -244,7 +246,8 @@ declare namespace MonkeyTypes {
     | "nospace"
     | `toPush:${number}`
     | "noInfiniteDuration"
-    | "changesWordsFrequency";
+    | "changesWordsFrequency"
+    | `wordOrder:${FunboxWordOrder}`;
 
   interface FunboxFunctions {
     getWord?: (wordset?: Misc.Wordset, wordIndex?: number) => string;
