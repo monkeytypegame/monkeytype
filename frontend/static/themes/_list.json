@@ -1181,6 +1181,13 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "intellij darcula",
+    "bgColor": "#242424",
+    "mainColor": "#CC8242",
+    "subColor": "#CCCCBA",
+    "textColor": "#CCCCDA"
   }
 
 ]
