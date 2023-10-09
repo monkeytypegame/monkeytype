@@ -1,5 +1,6 @@
 import * as Loader from "../elements/loader";
 import { normal as normalBlend } from "color-blend";
+import { envConfig } from "../constants/env-config";
 
 async function fetchJson<T>(url: string): Promise<T> {
   try {
@@ -1487,12 +1488,8 @@ export function loadCSS(href: string, prepend = false): void {
   }
 }
 
-export function isLocalhost(): boolean {
-  return (
-    location.hostname === "localhost" ||
-    location.hostname === "127.0.0.1" ||
-    location.hostname === ""
-  );
+export function isDevEnvironment(): boolean {
+  return envConfig.isDevelopment;
 }
 
 export function getBinary(): string {
@@ -1669,7 +1666,7 @@ export function reloadAfter(seconds: number): void {
 }
 
 export function updateTitle(title?: string): void {
-  const local = isLocalhost() ? "localhost - " : "";
+  const local = isDevEnvironment() ? "localhost - " : "";
 
   if (!title) {
     document.title =

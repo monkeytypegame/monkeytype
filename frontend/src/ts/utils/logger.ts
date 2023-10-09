@@ -1,4 +1,4 @@
-import { isLocalhost } from "./misc";
+import { isDevEnvironment } from "./misc";
 
 const nativeLog = console.log;
 const nativeWarn = console.warn;
@@ -6,7 +6,7 @@ const nativeError = console.error;
 
 let debugLogs = localStorage.getItem("debugLogs") === "true" ?? false;
 
-if (isLocalhost()) {
+if (isDevEnvironment()) {
   debugLogs = true;
   debug("Debug logs automatically enabled on localhost");
 }

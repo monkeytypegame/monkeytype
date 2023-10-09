@@ -13,11 +13,12 @@ import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-ignore
 import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
+import { envConfig } from "./constants/env-config";
 
-if (Misc.isLocalhost()) {
+if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
   $("body").prepend(
-    `<a class='button configureAPI' href='http://localhost:5005/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
+    `<a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
   Misc.getLatestReleaseFromGitHub().then((v) => {
@@ -88,7 +89,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     // disabling service workers on localhost - they dont really work well with local development
     // and cause issues with hot reloading
-    if (Misc.isLocalhost()) {
+    if (Misc.isDevEnvironment()) {
       navigator.serviceWorker.getRegistrations().then(function (registrations) {
         for (const registration of registrations) {
           // if (registration.scope !== "https://monkeytype.com/")

@@ -1,5 +1,5 @@
 import Ape from "../ape";
-import { isLocalhost, secondsToString } from "../utils/misc";
+import { isDevEnvironment, secondsToString } from "../utils/misc";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import * as Alerts from "./alerts";
@@ -22,7 +22,7 @@ async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
   const response = await Ape.psas.get();
 
   if (response.status === 500) {
-    if (isLocalhost()) {
+    if (isDevEnvironment()) {
       Notifications.addBanner(
         "Dev Info: Backend server not running",
         0,
