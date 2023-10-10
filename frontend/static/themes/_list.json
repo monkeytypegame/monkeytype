@@ -1183,7 +1183,7 @@
     "textColor": "#1f1f1f"
   },
   {
-    "name": "intellij darcula",
+    "name": "intellij_darcula",
     "bgColor": "#242424",
     "mainColor": "#CC8242",
     "subColor": "#CCCCBA",
