@@ -908,7 +908,7 @@ declare namespace MonkeyTypes {
   interface TypingSpeedUnitSettings {
     fromWpm: (number) => number;
     toWpm: (number) => number;
-    convertWithUnitSuffix: (number) => string;
+    convertWithUnitSuffix: (number, boolean) => string;
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;
