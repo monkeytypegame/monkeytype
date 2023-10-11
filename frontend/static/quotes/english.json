@@ -2894,7 +2894,7 @@
       "length": 214
     },
     {
-      "text": "If you had one shot to sit on your lazy butt, and watch all the TV you ever wanted, until your brain turned to mush. Would you go for it, or just let it slip.",
+      "text": "If you had one shot to sit on your lazy butt, and watch all the TV you ever wanted, until your brain turned to mush. Would you go for it, or just let it slip?",
       "source": "Couch Potato",
       "id": 504,
       "length": 158
@@ -15692,12 +15692,6 @@
       "length": 173
     },
     {
-      "text": "Seven of my guys are going to be off today 'cause it's a Jewish holiday and I'm gonna have to do all their jobs. What really gets me is that I don't think they're all Jewish... two of them are black and one's an Indian.",
-      "source": "Soap",
-      "id": 2756,
-      "length": 219
-    },
-    {
       "text": "I find I'm so excited, I can barely sit still or hold a thought in my head. I think it's the excitement only a free man can feel, a free man at the start of a long journey whose conclusion is uncertain. I hope I can make it across the border. I hope to see my friend and shake his hand. I hope the Pacific is as blue as it has been in my dreams. I hope.",
       "source": "The Shawshank Redemption",
       "id": 2757,
@@ -26924,12 +26918,6 @@
       "length": 146
     },
     {
-      "text": "You got a fetish for my love. I push you out and you come right back. Don't see a point in blaming you.",
-      "source": "Fetish",
-      "id": 4765,
-      "length": 103
-    },
-    {
       "text": "To move through a tree of paths using hill climbing, proceed as in depth-first search, but order the choices according to some heuristic measure of remaining distance. The better the heuristic measure is, the better hill climbing will be relative to ordinary depth-first search.",
       "source": "Artificial Intelligence Second Edition",
       "id": 4767,
@@ -32528,7 +32516,7 @@
       "id": 5844
     },
     {
-      "text": "I've seen what such feelings can do to a fully trained Jedi Knight. To the best of us.",
+      "text": "I've seen what such feelings can do to a fully-trained Jedi Knight. To the best of us.",
       "source": "The Mandalorian",
       "length": 86,
       "id": 5845
@@ -34501,9 +34489,9 @@
       "id": 6302
     },
     {
-      "text": "Voila! In view humble vaudevillian veteran, cast vicariously as both victim and villain by the vicissitudes of fate. This visage, no mere veneer of vanity, is a vestige of the \"vox populi\" now vacant, vanished. However, this valorous visitation of a bygone vexation stands vivified and has vowed to vanquish these venal and virulent vermin, van guarding vice and vouchsafing the violently vicious and voracious violation of volition. The only verdict is vengeance; a vendetta, held as a votive not in vain, for the value and veracity of such shall one day vindicate the vigilant and the virtuous. Verily this vichyssoise of verbiage veers most verbose, so let me simply add that it's my very good honor to meet you and you may call me V.",
+      "text": "VVoila! In view, a humble vaudevillian veteran, cast vicariously as both victim and villain by the vicissitudes of fate. This visage, no mere veneer of vanity, is a vestige of the \"vox populi\" now vacant, vanished. However, this valorous visitation of a bygone vexation stands vivified and has vowed to vanquish these venal and virulent vermin, van guarding vice and vouchsafing the violently vicious and voracious violation of volition. The only verdict is vengeance; a vendetta, held as a votive, not in vain, for the value and veracity of such shall one day vindicate the vigilant and the virtuous. Verily this vichyssoise of verbiage veers most verbose, so let me simply add that it's my very good honor to meet you and you may call me V.",
       "source": "V for Vendetta",
-      "length": 737,
+      "length": 742,
       "approvedBy": "Smithster",
       "id": 6303
     },
