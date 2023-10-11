@@ -710,6 +710,7 @@ export async function update(
   ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
+  hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");

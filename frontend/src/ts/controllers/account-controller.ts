@@ -520,7 +520,7 @@ async function signUp(): Promise<void> {
   }
 
   // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
-  if (!Misc.isLocalhost() && !Misc.isPasswordStrong(password)) {
+  if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
     Notifications.add(
       "Password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
       0,

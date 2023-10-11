@@ -160,7 +160,7 @@ function updateFooter(lb: LbKey): void {
   }
 
   if (
-    !Misc.isLocalhost() &&
+    !Misc.isDevEnvironment() &&
     (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 7200
   ) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`

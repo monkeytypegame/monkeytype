@@ -1,5 +1,6 @@
 import * as Loader from "../elements/loader";
 import { normal as normalBlend } from "color-blend";
+import { envConfig } from "../constants/env-config";
 
 async function fetchJson<T>(url: string): Promise<T> {
   try {
@@ -1487,12 +1488,8 @@ export function loadCSS(href: string, prepend = false): void {
   }
 }
 
-export function isLocalhost(): boolean {
-  return (
-    location.hostname === "localhost" ||
-    location.hostname === "127.0.0.1" ||
-    location.hostname === ""
-  );
+export function isDevEnvironment(): boolean {
+  return envConfig.isDevelopment;
 }
 
 export function getBinary(): string {
@@ -1669,7 +1666,7 @@ export function reloadAfter(seconds: number): void {
 }
 
 export function updateTitle(title?: string): void {
-  const local = isLocalhost() ? "localhost - " : "";
+  const local = isDevEnvironment() ? "localhost - " : "";
 
   if (!title) {
     document.title =
@@ -1677,6 +1674,37 @@ export function updateTitle(title?: string): void {
   } else {
     document.title = local + title;
   }
+}
+
+export function getNumberWithMagnitude(num: number): {
+  rounded: number;
+  roundedTo2: number;
+  orderOfMagnitude: string;
+} {
+  const units = [
+    "",
+    "thousand",
+    "million",
+    "billion",
+    "trillion",
+    "quadrillion",
+    "quintillion",
+  ];
+  let unitIndex = 0;
+  let roundedNum = num;
+
+  while (roundedNum >= 1000) {
+    roundedNum /= 1000;
+    unitIndex++;
+  }
+
+  const unit = units[unitIndex];
+
+  return {
+    rounded: Math.round(roundedNum),
+    roundedTo2: roundTo2(roundedNum),
+    orderOfMagnitude: unit,
+  };
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

@@ -104,6 +104,19 @@ function validateOthers() {
       console.log("Themes JSON schema is \u001b[31minvalid\u001b[0m");
       return reject(new Error(themesValidator.errors));
     }
+    //check if files exist
+    for (const theme of themesData) {
+      const themeName = theme.name;
+      const fileName = `${themeName}.css`;
+      const themePath = `./static/themes/${fileName}`;
+      if (!fs.existsSync(themePath)) {
+        console.log(`File ${fileName} was \u001b[31mnot found\u001b[0m`);
+        // return reject(new Error(`File for theme ${themeName} does not exist`));
+        return reject(
+          `Could not find file ${fileName} for theme ${themeName} - make sure the file exists and is named correctly`
+        );
+      }
+    }
 
     //challenges
     const challengesSchema = {

@@ -218,6 +218,12 @@ FunboxList.setFunboxFunctions("rAnDoMcAsE", {
   },
 });
 
+FunboxList.setFunboxFunctions("backwards", {
+  alterText(word: string): string {
+    return word.split("").reverse().join("");
+  },
+});
+
 FunboxList.setFunboxFunctions("capitals", {
   alterText(word: string): string {
     return Misc.capitalizeFirstLetterOfEachWord(word);
