@@ -1181,6 +1181,13 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "lilith_no_bunshin",
+    "bgColor": "#101010",
+    "mainColor": "#a877c8",
+    "subColor": "#a2b2df",
+    "textColor": "#1f1f1f"
   }
 
 ]
