@@ -29,8 +29,12 @@ class Unit implements MonkeyTypes.TypingSpeedUnitSettings {
     return val / this.convertFactor;
   }
 
-  convertWithUnitSuffix(wpm: number): string {
-    return roundTo2(this.fromWpm(wpm)).toFixed(2) + " " + this.unit;
+  convertWithUnitSuffix(wpm: number, withDecimals: boolean): string {
+    if (withDecimals) {
+      return roundTo2(this.fromWpm(wpm)).toFixed(2) + " " + this.unit;
+    } else {
+      return Math.round(this.fromWpm(wpm)) + " " + this.unit;
+    }
   }
 }
 

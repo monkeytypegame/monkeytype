@@ -147,7 +147,8 @@ export async function update(): Promise<void> {
     if (Auth?.currentUser && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
         ? getTypingSpeedUnit(Config.typingSpeedUnit).convertWithUnitSuffix(
-            avgWPM
+            avgWPM,
+            Config.alwaysShowDecimalPlaces
           )
         : "";
 
