@@ -898,6 +898,6 @@ export async function revokeAllTokens(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   await FirebaseAdmin().auth().revokeRefreshTokens(uid);
-  await removeTokensFromCache(uid);
+  removeTokensFromCache(uid);
   return new MonkeyResponse("All tokens revoked");
 }

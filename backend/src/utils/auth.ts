@@ -45,7 +45,9 @@ export async function verifyIdToken(
   }
 
   const decoded = await FirebaseAdmin().auth().verifyIdToken(idToken, true);
-  tokenCache.set(idToken, decoded);
+  for (let i = 0; i < 20000; i++) {
+    tokenCache.set(idToken, decoded);
+  }
   return decoded;
 }
 
@@ -59,7 +61,7 @@ export async function updateUserEmail(
   });
 }
 
-export async function removeTokensFromCache(uid: string): Promise<void> {
+export function removeTokensFromCache(uid: string): void {
   for (const entry of tokenCache.entries()) {
     if (entry[1].uid === uid) {
       tokenCache.delete(entry[0]);
