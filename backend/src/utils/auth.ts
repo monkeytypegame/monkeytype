@@ -45,9 +45,7 @@ export async function verifyIdToken(
   }
 
   const decoded = await FirebaseAdmin().auth().verifyIdToken(idToken, true);
-  for (let i = 0; i < 20000; i++) {
-    tokenCache.set(idToken, decoded);
-  }
+  tokenCache.set(idToken, decoded);
   return decoded;
 }
 
