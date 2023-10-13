@@ -11,12 +11,10 @@ export function set(foc: boolean, withCursor = false): void {
   if (foc && !state) {
     state = true;
     Caret.stopAnimation();
-    $("#top").addClass("focus");
-    $("#bottom").addClass("focus");
+    $("header").addClass("focus");
+    $("footer").addClass("focus");
     if (!withCursor) $("body").css("cursor", "none");
-    $("#middle").addClass("focus");
-    $("#testConfig").addClass("focus");
-    $("#mobileTestConfig").addClass("focus");
+    $("main").addClass("focus");
     $("#bannerCenter").addClass("focus");
     $("#notificationCenter").addClass("focus");
     $("#capsWarning").addClass("focus");
@@ -30,12 +28,10 @@ export function set(foc: boolean, withCursor = false): void {
   } else if (!foc && state) {
     state = false;
     Caret.startAnimation();
-    $("#top").removeClass("focus");
-    $("#bottom").removeClass("focus");
+    $("header").removeClass("focus");
+    $("footer").removeClass("focus");
     $("body").css("cursor", "default");
-    $("#middle").removeClass("focus");
-    $("#testConfig").removeClass("focus");
-    $("#mobileTestConfig").removeClass("focus");
+    $("main").removeClass("focus");
     $("#bannerCenter").removeClass("focus");
     $("#notificationCenter").removeClass("focus");
     $("#capsWarning").removeClass("focus");
@@ -52,8 +48,8 @@ export function set(foc: boolean, withCursor = false): void {
 
 $(document).on("mousemove", function (event) {
   if (!state) return;
-  if (ActivePage.get() == "loading") return;
-  if (ActivePage.get() == "account" && state == true) return;
+  if (ActivePage.get() === "loading") return;
+  if (ActivePage.get() === "account" && state === true) return;
   if (
     event.originalEvent &&
     // To avoid mouse/desk vibration from creating a flashy effect, we'll unfocus @ >5px instead of >0px

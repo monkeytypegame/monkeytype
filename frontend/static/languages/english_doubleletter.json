@@ -1,6 +1,5 @@
 {
   "name": "english_doubleletter",
-  "leftToRight": true,
   "_comment": "Sourced from https://www.panopy.com/iphone/secret-ada/double-letter-words.html and https://grammar.yourdictionary.com/word-lists/words-with-double-letters.html",
   "ligatures": false,
   "noLazyMode": true,

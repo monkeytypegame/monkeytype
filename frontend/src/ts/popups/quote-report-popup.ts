@@ -72,7 +72,7 @@ export async function show(options = defaultOptions): Promise<void> {
   }
 }
 
-export async function hide(): Promise<void> {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     const noAnim = state.previousPopupShowCallback ? true : false;
 

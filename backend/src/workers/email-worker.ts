@@ -1,6 +1,6 @@
 import _ from "lodash";
 import IORedis from "ioredis";
-import { Worker, Job } from "bullmq";
+import { Worker, Job, ConnectionOptions } from "bullmq";
 import Logger from "../utils/logger";
 import EmailQueue, {
   EmailTaskContexts,
@@ -21,6 +21,12 @@ async function jobHandler(job: Job): Promise<void> {
   const result = await sendEmail(type, email, ctx);
 
   if (!result.success) {
+    Logger.logToDb("error_sending_email", {
+      type,
+      email,
+      ctx: JSON.stringify(ctx),
+      error: result.message,
+    });
     throw new Error(result.message);
   }
 
@@ -32,5 +38,5 @@ async function jobHandler(job: Job): Promise<void> {
 export default (redisConnection?: IORedis.Redis): Worker =>
   new Worker(EmailQueue.queueName, jobHandler, {
     autorun: false,
-    connection: redisConnection,
+    connection: redisConnection as ConnectionOptions,
   });

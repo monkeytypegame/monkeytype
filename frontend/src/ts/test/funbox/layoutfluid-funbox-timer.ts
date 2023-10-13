@@ -18,8 +18,17 @@ export function hide(): void {
   );
 }
 
-export function update(sec: number, layout: string): void {
+export function updateTime(sec: number, layout: string): void {
   $("#typingTest #layoutfluidTimer").text(
     `${capitalizeFirstLetter(layout)} in: ${sec}s`
   );
+}
+
+export function updateWords(words: number, layout: string): void {
+  const layoutName = capitalizeFirstLetter(layout.replace(/_/g, " "));
+  let str = `${layoutName} in: ${words} words`;
+  if (words === 1) {
+    str = `${layoutName} starting next word`;
+  }
+  $("#typingTest #layoutfluidTimer").text(str);
 }

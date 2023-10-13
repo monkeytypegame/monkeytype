@@ -5,9 +5,19 @@ import { asyncHandler, validateRequest } from "../../middlewares/api-utils";
 import joi from "joi";
 
 const GET_MODE_STATS_VALIDATION_SCHEMA = {
-  language: joi.string().required(),
-  mode: joi.string().required(),
-  mode2: joi.string().required(),
+  language: joi
+    .string()
+    .max(50)
+    .pattern(/^[a-zA-Z0-9_+]+$/)
+    .required(),
+  mode: joi
+    .string()
+    .valid("time", "words", "quote", "zen", "custom")
+    .required(),
+  mode2: joi
+    .string()
+    .regex(/^(\d)+|custom|zen/)
+    .required(),
 };
 
 const router = Router();

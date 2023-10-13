@@ -1,6 +1,6 @@
 const { resolve } = require("path");
 const { merge } = require("webpack-merge");
-const RemovePlugin = require("remove-files-webpack-plugin");
+const FilemanagerPlugin = require("filemanager-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
@@ -69,9 +69,11 @@ const PRODUCTION_CONFIG = {
     ],
   },
   plugins: [
-    new RemovePlugin({
-      after: {
-        include: [resolve(__dirname, "../public/html")],
+    new FilemanagerPlugin({
+      events: {
+        onEnd: {
+          delete: [resolve(__dirname, "../public/html")],
+        },
       },
     }),
     new WorkboxPlugin.GenerateSW({

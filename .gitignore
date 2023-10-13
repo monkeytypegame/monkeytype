@@ -90,7 +90,6 @@ backend/server.version
 #cloudflare y
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
-purgeCfCache.sh
 
 frontend/static/adtest.html
 backend/lastId.txt
@@ -106,11 +105,13 @@ dep-graph.png
 
 # TypeScript
 build/
-backend/worker.*
+backend/workers
 
 #scripts
 updateContributors.js
 removeDupes.js
+content-validation.js
 
 ads.txt
 updateContributors.mjs
+copyAnticheatToDev.sh

@@ -1,6 +1,5 @@
 {
   "name": "english_10k",
-  "leftToRight": true,
   "noLazyMode": true,
   "orderedByFrequency": true,
   "words": [

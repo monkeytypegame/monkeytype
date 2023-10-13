@@ -1,4 +1,4 @@
-import admin from "firebase-admin";
+import FirebaseAdmin from "./../init/firebase-admin";
 import { UserRecord } from "firebase-admin/lib/auth/user-record";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import LRUCache from "lru-cache";
@@ -22,7 +22,7 @@ export async function verifyIdToken(
   noCache = false
 ): Promise<DecodedIdToken> {
   if (noCache) {
-    return await admin.auth().verifyIdToken(idToken, true);
+    return await FirebaseAdmin().auth().verifyIdToken(idToken, true);
   }
 
   setTokenCacheLength(tokenCache.size);
@@ -44,7 +44,7 @@ export async function verifyIdToken(
     recordTokenCacheAccess("miss");
   }
 
-  const decoded = await admin.auth().verifyIdToken(idToken, true);
+  const decoded = await FirebaseAdmin().auth().verifyIdToken(idToken, true);
   tokenCache.set(idToken, decoded);
   return decoded;
 }
@@ -53,7 +53,7 @@ export async function updateUserEmail(
   uid: string,
   email: string
 ): Promise<UserRecord> {
-  return await admin.auth().updateUser(uid, {
+  return await FirebaseAdmin().auth().updateUser(uid, {
     email,
     emailVerified: false,
   });

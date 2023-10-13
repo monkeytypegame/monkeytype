@@ -25,6 +25,9 @@
   align-content: center;
   height: 100%;
   display: grid;
+  .content {
+    display: grid; //stupid fix for stupid safari
+  }
   .preloader {
     position: absolute;
     z-index: 1;
@@ -51,6 +54,12 @@
     .message {
       display: inline;
     }
+  }
+  .lbOptOutReminder {
+    grid-column: span 2;
+    text-align: center;
+    color: var(--sub-color);
+    font-size: 0.8em;
   }
 }
 
@@ -88,7 +97,6 @@
     align-content: center;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    justify-items: baseline;
     position: relative;
 
     .buttonGroup {
@@ -350,7 +358,7 @@
         line-height: 100%;
         width: max-content;
         .bannedIcon {
-          margin-left: 0.5rem;
+          margin-left: 0.5em;
           display: inline-grid;
           font-size: 75%;
           color: var(--error-color);
@@ -439,6 +447,7 @@
       align-self: stretch;
       grid-auto-flow: column;
       width: 100%;
+      height: 100%; //dumb safari fix
     }
     .bioAndKeyboard {
       display: grid;
@@ -457,7 +466,7 @@
     }
     .separator {
       width: 0.5rem;
-      height: 100%;
+      height: auto;
       background: var(--bg-color);
       border-radius: var(--roundness);
     }

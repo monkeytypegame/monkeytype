@@ -1,7 +1,7 @@
 import * as CustomText from "../test/custom-text";
 import * as CustomTextState from "../states/custom-text-name";
 import * as Skeleton from "./skeleton";
-import { isPopupVisible } from "../utils/misc";
+import { escapeHTML, isPopupVisible } from "../utils/misc";
 
 const wrapperId = "savedTextsPopupWrapper";
 
@@ -14,7 +14,7 @@ function fill(): void {
   } else {
     for (const name of names) {
       list += `<div class="savedText">
-      <div class="button name">${name}</div>
+      <div class="button name">${escapeHTML(name)}</div>
       <div class="button delete">
       <i class="fas fa-fw fa-trash"></i>
       </div>
@@ -31,7 +31,7 @@ function fill(): void {
   } else {
     for (const name of longNames) {
       longList += `<div class="savedText">
-      <div class="button name">${name}</div>
+      <div class="button name">${escapeHTML(name)}</div>
       <div class="button ${
         CustomText.getCustomTextLongProgress(name) <= 0 ? "disabled" : ""
       } resetProgress">reset</div>
@@ -86,7 +86,7 @@ function applySaved(name: string, long: boolean): void {
   if (long) {
     text = text.slice(CustomText.getCustomTextLongProgress(name));
   }
-  CustomText.setPopupTextareaState(text.join(CustomText.delimiter));
+  CustomText.setPopupTextareaState(text.join(" "));
 }
 
 $("#popups").on(

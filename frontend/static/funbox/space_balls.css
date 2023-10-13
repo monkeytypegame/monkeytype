@@ -16,10 +16,10 @@ body {
   background-position: center;
 }
 
-#middle {
+main {
   transform: rotateX(35deg);
 }
 
-#centerContent {
+#contentWrapper {
   perspective: 500px;
 }

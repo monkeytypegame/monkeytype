@@ -1,6 +1,5 @@
 {
   "name": "chinese_traditional",
-  "leftToRight": true,
   "noLazyMode": true,
   "words": [
     "安靜",
@@ -194,7 +193,6 @@
     "清新",
     "清爽",
     "清晨",
-    "青蛙",
     "情緒",
     "情感",
     "親情",

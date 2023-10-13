@@ -85,7 +85,6 @@ declare namespace MonkeyTypes {
       maxResults: number;
       validModeRules: ValidModeRule[];
       scheduleRewardsModeRules: ValidModeRule[];
-      dailyLeaderboardCacheSize: number;
       topResultsToAnnounce: number;
       xpRewardBrackets: RewardBracket[];
     };
@@ -171,7 +170,7 @@ declare namespace MonkeyTypes {
     lbPersonalBests?: LbPersonalBests;
     name: string;
     customThemes?: CustomTheme[];
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
     quoteRatings?: UserQuoteRatings;
     startedTests?: number;
     tags?: UserTag[];
@@ -179,6 +178,7 @@ declare namespace MonkeyTypes {
     uid: string;
     quoteMod?: boolean;
     configurationMod?: boolean;
+    admin?: boolean;
     canReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
@@ -199,6 +199,7 @@ declare namespace MonkeyTypes {
     lastResultTimestamp: number;
     length: number;
     maxLength: number;
+    hourOffset?: number;
   }
 
   interface UserInventory {
@@ -285,7 +286,7 @@ declare namespace MonkeyTypes {
   interface UserTag {
     _id: ObjectId;
     name: string;
-    personalBests?: PersonalBests;
+    personalBests: PersonalBests;
   }
 
   interface LeaderboardEntry {
@@ -334,9 +335,11 @@ declare namespace MonkeyTypes {
     approved: boolean;
   }
 
-  type Mode = "time" | "words" | "quote" | "zen" | "custom";
+  type Mode = keyof PersonalBests;
 
   type Mode2<M extends Mode> = keyof PersonalBests[M];
+
+  type StringNumber = `${number}`;
 
   type Difficulty = "normal" | "expert" | "master";
 
@@ -353,17 +356,11 @@ declare namespace MonkeyTypes {
   }
 
   interface PersonalBests {
-    time: {
-      [key: number]: PersonalBest[];
-    };
-    words: {
-      [key: number]: PersonalBest[];
-    };
-    quote: { [quote: string]: PersonalBest[] };
-    custom: { custom?: PersonalBest[] };
-    zen: {
-      zen?: PersonalBest[];
-    };
+    time: Record<StringNumber, PersonalBest[]>;
+    words: Record<StringNumber, PersonalBest[]>;
+    quote: Record<StringNumber, PersonalBest[]>;
+    custom: Partial<Record<"custom", PersonalBest[]>>;
+    zen: Partial<Record<"zen", PersonalBest[]>>;
   }
 
   interface ChartData {
@@ -480,7 +477,11 @@ declare namespace MonkeyTypes {
   }
 
   interface FunboxMetadata {
+    name: string;
     canGetPb: boolean;
     difficultyLevel: number;
+    properties?: string[];
+    frontendForcedConfig?: Record<string, string[] | boolean[]>;
+    frontendFunctions?: string[];
   }
 }

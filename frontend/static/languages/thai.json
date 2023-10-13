@@ -1,6 +1,5 @@
 {
   "name": "thai",
-  "leftToRight": true,
   "noLazyMode": true,
   "bcp47": "th-TH",
   "words": [

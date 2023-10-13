@@ -1,11 +1,7 @@
 import "dotenv/config";
-import admin, { ServiceAccount } from "firebase-admin";
-// @ts-ignore
-import serviceAccount from "./credentials/serviceAccountKey.json"; // eslint-disable-line require-path-exists/exists
 import * as db from "./init/db";
 import jobs from "./jobs";
 import { getLiveConfiguration } from "./init/configuration";
-import { initializeDailyLeaderboardsCache } from "./utils/daily-leaderboards";
 import app from "./app";
 import { Server } from "http";
 import { version } from "./version";
@@ -15,6 +11,7 @@ import queues from "./queues";
 import workers from "./workers";
 import Logger from "./utils/logger";
 import * as EmailClient from "./init/email-client";
+import { init as initFirebaseAdmin } from "./init/firebase-admin";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -25,15 +22,10 @@ async function bootServer(port: number): Promise<Server> {
     Logger.success("Connected to database");
 
     Logger.info("Initializing Firebase app instance...");
-    admin.initializeApp({
-      credential: admin.credential.cert(
-        serviceAccount as unknown as ServiceAccount
-      ),
-    });
-    Logger.success("Firebase app initialized");
+    initFirebaseAdmin();
 
     Logger.info("Fetching live configuration...");
-    const liveConfiguration = await getLiveConfiguration();
+    await getLiveConfiguration();
     Logger.success("Live configuration fetched");
 
     Logger.info("Initializing email client...");
@@ -67,8 +59,6 @@ async function bootServer(port: number): Promise<Server> {
       );
     }
 
-    initializeDailyLeaderboardsCache(liveConfiguration.dailyLeaderboards);
-
     Logger.info("Starting cron jobs...");
     jobs.forEach((job) => job.start());
     Logger.success("Cron jobs started");
@@ -76,7 +66,8 @@ async function bootServer(port: number): Promise<Server> {
     recordServerVersion(version);
   } catch (error) {
     Logger.error("Failed to boot server");
-    Logger.error(error);
+    Logger.error(error.message);
+    console.error(error);
     return process.exit(1);
   }
 

@@ -66,13 +66,13 @@ export function updateFastOpacity(num: number): void {
   const opacity = mapRange(num, 130, 180, 0, 1);
   $("#monkey .fast").animate({ opacity: opacity }, 1000);
   let animDuration = mapRange(num, 130, 180, 0.25, 0.01);
-  if (animDuration == 0.25) animDuration = 0;
+  if (animDuration === 0.25) animDuration = 0;
   $("#monkey").css({ animationDuration: animDuration + "s" });
 }
 
 export function type(): void {
   if (!Config.monkey) return;
-  if (!left && last == "right") {
+  if (!left && last === "right") {
     left = true;
     last = "left";
   } else if (!right) {
@@ -105,5 +105,7 @@ export function hide(): void {
     .css("opacity", 1)
     .animate({ opacity: 1 }, 125, () => {
       $("#monkey").addClass("hidden");
+      $("#monkey .fast").stop(true, true).css("opacity", 0);
+      $("#monkey").stop(true, true).css({ animationDuration: "0s" });
     });
 }
