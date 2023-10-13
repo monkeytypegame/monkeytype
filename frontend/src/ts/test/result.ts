@@ -259,8 +259,11 @@ function updateWpmAndAcc(): void {
     );
   } else {
     //not showing decimal places
-    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm);
-    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(result.rawWpm);
+    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm, true);
+    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(
+      result.rawWpm,
+      true
+    );
     if (Config.typingSpeedUnit != "wpm") {
       wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
