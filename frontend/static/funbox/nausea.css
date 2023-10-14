@@ -29,7 +29,6 @@
 }
 
 #contentWrapper {
-  transform: rotate(5deg);
   perspective: 500px;
 }
 
