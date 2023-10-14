@@ -59,7 +59,7 @@ export async function updateUserEmail(
   });
 }
 
-export function removeTokensFromCache(uid: string): void {
+export function removeTokensFromCacheByUser(uid: string): void {
   for (const entry of tokenCache.entries()) {
     if (entry[1].uid === uid) {
       tokenCache.delete(entry[0]);
