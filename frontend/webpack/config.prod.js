@@ -163,6 +163,7 @@ const PRODUCTION_CONFIG = {
     }),
     new webpack.DefinePlugin({
       BACKEND_URL: JSON.stringify("https://api.monkeytype.com"),
+      IS_DEVELOPMENT: JSON.stringify(false),
     }),
   ],
 };
