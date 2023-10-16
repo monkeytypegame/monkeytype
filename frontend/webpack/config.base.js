@@ -3,8 +3,6 @@ const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const webpack = require("webpack");
-require("dotenv").config();
 
 let circularImports = 0;
 
@@ -20,15 +18,6 @@ const htmlWebpackPlugins = [
     inject: false,
   });
 });
-
-let BACKEND_URL = "https://api.monkeytype.com";
-if (process.env.NODE_ENV === "development") {
-  if (process.env.BACKEND_URL) {
-    BACKEND_URL = process.env.BACKEND_URL;
-  } else {
-    BACKEND_URL = "http://localhost:5005";
-  }
-}
 
 /** @type { import('webpack').Configuration } */
 const BASE_CONFIG = {
@@ -88,10 +77,6 @@ const BASE_CONFIG = {
     },
   },
   plugins: [
-    new webpack.DefinePlugin({
-      BACKEND_URL: JSON.stringify(BACKEND_URL),
-      IS_DEVELOPMENT: JSON.stringify(process.env.NODE_ENV === "development"),
-    }),
     new CircularDependencyPlugin({
       exclude: /node_modules/,
       include: /./,
