@@ -161,7 +161,7 @@ function buildPbHtml(
       if (Config.alwaysShowDecimalPlaces) {
         accString = Misc.roundTo2(accString).toFixed(2);
       } else {
-        accString = Math.round(accString);
+        accString = Math.floor(accString);
       }
     }
     accString += ` acc`;
