@@ -783,11 +783,13 @@
     <div class="quotes"></div>
   </div>
 </div>
-<div id="tagsWrapper" class="popupWrapper hidden">
+<div id="tagsWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="tagsEdit" action="" tagid="">
-    <div class="title"></div>
-    <input type="text" title="tag" />
-    <div class="button"><i class="fas fa-plus"></i></div>
+    <form>
+      <div class="title"></div>
+      <input type="text" title="tag" />
+      <button type="submit"></button>
+    </form>
   </div>
 </div>
 <div id="streakHourOffsetPopupWrapper" class="popupWrapper hidden">

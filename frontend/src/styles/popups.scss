@@ -1573,6 +1573,11 @@
   }
 }
 
+#tagsEdit form {
+  display: grid;
+  gap: 1rem;
+}
+
 #editProfilePopup {
   width: 100%;
   max-width: 600px;

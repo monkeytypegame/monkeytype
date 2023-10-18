@@ -22,27 +22,27 @@ export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {
     $("#tagsWrapper #tagsEdit").attr("action", "add");
     $("#tagsWrapper #tagsEdit .title").html("Add new tag");
-    $("#tagsWrapper #tagsEdit .button").html(`add`);
+    $("#tagsWrapper #tagsEdit button").html(`add`);
     $("#tagsWrapper #tagsEdit input").val("");
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
   } else if (action === "edit" && id && name) {
     $("#tagsWrapper #tagsEdit").attr("action", "edit");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Edit tag name");
-    $("#tagsWrapper #tagsEdit .button").html(`save`);
+    $("#tagsWrapper #tagsEdit button").html(`save`);
     $("#tagsWrapper #tagsEdit input").val(name);
     $("#tagsWrapper #tagsEdit input").removeClass("hidden");
   } else if (action === "remove" && id && name) {
     $("#tagsWrapper #tagsEdit").attr("action", "remove");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Delete tag " + name);
-    $("#tagsWrapper #tagsEdit .button").html(`delete`);
+    $("#tagsWrapper #tagsEdit button").html(`delete`);
     $("#tagsWrapper #tagsEdit input").addClass("hidden");
   } else if (action === "clearPb" && id && name) {
     $("#tagsWrapper #tagsEdit").attr("action", "clearPb");
     $("#tagsWrapper #tagsEdit").attr("tagid", id);
     $("#tagsWrapper #tagsEdit .title").html("Clear PB for tag " + name);
-    $("#tagsWrapper #tagsEdit .button").html(`clear`);
+    $("#tagsWrapper #tagsEdit button").html(`clear`);
     $("#tagsWrapper #tagsEdit input").addClass("hidden");
   }
 
@@ -52,8 +52,12 @@ export function show(action: string, id?: string, name?: string): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
-        console.log("focusing");
-        $("#tagsWrapper #tagsEdit input").trigger("focus");
+        const input = $("#tagsWrapper #tagsEdit input");
+        if (!input.hasClass("hidden")) {
+          $("#tagsWrapper #tagsEdit input").trigger("focus");
+        } else {
+          $("#tagsWrapper").trigger("focus");
+        }
       });
   }
 }
@@ -170,14 +174,9 @@ $("#tagsWrapper").on("click", (e) => {
   }
 });
 
-$("#tagsWrapper #tagsEdit .button").on("click", () => {
+$("#tagsWrapper #tagsEdit form").on("submit", (e) => {
+  e.preventDefault();
   apply();
-});
-
-$("#tagsWrapper #tagsEdit input").on("keypress", (e) => {
-  if (e.key === "Enter") {
-    apply();
-  }
 });
 
 $(".pageSettings .section.tags").on("click", ".addTagButton", () => {
@@ -188,11 +187,8 @@ $(".pageSettings .section.tags").on(
   "click",
   ".tagsList .tag .editButton",
   (e) => {
-    const tagid = $(e.currentTarget).parent(".tag").attr("id");
-    const name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
+    const tagid = $(e.currentTarget).parent(".tag").attr("data-id");
+    const name = $(e.currentTarget).parent(".tag").attr("data-display");
     show("edit", tagid, name);
   }
 );
@@ -201,11 +197,8 @@ $(".pageSettings .section.tags").on(
   "click",
   ".tagsList .tag .clearPbButton",
   (e) => {
-    const tagid = $(e.currentTarget).parent(".tag").attr("id");
-    const name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
+    const tagid = $(e.currentTarget).parent(".tag").attr("data-id");
+    const name = $(e.currentTarget).parent(".tag").attr("data-display");
     show("clearPb", tagid, name);
   }
 );
@@ -214,13 +207,17 @@ $(".pageSettings .section.tags").on(
   "click",
   ".tagsList .tag .removeButton",
   (e) => {
-    const tagid = $(e.currentTarget).parent(".tag").attr("id");
-    const name = $(e.currentTarget)
-      .siblings(".tagButton")
-      .children(".title")
-      .text();
+    const tagid = $(e.currentTarget).parent(".tag").attr("data-id");
+    const name = $(e.currentTarget).parent(".tag").attr("data-display");
     show("remove", tagid, name);
   }
 );
+
+$(document).on("keydown", (event) => {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
+    hide();
+    event.preventDefault();
+  }
+});
 
 Skeleton.save(wrapperId);

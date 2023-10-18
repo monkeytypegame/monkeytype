@@ -792,21 +792,23 @@ function refreshTagsSettingsSection(): void {
       // }
       tagsEl.append(`
 
-      <div class="buttons tag" id="${tag._id}">
-        <div class="button tagButton ${tag.active ? "active" : ""}" active="${
+      <div class="buttons tag" data-id="${tag._id}" data-name="${
+        tag.name
+      }" data-display="${tag.display}">
+        <button class="tagButton ${tag.active ? "active" : ""}" active="${
         tag.active
       }">
-          <div class="title">${tag.display}</div>
-        </div>
-        <div class="clearPbButton button">
+          ${tag.display}
+        </button>
+        <button class="clearPbButton">
           <i class="fas fa-crown fa-fw"></i>
-        </div>
-        <div class="editButton button">
+        </button>
+        <button class="editButton">
           <i class="fas fa-pen fa-fw"></i>
-        </div>
-        <div class="removeButton button">
+        </button>
+        <button class="removeButton">
           <i class="fas fa-trash fa-fw"></i>
-        </div>
+        </button>
       </div>
 
       `);
