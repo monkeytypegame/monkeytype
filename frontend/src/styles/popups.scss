@@ -1573,7 +1573,8 @@
   }
 }
 
-#tagsEdit form {
+#tagsEdit form,
+#presetEdit form {
   display: grid;
   gap: 1rem;
 }

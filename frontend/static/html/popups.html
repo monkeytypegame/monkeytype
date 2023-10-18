@@ -817,15 +817,17 @@
     <div class="button confirmButton"><i class="fas fa-check"></i></div>
   </div>
 </div>
-<div id="presetWrapper" class="popupWrapper hidden">
+<div id="presetWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="presetEdit" action="" presetid="">
-    <div class="title"></div>
-    <input type="text" class="text" title="presets" />
-    <label class="checkbox">
-      <input type="checkbox" />
-      Change preset to current settings
-    </label>
-    <div class="button"><i class="fas fa-plus"></i></div>
+    <form>
+      <div class="title"></div>
+      <input type="text" class="text" title="presets" />
+      <label class="checkbox">
+        <input type="checkbox" />
+        Change preset to current settings
+      </label>
+      <button type="submit">add</button>
+    </form>
   </div>
 </div>
 <div id="shareCustomThemeWrapper" class="popupWrapper hidden">

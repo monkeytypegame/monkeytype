@@ -824,16 +824,14 @@ function refreshPresetsSettingsSection(): void {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
-      <div class="buttons preset" id="${preset._id}">
-        <div class="button presetButton">
-          <div class="title">${preset.display}</div>
-        </div>
-        <div class="editButton button">
+      <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
+        <button class="presetButton">${preset.display}</button>
+        <button class="editButton">
           <i class="fas fa-pen fa-fw"></i>
-        </div>
-        <div class="removeButton button">
+        </button>
+        <button class="removeButton">
           <i class="fas fa-trash fa-fw"></i>
-        </div>
+        </button>
       </div>
       
       `);
@@ -1032,7 +1030,7 @@ $(".pageSettings .section.tags").on(
   ".tagsList .tag .tagButton",
   (e) => {
     const target = e.currentTarget;
-    const tagid = $(target).parent(".tag").attr("id") as string;
+    const tagid = $(target).parent(".tag").attr("data-id") as string;
     TagController.toggle(tagid);
     $(target).toggleClass("active");
   }
@@ -1043,7 +1041,7 @@ $(".pageSettings .section.presets").on(
   ".presetsList .preset .presetButton",
   (e) => {
     const target = e.currentTarget;
-    const presetid = $(target).parent(".preset").attr("id") as string;
+    const presetid = $(target).parent(".preset").attr("data-id") as string;
     console.log("Applying Preset");
     configEventDisabled = true;
     PresetController.apply(presetid);
