@@ -14,13 +14,13 @@
 
 ## Prerequisites
 
-This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 18.17.1. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
+This contribution guide is for cases in which you need to test the functionality of your changes, or if you need to take screenshots of your changes. You will need a computer with a stable internet connection, a text editor, Git, and NodeJS with version 18.17.1. There are some additional requirements depending on what you're looking to contribute, such as Firebase for authentication, and Mongo and Docker for the backend. Read the below sections to understand how to set up each of these tools.
 
 ### Git
 
 **IMPORTANT: If you are on Windows, run `git config --global core.autocrlf false` before cloning this repo to prevent CRLF errors.**
 
-Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management (SCM) system for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Using a Git client such as Sourcetree won't give you access to the full functionality of Git, but provides an easy to understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
+Git is optional but we recommend you utilize it. Monkeytype uses the Git source control management (SCM) system for its version control. Assuming you don't have experience typing commands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Using a Git client such as Sourcetree won't give you access to the full functionality of Git, but provides an easy-to-understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
 ### NodeJS and NPM
 
@@ -32,7 +32,7 @@ Alternatively, you can navigate to the NodeJS [website](https://nodejs.org/en/) 
 
 ### Docker (Recommended but Optional)
 
-You can use docker to run the frontend and backend. This will take care of OS specific problems, but might be a bit more resource intensive. You can download it from the [Docker website](https://www.docker.com/get-started/#h_installation).
+You can use docker to run the frontend and backend. This will take care of OS-specific problems but might be a bit more resource-intensive. You can download it from the [Docker website](https://www.docker.com/get-started/#h_installation).
 
 ### Firebase (optional)
 
@@ -48,7 +48,7 @@ The account system will not let you create an account without a Firebase project
 
    - In the Firebase console, go to `Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
-   - Click on `Google`, add a support email and save
+   - Click on `Google`, add a support email, and save
 
 1. Generate a Firebase Admin private key (optional, only needed if you want to work on the backend)
 
@@ -57,10 +57,10 @@ The account system will not let you create an account without a Firebase project
    - Save as `serviceAccountKey.json` inside the `backend/src/credentials/` directory.
 
 1. Run `npm install -g firebase-tools` to install the Firebase Command Line Interface.
-1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
+1. Run `firebase login` on your terminal to log in to the same Google account you just used to create the project.
 1. Within the `frontend` directory, duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name to the firebase project id you just created.
 
-   - Run `firebase projects:list` to find your firebase project id.
+   - Run `firebase projects:list` to find your firebase project ID.
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
    ```.firebaserc
@@ -141,7 +141,7 @@ Note: Rebuilding doesn't happen instantaneously and depends on your machine, so 
 
 Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit.
 
-For guidelines on commit messages, adding themes, languages or quotes, pleases refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
+For guidelines on commit messages, adding themes, languages, or quotes, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md). Following these guidelines will increase the chances of getting your change accepted.
 
 ## Questions
 
