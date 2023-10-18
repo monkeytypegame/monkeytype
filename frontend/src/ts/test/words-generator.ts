@@ -327,6 +327,18 @@ function applyLazyModeToWord(
   return word;
 }
 
+export function getQuoteOrCustomModeWordOrder(): MonkeyTypes.FunboxWordOrder {
+  const wordOrder = FunboxList.get(Config.funbox)
+    .find((f) => f.properties?.find((fp) => fp.startsWith("wordOrder")))
+    ?.properties?.find((fp) => fp.startsWith("wordOrder"));
+
+  if (!wordOrder) {
+    return "normal";
+  } else {
+    return wordOrder.split(":")[1] as MonkeyTypes.FunboxWordOrder;
+  }
+}
+
 export function getWordsLimit(): number {
   let limit = 100;
 
@@ -432,14 +444,26 @@ export async function generateWords(
   };
   const limit = getWordsLimit();
 
+  const wordOrder = getQuoteOrCustomModeWordOrder();
+  console.debug("Word order", wordOrder);
+
   let wordList = language.words;
   if (Config.mode === "custom") {
-    wordList = CustomText.text;
+    if (wordOrder === "reverse") {
+      wordList = CustomText.text.reverse();
+    } else {
+      wordList = CustomText.text;
+    }
   }
   const wordset = await Wordset.withWords(wordList);
 
   if (Config.mode === "quote") {
-    return await generateQuoteWords(language, wordset, limit);
+    const quoteWords = await generateQuoteWords(language, wordset, limit);
+    if (wordOrder === "reverse") {
+      quoteWords.words.reverse();
+      quoteWords.sectionIndexes.reverse();
+    }
+    return quoteWords;
   }
 
   if (

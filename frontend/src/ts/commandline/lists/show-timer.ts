@@ -1,13 +1,14 @@
 import * as UpdateConfig from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
-  title: "Timer/progress...",
+  title: "Live progress...",
   configKey: "showTimerProgress",
   list: [
     {
       id: "setTimerProgressOff",
       display: "off",
       configValue: false,
+      alias: "timer",
       exec: (): void => {
         UpdateConfig.setShowTimerProgress(false);
       },
@@ -16,6 +17,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       id: "setTimerProgressOn",
       display: "on",
       configValue: true,
+      alias: "timer",
       exec: (): void => {
         UpdateConfig.setShowTimerProgress(true);
       },
@@ -26,8 +28,8 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 const commands: MonkeyTypes.Command[] = [
   {
     id: "changeShowTimer",
-    display: "Timer/progress...",
-    icon: "fa-clock",
+    display: "Live progress...",
+    icon: "fa-chart-pie",
     subgroup,
   },
 ];

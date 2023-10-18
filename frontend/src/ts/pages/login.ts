@@ -128,7 +128,7 @@ const checkPassword = (): void => {
   ).val() as string;
 
   // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
-  if (!Misc.isLocalhost() && !Misc.isPasswordStrong(password)) {
+  if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
     if (password.length < 8) {
       passwordIndicator.show("short", "Password must be at least 8 characters");
     } else if (password.length > 64) {

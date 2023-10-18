@@ -249,8 +249,11 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "backwards",
     info: "...sdrawkcab epyt ot yrt woN",
-    properties: ["noLigatures", "conflictsWithSymmetricChars"],
-    hasCSS: true,
+    properties: [
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "wordOrder:reverse",
+    ],
   },
 ];
 

@@ -25,7 +25,7 @@ import {
 import {
   createErrorMessage,
   isElementVisible,
-  isLocalhost,
+  isDevEnvironment,
   isPasswordStrong,
   reloadAfter,
 } from "../utils/misc";
@@ -660,7 +660,7 @@ list["updatePassword"] = new SimplePopup(
       };
     }
 
-    if (!isLocalhost() && !isPasswordStrong(newPass)) {
+    if (!isDevEnvironment() && !isPasswordStrong(newPass)) {
       return {
         status: 0,
         message:

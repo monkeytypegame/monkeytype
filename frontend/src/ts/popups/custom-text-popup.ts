@@ -237,8 +237,8 @@ function apply(): void {
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
   if ($(`${popup} .replaceControlCharacters input`).prop("checked")) {
-    text = text.replace(/(?<!\\)\\t/gm, "\t");
-    text = text.replace(/(?<!\\)\\n/gm, "\n");
+    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
+    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
     text = text.replace(/\\\\t/gm, "\\t");
     text = text.replace(/\\\\n/gm, "\\n");
   }

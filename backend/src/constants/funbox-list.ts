@@ -322,7 +322,11 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
   },
   {
     name: "backwards",
-    properties: ["noLigatures", "conflictsWithSymmetricChars"],
+    properties: [
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "wordOrder:reverse",
+    ],
     frontendFunctions: ["applyCSS"],
     canGetPb: true,
     difficultyLevel: 3,

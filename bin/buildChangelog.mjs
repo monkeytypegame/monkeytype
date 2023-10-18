@@ -71,8 +71,7 @@ function itemIsAddressingQuoteReports(item) {
     item.scope?.includes("quote") || item.scope?.includes("quotes");
 
   const messageReport =
-    item.message.includes("quote") &&
-    (item.message.includes("report") || item.message.includes("reports"));
+    item.message.includes("report") || item.message.includes("reports");
 
   return scopeIsQuote && messageReport;
 }
