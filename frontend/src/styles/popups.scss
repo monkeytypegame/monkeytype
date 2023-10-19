@@ -615,10 +615,6 @@
       margin-top: 0.25rem;
       display: grid;
       gap: 1rem;
-      grid-template-columns: 1fr 1fr;
-      .openSettings {
-        grid-column: span 2;
-      }
     }
     .settings {
       display: grid;
