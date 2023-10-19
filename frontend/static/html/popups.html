@@ -62,6 +62,7 @@
 <div
   id="cookiePopupWrapper"
   class="cookie-popup-wrapper cookiePopupWrapper popupWrapper hidden"
+  tabindex="-1"
 >
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
@@ -79,15 +80,15 @@
         Cookies enhance your experience and help us improve our website.
       </div>
       <div class="buttons">
-        <div class="button rejectAll">Reject all</div>
-        <div class="button active acceptAll">Accept all</div>
-        <div class="button openSettings">More options</div>
+        <button class="active acceptAll">accept all</button>
+        <button class="rejectAll">reject non-essential</button>
+        <button class="openSettings">more options</button>
       </div>
     </div>
     <div class="settings hidden">
       <div class="cookie security">
         <label class="checkbox">
-          <div class="title">Security</div>
+          <div class="title">security</div>
           <div class="description">
             We use Cloudflare cookies to improve security and performance of our
             site.
@@ -102,7 +103,7 @@
       </div>
       <div class="cookie analytics">
         <label class="checkbox">
-          <div class="title">Analytics</div>
+          <div class="title">analytics</div>
           <div class="description">
             We use Google Analytics cookies to check how users interact with our
             website and use this data to improve our site design.
@@ -112,7 +113,7 @@
       </div>
       <div class="cookie ads">
         <label class="checkbox">
-          <div class="title">Advertising</div>
+          <div class="title">advertising</div>
           <div class="description">
             Our advertising partner may use cookies to deliver ads that are more
             relevant to you.
@@ -122,7 +123,7 @@
           </div>
         </label>
       </div>
-      <div class="button active acceptSelected">Accept selected</div>
+      <button class="active acceptSelected">accept selected</button>
     </div>
   </div>
 </div>
