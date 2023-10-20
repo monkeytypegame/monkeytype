@@ -127,6 +127,10 @@ export function focusWords(): void {
   }
 }
 
+export function blurWords(): void {
+  $("#wordsInput").trigger("blur");
+}
+
 export function updateActiveElement(
   backspace?: boolean,
   initial = false
