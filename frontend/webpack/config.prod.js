@@ -1,12 +1,13 @@
 const { resolve } = require("path");
 const { merge } = require("webpack-merge");
-const RemovePlugin = require("remove-files-webpack-plugin");
+const FilemanagerPlugin = require("filemanager-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const JsonMinimizerPlugin = require("json-minimizer-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 
 const BASE_CONFIG = require("./config.base");
+const webpack = require("webpack");
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -69,9 +70,11 @@ const PRODUCTION_CONFIG = {
     ],
   },
   plugins: [
-    new RemovePlugin({
-      after: {
-        include: [resolve(__dirname, "../public/html")],
+    new FilemanagerPlugin({
+      events: {
+        onEnd: {
+          delete: [resolve(__dirname, "../public/html")],
+        },
       },
     }),
     new WorkboxPlugin.GenerateSW({
@@ -157,6 +160,10 @@ const PRODUCTION_CONFIG = {
         //   handler: "CacheFirst",
         // },
       ],
+    }),
+    new webpack.DefinePlugin({
+      BACKEND_URL: JSON.stringify("https://api.monkeytype.com"),
+      IS_DEVELOPMENT: JSON.stringify(false),
     }),
   ],
 };

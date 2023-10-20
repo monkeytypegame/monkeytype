@@ -2,32 +2,32 @@ import * as Misc from "../utils/misc";
 import Config from "../config";
 import * as TestInput from "./test-input";
 import * as SlowTimer from "../states/slow-timer";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 
 export let caretAnimating = true;
-const caret = $("#caret");
+const caret = document.querySelector("#caret") as HTMLElement;
 
 export function stopAnimation(): void {
   if (caretAnimating === true) {
-    caret.css("animation-name", "none");
-    caret.css("opacity", "1");
+    caret.style.animationName = "none";
+    caret.style.opacity = "1";
     caretAnimating = false;
   }
 }
 
 export function startAnimation(): void {
   if (caretAnimating === false) {
-    if (Config.smoothCaret && !SlowTimer.get()) {
-      caret.css("animation-name", "caretFlashSmooth");
+    if (Config.smoothCaret !== "off" && !SlowTimer.get()) {
+      caret.style.animationName = "caretFlashSmooth";
     } else {
-      caret.css("animation-name", "caretFlashHard");
+      caret.style.animationName = "caretFlashHard";
     }
     caretAnimating = true;
   }
 }
 
 export function hide(): void {
-  caret.addClass("hidden");
+  caret.classList.add("hidden");
 }
 
 export async function updatePosition(): Promise<void> {
@@ -42,7 +42,7 @@ export async function updatePosition(): Promise<void> {
   const inputLen = TestInput.input.current.length;
   const currentLetterIndex = inputLen;
   //insert temporary character so the caret will work in zen mode
-  const activeWordEmpty = $("#words .active").children().length == 0;
+  const activeWordEmpty = $("#words .active").children().length === 0;
   if (activeWordEmpty) {
     $("#words .active").append('<letter style="opacity: 0;">_</letter>');
   }
@@ -62,12 +62,12 @@ export async function updatePosition(): Promise<void> {
   ] as HTMLElement;
 
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
-  const isLanguageLeftToRight = currentLanguage.leftToRight;
+  const isLanguageRightToLeft = currentLanguage.rightToLeft;
   const letterPosLeft =
     (currentLetter
       ? currentLetter.offsetLeft
       : previousLetter.offsetLeft + previousLetter.offsetWidth) +
-    (isLanguageLeftToRight
+    (!isLanguageRightToLeft
       ? 0
       : currentLetter
       ? currentLetter.offsetWidth
@@ -87,7 +87,7 @@ export async function updatePosition(): Promise<void> {
   if (Config.tapeMode === "letter") {
     newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
   } else if (Config.tapeMode === "word") {
-    if (inputLen == 0) {
+    if (inputLen === 0) {
       newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
     } else {
       let inputWidth = 0;
@@ -109,7 +109,9 @@ export async function updatePosition(): Promise<void> {
   let smoothlinescroll = $("#words .smoothScroller").height();
   if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
-  caret.css("display", "block"); //for some goddamn reason adding width animation sets the display to none ????????
+  const jqcaret = $(caret);
+
+  jqcaret.css("display", "block"); //for some goddamn reason adding width animation sets the display to none ????????
 
   const animation: { top: number; left: number; width?: string } = {
     top: newTop - smoothlinescroll,
@@ -119,22 +121,33 @@ export async function updatePosition(): Promise<void> {
   if (newWidth !== "") {
     animation["width"] = newWidth;
   } else {
-    caret.css("width", "");
+    jqcaret.css("width", "");
   }
 
-  caret
+  const smoothCaretSpeed =
+    Config.smoothCaret == "off"
+      ? 0
+      : Config.smoothCaret == "slow"
+      ? 150
+      : Config.smoothCaret == "medium"
+      ? 100
+      : Config.smoothCaret == "fast"
+      ? 85
+      : 0;
+
+  jqcaret
     .stop(true, false)
-    .animate(animation, Config.smoothCaret && !SlowTimer.get() ? 100 : 0);
+    .animate(animation, !SlowTimer.get() ? smoothCaretSpeed : 0);
 
   if (Config.showAllLines) {
     const browserHeight = window.innerHeight;
-    const middlePos = browserHeight / 2 - (caret.outerHeight() as number) / 2;
+    const middlePos = browserHeight / 2 - (jqcaret.outerHeight() as number) / 2;
     const contentHeight = document.body.scrollHeight;
 
     if (
       newTop >= middlePos &&
       contentHeight > browserHeight &&
-      TestActive.get()
+      TestState.isActive
     ) {
       const newscrolltop = newTop - middlePos / 2;
       window.scrollTo({
@@ -151,7 +164,7 @@ export async function updatePosition(): Promise<void> {
 
 export function show(): void {
   if ($("#result").hasClass("hidden")) {
-    caret.removeClass("hidden");
+    caret.classList.remove("hidden");
     updatePosition();
     startAnimation();
   }

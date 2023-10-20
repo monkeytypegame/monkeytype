@@ -10,32 +10,25 @@ import * as TestLogic from "../test/test-logic";
 import * as Loader from "../elements/loader";
 import * as PageTransition from "../states/page-transition";
 import * as ActivePage from "../states/active-page";
-import * as TestActive from "../states/test-active";
 import * as LoadingPage from "../pages/loading";
 import * as LoginPage from "../pages/login";
 import * as ResultFilters from "../account/result-filters";
-import * as PaceCaret from "../test/pace-caret";
 import * as TagController from "./tag-controller";
 import * as RegisterCaptchaPopup from "../popups/register-captcha-popup";
 import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
 import {
-  EmailAuthProvider,
   GoogleAuthProvider,
   browserSessionPersistence,
   browserLocalPersistence,
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
   setPersistence,
   updateProfile,
   linkWithPopup,
-  linkWithCredential,
-  reauthenticateWithPopup,
   getAdditionalUserInfo,
-  sendPasswordResetEmail,
   User as UserType,
   Unsubscribe,
 } from "firebase/auth";
@@ -45,34 +38,36 @@ import {
   hideFavoriteQuoteLength,
   showFavoriteQuoteLength,
 } from "../test/test-config";
-import { navigate } from "../observables/navigate-event";
-import { update as updateTagsCommands } from "../commandline/lists/tags";
 import * as ConnectionState from "../states/connection";
+import { navigate } from "./route-controller";
+
+let signedOutThisSession = false;
 
 export const gmailProvider = new GoogleAuthProvider();
-let canCall = true;
 
-export function sendVerificationEmail(): void {
+async function sendVerificationEmail(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
+
   Loader.show();
-  const user = Auth.currentUser;
-  if (user === null) return;
-  sendEmailVerification(user)
-    .then(() => {
-      Loader.hide();
-      Notifications.add("Email sent to " + user.email, 4000);
-    })
-    .catch((e) => {
-      Loader.hide();
-      Notifications.add("Error: " + e.message, 3000);
-      console.error(e.message);
-    });
+  const result = await Ape.users.verificationEmail();
+  if (result.status !== 200) {
+    Loader.hide();
+    Notifications.add(
+      "Failed to request verification email: " + result.message,
+      -1
+    );
+  } else {
+    Loader.hide();
+    Notifications.add("Verification email sent", 1);
+  }
 }
 
-export async function getDataAndInit(): Promise<boolean> {
+async function getDataAndInit(): Promise<boolean> {
   try {
     console.log("getting account data");
     if (window.location.pathname !== "/account") {
@@ -90,28 +85,32 @@ export async function getDataAndInit(): Promise<boolean> {
       Notifications.add(
         "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
         0,
-        0
+        {
+          duration: 0,
+        }
       );
       Notifications.add(
         "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enabled) to restart the test.",
         0,
-        0
+        {
+          duration: 0,
+        }
       );
     }
     const msg = e.message || e;
     Notifications.add("Failed to get user data: " + msg, -1);
 
-    $("#top #menu .account").css("opacity", 1);
+    $("header nav .account").css("opacity", 1);
     return false;
   }
-  if (ActivePage.get() == "loading") {
+  if (ActivePage.get() === "loading") {
     LoadingPage.updateBar(100);
   } else {
     LoadingPage.updateBar(45);
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
-  $("#menu .textButton.account > .text").text(snapshot.name);
+  $("nav .textButton.account > .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -139,7 +138,7 @@ export async function getDataAndInit(): Promise<boolean> {
 
   if (snapshot.needsToChangeName) {
     Notifications.addBanner(
-      "Your name was reset. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
+      "You need to update your account name. <a class='openNameChange'>Click here</a> to change it and learn more about why.",
       -1,
       undefined,
       true,
@@ -147,86 +146,22 @@ export async function getDataAndInit(): Promise<boolean> {
       true
     );
   }
-  if (!UpdateConfig.changedBeforeDb) {
-    //config didnt change before db loaded
-    if (UpdateConfig.localStorageConfig === null && snapshot.config) {
-      console.log("no local config, applying db");
-      AccountButton.loading(false);
-      UpdateConfig.apply(snapshot.config);
-      Settings.update();
-      UpdateConfig.saveFullConfigToLocalStorage(true);
-      TestLogic.restart({
-        nosave: true,
-      });
-    } else if (snapshot.config !== undefined) {
-      //loading db config, keep for now
-      let configsDifferent = false;
-      Object.keys(Config).forEach((ke) => {
-        const key = ke as keyof typeof Config;
-        if (configsDifferent) return;
-        try {
-          if (key !== "resultFilters") {
-            if (Array.isArray(Config[key])) {
-              (Config[key] as string[]).forEach((arrval, index) => {
-                const arrayValue = (
-                  snapshot?.config?.[key] as
-                    | string[]
-                    | MonkeyTypes.QuoteLength[]
-                    | MonkeyTypes.CustomBackgroundFilter
-                )[index];
-                if (arrval != arrayValue) {
-                  configsDifferent = true;
-                  console.log(
-                    `.config is different: ${arrval} != ${arrayValue}`
-                  );
-                }
-              });
-            } else {
-              if (Config[key] != snapshot?.config?.[key]) {
-                configsDifferent = true;
-                console.log(
-                  `..config is different ${key}: ${Config[key]} != ${snapshot?.config?.[key]}`
-                );
-              }
-            }
-          }
-        } catch (e) {
-          console.log(e);
-          configsDifferent = true;
-          console.log(`...config is different`);
-        }
-      });
-      if (configsDifferent) {
-        console.log("configs are different, applying config from db");
-        AccountButton.loading(false);
-        UpdateConfig.apply(snapshot.config);
-        Settings.update();
-        UpdateConfig.saveFullConfigToLocalStorage(true);
-        if (ActivePage.get() == "test") {
-          TestLogic.restart({
-            nosave: true,
-          });
-        }
-        AccountButton.loading(true);
-        DB.saveConfig(Config).then(() => {
-          AccountButton.loading(false);
-        });
-      }
-    }
-    UpdateConfig.setDbConfigLoaded(true);
-  } else {
-    console.log("config changed before db");
-    AccountButton.loading(false);
-  }
-  if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-    if (!TestActive.get()) {
-      PaceCaret.init();
-    }
+
+  const areConfigsEqual =
+    JSON.stringify(Config) === JSON.stringify(snapshot.config);
+
+  if (
+    snapshot.config &&
+    (!UpdateConfig.localStorageConfig || !areConfigsEqual)
+  ) {
+    console.log(
+      "no local config or local and db configs are different - applying db"
+    );
+    UpdateConfig.apply(snapshot.config);
+    UpdateConfig.saveFullConfigToLocalStorage(true);
   }
   AccountButton.loading(false);
-  updateTagsCommands();
   TagController.loadActiveFromLocalStorage();
-  Settings.showAccountSection();
   if (window.location.pathname === "/account") {
     LoadingPage.updateBar(90);
     await Account.downloadResults();
@@ -241,12 +176,6 @@ export async function getDataAndInit(): Promise<boolean> {
 
 export async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
-  $(".pageAccount .content p.accountVerificatinNotice").remove();
-  if (user.emailVerified === false) {
-    $(".pageAccount .content").prepend(
-      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
-    );
-  }
   PageTransition.set(false);
   AccountButton.loading(true);
   if ((await getDataAndInit()) === false) {
@@ -265,11 +194,13 @@ export async function loadUser(user: UserType): Promise<void> {
   // var providerData = user.providerData;
   LoginPage.hidePreloader();
 
-  $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-out-alt"></i>`);
+  $("header .signInOut .icon").html(
+    `<i class="fas fa-fw fa-sign-out-alt"></i>`
+  );
 
   // showFavouriteThemesAtTheTop();
 
-  if (TestLogic.notSignedInLastResult !== null) {
+  if (TestLogic.notSignedInLastResult !== null && !signedOutThisSession) {
     TestLogic.setNotSignedInUid(user.uid);
 
     const response = await Ape.results.save(TestLogic.notSignedInLastResult);
@@ -295,14 +226,15 @@ if (Auth && ConnectionState.get()) {
     const search = window.location.search;
     const hash = window.location.hash;
     console.log(`auth state changed, user ${user ? true : false}`);
+    console.debug(user);
     if (user) {
-      $("#top .signInOut .icon").html(
+      $("header .signInOut .icon").html(
         `<i class="fas fa-fw fa-sign-out-alt"></i>`
       );
       await loadUser(user);
     } else {
-      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
-      if (window.location.pathname == "/account") {
+      $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
+      if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
       PageTransition.set(false);
@@ -319,7 +251,9 @@ if (Auth && ConnectionState.get()) {
       Notifications.add(
         "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
         0,
-        7
+        {
+          duration: 7,
+        }
       );
       return;
       // Notifications.add("Loading challenge", 0);
@@ -330,14 +264,14 @@ if (Auth && ConnectionState.get()) {
     }
   });
 } else {
-  $("#menu .signInOut").addClass("hidden");
+  $("nav .signInOut").addClass("hidden");
 
   $("document").ready(async () => {
     // await UpdateConfig.loadPromise;
     const search = window.location.search;
     const hash = window.location.hash;
-    $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
-    if (window.location.pathname == "/account") {
+    $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
+    if (window.location.pathname === "/account") {
       window.history.replaceState("", "", "/login");
     }
     PageTransition.set(false);
@@ -351,29 +285,31 @@ if (Auth && ConnectionState.get()) {
       Notifications.add(
         "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
         0,
-        7
+        {
+          duration: 7,
+        }
       );
       return;
     }
   });
 }
 
-export async function signIn(): Promise<void> {
+async function signIn(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1);
     return;
   }
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
 
-  UpdateConfig.setChangedBeforeDb(false);
   authListener();
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  LoginPage.disableSignInButton();
   const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
   const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
@@ -382,7 +318,6 @@ export async function signIn(): Promise<void> {
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.enableSignUpButton();
-    LoginPage.enableSignInButton();
     return;
   }
 
@@ -408,55 +343,27 @@ export async function signIn(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      LoginPage.enableSignInButton();
       LoginPage.updateSignupButton();
     });
 }
 
-export async function forgotPassword(email: any): Promise<void> {
+async function signInWithGoogle(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
-    return;
-  }
-  if (!canCall) {
-    return Notifications.add(
-      "Please wait before requesting another password reset link",
-      0,
-      5000
-    );
-  }
-  if (!email) return Notifications.add("Please enter an email!", -1);
-
-  try {
-    await sendPasswordResetEmail(Auth, email);
-    Notifications.add("Email sent", 1, 2);
-  } catch (error) {
-    Notifications.add(
-      Misc.createErrorMessage(error, "Failed to send email"),
-      -1
-    );
-  }
-  canCall = false;
-  setTimeout(function () {
-    canCall = true;
-  }, 10000);
-}
-
-export async function signInWithGoogle(): Promise<void> {
-  if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
 
-  UpdateConfig.setChangedBeforeDb(false);
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  LoginPage.disableSignInButton();
   authListener();
   const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
     ? browserLocalPersistence
@@ -486,14 +393,15 @@ export async function signInWithGoogle(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      LoginPage.enableSignInButton();
       LoginPage.updateSignupButton();
     });
 }
 
-export async function addGoogleAuth(): Promise<void> {
+async function addGoogleAuth(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   Loader.show();
@@ -513,62 +421,27 @@ export async function addGoogleAuth(): Promise<void> {
     });
 }
 
-export async function addPasswordAuth(
-  email: string,
-  password: string
-): Promise<void> {
-  if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
-    return;
-  }
-  Loader.show();
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "google.com")
-  ) {
-    try {
-      await reauthenticateWithPopup(user, gmailProvider);
-    } catch (e) {
-      Loader.hide();
-      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
-      return Notifications.add(message, -1);
-    }
-  }
-
-  const credential = EmailAuthProvider.credential(email, password);
-  linkWithCredential(user, credential)
-    .then(function () {
-      Loader.hide();
-      Notifications.add("Password authentication added", 1);
-      Settings.updateAuthSections();
-    })
-    .catch(function (error) {
-      Loader.hide();
-      Notifications.add(
-        "Failed to add password authentication: " + error.message,
-        -1
-      );
-    });
-}
-
 export function signOut(): void {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   if (!Auth.currentUser) return;
   Auth.signOut()
     .then(function () {
-      Notifications.add("Signed out", 0, 2);
+      Notifications.add("Signed out", 0, {
+        duration: 2,
+      });
       AllTimeStats.clear();
       Settings.hideAccountSection();
       AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
-      $(".pageLogin .button").removeClass("disabled");
-      $(".pageLogin input").prop("disabled", false);
-      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
+      LoginPage.enableSignUpButton();
+      LoginPage.enableInputs();
+      $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
       }, 125);
@@ -580,16 +453,20 @@ export function signOut(): void {
 
 async function signUp(): Promise<void> {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   RegisterCaptchaPopup.show();
-  const captcha = await RegisterCaptchaPopup.promise;
-  if (!captcha) {
+  const captchaToken = await RegisterCaptchaPopup.promise;
+  if (!captchaToken) {
     Notifications.add("Please complete the captcha", -1);
     return;
   }
@@ -614,20 +491,12 @@ async function signUp(): Promise<void> {
     return;
   }
 
-  if (password.length > 25) {
-    LoginPage.hidePreloader();
-    LoginPage.enableInputs();
-    LoginPage.updateSignupButton();
-    Notifications.add("Password is too long", 0);
-    return;
-  }
-
   if (
     !email.match(
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     )
   ) {
-    Notifications.add("Invalid email", 0, 3);
+    Notifications.add("Invalid email", 0);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
@@ -635,7 +504,7 @@ async function signUp(): Promise<void> {
   }
 
   if (email !== emailVerify) {
-    Notifications.add("Emails do not match", 0, 3);
+    Notifications.add("Emails do not match", 0);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
@@ -643,19 +512,21 @@ async function signUp(): Promise<void> {
   }
 
   if (password !== passwordVerify) {
-    Notifications.add("Passwords do not match", 0, 3);
+    Notifications.add("Passwords do not match", 0);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.updateSignupButton();
     return;
   }
 
-  // Force user to use a capital letter, number, special character when setting up an account and changing password
-  if (!Misc.isLocalhost() && !Misc.isPasswordStrong(password)) {
+  // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
+  if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
     Notifications.add(
-      "Password must contain at least one capital letter, number, a special character and at least 8 characters long",
+      "Password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
       0,
-      4
+      {
+        duration: 4,
+      }
     );
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
@@ -675,7 +546,7 @@ async function signUp(): Promise<void> {
 
     const signInResponse = await Ape.users.create(
       nname,
-      captcha,
+      captchaToken,
       email,
       createdAuthUser.user.uid
     );
@@ -684,11 +555,9 @@ async function signUp(): Promise<void> {
     }
 
     await updateProfile(createdAuthUser.user, { displayName: nname });
-    await sendEmailVerification(createdAuthUser.user);
+    await sendVerificationEmail();
     AllTimeStats.clear();
-    $("#menu .textButton.account .text").text(nname);
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    $("nav .textButton.account .text").text(nname);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
@@ -707,7 +576,7 @@ async function signUp(): Promise<void> {
         );
       }
     }
-    Notifications.add("Account created", 1, 3);
+    Notifications.add("Account created", 1);
   } catch (e) {
     //make sure to do clean up here
     if (createdAuthUser) {
@@ -733,62 +602,44 @@ async function signUp(): Promise<void> {
   }
 }
 
-$(".pageLogin #forgotPasswordButton").on("click", () => {
-  const emailField =
-    ($(".pageLogin .login input")[0] as HTMLInputElement).value || "";
-  const email = prompt("Email address", emailField);
-  forgotPassword(email);
-});
-
-$(".pageLogin .login input").keyup((e) => {
-  if (e.key === "Enter") {
-    UpdateConfig.setChangedBeforeDb(false);
-    signIn();
-  }
-});
-
-$(".pageLogin .login .button.signIn").on("click", () => {
-  UpdateConfig.setChangedBeforeDb(false);
+$(".pageLogin .login form").on("submit", (e) => {
+  e.preventDefault();
   signIn();
 });
 
-$(".pageLogin .login .button.signInWithGoogle").on("click", () => {
-  UpdateConfig.setChangedBeforeDb(false);
+$(".pageLogin .login button.signInWithGoogle").on("click", () => {
   signInWithGoogle();
 });
 
 // $(".pageLogin .login .button.signInWithGitHub").on("click",(e) => {
-// UpdateConfig.setChangedBeforeDb(false);
 // signInWithGitHub();
 // });
 
-$("#top .signInOut").on("click", () => {
+$("header .signInOut").on("click", () => {
   if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, 3);
+    Notifications.add("Authentication uninitialized", -1, {
+      duration: 3,
+    });
     return;
   }
   if (Auth.currentUser) {
     signOut();
+    signedOutThisSession = true;
   } else {
     navigate("/login");
   }
 });
 
-$(".pageLogin .register input").keyup((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  if (e.key === "Enter") {
-    signUp();
-  }
-});
-
-$(".pageLogin .register .button").on("click", () => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
+$(".pageLogin .register form").on("submit", (e) => {
+  e.preventDefault();
   signUp();
 });
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   addGoogleAuth();
@@ -796,7 +647,9 @@ $(".pageSettings #addGoogleAuth").on("click", async () => {
 
 $(".pageAccount").on("click", ".sendVerificationEmail", () => {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   sendVerificationEmail();

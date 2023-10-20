@@ -1,4 +1,5 @@
 import * as RedisClient from "../init/redis";
+import LaterQueue from "../queues/later-queue";
 import { getCurrentWeekTimestamp } from "../utils/misc";
 
 interface InternalWeeklyXpLeaderboardEntry {
@@ -92,16 +93,22 @@ export class WeeklyXpLeaderboard {
       timeTypedSeconds +
       ((currentEntry && JSON.parse(currentEntry)?.timeTypedSeconds) || 0);
 
-    // @ts-ignore
-    const rank: number = await connection.addResultIncrement(
-      2,
-      weeklyXpLeaderboardScoresKey,
-      weeklyXpLeaderboardResultsKey,
-      weeklyXpLeaderboardExpirationTimeInSeconds,
-      entry.uid,
-      xpGained,
-      JSON.stringify({ ...entry, timeTypedSeconds: totalTimeTypedSeconds })
-    );
+    const [rank]: [number, void] = await Promise.all([
+      // @ts-ignore
+      connection.addResultIncrement(
+        2,
+        weeklyXpLeaderboardScoresKey,
+        weeklyXpLeaderboardResultsKey,
+        weeklyXpLeaderboardExpirationTimeInSeconds,
+        entry.uid,
+        xpGained,
+        JSON.stringify({ ...entry, timeTypedSeconds: totalTimeTypedSeconds })
+      ),
+      LaterQueue.scheduleForNextWeek(
+        "weekly-xp-leaderboard-results",
+        "weekly-xp"
+      ),
+    ]);
 
     return rank + 1;
   }

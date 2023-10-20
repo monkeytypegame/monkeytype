@@ -122,12 +122,6 @@
       "id": 19
     },
     {
-      "text": "Kurang cerdas dapat diperbaiki dengan belajar. Kurang cakap dapat dihilangkan dengan pengalaman. Namun tidak jujur itu sulit diperbaiki.",
-      "source": "Mohammad Hatta",
-      "length": 136,
-      "id": 20
-    },
-    {
       "text": "Untuk mencapai sesuatu, harus diperjuangkan dulu. Seperti mengambil buah kelapa, dan tidak menunggu saja seperti jatuh durian yang telah masak.",
       "source": "Mohammad Natsir",
       "length": 143,
@@ -150,12 +144,6 @@
       "source": "Ir. Soekarno",
       "length": 250,
       "id": 24
-    },
-    {
-      "text": "Kurang cerdas dapat diperbaiki dengan belajar, kurang cakap dapat dihilangkan dengan pengalaman. Namun, tidak jujur sulit diperbaiki.",
-      "source": "Bung Hatta",
-      "length": 133,
-      "id": 25
     },
     {
       "text": "Hidup memang ada pikiran tapi nggak usah banyak dipikirin lah. Katanya kalau orang banyak pikiran bakal banyak muncul penyakit. Jalanin aja. Rasa muda itu harus, tapi kalau umur itu kita nggak bisa dibendung, kalau semangat muda itu harus.",
@@ -476,9 +464,9 @@
       "id": 79
     },
     {
-      "text": "Aku tidak tahu dimana ujung perjalanan ini, aku tidak bisa menjanjikan apapun. Tapi, selama aku mampu, mimpi-mimpi kita adalah prioritas.",
+      "text": "Aku tidak tahu di mana ujung perjalanan ini, aku tidak bisa menjanjikan apa pun. Tapi, selama aku mampu, mimpi-mimpi kita adalah prioritas.",
       "source": "Fiersa Besari",
-      "length": 137,
+      "length": 139,
       "id": 80
     },
     {
@@ -666,12 +654,6 @@
       "source": "Umar bin Khattab",
       "length": 405,
       "id": 111
-    },
-    {
-      "text": "Barangsiapa ingin mutiara, harus berani terjun di lautan yang dalam.",
-      "source": "Ir. Soekarno",
-      "length": 68,
-      "id": 112
     },
     {
       "text": "Kenapa orang Indonesia selalu mempromosikan batik, reog? Kok korupsi nggak? Padahal korupsilah budaya kita yang paling mahal.",
@@ -908,9 +890,9 @@
       "id": 151
     },
     {
-      "text": "Indahnya kisah-kasih kita di masa remaja. Di bawah rayu senja kita di madu bermanja. Tiada masa-masa yang lebih indah dari masa remaja. Seakan dunia, milik berdua.",
+      "text": "Indahnya kisah-kasih kita di masa remaja. Di bawah rayu senja kita dimadu bermanja. Tiada masa-masa yang lebih indah dari masa remaja. Seakan dunia, milik berdua.",
       "source": "HIVI! - Remaja",
-      "length": 163,
+      "length": 162,
       "id": 152
     },
     {
@@ -968,7 +950,7 @@
       "id": 161
     },
     {
-      "text": "Terus terang belakangan kuingin jadi penyair. Karang senjata lawan Taufiq Ismail. Bolak-balik 7-Eleven, kutulis syair. Sebab kurasa di sana sangat spirituil. Ku tak bisa nulis yang indah dan berbunga-bunga. Yang kuingin langsung saja menikam di hati.",
+      "text": "Terus terang belakangan kuingin jadi penyair. Karang senjata lawan Taufiq Ismail. Bolak-balik 7-Eleven, kutulis syair. Sebab kurasa di sana sangat spiritual. Ku tak bisa nulis yang indah dan berbunga-bunga. Yang kuingin langsung saja menikam di hati.",
       "source": "Jason Ranti - Lagunya Begini Nadanya Begitu",
       "length": 250,
       "id": 162
@@ -1064,12 +1046,6 @@
       "id": 178
     },
     {
-      "text": "Gadis yang pikirannya sudah dicerdaskan, pemandangannya sudah diperluas, tidak akan sanggup lagi hidup di dalam dunia nenek moyangnya.",
-      "source": "R. A. Kartini",
-      "length": 134,
-      "id": 179
-    },
-    {
       "text": "Terkadang, kesulitan harus kamu rasakan terlebih dulu sebelum kebahagiaan yang sempurna datang kepadamu.",
       "source": "R. A. Kartini",
       "length": 104,
@@ -1112,7 +1088,7 @@
       "id": 186
     },
     {
-      "text": "Maju tak gentar membela yang benar. Maju tak gentar tak kita diserang. Maju serentak mengusir penyerang. Maju serentak tentu kita menang.",
+      "text": "Maju hak gentar membela yang benar. Maju tak gentar tak kita diserang. Maju serentak mengusir penyerang. Maju serentak tentu kita menang.",
       "source": "Maju Tak Gentar",
       "length": 137,
       "id": 187

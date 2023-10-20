@@ -1,6 +1,6 @@
 {
   "name": "hebrew_1k",
-  "leftToRight": false,
+  "rightToLeft": true,
   "ligatures": true,
   "bcp47": "he-IL",
   "words": [

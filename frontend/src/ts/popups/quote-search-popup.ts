@@ -28,7 +28,10 @@ export function setSelectedId(val: number): void {
   selectedId = val;
 }
 
-const searchServiceCache: Record<string, SearchService<any>> = {};
+const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
+
+const pageSize = 100;
+let currentPageNumber = 1;
 
 function getSearchService<T>(
   language: string,
@@ -36,11 +39,12 @@ function getSearchService<T>(
   textExtractor: TextExtractor<T>
 ): SearchService<T> {
   if (language in searchServiceCache) {
-    return searchServiceCache[language];
+    return searchServiceCache[language] as unknown as SearchService<T>;
   }
 
   const newSearchService = buildSearchService<T>(data, textExtractor);
-  searchServiceCache[language] = newSearchService;
+  searchServiceCache[language] =
+    newSearchService as unknown as typeof searchServiceCache[typeof language];
 
   return newSearchService;
 }
@@ -175,18 +179,33 @@ async function updateResults(searchText: string): Promise<void> {
   const resultsList = $("#quoteSearchResults");
   resultsList.empty();
 
-  quotesToShow.slice(0, 100).forEach((quote) => {
+  const totalPages = Math.ceil(quotesToShow.length / pageSize);
+
+  $("#quoteSearchPageNavigator .nextPage").toggleClass(
+    "disabled",
+    currentPageNumber >= totalPages
+  );
+  $("#quoteSearchPageNavigator .prevPage").toggleClass(
+    "disabled",
+    currentPageNumber <= 1
+  );
+
+  if (quotesToShow.length === 0) {
+    $("#pageInfo").html("No search results");
+    return;
+  }
+
+  const startIndex = (currentPageNumber - 1) * pageSize;
+  const endIndex = Math.min(currentPageNumber * pageSize, quotesToShow.length);
+
+  $("#pageInfo").html(
+    `${startIndex + 1} - ${endIndex} of ${quotesToShow.length}`
+  );
+
+  quotesToShow.slice(startIndex, endIndex).forEach((quote) => {
     const quoteSearchResult = buildQuoteSearchResult(quote, matchedQueryTerms);
     resultsList.append(quoteSearchResult);
   });
-
-  const resultsExceededText =
-    quotesToShow.length > 100
-      ? "<span style='opacity: 0.5'>(only showing 100)</span>"
-      : "";
-  $("#extraResults").html(
-    `${quotesToShow.length} result(s) ${resultsExceededText}`
-  );
 }
 
 export async function show(clearText = true): Promise<void> {
@@ -250,12 +269,13 @@ export async function show(clearText = true): Promise<void> {
         if (clearText) {
           $("#quoteSearchPopup input").trigger("focus").trigger("select");
         }
+        currentPageNumber = 1;
         updateResults(quoteSearchInputValue);
       });
   }
 }
 
-export function hide(noAnim = false, focusWords = true): void {
+function hide(noAnim = false, focusWords = true): void {
   if (isPopupVisible(wrapperId)) {
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
@@ -302,6 +322,7 @@ export function apply(val: number): boolean {
 const searchForQuotes = debounce(250, (): void => {
   const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
     .value;
+  currentPageNumber = 1;
   updateResults(searchText);
 });
 
@@ -312,19 +333,52 @@ $("#quoteSearchPopupWrapper .searchBox").on("keyup", (e) => {
 
 $("#quoteSearchPopupWrapper .quoteLengthFilter").on("change", searchForQuotes);
 
-$("#quoteSearchPopupWrapper").on("click", (e) => {
+$(
+  "#quoteSearchPageNavigator .nextPage, #quoteSearchPageNavigator .prevPage"
+).on("click", function () {
+  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+    .value;
+
+  if ($(this).hasClass("nextPage")) {
+    currentPageNumber++;
+  } else {
+    currentPageNumber--;
+  }
+
+  updateResults(searchText);
+});
+
+$("#quoteSearchPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
     hide();
   }
 });
 
-$("#popups").on("click", "#quoteSearchPopup #gotoSubmitQuoteButton", () => {
-  hide(true);
-  QuoteSubmitPopup.show(true);
-});
+$("#popups").on(
+  "click",
+  "#quoteSearchPopup #gotoSubmitQuoteButton",
+  async () => {
+    Loader.show();
+    const isSubmissionEnabled = (await Ape.quotes.isSubmissionEnabled()).data
+      .isEnabled;
+    Loader.hide();
+    if (!isSubmissionEnabled) {
+      Notifications.add(
+        "Quote submission is disabled temporarily due to a large submission queue.",
+        0,
+        {
+          duration: 5,
+        }
+      );
+      return;
+    }
+    hide();
+    QuoteSubmitPopup.show(true);
+  }
+);
 
 $("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
-  hide(true);
+  hide();
   QuoteApprovePopup.show(true);
 });
 
@@ -408,8 +462,8 @@ $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
 });
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
-  const len = $(e.currentTarget).attr("quoteLength") ?? (0 as number);
-  if (len == -2) {
+  const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
+  if (len === -2) {
     show();
   }
 });

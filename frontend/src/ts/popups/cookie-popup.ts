@@ -3,6 +3,7 @@ import { focusWords } from "../test/test-ui";
 import * as Notifications from "../elements/notifications";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
+import * as AdController from "../controllers/ad-controller";
 
 const wrapperId = "cookiePopupWrapper";
 
@@ -35,9 +36,16 @@ export function check(): void {
 
 export function show(): void {
   Skeleton.append(wrapperId);
-  if ($("#cookiePopupWrapper")[0] === undefined) {
+  $("#cookiePopupWrapper").removeClass("hidden");
+  if (
+    $("#cookiePopupWrapper")[0] === undefined ||
+    $("#cookiePopupWrapper").is(":visible") === false ||
+    $("#cookiePopupWrapper").outerHeight(true) === 0
+  ) {
     //removed by cookie popup blocking extension
+    $("#cookiePopupWrapper").addClass("hidden");
     visible = false;
+    Skeleton.remove(wrapperId);
     return;
   }
   if (!isPopupVisible(wrapperId)) {
@@ -58,7 +66,7 @@ export function show(): void {
   }
 }
 
-export async function hide(): Promise<void> {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     focusWords();
     $("#cookiePopupWrapper")
@@ -141,10 +149,7 @@ $(document).on("keypress", (e) => {
 
 $("#cookiePopup .cookie.ads .textButton").on("click", () => {
   try {
-    //@ts-ignore
-    window.__tcfapi("displayConsentUi", 2, function () {
-      //
-    });
+    AdController.showConsentPopup();
   } catch (e) {
     console.error("Failed to open ad consent UI");
     Notifications.add(

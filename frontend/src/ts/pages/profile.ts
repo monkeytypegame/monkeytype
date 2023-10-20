@@ -146,12 +146,12 @@ function reset(): void {
             <div class="acc">-</div>
           </div>
         </div>
-      </div>`);
+      </div><div class="lbOptOutReminder hidden"></div>`);
 }
 
 interface UpdateOptions {
   uidOrName?: string;
-  data?: any;
+  data?: undefined | Profile.ProfileData;
 }
 
 async function update(options: UpdateOptions): Promise<void> {
@@ -199,7 +199,7 @@ $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
   UserReportPopup.show({ uid, name });
 });
 
-export const page = new Page(
+export const page = new Page<undefined | Profile.ProfileData>(
   "profile",
   $(".page.pageProfile"),
   "/profile",
@@ -211,7 +211,7 @@ export const page = new Page(
     reset();
   },
   async (options) => {
-    Skeleton.append("pageProfile", "middle");
+    Skeleton.append("pageProfile", "main");
     const uidOrName = options?.params?.["uidOrName"];
     if (uidOrName) {
       $(".page.pageProfile .preloader").removeClass("hidden");
@@ -220,7 +220,7 @@ export const page = new Page(
       reset();
       update({
         uidOrName,
-        data: options?.["data"],
+        data: options?.data,
       });
     } else {
       $(".page.pageProfile .preloader").addClass("hidden");

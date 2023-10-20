@@ -1,31 +1,37 @@
-import * as TestUI from "./test-ui";
+import {
+  Chart,
+  type PluginChartOptions,
+  type ScaleChartOptions,
+} from "chart.js";
 import Config from "../config";
-import * as Misc from "../utils/misc";
-import * as TestStats from "./test-stats";
-import * as Keymap from "../elements/keymap";
+import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
-import * as ThemeColors from "../elements/theme-colors";
+import QuotesController from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as TodayTracker from "./today-tracker";
-import * as PbCrown from "./pb-crown";
+import * as Loader from "../elements/loader";
+import * as Notifications from "../elements/notifications";
+import * as ThemeColors from "../elements/theme-colors";
+import { Auth } from "../firebase";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
-import * as TestInput from "./test-input";
-import * as Notifications from "../elements/notifications";
-import * as Loader from "../elements/loader";
-import QuotesController from "../controllers/quotes-controller";
-import * as AdController from "../controllers/ad-controller";
-import * as TestConfig from "./test-config";
-import { Chart } from "chart.js";
-import { Auth } from "../firebase";
 import * as SlowTimer from "../states/slow-timer";
+import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as FunboxList from "./funbox/funbox-list";
+import * as PbCrown from "./pb-crown";
+import * as TestConfig from "./test-config";
+import * as TestInput from "./test-input";
+import * as TestStats from "./test-stats";
+import * as TestUI from "./test-ui";
+import * as TodayTracker from "./today-tracker";
+import * as ConfigEvent from "../observables/config-event";
+import * as Focus from "./focus";
+import * as CustomText from "./custom-text";
+import * as CustomTextState from "./../states/custom-text-name";
 
-// eslint-disable-next-line no-duplicate-imports -- need to ignore because eslint doesnt know what import type is
-import type { PluginChartOptions, ScaleChartOptions } from "chart.js";
+import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
-import confetti from "canvas-confetti";
 
 let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
 let maxChartVal: number;
@@ -46,7 +52,9 @@ let resultScaleOptions = (
 ).scales;
 
 async function updateGraph(): Promise<void> {
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const labels = [];
+
   for (let i = 1; i <= TestInput.wpmHistory.length; i++) {
     if (TestStats.lastSecondNotRound && i === TestInput.wpmHistory.length) {
       labels.push(Misc.roundTo2(result.testDuration).toString());
@@ -54,21 +62,20 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  resultScaleOptions["wpm"].title.text = Config.alwaysShowCPM
-    ? "Character per Minute"
-    : "Words per Minute";
+  resultScaleOptions["wpm"].title.text = typingSpeedUnit.fullUnitString;
+
   const chartData1 = [
-    ...(Config.alwaysShowCPM
-      ? TestInput.wpmHistory.map((a) => a * 5)
-      : TestInput.wpmHistory),
+    ...TestInput.wpmHistory.map((a) =>
+      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
   ];
 
   if (result.chartData === "toolong") return;
 
   const chartData2 = [
-    ...(Config.alwaysShowCPM
-      ? result.chartData.raw.map((a) => a * 5)
-      : result.chartData.raw),
+    ...result.chartData.raw.map((a) =>
+      Misc.roundTo2(typingSpeedUnit.fromWpm(a))
+    ),
   ];
 
   if (
@@ -84,20 +91,21 @@ async function updateGraph(): Promise<void> {
   let smoothedRawData = chartData2;
   if (!useUnsmoothedRaw) {
     smoothedRawData = Misc.smooth(smoothedRawData, 1);
+    smoothedRawData = smoothedRawData.map((a) => Math.round(a));
   }
 
   ChartController.result.data.labels = labels;
   ChartController.result.data.datasets[0].data = chartData1;
   ChartController.result.data.datasets[1].data = smoothedRawData;
+  ChartController.result.data.datasets[0].label = Config.typingSpeedUnit;
 
-  ChartController.result.data.datasets[0].label = Config.alwaysShowCPM
-    ? "cpm"
-    : "wpm";
+  maxChartVal = Math.max(
+    ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
+  );
 
-  maxChartVal = Math.max(...[Math.max(...chartData2), Math.max(...chartData1)]);
   if (!Config.startGraphsAtZero) {
     const minChartVal = Math.min(
-      ...[Math.min(...chartData2), Math.min(...chartData1)]
+      ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
     );
     resultScaleOptions["wpm"].min = minChartVal;
     resultScaleOptions["raw"].min = minChartVal;
@@ -163,10 +171,9 @@ export async function updateGraphPBLine(): Promise<void> {
     result.lazyMode ?? false,
     result.funbox ?? "none"
   );
-  if (lpb == 0) return;
-  const chartlpb = Misc.roundTo2(Config.alwaysShowCPM ? lpb * 5 : lpb).toFixed(
-    2
-  );
+  if (lpb === 0) return;
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+  const chartlpb = Misc.roundTo2(typingSpeedUnit.fromWpm(lpb)).toFixed(2);
   resultAnnotation.push({
     display: true,
     type: "line",
@@ -193,98 +200,98 @@ export async function updateGraphPBLine(): Promise<void> {
       content: `PB: ${chartlpb}`,
     },
   });
+  const lpbRange = typingSpeedUnit.fromWpm(20);
   if (
-    maxChartVal >= parseFloat(chartlpb) - 20 &&
-    maxChartVal <= parseFloat(chartlpb) + 20
+    maxChartVal >= parseFloat(chartlpb) - lpbRange &&
+    maxChartVal <= parseFloat(chartlpb) + lpbRange
   ) {
-    maxChartVal = parseFloat(chartlpb) + 15;
+    maxChartVal = Math.round(parseFloat(chartlpb) + lpbRange);
   }
-  resultScaleOptions["wpm"].max = Math.round(maxChartVal + 5);
-  resultScaleOptions["raw"].max = Math.round(maxChartVal + 5);
+  resultScaleOptions["wpm"].max = maxChartVal;
+  resultScaleOptions["raw"].max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
   let inf = false;
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (result.wpm >= 1000) {
     inf = true;
   }
+
   if (Config.alwaysShowDecimalPlaces) {
-    if (Config.alwaysShowCPM == false) {
-      $("#result .stats .wpm .top .text").text("wpm");
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(
-          Misc.roundTo2(result.wpm).toFixed(2)
-        );
-      }
-      $("#result .stats .raw .bottom").text(
-        Misc.roundTo2(result.rawWpm).toFixed(2)
+    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
+    if (inf) {
+      $("#result .stats .wpm .bottom").text("Infinite");
+    } else {
+      $("#result .stats .wpm .bottom").text(
+        Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)).toFixed(2)
       );
+    }
+    $("#result .stats .raw .bottom").text(
+      Misc.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)).toFixed(2)
+    );
+
+    if (Config.typingSpeedUnit != "wpm") {
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        Misc.roundTo2(result.wpm * 5).toFixed(2) + " cpm"
+        result.wpm.toFixed(2) + " wpm"
+      );
+      $("#result .stats .raw .bottom").attr(
+        "aria-label",
+        result.rawWpm.toFixed(2) + " wpm"
       );
     } else {
-      $("#result .stats .wpm .top .text").text("cpm");
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(
-          Misc.roundTo2(result.wpm * 5).toFixed(2)
-        );
-      }
-      $("#result .stats .raw .bottom").text(
-        Misc.roundTo2(result.rawWpm * 5).toFixed(2)
-      );
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(result.wpm).toFixed(2) + " wpm"
-      );
+      $("#result .stats .wpm .bottom").removeAttr("aria-label");
+      $("#result .stats .raw .bottom").removeAttr("aria-label");
     }
 
     $("#result .stats .acc .bottom").text(
-      result.acc == 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
+      result.acc === 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
     );
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
       time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
     }
     $("#result .stats .time .bottom .text").text(time);
-    $("#result .stats .raw .bottom").removeAttr("aria-label");
-    $("#result .stats .acc .bottom").removeAttr("aria-label");
+    // $("#result .stats .acc .bottom").removeAttr("aria-label");
+
+    $("#result .stats .acc .bottom").attr(
+      "aria-label",
+      `${TestInput.accuracy.correct} correct / ${TestInput.accuracy.incorrect} incorrect`
+    );
   } else {
     //not showing decimal places
-    if (Config.alwaysShowCPM == false) {
-      $("#result .stats .wpm .top .text").text("wpm");
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        result.wpm + ` (${Misc.roundTo2(result.wpm * 5)} cpm)`
-      );
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Math.round(result.wpm));
-      }
-      $("#result .stats .raw .bottom").text(Math.round(result.rawWpm));
-      $("#result .stats .raw .bottom").attr("aria-label", result.rawWpm);
-    } else {
-      $("#result .stats .wpm .top .text").text("cpm");
-      $("#result .stats .wpm .bottom").attr(
-        "aria-label",
-        Misc.roundTo2(result.wpm * 5) + ` (${Misc.roundTo2(result.wpm)} wpm)`
-      );
-      if (inf) {
-        $("#result .stats .wpm .bottom").text("Infinite");
-      } else {
-        $("#result .stats .wpm .bottom").text(Math.round(result.wpm * 5));
-      }
-      $("#result .stats .raw .bottom").text(Math.round(result.rawWpm * 5));
-      $("#result .stats .raw .bottom").attr("aria-label", result.rawWpm * 5);
+    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm, true);
+    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(
+      result.rawWpm,
+      true
+    );
+    if (Config.typingSpeedUnit != "wpm") {
+      wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
+      rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
 
+    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
+    $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
+    if (inf) {
+      $("#result .stats .wpm .bottom").text("Infinite");
+    } else {
+      $("#result .stats .wpm .bottom").text(
+        Math.round(typingSpeedUnit.fromWpm(result.wpm))
+      );
+    }
+    $("#result .stats .raw .bottom").text(
+      Math.round(typingSpeedUnit.fromWpm(result.rawWpm))
+    );
+    $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
+
     $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
-    $("#result .stats .acc .bottom").attr("aria-label", result.acc + "%");
+    $("#result .stats .acc .bottom").attr(
+      "aria-label",
+      `${result.acc === 100 ? "100" : Misc.roundTo2(result.acc).toFixed(2)}% (${
+        TestInput.accuracy.correct
+      } correct / ${TestInput.accuracy.incorrect} incorrect)`
+    );
   }
 }
 
@@ -409,14 +416,15 @@ export async function updateCrown(): Promise<void> {
     Config.lazyMode,
     Config.funbox
   );
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   pbDiff = Math.abs(result.wpm - lpb);
   $("#result .stats .wpm .crown").attr(
     "aria-label",
-    "+" + Misc.roundTo2(pbDiff)
+    "+" + Misc.roundTo2(typingSpeedUnit.fromWpm(pbDiff))
   );
 }
 
-function updateTags(dontSave: boolean): void {
+async function updateTags(dontSave: boolean): Promise<void> {
   const activeTags: MonkeyTypes.Tag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
@@ -444,6 +452,14 @@ function updateTags(dontSave: boolean): void {
   );
   $("#result .stats .tags .editTagsButton").addClass("invisible");
 
+  const funboxes = result.funbox?.split("#") ?? [];
+
+  const funboxObjects = await Promise.all(
+    funboxes.map(async (f) => Misc.getFunbox(f))
+  );
+
+  const allFunboxesCanGetPb = funboxObjects.every((f) => f?.canGetPb);
+
   let annotationSide = "start";
   let labelAdjust = 15;
   activeTags.forEach(async (tag) => {
@@ -459,7 +475,12 @@ function updateTags(dontSave: boolean): void {
     $("#result .stats .tags .bottom").append(`
       <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.display}<i class="fas fa-crown hidden"></i></div>
     `);
-    if (Config.mode != "quote" && !dontSave) {
+    const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+    if (
+      Config.mode !== "quote" &&
+      !dontSave &&
+      (result.funbox === "none" || funboxes.length === 0 || allFunboxesCanGetPb)
+    ) {
       if (tpb < result.wpm) {
         //new pb for that tag
         DB.saveLocalTagPB(
@@ -490,7 +511,7 @@ function updateTags(dontSave: boolean): void {
           type: "line",
           id: "tpb",
           scaleID: "wpm",
-          value: Config.alwaysShowCPM ? tpb * 5 : tpb,
+          value: typingSpeedUnit.fromWpm(tpb),
           borderColor: themecolors["sub"],
           borderWidth: 1,
           borderDash: [2, 2],
@@ -510,7 +531,7 @@ function updateTags(dontSave: boolean): void {
             xAdjust: labelAdjust,
             enabled: true,
             content: `${tag.display} PB: ${Misc.roundTo2(
-              Config.alwaysShowCPM ? tpb * 5 : tpb
+              typingSpeedUnit.fromWpm(tpb)
             ).toFixed(2)}`,
           },
         });
@@ -544,7 +565,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
     FunboxList.get(Config.funbox).find((f) =>
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
-  if (Config.mode != "custom" && !ignoresLanguage) {
+  if (Config.mode !== "custom" && !ignoresLanguage) {
     testType += "<br>" + result.language.replace(/_/g, " ");
   }
   if (Config.punctuation) {
@@ -562,10 +583,13 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   if (Config.funbox !== "none") {
     testType += "<br>" + Config.funbox.replace(/_/g, " ").replace(/#/g, ", ");
   }
-  if (Config.difficulty == "expert") {
+  if (Config.difficulty === "expert") {
     testType += "<br>expert";
-  } else if (Config.difficulty == "master") {
+  } else if (Config.difficulty === "master") {
     testType += "<br>master";
+  }
+  if (Config.stopOnError !== "off") {
+    testType += `<br>stop on ${Config.stopOnError}`;
   }
 
   $("#result .stats .testType .bottom").html(testType);
@@ -588,10 +612,20 @@ function updateOther(
   if (TestStats.invalid) {
     otherText += "<br>invalid";
     const extra: string[] = [];
-    if (result.wpm < 0 || result.wpm > 350) {
+    if (
+      result.wpm < 0 ||
+      (result.wpm > 350 && result.mode !== "words" && result.mode2 !== "10") ||
+      (result.wpm > 420 && result.mode === "words" && result.mode2 === "10")
+    ) {
       extra.push("wpm");
     }
-    if (result.rawWpm < 0 || result.rawWpm > 350) {
+    if (
+      result.rawWpm < 0 ||
+      (result.rawWpm > 350 &&
+        result.mode !== "words" &&
+        result.mode2 !== "10") ||
+      (result.rawWpm > 420 && result.mode === "words" && result.mode2 === "10")
+    ) {
       extra.push("raw");
     }
     if (result.acc < 75 || result.acc > 100) {
@@ -611,7 +645,7 @@ function updateOther(
     otherText += "<br>too short";
   }
 
-  if (otherText == "") {
+  if (otherText === "") {
     $("#result .stats .info").addClass("hidden");
   } else {
     $("#result .stats .info").removeClass("hidden");
@@ -681,6 +715,8 @@ export async function update(
   ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
+  hideCrown();
+  $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")
@@ -688,9 +724,8 @@ export async function update(
     .addClass("far");
   $(".pageTest #result #rateQuoteButton .rating").text("");
   $(".pageTest #result #rateQuoteButton").addClass("hidden");
-  $("#testModesNotice").css("opacity", 0);
   $("#words").removeClass("blurred");
-  $("#wordsInput").blur();
+  $("#wordsInput").trigger("blur");
   $("#result .stats .time .bottom .afk").text("");
   if (Auth?.currentUser) {
     $("#result .loginTip").addClass("hidden");
@@ -711,7 +746,7 @@ export async function update(
   updateQuoteFavorite(randomQuote);
   await updateGraph();
   await updateGraphPBLine();
-  updateTags(dontSave);
+  await updateTags(dontSave);
   updateOther(difficultyFailed, failReason, afkDetected, isRepeated, tooShort);
 
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
@@ -730,8 +765,8 @@ export async function update(
   }
 
   if (GlarsesMode.get()) {
-    $("#middle #result .noStressMessage").remove();
-    $("#middle #result").prepend(`
+    $("main #result .noStressMessage").remove();
+    $("main #result").prepend(`
 
       <div class='noStressMessage' style="
         text-align: center;
@@ -743,28 +778,28 @@ export async function update(
       </div>
 
     `);
-    $("#middle #result .stats").addClass("hidden");
-    $("#middle #result .chart").addClass("hidden");
-    $("#middle #result #resultWordsHistory").addClass("hidden");
-    $("#middle #result #resultReplay").addClass("hidden");
-    $("#middle #result .loginTip").addClass("hidden");
-    $("#middle #result #showWordHistoryButton").addClass("hidden");
-    $("#middle #result #watchReplayButton").addClass("hidden");
-    $("#middle #result #saveScreenshotButton").addClass("hidden");
+    $("main #result .stats").addClass("hidden");
+    $("main #result .chart").addClass("hidden");
+    $("main #result #resultWordsHistory").addClass("hidden");
+    $("main #result #resultReplay").addClass("hidden");
+    $("main #result .loginTip").addClass("hidden");
+    $("main #result #showWordHistoryButton").addClass("hidden");
+    $("main #result #watchReplayButton").addClass("hidden");
+    $("main #result #saveScreenshotButton").addClass("hidden");
 
     console.log(
       `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`
     );
   } else {
-    $("#middle #result .stats").removeClass("hidden");
-    $("#middle #result .chart").removeClass("hidden");
-    // $("#middle #result #resultWordsHistory").removeClass("hidden");
+    $("main #result .stats").removeClass("hidden");
+    $("main #result .chart").removeClass("hidden");
+    // $("main #result #resultWordsHistory").removeClass("hidden");
     if (!Auth?.currentUser) {
-      $("#middle #result .loginTip").removeClass("hidden");
+      $("main #result .loginTip").removeClass("hidden");
     }
-    $("#middle #result #showWordHistoryButton").removeClass("hidden");
-    $("#middle #result #watchReplayButton").removeClass("hidden");
-    $("#middle #result #saveScreenshotButton").removeClass("hidden");
+    $("main #result #showWordHistoryButton").removeClass("hidden");
+    $("main #result #watchReplayButton").removeClass("hidden");
+    $("main #result #saveScreenshotButton").removeClass("hidden");
   }
 
   if (window.scrollY > 0) {
@@ -780,30 +815,39 @@ export async function update(
     $("#result"),
     250,
     async () => {
+      $("#result").trigger("focus");
       AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
 
-      if (Config.alwaysShowWordsHistory && Config.burstHeatmap) {
-        TestUI.applyBurstHeatmap();
-      }
-      $("#result").trigger("focus");
       window.scrollTo({ top: 0 });
-      $("#testModesNotice").addClass("hidden");
     },
     async () => {
+      Focus.set(false);
       $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
         {
           opacity: 1,
         },
         125
       );
-      if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
-        TestUI.toggleResultWords();
+
+      const canQuickRestart = Misc.canQuickRestart(
+        Config.mode,
+        Config.words,
+        Config.time,
+        CustomText,
+        CustomTextState.isCustomTextLong() ?? false
+      );
+
+      if (
+        Config.alwaysShowWordsHistory &&
+        canQuickRestart &&
+        !GlarsesMode.get()
+      ) {
+        TestUI.toggleResultWords(true);
       }
-      Keymap.hide();
-      AdController.updateTestPageAds(true);
+      AdController.updateFooterAndVerticalAds(true);
     }
   );
 }
@@ -849,5 +893,25 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
       }
       dbSnapshot.favoriteQuotes[quoteLang]?.push(quoteId);
     }
+  }
+});
+
+ConfigEvent.subscribe(async (eventKey) => {
+  if (eventKey === "typingSpeedUnit" && TestUI.resultVisible) {
+    resultScaleOptions = (
+      ChartController.result.options as ScaleChartOptions<"line" | "scatter">
+    ).scales;
+    resultAnnotation = [];
+
+    updateWpmAndAcc();
+    await updateGraph();
+    await updateGraphPBLine();
+    TestUI.applyBurstHeatmap();
+
+    ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
+      .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
+      resultAnnotation;
+    ChartController.result.updateColors();
+    ChartController.result.resize();
   }
 });

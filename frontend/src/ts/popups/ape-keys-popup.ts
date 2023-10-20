@@ -71,7 +71,7 @@ function refreshList(): void {
   });
 }
 
-export function hide(): void {
+function hide(): void {
   if (isPopupVisible(wrapperId)) {
     $("#apeKeysPopupWrapper")
       .stop(true, true)
@@ -92,7 +92,9 @@ export function hide(): void {
 //show the popup
 export async function show(): Promise<void> {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   Skeleton.append(wrapperId);

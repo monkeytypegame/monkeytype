@@ -2,7 +2,6 @@ import * as DB from "./db";
 import * as OutOfFocus from "./test/out-of-focus";
 import * as Notifications from "./elements/notifications";
 import {
-  isConfigKeyValid,
   isConfigValueValid,
   isConfigValueValidAsync,
 } from "./config-validation";
@@ -12,33 +11,22 @@ import { Auth } from "./firebase";
 import * as AnalyticsController from "./controllers/analytics-controller";
 import * as AccountButton from "./elements/account-button";
 import { debounce } from "throttle-debounce";
-import { canSetConfigWithCurrentFunboxes } from "./test/funbox/funbox-validation";
+import {
+  canSetConfigWithCurrentFunboxes,
+  canSetFunboxWithConfig,
+} from "./test/funbox/funbox-validation";
+import { reloadAfter } from "./utils/misc";
 
 export let localStorageConfig: MonkeyTypes.Config;
-export let dbConfigLoaded = false;
-export let changedBeforeDb = false;
-
-export function setLocalStorageConfig(val: MonkeyTypes.Config): void {
-  localStorageConfig = val;
-}
-
-export function setDbConfigLoaded(val: boolean): void {
-  dbConfigLoaded = val;
-}
-
-export function setChangedBeforeDb(val: boolean): void {
-  changedBeforeDb = val;
-}
 
 let loadDone: (value?: unknown) => void;
 
-let config = {
+const config = {
   ...DefaultConfig,
 };
 
 let configToSend = {} as MonkeyTypes.Config;
 const saveToDatabase = debounce(1000, () => {
-  delete configToSend.resultFilters;
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
     DB.saveConfig(configToSend).then(() => {
@@ -53,14 +41,9 @@ async function saveToLocalStorage(
   nosave = false,
   noDbCheck = false
 ): Promise<void> {
-  if (!dbConfigLoaded && !noDbCheck && !nosave) {
-    setChangedBeforeDb(true);
-  }
-
   if (nosave) return;
 
   const localToSave = config;
-  delete localToSave.resultFilters;
 
   const localToSaveStringified = JSON.stringify(localToSave);
   window.localStorage.setItem("config", localToSaveStringified);
@@ -74,11 +57,8 @@ async function saveToLocalStorage(
 export async function saveFullConfigToLocalStorage(
   noDbCheck = false
 ): Promise<void> {
-  if (!dbConfigLoaded && !noDbCheck) {
-    setChangedBeforeDb(true);
-  }
+  console.log("saving full config to localStorage");
   const save = config;
-  delete save.resultFilters;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
   if (!noDbCheck) {
@@ -140,14 +120,14 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
 
   const previous = config.mode;
   config.mode = mode;
-  if (config.mode == "custom") {
+  if (config.mode === "custom") {
     setPunctuation(false, true);
     setNumbers(false, true);
-  } else if (config.mode == "quote") {
+  } else if (config.mode === "quote") {
     setPunctuation(false, true);
     setNumbers(false, true);
-  } else if (config.mode == "zen") {
-    if (config.paceCaret != "off") {
+  } else if (config.mode === "zen") {
+    if (config.paceCaret !== "off") {
       Notifications.add(`Pace caret will not work with zen mode.`, 0);
     }
   }
@@ -157,8 +137,13 @@ export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
   return true;
 }
 
-export function setPlaySoundOnError(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("play sound on error", val, ["boolean"])) {
+export function setPlaySoundOnError(
+  val: MonkeyTypes.PlaySoundOnError,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("play sound on error", val, [["off", "1", "2", "3"]])
+  ) {
     return false;
   }
 
@@ -175,7 +160,22 @@ export function setPlaySoundOnClick(
 ): boolean {
   if (
     !isConfigValueValid("play sound on click", val, [
-      ["off", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
+      [
+        "off",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+      ],
     ])
   ) {
     return false;
@@ -236,6 +236,12 @@ export function setFavThemes(themes: string[], nosave?: boolean): boolean {
 export function setFunbox(funbox: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("funbox", funbox, ["string"])) return false;
 
+  for (const funbox of config.funbox.split("#")) {
+    if (!canSetFunboxWithConfig(funbox, config)) {
+      return false;
+    }
+  }
+
   const val = funbox ? funbox : "none";
   config.funbox = val;
   saveToLocalStorage("funbox", nosave);
@@ -253,15 +259,18 @@ export function toggleFunbox(
   let r;
 
   const funboxArray = config.funbox.split("#");
-  if (funboxArray[0] == "none") funboxArray.splice(0, 1);
+  if (funboxArray[0] === "none") funboxArray.splice(0, 1);
   if (!funboxArray.includes(funbox)) {
+    if (!canSetFunboxWithConfig(funbox, config)) {
+      return false;
+    }
     funboxArray.push(funbox);
     config.funbox = funboxArray.sort().join("#");
     r = funboxArray.indexOf(funbox);
   } else {
     r = funboxArray.indexOf(funbox);
     funboxArray.splice(r, 1);
-    if (funboxArray.length == 0) {
+    if (funboxArray.length === 0) {
       config.funbox = "none";
     } else {
       config.funbox = funboxArray.join("#");
@@ -284,32 +293,64 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setChartAccuracy(
-  chartAccuracy: boolean,
+function setAccountChart(
+  array: MonkeyTypes.AccountChart,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("chart accuracy", chartAccuracy, ["boolean"])) {
+  if (
+    !isConfigValueValid("account chart", array, [["on", "off"], "stringArray"])
+  ) {
     return false;
   }
 
-  config.chartAccuracy = chartAccuracy;
-  saveToLocalStorage("chartAccuracy", nosave);
-  ConfigEvent.dispatch("chartAccuracy", config.chartAccuracy);
+  config.accountChart = array;
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
 
   return true;
 }
 
-export function setChartStyle(
-  chartStyle: MonkeyTypes.ChartStyle,
+export function setAccountChartAccuracy(
+  value: boolean,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("chart style", chartStyle, [["line", "scatter"]])) {
+  if (!isConfigValueValid("account chart accuracy", value, ["boolean"])) {
     return false;
   }
 
-  config.chartStyle = chartStyle;
-  saveToLocalStorage("chartStyle", nosave);
-  ConfigEvent.dispatch("chartStyle", config.chartStyle);
+  config.accountChart[0] = value ? "on" : "off";
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
+
+  return true;
+}
+
+export function setAccountChartAvg10(
+  value: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("account chart avg 10", value, ["boolean"])) {
+    return false;
+  }
+
+  config.accountChart[1] = value ? "on" : "off";
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
+
+  return true;
+}
+
+export function setAccountChartAvg100(
+  value: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("account chart avg 100", value, ["boolean"])) {
+    return false;
+  }
+
+  config.accountChart[2] = value ? "on" : "off";
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
 
   return true;
 }
@@ -325,6 +366,7 @@ export function setStopOnError(
   config.stopOnError = soe;
   if (config.stopOnError !== "off") {
     config.confidenceMode = "off";
+    saveToLocalStorage("confidenceMode", nosave);
   }
   saveToLocalStorage("stopOnError", nosave);
   ConfigEvent.dispatch("stopOnError", config.stopOnError, nosave);
@@ -350,12 +392,20 @@ export function setAlwaysShowDecimalPlaces(
   return true;
 }
 
-export function setAlwaysShowCPM(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("always show CPM", val, ["boolean"])) return false;
-
-  config.alwaysShowCPM = val;
-  saveToLocalStorage("alwaysShowCPM", nosave);
-  ConfigEvent.dispatch("alwaysShowCPM", config.alwaysShowCPM);
+export function setTypingSpeedUnit(
+  val: MonkeyTypes.TypingSpeedUnit,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("typing speed unit", val, [
+      ["wpm", "cpm", "wps", "cps", "wph"],
+    ])
+  ) {
+    return false;
+  }
+  config.typingSpeedUnit = val;
+  saveToLocalStorage("typingSpeedUnit", nosave);
+  ConfigEvent.dispatch("typingSpeedUnit", config.typingSpeedUnit, nosave);
 
   return true;
 }
@@ -392,12 +442,12 @@ export function setPaceCaret(
   }
 
   if (document.readyState === "complete") {
-    if (val == "pb" && !Auth?.currentUser) {
+    if (val === "pb" && !Auth?.currentUser) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return false;
     }
   }
-  // if (config.mode === "zen" && val != "off") {
+  // if (config.mode === "zen" && val !== "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
   // }
@@ -438,7 +488,9 @@ export function setMinWpm(
   minwpm: MonkeyTypes.MinimumWordsPerMinute,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("min WPM", minwpm, [["off", "custom"]])) return false;
+  if (!isConfigValueValid("min speed", minwpm, [["off", "custom"]])) {
+    return false;
+  }
 
   config.minWpm = minwpm;
   saveToLocalStorage("minWpm", nosave);
@@ -448,7 +500,7 @@ export function setMinWpm(
 }
 
 export function setMinWpmCustomSpeed(val: number, nosave?: boolean): boolean {
-  if (!isConfigValueValid("min WPM custom speed", val, ["number"])) {
+  if (!isConfigValueValid("min speed custom", val, ["number"])) {
     return false;
   }
 
@@ -589,9 +641,7 @@ export function setAds(val: MonkeyTypes.Ads, nosave?: boolean): boolean {
   config.ads = val;
   saveToLocalStorage("ads", nosave);
   if (!nosave) {
-    setTimeout(() => {
-      location.reload();
-    }, 3000);
+    reloadAfter(3);
     Notifications.add("Ad settings changed. Refreshing...", 0);
   }
   ConfigEvent.dispatch("ads", config.ads);
@@ -678,17 +728,17 @@ export function setPageWidth(
   }
 
   config.pageWidth = val;
-  $("#centerContent").removeClass("wide125");
-  $("#centerContent").removeClass("wide150");
-  $("#centerContent").removeClass("wide200");
-  $("#centerContent").removeClass("widemax");
+  $("#contentWrapper").removeClass("wide125");
+  $("#contentWrapper").removeClass("wide150");
+  $("#contentWrapper").removeClass("wide200");
+  $("#contentWrapper").removeClass("widemax");
   $("#app").removeClass("wide125");
   $("#app").removeClass("wide150");
   $("#app").removeClass("wide200");
   $("#app").removeClass("widemax");
 
   if (val !== "100") {
-    $("#centerContent").addClass("wide" + val);
+    $("#contentWrapper").addClass("wide" + val);
     $("#app").addClass("wide" + val);
   }
   saveToLocalStorage("pageWidth", nosave);
@@ -718,19 +768,19 @@ export function setCaretStyle(
   $("#caret").removeClass("carrot");
   $("#caret").removeClass("banana");
 
-  if (caretStyle == "off") {
+  if (caretStyle === "off") {
     $("#caret").addClass("off");
-  } else if (caretStyle == "default") {
+  } else if (caretStyle === "default") {
     $("#caret").addClass("default");
-  } else if (caretStyle == "block") {
+  } else if (caretStyle === "block") {
     $("#caret").addClass("block");
-  } else if (caretStyle == "outline") {
+  } else if (caretStyle === "outline") {
     $("#caret").addClass("outline");
-  } else if (caretStyle == "underline") {
+  } else if (caretStyle === "underline") {
     $("#caret").addClass("underline");
-  } else if (caretStyle == "carrot") {
+  } else if (caretStyle === "carrot") {
     $("#caret").addClass("carrot");
-  } else if (caretStyle == "banana") {
+  } else if (caretStyle === "banana") {
     $("#caret").addClass("banana");
   }
   saveToLocalStorage("caretStyle", nosave);
@@ -760,17 +810,17 @@ export function setPaceCaretStyle(
   $("#paceCaret").removeClass("carrot");
   $("#paceCaret").removeClass("banana");
 
-  if (caretStyle == "default") {
+  if (caretStyle === "default") {
     $("#paceCaret").addClass("default");
-  } else if (caretStyle == "block") {
+  } else if (caretStyle === "block") {
     $("#paceCaret").addClass("block");
-  } else if (caretStyle == "outline") {
+  } else if (caretStyle === "outline") {
     $("#paceCaret").addClass("outline");
-  } else if (caretStyle == "underline") {
+  } else if (caretStyle === "underline") {
     $("#paceCaret").addClass("underline");
-  } else if (caretStyle == "carrot") {
+  } else if (caretStyle === "carrot") {
     $("#paceCaret").addClass("carrot");
-  } else if (caretStyle == "banana") {
+  } else if (caretStyle === "banana") {
     $("#paceCaret").addClass("banana");
   }
   saveToLocalStorage("paceCaretStyle", nosave);
@@ -795,7 +845,7 @@ export function setShowTimerProgress(
 }
 
 export function setShowLiveWpm(live: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("show live WPM", live, ["boolean"])) return false;
+  if (!isConfigValueValid("show live speed", live, ["boolean"])) return false;
 
   config.showLiveWpm = live;
   saveToLocalStorage("showLiveWpm", nosave);
@@ -829,7 +879,9 @@ export function setShowAverage(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("show average", value, [["off", "wpm", "acc", "both"]])
+    !isConfigValueValid("show average", value, [
+      ["off", "speed", "acc", "both"],
+    ])
   ) {
     return false;
   }
@@ -846,7 +898,16 @@ export function setHighlightMode(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("highlight mode", mode, [["off", "letter", "word"]])
+    !isConfigValueValid("highlight mode", mode, [
+      [
+        "off",
+        "letter",
+        "word",
+        "next_word",
+        "next_two_words",
+        "next_three_words",
+      ],
+    ])
   ) {
     return false;
   }
@@ -983,9 +1044,9 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 
   config.showKeyTips = keyTips;
   if (config.showKeyTips) {
-    $("#bottom .keyTips").removeClass("hidden");
+    $("footer .keyTips").removeClass("hidden");
   } else {
-    $("#bottom .keyTips").addClass("hidden");
+    $("footer .keyTips").addClass("hidden");
   }
   saveToLocalStorage("showKeyTips", nosave);
   ConfigEvent.dispatch("showKeyTips", config.showKeyTips);
@@ -1039,7 +1100,10 @@ export function setQuoteLength(
       len = 1;
     }
     len = parseInt(len.toString()) as MonkeyTypes.QuoteLength;
-    if (multipleMode) {
+
+    if (len === -1) {
+      config.quoteLength = [0, 1, 2, 3];
+    } else if (multipleMode && len >= 0) {
       if (!config.quoteLength.includes(len)) {
         config.quoteLength.push(len);
       } else {
@@ -1080,15 +1144,24 @@ export function setWordCount(
 }
 
 //caret
-export function setSmoothCaret(mode: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("smooth caret", mode, ["boolean"])) return false;
-
-  config.smoothCaret = mode;
-  if (mode) {
-    $("#caret").css("animation-name", "caretFlashSmooth");
-  } else {
-    $("#caret").css("animation-name", "caretFlashHard");
+export function setSmoothCaret(
+  mode: MonkeyTypes.SmoothCaretMode,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("smooth caret", mode, [
+      ["off", "slow", "medium", "fast"],
+    ])
+  ) {
+    return false;
   }
+  config.smoothCaret = mode;
+  if (mode === "off") {
+    $("#caret").css("animation-name", "caretFlashHard");
+  } else {
+    $("#caret").css("animation-name", "caretFlashSmooth");
+  }
+
   saveToLocalStorage("smoothCaret", nosave);
   ConfigEvent.dispatch("smoothCaret", config.smoothCaret);
 
@@ -1165,23 +1238,22 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
     Notifications.add(
       "Empty input received, reverted to the default font.",
       0,
-      3,
-      "Custom font"
+      {
+        customTitle: "Custom font",
+      }
     );
   }
-  if (!isConfigKeyValid(font)) {
-    Notifications.add(
-      `Invalid font name value: "${font}".`,
-      -1,
-      3,
-      "Custom font"
-    );
+  if (!font || !/^[0-9a-zA-Z_.\-#+()]+$/.test(font)) {
+    Notifications.add(`Invalid font name value: "${font}".`, -1, {
+      customTitle: "Custom font",
+      duration: 3,
+    });
     return false;
   }
   config.fontFamily = font;
   document.documentElement.style.setProperty(
     "--font",
-    `"${font.replace(/_/g, " ")}", "Roboto Mono", "Vazirmatn"`
+    `"${font.replace(/_/g, " ")}", "Roboto Mono", "Vazirmatn", monospace`
   );
   saveToLocalStorage("fontFamily", nosave);
   ConfigEvent.dispatch("fontFamily", config.fontFamily);
@@ -1193,7 +1265,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
 export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
   if (!isConfigValueValid("freedom mode", freedom, ["boolean"])) return false;
 
-  if (freedom == null) {
+  if (freedom === null || freedom === undefined) {
     freedom = false;
   }
   config.freedomMode = freedom;
@@ -1218,6 +1290,8 @@ export function setConfidenceMode(
   if (config.confidenceMode !== "off") {
     config.freedomMode = false;
     config.stopOnError = "off";
+    saveToLocalStorage("freedomMode", nosave);
+    saveToLocalStorage("stopOnError", nosave);
   }
   saveToLocalStorage("confidenceMode", nosave);
   ConfigEvent.dispatch("confidenceMode", config.confidenceMode, nosave);
@@ -1314,7 +1388,9 @@ function setThemes(
       Notifications.add(
         "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
         0,
-        7
+        {
+          duration: 7,
+        }
       );
     }
     customThemeColors.splice(4, 0, "#000000");
@@ -1401,7 +1477,9 @@ export function setCustomThemeColors(
     Notifications.add(
       "Missing sub alt color. Please edit it in the custom theme settings and save your changes.",
       0,
-      7
+      {
+        duration: 7,
+      }
     );
     colors.splice(4, 0, "#000000");
   }
@@ -1507,7 +1585,15 @@ export function setKeymapStyle(
 ): boolean {
   if (
     !isConfigValueValid("keymap style", style, [
-      ["staggered", "alice", "matrix", "split", "split_matrix"],
+      [
+        "staggered",
+        "alice",
+        "matrix",
+        "split",
+        "split_matrix",
+        "steno",
+        "steno_matrix",
+      ],
     ])
   ) {
     return false;
@@ -1561,7 +1647,7 @@ export function setLayout(layout: string, nosave?: boolean): boolean {
 }
 
 // export function setSavedLayout(layout: string, nosave?: boolean): boolean {
-//   if (layout == null || layout == undefined) {
+//   if (layout === null || layout === undefined) {
 //     layout = "qwerty";
 //   }
 //   config.savedLayout = layout;
@@ -1597,7 +1683,7 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   // after converting from the string to float system
 
   // keeping this in for now, if you want a big font go 14.9 or something
-  if (fontSize == 15) {
+  if (fontSize === 15) {
     fontSize = 1.5;
   }
 
@@ -1609,7 +1695,7 @@ export function setFontSize(fontSize: number, nosave?: boolean): boolean {
   );
 
   saveToLocalStorage("fontSize", nosave);
-  ConfigEvent.dispatch("fontSize", config.fontSize);
+  ConfigEvent.dispatch("fontSize", config.fontSize, nosave);
 
   // trigger a resize event to update the layout - handled in ui.ts:108
   $(window).trigger("resize");
@@ -1626,7 +1712,7 @@ export function setCustomBackground(value: string, nosave?: boolean): boolean {
       value
     ) &&
       !/[<> "]/.test(value)) ||
-    value == ""
+    value === ""
   ) {
     config.customBackground = value;
     saveToLocalStorage("customBackground", nosave);
@@ -1674,9 +1760,6 @@ export function setCustomBackgroundSize(
     return false;
   }
 
-  if (value != "cover" && value != "contain" && value != "max") {
-    value = "cover";
-  }
   config.customBackgroundSize = value;
   saveToLocalStorage("customBackgroundSize", nosave);
   ConfigEvent.dispatch("customBackgroundSize", config.customBackgroundSize);
@@ -1736,6 +1819,9 @@ export function apply(
   configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
 ): void {
   if (!configToApply) return;
+
+  configToApply = replaceLegacyValues(configToApply);
+
   const configObj = configToApply as MonkeyTypes.Config;
   (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
     (configKey) => {
@@ -1809,8 +1895,7 @@ export function apply(
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setRepeatedPace(configObj.repeatedPace, true);
     setPageWidth(configObj.pageWidth, true);
-    setChartAccuracy(configObj.chartAccuracy, true);
-    setChartStyle(configObj.chartStyle, true);
+    setAccountChart(configObj.accountChart, true);
     setMinBurst(configObj.minBurst, true);
     setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
     setMinWpm(configObj.minWpm, true);
@@ -1820,7 +1905,7 @@ export function apply(
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
-    setAlwaysShowCPM(configObj.alwaysShowCPM, true);
+    setTypingSpeedUnit(configObj.typingSpeedUnit, true);
     setHideExtraLetters(configObj.hideExtraLetters, true);
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
@@ -1867,10 +1952,8 @@ export function loadFromLocalStorage(): void {
       newConfig = {} as MonkeyTypes.Config;
     }
     apply(newConfig);
-    console.log("applying localStorage config");
     localStorageConfig = newConfig;
     saveFullConfigToLocalStorage(true);
-    console.log("saving localStorage config");
   } else {
     reset();
   }
@@ -1878,20 +1961,52 @@ export function loadFromLocalStorage(): void {
   loadDone();
 }
 
+function replaceLegacyValues(
+  configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
+): MonkeyTypes.Config | MonkeyTypes.ConfigChanges {
+  const configObj = configToApply as MonkeyTypes.Config;
+
+  //@ts-ignore
+  if (configObj.quickTab === true) {
+    configObj.quickRestart = "tab";
+  }
+
+  if (typeof configObj.smoothCaret === "boolean") {
+    configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
+  }
+
+  //@ts-ignore
+  if (configObj.swapEscAndTab === true) {
+    configObj.quickRestart = "esc";
+  }
+
+  //@ts-ignore
+  if (configObj.alwaysShowCPM === true) {
+    configObj.typingSpeedUnit = "cpm";
+  }
+
+  //@ts-ignore
+  if (configObj.showAverage === "wpm") {
+    configObj.showAverage = "speed";
+  }
+
+  if (typeof configObj.playSoundOnError === "boolean") {
+    configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
+  }
+
+  return configObj;
+}
+
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
   (Object.keys(config) as (keyof MonkeyTypes.Config)[])
     .filter((key) => {
-      return config[key] != DefaultConfig[key];
+      return config[key] !== DefaultConfig[key];
     })
     .forEach((key) => {
       (configChanges[key] as typeof config[typeof key]) = config[key];
     });
   return configChanges;
-}
-
-export function setConfig(newConfig: MonkeyTypes.Config): void {
-  config = newConfig;
 }
 
 export const loadPromise = new Promise((v) => {

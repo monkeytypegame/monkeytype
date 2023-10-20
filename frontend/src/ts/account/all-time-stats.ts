@@ -28,9 +28,7 @@ export function update(): void {
     $(".pageAccount .globalTestsStarted .val").text(
       snapshot.typingStats.startedTests as number
     );
-  }
 
-  if (snapshot.typingStats !== undefined) {
     $(".pageAccount .globalTestsCompleted .val").text(
       snapshot.typingStats.completedTests as number
     );

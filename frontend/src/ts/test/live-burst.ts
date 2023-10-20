@@ -1,24 +1,24 @@
 import Config from "../config";
-import * as TestActive from "../states/test-active";
+import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 export async function update(burst: number): Promise<void> {
   if (!Config.showLiveBurst) return;
-  let number = burst;
-  if (Config.blindMode) {
-    number = 0;
-  }
+  burst = Math.round(getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(burst));
   (document.querySelector("#miniTimerAndLiveWpm .burst") as Element).innerHTML =
-    number.toString();
+    burst.toString();
   (document.querySelector("#liveBurst") as Element).innerHTML =
-    number.toString();
+    burst.toString();
 }
+
+let state = false;
 
 export function show(): void {
   if (!Config.showLiveBurst) return;
-  if (!TestActive.get()) return;
+  if (!TestState.isActive) return;
+  if (state) return;
   if (Config.timerStyle === "mini") {
-    if (!$("#miniTimerAndLiveWpm .burst").hasClass("hidden")) return;
     $("#miniTimerAndLiveWpm .burst")
       .stop(true, false)
       .removeClass("hidden")
@@ -30,7 +30,6 @@ export function show(): void {
         125
       );
   } else {
-    if (!$("#liveBurst").hasClass("hidden")) return;
     $("#liveBurst")
       .stop(true, false)
       .removeClass("hidden")
@@ -42,9 +41,11 @@ export function show(): void {
         125
       );
   }
+  state = true;
 }
 
 export function hide(): void {
+  if (!state) return;
   $("#liveBurst")
     .stop(true, false)
     .animate(
@@ -67,6 +68,7 @@ export function hide(): void {
         $("#miniTimerAndLiveWpm .burst").addClass("hidden");
       }
     );
+  state = false;
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

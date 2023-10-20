@@ -68,19 +68,13 @@
       "id": 10
     },
     {
-      "text": "Mía o de la muerte, entre la muerte y yo, un paso más para acercarme a ella, sería perderla; y dejarla llorar en abandono, era un suplicio superior a mis fuerzas.",
-      "source": "Jorge Isaacs, María",
-      "length": 162,
-      "id": 11
-    },
-    {
       "text": "La naturaleza es la más amorosa de las madres cuando el dolor se ha adueñado de nuestra alma; y si la felicidad nos acaricia, ella nos sonríe.",
       "source": "Jorge Isaacs, María",
       "length": 142,
       "id": 12
     },
     {
-      "text": "Es un hombre, pero podría ser otra cosa: una catástrofe, un rugido, el viento. Sentado en una butaca baja cubierta por una manta de lana, viste camisa de jean, un suéter beige que tiene varios agujeros, un pantalón de corderoy. A sus espaldas, una puerta vidriada separa la sala de un balcón en el que se ven dos sillas y, más allá, un terreno cubierto por arbustos. Después, el océano Pacífico, las olas que muerden rocas como corazones negros.",
+      "text": "Es un hombre, pero podría ser otra cosa: una catástrofe, un rugido, el viento. Sentado en una butaca baja cubierta por una manta de lana, viste camisa de jean, un suéter beige que tiene varios agujeros, un pantalón de corderoy. A sus espaldas, una puerta vidriada separa la sala de un balcón en el que se ven dos sillas y, más allá, un terreno cubierto por arbustos. Después, el Océano Pacífico, las olas que muerden rocas como corazones negros.",
       "source": "Leila Guerriero, Buscando a Nicanor",
       "length": 445,
       "id": 13
@@ -182,9 +176,9 @@
       "id": 29
     },
     {
-      "text": "-No se puede decir señores apus -lo amonestó Dionisio-. Porque apu quiere decir señor en quechua. Y toda repetición es una ofensa, señor cabo, como dice el vals.\\n-Tampoco se debe de decir señor cabo -replicó Lituma-. Cabo o señor, pero las dos cosas juntas es tomadura de pelo. Aunque, usted siempre está tomándole el pelo a la gente.",
+      "text": "-No se puede decir señores apus -lo amonestó Dionisio-. Porque apu quiere decir señor en quechua. Y toda repetición es una ofensa, señor cabo, como dice el vals.\n-Tampoco se debe de decir señor cabo -replicó Lituma-. Cabo o señor, pero las dos cosas juntas es tomadura de pelo. Aunque, usted siempre está tomándole el pelo a la gente.",
       "source": "Mario Vargas Llosa, Lituma en los Andes",
-      "length": 335,
+      "length": 334,
       "id": 30
     },
     {
@@ -192,12 +186,6 @@
       "source": "Continuidad de los Parques, Julio Cortázar, 1964",
       "length": 416,
       "id": 31
-    },
-    {
-      "text": "Discúlpame, ¿vos querés que nos caguemos bien a trompadas?",
-      "source": "Gerónimo Benavides \"Momo\"",
-      "length": 58,
-      "id": 32
     },
     {
       "text": "Sin embargo, frente a la opresión, el saqueo y el abandono, nuestra respuesta es la vida. Ni los diluvios ni las pestes, ni las hambrunas ni los cataclismos, ni siquiera las guerras eternas a través de los siglos y los siglos han conseguido reducir la ventaja tenaz de la vida sobre la muerte.",
@@ -308,9 +296,9 @@
       "id": 50
     },
     {
-      "text": "Dar el ejemplo no es la principal manera de influir sobre los demás; es la única manera",
+      "text": "Dar el ejemplo no es la principal manera de influir sobre los demás; es la única manera.",
       "source": "Albert Einstein",
-      "length": 87,
+      "length": 88,
       "id": 51
     },
     {
@@ -348,12 +336,6 @@
       "source": "El Principito",
       "length": 103,
       "id": 57
-    },
-    {
-      "text": "En un lugar de la Mancha, de cuyo nombre no quiero acordarme, no ha mucho tiempo que vivía un hidalgo de los de lanza en astillero, adarga antigua, rocín flaco y galgo corredor.",
-      "source": "El quijote - Cervantes",
-      "length": 177,
-      "id": 58
     },
     {
       "text": "Muchos años después, frente al pelotón de fusilamiento, el coronel Aureliano Buendía había de recordar aquella tarde remota en que su padre lo llevó a conocer el hielo. Macondo era entonces una aldea de veinte casas de barro y cañabrava construidas a la orilla de un río de aguas diáfanas que se precipitaban por un lecho de piedras pulidas, blancas y enormes como huevos prehistóricos. El mundo era tan reciente, que muchas cosas carecían de nombre, y para mencionarlas había que señalarlas con el dedo.",
@@ -537,7 +519,7 @@
     },
     {
       "text": "No estimes el dinero en más ni en menos de lo que vale, porque es un buen siervo y un mal amo.",
-      "source": "Alejandro Dumas (hijo)",
+      "source": "Alejandro Dumas",
       "length": 94,
       "id": 89
     },
@@ -680,7 +662,7 @@
       "id": 112
     },
     {
-      "text": "Yo soy el que sostiene el arma. Yo apunto. Yo pongo el cargador, y deslizo la cámara. Yo soy el que quita el seguro. Pero... tu eres la que en realidad los mata. Así que, ¿Qué harás? Dame mi orden, Sir Hellsing.",
+      "text": "Yo soy el que sostiene el arma. Yo apunto. Yo pongo el cargador, y deslizo la cámara. Yo soy el que quita el seguro. Pero... tú eres la que en realidad los mata. Así que, ¿Qué harás? Dame mi orden, Sir Hellsing.",
       "source": "Alucard - Hellsing Ultimate",
       "length": 211,
       "id": 113
@@ -710,21 +692,15 @@
       "id": 117
     },
     {
-      "text": "Mi nombre es Sasuke Uchiha me disgustan muchas cosas y no me gusta nada en particular, lo que yo tengo no es un sueño porque va a convertirse en realidad, voy a reestablecer mi clan y a destruir a alguien en específico.",
-      "source": "Sasuke Uchiha - Naruto",
-      "length": 219,
-      "id": 118
-    },
-    {
       "text": "La voluntad heredada, la era del destino y los sueños de la gente. Esas son cosas que nunca serán detenidas. Siempre y cuando la gente siga persiguiendo el significado de la libertad, nadie podrá quitárselas nunca... ¡Esas cosas nunca dejarán de existir!",
       "source": "Gol D Roger - One Piece",
       "length": 254,
       "id": 119
     },
     {
-      "text": "No existe la magia, sólo la ilusión. Las cosas sólo cambian cuando nosotros las cambiamos, pero tienes que se hábil, hacerlo en secreto. Y entonces parece magia.",
+      "text": "No existe la magia, sólo la ilusión. Las cosas sólo cambian cuando nosotros las cambiamos, pero tienes que ser hábil, hacerlo en secreto. Y entonces parece magia.",
       "source": "Mikkel - Dark",
-      "length": 161,
+      "length": 162,
       "id": 120
     },
     {
@@ -758,10 +734,94 @@
       "id": 125
     },
     {
-      "text": "Esta \"Nueva Era\" de la que hablan es basura. ¡¿La época en la que los piratas sueñas ha terminado?! ¡¿Eh?! ¡Los sueños de las personas jamás terminan!",
+      "text": "Esta \"Nueva Era\" de la que hablan es basura. ¡¿La época en la que los piratas sueñan ha terminado?! ¡¿Eh?! ¡Los sueños de las personas jamás terminan!",
       "source": "Marshal D. Teach - One Piece",
       "length": 150,
       "id": 126
+    },
+    {
+      "text": "Ayer tuve un amor que hoy me abandonó porque no me quería. Fue tanta la ilusión por hacerla feliz pero todo fue en vano.",
+      "source": "Manuel Jiménez. Máximo Fonseca - Ayer y Hoy",
+      "length": 120,
+      "id": 127
+    },
+    {
+      "text": "Ódiame por piedad yo te lo pido, ódiame sin medida ni clemencia. Odio quiero más que indiferencia, porque el rencor hiere menos que el olvido.",
+      "source": "Rafael Otero López - Ódiame",
+      "length": 142,
+      "id": 128
+    },
+    {
+      "text": "Dicen que con el tiempo los recuerdos se esfuman. Se ahonda en el olvido lo que fue una pasión. Mentira, cuando mueras y bajas a mi tumba verás que aún por ti arde la llama de mi amor.",
+      "source": "Luis Aguirre Pinto - Reminiscencias",
+      "length": 184,
+      "id": 129
+    },
+    {
+      "text": "Cuando escribí El Alquimista, intentaba entender la razón de la existencia de vivir. En lugar de hacer un tratado filosófico, decidí conversar con el niño que existía en mi alma. Para mi sorpresa, este niño todavía vivía en millones de personas en el mundo entero. Con este libro quiero compartir con mis lectores las preguntas que, justamente por no tener respuestas, hacen de la vida una gran aventura.",
+      "source": "Paulo Coelho - El Alquimista",
+      "length": 404,
+      "id": 130
+    },
+    {
+      "text": "Es justamente la posibilidad de realizar un sueño lo que hace la vida interesante.",
+      "source": "Paulo Coelho - El Alquimista",
+      "length": 82,
+      "id": 131
+    },
+    {
+      "text": "Emerge tu recuerdo de la noche en que estoy. El río anuda al mar su lamento obstinado. Abandonado como los muelles en el alba. Es la hora de partir, oh abandonado! Sobre mi corazón llueven frías corolas. Oh sentina de escombros, feroz cueva de náufragos! En ti se acumularon las guerras y los vuelos. De ti alzaron las alas los pájaros del canto. Todo te lo tragaste, como la lejanía. Como el mar, como el tiempo. Todo en ti fue naufragio!",
+      "source": "Pablo Neruda - La canción desesperada",
+      "length": 439,
+      "id": 133
+    },
+    {
+      "text": "Puedo escribir los versos más tristes esta noche. Escribir, por ejemplo: \"La noche está estrellada, y tiritan, azules, los astros, a lo lejos\". El viento de la noche gira en el cielo y canta. Puedo escribir los versos más tristes esta noche. Yo la quise, y a veces ella me quiso. En las noches como esta la tuve entre mis brazos. La besé tantas veces bajo el cielo infinito. Ella me quiso, a veces yo también la quería. Cómo no haber amado sus grandes ojos fijos. Puedo escribir los versos más tristes esta noche. Pensar que no la tengo. Sentir que la he perdido.",
+      "source": "Pablo Neruda - Poema 20",
+      "length": 563,
+      "id": 134
+    },
+    {
+      "text": "Oír la noche inmensa, más inmensa sin ella. Y el verso cae al alma como al pasto el rocío. Qué importa que mi amor no pudiera guardarla. La noche está estrellada y ella no está conmigo. Eso es todo. A lo lejos alguien canta. A lo lejos. Mi alma no se contenta con haberla perdido. Como para acercarla mi mirada la busca. Mi corazón la busca, y ella no está conmigo. La misma noche que hace blanquear los mismos árboles. Nosotros, los de entonces, ya no somos los mismos. Ya no la quiero, es cierto, pero cuánto la quise. Mi voz buscaba el viento para tocar su oído. De otro. Será de otro. Como antes de mis besos. Su voz, su cuerpo claro. Sus ojos infinitos. Ya no la quiero, es cierto, pero tal vez la quiero. Es tan corto el amor, y es tan largo el olvido. Porque en noches como ésta, la tuve entre mis brazos, mi alma no se contenta con haberla perdido. Aunque éste sea el último dolor que ella me causa, y éstos sean los últimos versos que yo le escribo.",
+      "source": "Pablo Neruda - Poema 20",
+      "length": 958,
+      "id": 135
+    },
+    {
+      "text": "El miedo a su propia sombra lo tenía atrapado y le impedía ver la luz del sol.",
+      "source": "Robert Fisher - El caballero de la armadura oxidada",
+      "length": 78,
+      "id": 136
+    },
+    {
+      "text": "El miedo al rechazo, al abandono, a no ser suficientemente bueno o querido, nos lleva a creer que necesitamos armaduras para protegernos, cuando en realidad lo que necesitamos es quitárnoslas para mostrar nuestra verdadera esencia y conectarnos auténticamente con los demás.",
+      "source": "Robert Fisher - El caballero de la armadura oxidada",
+      "length": 274,
+      "id": 137
+    },
+    {
+      "text": "La vida es como un espejo: si sonríes, el espejo te devuelve la sonrisa; pero si muestras una cara larga, recibes lo mismo a cambio, por lo que siempre es mejor sonreír a la vida y mantener el corazón abierto a las posibilidades que nos ofrece cada día.",
+      "source": "Robert Fisher - El caballero de la armadura oxidada",
+      "length": 253,
+      "id": 138
+    },
+    {
+      "text": "A veces, para encontrar el camino hacia la luz, es necesario pasar por la oscuridad, enfrentar nuestros miedos, sanar nuestras heridas y aprender las lecciones que la vida nos está enseñando para poder renacer con una armadura nueva y brillante, llena de amor y sabiduría.",
+      "source": "Robert Fisher - El caballero de la armadura oxidada",
+      "length": 272,
+      "id": 139
+    },
+    {
+      "text": "Me hablas te hablo, me ignoras te ignoro, me tratas mal, yo te trato peor, tú me tratas bien, yo te trato mejor. Así de simple.",
+      "source": "Pablo Escobar",
+      "length": 127,
+      "id": 140
+    },
+    {
+      "text": "Ser pobre no te hace humilde, ser humilde no significa que seas pobre.",
+      "source": "Pablo Escobar",
+      "length": 70,
+      "id": 141
     }
   ]
 }

@@ -7,22 +7,33 @@ import * as Misc from "../utils/misc";
 import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
+import * as TestWords from "../test/test-words";
+
+const stenoKeys: MonkeyTypes.Layout = {
+  keymapShowTopRow: true,
+  type: "matrix",
+  keys: {
+    row1: [],
+    row2: ["sS", "tT", "pP", "hH", "**", "fF", "pP", "lL", "tT", "dD"],
+    row3: ["sS", "kK", "wW", "rR", "**", "rR", "bB", "gG", "sS", "zZ"],
+    row4: ["aA", "oO", "eE", "uU"],
+    row5: [],
+  },
+};
 
 function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
   try {
-    if ($(".activeKey") != undefined) {
-      $(".activeKey").removeClass("activeKey");
-    }
+    $(".activeKey").removeClass("activeKey");
 
     let highlightKey;
     if (Config.language.startsWith("korean")) {
       currentKey = Hangul.disassemble(currentKey)[0];
     }
-    if (currentKey == " ") {
+    if (currentKey === " ") {
       highlightKey = "#keymap .keySpace, #keymap .keySplitSpace";
-    } else if (currentKey == '"') {
+    } else if (currentKey === '"') {
       highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
     } else {
       highlightKey = `#keymap .keymapKey[data-key*="${currentKey}"]`;
@@ -39,11 +50,11 @@ function highlightKey(currentKey: string): void {
 }
 
 async function flashKey(key: string, correct?: boolean): Promise<void> {
-  if (key == undefined) return;
+  if (key === undefined) return;
   //console.log("key", key);
-  if (key == " ") {
+  if (key === " ") {
     key = "#keymap .keySpace, #keymap .keySplitSpace";
-  } else if (key == '"') {
+  } else if (key === '"') {
     key = `#keymap .keymapKey[data-key*='${key}']`;
   } else {
     key = `#keymap .keymapKey[data-key*="${key}"]`;
@@ -78,7 +89,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
       .animate(
         {
           color: themecolors.sub,
-          backgroundColor: "transparent",
+          backgroundColor: themecolors.subAlt,
           borderColor: themecolors.sub,
         },
         SlowTimer.get() ? 0 : 500,
@@ -129,12 +140,20 @@ export async function refresh(
     }
 
     const showTopRow =
+      (TestWords.hasNumbers && Config.keymapMode === "next") ||
       Config.keymapShowTopRow === "always" ||
       ((lts as typeof layouts["qwerty"]).keymapShowTopRow &&
         Config.keymapShowTopRow !== "never");
 
     const isMatrix =
       Config.keymapStyle === "matrix" || Config.keymapStyle === "split_matrix";
+
+    const isSteno =
+      Config.keymapStyle === "steno" || Config.keymapStyle === "steno_matrix";
+
+    if (isSteno) {
+      lts = stenoKeys;
+    }
 
     let keymapElement = "";
 
@@ -148,19 +167,32 @@ export async function refresh(
           rowKeys = rowKeys.slice(1);
         }
         let rowElement = "";
-        if (row === "row1" && !showTopRow) {
+        if (row === "row1" && (!showTopRow || isSteno)) {
           return;
         }
 
-        if ((row === "row2" || row === "row3" || row === "row4") && !isMatrix) {
+        if (
+          (row === "row2" || row === "row3" || row === "row4") &&
+          !isMatrix &&
+          !isSteno
+        ) {
           rowElement += "<div></div>";
         }
 
-        if (row === "row4" && lts.type !== "iso" && !isMatrix) {
+        if (row === "row4" && lts.type !== "iso" && !isMatrix && !isSteno) {
           rowElement += "<div></div>";
+        }
+
+        if (isMatrix) {
+          if (row !== "row5" && lts.matrixShowRightColumn) {
+            rowElement += `<div class="keymapKey"></div>`;
+          } else {
+            rowElement += `<div></div>`;
+          }
         }
 
         if (row === "row5") {
+          if (isSteno) return;
           const layoutDisplay = layoutString.replace(/_/g, " ");
           let letterStyle = "";
           if (Config.keymapLegendStyle === "blank") {
@@ -177,10 +209,16 @@ export async function refresh(
         } else {
           for (let i = 0; i < rowKeys.length; i++) {
             if (row === "row2" && i === 12) continue;
+
+            let colLimit = 10;
+            if (lts.matrixShowRightColumn) {
+              colLimit = 11;
+            }
+
             if (
               (Config.keymapStyle === "matrix" ||
                 Config.keymapStyle === "split_matrix") &&
-              i >= 10
+              i >= colLimit
             ) {
               continue;
             }
@@ -215,9 +253,16 @@ export async function refresh(
             if (
               Config.keymapStyle === "split" ||
               Config.keymapStyle === "split_matrix" ||
-              Config.keymapStyle === "alice"
+              Config.keymapStyle === "alice" ||
+              isSteno
             ) {
               if (
+                row === "row4" &&
+                isSteno &&
+                (i === 0 || i === 2 || i === 4)
+              ) {
+                splitSpacer += `<div class="keymapSplitSpacer"></div>`;
+              } else if (
                 row === "row4" &&
                 (Config.keymapStyle === "split" ||
                   Config.keymapStyle === "alice") &&
@@ -265,6 +310,8 @@ export async function refresh(
     $("#keymap").removeClass("split");
     $("#keymap").removeClass("split_matrix");
     $("#keymap").removeClass("alice");
+    $("#keymap").removeClass("steno");
+    $("#keymap").removeClass("steno_matrix");
     $("#keymap").addClass(Config.keymapStyle);
   } catch (e) {
     if (e instanceof Error) {
@@ -276,7 +323,7 @@ export async function refresh(
   }
 }
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe((eventKey, newValue) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
     refresh(Config.keymapLayout);
   }
@@ -287,6 +334,9 @@ ConfigEvent.subscribe((eventKey) => {
     eventKey === "keymapMode"
   ) {
     refresh();
+  }
+  if (eventKey === "keymapMode") {
+    newValue === "off" ? hide() : show();
   }
 });
 

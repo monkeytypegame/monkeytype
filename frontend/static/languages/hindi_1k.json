@@ -1,6 +1,5 @@
 {
   "name": "hindi_1k",
-  "leftToRight": true,
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "hi-IN",

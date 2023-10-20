@@ -9,7 +9,7 @@ export function apply(_id: string): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   snapshot.presets?.forEach((preset) => {
-    if (preset._id == _id) {
+    if (preset._id === _id) {
       UpdateConfig.apply(preset.config);
       TagController.clear(true);
       if (preset.config.tags) {
@@ -19,7 +19,9 @@ export function apply(_id: string): void {
         TagController.saveActiveToLocalStorage();
       }
       TestLogic.restart();
-      Notifications.add("Preset applied", 1, 2);
+      Notifications.add("Preset applied", 1, {
+        duration: 2,
+      });
       UpdateConfig.saveFullConfigToLocalStorage();
     }
   });

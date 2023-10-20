@@ -1,6 +1,5 @@
 {
   "name": "italian",
-  "leftToRight": true,
   "bcp47": "it-IT",
   "words": [
     "come",

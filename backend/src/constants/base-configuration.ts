@@ -22,6 +22,9 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     submissionsEnabled: false,
     maxFavorites: 0,
   },
+  admin: {
+    endpointsEnabled: false,
+  },
   apeKeys: {
     endpointsEnabled: false,
     acceptKeys: false,
@@ -31,6 +34,10 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
   },
   users: {
     signUp: false,
+    lastHashesCheck: {
+      enabled: false,
+      maxHashes: 0,
+    },
     discordIntegration: {
       enabled: false,
     },
@@ -72,8 +79,6 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     leaderboardExpirationTimeInDays: 0,
     validModeRules: [],
     scheduleRewardsModeRules: [],
-    // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
-    dailyLeaderboardCacheSize: 1,
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
     xpRewardBrackets: [],
   },
@@ -198,6 +203,16 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
           },
         },
       },
+      admin: {
+        type: "object",
+        label: "Admin",
+        fields: {
+          endpointsEnabled: {
+            type: "boolean",
+            label: "Endpoints Enabled",
+          },
+        },
+      },
       apeKeys: {
         type: "object",
         label: "Ape Keys",
@@ -234,6 +249,14 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
           signUp: {
             type: "boolean",
             label: "Sign Up Enabled",
+          },
+          lastHashesCheck: {
+            type: "object",
+            label: "Last Hashes Check",
+            fields: {
+              enabled: { type: "boolean", label: "Enabled" },
+              maxHashes: { type: "number", label: "Hashes to store" },
+            },
           },
           xp: {
             type: "object",
@@ -427,11 +450,6 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
                 },
               },
             },
-          },
-          dailyLeaderboardCacheSize: {
-            type: "number",
-            label: "Daily Leaderboard Cache Size",
-            min: 1,
           },
           topResultsToAnnounce: {
             type: "number",

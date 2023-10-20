@@ -5,19 +5,35 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   configKey: "smoothCaret",
   list: [
     {
-      id: "changeSmoothCaretOn",
-      display: "on",
-      configValue: true,
+      id: "changeSmoothCaretoff",
+      display: "off",
+      configValue: "off",
       exec: (): void => {
-        UpdateConfig.setSmoothCaret(true);
+        UpdateConfig.setSmoothCaret("off");
       },
     },
     {
-      id: "changeSmoothCaretOff",
-      display: "off",
-      configValue: false,
+      id: "changeSmoothCaretSlow",
+      display: "slow",
+      configValue: "slow",
       exec: (): void => {
-        UpdateConfig.setSmoothCaret(false);
+        UpdateConfig.setSmoothCaret("slow");
+      },
+    },
+    {
+      id: "changeSmoothCaretMedium",
+      display: "medium",
+      configValue: "medium",
+      exec: (): void => {
+        UpdateConfig.setSmoothCaret("medium");
+      },
+    },
+    {
+      id: "changeSmoothCaretFast",
+      display: "fast",
+      configValue: "fast",
+      exec: (): void => {
+        UpdateConfig.setSmoothCaret("fast");
       },
     },
   ],

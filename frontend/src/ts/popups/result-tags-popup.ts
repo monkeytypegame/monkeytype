@@ -16,7 +16,9 @@ const state: Record<string, string | undefined> = {
 
 function show(): void {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   Skeleton.append(wrapperId);
@@ -82,7 +84,9 @@ $(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
     Notifications.add(
       "You haven't created any tags. You can do it in the settings page",
       0,
-      4
+      {
+        duration: 4,
+      }
     );
   }
 });
@@ -95,7 +99,7 @@ $(".pageTest").on("click", ".tags .editTagsButton", () => {
     const activeTagIds = $(".pageTest .tags .editTagsButton").attr(
       "active-tag-ids"
     ) as string;
-    const tags = activeTagIds == "" ? [] : activeTagIds.split(",");
+    const tags = activeTagIds === "" ? [] : activeTagIds.split(",");
     state["resultId"] = resultid;
     state["tags"] = JSON.stringify(tags);
     state["source"] = "resultPage";
@@ -147,7 +151,9 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
 
   const responseTagPbs = response.data.tagPbs;
 
-  Notifications.add("Tags updated", 1, 2);
+  Notifications.add("Tags updated", 1, {
+    duration: 2,
+  });
   DB.getSnapshot()?.results?.forEach(
     (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
       if (result._id === resultId) {
@@ -202,7 +208,7 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
       );
     }
   } else if (source === "resultPage") {
-    if (newTags.length == 0) {
+    if (newTags.length === 0) {
       $(`.pageTest #result .tags .bottom`).html(
         "<div class='noTags'>no tags</div>"
       );
@@ -238,6 +244,13 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
         newTags.join(",")
       );
     }
+  }
+});
+
+$(document).on("keydown", (event) => {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
+    hide();
+    event.preventDefault();
   }
 });
 

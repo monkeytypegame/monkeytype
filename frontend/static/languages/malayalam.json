@@ -1,6 +1,5 @@
 {
   "name": "malayalam",
-  "leftToRight": true,
   "noLazyMode": true,
   "ligatures": true,
   "bcp47": "ml-IN",

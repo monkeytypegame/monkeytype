@@ -13,7 +13,9 @@ let callbackFuncOnHide: (() => void) | null = null;
 
 export function show(callbackOnHide: () => void): void {
   if (!ConnectionState.get()) {
-    Notifications.add("You are offline", 0, 2);
+    Notifications.add("You are offline", 0, {
+      duration: 2,
+    });
     return;
   }
   Skeleton.append(wrapperId);
@@ -31,7 +33,7 @@ export function show(callbackOnHide: () => void): void {
   }
 }
 
-export function hide(): void {
+function hide(): void {
   if (isPopupVisible(wrapperId)) {
     callbackFuncOnHide && callbackFuncOnHide();
     $("#editProfilePopupWrapper")
@@ -130,6 +132,31 @@ async function updateProfile(): Promise<void> {
   if (!snapshot) return;
   const updates = buildUpdatesFromInputs();
 
+  // check for length resctrictions before sending server requests
+  const githubLengthLimit = 39;
+  if (
+    updates.socialProfiles.github &&
+    updates.socialProfiles.github.length > githubLengthLimit
+  ) {
+    Notifications.add(
+      `GitHub username exceeds maximum allowed length (${githubLengthLimit} characters).`,
+      -1
+    );
+    return;
+  }
+
+  const twitterLengthLimit = 20;
+  if (
+    updates.socialProfiles.twitter &&
+    updates.socialProfiles.twitter.length > twitterLengthLimit
+  ) {
+    Notifications.add(
+      `Twitter username exceeds maximum allowed length (${twitterLengthLimit} characters).`,
+      -1
+    );
+    return;
+  }
+
   Loader.show();
   const response = await Ape.users.updateProfile(
     updates,
@@ -156,7 +183,7 @@ async function updateProfile(): Promise<void> {
   hide();
 }
 
-$("#editProfilePopupWrapper").on("click", (e) => {
+$("#editProfilePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "editProfilePopupWrapper") {
     hide();
   }

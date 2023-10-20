@@ -17,31 +17,31 @@
     <meta name="image" content="https://monkeytype.com/mtsocial.png" />
     <meta
       name="description"
-      content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
+      content="The most customizable typing test website with a minimal design and a ton of features. Test yourself in various modes, track your progress and improve your speed."
     />
     <meta
       name="keywords"
       content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
     />
     <meta name="author" content="Miodec" />
-    <meta property="og:title" content="Monkeytype" />
+    <meta property="og:title" content="Terms of Service | Monkeytype" />
     <meta property="og:url" content="https://monkeytype.com/" />
     <meta property="og:type" content="website" />
     <meta
       property="og:description"
-      content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
+      content="The most customizable typing test website with a minimal design and a ton of features. Test yourself in various modes, track your progress and improve your speed."
     />
     <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
-    <meta name="twitter:title" content="Monkeytype" />
+    <meta name="twitter:title" content="Terms of Service | Monkeytype" />
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <style>
-      #top {
+      header {
         font-size: 2.5rem;
       }
 
-      #middle {
+      main {
         color: var(--text-color);
       }
 
@@ -60,9 +60,9 @@
   </head>
 
   <body>
-    <div id="centerContent">
-      <div id="top">
-        <div class="logo">
+    <div id="contentWrapper">
+      <header>
+        <div id="logo">
           <div class="icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -107,8 +107,8 @@
             <span style="color: var(--main-color)">Terms of Service</span>
           </div>
         </div>
-      </div>
-      <div id="middle">
+      </header>
+      <main>
         <!-- make sure to update this date every time the tos is changed -->
         <p>These terms of service were last updated on June 19, 2022.</p>
         <h1>Agreement</h1>
@@ -219,7 +219,11 @@
         <h1>Privacy Policy</h1>
         If you use our Services, you must abide by our Privacy Policy. You
         acknowledge that you have read our
-        <a href="https://monkeytype.com/privacy-policy" target="_blank">
+        <a
+          href="https://monkeytype.com/privacy-policy"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
           Privacy Policy
         </a>
         &nbsp;and understand that it sets forth how we collect, use, and store
@@ -332,11 +336,11 @@
         <p>
           Email:
           <a
-            href="mailto:jack@monkeytype.com"
+            href="mailto:contact@monkeytype.com"
             target="_blank"
             rel="noopener noreferrer"
           >
-            jack@monkeytype.com
+            contact@monkeytype.com
           </a>
         </p>
         Discord:
@@ -345,26 +349,32 @@
           data-balloon-pos="up"
           onclick="copyUserName()"
         >
-          Miodec#1512
+          @miodec
         </span>
-      </div>
+      </main>
       <p>
         Terms based on
-        <a href="https://glitch.com/legal" target="_blank">Glitch terms</a>
+        <a
+          href="https://glitch.com/legal"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Glitch terms
+        </a>
       </p>
     </div>
   </body>
   <script defer>
     function copyUserName() {
       if (true) {
-        navigator.clipboard.writeText("Miodec#1512");
+        navigator.clipboard.writeText("@miodec");
         alert("Copied To Clipboard!");
       } else {
         alert("Unable to copy username");
       }
     }
 
-    document.querySelector("#top").addEventListener("click", () => {
+    document.querySelector("header").addEventListener("click", () => {
       window.location = "/";
     });
   </script>

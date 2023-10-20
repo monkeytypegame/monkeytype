@@ -20,7 +20,7 @@ import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
-import { isTestTooShort } from "../../utils/validation";
+import { areFunboxesCompatible, isTestTooShort } from "../../utils/validation";
 import {
   implemented as anticheatImplemented,
   validateResult,
@@ -36,9 +36,11 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import FunboxesMetadata from "../../constants/funbox";
+import FunboxList from "../../constants/funbox-list";
 import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
+import { UAParser } from "ua-parser-js";
+import { canFunboxGetPb } from "../../utils/pb";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -122,7 +124,7 @@ export async function updateTags(
 
 interface AddResultData {
   isPb: boolean;
-  tagPbs: any[];
+  tagPbs: string[];
   insertedId: ObjectId;
   dailyLeaderboardRank?: number;
   weeklyXpLeaderboardRank?: number;
@@ -146,6 +148,7 @@ export async function addResult(
     );
   }
 
+  //todo add a type here
   const result = Object.assign({}, req.body.result);
   result.uid = uid;
   if (isTestTooShort(result)) {
@@ -156,11 +159,7 @@ export async function addResult(
   const resulthash = result.hash;
   delete result.hash;
   delete result.stringified;
-  if (
-    req.ctx.configuration.results.objectHashCheckEnabled &&
-    resulthash.length === 40
-  ) {
-    //if its not 64 that means client is still using old hashing package
+  if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const serverhash = objectHash(result);
     if (serverhash !== resulthash) {
       Logger.logToDb(
@@ -177,10 +176,49 @@ export async function addResult(
     }
   }
 
-  result.name = user.name;
+  if (result.funbox) {
+    const funboxes = result.funbox.split("#");
+    if (funboxes.length !== _.uniq(funboxes).length) {
+      throw new MonkeyError(400, "Duplicate funboxes");
+    }
+  }
+
+  if (!areFunboxesCompatible(result.funbox)) {
+    throw new MonkeyError(400, "Impossible funbox combination");
+  }
+
+  try {
+    result.keySpacingStats = {
+      average:
+        result.keySpacing.reduce((previous, current) => (current += previous)) /
+        result.keySpacing.length,
+      sd: stdDev(result.keySpacing),
+    };
+  } catch (e) {
+    //
+  }
+  try {
+    result.keyDurationStats = {
+      average:
+        result.keyDuration.reduce(
+          (previous, current) => (current += previous)
+        ) / result.keyDuration.length,
+      sd: stdDev(result.keyDuration),
+    };
+  } catch (e) {
+    //
+  }
 
   if (anticheatImplemented()) {
-    if (!validateResult(result)) {
+    if (
+      !validateResult(
+        result,
+        (req.headers["x-client-version"] ||
+          req.headers["client-version"]) as string,
+        JSON.stringify(new UAParser(req.headers["user-agent"]).getResult()),
+        user.lbOptOut === true
+      )
+    ) {
       const status = MonkeyStatusCodes.RESULT_DATA_INVALID;
       throw new MonkeyError(status.code, "Result data doesn't make sense");
     }
@@ -245,38 +283,21 @@ export async function addResult(
     throw new MonkeyError(status.code, "Invalid result spacing");
   }
 
-  try {
-    result.keySpacingStats = {
-      average:
-        result.keySpacing.reduce((previous, current) => (current += previous)) /
-        result.keySpacing.length,
-      sd: stdDev(result.keySpacing),
-    };
-  } catch (e) {
-    //
-  }
-  try {
-    result.keyDurationStats = {
-      average:
-        result.keyDuration.reduce(
-          (previous, current) => (current += previous)
-        ) / result.keyDuration.length,
-      sd: stdDev(result.keyDuration),
-    };
-  } catch (e) {
-    //
-  }
-
   //check keyspacing and duration here for bots
   if (
     result.mode === "time" &&
     result.wpm > 130 &&
     result.testDuration < 122 &&
-    (user.verified === false || user.verified === undefined)
+    (user.verified === false || user.verified === undefined) &&
+    user.lbOptOut !== true &&
+    user.banned !== true //no need to check again if user is already banned
   ) {
     if (!result.keySpacingStats || !result.keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
       throw new MonkeyError(status.code, "Missing key data");
+    }
+    if (result.keyOverlap === undefined) {
+      throw new MonkeyError(400, "Old key data format");
     }
     if (anticheatImplemented()) {
       if (!validateKeys(result, uid)) {
@@ -294,6 +315,7 @@ export async function addResult(
               body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
             UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+            user.banned = true;
           }
         }
         const status = MonkeyStatusCodes.BOT_DETECTED;
@@ -313,6 +335,36 @@ export async function addResult(
   delete result.keyDuration;
   delete result.smoothConsistency;
   delete result.wpmConsistency;
+  delete result.keyOverlap;
+  delete result.lastKeyToEnd;
+  delete result.startToFirstKey;
+  delete result.charTotal;
+
+  if (req.ctx.configuration.users.lastHashesCheck.enabled) {
+    let lastHashes = user.lastReultHashes ?? [];
+    if (lastHashes.includes(resulthash)) {
+      Logger.logToDb(
+        "duplicate_result",
+        {
+          lastHashes,
+          resulthash,
+          result,
+        },
+        uid
+      );
+      const status = MonkeyStatusCodes.DUPLICATE_RESULT;
+      throw new MonkeyError(status.code, "Duplicate result");
+    } else {
+      lastHashes.unshift(resulthash);
+      const maxHashes = req.ctx.configuration.users.lastHashesCheck.maxHashes;
+      if (lastHashes.length > maxHashes) {
+        lastHashes = lastHashes.slice(0, maxHashes);
+      }
+      await UserDAL.updateLastHashes(uid, lastHashes);
+    }
+  }
+
+  result.name = user.name;
 
   try {
     result.keyDurationStats.average = roundTo2(result.keyDurationStats.average);
@@ -324,7 +376,7 @@ export async function addResult(
   }
 
   let isPb = false;
-  let tagPbs: any[] = [];
+  let tagPbs: string[] = [];
 
   if (!result.bailedOut) {
     [isPb, tagPbs] = await Promise.all([
@@ -337,7 +389,7 @@ export async function addResult(
     result.isPb = true;
   }
 
-  if (result.mode === "time" && String(result.mode2) === "60") {
+  if (result.mode === "time" && result.mode2 === "60") {
     incrementBananas(uid, result.wpm);
     if (isPb && user.discordId) {
       GeorgeQueue.updateDiscordRole(user.discordId, result.wpm);
@@ -354,12 +406,8 @@ export async function addResult(
     delete result.challenge;
   }
 
-  let totalDurationTypedSeconds = 0;
-  let afk = result.afkDuration;
-  if (afk == undefined) {
-    afk = 0;
-  }
-  totalDurationTypedSeconds =
+  const afk = result.afkDuration ?? 0;
+  const totalDurationTypedSeconds =
     result.testDuration + result.incompleteTestSeconds - afk;
   updateTypingStats(uid, result.restartCount, totalDurationTypedSeconds);
   PublicDAL.updateStats(result.restartCount, totalDurationTypedSeconds);
@@ -374,11 +422,11 @@ export async function addResult(
 
   let dailyLeaderboardRank = -1;
 
-  const { funbox, bailedOut } = result;
   const validResultCriteria =
-    (funbox === "none" || funbox === "plus_one" || funbox === "plus_two") &&
-    !bailedOut &&
-    !user.banned &&
+    canFunboxGetPb(result) &&
+    !result.bailedOut &&
+    user.banned !== true &&
+    user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
@@ -404,6 +452,33 @@ export async function addResult(
 
   const streak = await UserDAL.updateStreak(uid, result.timestamp);
 
+  const shouldGetBadge =
+    streak >= 365 &&
+    user.inventory?.badges?.find((b) => b.id === 14) === undefined &&
+    (
+      user.inbox
+        ?.map((i) =>
+          (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
+        )
+        .flat() ?? []
+    ).includes(14) === false;
+
+  if (shouldGetBadge) {
+    const mail = buildMonkeyMail({
+      subject: "Badge",
+      body: "Congratulations for reaching a 365 day streak! You have been awarded a special badge. Now, go touch some grass.",
+      rewards: [
+        {
+          type: "badge",
+          item: {
+            id: 14,
+          },
+        },
+      ],
+    });
+    UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+  }
+
   const xpGained = await calculateXp(
     result,
     req.ctx.configuration.users.xp,
@@ -427,7 +502,8 @@ export async function addResult(
   const weeklyXpLeaderboardConfig = req.ctx.configuration.leaderboards.weeklyXp;
   let weeklyXpLeaderboardRank = -1;
   const eligibleForWeeklyXpLeaderboard =
-    !user.banned &&
+    user.banned !== true &&
+    user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
 
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
@@ -586,7 +662,7 @@ async function calculateXp(
 
   if (funboxBonusConfiguration > 0) {
     const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
-      const funbox = FunboxesMetadata[funboxName as string];
+      const funbox = FunboxList.find((f) => f.name === funboxName);
       const difficultyLevel = funbox?.difficultyLevel ?? 0;
       return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
     });

@@ -61,6 +61,16 @@ export function updateData(data: MonkeyTypes.ChartData): void {
   ChartController.miniResult.updateColors();
 }
 
+$(document).on("keydown", (event) => {
+  if (
+    event.key === "Escape" &&
+    Misc.isElementVisible(".pageAccount .miniResultChartWrapper")
+  ) {
+    hide();
+    event.preventDefault();
+  }
+});
+
 $(".pageAccount").on("click", ".miniResultChartBg", () => {
   hide();
 });

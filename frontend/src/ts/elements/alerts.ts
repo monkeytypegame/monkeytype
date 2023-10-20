@@ -27,7 +27,7 @@ const state: State = {
   psas: [],
 };
 
-export function hide(): void {
+function hide(): void {
   if (isPopupVisible(wrapperId)) {
     setNotificationBubbleVisible(false);
 
@@ -98,9 +98,11 @@ export function hide(): void {
                   badgesClaimed.length > 1 ? "s" : ""
                 } unlocked: ${badgesClaimed.join(", ")}`,
                 1,
-                5,
-                "Reward",
-                "gift"
+                {
+                  duration: 5,
+                  customTitle: "Reward",
+                  customIcon: "gift",
+                }
               );
             }
             if (totalXpClaimed > 0) {
@@ -118,7 +120,7 @@ export function hide(): void {
   }
 }
 
-export async function show(): Promise<void> {
+async function show(): Promise<void> {
   Skeleton.append(wrapperId);
   if (!isPopupVisible(wrapperId)) {
     $("#alertsPopup").css("marginRight", "-10rem").animate(
@@ -216,7 +218,7 @@ async function getAccountAlerts(): Promise<void> {
   $("#alertsPopup .accountAlerts .list").empty();
 
   for (const ie of accountAlerts) {
-    if (!ie.read && ie.rewards.length == 0) {
+    if (!ie.read && ie.rewards.length === 0) {
       mailToMarkRead.push(ie.id);
     }
 
@@ -248,7 +250,7 @@ async function getAccountAlerts(): Promise<void> {
           }
           ${
             (ie.rewards.length > 0 && ie.read === true) ||
-            ie.rewards.length == 0
+            ie.rewards.length === 0
               ? `<div class="deleteAlert textButton" aria-label="Delete" data-balloon-pos="left"><i class="fas fa-trash"></i></div>`
               : ``
           }
@@ -335,9 +337,9 @@ function fillNotifications(): void {
 
 export function setNotificationBubbleVisible(tf: boolean): void {
   if (tf) {
-    $("#top #menu .showAlerts .notificationBubble").removeClass("hidden");
+    $("header nav .showAlerts .notificationBubble").removeClass("hidden");
   } else {
-    $("#top #menu .showAlerts .notificationBubble").addClass("hidden");
+    $("header nav .showAlerts .notificationBubble").addClass("hidden");
   }
 }
 
@@ -428,7 +430,7 @@ $("#alertsPopupWrapper .accountAlerts").on("click", ".deleteAll", () => {
   }
 });
 
-$("#top #menu .showAlerts").on("click", () => {
+$("header nav .showAlerts").on("click", () => {
   show();
 });
 

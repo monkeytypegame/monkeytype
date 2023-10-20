@@ -1,36 +1,36 @@
 :root {
   --bg-color: #282a36;
-  --main-color: #f2f2f2;
-  --caret-color: #f2f2f2;
-  --sub-color: #bd93f9;
+  --main-color: #bd93f9;
+  --caret-color: #bd93f9;
+  --sub-color: #6272a4;
   --sub-alt-color: #20222c;
-  --text-color: #f2f2f2;
-  --error-color: #f758a0;
-  --error-extra-color: #732e51;
-  --colorful-error-color: #f758a0;
-  --colorful-error-extra-color: #732e51;
+  --text-color: #f8f8f2;
+  --error-color: #ff5555;
+  --error-extra-color: #f1fa8c;
+  --colorful-error-color: #ff5555;
+  --colorful-error-extra-color: #f1fa8c;
 }
 
-#menu .textButton:nth-child(1) {
+nav .textButton:nth-child(1) {
   color: #ec75c4;
 }
 
-#menu .textButton:nth-child(2) {
+nav .textButton:nth-child(2) {
   color: #8be9fd;
 }
 
-#menu .textButton:nth-child(3) {
+nav .textButton:nth-child(3) {
   color: #50fa7b;
 }
 
-#menu .textButton:nth-child(4) {
+nav .textButton:nth-child(4) {
   color: #f1fa8c;
 }
 
-#menu .textButton:nth-child(5) {
+nav .textButton:nth-child(5) {
   color: #ffb86c;
 }
 
-#menu .textButton:nth-child(6) {
+nav .textButton:nth-child(6) {
   color: #ffb86c;
 }

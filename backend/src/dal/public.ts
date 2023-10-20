@@ -24,9 +24,9 @@ export async function updateStats(
  * @returns an object mapping wpm => count, eg { '80': 4388, '90': 2149}
  */
 export async function getSpeedHistogram(
-  language,
-  mode,
-  mode2
+  language: string,
+  mode: string,
+  mode2: string
 ): Promise<Record<string, number>> {
   const key = `${language}_${mode}_${mode2}`;
   const stats = await db

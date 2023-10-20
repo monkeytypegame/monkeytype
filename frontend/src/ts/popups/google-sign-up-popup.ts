@@ -23,7 +23,7 @@ const wrapperId = "googleSignUpPopupWrapper";
 
 let signedInUser: UserCredential | undefined = undefined;
 
-export function show(credential: UserCredential): void {
+function show(credential: UserCredential): void {
   Skeleton.append(wrapperId);
 
   if (!isPopupVisible(wrapperId)) {
@@ -45,10 +45,12 @@ export function show(credential: UserCredential): void {
   }
 }
 
-export async function hide(): Promise<void> {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     if (signedInUser !== undefined) {
-      Notifications.add("Sign up process canceled", 0, 5);
+      Notifications.add("Sign up process canceled", 0, {
+        duration: 5,
+      });
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
       if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
@@ -105,8 +107,8 @@ async function apply(): Promise<void> {
       await updateProfile(signedInUser.user, { displayName: name });
       await sendEmailVerification(signedInUser.user);
       AllTimeStats.clear();
-      Notifications.add("Account created", 1, 3);
-      $("#menu .textButton.account .text").text(name);
+      Notifications.add("Account created", 1);
+      $("nav .textButton.account .text").text(name);
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
@@ -138,7 +140,6 @@ async function apply(): Promise<void> {
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
-    LoginPage.enableSignInButton();
     LoginPage.enableSignUpButton();
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();
@@ -205,12 +206,12 @@ const checkNameDebounced = debounce(1000, async () => {
     return;
   }
 
-  if (response.status == 422) {
+  if (response.status === 422) {
     nameIndicator.show("unavailable", response.message);
     return;
   }
 
-  if (response.status == 409) {
+  if (response.status === 409) {
     nameIndicator.show("taken", response.message);
     return;
   }

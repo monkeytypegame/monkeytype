@@ -1,16 +1,7 @@
-interface CompositionState {
-  composing: boolean;
-  startPos: number;
-}
-
 const compositionState = {
   composing: false,
   startPos: -1,
 };
-
-export function get(): CompositionState {
-  return compositionState;
-}
 
 export function getComposing(): boolean {
   return compositionState.composing;

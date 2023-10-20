@@ -4,13 +4,14 @@ import * as Misc from "../utils/misc";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "../controllers/chart-controller";
-import * as CustomThemePopup from "../popups/custom-theme-popup";
+import * as ShareCustomThemePopup from "../popups/share-custom-theme-popup";
 import * as Loader from "../elements/loader";
 import * as DB from "../db";
 import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
+import * as ActivePage from "../states/active-page";
 
-export function updateActiveButton(): void {
+function updateActiveButton(): void {
   let activeThemeName = Config.theme;
   if (
     Config.randomTheme !== "off" &&
@@ -21,8 +22,10 @@ export function updateActiveButton(): void {
   }
 
   document
-    .querySelector(`.pageSettings .section.themes .theme`)
-    ?.classList.remove("active");
+    .querySelectorAll(".pageSettings .section.themes .theme")
+    .forEach((el) => {
+      el.classList.remove("active");
+    });
   document
     .querySelector(
       `.pageSettings .section.themes .theme[theme='${activeThemeName}']`
@@ -246,7 +249,6 @@ export async function refreshButtons(): Promise<void> {
     }
     themesEl.innerHTML = themesElHTML;
   }
-  updateActiveButton();
 }
 
 export function setCustomInputs(noThemeUpdate = false): void {
@@ -276,14 +278,15 @@ function toggleFavourite(themeName: string): void {
   UpdateConfig.saveFullConfigToLocalStorage();
 }
 
-export function saveCustomThemeColors(): void {
+function saveCustomThemeColors(): void {
   const newColors: string[] = [];
-  $.each(
-    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-    (_index, element) => {
-      newColors.push($(element).attr("value") as string);
-    }
-  );
+  for (const color of ThemeController.colorVars) {
+    newColors.push(
+      $(
+        `.pageSettings .customTheme .customThemeEdit #${color}[type='color']`
+      ).attr("value") as string
+    );
+  }
   UpdateConfig.setCustomThemeColors(newColors);
   Notifications.add("Custom theme saved", 1);
 }
@@ -332,7 +335,7 @@ $(".pageSettings .section.themes .tabs .button").on("click", (e) => {
   $target.addClass("active");
   // setCustomInputs();
   //test
-  if ($target.attr("tab") == "preset") {
+  if ($target.attr("tab") === "preset") {
     UpdateConfig.setCustomTheme(false);
   } else {
     UpdateConfig.setCustomTheme(true);
@@ -345,7 +348,20 @@ $(".pageSettings").on("click", " .section.themes .customTheme.button", (e) => {
   if ($(e.target).hasClass("delButton")) return;
   if ($(e.target).hasClass("editButton")) return;
   const customThemeId = $(e.currentTarget).attr("customThemeId") ?? "";
-  ThemeController.set(customThemeId, true);
+  const theme = DB.getSnapshot()?.customThemes.find(
+    (e) => e._id === customThemeId
+  );
+
+  if (theme === undefined) {
+    //this shouldnt happen but typescript needs this check
+    console.error(
+      "Could not find custom theme in snapshot for id ",
+      customThemeId
+    );
+    return;
+  }
+
+  UpdateConfig.setCustomThemeColors(theme.colors);
 });
 
 // Handle click on favorite preset theme button
@@ -364,7 +380,6 @@ $(".pageSettings").on("click", ".section.themes .theme.button", (e) => {
   const theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton") && theme !== undefined) {
     UpdateConfig.setTheme(theme);
-    updateActiveButton();
   }
 });
 
@@ -451,25 +466,7 @@ $(".pageSettings #loadCustomColorsFromPreset").on("click", async () => {
 
 // Handles click on share custom theme button
 $("#shareCustomThemeButton").on("click", () => {
-  const share: string[] = [];
-  $.each(
-    $(".pageSettings .customTheme .customThemeEdit [type='color']"),
-    (_, element) => {
-      share.push($(element).attr("value") as string);
-    }
-  );
-
-  const url =
-    "https://monkeytype.com?customTheme=" + btoa(JSON.stringify(share));
-
-  navigator.clipboard.writeText(url).then(
-    function () {
-      Notifications.add("URL Copied to clipboard", 0);
-    },
-    function () {
-      CustomThemePopup.show(url);
-    }
-  );
+  ShareCustomThemePopup.show();
 });
 
 $(".pageSettings .saveCustomThemeButton").on("click", async () => {
@@ -493,5 +490,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "customThemeId") refreshButtons();
-  // if (eventKey === "customTheme") updateActiveTab();
+  if (eventKey === "theme" && ActivePage.get() === "settings") {
+    updateActiveButton();
+  }
 });

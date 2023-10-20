@@ -2,6 +2,7 @@ import Ape from "../ape";
 import * as DB from "../db";
 import Config from "../config";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
 import { Auth } from "../firebase";
@@ -9,6 +10,7 @@ import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
+import { debounce } from "throttle-debounce";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -16,56 +18,75 @@ let currentTimeRange: "allTime" | "daily" = "allTime";
 let currentLanguage = "english";
 let showingYesterday = false;
 
-type LbKey = 15 | 60;
+type LbKey = "15" | "60";
 
 let currentData: {
   [key in LbKey]: MonkeyTypes.LeaderboardEntry[];
 } = {
-  15: [],
-  60: [],
+  "15": [],
+  "60": [],
 };
 
+interface GetRankResponse {
+  minWpm: number;
+  count: number;
+  rank: number | null;
+  entry: MonkeyTypes.LeaderboardEntry | null;
+}
+
 let currentRank: {
-  [key in LbKey]: MonkeyTypes.LeaderboardEntry | Record<string, never>;
+  [key in LbKey]: GetRankResponse | Record<string, never>;
 } = {
-  15: {},
-  60: {},
+  "15": {},
+  "60": {},
+};
+
+let currentAvatars: {
+  [key in LbKey]: (string | null)[];
+} = {
+  "15": [],
+  "60": [],
 };
 
 const requesting = {
-  15: false,
-  60: false,
+  "15": false,
+  "60": false,
 };
 
 const leaderboardSingleLimit = 50;
 
 let updateTimer: number | undefined;
 
-function clearBody(lb: number): void {
-  if (lb === 15) {
+function clearBody(lb: LbKey): void {
+  if (lb === "15") {
     $("#leaderboardsWrapper table.left tbody").empty();
-  } else if (lb === 60) {
+  } else if (lb === "60") {
     $("#leaderboardsWrapper table.right tbody").empty();
   }
 }
 
-function clearFoot(lb: number): void {
-  if (lb === 15) {
+function clearFoot(lb: LbKey): void {
+  if (lb === "15") {
     $("#leaderboardsWrapper table.left tfoot").empty();
-  } else if (lb === 60) {
+  } else if (lb === "60") {
     $("#leaderboardsWrapper table.right tfoot").empty();
   }
 }
 
 function reset(): void {
   currentData = {
-    15: [],
-    60: [],
+    "15": [],
+    "60": [],
   };
 
   currentRank = {
-    15: {},
-    60: {},
+    "15": {},
+    "60": {},
+  };
+
+  currentAvatars = {
+    "15": [],
+    "60": [],
   };
 }
 
@@ -105,25 +126,25 @@ function startTimer(): void {
   }, 1000) as unknown as number;
 }
 
-function showLoader(lb: number): void {
-  if (lb === 15) {
+function showLoader(lb: LbKey): void {
+  if (lb === "15") {
     $(`#leaderboardsWrapper .leftTableLoader`).removeClass("hidden");
-  } else if (lb === 60) {
+  } else if (lb === "60") {
     $(`#leaderboardsWrapper .rightTableLoader`).removeClass("hidden");
   }
 }
 
-function hideLoader(lb: number): void {
-  if (lb === 15) {
+function hideLoader(lb: LbKey): void {
+  if (lb === "15") {
     $(`#leaderboardsWrapper .leftTableLoader`).addClass("hidden");
-  } else if (lb === 60) {
+  } else if (lb === "60") {
     $(`#leaderboardsWrapper .rightTableLoader`).addClass("hidden");
   }
 }
 
 function updateFooter(lb: LbKey): void {
   let side;
-  if (lb === 15) {
+  if (lb === "15") {
     side = "left";
   } else {
     side = "right";
@@ -139,7 +160,7 @@ function updateFooter(lb: LbKey): void {
   }
 
   if (
-    !Misc.isLocalhost() &&
+    !Misc.isDevEnvironment() &&
     (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 7200
   ) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
@@ -150,18 +171,38 @@ function updateFooter(lb: LbKey): void {
     return;
   }
 
-  $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+  if (DB.getSnapshot()?.lbOptOut === true) {
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
-      <td colspan="6" style="text-align:center;">Not qualified</>
+      <td colspan="6" style="text-align:center;">You have opted out of the leaderboards</>
     </tr>
     `);
+    return;
+  }
+
+  const lbRank = currentRank[lb];
+
+  if (
+    currentTimeRange === "daily" &&
+    lbRank !== null &&
+    lbRank.minWpm === undefined
+  ) {
+    //old response format
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td colspan="6" style="text-align:center;">Looks like the server returned data in a new format, please refresh</>
+    </tr>
+    `);
+    return;
+  }
 
   let toppercent;
-  if (currentTimeRange === "allTime" && currentRank[lb]) {
+  if (currentTimeRange === "allTime" && lbRank && lbRank?.rank) {
     const num = Misc.roundTo2(
-      (currentRank[lb]["rank"] / (currentRank[lb].count as number)) * 100
+      (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
-    if (currentRank[lb]["rank"] == 1) {
+    if (currentRank[lb]["rank"] === 1) {
       toppercent = "GOAT";
     } else {
       toppercent = `Top ${num}%`;
@@ -169,21 +210,17 @@ function updateFooter(lb: LbKey): void {
     toppercent = `<br><span class="sub">${toppercent}</span>`;
   }
 
-  if (currentRank[lb]) {
-    const entry = currentRank[lb];
+  const entry = lbRank?.entry;
+  if (entry) {
     const date = new Date(entry.timestamp);
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
-    <td>${entry.rank}</td>
+    <td>${lbRank.rank}</td>
     <td><span class="top">You</span>${toppercent ? toppercent : ""}</td>
-    <td class="alignRight">${(Config.alwaysShowCPM
-      ? entry.wpm * 5
-      : entry.wpm
-    ).toFixed(2)}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${(Config.alwaysShowCPM
-      ? entry.raw * 5
-      : entry.raw
-    ).toFixed(2)}<br><div class="sub">${
+    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
+    <div class="sub">${entry.acc.toFixed(2)}%</div></td>
+    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
+    <div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"
         : entry.consistency.toFixed(2) + "%"
@@ -192,6 +229,18 @@ function updateFooter(lb: LbKey): void {
     <div class='sub'>${format(date, "HH:mm")}</div></td>
   </tr>
   `);
+  } else if (currentTimeRange === "daily") {
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td colspan="6" style="text-align:center;">Not qualified ${`(min speed required: ${currentRank[lb]?.minWpm} wpm)`}</>
+    </tr>
+    `);
+  } else {
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td colspan="6" style="text-align:center;">Not qualified</>
+    </tr>
+    `);
   }
 }
 
@@ -199,7 +248,7 @@ function checkLbMemory(lb: LbKey): void {
   if (currentTimeRange === "daily") return;
 
   let side;
-  if (lb === 15) {
+  if (lb === "15") {
     side = "left";
   } else {
     side = "right";
@@ -207,10 +256,11 @@ function checkLbMemory(lb: LbKey): void {
 
   const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"] ?? 0;
 
-  if (currentRank[lb]) {
-    const difference = memory - currentRank[lb].rank;
+  const rank = currentRank[lb]?.rank;
+  if (rank) {
+    const difference = memory - rank;
     if (difference > 0) {
-      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      DB.updateLbMemory("time", lb, "english", rank, true);
       if (memory !== 0) {
         $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
           ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
@@ -219,7 +269,7 @@ function checkLbMemory(lb: LbKey): void {
         );
       }
     } else if (difference < 0) {
-      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      DB.updateLbMemory("time", lb, "english", rank, true);
       if (memory !== 0) {
         $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
           ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
@@ -237,13 +287,13 @@ function checkLbMemory(lb: LbKey): void {
   }
 }
 
-async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
+async function fillTable(lb: LbKey): Promise<void> {
   if (!currentData[lb]) {
     return;
   }
 
-  let side;
-  if (lb === 15) {
+  let side: string;
+  if (lb === "15") {
     side = "left";
   } else {
     side = "right";
@@ -255,56 +305,18 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
     );
   }
 
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const loggedInUserName = DB.getSnapshot()?.name;
 
-  const snap = DB.getSnapshot();
-
-  const avatarUrlPromises = currentData[lb].map(async (entry) => {
-    const isCurrentUser =
-      Auth?.currentUser &&
-      entry.uid === Auth?.currentUser.uid &&
-      snap &&
-      snap.discordAvatar &&
-      snap.discordId;
-
-    const entryHasAvatar = entry.discordAvatar && entry.discordId;
-
-    const avatarSource: Partial<
-      MonkeyTypes.Snapshot | MonkeyTypes.LeaderboardEntry
-    > = (isCurrentUser && snap) || (entryHasAvatar && entry) || {};
-
-    return Misc.getDiscordAvatarUrl(
-      avatarSource.discordId,
-      avatarSource.discordAvatar
-    );
-  });
-
-  const avatarUrls = (await Promise.allSettled(avatarUrlPromises)).map(
-    (promise) => {
-      if (promise.status === "fulfilled") {
-        return promise.value;
-      }
-
-      return null;
-    }
-  );
-
-  let a = currentData[lb].length - leaderboardSingleLimit;
-  let b = currentData[lb].length;
-  if (a < 0) a = 0;
-  if (prepend) {
-    a = 0;
-    b = prepend;
-  }
   let html = "";
-  for (let i = a; i < b; i++) {
+  for (let i = 0; i < currentData[lb].length; i++) {
     const entry = currentData[lb][i] as MonkeyTypes.LeaderboardEntry;
     if (!entry) {
       break;
     }
     if (entry.hidden) return;
     let meClassString = "";
-    if (entry.name == loggedInUserName) {
+    if (entry.name === loggedInUserName) {
       meClassString = ' class="me"';
     }
     const date = new Date(entry.timestamp);
@@ -315,9 +327,8 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
 
     let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
-    const currentEntryAvatarUrl = avatarUrls[i];
-    if (currentEntryAvatarUrl !== null) {
-      avatar = `<div class="avatar" style="background-image:url(${currentEntryAvatarUrl})"></div>`;
+    if (entry.discordAvatar) {
+      avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
     }
 
     html += `
@@ -326,21 +337,18 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
     <td>
-    <div class="avatarNameBadge">${avatar}
+    <div class="avatarNameBadge">
+      <div class="lbav">${avatar}</div>
       <a href="${location.origin}/profile/${
       entry.uid
     }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
     </div>
     </td>
-    <td class="alignRight">${(Config.alwaysShowCPM
-      ? entry.wpm * 5
-      : entry.wpm
-    ).toFixed(2)}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${(Config.alwaysShowCPM
-      ? entry.raw * 5
-      : entry.raw
-    ).toFixed(2)}<br><div class="sub">${
+    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
+    <div class="sub">${entry.acc.toFixed(2)}%</div></td>
+    <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
+    <div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"
         : entry.consistency.toFixed(2) + "%"
@@ -350,12 +358,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   </tr>
   `;
   }
-
-  if (!prepend) {
-    $(`#leaderboardsWrapper table.${side} tbody`).append(html);
-  } else {
-    $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
-  }
+  $(`#leaderboardsWrapper table.${side} tbody`).html(html);
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
@@ -373,10 +376,10 @@ export function hide(): void {
       },
       100,
       () => {
-        clearBody(15);
-        clearBody(60);
-        clearFoot(15);
-        clearFoot(60);
+        clearBody("15");
+        clearBody("60");
+        clearFoot("15");
+        clearFoot("60");
         reset();
         stopTimer();
         showingYesterday = false;
@@ -396,7 +399,7 @@ function updateTitle(): void {
 
   let text = `${timeRangeString} ${capitalizedLanguage} Leaderboards`;
 
-  if (showingYesterday) {
+  if (showingYesterday && currentTimeRange !== "allTime") {
     text += " (Yesterday)";
   }
 
@@ -430,8 +433,8 @@ async function update(): Promise<void> {
   leftScrollEnabled = false;
   rightScrollEnabled = false;
 
-  showLoader(15);
-  showLoader(60);
+  showLoader("15");
+  showLoader("60");
 
   const timeModes = ["15", "60"];
 
@@ -461,8 +464,8 @@ async function update(): Promise<void> {
 
   const failedResponse = responses.find((response) => response.status !== 200);
   if (failedResponse) {
-    hideLoader(15);
-    hideLoader(60);
+    hideLoader("15");
+    hideLoader("60");
     return Notifications.add(
       "Failed to load leaderboards: " + failedResponse.message,
       -1
@@ -473,19 +476,24 @@ async function update(): Promise<void> {
     (response) => response.data
   );
 
-  currentData[15] = lb15Data;
-  currentData[60] = lb60Data;
-  currentRank[15] = lb15Rank;
-  currentRank[60] = lb60Rank;
+  currentData["15"] = lb15Data;
+  currentData["60"] = lb60Data;
+  currentRank["15"] = lb15Rank;
+  currentRank["60"] = lb60Rank;
 
-  const leaderboardKeys: LbKey[] = [15, 60];
+  const leaderboardKeys: LbKey[] = ["15", "60"];
 
-  leaderboardKeys.forEach((leaderboardTime: LbKey) => {
-    hideLoader(leaderboardTime);
-    clearBody(leaderboardTime);
-    updateFooter(leaderboardTime);
-    checkLbMemory(leaderboardTime);
-    fillTable(leaderboardTime);
+  leaderboardKeys.forEach((lbKey) => {
+    hideLoader(lbKey);
+    clearBody(lbKey);
+    updateFooter(lbKey);
+    checkLbMemory(lbKey);
+    fillTable(lbKey);
+
+    getAvatarUrls(currentData[lbKey]).then((urls) => {
+      currentAvatars[lbKey] = urls;
+      fillAvatars(lbKey);
+    });
   });
 
   $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
@@ -522,7 +530,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   const response = await Ape.leaderboards.get({
     language: currentLanguage,
     mode: "time",
-    mode2: lb.toString(),
+    mode2: lb,
     skip: skipVal,
     limit: limitVal,
     ...getDailyLeaderboardQuery(),
@@ -531,6 +539,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
 
   if (response.status !== 200 || data.length === 0) {
     hideLoader(lb);
+    requesting[lb] = false;
     return;
   }
   if (prepend) {
@@ -541,7 +550,17 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   if (prepend && !limitVal) {
     limitVal = leaderboardSingleLimit - 1;
   }
-  await fillTable(lb, limitVal);
+  await fillTable(lb);
+
+  getAvatarUrls(data).then((urls) => {
+    if (prepend) {
+      currentAvatars[lb].unshift(...urls);
+    } else {
+      currentAvatars[lb].push(...urls);
+    }
+    fillAvatars(lb);
+  });
+
   hideLoader(lb);
   requesting[lb] = false;
 }
@@ -552,7 +571,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   const response = await Ape.leaderboards.get({
     language: currentLanguage,
     mode: "time",
-    mode2: lb.toString(),
+    mode2: lb,
     skip,
     ...getDailyLeaderboardQuery(),
   });
@@ -568,13 +587,53 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 
   clearBody(lb);
   currentData[lb] = [];
+  currentAvatars[lb] = [];
   if (response.status !== 200 || data.length === 0) {
     hideLoader(lb);
     return;
   }
   currentData[lb] = data;
   await fillTable(lb);
+
+  getAvatarUrls(data).then((urls) => {
+    currentAvatars[lb] = urls;
+    fillAvatars(lb);
+  });
+
   hideLoader(lb);
+}
+
+async function getAvatarUrls(
+  data: MonkeyTypes.LeaderboardEntry[]
+): Promise<(string | null)[]> {
+  return Promise.allSettled(
+    data.map(async (entry) =>
+      Misc.getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
+    )
+  ).then((promises) => {
+    return promises.map((promise) => {
+      if (promise.status === "fulfilled") {
+        return promise.value;
+      }
+      return null;
+    });
+  });
+}
+
+function fillAvatars(lb: LbKey): void {
+  const side = lb === "15" ? "left" : "right";
+  const elements = $(`#leaderboardsWrapper table.${side} tbody .lbav`);
+  currentAvatars[lb].forEach((url, index) => {
+    if (url !== null) {
+      $(elements[index]).html(
+        `<div class="avatar" style="background-image:url(${url})"></div>`
+      );
+    } else {
+      $(elements[index]).html(
+        `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`
+      );
+    }
+  });
 }
 
 export function show(): void {
@@ -599,15 +658,9 @@ export function show(): void {
         "disabled"
       );
     }
-    if (Config.alwaysShowCPM) {
-      $("#leaderboards table thead tr td:nth-child(3)").html(
-        'cpm<br><div class="sub">accuracy</div>'
-      );
-    } else {
-      $("#leaderboards table thead tr td:nth-child(3)").html(
-        'wpm<br><div class="sub">accuracy</div>'
-      );
-    }
+    $("#leaderboards table thead tr td:nth-child(3)").html(
+      Config.typingSpeedUnit + '<br><div class="sub">accuracy</div>'
+    );
     $("#leaderboardsWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -651,6 +704,10 @@ const languageSelector = $(
       text: "german",
     },
     {
+      id: "french",
+      text: "french",
+    },
+    {
       id: "portuguese",
       text: "portuguese",
     },
@@ -661,6 +718,10 @@ const languageSelector = $(
     {
       id: "italian",
       text: "italian",
+    },
+    {
+      id: "russian",
+      text: "russian",
     },
   ],
 });
@@ -673,42 +734,44 @@ languageSelector.on("select2:select", (e) => {
 
 let leftScrollEnabled = true;
 
-$("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    requestMore(15, true);
+    debouncedRequestMore("15", true);
   }
 });
 
-$("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
+const debouncedRequestMore = debounce(500, requestMore);
+
+$("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round(elem.outerHeight() as number) + 50
   ) {
-    requestMore(15);
+    debouncedRequestMore("15");
   }
 });
 
 let rightScrollEnabled = true;
 
-$("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
   if (!rightScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    requestMore(60, true);
+    debouncedRequestMore("60", true);
   }
 });
 
-$("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
   const elem = $(e.currentTarget);
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round((elem.outerHeight() as number) + 50)
   ) {
-    requestMore(60);
+    debouncedRequestMore("60");
   }
 });
 
@@ -717,7 +780,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").on(
   async () => {
     leftScrollEnabled = false;
     $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scrollTop(0);
-    await requestNew(15, 0);
+    await requestNew("15", 0);
     leftScrollEnabled = true;
   }
 );
@@ -725,9 +788,9 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
   "click",
   async () => {
-    if (!currentRank[15]?.rank) return;
+    if (!currentRank["15"]?.rank) return;
     leftScrollEnabled = false;
-    await requestNew(15, currentRank[15].rank - leaderboardSingleLimit / 2);
+    await requestNew("15", currentRank["15"].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
       "#leaderboardsWrapper #leaderboards .leftTableWrapper table tbody td"
     ).outerHeight() as number;
@@ -735,7 +798,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").on(
       {
         scrollTop:
           rowHeight *
-            Math.min(currentRank[15].rank, leaderboardSingleLimit / 2) -
+            Math.min(currentRank["15"].rank, leaderboardSingleLimit / 2) -
           ($(
             "#leaderboardsWrapper #leaderboards .leftTableWrapper"
           ).outerHeight() as number) /
@@ -754,7 +817,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").on(
   async () => {
     rightScrollEnabled = false;
     $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scrollTop(0);
-    await requestNew(60, 0);
+    await requestNew("60", 0);
     rightScrollEnabled = true;
   }
 );
@@ -762,9 +825,9 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").on(
 $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
   "click",
   async () => {
-    if (!currentRank[60]?.rank) return;
+    if (!currentRank["60"]?.rank) return;
     leftScrollEnabled = false;
-    await requestNew(60, currentRank[60].rank - leaderboardSingleLimit / 2);
+    await requestNew("60", currentRank["60"].rank - leaderboardSingleLimit / 2);
     const rowHeight = $(
       "#leaderboardsWrapper #leaderboards .rightTableWrapper table tbody td"
     ).outerHeight() as number;
@@ -772,7 +835,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").on(
       {
         scrollTop:
           rowHeight *
-            Math.min(currentRank[60].rank, leaderboardSingleLimit / 2) -
+            Math.min(currentRank["60"].rank, leaderboardSingleLimit / 2) -
           ($(
             "#leaderboardsWrapper #leaderboards .rightTableWrapper"
           ).outerHeight() as number) /
@@ -818,15 +881,9 @@ $(document).on("keydown", (event) => {
   }
 });
 
-$("#top #menu").on("click", ".textButton", (e) => {
+$("header nav").on("click", ".textButton", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
     show();
-  }
-});
-
-$(document).on("keypress", "#top #menu .textButton", (e) => {
-  if (e.key === "Enter") {
-    $(e.currentTarget).trigger("click");
   }
 });
 

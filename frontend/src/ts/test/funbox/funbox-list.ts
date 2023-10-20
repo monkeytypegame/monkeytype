@@ -2,10 +2,12 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "nausea",
     info: "I think I'm gonna be sick.",
+    hasCSS: true,
   },
   {
     name: "round_round_baby",
     info: "...right round, like a record baby. Right, round round round.",
+    hasCSS: true,
   },
   {
     name: "simon_says",
@@ -14,14 +16,17 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "mirror",
     info: "Everything is mirrored!",
+    hasCSS: true,
   },
   {
     name: "upside_down",
     info: "Everything is upside down!",
+    hasCSS: true,
   },
   {
     name: "tts",
@@ -30,15 +35,17 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "choo_choo",
     info: "All the letters are spinning!",
     properties: ["noLigatures", "conflictsWithSymmetricChars"],
+    hasCSS: true,
   },
   {
     name: "arrows",
-    info: "Eurobeat Intensifies...",
+    info: "Play it on a pad!",
     properties: [
       "ignoresLanguage",
       "ignoresLayout",
@@ -71,10 +78,12 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     name: "earthquake",
     info: "Everybody get down! The words are shaking!",
     properties: ["noLigatures"],
+    hasCSS: true,
   },
   {
     name: "space_balls",
     info: "In a galaxy far far away.",
+    hasCSS: true,
   },
   {
     name: "gibberish",
@@ -95,7 +104,6 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     info: "Where was the ampersand again?. Only ASCII characters.",
     properties: ["ignoresLanguage", "noLetters", "unspeakable"],
     forcedConfig: {
-      punctuation: [false],
       numbers: [false],
     },
   },
@@ -119,12 +127,18 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     properties: ["changesWordsVisibility", "toPush:3", "noInfiniteDuration"],
   },
   {
+    name: "plus_three",
+    info: "Only three future words are visible.",
+    properties: ["changesWordsVisibility", "toPush:4", "noInfiniteDuration"],
+  },
+  {
     name: "read_ahead_easy",
     info: "Only the current word is invisible.",
     properties: ["changesWordsVisibility"],
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "read_ahead",
@@ -133,6 +147,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "read_ahead_hard",
@@ -141,6 +156,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       highlightMode: ["letter", "off"],
     },
+    hasCSS: true,
   },
   {
     name: "memory",
@@ -161,7 +177,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "poetry",
     info: "Practice typing some beautiful prose.",
-    properties: ["noInfiniteDuration"],
+    properties: ["noInfiniteDuration", "ignoresLanguage"],
     forcedConfig: {
       punctuation: [false],
       numbers: [false],
@@ -170,7 +186,7 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "wikipedia",
     info: "Practice typing wikipedia sections.",
-    properties: ["noInfiniteDuration"],
+    properties: ["noInfiniteDuration", "ignoresLanguage"],
     forcedConfig: {
       punctuation: [false],
       numbers: [false],
@@ -179,11 +195,12 @@ const list: MonkeyTypes.FunboxMetadata[] = [
   {
     name: "weakspot",
     info: "Focus on slow and mistyped letters.",
+    properties: ["changesWordsFrequency"],
   },
   {
     name: "pseudolang",
     info: "Nonsense words that look like the current language.",
-    properties: ["unspeakable"],
+    properties: ["unspeakable", "ignoresLanguage"],
   },
   {
     name: "IPv4",
@@ -202,6 +219,41 @@ const list: MonkeyTypes.FunboxMetadata[] = [
     forcedConfig: {
       numbers: [false],
     },
+  },
+  {
+    name: "binary",
+    alias: "numbers",
+    info: "01000010 01100101 01100101 01110000 00100000 01100010 01101111 01101111 01110000 00101110",
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters"],
+    forcedConfig: {
+      numbers: [false],
+      punctuation: [false],
+    },
+  },
+  {
+    name: "zipf",
+    alias: "frequency",
+    info: "Words are generated according to Zipf's law. (not all languages will produce Zipfy results, use with caution)",
+    properties: ["changesWordsFrequency"],
+  },
+  {
+    name: "morse",
+    info: "-.../././.--./ -.../---/---/.--./-.-.--/ ",
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters", "nospace"],
+  },
+  {
+    name: "crt",
+    info: "Go back to the 1980s",
+    properties: ["noLigatures"],
+  },
+  {
+    name: "backwards",
+    info: "...sdrawkcab epyt ot yrt woN",
+    properties: [
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "wordOrder:reverse",
+    ],
   },
 ];
 

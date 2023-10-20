@@ -12,7 +12,9 @@ export async function show(): Promise<void> {
     Notifications.add(
       "Looks like you're using an adblocker. Video ads will not work until you disable it.",
       0,
-      6
+      {
+        duration: 6,
+      }
     );
     return;
   }
@@ -22,7 +24,9 @@ export async function show(): Promise<void> {
     Notifications.add(
       "Looks like you're using a cookie popup blocker. Video ads will not work without giving your consent through the popup.",
       0,
-      7
+      {
+        duration: 7,
+      }
     );
     return;
   }
@@ -65,7 +69,9 @@ export function egVideoListener(options: Record<string, string>): void {
   } else if (event === "finished") {
     hide();
   } else if (event === "empty") {
-    Notifications.add("Failed to load video ad. Please try again later", -1, 3);
+    Notifications.add("Failed to load video ad. Please try again later", -1, {
+      duration: 3,
+    });
     hide();
   }
 }
