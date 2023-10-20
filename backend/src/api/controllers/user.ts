@@ -194,7 +194,7 @@ export async function resetUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "reset user");
-  await Promise.all([
+  const promises = [
     UserDAL.resetUser(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
@@ -204,7 +204,12 @@ export async function resetUser(
       uid,
       req.ctx.configuration.dailyLeaderboards
     ),
-  ]);
+  ];
+
+  if (userInfo.discordId) {
+    promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
+  }
+  await Promise.all(promises);
   Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
