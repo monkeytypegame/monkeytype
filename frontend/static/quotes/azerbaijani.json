@@ -1,10 +1,22 @@
 {
   "language": "azerbaijani",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -220,13 +232,13 @@
     {
       "text": "Bu kino ki var, çox qəliz məsələdi, həm qəlizdi, həm də ki vacib!",
       "source": "\"Bəyin Oğurlanması\"",
-      "length": 64,
+      "length": 65,
       "id": 36
     },
     {
       "text": "Məsələ sosiskada deyil e, adam gərək \"vnimatelnı\" olsun",
       "source": "\"Uşaqlığın son gecəsi\"",
-      "length": 57,
+      "length": 55,
       "id": 37
     },
     {
@@ -247,6 +259,5 @@
       "length": 40,
       "id": 40
     }
-
   ]
 }
