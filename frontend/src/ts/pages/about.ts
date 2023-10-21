@@ -205,3 +205,7 @@ export const page = new Page(
 );
 
 Skeleton.save("pageAbout");
+
+Notifications.add(`Error Message`, -1);
+Notifications.add(`Info Message`, 0);
+Notifications.add(`Success Message`, 1);

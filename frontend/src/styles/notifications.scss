@@ -26,32 +26,33 @@
   }
 
   .notif {
-    --notif-border-color: rgba(0, 77, 148, 0.71);
+    --notif-border-color: rgba(0, 130, 251, 0.985);
     --notif-background-color: rgba(0, 77, 148, 0.9);
-    --notif-icon-color: rgba(255, 255, 255);
 
     -webkit-user-select: none;
     user-select: none;
+    backdrop-filter: blur(15px);
 
     .icon {
-      color: var(--notif-icon-color);
+      color: #fff;
       padding: 1rem 1rem;
       font-size: 1rem;
     }
 
     .message {
       padding: 1rem 1rem 1rem 0;
-      color: #fff;
+      color: #ffffff92;
       font-size: 14px;
 
       .title {
         color: #fff;
+        font-weight: 500;
         padding-bottom: 0.25rem;
       }
     }
 
     border-radius: 12px;
-    border: 1px solid var(--notif-border-color);
+    border: 2px solid var(--notif-border-color);
     background: var(--notif-background-color);
     color: #fff;
 
@@ -64,13 +65,11 @@
     &.bad {
       --notif-border-color: rgba(241, 90, 34, 0.71);
       --notif-background-color: rgba(138, 46, 12, 0.9);
-      --notif-icon-color: rgba(243, 190, 63, 1);
     }
 
     &.good {
       --notif-border-color: rgba(100, 206, 100, 0.71);
       --notif-background-color: rgba(0, 148, 0, 0.9);
-      --notif-icon-color: rgba(255, 255, 255);
     }
 
     &:hover {
