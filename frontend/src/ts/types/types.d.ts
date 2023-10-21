@@ -228,6 +228,8 @@ declare namespace MonkeyTypes {
 
   type FunboxWordsFrequency = "normal" | "zipf";
 
+  type FunboxWordOrder = "normal" | "reverse";
+
   type FunboxProperty =
     | "symmetricChars"
     | "conflictsWithSymmetricChars"
@@ -244,7 +246,8 @@ declare namespace MonkeyTypes {
     | "nospace"
     | `toPush:${number}`
     | "noInfiniteDuration"
-    | "changesWordsFrequency";
+    | "changesWordsFrequency"
+    | `wordOrder:${FunboxWordOrder}`;
 
   interface FunboxFunctions {
     getWord?: (wordset?: Misc.Wordset, wordIndex?: number) => string;
@@ -905,7 +908,7 @@ declare namespace MonkeyTypes {
   interface TypingSpeedUnitSettings {
     fromWpm: (number) => number;
     toWpm: (number) => number;
-    convertWithUnitSuffix: (number) => string;
+    convertWithUnitSuffix: (number, boolean) => string;
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;

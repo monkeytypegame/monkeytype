@@ -33,6 +33,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
+import * as CookiePopup from "../popups/cookie-popup";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -832,6 +833,10 @@ $(document).on("keydown", async (event) => {
   const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
+
+  const cookiePopupVisible = CookiePopup.isVisible();
+
+  if (cookiePopupVisible) return;
 
   const allowTyping: boolean =
     pageTestActive &&

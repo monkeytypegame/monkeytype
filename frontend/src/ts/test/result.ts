@@ -26,6 +26,8 @@ import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
 import * as ConfigEvent from "../observables/config-event";
 import * as Focus from "./focus";
+import * as CustomText from "./custom-text";
+import * as CustomTextState from "./../states/custom-text-name";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -259,8 +261,11 @@ function updateWpmAndAcc(): void {
     );
   } else {
     //not showing decimal places
-    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm);
-    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(result.rawWpm);
+    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm, true);
+    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(
+      result.rawWpm,
+      true
+    );
     if (Config.typingSpeedUnit != "wpm") {
       wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
@@ -710,6 +715,7 @@ export async function update(
   ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
+  hideCrown();
   $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
@@ -825,7 +831,20 @@ export async function update(
         },
         125
       );
-      if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
+
+      const canQuickRestart = Misc.canQuickRestart(
+        Config.mode,
+        Config.words,
+        Config.time,
+        CustomText,
+        CustomTextState.isCustomTextLong() ?? false
+      );
+
+      if (
+        Config.alwaysShowWordsHistory &&
+        canQuickRestart &&
+        !GlarsesMode.get()
+      ) {
         TestUI.toggleResultWords(true);
       }
       AdController.updateFooterAndVerticalAds(true);

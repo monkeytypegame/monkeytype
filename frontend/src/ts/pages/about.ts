@@ -56,19 +56,35 @@ function updateStatsAndHistogram(): void {
       Math.round(secondsRounded / 3600) + " hours"
     );
 
-    $(".pageAbout #totalStartedTestsStat .val").text(
-      Math.round(typingStatsResponseData.testsStarted / 1000000)
+    const startedWithMagnitude = Misc.getNumberWithMagnitude(
+      typingStatsResponseData.testsStarted
     );
-    $(".pageAbout #totalStartedTestsStat .valSmall").text("million");
+
+    $(".pageAbout #totalStartedTestsStat .val").text(
+      typingStatsResponseData.testsStarted < 10
+        ? startedWithMagnitude.roundedTo2
+        : startedWithMagnitude.rounded
+    );
+    $(".pageAbout #totalStartedTestsStat .valSmall").text(
+      startedWithMagnitude.orderOfMagnitude
+    );
     $(".pageAbout #totalStartedTestsStat").attr(
       "aria-label",
       typingStatsResponseData.testsStarted + " tests"
     );
 
-    $(".pageAbout #totalCompletedTestsStat .val").text(
-      Math.round(typingStatsResponseData.testsCompleted / 1000000)
+    const completedWIthMagnitude = Misc.getNumberWithMagnitude(
+      typingStatsResponseData.testsCompleted
     );
-    $(".pageAbout #totalCompletedTestsStat .valSmall").text("million");
+
+    $(".pageAbout #totalCompletedTestsStat .val").text(
+      typingStatsResponseData.testsCompleted < 10
+        ? completedWIthMagnitude.roundedTo2
+        : completedWIthMagnitude.rounded
+    );
+    $(".pageAbout #totalCompletedTestsStat .valSmall").text(
+      completedWIthMagnitude.orderOfMagnitude
+    );
     $(".pageAbout #totalCompletedTestsStat").attr(
       "aria-label",
       typingStatsResponseData.testsCompleted + " tests"

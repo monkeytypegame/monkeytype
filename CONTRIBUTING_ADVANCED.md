@@ -83,6 +83,12 @@ Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-exa
   4. The Firebase config will be visible below
   5. Paste the config into `firebase-config.ts`
 
+If you want to access the frontend from other machines on your network create a file `frontend/.env` with this content:
+
+```
+BACKEND_URL="http://<Your IP>:5005"
+```
+
 ### Backend (optional)
 
 Follow these steps if you want to work on anything involving the database/account system. Otherwise, you can skip this section.

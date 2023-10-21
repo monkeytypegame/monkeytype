@@ -1,12 +1,9 @@
 import endpoints from "./endpoints";
 import { buildHttpClient } from "./adapters/axios-adapter";
-
-const DEV_SERVER_HOST = "http://localhost:5005";
-const PROD_SERVER_HOST = "https://api.monkeytype.com";
+import { envConfig } from "../constants/env-config";
 
 const API_PATH = "";
-const BASE_URL =
-  window.location.hostname === "localhost" ? DEV_SERVER_HOST : PROD_SERVER_HOST;
+const BASE_URL = envConfig.backendUrl;
 const API_URL = `${BASE_URL}${API_PATH}`;
 
 const httpClient = buildHttpClient(API_URL, 10000);

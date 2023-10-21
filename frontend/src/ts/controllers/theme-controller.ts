@@ -32,7 +32,7 @@ async function updateFavicon(): Promise<void> {
     let maincolor, bgcolor;
     bgcolor = await ThemeColors.get("bg");
     maincolor = await ThemeColors.get("main");
-    if (Misc.isLocalhost()) {
+    if (Misc.isDevEnvironment()) {
       [maincolor, bgcolor] = [bgcolor, maincolor];
     }
     if (bgcolor === maincolor) {

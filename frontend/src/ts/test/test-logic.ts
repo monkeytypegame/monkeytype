@@ -1224,7 +1224,6 @@ async function saveResult(
   const response = await Ape.results.save(completedEvent);
 
   AccountButton.loading(false);
-  Result.hideCrown();
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
