@@ -66,7 +66,7 @@ class Notification {
   //-1 - bad
   show(): void {
     let cls = "notice";
-    let icon = `<i class="far fa-flag"></i>`;
+    let icon = `<i class="fas fa-info-circle"></i>`;
     let title = "Notice";
     if (this.level === 1) {
       cls = "good";
@@ -74,7 +74,7 @@ class Notification {
       title = "Success";
     } else if (this.level === -1) {
       cls = "bad";
-      icon = `<i class="fas fa-exclamation-triangle"></i>`;
+      icon = `<i class="fas fa-times-circle"></i>`;
       title = "Error";
       console.error(this.message);
     }
@@ -105,8 +105,7 @@ class Notification {
       $("#notificationCenter .history").prepend(`
 
           <div class="notif ${cls}" id=${this.id}>
-              <div class="icon">${icon}</div>
-              <div class="message"><div class="title">${title}</div>${this.message}</div>
+              <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
           </div>
 
           `);
@@ -124,8 +123,7 @@ class Notification {
             $("#notificationCenter .history").prepend(`
 
                   <div class="notif ${cls}" id=${this.id}>
-                      <div class="icon">${icon}</div>
-                      <div class="message"><div class="title">${title}</div>${this.message}</div>
+                      <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
                   </div>
 
               `);
@@ -318,3 +316,37 @@ $("#notificationCenter .clearAll").on("click", () => {
   visibleStickyNotifications = 0;
   updateClearAllButton();
 });
+
+add("This is a test notification", -1, {
+  duration: 0,
+});
+
+add("This is a test notification", 0, {
+  duration: 0,
+});
+
+add("This is a test notification", 1, {
+  duration: 0,
+});
+
+add(
+  "And this is a very long test notification that will break into multiple lines",
+  -1,
+  {
+    duration: 0,
+  }
+);
+add(
+  "And this is a very long test notification that will break into multiple lines",
+  0,
+  {
+    duration: 0,
+  }
+);
+add(
+  "And this is a very long test notification that will break into multiple lines",
+  1,
+  {
+    duration: 0,
+  }
+);
