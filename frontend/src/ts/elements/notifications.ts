@@ -316,37 +316,3 @@ $("#notificationCenter .clearAll").on("click", () => {
   visibleStickyNotifications = 0;
   updateClearAllButton();
 });
-
-add("This is a test notification", -1, {
-  duration: 0,
-});
-
-add("This is a test notification", 0, {
-  duration: 0,
-});
-
-add("This is a test notification", 1, {
-  duration: 0,
-});
-
-add(
-  "And this is a very long test notification that will break into multiple lines",
-  -1,
-  {
-    duration: 0,
-  }
-);
-add(
-  "And this is a very long test notification that will break into multiple lines",
-  0,
-  {
-    duration: 0,
-  }
-);
-add(
-  "And this is a very long test notification that will break into multiple lines",
-  1,
-  {
-    duration: 0,
-  }
-);
