@@ -16,7 +16,7 @@ When contributing to Monkeytype, it's good to know our best practices, tips, and
 
 ## How to Contribute
 
-We have two separate contribution guides based on what you're looking to contribute. If you're simply looking to help us augment our language or quotes data, please refer to [CONTRIBUTING_BASIC.md](./CONTRIBUTING_BASIC.md). This guide will go over how to do so easily, and without the need to set up a local development server.
+We have two separate contribution guides based on what you're looking to contribute. If you're simply looking to help us augment our language or quotes data, please refer to [CONTRIBUTING_BASIC.md](./CONTRIBUTING_BASIC.md). This guide will go over how to do so easily and without the need to set up a local development server.
 
 If you're looking to make deeper code changes that affect functionality, or will require screenshots of the changes, please refer to [CONTRIBUTING_ADVANCED.md](./CONTRIBUTING_ADVANCED.md).
 
@@ -34,7 +34,7 @@ For types, we use the following:
 - `impr`: An improvement to an existing feature
 - `fix`: A bug fix
 - `docs`: Documentation only changes
-- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- `style`: Changes that do not affect the meaning of the code (white space, formatting, missing semi-colons, etc)
 - `refactor`: A code change that neither fixes a bug nor adds a feature, but makes the code easier to read, understand, or improve
 - `perf`: A code change that improves performance
 - `test`: Adding missing tests or correcting existing tests
@@ -67,7 +67,7 @@ Before submitting a theme make sure...
 
 ### Quote Guidelines
 
-- Do not include content that contains any libelous or otherwise unlawful, abusive or obscene text.
+- Do not include content that contains any libelous or otherwise unlawful, abusive, or obscene text.
 - Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
 - Verify quotes added aren't duplicates of any already present
 - Verify the `length` property is correct (length of the text in characters)

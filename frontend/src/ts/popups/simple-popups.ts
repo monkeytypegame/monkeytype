@@ -222,7 +222,16 @@ class SimplePopup {
       }
     });
 
-    if (vals.some((v) => v === undefined || v === "")) {
+    const inputsWithCurrentValue = [];
+    for (let i = 0; i < this.inputs.length; i++) {
+      inputsWithCurrentValue.push({ ...this.inputs[i], currentValue: vals[i] });
+    }
+
+    if (
+      inputsWithCurrentValue
+        .filter((i) => !i.hidden)
+        .some((v) => v.currentValue === undefined || v.currentValue === "")
+    ) {
       Notifications.add("Please fill in all fields", 0);
       return;
     }
