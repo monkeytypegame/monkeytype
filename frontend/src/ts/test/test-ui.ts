@@ -461,7 +461,6 @@ export async function screenshot(): Promise<void> {
   $("header, footer").addClass("invisible");
   $("#result").addClass("noBalloons");
   $(".wordInputHighlight").addClass("hidden");
-
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
