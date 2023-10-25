@@ -45,18 +45,18 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
     const { authorization: authHeader } = req.headers;
 
     try {
-      if (options.isPublic === true) {
-        token = {
-          type: "None",
-          uid: "",
-          email: "",
-        };
-      } else if (authHeader) {
+      if (authHeader) {
         token = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
           options
         );
+      } else if (options.isPublic === true) {
+        token = {
+          type: "None",
+          uid: "",
+          email: "",
+        };
       } else if (process.env.MODE === "dev") {
         token = authenticateWithBody(req.body);
       } else {
@@ -216,7 +216,7 @@ async function authenticateWithApeKey(
     throw new MonkeyError(503, "ApeKeys are not being accepted at this time");
   }
 
-  if (!options.acceptApeKeys) {
+  if (!options.acceptApeKeys && !options.isPublic) {
     throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
   }
 
