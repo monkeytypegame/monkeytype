@@ -113,6 +113,36 @@ describe("UserDal", () => {
     ).rejects.toThrow("User document already exists");
   });
 
+  it("isNameAvailable should correctly check if a username is available", async () => {
+    // given
+    await UserDAL.addUser("user1", "user1@email.com", "userId1");
+    await UserDAL.addUser("user2", "user2@email.com", "userId2");
+
+    const testCases = [
+      {
+        name: "user1",
+        whosChecking: "userId1",
+        expected: true,
+      },
+      {
+        name: "USER1",
+        whosChecking: "userId1",
+        expected: true,
+      },
+      {
+        name: "user2",
+        whosChecking: "userId1",
+        expected: false,
+      },
+    ];
+
+    // when, then
+    for (const { name, expected, whosChecking } of testCases) {
+      const isAvailable = await UserDAL.isNameAvailable(name, whosChecking);
+      expect(isAvailable).toBe(expected);
+    }
+  });
+
   it("updatename should not allow unavailable usernames", async () => {
     // given
     const mockUsers = [...Array(3).keys()]
