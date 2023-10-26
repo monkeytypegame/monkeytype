@@ -7,6 +7,7 @@ import * as Misc from "../utils/misc";
 import * as Hangul from "hangul-js";
 import * as Notifications from "../elements/notifications";
 import * as ActivePage from "../states/active-page";
+import * as TestWords from "../test/test-words";
 
 const stenoKeys: MonkeyTypes.Layout = {
   keymapShowTopRow: true,
@@ -24,17 +25,15 @@ function highlightKey(currentKey: string): void {
   if (Config.mode === "zen") return;
   if (currentKey === "") currentKey = " ";
   try {
-    if ($(".activeKey") != undefined) {
-      $(".activeKey").removeClass("activeKey");
-    }
+    $(".activeKey").removeClass("activeKey");
 
     let highlightKey;
     if (Config.language.startsWith("korean")) {
       currentKey = Hangul.disassemble(currentKey)[0];
     }
-    if (currentKey == " ") {
+    if (currentKey === " ") {
       highlightKey = "#keymap .keySpace, #keymap .keySplitSpace";
-    } else if (currentKey == '"') {
+    } else if (currentKey === '"') {
       highlightKey = `#keymap .keymapKey[data-key*='${currentKey}']`;
     } else {
       highlightKey = `#keymap .keymapKey[data-key*="${currentKey}"]`;
@@ -51,11 +50,11 @@ function highlightKey(currentKey: string): void {
 }
 
 async function flashKey(key: string, correct?: boolean): Promise<void> {
-  if (key == undefined) return;
+  if (key === undefined) return;
   //console.log("key", key);
-  if (key == " ") {
+  if (key === " ") {
     key = "#keymap .keySpace, #keymap .keySplitSpace";
-  } else if (key == '"') {
+  } else if (key === '"') {
     key = `#keymap .keymapKey[data-key*='${key}']`;
   } else {
     key = `#keymap .keymapKey[data-key*="${key}"]`;
@@ -90,7 +89,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
       .animate(
         {
           color: themecolors.sub,
-          backgroundColor: "transparent",
+          backgroundColor: themecolors.subAlt,
           borderColor: themecolors.sub,
         },
         SlowTimer.get() ? 0 : 500,
@@ -141,6 +140,7 @@ export async function refresh(
     }
 
     const showTopRow =
+      (TestWords.hasNumbers && Config.keymapMode === "next") ||
       Config.keymapShowTopRow === "always" ||
       ((lts as typeof layouts["qwerty"]).keymapShowTopRow &&
         Config.keymapShowTopRow !== "never");
@@ -183,6 +183,14 @@ export async function refresh(
           rowElement += "<div></div>";
         }
 
+        if (isMatrix) {
+          if (row !== "row5" && lts.matrixShowRightColumn) {
+            rowElement += `<div class="keymapKey"></div>`;
+          } else {
+            rowElement += `<div></div>`;
+          }
+        }
+
         if (row === "row5") {
           if (isSteno) return;
           const layoutDisplay = layoutString.replace(/_/g, " ");
@@ -201,10 +209,16 @@ export async function refresh(
         } else {
           for (let i = 0; i < rowKeys.length; i++) {
             if (row === "row2" && i === 12) continue;
+
+            let colLimit = 10;
+            if (lts.matrixShowRightColumn) {
+              colLimit = 11;
+            }
+
             if (
               (Config.keymapStyle === "matrix" ||
                 Config.keymapStyle === "split_matrix") &&
-              i >= 10
+              i >= colLimit
             ) {
               continue;
             }
@@ -266,7 +280,7 @@ export async function refresh(
                   splitSpacer += `<div class="keymapSplitSpacer"></div>`;
                 }
               } else {
-                if (i === 5 && isSteno) {
+                if (i === 5) {
                   splitSpacer += `<div class="keymapSplitSpacer"></div>`;
                 }
               }
@@ -309,7 +323,7 @@ export async function refresh(
   }
 }
 
-ConfigEvent.subscribe((eventKey) => {
+ConfigEvent.subscribe((eventKey, newValue) => {
   if (eventKey === "layout" && Config.keymapLayout === "overrideSync") {
     refresh(Config.keymapLayout);
   }
@@ -320,6 +334,9 @@ ConfigEvent.subscribe((eventKey) => {
     eventKey === "keymapMode"
   ) {
     refresh();
+  }
+  if (eventKey === "keymapMode") {
+    newValue === "off" ? hide() : show();
   }
 });
 

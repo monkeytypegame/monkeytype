@@ -1,7 +1,5 @@
 {
   "name": "russian_50k",
-  "leftToRight": true,
-  "noLazyMode": false,
   "bcp47": "ru-RU",
   "words": [
     "а",

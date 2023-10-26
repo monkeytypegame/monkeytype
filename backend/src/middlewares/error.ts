@@ -5,6 +5,7 @@ import MonkeyError from "../utils/error";
 import { incrementBadAuth } from "./rate-limit";
 import { NextFunction, Response } from "express";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
+import { recordClientErrorByVersion } from "../utils/prometheus";
 
 async function errorHandlingMiddleware(
   error: Error,
@@ -37,6 +38,10 @@ async function errorHandlingMiddleware(
 
     await incrementBadAuth(req, res, monkeyResponse.status);
 
+    if (monkeyResponse.status >= 400 && monkeyResponse.status < 500) {
+      recordClientErrorByVersion(req.headers["x-client-version"] as string);
+    }
+
     if (process.env.MODE !== "dev" && monkeyResponse.status >= 500) {
       const { uid, errorId } = monkeyResponse.data;
 
@@ -54,6 +59,8 @@ async function errorHandlingMiddleware(
           message: error.message,
           stack: error.stack,
           endpoint: req.originalUrl,
+          method: req.method,
+          url: req.url,
         });
       } catch (e) {
         Logger.error("Logging to db failed.");

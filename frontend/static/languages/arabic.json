@@ -1,6 +1,6 @@
 {
   "name": "arabic",
-  "leftToRight": false,
+  "rightToLeft": true,
   "ligatures": true,
   "bcp47": "ar-SA",
   "words": [

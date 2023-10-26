@@ -1,6 +1,7 @@
 import Config from "../config";
 import format from "date-fns/format";
 import * as Misc from "../utils/misc";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
@@ -93,8 +94,10 @@ export function update(
   $(`.page${source} .profile .pbsTime`).html("");
   $(`.page${source} .profile .pbsWords`).html("");
 
-  text = "";
-  [15, 30, 60, 120].forEach((mode2) => {
+  const timeMode2s: MonkeyTypes.Mode2<"time">[] = ["15", "30", "60", "120"];
+  const wordMode2s: MonkeyTypes.Mode2<"words">[] = ["10", "25", "50", "100"];
+
+  timeMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "time", mode2);
   });
 
@@ -111,7 +114,7 @@ export function update(
   $(`.page${source} .profile .pbsTime`).append(text + showAllButton);
 
   text = "";
-  [10, 25, 50, 100].forEach((mode2) => {
+  wordMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "words", mode2);
   });
 
@@ -121,30 +124,29 @@ export function update(
 function buildPbHtml(
   pbs: MonkeyTypes.PersonalBests,
   mode: "time" | "words",
-  mode2: number
+  mode2: MonkeyTypes.StringNumber
 ): string {
   let retval = "";
-  let pbData;
   let dateText = "";
-  const multiplier = Config.alwaysShowCPM ? 5 : 1;
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
-  const wpmCpm = Config.alwaysShowCPM ? "cpm" : "wpm";
+  const speedUnit = Config.typingSpeedUnit;
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   try {
-    pbData = pbs[mode][mode2].sort((a, b) => b.wpm - a.wpm)[0];
+    const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
     const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText = format(date, "dd MMM yyyy");
     }
 
-    let wpmString: number | string = pbData.wpm * multiplier;
+    let speedString: number | string = typingSpeedUnit.fromWpm(pbData.wpm);
     if (Config.alwaysShowDecimalPlaces) {
-      wpmString = Misc.roundTo2(wpmString).toFixed(2);
+      speedString = Misc.roundTo2(speedString).toFixed(2);
     } else {
-      wpmString = Math.round(wpmString);
+      speedString = Math.round(speedString);
     }
-    wpmString += ` ${wpmCpm}`;
+    speedString += ` ${speedUnit}`;
 
-    let rawString: number | string = pbData.raw * multiplier;
+    let rawString: number | string = typingSpeedUnit.fromWpm(pbData.raw);
     if (Config.alwaysShowDecimalPlaces) {
       rawString = Misc.roundTo2(rawString).toFixed(2);
     } else {
@@ -159,7 +161,7 @@ function buildPbHtml(
       if (Config.alwaysShowDecimalPlaces) {
         accString = Misc.roundTo2(accString).toFixed(2);
       } else {
-        accString = Math.round(accString);
+        accString = Math.floor(accString);
       }
     }
     accString += ` acc`;
@@ -178,14 +180,14 @@ function buildPbHtml(
 
     retval = `<div class="quick">
       <div class="test">${modeString}</div>
-      <div class="wpm">${Math.round(pbData.wpm * multiplier)}</div>
+      <div class="wpm">${Math.round(typingSpeedUnit.fromWpm(pbData.wpm))}</div>
       <div class="acc">${
         pbData.acc === undefined ? "-" : Math.floor(pbData.acc) + "%"
       }</div>
     </div>
     <div class="fullTest">
       <div>${modeString}</div>
-      <div>${wpmString}</div>
+      <div>${speedString}</div>
       <div>${rawString}</div>
       <div>${accString}</div>
       <div>${conString}</div>

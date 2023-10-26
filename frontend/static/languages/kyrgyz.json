@@ -1,6 +1,5 @@
 {
   "name": "kyrgyz",
-  "leftToRight": true,
   "ligatures": false,
   "bcp47": "ky-KY",
   "words": [

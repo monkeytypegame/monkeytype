@@ -42,12 +42,17 @@ const BASE_CONFIG = {
             loader: "css-loader",
             options: {
               url: false,
+              importLoaders: 2,
+              sourceMap: true,
             },
+          },
+          {
+            loader: "postcss-loader",
           },
           {
             loader: "sass-loader",
             options: {
-              implementation: require("sass"),
+              sourceMap: true,
             },
           },
         ],
@@ -98,7 +103,7 @@ const BASE_CONFIG = {
           from: resolve(__dirname, "../static"),
           to: "./",
           globOptions: {
-            ignore: [resolve(__dirname, "../static/*.html")],
+            ignore: ["**/static/*.html"],
           },
         },
       ],

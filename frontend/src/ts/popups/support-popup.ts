@@ -25,7 +25,7 @@ $("#supportMeButton").on("click", () => {
   show();
 });
 
-$("#middle").on("click", ".pageAbout #supportMeAboutButton", () => {
+$("main").on("click", ".pageAbout #supportMeAboutButton", () => {
   show();
 });
 
@@ -39,12 +39,6 @@ $("#popups").on("click", "#supportMeWrapper .button.ads", () => {
 
 $("#popups").on("click", "#supportMeWrapper a.button", () => {
   hide();
-});
-
-$(document).on("keypress", "#supportMeButton, #supportMeAboutButton", (e) => {
-  if (e.key === "Enter") {
-    $(e.currentTarget).trigger("click");
-  }
 });
 
 $(document).on("keydown", (e) => {

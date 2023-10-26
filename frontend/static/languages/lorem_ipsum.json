@@ -1,6 +1,5 @@
 {
   "name": "lorem_ipsum",
-  "leftToRight": true,
   "_comment": "Sourced from https://loremipsum.io/generator/?n=5&t=p and https://www.lipsum.com/feed/html",
   "ligatures": false,
   "noLazyMode": true,

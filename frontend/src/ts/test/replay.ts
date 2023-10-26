@@ -1,5 +1,6 @@
 import config from "../config";
 import * as Sound from "../controllers/sound-controller";
+import * as TestInput from "./test-input";
 
 type ReplayAction =
   | "correctLetter"
@@ -86,7 +87,7 @@ export function pauseReplay(): void {
 
 function playSound(error = false): void {
   if (error) {
-    if (config.playSoundOnError) {
+    if (config.playSoundOnError !== "off") {
       Sound.playError();
     } else {
       Sound.playClick();
@@ -103,7 +104,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
 
   if (item.action === "correctLetter") {
     if (!nosound) playSound();
-    activeWord.children[curPos].classList.add("correct");
+    activeWord.children[curPos]?.classList.add("correct");
     curPos++;
   } else if (item.action === "incorrectLetter") {
     if (!nosound) playSound(true);
@@ -111,12 +112,12 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     if (curPos >= activeWord.children.length) {
       //if letter is an extra
       myElement = document.createElement("letter");
-      myElement.classList.add("extra");
+      myElement?.classList.add("extra");
       myElement.innerHTML = item.value?.toString() ?? "";
       activeWord.appendChild(myElement);
     }
     myElement = activeWord.children[curPos];
-    myElement.classList.add("incorrect");
+    myElement?.classList.add("incorrect");
     curPos++;
   } else if (
     item.action === "setLetterIndex" &&
@@ -126,7 +127,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     curPos = item.value;
     // remove all letters from cursor to end of word
     for (const myElement of [...activeWord.children].slice(curPos)) {
-      if (myElement.classList.contains("extra")) {
+      if (myElement?.classList.contains("extra")) {
         myElement.remove();
       } else {
         myElement.className = "";
@@ -138,7 +139,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
     curPos = 0;
   } else if (item.action === "submitErrorWord") {
     if (!nosound) playSound(true);
-    activeWord.classList.add("error");
+    activeWord?.classList.add("error");
     wordPos++;
     curPos = 0;
   } else if (item.action === "backWord") {
@@ -151,7 +152,7 @@ function handleDisplayLogic(item: Replay, nosound = false): void {
 
     curPos = activeWord.children.length;
     while (activeWord.children[curPos - 1].className === "") curPos--;
-    activeWord.classList.remove("error");
+    activeWord?.classList.remove("error");
   }
 }
 
@@ -170,7 +171,8 @@ function loadOldReplay(): number {
     }
   });
   const time = Math.floor(replayData[startingIndex].time / 1000);
-  $("#replayStopwatch").text(time + "s");
+  updateStatsString(time);
+
   return startingIndex;
 }
 
@@ -212,7 +214,7 @@ function startReplayRecording(): void {
     //hide replay display if user left it open
     toggleReplayDisplay();
   }
-  $("#replayStopwatch").text(0 + "s");
+  $("#replayStats").text("");
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;
@@ -231,6 +233,12 @@ function addReplayEvent(action: ReplayAction, value?: number | string): void {
 
   const timeDelta = performance.now() - replayStartTime;
   replayData.push({ action: action, value: value, time: timeDelta });
+}
+
+function updateStatsString(time: number): void {
+  const wpm = TestInput.wpmHistory[time - 1] ?? 0;
+  const statsString = `${wpm}wpm\t${time}s`;
+  $("#replayStats").text(statsString);
 }
 
 function playReplay(): void {
@@ -253,7 +261,7 @@ function playReplay(): void {
     const time = swTime;
     stopwatchList.push(
       setTimeout(() => {
-        $("#replayStopwatch").text(time + "s");
+        updateStatsString(time);
       }, time * 1000 - lastTime)
     );
     swTime++;
@@ -307,12 +315,6 @@ $("#replayWords").on("click", "letter", (event) => {
 
   initializeReplayPrompt();
   loadOldReplay();
-});
-
-$(document).on("keypress", "#watchReplayButton", (event) => {
-  if (event.key === "Enter") {
-    toggleReplayDisplay();
-  }
 });
 
 $(".pageTest").on("click", "#watchReplayButton", () => {

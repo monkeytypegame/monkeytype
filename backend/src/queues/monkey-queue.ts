@@ -1,6 +1,7 @@
 import IORedis from "ioredis";
 import {
   BulkJobOptions,
+  ConnectionOptions,
   JobsOptions,
   Queue,
   QueueOptions,
@@ -25,11 +26,11 @@ export class MonkeyQueue<T> {
 
     this.jobQueue = new Queue(this.queueName, {
       ...this.queueOpts,
-      connection: redisConnection,
+      connection: redisConnection as ConnectionOptions,
     });
 
     this._queueScheduler = new QueueScheduler(this.queueName, {
-      connection: redisConnection,
+      connection: redisConnection as ConnectionOptions,
     });
   }
 

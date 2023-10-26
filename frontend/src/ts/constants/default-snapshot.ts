@@ -3,9 +3,9 @@ export const defaultSnap: MonkeyTypes.Snapshot = {
   personalBests: {
     time: {},
     words: {},
-    zen: { zen: [] },
-    quote: { custom: [] },
-    custom: { custom: [] },
+    quote: {},
+    zen: {},
+    custom: {},
   },
   name: "",
   customThemes: [],
@@ -30,4 +30,5 @@ export const defaultSnap: MonkeyTypes.Snapshot = {
   inboxUnreadSize: 0,
   streak: 0,
   maxStreak: 0,
+  streakHourOffset: undefined,
 };

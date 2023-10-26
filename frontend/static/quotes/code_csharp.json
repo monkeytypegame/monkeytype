@@ -68,10 +68,10 @@
       "length": 738
     },
     {
-      "text": "public int IndexOf(int elem) {\n\tint index = 0;\n\tfor (Node curr = head; curr != null; curr = curr.GetTail()) {\n\t \tif (curr.GetElem() == elem) {\n\t\t\treturn index;\n\t\t} else {\n\t\t\tindex++;\n\t\t}\n\t}\n\treturn -1;\n}",
+      "text": "public int IndexOf(int elem) {\n\tint index = 0;\n\tfor (Node curr = head; curr != null; curr = curr.GetTail()) {\n\t\tif (curr.GetElem() == elem) {\n\t\t\treturn index;\n\t\t} else {\n\t\t\tindex++;\n\t\t}\n\t}\n\treturn -1;\n}",
       "source": "Get the Index of an Element in a Linked List",
       "id": 11,
-      "length": 203
+      "length": 202
     },
     {
       "text": "public void SetTail(Node curr, Node next) {\n\tif (curr == null) {\n\t\tnext.SetNext(head);\n\t\thead = next;\n\t} else {\n\t\tnext.SetNext(curr.GetNext());\n\t\tcurr.SetNext(next);\n\t}\n\tnumNodes++;\n}",
@@ -92,10 +92,10 @@
       "length": 264
     },
     {
-      "text": "public int RemoveAtIndex(int index) {\n\tif (index < 0 || index >= Size()) {\n\t\tConsole.WriteLine(\"index out of bounds or list is empty\");\n\t}\n\tNode curr = null;\n\tint elem = 0;\n\tif (index != 0) {\n\t\tcurr = GetNodeAtIndex(index - 1);\t\t\n\t}\n\treturn Remove(curr);\n}",
+      "text": "public int RemoveAtIndex(int index) {\n\tif (index < 0 || index >= Size()) {\n\t\tConsole.WriteLine(\"index out of bounds or list is empty\");\n\t}\n\tNode curr = null;\n\tint elem = 0;\n\tif (index != 0) {\n\t\tcurr = GetNodeAtIndex(index - 1);\n\t}\n\treturn Remove(curr);\n}",
       "source": "Remove an Element using its Index in a Linked List",
       "id": 15,
-      "length": 256
+      "length": 254
     },
     {
       "text": "public void EnlargeArr() {\n\tint newSize = capacity * 2;\n\tint[] newArr = new int[newSize];\n\tfor (int i = 0; i <= topIdx; i++) {\n\t\tnewArr[i] = arr[i];\n\t}\n\tarr = newArr;\n\tcapacity = newSize;\n}",
@@ -138,6 +138,42 @@
       "id": 22,
       "source": "BogoSort",
       "length": 249
+    },
+    {
+      "text": "for (int i = 0; i < 2; i++) {\n\tfor (int j = 0; j < 2; j++) {\n\t\tfor (int k = 0; k < 3; k++) {\n\t\t\tConsole.WriteLine(\"element at index [{0}, {1}, {2}] is : {3}\", i, j, k, arr.GetValue(i, j, k));\n\t\t}\n\t}\n }",
+      "id": 23,
+      "source": "Geeks For Geeks - Array.GetValue() Method in C# with Examples",
+      "length": 201
+    },
+    {
+      "text": "static public void Main() {\n\t\tstring[] @for = {\"C#\", \"PHP\", \"Java\", \"Python\"};\n\t\tforeach (string @as in @for) {\n\t\t\tConsole.WriteLine(\"Element of Array: {0}\", @as); \n\t\t\t} \n\t\t}",
+      "id": 24,
+      "source": "Geeks For Geeks - C# | Verbatim String Literal",
+      "length": 174
+    },
+    {
+      "text": "public void StartTheQuiz() {\n\taddend1 = randomizer.Next(51);\n\taddend2 = randomizer.Next(51);\n\tplusLeftLabel.Text = addend1.ToString();\n\tplusRightLabel.Text = addend2.ToString();\n\tsum.Value = 0;\n\t}",
+      "id": 25,
+      "source": "Microsoft Learn - Add math problems to a math quiz WinForms app",
+      "length": 196
+    },
+    {
+      "text": "private void label1_Click(object sender, EventArgs e) {\n\tLabel clickedLabel = sender as Label;\n if (clickedLabel != null) {\n\t\tif (clickedLabel.ForeColor == Color.Black) \n\t\t\treturn; \n\t\tif (firstClicked == null) {\n\t\t\tfirstClicked = clickedLabel;\n\t\t\tfirstClicked.ForeColor = Color.Black;\n\t\t\treturn;\n\t\t\t}\n\t\t}\n\t}",
+      "id": 26,
+      "source": "Microsoft Learn - Add reference variables and a timer control to your matching game WinForms app",
+      "length": 307
+    },
+    {
+      "text": "public static T MidPoint<T>(IEnumerable<T> sequence) {\n\tif (sequence is IList<T> list) {\n\t\treturn list[list.Count / 2];\n\t}\n\telse if (sequence is null) {\n\t\tthrow new ArgumentNullException(nameof(sequence), \"Sequence can't be null.\");\n\t}\n\telse {\n\t\tint halfLength = sequence.Count() / 2 - 1;\n\t\tif (halfLength < 0)\n\t\t\thalfLength = 0;\n\t\treturn sequence.Skip(halfLength).First();\n\t\t}\n\t}",
+      "id": 27,
+      "source": "Microsoft Learn - Pattern Matching",
+      "length": 380
+    },
+    {
+      "text": "class ExecuteRectangle { \n\tstatic void Main(string[] args) { \n\t\tRectangle r = new Rectangle();\n\t\tr.length = 4.5;\n\t\tr.width = 3.5;\n\t\tr.Display();\n\t\tConsole.ReadLine();\n\t\t}\n\t}",
+      "id": 28,
+      "source": "Tutorialspoint (C# - Encapsulation)",
+      "length": 173
     }
   ]
 }

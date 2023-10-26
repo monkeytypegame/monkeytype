@@ -79,8 +79,6 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     leaderboardExpirationTimeInDays: 0,
     validModeRules: [],
     scheduleRewardsModeRules: [],
-    // GOTCHA! MUST ATLEAST BE 1, LRUCache module will make process crash and die
-    dailyLeaderboardCacheSize: 1,
     topResultsToAnnounce: 1, // This should never be 0. Setting to zero will announce all results.
     xpRewardBrackets: [],
   },
@@ -452,11 +450,6 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
                 },
               },
             },
-          },
-          dailyLeaderboardCacheSize: {
-            type: "number",
-            label: "Daily Leaderboard Cache Size",
-            min: 1,
           },
           topResultsToAnnounce: {
             type: "number",

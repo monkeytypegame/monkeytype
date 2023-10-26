@@ -1,6 +1,5 @@
 {
   "name": "english_1k",
-  "leftToRight": true,
   "noLazyMode": true,
   "orderedByFrequency": true,
   "words": [
@@ -1000,6 +999,8 @@
     "quotient",
     "teeth",
     "shell",
-    "neck"
+    "neck",
+    "program",
+    "public"
   ]
 }

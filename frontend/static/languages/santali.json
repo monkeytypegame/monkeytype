@@ -1,6 +1,5 @@
 {
   "name": "santali",
-  "leftToRight": true,
   "_comment": "Foundational Language Tech: Santali Wordlist. O Foundation. CC0 1.0. (2021)",
   "ligatures": false,
   "bcp47": "sat-IN",

@@ -1,6 +1,5 @@
 {
   "name": "myanmar_burmese",
-  "leftToRight": true,
   "ligatures": true,
   "noLazyMode": true,
   "bcp47": "my-MM",

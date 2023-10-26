@@ -1,6 +1,5 @@
 {
   "name": "estonian_10k",
-  "leftToRight": true,
   "bcp47": "et-EE",
   "words": [
     "on",

@@ -235,11 +235,6 @@ export async function renderResult(): Promise<void> {
   // }
 }
 
-export function setMobile(tf: boolean): void {
-  if (!rampReady) return;
-  ramp.setMobile(tf);
-}
-
 // let showSky = false;
 
 // export function updateSky(visible: boolean): void {

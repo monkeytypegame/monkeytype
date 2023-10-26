@@ -71,7 +71,7 @@ function refreshList(): void {
   });
 }
 
-export function hide(): void {
+function hide(): void {
   if (isPopupVisible(wrapperId)) {
     $("#apeKeysPopupWrapper")
       .stop(true, true)
