@@ -3,15 +3,23 @@ import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
+let isAltGrPressed = false;
+
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
 ): Promise<string | null> {
-  function emulatedLayoutShouldShiftKey(
+  function emulatedLayoutGetVariantIndex(
     event: JQuery.KeyDownEvent,
-    newKeyPreview: string
-  ): boolean {
-    if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
-    return event.shiftKey;
+    newKeyPreview: string,
+    keyVariantsCount: number
+  ): number {
+    let isCapitalized = event.shiftKey;
+    if (capsState) {
+      isCapitalized = Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
+    }
+    return (
+      (isCapitalized ? 1 : 0) + (isAltGrPressed && keyVariantsCount > 2 ? 2 : 0)
+    );
   }
 
   let layout;
@@ -206,11 +214,24 @@ export async function getCharFromEvent(
     }
   }
   const newKeyPreview = layoutMap[mapIndex][0];
-  const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
-  const char = layoutMap[mapIndex][shift];
+  const variant = emulatedLayoutGetVariantIndex(
+    event,
+    newKeyPreview,
+    layoutMap[mapIndex].length
+  );
+  const char = layoutMap[mapIndex][variant];
   if (char) {
     return char;
   } else {
     return event.key;
   }
 }
+
+function updateAltGrState(event: JQuery.KeyboardEventBase): void {
+  if (event.code !== "AltRight") return;
+  if (event.type === "keydown") isAltGrPressed = true;
+  if (event.type === "keyup") isAltGrPressed = false;
+}
+
+$(document).on("keydown", updateAltGrState);
+$(document).on("keyup", updateAltGrState);
