@@ -612,6 +612,7 @@
   ["endeavors", "endeavours"],
   ["endeavoring", "endeavouring"],
   ["judgments", "judgements"],
+  ["judgment", "judgement"],
   ["paneling", "panelling"],
   ["defenses", "defences"],
   ["criticizing", "criticising"],
@@ -620,5 +621,6 @@
   ["emphasized", "emphasised"],
   ["emphasizes", "emphasises"],
   ["emphasizing", "emphasising"],
-  ["fetus", "foetus"]
+  ["fetus", "foetus"],
+  ["fiber", "fibre"]
 ]
