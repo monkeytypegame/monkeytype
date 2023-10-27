@@ -1065,7 +1065,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
     dontSave = true;
-  } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
+  } else if (
+    (!DB.getSnapshot()?.lbOptOut &&
+      (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
+    (DB.getSnapshot()?.lbOptOut === true &&
+      (completedEvent.acc < 50 || completedEvent.acc > 100))
+  ) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
     dontSave = true;

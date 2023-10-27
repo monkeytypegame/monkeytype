@@ -150,6 +150,12 @@ export async function addResult(
 
   //todo add a type here
   const result = Object.assign({}, req.body.result);
+  if (!user.lbOptOut && result.acc < 75) {
+    throw new MonkeyError(
+      400,
+      "Cannot submit a result with less than 75% accuracy"
+    );
+  }
   result.uid = uid;
   if (isTestTooShort(result)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
