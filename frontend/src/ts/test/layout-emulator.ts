@@ -6,14 +6,6 @@ import * as Notifications from "../elements/notifications";
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
 ): Promise<string | null> {
-  function emulatedLayoutShouldShiftKey(
-    event: JQuery.KeyDownEvent,
-    newKeyPreview: string
-  ): boolean {
-    if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
-    return event.shiftKey;
-  }
-
   let layout;
 
   try {
@@ -205,9 +197,9 @@ export async function getCharFromEvent(
       return null;
     }
   }
-  const newKeyPreview = layoutMap[mapIndex][0];
-  const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
-  const char = layoutMap[mapIndex][shift];
+  const charIndex =
+    (capsState && !event.shiftKey) || (!capsState && event.shiftKey) ? 1 : 0;
+  const char = layoutMap[mapIndex][charIndex];
   if (char) {
     return char;
   } else {
