@@ -116,13 +116,19 @@ export async function sendVerificationEmail(
     if (e.code === "auth/user-not-found") {
       throw new MonkeyError(
         500,
-        "Auth user not found when the user was found in the database",
+        "Auth user not found when the user was found in the database. Contact support with this error message and your email",
         JSON.stringify({
           decodedTokenEmail: email,
           userInfoEmail: userInfo.email,
           stack: e.stack,
         }),
         userInfo.uid
+      );
+    }
+    if (e.message.includes("Internal error encountered.")) {
+      throw new MonkeyError(
+        500,
+        "Firebase failed to generate an email verification link. Please try again later."
       );
     }
     throw e;
