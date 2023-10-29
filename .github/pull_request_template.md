@@ -1,17 +1,13 @@
-<!-- Adding a language or a theme?
-For languages, make sure to edit the `_list.json`, `_groups.json` files, and add the `language.json` file as well.
-For themes, make sure to add the `theme.css` file. It will not work if you don't follow these steps!
-
-If your change is visual (mainly themes) it would be extra awesome if you could include a screenshot.
-
--->
-
 ### Description
 
 <!-- Please describe the change(s) made in your PR -->
+<!-- If your change is visual (mainly themes) it would be extra awesome if you could include a screenshot. -->
 
 ### Checks
 
+- [ ] Adding a language or a theme?
+    - [ ] If is a language, did you edit `_list.json`, `_groups.json` and add `languages.json`?
+    - [ ] If is a theme, did you add the theme.css?
 - [ ] Check if any open issues are related to this PR; if so, be sure to tag them below.
 - [ ] Make sure the PR title follows the Conventional Commits standard. (https://www.conventionalcommits.org for more info)
 - [ ] Make sure to include your GitHub username inside round brackets at the end of the PR title
