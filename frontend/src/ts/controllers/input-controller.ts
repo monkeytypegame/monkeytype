@@ -822,9 +822,17 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 let lastBailoutAttempt = -1;
 
 $(document).on("keydown", async (event) => {
-  if (ActivePage.get() === "loading") return;
+  if (ActivePage.get() === "loading") {
+    console.debug("Ignoring keydown event on loading page.");
+    return;
+  }
 
-  if (IgnoredKeys.includes(event.key)) return;
+  if (IgnoredKeys.includes(event.key)) {
+    console.debug(
+      `Key ${event.key} is on the list of ignored keys. Stopping keydown event.`
+    );
+    return;
+  }
 
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
@@ -836,7 +844,10 @@ $(document).on("keydown", async (event) => {
 
   const cookiePopupVisible = CookiePopup.isVisible();
 
-  if (cookiePopupVisible) return;
+  if (cookiePopupVisible) {
+    console.debug("Ignoring keydown event because cookie popup is visible.");
+    return;
+  }
 
   const allowTyping: boolean =
     pageTestActive &&
