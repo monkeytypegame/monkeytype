@@ -3,6 +3,37 @@ import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
+function shouldCapslockUseSecondCharLocation(keyLocation: string): boolean {
+  return [
+    "KeyQ",
+    "KeyW",
+    "KeyE",
+    "KeyR",
+    "KeyT",
+    "KeyY",
+    "KeyU",
+    "KeyI",
+    "KeyO",
+    "KeyP",
+    "KeyA",
+    "KeyS",
+    "KeyD",
+    "KeyF",
+    "KeyG",
+    "KeyH",
+    "KeyJ",
+    "KeyK",
+    "KeyL",
+    "KeyZ",
+    "KeyX",
+    "KeyC",
+    "KeyV",
+    "KeyB",
+    "KeyN",
+    "KeyM",
+  ].includes(keyLocation);
+}
+
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
 ): Promise<string | null> {
@@ -197,8 +228,14 @@ export async function getCharFromEvent(
       return null;
     }
   }
+
+  const capsSwap = shouldCapslockUseSecondCharLocation(event.code);
   const charIndex =
-    (capsState && !event.shiftKey) || (!capsState && event.shiftKey) ? 1 : 0;
+    (capsState && !event.shiftKey && capsSwap) ||
+    (capsState && event.shiftKey && !capsSwap) ||
+    (!capsState && event.shiftKey)
+      ? 1
+      : 0;
   const char = layoutMap[mapIndex][charIndex];
   if (char) {
     return char;
