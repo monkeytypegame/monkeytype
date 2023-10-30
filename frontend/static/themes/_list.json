@@ -1181,6 +1181,11 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  ,{
+    "name": "discord_blurple",
+    "bgColor": "#454FBF",
+    "mainColor": "#00ffff"
+}
   }
 
 ]
