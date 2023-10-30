@@ -61,7 +61,7 @@ function updateStatsAndHistogram(): void {
     );
 
     $(".pageAbout #totalStartedTestsStat .val").text(
-      typingStatsResponseData.testsStarted < 10
+      startedWithMagnitude.rounded < 10
         ? startedWithMagnitude.roundedTo2
         : startedWithMagnitude.rounded
     );
@@ -78,7 +78,7 @@ function updateStatsAndHistogram(): void {
     );
 
     $(".pageAbout #totalCompletedTestsStat .val").text(
-      typingStatsResponseData.testsCompleted < 10
+      completedWIthMagnitude.rounded < 10
         ? completedWIthMagnitude.roundedTo2
         : completedWIthMagnitude.rounded
     );
