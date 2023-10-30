@@ -53,7 +53,7 @@ function updateStatsAndHistogram(): void {
     $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
     $(".pageAbout #totalTimeTypingStat").attr(
       "aria-label",
-      Math.round(secondsRounded / 3600) + " hours"
+      Misc.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
     );
 
     const startedWithMagnitude = Misc.getNumberWithMagnitude(
@@ -61,7 +61,7 @@ function updateStatsAndHistogram(): void {
     );
 
     $(".pageAbout #totalStartedTestsStat .val").text(
-      typingStatsResponseData.testsStarted < 10
+      startedWithMagnitude.rounded < 10
         ? startedWithMagnitude.roundedTo2
         : startedWithMagnitude.rounded
     );
@@ -70,7 +70,7 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalStartedTestsStat").attr(
       "aria-label",
-      typingStatsResponseData.testsStarted + " tests"
+      Misc.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
     );
 
     const completedWIthMagnitude = Misc.getNumberWithMagnitude(
@@ -78,7 +78,7 @@ function updateStatsAndHistogram(): void {
     );
 
     $(".pageAbout #totalCompletedTestsStat .val").text(
-      typingStatsResponseData.testsCompleted < 10
+      completedWIthMagnitude.rounded < 10
         ? completedWIthMagnitude.roundedTo2
         : completedWIthMagnitude.rounded
     );
@@ -87,7 +87,7 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalCompletedTestsStat").attr(
       "aria-label",
-      typingStatsResponseData.testsCompleted + " tests"
+      Misc.numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests"
     );
   }
 }
