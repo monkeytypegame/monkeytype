@@ -53,7 +53,7 @@ function updateStatsAndHistogram(): void {
     $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
     $(".pageAbout #totalTimeTypingStat").attr(
       "aria-label",
-      Math.round(secondsRounded / 3600) + " hours"
+      Misc.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
     );
 
     const startedWithMagnitude = Misc.getNumberWithMagnitude(
@@ -70,7 +70,7 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalStartedTestsStat").attr(
       "aria-label",
-      typingStatsResponseData.testsStarted + " tests"
+      Misc.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
     );
 
     const completedWIthMagnitude = Misc.getNumberWithMagnitude(
@@ -87,7 +87,7 @@ function updateStatsAndHistogram(): void {
     );
     $(".pageAbout #totalCompletedTestsStat").attr(
       "aria-label",
-      typingStatsResponseData.testsCompleted + " tests"
+      Misc.numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests"
     );
   }
 }
