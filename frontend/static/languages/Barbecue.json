@@ -1,0 +1,19 @@
+{
+  "name": "english",
+  "noLazyMode": true,
+  "orderedByFrequency": true,
+  "words": [
+    "BBQ",
+    "Grill",
+    "Cooking",
+    "Patty",
+    "Burger",
+    "Fire",
+    "Fish",
+    "Chicken",
+    "Beef",
+    "Cow",
+    "Wood",
+    "Campfire"
+  ]
+}
