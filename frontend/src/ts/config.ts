@@ -527,6 +527,7 @@ export function setMinAcc(
 
 export function setMinAccCustom(val: number, nosave?: boolean): boolean {
   if (!isConfigValueValid("min acc custom", val, ["number"])) return false;
+  if (val > 100) val = 100;
 
   config.minAccCustom = val;
   saveToLocalStorage("minAccCustom", nosave);
