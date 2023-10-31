@@ -4,22 +4,24 @@ import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
 let isAltGrPressed = false;
+const isPunctuationPattern = /\p{P}/u;
 
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
 ): Promise<string | null> {
   function emulatedLayoutGetVariantIndex(
     event: JQuery.KeyDownEvent,
-    newKeyPreview: string,
-    keyVariantsCount: number
+    keyVariants: string
   ): number {
     let isCapitalized = event.shiftKey;
-    if (capsState) {
-      isCapitalized = Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
-    }
-    return (
-      (isCapitalized ? 1 : 0) + (isAltGrPressed && keyVariantsCount > 2 ? 2 : 0)
+    const altGrIndex = isAltGrPressed && keyVariants.length > 2 ? 2 : 0;
+    const isNotPunctuation = !isPunctuationPattern.test(
+      keyVariants.slice(altGrIndex, altGrIndex + 2)
     );
+    if (capsState && isNotPunctuation) {
+      isCapitalized = !event.shiftKey;
+    }
+    return (isCapitalized ? 1 : 0) + altGrIndex;
   }
 
   let layout;
@@ -213,12 +215,7 @@ export async function getCharFromEvent(
       return null;
     }
   }
-  const newKeyPreview = layoutMap[mapIndex][0];
-  const variant = emulatedLayoutGetVariantIndex(
-    event,
-    newKeyPreview,
-    layoutMap[mapIndex].length
-  );
+  const variant = emulatedLayoutGetVariantIndex(event, layoutMap[mapIndex]);
   const char = layoutMap[mapIndex][variant];
   if (char) {
     return char;
