@@ -801,6 +801,7 @@ declare namespace MonkeyTypes {
 
   interface Quote {
     text: string;
+    britishText?: string;
     source: string;
     length: number;
     id: number;

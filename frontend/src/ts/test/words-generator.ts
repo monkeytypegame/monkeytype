@@ -311,10 +311,11 @@ async function applyBritishEnglishToWord(
   word: string,
   previousWord: string
 ): Promise<string> {
-  if (Config.britishEnglish && /english/.test(Config.language)) {
-    word = await BritishEnglish.replace(word, previousWord);
-  }
-  return word;
+  if (!Config.britishEnglish) return word;
+  if (!/english/.test(Config.language)) return word;
+  if (Config.mode === "quote" && TestWords.randomQuote.britishText) return word;
+
+  return await BritishEnglish.replace(word, previousWord);
 }
 
 function applyLazyModeToWord(
@@ -591,7 +592,12 @@ async function generateQuoteWords(
   rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   rq.text = rq.text.replace(/…/g, "...");
   rq.text = rq.text.trim();
-  rq.textSplit = rq.text.split(" ");
+
+  if (rq.britishText && Config.britishEnglish) {
+    rq.textSplit = rq.britishText.split(" ");
+  } else {
+    rq.textSplit = rq.text.split(" ");
+  }
 
   TestWords.setRandomQuote(rq);
 
