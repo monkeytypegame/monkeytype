@@ -1,21 +1,42 @@
-let pairsList: string[] = [];
+import { randomElementFromArray } from "../utils/misc";
 
-export async function getList(): Promise<string[]> {
-  if (pairsList.length === 0) {
-    return $.getJSON("languages/english_punctuation.json", function (data) {
-      pairsList = data;
-      return pairsList;
-    });
-  }
-  return pairsList;
-}
+type Pair = [string, string[]];
+
+const pairs: Pair[] = [
+  ["are", ["aren't"]],
+  ["can", ["can't"]],
+  ["could", ["couldn't"]],
+  ["did", ["didn't"]],
+  ["does", ["doesn't"]],
+  ["do", ["don't"]],
+  ["had", ["hadn't"]],
+  ["has", ["hasn't"]],
+  ["have", ["haven't"]],
+  ["is", ["isn't"]],
+  ["it", ["it's", "it'll"]],
+  ["i", ["i'm", "i'll", "i've", "i'd"]],
+  ["you", ["you'll", "you're", "you've", "you'd"]],
+  ["that", ["that's", "that'll", "that'd"]],
+  ["must", ["mustn't", "must've"]],
+  ["there", ["there's", "there'll", "there'd"]],
+  ["he", ["he's", "he'll", "he'd"]],
+  ["she", ["she's", "she'll", "she'd"]],
+  ["we", ["we're", "we'll", "we'd"]],
+  ["they", ["they're", "they'll", "they'd"]],
+  ["should", ["shouldn't", "should've"]],
+  ["was", ["wasn't"]],
+  ["were", ["weren't"]],
+  ["will", ["won't"]],
+  ["would", ["wouldn't", "would've"]],
+  ["going", ["goin'"]],
+];
 
 // Check if word is in the group of pairs so it can be replaced
 export async function check(word: string): Promise<boolean> {
-  const list = await getList();
   if (
-    list.find((a) => word.match(RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))) ===
-    undefined
+    pairs.find((pair) =>
+      word.match(RegExp(`^([\\W]*${pair[0]}[\\W]*)$`, "gi"))
+    ) === undefined
   ) {
     return false;
   }
@@ -23,14 +44,16 @@ export async function check(word: string): Promise<boolean> {
 }
 
 export async function replace(word: string): Promise<string> {
-  const list = await getList();
-  const replacement = list.find((a) =>
-    word.match(RegExp(`^([\\W]*${a[0]}[\\W]*)$`, "gi"))
+  const replacement = pairs.find((pair) =>
+    word.match(RegExp(`^([\\W]*${pair[0]}[\\W]*)$`, "gi"))
   );
-  return replacement
-    ? word.replace(
-        RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
-        replacement[1]
-      )
-    : word;
+
+  if (replacement === undefined) return word;
+
+  const randomReplacement = randomElementFromArray(replacement[1]);
+
+  return word.replace(
+    RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
+    randomReplacement
+  );
 }
