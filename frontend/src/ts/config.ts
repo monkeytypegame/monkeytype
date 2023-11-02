@@ -1196,11 +1196,13 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
 
 //quick restart
 export function setQuickRestartMode(
-  mode: "off" | "esc" | "tab",
+  mode: "off" | "esc" | "tab" | "enter",
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("quick restart mode", mode, [["off", "esc", "tab"]])
+    !isConfigValueValid("quick restart mode", mode, [
+      ["off", "esc", "tab", "enter"],
+    ])
   ) {
     return false;
   }

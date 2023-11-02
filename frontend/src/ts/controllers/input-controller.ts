@@ -754,7 +754,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   const modalVisible: boolean =
     Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
-  if (Config.quickRestart === "esc") {
+  if (Config.quickRestart === "esc" || Config.quickRestart === "enter") {
     // dont do anything special
     if (modalVisible) return;
 
@@ -897,6 +897,52 @@ $(document).on("keydown", async (event) => {
     TestLogic.restart({
       event,
     });
+  }
+
+  //enter
+  if (event.key === "Enter" && Config.quickRestart === "enter") {
+    const modalVisible: boolean =
+      Misc.isPopupVisible("commandLineWrapper") || popupVisible;
+
+    if (modalVisible) return;
+
+    // change page if not on test page
+    if (ActivePage.get() !== "test") {
+      navigate("/");
+      return;
+    }
+
+    if (TestUI.resultVisible) {
+      TestLogic.restart({
+        event,
+      });
+      return;
+    }
+
+    if (Config.mode === "zen") {
+      //do nothing
+    } else if (
+      !TestWords.hasNewline ||
+      (TestWords.hasNewline && event.shiftKey)
+    ) {
+      // in case we are in a long test, setting manual restart
+      if (event.shiftKey) {
+        ManualRestart.set();
+      } else {
+        ManualRestart.reset();
+      }
+
+      //otherwise restart
+      TestLogic.restart({
+        event,
+      });
+    } else {
+      handleChar("\n", TestInput.input.current.length);
+      setWordsInput(" " + TestInput.input.current);
+      if (Config.tapeMode !== "off") {
+        TestUI.scrollTape();
+      }
+    }
   }
 
   if (!allowTyping) return;

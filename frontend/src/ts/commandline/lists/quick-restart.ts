@@ -5,6 +5,14 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
   configKey: "quickRestart",
   list: [
     {
+      id: "changeQuickRestartEnter",
+      display: "enter",
+      configValue: "enter",
+      exec: (): void => {
+        UpdateConfig.setQuickRestartMode("enter");
+      },
+    },
+    {
       id: "changeQuickRestartTab",
       display: "tab",
       configValue: "tab",

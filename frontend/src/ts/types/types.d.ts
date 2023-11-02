@@ -437,7 +437,7 @@ declare namespace MonkeyTypes {
     showLiveWpm: boolean;
     showTimerProgress: boolean;
     smoothCaret: SmoothCaretMode;
-    quickRestart: "off" | "esc" | "tab";
+    quickRestart: "off" | "esc" | "tab" | "enter";
     punctuation: boolean;
     numbers: boolean;
     words: WordsModes;
