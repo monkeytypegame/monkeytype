@@ -57,9 +57,9 @@ async function updateFavicon(): Promise<void> {
 }
 
 function clearCustomTheme(): void {
-  colorVars.forEach((e) => {
+  for (const e of colorVars) {
     document.documentElement.style.setProperty(e, "");
-  });
+  }
 }
 
 let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
