@@ -1205,11 +1205,6 @@ export function setQuickRestartMode(
     return false;
   }
 
-  if (mode === "off") {
-    $(".pageTest #restartTestButton").removeClass("hidden");
-  } else {
-    $(".pageTest #restartTestButton").addClass("hidden");
-  }
   config.quickRestart = mode;
   saveToLocalStorage("quickRestart", nosave);
   ConfigEvent.dispatch("quickRestart", config.quickRestart);

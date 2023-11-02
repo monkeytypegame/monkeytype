@@ -1326,3 +1326,13 @@ $(document).on("keypress", () => {
     skipXpBreakdown();
   }
 });
+
+ConfigEvent.subscribe((key, value) => {
+  if (key === "quickRestart") {
+    if (value === "off") {
+      $(".pageTest #restartTestButton").removeClass("hidden");
+    } else {
+      $(".pageTest #restartTestButton").addClass("hidden");
+    }
+  }
+});
