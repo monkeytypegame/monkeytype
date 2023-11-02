@@ -58,7 +58,7 @@ Before submitting a theme make sure...
 
 ### Language Guidelines
 
-- Do not include swear words
+- Do not include expletive words
 - Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
 - Be sure to add your language to the `_list` and `_groups` files
 - Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `languageName_1k.json` is 1000 words, and so on)
