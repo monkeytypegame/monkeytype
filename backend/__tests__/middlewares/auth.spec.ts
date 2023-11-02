@@ -93,5 +93,41 @@ describe("middlewares/auth", () => {
       expect(decodedToken?.uid).toBe(mockDecodedToken.uid);
       expect(nextFunction).toHaveBeenCalledTimes(1);
     });
+    it("should allow the request with authentation on public endpoint", async () => {
+      const authenticateRequest = Auth.authenticateRequest({
+        isPublic: true,
+      });
+
+      await authenticateRequest(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      const decodedToken = mockRequest?.ctx?.decodedToken;
+      expect(decodedToken?.type).toBe("Bearer");
+      expect(decodedToken?.email).toBe(mockDecodedToken.email);
+      expect(decodedToken?.uid).toBe(mockDecodedToken.uid);
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+    });
+    it("should allow the request without authentication on public endpoint", async () => {
+      mockRequest.headers = {};
+
+      const authenticateRequest = Auth.authenticateRequest({
+        isPublic: true,
+      });
+
+      await authenticateRequest(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      const decodedToken = mockRequest?.ctx?.decodedToken;
+      expect(decodedToken?.type).toBe("None");
+      expect(decodedToken?.email).toBe("");
+      expect(decodedToken?.uid).toBe("");
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+    });
   });
 });
