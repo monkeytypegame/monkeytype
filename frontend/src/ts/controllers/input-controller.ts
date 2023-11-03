@@ -170,13 +170,6 @@ function handleSpace(): void {
     return;
   }
 
-  if (
-    CompositionState.getComposing() &&
-    Config.language.startsWith("chinese")
-  ) {
-    return;
-  }
-
   if (Config.mode === "zen") {
     $("#words .word.active").removeClass("active");
     $("#words").append("<div class='word active'></div>");
@@ -1323,7 +1316,6 @@ $("#wordsInput").on("input", (event) => {
   }
 
   setWordsInput(" " + TestInput.input.current);
-
   updateUI();
   if (Config.tapeMode !== "off") {
     TestUI.scrollTape();
