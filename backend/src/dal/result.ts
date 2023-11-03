@@ -90,16 +90,16 @@ export async function getResultByTimestamp(
 
 interface GetResultsOpts {
   onOrAfterTimestamp?: number;
-  start?: number;
-  end?: number;
+  beforeTimestamp?: number;
+  limit?: number;
 }
 
 export async function getResults(
   uid: string,
   opts?: GetResultsOpts
 ): Promise<MonkeyTypesResult[]> {
-  const { onOrAfterTimestamp, start, end } = opts ?? {};
-  const results = await db
+  const { onOrAfterTimestamp, beforeTimestamp, limit } = opts ?? {};
+  let query = db
     .collection<MonkeyTypesResult>("results")
     .find({
       uid,
@@ -107,11 +107,18 @@ export async function getResults(
         !_.isNaN(onOrAfterTimestamp) && {
           timestamp: { $gte: onOrAfterTimestamp },
         }),
+      ...(!_.isNil(beforeTimestamp) &&
+        !_.isNaN(beforeTimestamp) && {
+          timestamp: { $lt: beforeTimestamp },
+        }),
     })
-    .sort({ timestamp: -1 })
-    .skip(start ?? 0)
-    .limit(end ?? 1000)
-    .toArray(); // this needs to be changed to later take patreon into consideration
+    .sort({ timestamp: -1 });
+
+  if (limit !== undefined) {
+    query = query.limit(limit);
+  }
+
+  const results = await query.toArray();
   if (!results) throw new MonkeyError(404, "Result not found");
   return results;
 }

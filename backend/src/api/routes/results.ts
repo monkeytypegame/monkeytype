@@ -22,6 +22,7 @@ router.get(
   validateRequest({
     query: {
       onOrAfterTimestamp: joi.number().integer().min(1589428800000),
+      beforeTimestamp: joi.number().integer().min(1589428800000),
     },
   }),
   asyncHandler(ResultController.getResults)

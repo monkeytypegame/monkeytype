@@ -62,12 +62,26 @@ export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
+  const isPremium = await UserDAL.checkIfUserIsPremium(uid);
+  const limit: number | undefined = isPremium ? undefined : 1000;
+
   const onOrAfterTimestamp = parseInt(
     req.query.onOrAfterTimestamp as string,
     10
   );
+
+  if (req.query.beforeTimestamp !== undefined && !isPremium) {
+    throw new MonkeyError(
+      403,
+      "beforeTimestamp is only available for premium users"
+    );
+  }
+  const beforeTimestamp = parseInt(req.query.beforeTimestamp as string, 10);
+
   const results = await ResultDAL.getResults(uid, {
     onOrAfterTimestamp,
+    beforeTimestamp,
+    limit,
   });
   return new MonkeyResponse("Results retrieved", results);
 }

@@ -1035,3 +1035,8 @@ export async function setBanned(uid: string, banned: boolean): Promise<void> {
     await getUsersCollection().updateOne({ uid }, { $unset: { banned: "" } });
   }
 }
+
+export async function checkIfUserIsPremium(uid: string): Promise<boolean> {
+  const user = await getUser(uid, "checkIfUserIsPremium");
+  return user.isPremium === true;
+}
