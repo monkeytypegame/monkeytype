@@ -163,6 +163,13 @@ function handleSpace(): void {
 
   if (TestInput.input.current === "") return;
 
+  if (
+    CompositionState.getComposing() &&
+    Config.language.startsWith("chinese")
+  ) {
+    return;
+  }
+
   if (Config.mode === "zen") {
     $("#words .word.active").removeClass("active");
     $("#words").append("<div class='word active'></div>");
@@ -515,6 +522,8 @@ function handleChar(
     const realInput: string = (realInputValue ?? "").slice(1);
     resultingWord = realInput;
     koInputVisual.innerText = resultingWord.slice(-1);
+  } else if (Config.language.startsWith("chinese")) {
+    resultingWord = (realInputValue ?? "").slice(1);
   } else {
     resultingWord =
       TestInput.input.current.substring(0, charIndex) +
@@ -647,15 +656,22 @@ function handleChar(
   if (Config.mode !== "zen") {
     //not applicable to zen mode
     //auto stop the test if the last word is correct
-    const currentWord: string = TestWords.words.getCurrent();
-    const lastIndex: number = TestWords.words.currentIndex;
+    //do not stop if not all characters have been parsed by handleChar yet
+    const currentWord = TestWords.words.getCurrent();
+    const lastWordIndex = TestWords.words.currentIndex;
+    const isLastWord = lastWordIndex === TestWords.words.length - 1;
+    const wordIsTheSame = currentWord === TestInput.input.current;
+    const shouldQuickEnd =
+      Config.quickEnd &&
+      !Config.language.startsWith("korean") &&
+      currentWord.length === TestInput.input.current.length &&
+      Config.stopOnError === "off";
+    const isChinese = Config.language.startsWith("chinese");
+
     if (
-      (currentWord === TestInput.input.current ||
-        (Config.quickEnd &&
-          !Config.language.startsWith("korean") &&
-          currentWord.length === TestInput.input.current.length &&
-          Config.stopOnError === "off")) &&
-      lastIndex === TestWords.words.length - 1
+      isLastWord &&
+      (wordIsTheSame || shouldQuickEnd) &&
+      (!isChinese || (realInputValue && charIndex + 2 == realInputValue.length))
     ) {
       TestLogic.finish();
       return;
@@ -1204,6 +1220,7 @@ $("#wordsInput").on("input", (event) => {
   }
 
   const containsKorean = TestInput.input.getKoreanStatus();
+  const containsChinese = Config.language.startsWith("chinese");
 
   //Hangul.disassemble breaks down Korean characters into its components
   //allowing it to be treated as normal latin characters
@@ -1248,7 +1265,28 @@ $("#wordsInput").on("input", (event) => {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
-    if (containsKorean) {
+    if (containsChinese) {
+      if (
+        currTestInput.length - inputValue.length <= 2 &&
+        currTestInput.slice(0, currTestInput.length) === currTestInput
+      ) {
+        TestInput.input.current = inputValue;
+      } else {
+        // IME has converted pinyin to Chinese Character(s)
+        let diffStart = 0;
+        while (inputValue[diffStart] === currTestInput[diffStart]) {
+          diffStart++;
+        }
+
+        let iOffset = 0;
+        if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
+          iOffset = inputValue.indexOf(" ") + 1;
+        }
+        for (let i = diffStart; i < inputValue.length; i++) {
+          handleChar(inputValue[i], i - iOffset, realInputValue);
+        }
+      }
+    } else if (containsKorean) {
       const realInput = (event.target as HTMLInputElement).value
         .normalize()
         .slice(1);
