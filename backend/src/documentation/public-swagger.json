@@ -112,7 +112,7 @@
     "/results": {
       "get": {
         "tags": ["results"],
-        "summary": "Gets up to 1000 results (endpoint limited to 1 request per hour)",
+        "summary": "Gets results (endpoint limited to 1 request per hour)",
         "parameters": [
           {
             "name": "onOrAfterTimestamp",
@@ -122,9 +122,16 @@
             "type": "number"
           },
           {
-            "name": "beforeTimestamp",
+            "name": "limit",
             "in": "query",
-            "description": "Get results before a Unix timestamp in milliseconds. Must be no earlier than Thu May 14 2020 04:00:00 GMT+0000 (i.e., 1670454228000). If omitted, defaults to the most recent results. This can only be used by premium users.",
+            "description": "The maximum number of items to return per page.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The offset of the item at which to begin the response.",
             "required": false,
             "type": "number"
           }

@@ -27,6 +27,10 @@ declare namespace MonkeyTypes {
         enabled: boolean;
         maxPresetsPerUser: number;
       };
+      limits: {
+        regularUser: number;
+        premiumUser: number;
+      };
     };
     users: {
       signUp: boolean;

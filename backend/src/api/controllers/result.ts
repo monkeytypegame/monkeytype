@@ -58,30 +58,36 @@ try {
   }
 }
 
+function getNumberOrDefault(query: string, alt: number): number {
+  if (query === undefined) return alt;
+  return parseInt(query, 10);
+}
+
 export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const isPremium = await UserDAL.checkIfUserIsPremium(uid);
-  const limit: number | undefined = isPremium ? undefined : 1000;
+
+  const maxLimit = isPremium
+    ? req.ctx.configuration.results.limits.premiumUser
+    : req.ctx.configuration.results.limits.regularUser;
 
   const onOrAfterTimestamp = parseInt(
     req.query.onOrAfterTimestamp as string,
     10
   );
+  const limit = getNumberOrDefault(req.query.limit as string, maxLimit);
+  const offset = getNumberOrDefault(req.query.offset as string, 0);
 
-  if (req.query.beforeTimestamp !== undefined && !isPremium) {
-    throw new MonkeyError(
-      403,
-      "beforeTimestamp is only available for premium users"
-    );
+  if (limit + offset > maxLimit) {
+    throw new MonkeyError(403, `max results of ${maxLimit} exceeded.`);
   }
-  const beforeTimestamp = parseInt(req.query.beforeTimestamp as string, 10);
 
   const results = await ResultDAL.getResults(uid, {
     onOrAfterTimestamp,
-    beforeTimestamp,
     limit,
+    offset,
   });
   return new MonkeyResponse("Results retrieved", results);
 }

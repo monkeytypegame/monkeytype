@@ -90,15 +90,15 @@ export async function getResultByTimestamp(
 
 interface GetResultsOpts {
   onOrAfterTimestamp?: number;
-  beforeTimestamp?: number;
   limit?: number;
+  offset?: number;
 }
 
 export async function getResults(
   uid: string,
   opts?: GetResultsOpts
 ): Promise<MonkeyTypesResult[]> {
-  const { onOrAfterTimestamp, beforeTimestamp, limit } = opts ?? {};
+  const { onOrAfterTimestamp, offset, limit } = opts ?? {};
   let query = db
     .collection<MonkeyTypesResult>("results")
     .find({
@@ -107,15 +107,14 @@ export async function getResults(
         !_.isNaN(onOrAfterTimestamp) && {
           timestamp: { $gte: onOrAfterTimestamp },
         }),
-      ...(!_.isNil(beforeTimestamp) &&
-        !_.isNaN(beforeTimestamp) && {
-          timestamp: { $lt: beforeTimestamp },
-        }),
     })
     .sort({ timestamp: -1 });
 
   if (limit !== undefined) {
     query = query.limit(limit);
+  }
+  if (offset !== undefined) {
+    query = query.skip(offset);
   }
 
   const results = await query.toArray();
