@@ -429,6 +429,9 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
+    FunboxList.get(Config.funbox).forEach((f) =>
+      f.functions?.applyGlobalCSS?.()
+    );
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
@@ -464,6 +467,8 @@ export async function screenshot(): Promise<void> {
   $(".wordInputHighlight").addClass("hidden");
   $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+
+  FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
   window.scrollTo({
