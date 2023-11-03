@@ -20,7 +20,7 @@ import Logger from "../../utils/logger";
 import "dotenv/config";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import MonkeyError from "../../utils/error";
-import { isTestTooShort } from "../../utils/validation";
+import { areFunboxesCompatible, isTestTooShort } from "../../utils/validation";
 import {
   implemented as anticheatImplemented,
   validateResult,
@@ -36,10 +36,11 @@ import { getDailyLeaderboard } from "../../utils/daily-leaderboards";
 import AutoRoleList from "../../constants/auto-roles";
 import * as UserDAL from "../../dal/user";
 import { buildMonkeyMail } from "../../utils/monkey-mail";
-import FunboxesMetadata from "../../constants/funbox";
+import FunboxList from "../../constants/funbox-list";
 import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
+import { canFunboxGetPb } from "../../utils/pb";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -149,6 +150,12 @@ export async function addResult(
 
   //todo add a type here
   const result = Object.assign({}, req.body.result);
+  if (!user.lbOptOut && result.acc < 75) {
+    throw new MonkeyError(
+      400,
+      "Cannot submit a result with less than 75% accuracy"
+    );
+  }
   result.uid = uid;
   if (isTestTooShort(result)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
@@ -173,6 +180,17 @@ export async function addResult(
       const status = MonkeyStatusCodes.RESULT_HASH_INVALID;
       throw new MonkeyError(status.code, "Incorrect result hash");
     }
+  }
+
+  if (result.funbox) {
+    const funboxes = result.funbox.split("#");
+    if (funboxes.length !== _.uniq(funboxes).length) {
+      throw new MonkeyError(400, "Duplicate funboxes");
+    }
+  }
+
+  if (!areFunboxesCompatible(result.funbox)) {
+    throw new MonkeyError(400, "Impossible funbox combination");
   }
 
   try {
@@ -201,7 +219,8 @@ export async function addResult(
     if (
       !validateResult(
         result,
-        req.headers["client-version"] as string,
+        (req.headers["x-client-version"] ||
+          req.headers["client-version"]) as string,
         JSON.stringify(new UAParser(req.headers["user-agent"]).getResult()),
         user.lbOptOut === true
       )
@@ -276,7 +295,8 @@ export async function addResult(
     result.wpm > 130 &&
     result.testDuration < 122 &&
     (user.verified === false || user.verified === undefined) &&
-    user.lbOptOut !== true
+    user.lbOptOut !== true &&
+    user.banned !== true //no need to check again if user is already banned
   ) {
     if (!result.keySpacingStats || !result.keyDurationStats) {
       const status = MonkeyStatusCodes.MISSING_KEY_DATA;
@@ -301,6 +321,7 @@ export async function addResult(
               body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
             UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+            user.banned = true;
           }
         }
         const status = MonkeyStatusCodes.BOT_DETECTED;
@@ -374,7 +395,7 @@ export async function addResult(
     result.isPb = true;
   }
 
-  if (result.mode === "time" && String(result.mode2) === "60") {
+  if (result.mode === "time" && result.mode2 === "60") {
     incrementBananas(uid, result.wpm);
     if (isPb && user.discordId) {
       GeorgeQueue.updateDiscordRole(user.discordId, result.wpm);
@@ -407,13 +428,9 @@ export async function addResult(
 
   let dailyLeaderboardRank = -1;
 
-  const { funbox, bailedOut } = result;
   const validResultCriteria =
-    (funbox === "none" ||
-      funbox === "plus_one" ||
-      funbox === "plus_two" ||
-      funbox === "plus_three") &&
-    !bailedOut &&
+    canFunboxGetPb(result) &&
+    !result.bailedOut &&
     user.banned !== true &&
     user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
@@ -440,6 +457,33 @@ export async function addResult(
   }
 
   const streak = await UserDAL.updateStreak(uid, result.timestamp);
+
+  const shouldGetBadge =
+    streak >= 365 &&
+    user.inventory?.badges?.find((b) => b.id === 14) === undefined &&
+    (
+      user.inbox
+        ?.map((i) =>
+          (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
+        )
+        .flat() ?? []
+    ).includes(14) === false;
+
+  if (shouldGetBadge) {
+    const mail = buildMonkeyMail({
+      subject: "Badge",
+      body: "Congratulations for reaching a 365 day streak! You have been awarded a special badge. Now, go touch some grass.",
+      rewards: [
+        {
+          type: "badge",
+          item: {
+            id: 14,
+          },
+        },
+      ],
+    });
+    UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+  }
 
   const xpGained = await calculateXp(
     result,
@@ -624,7 +668,7 @@ async function calculateXp(
 
   if (funboxBonusConfiguration > 0) {
     const funboxModifier = _.sumBy(funbox.split("#"), (funboxName) => {
-      const funbox = FunboxesMetadata[funboxName as string];
+      const funbox = FunboxList.find((f) => f.name === funboxName);
       const difficultyLevel = funbox?.difficultyLevel ?? 0;
       return Math.max(difficultyLevel * funboxBonusConfiguration, 0);
     });

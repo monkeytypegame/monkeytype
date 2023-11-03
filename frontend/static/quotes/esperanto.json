@@ -1,0 +1,95 @@
+{
+  "language": "esperanto",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "La nun proponatan broŝuron la leganto kredeble prenos en la manojn kun malkonfido, kun antaŭe preta penso, ke al li estos proponata ia neefektivigebla utopio.",
+      "source": "La unua libro, L.Zamenof",
+      "length": 158,
+      "id": 1
+    },
+    {
+      "text": "Mi devas tial antaŭ ĉio peti la leganton, ke li formetu tiun ĉi antaŭjuĝon kaj ke li pripensu serioze kaj kritike la proponatan aferon.",
+      "source": "La unua libro, L.Zamenof",
+      "length": 135,
+      "id": 2
+    },
+    {
+      "text": "La demando pri lingvo internacia okupadis min jam longe; sed sentante min nek pli talenta, nek pli energia, ol la aŭtoroj de ĉiuj senfrukte pereintaj provoj, mi longan tempon limigadis min nur per revado kaj nevola meditado super tiu ĉi afero. Sed kelke da feliĉaj ideoj, kiuj aperis kiel frukto de tiu ĉi nevola meditado, kuraĝigis min por plua laborado kaj igis min ekprovi, ĉu ne prosperos al mi sisteme venki ĉiujn barojn por la kreo kaj enkonduko en uzadon de racia lingvo internacia.",
+      "source": "La unua libro, L.Zamenof",
+      "length": 489,
+      "id": 3
+    },
+    {
+      "text": "La Unua Libro estas samtempe enkonduko al la origino kaj idealoj de la lingvo kaj priskribo de ĝia simpla gramatiko (kun ekzemploj el prozo kaj poezio kaj aldonita vortaro de oftaj vortoj).",
+      "source": "Vikipedio - La unua libro",
+      "length": 189,
+      "id": 4
+    },
+    {
+      "text": "Tajpado (ankaŭ maŝinskribado) estas skribi tekston klavante, per maŝino. Pli ĝusta maniero tajpi konsistas en tio ke oni ne rigardu al la klavaro, sed nur al papero (okaze de maŝino) aŭ al la ekrano (okaze de komputilo). Estas metodoj por lerni tiun sistemon, ĉu per rekta instruado de instruisto, ĉu per librometodo, ĉu per interreta kurso aŭ komputila programo.",
+      "source": "Vikipedio - Tajpado",
+      "length": 363,
+      "id": 5
+    },
+    {
+      "text": "Esperanta Vikipedio estas projekto de kunlabora enciklopedio, universala kaj plurlingva, kreita interrete laŭ la vikio-principo. Ĝi celas liveri en Esperanto liberan, objektivan kaj kontroleblan enhavon, kiun ĉiuj povas redakti.",
+      "source": "Vikipedio - Ĉefpaĝo",
+      "length": 228,
+      "id": 6
+    },
+    {
+      "text": "Ke la lingvo estu eksterordinare facila, tiel ke oni povu ellerni ĝin ludante.",
+      "source": "La unua libro, L.Zamenof",
+      "length": 78,
+      "id": 7
+    },
+    {
+      "text": "Juna Rikardo preskaŭ ploris ĉe tiu terura konstato. Li rondrigardis. En la dormejo, li estis sola. Videble, ne nur lia mono malaperis, sed ankaŭ Janĉjo.",
+      "source": "Dankon, amiko!, Claude Piron",
+      "length": 152,
+      "id": 8
+    },
+    {
+      "text": "Normale mi devus forkuri kun via mono kaj veturbileto sen diri al vi ion ajn. Sed miaj amikaj sentoj tion malhelpas, kaj mi volas skribi adiaŭon al vi. Mi sentas devon instrui vin pri la vivo. Se je la aĝo de 21 jaroj vi ankoraŭ ne komprenis la riskojn, al kiuj vi vin elmetas, iu devas vin lernigi. Ni hazarde renkontiĝis nur antaŭ tri tagoj. Vi sciis nenion pri mi. Tamen vian tutan vivon vi rakontis kaj... montris al mi vian tutan monon.",
+      "source": "Dankon, amiko!, Claude Piron",
+      "length": 441,
+      "id": 9
+    },
+    {
+      "text": "Kaj nun li sentas sin ema zorgi pri Linda. Ĉu tiu belega knabino ne troviĝas en danĝero? Li amas ŝin, li eĉ amegas ŝin, pli kaj pli, kaj la ideo, ke danĝeraj homoj povus fari ion al ŝi, apenaŭ estas travivebla.",
+      "source": "Gerda malaperis, Claude Piron",
+      "length": 210,
+      "id": 10
+    },
+    {
+      "text": "Kion esperantistoj faru post la milito? Tiun demandon klopodas prilumi Istvan Szabolcs en dua vidpunkta artikolo pri la temo.",
+      "source": "Tragedio por Ukrainio kaj katastrofo por Rusio, 2022, Libera folio",
+      "length": 125,
+      "id": 11
+    },
+    {
+      "text": "En la vilaĝo de Nomen Tuum, antikva cervfontano estas supozata enhavi kuracpovojn. En certaj okazoj personoj estis risanigitaj, sed pliofte ili akiris certan belecon.",
+      "source": "Inkubo (1966), Leslie Stevens",
+      "length": 166,
+      "id": 12
+    },
+    {
+      "text": "Kiam mi eniris la ĉefstraton de la malgranda vilaĝo, ĝi estis tute senhoma, krom ke unu maljunulo per la helpo de marŝbastono malrapide iris en la direkto al la haveno kaj mi sciis, ke la vilaĝanoj troviĝos tie, kien li iras.",
+      "source": "La ŝtormo, John S. Dinwoodie",
+      "length": 225,
+      "id": 13
+    },
+    {
+      "text": "La muroj de la haveno mem kaj la deklivo super ĝi estis kovritaj de grupoj de la vilaĝanoj.",
+      "source": "La ŝtormo, John S. Dinwoodie",
+      "length": 91,
+      "id": 14
+    }
+  ]
+}

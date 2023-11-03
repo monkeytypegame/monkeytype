@@ -10,7 +10,7 @@ import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 
 type ProfileViewPaths = "profile" | "account";
 
-interface ProfileData extends MonkeyTypes.Snapshot {
+export interface ProfileData extends MonkeyTypes.Snapshot {
   allTimeLbs: MonkeyTypes.LeaderboardMemory;
   uid: string;
 }
@@ -38,16 +38,16 @@ export async function update(
 
   details.find(".placeholderAvatar").removeClass("hidden");
   if (profile.discordAvatar && profile.discordId && !banned) {
-    const avatarUrl = await Misc.getDiscordAvatarUrl(
+    Misc.getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
       256
-    );
-
-    if (avatarUrl) {
-      details.find(".placeholderAvatar").addClass("hidden");
-      details.find(".avatar").css("background-image", `url(${avatarUrl})`);
-    }
+    ).then((avatarUrl) => {
+      if (avatarUrl) {
+        details.find(".placeholderAvatar").addClass("hidden");
+        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
+      }
+    });
   } else {
     details.find(".avatar").removeAttr("style");
   }
@@ -84,14 +84,27 @@ export async function update(
       .append(
         `<div class="bannedIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
       );
+
+    if (where === "profile") {
+      profileElement
+        .find(".lbOptOutReminder")
+        .removeClass("hidden")
+        .text(
+          "Note: This account has opted out of the leaderboards, meaning their results aren't verified by the anticheat system and may not be legitimate."
+        );
+    } else {
+      profileElement.find(".lbOptOutReminder").addClass("hidden");
+    }
   }
 
-  updateNameFontSize(where);
+  setTimeout(() => {
+    updateNameFontSize(where);
+  }, 10);
 
   const joinedText = "Joined " + format(profile.addedAt ?? 0, "dd MMM yyyy");
   const creationDate = new Date(profile.addedAt);
   const diffDays = differenceInDays(new Date(), creationDate);
-  const balloonText = `${diffDays} day${diffDays != 1 ? "s" : ""} ago`;
+  const balloonText = `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
   details.find(".joined").text(joinedText).attr("aria-label", balloonText);
 
   let hoverText = "";
@@ -117,19 +130,54 @@ export async function update(
     const lastResult = results?.[0];
 
     const dayInMilis = 1000 * 60 * 60 * 24;
+    const milisOffset = (profile.streakHourOffset ?? 0) * 3600000;
     const timeDif = formatDistanceToNowStrict(
-      Misc.getCurrentDayTimestamp() + dayInMilis
+      Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset
     );
+
+    console.debug("Streak hour offset");
+    console.debug("date.now()", Date.now(), new Date(Date.now()));
+    console.debug("dayInMilis", dayInMilis);
+    console.debug("milisOffset", milisOffset);
+    console.debug("timeDif", timeDif);
+    console.debug(
+      "Misc.getCurrentDayTimestamp()",
+      Misc.getCurrentDayTimestamp(),
+      new Date(Misc.getCurrentDayTimestamp())
+    );
+    console.debug("profile.streakHourOffset", profile.streakHourOffset);
 
     if (lastResult) {
       //check if the last result is from today
       const isToday = Misc.isToday(lastResult.timestamp);
+      const isYesterday = Misc.isYesterday(lastResult.timestamp);
+
+      console.debug(
+        "lastResult.timestamp",
+        lastResult.timestamp,
+        new Date(lastResult.timestamp)
+      );
+      console.debug("isToday", isToday);
+      console.debug("isYesterday", isYesterday);
+
+      const offsetString = profile.streakHourOffset
+        ? `(${profile.streakHourOffset > 0 ? "+" : ""}${
+            profile.streakHourOffset
+          } offset)`
+        : "";
+
       if (isToday) {
         hoverText += `\nClaimed today: yes`;
-        hoverText += `\nCome back in: ${timeDif}`;
+        hoverText += `\nCome back in: ${timeDif} ${offsetString}`;
       } else {
         hoverText += `\nClaimed today: no`;
-        hoverText += `\nStreak lost in: ${timeDif}`;
+        hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
+      }
+
+      console.debug(hoverText);
+
+      if (profile.streakHourOffset === undefined) {
+        hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
       }
     }
   }
@@ -251,8 +299,8 @@ export async function update(
 
     const lbPos = where === "profile" ? profile.allTimeLbs : profile.lbMemory;
 
-    const t15 = lbPos?.time?.[15]?.["english"];
-    const t60 = lbPos?.time?.[60]?.["english"];
+    const t15 = lbPos?.time?.["15"]?.["english"];
+    const t60 = lbPos?.time?.["60"]?.["english"];
 
     if (!t15 && !t60) {
       profileElement.find(".leaderboardsPositions").addClass("hidden");
@@ -316,6 +364,10 @@ export async function update(
 }
 
 export function updateNameFontSize(where: ProfileViewPaths): void {
+  //dont run this function in safari because OH MY GOD IT IS SO SLOW
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (isSafari) return;
+
   let details;
   if (where === "account") {
     details = $(".pageAccount .profile .details");
@@ -323,19 +375,18 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
     details = $(".pageProfile .profile .details");
   }
   if (!details) return;
-  const nameField = details.find(".name");
-  const nameFieldParent = nameField.parent();
+  const nameFieldjQ = details.find(".name");
+  const nameFieldParent = nameFieldjQ.parent()[0];
+  const nameField = nameFieldjQ[0];
   const upperLimit = Misc.convertRemToPixels(2);
-  // const nameFieldParentWidth = nameField.parent().width() ?? 0;
-  let fontSize = 15;
-  let nameWidth;
-  let parentWidth;
-  do {
-    fontSize = fontSize + 1;
-    nameField.css("font-size", fontSize);
-    nameWidth = nameField.width() ?? 0;
-    parentWidth = nameFieldParent.width() ?? 0;
-  } while (nameWidth < parentWidth - 10 && fontSize < upperLimit);
+
+  nameField.style.fontSize = `10px`;
+  const parentWidth = nameFieldParent.clientWidth;
+  const widthAt10 = nameField.clientWidth;
+  const ratioAt10 = parentWidth / widthAt10;
+  const fittedFontSize = ratioAt10 * 10;
+  const finalFontSize = Math.min(Math.max(fittedFontSize, 10), upperLimit);
+  nameField.style.fontSize = `${finalFontSize}px`;
 }
 
 $(".details .editProfileButton").on("click", () => {
@@ -346,7 +397,7 @@ $(".details .editProfileButton").on("click", () => {
   });
 });
 
-const throttledEvent = throttle(250, () => {
+const throttledEvent = throttle(1000, () => {
   const activePage = ActivePage.get();
   if (activePage && ["account", "profile"].includes(activePage)) {
     updateNameFontSize(activePage as ProfileViewPaths);

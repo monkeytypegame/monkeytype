@@ -55,6 +55,12 @@
       display: inline;
     }
   }
+  .lbOptOutReminder {
+    grid-column: span 2;
+    text-align: center;
+    color: var(--sub-color);
+    font-size: 0.8em;
+  }
 }
 
 .profile {
@@ -91,7 +97,6 @@
     align-content: center;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    justify-items: baseline;
     position: relative;
 
     .buttonGroup {
@@ -353,7 +358,7 @@
         line-height: 100%;
         width: max-content;
         .bannedIcon {
-          margin-left: 0.5rem;
+          margin-left: 0.5em;
           display: inline-grid;
           font-size: 75%;
           color: var(--error-color);

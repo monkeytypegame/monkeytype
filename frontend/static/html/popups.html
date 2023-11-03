@@ -62,6 +62,7 @@
 <div
   id="cookiePopupWrapper"
   class="cookie-popup-wrapper cookiePopupWrapper popupWrapper hidden"
+  tabindex="-1"
 >
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
@@ -79,15 +80,15 @@
         Cookies enhance your experience and help us improve our website.
       </div>
       <div class="buttons">
-        <div class="button active acceptAll">Accept all</div>
-        <div class="button rejectAll">Reject all</div>
-        <div class="button openSettings">More options</div>
+        <button class="active acceptAll">accept all</button>
+        <button class="rejectAll">reject non-essential</button>
+        <button class="openSettings">more options</button>
       </div>
     </div>
     <div class="settings hidden">
       <div class="cookie security">
         <label class="checkbox">
-          <div class="title">Security</div>
+          <div class="title">security</div>
           <div class="description">
             We use Cloudflare cookies to improve security and performance of our
             site.
@@ -98,31 +99,21 @@
             store any personal information and are required.
           </div>
           <input type="checkbox" checked disabled />
-          <div class="customTextCheckbox" style="cursor: default; opacity: 0.5">
-            <div class="check">
-              <i class="fas fa-fw fa-check"></i>
-            </div>
-          </div>
         </label>
       </div>
       <div class="cookie analytics">
         <label class="checkbox">
-          <div class="title">Analytics</div>
+          <div class="title">analytics</div>
           <div class="description">
             We use Google Analytics cookies to check how users interact with our
             website and use this data to improve our site design.
           </div>
           <input type="checkbox" />
-          <div class="customTextCheckbox">
-            <div class="check">
-              <i class="fas fa-fw fa-check"></i>
-            </div>
-          </div>
         </label>
       </div>
       <div class="cookie ads">
         <label class="checkbox">
-          <div class="title">Advertising</div>
+          <div class="title">advertising</div>
           <div class="description">
             Our advertising partner may use cookies to deliver ads that are more
             relevant to you.
@@ -132,7 +123,7 @@
           </div>
         </label>
       </div>
-      <div class="button active acceptSelected">Accept selected</div>
+      <button class="active acceptSelected">accept selected</button>
     </div>
   </div>
 </div>
@@ -140,83 +131,43 @@
 <div id="shareTestSettingsPopupWrapper" class="popupWrapper hidden">
   <div id="shareTestSettingsPopup">
     <div class="title">Share test settings</div>
-    <label class="checkbox mode">
+    <label class="checkboxWithSub mode">
       <input type="checkbox" setting="mode" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
-      Mode
-      <span>Time, Words, Quote, Zen, Custom</span>
+      <div>Mode</div>
+      <div class="sub">Time, Words, Quote, Zen, Custom</div>
     </label>
-    <label class="checkbox mode2 subgroup hidden">
+    <label class="checkboxWithSub mode2 subgroup hidden">
       <input type="checkbox" setting="mode2" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
-      Mode2
-      <span>Test seconds, Test words, Quote Id</span>
+      <div>Mode2</div>
+      <div class="sub">Test seconds, Test words, Quote Id</div>
     </label>
     <label class="checkbox customText subgroup hidden">
       <input type="checkbox" setting="customText" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Custom text
       <span></span>
     </label>
     <label class="checkbox punctuation">
       <input type="checkbox" setting="punctuation" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Punctuation
       <span></span>
     </label>
     <label class="checkbox numbers">
       <input type="checkbox" setting="numbers" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Numbers
       <span></span>
     </label>
     <label class="checkbox language">
       <input type="checkbox" setting="language" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Language
       <span></span>
     </label>
     <label class="checkbox difficulty">
       <input type="checkbox" setting="difficulty" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Difficulty
       <span></span>
     </label>
     <label class="checkbox funbox">
       <input type="checkbox" setting="funbox" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
       Funbox
       <span></span>
     </label>
@@ -314,7 +265,7 @@
   </div>
 </div>
 
-<div id="practiseWordsPopupWrapper" class="popupWrapper hidden">
+<div id="practiseWordsPopupWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="practiseWordsPopup" action="">
     <div class="title">Practice words</div>
     <div class="text">
@@ -435,6 +386,11 @@
         <i class="fas fa-folder"></i>
         Show saved texts
       </div>
+      <input id="fileInput" type="file" class="hidden" accept=".txt" />
+      <label for="fileInput" class="button importText">
+        <i class="fas fa-file-import"></i>
+        Open file
+      </label>
       <div class="button wordfilter">
         <i class="fas fa-filter"></i>
         Words filter
@@ -455,21 +411,20 @@
       <textarea class="textarea"></textarea>
     </div>
     <div class="inputs">
-      <label class="checkbox randomWordsCheckbox">
+      <label class="checkboxWithSub randomWordsCheckbox">
         <input type="checkbox" />
-        <div class="customTextCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
-        </div>
-        Random
-        <span>
+        <div>Random</div>
+        <div class="sub">
           Randomize the above words, and control how many words are generated.
-        </span>
+        </div>
       </label>
       <div class="randomInputFields disabled">
         <label class="wordcount">
           Words
+          <input type="number" value="" min="1" max="10000" />
+        </label>
+        <label class="sectioncount hidden">
+          Sections
           <input type="number" value="" min="1" max="10000" />
         </label>
         <div style="color: var(--sub-color)">or</div>
@@ -477,44 +432,38 @@
           Time
           <input type="number" value="" min="1" max="10000" />
         </label>
+        <!-- <div style="color: var(--sub-color)">or</div> -->
       </div>
-      <label class="checkbox typographyCheck">
+      <label class="checkboxWithSub typographyCheck">
         <input type="checkbox" checked />
-        <div class="customTextCheckbox customTextTypographyCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
-        </div>
-        Remove Fancy Typography
-        <span>
+        <div>Remove fancy typography</div>
+        <div class="sub">
           Standardises typography symbols (for example “ and ” become ")
-        </span>
-      </label>
-      <label class="checkbox delimiterCheck">
-        <input type="checkbox" />
-        <div class="customTextCheckbox customTextDelimiterCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
         </div>
-        Pipe Delimiter
-        <span>
+      </label>
+      <label class="checkboxWithSub replaceControlCharacters">
+        <input type="checkbox" checked />
+        <div>Replace control characters</div>
+        <div class="sub">
+          Replace control characters (\n becomes a new line and \t becomes a
+          tab)
+        </div>
+      </label>
+      <label class="checkboxWithSub delimiterCheck">
+        <input type="checkbox" />
+        <div>Pipe delimiter</div>
+        <div class="sub">
           Change how words are separated. Using the pipe delimiter allows you to
           randomize groups of words.
-        </span>
-      </label>
-      <label class="checkbox replaceNewlineWithSpace">
-        <input type="checkbox" />
-        <div class="customTextCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
         </div>
-        Replace new lines with spaces
-        <span>
+      </label>
+      <label class="checkboxWithSub replaceNewlineWithSpace">
+        <input type="checkbox" />
+        <div>Replace new lines with spaces</div>
+        <div class="sub">
           Replace all new line characters with spaces. Can automatically add
           periods to the end of lines if you wish.
-        </span>
+        </div>
       </label>
       <div class="replaceNewLinesButtons">
         <div class="buttonGroup">
@@ -539,19 +488,14 @@
     <div class="title">Save custom text</div>
     <input class="textName" type="text" placeholder="name" />
     <div>
-      <label class="checkbox">
+      <label class="checkboxWithSub">
         <input type="checkbox" class="isLongText" />
-        <div class="customTextCheckbox">
-          <div class="check">
-            <i class="fas fa-fw fa-check"></i>
-          </div>
-        </div>
-        Long text (book mode)
-        <span>
+        <div>Long text (book mode)</div>
+        <div class="sub">
           Disables editing this text but allows you to save progress by pressing
           shift + enter or bailing out. You can then load this text again to
           continue where you left off.
-        </span>
+        </div>
       </label>
     </div>
     <div class="button save">save</div>
@@ -697,8 +641,16 @@
       <select class="quoteLengthFilter"></select>
       <div id="toggleShowFavorites" class="button">Favorites Only</div>
     </div>
-    <div id="extraResults">No search results</div>
     <div id="quoteSearchResults" class="quoteSearchResults"></div>
+    <div id="quoteSearchPageNavigator">
+      <div class="button prevPage disabled">
+        <i class="fas fa-fw fa-chevron-left"></i>
+      </div>
+      <div id="pageInfo">No search results</div>
+      <div class="button nextPage disabled">
+        <i class="fas fa-fw fa-chevron-right"></i>
+      </div>
+    </div>
   </div>
 </div>
 <div id="quoteSubmitPopupWrapper" class="popupWrapper hidden">
@@ -832,11 +784,32 @@
     <div class="quotes"></div>
   </div>
 </div>
-<div id="tagsWrapper" class="popupWrapper hidden">
+<div id="tagsWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="tagsEdit" action="" tagid="">
-    <div class="title"></div>
-    <input type="text" title="tag" />
-    <div class="button"><i class="fas fa-plus"></i></div>
+    <form>
+      <div class="title"></div>
+      <input type="text" title="tag" />
+      <button type="submit"></button>
+    </form>
+  </div>
+</div>
+<div id="streakHourOffsetPopupWrapper" class="popupWrapper hidden">
+  <div id="streakHourOffsetPopup">
+    <div class="title">Set Streak Hour Offset</div>
+    <div class="text">
+      Streaks reset at midnight UTC by default. If this is not convenient for
+      you (for example if it means that streaks reset in the middle of the day),
+      you can change the hour offset here.
+      <br />
+      <br />
+      This will not take daylight savings time into consideration!
+      <br />
+      <br />
+      <span class="red">You can only do this once!</span>
+    </div>
+    <input type="number" min="-11" max="12" value="0" />
+    <div class="preview"></div>
+    <div class="button">set</div>
   </div>
 </div>
 <div id="resultEditTagsPanelWrapper" class="popupWrapper hidden">
@@ -845,20 +818,27 @@
     <div class="button confirmButton"><i class="fas fa-check"></i></div>
   </div>
 </div>
-<div id="presetWrapper" class="popupWrapper hidden">
+<div id="presetWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="presetEdit" action="" presetid="">
-    <div class="title"></div>
-    <input type="text" class="text" title="presets" />
+    <form>
+      <div class="title"></div>
+      <input type="text" class="text" title="presets" />
+      <label class="checkbox">
+        <input type="checkbox" />
+        Change preset to current settings
+      </label>
+      <button type="submit">add</button>
+    </form>
+  </div>
+</div>
+<div id="shareCustomThemeWrapper" class="popupWrapper hidden">
+  <div id="shareCustomThemeEdit" action="">
+    <div class="title">Share Custom Theme</div>
     <label class="checkbox">
-      <input type="checkbox" />
-      <div class="customTextCheckbox">
-        <div class="check">
-          <i class="fas fa-fw fa-check"></i>
-        </div>
-      </div>
-      Change preset to current settings
+      <input type="checkbox" id="includeBackground" />
+      Include background information
     </label>
-    <div class="button"><i class="fas fa-plus"></i></div>
+    <div class="button copy-button">copy link to clipboard</div>
   </div>
 </div>
 <div id="leaderboardsWrapper" class="popupWrapper hidden">
@@ -984,14 +964,14 @@
         <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
         <div class="text">Enable Ads</div>
       </div>
-      <div class="button watchVideoAd">
+      <!-- <div class="button watchVideoAd">
         <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
         <div class="text">
           Watch
           <br />
           a Video Ad
         </div>
-      </div>
+      </div> -->
       <a
         class="button"
         href="https://ko-fi.com/monkeytype"

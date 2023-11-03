@@ -10,6 +10,9 @@
   justify-content: center;
   align-items: center;
   padding: 2rem 0;
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 #customTextPopupWrapper {
@@ -90,7 +93,7 @@
 
     .buttonsTop {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 1rem;
     }
 
@@ -205,7 +208,6 @@
 
 #saveCustomTextPopupWrapper {
   #saveCustomTextPopup {
-    color: var(--sub-color);
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -223,6 +225,7 @@
 }
 
 #wordFilterPopupWrapper {
+  padding: 2rem;
   #wordFilterPopup {
     color: var(--sub-color);
     background: var(--bg-color);
@@ -232,7 +235,9 @@
     grid-template-areas: "top top top" "left divider right" "bottom bottom bottom";
     grid-template-columns: 1fr auto 1fr;
     gap: 2rem;
-    width: 800px;
+    max-width: 800px;
+    overflow-y: scroll;
+    max-height: 100%;
 
     .top {
       grid-area: top;
@@ -410,9 +415,12 @@
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
-    display: grid;
-    gap: 1rem;
     width: 400px;
+
+    form {
+      display: grid;
+      gap: 1rem;
+    }
 
     .title {
       font-size: 1.5rem;
@@ -607,17 +615,10 @@
       margin-top: 0.25rem;
       display: grid;
       gap: 1rem;
-      grid-template-columns: 1fr 1fr;
-      .openSettings {
-        grid-column: span 2;
-      }
     }
     .settings {
       display: grid;
       gap: 1rem;
-      .customTextCheckbox {
-        background: var(--sub-color);
-      }
       .cookie label {
         display: grid;
         gap: 0 1rem;
@@ -632,9 +633,10 @@
         .description {
           grid-area: description;
         }
-        .customTextCheckbox {
-          place-self: center;
+        input[type="checkbox"] {
+          align-self: center;
           grid-area: check;
+          font-size: 2em;
         }
       }
       .cookie.ads label {
@@ -803,10 +805,28 @@
       }
     }
 
-    #extraResults {
-      text-align: center;
-      color: var(--sub-color);
+    #quoteSearchPageNavigator {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
     }
+
+    .prevPage,
+    .nextPage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    #pageInfo {
+      flex: 1;
+      text-align: center;
+      max-width: 20rem;
+      color: var(--sub-color);
+      padding: 0.5rem 1.5rem;
+    }
+
     #quoteSearchResults {
       display: grid;
       gap: 0.5rem;
@@ -1282,6 +1302,20 @@
     @extend .ffscroll;
     overflow-y: scroll;
 
+    hr {
+      background: var(--sub-alt-color);
+      height: 0.25rem;
+      border: none;
+      border-radius: var(--roundness);
+      margin: 1rem 0;
+    }
+
+    h3 {
+      color: var(--sub-color);
+      font-size: 1.25rem;
+      margin: 0 0 0.5rem 0;
+    }
+
     .preloader {
       color: var(--main-color);
       display: grid;
@@ -1385,7 +1419,29 @@
     }
   }
 }
+#shareCustomThemeWrapper {
+  #shareCustomThemeEdit {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+    width: 500px;
 
+    .buttons {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .title {
+      font-size: 1.5rem;
+      line-height: 2rem;
+      color: var(--sub-color);
+    }
+  }
+}
 #contactPopupWrapper {
   #contactPopup {
     // height: 400px;
@@ -1474,6 +1530,25 @@
   }
 }
 
+#streakHourOffsetPopupWrapper {
+  #streakHourOffsetPopup {
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+    width: 400px;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+    .red {
+      color: var(--error-color);
+    }
+  }
+}
+
 #tagsWrapper,
 #newResultFilterPresetPopupWrapper,
 #editProfilePopupWrapper {
@@ -1492,6 +1567,12 @@
       color: var(--sub-color);
     }
   }
+}
+
+#tagsEdit form,
+#presetEdit form {
+  display: grid;
+  gap: 1rem;
 }
 
 #editProfilePopup {

@@ -59,7 +59,7 @@ export default new EmailQueue(QUEUE_NAME, {
   defaultJobOptions: {
     removeOnComplete: true,
     removeOnFail: true,
-    attempts: 3,
+    attempts: 1,
     backoff: {
       type: "exponential",
       delay: 2000,

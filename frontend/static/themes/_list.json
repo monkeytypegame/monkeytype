@@ -156,9 +156,9 @@
   {
     "name": "nord",
     "bgColor": "#242933",
-    "mainColor": "#d8dee9",
-    "subColor": "#617b94",
-    "textColor": "#d8dee9"
+    "mainColor": "#88C0D0",
+    "subColor": "#2E3440",
+    "textColor": "#88C0D0"
   },
   {
     "name": "mr_sleeves",
@@ -339,7 +339,7 @@
     "name": "matrix",
     "bgColor": "#000000",
     "mainColor": "#15ff00",
-    "subColor": "#003b00",
+    "subColor": "#006500",
     "textColor": "#d1ffcd"
   },
   {
@@ -1127,11 +1127,11 @@
     "textColor": "#e6c7a8"
   },
   {
-    "name": "purpurite",
-    "bgColor": "#1f2533",
-    "mainColor": "#9999ff",
-    "subColor": "#ccddff",
-    "textColor": "#9999ff"
+    "name": "purpleish",
+    "bgColor": "#1e1e32",
+    "mainColor": "#7a52cc",
+    "subColor": "#3d3d66",
+    "textColor": "#7a52cc"
   },
   {
     "name": "nord_light",
@@ -1167,5 +1167,20 @@
     "mainColor": "#8ccf7e",
     "subColor": "#838887",
     "textColor": "#dadada"
+  },
+  {
+    "name": "grape",
+    "bgColor": "#2c003e",
+    "mainColor": "#ff8f00",
+    "subColor": "#651e56",
+    "textColor": "#fff"
+  },
+  {
+    "name": "rainbow_trail",
+    "bgColor": "#f5f5f5",
+    "mainColor": "#363636",
+    "subColor": "#4f4f4f",
+    "textColor": "#1f1f1f"
   }
+
 ]

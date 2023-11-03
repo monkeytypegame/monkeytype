@@ -14,56 +14,86 @@ function reset(): void {
   ChartController.globalSpeedHistogram.updateColors();
 }
 
-let speedStatsResponseData: any | undefined;
-let typingStatsResponseData: any | undefined;
+interface HistogramData {
+  [key: string]: number;
+}
+
+interface TypingStatsData {
+  type: string;
+  timeTyping: number;
+  testsCompleted: number;
+  testsStarted: number;
+}
+
+let speedHistogramResponseData: HistogramData | undefined;
+let typingStatsResponseData: TypingStatsData | undefined;
 
 function updateStatsAndHistogram(): void {
-  if (!speedStatsResponseData && !typingStatsResponseData) {
-    return;
+  if (speedHistogramResponseData) {
+    ChartController.globalSpeedHistogram.updateColors();
+    const bucketedSpeedStats = getHistogramDataBucketed(
+      speedHistogramResponseData
+    );
+    ChartController.globalSpeedHistogram.data.labels =
+      bucketedSpeedStats.labels;
+    ChartController.globalSpeedHistogram.data.datasets[0].data =
+      bucketedSpeedStats.data;
   }
-  ChartController.globalSpeedHistogram.updateColors();
-  const bucketedSpeedStats = getHistogramDataBucketed(speedStatsResponseData);
-  ChartController.globalSpeedHistogram.data.labels = bucketedSpeedStats.labels;
-  ChartController.globalSpeedHistogram.data.datasets[0].data =
-    bucketedSpeedStats.data;
+  if (typingStatsResponseData) {
+    const secondsRounded = Math.round(typingStatsResponseData.timeTyping);
 
-  const secondsRounded = Math.round(typingStatsResponseData.timeTyping);
+    const timeTypingDuration = intervalToDuration({
+      start: 0,
+      end: secondsRounded * 1000,
+    });
 
-  const timeTypingDuration = intervalToDuration({
-    start: 0,
-    end: secondsRounded * 1000,
-  });
+    $(".pageAbout #totalTimeTypingStat .val").text(
+      timeTypingDuration.years?.toString() ?? ""
+    );
+    $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
+    $(".pageAbout #totalTimeTypingStat").attr(
+      "aria-label",
+      Misc.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
+    );
 
-  $(".pageAbout #totalTimeTypingStat .val").text(
-    timeTypingDuration.years?.toString() ?? ""
-  );
-  $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
-  $(".pageAbout #totalTimeTypingStat").attr(
-    "aria-label",
-    Math.round(secondsRounded / 3600) + " hours"
-  );
+    const startedWithMagnitude = Misc.getNumberWithMagnitude(
+      typingStatsResponseData.testsStarted
+    );
 
-  $(".pageAbout #totalStartedTestsStat .val").text(
-    Math.round(typingStatsResponseData.testsStarted / 1000000)
-  );
-  $(".pageAbout #totalStartedTestsStat .valSmall").text("million");
-  $(".pageAbout #totalStartedTestsStat").attr(
-    "aria-label",
-    typingStatsResponseData.testsStarted + " tests"
-  );
+    $(".pageAbout #totalStartedTestsStat .val").text(
+      startedWithMagnitude.rounded < 10
+        ? startedWithMagnitude.roundedTo2
+        : startedWithMagnitude.rounded
+    );
+    $(".pageAbout #totalStartedTestsStat .valSmall").text(
+      startedWithMagnitude.orderOfMagnitude
+    );
+    $(".pageAbout #totalStartedTestsStat").attr(
+      "aria-label",
+      Misc.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
+    );
 
-  $(".pageAbout #totalCompletedTestsStat .val").text(
-    Math.round(typingStatsResponseData.testsCompleted / 1000000)
-  );
-  $(".pageAbout #totalCompletedTestsStat .valSmall").text("million");
-  $(".pageAbout #totalCompletedTestsStat").attr(
-    "aria-label",
-    typingStatsResponseData.testsCompleted + " tests"
-  );
+    const completedWIthMagnitude = Misc.getNumberWithMagnitude(
+      typingStatsResponseData.testsCompleted
+    );
+
+    $(".pageAbout #totalCompletedTestsStat .val").text(
+      completedWIthMagnitude.rounded < 10
+        ? completedWIthMagnitude.roundedTo2
+        : completedWIthMagnitude.rounded
+    );
+    $(".pageAbout #totalCompletedTestsStat .valSmall").text(
+      completedWIthMagnitude.orderOfMagnitude
+    );
+    $(".pageAbout #totalCompletedTestsStat").attr(
+      "aria-label",
+      Misc.numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests"
+    );
+  }
 }
 
 async function getStatsAndHistogramData(): Promise<void> {
-  if (speedStatsResponseData && typingStatsResponseData) {
+  if (speedHistogramResponseData && typingStatsResponseData) {
     return;
   }
 
@@ -78,7 +108,7 @@ async function getStatsAndHistogramData(): Promise<void> {
     mode2: "60",
   });
   if (speedStats.status >= 200 && speedStats.status < 300) {
-    speedStatsResponseData = speedStats.data;
+    speedHistogramResponseData = speedStats.data;
   } else {
     Notifications.add(
       `Failed to get global speed stats for histogram: ${speedStats.message}`,
@@ -160,7 +190,7 @@ function getHistogramDataBucketed(data: Record<string, number>): {
       y: data[bucket],
     });
     labels.push(`${bucket} - ${bucket + 9}`);
-    if (bucket + 10 != parseInt(keys[i + 1], 10)) {
+    if (bucket + 10 !== parseInt(keys[i + 1], 10)) {
       for (let j = bucket + 10; j < parseInt(keys[i + 1], 10); j += 10) {
         histogramChartDataBucketed.push({ x: j, y: 0 });
         labels.push(`${j} - ${j + 9}`);
@@ -182,7 +212,7 @@ export const page = new Page(
     Skeleton.remove("pageAbout");
   },
   async () => {
-    Skeleton.append("pageAbout", "middle");
+    Skeleton.append("pageAbout", "main");
     fill();
   },
   async () => {

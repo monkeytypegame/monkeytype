@@ -87,6 +87,7 @@ export async function resetUser(uid: string): Promise<void> {
         discordAvatar: "",
         discordId: "",
         lbOptOut: "",
+        inbox: "",
       },
     }
   );
@@ -103,8 +104,9 @@ export async function updateName(
   if (!isUsernameValid(name)) {
     throw new MonkeyError(400, "Invalid username");
   }
+
   if (
-    name.toLowerCase() !== previousName.toLowerCase() &&
+    name?.toLowerCase() !== previousName?.toLowerCase() &&
     !(await isNameAvailable(name, uid))
   ) {
     throw new MonkeyError(409, "Username already taken", name);
@@ -117,6 +119,13 @@ export async function updateName(
       $unset: { needsToChangeName: "" },
       $push: { nameHistory: previousName },
     }
+  );
+}
+
+export async function flagForNameChange(uid: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    { $set: { needsToChangeName: true } }
   );
 }
 
@@ -271,6 +280,12 @@ export async function addTag(
   uid: string,
   name: string
 ): Promise<MonkeyTypes.UserTag> {
+  const user = await getUser(uid, "add tag");
+
+  if ((user?.tags?.length ?? 0) >= 15) {
+    throw new MonkeyError(400, "You can only have up to 15 tags");
+  }
+
   const _id = new ObjectId();
   const toPush = {
     _id,
@@ -557,7 +572,7 @@ export async function incrementBananas(uid: string, wpm): Promise<void> {
   const user = await getUser(uid, "increment bananas");
 
   let best60: number | undefined;
-  const personalBests60 = user.personalBests?.time[60];
+  const personalBests60 = user.personalBests?.time["60"];
 
   if (personalBests60) {
     best60 = Math.max(...personalBests60.map((best) => best.wpm));
@@ -764,7 +779,7 @@ export async function recordAutoBanEvent(
 
   const now = Date.now();
 
-  //remove any old events
+  //only keep events within the last maxHours
   const recentAutoBanTimestamps = autoBanTimestamps.filter(
     (timestamp) => timestamp >= now - maxHours * SECONDS_PER_HOUR * 1000
   );
@@ -776,13 +791,15 @@ export async function recordAutoBanEvent(
   const updateObj: Partial<MonkeyTypes.User> = {
     autoBanTimestamps: recentAutoBanTimestamps,
   };
+  let banningUser = false;
   if (recentAutoBanTimestamps.length > maxCount) {
     updateObj.banned = true;
+    banningUser = true;
     ret = true;
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
-  Logger.logToDb("user_auto_banned", { autoBanTimestamps }, uid);
+  Logger.logToDb("user_auto_banned", { autoBanTimestamps, banningUser }, uid);
   return ret;
 }
 
@@ -970,12 +987,13 @@ export async function updateStreak(
     lastResultTimestamp: user.streak?.lastResultTimestamp ?? 0,
     length: user.streak?.length ?? 0,
     maxLength: user.streak?.maxLength ?? 0,
+    hourOffset: user.streak?.hourOffset,
   };
 
-  if (isYesterday(streak.lastResultTimestamp)) {
+  if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
-  } else if (!isToday(streak.lastResultTimestamp)) {
-    Logger.logToDb("streak_lost", { streak }, uid);
+  } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
+    Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
     streak.length = 1;
   }
 
@@ -984,7 +1002,36 @@ export async function updateStreak(
   }
 
   streak.lastResultTimestamp = timestamp;
+
+  if (user.streak?.hourOffset === 0) {
+    // todo this needs to be removed after a while
+    delete streak.hourOffset;
+  }
+
   await getUsersCollection().updateOne({ uid }, { $set: { streak } });
 
   return streak.length;
+}
+
+export async function setStreakHourOffset(
+  uid: string,
+  hourOffset: number
+): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    {
+      $set: {
+        "streak.hourOffset": hourOffset,
+        "streak.lastResultTimestamp": Date.now(),
+      },
+    }
+  );
+}
+
+export async function setBanned(uid: string, banned: boolean): Promise<void> {
+  if (banned) {
+    await getUsersCollection().updateOne({ uid }, { $set: { banned: true } });
+  } else {
+    await getUsersCollection().updateOne({ uid }, { $unset: { banned: "" } });
+  }
 }

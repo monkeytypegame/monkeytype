@@ -178,6 +178,7 @@ declare namespace MonkeyTypes {
     uid: string;
     quoteMod?: boolean;
     configurationMod?: boolean;
+    admin?: boolean;
     canReport?: boolean;
     banned?: boolean;
     canManageApeKeys?: boolean;
@@ -198,6 +199,7 @@ declare namespace MonkeyTypes {
     lastResultTimestamp: number;
     length: number;
     maxLength: number;
+    hourOffset?: number;
   }
 
   interface UserInventory {
@@ -333,9 +335,11 @@ declare namespace MonkeyTypes {
     approved: boolean;
   }
 
-  type Mode = "time" | "words" | "quote" | "zen" | "custom";
+  type Mode = keyof PersonalBests;
 
   type Mode2<M extends Mode> = keyof PersonalBests[M];
+
+  type StringNumber = `${number}`;
 
   type Difficulty = "normal" | "expert" | "master";
 
@@ -352,9 +356,9 @@ declare namespace MonkeyTypes {
   }
 
   interface PersonalBests {
-    time: Record<number, PersonalBest[]>;
-    words: Record<number, PersonalBest[]>;
-    quote: Record<string, PersonalBest[]>;
+    time: Record<StringNumber, PersonalBest[]>;
+    words: Record<StringNumber, PersonalBest[]>;
+    quote: Record<StringNumber, PersonalBest[]>;
     custom: Partial<Record<"custom", PersonalBest[]>>;
     zen: Partial<Record<"zen", PersonalBest[]>>;
   }
@@ -473,7 +477,11 @@ declare namespace MonkeyTypes {
   }
 
   interface FunboxMetadata {
+    name: string;
     canGetPb: boolean;
     difficultyLevel: number;
+    properties?: string[];
+    frontendForcedConfig?: Record<string, string[] | boolean[]>;
+    frontendFunctions?: string[];
   }
 }

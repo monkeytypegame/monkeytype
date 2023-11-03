@@ -3,7 +3,7 @@ const BASE_PATH = "/leaderboards";
 interface LeaderboardQuery {
   language: string;
   mode: MonkeyTypes.Mode;
-  mode2: string | number;
+  mode2: string;
   isDaily?: boolean;
   daysBefore?: number;
 }
@@ -18,7 +18,7 @@ export default class Leaderboards {
     this.httpClient = httpClient;
   }
 
-  async get(query: LeadeboardQueryWithPagination): Ape.EndpointData {
+  async get(query: LeadeboardQueryWithPagination): Ape.EndpointResponse {
     const {
       language,
       mode,
@@ -44,7 +44,7 @@ export default class Leaderboards {
     return await this.httpClient.get(endpointPath, { searchQuery });
   }
 
-  async getRank(query: LeaderboardQuery): Ape.EndpointData {
+  async getRank(query: LeaderboardQuery): Ape.EndpointResponse {
     const { language, mode, mode2, isDaily, daysBefore } = query;
     const includeDaysBefore = isDaily && daysBefore;
 

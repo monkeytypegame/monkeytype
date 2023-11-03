@@ -11,6 +11,7 @@ import {
   recordRequestCountry,
   // recordRequestForUid,
 } from "../utils/prometheus";
+import crypto from "crypto";
 import { performance } from "perf_hooks";
 
 interface RequestAuthenticationOptions {
@@ -50,7 +51,7 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
           req.ctx.configuration,
           options
         );
-      } else if (options.isPublic) {
+      } else if (options.isPublic === true) {
         token = {
           type: "None",
           uid: "",
@@ -215,7 +216,7 @@ async function authenticateWithApeKey(
     throw new MonkeyError(503, "ApeKeys are not being accepted at this time");
   }
 
-  if (!options.acceptApeKeys) {
+  if (!options.acceptApeKeys && !options.isPublic) {
     throw new MonkeyError(401, "This endpoint does not accept ApeKeys");
   }
 
@@ -256,4 +257,41 @@ async function authenticateWithApeKey(
   }
 }
 
-export { authenticateRequest };
+function authenticateGithubWebhook(): Handler {
+  return async (
+    req: MonkeyTypes.Request,
+    _res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    //authorize github webhook
+    const { "x-hub-signature-256": authHeader } = req.headers;
+
+    const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
+
+    try {
+      if (!webhookSecret) {
+        throw new MonkeyError(500, "Missing Github Webhook Secret");
+      } else if (!authHeader) {
+        throw new MonkeyError(401, "Missing Github signature header");
+      } else {
+        const signature = crypto
+          .createHmac("sha256", webhookSecret)
+          .update(JSON.stringify(req.body))
+          .digest("hex");
+        const trusted = Buffer.from(`sha256=${signature}`, "ascii");
+        const untrusted = Buffer.from(authHeader as string, "ascii");
+        const isSignatureValid = crypto.timingSafeEqual(trusted, untrusted);
+
+        if (!isSignatureValid) {
+          throw new MonkeyError(401, "Github webhook signature invalid");
+        }
+      }
+    } catch (e) {
+      return next(e);
+    }
+
+    next();
+  };
+}
+
+export { authenticateRequest, authenticateGithubWebhook };

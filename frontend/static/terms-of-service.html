@@ -37,11 +37,11 @@
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <style>
-      #top {
+      header {
         font-size: 2.5rem;
       }
 
-      #middle {
+      main {
         color: var(--text-color);
       }
 
@@ -60,9 +60,9 @@
   </head>
 
   <body>
-    <div id="centerContent">
-      <div id="top">
-        <div class="logo">
+    <div id="contentWrapper">
+      <header>
+        <div id="logo">
           <div class="icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -107,8 +107,8 @@
             <span style="color: var(--main-color)">Terms of Service</span>
           </div>
         </div>
-      </div>
-      <div id="middle">
+      </header>
+      <main>
         <!-- make sure to update this date every time the tos is changed -->
         <p>These terms of service were last updated on June 19, 2022.</p>
         <h1>Agreement</h1>
@@ -349,9 +349,9 @@
           data-balloon-pos="up"
           onclick="copyUserName()"
         >
-          Miodec#1512
+          @miodec
         </span>
-      </div>
+      </main>
       <p>
         Terms based on
         <a
@@ -367,14 +367,14 @@
   <script defer>
     function copyUserName() {
       if (true) {
-        navigator.clipboard.writeText("Miodec#1512");
+        navigator.clipboard.writeText("@miodec");
         alert("Copied To Clipboard!");
       } else {
         alert("Unable to copy username");
       }
     }
 
-    document.querySelector("#top").addEventListener("click", () => {
+    document.querySelector("header").addEventListener("click", () => {
       window.location = "/";
     });
   </script>

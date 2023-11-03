@@ -74,7 +74,7 @@ function update(mode: MonkeyTypes.Mode): void {
         <td>${dateText}</td>
       </tr>
     `);
-    mode2memory = pb.mode2 as never;
+    mode2memory = pb.mode2;
   });
 }
 

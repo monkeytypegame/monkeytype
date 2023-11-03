@@ -1,7 +1,7 @@
 import * as ThemeColors from "../elements/theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "../utils/misc";
-import Config, * as UpdateConfig from "../config";
+import Config, { setAutoSwitchTheme } from "../config";
 import * as BackgroundFilter from "../elements/custom-background-filter";
 import * as ConfigEvent from "../observables/config-event";
 import * as DB from "../db";
@@ -10,9 +10,9 @@ import * as Loader from "../elements/loader";
 import * as AnalyticsController from "../controllers/analytics-controller";
 import { debounce } from "throttle-debounce";
 
-let isPreviewingTheme = false;
 export let randomTheme: string | null = null;
-export let randomThemeIndex = 0;
+let isPreviewingTheme = false;
+let randomThemeIndex = 0;
 
 export const colorVars = [
   "--bg-color",
@@ -27,135 +27,39 @@ export const colorVars = [
   "--colorful-error-extra-color",
 ];
 
-async function updateFavicon(size: number, curveSize: number): Promise<void> {
+async function updateFavicon(): Promise<void> {
   setTimeout(async () => {
     let maincolor, bgcolor;
     bgcolor = await ThemeColors.get("bg");
     maincolor = await ThemeColors.get("main");
-    if (Misc.isLocalhost()) {
-      const swap = maincolor;
-      maincolor = bgcolor;
-      bgcolor = swap;
+    if (Misc.isDevEnvironment()) {
+      [maincolor, bgcolor] = [bgcolor, maincolor];
     }
-    if (bgcolor == maincolor) {
+    if (bgcolor === maincolor) {
       bgcolor = "#111";
       maincolor = "#eee";
     }
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-    const scale = size / 500;
-    // const moffset = [71 * scale,188 * scale];
-    const currentPos = [0, 0];
+    const svgPre = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    #bg{fill:${bgcolor};}
+    path{fill:${maincolor};}
+  </style>
+  <g>
+    <path id="bg" d="M0 16Q0 0 16 0h32q16 0 16 16v32q0 16-16 16H16Q0 64 0 48"/>
+    <path d="M9.09 24.1v21.2h5.12V33.1q.256-4.61 4.48-4.61 3.46.384 3.46 3.84v12.9h5.12v-11.5q-.128-5.25 4.48-5.25 3.46.384 3.46 3.84v12.9h5.12v-12.2q0-9.47-7.04-9.47-4.22 0-7.04 3.46-2.18-3.46-6.02-3.46-3.46 0-6.02 2.43v-2.05M47 18.9v5.12h-4.61v5.12H47v16.1h5.12v-16.1h4.61v-5.12h-4.61V18.9"/>
+  </g>
+</svg>`;
 
-    function mRelativeMove(x: number, y: number): void {
-      currentPos[0] += x * scale;
-      currentPos[1] += y * scale;
-      ctx.moveTo(currentPos[0], currentPos[1]);
-    }
-
-    function mRelativeLine(x: number, y: number): void {
-      currentPos[0] += x * scale;
-      currentPos[1] += y * scale;
-      ctx.lineTo(currentPos[0], currentPos[1]);
-    }
-
-    function mRelativeCurve(
-      cpx: number,
-      cpy: number,
-      x: number,
-      y: number
-    ): void {
-      currentPos[0] += x * scale;
-      currentPos[1] += y * scale;
-      ctx.quadraticCurveTo(
-        currentPos[0] + cpx * scale,
-        currentPos[1] + cpy * scale,
-        currentPos[0],
-        currentPos[1]
-      );
-    }
-
-    ctx.beginPath();
-    ctx.moveTo(0, curveSize);
-    //top left
-    ctx.quadraticCurveTo(0, 0, curveSize, 0);
-    ctx.lineTo(size - curveSize, 0);
-    //top right
-    ctx.quadraticCurveTo(size, 0, size, curveSize);
-    ctx.lineTo(size, size - curveSize);
-    ctx.quadraticCurveTo(size, size, size - curveSize, size);
-    ctx.lineTo(curveSize, size);
-    ctx.quadraticCurveTo(0, size, 0, size - curveSize);
-    ctx.fillStyle = bgcolor;
-    ctx.fill();
-    // ctx.font = "900 " + (size / 2) * 1.2 + "px Lexend Deca";
-    // ctx.textAlign = "center";
-    // ctx.fillStyle = maincolor;
-    // ctx.fillText("mt", size / 2 + 1, (size / 3) * 2.1);
-
-    ctx.beginPath();
-    mRelativeMove(71, 188);
-    mRelativeLine(0, 166);
-    mRelativeLine(40, 0);
-    mRelativeLine(0, -95);
-
-    mRelativeCurve(-33, 0, 35, -36);
-    mRelativeCurve(0, -27, 27, 30);
-    mRelativeLine(0, 101);
-    mRelativeLine(40, 0);
-    mRelativeLine(0, -90);
-
-    mRelativeCurve(-36, 0, 35, -41);
-    mRelativeCurve(0, -27, 27, 30);
-    mRelativeLine(0, 101);
-    mRelativeLine(40, 0);
-    mRelativeLine(0, -95);
-
-    mRelativeCurve(55, 0, -55, -74);
-    mRelativeCurve(22, -27, -55, 27);
-
-    mRelativeCurve(30, 0, -47, -27);
-    mRelativeCurve(20, -19, -47, 19);
-
-    mRelativeLine(0, -16);
-
-    ctx.fillStyle = maincolor;
-
-    ctx.fill();
-    ctx.closePath();
-
-    ctx.beginPath();
-    mRelativeMove(256, -40);
-    mRelativeLine(0, 40);
-    mRelativeLine(-36, 0);
-    mRelativeLine(0, 40);
-    mRelativeLine(36, 0);
-
-    mRelativeLine(0, 126);
-    mRelativeLine(40, 0);
-    mRelativeLine(0, -126);
-
-    mRelativeLine(36, 0);
-    mRelativeLine(0, -40);
-    mRelativeLine(-36, 0);
-    mRelativeLine(0, -40);
-
-    ctx.fillStyle = maincolor;
-
-    ctx.fill();
-
-    // $("body").prepend(canvas);
-    $("#favicon").attr("href", canvas.toDataURL("image/png"));
+    $("#favicon").attr("href", "data:image/svg+xml;base64," + btoa(svgPre));
   }, 125);
 }
 
 function clearCustomTheme(): void {
-  colorVars.forEach((e) => {
+  for (const e of colorVars) {
     document.documentElement.style.setProperty(e, "");
-  });
+  }
 }
 
 let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
@@ -213,15 +117,13 @@ export async function loadStyle(name: string): Promise<void> {
 //   UpdateConfig.setCustomThemeColors(colors, nosave);
 // }
 
-function apply(themeName: string, isCustom: boolean, isPreview = false): void {
+function apply(
+  themeName: string,
+  customColorsOverride?: string[],
+  isPreview = false
+): void {
   clearCustomTheme();
-
-  let name = "serika_dark";
-  if (!isCustom) {
-    name = themeName;
-  } else {
-    name = "custom";
-  }
+  const name = customColorsOverride ? "custom" : themeName;
 
   ThemeColors.reset();
 
@@ -229,60 +131,58 @@ function apply(themeName: string, isCustom: boolean, isPreview = false): void {
   // $("#currentTheme").attr("href", `themes/${name}.css`);
   loadStyle(name).then(() => {
     ThemeColors.update();
-    if (isCustom) {
-      let colorValues = Config.customThemeColors;
-      const snapshot = DB.getSnapshot();
-      if (isCustom && !isPreview && snapshot) {
-        const customColors =
-          snapshot.customThemes.find((e) => e._id === themeName)?.colors ?? [];
-        if (customColors.length > 0) {
-          UpdateConfig.setCustomThemeColors(customColors);
-        }
-      }
-      if (themeName !== "custom" && snapshot) {
-        const customThemes = snapshot.customThemes;
-        const customThemeById = customThemes.find((e) => e._id === themeName);
-        colorValues = customThemeById?.colors as string[];
-      }
+
+    if ((Config.customTheme && !isPreview) || customColorsOverride) {
+      const colors = customColorsOverride ?? Config.customThemeColors;
+
       colorVars.forEach((e, index) => {
-        document.documentElement.style.setProperty(e, colorValues[index]);
+        document.documentElement.style.setProperty(e, colors[index]);
       });
     }
 
-    AnalyticsController.log("changedTheme", { theme: themeName });
+    AnalyticsController.log("changedTheme", { theme: name });
     // if (!isPreview) {
     ThemeColors.getAll().then((colors) => {
       $(".keymapKey").attr("style", "");
       ChartController.updateAllChartColors();
-      const size = 64;
-      updateFavicon(size, size / 4);
+      updateFavicon();
       $("#metaThemeColor").attr("content", colors.bg);
     });
     // }
-    $(".current-theme .text").text(
-      isCustom ? "custom" : themeName.replace(/_/g, " ")
-    );
+    updateFooterThemeName(isPreview ? themeName : undefined);
   });
+}
+
+function updateFooterThemeName(nameOverride?: string): void {
+  let str = Config.theme;
+  if (Config.customTheme) str = "custom";
+  if (nameOverride) str = nameOverride;
+  str = str.replace(/_/g, " ");
+  $(".current-theme .text").text(str);
 }
 
 export function preview(
   themeIdentifier: string,
-  isCustom: boolean,
-  randomTheme = false
+  customColorsOverride?: string[]
 ): void {
-  debouncedPreview(themeIdentifier, isCustom, randomTheme);
+  debouncedPreview(themeIdentifier, customColorsOverride);
 }
 
 const debouncedPreview = debounce(
   250,
-  (themeIdenfitier, isCustom, randomTheme) => {
+  (themeIdenfitier, customColorsOverride) => {
     isPreviewingTheme = true;
-    apply(themeIdenfitier, isCustom, !randomTheme);
+    apply(themeIdenfitier, customColorsOverride, true);
   }
 );
 
-export function set(themeIdentifier: string, isCustom: boolean): void {
-  apply(themeIdentifier, isCustom);
+function set(themeIdentifier: string, isAutoSwitch = false): void {
+  apply(themeIdentifier, undefined, isAutoSwitch);
+
+  if (!isAutoSwitch && Config.autoSwitchTheme) {
+    setAutoSwitchTheme(false);
+    Notifications.add("Auto switch theme disabled", 0);
+  }
 }
 
 export function clearPreview(applyTheme = true): void {
@@ -291,9 +191,9 @@ export function clearPreview(applyTheme = true): void {
     randomTheme = null;
     if (applyTheme) {
       if (Config.customTheme) {
-        apply("custom", true);
+        apply("custom");
       } else {
-        apply(Config.theme, false);
+        apply(Config.theme);
       }
     }
   }
@@ -346,7 +246,17 @@ export async function randomizeTheme(): Promise<void> {
     randomThemeIndex = 0;
   }
 
-  preview(randomTheme, Config.randomTheme === "custom");
+  let colorsOverride: string[] | undefined;
+
+  if (Config.randomTheme === "custom") {
+    const theme = DB.getSnapshot()?.customThemes.find(
+      (ct) => ct._id === randomTheme
+    );
+    colorsOverride = theme?.colors;
+    randomTheme = "custom";
+  }
+
+  preview(randomTheme, colorsOverride);
 
   if (randomThemeIndex >= themesList.length) {
     let name = randomTheme.replace(/_/g, " ");
@@ -360,18 +270,18 @@ export async function randomizeTheme(): Promise<void> {
   }
 }
 
-export function clearRandom(): void {
+function clearRandom(): void {
   if (randomTheme === null) return;
   randomTheme = null;
   if (Config.customTheme) {
-    apply("custom", true);
+    apply("custom");
   } else {
-    apply(Config.theme, false);
+    apply(Config.theme);
   }
 }
 
-export function applyCustomBackgroundSize(): void {
-  if (Config.customBackgroundSize == "max") {
+function applyCustomBackgroundSize(): void {
+  if (Config.customBackgroundSize === "max") {
     $(".customBackground img").css({
       // width: "calc(100%)",
       // height: "calc(100%)",
@@ -384,7 +294,7 @@ export function applyCustomBackgroundSize(): void {
   }
 }
 
-export function applyCustomBackground(): void {
+function applyCustomBackground(): void {
   // $(".customBackground").css({
   //   backgroundImage: `url(${Config.customBackground})`,
   //   backgroundAttachment: "fixed",
@@ -409,9 +319,9 @@ window
   ?.addEventListener?.("change", (event) => {
     if (!Config.autoSwitchTheme || Config.customTheme) return;
     if (event.matches) {
-      set(Config.themeDark, false);
+      set(Config.themeDark, true);
     } else {
-      set(Config.themeLight, false);
+      set(Config.themeLight, true);
     }
   });
 
@@ -420,31 +330,31 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     changeThemeList();
   }
   if (eventKey === "customTheme") {
-    eventValue ? set("custom", true) : set(Config.theme, false);
+    eventValue ? set("custom") : set(Config.theme);
   }
   if (eventKey === "customThemeColors") {
-    nosave ? preview("custom", true) : set("custom", true);
+    nosave ? preview("custom") : set("custom");
   }
   if (eventKey === "theme") {
     clearPreview(false);
-    set(eventValue as string, false);
+    set(eventValue as string);
   }
   if (eventKey === "setThemes") {
     clearPreview(false);
-    if (eventValue) {
-      set("custom", true);
-    } else {
-      if (Config.autoSwitchTheme) {
-        if (
-          window.matchMedia &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches
-        ) {
-          set(Config.themeDark, false);
-        } else {
-          set(Config.themeLight, false);
-        }
+    if (Config.autoSwitchTheme) {
+      if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      ) {
+        set(Config.themeDark, true);
       } else {
-        set(Config.theme, false);
+        set(Config.themeLight, true);
+      }
+    } else {
+      if (eventValue) {
+        set("custom");
+      } else {
+        set(Config.theme);
       }
     }
   }
@@ -457,12 +367,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
       ) {
-        set(Config.themeDark, false);
+        set(Config.themeDark, true);
       } else {
-        set(Config.themeLight, false);
+        set(Config.themeLight, true);
       }
     } else {
-      set(Config.theme, false);
+      set(Config.theme);
     }
   }
   if (
@@ -474,7 +384,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     ) &&
     !nosave
   ) {
-    set(Config.themeLight, false);
+    set(Config.themeLight, true);
   }
   if (
     eventKey === "themeDark" &&
@@ -483,6 +393,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     window.matchMedia("(prefers-color-scheme: dark)").matches &&
     !nosave
   ) {
-    set(Config.themeDark, false);
+    set(Config.themeDark, true);
   }
 });
