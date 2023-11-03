@@ -657,17 +657,21 @@ function handleChar(
     //not applicable to zen mode
     //auto stop the test if the last word is correct
     //do not stop if not all characters have been parsed by handleChar yet
-    const currentWord: string = TestWords.words.getCurrent();
-    const lastIndex: number = TestWords.words.currentIndex;
+    const currentWord = TestWords.words.getCurrent();
+    const lastWordIndex = TestWords.words.currentIndex;
+    const isLastWord = lastWordIndex === TestWords.words.length - 1;
+    const wordIsTheSame = currentWord === TestInput.input.current;
+    const shouldQuickEnd =
+      Config.quickEnd &&
+      !Config.language.startsWith("korean") &&
+      currentWord.length === TestInput.input.current.length &&
+      Config.stopOnError === "off";
+    const isChinese = Config.language.startsWith("chinese");
+
     if (
-      (currentWord === TestInput.input.current ||
-        (Config.quickEnd &&
-          !Config.language.startsWith("korean") &&
-          currentWord.length === TestInput.input.current.length &&
-          Config.stopOnError === "off")) &&
-      lastIndex === TestWords.words.length - 1 &&
-      (!Config.language.startsWith("chinese") ||
-        (realInputValue && charIndex + 2 == realInputValue.length))
+      isLastWord &&
+      (wordIsTheSame || shouldQuickEnd) &&
+      (!isChinese || (realInputValue && charIndex + 2 == realInputValue.length))
     ) {
       TestLogic.finish();
       return;
