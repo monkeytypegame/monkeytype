@@ -1036,7 +1036,12 @@ export async function setBanned(uid: string, banned: boolean): Promise<void> {
   }
 }
 
-export async function checkIfUserIsPremium(uid: string): Promise<boolean> {
-  const user = await getUser(uid, "checkIfUserIsPremium");
+export async function checkIfUserIsPremium(
+  uid: string,
+  user: MonkeyTypes.User | undefined = undefined
+): Promise<boolean> {
+  if (user === undefined) {
+    user = await getUser(uid, "checkIfUserIsPremium");
+  }
   return user.isPremium === true || user.name === "mt"; //TODO: remove
 }
