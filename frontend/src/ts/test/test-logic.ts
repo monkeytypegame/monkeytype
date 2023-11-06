@@ -1519,6 +1519,9 @@ $("header").on("click", "nav #startTestButton, #logo", () => {
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (ActivePage.get() === "test") {
+    if (eventKey === "language") {
+      restart();
+    }
     if (eventKey === "difficulty" && !nosave) restart();
     if (eventKey === "showAllLines" && !nosave) restart();
     if (eventKey === "tapeMode" && !nosave) restart();
