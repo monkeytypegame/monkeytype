@@ -10,7 +10,9 @@
       "email": "support@monkeytype.com"
     }
   },
-  "basePath": "api.monkeytype.com/",
+  "host": "api.monkeytype.com",
+  "schemes": ["https"],
+  "basePath": "/",
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "tags": [
@@ -86,17 +88,26 @@
         }
       }
     },
-    "/users/:uid/profile": {
+    "/users/{uidOrName}/profile": {
       "get": {
         "tags": ["users"],
         "summary": "Gets a user's profile",
         "parameters": [
           {
-            "name": "uid",
-            "in": "query",
-            "description": "The User ID",
+            "name": "uidOrName",
+            "in": "path",
+            "description": "The user uid or name. Defaults to the user name. To filter by uid set the parameter `isUid` to ``.",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "isUid",
+            "in": "query",
+            "description": "Indicates the parameter `uidOrName` is an uid.",
+            "required": false,
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 0
           }
         ],
         "responses": {
@@ -639,6 +650,9 @@
         },
         "charStats": {
           "type": "array",
+          "items": {
+            "type": "number"
+          },
           "example": [44, 0, 0, 0]
         },
         "acc": {
@@ -673,6 +687,9 @@
         },
         "tags": {
           "type": "array",
+          "items": {
+            "type": "string"
+          },
           "example": ["6210edbfc4fdc8a1700e648b"]
         },
         "consistency": {
@@ -690,14 +707,23 @@
           "properties": {
             "wpm": {
               "type": "array",
+              "items": {
+                "type": "number"
+              },
               "example": [144, 144, 144, 154]
             },
             "raw": {
               "type": "array",
+              "items": {
+                "type": "number"
+              },
               "example": [150, 148, 124, 114]
             },
             "err": {
               "type": "array",
+              "items": {
+                "type": "number"
+              },
               "example": [0, 0, 0, 0]
             }
           }
