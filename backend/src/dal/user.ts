@@ -1043,5 +1043,5 @@ export async function checkIfUserIsPremium(
   if (user === undefined) {
     user = await getUser(uid, "checkIfUserIsPremium");
   }
-  return user.isPremium === true || user.name === "mt"; //TODO: remove
+  return user.isPremium === true;
 }
