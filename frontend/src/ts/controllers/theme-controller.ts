@@ -86,7 +86,8 @@ export async function loadStyle(name: string): Promise<void> {
       $("#keymap .keymapKey").stop(true, true).removeAttr("style");
       resolve();
     };
-    link.onerror = (): void => {
+    link.onerror = (e): void => {
+      console.error(`Failed to load theme ${name}`, e);
       Loader.hide();
       Notifications.add("Failed to load theme", 0);
       $("#currentTheme").remove();
@@ -117,11 +118,11 @@ export async function loadStyle(name: string): Promise<void> {
 //   UpdateConfig.setCustomThemeColors(colors, nosave);
 // }
 
-function apply(
+async function apply(
   themeName: string,
   customColorsOverride?: string[],
   isPreview = false
-): void {
+): Promise<void> {
   clearCustomTheme();
   const name = customColorsOverride ? "custom" : themeName;
 
@@ -129,28 +130,27 @@ function apply(
 
   $(".keymapKey").attr("style", "");
   // $("#currentTheme").attr("href", `themes/${name}.css`);
-  loadStyle(name).then(() => {
-    ThemeColors.update();
+  await loadStyle(name);
+  ThemeColors.update();
 
-    if ((Config.customTheme && !isPreview) || customColorsOverride) {
-      const colors = customColorsOverride ?? Config.customThemeColors;
+  if ((Config.customTheme && !isPreview) || customColorsOverride) {
+    const colors = customColorsOverride ?? Config.customThemeColors;
 
-      colorVars.forEach((e, index) => {
-        document.documentElement.style.setProperty(e, colors[index]);
-      });
+    for (let i = 0; i < colorVars.length; i++) {
+      const colorVar = colorVars[i];
+      document.documentElement.style.setProperty(colorVar, colors[i]);
     }
+  }
 
-    AnalyticsController.log("changedTheme", { theme: name });
-    // if (!isPreview) {
-    ThemeColors.getAll().then((colors) => {
-      $(".keymapKey").attr("style", "");
-      ChartController.updateAllChartColors();
-      updateFavicon();
-      $("#metaThemeColor").attr("content", colors.bg);
-    });
-    // }
-    updateFooterThemeName(isPreview ? themeName : undefined);
-  });
+  AnalyticsController.log("changedTheme", { theme: name });
+  // if (!isPreview) {
+  const colors = await ThemeColors.getAll();
+  $(".keymapKey").attr("style", "");
+  ChartController.updateAllChartColors();
+  updateFavicon();
+  $("#metaThemeColor").attr("content", colors.bg);
+  // }
+  updateFooterThemeName(isPreview ? themeName : undefined);
 }
 
 function updateFooterThemeName(nameOverride?: string): void {
@@ -176,8 +176,11 @@ const debouncedPreview = debounce(
   }
 );
 
-function set(themeIdentifier: string, isAutoSwitch = false): void {
-  apply(themeIdentifier, undefined, isAutoSwitch);
+async function set(
+  themeIdentifier: string,
+  isAutoSwitch = false
+): Promise<void> {
+  await apply(themeIdentifier, undefined, isAutoSwitch);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
     setAutoSwitchTheme(false);
@@ -185,15 +188,15 @@ function set(themeIdentifier: string, isAutoSwitch = false): void {
   }
 }
 
-export function clearPreview(applyTheme = true): void {
+export async function clearPreview(applyTheme = true): Promise<void> {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     randomTheme = null;
     if (applyTheme) {
       if (Config.customTheme) {
-        apply("custom");
+        await apply("custom");
       } else {
-        apply(Config.theme);
+        await apply(Config.theme);
       }
     }
   }
@@ -270,13 +273,13 @@ export async function randomizeTheme(): Promise<void> {
   }
 }
 
-function clearRandom(): void {
+async function clearRandom(): Promise<void> {
   if (randomTheme === null) return;
   randomTheme = null;
   if (Config.customTheme) {
-    apply("custom");
+    await apply("custom");
   } else {
-    apply(Config.theme);
+    await apply(Config.theme);
   }
 }
 
@@ -325,40 +328,40 @@ window
     }
   });
 
-ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
+ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (eventKey === "randomTheme") {
     changeThemeList();
   }
   if (eventKey === "customTheme") {
-    eventValue ? set("custom") : set(Config.theme);
+    eventValue ? await set("custom") : await set(Config.theme);
   }
   if (eventKey === "customThemeColors") {
-    nosave ? preview("custom") : set("custom");
+    nosave ? preview("custom") : await set("custom");
   }
   if (eventKey === "theme") {
-    clearPreview(false);
-    set(eventValue as string);
+    await clearPreview(false);
+    await set(eventValue as string);
   }
   if (eventKey === "setThemes") {
-    clearPreview(false);
+    await clearPreview(false);
     if (Config.autoSwitchTheme) {
       if (
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
       ) {
-        set(Config.themeDark, true);
+        await set(Config.themeDark, true);
       } else {
-        set(Config.themeLight, true);
+        await set(Config.themeLight, true);
       }
     } else {
       if (eventValue) {
-        set("custom");
+        await set("custom");
       } else {
-        set(Config.theme);
+        await set(Config.theme);
       }
     }
   }
-  if (eventKey === "randomTheme" && eventValue === "off") clearRandom();
+  if (eventKey === "randomTheme" && eventValue === "off") await clearRandom();
   if (eventKey === "customBackground") applyCustomBackground();
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
   if (eventKey === "autoSwitchTheme") {
@@ -367,12 +370,12 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
       ) {
-        set(Config.themeDark, true);
+        await set(Config.themeDark, true);
       } else {
-        set(Config.themeLight, true);
+        await set(Config.themeLight, true);
       }
     } else {
-      set(Config.theme);
+      await set(Config.theme);
     }
   }
   if (
@@ -384,7 +387,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     ) &&
     !nosave
   ) {
-    set(Config.themeLight, true);
+    await set(Config.themeLight, true);
   }
   if (
     eventKey === "themeDark" &&
@@ -393,6 +396,6 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     window.matchMedia("(prefers-color-scheme: dark)").matches &&
     !nosave
   ) {
-    set(Config.themeDark, true);
+    await set(Config.themeDark, true);
   }
 });
