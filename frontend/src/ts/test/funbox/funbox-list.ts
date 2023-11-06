@@ -255,6 +255,11 @@ const list: MonkeyTypes.FunboxMetadata[] = [
       "wordOrder:reverse",
     ],
   },
+  {
+    name: "skew",
+    info: "Everything is skewed!",
+    hasCSS: true,
+  },
 ];
 
 export function getAll(): MonkeyTypes.FunboxMetadata[] {

@@ -180,5 +180,10 @@
     "name": "backwards",
     "info": "...sdrawkcab epyt ot yrt woN",
     "canGetPb": true
+  },
+  {
+    "name": "skew",
+    "info": "skewed",
+    "canGetPb": true
   }
 ]
