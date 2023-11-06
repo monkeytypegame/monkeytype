@@ -331,6 +331,12 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
     canGetPb: true,
     difficultyLevel: 3,
   },
+  {
+    canGetPb: true,
+    difficultyLevel: 1,
+    frontendFunctions: ["applyCSS"],
+    name: "skew",
+  },
 ];
 
 export default FunboxList;
