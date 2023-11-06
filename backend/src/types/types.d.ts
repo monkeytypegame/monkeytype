@@ -197,6 +197,7 @@ declare namespace MonkeyTypes {
     streak?: UserStreak;
     lastReultHashes?: string[];
     lbOptOut?: boolean;
+    premium?: PremiumProperties;
     isPremium?: boolean;
   }
 
@@ -488,5 +489,9 @@ declare namespace MonkeyTypes {
     properties?: string[];
     frontendForcedConfig?: Record<string, string[] | boolean[]>;
     frontendFunctions?: string[];
+  }
+
+  interface PremiumProperties {
+    isActive: boolean;
   }
 }

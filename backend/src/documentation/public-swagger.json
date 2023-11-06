@@ -112,7 +112,7 @@
     "/results": {
       "get": {
         "tags": ["results"],
-        "summary": "Gets results (endpoint limited to 1 request per hour)",
+        "summary": "Gets up to 1000 results (endpoint limited to 30 requests per day)",
         "parameters": [
           {
             "name": "onOrAfterTimestamp",
@@ -126,14 +126,17 @@
             "in": "query",
             "description": "The maximum number of items to return per page.",
             "required": false,
-            "type": "number"
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000
           },
           {
             "name": "offset",
             "in": "query",
             "description": "The offset of the item at which to begin the response.",
             "required": false,
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           }
         ],
         "responses": {

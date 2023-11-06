@@ -22,7 +22,7 @@ router.get(
   validateRequest({
     query: {
       onOrAfterTimestamp: joi.number().integer().min(1589428800000),
-      limit: joi.number().integer().min(0),
+      limit: joi.number().integer().min(0).max(1000),
       offset: joi.number().integer().min(0),
     },
   }),

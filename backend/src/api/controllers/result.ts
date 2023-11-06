@@ -77,11 +77,14 @@ export async function getResults(
     req.query.onOrAfterTimestamp as string,
     10
   );
-  const limit = getNumberOrDefault(req.query.limit as string, maxLimit);
+  const limit = getNumberOrDefault(
+    req.query.limit as string,
+    Math.min(1000, maxLimit)
+  );
   const offset = getNumberOrDefault(req.query.offset as string, 0);
 
   if (limit + offset > maxLimit) {
-    throw new MonkeyError(403, `max results of ${maxLimit} exceeded.`);
+    throw new MonkeyError(422, `max results of ${maxLimit} exceeded.`);
   }
 
   const results = await ResultDAL.getResults(uid, {

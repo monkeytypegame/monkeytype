@@ -332,10 +332,6 @@ export async function getUser(
   let userInfo: MonkeyTypes.User;
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
-    userInfo.isPremium = await UserDAL.checkIfUserIsPremium(
-      userInfo.uid,
-      userInfo
-    );
   } catch (e) {
     if (e.status === 404) {
       //if the user is in the auth system but not in the db, its possible that the user was created by bypassing captcha

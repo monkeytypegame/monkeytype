@@ -94,7 +94,7 @@ describe("result controller test", () => {
         .query({ limit: 600, offset: 800 })
         .set("Authorization", "Bearer 123456789")
         .send()
-        .expect(403)
+        .expect(422)
         .expect(expectErrorMessage("max results of 1000 exceeded."));
 
       //THEN
@@ -119,17 +119,36 @@ describe("result controller test", () => {
         onOrAfterTimestamp: NaN,
       });
     });
-    it("should fail exceeding limit for premium user", async () => {
+    it("should fail exceeding 1k limit for premium user", async () => {
       //GIVEN
       jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
 
       //WHEN
       await mockApp
         .get("/results")
-        .query({ limit: 20000, offset: 10000 })
+        .query({ limit: 2000 })
         .set("Authorization", "Bearer 123456789")
         .send()
-        .expect(403)
+        .expect(422)
+        .expect(
+          expectErrorMessage(
+            '"limit" must be less than or equal to 1000 (2000)'
+          )
+        );
+
+      //THEN
+    });
+    it("should fail exceeding maxlimit for premium user", async () => {
+      //GIVEN
+      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+
+      //WHEN
+      await mockApp
+        .get("/results")
+        .query({ limit: 1000, offset: 24900 })
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(422)
         .expect(expectErrorMessage("max results of 25000 exceeded."));
 
       //THEN
