@@ -146,7 +146,7 @@ declare namespace MonkeyTypes {
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
-  type AccountChart = ("off" | "on")[];
+  type AccountChart = ["off" | "on", "off" | "on", "off" | "on", "off" | "on"];
 
   type MinimumWordsPerMinute = "off" | "custom";
 

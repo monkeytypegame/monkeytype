@@ -975,11 +975,13 @@ export const miniResult: ChartWithUpdateColors<
 );
 
 type ButtonBelowChart =
+  | ".toggleResultsOnChart"
   | ".toggleAccuracyOnChart"
   | ".toggleAverage10OnChart"
   | ".toggleAverage100OnChart";
 
 export function updateAccountChartButtons(): void {
+  updateResults(false);
   updateAccuracy(false);
   updateAverage10(false);
   updateAverage100(false);
@@ -994,42 +996,78 @@ function updateAccountChartButton(
     : $(`.pageAccount ${className}`).removeClass("active");
 }
 
+function updateResults(updateChart = true): void {
+  const resultsOn = Config.accountChart[0] === "on";
+  updateAccountChartButton(resultsOn, ".toggleResultsOnChart");
+
+  accountHistory.data.datasets[0].hidden = !resultsOn;
+  accountHistory.data.datasets[3].hidden = !resultsOn;
+  accountHistory.data.datasets[5].hidden = !resultsOn;
+  accountHistory.data.datasets[1].hidden = !resultsOn;
+
+  (accountHistory.options as ScaleChartOptions<"line">).scales["wpm"].display =
+    resultsOn;
+  if (updateChart) accountHistory.updateColors();
+}
+
 function updateAccuracy(updateChart = true): void {
-  const accOn = Config.accountChart[0] === "on";
+  const accountHistoryOptions =
+    accountHistory.options as ScaleChartOptions<"line">;
+  const resultsOn = Config.accountChart[0] === "on";
+  const accOn = Config.accountChart[1] === "on";
   updateAccountChartButton(accOn, ".toggleAccuracyOnChart");
 
   accountHistory.data.datasets[2].hidden = !accOn;
   accountHistory.data.datasets[4].hidden = !accOn;
   accountHistory.data.datasets[6].hidden = !accOn;
 
-  (accountHistory.options as ScaleChartOptions<"line">).scales["acc"].display =
-    accOn;
+  accountHistoryOptions.scales["acc"].display = accOn;
+
+  if (resultsOn) {
+    accountHistoryOptions.scales["acc"].min = 0;
+    accountHistoryOptions.scales["accAvgTen"].min = 0;
+    accountHistoryOptions.scales["accAvgHundred"].min = 0;
+  } else {
+    const minAccRoundedTo10 =
+      Math.floor(
+        Math.min(...accountHistory.data.datasets[2].data.map((x) => x.y)) / 10
+      ) * 10;
+
+    console.log(accountHistory.data.datasets);
+
+    accountHistoryOptions.scales["acc"].min = minAccRoundedTo10;
+    accountHistoryOptions.scales["accAvgTen"].min = minAccRoundedTo10;
+    accountHistoryOptions.scales["accAvgHundred"].min = minAccRoundedTo10;
+  }
+
   if (updateChart) accountHistory.updateColors();
 }
 
 function updateAverage10(updateChart = true): void {
-  const accOn = Config.accountChart[0] === "on";
-  const avg10On = Config.accountChart[1] === "on";
+  const resultsOn = Config.accountChart[0] === "on";
+  const accOn = Config.accountChart[1] === "on";
+  const avg10On = Config.accountChart[2] === "on";
   updateAccountChartButton(avg10On, ".toggleAverage10OnChart");
 
   if (accOn) {
-    accountHistory.data.datasets[3].hidden = !avg10On;
     accountHistory.data.datasets[4].hidden = !avg10On;
-  } else {
+  }
+  if (resultsOn) {
     accountHistory.data.datasets[3].hidden = !avg10On;
   }
   if (updateChart) accountHistory.updateColors();
 }
 
 function updateAverage100(updateChart = true): void {
-  const accOn = Config.accountChart[0] === "on";
-  const avg100On = Config.accountChart[2] === "on";
+  const resultsOn = Config.accountChart[0] === "on";
+  const accOn = Config.accountChart[1] === "on";
+  const avg100On = Config.accountChart[3] === "on";
   updateAccountChartButton(avg100On, ".toggleAverage100OnChart");
 
   if (accOn) {
-    accountHistory.data.datasets[5].hidden = !avg100On;
     accountHistory.data.datasets[6].hidden = !avg100On;
-  } else {
+  }
+  if (resultsOn) {
     accountHistory.data.datasets[5].hidden = !avg100On;
   }
   if (updateChart) accountHistory.updateColors();
@@ -1113,8 +1151,8 @@ async function updateColors<
       const color = subcolor;
       return color;
     };
-    const avg10On = Config.accountChart[1] === "on";
-    const avg100On = Config.accountChart[2] === "on";
+    const avg10On = Config.accountChart[2] === "on";
+    const avg100On = Config.accountChart[3] === "on";
 
     const text02 = Misc.blendTwoHexColors(bgcolor, textcolor, 0.2);
     const main02 = Misc.blendTwoHexColors(bgcolor, maincolor, 0.2);
@@ -1200,6 +1238,7 @@ export function updateAllChartColors(): void {
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "accountChart" && ActivePage.get() === "account") {
+    updateResults();
     updateAccuracy();
     updateAverage10();
     updateAverage100();
