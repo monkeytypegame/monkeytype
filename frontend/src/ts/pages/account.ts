@@ -1159,19 +1159,19 @@ function sortAndRefreshHistory(
   loadMoreLines();
 }
 
-$(".pageAccount .toggleResultsOnChart").on("click", () => {
+$(".pageAccount button.toggleResultsOnChart").on("click", () => {
   UpdateConfig.setAccountChartResults(!(Config.accountChart[0] === "on"));
 });
 
-$(".pageAccount .toggleAccuracyOnChart").on("click", () => {
+$(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
   UpdateConfig.setAccountChartAccuracy(!(Config.accountChart[1] === "on"));
 });
 
-$(".pageAccount .toggleAverage10OnChart").on("click", () => {
+$(".pageAccount button.toggleAverage10OnChart").on("click", () => {
   UpdateConfig.setAccountChartAvg10(!(Config.accountChart[2] === "on"));
 });
 
-$(".pageAccount .toggleAverage100OnChart").on("click", () => {
+$(".pageAccount button.toggleAverage100OnChart").on("click", () => {
   UpdateConfig.setAccountChartAvg100(!(Config.accountChart[3] === "on"));
 });
 
