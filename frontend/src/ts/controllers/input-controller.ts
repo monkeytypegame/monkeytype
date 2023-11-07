@@ -576,8 +576,9 @@ function handleChar(
     if (!correctShiftUsed) {
       incorrectShiftsInARow++;
       if (incorrectShiftsInARow >= 5) {
-        Notifications.add("Reminder: Opposite shift mode is on.", 0, {
+        Notifications.add("Opposite shift mode is on.", 0, {
           important: true,
+          customTitle: "Reminder",
         });
       }
       return;
