@@ -84,7 +84,7 @@ describe("result controller test", () => {
         onOrAfterTimestamp: NaN,
       });
     });
-    it("should fail exceeding limit for regular user", async () => {
+    it("should fail exceeding max limit for regular user", async () => {
       //GIVEN
       jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
 
@@ -95,11 +95,11 @@ describe("result controller test", () => {
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(422)
-        .expect(expectErrorMessage("max results of 1000 exceeded."));
+        .expect(expectErrorMessage("Max results limit of 1000 exceeded."));
 
       //THEN
     });
-    it("should get with higher limit for premium user", async () => {
+    it("should get with higher max limit for premium user", async () => {
       //GIVEN
       jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
 
@@ -119,9 +119,9 @@ describe("result controller test", () => {
         onOrAfterTimestamp: NaN,
       });
     });
-    it("should fail exceeding 1k limit for premium user", async () => {
+    it("should fail exceeding 1k limit", async () => {
       //GIVEN
-      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
 
       //WHEN
       await mockApp
@@ -149,7 +149,7 @@ describe("result controller test", () => {
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(422)
-        .expect(expectErrorMessage("max results of 25000 exceeded."));
+        .expect(expectErrorMessage("Max results limit of 25000 exceeded."));
 
       //THEN
     });

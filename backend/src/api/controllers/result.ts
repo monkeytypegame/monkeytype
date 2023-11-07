@@ -60,7 +60,9 @@ try {
 
 function getNumberOrDefault(query: string, alt: number): number {
   if (query === undefined) return alt;
-  return parseInt(query, 10);
+  const value = parseInt(query, 10);
+  if (Number.isNaN(value)) return alt;
+  return value;
 }
 
 export async function getResults(
@@ -84,7 +86,7 @@ export async function getResults(
   const offset = getNumberOrDefault(req.query.offset as string, 0);
 
   if (limit + offset > maxLimit) {
-    throw new MonkeyError(422, `max results of ${maxLimit} exceeded.`);
+    throw new MonkeyError(422, `Max results limit of ${maxLimit} exceeded.`);
   }
 
   const results = await ResultDAL.getResults(uid, {
