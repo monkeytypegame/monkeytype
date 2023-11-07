@@ -14,6 +14,7 @@ import * as FunboxList from "./test/funbox/funbox-list";
 import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
+import * as ServerConfiguration from "./ape/server-configuration";
 
 if (Misc.isDevEnvironment()) {
   $("footer .currentVersion .text").text("localhost");
@@ -79,7 +80,10 @@ $(document).ready(() => {
     .removeClass("hidden")
     .stop(true, true)
     .animate({ opacity: 1 }, 250);
-  if (ConnectionState.get()) PSA.show();
+  if (ConnectionState.get()) {
+    PSA.show();
+    ServerConfiguration.sync();
+  }
   MonkeyPower.init();
 
   new Konami("https://keymash.io/");
