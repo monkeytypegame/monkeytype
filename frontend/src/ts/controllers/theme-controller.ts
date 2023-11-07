@@ -57,6 +57,7 @@ async function updateFavicon(): Promise<void> {
 }
 
 function clearCustomTheme(): void {
+  console.debug("Theme controller clearing custom theme");
   for (const e of colorVars) {
     document.documentElement.style.setProperty(e, "");
   }
@@ -66,6 +67,21 @@ let loadStyleLoaderTimeouts: NodeJS.Timeout[] = [];
 
 export async function loadStyle(name: string): Promise<void> {
   return new Promise((resolve) => {
+    function swapCurrentToNext(): void {
+      console.debug("Theme controller swapping elements");
+      const current = $("#currentTheme");
+      const next = $("#nextTheme");
+      if (next.length === 0) {
+        console.debug(
+          "Theme controller failed to swap elements, next is missing"
+        );
+        return;
+      }
+      current.remove();
+      next.attr("id", "currentTheme");
+    }
+
+    console.debug("Theme controller loading style", name);
     loadStyleLoaderTimeouts.push(
       setTimeout(() => {
         Loader.show();
@@ -78,20 +94,20 @@ export async function loadStyle(name: string): Promise<void> {
     link.rel = "stylesheet";
     link.id = "nextTheme";
     link.onload = (): void => {
+      console.debug("Theme controller loaded style", name);
       Loader.hide();
-      $("#currentTheme").remove();
-      $("#nextTheme").attr("id", "currentTheme");
+      swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
       $("#keymap .keymapKey").stop(true, true).removeAttr("style");
       resolve();
     };
     link.onerror = (e): void => {
+      console.debug("Theme controller failed to load style", name, e);
       console.error(`Failed to load theme ${name}`, e);
       Loader.hide();
       Notifications.add("Failed to load theme", 0);
-      $("#currentTheme").remove();
-      $("#nextTheme").attr("id", "currentTheme");
+      swapCurrentToNext();
       loadStyleLoaderTimeouts.map((t) => clearTimeout(t));
       loadStyleLoaderTimeouts = [];
       $("#keymap .keymapKey").stop(true, true).removeAttr("style");
@@ -104,8 +120,13 @@ export async function loadStyle(name: string): Promise<void> {
     }
 
     if (!headScript) {
+      console.debug("Theme controller appending link to the head", link);
       document.head.appendChild(link);
     } else {
+      console.debug(
+        "Theme controller inserting link after current theme",
+        link
+      );
       headScript.after(link);
     }
   });
@@ -123,6 +144,12 @@ async function apply(
   customColorsOverride?: string[],
   isPreview = false
 ): Promise<void> {
+  console.debug(
+    "Theme controller applying theme",
+    themeName,
+    customColorsOverride,
+    isPreview
+  );
   clearCustomTheme();
   const name = customColorsOverride ? "custom" : themeName;
 
@@ -180,6 +207,11 @@ async function set(
   themeIdentifier: string,
   isAutoSwitch = false
 ): Promise<void> {
+  console.debug(
+    "Theme controller setting theme",
+    themeIdentifier,
+    isAutoSwitch
+  );
   await apply(themeIdentifier, undefined, isAutoSwitch);
 
   if (!isAutoSwitch && Config.autoSwitchTheme) {
