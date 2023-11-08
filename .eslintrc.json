@@ -53,14 +53,17 @@
     "import/no-unresolved": [
       "error",
       {
-        "ignore": ["^@backend/.+", "^./constants/firebase-config$"]
+        "ignore": ["^./constants/firebase-config$"]
       }
     ],
     "import/no-duplicates": "off"
   },
   "settings": {
     "import/resolver": {
-      "typescript": true,
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": ["frontend/tsconfig.json", "backend/tsconfig.json"]
+      },
       "node": true
     }
   },
