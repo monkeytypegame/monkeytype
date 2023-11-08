@@ -1,5 +1,4 @@
 import Ape from ".";
-/* eslint-disable-next-line */
 import * as SharedMonkeyTypes from "@backend/types/shared";
 
 let config: SharedMonkeyTypes.Configuration | undefined = undefined;
