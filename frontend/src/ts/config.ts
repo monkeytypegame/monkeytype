@@ -303,7 +303,26 @@ function setAccountChart(
     return false;
   }
 
+  if (array.length !== 4) {
+    array = ["on", "on", "on", "on"];
+  }
+
   config.accountChart = array;
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
+
+  return true;
+}
+
+export function setAccountChartResults(
+  value: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("account chart results", value, ["boolean"])) {
+    return false;
+  }
+
+  config.accountChart[0] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -318,7 +337,7 @@ export function setAccountChartAccuracy(
     return false;
   }
 
-  config.accountChart[0] = value ? "on" : "off";
+  config.accountChart[1] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -333,7 +352,7 @@ export function setAccountChartAvg10(
     return false;
   }
 
-  config.accountChart[1] = value ? "on" : "off";
+  config.accountChart[2] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -348,7 +367,7 @@ export function setAccountChartAvg100(
     return false;
   }
 
-  config.accountChart[2] = value ? "on" : "off";
+  config.accountChart[3] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 

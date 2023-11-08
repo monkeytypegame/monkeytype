@@ -68,7 +68,7 @@ export default <MonkeyTypes.Config>{
   paceCaretCustomSpeed: 100,
   repeatedPace: true,
   pageWidth: "125",
-  accountChart: ["on", "on", "on"],
+  accountChart: ["on", "on", "on", "on"],
   minWpm: "off",
   minWpmCustomSpeed: 100,
   highlightMode: "letter",

@@ -5228,10 +5228,10 @@
       "length": 354
     },
     {
-      "text": "You are older than me. Do you still feel the pain of the scars that won't heal? Your eyes have died but you see more than I. Daniel you're a star in the face of the sky.",
+      "text": "You are older than me. Do you still feel the pain of the scars that won't heal? Your eyes have died but you see more than I. Daniel, you're a star in the face of the sky.",
       "source": "Daniel",
       "id": 908,
-      "length": 169
+      "length": 170
     },
     {
       "text": "Kinda cold, walking home. Growing older on my own. Feels so strange to say when I am not alone. Faith will claim to be a friend to those she own but she will never try to call when I'm by the phone.",
@@ -11120,10 +11120,10 @@
       "length": 213
     },
     {
-      "text": "Where it began, I can't begin to know, but then I know it's growing strong. Was in the spring, then spring became the summer. Who'd have believed you'd come along?",
+      "text": "Where it began, I can't begin to know when, but then I know it's growing strong. Was in the spring, then spring became the summer. Who'd have believed you'd come along?",
       "source": "Sweet Caroline",
       "id": 1945,
-      "length": 163
+      "length": 168
     },
     {
       "text": "Even a few people leaving would reverberate through the entire user base. The users are interconnected; that is the whole point. College kids are online because their friends are online, and if one domino goes, the other dominoes go. Don't you get that?",
@@ -29545,12 +29545,6 @@
       "source": "Pooh, Winnie-the-Pooh",
       "length": 80,
       "id": 5244
-    },
-    {
-      "text": "Here is my message to those beyond our borders. America has been tested and we have come out stronger for it. We will repair our alliances and engage with the world once again.",
-      "source": "President Joe Biden",
-      "length": 176,
-      "id": 5246
     },
     {
       "text": "The air was full of all the night noises that, taken together, make one big silence.",

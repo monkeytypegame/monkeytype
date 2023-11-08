@@ -9,6 +9,7 @@ declare namespace MonkeyTypes {
     mode2: string;
   }
 
+  //keep this in sync with the frontend
   interface Configuration {
     maintenance: boolean;
     quotes: {
