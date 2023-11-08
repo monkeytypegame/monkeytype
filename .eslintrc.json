@@ -53,7 +53,7 @@
     "import/no-unresolved": [
       "error",
       {
-        "ignore": ["^@backend/.+"]
+        "ignore": ["^@backend/.+", "^./constants/firebase-config$"]
       }
     ],
     "import/no-duplicates": "off"
