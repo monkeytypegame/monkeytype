@@ -30,7 +30,10 @@
     "noPropertyAccessFromIndexSignature": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@backend/*": ["../backend/src/*"]
+    }
   },
   "include": ["./src/**/*.ts"],
   "files": ["src/ts/modules.d.ts"]
