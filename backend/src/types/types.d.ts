@@ -491,6 +491,7 @@ declare namespace MonkeyTypes {
   }
 
   interface PremiumInfo {
+    startTimestamp: number;
     expirationTimestamp: number;
   }
 }
