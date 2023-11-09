@@ -1040,6 +1040,7 @@ export async function checkIfUserIsPremium(uid: string): Promise<boolean> {
   const user = await getUser(uid, "checkIfUserIsPremium");
   const expirationDate = user.premium?.expiryTimestamp;
 
+  if (expirationDate === undefined) return false;
   if (expirationDate === -1) return true; //lifetime
   return user.premium.expiryTimestamp > Date.now();
 }
