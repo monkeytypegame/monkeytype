@@ -14,7 +14,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     },
     limits: {
       regularUser: 1000,
-      premiumUser: 25000,
+      premiumUser: 10000,
     },
   },
   quotes: {
