@@ -333,7 +333,7 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
   },
   {
     canGetPb: true,
-    difficultyLevel: 0,
+    difficultyLevel: 1,
     properties: ["noLigatures"],
     frontendFunctions: ["alterText"],
     name: "ddoouubblleedd",
