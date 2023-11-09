@@ -164,6 +164,11 @@
     grid-auto-flow: unset;
     justify-items: center;
   }
+  .pageAccount {
+    .group.chart .below {
+      grid-template-columns: 1fr;
+    }
+  }
 }
 
 //900px
@@ -407,13 +412,6 @@
     }
     .saveContainer {
       grid-column: -1/-2;
-    }
-  }
-
-  .pageAccount {
-    .group.chart .below {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
     }
   }
 

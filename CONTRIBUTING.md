@@ -73,6 +73,9 @@ Before submitting a theme make sure...
 - Verify the `length` property is correct (length of the text in characters)
 - Verify the `id` property is incremented correctly
 - Please do not add extremely short quotes (less than 60 characters)
+- For quotes not in English, please include translations of quotes in description of your Pull request. This assists in the verification process to ensure the integrity of the quotes.
+- Remember to name you pull request properly. For example, if you are adding new quotes for the language `French`, your pull request should be named `impr(quotes): add French quotes`.
+
 
 (If you want to contribute quotes but don't know how, check [QUOTES.md](./QUOTES.md))
 

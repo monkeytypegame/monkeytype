@@ -1,4 +1,7 @@
-import { randomElementFromArray } from "../utils/misc";
+import {
+  capitalizeFirstLetterOfEachWord,
+  randomElementFromArray,
+} from "../utils/misc";
 
 type Pair = [string, string[]];
 
@@ -54,6 +57,21 @@ export async function replace(word: string): Promise<string> {
 
   return word.replace(
     RegExp(`^(?:([\\W]*)(${replacement[0]})([\\W]*))$`, "gi"),
-    randomReplacement
+    (_, $1, $2, $3) =>
+      $1 +
+      ($2.charAt(0) === $2.charAt(0).toUpperCase()
+        ? shouldWholeReplacementWordBeCapitalised($2)
+          ? randomReplacement.toUpperCase()
+          : capitalizeFirstLetterOfEachWord(randomReplacement)
+        : randomReplacement) +
+      $3
   );
+}
+
+function shouldWholeReplacementWordBeCapitalised(
+  wordToBeReplaced: string
+): boolean {
+  if (wordToBeReplaced === "I") return false;
+  if (wordToBeReplaced === wordToBeReplaced.toUpperCase()) return true;
+  return false;
 }

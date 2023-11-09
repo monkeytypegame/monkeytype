@@ -1,0 +1,143 @@
+{
+  "language": "finnish",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Mieleni minun tekevi, aivoni ajattelevi lähteäni laulamahan, saa'ani sanelemahan, sukuvirttä suoltamahan, lajivirttä laulamahan.",
+      "source": "Kalevala",
+      "id": 1,
+      "length": 128
+    },
+    {
+      "text": "Sanat suussani sulavat, puhe'et putoelevat, kielelleni kerkiävät, hampahilleni hajoovat.",
+      "source": "Kalevala",
+      "id": 2,
+      "length": 88
+    },
+    {
+      "text": "Veli kulta, veikkoseni, kaunis kasvinkumppalini! Lähe nyt kanssa laulamahan, saa kera sanelemahan yhtehen yhyttyämme, kahta'alta käytyämme!",
+      "source": "Kalevala",
+      "id": 3,
+      "length": 139
+    },
+    {
+      "text": "Harvoin yhtehen yhymme, saamme toinen toisihimme näillä raukoilla rajoilla, poloisilla Pohjan mailla.",
+      "source": "Kalevala",
+      "id": 4,
+      "length": 101
+    },
+    {
+      "text": "Lyökämme käsi kätehen, sormet sormien lomahan, lauloaksemme hyviä, parahia pannaksemme, kuulla noien kultaisien, tietä mielitehtoisien, nuorisossa nousevassa, kansassa kasuavassa: noita saamia sanoja, virsiä virittämiä vyöltä vanhan Väinämöisen, alta ahjon Ilmarisen, päästä kalvan Kaukomielen, Joukahaisen jousen tiestä, Pohjan peltojen periltä, Kalevalan kankahilta.",
+      "source": "Kalevala",
+      "id": 5,
+      "length": 368
+    },
+    {
+      "text": "Niit' ennen isoni lauloi kirvesvartta vuollessansa; niitä äitini opetti väätessänsä värttinätä, minun lasna lattialla eessä polven pyöriessä, maitopartana pahaisna, piimäsuuna pikkaraisna.",
+      "source": "Kalevala",
+      "id": 6,
+      "length": 188
+    },
+    {
+      "text": "Sampo ei puuttunut sanoja eikä Louhi luottehia: vanheni sanoihin sampo, katoi Louhi luottehisin, virsihin Vipunen kuoli, Lemminkäinen leikkilöihin.",
+      "source": "Kalevala",
+      "id": 7,
+      "length": 147
+    },
+    {
+      "text": "Viel' on muitaki sanoja,ongelmoita oppimia: tieohesta tempomia, kanervoista katkomia, risukoista riipomia, vesoista vetelemiä, päästä heinän hieromia, raitiolta ratkomia, paimenessa käyessäni, lasna karjanlaitumilla, metisillä mättähillä, kultaisilla kunnahilla, mustan Muurikin jälessä, Kimmon kirjavan keralla.",
+      "source": "Kalevala",
+      "id": 8,
+      "length": 312
+    },
+    {
+      "text": "Niin laulan hyvänki virren, kaunihinki kalkuttelen ruoalta rukihiselta, oluelta ohraiselta.",
+      "source": "Kalevala",
+      "id": 9,
+      "length": 91
+    },
+    {
+      "text": "Noin kuulin saneltavaksi, tiesin virttä tehtäväksi: yksin meillä yöt tulevat, yksin päivät valkeavat; yksin syntyi Väinämöinen, ilmestyi ikirunoja kapehesta kantajasta, Ilmattaresta emosta.",
+      "source": "Kalevala",
+      "id": 10,
+      "length": 189
+    },
+    {
+      "text": "Olipa impi, ilman tyttö, kave luonnotar korea. Piti viikoista pyhyyttä, iän kaiken impeyttä ilman pitkillä pihoilla, tasaisilla tanterilla.",
+      "source": "Kalevala",
+      "id": 11,
+      "length": 139
+    },
+    {
+      "text": "Vaka vanha Väinämöinen kulki äitinsä kohussa kolmekymmentä keseä, yhen verran talviaki, noilla vienoilla vesillä, utuisilla lainehilla.",
+      "source": "Kalevala",
+      "id": 12,
+      "length": 135
+    },
+    {
+      "text": "Kylvi maita kyyhätteli, kylvi maita, kylvi soita, kylvi auhtoja ahoja, panettavi paasikoita.",
+      "source": "Kalevala",
+      "id": 13,
+      "length": 92
+    },
+    {
+      "text": "Mäet kylvi männiköiksi, kummut kylvi kuusikoiksi, kankahat kanervikoiksi, notkot nuoriksi vesoiksi.",
+      "source": "Kalevala",
+      "id": 14,
+      "length": 99
+    },
+    {
+      "text": "Kenpä siitä oksan otti, se otti ikuisen onnen; kenpä siitä latvan taittoi, se taittoi ikuisen taian; kenpä lehvän leikkaeli, se leikkoi ikuisen lemmen.",
+      "source": "Kalevala",
+      "id": 15,
+      "length": 151
+    },
+    {
+      "text": "Vaka vanha Väinämöinen elelevi aikojansa noilla Väinölän ahoilla, Kalevalan kankahilla.",
+      "source": "Kalevala",
+      "id": 16,
+      "length": 87
+    },
+    {
+      "text": "Tuli nuori Joukahainen, ajoi tiellä vastatusten: tarttui aisa aisan päähän, rahe rahkehen takistui, länget puuttui länkilöihin, vemmel vempelen nenähän.",
+      "source": "Kalevala",
+      "id": 17,
+      "length": 152
+    },
+    {
+      "text": "Silmät kattoo niin kieroon, että keskiviikkona näkee molemmat sunnuntait.",
+      "source": "Väinö Linna -Tuntematon sotilas",
+      "id": 18,
+      "length": 73
+    },
+    {
+      "text": "Kolmen tunnin päästä lähdetään. Ne, joilla ei ole valkoista nenäliinaa, hankkikoon sellaisen.",
+      "source": "Väinö Linna -Tuntematon sotilas",
+      "id": 19,
+      "length": 93
+    },
+    {
+      "text": "Herra kapteeni, täitä ei kuitenkaan minun käsittääkseni voi syyttää tästä liasta, sillä sehän ei ole syy, vaan seurausilmiö. Ellen ole johdellut väärin ajatusta.",
+      "source": "Väinö Linna -Tuntematon sotilas",
+      "id": 20,
+      "length": 161
+    },
+    {
+      "text": "Tokko mie tuon tytön kauniita silmiä ennee suan nähä millonkaa.",
+      "source": "Väinö Linna -Tuntematon sotilas",
+      "id": 21,
+      "length": 63
+    },
+    {
+      "text": "Mä en ymmärrä mitään sellasista kaloreista, mutta mun suoleni ymmärtää, että niitä on vähän.",
+      "source": "Väinö Linna -Tuntematon sotilas",
+      "id": 22,
+      "length": 92
+    }
+  ]
+}

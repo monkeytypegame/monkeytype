@@ -505,6 +505,12 @@ FunboxList.setFunboxFunctions("zipf", {
   },
 });
 
+FunboxList.setFunboxFunctions("ddoouubblleedd", {
+  alterText(word: string): string {
+    return word.replace(/./gu, "$&$&");
+  },
+});
+
 export function toggleScript(...params: string[]): void {
   FunboxList.get(Config.funbox).forEach((funbox) => {
     if (funbox.functions?.toggleScript) funbox.functions.toggleScript(params);

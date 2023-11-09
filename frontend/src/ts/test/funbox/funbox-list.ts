@@ -255,6 +255,11 @@ const list: MonkeyTypes.FunboxMetadata[] = [
       "wordOrder:reverse",
     ],
   },
+  {
+    name: "ddoouubblleedd",
+    info: "TTyyppee eevveerryytthhiinngg ttwwiiccee..",
+    properties: ["noLigatures"],
+  },
 ];
 
 export function getAll(): MonkeyTypes.FunboxMetadata[] {

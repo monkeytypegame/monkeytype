@@ -146,7 +146,7 @@ declare namespace MonkeyTypes {
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
-  type AccountChart = ("off" | "on")[];
+  type AccountChart = ["off" | "on", "off" | "on", "off" | "on", "off" | "on"];
 
   type MinimumWordsPerMinute = "off" | "custom";
 
@@ -913,5 +913,93 @@ declare namespace MonkeyTypes {
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;
+  }
+
+  interface ServerConfiguration {
+    maintenance: boolean;
+    quotes: {
+      reporting: {
+        enabled: boolean;
+        maxReports: number;
+        contentReportLimit: number;
+      };
+      submissionsEnabled: boolean;
+      maxFavorites: number;
+    };
+    results: {
+      savingEnabled: boolean;
+      objectHashCheckEnabled: boolean;
+      filterPresets: {
+        enabled: boolean;
+        maxPresetsPerUser: number;
+      };
+    };
+    users: {
+      signUp: boolean;
+      lastHashesCheck: {
+        enabled: boolean;
+        maxHashes: number;
+      };
+      autoBan: {
+        enabled: boolean;
+        maxCount: number;
+        maxHours: number;
+      };
+      profiles: {
+        enabled: boolean;
+      };
+      discordIntegration: {
+        enabled: boolean;
+      };
+      xp: {
+        enabled: boolean;
+        funboxBonus: number;
+        gainMultiplier: number;
+        maxDailyBonus: number;
+        minDailyBonus: number;
+        streak: {
+          enabled: boolean;
+          maxStreakDays: number;
+          maxStreakMultiplier: number;
+        };
+      };
+      inbox: {
+        enabled: boolean;
+        maxMail: number;
+      };
+    };
+    admin: {
+      endpointsEnabled: boolean;
+    };
+    apeKeys: {
+      endpointsEnabled: boolean;
+      acceptKeys: boolean;
+      maxKeysPerUser: number;
+      apeKeyBytes: number;
+      apeKeySaltRounds: number;
+    };
+    rateLimiting: {
+      badAuthentication: {
+        enabled: boolean;
+        penalty: number;
+        flaggedStatusCodes: number[];
+      };
+    };
+    dailyLeaderboards: {
+      enabled: boolean;
+      leaderboardExpirationTimeInDays: number;
+      maxResults: number;
+      validModeRules: ValidModeRule[];
+      scheduleRewardsModeRules: ValidModeRule[];
+      topResultsToAnnounce: number;
+      xpRewardBrackets: RewardBracket[];
+    };
+    leaderboards: {
+      weeklyXp: {
+        enabled: boolean;
+        expirationTimeInDays: number;
+        xpRewardBrackets: RewardBracket[];
+      };
+    };
   }
 }
