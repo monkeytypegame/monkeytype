@@ -1,6 +1,6 @@
 import * as db from "../init/db";
 import chalk from "chalk";
-import winston, { format } from "winston";
+import { format, createLogger, transports, Logger } from "winston";
 import { resolve } from "path";
 import { ObjectId } from "mongodb";
 
@@ -57,28 +57,28 @@ const fileFormat = format.combine(timestampFormat, simpleOutputFormat);
 
 const consoleFormat = format.combine(timestampFormat, coloredOutputFormat);
 
-const logger = winston.createLogger({
+const logger = createLogger({
   levels: customLevels,
   transports: [
-    new winston.transports.File({
+    new transports.File({
       level: "error",
       filename: resolve(logFolderPath, "error.log"),
       maxsize: maxLogSize,
       format: fileFormat,
     }),
-    new winston.transports.File({
+    new transports.File({
       level: "success",
       filename: resolve(logFolderPath, "combined.log"),
       maxsize: maxLogSize,
       format: fileFormat,
     }),
-    new winston.transports.Console({
+    new transports.Console({
       level: "success",
       format: consoleFormat,
     }),
   ],
   exceptionHandlers: [
-    new winston.transports.File({
+    new transports.File({
       filename: resolve(logFolderPath, "exceptions.log"),
       format: fileFormat,
     }),
@@ -107,10 +107,10 @@ const logToDb = async (
 };
 
 const Logger = {
-  error: (message: string): winston.Logger => logger.error(message),
-  warning: (message: string): winston.Logger => logger.warning(message),
-  info: (message: string): winston.Logger => logger.info(message),
-  success: (message: string): winston.Logger => logger.log("success", message),
+  error: (message: string): Logger => logger.error(message),
+  warning: (message: string): Logger => logger.warning(message),
+  info: (message: string): Logger => logger.info(message),
+  success: (message: string): Logger => logger.log("success", message),
   logToDb,
 };
 
