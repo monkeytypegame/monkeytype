@@ -20,6 +20,8 @@ const resultMock = jest.spyOn(ResultDal, "getResults");
 
 const mockApp = request(app);
 
+const configuration = Configuration.getCachedConfiguration();
+
 describe("result controller test", () => {
   describe("getResults", () => {
     beforeEach(() => {
@@ -95,7 +97,15 @@ describe("result controller test", () => {
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(422)
-        .expect(expectErrorMessage("Max results limit of 1000 exceeded."));
+        .expect(
+          expectErrorMessage(
+            `Max results limit of ${
+              (
+                await configuration
+              ).results.limits.regularUser
+            } exceeded.`
+          )
+        );
 
       //THEN
     });
@@ -149,7 +159,15 @@ describe("result controller test", () => {
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(422)
-        .expect(expectErrorMessage("Max results limit of 25000 exceeded."));
+        .expect(
+          expectErrorMessage(
+            `Max results limit of ${
+              (
+                await configuration
+              ).results.limits.premiumUser
+            } exceeded.`
+          )
+        );
 
       //THEN
     });
