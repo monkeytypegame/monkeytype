@@ -174,6 +174,22 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
             },
           },
         },
+        limits: {
+          type: "object",
+          label: "maximum results",
+          fields: {
+            regularUser: {
+              type: "number",
+              label: "for regular users",
+              min: 0,
+            },
+            premiumUser: {
+              type: "number",
+              label: "for premium users",
+              min: 0,
+            },
+          },
+        },
       },
     },
     quotes: {
@@ -387,22 +403,6 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
               items: {
                 label: "Status Code",
                 type: "number",
-                min: 0,
-              },
-            },
-          },
-          limits: {
-            type: "object",
-            label: "maximum results",
-            fields: {
-              regularUser: {
-                type: "number",
-                label: "for regular users",
-                min: 0,
-              },
-              premiumUser: {
-                type: "number",
-                label: "for premium users",
                 min: 0,
               },
             },
