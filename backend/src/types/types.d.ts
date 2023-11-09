@@ -197,7 +197,7 @@ declare namespace MonkeyTypes {
     streak?: UserStreak;
     lastReultHashes?: string[];
     lbOptOut?: boolean;
-    premium?: PremiumProperties;
+    premium?: PremiumInfo;
   }
 
   interface UserStreak {
