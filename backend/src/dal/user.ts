@@ -1038,5 +1038,8 @@ export async function setBanned(uid: string, banned: boolean): Promise<void> {
 
 export async function checkIfUserIsPremium(uid: string): Promise<boolean> {
   const user = await getUser(uid, "checkIfUserIsPremium");
-  return user.premium?.isActive === true;
+  const expirationDate = user.premium?.expiryTimestamp;
+
+  if (expirationDate === -1) return true; //lifetime
+  return user.premium.expiryTimestamp > Date.now();
 }

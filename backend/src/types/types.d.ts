@@ -198,7 +198,6 @@ declare namespace MonkeyTypes {
     lastReultHashes?: string[];
     lbOptOut?: boolean;
     premium?: PremiumProperties;
-    isPremium?: boolean;
   }
 
   interface UserStreak {
@@ -491,7 +490,7 @@ declare namespace MonkeyTypes {
     frontendFunctions?: string[];
   }
 
-  interface PremiumProperties {
-    isActive: boolean;
+  interface PremiumInfo {
+    expirationTimestamp: number;
   }
 }
