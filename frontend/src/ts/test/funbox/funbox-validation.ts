@@ -265,13 +265,17 @@ export function areFunboxesCompatible(
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "symmetricChars")
     ).length === 0;
-  const canSpeak =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "speaks" || fp === "unspeakable")
-    ).length <= 1;
-  const hasLanguageToSpeak =
+  const oneCanSpeakMax =
+    funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
+      .length <= 1;
+  const hasLanguageToSpeakAndNoUnspeakable =
     funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
       .length === 0 ||
+    (funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
+      .length === 1 &&
+      funboxesToCheck.filter((f) =>
+        f.properties?.find((fp) => fp === "unspeakable")
+      ).length === 0) ||
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "ignoresLanguage")
     ).length === 0;
@@ -318,8 +322,8 @@ export function areFunboxesCompatible(
     noFrequencyChangesConflicts &&
     capitalisationChangePosibility &&
     noConflictsWithSymmetricChars &&
-    canSpeak &&
-    hasLanguageToSpeak &&
+    oneCanSpeakMax &&
+    hasLanguageToSpeakAndNoUnspeakable &&
     oneToPushOrPullSectionMax &&
     oneApplyCSSMax &&
     onePunctuateWordMax &&
