@@ -478,8 +478,12 @@ export async function generateWords(
       for (let i = 0; i < funboxSection.length; i++) {
         indexes.push(i);
       }
+      const ret = [];
+      for (const word of funboxSection) {
+        ret.push(applyFunboxesToWord(word));
+      }
       return {
-        words: funboxSection,
+        words: ret,
         sectionIndexes: indexes,
       };
     }
