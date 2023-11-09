@@ -1,5 +1,5 @@
 import Config from "../config";
-import Howler, { Howl } from "howler";
+import { Howler, Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
 import {
   createErrorMessage,
@@ -12,14 +12,14 @@ import * as Notifications from "../elements/notifications";
 
 interface ClickSounds {
   [key: string]: {
-    sounds: Howler.Howl[];
+    sounds: Howl[];
     counter: number;
   }[];
 }
 
 interface ErrorSounds {
   [key: string]: {
-    sounds: Howler.Howl[];
+    sounds: Howl[];
     counter: number;
   }[];
 }
@@ -553,7 +553,7 @@ export function playError(): void {
 }
 
 function setVolume(val: number): void {
-  Howler.Howler.volume(val);
+  Howler.volume(val);
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

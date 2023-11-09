@@ -22,7 +22,8 @@
   "extends": [
     "eslint:recommended",
     "plugin:json/recommended",
-    "plugin:require-path-exists/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
     // "plugin:@typescript-eslint/recommended-requiring-type-checking"
@@ -42,31 +43,29 @@
     "semi": ["error", "always"],
     "no-empty": ["error", { "allowEmptyCatch": true }],
     "no-var": 2,
-    "require-path-exists/notEmpty": 2,
-    "require-path-exists/tooManyArguments": 2,
-    "require-path-exists/exists": [
-      2,
-      {
-        "extensions": [
-          "",
-          ".js",
-          ".ts",
-          ".tsx",
-          ".es.ts",
-          ".tsx",
-          ".json5",
-          ".es",
-          ".es6",
-          ".coffee"
-        ]
-      }
-    ],
     "no-duplicate-imports": ["error"],
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-var-requires": "off"
+    "@typescript-eslint/no-var-requires": "off",
     // "@typescript-eslint/no-floating-promises": "error" // consider adding these
     // "@typescript-eslint/strict-boolean-expressions": "warn",
+    // "import/default": "off",
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": ["^./constants/firebase-config$"]
+      }
+    ],
+    "import/no-duplicates": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": ["frontend/tsconfig.json", "backend/tsconfig.json"]
+      },
+      "node": true
+    }
   },
   "overrides": [
     {

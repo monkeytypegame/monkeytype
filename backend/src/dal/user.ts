@@ -7,6 +7,7 @@ import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
+import { Configuration } from "../types/shared";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -844,7 +845,7 @@ interface AddToInboxBulkEntry {
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],
-  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+  inboxConfig: Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -872,7 +873,7 @@ export async function addToInboxBulk(
 export async function addToInbox(
   uid: string,
   mail: MonkeyTypes.MonkeyMail[],
-  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+  inboxConfig: Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 

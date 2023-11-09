@@ -1,7 +1,10 @@
 import _ from "lodash";
 import { Application } from "express";
-import swaggerStats from "swagger-stats";
-import swaggerUi from "swagger-ui-express";
+import { getMiddleware as getSwaggerMiddleware } from "swagger-stats";
+import {
+  serve as serveSwagger,
+  setup as setupSwaggerUi,
+} from "swagger-ui-express";
 import publicSwaggerSpec from "../../documentation/public-swagger.json";
 import internalSwaggerSpec from "../../documentation/internal-swagger.json";
 
@@ -12,7 +15,7 @@ const SWAGGER_UI_OPTIONS = {
 
 function addSwaggerMiddlewares(app: Application): void {
   app.use(
-    swaggerStats.getMiddleware({
+    getSwaggerMiddleware({
       name: "Monkeytype API",
       uriPath: "/stats",
       authentication: process.env.MODE !== "dev",
@@ -29,8 +32,8 @@ function addSwaggerMiddlewares(app: Application): void {
 
   app.use(
     ["/documentation", "/docs"],
-    swaggerUi.serve,
-    swaggerUi.setup(publicSwaggerSpec, SWAGGER_UI_OPTIONS)
+    serveSwagger,
+    setupSwaggerUi(publicSwaggerSpec, SWAGGER_UI_OPTIONS)
   );
 }
 

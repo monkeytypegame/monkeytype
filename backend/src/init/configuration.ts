@@ -4,12 +4,13 @@ import { ObjectId } from "mongodb";
 import Logger from "../utils/logger";
 import { identity } from "../utils/misc";
 import { BASE_CONFIGURATION } from "../constants/base-configuration";
+import { Configuration } from "../types/shared";
 
 const CONFIG_UPDATE_INTERVAL = 10 * 60 * 1000; // 10 Minutes
 
 function mergeConfigurations(
-  baseConfiguration: MonkeyTypes.Configuration,
-  liveConfiguration: Partial<MonkeyTypes.Configuration>
+  baseConfiguration: Configuration,
+  liveConfiguration: Partial<Configuration>
 ): void {
   if (
     !_.isPlainObject(baseConfiguration) ||
@@ -45,7 +46,7 @@ let serverConfigurationUpdated = false;
 
 export async function getCachedConfiguration(
   attemptCacheUpdate = false
-): Promise<MonkeyTypes.Configuration> {
+): Promise<Configuration> {
   if (
     attemptCacheUpdate &&
     lastFetchTime < Date.now() - CONFIG_UPDATE_INTERVAL
@@ -57,7 +58,7 @@ export async function getCachedConfiguration(
   return configuration;
 }
 
-export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration> {
+export async function getLiveConfiguration(): Promise<Configuration> {
   lastFetchTime = Date.now();
 
   const configurationCollection = db.collection("configuration");
@@ -71,7 +72,7 @@ export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration>
       const liveConfigurationWithoutId = _.omit(
         liveConfiguration,
         "_id"
-      ) as MonkeyTypes.Configuration;
+      ) as Configuration;
       mergeConfigurations(baseConfiguration, liveConfigurationWithoutId);
 
       pushConfiguration(baseConfiguration);
@@ -92,9 +93,7 @@ export async function getLiveConfiguration(): Promise<MonkeyTypes.Configuration>
   return configuration;
 }
 
-async function pushConfiguration(
-  configuration: MonkeyTypes.Configuration
-): Promise<void> {
+async function pushConfiguration(configuration: Configuration): Promise<void> {
   if (serverConfigurationUpdated) {
     return;
   }
@@ -111,7 +110,7 @@ async function pushConfiguration(
 }
 
 export async function patchConfiguration(
-  configurationUpdates: Partial<MonkeyTypes.Configuration>
+  configurationUpdates: Partial<Configuration>
 ): Promise<boolean> {
   try {
     const currentConfiguration = _.cloneDeep(configuration);
