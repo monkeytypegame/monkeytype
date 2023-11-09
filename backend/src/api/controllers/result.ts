@@ -14,6 +14,7 @@ import {
   mapRange,
   roundTo2,
   stdDev,
+  stringToNumberOrDefault,
 } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
@@ -58,13 +59,6 @@ try {
   }
 }
 
-function getNumberOrDefault(query: string, alt: number): number {
-  if (query === undefined) return alt;
-  const value = parseInt(query, 10);
-  if (Number.isNaN(value)) return alt;
-  return value;
-}
-
 export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -79,11 +73,11 @@ export async function getResults(
     req.query.onOrAfterTimestamp as string,
     10
   );
-  const limit = getNumberOrDefault(
+  const limit = stringToNumberOrDefault(
     req.query.limit as string,
     Math.min(1000, maxLimit)
   );
-  const offset = getNumberOrDefault(req.query.offset as string, 0);
+  const offset = stringToNumberOrDefault(req.query.offset as string, 0);
 
   if (limit + offset > maxLimit) {
     throw new MonkeyError(422, `Max results limit of ${maxLimit} exceeded.`);
