@@ -21,6 +21,7 @@ import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
+import * as ServerConfiguration from "../ape/server-configuration";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1047,9 +1048,8 @@ async function fillContent(): Promise<void> {
   );
 }
 
-export async function downloadResults(): Promise<void> {
-  if (DB.getSnapshot()?.results !== undefined) return;
-  const results = await DB.getUserResults();
+export async function downloadResults(offset?: number): Promise<void> {
+  const results = await DB.getUserResults(offset);
   if (results === false && !ConnectionState.get()) {
     Notifications.add("Could not get results - you are offline", -1, {
       duration: 5,
@@ -1059,6 +1059,7 @@ export async function downloadResults(): Promise<void> {
   TodayTracker.addAllFromToday();
   if (results) {
     ResultFilters.updateActive();
+    await updateProgressBar();
   }
 }
 
@@ -1299,6 +1300,20 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
   );
 });
 
+$(".pageAccount .button.loadMoreResults").on("click", async () => {
+  const offset = DB.getSnapshot()?.results?.length || 0;
+  await downloadResults(offset);
+  await fillContent();
+  const allResults = DB.getSnapshot()?.results || [];
+  const serverConfig = ServerConfiguration.get();
+  if (
+    serverConfig !== undefined &&
+    allResults.length >= serverConfig.results.limits.premiumUser
+  ) {
+    $(".pageAccount .button.loadMoreResults").attr("disabled", "true");
+  }
+});
+
 ConfigEvent.subscribe((eventKey) => {
   if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
     update();
@@ -1327,6 +1342,7 @@ export const page = new Page(
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
     }
+
     await update();
     await Misc.sleep(0);
     updateChartColors();
@@ -1336,6 +1352,11 @@ export const page = new Page(
         `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
       );
     }
+
+    if (DB.getSnapshot()?.isPremium === true) {
+      $(".pageAccount .loadMoreHistory").removeClass("hidden");
+    }
+    await updateProgressBar();
   },
   async () => {
     //
@@ -1345,3 +1366,19 @@ export const page = new Page(
 $(() => {
   Skeleton.save("pageAccount");
 });
+
+async function updateProgressBar(): Promise<void> {
+  const results = DB.getSnapshot()?.results;
+  const maxResults = (await ServerConfiguration.get())?.results.limits
+    .premiumUser;
+
+  let percentage = 0;
+
+  if (results !== undefined && maxResults !== undefined) {
+    percentage = Math.round((results.length / maxResults) * 100);
+  }
+
+  const bar = $(".pageAccount .loadMoreHistory .progress div");
+  bar.css("width", percentage + "%");
+  bar.text(percentage + "%");
+}

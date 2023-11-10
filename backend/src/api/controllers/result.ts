@@ -76,7 +76,7 @@ export async function getResults(
   );
   const limit = stringToNumberOrDefault(
     req.query.limit as string,
-    Math.min(1000, maxLimit)
+    Math.min(5, maxLimit) //TODO: set to 1000
   );
   const offset = stringToNumberOrDefault(req.query.offset as string, 0);
 

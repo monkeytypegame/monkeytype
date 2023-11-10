@@ -603,6 +603,7 @@ declare namespace MonkeyTypes {
     maxStreak: number;
     streakHourOffset?: number;
     lbOptOut?: boolean;
+    isPremium?: boolean;
   }
 
   interface UserDetails {
