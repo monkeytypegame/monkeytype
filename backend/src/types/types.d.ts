@@ -92,6 +92,7 @@ declare namespace MonkeyTypes {
     streak?: UserStreak;
     lastReultHashes?: string[];
     lbOptOut?: boolean;
+    premium?: PremiumInfo;
   }
 
   interface UserStreak {
@@ -382,5 +383,10 @@ declare namespace MonkeyTypes {
     properties?: string[];
     frontendForcedConfig?: Record<string, string[] | boolean[]>;
     frontendFunctions?: string[];
+  }
+
+  interface PremiumInfo {
+    startTimestamp: number;
+    expirationTimestamp: number;
   }
 }
