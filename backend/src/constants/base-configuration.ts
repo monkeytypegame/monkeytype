@@ -14,6 +14,10 @@ export const BASE_CONFIGURATION: Configuration = {
       enabled: false,
       maxPresetsPerUser: 0,
     },
+    limits: {
+      regularUser: 1000,
+      premiumUser: 10000,
+    },
   },
   quotes: {
     reporting: {
@@ -166,6 +170,22 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
             maxPresetsPerUser: {
               type: "number",
               label: "Max Presets Per User",
+              min: 0,
+            },
+          },
+        },
+        limits: {
+          type: "object",
+          label: "maximum results",
+          fields: {
+            regularUser: {
+              type: "number",
+              label: "for regular users",
+              min: 0,
+            },
+            premiumUser: {
+              type: "number",
+              label: "for premium users",
               min: 0,
             },
           },
