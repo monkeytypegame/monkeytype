@@ -1056,8 +1056,12 @@ export async function downloadResults(offset?: number): Promise<void> {
     });
     return;
   }
+
   TodayTracker.addAllFromToday();
   if (results) {
+    //TODO remove after testing
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     ResultFilters.updateActive();
     await updateProgressBar();
   }
@@ -1302,6 +1306,12 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
 
 $(".pageAccount .button.loadMoreResults").on("click", async () => {
   const offset = DB.getSnapshot()?.results?.length || 0;
+  const btn = $(".pageAccount .button.loadMoreResults");
+  const loader = $(".pageAccount .preloader");
+
+  loader.removeClass("hidden");
+  btn.attr("disabled", "true");
+
   await downloadResults(offset);
   await fillContent();
   const allResults = DB.getSnapshot()?.results || [];
@@ -1310,8 +1320,11 @@ $(".pageAccount .button.loadMoreResults").on("click", async () => {
     serverConfig !== undefined &&
     allResults.length >= serverConfig.results.limits.premiumUser
   ) {
-    $(".pageAccount .button.loadMoreResults").attr("disabled", "true");
+    btn.attr("disabled", "true");
+  } else {
+    btn.removeAttr("disabled");
   }
+  loader.addClass("hidden");
 });
 
 ConfigEvent.subscribe((eventKey) => {
