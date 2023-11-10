@@ -1,9 +1,33 @@
 :root {
   --roundness: 0.5rem;
-  --font: "Roboto Mono", "Vazirmatn", sans-serif;
+  --font: "Roboto Mono", "Vazirmatn", monospace;
   // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
   font-weight: 400;
+  --crt-bg-color-shine: color-mix(
+    in oklab,
+    var(--main-color) 5%,
+    var(--bg-color)
+  );
+  --crt-bg-color-stripe: color-mix(in oklab, black 50%, var(--bg-color));
+  --crt-sub-color-glow: color-mix(in srgb, var(--sub-color) 20%, transparent);
+  --crt-sub-alt-color-glow: color-mix(
+    in srgb,
+    var(--sub-alt-color) 20%,
+    transparent
+  );
+  --crt-text-color-glow: color-mix(in srgb, var(--text-color) 20%, transparent);
+  --crt-main-color-glow: color-mix(in srgb, var(--main-color) 20%, transparent);
+  --crt-error-color-glow: color-mix(
+    in srgb,
+    var(--error-color) 20%,
+    transparent
+  );
+  --crt-caret-color-glow: color-mix(
+    in srgb,
+    var(--caret-color) 20%,
+    transparent
+  );
 }
 
 ::placeholder {
@@ -49,23 +73,25 @@ html {
   @extend .ffscroll;
   overflow-y: scroll;
   scroll-behavior: smooth;
+  line-height: 1.25;
 }
 
 a {
   display: inline-block;
   color: var(--sub-color);
-  transition: 0.125s;
+  transition: color 0.125s, opacity 0.125s, background 0.125s;
   &:hover {
     color: var(--text-color);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
+    border-radius: var(--roundness);
   }
 }
 
 a[router-link] * {
   pointer-events: none;
-}
-
-a.button {
-  text-decoration: none;
 }
 
 body {
@@ -102,47 +128,7 @@ body {
   z-index: 9999;
 }
 
-label.checkbox {
-  span {
-    display: block;
-    font-size: 0.76rem;
-    color: var(--sub-color);
-    margin-left: 1.5rem;
-  }
-
-  input {
-    margin: 0 !important;
-    cursor: pointer;
-    width: 0;
-    height: 0;
-    display: none;
-    -webkit-user-select: none;
-    user-select: none;
-
-    & ~ .customTextCheckbox {
-      width: 1.25rem;
-      height: 1.25rem;
-      background: var(--sub-alt-color);
-      border-radius: calc(var(--roundness) / 2);
-      display: inline-grid;
-      margin: 0 0.5rem 0 0;
-      -webkit-user-select: none;
-      user-select: none;
-      cursor: pointer;
-      & .check {
-        opacity: 0;
-        color: var(--main-color);
-        transition: 0.125s;
-      }
-    }
-
-    &:checked ~ .customTextCheckbox .check {
-      opacity: 1;
-    }
-  }
-}
-
-#centerContent {
+#contentWrapper {
   max-width: 1000px;
   // min-width: 500px;
   // margin: 0 auto;
@@ -173,7 +159,7 @@ label.checkbox {
   }
 }
 
-#middle {
+main {
   display: grid; //stupid fix for stupid safari
 }
 
@@ -271,134 +257,8 @@ key {
   pointer-events: none !important;
 }
 
-.button {
-  color: var(--text-color);
-  cursor: pointer;
-  transition: background 0.125s, color 0.125s;
-  padding: 0.5em;
-  border-radius: var(--roundness);
-  background: var(--sub-alt-color);
-  text-align: center;
-  -webkit-user-select: none;
-  user-select: none;
-  align-content: center;
-  height: -moz-min-content;
-  height: min-content;
-  line-height: 1.25em;
-  appearance: none;
-  border: none;
-  font-family: inherit;
-  font-size: 1em;
-
-  &.active {
-    background: var(--main-color);
-    color: var(--bg-color);
-    &:hover {
-      background: var(--text-color);
-    }
-    &:active {
-      background: var(--sub-color);
-      color: var(--bg-color);
-    }
-  }
-
-  &.disabled {
-    opacity: 0.33;
-    cursor: default;
-    pointer-events: none;
-    &:hover {
-      background: var(--text-color);
-      outline: none;
-    }
-    &:active {
-      background: var(--sub-color);
-      color: var(--bg-color);
-    }
-  }
-
-  &:hover {
-    color: var(--bg-color);
-    background: var(--text-color);
-    outline: none;
-  }
-  &:focus {
-    box-shadow: 0 0 0 0.15em var(--text-color);
-    // outline: 2px solid var(--text-color);
-  }
-  &:active {
-    background: var(--sub-color);
-    color: var(--bg-color);
-  }
-}
-
-.textButton {
-  color: var(--sub-color);
-  cursor: pointer;
-  transition: background 0.125s, color 0.125s;
-  padding: 0.5em;
-  border-radius: var(--roundness);
-  text-align: center;
-  -webkit-user-select: none;
-  user-select: none;
-  align-content: center;
-  height: -moz-min-content;
-  height: min-content;
-  line-height: 1.25em;
-  appearance: none;
-  border: none;
-  font-family: inherit;
-  font-size: 1em;
-  width: -moz-max-content;
-  width: max-content;
-  display: grid;
-  grid-auto-flow: column;
-  gap: 0.25em;
-  text-decoration: none;
-
-  .fas,
-  .far {
-    display: grid;
-    place-content: center center;
-  }
-
-  &.active {
-    color: var(--main-color);
-    &:hover {
-      color: var(--text-color);
-    }
-    &:active {
-      color: var(--sub-color);
-    }
-  }
-
-  &.disabled {
-    opacity: 0.33;
-    cursor: default;
-    pointer-events: none;
-    &:hover {
-      background: var(--text-color);
-      outline: none;
-    }
-    &:active {
-      background: var(--sub-color);
-      color: var(--bg-color);
-    }
-  }
-
-  &:hover {
-    color: var(--text-color);
-  }
-  &:focus {
-    color: var(--text-color);
-    outline: none;
-  }
-  &:active {
-    color: var(--sub-color);
-  }
-}
-
 .scrollToTopButton {
-  bottom: 2rem;
+  bottom: 4rem;
   right: 2rem;
   position: fixed;
   font-size: 2rem;
@@ -489,13 +349,11 @@ key {
   .far {
     margin-right: 0.3rem;
     margin-left: 0.3rem;
-    margin-top: 0.15rem;
-    margin-bottom: 0.15rem;
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
     font-size: 0.9em;
   }
   .text {
-    margin-top: 0.15rem;
-    margin-bottom: 0.15rem;
     margin-right: 0.3rem;
   }
 }
@@ -513,4 +371,22 @@ key {
   top: 0.5em;
   box-shadow: 0 0 0 0.5em var(--bg-color);
   transition: 0.125s;
+}
+
+#fpsCounter {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: var(--sub-alt-color);
+  color: rgb(255, 217, 0);
+  padding: 0.25rem;
+  width: 10ch;
+  text-align: center;
+  z-index: 999999999;
+  &.main {
+    color: rgb(30, 255, 0);
+  }
+  &.error {
+    color: red;
+  }
 }

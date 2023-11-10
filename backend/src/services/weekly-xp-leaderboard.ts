@@ -1,5 +1,6 @@
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
+import { Configuration } from "../types/shared";
 import { getCurrentWeekTimestamp } from "../utils/misc";
 
 interface InternalWeeklyXpLeaderboardEntry {
@@ -59,7 +60,7 @@ export class WeeklyXpLeaderboard {
   }
 
   public async addResult(
-    weeklyXpLeaderboardConfig: MonkeyTypes.Configuration["leaderboards"]["weeklyXp"],
+    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
     opts: AddResultOpts
   ): Promise<number> {
     const { entry, xpGained, timeTypedSeconds } = opts;
@@ -116,7 +117,7 @@ export class WeeklyXpLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    weeklyXpLeaderboardConfig: MonkeyTypes.Configuration["leaderboards"]["weeklyXp"]
+    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
   ): Promise<WeeklyXpLeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
@@ -149,7 +150,7 @@ export class WeeklyXpLeaderboard {
 
   public async getRank(
     uid: string,
-    weeklyXpLeaderboardConfig: MonkeyTypes.Configuration["leaderboards"]["weeklyXp"]
+    weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"]
   ): Promise<WeeklyXpLeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
@@ -183,7 +184,7 @@ export class WeeklyXpLeaderboard {
 }
 
 export function get(
-  weeklyXpLeaderboardConfig: MonkeyTypes.Configuration["leaderboards"]["weeklyXp"],
+  weeklyXpLeaderboardConfig: Configuration["leaderboards"]["weeklyXp"],
   customTimestamp?: number
 ): WeeklyXpLeaderboard | null {
   const { enabled } = weeklyXpLeaderboardConfig;

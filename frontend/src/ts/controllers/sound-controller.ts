@@ -1,5 +1,5 @@
 import Config from "../config";
-import Howler, { Howl } from "howler";
+import { Howler, Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
 import {
   createErrorMessage,
@@ -12,20 +12,55 @@ import * as Notifications from "../elements/notifications";
 
 interface ClickSounds {
   [key: string]: {
-    sounds: Howler.Howl[];
+    sounds: Howl[];
     counter: number;
   }[];
 }
 
-let errorSound: Howler.Howl | null = null;
-let clickSounds: ClickSounds | null = null;
-
-export function initErrorSound(): void {
-  if (errorSound !== null) return;
-  errorSound = new Howl({ src: ["../sound/error.wav"] });
+interface ErrorSounds {
+  [key: string]: {
+    sounds: Howl[];
+    counter: number;
+  }[];
 }
 
-export function init(): void {
+let errorSounds: ErrorSounds | null = null;
+let clickSounds: ClickSounds | null = null;
+
+function initErrorSound(): void {
+  if (errorSounds !== null) return;
+  errorSounds = {
+    1: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/error1/error1_1.wav" }),
+          new Howl({ src: "../sound/error1/error1_1.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+    2: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/error2/error2_1.wav" }),
+          new Howl({ src: "../sound/error2/error2_1.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+    3: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/error3/error3_1.wav" }),
+          new Howl({ src: "../sound/error3/error3_1.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+  };
+}
+
+function init(): void {
   if (clickSounds !== null) return;
   clickSounds = {
     1: [
@@ -403,7 +438,7 @@ export const scaleConfigurations: Record<
   },
 };
 
-export function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
+function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
   if (audioCtx === undefined) {
     initAudioContext();
   }
@@ -504,19 +539,24 @@ export function playClick(codeOverride?: string): void {
 }
 
 export function playError(): void {
-  if (!Config.playSoundOnError) return;
-  if (errorSound === null) initErrorSound();
-  (errorSound as Howler.Howl).seek(0);
-  (errorSound as Howler.Howl).play();
+  if (Config.playSoundOnError === "off") return;
+  if (errorSounds === null) initErrorSound();
+
+  const randomSound = randomElementFromArray(
+    (errorSounds as ErrorSounds)[Config.playSoundOnError]
+  );
+
+  randomSound.counter++;
+  if (randomSound.counter === 2) randomSound.counter = 0;
+  randomSound.sounds[randomSound.counter].seek(0);
+  randomSound.sounds[randomSound.counter].play();
 }
 
-export function setVolume(val: string): void {
-  // not sure why it complains but it works
-  // @ts-ignore
-  Howler.Howler.volume(val);
+function setVolume(val: number): void {
+  Howler.volume(val);
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "playSoundOnClick" && eventValue !== "off") init();
-  if (eventKey === "soundVolume") setVolume(eventValue as string);
+  if (eventKey === "soundVolume") setVolume(parseFloat(eventValue as string));
 });

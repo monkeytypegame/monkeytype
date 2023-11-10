@@ -38,7 +38,7 @@ export function start(): void {
   memoryInterval = setInterval(() => {
     if (memoryTimer === null) return;
     memoryTimer -= 1;
-    memoryTimer == 0 ? hide() : update(memoryTimer);
+    memoryTimer === 0 ? hide() : update(memoryTimer);
     if (memoryTimer <= 0) {
       reset();
       $("#wordsWrapper").addClass("hidden");

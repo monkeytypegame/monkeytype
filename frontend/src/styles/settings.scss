@@ -9,22 +9,16 @@
 
   .sectionGroupTitle {
     font-size: 2rem;
-    color: var(--sub-color);
-    line-height: 2rem;
-    cursor: pointer;
-    transition: 0.25s;
-    display: flex;
-    align-items: baseline;
-    &:hover {
-      color: var(--text-color);
-    }
+    width: max-content;
+    margin: -0.25em;
+    padding: 0.25em;
 
     .fas {
-      margin-right: 0.5em;
+      transition: transform 0.25s;
+    }
 
-      &.rotate {
-        transform: rotate(-90deg);
-      }
+    &.rotateIcon .fas {
+      transform: rotate(-90deg);
     }
   }
 
@@ -51,20 +45,12 @@
     grid-template-columns: 2fr 1fr;
     grid-template-rows: auto 1fr;
     column-gap: 2rem;
+    row-gap: 0.5rem;
     align-items: center;
-
-    .button.danger {
-      box-shadow: 0 0 0 0.15em var(--error-color);
-      color: var(--text-color);
-      &:hover {
-        background: var(--text-color);
-        color: var(--bg-color);
-      }
-    }
 
     .inputAndButton {
       display: grid;
-      grid-template-columns: 8fr 1fr;
+      grid-template-columns: auto min-content;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
 
@@ -187,7 +173,6 @@
       .far,
       .textIcon {
         margin-right: 0.5em;
-        margin-bottom: 0.5em;
       }
     }
 
@@ -210,6 +195,7 @@
       color: var(--text-color);
       grid-area: text;
       .red {
+        line-height: 2rem;
         color: var(--error-color);
       }
     }
@@ -220,8 +206,7 @@
 
     .buttons {
       display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
       gap: 0.5rem;
       grid-area: buttons;
       &.vertical {
@@ -262,7 +247,7 @@
       }
 
       .tag {
-        grid-template-columns: 6fr 1fr 1fr 1fr;
+        grid-template-columns: auto min-content min-content min-content;
         margin-bottom: 0.5rem;
       }
     }
@@ -273,7 +258,7 @@
       }
 
       .preset {
-        grid-template-columns: 7fr 1fr 1fr;
+        grid-template-columns: auto min-content min-content;
         margin-bottom: 0.5rem;
       }
     }
@@ -419,9 +404,8 @@
         margin-left: 0;
         grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)) !important;
         gap: 0.5rem;
-        margin-top: 0.5rem;
         .button {
           transition: transform 0.125s;
           &:hover .themeBubbles {
@@ -461,16 +445,10 @@
 
       .buttons {
         margin-left: 0;
-        grid-auto-flow: dense;
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
         gap: 0.5rem;
-        margin-top: 1rem;
       }
-    }
-
-    &.randomTheme .buttons {
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     }
   }
 }

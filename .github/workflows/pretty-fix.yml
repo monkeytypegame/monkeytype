@@ -14,7 +14,7 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up date environment variables
         run: |
           echo "BRANCH_TITLE=pretty-fix-$(date +%s)" >> $GITHUB_ENV
@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16.13.2"
+          node-version: "18.17.1"
 
       - name: Install dependencies
         run: npm i prettier@2.5.1 --save-dev --save-exact

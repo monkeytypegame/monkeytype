@@ -16,7 +16,7 @@ const skeletonId = "customTextPopupWrapper";
 const wrapper = "#customTextPopupWrapper";
 const popup = "#customTextPopup";
 
-export function updateLongTextWarning(): void {
+function updateLongTextWarning(): void {
   if (CustomTextState.isCustomTextLong() === true) {
     $(`${popup} .longCustomTextWarning`).removeClass("hidden");
     $(`${popup} .randomWordsCheckbox input`).prop("checked", false);
@@ -103,7 +103,7 @@ $(`${popup} .delimiterCheck input`).on("change", () => {
     $(`${popup} .randomInputFields .wordcount `).removeClass("hidden");
   }
   if (
-    $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
+    $(`${popup} textarea`).val() !== CustomText.text.join(CustomText.delimiter)
   ) {
     const currentText = $(`${popup} textarea`).val() as string;
     const currentTextSplit = currentText.split(CustomText.delimiter);
@@ -123,7 +123,7 @@ interface HideOptions {
   resetState?: boolean | undefined;
 }
 
-export function hide(options = {} as HideOptions): void {
+function hide(options = {} as HideOptions): void {
   if (options.noAnim === undefined) options.noAnim = false;
   if (options.resetState === undefined) options.resetState = true;
 
@@ -139,7 +139,7 @@ export function hide(options = {} as HideOptions): void {
         () => {
           if (options.resetState) {
             const newText = CustomText.text.map((word) => {
-              if (word[word.length - 1] == "|") {
+              if (word[word.length - 1] === "|") {
                 word = word.slice(0, -1);
               }
               return word;
@@ -229,14 +229,21 @@ function apply(): void {
 
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
-  text = text.replace(/\\\\t/gm, "\t");
-  text = text.replace(/\\\\n/gm, "\n");
-  text = text.replace(/\\t/gm, "\t");
-  text = text.replace(/\\n/gm, "\n");
+
+  //replace any characters that look like a space with an actual space
+  text = text.replace(/[\u2000-\u200A\u202F\u205F\u00A0]/g, " ");
+
+  //replace zero width characters
+  text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
+
+  if ($(`${popup} .replaceControlCharacters input`).prop("checked")) {
+    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
+    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
+    text = text.replace(/\\\\t/gm, "\\t");
+    text = text.replace(/\\\\n/gm, "\\n");
+  }
+
   text = text.replace(/ +/gm, " ");
-  // text = text.replace(/(\r\n)+/g, "\r\n");
-  // text = text.replace(/(\n)+/g, "\n");
-  // text = text.replace(/(\r)+/g, "\r");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   if ($(`${popup} .typographyCheck input`).prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
@@ -258,10 +265,9 @@ function apply(): void {
       text = text.replace(/ +/gm, " ");
     }
   }
-  // text = Misc.remove_non_ascii(text);
-  text = text.replace(/[\u2060]/g, "");
 
-  CustomText.setText(text.split(CustomText.delimiter));
+  const words = text.split(CustomText.delimiter).filter((word) => word !== "");
+  CustomText.setText(words);
 
   CustomText.setWord(
     parseInt(($(`${popup} .wordcount input`).val() as string) || "-1")
@@ -377,6 +383,32 @@ $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
 
 $(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
   $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
+});
+
+$(`#fileInput`).on("change", () => {
+  const file = ($(`#fileInput`)[0] as HTMLInputElement).files?.[0];
+  if (file) {
+    if (file.type !== "text/plain") {
+      Notifications.add("File is not a text file", -1, {
+        duration: 5,
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+
+    reader.onload = (readerEvent): void => {
+      const content = readerEvent.target?.result as string;
+      $(`${popup} textarea`).val(content);
+      $(`#fileInput`).val("");
+    };
+    reader.onerror = (): void => {
+      Notifications.add("Failed to read file", -1, {
+        duration: 5,
+      });
+    };
+  }
 });
 
 Skeleton.save(skeletonId);

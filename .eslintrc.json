@@ -14,14 +14,20 @@
   "ignorePatterns": [
     "backend/__tests__/**/*",
     "backend/setup-tests.ts",
-    "backend/jest.config.ts"
+    "backend/jest.config.ts",
+    "**/*.css",
+    "**/*.scss",
+    "frontend/static/js/*"
   ],
   "extends": [
     "eslint:recommended",
     "plugin:json/recommended",
-    "plugin:require-path-exists/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
+    // "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    // "plugin:@typescript-eslint/strict"
   ],
   "plugins": ["json", "require-path-exists", "@typescript-eslint"],
   "rules": {
@@ -37,37 +43,41 @@
     "semi": ["error", "always"],
     "no-empty": ["error", { "allowEmptyCatch": true }],
     "no-var": 2,
-    "require-path-exists/notEmpty": 2,
-    "require-path-exists/tooManyArguments": 2,
-    "require-path-exists/exists": [
-      2,
-      {
-        "extensions": [
-          "",
-          ".js",
-          ".ts",
-          ".tsx",
-          ".es.ts",
-          ".tsx",
-          ".json5",
-          ".es",
-          ".es6",
-          ".coffee"
-        ]
-      }
-    ],
     "no-duplicate-imports": ["error"],
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-var-requires": "off"
+    "@typescript-eslint/no-var-requires": "off",
     // "@typescript-eslint/no-floating-promises": "error" // consider adding these
     // "@typescript-eslint/strict-boolean-expressions": "warn",
+    // "import/default": "off",
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": ["^./constants/firebase-config$"]
+      }
+    ],
+    "import/no-duplicates": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": ["frontend/tsconfig.json", "backend/tsconfig.json"]
+      },
+      "node": true
+    }
   },
   "overrides": [
     {
       // enable the rule specifically for TypeScript files
       "files": ["*.ts", "*.tsx"],
       "rules": {
+        // "@typescript-eslint/strict-boolean-expressions": [
+        //   "error",
+        //   {
+        //     "allowString": false
+        //   }
+        // ],
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "error",
@@ -85,6 +95,7 @@
           }
         ],
         "@typescript-eslint/promise-function-async": "warn"
+        // "@typescript-eslint/no-unnecessary-condition": "error" TODO ADD THIS
       },
       "parserOptions": {
         "ecmaVersion": 12,

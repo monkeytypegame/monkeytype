@@ -48,7 +48,7 @@ export async function show(options: ShowOptions): Promise<void> {
   }
 }
 
-export async function hide(): Promise<void> {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     $("#userReportPopupWrapper")
       .stop(true, true)

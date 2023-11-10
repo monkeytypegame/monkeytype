@@ -19,6 +19,7 @@ import {
   checkFunboxForcedConfigs,
 } from "./funbox-validation";
 import { Wordset } from "../wordset";
+import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 
 const prefixSize = 2;
 
@@ -70,7 +71,7 @@ class PseudolangWordGenerator extends Wordset {
           this.ngrams[prefix] = new CharDistribution();
         }
         this.ngrams[prefix].addChar(c);
-        prefix = (prefix + c).substr(-prefixSize);
+        prefix = (prefix + c).slice(-prefixSize);
       }
     }
   }
@@ -78,7 +79,7 @@ class PseudolangWordGenerator extends Wordset {
   public override randomWord(): string {
     let word = "";
     for (;;) {
-      const prefix = word.substr(-prefixSize);
+      const prefix = word.slice(-prefixSize);
       const charDistribution = this.ngrams[prefix];
       if (!charDistribution) {
         // This shouldn't happen if this.ngrams is complete. If it does
@@ -88,7 +89,7 @@ class PseudolangWordGenerator extends Wordset {
       }
       // Pick a random char from the distribution that comes after `prefix`.
       const nextChar = charDistribution.randomChar();
-      if (nextChar == " ") {
+      if (nextChar === " ") {
         // A space marks the end of the word, so stop generating and return.
         break;
       }
@@ -98,22 +99,7 @@ class PseudolangWordGenerator extends Wordset {
   }
 }
 
-FunboxList.setFunboxFunctions("nausea", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/nausea.css`);
-  },
-});
-
-FunboxList.setFunboxFunctions("round_round_baby", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/round_round_baby.css`);
-  },
-});
-
 FunboxList.setFunboxFunctions("simon_says", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-  },
   applyConfig(): void {
     UpdateConfig.setKeymapMode("next", true);
   },
@@ -122,22 +108,7 @@ FunboxList.setFunboxFunctions("simon_says", {
   },
 });
 
-FunboxList.setFunboxFunctions("mirror", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/mirror.css`);
-  },
-});
-
-FunboxList.setFunboxFunctions("upside_down", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/upside_down.css`);
-  },
-});
-
 FunboxList.setFunboxFunctions("tts", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-  },
   applyConfig(): void {
     UpdateConfig.setKeymapMode("off", true);
   },
@@ -145,7 +116,7 @@ FunboxList.setFunboxFunctions("tts", {
     save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
   },
   toggleScript(params: string[]): void {
-    if (window.speechSynthesis == undefined) {
+    if (window.speechSynthesis === undefined) {
       Notifications.add("Failed to load text-to-speech script", -1);
       return;
     }
@@ -153,18 +124,9 @@ FunboxList.setFunboxFunctions("tts", {
   },
 });
 
-FunboxList.setFunboxFunctions("choo_choo", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/choo_choo.css`);
-  },
-});
-
 FunboxList.setFunboxFunctions("arrows", {
   getWord(_wordset, wordIndex): string {
     return Misc.chart2Word(wordIndex === 0);
-  },
-  applyConfig(): void {
-    $("#words").addClass("arrows");
   },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
@@ -211,11 +173,7 @@ FunboxList.setFunboxFunctions("arrows", {
     }
     return false;
   },
-  async preventDefaultEvent(
-    event: JQuery.KeyDownEvent<Document, null, Document, Document>
-  ): Promise<boolean> {
-    // TODO What's better?
-    // return /Arrow/i.test(event.key);
+  async preventDefaultEvent(event: JQuery.KeyDownEvent): Promise<boolean> {
     return ["ArrowLeft", "ArrowUp", "ArrowRight", "ArrowDown"].includes(
       event.key
     );
@@ -250,13 +208,19 @@ FunboxList.setFunboxFunctions("rAnDoMcAsE", {
   alterText(word: string): string {
     let randomcaseword = word[0];
     for (let i = 1; i < word.length; i++) {
-      if (randomcaseword[i - 1] == randomcaseword[i - 1].toUpperCase()) {
+      if (randomcaseword[i - 1] === randomcaseword[i - 1].toUpperCase()) {
         randomcaseword += word[i].toLowerCase();
       } else {
         randomcaseword += word[i].toUpperCase();
       }
     }
     return randomcaseword;
+  },
+});
+
+FunboxList.setFunboxFunctions("backwards", {
+  alterText(word: string): string {
+    return word.split("").reverse().join("");
   },
 });
 
@@ -293,24 +257,39 @@ FunboxList.setFunboxFunctions("layoutfluid", {
       const layouts: string[] = Config.customLayoutfluid
         ? Config.customLayoutfluid.split("#")
         : ["qwerty", "dvorak", "colemak"];
-      let index = 0;
       const outOf: number = TestWords.words.length;
-      index = Math.floor(
-        (TestInput.input.history.length + 1) / (outOf / layouts.length)
+      const wordsPerLayout = Math.floor(outOf / layouts.length);
+      const index = Math.floor(
+        (TestInput.input.history.length + 1) / wordsPerLayout
       );
-      if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
-        Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
-      }
+      const mod =
+        wordsPerLayout - ((TestWords.words.currentIndex + 1) % wordsPerLayout);
+
       if (layouts[index]) {
-        UpdateConfig.setLayout(layouts[index]);
-        UpdateConfig.setKeymapLayout(layouts[index]);
+        if (mod <= 3 && layouts[index + 1]) {
+          LayoutfluidFunboxTimer.show();
+          LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1]);
+        } else {
+          LayoutfluidFunboxTimer.hide();
+        }
+        if (mod === wordsPerLayout) {
+          UpdateConfig.setLayout(layouts[index]);
+          UpdateConfig.setKeymapLayout(layouts[index]);
+          if (mod > 3) {
+            LayoutfluidFunboxTimer.hide();
+          }
+        }
+      } else {
+        LayoutfluidFunboxTimer.hide();
       }
-      KeymapEvent.highlight(
-        TestWords.words
-          .getCurrent()
-          .charAt(TestInput.input.current.length)
-          .toString()
-      );
+      setTimeout(() => {
+        KeymapEvent.highlight(
+          TestWords.words
+            .getCurrent()
+            .charAt(TestInput.input.current.length)
+            .toString()
+        );
+      }, 1);
     }
   },
   getResultContent(): string {
@@ -318,27 +297,17 @@ FunboxList.setFunboxFunctions("layoutfluid", {
   },
   restart(): void {
     if (this.applyConfig) this.applyConfig();
-    KeymapEvent.highlight(
-      TestWords.words
-        .getCurrent()
-        .substring(
-          TestInput.input.current.length,
-          TestInput.input.current.length + 1
-        )
-        .toString()
-    );
-  },
-});
-
-FunboxList.setFunboxFunctions("earthquake", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/earthquake.css`);
-  },
-});
-
-FunboxList.setFunboxFunctions("space_balls", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/space_balls.css`);
+    setTimeout(() => {
+      KeymapEvent.highlight(
+        TestWords.words
+          .getCurrent()
+          .substring(
+            TestInput.input.current.length,
+            TestInput.input.current.length + 1
+          )
+          .toString()
+      );
+    }, 1);
   },
 });
 
@@ -408,27 +377,18 @@ FunboxList.setFunboxFunctions("specials", {
 });
 
 FunboxList.setFunboxFunctions("read_ahead_easy", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/read_ahead_easy.css`);
-  },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
 });
 
 FunboxList.setFunboxFunctions("read_ahead", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/read_ahead.css`);
-  },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
 });
 
 FunboxList.setFunboxFunctions("read_ahead_hard", {
-  applyCSS(): void {
-    $("#funBoxTheme").attr("href", `funbox/read_ahead_hard.css`);
-  },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
@@ -462,9 +422,6 @@ FunboxList.setFunboxFunctions("memory", {
 });
 
 FunboxList.setFunboxFunctions("nospace", {
-  applyConfig(): void {
-    $("#words").addClass("nospace");
-  },
   rememberSettings(): void {
     save("highlightMode", Config.highlightMode, UpdateConfig.setHighlightMode);
   },
@@ -548,6 +505,12 @@ FunboxList.setFunboxFunctions("zipf", {
   },
 });
 
+FunboxList.setFunboxFunctions("ddoouubblleedd", {
+  alterText(word: string): string {
+    return word.replace(/./gu, "$&$&");
+  },
+});
+
 export function toggleScript(...params: string[]): void {
   FunboxList.get(Config.funbox).forEach((funbox) => {
     if (funbox.functions?.toggleScript) funbox.functions.toggleScript(params);
@@ -555,13 +518,16 @@ export function toggleScript(...params: string[]): void {
 }
 
 export function setFunbox(funbox: string): boolean {
+  if (funbox === "none") {
+    FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
+  }
   FunboxMemory.load();
   UpdateConfig.setFunbox(funbox, false);
   return true;
 }
 
 export function toggleFunbox(funbox: string): boolean {
-  if (funbox == "none") setFunbox("none");
+  if (funbox === "none") setFunbox("none");
   if (
     !areFunboxesCompatible(Config.funbox, funbox) &&
     !Config.funbox.split("#").includes(funbox)
@@ -576,14 +542,30 @@ export function toggleFunbox(funbox: string): boolean {
   }
   FunboxMemory.load();
   const e = UpdateConfig.toggleFunbox(funbox, false);
+
+  if (!Config.funbox.includes(funbox)) {
+    FunboxList.get(funbox).forEach((f) => f.functions?.clearGlobal?.());
+  } else {
+    FunboxList.get(funbox).forEach((f) => f.functions?.applyGlobalCSS?.());
+  }
+
+  //todo find out what the hell this means
   if (e === false || e === true) return false;
   return true;
 }
 
 export async function clear(): Promise<boolean> {
-  $("#funBoxTheme").attr("href", ``);
-  $("#words").removeClass("nospace");
-  $("#words").removeClass("arrows");
+  $("body").attr(
+    "class",
+    $("body")
+      ?.attr("class")
+      ?.split(/\s+/)
+      ?.filter((it) => !it.startsWith("fb-"))
+      ?.join(" ") || ""
+  );
+
+  $("#funBoxTheme").removeAttr("href");
+
   $("#wordsWrapper").removeClass("hidden");
   MemoryTimer.reset();
   ManualRestart.set();
@@ -593,7 +575,7 @@ export async function clear(): Promise<boolean> {
 export async function activate(funbox?: string): Promise<boolean | undefined> {
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
-  } else if (Config.funbox != funbox) {
+  } else if (Config.funbox !== funbox) {
     Config.funbox = funbox;
   }
 
@@ -616,10 +598,10 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
   }
 
   MemoryTimer.reset();
+  await setFunboxBodyClasses();
+  await applyFunboxCSS();
+
   $("#wordsWrapper").removeClass("hidden");
-  $("#funBoxTheme").attr("href", ``);
-  $("#words").removeClass("nospace");
-  $("#words").removeClass("arrows");
 
   let language;
   try {
@@ -707,8 +689,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
 
   ManualRestart.set();
   FunboxList.get(Config.funbox).forEach(async (funbox) => {
-    if (funbox.functions?.applyCSS) funbox.functions.applyCSS();
-    if (funbox.functions?.applyConfig) funbox.functions.applyConfig();
+    funbox.functions?.applyConfig?.();
   });
   // ModesNotice.update();
   return true;
@@ -718,4 +699,84 @@ export async function rememberSettings(): Promise<void> {
   FunboxList.get(Config.funbox).forEach(async (funbox) => {
     if (funbox.functions?.rememberSettings) funbox.functions.rememberSettings();
   });
+}
+
+FunboxList.setFunboxFunctions("morse", {
+  alterText(word: string): string {
+    return Misc.convertToMorse(word);
+  },
+});
+
+FunboxList.setFunboxFunctions("crt", {
+  applyGlobalCSS(): void {
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isSafari) {
+      //Workaround for bug https://bugs.webkit.org/show_bug.cgi?id=256171 in Safari 16.5 or earlier
+      const versionMatch = navigator.userAgent.match(
+        /.*Version\/([0-9]*)\.([0-9]*).*/
+      );
+      const mainVersion = versionMatch !== null ? parseInt(versionMatch[1]) : 0;
+      const minorVersion =
+        versionMatch !== null ? parseInt(versionMatch[2]) : 0;
+      if (mainVersion <= 16 && minorVersion <= 5) {
+        Notifications.add(
+          "CRT is not available on Safari 16.5 or earlier.",
+          0,
+          {
+            duration: 5,
+          }
+        );
+        toggleFunbox("crt");
+        return;
+      }
+    }
+    $("body").append('<div id="scanline" />');
+    $("body").addClass("crtmode");
+    $("#globalFunBoxTheme").attr("href", `funbox/crt.css`);
+  },
+  clearGlobal(): void {
+    $("#scanline").remove();
+    $("body").removeClass("crtmode");
+    $("#globalFunBoxTheme").attr("href", ``);
+  },
+});
+
+async function setFunboxBodyClasses(): Promise<boolean> {
+  const $body = $("body");
+
+  const activeFbClasses = FunboxList.get(Config.funbox).map(
+    (it) => "fb-" + it.name.replaceAll("_", "-")
+  );
+
+  const currentClasses =
+    $body
+      ?.attr("class")
+      ?.split(/\s+/)
+      ?.filter((it) => !it.startsWith("fb-")) || [];
+
+  $body.attr("class", [...currentClasses, ...activeFbClasses].join(" "));
+
+  return true;
+}
+
+async function applyFunboxCSS(): Promise<boolean> {
+  const $theme = $("#funBoxTheme");
+
+  //currently we only support one active funbox with hasCSS
+  const activeFunboxWithTheme = FunboxList.get(Config.funbox).find(
+    (it) => it.hasCSS == true
+  );
+
+  const activeTheme =
+    activeFunboxWithTheme != null
+      ? "funbox/" + activeFunboxWithTheme.name + ".css"
+      : "";
+
+  const currentTheme = $theme.attr("href") || null;
+
+  if (activeTheme != currentTheme) {
+    $theme.attr("href", activeTheme);
+  }
+
+  return true;
 }

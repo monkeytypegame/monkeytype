@@ -30,4 +30,5 @@ export const defaultSnap: MonkeyTypes.Snapshot = {
   inboxUnreadSize: 0,
   streak: 0,
   maxStreak: 0,
+  streakHourOffset: undefined,
 };

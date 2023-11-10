@@ -72,13 +72,6 @@ const keysToTrack = [
   "NoCode", //android (smells) and some keyboards might send no location data - need to use this as a fallback
 ];
 
-interface Keypress {
-  count: number;
-  errors: number;
-  words: number[];
-  afk: boolean;
-}
-
 interface KeypressTimings {
   spacing: {
     first: number;
@@ -93,6 +86,11 @@ interface KeypressTimings {
 interface Keydata {
   timestamp: number;
   index: number;
+}
+
+interface ErrorHistoryObject {
+  count: number;
+  words: number[];
 }
 
 class Input {
@@ -218,14 +216,8 @@ let keyDownData: Record<string, Keydata> = {};
 export const input = new Input();
 export const corrected = new Corrected();
 
-export let keypressPerSecond: Keypress[] = [];
-export let currentKeypress: Keypress = {
-  count: 0,
-  errors: 0,
-  words: [],
-  afk: true,
-};
-export let lastKeypress: number;
+export let keypressCountHistory: number[] = [];
+let currentKeypressCount = 0;
 export let currentBurstStart = 0;
 export let missedWords: {
   [word: string]: number;
@@ -251,35 +243,29 @@ export let keyOverlap = {
 export let wpmHistory: number[] = [];
 export let rawHistory: number[] = [];
 export let burstHistory: number[] = [];
-export let bailout = false;
-export function setBailout(tf: boolean): void {
-  bailout = tf;
-}
+export let errorHistory: ErrorHistoryObject[] = [];
+let currentErrorHistory: ErrorHistoryObject = {
+  count: 0,
+  words: [],
+};
 
-export let spacingDebug = false;
-export function enableSpacingDebug(): void {
-  spacingDebug = true;
-  console.clear();
-}
-
-export function updateLastKeypress(): void {
-  lastKeypress = performance.now();
-}
+export let afkHistory: boolean[] = [];
+let currentAfk = true;
 
 export function incrementKeypressCount(): void {
-  currentKeypress.count++;
+  currentKeypressCount++;
 }
 
-export function setKeypressNotAfk(): void {
-  currentKeypress.afk = false;
+export function setCurrentNotAfk(): void {
+  currentAfk = false;
 }
 
 export function incrementKeypressErrors(): void {
-  currentKeypress.errors++;
+  currentErrorHistory.count++;
 }
 
 export function pushKeypressWord(wordIndex: number): void {
-  currentKeypress.words.push(wordIndex);
+  currentErrorHistory.words.push(wordIndex);
 }
 
 export function setBurstStart(time: number): void {
@@ -287,12 +273,20 @@ export function setBurstStart(time: number): void {
 }
 
 export function pushKeypressesToHistory(): void {
-  keypressPerSecond.push(currentKeypress);
-  currentKeypress = {
+  keypressCountHistory.push(currentKeypressCount);
+  currentKeypressCount = 0;
+}
+
+export function pushAfkToHistory(): void {
+  afkHistory.push(currentAfk);
+  currentAfk = true;
+}
+
+export function pushErrorToHistory(): void {
+  errorHistory.push(currentErrorHistory);
+  currentErrorHistory = {
     count: 0,
-    errors: 0,
     words: [],
-    afk: true,
   };
 }
 
@@ -334,17 +328,8 @@ export function recordKeyupTime(now: number, key: string): void {
 
   const diff = Math.abs(keyDownData[key].timestamp - now);
   keypressTimings.duration.array[keyDownData[key].index] = diff;
-  if (spacingDebug) {
-    console.log(
-      "spacing debug",
-      "recorded",
-      key,
-      "durating array",
-      keypressTimings.duration.array.length,
-      "val",
-      roundTo2(diff)
-    );
-  }
+
+  console.debug("Keyup recorded", key, diff);
   delete keyDownData[key];
 
   updateOverlap(now);
@@ -352,15 +337,7 @@ export function recordKeyupTime(now: number, key: string): void {
 
 export function recordKeydownTime(now: number, key: string): void {
   if (!keysToTrack.includes(key)) {
-    if (spacingDebug) {
-      console.log(
-        "spacing debug",
-        "key not tracked",
-        key,
-        "spacing array",
-        keypressTimings.spacing.array.length
-      );
-    }
+    console.debug("Key not tracked", key);
     return;
   }
 
@@ -370,15 +347,7 @@ export function recordKeydownTime(now: number, key: string): void {
   }
 
   if (keyDownData[key] !== undefined) {
-    if (spacingDebug) {
-      console.log(
-        "spacing debug",
-        "key already down",
-        key,
-        "spacing array",
-        keypressTimings.spacing.array.length
-      );
-    }
+    console.debug("Key already down", key);
     return;
   }
 
@@ -393,24 +362,12 @@ export function recordKeydownTime(now: number, key: string): void {
   if (keypressTimings.spacing.last !== -1) {
     const diff = Math.abs(now - keypressTimings.spacing.last);
     keypressTimings.spacing.array.push(roundTo2(diff));
-    if (spacingDebug) {
-      console.log(
-        "spacing debug",
-        "recorded",
-        key,
-        "spacing array",
-        keypressTimings.spacing.array.length,
-        "val",
-        roundTo2(diff)
-      );
-    }
+    console.debug("Keydown recorded", key, diff);
   }
   keypressTimings.spacing.last = now;
   if (keypressTimings.spacing.first === -1) {
     keypressTimings.spacing.first = now;
-    if (spacingDebug) {
-      console.log("spacing debug", "saved first", now);
-    }
+    console.debug("First keydown recorded", key, now);
   }
 }
 
@@ -445,12 +402,7 @@ export function resetKeypressTimings(): void {
   };
   keyDownData = {};
   noCodeIndex = 0;
-  if (spacingDebug) {
-    console.clear();
-    if (spacingDebug) {
-      console.log("spacing debug", "reset keypress timings");
-    }
-  }
+  console.debug("Keypress timings reset");
 }
 
 export function pushMissedWord(word: string): void {
@@ -482,12 +434,14 @@ export function restart(): void {
   wpmHistory = [];
   rawHistory = [];
   burstHistory = [];
-  keypressPerSecond = [];
-  currentKeypress = {
+  keypressCountHistory = [];
+  currentKeypressCount = 0;
+  afkHistory = [];
+  currentAfk = true;
+  errorHistory = [];
+  currentErrorHistory = {
     count: 0,
-    errors: 0,
     words: [],
-    afk: true,
   };
   currentBurstStart = 0;
   missedWords = {};
@@ -505,7 +459,4 @@ export function restart(): void {
       array: [],
     },
   };
-  if (spacingDebug) {
-    console.log("spacing debug", "restart");
-  }
 }

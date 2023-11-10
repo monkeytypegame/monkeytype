@@ -136,6 +136,13 @@ export const newQuotesGet = rateLimit({
   handler: customHandler,
 });
 
+export const newQuotesIsSubmissionEnabled = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const newQuotesAdd = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
@@ -295,6 +302,13 @@ export const resultsLeaderboardQualificationGet = rateLimit({
 export const userGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const setStreakHourOffset = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 5 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });
@@ -469,6 +483,13 @@ export const userForgotPasswordEmail = rateLimit({
   handler: customHandler,
 });
 
+export const userRevokeAllTokens = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 10 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const userProfileGet = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 100 * REQUEST_MULTIPLIER,
@@ -508,6 +529,13 @@ export const apeKeysGet = rateLimit({
 export const apeKeysGenerate = rateLimit({
   windowMs: ONE_HOUR_MS,
   max: 15 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
+export const webhookLimit = rateLimit({
+  windowMs: 1000,
+  max: 1 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });

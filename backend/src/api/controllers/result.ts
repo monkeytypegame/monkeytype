@@ -40,6 +40,8 @@ import FunboxList from "../../constants/funbox-list";
 import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
+import { canFunboxGetPb } from "../../utils/pb";
+import { Configuration } from "../../types/shared";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -149,6 +151,12 @@ export async function addResult(
 
   //todo add a type here
   const result = Object.assign({}, req.body.result);
+  if (!user.lbOptOut && result.acc < 75) {
+    throw new MonkeyError(
+      400,
+      "Cannot submit a result with less than 75% accuracy"
+    );
+  }
   result.uid = uid;
   if (isTestTooShort(result)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;
@@ -212,7 +220,8 @@ export async function addResult(
     if (
       !validateResult(
         result,
-        req.headers["client-version"] as string,
+        (req.headers["x-client-version"] ||
+          req.headers["client-version"]) as string,
         JSON.stringify(new UAParser(req.headers["user-agent"]).getResult()),
         user.lbOptOut === true
       )
@@ -420,13 +429,9 @@ export async function addResult(
 
   let dailyLeaderboardRank = -1;
 
-  const { funbox, bailedOut } = result;
   const validResultCriteria =
-    (funbox === "none" ||
-      funbox === "plus_one" ||
-      funbox === "plus_two" ||
-      funbox === "plus_three") &&
-    !bailedOut &&
+    canFunboxGetPb(result) &&
+    !result.bailedOut &&
     user.banned !== true &&
     user.lbOptOut !== true &&
     (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
@@ -453,6 +458,33 @@ export async function addResult(
   }
 
   const streak = await UserDAL.updateStreak(uid, result.timestamp);
+
+  const shouldGetBadge =
+    streak >= 365 &&
+    user.inventory?.badges?.find((b) => b.id === 14) === undefined &&
+    (
+      user.inbox
+        ?.map((i) =>
+          (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
+        )
+        .flat() ?? []
+    ).includes(14) === false;
+
+  if (shouldGetBadge) {
+    const mail = buildMonkeyMail({
+      subject: "Badge",
+      body: "Congratulations for reaching a 365 day streak! You have been awarded a special badge. Now, go touch some grass.",
+      rewards: [
+        {
+          type: "badge",
+          item: {
+            id: 14,
+          },
+        },
+      ],
+    });
+    UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+  }
 
   const xpGained = await calculateXp(
     result,
@@ -567,7 +599,7 @@ interface XpResult {
 
 async function calculateXp(
   result,
-  xpConfiguration: MonkeyTypes.Configuration["users"]["xp"],
+  xpConfiguration: Configuration["users"]["xp"],
   uid: string,
   currentTotalXp: number,
   streak: number

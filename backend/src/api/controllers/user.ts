@@ -25,6 +25,7 @@ import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
+import { removeTokensFromCacheByUid } from "../../utils/auth";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -87,6 +88,13 @@ export async function sendVerificationEmail(
 
   const userInfo = await UserDAL.getUser(uid, "request verification email");
 
+  if (userInfo.email !== email) {
+    throw new MonkeyError(
+      400,
+      "Authenticated email does not match the email found in the database. This might happen if you recently changed your email. Please refresh and try again."
+    );
+  }
+
   let link = "";
   try {
     link = await FirebaseAdmin()
@@ -108,13 +116,19 @@ export async function sendVerificationEmail(
     if (e.code === "auth/user-not-found") {
       throw new MonkeyError(
         500,
-        "Auth user not found when the user was found in the database",
+        "Auth user not found when the user was found in the database. Contact support with this error message and your email",
         JSON.stringify({
           decodedTokenEmail: email,
           userInfoEmail: userInfo.email,
           stack: e.stack,
         }),
         userInfo.uid
+      );
+    }
+    if (e.message.includes("Internal error encountered.")) {
+      throw new MonkeyError(
+        500,
+        "Firebase failed to generate an email verification link. Please try again later."
       );
     }
     throw e;
@@ -186,7 +200,7 @@ export async function resetUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "reset user");
-  await Promise.all([
+  const promises = [
     UserDAL.resetUser(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
@@ -196,7 +210,12 @@ export async function resetUser(
       uid,
       req.ctx.configuration.dailyLeaderboards
     ),
-  ]);
+  ];
+
+  if (userInfo.discordId) {
+    promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
+  }
+  await Promise.all(promises);
   Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
@@ -275,7 +294,9 @@ export async function updateEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { newEmail } = req.body;
+  let { newEmail } = req.body;
+
+  newEmail = newEmail.toLowerCase();
 
   try {
     await UserDAL.updateEmail(uid, newEmail);
@@ -299,6 +320,7 @@ function getRelevantUserInfo(
     "lastNameChange",
     "_id",
     "lastResultHashes",
+    "note",
   ]);
 }
 
@@ -312,18 +334,22 @@ export async function getUser(
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
     if (e.status === 404) {
-      let user;
+      //if the user is in the auth system but not in the db, its possible that the user was created by bypassing captcha
+      //since there is no data in the database anyway, we can just delete the user from the auth system
+      //and ask them to sign up again
       try {
-        user = await FirebaseAdmin().auth().getUser(uid);
-        //exists, recreate in db
-        await UserDAL.addUser(user.displayName, user.email, uid);
-        userInfo = await UserDAL.getUser(uid, "get user (recreated)");
+        await FirebaseAdmin().auth().deleteUser(uid);
+        throw new MonkeyError(
+          404,
+          "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
+          "get user",
+          uid
+        );
       } catch (e) {
         if (e.code === "auth/user-not-found") {
-          //doesnt exist
           throw new MonkeyError(
             404,
-            "User not found in the database or authentication system. Please try to sign up again.",
+            "User not found in the database or the auth system. Please sign up again.",
             "get user",
             uid
           );
@@ -350,6 +376,11 @@ export async function getUser(
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
     inboxUnreadSize = _.filter(userInfo.inbox, { read: false }).length;
+  }
+
+  if (!userInfo.name) {
+    userInfo.needsToChangeName = true;
+    UserDAL.flagForNameChange(uid);
   }
 
   const userData = {
@@ -832,6 +863,26 @@ export async function reportUser(
   return new MonkeyResponse("User reported");
 }
 
+export async function setStreakHourOffset(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { hourOffset } = req.body;
+
+  const user = await UserDAL.getUser(uid, "update user profile");
+
+  if (
+    user.streak?.hourOffset !== undefined &&
+    user.streak?.hourOffset !== null
+  ) {
+    throw new MonkeyError(403, "Streak hour offset already set");
+  }
+
+  await UserDAL.setStreakHourOffset(uid, hourOffset);
+
+  return new MonkeyResponse("Streak hour offset set");
+}
+
 export async function toggleBan(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -851,4 +902,13 @@ export async function toggleBan(
   return new MonkeyResponse(`Ban toggled`, {
     banned: !user.banned,
   });
+}
+
+export async function revokeAllTokens(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  await FirebaseAdmin().auth().revokeRefreshTokens(uid);
+  removeTokensFromCacheByUid(uid);
+  return new MonkeyResponse("All tokens revoked");
 }

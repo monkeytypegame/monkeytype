@@ -1,6 +1,8 @@
 const { webpack } = require("webpack");
 const eslint = require("gulp-eslint-new");
 const { task, src, series, watch } = require("gulp");
+const { resolve } = require("path");
+const fs = require("fs");
 const webpackDevConfig = require("./webpack/config.dev.js");
 const webpackProdConfig = require("./webpack/config.prod.js");
 

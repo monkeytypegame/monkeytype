@@ -38,12 +38,6 @@
       "id": 5
     },
     {
-      "text": "È molto semplice: non vedo bene che col cuore. L'essenziale è invisibile agli occhi.",
-      "source": "Antoine De Saint-Exupéry - Little Prince",
-      "length": 84,
-      "id": 6
-    },
-    {
       "text": "La vita non è quella che si è vissuta, ma quella che si ricorda e come la si ricorda per raccontarla.",
       "source": "Gabriel García Márquez, Vivere per raccontarla",
       "length": 101,
@@ -306,60 +300,6 @@
       "source": "William Shakespeare",
       "length": 103,
       "id": 50
-    },
-    {
-      "text": "Vedo il mondo mutarsi lentamente in un deserto, odo sempre più forte l’avvicinarsi del rombo che ucciderà anche noi, partecipo al dolore di milioni di uomini, eppure, quando guardo il cielo, penso che tutto volgerà nuovamente al bene, che anche questa spietata durezza cesserà, che ritorneranno l’ordine, la pace e la serenità..",
-      "source": "Anna Frank",
-      "length": 328,
-      "id": 51
-    },
-    {
-      "text": "Il solo vero viaggio, il solo bagno di giovinezza, non sarebbe quello di andare verso nuovi paesaggi, ma di avere occhi diversi, di vedere l'universo con gli occhi di un altro, di cento altri, di vedere i cento universi che ciascuno di essi vede, che ciascuno di essi è..",
-      "source": "Marcel Proust",
-      "length": 271,
-      "id": 52
-    },
-    {
-      "text": "Il più bello dei mari è quello che non navigammo. Il più bello dei nostri figli non è ancora cresciuto. I più belli dei nostri giorni non li abbiamo ancora vissuti. E quello che vorrei dirti di più bello non te l’ho ancora detto..",
-      "source": "Nazim Hikmet",
-      "length": 230,
-      "id": 53
-    },
-    {
-      "text": "Non sempre le nuvole offuscano il cielo: a volte lo illuminano..",
-      "source": "Elsa Morante",
-      "length": 64,
-      "id": 54
-    },
-    {
-      "text": "Oggi non è che un giorno qualunque di tutti i giorni che verranno. Ma quello che accadrà in tutti gli altri giorni che verranno può dipendere da quello che farai oggi..",
-      "source": "Ernest Hemingway",
-      "length": 168,
-      "id": 55
-    },
-    {
-      "text": "Quando la tempesta sarà finita, probabilmente non saprai neanche tu come hai fatto ad attraversarla e a uscirne vivo. Anzi, non sarai neanche sicuro se sia finita per davvero. Ma su un punto non c'è dubbio. Ed è che tu, uscito da quel vento, non sarai lo stesso che vi è entrato..",
-      "source": "Kafka",
-      "length": 280,
-      "id": 56
-    },
-    {
-      "text": "Se nel mondo non c'è amore faremo un altro mondo, e lo circonderemo di mura massicce e lo arrederemo con interni rossi e soffici, e gli forniremo un battaglio che suoni come un diamante caduto nel feltro di un gioielliere in modo che non lo sentiamo mai. Amami perché l'amore non esiste e io ho provato tutto ciò che esiste..",
-      "source": "Jonathan Safran Foer",
-      "length": 325,
-      "id": 57
-    },
-    {
-      "text": "Sono cresciuto in mezzo ai libri, facendomi amici invisibili tra le pagine polverose di cui ho ancora l'odore sulle mani..",
-      "source": "Carlos Ruiz",
-      "length": 122,
-      "id": 58
-    },
-    {
-      "text": "La bellezza non è che una promessa di felicità..",
-      "source": "Stendhal",
-      "length": 48,
-      "id": 59
     },
     {
       "text": "Ecco il mio segreto. È molto semplice: si vede solo con il cuore. L'essenziale è invisibile agli occhi.",

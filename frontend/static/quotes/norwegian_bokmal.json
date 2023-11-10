@@ -806,7 +806,7 @@
       "length": 102
     },
     {
-      "text": "Hvilken vei skal jeg gå, spurte Alice. Hvor er det du skal, svarte haren. Jeg vet ikke, sa Alica. Da har det ikke så mye å si hvor du går, svarte haren.",
+      "text": "Hvilken vei skal jeg gå, spurte Alice. Hvor er det du skal, svarte haren. Jeg vet ikke, sa Alice. Da har det ikke så mye å si hvor du går, svarte haren.",
       "source": "Alice i eventyrland",
       "id": 134,
       "length": 152
@@ -815,12 +815,6 @@
       "text": "Far verden, far vel! Jeg vil ikke lenger være din trell. De byrder du byltet og lesset meg på, dem kaster jeg fra meg og vil dem forsmå. Jeg river meg løs for jeg kjeder med ved forfengelighet, forfengelighet!",
       "source": "Thomas Kingos, Keed af Verden og kier ad Himmelen",
       "id": 135,
-      "length": 209
-    },
-    {
-      "text": "Denne dag er du ei kvitt, at du jo har fallet titt. Reis dig og med bønn gakk hen til din gud i himmelen. Be om nåde og gjør bot, åpne dine øynes flod, slipp ham ikke med ditt skrik, før han får velsignet dig.",
-      "source": "Dorothe Engelbretsdotter, Siælens Sang-Offer, Aftensalme",
-      "id": 136,
       "length": 209
     },
     {
@@ -860,10 +854,10 @@
       "length": 177
     },
     {
-      "text": "Jeg tillater meg derfor å foreslå at H.C. Anderseon og P. Chr. Asbjørnsen fra nå av slås sammen til én forfatter under navnet: Asbjørn Andersen. Hensynet til de unge må gå foran alt. Dessuten er de to nevnte forfattere for lengst død og maktesløse. De levende har livets rett. Kun de.",
+      "text": "Jeg tillater meg derfor å foreslå at H.C. Andersen og P. Chr. Asbjørnsen fra nå av slås sammen til én forfatter under navnet: Asbjørn Andersen. Hensynet til de unge må gå foran alt. Dessuten er de to nevnte forfattere for lengst død og maktesløse. De levende har livets rett. Kun de.",
       "source": "Fredrik Stabel, Snarere tvert i mot",
       "id": 143,
-      "length": 284
+      "length": 283
     },
     {
       "text": "Om våren kommer den siste snøen seilende i klumper ned trikkeskinnene, skyver brunt vann foran seg med fine bølgestriper i. Siden blå menn som skyfler skinnene rene så solen skal få klatre uten sand i munnen opp bakken til Adamstua, der leira ligger våt og snart skal bli gras mellom skinnene.",

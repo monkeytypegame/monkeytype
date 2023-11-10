@@ -15,6 +15,14 @@ function buildGeorgeTask(taskName: string, taskArgs: any[]): GeorgeTask {
 }
 
 class GeorgeQueue extends MonkeyQueue<GeorgeTask> {
+  async sendReleaseAnnouncement(releaseName: string): Promise<void> {
+    const taskName = "sendReleaseAnnouncement";
+    const sendReleaseAnnouncementTask = buildGeorgeTask(taskName, [
+      releaseName,
+    ]);
+    await this.add(taskName, sendReleaseAnnouncementTask);
+  }
+
   async updateDiscordRole(discordId: string, wpm: number): Promise<void> {
     const taskName = "updateRole";
     const updateDiscordRoleTask = buildGeorgeTask(taskName, [discordId, wpm]);

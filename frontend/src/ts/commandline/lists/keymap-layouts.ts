@@ -2,7 +2,7 @@ import * as UpdateConfig from "../../config";
 import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
 
-export const subgroup: MonkeyTypes.CommandsSubgroup = {
+const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change keymap layout...",
   configKey: "keymapLayout",
   list: [
@@ -29,6 +29,7 @@ function update(layouts: MonkeyTypes.Layouts): void {
     id: "changeKeymapLayoutOverrideSync",
     display: "emulator sync",
     configValue: "overrideSync",
+    alias: "default",
     exec: (): void => {
       UpdateConfig.setKeymapLayout("overrideSync");
       TestLogic.restart();

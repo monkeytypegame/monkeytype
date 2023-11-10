@@ -11,9 +11,19 @@ import {
 } from "../../middlewares/api-utils";
 
 const BASE_LEADERBOARD_VALIDATION_SCHEMA = {
-  language: joi.string().required(),
-  mode: joi.string().required(),
-  mode2: joi.string().required(),
+  language: joi
+    .string()
+    .max(50)
+    .pattern(/^[a-zA-Z0-9_+]+$/)
+    .required(),
+  mode: joi
+    .string()
+    .valid("time", "words", "quote", "zen", "custom")
+    .required(),
+  mode2: joi
+    .string()
+    .regex(/^(\d)+|custom|zen/)
+    .required(),
 };
 
 const LEADERBOARD_VALIDATION_SCHEMA_WITH_LIMIT = {
@@ -38,7 +48,7 @@ const requireDailyLeaderboardsEnabled = validateConfiguration({
 
 router.get(
   "/",
-  authenticateRequest({ isPublic: true, acceptApeKeys: true }),
+  authenticateRequest({ isPublic: true }),
   withApeRateLimiter(RateLimit.leaderboardsGet),
   validateRequest({
     query: LEADERBOARD_VALIDATION_SCHEMA_WITH_LIMIT,

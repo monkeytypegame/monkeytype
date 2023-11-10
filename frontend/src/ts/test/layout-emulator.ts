@@ -3,17 +3,40 @@ import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
+function shouldCapslockUseSecondCharLocation(keyLocation: string): boolean {
+  return [
+    "KeyQ",
+    "KeyW",
+    "KeyE",
+    "KeyR",
+    "KeyT",
+    "KeyY",
+    "KeyU",
+    "KeyI",
+    "KeyO",
+    "KeyP",
+    "KeyA",
+    "KeyS",
+    "KeyD",
+    "KeyF",
+    "KeyG",
+    "KeyH",
+    "KeyJ",
+    "KeyK",
+    "KeyL",
+    "KeyZ",
+    "KeyX",
+    "KeyC",
+    "KeyV",
+    "KeyB",
+    "KeyN",
+    "KeyM",
+  ].includes(keyLocation);
+}
+
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
 ): Promise<string | null> {
-  function emulatedLayoutShouldShiftKey(
-    event: JQuery.KeyDownEvent,
-    newKeyPreview: string
-  ): boolean {
-    if (capsState) return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
-    return event.shiftKey;
-  }
-
   let layout;
 
   try {
@@ -194,7 +217,7 @@ export async function getCharFromEvent(
 
   let mapIndex = null;
   for (let i = 0; i < keyEventCodes.length; i++) {
-    if (event.code == keyEventCodes[i]) {
+    if (event.code === keyEventCodes[i]) {
       mapIndex = i;
     }
   }
@@ -205,9 +228,15 @@ export async function getCharFromEvent(
       return null;
     }
   }
-  const newKeyPreview = layoutMap[mapIndex][0];
-  const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
-  const char = layoutMap[mapIndex][shift];
+
+  const capsSwap = shouldCapslockUseSecondCharLocation(event.code);
+  const charIndex =
+    (capsState && !event.shiftKey && capsSwap) ||
+    (capsState && event.shiftKey && !capsSwap) ||
+    (!capsState && event.shiftKey)
+      ? 1
+      : 0;
+  const char = layoutMap[mapIndex][charIndex];
   if (char) {
     return char;
   } else {

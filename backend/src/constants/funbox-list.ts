@@ -302,10 +302,41 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
   },
   {
     canGetPb: false,
-    difficultyLevel: 1,
+    difficultyLevel: 0,
     properties: ["changesWordsFrequency"],
     frontendFunctions: ["getWordsFrequencyMode"],
     name: "zipf",
+  },
+  {
+    canGetPb: false,
+    difficultyLevel: 1,
+    properties: ["ignoresLanguage", "ignoresLayout", "noLetters", "noSpace"],
+    frontendFunctions: ["alterText"],
+    name: "morse",
+  },
+  {
+    canGetPb: true,
+    difficultyLevel: 0,
+    properties: ["noLigatures"],
+    name: "crt",
+  },
+  {
+    name: "backwards",
+    properties: [
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "wordOrder:reverse",
+    ],
+    frontendFunctions: ["applyCSS"],
+    canGetPb: true,
+    difficultyLevel: 3,
+  },
+  {
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["noLigatures"],
+    frontendFunctions: ["alterText"],
+    name: "ddoouubblleedd",
   },
 ];
 

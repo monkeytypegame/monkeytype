@@ -6,13 +6,14 @@ import * as NotificationEvent from "../observables/notification-event";
 
 function updateMargin(): void {
   const height = $("#bannerCenter").height() as number;
-  $("#centerContent").css(
+  $("#contentWrapper").css(
     "padding-top",
     height + Misc.convertRemToPixels(2) + "px"
   );
   $("#notificationCenter").css("margin-top", height + "px");
 }
 
+let visibleStickyNotifications = 0;
 let id = 0;
 class Notification {
   id: number;
@@ -44,7 +45,7 @@ class Notification {
     if (type === "banner") {
       this.duration = duration as number;
     } else {
-      if (duration == undefined) {
+      if (duration === undefined) {
         if (level === -1) {
           this.duration = 0;
         } else {
@@ -65,15 +66,15 @@ class Notification {
   //-1 - bad
   show(): void {
     let cls = "notice";
-    let icon = `<i class="fas fa-fw fa-exclamation"></i>`;
+    let icon = `<i class="fas fa-info-circle"></i>`;
     let title = "Notice";
     if (this.level === 1) {
       cls = "good";
-      icon = `<i class="fas fa-fw fa-check"></i>`;
+      icon = `<i class="fas fa-check-circle"></i>`;
       title = "Success";
     } else if (this.level === -1) {
       cls = "bad";
-      icon = `<i class="fas fa-fw fa-times"></i>`;
+      icon = `<i class="fas fa-times-circle"></i>`;
       title = "Error";
       console.error(this.message);
     }
@@ -82,7 +83,7 @@ class Notification {
       cls += " important";
     }
 
-    if (this.customTitle != undefined) {
+    if (this.customTitle !== undefined) {
       title = this.customTitle;
     }
 
@@ -90,19 +91,22 @@ class Notification {
       icon = `<i class="fas fa-fw fa-bullhorn"></i>`;
     }
 
-    if (this.customIcon != undefined) {
+    if (this.customIcon !== undefined) {
       icon = `<i class="fas fa-fw fa-${this.customIcon}"></i>`;
     }
 
     if (this.type === "notification") {
       // moveCurrentToHistory();
+      if (this.duration === 0) {
+        visibleStickyNotifications++;
+        updateClearAllButton();
+      }
       const oldHeight = $("#notificationCenter .history").height() as number;
       $("#notificationCenter .history").prepend(`
-          
+
           <div class="notif ${cls}" id=${this.id}>
-              <div class="icon">${icon}</div>
-              <div class="message"><div class="title">${title}</div>${this.message}</div>
-          </div>     
+              <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
+          </div>
 
           `);
       const newHeight = $("#notificationCenter .history").height() as number;
@@ -117,11 +121,10 @@ class Notification {
           () => {
             $("#notificationCenter .history").css("margin-top", 0);
             $("#notificationCenter .history").prepend(`
-          
+
                   <div class="notif ${cls}" id=${this.id}>
-                      <div class="icon">${icon}</div>
-                      <div class="message"><div class="title">${title}</div>${this.message}</div>
-                  </div>     
+                      <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
+                  </div>
 
               `);
             $(`#notificationCenter .notif[id='${this.id}']`)
@@ -141,10 +144,14 @@ class Notification {
             $(`#notificationCenter .notif[id='${this.id}']`).on("click", () => {
               this.hide();
               this.closeCallback();
+              if (this.duration === 0) {
+                visibleStickyNotifications--;
+              }
+              updateClearAllButton();
             });
           }
         );
-      $(`#notificationCenter .notif[id='${this.id}']`).hover(() => {
+      $(`#notificationCenter .notif[id='${this.id}']`).on("hover", () => {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
       });
     } else if (this.type === "banner") {
@@ -239,19 +246,20 @@ class Notification {
   }
 }
 
-interface AddNotificationOptions {
-  important?: boolean;
-  duration?: number;
-  customTitle?: string;
-  customIcon?: string;
-  closeCallback?: () => void;
-  allowHTML?: boolean;
+function updateClearAllButton(): void {
+  if (visibleStickyNotifications > 1) {
+    $("#notificationCenter .clearAll").removeClass("invisible");
+    $("#notificationCenter .clearAll").slideDown(125);
+  } else if (visibleStickyNotifications < 1) {
+    $("#notificationCenter .clearAll").addClass("invisible");
+    $("#notificationCenter .clearAll").slideUp(125);
+  }
 }
 
 export function add(
   message: string,
   level = 0,
-  options: AddNotificationOptions = {}
+  options: MonkeyTypes.AddNotificationOptions = {}
 ): void {
   NotificationEvent.dispatch(message, level, options.customTitle);
 
@@ -299,4 +307,12 @@ const debouncedMarginUpdate = debounce(100, updateMargin);
 
 $(window).on("resize", () => {
   debouncedMarginUpdate();
+});
+
+$("#notificationCenter .clearAll").on("click", () => {
+  $("#notificationCenter .notif.bad").each((_, element) => {
+    $(element)[0].click();
+  });
+  visibleStickyNotifications = 0;
+  updateClearAllButton();
 });

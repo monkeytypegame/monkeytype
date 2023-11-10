@@ -28,7 +28,7 @@ export async function withWords(words: string[]): Promise<Wordset> {
   if (wordFunbox?.functions?.withWords) {
     return wordFunbox.functions.withWords(words);
   }
-  if (currentWordset == null || words !== currentWordset.words) {
+  if (currentWordset === null || words !== currentWordset.words) {
     currentWordset = new Wordset(words);
   }
   return currentWordset;

@@ -111,7 +111,7 @@ export function show(): void {
   }
 }
 
-export async function hide(): Promise<void> {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     $("#shareTestSettingsPopupWrapper")
       .stop(true, true)
@@ -132,6 +132,10 @@ export async function hide(): Promise<void> {
 $(`#shareTestSettingsPopupWrapper label input`).on("change", () => {
   updateURL();
   updateSubgroups();
+});
+
+$("#shareTestSettingsPopupWrapper textarea.url").on("click", () => {
+  $("#shareTestSettingsPopupWrapper textarea.url").trigger("select");
 });
 
 $("#shareTestSettingsPopupWrapper").on("mousedown", (e) => {

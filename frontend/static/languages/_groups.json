@@ -10,20 +10,13 @@
       "english_450k",
       "english_commonly_misspelled",
       "english_contractions",
-      "english_doubleletter"
+      "english_doubleletter",
+      "english_shakespearean"
     ]
   },
   {
     "name": "spanish",
     "languages": ["spanish", "spanish_1k", "spanish_10k", "spanish_650k"]
-  },
-  {
-    "name": "lorem_ipsum",
-    "languages": ["lorem_ipsum"]
-  },
-  {
-    "name": "nepali",
-    "languages": ["nepali", "nepali_1k"]
   },
   {
     "name": "french",
@@ -88,7 +81,8 @@
       "chinese_simplified",
       "chinese_simplified_1k",
       "chinese_simplified_5k",
-      "chinese_simplified_10k, chinese_simplified_50k, chinese_simplified_100k"
+      "chinese_simplified_10k",
+      "chinese_simplified_50k"
     ]
   },
   {
@@ -187,7 +181,11 @@
   },
   {
     "name": "tamil",
-    "languages": ["tamil", "tamil_1k"]
+    "languages": ["tamil", "tamil_1k", "tanglish"]
+  },
+  {
+    "name": "kannada",
+    "languages": ["kannada"]
   },
   {
     "name": "telugu",
@@ -253,7 +251,7 @@
   },
   {
     "name": "malay",
-    "languages": ["malay"]
+    "languages": ["malay", "malay_1k"]
   },
   {
     "name": "romanian",
@@ -394,6 +392,10 @@
     "languages": ["sanskrit"]
   },
   {
+    "name": "nepali",
+    "languages": ["nepali", "nepali_1k"]
+  },
+  {
     "name": "santali",
     "languages": ["santali"]
   },
@@ -408,7 +410,7 @@
   },
   {
     "name": "uzbek",
-    "languages": ["uzbek", "uzbek_1k"]
+    "languages": ["uzbek", "uzbek_1k", "uzbek_70k"]
   },
   {
     "name": "belarusian",
@@ -472,6 +474,14 @@
   {
     "name": "frysk",
     "languages": ["frysk", "frysk_1k"]
+  },
+  {
+    "name": "pashto",
+    "languages": ["pashto"]
+  },
+  {
+    "name": "lorem_ipsum",
+    "languages": ["lorem_ipsum"]
   },
   {
     "name": "code",

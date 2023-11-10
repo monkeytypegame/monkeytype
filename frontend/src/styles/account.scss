@@ -159,6 +159,9 @@
     }
 
     &.history {
+      table td {
+        -webkit-appearance: unset;
+      }
       .active {
         animation: flashHighlight 4s linear 0s 1;
       }
@@ -230,7 +233,8 @@
         color: var(--sub-color);
         margin-top: 1rem;
         display: grid;
-        grid-template-columns: auto 400px;
+        grid-template-columns: auto 500px;
+        gap: 1rem;
         align-items: center;
         .text {
           height: min-content;
@@ -239,7 +243,7 @@
           font-size: 0.75rem;
           display: grid;
           gap: 0.5rem;
-          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-columns: 1fr 1fr 1fr 1fr;
         }
       }
       .chart {

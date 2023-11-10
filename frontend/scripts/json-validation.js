@@ -104,6 +104,19 @@ function validateOthers() {
       console.log("Themes JSON schema is \u001b[31minvalid\u001b[0m");
       return reject(new Error(themesValidator.errors));
     }
+    //check if files exist
+    for (const theme of themesData) {
+      const themeName = theme.name;
+      const fileName = `${themeName}.css`;
+      const themePath = `./static/themes/${fileName}`;
+      if (!fs.existsSync(themePath)) {
+        console.log(`File ${fileName} was \u001b[31mnot found\u001b[0m`);
+        // return reject(new Error(`File for theme ${themeName} does not exist`));
+        return reject(
+          `Could not find file ${fileName} for theme ${themeName} - make sure the file exists and is named correctly`
+        );
+      }
+    }
 
     //challenges
     const challengesSchema = {
@@ -404,19 +417,20 @@ function validateQuotes() {
         quoteIdsAllGood = false;
         quoteIdsErrors = quoteIdsValidator.errors;
       }
-      const incorrectQuoteLength = quoteData.quotes
-        .filter((quote) => quote.text.length !== quote.length)
-        .map((quote) => quote.id);
+      const incorrectQuoteLength = quoteData.quotes.filter(
+        (quote) => quote.text.length !== quote.length
+      );
       if (incorrectQuoteLength.length !== 0) {
-        console.log(
-          `Quote ${quotefilename} ID(s) ${incorrectQuoteLength.join(
-            ","
-          )} length fields are \u001b[31mincorrect\u001b[0m`
-        );
+        console.log("Some length fields are \u001b[31mincorrect\u001b[0m");
+        incorrectQuoteLength.map((quote) => {
+          console.log(
+            `Quote ${quotefilename} ID ${quote.id}: expected length ${quote.text.length}`
+          );
+        });
         quoteFilesAllGood = false;
-        incorrectQuoteLength.map((id) => {
+        incorrectQuoteLength.map((quote) => {
           quoteLengthErrors.push(
-            `${quotefilename} ${id} length field is incorrect`
+            `${quotefilename} ${quote.id} length field is incorrect`
           );
         });
       }

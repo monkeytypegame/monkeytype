@@ -1,9 +1,11 @@
+import { Configuration } from "../types/shared";
+
 /**
  * This is the base schema for the configuration of the API backend.
  * To add a new configuration. Simply add it to this object.
  * When changing this template, please follow the principle of "Secure by default" (https://en.wikipedia.org/wiki/Secure_by_default).
  */
-export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
+export const BASE_CONFIGURATION: Configuration = {
   maintenance: false,
   results: {
     savingEnabled: false,
@@ -133,407 +135,405 @@ type Schema<T> = {
     : never;
 };
 
-export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> =
-  {
-    type: "object",
-    label: "Server Configuration",
-    fields: {
-      maintenance: {
-        type: "boolean",
-        label: "In Maintenance",
+export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
+  type: "object",
+  label: "Server Configuration",
+  fields: {
+    maintenance: {
+      type: "boolean",
+      label: "In Maintenance",
+    },
+    results: {
+      type: "object",
+      label: "Results",
+      fields: {
+        savingEnabled: {
+          type: "boolean",
+          label: "Saving Results",
+        },
+        objectHashCheckEnabled: {
+          type: "boolean",
+          label: "Object Hash Check",
+        },
+        filterPresets: {
+          type: "object",
+          label: "Filter Presets",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            maxPresetsPerUser: {
+              type: "number",
+              label: "Max Presets Per User",
+              min: 0,
+            },
+          },
+        },
       },
-      results: {
-        type: "object",
-        label: "Results",
-        fields: {
-          savingEnabled: {
-            type: "boolean",
-            label: "Saving Results",
+    },
+    quotes: {
+      type: "object",
+      label: "Quotes",
+      fields: {
+        reporting: {
+          type: "object",
+          label: "Reporting",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            maxReports: {
+              type: "number",
+              label: "Max Reports",
+            },
+            contentReportLimit: {
+              type: "number",
+              label: "Content Report Limit",
+            },
           },
-          objectHashCheckEnabled: {
-            type: "boolean",
-            label: "Object Hash Check",
+        },
+        submissionsEnabled: {
+          type: "boolean",
+          label: "Submissions Enabled",
+        },
+        maxFavorites: {
+          type: "number",
+          label: "Max Favorites",
+        },
+      },
+    },
+    admin: {
+      type: "object",
+      label: "Admin",
+      fields: {
+        endpointsEnabled: {
+          type: "boolean",
+          label: "Endpoints Enabled",
+        },
+      },
+    },
+    apeKeys: {
+      type: "object",
+      label: "Ape Keys",
+      fields: {
+        endpointsEnabled: {
+          type: "boolean",
+          label: "Endpoints Enabled",
+        },
+        acceptKeys: {
+          type: "boolean",
+          label: "Accept Keys",
+        },
+        maxKeysPerUser: {
+          type: "number",
+          label: "Max Keys Per User",
+          min: 0,
+        },
+        apeKeyBytes: {
+          type: "number",
+          label: "Ape Key Bytes",
+          min: 24,
+        },
+        apeKeySaltRounds: {
+          type: "number",
+          label: "Ape Key Salt Rounds",
+          min: 5,
+        },
+      },
+    },
+    users: {
+      type: "object",
+      label: "Users",
+      fields: {
+        signUp: {
+          type: "boolean",
+          label: "Sign Up Enabled",
+        },
+        lastHashesCheck: {
+          type: "object",
+          label: "Last Hashes Check",
+          fields: {
+            enabled: { type: "boolean", label: "Enabled" },
+            maxHashes: { type: "number", label: "Hashes to store" },
           },
-          filterPresets: {
-            type: "object",
-            label: "Filter Presets",
-            fields: {
-              enabled: {
-                type: "boolean",
-                label: "Enabled",
+        },
+        xp: {
+          type: "object",
+          label: "XP",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            gainMultiplier: {
+              type: "number",
+              label: "Gain Multiplier",
+            },
+            funboxBonus: {
+              type: "number",
+              label: "Funbox Bonus",
+            },
+            maxDailyBonus: {
+              type: "number",
+              label: "Max Daily Bonus",
+            },
+            minDailyBonus: {
+              type: "number",
+              label: "Min Daily Bonus",
+            },
+            streak: {
+              type: "object",
+              label: "Streak",
+              fields: {
+                enabled: {
+                  type: "boolean",
+                  label: "Enabled",
+                },
+                maxStreakDays: {
+                  type: "number",
+                  label: "Max Streak Days",
+                },
+                maxStreakMultiplier: {
+                  type: "number",
+                  label: "Max Streak Multiplier",
+                },
               },
-              maxPresetsPerUser: {
+            },
+          },
+        },
+        discordIntegration: {
+          type: "object",
+          label: "Discord Integration",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+          },
+        },
+        autoBan: {
+          type: "object",
+          label: "Auto Ban",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            maxCount: {
+              type: "number",
+              label: "Max Count",
+              min: 0,
+            },
+            maxHours: {
+              type: "number",
+              label: "Max Hours",
+              min: 0,
+            },
+          },
+        },
+        inbox: {
+          type: "object",
+          label: "Inbox",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            maxMail: {
+              type: "number",
+              label: "Max Messages",
+              min: 0,
+            },
+          },
+        },
+        profiles: {
+          type: "object",
+          label: "User Profiles",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+          },
+        },
+      },
+    },
+    rateLimiting: {
+      type: "object",
+      label: "Rate Limiting",
+      fields: {
+        badAuthentication: {
+          type: "object",
+          label: "Bad Authentication Rate Limiter",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            penalty: {
+              type: "number",
+              label: "Penalty",
+              min: 0,
+            },
+            flaggedStatusCodes: {
+              type: "array",
+              label: "Flagged Status Codes",
+              items: {
+                label: "Status Code",
                 type: "number",
-                label: "Max Presets Per User",
                 min: 0,
               },
             },
           },
         },
       },
-      quotes: {
-        type: "object",
-        label: "Quotes",
-        fields: {
-          reporting: {
+    },
+    dailyLeaderboards: {
+      type: "object",
+      label: "Daily Leaderboards",
+      fields: {
+        enabled: {
+          type: "boolean",
+          label: "Enabled",
+        },
+        maxResults: {
+          type: "number",
+          label: "Max Results",
+          min: 0,
+        },
+        leaderboardExpirationTimeInDays: {
+          type: "number",
+          label: "Leaderboard Expiration Time In Days",
+          min: 0,
+        },
+        validModeRules: {
+          type: "array",
+          label: "Valid Mode Rules",
+          items: {
             type: "object",
-            label: "Reporting",
+            label: "Rule",
             fields: {
-              enabled: {
-                type: "boolean",
-                label: "Enabled",
+              language: {
+                type: "string",
+                label: "Language",
               },
-              maxReports: {
-                type: "number",
-                label: "Max Reports",
+              mode: {
+                type: "string",
+                label: "Mode",
               },
-              contentReportLimit: {
-                type: "number",
-                label: "Content Report Limit",
+              mode2: {
+                type: "string",
+                label: "Secondary Mode",
               },
             },
           },
-          submissionsEnabled: {
-            type: "boolean",
-            label: "Submissions Enabled",
-          },
-          maxFavorites: {
-            type: "number",
-            label: "Max Favorites",
-          },
         },
-      },
-      admin: {
-        type: "object",
-        label: "Admin",
-        fields: {
-          endpointsEnabled: {
-            type: "boolean",
-            label: "Endpoints Enabled",
-          },
-        },
-      },
-      apeKeys: {
-        type: "object",
-        label: "Ape Keys",
-        fields: {
-          endpointsEnabled: {
-            type: "boolean",
-            label: "Endpoints Enabled",
-          },
-          acceptKeys: {
-            type: "boolean",
-            label: "Accept Keys",
-          },
-          maxKeysPerUser: {
-            type: "number",
-            label: "Max Keys Per User",
-            min: 0,
-          },
-          apeKeyBytes: {
-            type: "number",
-            label: "Ape Key Bytes",
-            min: 24,
-          },
-          apeKeySaltRounds: {
-            type: "number",
-            label: "Ape Key Salt Rounds",
-            min: 5,
-          },
-        },
-      },
-      users: {
-        type: "object",
-        label: "Users",
-        fields: {
-          signUp: {
-            type: "boolean",
-            label: "Sign Up Enabled",
-          },
-          lastHashesCheck: {
+        scheduleRewardsModeRules: {
+          type: "array",
+          label: "Schedule Rewards Mode Rules",
+          items: {
             type: "object",
-            label: "Last Hashes Check",
+            label: "Rule",
             fields: {
-              enabled: { type: "boolean", label: "Enabled" },
-              maxHashes: { type: "number", label: "Hashes to store" },
+              language: {
+                type: "string",
+                label: "Language",
+              },
+              mode: {
+                type: "string",
+                label: "Mode",
+              },
+              mode2: {
+                type: "string",
+                label: "Secondary Mode",
+              },
             },
           },
-          xp: {
+        },
+        topResultsToAnnounce: {
+          type: "number",
+          label: "Top Results To Announce",
+          min: 1,
+          hint: "This should atleast be 1. Setting to zero is very bad.",
+        },
+        xpRewardBrackets: {
+          type: "array",
+          label: "XP Reward Brackets",
+          items: {
             type: "object",
-            label: "XP",
+            label: "Bracket",
             fields: {
-              enabled: {
-                type: "boolean",
-                label: "Enabled",
-              },
-              gainMultiplier: {
+              minRank: {
                 type: "number",
-                label: "Gain Multiplier",
+                label: "Min Rank",
+                min: 1,
               },
-              funboxBonus: {
+              maxRank: {
                 type: "number",
-                label: "Funbox Bonus",
+                label: "Max Rank",
+                min: 1,
               },
-              maxDailyBonus: {
+              minReward: {
                 type: "number",
-                label: "Max Daily Bonus",
+                label: "Min Reward",
+                min: 0,
               },
-              minDailyBonus: {
+              maxReward: {
                 type: "number",
-                label: "Min Daily Bonus",
+                label: "Max Reward",
+                min: 0,
               },
-              streak: {
+            },
+          },
+        },
+      },
+    },
+    leaderboards: {
+      type: "object",
+      label: "Leaderboards",
+      fields: {
+        weeklyXp: {
+          type: "object",
+          label: "Weekly XP",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+            expirationTimeInDays: {
+              type: "number",
+              label: "Expiration time in days",
+              min: 0,
+              hint: "This should atleast be 15, to allow for past week queries.",
+            },
+            xpRewardBrackets: {
+              type: "array",
+              label: "XP Reward Brackets",
+              items: {
                 type: "object",
-                label: "Streak",
+                label: "Bracket",
                 fields: {
-                  enabled: {
-                    type: "boolean",
-                    label: "Enabled",
-                  },
-                  maxStreakDays: {
+                  minRank: {
                     type: "number",
-                    label: "Max Streak Days",
+                    label: "Min Rank",
+                    min: 1,
                   },
-                  maxStreakMultiplier: {
+                  maxRank: {
                     type: "number",
-                    label: "Max Streak Multiplier",
+                    label: "Max Rank",
+                    min: 1,
                   },
-                },
-              },
-            },
-          },
-          discordIntegration: {
-            type: "object",
-            label: "Discord Integration",
-            fields: {
-              enabled: {
-                type: "boolean",
-                label: "Enabled",
-              },
-            },
-          },
-          autoBan: {
-            type: "object",
-            label: "Auto Ban",
-            fields: {
-              enabled: {
-                type: "boolean",
-                label: "Enabled",
-              },
-              maxCount: {
-                type: "number",
-                label: "Max Count",
-                min: 0,
-              },
-              maxHours: {
-                type: "number",
-                label: "Max Hours",
-                min: 0,
-              },
-            },
-          },
-          inbox: {
-            type: "object",
-            label: "Inbox",
-            fields: {
-              enabled: {
-                type: "boolean",
-                label: "Enabled",
-              },
-              maxMail: {
-                type: "number",
-                label: "Max Messages",
-                min: 0,
-              },
-            },
-          },
-          profiles: {
-            type: "object",
-            label: "User Profiles",
-            fields: {
-              enabled: {
-                type: "boolean",
-                label: "Enabled",
-              },
-            },
-          },
-        },
-      },
-      rateLimiting: {
-        type: "object",
-        label: "Rate Limiting",
-        fields: {
-          badAuthentication: {
-            type: "object",
-            label: "Bad Authentication Rate Limiter",
-            fields: {
-              enabled: {
-                type: "boolean",
-                label: "Enabled",
-              },
-              penalty: {
-                type: "number",
-                label: "Penalty",
-                min: 0,
-              },
-              flaggedStatusCodes: {
-                type: "array",
-                label: "Flagged Status Codes",
-                items: {
-                  label: "Status Code",
-                  type: "number",
-                  min: 0,
-                },
-              },
-            },
-          },
-        },
-      },
-      dailyLeaderboards: {
-        type: "object",
-        label: "Daily Leaderboards",
-        fields: {
-          enabled: {
-            type: "boolean",
-            label: "Enabled",
-          },
-          maxResults: {
-            type: "number",
-            label: "Max Results",
-            min: 0,
-          },
-          leaderboardExpirationTimeInDays: {
-            type: "number",
-            label: "Leaderboard Expiration Time In Days",
-            min: 0,
-          },
-          validModeRules: {
-            type: "array",
-            label: "Valid Mode Rules",
-            items: {
-              type: "object",
-              label: "Rule",
-              fields: {
-                language: {
-                  type: "string",
-                  label: "Language",
-                },
-                mode: {
-                  type: "string",
-                  label: "Mode",
-                },
-                mode2: {
-                  type: "string",
-                  label: "Secondary Mode",
-                },
-              },
-            },
-          },
-          scheduleRewardsModeRules: {
-            type: "array",
-            label: "Schedule Rewards Mode Rules",
-            items: {
-              type: "object",
-              label: "Rule",
-              fields: {
-                language: {
-                  type: "string",
-                  label: "Language",
-                },
-                mode: {
-                  type: "string",
-                  label: "Mode",
-                },
-                mode2: {
-                  type: "string",
-                  label: "Secondary Mode",
-                },
-              },
-            },
-          },
-          topResultsToAnnounce: {
-            type: "number",
-            label: "Top Results To Announce",
-            min: 1,
-            hint: "This should atleast be 1. Setting to zero is very bad.",
-          },
-          xpRewardBrackets: {
-            type: "array",
-            label: "XP Reward Brackets",
-            items: {
-              type: "object",
-              label: "Bracket",
-              fields: {
-                minRank: {
-                  type: "number",
-                  label: "Min Rank",
-                  min: 1,
-                },
-                maxRank: {
-                  type: "number",
-                  label: "Max Rank",
-                  min: 1,
-                },
-                minReward: {
-                  type: "number",
-                  label: "Min Reward",
-                  min: 0,
-                },
-                maxReward: {
-                  type: "number",
-                  label: "Max Reward",
-                  min: 0,
-                },
-              },
-            },
-          },
-        },
-      },
-      leaderboards: {
-        type: "object",
-        label: "Leaderboards",
-        fields: {
-          weeklyXp: {
-            type: "object",
-            label: "Weekly XP",
-            fields: {
-              enabled: {
-                type: "boolean",
-                label: "Enabled",
-              },
-              expirationTimeInDays: {
-                type: "number",
-                label: "Expiration time in days",
-                min: 0,
-                hint: "This should atleast be 15, to allow for past week queries.",
-              },
-              xpRewardBrackets: {
-                type: "array",
-                label: "XP Reward Brackets",
-                items: {
-                  type: "object",
-                  label: "Bracket",
-                  fields: {
-                    minRank: {
-                      type: "number",
-                      label: "Min Rank",
-                      min: 1,
-                    },
-                    maxRank: {
-                      type: "number",
-                      label: "Max Rank",
-                      min: 1,
-                    },
-                    minReward: {
-                      type: "number",
-                      label: "Min Reward",
-                      min: 0,
-                    },
-                    maxReward: {
-                      type: "number",
-                      label: "Max Reward",
-                      min: 0,
-                    },
+                  minReward: {
+                    type: "number",
+                    label: "Min Reward",
+                    min: 0,
+                  },
+                  maxReward: {
+                    type: "number",
+                    label: "Max Reward",
+                    min: 0,
                   },
                 },
               },
@@ -542,4 +542,5 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
         },
       },
     },
-  };
+  },
+};
