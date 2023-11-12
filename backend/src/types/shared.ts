@@ -29,6 +29,10 @@ export interface Configuration {
       enabled: boolean;
       maxPresetsPerUser: number;
     };
+    limits: {
+      regularUser: number;
+      premiumUser: number;
+    };
   };
   users: {
     signUp: boolean;

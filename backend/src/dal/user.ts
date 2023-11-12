@@ -1036,3 +1036,12 @@ export async function setBanned(uid: string, banned: boolean): Promise<void> {
     await getUsersCollection().updateOne({ uid }, { $unset: { banned: "" } });
   }
 }
+
+export async function checkIfUserIsPremium(uid: string): Promise<boolean> {
+  const user = await getUser(uid, "checkIfUserIsPremium");
+  const expirationDate = user.premium?.expirationTimestamp;
+
+  if (expirationDate === undefined) return false;
+  if (expirationDate === -1) return true; //lifetime
+  return expirationDate > Date.now();
+}
