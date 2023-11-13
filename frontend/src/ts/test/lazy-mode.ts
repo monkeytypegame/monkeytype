@@ -38,6 +38,7 @@ const accents: [string, string][] = [
   ["ό", "ο"],
   ["ή", "η"],
   ["ώ", "ω"],
+  ["þ", "th"],
 ];
 
 export function replaceAccents(
