@@ -131,9 +131,7 @@ export async function initSnapshot(): Promise<
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
     snap.filterPresets = userData.resultFilterPresets ?? [];
-    snap.isPremium = checkIfPremiumIsActive(
-      userData?.premium?.expirationTimestamp
-    );
+    snap.isPremium = userData?.isPremium;
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
@@ -975,12 +973,6 @@ export function setStreak(streak: number): void {
   }
 
   setSnapshot(snapshot);
-}
-
-function checkIfPremiumIsActive(expirationDate: number): boolean {
-  if (expirationDate === undefined) return false;
-  if (expirationDate === -1) return true; //lifetime
-  return expirationDate > Date.now();
 }
 
 // export async function DB.getLocalTagPB(tagId) {
