@@ -260,6 +260,13 @@ async function filter(language: string): Promise<string[]> {
 async function apply(set: boolean): Promise<void> {
   const language = $("#wordFilterPopup .languageInput").val() as string;
   const filteredWords = await filter(language);
+
+  if (filteredWords.length === 0) {
+    Notifications.add("No words found", 0);
+    hide(true);
+    return;
+  }
+
   const customText = filteredWords.join(CustomText.delimiter);
 
   CustomText.setPopupTextareaState(
