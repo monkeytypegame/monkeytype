@@ -389,7 +389,7 @@
   },
   {
     "name": "sanskrit",
-    "languages": ["sanskrit"]
+    "languages": ["sanskrit", "sanskrit_roman"]
   },
   {
     "name": "nepali",
