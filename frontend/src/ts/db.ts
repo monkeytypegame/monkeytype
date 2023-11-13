@@ -132,7 +132,7 @@ export async function initSnapshot(): Promise<
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
     snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.isPremium = checkIfPremiumIsActive(
-      userData.premium.expirationTimestamp
+      userData?.premium?.expirationTimestamp
     );
 
     const hourOffset = userData?.streak?.hourOffset;
