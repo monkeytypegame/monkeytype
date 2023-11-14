@@ -76,7 +76,7 @@ export async function getResults(
   );
   const limit = stringToNumberOrDefault(
     req.query.limit as string,
-    Math.min(5, maxLimit) //TODO: set to 1000
+    Math.min(req.ctx.configuration.results.maxBatchSize, maxLimit)
   );
   const offset = stringToNumberOrDefault(req.query.offset as string, 0);
 

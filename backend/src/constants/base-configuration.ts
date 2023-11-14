@@ -18,6 +18,7 @@ export const BASE_CONFIGURATION: Configuration = {
       regularUser: 1000,
       premiumUser: 10000,
     },
+    maxBatchSize: 1000,
   },
   quotes: {
     reporting: {
@@ -189,6 +190,11 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
               min: 0,
             },
           },
+        },
+        maxBatchSize: {
+          type: "number",
+          label: "results endpoint max batch size",
+          min: 1,
         },
       },
     },

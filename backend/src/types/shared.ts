@@ -33,6 +33,7 @@ export interface Configuration {
       regularUser: number;
       premiumUser: number;
     };
+    maxBatchSize: number;
   };
   users: {
     signUp: boolean;
