@@ -1,0 +1,37 @@
+{
+    "language": "english_old",
+    "groups": [
+      [0, 100],
+      [101, 300],
+      [301, 600],
+      [601, 9999]
+    ],
+    "quotes": [
+      {
+        "text": "Getreowan freond deorweorðeste ðyng eallra þissa woruldgesælþa.", 
+        "source": "Consolation of Philosophy",
+        "length": 63,
+        "id": 1,
+
+        "text": "Hige sceal þē heardra, heorte þē cēnre, mōd sceal þē māre, þē ūre mægen lytlað.", 
+        "source": "The Battle of Maldon",
+        "length": 79,
+        "id": 2,
+
+        "text": "Sēlre bið æghwæm, þæt hē his frēond wrece, þonne hē fela murne; ūre æghwylc sceal ende gebīdan worolde līfes; wyrce sē þe mōte dōmes ær dēaðe! þæt bið driht-guman unlifgendum æfter sēlest.", 
+        "source": "Beowulf",
+        "length": 193,
+        "id": 3,
+
+        "text": "Eart þu se Beowulf, se þe wið Brecan wunne on sidne sæ, ymb sund flite, ðær git for wlence wada cunnedon?", 
+        "source": "Beowulf",
+        "length": 105,
+        "id": 4,
+
+        "text": "Gemunan þa mæla þe we oft æt meodo spræcon, þonne we on bence beot ahofon, hæleð on healle, ymbe heard gewinn; nu mæg cunnian hwa cene sy.", 
+        "source": "The Battle of Maldon",
+        "length": 138,
+        "id": 5
+      }
+    ]
+  }
