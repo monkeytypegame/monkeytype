@@ -21,6 +21,8 @@ import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
+import * as Loader from "../elements/loader";
+import * as ResultBatches from "../elements/result-batches";
 import * as ServerConfiguration from "../ape/server-configuration";
 
 let filterDebug = false;
@@ -222,6 +224,8 @@ async function fillContent(): Promise<void> {
 
   PbTables.update(snapshot.personalBests);
   Profile.update("account", snapshot);
+
+  ResultBatches.update();
 
   chartData = [];
   accChartData = [];
@@ -1063,7 +1067,6 @@ export async function downloadResults(offset?: number): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     ResultFilters.updateActive();
-    await updateProgressBar();
   }
 }
 
@@ -1304,13 +1307,11 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
   );
 });
 
-$(".pageAccount .button.loadMoreResults").on("click", async () => {
+$(".pageAccount button.loadMoreResults").on("click", async () => {
   const offset = DB.getSnapshot()?.results?.length || 0;
-  const btn = $(".pageAccount .button.loadMoreResults");
-  const loader = $(".pageAccount .preloader");
 
-  loader.removeClass("hidden");
-  btn.attr("disabled", "true");
+  Loader.show();
+  ResultBatches.disableButton();
 
   await downloadResults(offset);
   await fillContent();
@@ -1318,13 +1319,14 @@ $(".pageAccount .button.loadMoreResults").on("click", async () => {
   const serverConfig = ServerConfiguration.get();
   if (
     serverConfig !== undefined &&
-    allResults.length >= serverConfig.results.limits.premiumUser
+    (allResults.length >= serverConfig.results.limits.premiumUser ||
+      allResults.length === DB.getSnapshot()?.typingStats?.completedTests)
   ) {
-    btn.attr("disabled", "true");
+    ResultBatches.disableButton();
   } else {
-    btn.removeAttr("disabled");
+    ResultBatches.enableButton();
   }
-  loader.addClass("hidden");
+  Loader.hide();
 });
 
 ConfigEvent.subscribe((eventKey) => {
@@ -1367,9 +1369,10 @@ export const page = new Page(
     }
 
     if (DB.getSnapshot()?.isPremium === true) {
-      $(".pageAccount .loadMoreHistory").removeClass("hidden");
+      ResultBatches.show();
+    } else {
+      ResultBatches.hide();
     }
-    await updateProgressBar();
   },
   async () => {
     //
@@ -1379,19 +1382,3 @@ export const page = new Page(
 $(() => {
   Skeleton.save("pageAccount");
 });
-
-async function updateProgressBar(): Promise<void> {
-  const results = DB.getSnapshot()?.results;
-  const maxResults = (await ServerConfiguration.get())?.results.limits
-    .premiumUser;
-
-  let percentage = 0;
-
-  if (results !== undefined && maxResults !== undefined) {
-    percentage = Math.round((results.length / maxResults) * 100);
-  }
-
-  const bar = $(".pageAccount .loadMoreHistory .progress div");
-  bar.css("width", percentage + "%");
-  bar.text(percentage + "%");
-}

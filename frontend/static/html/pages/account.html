@@ -304,16 +304,29 @@
       <div id="ad-account-1-small"></div>
     </div>
 
-    <div class="group loadMoreHistory hidden">
-      <div class="buttonsAndTitle" style="grid-column: 1/2">
-        <div class="title">Load more results</div>
-        <div class="buttons">
-          <div class="progress">
-            <div style="width: 0%">&nbsp;</div>
-          </div>
-          <div class="button loadMoreResults">load more results</div>
+    <div class="group resultBatches hidden">
+      <div class="title">result history</div>
+      <div class="bars">
+        <!-- <div class="leftText downloaded">Loaded:</div>
+        <div class="bar downloaded">
+          <div class="fill"></div>
         </div>
+        <div class="rightText downloaded">-</div> -->
+        <div class="leftText limit">Result limit:</div>
+        <div class="bar limit">
+          <div class="fill"></div>
+          <!-- <div class="indicator">
+            <div class="text">completed tests</div>
+            <div class="line"></div>
+          </div> -->
+        </div>
+        <div class="rightText limit">-</div>
       </div>
+      <!-- <div class="text">
+        As a premium user, you can request up to 10000 results in batches of
+        1000. To request more results, press the load more button.
+      </div> -->
+      <button class="loadMoreResults">load more</button>
     </div>
 
     <div class="group presetFilterButtons hidden">
