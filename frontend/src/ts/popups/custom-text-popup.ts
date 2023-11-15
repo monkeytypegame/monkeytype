@@ -361,7 +361,7 @@ $(document).on("keydown", (event) => {
 });
 
 $("#popups").on("click", `${popup} .wordfilter`, () => {
-  hide({ noAnim: true });
+  hide({ noAnim: true, resetState: false });
   WordFilterPopup.show(true, () => {
     show(true);
   });
