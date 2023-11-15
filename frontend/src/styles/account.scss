@@ -137,8 +137,10 @@
         grid-area: title;
         margin-bottom: 0;
       }
-      .text {
+      & > .text {
         grid-area: text;
+        text-align: center;
+        margin: 1rem 0;
       }
       button {
         grid-area: button;

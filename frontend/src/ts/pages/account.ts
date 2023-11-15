@@ -1368,11 +1368,7 @@ export const page = new Page(
       );
     }
 
-    if (DB.getSnapshot()?.isPremium === true) {
-      ResultBatches.show();
-    } else {
-      ResultBatches.hide();
-    }
+    ResultBatches.showOrHideIfNeeded();
   },
   async () => {
     //
