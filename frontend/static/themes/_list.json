@@ -1181,6 +1181,13 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "unc_blue",
+    "bgColor": "#add5ef",
+    "mainColor": "#334a69",
+    "subColor": "#308bde",
+    "textColor": "#3a383c"
   }
 
 ]

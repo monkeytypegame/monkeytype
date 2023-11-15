@@ -1,0 +1,53 @@
+:root {
+  --bg-color: #add5ef;
+  --main-color: #334a69;
+  --caret-color: #2b425f;
+  --sub-color: #308bde;
+  --sub-alt-color: #f5f5f5;
+  --text-color: #3a383c;
+  --error-color: #fd6638;
+  --error-extra-color: #ba3040;
+  --colorful-error-color: #c65f33;
+  --colorful-error-extra-color: #8a1e2b;
+}
+button.active,
+.button.active,
+input[type="button"].active,
+input[type="reset"].active,
+input[type="submit"].active {
+  background: var(--sub-color);
+  color: var(--sub-alt-color);
+}
+button:hover,
+.button:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover {
+  background: var(--sub-color);
+  color: var(--sub-alt-color);
+}
+button.active:hover,
+.button.active:hover,
+input[type="button"].active:hover,
+input[type="reset"].active:hover,
+input[type="submit"].active:hover {
+  background: var(--sub-color);
+}
+#commandLineWrapper #commandLine .suggestions .entry.active,
+.select2-container--default
+  .select2-results__option--highlighted.select2-results__option--selectable,
+.select2-container--default .select2-results__option--selected {
+  background: var(--sub-color) !important;
+}
+.scrollToTopButton:hover {
+  background: var(--sub-color);
+  color: var(--sub-alt-color);
+}
+#timerWrapper #timer.timerMain {
+  background: var(--sub-color);
+}
+.pageTest #largeLiveWpmAndAcc.timerMain,
+.pageTest #timerNumber.timerMain,
+.pageTest #miniTimerAndLiveWpm.timerMain {
+  color: var(--sub-color);
+}
