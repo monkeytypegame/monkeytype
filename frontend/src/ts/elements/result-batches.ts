@@ -69,8 +69,8 @@ export function update(): void {
     updateButtonText("limit reached");
 
     if (DB.getSnapshot()?.isPremium === false) {
-      text.text(
-        `Want to load up to ${limits?.premiumUser} results? Join Monkeytype Premium.`
+      text.html(
+        `<br>Want to load up to ${limits?.premiumUser} results and gain access to more perks? Join Monkeytype Premium.<br>`
       );
     }
   }
