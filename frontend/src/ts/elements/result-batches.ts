@@ -1,5 +1,7 @@
 import * as DB from "../db";
 import * as ServerConfiguration from "../ape/server-configuration";
+import { blendTwoHexColors, mapRange } from "../utils/misc";
+import * as ThemeColors from "../elements/theme-colors";
 
 export function hide(): void {
   $(".pageAccount .resultBatches").addClass("hidden");
@@ -9,7 +11,7 @@ export function show(): void {
   $(".pageAccount .resultBatches").removeClass("hidden");
 }
 
-export function update(): void {
+export async function update(): Promise<void> {
   const results = DB.getSnapshot()?.results;
 
   if (results === undefined) {
@@ -19,6 +21,8 @@ export function update(): void {
     hide();
     return;
   }
+
+  enableButton();
 
   const completedTests = DB.getSnapshot()?.typingStats?.completedTests ?? 0;
   const percentageDownloaded = Math.round(
@@ -51,7 +55,16 @@ export function update(): void {
     `${results?.length} / ${completedTests} (${percentageDownloaded}%)`
   );
 
-  bars.limit.fill.css("width", Math.min(percentageLimit, 100) + "%");
+  const colors = await ThemeColors.getAll();
+
+  bars.limit.fill.css({
+    width: Math.min(percentageLimit, 100) + "%",
+    background: blendTwoHexColors(
+      colors.sub,
+      colors.error,
+      mapRange(percentageLimit, 50, 100, 0, 1)
+    ),
+  });
   bars.limit.rightText.text(
     `${results?.length} / ${currentLimit} (${percentageLimit}%)`
   );
