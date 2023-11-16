@@ -89,5 +89,14 @@ export function updateButtonText(text: string): void {
 }
 
 export function showOrHideIfNeeded(): void {
+  const completed = DB.getSnapshot()?.typingStats?.completedTests ?? 0;
+  const batchSize = ServerConfiguration.get()?.results.maxBatchSize ?? 0;
+
+  //no matter if premium or not, if the user is below the initial batch, hide the element
+  if (completed <= batchSize) {
+    hide();
+    return;
+  }
+
   show();
 }
