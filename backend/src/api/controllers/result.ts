@@ -74,14 +74,19 @@ export async function getResults(
     req.query.onOrAfterTimestamp as string,
     10
   );
-  const limit = stringToNumberOrDefault(
+  let limit = stringToNumberOrDefault(
     req.query.limit as string,
     Math.min(req.ctx.configuration.results.maxBatchSize, maxLimit)
   );
   const offset = stringToNumberOrDefault(req.query.offset as string, 0);
 
   if (limit + offset > maxLimit) {
-    throw new MonkeyError(422, `Max results limit of ${maxLimit} exceeded.`);
+    if (offset < maxLimit) {
+      //batch is partly in the allowed ranged. Set the limit to the max allowed and return partly results.
+      limit = maxLimit - offset;
+    } else {
+      throw new MonkeyError(422, `Max results limit of ${maxLimit} exceeded.`);
+    }
   }
 
   const results = await ResultDAL.getResults(uid, {

@@ -5,7 +5,6 @@ import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
 import * as AuthUtils from "../../../src/utils/auth";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
-import { messaging } from "firebase-admin";
 const uid = "123456";
 
 const mockDecodedToken: DecodedIdToken = {
@@ -74,7 +73,7 @@ describe("result controller test", () => {
       //WHEN
       await mockApp
         .get("/results")
-        .query({ offset: 500, limit: 250 })
+        .query({ limit: 250, offset: 500 })
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(200);
@@ -93,7 +92,7 @@ describe("result controller test", () => {
       //WHEN
       await mockApp
         .get("/results")
-        .query({ limit: 600, offset: 800 })
+        .query({ limit: 100, offset: 1000 })
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(422)
@@ -116,7 +115,7 @@ describe("result controller test", () => {
       //WHEN
       await mockApp
         .get("/results")
-        .query({ offset: 600, limit: 800 })
+        .query({ limit: 800, offset: 600 })
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(200);
@@ -126,6 +125,26 @@ describe("result controller test", () => {
       expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
         limit: 800,
         offset: 600,
+        onOrAfterTimestamp: NaN,
+      });
+    });
+    it("should get results if offset/limit is partly outside the max limit", async () => {
+      //GIVEN
+      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(false);
+
+      //WHEN
+      await mockApp
+        .get("/results")
+        .query({ limit: 20, offset: 990 })
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(200);
+
+      //THEN
+
+      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+        limit: 10, //limit is reduced to stay within max limit
+        offset: 990,
         onOrAfterTimestamp: NaN,
       });
     });
@@ -155,7 +174,7 @@ describe("result controller test", () => {
       //WHEN
       await mockApp
         .get("/results")
-        .query({ limit: 1000, offset: 24900 })
+        .query({ limit: 1000, offset: 25000 })
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(422)
