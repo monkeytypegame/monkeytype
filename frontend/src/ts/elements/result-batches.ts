@@ -46,12 +46,12 @@ export function update(): void {
     },
   };
 
-  bars.downloaded.fill.css("width", percentageDownloaded + "%");
+  bars.downloaded.fill.css("width", Math.min(percentageDownloaded, 100) + "%");
   bars.downloaded.rightText.text(
     `${results?.length} / ${completedTests} (${percentageDownloaded}%)`
   );
 
-  bars.limit.fill.css("width", percentageLimit + "%");
+  bars.limit.fill.css("width", Math.min(percentageLimit, 100) + "%");
   bars.limit.rightText.text(
     `${results?.length} / ${currentLimit} (${percentageLimit}%)`
   );
