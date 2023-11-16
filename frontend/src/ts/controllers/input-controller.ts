@@ -441,7 +441,8 @@ function handleChar(
   const now = performance.now();
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
-  if (char === "…") {
+
+  if (char === "…" && TestWords.words.getCurrent()[charIndex] !== "…") {
     for (let i = 0; i < 3; i++) {
       handleChar(".", charIndex + i);
     }
