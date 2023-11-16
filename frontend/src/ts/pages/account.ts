@@ -23,7 +23,6 @@ import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
-import * as ServerConfiguration from "../ape/server-configuration";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -1315,17 +1314,6 @@ $(".pageAccount button.loadMoreResults").on("click", async () => {
 
   await downloadResults(offset);
   await fillContent();
-  const allResults = DB.getSnapshot()?.results || [];
-  const serverConfig = ServerConfiguration.get();
-  if (
-    serverConfig !== undefined &&
-    (allResults.length >= serverConfig.results.limits.premiumUser ||
-      allResults.length === DB.getSnapshot()?.typingStats?.completedTests)
-  ) {
-    ResultBatches.disableButton();
-  } else {
-    ResultBatches.enableButton();
-  }
   Loader.hide();
 });
 
