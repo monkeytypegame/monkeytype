@@ -130,7 +130,7 @@
 
     &.resultBatches {
       display: grid;
-      grid-template-areas: "title title" "bar button" "text text";
+      grid-template-areas: "bar button" "text text";
       grid-template-columns: 2fr 1fr;
       column-gap: 1rem;
       .title {
