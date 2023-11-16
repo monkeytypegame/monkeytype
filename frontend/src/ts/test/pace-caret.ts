@@ -23,7 +23,10 @@ export let settings: Settings | null = null;
 let lastTestWpm = 0;
 
 export function setLastTestWpm(wpm: number): void {
-  if (!TestState.isPaceRepeat || TestState.isPaceRepeat && wpm > lastTestWpm) {
+  if (
+    !TestState.isPaceRepeat ||
+    (TestState.isPaceRepeat && wpm > lastTestWpm)
+  ) {
     lastTestWpm = wpm;
   }
 }
