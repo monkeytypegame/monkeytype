@@ -1,6 +1,6 @@
 {
   "hooks": {
-    "before:init": ["npm run lint"],
+    "before:init": ["npm run lint", "cd frontend && npx gulp build-production"],
     "before:release": [
       "cd frontend && npm run deploy-live",
       "sh ./bin/purgeCfCache.sh"

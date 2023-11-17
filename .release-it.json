@@ -1,6 +1,10 @@
 {
   "hooks": {
-    "before:init": ["npm run lint", "npm run test-be"],
+    "before:init": [
+      "npm run lint",
+      "npm run test-be",
+      "cd frontend && npx gulp build-production"
+    ],
     "before:release": [
       "sh ./bin/deployBackend.sh",
       "cd frontend && npm run deploy-live",
