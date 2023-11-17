@@ -81,11 +81,11 @@ export async function update(): Promise<void> {
     disableButton();
     updateButtonText("limit reached");
 
-    if (DB.getSnapshot()?.isPremium === false) {
-      text.html(
-        `<br>Want to load up to ${limits?.premiumUser} results and gain access to more perks? Join Monkeytype Premium.<br>`
-      );
-    }
+    // if (DB.getSnapshot()?.isPremium === false) {
+    //   text.html(
+    //     `<br>Want to load up to ${limits?.premiumUser} results and gain access to more perks? Join Monkeytype Premium.<br>`
+    //   );
+    // }
   }
 }
 
