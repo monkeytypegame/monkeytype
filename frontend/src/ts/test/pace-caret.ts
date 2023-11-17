@@ -23,7 +23,12 @@ export let settings: Settings | null = null;
 let lastTestWpm = 0;
 
 export function setLastTestWpm(wpm: number): void {
-  lastTestWpm = wpm;
+  if (
+    !TestState.isPaceRepeat ||
+    (TestState.isPaceRepeat && wpm > lastTestWpm)
+  ) {
+    lastTestWpm = wpm;
+  }
 }
 
 function resetCaretPosition(): void {
