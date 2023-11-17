@@ -171,7 +171,7 @@ declare namespace MonkeyTypes {
       [language: string]: boolean;
     };
     funbox: {
-      //none?: boolean; TODO
+      //none?: boolean;  TODO: unused?
       [funbox: string]: boolean;
     };
   }
@@ -365,8 +365,8 @@ declare namespace MonkeyTypes {
   }
 
   interface PublicSpeedStats {
-    _id: string;
-    type: "speedStats";
+    //_id: string;
+    //type: "speedStats"; //TODO seems unused
     [language_mode_mode2: string]: Record<string, number>;
   }
 
