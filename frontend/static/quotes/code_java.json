@@ -101,7 +101,7 @@
       "text": "public int indexOf(int elem) {\n\tint index = 0;\n\tfor (Node curr = head; curr != null; curr = curr.getTail()) {\n\t\tif (curr.getElem() == elem) {\n\t\t\treturn index;\n\t\t} else {\n\t\t\tindex++;\n\t\t}\n\t}\n\treturn -1;\n}",
       "source": "Get the Index of an Element in a Linked List",
       "id": 16,
-      "length": 203
+      "length": 202
     },
     {
       "text": "public void setTail(Node curr, Node next) {\n\tif (curr == null) {\n\t\tnext.setNext(head);\n\t\thead = next;\n\t} else {\n\t\tnext.setNext(curr.getNext());\n\t\tcurr.setNext(next);\n\t}\n\tnumNodes++;\n}",
