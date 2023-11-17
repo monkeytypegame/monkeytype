@@ -85,6 +85,7 @@ input[type="checkbox"] {
   border-radius: calc(var(--roundness) / 2);
   position: relative;
   transition: background 0.125s;
+  flex-shrink: 0;
   &:after {
     font-family: "Font Awesome 5 Free";
     content: "\f00c";
