@@ -108,13 +108,13 @@
       width: 2rem;
       display: grid;
 
-      .button:first-child {
+      button:first-child {
         border-top-right-radius: var(--roundness);
       }
-      .button:last-child {
+      button:last-child {
         border-bottom-right-radius: var(--roundness);
       }
-      .button {
+      button {
         align-items: center;
         align-content: center;
         display: grid;
@@ -479,6 +479,9 @@
     .socials {
       .value {
         margin-top: 0.05rem;
+        .textButton {
+          padding: 0.1em;
+        }
       }
     }
     .title {
