@@ -94,6 +94,16 @@ export async function getResults(
     limit,
     offset,
   });
+  Logger.logToDb(
+    "user_results_requested",
+    {
+      limit,
+      offset,
+      onOrAfterTimestamp,
+      isPremium,
+    },
+    uid
+  );
   return new MonkeyResponse("Results retrieved", results);
 }
 
