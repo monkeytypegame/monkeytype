@@ -7,7 +7,6 @@ import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
-import { Configuration } from "../types/shared";
 
 const SECONDS_PER_HOUR = 3600;
 

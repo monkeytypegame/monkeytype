@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../../src/app";
+import _ from "lodash";
 import * as Configuration from "../../../src/init/configuration";
 import * as ResultDal from "../../../src/dal/result";
 import * as UserDal from "../../../src/dal/user";
@@ -187,6 +188,54 @@ describe("result controller test", () => {
             } exceeded.`
           )
         );
+
+      //THEN
+    });
+    it("should get results within regular limits for premium users if premium is globally disabled", async () => {
+      //GIVEN
+      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      const mockConfig = _.merge(await configuration, {
+        users: { premium: { enabled: false } },
+      });
+
+      jest
+        .spyOn(Configuration, "getCachedConfiguration")
+        .mockResolvedValue(mockConfig);
+
+      //WHEN
+      await mockApp
+        .get("/results")
+        .query({ limit: 100, offset: 900 })
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(200);
+
+      //THEN
+      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+        limit: 100,
+        offset: 900,
+        onOrAfterTimestamp: NaN,
+      });
+    });
+    it("should fail exceeding max limit for premium user if premium is globally disabled", async () => {
+      //GIVEN
+      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      const mockConfig = _.merge(await configuration, {
+        users: { premium: { enabled: false } },
+      });
+
+      jest
+        .spyOn(Configuration, "getCachedConfiguration")
+        .mockResolvedValue(mockConfig);
+
+      //WHEN
+      await mockApp
+        .get("/results")
+        .query({ limit: 200, offset: 900 })
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(503)
+        .expect(expectErrorMessage("Premium feature disabled."));
 
       //THEN
     });

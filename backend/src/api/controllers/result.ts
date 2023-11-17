@@ -89,6 +89,15 @@ export async function getResults(
     }
   }
 
+  //check if premium features are disabled and current call exceeds the limit for regular users
+  if (
+    isPremium &&
+    req.ctx.configuration.users.premium.enabled === false &&
+    limit + offset > req.ctx.configuration.results.limits.regularUser
+  ) {
+    throw new MonkeyError(503, "Premium feature disabled.");
+  }
+
   const results = await ResultDAL.getResults(uid, {
     onOrAfterTimestamp,
     limit,

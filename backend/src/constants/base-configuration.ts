@@ -72,6 +72,9 @@ export const BASE_CONFIGURATION: Configuration = {
       enabled: false,
       maxMail: 0,
     },
+    premium: {
+      enabled: true,
+    },
   },
   rateLimiting: {
     badAuthentication: {
@@ -377,6 +380,16 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
         profiles: {
           type: "object",
           label: "User Profiles",
+          fields: {
+            enabled: {
+              type: "boolean",
+              label: "Enabled",
+            },
+          },
+        },
+        premium: {
+          type: "object",
+          label: "premium",
           fields: {
             enabled: {
               type: "boolean",

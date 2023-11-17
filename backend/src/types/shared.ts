@@ -68,6 +68,9 @@ export interface Configuration {
       enabled: boolean;
       maxMail: number;
     };
+    premium: {
+      enabled: boolean;
+    };
   };
   admin: {
     endpointsEnabled: boolean;
