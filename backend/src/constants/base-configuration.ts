@@ -73,7 +73,7 @@ export const BASE_CONFIGURATION: Configuration = {
       maxMail: 0,
     },
     premium: {
-      enabled: true,
+      enabled: false,
     },
   },
   rateLimiting: {
@@ -389,7 +389,7 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<Configuration> = {
         },
         premium: {
           type: "object",
-          label: "premium",
+          label: "Premium",
           fields: {
             enabled: {
               type: "boolean",

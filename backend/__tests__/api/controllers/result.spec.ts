@@ -24,8 +24,9 @@ const configuration = Configuration.getCachedConfiguration();
 
 describe("result controller test", () => {
   describe("getResults", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       resultMock.mockResolvedValue([]);
+      await enablePremiumFeatures(true);
     });
     afterEach(() => {
       resultMock.mockReset();
@@ -191,16 +192,10 @@ describe("result controller test", () => {
 
       //THEN
     });
-    it("should get results within regular limits for premium users if premium is globally disabled", async () => {
+    it("should get results within regular limits for premium users even if premium is globally disabled", async () => {
       //GIVEN
       jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
-      const mockConfig = _.merge(await configuration, {
-        users: { premium: { enabled: false } },
-      });
-
-      jest
-        .spyOn(Configuration, "getCachedConfiguration")
-        .mockResolvedValue(mockConfig);
+      enablePremiumFeatures(false);
 
       //WHEN
       await mockApp
@@ -220,13 +215,7 @@ describe("result controller test", () => {
     it("should fail exceeding max limit for premium user if premium is globally disabled", async () => {
       //GIVEN
       jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
-      const mockConfig = _.merge(await configuration, {
-        users: { premium: { enabled: false } },
-      });
-
-      jest
-        .spyOn(Configuration, "getCachedConfiguration")
-        .mockResolvedValue(mockConfig);
+      enablePremiumFeatures(false);
 
       //WHEN
       await mockApp
@@ -244,4 +233,14 @@ describe("result controller test", () => {
 
 function expectErrorMessage(message: string): (res: request.Response) => void {
   return (res) => expect(res.body).toHaveProperty("message", message);
+}
+
+async function enablePremiumFeatures(premium: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    users: { premium: { enabled: premium } },
+  });
+
+  jest
+    .spyOn(Configuration, "getCachedConfiguration")
+    .mockResolvedValue(mockConfig);
 }
