@@ -398,11 +398,16 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   }
 
   if (
-    (char === "’" || char === "‘" || char === "'" || char === "ʼ") &&
+    (char === "’" ||
+      char === "‘" ||
+      char === "'" ||
+      char === "ʼ" ||
+      char === "׳") &&
     (originalChar === "’" ||
       originalChar === "‘" ||
       originalChar === "'" ||
-      originalChar === "ʼ")
+      originalChar === "ʼ" ||
+      originalChar === "׳")
   ) {
     return true;
   }
