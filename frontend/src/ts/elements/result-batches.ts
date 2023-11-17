@@ -102,6 +102,13 @@ export function updateButtonText(text: string): void {
 }
 
 export function showOrHideIfNeeded(): void {
+  //for now, just hide if not premium - will show this to everyone later
+  const isPremium = DB.getSnapshot()?.isPremium ?? false;
+  if (!isPremium) {
+    hide();
+    return;
+  }
+
   const completed = DB.getSnapshot()?.typingStats?.completedTests ?? 0;
   const batchSize = ServerConfiguration.get()?.results.maxBatchSize ?? 0;
 
