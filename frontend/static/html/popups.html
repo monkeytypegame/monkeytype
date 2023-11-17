@@ -1126,8 +1126,8 @@
   </div>
 </div>
 
-<div id="editProfilePopupWrapper" class="popupWrapper hidden">
-  <div id="editProfilePopup">
+<div id="editProfilePopupWrapper" class="popupWrapper hidden" tabindex="-1">
+  <form id="editProfilePopup">
     <div class="title">Edit Profile</div>
     <div>
       <label>avatar</label>
@@ -1166,6 +1166,6 @@
       <label>badge</label>
       <div class="badgeSelectionContainer"></div>
     </div>
-    <div class="button edit-profile-submit">save</div>
-  </div>
+    <button class="edit-profile-submit" type="submit">save</button>
+  </form>
 </div>
