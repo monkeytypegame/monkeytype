@@ -171,7 +171,7 @@ declare namespace MonkeyTypes {
       [language: string]: boolean;
     };
     funbox: {
-      none?: boolean;
+      //none?: boolean; TODO
       [funbox: string]: boolean;
     };
   }
