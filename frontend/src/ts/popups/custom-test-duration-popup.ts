@@ -143,7 +143,7 @@ $("#customTestDurationPopupWrapper input").on("keyup", (e) => {
   }
 });
 
-$("#customTestDurationPopupWrapper .button").on("click", () => {
+$("#customTestDurationPopupWrapper button").on("click", () => {
   apply();
 });
 

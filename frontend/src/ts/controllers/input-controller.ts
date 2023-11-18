@@ -398,11 +398,16 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   }
 
   if (
-    (char === "’" || char === "‘" || char === "'" || char === "ʼ") &&
+    (char === "’" ||
+      char === "‘" ||
+      char === "'" ||
+      char === "ʼ" ||
+      char === "׳") &&
     (originalChar === "’" ||
       originalChar === "‘" ||
       originalChar === "'" ||
-      originalChar === "ʼ")
+      originalChar === "ʼ" ||
+      originalChar === "׳")
   ) {
     return true;
   }
@@ -441,7 +446,8 @@ function handleChar(
   const now = performance.now();
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
-  if (char === "…") {
+
+  if (char === "…" && TestWords.words.getCurrent()[charIndex] !== "…") {
     for (let i = 0; i < 3; i++) {
       handleChar(".", charIndex + i);
     }

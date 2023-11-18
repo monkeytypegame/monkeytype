@@ -231,7 +231,7 @@ export async function update(
             git
           )}/' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             git
-          )}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-github"></i></a>`
         );
       }
 
@@ -242,7 +242,7 @@ export async function update(
             twitter
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
-          )}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-twitter"></i></a>`
         );
       }
 
@@ -258,7 +258,7 @@ export async function update(
             website
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             websiteName ?? ""
-          )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fas fa-fw fa-globe"></i></a>`
         );
       }
     }
