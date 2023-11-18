@@ -1062,9 +1062,6 @@ export async function downloadResults(offset?: number): Promise<void> {
 
   TodayTracker.addAllFromToday();
   if (results) {
-    //TODO remove after testing
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     ResultFilters.updateActive();
   }
 }

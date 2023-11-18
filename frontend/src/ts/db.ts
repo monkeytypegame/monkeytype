@@ -282,13 +282,6 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     const resultsWithoutDuplicates = results.filter(
       (it) => it.timestamp < oldestTimestamp
     );
-    console.log("+++++ mergeResults", {
-      current: dbSnapshot?.results,
-      results,
-      added: resultsWithoutDuplicates,
-      oldestTimestamp,
-    });
-
     dbSnapshot.results.push(...resultsWithoutDuplicates);
   } else {
     dbSnapshot.results = results;
