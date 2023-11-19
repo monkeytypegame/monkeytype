@@ -123,6 +123,11 @@ export async function punctuateWord(
       const r = Math.random();
       const brackets = ["()", "{}", "[]", "<>"];
 
+      // add `word` in javascript
+      if (Config.language.startsWith("code_javascript")) {
+        brackets.push("``");
+      }
+
       const index = Math.floor(r * brackets.length);
       const bracket = brackets[index];
 
