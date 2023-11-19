@@ -229,7 +229,11 @@ export async function punctuateWord(
     ) {
       word = Misc.randomElementFromArray(specialsC);
     } else {
-      word = Misc.randomElementFromArray(specials);
+      if (Config.language.startsWith("code_javascript")) {
+        word = Misc.randomElementFromArray([...specials, "`"]);
+      } else {
+        word = Misc.randomElementFromArray(specials);
+      }
     }
   } else if (
     Math.random() < 0.5 &&
