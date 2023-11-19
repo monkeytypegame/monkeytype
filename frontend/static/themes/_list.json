@@ -1181,6 +1181,13 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name":"one_dark_pro",
+    "bgColor": "#282c34",
+    "mainColor": "#e5c07b",
+    "subColor": "#abb2bf",
+    "textColor": "#ffffff"
   }
 
 ]
