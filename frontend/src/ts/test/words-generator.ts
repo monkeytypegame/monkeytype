@@ -121,15 +121,12 @@ export async function punctuateWord(
   } else if (Math.random() < 0.012 && lastChar !== "," && lastChar !== ".") {
     if (currentLanguage === "code") {
       const r = Math.random();
-      if (r < 0.25) {
-        word = `(${word})`;
-      } else if (r < 0.5) {
-        word = `{${word}}`;
-      } else if (r < 0.75) {
-        word = `[${word}]`;
-      } else {
-        word = `<${word}>`;
-      }
+      const brackets = ["()", "{}", "[]", "<>"];
+
+      const index = Math.floor(r * brackets.length);
+      const bracket = brackets[index];
+
+      word = `${bracket[0]}${word}${bracket[1]}`;
     } else {
       word = `(${word})`;
     }
