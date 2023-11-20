@@ -16,6 +16,7 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
       regularUser: 1000,
       premiumUser: 10000,
     },
+    maxBatchSize: 1000,
   },
   quotes: {
     reporting: {
@@ -68,6 +69,9 @@ export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
     inbox: {
       enabled: false,
       maxMail: 0,
+    },
+    premium: {
+      enabled: false,
     },
   },
   rateLimiting: {
@@ -189,6 +193,11 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
               },
             },
           },
+          maxBatchSize: {
+            type: "number",
+            label: "results endpoint max batch size",
+            min: 1,
+          },
         },
       },
       quotes: {
@@ -266,6 +275,16 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
         type: "object",
         label: "Users",
         fields: {
+          premium: {
+            type: "object",
+            label: "Premium",
+            fields: {
+              enabled: {
+                type: "boolean",
+                label: "Enabled",
+              },
+            },
+          },
           signUp: {
             type: "boolean",
             label: "Sign Up Enabled",

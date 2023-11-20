@@ -33,6 +33,7 @@ export interface Configuration {
       regularUser: number;
       premiumUser: number;
     };
+    maxBatchSize: number;
   };
   users: {
     signUp: boolean;
@@ -66,6 +67,9 @@ export interface Configuration {
     inbox: {
       enabled: boolean;
       maxMail: number;
+    };
+    premium: {
+      enabled: boolean;
     };
   };
   admin: {

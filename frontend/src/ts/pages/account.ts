@@ -21,6 +21,8 @@ import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
+import * as Loader from "../elements/loader";
+import * as ResultBatches from "../elements/result-batches";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -221,6 +223,8 @@ async function fillContent(): Promise<void> {
 
   PbTables.update(snapshot.personalBests);
   Profile.update("account", snapshot);
+
+  ResultBatches.update();
 
   chartData = [];
   accChartData = [];
@@ -1047,15 +1051,15 @@ async function fillContent(): Promise<void> {
   );
 }
 
-export async function downloadResults(): Promise<void> {
-  if (DB.getSnapshot()?.results !== undefined) return;
-  const results = await DB.getUserResults();
+export async function downloadResults(offset?: number): Promise<void> {
+  const results = await DB.getUserResults(offset);
   if (results === false && !ConnectionState.get()) {
     Notifications.add("Could not get results - you are offline", -1, {
       duration: 5,
     });
     return;
   }
+
   TodayTracker.addAllFromToday();
   if (results) {
     ResultFilters.updateActive();
@@ -1299,6 +1303,17 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
   );
 });
 
+$(".pageAccount button.loadMoreResults").on("click", async () => {
+  const offset = DB.getSnapshot()?.results?.length || 0;
+
+  Loader.show();
+  ResultBatches.disableButton();
+
+  await downloadResults(offset);
+  await fillContent();
+  Loader.hide();
+});
+
 ConfigEvent.subscribe((eventKey) => {
   if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
     update();
@@ -1327,6 +1342,7 @@ export const page = new Page(
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
     }
+
     await update();
     await Misc.sleep(0);
     updateChartColors();
@@ -1336,6 +1352,8 @@ export const page = new Page(
         `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
       );
     }
+
+    ResultBatches.showOrHideIfNeeded();
   },
   async () => {
     //

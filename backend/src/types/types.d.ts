@@ -1,3 +1,5 @@
+type Configuration = import("../types/shared").Configuration;
+
 type ObjectId = import("mongodb").ObjectId;
 
 type ExpressRequest = import("express").Request;
