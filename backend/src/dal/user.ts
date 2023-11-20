@@ -19,7 +19,7 @@ export async function addUser(
   email: string,
   uid: string
 ): Promise<void> {
-  const newUserDocument: MonkeyTypes.User = {
+  const newUserDocument: Partial<MonkeyTypes.User> = {
     name,
     email,
     uid,
@@ -548,7 +548,10 @@ export async function linkDiscord(
   discordId: string,
   discordAvatar?: string
 ): Promise<void> {
-  const updates = _.pickBy({ discordId, discordAvatar }, _.identity);
+  const updates: Partial<MonkeyTypes.User> = _.pickBy(
+    { discordId, discordAvatar },
+    _.identity
+  );
   const result = await getUsersCollection().updateOne(
     { uid },
     { $set: updates }
@@ -844,7 +847,7 @@ interface AddToInboxBulkEntry {
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],
-  inboxConfig: Configuration["users"]["inbox"]
+  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -872,7 +875,7 @@ export async function addToInboxBulk(
 export async function addToInbox(
   uid: string,
   mail: MonkeyTypes.MonkeyMail[],
-  inboxConfig: Configuration["users"]["inbox"]
+  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 

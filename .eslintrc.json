@@ -25,7 +25,8 @@
     "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
     // "plugin:@typescript-eslint/recommended-requiring-type-checking"
     // "plugin:@typescript-eslint/strict"
   ],
@@ -33,14 +34,6 @@
   "rules": {
     "json/*": ["error"],
     "indent": ["off"],
-    "linebreak-style": ["error", "unix"],
-    "curly": ["error", "multi-line"],
-    "quotes": [
-      "error",
-      "double",
-      { "allowTemplateLiterals": true, "avoidEscape": true }
-    ],
-    "semi": ["error", "always"],
     "no-empty": ["error", { "allowEmptyCatch": true }],
     "no-var": 2,
     "no-duplicate-imports": ["error"],
