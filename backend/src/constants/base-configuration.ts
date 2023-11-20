@@ -193,11 +193,11 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
               },
             },
           },
-        },
-        maxBatchSize: {
-          type: "number",
-          label: "results endpoint max batch size",
-          min: 1,
+          maxBatchSize: {
+            type: "number",
+            label: "results endpoint max batch size",
+            min: 1,
+          },
         },
       },
       quotes: {
@@ -270,21 +270,21 @@ export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> 
             min: 5,
           },
         },
-        premium: {
-          type: "object",
-          label: "Premium",
-          fields: {
-            enabled: {
-              type: "boolean",
-              label: "Enabled",
-            },
-          },
-        },
       },
       users: {
         type: "object",
         label: "Users",
         fields: {
+          premium: {
+            type: "object",
+            label: "Premium",
+            fields: {
+              enabled: {
+                type: "boolean",
+                label: "Enabled",
+              },
+            },
+          },
           signUp: {
             type: "boolean",
             label: "Sign Up Enabled",
