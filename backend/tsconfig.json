@@ -12,7 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "strictNullChecks": true,
-    "skipLibCheck": true
+    "skipLibCheck": false
   },
   "ts-node": {
     "files": true

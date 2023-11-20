@@ -1,9 +1,8 @@
 import Ape from ".";
-import * as SharedMonkeyTypes from "@backend/types/shared";
 
-let config: SharedMonkeyTypes.Configuration | undefined = undefined;
+let config: MonkeyTypes.Configuration | undefined = undefined;
 
-export function get(): SharedMonkeyTypes.Configuration | undefined {
+export function get(): MonkeyTypes.Configuration | undefined {
   return config;
 }
 
@@ -14,6 +13,6 @@ export async function sync(): Promise<void> {
     console.error("Could not fetch configuration", response.message);
     return;
   } else {
-    config = response.data as SharedMonkeyTypes.Configuration;
+    config = response.data as MonkeyTypes.Configuration;
   }
 }

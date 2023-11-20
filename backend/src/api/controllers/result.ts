@@ -42,7 +42,6 @@ import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
-import { Configuration } from "../../types/shared";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -618,7 +617,7 @@ interface XpResult {
 
 async function calculateXp(
   result,
-  xpConfiguration: Configuration["users"]["xp"],
+  xpConfiguration: MonkeyTypes.Configuration["users"]["xp"],
   uid: string,
   currentTotalXp: number,
   streak: number

@@ -1,6 +1,10 @@
 type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
 
 declare namespace MonkeyTypes {
+  type Configuration = import("@backend/types/shared").Configuration;
+  type ValidModeRule = import("@backend/types/shared").ValidModeRule;
+  type RewardBracket = import("@backend/types/shared").RewardBracket;
+
   type PageName =
     | "loading"
     | "test"
