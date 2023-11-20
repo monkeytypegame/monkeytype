@@ -64,11 +64,13 @@ export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const isPremium = await UserDAL.checkIfUserIsPremium(uid);
+  const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
+  const userHasPremium = await UserDAL.checkIfUserIsPremium(uid);
 
-  const maxLimit = isPremium
-    ? req.ctx.configuration.results.limits.premiumUser
-    : req.ctx.configuration.results.limits.regularUser;
+  const maxLimit =
+    premiumFeaturesEnabled && userHasPremium
+      ? req.ctx.configuration.results.limits.premiumUser
+      : req.ctx.configuration.results.limits.regularUser;
 
   const onOrAfterTimestamp = parseInt(
     req.query.onOrAfterTimestamp as string,
@@ -80,6 +82,15 @@ export async function getResults(
   );
   const offset = stringToNumberOrDefault(req.query.offset as string, 0);
 
+  //check if premium features are disabled and current call exceeds the limit for regular users
+  if (
+    userHasPremium &&
+    premiumFeaturesEnabled === false &&
+    limit + offset > req.ctx.configuration.results.limits.regularUser
+  ) {
+    throw new MonkeyError(503, "Premium feature disabled.");
+  }
+
   if (limit + offset > maxLimit) {
     if (offset < maxLimit) {
       //batch is partly in the allowed ranged. Set the limit to the max allowed and return partly results.
@@ -87,15 +98,6 @@ export async function getResults(
     } else {
       throw new MonkeyError(422, `Max results limit of ${maxLimit} exceeded.`);
     }
-  }
-
-  //check if premium features are disabled and current call exceeds the limit for regular users
-  if (
-    isPremium &&
-    req.ctx.configuration.users.premium.enabled === false &&
-    limit + offset > req.ctx.configuration.results.limits.regularUser
-  ) {
-    throw new MonkeyError(503, "Premium feature disabled.");
   }
 
   const results = await ResultDAL.getResults(uid, {
@@ -109,7 +111,7 @@ export async function getResults(
       limit,
       offset,
       onOrAfterTimestamp,
-      isPremium,
+      isPremium: userHasPremium,
     },
     uid
   );

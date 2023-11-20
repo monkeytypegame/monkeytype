@@ -228,6 +228,25 @@ describe("result controller test", () => {
 
       //THEN
     });
+    it("should get results with regular limit as default for premium users if premium is globally disabled", async () => {
+      //GIVEN
+      jest.spyOn(UserDal, "checkIfUserIsPremium").mockResolvedValue(true);
+      enablePremiumFeatures(false);
+
+      //WHEN
+      await mockApp
+        .get("/results")
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(200);
+
+      //THEN
+      expect(resultMock).toHaveBeenCalledWith(mockDecodedToken.uid, {
+        limit: 1000, //the default limit for regular users
+        offset: 0,
+        onOrAfterTimestamp: NaN,
+      });
+    });
   });
 });
 
