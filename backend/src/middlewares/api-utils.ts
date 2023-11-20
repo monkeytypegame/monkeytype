@@ -5,7 +5,6 @@ import { Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
 import { getUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
-import { Configuration } from "../types/shared";
 
 interface ValidationOptions<T> {
   criteria: (data: T) => boolean;
@@ -23,7 +22,7 @@ const emptyMiddleware = (
  * the criteria.
  */
 function validateConfiguration(
-  options: ValidationOptions<Configuration>
+  options: ValidationOptions<MonkeyTypes.Configuration>
 ): RequestHandler {
   const {
     criteria,

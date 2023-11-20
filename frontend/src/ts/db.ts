@@ -131,6 +131,7 @@ export async function initSnapshot(): Promise<
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
     snap.filterPresets = userData.resultFilterPresets ?? [];
+    snap.isPremium = userData?.isPremium;
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
@@ -225,51 +226,67 @@ export async function initSnapshot(): Promise<
   }
 }
 
-export async function getUserResults(): Promise<boolean> {
+export async function getUserResults(offset?: number): Promise<boolean> {
   const user = Auth?.currentUser;
   if (!user) return false;
   if (!dbSnapshot) return false;
+  if (
+    dbSnapshot.results !== undefined &&
+    (offset === undefined || dbSnapshot.results.length > offset)
+  ) {
+    return false;
+  }
 
   if (!ConnectionState.get()) {
     return false;
   }
 
-  if (dbSnapshot.results !== undefined) {
-    return true;
-  } else {
+  if (dbSnapshot.results === undefined) {
     LoadingPage.updateText("Downloading results...");
     LoadingPage.updateBar(90);
-
-    const response = await Ape.results.get();
-
-    if (response.status !== 200) {
-      Notifications.add("Error getting results: " + response.message, -1);
-      return false;
-    }
-
-    const results = response.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
-    results.forEach((result) => {
-      if (result.bailedOut === undefined) result.bailedOut = false;
-      if (result.blindMode === undefined) result.blindMode = false;
-      if (result.lazyMode === undefined) result.lazyMode = false;
-      if (result.difficulty === undefined) result.difficulty = "normal";
-      if (result.funbox === undefined) result.funbox = "none";
-      if (result.language === undefined || result.language === null) {
-        result.language = "english";
-      }
-      if (result.numbers === undefined) result.numbers = false;
-      if (result.punctuation === undefined) result.punctuation = false;
-      if (result.quoteLength === undefined) result.quoteLength = -1;
-      if (result.restartCount === undefined) result.restartCount = 0;
-      if (result.incompleteTestSeconds === undefined) {
-        result.incompleteTestSeconds = 0;
-      }
-      if (result.afkDuration === undefined) result.afkDuration = 0;
-      if (result.tags === undefined) result.tags = [];
-    });
-    dbSnapshot.results = results?.sort((a, b) => b.timestamp - a.timestamp);
-    return true;
   }
+
+  const response = await Ape.results.get(offset);
+
+  if (response.status !== 200) {
+    Notifications.add("Error getting results: " + response.message, -1);
+    return false;
+  }
+
+  const results = response.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
+  results?.sort((a, b) => b.timestamp - a.timestamp);
+  results.forEach((result) => {
+    if (result.bailedOut === undefined) result.bailedOut = false;
+    if (result.blindMode === undefined) result.blindMode = false;
+    if (result.lazyMode === undefined) result.lazyMode = false;
+    if (result.difficulty === undefined) result.difficulty = "normal";
+    if (result.funbox === undefined) result.funbox = "none";
+    if (result.language === undefined || result.language === null) {
+      result.language = "english";
+    }
+    if (result.numbers === undefined) result.numbers = false;
+    if (result.punctuation === undefined) result.punctuation = false;
+    if (result.quoteLength === undefined) result.quoteLength = -1;
+    if (result.restartCount === undefined) result.restartCount = 0;
+    if (result.incompleteTestSeconds === undefined) {
+      result.incompleteTestSeconds = 0;
+    }
+    if (result.afkDuration === undefined) result.afkDuration = 0;
+    if (result.tags === undefined) result.tags = [];
+  });
+
+  if (dbSnapshot.results !== undefined) {
+    //merge
+    const oldestTimestamp =
+      dbSnapshot.results[dbSnapshot.results.length - 1].timestamp;
+    const resultsWithoutDuplicates = results.filter(
+      (it) => it.timestamp < oldestTimestamp
+    );
+    dbSnapshot.results.push(...resultsWithoutDuplicates);
+  } else {
+    dbSnapshot.results = results;
+  }
+  return true;
 }
 
 function _getCustomThemeById(

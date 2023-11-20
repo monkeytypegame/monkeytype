@@ -383,9 +383,12 @@ export async function getUser(
     UserDAL.flagForNameChange(uid);
   }
 
+  const isPremium = await UserDAL.checkIfUserIsPremium(uid);
+
   const userData = {
     ...getRelevantUserInfo(userInfo),
     inboxUnreadSize: inboxUnreadSize,
+    isPremium,
   };
 
   return new MonkeyResponse("User data retrieved", userData);

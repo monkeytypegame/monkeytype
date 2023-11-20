@@ -30,7 +30,7 @@
     "noPropertyAccessFromIndexSignature": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "paths": {
       "@backend/*": ["../backend/src/*"]
     }
