@@ -42,7 +42,6 @@ import _ from "lodash";
 import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
-import { Configuration } from "../../types/shared";
 
 try {
   if (anticheatImplemented() === false) throw new Error("undefined");
@@ -64,24 +63,40 @@ export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const isPremium = await UserDAL.checkIfUserIsPremium(uid);
+  const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
+  const userHasPremium = await UserDAL.checkIfUserIsPremium(uid);
 
-  const maxLimit = isPremium
-    ? req.ctx.configuration.results.limits.premiumUser
-    : req.ctx.configuration.results.limits.regularUser;
+  const maxLimit =
+    premiumFeaturesEnabled && userHasPremium
+      ? req.ctx.configuration.results.limits.premiumUser
+      : req.ctx.configuration.results.limits.regularUser;
 
   const onOrAfterTimestamp = parseInt(
     req.query.onOrAfterTimestamp as string,
     10
   );
-  const limit = stringToNumberOrDefault(
+  let limit = stringToNumberOrDefault(
     req.query.limit as string,
-    Math.min(1000, maxLimit)
+    Math.min(req.ctx.configuration.results.maxBatchSize, maxLimit)
   );
   const offset = stringToNumberOrDefault(req.query.offset as string, 0);
 
+  //check if premium features are disabled and current call exceeds the limit for regular users
+  if (
+    userHasPremium &&
+    premiumFeaturesEnabled === false &&
+    limit + offset > req.ctx.configuration.results.limits.regularUser
+  ) {
+    throw new MonkeyError(503, "Premium feature disabled.");
+  }
+
   if (limit + offset > maxLimit) {
-    throw new MonkeyError(422, `Max results limit of ${maxLimit} exceeded.`);
+    if (offset < maxLimit) {
+      //batch is partly in the allowed ranged. Set the limit to the max allowed and return partly results.
+      limit = maxLimit - offset;
+    } else {
+      throw new MonkeyError(422, `Max results limit of ${maxLimit} exceeded.`);
+    }
   }
 
   const results = await ResultDAL.getResults(uid, {
@@ -89,6 +104,16 @@ export async function getResults(
     limit,
     offset,
   });
+  Logger.logToDb(
+    "user_results_requested",
+    {
+      limit,
+      offset,
+      onOrAfterTimestamp,
+      isPremium: userHasPremium,
+    },
+    uid
+  );
   return new MonkeyResponse("Results retrieved", results);
 }
 
@@ -618,7 +643,7 @@ interface XpResult {
 
 async function calculateXp(
   result,
-  xpConfiguration: Configuration["users"]["xp"],
+  xpConfiguration: MonkeyTypes.Configuration["users"]["xp"],
   uid: string,
   currentTotalXp: number,
   streak: number
