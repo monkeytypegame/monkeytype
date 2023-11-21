@@ -43,6 +43,7 @@
     "rate-limiter-flexible": "2.3.7",
     "simple-git": "3.16.0",
     "string-similarity": "4.0.4",
+    "stripe": "^14.5.0",
     "swagger-stats": "0.99.4",
     "swagger-ui-express": "4.3.0",
     "ua-parser-js": "0.7.28",
