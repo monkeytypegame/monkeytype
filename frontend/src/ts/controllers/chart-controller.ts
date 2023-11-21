@@ -100,10 +100,10 @@ export const result: ChartWithUpdateColors<
           label: "wpm",
           data: [],
           borderColor: "rgba(125, 125, 125, 1)",
-          borderWidth: 2,
+          borderWidth: 3,
           yAxisID: "wpm",
           order: 2,
-          pointRadius: 2,
+          pointRadius: 1,
         },
         {
           //@ts-ignore the type is defined incorrectly, have to ingore the error
@@ -111,10 +111,10 @@ export const result: ChartWithUpdateColors<
           label: "raw",
           data: [],
           borderColor: "rgba(125, 125, 125, 1)",
-          borderWidth: 2,
+          borderWidth: 3,
           yAxisID: "raw",
           order: 3,
-          pointRadius: 2,
+          pointRadius: 1,
         },
         {
           //@ts-ignore the type is defined incorrectly, have to ingore the error
