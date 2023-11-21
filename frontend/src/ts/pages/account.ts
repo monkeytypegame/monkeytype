@@ -1349,7 +1349,7 @@ export const page = new Page(
     $(".pageAccount .content p.accountVerificatinNotice").remove();
     if (Auth?.currentUser?.emailVerified === false) {
       $(".pageAccount .content").prepend(
-        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
+        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
       );
     }
 
