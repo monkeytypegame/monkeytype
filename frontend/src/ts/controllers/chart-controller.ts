@@ -1084,9 +1084,12 @@ async function updateColors<
 >(chart: ChartWithUpdateColors<TType, TData, TLabel>): Promise<void> {
   const bgcolor = await ThemeColors.get("bg");
   const subcolor = await ThemeColors.get("sub");
+  const subaltcolor = await ThemeColors.get("subAlt");
   const maincolor = await ThemeColors.get("main");
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
+
+  const gridcolor = Misc.blendTwoHexColors(bgcolor, subaltcolor, 0.75);
 
   //@ts-ignore
   chart.data.datasets[0].borderColor = (ctx): string => {
@@ -1199,6 +1202,9 @@ async function updateColors<
     const axis = chartScaleOptions.scales[scaleID] as CartesianScaleOptions;
     axis.ticks.color = subcolor;
     axis.title.color = subcolor;
+    axis.grid.color = gridcolor;
+    axis.grid.tickColor = gridcolor;
+    axis.grid.borderColor = gridcolor;
   });
 
   try {
