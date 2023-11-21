@@ -298,3 +298,9 @@ export function stringToNumberOrDefault(
   if (!Number.isFinite(value)) return defaultValue;
   return value;
 }
+
+export function getFrontendUrl(): string {
+  return process.env.FRONTEND_URL || process.env.MODE === "dev"
+    ? "http://localhost:3000"
+    : "https://monkeytype.com";
+}

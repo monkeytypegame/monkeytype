@@ -7,6 +7,7 @@ import * as DiscordUtils from "../../utils/discord";
 import {
   MILLISECONDS_IN_DAY,
   buildAgentLog,
+  getFrontendUrl,
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
@@ -97,14 +98,9 @@ export async function sendVerificationEmail(
 
   let link = "";
   try {
-    link = await FirebaseAdmin()
-      .auth()
-      .generateEmailVerificationLink(email, {
-        url:
-          process.env.MODE === "dev"
-            ? "http://localhost:3000"
-            : "https://monkeytype.com",
-      });
+    link = await FirebaseAdmin().auth().generateEmailVerificationLink(email, {
+      url: getFrontendUrl(),
+    });
   } catch (e) {
     if (
       e.code === "auth/internal-error" &&
@@ -159,14 +155,9 @@ export async function sendForgotPasswordEmail(
     "request forgot password email"
   );
 
-  const link = await FirebaseAdmin()
-    .auth()
-    .generatePasswordResetLink(email, {
-      url:
-        process.env.MODE === "dev"
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
-    });
+  const link = await FirebaseAdmin().auth().generatePasswordResetLink(email, {
+    url: getFrontendUrl(),
+  });
   await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
 
   return new MonkeyResponse("Email sent if user was found");

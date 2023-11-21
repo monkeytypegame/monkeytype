@@ -115,3 +115,7 @@ content-validation.js
 ads.txt
 updateContributors.mjs
 copyAnticheatToDev.sh
+
+
+#stripe secrets
+stripeConfig*.json

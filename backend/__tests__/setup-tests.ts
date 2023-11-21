@@ -82,3 +82,7 @@ afterEach(() => {
 afterAll(async () => {
   await connection.close();
 });
+
+export const describeIntegration = process.env.RUN_INTEGRATION_TESTS
+  ? describe
+  : describe.skip;
