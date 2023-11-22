@@ -101,7 +101,7 @@ declare namespace MonkeyTypes {
     lbOptOut?: boolean;
     premium?: PremiumInfo;
     ips?: UserIpHistory;
-    payment?: PaymentInfo;
+    stripeData?: StripeData;
   }
 
   interface UserStreak {
@@ -401,11 +401,8 @@ declare namespace MonkeyTypes {
     startTimestamp: number;
     expirationTimestamp: number;
   }
-  interface PaymentInfo {
-    stripe?: StripeInfo;
-  }
 
-  interface StripeInfo {
+  interface StripeData {
     customerId: string;
   }
 }
