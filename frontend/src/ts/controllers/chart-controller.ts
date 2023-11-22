@@ -100,10 +100,10 @@ export const result: ChartWithUpdateColors<
           label: "wpm",
           data: [],
           borderColor: "rgba(125, 125, 125, 1)",
-          borderWidth: 2,
+          borderWidth: 3,
           yAxisID: "wpm",
           order: 2,
-          pointRadius: 2,
+          pointRadius: 1,
         },
         {
           //@ts-ignore the type is defined incorrectly, have to ingore the error
@@ -111,10 +111,10 @@ export const result: ChartWithUpdateColors<
           label: "raw",
           data: [],
           borderColor: "rgba(125, 125, 125, 1)",
-          borderWidth: 2,
+          borderWidth: 3,
           yAxisID: "raw",
           order: 3,
-          pointRadius: 2,
+          pointRadius: 1,
         },
         {
           //@ts-ignore the type is defined incorrectly, have to ingore the error
@@ -1084,9 +1084,12 @@ async function updateColors<
 >(chart: ChartWithUpdateColors<TType, TData, TLabel>): Promise<void> {
   const bgcolor = await ThemeColors.get("bg");
   const subcolor = await ThemeColors.get("sub");
+  const subaltcolor = await ThemeColors.get("subAlt");
   const maincolor = await ThemeColors.get("main");
   const errorcolor = await ThemeColors.get("error");
   const textcolor = await ThemeColors.get("text");
+
+  const gridcolor = Misc.blendTwoHexColors(bgcolor, subaltcolor, 0.75);
 
   //@ts-ignore
   chart.data.datasets[0].borderColor = (ctx): string => {
@@ -1199,6 +1202,9 @@ async function updateColors<
     const axis = chartScaleOptions.scales[scaleID] as CartesianScaleOptions;
     axis.ticks.color = subcolor;
     axis.title.color = subcolor;
+    axis.grid.color = gridcolor;
+    axis.grid.tickColor = gridcolor;
+    axis.grid.borderColor = gridcolor;
   });
 
   try {

@@ -1167,7 +1167,7 @@
 
     label {
       color: var(--sub-color);
-      margin-bottom: -1rem;
+      margin-bottom: -0.5rem;
     }
 
     // .text {
@@ -1397,6 +1397,7 @@
       grid-template-columns: 1fr 1fr 1fr;
       gap: 1rem;
 
+      button,
       .button {
         display: block;
         width: 100%;

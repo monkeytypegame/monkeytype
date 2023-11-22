@@ -51,6 +51,10 @@
     top: 50%;
     transform: translate(-50%, -50%);
     color: var(--error-color);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    align-items: baseline;
     .message {
       display: inline;
     }

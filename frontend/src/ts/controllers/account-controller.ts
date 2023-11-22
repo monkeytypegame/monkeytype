@@ -54,7 +54,9 @@ async function sendVerificationEmail(): Promise<void> {
   }
 
   Loader.show();
+  $(".sendVerificationEmail").prop("disabled", true);
   const result = await Ape.users.verificationEmail();
+  $(".sendVerificationEmail").prop("disabled", false);
   if (result.status !== 200) {
     Loader.hide();
     Notifications.add(

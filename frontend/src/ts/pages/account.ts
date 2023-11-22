@@ -1257,7 +1257,7 @@ $(".pageAccount .group.history").on("click", ".history-date-header", () => {
 // Resets sorting to by date' when applying filers (normal or advanced)
 $(".pageAccount .group.history").on(
   "click",
-  ".buttonsAndTitle .buttons .button",
+  ".buttonsAndTitle .buttons button",
   () => {
     // We want to 'force' descending sort:
     sortAndRefreshHistory("timestamp", ".history-date-header", true);
@@ -1266,7 +1266,7 @@ $(".pageAccount .group.history").on(
 
 $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "click",
-  ".button",
+  "button",
   () => {
     setTimeout(() => {
       update();
@@ -1349,7 +1349,7 @@ export const page = new Page(
     $(".pageAccount .content p.accountVerificatinNotice").remove();
     if (Auth?.currentUser?.emailVerified === false) {
       $(".pageAccount .content").prepend(
-        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
+        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
       );
     }
 
