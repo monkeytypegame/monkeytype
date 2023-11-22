@@ -5,7 +5,7 @@ import {
   validateRequest,
   validateConfiguration,
 } from "../../middlewares/api-utils";
-import * as PaymentsController from "../controllers/payments";
+import * as StoreController from "../controllers/store";
 import { authenticateRequest } from "../../middlewares/auth";
 
 const router = Router();
@@ -33,7 +33,7 @@ router.post(
         .max(1), //currently we only support one item per checkout
     },
   }),
-  asyncHandler(PaymentsController.createCheckout)
+  asyncHandler(StoreController.createCheckout)
 );
 
 export default router;

@@ -33,8 +33,8 @@ export async function createCheckout(
   };
 
   //reuse existing customer
-  if (user.payment?.stripe?.customerId !== undefined) {
-    createSession.customer = user.payment.stripe.customerId;
+  if (user.stripeData?.customerId !== undefined) {
+    createSession.customer = user.stripeData.customerId;
   } else {
     createSession.customer_email = user.email;
   }

@@ -38,7 +38,7 @@ const userGetUserMock = jest.spyOn(UserDal, "getUser");
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 
-describe("payments controller test", () => {
+describe("store controller test", () => {
   describe("createCheckout", () => {
     beforeEach(async () => {
       await enablePremiumFeatures(true);
@@ -58,7 +58,7 @@ describe("payments controller test", () => {
 
       //WHEN
       const response = await mockApp
-        .post("/payments/checkouts")
+        .post("/store/checkouts")
         .set("Authorization", "Bearer 123456789")
         .send({ items: [{ lookupKey: "prime_monthly" }] })
         .expect(200);
@@ -90,7 +90,7 @@ describe("payments controller test", () => {
 
       //WHEN
       const response = await mockApp
-        .post("/payments/checkouts")
+        .post("/store/checkouts")
         .set("Authorization", "Bearer 123456789")
         .send({ items: [{ lookupKey: "prime_monthly" }] })
         .expect(200);
@@ -122,13 +122,13 @@ describe("payments controller test", () => {
       ]);
       stripeCreateCheckout.mockResolvedValue("http://example.com");
       const returningUser = _.merge(dummyUser, {
-        payment: { stripe: { customerId: "cust_1234" } },
+        stripeData: { customerId: "cust_1234" },
       });
       userGetUserMock.mockResolvedValue(returningUser);
 
       //WHEN
       const response = await mockApp
-        .post("/payments/checkouts")
+        .post("/store/checkouts")
         .set("Authorization", "Bearer 123456789")
         .send({ items: [{ lookupKey: "prime_monthly" }] })
         .expect(200);
@@ -159,7 +159,7 @@ describe("payments controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/payments/checkouts")
+          .post("/store/checkouts")
           .set("Authorization", "Bearer 123456789")
           .send()
           .expect(422)
@@ -173,7 +173,7 @@ describe("payments controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/payments/checkouts")
+          .post("/store/checkouts")
           .set("Authorization", "Bearer 123456789")
           .send({ items: [] })
           .expect(422)
@@ -189,7 +189,7 @@ describe("payments controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/payments/checkouts")
+          .post("/store/checkouts")
           .set("Authorization", "Bearer 123456789")
           .send({ items: [{}] })
           .expect(422)
@@ -205,7 +205,7 @@ describe("payments controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/payments/checkouts")
+          .post("/store/checkouts")
           .set("Authorization", "Bearer 123456789")
           .send({ items: [{ lookupKey: "" }] })
           .expect(422)
@@ -223,7 +223,7 @@ describe("payments controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/payments/checkouts")
+          .post("/store/checkouts")
           .set("Authorization", "Bearer 123456789")
           .send({ items: [{ lookupKey: "first" }, { lookupKey: "second" }] })
           .expect(422)
@@ -242,7 +242,7 @@ describe("payments controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/payments/checkouts")
+          .post("/store/checkouts")
           .set("Authorization", "Bearer 123456789")
           .send()
           .expect(503)

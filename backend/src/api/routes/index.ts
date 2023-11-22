@@ -13,7 +13,7 @@ import webhooks from "./webhooks";
 import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
-import payments from "./payments";
+import store from "./store";
 import addSwaggerMiddlewares from "./swagger";
 import { asyncHandler } from "../../middlewares/api-utils";
 import { MonkeyResponse } from "../../utils/monkey-response";
@@ -42,7 +42,7 @@ const API_ROUTE_MAP = {
   "/ape-keys": apeKeys,
   "/admin": admin,
   "/webhooks": webhooks,
-  "/payments": payments,
+  "/store": store,
 };
 
 function addApiRoutes(app: Application): void {
