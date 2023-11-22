@@ -1,8 +1,13 @@
+type Configuration = import("../types/shared").Configuration;
+
 type ObjectId = import("mongodb").ObjectId;
 
 type ExpressRequest = import("express").Request;
 
 declare namespace MonkeyTypes {
+  type Configuration = import("./shared").Configuration;
+  type ValidModeRule = import("./shared").ValidModeRule;
+  type RewardBracket = import("./shared").RewardBracket;
   interface DecodedToken {
     type: "Bearer" | "ApeKey" | "None";
     uid: string;
@@ -168,7 +173,7 @@ declare namespace MonkeyTypes {
       [language: string]: boolean;
     };
     funbox: {
-      none?: boolean;
+      none: boolean;
       [funbox: string]: boolean;
     };
   }
@@ -361,9 +366,12 @@ declare namespace MonkeyTypes {
     type: string;
   }
 
-  interface PublicSpeedStats {
+  type PublicSpeedStats = TypedMongoEntry & PublicSpeedStatsByLanguage;
+  interface TypedMongoEntry {
     _id: string;
     type: "speedStats";
+  }
+  interface PublicSpeedStatsByLanguage {
     [language_mode_mode2: string]: Record<string, number>;
   }
 

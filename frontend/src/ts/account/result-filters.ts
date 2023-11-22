@@ -344,11 +344,11 @@ export function updateActive(): void {
       let buttonEl;
       if (group === "date") {
         buttonEl = $(
-          `.pageAccount .group.topFilters .filterGroup[group="${group}"] .button[filter="${filter}"]`
+          `.pageAccount .group.topFilters .filterGroup[group="${group}"] button[filter="${filter}"]`
         );
       } else {
         buttonEl = $(
-          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
+          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
         );
       }
       if (getFilter(group, filter)) {
@@ -487,7 +487,7 @@ function toggle<G extends keyof MonkeyTypes.ResultFilters>(
 
 $(
   ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
-).on("click", ".button", (e) => {
+).on("click", "button", (e) => {
   const group = $(e.target)
     .parents(".buttons")
     .attr("group") as keyof MonkeyTypes.ResultFilters;
@@ -514,7 +514,7 @@ $(
         setAllFilters(group, false);
       }
     });
-  } else if ($(e.target).hasClass("button")) {
+  } else if ($(e.target).is("button")) {
     if (e.shiftKey) {
       setAllFilters(group, false);
       filters[group][filter as keyof typeof filters[typeof group]] =
@@ -528,7 +528,7 @@ $(
   save();
 });
 
-$(".pageAccount .topFilters .button.allFilters").on("click", () => {
+$(".pageAccount .topFilters button.allFilters").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
@@ -548,7 +548,7 @@ $(".pageAccount .topFilters .button.allFilters").on("click", () => {
   save();
 });
 
-$(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
+$(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
   // user is changing the filters -> current filter is no longer a filter preset
   deSelectFilterPreset();
 
@@ -633,9 +633,9 @@ $(".pageAccount .topFilters .button.currentConfigFilter").on("click", () => {
   save();
 });
 
-$(".pageAccount .topFilters .button.toggleAdvancedFilters").on("click", () => {
+$(".pageAccount .topFilters button.toggleAdvancedFilters").on("click", () => {
   $(".pageAccount .filterButtons").slideToggle(250);
-  $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass(
+  $(".pageAccount .topFilters button.toggleAdvancedFilters").toggleClass(
     "active"
   );
 });
@@ -652,10 +652,10 @@ export async function appendButtons(): Promise<void> {
   if (languageList) {
     let html = "";
     for (const language of languageList) {
-      html += `<div class="button" filter="${language}">${language.replace(
+      html += `<button filter="${language}">${language.replace(
         "_",
         " "
-      )}</div>`;
+      )}</button>`;
     }
     const el = document.querySelector(
       ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
@@ -674,15 +674,16 @@ export async function appendButtons(): Promise<void> {
   if (funboxList) {
     let html = "";
     for (const funbox of funboxList) {
-      html += `<div class="button" filter="${
-        funbox.name
-      }">${funbox.name.replace(/_/g, " ")}</div>`;
+      html += `<button filter="${funbox.name}">${funbox.name.replace(
+        /_/g,
+        " "
+      )}</button>`;
     }
     const el = document.querySelector(
       ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
     );
     if (el) {
-      el.innerHTML = `<div class="button" filter="none">none</div>` + html;
+      el.innerHTML = `<button filter="none">none</button>` + html;
     }
   }
 
@@ -692,9 +693,9 @@ export async function appendButtons(): Promise<void> {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
-    let html = `<div class="button" filter="none">no tag</div>`;
+    let html = `<button filter="none">no tag</button>`;
     for (const tag of snapshot?.tags ?? []) {
-      html += `<div class="button" filter="${tag._id}">${tag.display}</div>`;
+      html += `<button filter="${tag._id}">${tag.display}</button>`;
     }
     const el = document.querySelector(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
@@ -723,7 +724,7 @@ export function removeButtons(): void {
   ).empty();
 }
 
-$(".pageAccount .topFilters .button.createFilterPresetBtn").on("click", () => {
+$(".pageAccount .topFilters button.createFilterPresetBtn").on("click", () => {
   startCreateFilterPreset();
 });
 

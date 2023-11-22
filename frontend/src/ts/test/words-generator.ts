@@ -121,15 +121,17 @@ export async function punctuateWord(
   } else if (Math.random() < 0.012 && lastChar !== "," && lastChar !== ".") {
     if (currentLanguage === "code") {
       const r = Math.random();
-      if (r < 0.25) {
-        word = `(${word})`;
-      } else if (r < 0.5) {
-        word = `{${word}}`;
-      } else if (r < 0.75) {
-        word = `[${word}]`;
-      } else {
-        word = `<${word}>`;
+      const brackets = ["()", "{}", "[]", "<>"];
+
+      // add `word` in javascript
+      if (Config.language.startsWith("code_javascript")) {
+        brackets.push("``");
       }
+
+      const index = Math.floor(r * brackets.length);
+      const bracket = brackets[index];
+
+      word = `${bracket[0]}${word}${bracket[1]}`;
     } else {
       word = `(${word})`;
     }
@@ -227,7 +229,11 @@ export async function punctuateWord(
     ) {
       word = Misc.randomElementFromArray(specialsC);
     } else {
-      word = Misc.randomElementFromArray(specials);
+      if (Config.language.startsWith("code_javascript")) {
+        word = Misc.randomElementFromArray([...specials, "`"]);
+      } else {
+        word = Misc.randomElementFromArray(specials);
+      }
     }
   } else if (
     Math.random() < 0.5 &&

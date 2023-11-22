@@ -6,13 +6,13 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
 
-  const showAllButton = `<div class="buttonGroup"><div
-  class="showAllButton button"
+  const showAllButton = `<div class="buttonGroup"><button
+  class="showAllButton"
   data-balloon-pos="left"
   aria-label="Show all personal bests"
 >
   <i class="fas fa-ellipsis-v"></i>
-</div></div>`;
+</button></div>`;
 
   const htmlToShow = isProfile ? "" : showAllButton;
 
@@ -103,13 +103,13 @@ export function update(
 
   const showAllButton = isProfile
     ? ""
-    : `<div class="buttonGroup"><div
-      class="showAllButton button"
+    : `<div class="buttonGroup"><button
+      class="showAllButton"
       data-balloon-pos="left"
       aria-label="Show all personal bests"
     >
       <i class="fas fa-ellipsis-v"></i>
-    </div></div>`;
+    </button></div>`;
 
   $(`.page${source} .profile .pbsTime`).append(text + showAllButton);
 
