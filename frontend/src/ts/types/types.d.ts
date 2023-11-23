@@ -14,6 +14,7 @@ declare namespace MonkeyTypes {
     | "login"
     | "profile"
     | "profileSearch"
+    | "store"
     | "404";
 
   type Difficulty = "normal" | "expert" | "master";
@@ -608,6 +609,7 @@ declare namespace MonkeyTypes {
     streakHourOffset?: number;
     lbOptOut?: boolean;
     isPremium?: boolean;
+    premium?: PremiumInfo;
   }
 
   interface UserDetails {
@@ -918,5 +920,9 @@ declare namespace MonkeyTypes {
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;
+  }
+  interface PremiumInfo {
+    startTimestamp: number;
+    expirationTimestamp: number;
   }
 }

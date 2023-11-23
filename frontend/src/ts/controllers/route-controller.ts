@@ -123,6 +123,12 @@ const routes: Route[] = [
       });
     },
   },
+  {
+    path: "/store",
+    load: (): void => {
+      PageController.change("store");
+    },
+  },
 ];
 
 export function navigate(
