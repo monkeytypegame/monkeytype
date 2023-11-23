@@ -281,7 +281,6 @@ export const profanities = [
   "wank",
   "whoar",
   "whore",
-  "damn",
   "dyke",
   "fuck",
   "shit",
