@@ -398,9 +398,9 @@
       "id": 75
     },
     {
-      "text": "essere assolutamente ridicoli che assolutamente noiosi.",
+      "text": "L'imperfezione è bellezza, la follia è genio ed è meglio essere assolutamente ridicoli che assolutamente noiosi.",
       "source": "Marilyn Monroe",
-      "length": 55,
+      "length": 112,
       "id": 76
     },
     {
@@ -786,6 +786,66 @@
       "source": "Il gattopardo",
       "length": 148,
       "id": 141
+    },
+    {
+      "text": "Dove posso mai aver letto di quel condannato a morte che, un'ora prima dell'esecuzione, dice o pensa che se potesse vivere in cima a uno scoglio, su una piattaforma così stretta da poterci tenere soltanto i due piedi, con intorno l'abisso, l'oceano, la tenebra eterna, la solitudine eterna e l'eterna procella, e rimanersene immobile su quello spazio di un metro quadrato per tutta la vita, per mille anni, per l'eternità, ebbene, preferirebbe vivere così piuttosto che morire in quell'istante? Pur di vivere, vivere, vivere! Vivere in qualunque modo, ma vivere!... Che verità, Signore Iddio, che verità! L'uomo è un vigliacco! Ed è un vigliacco chi, per questo, lo chiama vigliacco.",
+      "source": "Delitto e castigo",
+      "length": 683,
+      "id": 142
+    },
+    {
+      "text": "Il mozzicone di candela già da un pezzo si stava spegnendo nel candeliere storto, e illuminava con la sua luce fioca, in quella misera stanza, l'assassino e la peccatrice, stranamente riuniti nella lettura del libro eterno.",
+      "source": "Delitto e castigo",
+      "length": 223,
+      "id": 143
+    },
+    {
+      "text": "Eccoli qui: vanno e vengono su e giù per la strada, e sì che ciascuno di loro, per la sua stessa natura, è un mascalzone e un bandito; o, peggio ancora, un idiota! Ma se non mandassero me ai lavori forzati, tutti quanti si infurierebbero, pieni di nobile sdegno! Oh, come li odio!",
+      "source": "Delitto e castigo",
+      "length": 280,
+      "id": 144
+    },
+    {
+      "text": "Ho sempre visto, osservando la natura umana, che l'uomo il quale abbia buone ragioni per credere in se stesso, non si pavoneggia mai davanti agli altri per indurli a credere in lui.",
+      "source": "David Copperfield - Charles Dickens",
+      "length": 181,
+      "id": 145
+    },
+    {
+      "text": "La più nobile come la più bassa forma di critica sono una sorta di autobiografia.",
+      "source": "Dorian Gray",
+      "length": 81,
+      "id": 146
+    },
+    {
+      "text": "L'inventiva, bisogna ammetterlo con umiltà, non consiste nel creare dal vuoto, bensì dal caos.",
+      "source": "Frankenstein",
+      "length": 94,
+      "id": 147
+    },
+    {
+      "text": "Una grassona sfiatata, dall'aria sconfitta, con una tuta sporca, che arrancava al nostro fianco, sentì quello che stava dicendo Miss Pefko. Si girò a esaminare il dottor Breed, lanciandogli un'occhiata di impotente rimprovero. Lei odiava la gente che pensava troppo. In quel momento quella donna mi colpì come la degna rappresentante di quasi tutta l'umanità.",
+      "source": "Ghiaccio-Nove - Kurt Vonnegut",
+      "length": 359,
+      "id": 148
+    },
+    {
+      "text": "Quello che avevo visto, naturalmente, era il rito bokononista del boko-maru, ovvero la fusione delle coscienze. Noi bokononisti crediamo che sia impossibile stare piede-a-piede con una persona senza amarla, a patto che i piedi di entrambe le parti siano puliti e ben curati.",
+      "source": "Ghiaccio-Nove - Kurt Vonnegut",
+      "length": 274,
+      "id": 149
+    },
+    {
+      "text": "L’ozio rende lente le ore e veloci gli anni. L’operosità rapide le ore e lenti gli anni.",
+      "source": "Il mestiere di viere - Cesare Pavese",
+      "length": 88,
+      "id": 150
+    },
+    {
+      "text": "Date una compagnia al solitario e parlerà più di chiunque.",
+      "source": "Il mestiere di viere - Cesare Pavese",
+      "length": 58,
+      "id": 151
     }
   ]
 }
