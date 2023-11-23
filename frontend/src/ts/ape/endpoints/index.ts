@@ -8,6 +8,7 @@ import Users from "./users";
 import ApeKeys from "./ape-keys";
 import Public from "./public";
 import Configuration from "./configuration";
+import Store from "./store";
 
 export default {
   Configs,
@@ -20,4 +21,5 @@ export default {
   Users,
   ApeKeys,
   Configuration,
+  Store,
 };

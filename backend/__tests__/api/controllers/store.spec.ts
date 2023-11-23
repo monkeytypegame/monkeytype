@@ -75,8 +75,8 @@ describe("store controller test", () => {
         line_items: [{ price: "price_id", quantity: 1 }],
         billing_address_collection: "auto",
         success_url:
-          "http://localhost:3000/payment/success?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: "http://localhost:3000/payment/cancel",
+          "http://localhost:3000/store?action=success&session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: "http://localhost:3000/store?action=cancel",
         client_reference_id: uid,
         mode: "subscription",
         customer_email: "test@example.com",
@@ -107,8 +107,8 @@ describe("store controller test", () => {
         line_items: [{ price: "price_id", quantity: 1 }],
         billing_address_collection: "auto",
         success_url:
-          "http://localhost:3000/payment/success?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: "http://localhost:3000/payment/cancel",
+          "http://localhost:3000/store?action=success&session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: "http://localhost:3000/store?action=cancel",
         client_reference_id: uid,
         mode: "payment",
         customer_creation: "always",
@@ -145,8 +145,8 @@ describe("store controller test", () => {
         line_items: [{ price: "price_id", quantity: 1 }],
         billing_address_collection: "auto",
         success_url:
-          "http://localhost:3000/payment/success?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url: "http://localhost:3000/payment/cancel",
+          "http://localhost:3000/store?action=success&session_id={CHECKOUT_SESSION_ID}",
+        cancel_url: "http://localhost:3000/store?action=cancel",
         client_reference_id: uid,
         mode: "subscription",
         customer: "cust_1234",

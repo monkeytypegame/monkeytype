@@ -27,8 +27,8 @@ export async function createCheckout(
       },
     ],
     billing_address_collection: "auto",
-    success_url: `${MY_DOMAIN}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${MY_DOMAIN}/payment/cancel`,
+    success_url: `${MY_DOMAIN}/store?action=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${MY_DOMAIN}/store?action=cancel`,
     client_reference_id: uid,
   };
 

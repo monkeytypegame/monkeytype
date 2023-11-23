@@ -25,6 +25,7 @@ import "./controllers/input-controller";
 import "./ready";
 import "./controllers/route-controller";
 import "./pages/about";
+import "./pages/store";
 import "./popups/pb-tables-popup";
 import "./elements/scroll-to-top";
 import "./popups/mobile-test-config-popup";

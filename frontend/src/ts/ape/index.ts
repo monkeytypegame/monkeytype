@@ -20,6 +20,7 @@ const Ape = {
   publicStats: new endpoints.Public(httpClient),
   apeKeys: new endpoints.ApeKeys(httpClient),
   configuration: new endpoints.Configuration(httpClient),
+  store: new endpoints.Store(httpClient),
 };
 
 export default Ape;

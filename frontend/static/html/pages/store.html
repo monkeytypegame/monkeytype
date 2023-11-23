@@ -1,0 +1,37 @@
+<div class="page pageStore hidden" id="pageStore">
+  <div class="premiumActive hidden">
+    <h2>You are a premium user</h2>
+    <p>
+      premium active until
+      <span id="premium_until"></span>
+      .
+    </p>
+    <input type="button" id="premium_sub_cancel" value="Cancel subsciption." />
+  </div>
+
+  <div class="premiumAvailable hidden">
+    <h2>Subscripe to Prime Ape!</h2>
+    <p>Get cool features like:</p>
+    <ul>
+      <li>More historical test results.</li>
+      <li>Bragging rights</li>
+    </ul>
+
+    <input
+      type="button"
+      class="premium_sub"
+      data-item="prime_monthly"
+      value="Subscripe for 5$/month"
+    />
+    <input
+      type="button"
+      class="premium_sub"
+      data-item="prime_yearly"
+      value="Subscripe for 39$/year"
+    />
+  </div>
+
+  <div class="premiumDisabled">
+    Sorry, premium feature is currently not available.
+  </div>
+</div>
