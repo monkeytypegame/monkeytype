@@ -312,6 +312,7 @@ function getRelevantUserInfo(
     "_id",
     "lastResultHashes",
     "note",
+    "stripeData",
   ]);
 }
 

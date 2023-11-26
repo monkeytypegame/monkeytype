@@ -15,9 +15,6 @@ async function fill(): Promise<void> {
   if (!user) return;
 
   const data = DB.getSnapshot();
-
-  console.log("++++ fill", { user, data });
-
   if (!data) return;
 
   //TODO check backend config for user.premium.enabled
@@ -27,16 +24,22 @@ async function fill(): Promise<void> {
   const action = urlParams.get("action");
 
   if (action === "success") {
-    const sessionId = urlParams.get("session_id");
-    alert("complete purchase for sessionId " + sessionId);
-    //TODO: call backend POST /store/checkouts/${sessionId}
-    //TODO: on success reload user info
-    //simulate
-    data.isPremium = true;
-    data.premium = {
-      startTimestamp: 1701471599,
-      expirationTimestamp: 1704149999,
-    };
+    const sessionId = urlParams.get("session_id") || ""; //error handling?
+    const response = await Ape.store.finalizeCheckout(sessionId);
+    if (response.status >= 300) {
+      alert("request failed: " + response.status + " " + response.message);
+      return;
+    }
+
+    const userData = await Ape.users.getData();
+    //error handling?
+    data.premium = userData.data.premium;
+    data.isPremium = userData.data.isPremium;
+    window.location.href =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      window.location.pathname;
   } else if (action === "cancel") {
     alert("purchase cancelled.");
   }
@@ -49,7 +52,7 @@ async function fill(): Promise<void> {
         $("#premium_sub_cancel").attr("disabled", "disabled");
       } else {
         premiumEndDate = new Date(
-          data.premium?.expirationTimestamp * 1000
+          data.premium?.expirationTimestamp
         ).toDateString();
       }
       $("#premium_until").html(premiumEndDate);
@@ -71,6 +74,10 @@ $(".premium_sub").on("click", async (e) => {
   }
   const redirectUrl = response.data.redirectUrl;
   window.location.href = redirectUrl;
+});
+
+$(".premium_sub_cancel").on("click", async (e) => {
+  alert("cancel subscription");
 });
 
 export const page = new Page(

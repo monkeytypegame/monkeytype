@@ -10,14 +10,16 @@ import { authenticateRequest } from "../../middlewares/auth";
 
 const router = Router();
 
+const validateFeatureEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.users.premium.enabled;
+  },
+  invalidMessage: "Premium is temporarily disabled.",
+});
+
 router.post(
   "/checkouts",
-  validateConfiguration({
-    criteria: (configuration) => {
-      return configuration.users.premium.enabled;
-    },
-    invalidMessage: "Premium is temporarily disabled.",
-  }),
+  validateFeatureEnabled,
   authenticateRequest(),
   validateRequest({
     body: {
@@ -34,6 +36,17 @@ router.post(
     },
   }),
   asyncHandler(StoreController.createCheckout)
+);
+router.post(
+  "/checkouts/:stripeSessionId",
+  validateFeatureEnabled,
+  authenticateRequest(),
+  validateRequest({
+    params: {
+      stripeSessionId: joi.string().required(),
+    },
+  }),
+  asyncHandler(StoreController.finalizeCheckout)
 );
 
 export default router;

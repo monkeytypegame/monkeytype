@@ -1,6 +1,5 @@
 import { MonkeyResponse } from "../../utils/monkey-response";
 import * as UserDal from "../../dal/user";
-
 import * as Stripe from "../../services/stripe";
 import MonkeyError from "../../utils/error";
 import { getFrontendUrl } from "../../utils/misc";
@@ -49,4 +48,59 @@ export async function createCheckout(
   const redirectUrl = await Stripe.createCheckout(createSession);
 
   return new MonkeyResponse("Checkout created", { redirectUrl });
+}
+
+export async function finalizeCheckout(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const stripeSessionId = req.params.stripeSessionId;
+  const session = await Stripe.getCheckout(stripeSessionId);
+
+  //check the checkout was for the current user
+  if (session.client_reference_id !== uid) {
+    throw new MonkeyError(400, "Invalid checkout for the current user.");
+  }
+
+  //session must be linked to a stripe customer
+  await UserDal.linkStripeCustomerIdByUid(uid, session.customer as string);
+
+  //check session payment is not pending
+  if (
+    session.payment_status !== "paid" &&
+    session.payment_status !== "no_payment_required"
+  ) {
+    throw new MonkeyError(500, "Session is not paid.");
+  }
+
+  switch (session.mode) {
+    case "subscription":
+      await processSubscription(session.subscription as string);
+      break;
+    default:
+      throw new MonkeyError(
+        500,
+        `Session mode ${session.mode} is not supported yet.`
+      );
+  }
+
+  return new MonkeyResponse("Checkout finalized", {});
+}
+
+async function processSubscription(subscriptionId: string): Promise<void> {
+  const subscription = await Stripe.getSubscription(subscriptionId);
+
+  if (subscription.status === "active") {
+    //
+    const startDate = subscription.start_date * 1000;
+    const endDate = subscription.current_period_end * 1000;
+
+    await UserDal.updatePremiumByStripeCustomerId(
+      subscription.customer as string,
+      startDate,
+      endDate
+    );
+  } else {
+    //we don't need to handle other states as premium validity is calculated based on the expirationTimestamp.
+  }
 }
