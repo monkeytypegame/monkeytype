@@ -32,8 +32,19 @@ const dummyUser = {
 jest.spyOn(AuthUtils, "verifyIdToken").mockResolvedValue(mockDecodedToken);
 
 const stripePriceMock = jest.spyOn(Stripe, "getPrices");
-const stripeCreateCheckout = jest.spyOn(Stripe, "createCheckout");
+const stripeCreateCheckoutMock = jest.spyOn(Stripe, "createCheckout");
+const stripeGetCheckoutMock = jest.spyOn(Stripe, "getCheckout");
+const stripeGetSubscriptionMock = jest.spyOn(Stripe, "getSubscription");
+
 const userGetUserMock = jest.spyOn(UserDal, "getUser");
+const userLinkCustomerByUidMock = jest.spyOn(
+  UserDal,
+  "linkStripeCustomerIdByUid"
+);
+const userUpdatePremiumMock = jest.spyOn(
+  UserDal,
+  "updatePremiumByStripeCustomerId"
+);
 
 const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
@@ -44,8 +55,8 @@ describe("store controller test", () => {
       await enablePremiumFeatures(true);
     });
     afterEach(async () => {
-      [stripePriceMock, stripeCreateCheckout, userGetUserMock].forEach((it) =>
-        it.mockReset()
+      [stripePriceMock, stripeCreateCheckoutMock, userGetUserMock].forEach(
+        (it) => it.mockReset()
       );
     });
     it("should create checkout for single subscription for first time user", async () => {
@@ -53,7 +64,7 @@ describe("store controller test", () => {
       stripePriceMock.mockResolvedValue([
         { id: "price_id", type: "recurring" },
       ]);
-      stripeCreateCheckout.mockResolvedValue("http://example.com");
+      stripeCreateCheckoutMock.mockResolvedValue("http://example.com");
       userGetUserMock.mockResolvedValue(dummyUser);
 
       //WHEN
@@ -71,7 +82,7 @@ describe("store controller test", () => {
       expect(checkoutData).toHaveProperty("redirectUrl", "http://example.com");
 
       expect(stripePriceMock).toHaveBeenCalledWith(["prime_monthly"]);
-      expect(stripeCreateCheckout).toHaveBeenCalledWith({
+      expect(stripeCreateCheckoutMock).toHaveBeenCalledWith({
         line_items: [{ price: "price_id", quantity: 1 }],
         billing_address_collection: "auto",
         success_url:
@@ -85,7 +96,7 @@ describe("store controller test", () => {
     it("should create checkout for single one_time_payment for first time user", async () => {
       //GIVEN
       stripePriceMock.mockResolvedValue([{ id: "price_id", type: "one_time" }]);
-      stripeCreateCheckout.mockResolvedValue("http://example.com");
+      stripeCreateCheckoutMock.mockResolvedValue("http://example.com");
       userGetUserMock.mockResolvedValue(dummyUser);
 
       //WHEN
@@ -103,7 +114,7 @@ describe("store controller test", () => {
       expect(checkoutData).toHaveProperty("redirectUrl", "http://example.com");
 
       expect(stripePriceMock).toHaveBeenCalledWith(["prime_monthly"]);
-      expect(stripeCreateCheckout).toHaveBeenCalledWith({
+      expect(stripeCreateCheckoutMock).toHaveBeenCalledWith({
         line_items: [{ price: "price_id", quantity: 1 }],
         billing_address_collection: "auto",
         success_url:
@@ -120,7 +131,7 @@ describe("store controller test", () => {
       stripePriceMock.mockResolvedValue([
         { id: "price_id", type: "recurring" },
       ]);
-      stripeCreateCheckout.mockResolvedValue("http://example.com");
+      stripeCreateCheckoutMock.mockResolvedValue("http://example.com");
       const returningUser = _.merge(dummyUser, {
         stripeData: { customerId: "cust_1234" },
       });
@@ -141,7 +152,7 @@ describe("store controller test", () => {
       expect(checkoutData).toHaveProperty("redirectUrl", "http://example.com");
 
       expect(stripePriceMock).toHaveBeenCalledWith(["prime_monthly"]);
-      expect(stripeCreateCheckout).toHaveBeenCalledWith({
+      expect(stripeCreateCheckoutMock).toHaveBeenCalledWith({
         line_items: [{ price: "price_id", quantity: 1 }],
         billing_address_collection: "auto",
         success_url:
@@ -243,6 +254,121 @@ describe("store controller test", () => {
         //WHEN
         await mockApp
           .post("/store/checkouts")
+          .set("Authorization", "Bearer 123456789")
+          .send()
+          .expect(503)
+          .expect(expectErrorMessage("Premium is temporarily disabled."));
+      });
+    });
+  });
+  describe("finalizeCheckout", () => {
+    beforeEach(async () => {
+      await enablePremiumFeatures(true);
+      userLinkCustomerByUidMock.mockResolvedValue();
+      userUpdatePremiumMock.mockResolvedValue();
+    });
+    afterEach(async () => {
+      [
+        userLinkCustomerByUidMock,
+        userUpdatePremiumMock,
+        stripeGetCheckoutMock,
+        stripeGetSubscriptionMock,
+      ].forEach((it) => it.mockReset());
+    });
+
+    it("should update premium for subscriptions", async () => {
+      //GIVEN
+      stripeGetCheckoutMock.mockResolvedValue({
+        client_reference_id: uid,
+        customer: "customerId",
+        payment_status: "paid",
+        mode: "subscription",
+        subscription: "subscriptionId",
+      } as Stripe.Session);
+      stripeGetSubscriptionMock.mockResolvedValue({
+        status: "active",
+        customer: "customerId",
+        start_date: 10,
+        current_period_end: 20,
+      } as Stripe.Subscription);
+
+      //WHEN
+      await mockApp
+        .post("/store/checkouts/sessionId")
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(200);
+
+      //THEN
+      expect(stripeGetCheckoutMock).toHaveBeenCalledWith("sessionId");
+      expect(userLinkCustomerByUidMock).toHaveBeenCalledWith(uid, "customerId");
+      expect(stripeGetSubscriptionMock).toHaveBeenCalledWith("subscriptionId");
+      expect(userUpdatePremiumMock).toHaveBeenCalledWith(
+        "customerId",
+        10000,
+        20000
+      );
+    });
+
+    it("should fail for mismatch user", async () => {
+      //the MT user in the stripe session is not the same as in the request
+      //GIVEN
+      stripeGetCheckoutMock.mockResolvedValue({
+        client_reference_id: "anotherUser",
+      } as Stripe.Session);
+
+      //WHEN /THEN
+      await mockApp
+        .post("/store/checkouts/theSessionId")
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(400)
+        .expect(expectErrorMessage("Invalid checkout for the current user."));
+    });
+    it("should fail for unpaid subscriptions", async () => {
+      //GIVEN
+      stripeGetCheckoutMock.mockResolvedValue({
+        client_reference_id: uid,
+        customer: "customerId",
+        payment_status: "unpaid",
+      } as Stripe.Session);
+
+      //WHEN
+      await mockApp
+        .post("/store/checkouts/sessionId")
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(500)
+        .expect(expectErrorMessage("Session is not paid."));
+    });
+    it("should fail for non subscriptions", async () => {
+      //GIVEN
+      stripeGetCheckoutMock.mockResolvedValue({
+        client_reference_id: uid,
+        customer: "customerId",
+        payment_status: "paid",
+        mode: "payment",
+      } as Stripe.Session);
+
+      //WHEN
+      await mockApp
+        .post("/store/checkouts/sessionId")
+        .set("Authorization", "Bearer 123456789")
+        .send()
+        .expect(500)
+        .expect(
+          expectErrorMessage("Session mode payment is not supported yet.")
+        );
+    });
+
+    describe("validations", () => {
+      it("should fail if premium feature is disabled", async () => {
+        //GIVEN
+        await enablePremiumFeatures(false);
+
+        //WHEN
+        await mockApp
+          .post("/store/checkouts/theSessionId")
           .set("Authorization", "Bearer 123456789")
           .send()
           .expect(503)

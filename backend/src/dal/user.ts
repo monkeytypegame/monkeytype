@@ -1047,3 +1047,58 @@ export async function checkIfUserIsPremium(uid: string): Promise<boolean> {
   if (expirationDate === -1) return true; //lifetime
   return expirationDate > Date.now();
 }
+
+export async function linkStripeCustomerIdByUid(
+  uid: string,
+  customerId: string
+): Promise<void> {
+  return linkStripeCustomer(customerId, uid, undefined);
+}
+export async function linkStripeCustomerIdByEmail(
+  email: string,
+  customerId: string
+): Promise<void> {
+  return linkStripeCustomer(customerId, undefined, email);
+}
+async function linkStripeCustomer(
+  customerId: string,
+  uid?: string,
+  email?: string
+): Promise<void> {
+  const customerFilter = {
+    $or: [
+      { "stripeData.customerId": null },
+      { "stripeData.customerId": customerId },
+    ],
+  };
+  const userFilter = uid !== undefined ? { uid } : { email };
+  const filter = {
+    $and: [userFilter, customerFilter],
+  };
+
+  const result = await getUsersCollection().updateOne(filter, {
+    $set: { stripeData: { customerId: customerId } },
+  });
+
+  if (result.matchedCount !== 1) {
+    throw new MonkeyError(404, "Cannot link customer to user.");
+  }
+}
+export async function updatePremiumByStripeCustomerId(
+  customerId: string,
+  startDate: number,
+  endDate: number
+): Promise<void> {
+  const result = await getUsersCollection().updateOne(
+    { "stripeData.customerId": customerId },
+    {
+      $set: {
+        premium: { startTimestamp: startDate, expirationTimestamp: endDate },
+      },
+    }
+  );
+
+  if (result.matchedCount !== 1) {
+    throw new MonkeyError(404, "Cannot update premium info.");
+  }
+}

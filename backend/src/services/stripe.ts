@@ -8,6 +8,8 @@ export type Price = {
   type: Stripe.Price.Type;
 };
 export type SessionCreateParams = Stripe.Checkout.SessionCreateParams;
+export type Session = Stripe.Checkout.Session;
+export type Subscription = Stripe.Subscription;
 
 export async function getPrices(
   lookupKeys: Array<string>
@@ -27,4 +29,16 @@ export async function createCheckout(
     throw new MonkeyError(500, "Cannot create checkout session"); //TODO error handling
   }
   return result.url;
+}
+
+export async function getCheckout(sessionId: string): Promise<Session> {
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+  return session;
+}
+export async function getSubscription(
+  subscriptionId: string
+): Promise<Subscription> {
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  return subscription;
 }

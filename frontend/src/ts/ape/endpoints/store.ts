@@ -11,4 +11,11 @@ export default class Store {
 
     return await this.httpClient.post(`${BASE_PATH}/checkouts`, { payload });
   }
+
+  async finalizeCheckout(sessionId: string): Ape.EndpointResponse {
+    return await this.httpClient.post(
+      `${BASE_PATH}/checkouts/${sessionId}`,
+      {}
+    );
+  }
 }

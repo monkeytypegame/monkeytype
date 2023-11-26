@@ -2,6 +2,7 @@ import _ from "lodash";
 import { ObjectId } from "mongodb";
 import { updateStreak } from "../../src/dal/user";
 import * as UserDAL from "../../src/dal/user";
+import MonkeyError from "../../src/utils/error";
 
 const mockPersonalBest = {
   acc: 1,
@@ -780,5 +781,93 @@ describe("UserDal", () => {
 
       await expect(streak).toBe(expectedStreak);
     }
+  });
+  describe("linkStripeCustomerIdByUid", () => {
+    it("should link user by uid", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const customerId = new ObjectId().toHexString();
+      await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
+
+      //WHEN
+      await UserDAL.linkStripeCustomerIdByUid(uid, customerId);
+
+      //THEN
+      const readUser = await UserDAL.getUser(uid, "test");
+      expect(readUser).toHaveProperty("stripeData.customerId", customerId);
+    });
+    it("should link user by email", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const email = uid + "@example.com";
+      const customerId = new ObjectId().toHexString();
+      await UserDAL.addUser("user" + uid, email, uid);
+
+      //WHEN
+      await UserDAL.linkStripeCustomerIdByEmail(email, customerId);
+
+      //THEN
+      const readUser = await UserDAL.getUser(uid, "test");
+      expect(readUser).toHaveProperty("stripeData.customerId", customerId);
+    });
+    it("should link user by uid if already linked", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const customerId = new ObjectId().toHexString();
+      await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
+      await UserDAL.linkStripeCustomerIdByUid(uid, customerId);
+
+      //WHEN
+      await UserDAL.linkStripeCustomerIdByUid(uid, customerId);
+
+      //THEN
+      const readUser = await UserDAL.getUser(uid, "test");
+      expect(readUser).toHaveProperty("stripeData.customerId", customerId);
+    });
+
+    it("should fail linking user by uid if already linked with a different customerId", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const customerId = new ObjectId().toHexString();
+      await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
+      await UserDAL.linkStripeCustomerIdByUid(uid, "diffenentCustomerId");
+
+      //WHEN / THEN
+      await expect(
+        UserDAL.linkStripeCustomerIdByUid(uid, customerId)
+      ).rejects.toThrow(new MonkeyError(404, "Cannot link customer to user."));
+    });
+    it("should fail for unknown uid", async () => {
+      await expect(
+        UserDAL.linkStripeCustomerIdByUid("unknownUid", "customerId")
+      ).rejects.toThrow(new MonkeyError(404, "Cannot link customer to user."));
+    });
+    it("should fail for unknown email", async () => {
+      await expect(
+        UserDAL.linkStripeCustomerIdByEmail("unknown@example.com", "customerId")
+      ).rejects.toThrow(new MonkeyError(404, "Cannot link customer to user."));
+    });
+  });
+  describe("updatePremiumByStripeCustomerId", () => {
+    it("should set premium by customerId", async () => {
+      //GIVEN
+      const uid = new ObjectId().toHexString();
+      const customerId = new ObjectId().toHexString();
+      await UserDAL.addUser("user" + uid, uid + "@example.com", uid);
+      await UserDAL.linkStripeCustomerIdByUid(uid, customerId);
+
+      //WHEN
+      await UserDAL.updatePremiumByStripeCustomerId(customerId, 10, 20);
+
+      //THEN
+      const readUser = await UserDAL.getUser(uid, "test");
+      expect(readUser).toHaveProperty("premium.startTimestamp", 10);
+      expect(readUser).toHaveProperty("premium.expirationTimestamp", 20);
+    });
+    it("should fail for unknown customerId", async () => {
+      await expect(
+        UserDAL.updatePremiumByStripeCustomerId("unknownCustomerId", 10, 20)
+      ).rejects.toThrow(new MonkeyError(404, "Cannot update premium info."));
+    });
   });
 });
