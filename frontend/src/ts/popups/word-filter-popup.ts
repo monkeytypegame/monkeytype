@@ -189,6 +189,12 @@ export async function show(
 
 function hide(noAnim = false): void {
   if (Misc.isPopupVisible(wrapperId)) {
+    $("#wordFilterPopup .languageInput").select2("close");
+
+    $("#wordFilterPopup .layoutInput").select2("close");
+
+    $("#wordFilterPopup .presetInput").select2("close");
+
     $("#wordFilterPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
