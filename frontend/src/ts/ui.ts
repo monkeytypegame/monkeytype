@@ -32,6 +32,10 @@ function updateKeytips(): void {
     $("footer .keyTips").html(`
     <key>tab</key> - restart test<br>
       <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
+  } else if (Config.quickRestart === "enter") {
+    $("footer .keyTips").html(`
+    <key>enter</key> - restart test<br>
+      <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   } else {
     $("footer .keyTips").html(`
     <key>tab</key> + <key>enter</key> - restart test<br>

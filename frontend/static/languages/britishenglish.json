@@ -452,6 +452,7 @@
   ["dramatization", "dramatisation"],
   ["yodeler", "yodeller"],
   ["apologize", "apologise"],
+  ["apologized", "apologised"],
   ["blond", "blonde"],
   ["oxidize", "oxidise"],
   ["extemporize", "extemporise"],
@@ -611,6 +612,7 @@
   ["endeavors", "endeavours"],
   ["endeavoring", "endeavouring"],
   ["judgments", "judgements"],
+  ["judgment", "judgement"],
   ["paneling", "panelling"],
   ["defenses", "defences"],
   ["criticizing", "criticising"],
@@ -618,5 +620,7 @@
   ["emphasize", "emphasise"],
   ["emphasized", "emphasised"],
   ["emphasizes", "emphasises"],
-  ["emphasizing", "emphasising"]
+  ["emphasizing", "emphasising"],
+  ["fetus", "foetus"],
+  ["fiber", "fibre"]
 ]

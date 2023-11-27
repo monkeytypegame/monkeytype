@@ -23,7 +23,6 @@ export async function getCharFromEvent(
     }
     return (isCapitalized ? 1 : 0) + altGrIndex;
   }
-
   let layout;
 
   try {

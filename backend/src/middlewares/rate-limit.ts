@@ -31,6 +31,7 @@ export const customHandler = (
 
 const ONE_HOUR_SECONDS = 60 * 60;
 const ONE_HOUR_MS = 1000 * ONE_HOUR_SECONDS;
+const ONE_DAY_MS = 24 * ONE_HOUR_MS;
 
 // Root Rate Limit
 export const rootRateLimiter = rateLimit({
@@ -257,8 +258,8 @@ export const resultsGet = rateLimit({
 
 // Results Routing
 export const resultsGetApe = rateLimit({
-  windowMs: ONE_HOUR_MS,
-  max: 1 * REQUEST_MULTIPLIER,
+  windowMs: ONE_DAY_MS,
+  max: 30 * REQUEST_MULTIPLIER,
   keyGenerator: getKeyWithUid,
   handler: customHandler,
 });

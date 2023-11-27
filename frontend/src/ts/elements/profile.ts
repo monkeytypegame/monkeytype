@@ -135,9 +135,30 @@ export async function update(
       Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset
     );
 
+    console.debug("Streak hour offset");
+    console.debug("date.now()", Date.now(), new Date(Date.now()));
+    console.debug("dayInMilis", dayInMilis);
+    console.debug("milisOffset", milisOffset);
+    console.debug("timeDif", timeDif);
+    console.debug(
+      "Misc.getCurrentDayTimestamp()",
+      Misc.getCurrentDayTimestamp(),
+      new Date(Misc.getCurrentDayTimestamp())
+    );
+    console.debug("profile.streakHourOffset", profile.streakHourOffset);
+
     if (lastResult) {
       //check if the last result is from today
       const isToday = Misc.isToday(lastResult.timestamp);
+      const isYesterday = Misc.isYesterday(lastResult.timestamp);
+
+      console.debug(
+        "lastResult.timestamp",
+        lastResult.timestamp,
+        new Date(lastResult.timestamp)
+      );
+      console.debug("isToday", isToday);
+      console.debug("isYesterday", isYesterday);
 
       const offsetString = profile.streakHourOffset
         ? `(${profile.streakHourOffset > 0 ? "+" : ""}${
@@ -152,6 +173,8 @@ export async function update(
         hoverText += `\nClaimed today: no`;
         hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
       }
+
+      console.debug(hoverText);
 
       if (profile.streakHourOffset === undefined) {
         hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
@@ -208,7 +231,7 @@ export async function update(
             git
           )}/' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             git
-          )}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-github"></i></a>`
         );
       }
 
@@ -219,7 +242,7 @@ export async function update(
             twitter
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
-          )}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-twitter"></i></a>`
         );
       }
 
@@ -235,7 +258,7 @@ export async function update(
             website
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             websiteName ?? ""
-          )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fas fa-fw fa-globe"></i></a>`
         );
       }
     }

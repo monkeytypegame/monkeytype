@@ -127,6 +127,10 @@ export function focusWords(): void {
   }
 }
 
+export function blurWords(): void {
+  $("#wordsInput").trigger("blur");
+}
+
 export function updateActiveElement(
   backspace?: boolean,
   initial = false
@@ -416,6 +420,8 @@ export async function screenshot(): Promise<void> {
     $("#nocss").removeClass("hidden");
     $("header, footer").removeClass("invisible");
     $("#result").removeClass("noBalloons");
+    $(".wordInputHighlight").removeClass("hidden");
+    $(".highlightContainer").removeClass("hidden");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (!Auth?.currentUser) {
@@ -423,6 +429,9 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
+    FunboxList.get(Config.funbox).forEach((f) =>
+      f.functions?.applyGlobalCSS?.()
+    );
   }
 
   if (!$("#resultReplay").hasClass("hidden")) {
@@ -455,7 +464,11 @@ export async function screenshot(): Promise<void> {
   $(".page.pageTest").prepend("<div class='screenshotSpacer'></div>");
   $("header, footer").addClass("invisible");
   $("#result").addClass("noBalloons");
+  $(".wordInputHighlight").addClass("hidden");
+  $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+
+  FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
   window.scrollTo({
@@ -1100,20 +1113,6 @@ export async function applyBurstHeatmap(): Promise<void> {
       burstlist[index] = Math.round(typingSpeedUnit.fromWpm(burst));
     });
 
-    if (
-      TestInput.input.getHistory(TestInput.input.getHistory().length - 1)
-        ?.length !== TestWords.words.getCurrent()?.length
-    ) {
-      burstlist = burstlist.splice(0, burstlist.length - 1);
-    }
-
-    const median = Misc.median(burstlist);
-    const adatm: number[] = [];
-    burstlist.forEach((burst) => {
-      adatm.push(Math.abs(median - burst));
-    });
-    const step = Misc.mean(adatm);
-
     const themeColors = await ThemeColors.getAll();
 
     let colors = [
@@ -1140,25 +1139,28 @@ export async function applyBurstHeatmap(): Promise<void> {
       unreachedColor = themeColors.subAlt;
     }
 
+    const burstlistSorted = burstlist.sort((a, b) => a - b);
+    const burstlistLength = burstlist.length;
+
     const steps = [
       {
         val: 0,
         colorId: 0,
       },
       {
-        val: median - step * 1.5,
+        val: burstlistSorted[(burstlistLength * 0.15) | 0],
         colorId: 1,
       },
       {
-        val: median - step * 0.5,
+        val: burstlistSorted[(burstlistLength * 0.35) | 0],
         colorId: 2,
       },
       {
-        val: median + step * 0.5,
+        val: burstlistSorted[(burstlistLength * 0.65) | 0],
         colorId: 3,
       },
       {
-        val: median + step * 1.5,
+        val: burstlistSorted[(burstlistLength * 0.85) | 0],
         colorId: 4,
       },
     ];
@@ -1168,11 +1170,15 @@ export async function applyBurstHeatmap(): Promise<void> {
       if (index === 0) {
         string = `<${Math.round(steps[index + 1].val)}`;
       } else if (index === 4) {
-        string = `${Math.round(step.val - 1)}+`;
+        string = `${Math.round(step.val)}+`;
       } else {
-        string = `${Math.round(step.val)}-${
-          Math.round(steps[index + 1].val) - 1
-        }`;
+        if (step.val != steps[index + 1].val) {
+          string = `${Math.round(step.val)}-${
+            Math.round(steps[index + 1].val) - 1
+          }`;
+        } else {
+          string = `${Math.round(step.val)}-${Math.round(step.val)}`;
+        }
       }
 
       $("#resultWordsHistory .heatmapLegend .box" + index).html(
@@ -1323,5 +1329,15 @@ $("#wordsWrapper").on("click", () => {
 $(document).on("keypress", () => {
   if (resultVisible) {
     skipXpBreakdown();
+  }
+});
+
+ConfigEvent.subscribe((key, value) => {
+  if (key === "quickRestart") {
+    if (value === "off") {
+      $(".pageTest #restartTestButton").removeClass("hidden");
+    } else {
+      $(".pageTest #restartTestButton").addClass("hidden");
+    }
   }
 });

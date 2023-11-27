@@ -9,7 +9,9 @@ function show(): void {
   $("#supportMeWrapper")
     .css("opacity", 0)
     .removeClass("hidden")
-    .animate({ opacity: 1 }, 125);
+    .animate({ opacity: 1 }, 125, () => {
+      $(`#${wrapperId}`).trigger("focus");
+    });
 }
 
 function hide(): void {
@@ -29,15 +31,13 @@ $("main").on("click", ".pageAbout #supportMeAboutButton", () => {
   show();
 });
 
-$("#popups").on("click", "#supportMeWrapper", () => {
-  hide();
+$("#popups").on("click", "#supportMeWrapper", (e) => {
+  if ($(e.target).attr("id") === "supportMeWrapper") {
+    hide();
+  }
 });
 
-$("#popups").on("click", "#supportMeWrapper .button.ads", () => {
-  hide();
-});
-
-$("#popups").on("click", "#supportMeWrapper a.button", () => {
+$("#popups").on("click", "#supportMeWrapper button", () => {
   hide();
 });
 

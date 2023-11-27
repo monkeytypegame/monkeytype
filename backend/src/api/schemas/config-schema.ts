@@ -27,7 +27,7 @@ const CONFIG_SCHEMA = joi.object({
   showLiveWpm: joi.boolean(),
   showTimerProgress: joi.boolean(),
   smoothCaret: joi.string().valid("off", "slow", "medium", "fast"),
-  quickRestart: joi.string().valid("off", "tab", "esc"),
+  quickRestart: joi.string().valid("off", "tab", "esc", "enter"),
   punctuation: joi.boolean(),
   numbers: joi.boolean(),
   words: joi.number().min(0),
@@ -102,7 +102,12 @@ const CONFIG_SCHEMA = joi.object({
   paceCaretCustomSpeed: joi.number().min(0),
   repeatedPace: joi.boolean(),
   pageWidth: joi.string().valid("100", "125", "150", "200", "max"),
-  accountChart: joi.array().items(joi.string().valid("on", "off")).optional(),
+  accountChart: joi
+    .array()
+    .items(joi.string().valid("on", "off"))
+    .min(3)
+    .max(4)
+    .optional(), //replace min max with length 4 after a while
   minWpm: joi.string().valid("off", "custom"),
   minWpmCustomSpeed: joi.number().min(0),
   highlightMode: joi

@@ -25,6 +25,7 @@ import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
+import { removeTokensFromCacheByUid } from "../../utils/auth";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -115,13 +116,19 @@ export async function sendVerificationEmail(
     if (e.code === "auth/user-not-found") {
       throw new MonkeyError(
         500,
-        "Auth user not found when the user was found in the database",
+        "Auth user not found when the user was found in the database. Contact support with this error message and your email",
         JSON.stringify({
           decodedTokenEmail: email,
           userInfoEmail: userInfo.email,
           stack: e.stack,
         }),
         userInfo.uid
+      );
+    }
+    if (e.message.includes("Internal error encountered.")) {
+      throw new MonkeyError(
+        500,
+        "Firebase failed to generate an email verification link. Please try again later."
       );
     }
     throw e;
@@ -193,7 +200,7 @@ export async function resetUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "reset user");
-  await Promise.all([
+  const promises = [
     UserDAL.resetUser(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
@@ -203,7 +210,12 @@ export async function resetUser(
       uid,
       req.ctx.configuration.dailyLeaderboards
     ),
-  ]);
+  ];
+
+  if (userInfo.discordId) {
+    promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
+  }
+  await Promise.all(promises);
   Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
@@ -371,9 +383,12 @@ export async function getUser(
     UserDAL.flagForNameChange(uid);
   }
 
+  const isPremium = await UserDAL.checkIfUserIsPremium(uid);
+
   const userData = {
     ...getRelevantUserInfo(userInfo),
     inboxUnreadSize: inboxUnreadSize,
+    isPremium,
   };
 
   return new MonkeyResponse("User data retrieved", userData);
@@ -897,5 +912,6 @@ export async function revokeAllTokens(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   await FirebaseAdmin().auth().revokeRefreshTokens(uid);
+  removeTokensFromCacheByUid(uid);
   return new MonkeyResponse("All tokens revoked");
 }

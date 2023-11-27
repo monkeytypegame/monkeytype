@@ -47,6 +47,9 @@
     "concurrently": "7.2.1",
     "conventional-changelog": "4.0.0",
     "eslint": "8.42.0",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-import-resolver-typescript": "3.6.1",
+    "eslint-plugin-import": "2.29.0",
     "eslint-plugin-json": "2.1.2",
     "eslint-plugin-require-path-exists": "1.1.9",
     "husky": "8.0.1",
@@ -65,5 +68,5 @@
       "eslint"
     ]
   },
-  "version": "23.41.0"
+  "version": "23.47.0"
 }

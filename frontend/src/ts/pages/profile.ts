@@ -67,13 +67,13 @@ function reset(): void {
           <div class="value">-</div>
         </div>
         <div class="buttonGroup">
-          <div
-            class="userReportButton button"
+          <button
+            class="userReportButton"
             data-balloon-pos="left"
             aria-label="Report user"
           >
             <i class="fas fa-flag"></i>
-          </div>
+          </button>
         </div>
       </div>
       <div class="leaderboardsPositions">

@@ -33,6 +33,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
 import { navigate } from "./route-controller";
+import * as CookiePopup from "../popups/cookie-popup";
 
 let dontInsertSpace = false;
 let correctShiftUsed = true;
@@ -161,6 +162,13 @@ function handleSpace(): void {
   if (!TestState.isActive) return;
 
   if (TestInput.input.current === "") return;
+
+  if (
+    CompositionState.getComposing() &&
+    Config.language.startsWith("chinese")
+  ) {
+    return;
+  }
 
   if (Config.mode === "zen") {
     $("#words .word.active").removeClass("active");
@@ -390,11 +398,16 @@ function isCharCorrect(char: string, charIndex: number): boolean {
   }
 
   if (
-    (char === "’" || char === "‘" || char === "'" || char === "ʼ") &&
+    (char === "’" ||
+      char === "‘" ||
+      char === "'" ||
+      char === "ʼ" ||
+      char === "׳") &&
     (originalChar === "’" ||
       originalChar === "‘" ||
       originalChar === "'" ||
-      originalChar === "ʼ")
+      originalChar === "ʼ" ||
+      originalChar === "׳")
   ) {
     return true;
   }
@@ -433,7 +446,8 @@ function handleChar(
   const now = performance.now();
 
   const isCharKorean: boolean = TestInput.input.getKoreanStatus();
-  if (char === "…") {
+
+  if (char === "…" && TestWords.words.getCurrent()[charIndex] !== "…") {
     for (let i = 0; i < 3; i++) {
       handleChar(".", charIndex + i);
     }
@@ -514,6 +528,8 @@ function handleChar(
     const realInput: string = (realInputValue ?? "").slice(1);
     resultingWord = realInput;
     koInputVisual.innerText = resultingWord.slice(-1);
+  } else if (Config.language.startsWith("chinese")) {
+    resultingWord = (realInputValue ?? "").slice(1);
   } else {
     resultingWord =
       TestInput.input.current.substring(0, charIndex) +
@@ -566,8 +582,9 @@ function handleChar(
     if (!correctShiftUsed) {
       incorrectShiftsInARow++;
       if (incorrectShiftsInARow >= 5) {
-        Notifications.add("Reminder: Opposite shift mode is on.", 0, {
+        Notifications.add("Opposite shift mode is on.", 0, {
           important: true,
+          customTitle: "Reminder",
         });
       }
       return;
@@ -646,15 +663,22 @@ function handleChar(
   if (Config.mode !== "zen") {
     //not applicable to zen mode
     //auto stop the test if the last word is correct
-    const currentWord: string = TestWords.words.getCurrent();
-    const lastIndex: number = TestWords.words.currentIndex;
+    //do not stop if not all characters have been parsed by handleChar yet
+    const currentWord = TestWords.words.getCurrent();
+    const lastWordIndex = TestWords.words.currentIndex;
+    const isLastWord = lastWordIndex === TestWords.words.length - 1;
+    const wordIsTheSame = currentWord === TestInput.input.current;
+    const shouldQuickEnd =
+      Config.quickEnd &&
+      !Config.language.startsWith("korean") &&
+      currentWord.length === TestInput.input.current.length &&
+      Config.stopOnError === "off";
+    const isChinese = Config.language.startsWith("chinese");
+
     if (
-      (currentWord === TestInput.input.current ||
-        (Config.quickEnd &&
-          !Config.language.startsWith("korean") &&
-          currentWord.length === TestInput.input.current.length &&
-          Config.stopOnError === "off")) &&
-      lastIndex === TestWords.words.length - 1
+      isLastWord &&
+      (wordIsTheSame || shouldQuickEnd) &&
+      (!isChinese || (realInputValue && charIndex + 2 == realInputValue.length))
     ) {
       TestLogic.finish();
       return;
@@ -753,7 +777,7 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
   const modalVisible: boolean =
     Misc.isPopupVisible("commandLineWrapper") || popupVisible;
 
-  if (Config.quickRestart === "esc") {
+  if (Config.quickRestart === "esc" || Config.quickRestart === "enter") {
     // dont do anything special
     if (modalVisible) return;
 
@@ -821,9 +845,17 @@ function handleTab(event: JQuery.KeyDownEvent, popupVisible: boolean): void {
 let lastBailoutAttempt = -1;
 
 $(document).on("keydown", async (event) => {
-  if (ActivePage.get() === "loading") return;
+  if (ActivePage.get() === "loading") {
+    console.debug("Ignoring keydown event on loading page.");
+    return;
+  }
 
-  if (IgnoredKeys.includes(event.key)) return;
+  if (IgnoredKeys.includes(event.key)) {
+    console.debug(
+      `Key ${event.key} is on the list of ignored keys. Stopping keydown event.`
+    );
+    return;
+  }
 
   //autofocus
   const wordsFocused: boolean = $("#wordsInput").is(":focus");
@@ -832,6 +864,13 @@ $(document).on("keydown", async (event) => {
   const leaderboardsVisible = Misc.isPopupVisible("leaderboardsWrapper");
 
   const popupVisible: boolean = Misc.isAnyPopupVisible();
+
+  const cookiePopupVisible = CookiePopup.isVisible();
+
+  if (cookiePopupVisible) {
+    console.debug("Ignoring keydown event because cookie popup is visible.");
+    return;
+  }
 
   const allowTyping: boolean =
     pageTestActive &&
@@ -881,6 +920,52 @@ $(document).on("keydown", async (event) => {
     TestLogic.restart({
       event,
     });
+  }
+
+  //enter
+  if (event.key === "Enter" && Config.quickRestart === "enter") {
+    const modalVisible: boolean =
+      Misc.isPopupVisible("commandLineWrapper") || popupVisible;
+
+    if (modalVisible) return;
+
+    // change page if not on test page
+    if (ActivePage.get() !== "test") {
+      navigate("/");
+      return;
+    }
+
+    if (TestUI.resultVisible) {
+      TestLogic.restart({
+        event,
+      });
+      return;
+    }
+
+    if (Config.mode === "zen") {
+      //do nothing
+    } else if (
+      !TestWords.hasNewline ||
+      (TestWords.hasNewline && event.shiftKey)
+    ) {
+      // in case we are in a long test, setting manual restart
+      if (event.shiftKey) {
+        ManualRestart.set();
+      } else {
+        ManualRestart.reset();
+      }
+
+      //otherwise restart
+      TestLogic.restart({
+        event,
+      });
+    } else {
+      handleChar("\n", TestInput.input.current.length);
+      setWordsInput(" " + TestInput.input.current);
+      if (Config.tapeMode !== "off") {
+        TestUI.scrollTape();
+      }
+    }
   }
 
   if (!allowTyping) return;
@@ -1142,6 +1227,7 @@ $("#wordsInput").on("input", (event) => {
   }
 
   const containsKorean = TestInput.input.getKoreanStatus();
+  const containsChinese = Config.language.startsWith("chinese");
 
   //Hangul.disassemble breaks down Korean characters into its components
   //allowing it to be treated as normal latin characters
@@ -1186,7 +1272,28 @@ $("#wordsInput").on("input", (event) => {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
   } else if (inputValue.length < currTestInput.length) {
-    if (containsKorean) {
+    if (containsChinese) {
+      if (
+        currTestInput.length - inputValue.length <= 2 &&
+        currTestInput.slice(0, currTestInput.length) === currTestInput
+      ) {
+        TestInput.input.current = inputValue;
+      } else {
+        // IME has converted pinyin to Chinese Character(s)
+        let diffStart = 0;
+        while (inputValue[diffStart] === currTestInput[diffStart]) {
+          diffStart++;
+        }
+
+        let iOffset = 0;
+        if (Config.stopOnError !== "word" && /.+ .+/.test(inputValue)) {
+          iOffset = inputValue.indexOf(" ") + 1;
+        }
+        for (let i = diffStart; i < inputValue.length; i++) {
+          handleChar(inputValue[i], i - iOffset, realInputValue);
+        }
+      }
+    } else if (containsKorean) {
       const realInput = (event.target as HTMLInputElement).value
         .normalize()
         .slice(1);

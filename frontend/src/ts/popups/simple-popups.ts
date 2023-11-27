@@ -167,15 +167,10 @@ class SimplePopup {
               `);
             } else if (input.type === "checkbox") {
               el.find(".inputs").append(`
-                <label class="checkbox">
-                  <input type="checkbox">
-                  <div class="customTextCheckbox">
-                    <div class="check">
-                      <i class="fas fa-fw fa-check"></i>
-                    </div>
-                  </div>
-                  ${input.label}
-                </label>
+              <label class="checkbox">
+                <input type="checkbox" checked="">
+                <div>${input.label}</div>
+              </label>
               `);
             } else {
               el.find(".inputs").append(`
@@ -222,7 +217,16 @@ class SimplePopup {
       }
     });
 
-    if (vals.some((v) => v === undefined || v === "")) {
+    const inputsWithCurrentValue = [];
+    for (let i = 0; i < this.inputs.length; i++) {
+      inputsWithCurrentValue.push({ ...this.inputs[i], currentValue: vals[i] });
+    }
+
+    if (
+      inputsWithCurrentValue
+        .filter((i) => !i.hidden)
+        .some((v) => v.currentValue === undefined || v.currentValue === "")
+    ) {
       Notifications.add("Please fill in all fields", 0);
       return;
     }
@@ -1456,7 +1460,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
 list["updateCustomTheme"] = new SimplePopup(
   "updateCustomTheme",
   "text",
-  "Update Custom Theme",
+  "Update custom theme",
   [
     {
       type: "text",
@@ -1470,7 +1474,7 @@ list["updateCustomTheme"] = new SimplePopup(
     },
   ],
   "",
-  "Update",
+  "update",
   async (_thisPopup, name, updateColors) => {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {

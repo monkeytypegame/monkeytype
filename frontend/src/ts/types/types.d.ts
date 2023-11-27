@@ -1,6 +1,10 @@
 type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
 
 declare namespace MonkeyTypes {
+  type Configuration = import("@backend/types/shared").Configuration;
+  type ValidModeRule = import("@backend/types/shared").ValidModeRule;
+  type RewardBracket = import("@backend/types/shared").RewardBracket;
+
   type PageName =
     | "loading"
     | "test"
@@ -146,7 +150,7 @@ declare namespace MonkeyTypes {
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
-  type AccountChart = ("off" | "on")[];
+  type AccountChart = ["off" | "on", "off" | "on", "off" | "on", "off" | "on"];
 
   type MinimumWordsPerMinute = "off" | "custom";
 
@@ -437,7 +441,7 @@ declare namespace MonkeyTypes {
     showLiveWpm: boolean;
     showTimerProgress: boolean;
     smoothCaret: SmoothCaretMode;
-    quickRestart: "off" | "esc" | "tab";
+    quickRestart: "off" | "esc" | "tab" | "enter";
     punctuation: boolean;
     numbers: boolean;
     words: WordsModes;
@@ -603,6 +607,7 @@ declare namespace MonkeyTypes {
     maxStreak: number;
     streakHourOffset?: number;
     lbOptOut?: boolean;
+    isPremium?: boolean;
   }
 
   interface UserDetails {
@@ -801,6 +806,7 @@ declare namespace MonkeyTypes {
 
   interface Quote {
     text: string;
+    britishText?: string;
     source: string;
     length: number;
     id: number;

@@ -1,5 +1,4 @@
 import * as UpdateConfig from "../../config";
-import * as TestLogic from "../../test/test-logic";
 import { capitalizeFirstLetterOfEachWord } from "../../utils/misc";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
@@ -31,7 +30,6 @@ function update(languages: string[]): void {
       configValue: language,
       exec: (): void => {
         UpdateConfig.setLanguage(language);
-        TestLogic.restart();
       },
     });
   });

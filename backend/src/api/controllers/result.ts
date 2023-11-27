@@ -14,6 +14,7 @@ import {
   mapRange,
   roundTo2,
   stdDev,
+  stringToNumberOrDefault,
 } from "../../utils/misc";
 import objectHash from "object-hash";
 import Logger from "../../utils/logger";
@@ -62,13 +63,57 @@ export async function getResults(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
+  const premiumFeaturesEnabled = req.ctx.configuration.users.premium.enabled;
+  const userHasPremium = await UserDAL.checkIfUserIsPremium(uid);
+
+  const maxLimit =
+    premiumFeaturesEnabled && userHasPremium
+      ? req.ctx.configuration.results.limits.premiumUser
+      : req.ctx.configuration.results.limits.regularUser;
+
   const onOrAfterTimestamp = parseInt(
     req.query.onOrAfterTimestamp as string,
     10
   );
+  let limit = stringToNumberOrDefault(
+    req.query.limit as string,
+    Math.min(req.ctx.configuration.results.maxBatchSize, maxLimit)
+  );
+  const offset = stringToNumberOrDefault(req.query.offset as string, 0);
+
+  //check if premium features are disabled and current call exceeds the limit for regular users
+  if (
+    userHasPremium &&
+    premiumFeaturesEnabled === false &&
+    limit + offset > req.ctx.configuration.results.limits.regularUser
+  ) {
+    throw new MonkeyError(503, "Premium feature disabled.");
+  }
+
+  if (limit + offset > maxLimit) {
+    if (offset < maxLimit) {
+      //batch is partly in the allowed ranged. Set the limit to the max allowed and return partly results.
+      limit = maxLimit - offset;
+    } else {
+      throw new MonkeyError(422, `Max results limit of ${maxLimit} exceeded.`);
+    }
+  }
+
   const results = await ResultDAL.getResults(uid, {
     onOrAfterTimestamp,
+    limit,
+    offset,
   });
+  Logger.logToDb(
+    "user_results_requested",
+    {
+      limit,
+      offset,
+      onOrAfterTimestamp,
+      isPremium: userHasPremium,
+    },
+    uid
+  );
   return new MonkeyResponse("Results retrieved", results);
 }
 
@@ -150,6 +195,12 @@ export async function addResult(
 
   //todo add a type here
   const result = Object.assign({}, req.body.result);
+  if (!user.lbOptOut && result.acc < 75) {
+    throw new MonkeyError(
+      400,
+      "Cannot submit a result with less than 75% accuracy"
+    );
+  }
   result.uid = uid;
   if (isTestTooShort(result)) {
     const status = MonkeyStatusCodes.TEST_TOO_SHORT;

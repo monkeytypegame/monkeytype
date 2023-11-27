@@ -19,6 +19,7 @@ const Ape = {
   presets: new endpoints.Presets(httpClient),
   publicStats: new endpoints.Public(httpClient),
   apeKeys: new endpoints.ApeKeys(httpClient),
+  configuration: new endpoints.Configuration(httpClient),
 };
 
 export default Ape;

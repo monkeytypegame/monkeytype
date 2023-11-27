@@ -26,6 +26,8 @@ import * as TestUI from "./test-ui";
 import * as TodayTracker from "./today-tracker";
 import * as ConfigEvent from "../observables/config-event";
 import * as Focus from "./focus";
+import * as CustomText from "./custom-text";
+import * as CustomTextState from "./../states/custom-text-name";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -829,7 +831,20 @@ export async function update(
         },
         125
       );
-      if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
+
+      const canQuickRestart = Misc.canQuickRestart(
+        Config.mode,
+        Config.words,
+        Config.time,
+        CustomText,
+        CustomTextState.isCustomTextLong() ?? false
+      );
+
+      if (
+        Config.alwaysShowWordsHistory &&
+        canQuickRestart &&
+        !GlarsesMode.get()
+      ) {
         TestUI.toggleResultWords(true);
       }
       AdController.updateFooterAndVerticalAds(true);

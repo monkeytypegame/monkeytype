@@ -79,9 +79,7 @@ export const profanities = [
   "fagit",
   "fags",
   "fagz",
-  "faig",
   "faigs",
-  "fart",
   "flipping the bird",
   "fudge packer",
   "fukah",
@@ -171,7 +169,6 @@ export const profanities = [
   "sadist",
   "scank",
   "schlong",
-  "screwing",
   "semen",
   "sex",
   "sexy",
@@ -282,7 +279,6 @@ export const profanities = [
   "wank",
   "whoar",
   "whore",
-  "damn",
   "dyke",
   "fuck",
   "shit",
@@ -378,7 +374,6 @@ export const profanities = [
   "scheiss",
   "schlampe",
   "schmuck",
-  "screw",
   "sh!t",
   "sharmuta",
   "sharmute",
@@ -406,3 +401,7 @@ export const regexProfanities = profanities.map((profanity) => {
   const normalizedProfanity = _.escapeRegExp(profanity.toLowerCase());
   return `${normalizedProfanity}.*`;
 });
+
+export function findProfanities(string: string): string[] {
+  return profanities.filter((profanity) => string.includes(profanity)) || [];
+}

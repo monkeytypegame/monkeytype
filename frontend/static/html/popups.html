@@ -62,6 +62,7 @@
 <div
   id="cookiePopupWrapper"
   class="cookie-popup-wrapper cookiePopupWrapper popupWrapper hidden"
+  tabindex="-1"
 >
   <div class="extensionMessage">
     If you see this text, that means an extension is blocking a cookie consent
@@ -79,15 +80,15 @@
         Cookies enhance your experience and help us improve our website.
       </div>
       <div class="buttons">
-        <div class="button rejectAll">Reject all</div>
-        <div class="button active acceptAll">Accept all</div>
-        <div class="button openSettings">More options</div>
+        <button class="active acceptAll">accept all</button>
+        <button class="rejectAll">reject non-essential</button>
+        <button class="openSettings">more options</button>
       </div>
     </div>
     <div class="settings hidden">
       <div class="cookie security">
         <label class="checkbox">
-          <div class="title">Security</div>
+          <div class="title">security</div>
           <div class="description">
             We use Cloudflare cookies to improve security and performance of our
             site.
@@ -102,7 +103,7 @@
       </div>
       <div class="cookie analytics">
         <label class="checkbox">
-          <div class="title">Analytics</div>
+          <div class="title">analytics</div>
           <div class="description">
             We use Google Analytics cookies to check how users interact with our
             website and use this data to improve our site design.
@@ -112,7 +113,7 @@
       </div>
       <div class="cookie ads">
         <label class="checkbox">
-          <div class="title">Advertising</div>
+          <div class="title">advertising</div>
           <div class="description">
             Our advertising partner may use cookies to deliver ads that are more
             relevant to you.
@@ -122,7 +123,7 @@
           </div>
         </label>
       </div>
-      <div class="button active acceptSelected">Accept selected</div>
+      <button class="active acceptSelected">accept selected</button>
     </div>
   </div>
 </div>
@@ -186,42 +187,42 @@
 <div id="mobileTestConfigPopupWrapper" class="popupWrapper hidden">
   <div id="mobileTestConfigPopup">
     <div class="group">
-      <div class="button punctuation">punctuation</div>
-      <div class="button numbers">numbers</div>
+      <button class="punctuation">punctuation</button>
+      <button class="numbers">numbers</button>
     </div>
     <div class="spacer"></div>
     <div class="group modeGroup">
-      <div class="button" mode="time">time</div>
-      <div class="button active" mode="words">words</div>
-      <div class="button" mode="quote">quote</div>
-      <div class="button" mode="zen">zen</div>
-      <div class="button" mode="custom">custom</div>
+      <button data-mode="time">time</button>
+      <button class="active" data-mode="words">words</button>
+      <button data-mode="quote">quote</button>
+      <button data-mode="zen">zen</button>
+      <button data-mode="custom">custom</button>
     </div>
     <div class="spacer"></div>
     <div class="group timeGroup">
-      <div class="button" time="15">15</div>
-      <div class="button active" time="30">30</div>
-      <div class="button" time="60">60</div>
-      <div class="button" time="120">120</div>
-      <div class="button" time="custom">custom</div>
+      <button data-time="15">15</button>
+      <button class="button active" data-time="30">30</button>
+      <button data-time="60">60</button>
+      <button data-time="120">120</button>
+      <button data-time="custom">custom</button>
     </div>
     <div class="group wordsGroup hidden">
-      <div class="button" words="10">10</div>
-      <div class="button" words="25">25</div>
-      <div class="button" words="50">50</div>
-      <div class="button" words="100">100</div>
-      <div class="button" words="custom">custom</div>
+      <button data-words="10">10</button>
+      <button data-words="25">25</button>
+      <button data-words="50">50</button>
+      <button data-words="100">100</button>
+      <button data-words="custom">custom</button>
     </div>
     <div class="group quoteGroup hidden">
-      <div class="button" quote="-1">all</div>
-      <div class="button" quote="0">short</div>
-      <div class="button" quote="1">medium</div>
-      <div class="button" quote="2">long</div>
-      <div class="button" quote="3">thicc</div>
-      <div id="quote-search-button" class="button" quote="-2">search</div>
+      <button data-quoteLength="-1">all</button>
+      <button data-quoteLength="0">short</button>
+      <button data-quoteLength="1">medium</button>
+      <button data-quoteLength="2">long</button>
+      <button data-quoteLength="3">thicc</button>
+      <button id="quote-search-button" data-quoteLength="-2">search</button>
     </div>
     <div class="group customGroup hidden">
-      <div class="button customChange">change</div>
+      <button class="customChange">change</button>
     </div>
   </div>
 </div>
@@ -598,7 +599,7 @@
       You can start an infinite test by inputting 0. Then, to stop the test, use
       the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
     </div>
-    <div class="button">ok</div>
+    <button>ok</button>
   </div>
 </div>
 <div id="customTestDurationPopupWrapper" class="popupWrapper hidden">
@@ -610,7 +611,7 @@
       You can start an infinite test by inputting 0. Then, to stop the test, use
       the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
     </div>
-    <div class="button">ok</div>
+    <button>ok</button>
   </div>
 </div>
 <div id="quoteSearchPopupWrapper" class="popupWrapper hidden">
@@ -783,11 +784,13 @@
     <div class="quotes"></div>
   </div>
 </div>
-<div id="tagsWrapper" class="popupWrapper hidden">
+<div id="tagsWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="tagsEdit" action="" tagid="">
-    <div class="title"></div>
-    <input type="text" title="tag" />
-    <div class="button"><i class="fas fa-plus"></i></div>
+    <form>
+      <div class="title"></div>
+      <input type="text" title="tag" />
+      <button type="submit"></button>
+    </form>
   </div>
 </div>
 <div id="streakHourOffsetPopupWrapper" class="popupWrapper hidden">
@@ -815,15 +818,17 @@
     <div class="button confirmButton"><i class="fas fa-check"></i></div>
   </div>
 </div>
-<div id="presetWrapper" class="popupWrapper hidden">
+<div id="presetWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="presetEdit" action="" presetid="">
-    <div class="title"></div>
-    <input type="text" class="text" title="presets" />
-    <label class="checkbox">
-      <input type="checkbox" />
-      Change preset to current settings
-    </label>
-    <div class="button"><i class="fas fa-plus"></i></div>
+    <form>
+      <div class="title"></div>
+      <input type="text" class="text" title="presets" />
+      <label class="checkbox">
+        <input type="checkbox" />
+        Change preset to current settings
+      </label>
+      <button type="submit">add</button>
+    </form>
   </div>
 </div>
 <div id="shareCustomThemeWrapper" class="popupWrapper hidden">
@@ -946,7 +951,7 @@
 <div id="versionHistoryWrapper" class="popupWrapper hidden">
   <div id="versionHistory"></div>
 </div>
-<div id="supportMeWrapper" class="popupWrapper hidden">
+<div id="supportMeWrapper" class="popupWrapper hidden" tabindex="-1">
   <div id="supportMe">
     <div class="title">Support Monkeytype</div>
     <div class="text">
@@ -955,18 +960,18 @@
       <i class="fas fa-heart"></i>
     </div>
     <div class="buttons">
-      <div class="button ads">
+      <button class="ads">
         <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
         <div class="text">Enable Ads</div>
-      </div>
-      <div class="button watchVideoAd">
+      </button>
+      <!-- <div class="button watchVideoAd">
         <div class="icon"><i class="fas fa-fw fa-ad"></i></div>
         <div class="text">
           Watch
           <br />
           a Video Ad
         </div>
-      </div>
+      </div> -->
       <a
         class="button"
         href="https://ko-fi.com/monkeytype"
@@ -983,11 +988,7 @@
         rel="noreferrer noopener"
       >
         <div class="icon"><i class="fab fa-fw fa-patreon"></i></div>
-        <div class="text">
-          Become
-          <br />
-          a Patron
-        </div>
+        <div class="text">Join Patreon</div>
       </a>
       <a
         class="button"
@@ -1121,8 +1122,8 @@
   </div>
 </div>
 
-<div id="editProfilePopupWrapper" class="popupWrapper hidden">
-  <div id="editProfilePopup">
+<div id="editProfilePopupWrapper" class="popupWrapper hidden" tabindex="-1">
+  <form id="editProfilePopup">
     <div class="title">Edit Profile</div>
     <div>
       <label>avatar</label>
@@ -1161,6 +1162,6 @@
       <label>badge</label>
       <div class="badgeSelectionContainer"></div>
     </div>
-    <div class="button edit-profile-submit">save</div>
-  </div>
+    <button class="edit-profile-submit" type="submit">save</button>
+  </form>
 </div>

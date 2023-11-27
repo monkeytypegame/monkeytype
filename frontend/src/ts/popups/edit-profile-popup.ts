@@ -29,6 +29,7 @@ export function show(callbackOnHide: () => void): void {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
         hydrateInputs();
+        $("#editProfilePopupWrapper").trigger("focus");
       });
   }
 }
@@ -189,7 +190,8 @@ $("#editProfilePopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#editProfilePopupWrapper .edit-profile-submit").on("click", async () => {
+$("#editProfilePopupWrapper #editProfilePopup").on("submit", async (e) => {
+  e.preventDefault();
   await updateProfile();
 });
 
