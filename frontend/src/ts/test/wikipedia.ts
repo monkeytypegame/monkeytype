@@ -106,6 +106,9 @@ export async function getSection(language: string): Promise<Section> {
           // Remove invisible characters
           sectionText = sectionText.replace(/[\u200B-\u200D\uFEFF]/g, "");
 
+          // replace any fancy symbols
+          sectionText = Misc.cleanTypographySymbols(sectionText);
+
           // Remove non-ascii characters for English articles
           if (urlTLD === "en") {
             sectionText = sectionText.replace(/[^\x20-\x7E]+/g, "");
