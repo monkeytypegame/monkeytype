@@ -11,14 +11,17 @@
   --colorful-error-color: #b81b2c;
   --colorful-error-extra-color: #84131f;
 }
+
 nav {
   gap: 0.5rem;
 }
+
 header.focus nav .textButton,
 header.focus nav:before,
 header.focus nav:after {
   background: var(--bg-color);
 }
+
 nav .textButton:nth-child(1),
 nav .textButton:nth-child(2),
 nav .textButton:nth-child(3),
@@ -27,6 +30,7 @@ nav .textButton:nth-child(4) {
   color: #191f28 !important;
   background: #c69f68;
 }
+
 nav .textButton:nth-child(1):hover,
 nav
   .textButton:nth-child(2):hover
@@ -38,6 +42,7 @@ nav
   color: #4b5975 !important;
   transition: 0.25s;
 }
+
 /* nav .textButton:nth-child(1) {
   background: #c69f68;
 }
@@ -62,15 +67,14 @@ header.focus nav .textButton.discord::after {
   border-color: transparent;
 }
 
-body.crtmode {
-  nav .textButton:nth-child(1),
-  nav .textButton:nth-child(2),
-  nav .textButton:nth-child(3),
-  nav .textButton:nth-child(4) {
-    box-shadow: 3px 0 1px color-mix(in srgb, #c69f68 20%, transparent),
-      -3px 0 color-mix(in srgb, #c69f68 30%, transparent), 0 0 3px;
-  }
-  header.focus nav .textButton {
-    box-shadow: none;
-  }
+body.crtmode nav .textButton:nth-child(1),
+body.crtmode nav .textButton:nth-child(2),
+body.crtmode nav .textButton:nth-child(3),
+body.crtmode nav .textButton:nth-child(4) {
+  box-shadow: 3px 0 1px color-mix(in srgb, #c69f68 20%, transparent),
+    -3px 0 color-mix(in srgb, #c69f68 30%, transparent), 0 0 3px;
+}
+
+body.crtmode header.focus nav .textButton {
+  box-shadow: none;
 }
