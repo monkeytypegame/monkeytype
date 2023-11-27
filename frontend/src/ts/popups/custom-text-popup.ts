@@ -227,6 +227,11 @@ $(`${popup} .randomInputFields .sectioncount input`).on("keypress", () => {
 function apply(): void {
   let text = ($(`${popup} textarea`).val() as string).normalize();
 
+  if (text === "") {
+    Notifications.add("Text cannot be empty", 0);
+    return;
+  }
+
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
 
