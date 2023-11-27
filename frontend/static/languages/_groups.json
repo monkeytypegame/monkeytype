@@ -306,7 +306,7 @@
   },
   {
     "name": "serbian",
-    "languages": ["serbian"]
+    "languages": ["serbian", "serbian_latin"]
   },
   {
     "name": "georgian",
