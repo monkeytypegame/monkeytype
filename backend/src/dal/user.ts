@@ -1123,4 +1123,3 @@ export async function updatePremiumByStripeCustomerId(
     throw new MonkeyError(404, "Cannot update premium info.");
   }
 }
->>>>>>> 64af76859 (add finalizeCheckout)
