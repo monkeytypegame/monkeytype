@@ -50,7 +50,7 @@ const mockApp = request(app);
 const configuration = Configuration.getCachedConfiguration();
 
 describe("store controller test", () => {
-  describe("createCheckout", () => {
+  describe("startCheckout", () => {
     beforeEach(async () => {
       await enablePremiumFeatures(true);
     });
@@ -69,7 +69,7 @@ describe("store controller test", () => {
 
       //WHEN
       const response = await mockApp
-        .post("/store/checkouts")
+        .post("/store/startCheckout")
         .set("Authorization", "Bearer 123456789")
         .send({ items: [{ lookupKey: "prime_monthly" }] })
         .expect(200);
@@ -101,7 +101,7 @@ describe("store controller test", () => {
 
       //WHEN
       const response = await mockApp
-        .post("/store/checkouts")
+        .post("/store/startCheckout")
         .set("Authorization", "Bearer 123456789")
         .send({ items: [{ lookupKey: "prime_monthly" }] })
         .expect(200);
@@ -139,7 +139,7 @@ describe("store controller test", () => {
 
       //WHEN
       const response = await mockApp
-        .post("/store/checkouts")
+        .post("/store/startCheckout")
         .set("Authorization", "Bearer 123456789")
         .send({ items: [{ lookupKey: "prime_monthly" }] })
         .expect(200);
@@ -170,7 +170,7 @@ describe("store controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/store/checkouts")
+          .post("/store/startCheckout")
           .set("Authorization", "Bearer 123456789")
           .send()
           .expect(422)
@@ -184,7 +184,7 @@ describe("store controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/store/checkouts")
+          .post("/store/startCheckout")
           .set("Authorization", "Bearer 123456789")
           .send({ items: [] })
           .expect(422)
@@ -200,7 +200,7 @@ describe("store controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/store/checkouts")
+          .post("/store/startCheckout")
           .set("Authorization", "Bearer 123456789")
           .send({ items: [{}] })
           .expect(422)
@@ -216,7 +216,7 @@ describe("store controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/store/checkouts")
+          .post("/store/startCheckout")
           .set("Authorization", "Bearer 123456789")
           .send({ items: [{ lookupKey: "" }] })
           .expect(422)
@@ -234,7 +234,7 @@ describe("store controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/store/checkouts")
+          .post("/store/startCheckout")
           .set("Authorization", "Bearer 123456789")
           .send({ items: [{ lookupKey: "first" }, { lookupKey: "second" }] })
           .expect(422)
@@ -253,7 +253,7 @@ describe("store controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/store/checkouts")
+          .post("/store/startCheckout")
           .set("Authorization", "Bearer 123456789")
           .send()
           .expect(503)
@@ -261,7 +261,7 @@ describe("store controller test", () => {
       });
     });
   });
-  describe("finalizeCheckout", () => {
+  describe("finishCheckout", () => {
     beforeEach(async () => {
       await enablePremiumFeatures(true);
       userLinkCustomerByUidMock.mockResolvedValue();
@@ -294,7 +294,7 @@ describe("store controller test", () => {
 
       //WHEN
       await mockApp
-        .post("/store/checkouts/sessionId")
+        .post("/store/finishCheckout/sessionId")
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(200);
@@ -319,7 +319,7 @@ describe("store controller test", () => {
 
       //WHEN /THEN
       await mockApp
-        .post("/store/checkouts/theSessionId")
+        .post("/store/finishCheckout/theSessionId")
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(400)
@@ -335,7 +335,7 @@ describe("store controller test", () => {
 
       //WHEN
       await mockApp
-        .post("/store/checkouts/sessionId")
+        .post("/store/finishCheckout/sessionId")
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(500)
@@ -352,7 +352,7 @@ describe("store controller test", () => {
 
       //WHEN
       await mockApp
-        .post("/store/checkouts/sessionId")
+        .post("/store/finishCheckout/sessionId")
         .set("Authorization", "Bearer 123456789")
         .send()
         .expect(500)
@@ -368,7 +368,7 @@ describe("store controller test", () => {
 
         //WHEN
         await mockApp
-          .post("/store/checkouts/theSessionId")
+          .post("/store/finishCheckout/theSessionId")
           .set("Authorization", "Bearer 123456789")
           .send()
           .expect(503)

@@ -1,7 +1,8 @@
-import * as config from "../credentials/stripeConfig.json";
 import Stripe from "stripe";
 import MonkeyError from "../utils/error";
-const stripe = new Stripe(config.apiKey);
+const { STRIPE_API_KEY } = process.env;
+const stripe =
+  STRIPE_API_KEY !== undefined ? new Stripe(STRIPE_API_KEY) : undefined;
 
 export type Price = {
   id: string;
@@ -14,7 +15,7 @@ export type Subscription = Stripe.Subscription;
 export async function getPrices(
   lookupKeys: Array<string>
 ): Promise<Array<Price>> {
-  const result = await stripe.prices.list({
+  const result = await getService().prices.list({
     lookup_keys: lookupKeys,
   });
   //TODO error handling
@@ -24,7 +25,7 @@ export async function getPrices(
 export async function createCheckout(
   params: SessionCreateParams
 ): Promise<string> {
-  const result = await stripe.checkout.sessions.create(params);
+  const result = await getService().checkout.sessions.create(params);
   if (result.url === null) {
     throw new MonkeyError(500, "Cannot create checkout session"); //TODO error handling
   }
@@ -32,13 +33,21 @@ export async function createCheckout(
 }
 
 export async function getCheckout(sessionId: string): Promise<Session> {
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  const session = await getService().checkout.sessions.retrieve(sessionId);
 
   return session;
 }
 export async function getSubscription(
   subscriptionId: string
 ): Promise<Subscription> {
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const subscription = await getService().subscriptions.retrieve(
+    subscriptionId
+  );
   return subscription;
+}
+
+function getService(): Stripe {
+  if (stripe === undefined)
+    throw new Error("Stripe config missing from environment 'STRIPE_API_KEY'.");
+  return stripe;
 }

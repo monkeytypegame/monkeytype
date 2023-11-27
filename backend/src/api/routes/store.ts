@@ -18,7 +18,7 @@ const validateFeatureEnabled = validateConfiguration({
 });
 
 router.post(
-  "/checkouts",
+  "/startCheckout",
   validateFeatureEnabled,
   authenticateRequest(),
   validateRequest({
@@ -38,7 +38,7 @@ router.post(
   asyncHandler(StoreController.createCheckout)
 );
 router.post(
-  "/checkouts/:stripeSessionId",
+  "/finishCheckout/:stripeSessionId",
   validateFeatureEnabled,
   authenticateRequest(),
   validateRequest({

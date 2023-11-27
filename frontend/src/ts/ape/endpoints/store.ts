@@ -9,12 +9,14 @@ export default class Store {
       items: [{ lookupKey: item }],
     };
 
-    return await this.httpClient.post(`${BASE_PATH}/checkouts`, { payload });
+    return await this.httpClient.post(`${BASE_PATH}/startCheckout`, {
+      payload,
+    });
   }
 
   async finalizeCheckout(sessionId: string): Ape.EndpointResponse {
     return await this.httpClient.post(
-      `${BASE_PATH}/checkouts/${sessionId}`,
+      `${BASE_PATH}/finishCheckout/${sessionId}`,
       {}
     );
   }
