@@ -35,11 +35,16 @@ const stripePriceMock = jest.spyOn(Stripe, "getPrices");
 const stripeCreateCheckoutMock = jest.spyOn(Stripe, "createCheckout");
 const stripeGetCheckoutMock = jest.spyOn(Stripe, "getCheckout");
 const stripeGetSubscriptionMock = jest.spyOn(Stripe, "getSubscription");
+const stripeGetEventMock = jest.spyOn(Stripe, "validateAndGetEvent");
 
 const userGetUserMock = jest.spyOn(UserDal, "getUser");
 const userLinkCustomerByUidMock = jest.spyOn(
   UserDal,
   "linkStripeCustomerIdByUid"
+);
+const userLinkCustomerByEmailMock = jest.spyOn(
+  UserDal,
+  "linkStripeCustomerIdByEmail"
 );
 const userUpdatePremiumMock = jest.spyOn(
   UserDal,
@@ -373,6 +378,143 @@ describe("store controller test", () => {
           .send()
           .expect(503)
           .expect(expectErrorMessage("Premium is temporarily disabled."));
+      });
+    });
+  });
+  describe("handleWebhook", () => {
+    beforeEach(async () => {
+      await enablePremiumFeatures(true);
+      stripeGetEventMock.mockImplementation(async (body, signature) => {
+        signature.toString; //prevent unused warning
+        return JSON.parse(body) as Stripe.WebhookEvent;
+      });
+    });
+    afterEach(async () => {
+      stripeGetEventMock.mockReset();
+    });
+
+    it("should pass raw body to handler", async () => {
+      //for the signature check to work we need to pass the body unprocessed to stripe
+      //GIVEN
+      await enablePremiumFeatures(true);
+      const body = { a: { b: "foo", isFoo: true } };
+      //WHEN
+      await mockApp
+        .post("/store/webhook")
+        .set("stripe-signature", "validSignature")
+        .send(body)
+        .expect(200);
+
+      //THEN
+      expect(stripeGetEventMock).toHaveBeenLastCalledWith(
+        Buffer.from('{"a":{"b":"foo","isFoo":true}}'),
+        "validSignature"
+      );
+    });
+
+    describe("event type customer", () => {
+      afterEach(async () => {
+        userLinkCustomerByEmailMock.mockReset();
+      });
+
+      it("should handle customer.created", async () => {
+        //GIVEN
+        userLinkCustomerByEmailMock.mockResolvedValue();
+        const event = {
+          type: "customer.created",
+          data: {
+            object: {
+              id: "cus_1234",
+              email: "customer@example.com",
+            },
+          },
+        } as Stripe.WebhookEvent;
+
+        //WHEN
+        await mockApp
+          .post("/store/webhook")
+          .set("stripe-signature", "validSignature")
+          .send(event)
+          .expect(200);
+
+        //THEN
+        expect(userLinkCustomerByEmailMock).toHaveBeenCalledWith(
+          "customer@example.com",
+          "cus_1234"
+        );
+      });
+    });
+
+    describe("event type invoice", () => {
+      afterEach(async () => {
+        [stripeGetSubscriptionMock, userUpdatePremiumMock].forEach((it) =>
+          it.mockReset()
+        );
+      });
+
+      it("should handle invoice.paid", async () => {
+        //GIVEN
+        const event = {
+          type: "invoice.paid",
+          data: {
+            object: {
+              customer: "cus_1234",
+              subscription: "sub_1234",
+            },
+          },
+        } as Stripe.WebhookEvent;
+
+        stripeGetSubscriptionMock.mockResolvedValue({
+          status: "active",
+          customer: "cus_1234",
+          start_date: 10,
+          current_period_end: 20,
+        } as Stripe.Subscription);
+
+        userUpdatePremiumMock.mockResolvedValue();
+
+        //WHEN
+        await mockApp
+          .post("/store/webhook")
+          .set("stripe-signature", "validSignature")
+          .send(event)
+          .expect(200);
+
+        //THEN
+        expect(stripeGetSubscriptionMock).toHaveBeenCalledWith("sub_1234");
+        expect(userUpdatePremiumMock).toHaveBeenCalledWith(
+          "cus_1234",
+          10 * 1000,
+          20 * 1000
+        );
+      });
+    });
+
+    describe("validations", () => {
+      it("should fail if premium feature is disabled", async () => {
+        //GIVEN
+        await enablePremiumFeatures(false);
+
+        //WHEN
+        await mockApp
+          .post("/store/webhook")
+          .set("stripe-signature", "validSignature")
+          .send()
+          .expect(503)
+          .expect(expectErrorMessage("Premium is temporarily disabled."));
+      });
+      it("should fail without stripe-signature header", async () => {
+        //GIVEN
+        await enablePremiumFeatures(true);
+
+        //WHEN
+        await mockApp
+          .post("/store/webhook")
+          .send()
+          .expect(422)
+          .expect(
+            expectErrorMessage('"stripe-signature" is required (undefined)')
+          );
       });
     });
   });

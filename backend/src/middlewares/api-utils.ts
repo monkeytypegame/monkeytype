@@ -1,5 +1,5 @@
 import _ from "lodash";
-import joi from "joi";
+import joi, { AnySchema } from "joi";
 import MonkeyError from "../utils/error";
 import { Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
@@ -125,9 +125,10 @@ function asyncHandler(handler: AsyncHandler): RequestHandler {
 }
 
 interface ValidationSchema {
-  body?: object;
+  body?: object | null;
   query?: object;
   params?: object;
+  headers?: object;
   validationErrorMessage?: string;
 }
 
@@ -137,7 +138,7 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
    * you can pass the authentication middleware by having a user id in the body.
    * Inject the user id into the schema so that validation will not fail.
    */
-  if (process.env.MODE === "dev") {
+  if (process.env.MODE === "dev" && validationSchema.body !== null) {
     validationSchema.body = {
       uid: joi.any(),
       ...(validationSchema.body ?? {}),
@@ -154,22 +155,35 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
     _.each(
       normalizedValidationSchema,
       (schema: object, key: keyof ValidationSchema) => {
-        const joiSchema = joi.object().keys(schema);
-
-        const { error } = joiSchema.validate(req[key] ?? {});
-        if (error) {
-          const errorMessage = error.details[0].message;
-          throw new MonkeyError(
-            422,
-            validationErrorMessage ??
-              `${errorMessage} (${error.details[0]?.context?.value})`
-          );
+        const joiSchema = buildJoiSchema(key, schema);
+        if (joiSchema !== null) {
+          const { error } = joiSchema.validate(req[key] ?? {});
+          if (error) {
+            const errorMessage = error.details[0].message;
+            throw new MonkeyError(
+              422,
+              validationErrorMessage ??
+                `${errorMessage} (${error.details[0]?.context?.value})`
+            );
+          }
         }
       }
     );
 
     next();
   };
+}
+
+function buildJoiSchema(
+  key: keyof ValidationSchema,
+  schema: object | null
+): AnySchema | null {
+  if (schema === null) return null;
+
+  if (key === "headers") {
+    return joi.object().keys(schema).unknown(true);
+  }
+  return joi.object().keys(schema);
 }
 
 /**

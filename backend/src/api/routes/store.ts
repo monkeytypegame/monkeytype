@@ -48,5 +48,16 @@ router.post(
   }),
   asyncHandler(StoreController.finalizeCheckout)
 );
+router.post(
+  "/webhook",
+  validateFeatureEnabled,
+  validateRequest({
+    headers: {
+      "stripe-signature": joi.string().required().not().empty(),
+    },
+    body: null, //accept any body
+  }),
+  asyncHandler(StoreController.handleWebhook)
+);
 
 export default router;

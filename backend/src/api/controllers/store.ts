@@ -104,3 +104,41 @@ async function processSubscription(subscriptionId: string): Promise<void> {
     //we don't need to handle other states as premium validity is calculated based on the expirationTimestamp.
   }
 }
+
+export async function handleWebhook(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const event = await Stripe.validateAndGetEvent(
+    req.body,
+    req.headers["stripe-signature"] as string
+  );
+
+  switch (event.type) {
+    case "customer.created":
+      await processCustomerCreated(event.data.object);
+      break;
+    case "invoice.paid":
+      await processInvoicePaid(event.data.object);
+      break;
+    case "customer.subscription.deleted":
+      //TODO implement
+      break;
+  }
+
+  return new MonkeyResponse("webhook", {});
+}
+
+async function processCustomerCreated(
+  customer: Stripe.Customer
+): Promise<void> {
+  if (customer.email === null) {
+    //Should not happen as we defined createCheckout to always create the user with email
+    throw new MonkeyError(422, "Customer is missing the email.");
+  }
+  await UserDal.linkStripeCustomerIdByEmail(customer.email, customer.id);
+}
+
+async function processInvoicePaid(invoice: Stripe.Invoice): Promise<void> {
+  const subscriptionId = invoice.subscription as string;
+  await processSubscription(subscriptionId);
+}
