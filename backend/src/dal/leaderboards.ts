@@ -65,50 +65,73 @@ export async function update(
   message: string;
   rank?: number;
 }> {
-  const str = `lbPersonalBests.${mode}.${mode2}.${language}`;
+  const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const start1 = performance.now();
   const lb = await db
     .collection<MonkeyTypes.User>("users")
     .aggregate<MonkeyTypes.LeaderboardEntry>(
       [
         {
+          $project: {
+            _id: 0,
+            [`${key}.wpm`]: 1,
+            [`${key}.acc`]: 1,
+            [`${key}.timestamp`]: 1,
+            banned: 1,
+            lbOptOut: 1,
+            needsToChangeName: 1,
+            timeTyping: 1,
+            uid: 1,
+            name: 1,
+            discordId: 1,
+            discordAvatar: 1,
+            inventory: 1,
+          },
+        },
+        {
           $match: {
-            [str + ".wpm"]: {
-              $exists: true,
+            [`${key}.wpm`]: {
+              $gt: 0,
             },
-            [str + ".acc"]: {
-              $exists: true,
+            [`${key}.acc`]: {
+              $gt: 0,
             },
-            [str + ".timestamp"]: {
-              $exists: true,
+            [`${key}.timestamp`]: {
+              $gt: 0,
             },
-            banned: { $exists: false },
-            lbOptOut: { $exists: false },
-            needsToChangeName: { $exists: false },
+            banned: {
+              $ne: true,
+            },
+            lbOptOut: {
+              $ne: true,
+            },
+            needsToChangeName: {
+              $ne: true,
+            },
             timeTyping: {
               $gt: process.env.MODE === "dev" ? 0 : 7200,
             },
           },
         },
         {
+          $sort: {
+            [`${key}.wpm`]: -1,
+            [`${key}.acc`]: -1,
+            [`${key}.timestamp`]: -1,
+          },
+        },
+        {
           $set: {
-            [str + ".uid"]: "$uid",
-            [str + ".name"]: "$name",
-            [str + ".discordId"]: "$discordId",
-            [str + ".discordAvatar"]: "$discordAvatar",
-            [str + ".badges"]: "$inventory.badges",
+            [`${key}.uid`]: "$uid",
+            [`${key}.name`]: "$name",
+            [`${key}.discordId`]: "$discordId",
+            [`${key}.discordAvatar`]: "$discordAvatar",
+            [`${key}.badges`]: "$inventory.badges",
           },
         },
         {
           $replaceRoot: {
-            newRoot: "$" + str,
-          },
-        },
-        {
-          $sort: {
-            wpm: -1,
-            acc: -1,
-            timestamp: -1,
+            newRoot: `$${key}`,
           },
         },
       ],
