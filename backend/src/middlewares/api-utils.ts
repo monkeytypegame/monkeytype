@@ -125,14 +125,28 @@ function asyncHandler(handler: AsyncHandler): RequestHandler {
 }
 
 interface ValidationSchema {
-  body?: object | null;
+  body?: object;
   query?: object;
   params?: object;
   headers?: object;
   validationErrorMessage?: string;
 }
 
-function validateRequest(validationSchema: ValidationSchema): RequestHandler {
+interface ValidationSchemaOption {
+  allowUnknown?: boolean;
+}
+
+type ValidationSchemaOptions = {
+  [schema in keyof ValidationSchema]?: ValidationSchemaOption;
+};
+
+function validateRequest(
+  validationSchema: ValidationSchema,
+  options: ValidationSchemaOptions = {
+    body: { allowUnknown: false },
+    headers: { allowUnknown: true },
+  }
+): RequestHandler {
   /**
    * In dev environments, as an alternative to token authentication,
    * you can pass the authentication middleware by having a user id in the body.
@@ -155,17 +169,15 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
     _.each(
       normalizedValidationSchema,
       (schema: object, key: keyof ValidationSchema) => {
-        const joiSchema = buildJoiSchema(key, schema);
-        if (joiSchema !== null) {
-          const { error } = joiSchema.validate(req[key] ?? {});
-          if (error) {
-            const errorMessage = error.details[0].message;
-            throw new MonkeyError(
-              422,
-              validationErrorMessage ??
-                `${errorMessage} (${error.details[0]?.context?.value})`
-            );
-          }
+        const joiSchema = buildJoiSchema(schema, options[key]);
+        const { error } = joiSchema.validate(req[key] ?? {});
+        if (error) {
+          const errorMessage = error.details[0].message;
+          throw new MonkeyError(
+            422,
+            validationErrorMessage ??
+              `${errorMessage} (${error.details[0]?.context?.value})`
+          );
         }
       }
     );
@@ -175,15 +187,10 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
 }
 
 function buildJoiSchema(
-  key: keyof ValidationSchema,
-  schema: object | null
-): AnySchema | null {
-  if (schema === null) return null;
-
-  if (key === "headers") {
-    return joi.object().keys(schema).unknown(true);
-  }
-  return joi.object().keys(schema);
+  schema: object,
+  options: ValidationSchemaOption | undefined
+): AnySchema {
+  return joi.object().keys(schema).unknown(options?.allowUnknown);
 }
 
 /**

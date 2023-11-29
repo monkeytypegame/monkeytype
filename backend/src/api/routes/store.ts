@@ -51,12 +51,16 @@ router.post(
 router.post(
   "/webhook",
   validateFeatureEnabled,
-  validateRequest({
-    headers: {
-      "stripe-signature": joi.string().required().not().empty(),
+  validateRequest(
+    {
+      headers: {
+        "stripe-signature": joi.string().required().not().empty(),
+      },
     },
-    body: null, //accept any body
-  }),
+    {
+      body: { allowUnknown: true },
+    }
+  ),
   asyncHandler(StoreController.handleWebhook)
 );
 
