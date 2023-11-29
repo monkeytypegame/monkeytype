@@ -6,6 +6,7 @@ import { getCachedConfiguration } from "../../src/init/configuration";
 import * as ApeKeys from "../../src/dal/ape-keys";
 import { ObjectId } from "mongodb";
 import { hashSync } from "bcrypt";
+import MonkeyError from "../../src/utils/error";
 
 const mockDecodedToken: DecodedIdToken = {
   uid: "123456789",
@@ -190,6 +191,69 @@ describe("middlewares/auth", () => {
       expect(decodedToken?.email).toBe("");
       expect(decodedToken?.uid).toBe("123");
       expect(nextFunction).toHaveBeenCalledTimes(1);
+    });
+    it("should allow request with Uid on dev", async () => {
+      mockRequest.headers = {
+        authorization: "Uid 123",
+      };
+
+      const authenticateRequest = Auth.authenticateRequest({});
+
+      await authenticateRequest(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      const decodedToken = mockRequest?.ctx?.decodedToken;
+
+      expect(decodedToken?.type).toBe("Bearer");
+      expect(decodedToken?.email).toBe("");
+      expect(decodedToken?.uid).toBe("123");
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+    });
+    it("should allow request with Uid and email on dev", async () => {
+      mockRequest.headers = {
+        authorization: "Uid 123|test@example.com",
+      };
+
+      const authenticateRequest = Auth.authenticateRequest({});
+
+      await authenticateRequest(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction
+      );
+
+      const decodedToken = mockRequest?.ctx?.decodedToken;
+
+      expect(decodedToken?.type).toBe("Bearer");
+      expect(decodedToken?.email).toBe("test@example.com");
+      expect(decodedToken?.uid).toBe("123");
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+    });
+    it("should fail request with Uid on non-dev", async () => {
+      const mode = process.env.MODE;
+      try {
+        process.env.MODE = "non-dev";
+        mockRequest.headers = {
+          authorization: "Uid 123",
+        };
+
+        const authenticateRequest = Auth.authenticateRequest({});
+
+        await expect(() =>
+          authenticateRequest(
+            mockRequest as Request,
+            mockResponse as Response,
+            nextFunction
+          )
+        ).rejects.toThrow(
+          new MonkeyError(401, "Baerer type uid is not supported")
+        );
+      } finally {
+        process.env.MODE = mode;
+      }
     });
   });
 });
