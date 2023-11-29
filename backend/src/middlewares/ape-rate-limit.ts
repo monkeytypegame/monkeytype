@@ -5,8 +5,9 @@ import rateLimit, {
   RateLimitRequestHandler,
   Options,
 } from "express-rate-limit";
+import { isDevEnvironment } from "../utils/misc";
 
-const REQUEST_MULTIPLIER = process.env.MODE === "dev" ? 1 : 1;
+const REQUEST_MULTIPLIER = isDevEnvironment() ? 1 : 1;
 
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
   return req?.ctx?.decodedToken?.uid;

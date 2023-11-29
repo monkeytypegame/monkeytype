@@ -7,6 +7,7 @@ import * as DiscordUtils from "../../utils/discord";
 import {
   MILLISECONDS_IN_DAY,
   buildAgentLog,
+  isDevEnvironment,
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
@@ -100,10 +101,9 @@ export async function sendVerificationEmail(
     link = await FirebaseAdmin()
       .auth()
       .generateEmailVerificationLink(email, {
-        url:
-          process.env.MODE === "dev"
-            ? "http://localhost:3000"
-            : "https://monkeytype.com",
+        url: isDevEnvironment()
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
       });
   } catch (e) {
     if (
@@ -162,10 +162,9 @@ export async function sendForgotPasswordEmail(
   const link = await FirebaseAdmin()
     .auth()
     .generatePasswordResetLink(email, {
-      url:
-        process.env.MODE === "dev"
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
+      url: isDevEnvironment()
+        ? "http://localhost:3000"
+        : "https://monkeytype.com",
     });
   await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
 

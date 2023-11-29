@@ -11,6 +11,7 @@ import * as PublicDAL from "../../dal/public";
 import {
   getCurrentDayTimestamp,
   getStartOfDayTimestamp,
+  isDevEnvironment,
   mapRange,
   roundTo2,
   stdDev,
@@ -47,7 +48,7 @@ try {
   if (anticheatImplemented() === false) throw new Error("undefined");
   Logger.success("Anticheat module loaded");
 } catch (e) {
-  if (process.env.MODE === "dev") {
+  if (isDevEnvironment()) {
     Logger.warning(
       "No anticheat module found. Continuing in dev mode, results will not be validated."
     );
@@ -274,7 +275,7 @@ export async function addResult(
       throw new MonkeyError(status.code, "Result data doesn't make sense");
     }
   } else {
-    if (process.env.MODE !== "dev") {
+    if (!isDevEnvironment()) {
       throw new Error("No anticheat module found");
     }
     Logger.warning(
@@ -373,7 +374,7 @@ export async function addResult(
         throw new MonkeyError(status.code, "Possible bot detected");
       }
     } else {
-      if (process.env.MODE !== "dev") {
+      if (!isDevEnvironment()) {
         throw new Error("No anticheat module found");
       }
       Logger.warning(
@@ -478,7 +479,7 @@ export async function addResult(
     !result.bailedOut &&
     user.banned !== true &&
     user.lbOptOut !== true &&
-    (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
+    (isDevEnvironment() || (user.timeTyping ?? 0) > 7200);
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
 
@@ -555,7 +556,7 @@ export async function addResult(
   const eligibleForWeeklyXpLeaderboard =
     user.banned !== true &&
     user.lbOptOut !== true &&
-    (process.env.MODE === "dev" || (user.timeTyping ?? 0) > 7200);
+    (isDevEnvironment() || (user.timeTyping ?? 0) > 7200);
 
   const weeklyXpLeaderboard = WeeklyXpLeaderboard.get(
     weeklyXpLeaderboardConfig

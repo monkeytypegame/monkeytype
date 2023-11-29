@@ -5,6 +5,7 @@ import { Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
 import { getUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
+import { isDevEnvironment } from "../utils/misc";
 
 interface ValidationOptions<T> {
   criteria: (data: T) => boolean;
@@ -165,7 +166,7 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
  */
 function useInProduction(middlewares: RequestHandler[]): RequestHandler[] {
   return middlewares.map((middleware) =>
-    process.env.MODE === "dev" ? emptyMiddleware : middleware
+    isDevEnvironment() ? emptyMiddleware : middleware
   );
 }
 

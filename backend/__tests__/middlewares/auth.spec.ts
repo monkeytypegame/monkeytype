@@ -7,6 +7,7 @@ import * as ApeKeys from "../../src/dal/ape-keys";
 import { ObjectId } from "mongodb";
 import { hashSync } from "bcrypt";
 import MonkeyError from "../../src/utils/error";
+import * as Misc from "../../src/utils/misc";
 
 const mockDecodedToken: DecodedIdToken = {
   uid: "123456789",
@@ -29,6 +30,7 @@ const mockApeKey = {
 };
 jest.spyOn(ApeKeys, "getApeKey").mockResolvedValue(mockApeKey);
 jest.spyOn(ApeKeys, "updateLastUsedOn").mockResolvedValue();
+const isDevModeMock = jest.spyOn(Misc, "isDevEnvironment");
 
 describe("middlewares/auth", () => {
   let mockRequest: Partial<MonkeyTypes.Request>;
@@ -36,6 +38,7 @@ describe("middlewares/auth", () => {
   let nextFunction: NextFunction;
 
   beforeEach(async () => {
+    isDevModeMock.mockReturnValue(true);
     let config = await getCachedConfiguration(true);
     config.apeKeys.acceptKeys = true;
 
@@ -65,6 +68,10 @@ describe("middlewares/auth", () => {
       }
       return "Next function called";
     }) as unknown as NextFunction;
+  });
+
+  afterEach(() => {
+    isDevModeMock.mockReset();
   });
 
   describe("authenticateRequest", () => {
@@ -233,27 +240,22 @@ describe("middlewares/auth", () => {
       expect(nextFunction).toHaveBeenCalledTimes(1);
     });
     it("should fail request with Uid on non-dev", async () => {
-      const mode = process.env.MODE;
-      try {
-        process.env.MODE = "non-dev";
-        mockRequest.headers = {
-          authorization: "Uid 123",
-        };
+      isDevModeMock.mockReturnValue(false);
+      mockRequest.headers = {
+        authorization: "Uid 123",
+      };
 
-        const authenticateRequest = Auth.authenticateRequest({});
+      const authenticateRequest = Auth.authenticateRequest({});
 
-        await expect(() =>
-          authenticateRequest(
-            mockRequest as Request,
-            mockResponse as Response,
-            nextFunction
-          )
-        ).rejects.toThrow(
-          new MonkeyError(401, "Baerer type uid is not supported")
-        );
-      } finally {
-        process.env.MODE = mode;
-      }
+      await expect(() =>
+        authenticateRequest(
+          mockRequest as Request,
+          mockResponse as Response,
+          nextFunction
+        )
+      ).rejects.toThrow(
+        new MonkeyError(401, "Baerer type uid is not supported")
+      );
     });
   });
 });

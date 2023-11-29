@@ -2,7 +2,7 @@ import { compare } from "bcrypt";
 import { getApeKey, updateLastUsedOn } from "../dal/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
-import { base64UrlDecode } from "../utils/misc";
+import { base64UrlDecode, isDevEnvironment } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
 import {
@@ -241,7 +241,7 @@ async function authenticateWithApeKey(
 async function authenticateWithUid(
   token: string
 ): Promise<MonkeyTypes.DecodedToken> {
-  if (process.env.MODE !== "dev") {
+  if (!isDevEnvironment()) {
     throw new MonkeyError(401, "Baerer type uid is not supported");
   }
   const uidAndEmail = token.split("|");
