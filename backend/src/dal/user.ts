@@ -1050,3 +1050,21 @@ export async function checkIfUserIsPremium(
   if (expirationDate === -1) return true; //lifetime
   return expirationDate > Date.now();
 }
+
+export async function logIpAddress(
+  uid: string,
+  ip: string,
+  userInfoOverride?: MonkeyTypes.User
+): Promise<void> {
+  const user = userInfoOverride ?? (await getUser(uid, "logIpAddress"));
+  const currentIps = user.ips ?? [];
+  const ipIndex = currentIps.indexOf(ip);
+  if (ipIndex !== -1) {
+    currentIps.splice(ipIndex, 1);
+  }
+  currentIps.unshift(ip);
+  if (currentIps.length > 10) {
+    currentIps.pop();
+  }
+  await getUsersCollection().updateOne({ uid }, { $set: { ips: currentIps } });
+}

@@ -61,6 +61,8 @@ declare namespace MonkeyTypes {
     rewards: AllRewards[];
   }
 
+  type UserIpHistory = string[];
+
   interface User {
     autoBanTimestamps?: number[];
     addedAt: number;
@@ -98,6 +100,7 @@ declare namespace MonkeyTypes {
     lastReultHashes?: string[];
     lbOptOut?: boolean;
     premium?: PremiumInfo;
+    ips?: UserIpHistory;
   }
 
   interface UserStreak {
