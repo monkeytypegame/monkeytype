@@ -382,7 +382,7 @@ export async function getUser(
     UserDAL.flagForNameChange(uid);
   }
 
-  const isPremium = await UserDAL.checkIfUserIsPremium(uid);
+  const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
 
   const userData = {
     ...getRelevantUserInfo(userInfo),

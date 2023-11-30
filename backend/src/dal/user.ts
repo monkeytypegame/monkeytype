@@ -1039,8 +1039,11 @@ export async function setBanned(uid: string, banned: boolean): Promise<void> {
   }
 }
 
-export async function checkIfUserIsPremium(uid: string): Promise<boolean> {
-  const user = await getUser(uid, "checkIfUserIsPremium");
+export async function checkIfUserIsPremium(
+  uid: string,
+  userInfoOverride?: MonkeyTypes.User
+): Promise<boolean> {
+  const user = userInfoOverride ?? (await getUser(uid, "checkIfUserIsPremium"));
   const expirationDate = user.premium?.expirationTimestamp;
 
   if (expirationDate === undefined) return false;
