@@ -55,9 +55,8 @@ export async function initSnapshot(): Promise<
     //getData recreates the user if it doesnt exist - thats why it needs to be called first, by itself
     const userResponse = await Ape.users.getData();
 
-    const [configResponse, tagsResponse, presetsResponse] = await Promise.all([
+    const [configResponse, presetsResponse] = await Promise.all([
       Ape.configs.get(),
-      Ape.users.getTags(),
       Ape.presets.get(),
     ]);
 
@@ -73,12 +72,6 @@ export async function initSnapshot(): Promise<
         responseCode: configResponse.status,
       };
     }
-    if (tagsResponse.status !== 200) {
-      throw {
-        message: `${tagsResponse.message} (tags)`,
-        responseCode: tagsResponse.status,
-      };
-    }
     if (presetsResponse.status !== 200) {
       throw {
         message: `${presetsResponse.message} (presets)`,
@@ -86,10 +79,9 @@ export async function initSnapshot(): Promise<
       };
     }
 
-    const [userData, configData, tagsData, presetsData] = [
+    const [userData, configData, presetsData] = [
       userResponse,
       configResponse,
-      tagsResponse,
       presetsResponse,
     ].map((response) => response.data);
 
@@ -170,7 +162,7 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading tags...");
     snap.customThemes = userData.customThemes ?? [];
-    snap.tags = tagsData;
+    snap.tags = userData.tags || [];
 
     snap.tags.forEach((tag) => {
       tag.display = tag.name.replaceAll("_", " ");
