@@ -62,8 +62,8 @@ async function updateLeaderboards(): Promise<void> {
     return;
   }
 
-  await updateLeaderboardAndNotifyChanges("15");
   await updateLeaderboardAndNotifyChanges("60");
+  await updateLeaderboardAndNotifyChanges("15");
 }
 
 export default new CronJob(CRON_SCHEDULE, updateLeaderboards);
