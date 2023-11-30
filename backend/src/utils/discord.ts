@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { isDevEnvironment } from "./misc";
 
 const BASE_URL = "https://discord.com/api";
 
@@ -35,7 +36,7 @@ export async function getDiscordUser(
 
 export function getOauthLink(): string {
   return `${BASE_URL}/oauth2/authorize?client_id=798272335035498557&redirect_uri=${
-    process.env.MODE === "dev"
+    isDevEnvironment()
       ? `http%3A%2F%2Flocalhost%3A3000%2Fverify`
       : `https%3A%2F%2Fmonkeytype.com%2Fverify`
   }&response_type=token&scope=identify`;

@@ -3,8 +3,9 @@ import MonkeyError from "../utils/error";
 import { Response, NextFunction } from "express";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import rateLimit, { Options } from "express-rate-limit";
+import { isDevEnvironment } from "../utils/misc";
 
-const REQUEST_MULTIPLIER = process.env.MODE === "dev" ? 100 : 1;
+const REQUEST_MULTIPLIER = isDevEnvironment() ? 100 : 1;
 
 const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
   return (req.headers["cf-connecting-ip"] ||

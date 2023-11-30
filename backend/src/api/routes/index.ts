@@ -24,6 +24,7 @@ import {
   Router,
   static as expressStatic,
 } from "express";
+import { isDevEnvironment } from "../../utils/misc";
 
 const pathOverride = process.env.API_PATH_OVERRIDE;
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
@@ -51,7 +52,7 @@ function addApiRoutes(app: Application): void {
   // Cannot be added to the route map because it needs to be added before the maintenance handler
   app.use("/configuration", configuration);
 
-  if (process.env.MODE === "dev") {
+  if (isDevEnvironment()) {
     //disable csp to allow assets to load from unsecured http
     app.use((req, res, next) => {
       res.setHeader("Content-Security-Policy", "");

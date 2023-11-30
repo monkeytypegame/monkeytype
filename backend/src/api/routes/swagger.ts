@@ -7,6 +7,7 @@ import {
 } from "swagger-ui-express";
 import publicSwaggerSpec from "../../documentation/public-swagger.json";
 import internalSwaggerSpec from "../../documentation/internal-swagger.json";
+import { isDevEnvironment } from "../../utils/misc";
 
 const SWAGGER_UI_OPTIONS = {
   customCss: ".swagger-ui .topbar { display: none } .try-out { display: none }",
@@ -18,7 +19,7 @@ function addSwaggerMiddlewares(app: Application): void {
     getSwaggerMiddleware({
       name: "Monkeytype API",
       uriPath: "/stats",
-      authentication: process.env.MODE !== "dev",
+      authentication: !isDevEnvironment(),
       apdexThreshold: 100,
       swaggerSpec: internalSwaggerSpec,
       onAuthenticate: (_req, username, password) => {

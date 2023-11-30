@@ -298,3 +298,7 @@ export function stringToNumberOrDefault(
   if (!Number.isFinite(value)) return defaultValue;
   return value;
 }
+
+export function isDevEnvironment(): boolean {
+  return process.env.MODE === "dev";
+}

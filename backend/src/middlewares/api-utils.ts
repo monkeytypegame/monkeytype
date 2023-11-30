@@ -5,6 +5,7 @@ import { Response, NextFunction, RequestHandler } from "express";
 import { handleMonkeyResponse, MonkeyResponse } from "../utils/monkey-response";
 import { getUser } from "../dal/user";
 import { isAdmin } from "../dal/admin-uids";
+import { isDevEnvironment } from "../utils/misc";
 
 interface ValidationOptions<T> {
   criteria: (data: T) => boolean;
@@ -132,18 +133,6 @@ interface ValidationSchema {
 }
 
 function validateRequest(validationSchema: ValidationSchema): RequestHandler {
-  /**
-   * In dev environments, as an alternative to token authentication,
-   * you can pass the authentication middleware by having a user id in the body.
-   * Inject the user id into the schema so that validation will not fail.
-   */
-  if (process.env.MODE === "dev") {
-    validationSchema.body = {
-      uid: joi.any(),
-      ...(validationSchema.body ?? {}),
-    };
-  }
-
   const { validationErrorMessage } = validationSchema;
   const normalizedValidationSchema: ValidationSchema = _.omit(
     validationSchema,
@@ -177,7 +166,7 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
  */
 function useInProduction(middlewares: RequestHandler[]): RequestHandler[] {
   return middlewares.map((middleware) =>
-    process.env.MODE === "dev" ? emptyMiddleware : middleware
+    isDevEnvironment() ? emptyMiddleware : middleware
   );
 }
 

@@ -2,6 +2,7 @@ import * as db from "../init/db";
 import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
+import { isDevEnvironment } from "../utils/misc";
 
 const leaderboardUpdating: { [key: string]: boolean } = {};
 
@@ -111,7 +112,7 @@ export async function update(
               $ne: true,
             },
             timeTyping: {
-              $gt: process.env.MODE === "dev" ? 0 : 7200,
+              $gt: isDevEnvironment() ? 0 : 7200,
             },
           },
         },

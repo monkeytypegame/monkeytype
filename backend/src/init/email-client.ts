@@ -6,6 +6,7 @@ import mjml2html from "mjml";
 import mustache from "mustache";
 import { recordEmail } from "../utils/prometheus";
 import { EmailTaskContexts, EmailType } from "../queues/email-queue";
+import { isDevEnvironment } from "../utils/misc";
 
 interface EmailMetadata {
   subject: string;
@@ -35,10 +36,10 @@ export async function init(): Promise<void> {
     return;
   }
 
-  const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT, MODE } = process.env;
+  const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT } = process.env;
 
   if (!EMAIL_HOST || !EMAIL_USER || !EMAIL_PASS) {
-    if (MODE === "dev") {
+    if (isDevEnvironment()) {
       Logger.warning(
         "No email client configuration provided. Running without email."
       );

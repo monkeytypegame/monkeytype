@@ -2,7 +2,7 @@ import { compare } from "bcrypt";
 import { getApeKey, updateLastUsedOn } from "../dal/ape-keys";
 import MonkeyError from "../utils/error";
 import { verifyIdToken } from "../utils/auth";
-import { base64UrlDecode } from "../utils/misc";
+import { base64UrlDecode, isDevEnvironment } from "../utils/misc";
 import { NextFunction, Response, Handler } from "express";
 import statuses from "../constants/monkey-status-codes";
 import {
@@ -57,8 +57,6 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
           uid: "",
           email: "",
         };
-      } else if (process.env.MODE === "dev") {
-        token = authenticateWithBody(req.body);
       } else {
         throw new MonkeyError(
           401,
@@ -105,25 +103,6 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
   };
 }
 
-function authenticateWithBody(
-  body: MonkeyTypes.Request["body"]
-): MonkeyTypes.DecodedToken {
-  const { uid, email } = body;
-
-  if (!uid) {
-    throw new MonkeyError(
-      401,
-      "Running authorization in dev mode but still no uid was provided"
-    );
-  }
-
-  return {
-    type: "Bearer",
-    uid,
-    email: email ?? "",
-  };
-}
-
 async function authenticateWithAuthHeader(
   authHeader: string,
   configuration: MonkeyTypes.Configuration,
@@ -137,6 +116,8 @@ async function authenticateWithAuthHeader(
       return await authenticateWithBearerToken(token, options);
     case "ApeKey":
       return await authenticateWithApeKey(token, configuration, options);
+    case "Uid":
+      return await authenticateWithUid(token);
   }
 
   throw new MonkeyError(
@@ -255,6 +236,20 @@ async function authenticateWithApeKey(
 
     throw error;
   }
+}
+
+async function authenticateWithUid(
+  token: string
+): Promise<MonkeyTypes.DecodedToken> {
+  if (!isDevEnvironment()) {
+    throw new MonkeyError(401, "Baerer type uid is not supported");
+  }
+  const uidAndEmail = token.split("|");
+  return {
+    type: "Bearer",
+    uid: uidAndEmail[0],
+    email: uidAndEmail.length > 1 ? uidAndEmail[1] : "",
+  };
 }
 
 function authenticateGithubWebhook(): Handler {
