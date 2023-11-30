@@ -145,7 +145,8 @@ export async function update(
 
   const start2 = performance.now();
   let retval: number | undefined = undefined;
-  lb.forEach((lbEntry, index) => {
+  for (let index = 0; index < lb.length; index++) {
+    const lbEntry = lb[index];
     lbEntry.rank = index + 1;
     if (uid && lbEntry.uid === uid) {
       retval = index + 1;
@@ -159,7 +160,7 @@ export async function update(
       }
       delete lbEntry.badges;
     }
-  });
+  }
   const end2 = performance.now();
   const start3 = performance.now();
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
