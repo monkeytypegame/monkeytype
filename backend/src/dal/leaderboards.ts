@@ -76,6 +76,8 @@ export async function update(
             _id: 0,
             [`${key}.wpm`]: 1,
             [`${key}.acc`]: 1,
+            [`${key}.raw`]: 1,
+            [`${key}.consistency`]: 1,
             [`${key}.timestamp`]: 1,
             banned: 1,
             lbOptOut: 1,
