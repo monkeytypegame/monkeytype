@@ -129,24 +129,36 @@ interface ValidationSchema {
   query?: object;
   params?: object;
   headers?: object;
-  validationErrorMessage?: string;
 }
 
 interface ValidationSchemaOption {
   allowUnknown?: boolean;
 }
 
+interface ValidationSchemaErrorMessage {
+  validationErrorMessage?: string;
+}
+
 type ValidationSchemaOptions = {
   [schema in keyof ValidationSchema]?: ValidationSchemaOption;
+} & ValidationSchemaErrorMessage;
+
+const VALIDATION_SCHEMA_DEFAULT_OPTIONS: ValidationSchemaOptions = {
+  body: { allowUnknown: false },
+  headers: { allowUnknown: true },
+  params: { allowUnknown: false },
+  query: { allowUnknown: false },
 };
 
 function validateRequest(
   validationSchema: ValidationSchema,
-  options: ValidationSchemaOptions = {
-    body: { allowUnknown: false },
-    headers: { allowUnknown: true },
-  }
+  validationOptions: ValidationSchemaOptions = VALIDATION_SCHEMA_DEFAULT_OPTIONS
 ): RequestHandler {
+  const options = {
+    ...VALIDATION_SCHEMA_DEFAULT_OPTIONS,
+    ...validationOptions,
+  };
+
   /**
    * In dev environments, as an alternative to token authentication,
    * you can pass the authentication middleware by having a user id in the body.
@@ -159,7 +171,7 @@ function validateRequest(
     };
   }
 
-  const { validationErrorMessage } = validationSchema;
+  const { validationErrorMessage } = options;
   const normalizedValidationSchema: ValidationSchema = _.omit(
     validationSchema,
     "validationErrorMessage"
