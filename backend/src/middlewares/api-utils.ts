@@ -136,13 +136,13 @@ interface ValidationSchemaOption {
   allowUnknown?: boolean;
 }
 
-interface ValidationSchemaErrorMessage {
+interface ValidationHandlingOptions {
   validationErrorMessage?: string;
 }
 
 type ValidationSchemaOptions = {
   [schema in keyof ValidationSchema]?: ValidationSchemaOption;
-} & ValidationSchemaErrorMessage;
+} & ValidationHandlingOptions;
 
 const VALIDATION_SCHEMA_DEFAULT_OPTIONS: ValidationSchemaOptions = {
   body: { allowUnknown: false },
