@@ -100,6 +100,18 @@
     "xor",
     "xor_eq",
     "cout",
-    "vector"
+    "vector",
+    "set",
+    "multiset",
+    "unordered_set",
+    "map",
+    "unordered_map",
+    "stack",
+    "queue",
+    "deque",
+    "priority_queue",
+    "array",
+    "pair",
+    "tuple"
   ]
 }
