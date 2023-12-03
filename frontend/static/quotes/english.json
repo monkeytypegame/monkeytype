@@ -30555,7 +30555,7 @@
       "id": 5460
     },
     {
-      "text": "Being human totally sucks most of the time. Video games are the only things that make life bearable.",
+      "text": "Being human totally sucks most of the time. Video games are the only things that make rable.",
       "source": "Anorak's Almanac, Ready Player One",
       "length": 100,
       "id": 5461
@@ -38681,6 +38681,66 @@
       "source": "Henry David Thoreau",
       "length": 69,
       "id": 7011
+    },
+    {
+      "text": "The last of human freedoms—the ability to choose one’s attitude in a given set of circumstances.",
+      "source": "Viktor E. Frankl",
+      "length": 96,
+      "id": 7012
+    },
+    {
+      "text": "I believe every human has a finite number of heartbeats. I don’t intend to waste any of mine.",
+      "source": "Neil Armstrong",
+      "length": 93,
+      "id": 7013
+    },
+    {
+      "text": "Simplicity and repose are the qualities that measure the true value of any work of art.",
+      "source": "Frank Lloyd Wright",
+      "length": 87,
+      "id": 7014
+    },
+    {
+      "text": "Life beats down and crushes the soul and art reminds you that you have one.",
+      "source": "Stella Adler",
+      "length": 75,
+      "id": 7015
+    },
+    {
+      "text": "Our prime purpose in this life is to help others. And if you can't help them, at least don't hurt them.",
+      "source": "Dalai Lama",
+      "length": 103,
+      "id": 7016
+    },
+    {
+      "text": "Life is a series of natural and spontaneous changes. Don't resist them - that only creates sorrow. Let reality be reality. Let things flow naturally forward in whatever way they like.",
+      "source": "Lao Tzu",
+      "length": 183,
+      "id": 7017
+    },
+    {
+      "text": "The truth is you don't know what is going to happen tomorrow. Life is a crazy ride, and nothing is guaranteed.",
+      "source": "Eminem",
+      "length": 110,
+      "id": 7018
+    },
+    {
+      "text": "Nobody made a greater mistake than he who did nothing because he could do only a little.",
+      "source": "Edmund Burke",
+      "length": 88,
+      "id": 7019
+    },
+    {
+      "text": "I slept and dreamt that life was joy. I awoke and saw that life was service. I acted and behold, service was joy.",
+      "source": "Rabindranath Tagore",
+      "length": 113,
+      "id": 7020
+    },
+    {
+      "text": "I am prepared to resort to anything, to submit to anything, for the sake of the commonwealth.",
+      "source": "Julius Caesar",
+      "length": 93,
+      "id": 7021
     }
   ]
 }
