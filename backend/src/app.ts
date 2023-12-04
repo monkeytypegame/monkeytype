@@ -1,7 +1,7 @@
 import cors from "cors";
 import helmet from "helmet";
 import addApiRoutes from "./api/routes";
-import express, { urlencoded, json } from "express";
+import express, { urlencoded, json, raw } from "express";
 import contextMiddleware from "./middlewares/context";
 import errorHandlingMiddleware from "./middlewares/error";
 import {
@@ -11,9 +11,17 @@ import {
 
 function buildApp(): express.Application {
   const app = express();
+  const jsonParser = json();
+  const rawParser = raw({ type: "application/json" });
+
+  app.use((req, res, next) => {
+    if (req.path === "/store/webhook") {
+      return rawParser(req, res, next);
+    }
+    return jsonParser(req, res, next);
+  });
 
   app.use(urlencoded({ extended: true }));
-  app.use(json());
   app.use(cors());
   app.use(helmet());
 

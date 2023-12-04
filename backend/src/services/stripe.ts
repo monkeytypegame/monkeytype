@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import MonkeyError from "../utils/error";
-const { STRIPE_API_KEY } = process.env;
+const { STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET } = process.env;
 const stripe =
   STRIPE_API_KEY !== undefined ? new Stripe(STRIPE_API_KEY) : undefined;
 
@@ -11,6 +11,9 @@ export type Price = {
 export type SessionCreateParams = Stripe.Checkout.SessionCreateParams;
 export type Session = Stripe.Checkout.Session;
 export type Subscription = Stripe.Subscription;
+export type WebhookEvent = Stripe.Event;
+export type Customer = Stripe.Customer;
+export type Invoice = Stripe.Invoice;
 
 export async function getPrices(
   lookupKeys: Array<string>
@@ -44,6 +47,27 @@ export async function getSubscription(
     subscriptionId
   );
   return subscription;
+}
+
+export async function validateAndGetEvent(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rawBody: any,
+  signature: string
+): Promise<WebhookEvent> {
+  if (STRIPE_WEBHOOK_SECRET === undefined)
+    throw new MonkeyError(
+      500,
+      "Missing environment variable 'STRIPE_WEBHOOK_SECRET'."
+    );
+  try {
+    return getService().webhooks.constructEvent(
+      rawBody,
+      signature,
+      STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    throw new MonkeyError(500, `Cannot validate webhook: ${err.message}`);
+  }
 }
 
 function getService(): Stripe {
