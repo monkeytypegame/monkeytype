@@ -1,10 +1,6 @@
 type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
 
 declare namespace MonkeyTypes {
-  type Configuration = import("@backend/types/shared").Configuration;
-  type ValidModeRule = import("@backend/types/shared").ValidModeRule;
-  type RewardBracket = import("@backend/types/shared").RewardBracket;
-
   type PageName =
     | "loading"
     | "test"
@@ -144,7 +140,7 @@ declare namespace MonkeyTypes {
 
   type PlaySoundOnError = "off" | "1" | "2" | "3";
 
-  type SoundVolume = "0.1" | "0.5" | "1.0";
+  type SoundVolume = number;
 
   type PaceCaret = "off" | "average" | "pb" | "last" | "custom" | "daily";
 
@@ -175,6 +171,7 @@ declare namespace MonkeyTypes {
   type CustomBackgroundFilter = [number, number, number, number, number];
 
   /*
+
     off = off
     1 = mellow
     2 = high
@@ -607,7 +604,6 @@ declare namespace MonkeyTypes {
     maxStreak: number;
     streakHourOffset?: number;
     lbOptOut?: boolean;
-    isPremium?: boolean;
   }
 
   interface UserDetails {

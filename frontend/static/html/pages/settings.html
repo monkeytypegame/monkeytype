@@ -870,31 +870,9 @@
         <span>sound volume</span>
       </div>
       <div class="text">Change the volume of the sound effects.</div>
-      <div class="buttons">
-        <div
-          class="button"
-          soundVolume="0.1"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          quiet
-        </div>
-        <div
-          class="button"
-          soundVolume="0.5"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          medium
-        </div>
-        <div
-          class="button"
-          soundVolume="1.0"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          loud
-        </div>
+      <div class="volume slider">
+        <div class="value"></div>
+        <input type="range" min="0" max="1" step="0.01" />
       </div>
     </div>
     <div class="section playSoundOnClick fullWidth">
@@ -3006,5 +2984,6 @@
         </div>
       </div>
     </div>
+    <div class="sectionSpacer"></div>
   </div>
 </div>

@@ -192,7 +192,7 @@ export function setSoundVolume(
   val: MonkeyTypes.SoundVolume,
   nosave?: boolean
 ): boolean {
-  if (!isConfigValueValid("sound volume", val, [["0.1", "0.5", "1.0"]])) {
+  if (!isConfigValueValid("sound volume", val, ["number"])) {
     return false;
   }
 
@@ -1783,6 +1783,7 @@ export function setCustomBackgroundSize(
 
   return true;
 }
+
 
 export function setCustomBackgroundFilter(
   array: MonkeyTypes.CustomBackgroundFilter,

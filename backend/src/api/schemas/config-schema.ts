@@ -93,7 +93,7 @@ const CONFIG_SCHEMA = joi.object({
     joi.boolean(), //todo remove soon
     joi.string().valid("off", ..._.range(1, 14).map(_.toString))
   ),
-  soundVolume: joi.string().valid("0.1", "0.5", "1.0"),
+  soundVolume: joi.number().min(0).max(1),
   startGraphsAtZero: joi.boolean(),
   showOutOfFocusWarning: joi.boolean(),
   paceCaret: joi

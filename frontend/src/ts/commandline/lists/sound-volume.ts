@@ -1,35 +1,21 @@
-import * as UpdateConfig from "../../config";
-import * as SoundController from "../../controllers/sound-controller";
+import Config, * as UpdateConfig from "../../config";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Sound volume...",
   configKey: "soundVolume",
   list: [
     {
-      id: "setSoundVolume0.1",
-      display: "quiet",
-      configValue: "0.1",
-      exec: (): void => {
-        UpdateConfig.setSoundVolume("0.1");
-        SoundController.playClick();
+      id: "setSoundVolume",
+      display: "volume...",
+      input: true,
+      defaultValue: (): string => {
+        return Config.soundVolume.toString();
       },
-    },
-    {
-      id: "setSoundVolume0.5",
-      display: "medium",
-      configValue: "0.5",
-      exec: (): void => {
-        UpdateConfig.setSoundVolume("0.5");
-        SoundController.playClick();
-      },
-    },
-    {
-      id: "setSoundVolume1.0",
-      display: "loud",
-      configValue: "1.0",
-      exec: (): void => {
-        UpdateConfig.setSoundVolume("1.0");
-        SoundController.playClick();
+      exec: (input): void => {
+        if(!input) return;
+        let newVolume = Config.soundVolume;
+        newVolume = parseFloat(input);
+        UpdateConfig.setSoundVolume(newVolume);
       },
     },
   ],
@@ -37,7 +23,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
 
 const commands: MonkeyTypes.Command[] = [
   {
-    id: "changeSoundVolume",
+    id: "setSoundVolume",
     display: "Sound volume...",
     icon: "fa-volume-down",
     subgroup,
