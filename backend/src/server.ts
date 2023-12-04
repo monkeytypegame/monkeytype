@@ -13,7 +13,7 @@ import Logger from "./utils/logger";
 import * as EmailClient from "./init/email-client";
 import { init as initFirebaseAdmin } from "./init/firebase-admin";
 
-import { setup as leaderboardDbSetup } from "./dal/leaderboards";
+import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
 
 async function bootServer(port: number): Promise<Server> {
   try {
@@ -65,7 +65,7 @@ async function bootServer(port: number): Promise<Server> {
     jobs.forEach((job) => job.start());
     Logger.success("Cron jobs started");
 
-    Logger.info("Setup leaderboard...");
+    Logger.info("Setting up leaderboard indicies...");
     await leaderboardDbSetup();
 
     recordServerVersion(version);

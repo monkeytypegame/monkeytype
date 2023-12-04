@@ -265,7 +265,7 @@ async function createIndex(key: string): Promise<void> {
   await db.collection("users").createIndex(index, partial);
 }
 
-export async function setup(): Promise<void> {
+export async function createIndicies(): Promise<void> {
   await createIndex("lbPersonalBests.time.15.english");
   await createIndex("lbPersonalBests.time.60.english");
 }
