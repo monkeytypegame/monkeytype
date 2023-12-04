@@ -129,11 +129,37 @@ interface ValidationSchema {
   body?: object;
   query?: object;
   params?: object;
+  headers?: object;
+}
+
+interface ValidationSchemaOption {
+  allowUnknown?: boolean;
+}
+
+interface ValidationHandlingOptions {
   validationErrorMessage?: string;
 }
 
-function validateRequest(validationSchema: ValidationSchema): RequestHandler {
-  const { validationErrorMessage } = validationSchema;
+type ValidationSchemaOptions = {
+  [schema in keyof ValidationSchema]?: ValidationSchemaOption;
+} & ValidationHandlingOptions;
+
+const VALIDATION_SCHEMA_DEFAULT_OPTIONS: ValidationSchemaOptions = {
+  body: { allowUnknown: false },
+  headers: { allowUnknown: true },
+  params: { allowUnknown: false },
+  query: { allowUnknown: false },
+};
+
+function validateRequest(
+  validationSchema: ValidationSchema,
+  validationOptions: ValidationSchemaOptions = VALIDATION_SCHEMA_DEFAULT_OPTIONS
+): RequestHandler {
+  const options = {
+    ...VALIDATION_SCHEMA_DEFAULT_OPTIONS,
+    ...validationOptions,
+  };
+  const { validationErrorMessage } = options;
   const normalizedValidationSchema: ValidationSchema = _.omit(
     validationSchema,
     "validationErrorMessage"
@@ -143,7 +169,10 @@ function validateRequest(validationSchema: ValidationSchema): RequestHandler {
     _.each(
       normalizedValidationSchema,
       (schema: object, key: keyof ValidationSchema) => {
-        const joiSchema = joi.object().keys(schema);
+        const joiSchema = joi
+          .object()
+          .keys(schema)
+          .unknown(options[key]?.allowUnknown);
 
         const { error } = joiSchema.validate(req[key] ?? {});
         if (error) {
