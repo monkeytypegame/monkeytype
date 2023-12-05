@@ -3,7 +3,6 @@ import * as db from "../../src/init/db";
 import { ObjectId } from "mongodb";
 
 const mockSpeedHistogram = {
-  _id: new ObjectId(),
   type: "speedStats",
   english_time_15: {
     "70": 2761,
