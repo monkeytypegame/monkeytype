@@ -1181,6 +1181,13 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "indigo",
+    "bgColor": "#2a2e4b",
+    "mainColor": "#e1dbd1",
+    "subColor": "#606e8c",
+    "textColor": "#e1dbd1"
   }
 
 ]
