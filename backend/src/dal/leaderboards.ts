@@ -192,12 +192,6 @@ export async function update(
         },
       },
       {
-        $addFields: {
-          type: "speedStats",
-        },
-      },
-
-      {
         $merge: {
           into: "public",
           on: "_id",
