@@ -852,6 +852,25 @@
       "source": "Seneca",
       "length": 174,
       "id": 147
+    },
+    {
+      "text": "Errar es humano, pero más lo es culpar de ello a otros",
+      "source": "Baltasar Gracián",
+      "length": 54,
+      "id": 148
+    },
+    {
+      "text": "El pesimista se queja del viento, el optimista espera que este cambie, pero el realista ajusta las velas.",
+      "source": "William Wars",
+      "length": 105,
+      "id": 149
+    },
+    {
+      "text": "Si haces lo que siempre has hecho, obtendrás lo que siempre has conseguido. No es lo que hacemos de vez en cuando lo que da forma a nuestras vidas, sino lo que hacemos constantemente.",
+      "source": "Tony Robbins",
+      "length": 183,
+      "id": 150
     }
+    
   ]
 }
