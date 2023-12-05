@@ -29,9 +29,10 @@ export async function getSpeedHistogram(
   mode2: string
 ): Promise<Record<string, number>> {
   const key = `${language}_${mode}_${mode2}`;
+
   const stats = await db
     .collection<MonkeyTypes.PublicSpeedStats>("public")
-    .findOne({ type: "speedStats" }, { projection: { [key]: 1 } });
+    .findOne({ _id: "speedStatsHistogram" }, { projection: { [key]: 1 } });
   return stats?.[key] ?? {};
 }
 
