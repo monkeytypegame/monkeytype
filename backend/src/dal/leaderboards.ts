@@ -73,25 +73,6 @@ export async function update(
     .aggregate<MonkeyTypes.LeaderboardEntry>(
       [
         {
-          $project: {
-            _id: 0,
-            [`${key}.wpm`]: 1,
-            [`${key}.acc`]: 1,
-            [`${key}.raw`]: 1,
-            [`${key}.consistency`]: 1,
-            [`${key}.timestamp`]: 1,
-            banned: 1,
-            lbOptOut: 1,
-            needsToChangeName: 1,
-            timeTyping: 1,
-            uid: 1,
-            name: 1,
-            discordId: 1,
-            discordAvatar: 1,
-            inventory: 1,
-          },
-        },
-        {
           $match: {
             [`${key}.wpm`]: {
               $gt: 0,
@@ -121,6 +102,25 @@ export async function update(
             [`${key}.wpm`]: -1,
             [`${key}.acc`]: -1,
             [`${key}.timestamp`]: -1,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            [`${key}.wpm`]: 1,
+            [`${key}.acc`]: 1,
+            [`${key}.raw`]: 1,
+            [`${key}.consistency`]: 1,
+            [`${key}.timestamp`]: 1,
+            banned: 1,
+            lbOptOut: 1,
+            needsToChangeName: 1,
+            timeTyping: 1,
+            uid: 1,
+            name: 1,
+            discordId: 1,
+            discordAvatar: 1,
+            inventory: 1,
           },
         },
         {
@@ -233,4 +233,39 @@ export async function update(
       message: "Successfully updated leaderboard",
     };
   }
+}
+
+async function createIndex(key: string): Promise<void> {
+  const index = {
+    [`${key}.wpm`]: -1,
+    [`${key}.acc`]: -1,
+    [`${key}.timestamp`]: -1,
+    [`${key}.raw`]: -1,
+    [`${key}.consistency`]: -1,
+    banned: 1,
+    lbOptOut: 1,
+    needsToChangeName: 1,
+    timeTyping: 1,
+    uid: 1,
+    name: 1,
+    discordId: 1,
+    discordAvatar: 1,
+    inventory: 1,
+  };
+  const partial = {
+    partialFilterExpression: {
+      [`${key}.wpm`]: {
+        $gt: 0,
+      },
+      timeTyping: {
+        $gt: isDevEnvironment() ? 0 : 7200,
+      },
+    },
+  };
+  await db.collection("users").createIndex(index, partial);
+}
+
+export async function createIndicies(): Promise<void> {
+  await createIndex("lbPersonalBests.time.15.english");
+  await createIndex("lbPersonalBests.time.60.english");
 }
