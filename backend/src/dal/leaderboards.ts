@@ -138,7 +138,7 @@ export async function update(
           },
         },
       ],
-      { allowDiskUse: false }
+      { allowDiskUse: true }
     )
     .toArray();
   const end1 = performance.now();
