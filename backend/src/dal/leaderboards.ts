@@ -124,7 +124,7 @@ export async function update(
           },
         },
         {
-          $set: {
+          $addFields: {
             [`${key}.uid`]: "$uid",
             [`${key}.name`]: "$name",
             [`${key}.discordId`]: "$discordId",
@@ -195,6 +195,7 @@ export async function update(
     if (bucket in buckets) buckets[bucket]++;
     else buckets[bucket] = 1;
   }
+
   await db
     .collection("public")
     .updateOne(
