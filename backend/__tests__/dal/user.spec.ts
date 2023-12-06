@@ -781,4 +781,106 @@ describe("UserDal", () => {
       await expect(streak).toBe(expectedStreak);
     }
   });
+
+  describe("deleteUser", () => {
+    it("should remove deleted user from other users friends list", async () => {
+      //GIVEN
+      const user = new ObjectId().toHexString();
+      const otherUser = new ObjectId().toHexString();
+      await UserDAL.addUser("u1", "u1@axample.com", user);
+      await UserDAL.addUser("u2", "test email", otherUser);
+      await UserDAL.addFriend(otherUser, user);
+      await expect(UserDAL.getUser(otherUser, "test")).resolves.toHaveProperty(
+        "friends",
+        [user]
+      );
+
+      //WHEN
+      await UserDAL.deleteUser(user);
+
+      //THEN
+      await expect(UserDAL.getUser(user, "test")).rejects.toThrow(
+        "User not found\nStack: test"
+      );
+      await expect(UserDAL.getUser(otherUser, "test")).resolves.toHaveProperty(
+        "friends",
+        []
+      );
+    });
+
+    describe("friends", () => {
+      it("should get friend list", async () => {
+        //GIVEN
+        const user = new ObjectId().toHexString();
+        const friend = new ObjectId().toHexString();
+        const friend2 = new ObjectId().toHexString();
+        await UserDAL.addUser("u1", "u1@axample.com", user);
+        await UserDAL.addUser("u2", "test email", friend);
+        await UserDAL.addUser("u3", "test email", friend2);
+        await UserDAL.addFriend(user, friend);
+        await UserDAL.addFriend(user, friend2);
+        await UserDAL.addFriend(user, "unknown");
+
+        //WHEN
+        await expect(UserDAL.getFriendsList(user)).resolves.toEqual([
+          { uid: friend, name: "u2" },
+          { uid: friend2, name: "u3" },
+        ]);
+      });
+
+      it("should add friend ", async () => {
+        //GIVEN
+        const user = new ObjectId().toHexString();
+        const friend = new ObjectId().toHexString();
+        await UserDAL.addUser("u1", "u1@axample.com", user);
+        await UserDAL.addUser("u2", "test email", friend);
+
+        //WHEN
+        await UserDAL.addFriend(user, friend);
+
+        //THEN
+        await expect(UserDAL.getUser(user, "test")).resolves.toHaveProperty(
+          "friends",
+          [friend]
+        );
+
+        //WHEN
+        //adding the same friend twice
+        await UserDAL.addFriend(user, friend);
+
+        //THEN
+        await expect(UserDAL.getUser(user, "test")).resolves.toHaveProperty(
+          "friends",
+          [friend]
+        );
+      });
+      it("should remove friend ", async () => {
+        //GIVEN
+        const user = new ObjectId().toHexString();
+        const friend = new ObjectId().toHexString();
+        await UserDAL.addUser("u1", "u1@axample.com", user);
+        await UserDAL.addUser("u2", "test email", friend);
+        await UserDAL.addFriend(user, friend);
+
+        //WHEN
+        await UserDAL.removeFriend(user, friend);
+
+        //THEN
+        await expect(UserDAL.getUser(user, "test")).resolves.toHaveProperty(
+          "friends",
+          []
+        );
+
+        //WHEN
+        //remove an unknown friend
+        await expect(UserDAL.removeFriend(user, "unknown")).resolves;
+
+        //THEN
+        await expect(UserDAL.getUser(user, "test")).resolves.toHaveProperty(
+          "friends",
+          []
+        );
+      });
+    });
+  });
 });

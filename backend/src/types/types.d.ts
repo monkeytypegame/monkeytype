@@ -101,6 +101,7 @@ declare namespace MonkeyTypes {
     lbOptOut?: boolean;
     premium?: PremiumInfo;
     ips?: UserIpHistory;
+    friends?: string[]; //List of user uids
   }
 
   interface UserStreak {
@@ -398,5 +399,10 @@ declare namespace MonkeyTypes {
   interface PremiumInfo {
     startTimestamp: number;
     expirationTimestamp: number;
+  }
+
+  interface Friend {
+    uid: string;
+    name: string;
   }
 }

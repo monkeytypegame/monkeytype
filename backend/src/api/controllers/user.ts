@@ -915,3 +915,41 @@ export async function revokeAllTokens(
   removeTokensFromCacheByUid(uid);
   return new MonkeyResponse("All tokens revoked");
 }
+
+export async function getFriends(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+
+  const friends = await UserDAL.getFriendsList(uid);
+  return new MonkeyResponse("Friends retrieved", friends ?? []);
+}
+export async function addFriend(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const newFriend = req.body.uid;
+
+  const user = await UserDAL.getUser(uid, "addFriend");
+  //TODO move max friends to config
+  if (user.friends?.length || 0 > 25) {
+    throw new MonkeyError(400, "You can only have up to 25 friends");
+  }
+
+  // To make sure that the friend exists
+  await UserDAL.getUser(newFriend, "addFriend");
+
+  await UserDAL.addFriend(uid, newFriend);
+  return new MonkeyResponse("Friend added");
+}
+
+export async function removeFriend(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  const { friendUid } = req.params;
+
+  await UserDAL.removeFriend(uid, friendUid);
+
+  return new MonkeyResponse("Friend removed");
+}

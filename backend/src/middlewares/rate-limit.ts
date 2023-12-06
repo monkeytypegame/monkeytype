@@ -542,6 +542,25 @@ export const webhookLimit = rateLimit({
   handler: customHandler,
 });
 
+export const userFriendsGet = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+export const userFriendsAdd = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+export const userFriendsDelete = rateLimit({
+  windowMs: ONE_HOUR_MS,
+  max: 60 * REQUEST_MULTIPLIER,
+  keyGenerator: getKeyWithUid,
+  handler: customHandler,
+});
+
 export const apeKeysUpdate = apeKeysGenerate;
 
 export const apeKeysDelete = apeKeysGenerate;

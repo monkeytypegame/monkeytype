@@ -94,6 +94,13 @@ const languageSchema = joi
   .required();
 const quoteIdSchema = joi.string().min(1).max(10).regex(/\d+/).required();
 
+const validatePremiumFeatureIsEnabled = validateConfiguration({
+  criteria: (configuration) => {
+    return configuration.users.premium.enabled;
+  },
+  invalidMessage: "Premium is temporarily disabled.",
+});
+
 router.get(
   "/",
   authenticateRequest(),
@@ -657,6 +664,40 @@ router.post(
     noCache: true,
   }),
   asyncHandler(UserController.revokeAllTokens)
+);
+
+router.get(
+  "/friends",
+  validatePremiumFeatureIsEnabled,
+  authenticateRequest(),
+  RateLimit.userFriendsGet,
+  asyncHandler(UserController.getFriends)
+);
+
+router.post(
+  "/friends",
+  validatePremiumFeatureIsEnabled,
+  authenticateRequest(),
+  RateLimit.userFriendsAdd,
+  validateRequest({
+    body: {
+      uid: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.addFriend)
+);
+
+router.delete(
+  "/friends/:friendUid",
+  validatePremiumFeatureIsEnabled,
+  authenticateRequest(),
+  RateLimit.userFriendsDelete,
+  validateRequest({
+    params: {
+      friendUid: joi.string().required(),
+    },
+  }),
+  asyncHandler(UserController.removeFriend)
 );
 
 export default router;

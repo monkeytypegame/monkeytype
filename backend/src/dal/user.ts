@@ -46,6 +46,12 @@ export async function addUser(
 
 export async function deleteUser(uid: string): Promise<void> {
   await getUsersCollection().deleteOne({ uid });
+
+  //remove deleted user from other users friends lists
+  await getUsersCollection().updateMany(
+    { friends: uid },
+    { $pull: { friends: uid } }
+  );
 }
 
 export async function resetUser(uid: string): Promise<void> {
@@ -1067,4 +1073,42 @@ export async function logIpAddress(
     currentIps.pop();
   }
   await getUsersCollection().updateOne({ uid }, { $set: { ips: currentIps } });
+}
+
+export async function getFriendsList(
+  uid: string
+): Promise<MonkeyTypes.Friend[]> {
+  const query = getUsersCollection().aggregate([
+    { $match: { uid } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "friends",
+        foreignField: "uid",
+        as: "friends",
+      },
+    },
+    {
+      $project: { "friends.uid": 1, "friends.name": 1, _id: 0 },
+    },
+  ]);
+  const result = await query.toArray();
+  return result ? result[0].friends : {};
+}
+
+export async function addFriend(uid: string, newFriend: string): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    { $addToSet: { friends: newFriend } }
+  );
+}
+
+export async function removeFriend(
+  uid: string,
+  oldFriend: string
+): Promise<void> {
+  await getUsersCollection().updateOne(
+    { uid },
+    { $pull: { friends: oldFriend } }
+  );
 }
