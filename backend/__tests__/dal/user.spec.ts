@@ -857,16 +857,25 @@ describe("UserDal", () => {
       await UserDAL.linkStripeCustomerIdByUid(uid, customerId);
 
       //WHEN
-      await UserDAL.updatePremiumByStripeCustomerId(customerId, 10, 20);
+      await UserDAL.updatePremiumByStripeCustomerId(customerId, {
+        startTimestamp: 10,
+        expirationTimestamp: 20,
+        subscriptionStatus: "active",
+      });
 
       //THEN
       const readUser = await UserDAL.getUser(uid, "test");
       expect(readUser).toHaveProperty("premium.startTimestamp", 10);
       expect(readUser).toHaveProperty("premium.expirationTimestamp", 20);
+      expect(readUser).toHaveProperty("premium.subscriptionStatus", "active");
     });
     it("should fail for unknown customerId", async () => {
       await expect(
-        UserDAL.updatePremiumByStripeCustomerId("unknownCustomerId", 10, 20)
+        UserDAL.updatePremiumByStripeCustomerId("unknownCustomerId", {
+          startTimestamp: 10,
+          expirationTimestamp: 20,
+          subscriptionStatus: "active",
+        })
       ).rejects.toThrow(new MonkeyError(404, "Cannot update premium info."));
     });
   });

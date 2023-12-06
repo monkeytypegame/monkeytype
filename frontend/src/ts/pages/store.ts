@@ -45,6 +45,7 @@ async function fill(): Promise<void> {
   }
 
   if (data.isPremium === true) {
+    let premiumStartDate = "";
     let premiumEndDate = "";
     if (data.premium?.expirationTimestamp) {
       if (data.premium?.expirationTimestamp === -1) {
@@ -54,8 +55,22 @@ async function fill(): Promise<void> {
         premiumEndDate = new Date(
           data.premium?.expirationTimestamp
         ).toDateString();
+        premiumStartDate = new Date(
+          data.premium?.startTimestamp
+        ).toDateString();
       }
+      $("#premium_from").html(premiumStartDate);
       $("#premium_until").html(premiumEndDate);
+    }
+
+    if (data.premium?.subscriptionStatus === "active") {
+      $("#premium_renewal").html(
+        ` Subscription will auto-renewal on ${premiumEndDate}`
+      );
+    } else {
+      $("#premium_renewal").html(
+        ` Subscription is pending cancellation until ${premiumEndDate}.`
+      );
     }
 
     $(".premiumActive").removeClass("hidden");

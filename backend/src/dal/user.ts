@@ -1107,14 +1107,13 @@ async function linkStripeCustomer(
 }
 export async function updatePremiumByStripeCustomerId(
   customerId: string,
-  startDate: number,
-  endDate: number
+  premium: MonkeyTypes.PremiumInfo
 ): Promise<void> {
   const result = await getUsersCollection().updateOne(
     { "stripeData.customerId": customerId },
     {
       $set: {
-        premium: { startTimestamp: startDate, expirationTimestamp: endDate },
+        premium,
       },
     }
   );

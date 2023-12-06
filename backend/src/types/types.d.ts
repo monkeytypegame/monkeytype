@@ -400,6 +400,7 @@ declare namespace MonkeyTypes {
   interface PremiumInfo {
     startTimestamp: number;
     expirationTimestamp: number;
+    subscriptionStatus: "active" | "canceled";
   }
 
   interface StripeData {

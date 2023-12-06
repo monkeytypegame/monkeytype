@@ -308,11 +308,11 @@ describe("store controller test", () => {
       expect(stripeGetCheckoutMock).toHaveBeenCalledWith("sessionId");
       expect(userLinkCustomerByUidMock).toHaveBeenCalledWith(uid, "customerId");
       expect(stripeGetSubscriptionMock).toHaveBeenCalledWith("subscriptionId");
-      expect(userUpdatePremiumMock).toHaveBeenCalledWith(
-        "customerId",
-        10000,
-        20000
-      );
+      expect(userUpdatePremiumMock).toHaveBeenCalledWith("customerId", {
+        startTimestamp: 10000,
+        expirationTimestamp: 20000,
+        subscriptionStatus: "active",
+      });
     });
 
     it("should fail for mismatch user", async () => {
@@ -482,11 +482,49 @@ describe("store controller test", () => {
 
         //THEN
         expect(stripeGetSubscriptionMock).toHaveBeenCalledWith("sub_1234");
-        expect(userUpdatePremiumMock).toHaveBeenCalledWith(
-          "cus_1234",
-          10 * 1000,
-          20 * 1000
-        );
+        expect(userUpdatePremiumMock).toHaveBeenCalledWith("cus_1234", {
+          startTimestamp: 10 * 1000,
+          expirationTimestamp: 20 * 1000,
+          subscriptionStatus: "active",
+        });
+      });
+    });
+
+    describe("event type customer.subscription", () => {
+      afterEach(async () => {
+        [userUpdatePremiumMock].forEach((it) => it.mockReset());
+      });
+
+      it("should handle customer.subscription.deleted", async () => {
+        //GIVEN
+        const event = {
+          type: "customer.subscription.deleted",
+          data: {
+            object: {
+              id: "sub_1234",
+              customer: "cus_1234",
+              start_date: 10,
+              current_period_end: 20,
+              status: "canceled",
+            },
+          },
+        } as Stripe.WebhookEvent;
+
+        userUpdatePremiumMock.mockResolvedValue();
+
+        //WHEN
+        await mockApp
+          .post("/store/webhook")
+          .set("stripe-signature", "validSignature")
+          .send(event)
+          .expect(200);
+
+        //THEN
+        expect(userUpdatePremiumMock).toHaveBeenCalledWith("cus_1234", {
+          startTimestamp: 10 * 1000,
+          expirationTimestamp: 20 * 1000,
+          subscriptionStatus: "canceled",
+        });
       });
     });
 

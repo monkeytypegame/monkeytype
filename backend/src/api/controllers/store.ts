@@ -75,7 +75,9 @@ export async function finalizeCheckout(
 
   switch (session.mode) {
     case "subscription":
-      await processSubscription(session.subscription as string);
+      await processSubscription(
+        await fetchSubscription(session.subscription as string)
+      );
       break;
     default:
       throw new MonkeyError(
@@ -87,21 +89,27 @@ export async function finalizeCheckout(
   return new MonkeyResponse("Checkout finalized", {});
 }
 
-async function processSubscription(subscriptionId: string): Promise<void> {
-  const subscription = await Stripe.getSubscription(subscriptionId);
-
-  if (subscription.status === "active") {
+async function fetchSubscription(
+  subscriptionId: string
+): Promise<Stripe.Subscription> {
+  return await Stripe.getSubscription(subscriptionId);
+}
+async function processSubscription(
+  subscription: Stripe.Subscription
+): Promise<void> {
+  if (subscription.status === "active" || subscription.status === "canceled") {
     //
-    const startDate = subscription.start_date * 1000;
-    const endDate = subscription.current_period_end * 1000;
+    const startTimestamp = subscription.start_date * 1000;
+    const expirationTimestamp = subscription.current_period_end * 1000;
 
     await UserDal.updatePremiumByStripeCustomerId(
       subscription.customer as string,
-      startDate,
-      endDate
+      {
+        startTimestamp,
+        expirationTimestamp,
+        subscriptionStatus: subscription.status,
+      }
     );
-  } else {
-    //we don't need to handle other states as premium validity is calculated based on the expirationTimestamp.
   }
 }
 export async function handleWebhook(
@@ -120,7 +128,7 @@ export async function handleWebhook(
       await processInvoicePaid(event.data.object);
       break;
     case "customer.subscription.deleted":
-      //TODO implement
+      await processSubscriptionDeleted(event.data.object);
       break;
   }
 
@@ -139,5 +147,11 @@ async function processCustomerCreated(
 
 async function processInvoicePaid(invoice: Stripe.Invoice): Promise<void> {
   const subscriptionId = invoice.subscription as string;
-  await processSubscription(subscriptionId);
+  const subscription = await fetchSubscription(subscriptionId);
+  await processSubscription(subscription);
+}
+async function processSubscriptionDeleted(
+  subscription: Stripe.Subscription
+): Promise<void> {
+  await processSubscription(subscription);
 }
