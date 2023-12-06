@@ -60,15 +60,16 @@ export async function getRank(
 export async function update(
   mode: string,
   mode2: string,
-  language: string,
-  uid?: string
+  language: string
 ): Promise<{
   message: string;
   rank?: number;
 }> {
   const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
+  const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
+  leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
   const start1 = performance.now();
-  const lb = await db
+  const lb = db
     .collection<MonkeyTypes.User>("users")
     .aggregate<MonkeyTypes.LeaderboardEntry>(
       [
@@ -112,10 +113,6 @@ export async function update(
             [`${key}.raw`]: 1,
             [`${key}.consistency`]: 1,
             [`${key}.timestamp`]: 1,
-            banned: 1,
-            lbOptOut: 1,
-            needsToChangeName: 1,
-            timeTyping: 1,
             uid: 1,
             name: 1,
             discordId: 1,
@@ -123,13 +120,27 @@ export async function update(
             inventory: 1,
           },
         },
+
         {
           $addFields: {
             [`${key}.uid`]: "$uid",
             [`${key}.name`]: "$name",
             [`${key}.discordId`]: "$discordId",
             [`${key}.discordAvatar`]: "$discordAvatar",
-            [`${key}.badges`]: "$inventory.badges",
+            [`${key}.rank`]: {
+              $function: {
+                body: "function() {try {row_number+= 1;} catch (e) {row_number= 1;}return row_number;}",
+                args: [],
+                lang: "js",
+              },
+            },
+            [`${key}.badgeId`]: {
+              $function: {
+                body: "function(badges) {if (!badges) return null; for(let i=0;i<badges.length;i++){ if(badges[i].selected) return badges[i].id;}return null;}",
+                args: ["$inventory.badges"],
+                lang: "js",
+              },
+            },
           },
         },
         {
@@ -137,103 +148,82 @@ export async function update(
             newRoot: `$${key}`,
           },
         },
+        { $out: lbCollectionName },
       ],
       { allowDiskUse: true }
-    )
-    .toArray();
+    );
+
+  await lb.toArray();
   const end1 = performance.now();
 
   const start2 = performance.now();
-  let retval: number | undefined = undefined;
-  for (let index = 0; index < lb.length; index++) {
-    const lbEntry = lb[index];
-    lbEntry.rank = index + 1;
-    if (uid && lbEntry.uid === uid) {
-      retval = index + 1;
-    }
-
-    // extract selected badge
-    if (lbEntry.badges) {
-      const selectedBadge = lbEntry.badges.find((badge) => badge.selected);
-      if (selectedBadge) {
-        lbEntry.badgeId = selectedBadge.id;
-      }
-      delete lbEntry.badges;
-    }
-  }
+  await db.collection(lbCollectionName).createIndex({ uid: -1 });
+  await db.collection(lbCollectionName).createIndex({ rank: 1 });
+  leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
   const end2 = performance.now();
+
+  //update speedStats
   const start3 = performance.now();
-  leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
-  try {
-    await db.collection(`leaderboards.${language}.${mode}.${mode2}`).drop();
-  } catch {
-    //
-  }
-  if (lb && lb.length !== 0) {
-    await db
-      .collection<MonkeyTypes.LeaderboardEntry>(
-        `leaderboards.${language}.${mode}.${mode2}`
-      )
-      .insertMany(lb);
-  }
+  const boundaries = [...Array(32).keys()].map((it) => it * 10);
+  const statsKey = `${language}_${mode}_${mode2}`;
+  const src = await db.collection(lbCollectionName);
+  const histogram = src.aggregate(
+    [
+      {
+        $bucket: {
+          groupBy: "$wpm",
+          boundaries: boundaries,
+          default: "Other",
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $arrayToObject: [[{ k: { $toString: "$_id" }, v: "$count" }]],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "speedStatsHistogram", //we only expect one document with type=speedStats
+          [`${statsKey}`]: {
+            $mergeObjects: "$$ROOT",
+          },
+        },
+      },
+      {
+        $merge: {
+          into: "public",
+          on: "_id",
+          whenMatched: "merge",
+          whenNotMatched: "insert",
+        },
+      },
+    ],
+    { allowDiskUse: true }
+  );
+  await histogram.toArray();
   const end3 = performance.now();
 
-  const start4 = performance.now();
-  await db.collection(`leaderboards.${language}.${mode}.${mode2}`).createIndex({
-    uid: -1,
-  });
-  await db.collection(`leaderboards.${language}.${mode}.${mode2}`).createIndex({
-    rank: 1,
-  });
-  leaderboardUpdating[`${language}_${mode}_${mode2}`] = false;
-  const end4 = performance.now();
-
-  const start5 = performance.now();
-  const buckets = {}; // { "70": count, "80": count }
-  for (const lbEntry of lb) {
-    const bucket = Math.floor(lbEntry.wpm / 10).toString() + "0";
-    if (bucket in buckets) buckets[bucket]++;
-    else buckets[bucket] = 1;
-  }
-
-  await db
-    .collection("public")
-    .updateOne(
-      { type: "speedStats" },
-      { $set: { [`${language}_${mode}_${mode2}`]: buckets } },
-      { upsert: true }
-    );
-  const end5 = performance.now();
-
   const timeToRunAggregate = (end1 - start1) / 1000;
-  const timeToRunLoop = (end2 - start2) / 1000;
-  const timeToRunInsert = (end3 - start3) / 1000;
-  const timeToRunIndex = (end4 - start4) / 1000;
-  const timeToSaveHistogram = (end5 - start5) / 1000; // not sent to prometheus yet
+  const timeToRunIndex = (end2 - start2) / 1000;
+  const timeToSaveHistogram = (end3 - start3) / 1000; // not sent to prometheus yet
 
   Logger.logToDb(
     `system_lb_update_${language}_${mode}_${mode2}`,
-    `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`,
-    uid
+    `Aggregate ${timeToRunAggregate}s, loop 0s, insert 0s, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`
   );
 
   setLeaderboard(language, mode, mode2, [
     timeToRunAggregate,
-    timeToRunLoop,
-    timeToRunInsert,
+    0,
+    0,
     timeToRunIndex,
   ]);
 
-  if (retval) {
-    return {
-      message: "Successfully updated leaderboard",
-      rank: retval,
-    };
-  } else {
-    return {
-      message: "Successfully updated leaderboard",
-    };
-  }
+  return {
+    message: "Successfully updated leaderboard",
+  };
 }
 
 async function createIndex(key: string): Promise<void> {
