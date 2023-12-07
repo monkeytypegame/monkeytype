@@ -7,7 +7,7 @@ export async function updateStats(
   time: number
 ): Promise<boolean> {
   await db.collection<MonkeyTypes.PublicStats>("public").updateOne(
-    { type: "stats" },
+    { _id: "stats" },
     {
       $inc: {
         testsCompleted: 1,
@@ -29,9 +29,10 @@ export async function getSpeedHistogram(
   mode2: string
 ): Promise<Record<string, number>> {
   const key = `${language}_${mode}_${mode2}`;
+
   const stats = await db
     .collection<MonkeyTypes.PublicSpeedStats>("public")
-    .findOne({ type: "speedStats" }, { projection: { [key]: 1 } });
+    .findOne({ _id: "speedStatsHistogram" }, { projection: { [key]: 1 } });
   return stats?.[key] ?? {};
 }
 
@@ -39,7 +40,7 @@ export async function getSpeedHistogram(
 export async function getTypingStats(): Promise<MonkeyTypes.PublicStats> {
   const stats = await db
     .collection<MonkeyTypes.PublicStats>("public")
-    .findOne({ type: "stats" }, { projection: { _id: 0 } });
+    .findOne({ _id: "stats" }, { projection: { _id: 0 } });
   if (!stats) {
     throw new MonkeyError(
       404,

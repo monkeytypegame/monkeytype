@@ -362,17 +362,16 @@ declare namespace MonkeyTypes {
   }
 
   interface PublicStats {
-    _id: string;
+    _id: "stats";
     testsCompleted: number;
     testsStarted: number;
     timeTyping: number;
-    type: string;
   }
 
-  type PublicSpeedStats = TypedMongoEntry & PublicSpeedStatsByLanguage;
-  interface TypedMongoEntry {
-    _id: string;
-    type: "speedStats";
+  type PublicSpeedStats = PublicSpeedStatsMongoEntry &
+    PublicSpeedStatsByLanguage;
+  interface PublicSpeedStatsMongoEntry {
+    _id: "speedStatsHistogram";
   }
   interface PublicSpeedStatsByLanguage {
     [language_mode_mode2: string]: Record<string, number>;
