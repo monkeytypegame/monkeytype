@@ -10,6 +10,7 @@
   ,"english_doubleletter"
   ,"english_shakespearean"
   ,"english_old"
+  ,"english_medical"
   ,"spanish"
   ,"spanish_1k"
   ,"spanish_10k"
@@ -304,5 +305,4 @@
   ,"code_gdscript"
   ,"code_gdscript_2"
   ,"code_assembly"
-  ,"medicine"
 ]
