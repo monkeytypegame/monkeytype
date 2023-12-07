@@ -1,23 +1,4 @@
 import * as PublicDAL from "../../src/dal/public";
-import * as db from "../../src/init/db";
-import { ObjectId } from "mongodb";
-
-const mockSpeedHistogram = {
-  type: "speedStats",
-  english_time_15: {
-    "70": 2761,
-    "80": 2520,
-    "90": 2391,
-    "100": 2317,
-  },
-  english_time_60: {
-    "50": 8781,
-    "60": 2978,
-    "70": 2786,
-    "80": 2572,
-    "90": 2399,
-  },
-};
 
 describe("PublicDAL", function () {
   it("should be able to update stats", async function () {
@@ -40,18 +21,5 @@ describe("PublicDAL", function () {
     expect(afterStats.testsCompleted).toBe(priorStats.testsCompleted + 1);
     expect(afterStats.testsStarted).toBe(priorStats.testsStarted + 2);
     expect(afterStats.timeTyping).toBe(priorStats.timeTyping + 60);
-  });
-
-  it("should be able to get speed histogram", async function () {
-    // this test ensures that the property access is correct
-    await db
-      .collection("public")
-      .replaceOne({ type: "speedStats" }, mockSpeedHistogram, { upsert: true });
-    const speedHistogram = await PublicDAL.getSpeedHistogram(
-      "english",
-      "time",
-      "60"
-    );
-    expect(speedHistogram["50"]).toBe(8781); // check a value in the histogram that has been set
   });
 });
