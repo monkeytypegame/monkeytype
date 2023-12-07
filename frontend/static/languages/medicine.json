@@ -1,1 +1,7 @@
-
+{
+  "name": "medicine",
+  "rightToLeft": boolean,
+  "ligatures": boolean,
+  "bcp47": string,
+  "words": string[]
+}
