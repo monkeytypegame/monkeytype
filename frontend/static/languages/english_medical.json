@@ -1,6 +1,9 @@
 {
-  "name": "medicine",
+  "name": "english_medical",
   "rightToLeft": false,
+  "noLazyMode": true,
+  "orderedByFrequency": false,
+  "bcp47": "en-US",
   "words": [
     "peritoneum",
     "bronchus",
