@@ -19,7 +19,7 @@ export async function addUser(
   email: string,
   uid: string
 ): Promise<void> {
-  const newUserDocument: MonkeyTypes.User = {
+  const newUserDocument: Partial<MonkeyTypes.User> = {
     name,
     email,
     uid,
@@ -548,7 +548,10 @@ export async function linkDiscord(
   discordId: string,
   discordAvatar?: string
 ): Promise<void> {
-  const updates = _.pickBy({ discordId, discordAvatar }, _.identity);
+  const updates: Partial<MonkeyTypes.User> = _.pickBy(
+    { discordId, discordAvatar },
+    _.identity
+  );
   const result = await getUsersCollection().updateOne(
     { uid },
     { $set: updates }
@@ -1034,4 +1037,34 @@ export async function setBanned(uid: string, banned: boolean): Promise<void> {
   } else {
     await getUsersCollection().updateOne({ uid }, { $unset: { banned: "" } });
   }
+}
+
+export async function checkIfUserIsPremium(
+  uid: string,
+  userInfoOverride?: MonkeyTypes.User
+): Promise<boolean> {
+  const user = userInfoOverride ?? (await getUser(uid, "checkIfUserIsPremium"));
+  const expirationDate = user.premium?.expirationTimestamp;
+
+  if (expirationDate === undefined) return false;
+  if (expirationDate === -1) return true; //lifetime
+  return expirationDate > Date.now();
+}
+
+export async function logIpAddress(
+  uid: string,
+  ip: string,
+  userInfoOverride?: MonkeyTypes.User
+): Promise<void> {
+  const user = userInfoOverride ?? (await getUser(uid, "logIpAddress"));
+  const currentIps = user.ips ?? [];
+  const ipIndex = currentIps.indexOf(ip);
+  if (ipIndex !== -1) {
+    currentIps.splice(ipIndex, 1);
+  }
+  currentIps.unshift(ip);
+  if (currentIps.length > 10) {
+    currentIps.pop();
+  }
+  await getUsersCollection().updateOne({ uid }, { $set: { ips: currentIps } });
 }

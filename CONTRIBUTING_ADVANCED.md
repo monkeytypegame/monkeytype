@@ -82,6 +82,7 @@ Within the `frontend/src/ts/constants` directory, duplicate `firebase-config-exa
   3. In the `SDK setup and configuration` section, select `npm`
   4. The Firebase config will be visible below
   5. Paste the config into `firebase-config.ts`
+  6. Ensure there is an `export` statement before `const firebaseConfig`
 
 If you want to access the frontend from other machines on your network create a file `frontend/.env` with this content:
 

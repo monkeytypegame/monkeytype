@@ -303,7 +303,26 @@ function setAccountChart(
     return false;
   }
 
+  if (array.length !== 4) {
+    array = ["on", "on", "on", "on"];
+  }
+
   config.accountChart = array;
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
+
+  return true;
+}
+
+export function setAccountChartResults(
+  value: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("account chart results", value, ["boolean"])) {
+    return false;
+  }
+
+  config.accountChart[0] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -318,7 +337,7 @@ export function setAccountChartAccuracy(
     return false;
   }
 
-  config.accountChart[0] = value ? "on" : "off";
+  config.accountChart[1] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -333,7 +352,7 @@ export function setAccountChartAvg10(
     return false;
   }
 
-  config.accountChart[1] = value ? "on" : "off";
+  config.accountChart[2] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -348,7 +367,7 @@ export function setAccountChartAvg100(
     return false;
   }
 
-  config.accountChart[2] = value ? "on" : "off";
+  config.accountChart[3] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -527,6 +546,7 @@ export function setMinAcc(
 
 export function setMinAccCustom(val: number, nosave?: boolean): boolean {
   if (!isConfigValueValid("min acc custom", val, ["number"])) return false;
+  if (val > 100) val = 100;
 
   config.minAccCustom = val;
   saveToLocalStorage("minAccCustom", nosave);
@@ -1195,20 +1215,17 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
 
 //quick restart
 export function setQuickRestartMode(
-  mode: "off" | "esc" | "tab",
+  mode: "off" | "esc" | "tab" | "enter",
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("quick restart mode", mode, [["off", "esc", "tab"]])
+    !isConfigValueValid("quick restart mode", mode, [
+      ["off", "esc", "tab", "enter"],
+    ])
   ) {
     return false;
   }
 
-  if (mode === "off") {
-    $(".pageTest #restartTestButton").removeClass("hidden");
-  } else {
-    $(".pageTest #restartTestButton").addClass("hidden");
-  }
   config.quickRestart = mode;
   saveToLocalStorage("quickRestart", nosave);
   ConfigEvent.dispatch("quickRestart", config.quickRestart);

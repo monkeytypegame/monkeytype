@@ -144,7 +144,7 @@ export function restart(options = {} as RestartOptions): void {
     event?.preventDefault();
     return;
   }
-  if (ActivePage.get() === "test" && !TestUI.resultVisible) {
+  if (ActivePage.get() === "test") {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") event?.preventDefault();
       if (
@@ -161,6 +161,8 @@ export function restart(options = {} as RestartOptions): void {
           message = "Press shift + tab or use your mouse to confirm.";
         } else if (Config.quickRestart === "esc") {
           message = "Press shift + escape or use your mouse to confirm.";
+        } else if (Config.quickRestart === "enter") {
+          message = "Press shift + enter or use your mouse to confirm.";
         }
         Notifications.add(
           `Quick restart disabled in long tests. ${message}`,
@@ -537,6 +539,7 @@ export async function init(): Promise<void> {
 
   let hasTab = false;
   let hasNumbers = false;
+  let hasNewline = false;
 
   for (const word of generatedWords) {
     if (/\t/g.test(word) && !hasTab) {
@@ -545,10 +548,14 @@ export async function init(): Promise<void> {
     if (/\d/g.test(word) && !hasNumbers) {
       hasNumbers = true;
     }
+    if (/\n/g.test(word) && !hasNewline) {
+      hasNewline = true;
+    }
   }
 
   TestWords.setHasTab(hasTab);
   TestWords.setHasNumbers(hasNumbers);
+  TestWords.setHasNewline(hasNewline);
 
   if (beforeHasNumbers !== hasNumbers) {
     Keymap.refresh();
@@ -1065,7 +1072,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     Notifications.add("Test invalid - raw", 0);
     TestStats.setInvalid();
     dontSave = true;
-  } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
+  } else if (
+    (!DB.getSnapshot()?.lbOptOut &&
+      (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
+    (DB.getSnapshot()?.lbOptOut === true &&
+      (completedEvent.acc < 50 || completedEvent.acc > 100))
+  ) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
     dontSave = true;
@@ -1507,6 +1519,13 @@ $("header").on("click", "nav #startTestButton, #logo", () => {
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (ActivePage.get() === "test") {
+    if (eventKey === "language") {
+      //automatically enable lazy mode for arabic
+      if ((eventValue as string)?.startsWith("arabic")) {
+        UpdateConfig.setLazyMode(true, true);
+      }
+      restart();
+    }
     if (eventKey === "difficulty" && !nosave) restart();
     if (eventKey === "showAllLines" && !nosave) restart();
     if (eventKey === "tapeMode" && !nosave) restart();

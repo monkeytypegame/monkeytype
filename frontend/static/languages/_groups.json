@@ -11,7 +11,8 @@
       "english_commonly_misspelled",
       "english_contractions",
       "english_doubleletter",
-      "english_shakespearean"
+      "english_shakespearean",
+      "english_old"
     ]
   },
   {
@@ -146,11 +147,7 @@
   },
   {
     "name": "kurdish_central",
-    "languages": [
-      "kurdish_central",
-      "kurdish_central_2k",
-      "kurdish_central_45k"
-    ]
+    "languages": ["kurdish_central", "kurdish_central_2k", "kurdish_central_4k"]
   },
   {
     "name": "greek",
@@ -309,7 +306,7 @@
   },
   {
     "name": "serbian",
-    "languages": ["serbian"]
+    "languages": ["serbian", "serbian_latin"]
   },
   {
     "name": "georgian",
@@ -389,7 +386,7 @@
   },
   {
     "name": "sanskrit",
-    "languages": ["sanskrit"]
+    "languages": ["sanskrit", "sanskrit_roman"]
   },
   {
     "name": "nepali",

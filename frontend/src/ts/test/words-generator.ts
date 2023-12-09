@@ -121,15 +121,17 @@ export async function punctuateWord(
   } else if (Math.random() < 0.012 && lastChar !== "," && lastChar !== ".") {
     if (currentLanguage === "code") {
       const r = Math.random();
-      if (r < 0.25) {
-        word = `(${word})`;
-      } else if (r < 0.5) {
-        word = `{${word}}`;
-      } else if (r < 0.75) {
-        word = `[${word}]`;
-      } else {
-        word = `<${word}>`;
+      const brackets = ["()", "{}", "[]", "<>"];
+
+      // add `word` in javascript
+      if (Config.language.startsWith("code_javascript")) {
+        brackets.push("``");
       }
+
+      const index = Math.floor(r * brackets.length);
+      const bracket = brackets[index];
+
+      word = `${bracket[0]}${word}${bracket[1]}`;
     } else {
       word = `(${word})`;
     }
@@ -227,7 +229,11 @@ export async function punctuateWord(
     ) {
       word = Misc.randomElementFromArray(specialsC);
     } else {
-      word = Misc.randomElementFromArray(specials);
+      if (Config.language.startsWith("code_javascript")) {
+        word = Misc.randomElementFromArray([...specials, "`"]);
+      } else {
+        word = Misc.randomElementFromArray(specials);
+      }
     }
   } else if (
     Math.random() < 0.5 &&
@@ -311,10 +317,11 @@ async function applyBritishEnglishToWord(
   word: string,
   previousWord: string
 ): Promise<string> {
-  if (Config.britishEnglish && /english/.test(Config.language)) {
-    word = await BritishEnglish.replace(word, previousWord);
-  }
-  return word;
+  if (!Config.britishEnglish) return word;
+  if (!/english/.test(Config.language)) return word;
+  if (Config.mode === "quote" && TestWords.randomQuote.britishText) return word;
+
+  return await BritishEnglish.replace(word, previousWord);
 }
 
 function applyLazyModeToWord(
@@ -477,8 +484,12 @@ export async function generateWords(
       for (let i = 0; i < funboxSection.length; i++) {
         indexes.push(i);
       }
+      const ret = [];
+      for (const word of funboxSection) {
+        ret.push(applyFunboxesToWord(word));
+      }
       return {
-        words: funboxSection,
+        words: ret,
         sectionIndexes: indexes,
       };
     }
@@ -591,7 +602,12 @@ async function generateQuoteWords(
   rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   rq.text = rq.text.replace(/…/g, "...");
   rq.text = rq.text.trim();
-  rq.textSplit = rq.text.split(" ");
+
+  if (rq.britishText && Config.britishEnglish) {
+    rq.textSplit = rq.britishText.split(" ");
+  } else {
+    rq.textSplit = rq.text.split(" ");
+  }
 
   TestWords.setRandomQuote(rq);
 

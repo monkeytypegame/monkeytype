@@ -308,12 +308,6 @@
       "id": 52
     },
     {
-      "text": "GitHub es una compañía sin fines de lucro que ofrece un servicio de hosting de repositorios almacenados en la nube. Esencialmente, hace que sea más fácil para individuos y equipos usar Git como la versión de control y colaboración.",
-      "source": "https://kinsta.com/es/base-de-conocimiento/que-es-github/",
-      "length": 231,
-      "id": 53
-    },
-    {
       "text": "Estar en paz consigo mismo es el medio más seguro de comenzar a estarlo con los demás.",
       "source": "Fray Luis de Leon",
       "length": 86,
@@ -332,9 +326,9 @@
       "id": 56
     },
     {
-      "text": "Me pregunto si las estrellas se iluminan con el fin de que algún día, cada uno pueda encontrar la suya.",
+      "text": "Me pregunto si las estrellas se iluminan con el fin de que, algún día, cada uno pueda encontrar la suya.",
       "source": "El Principito",
-      "length": 103,
+      "length": 104,
       "id": 57
     },
     {
@@ -674,9 +668,9 @@
       "id": 114
     },
     {
-      "text": "Mi nombre es Yoshikage Kira. Tengo 33 años de edad. Mi casa está en la sección noreste de Morioh, donde están todas las villas, y no estoy casado. Trabajo como empleado para los grandes almacenes Kame Yu y llego a casa todos los días a las 8 p.m. como muy tarde. No fumo, pero bebo de vez en cuando. Me acuesto a las 11 p. m. y me aseguro de dormir ocho horas, pase lo que pase. Después de tomar un vaso de leche tibia y hacer unos veinte minutos de estiramientos antes de acostarme, no suelo tener problemas para dormir hasta la mañana. Al igual que un bebé, me despierto sin fatiga ni estrés por la mañana.",
+      "text": "Mi nombre es Yoshikage Kira. Tengo 33 años de edad. Mi casa está en la sección noreste de Morioh, donde están todas las villas, y no estoy casado. Trabajo como empleado para los grandes almacenes Kame Yu y llego a casa todos los días a las 8 p.m. como muy tarde. No fumo, pero bebo de vez en cuando. Me acuesto a las 11 p.m. y me aseguro de dormir ocho horas, pase lo que pase. Después de tomar un vaso de leche tibia y hacer unos veinte minutos de estiramientos antes de acostarme, no suelo tener problemas para dormir hasta la mañana. Al igual que un bebé, me despierto sin fatiga ni estrés por la mañana.",
       "source": "Yoshikage Kira - Jojo's Bizzare Adventure",
-      "length": 608,
+      "length": 607,
       "id": 115
     },
     {
@@ -822,6 +816,42 @@
       "source": "Pablo Escobar",
       "length": 70,
       "id": 141
+    },
+    {
+      "text": "El verdadero modo de vengarse de un enemigo, es no asemejársele.",
+      "source": "Marco Aurelio",
+      "length": 64,
+      "id": 142
+    },
+    {
+      "text": "Si no conviene, no lo hagas; si no es verdad, no lo digas. Sé dueño de tus inclinaciones.",
+      "source": "Marco Aurelio",
+      "length": 89,
+      "id": 143
+    },
+    {
+      "text": "Todas las cosas se hallan entrelazadas entre sí y su común vínculo es sagrado y casi ninguna es extraña a la otra, porque todas están coordinadas y contribuyen al orden del mismo mundo.",
+      "source": "Marco Aurelio",
+      "length": 185,
+      "id": 144
+    },
+    {
+      "text": "Me llamo Maximo Décimo Meridio, Comandante de los ejércitos del Norte, General de las legiones felix, Leal servidor del verdadero emperador Marco Aurelio, Padre de un hijo asesinado, Marido de una mujer asesinada y alcanzaré mi venganza en esta vida o en la otra.",
+      "source": "Maximo Décimo Meridio - Gladiator",
+      "length": 263,
+      "id": 145
+    },
+    {
+      "text": "Podrás amenazarme, encadenarme, encerrarme o exiliarme. Pero yo te recuerdo que ni Zeus podría quitarme el poder de decidir mi actitud.",
+      "source": "Epicteto",
+      "length": 135,
+      "id": 146
+    },
+    {
+      "text": "Nada, a mi modo de ver, es una mejor prueba de una mente bien ordenada que la capacidad de un hombre de detenerse justo donde está y pasar algún tiempo en su propia compañía.",
+      "source": "Seneca",
+      "length": 174,
+      "id": 147
     }
   ]
 }

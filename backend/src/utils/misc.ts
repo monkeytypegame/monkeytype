@@ -44,7 +44,7 @@ export function base64UrlDecode(data: string): string {
 }
 
 interface AgentLog {
-  ip: string | string[];
+  ip: string;
   agent: string;
   device?: string;
 }
@@ -54,8 +54,8 @@ export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
 
   const agentLog: AgentLog = {
     ip:
-      req.headers["cf-connecting-ip"] ||
-      req.headers["x-forwarded-for"] ||
+      (req.headers["cf-connecting-ip"] as string) ||
+      (req.headers["x-forwarded-for"] as string) ||
       req.ip ||
       "255.255.255.255",
     agent: `${agent.os.name} ${agent.os.version} ${agent.browser.name} ${agent.browser.version}`,
@@ -287,4 +287,18 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
     return b.indexOf(e) > -1;
   });
   return removeDuplicates ? [...new Set(filtered)] : filtered;
+}
+
+export function stringToNumberOrDefault(
+  string: string,
+  defaultValue: number
+): number {
+  if (string === undefined) return defaultValue;
+  const value = parseInt(string, 10);
+  if (!Number.isFinite(value)) return defaultValue;
+  return value;
+}
+
+export function isDevEnvironment(): boolean {
+  return process.env.MODE === "dev";
 }

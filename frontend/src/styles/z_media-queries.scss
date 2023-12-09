@@ -86,6 +86,7 @@
   #supportMe {
     width: 90vw !important;
     .buttons {
+      button,
       .button {
         .icon {
           font-size: 3rem !important;
@@ -163,6 +164,11 @@
     grid-template-columns: 1fr 1fr 1fr;
     grid-auto-flow: unset;
     justify-items: center;
+  }
+  .pageAccount {
+    .group.chart .below {
+      grid-template-columns: 1fr;
+    }
   }
 }
 
@@ -394,8 +400,7 @@
       .supporters {
         grid-template-columns: 1fr 1fr 1fr;
       }
-      .contactButtons,
-      .supportButtons {
+      .contactButtons {
         grid-template-columns: 1fr 1fr;
       }
     }
@@ -407,13 +412,6 @@
     }
     .saveContainer {
       grid-column: -1/-2;
-    }
-  }
-
-  .pageAccount {
-    .group.chart .below {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
     }
   }
 
@@ -625,7 +623,7 @@
       "buttons";
 
     & > .text {
-      margin-bottom: 1rem;
+      margin-bottom: 0.25em;
     }
 
     & .customThemeEdit {
@@ -656,6 +654,7 @@
     width: 80vw !important;
     .buttons {
       grid-template-columns: none !important;
+      button,
       .button {
         grid-template-columns: auto 1fr;
         align-items: center;

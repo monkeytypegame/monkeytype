@@ -4,7 +4,7 @@ import * as Skeleton from "../popups/skeleton";
 
 export function updateBar(percentage: number, fast = false): void {
   const speed = fast ? 100 : 1000;
-  $(".pageLoading .fill, .pageAccount .fill")
+  $(".pageLoading .fill, .pageAccount .preloader .fill")
     .stop(true, fast)
     .animate(
       {

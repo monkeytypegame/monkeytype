@@ -66,6 +66,7 @@ class Words {
 
 export const words = new Words();
 export let hasTab = false;
+export let hasNewline = false;
 export let hasNumbers = false;
 export let randomQuote = null as unknown as MonkeyTypes.Quote;
 
@@ -75,6 +76,10 @@ export function setRandomQuote(rq: MonkeyTypes.Quote): void {
 
 export function setHasTab(tf: boolean): void {
   hasTab = tf;
+}
+
+export function setHasNewline(tf: boolean): void {
+  hasNewline = tf;
 }
 
 export function setHasNumbers(tf: boolean): void {

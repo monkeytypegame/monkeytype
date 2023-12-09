@@ -167,15 +167,10 @@ class SimplePopup {
               `);
             } else if (input.type === "checkbox") {
               el.find(".inputs").append(`
-                <label class="checkbox">
-                  <input type="checkbox">
-                  <div class="customTextCheckbox">
-                    <div class="check">
-                      <i class="fas fa-fw fa-check"></i>
-                    </div>
-                  </div>
-                  ${input.label}
-                </label>
+              <label class="checkbox">
+                <input type="checkbox" checked="">
+                <div>${input.label}</div>
+              </label>
               `);
             } else {
               el.find(".inputs").append(`
@@ -1465,7 +1460,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
 list["updateCustomTheme"] = new SimplePopup(
   "updateCustomTheme",
   "text",
-  "Update Custom Theme",
+  "Update custom theme",
   [
     {
       type: "text",
@@ -1479,7 +1474,7 @@ list["updateCustomTheme"] = new SimplePopup(
     },
   ],
   "",
-  "Update",
+  "update",
   async (_thisPopup, name, updateColors) => {
     const snapshot = DB.getSnapshot();
     if (!snapshot) {

@@ -5,8 +5,8 @@ export default class Results {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointResponse {
-    return await this.httpClient.get(BASE_PATH);
+  async get(offset?: number): Ape.EndpointResponse {
+    return await this.httpClient.get(BASE_PATH, { searchQuery: { offset } });
   }
 
   async save(

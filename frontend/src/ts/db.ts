@@ -55,9 +55,8 @@ export async function initSnapshot(): Promise<
     //getData recreates the user if it doesnt exist - thats why it needs to be called first, by itself
     const userResponse = await Ape.users.getData();
 
-    const [configResponse, tagsResponse, presetsResponse] = await Promise.all([
+    const [configResponse, presetsResponse] = await Promise.all([
       Ape.configs.get(),
-      Ape.users.getTags(),
       Ape.presets.get(),
     ]);
 
@@ -73,12 +72,6 @@ export async function initSnapshot(): Promise<
         responseCode: configResponse.status,
       };
     }
-    if (tagsResponse.status !== 200) {
-      throw {
-        message: `${tagsResponse.message} (tags)`,
-        responseCode: tagsResponse.status,
-      };
-    }
     if (presetsResponse.status !== 200) {
       throw {
         message: `${presetsResponse.message} (presets)`,
@@ -86,10 +79,9 @@ export async function initSnapshot(): Promise<
       };
     }
 
-    const [userData, configData, tagsData, presetsData] = [
+    const [userData, configData, presetsData] = [
       userResponse,
       configResponse,
-      tagsResponse,
       presetsResponse,
     ].map((response) => response.data);
 
@@ -131,6 +123,7 @@ export async function initSnapshot(): Promise<
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
     snap.filterPresets = userData.resultFilterPresets ?? [];
+    snap.isPremium = userData?.isPremium;
 
     const hourOffset = userData?.streak?.hourOffset;
     snap.streakHourOffset =
@@ -169,7 +162,7 @@ export async function initSnapshot(): Promise<
     // }
     // LoadingPage.updateText("Downloading tags...");
     snap.customThemes = userData.customThemes ?? [];
-    snap.tags = tagsData;
+    snap.tags = userData.tags || [];
 
     snap.tags.forEach((tag) => {
       tag.display = tag.name.replaceAll("_", " ");
@@ -225,51 +218,67 @@ export async function initSnapshot(): Promise<
   }
 }
 
-export async function getUserResults(): Promise<boolean> {
+export async function getUserResults(offset?: number): Promise<boolean> {
   const user = Auth?.currentUser;
   if (!user) return false;
   if (!dbSnapshot) return false;
+  if (
+    dbSnapshot.results !== undefined &&
+    (offset === undefined || dbSnapshot.results.length > offset)
+  ) {
+    return false;
+  }
 
   if (!ConnectionState.get()) {
     return false;
   }
 
-  if (dbSnapshot.results !== undefined) {
-    return true;
-  } else {
+  if (dbSnapshot.results === undefined) {
     LoadingPage.updateText("Downloading results...");
     LoadingPage.updateBar(90);
-
-    const response = await Ape.results.get();
-
-    if (response.status !== 200) {
-      Notifications.add("Error getting results: " + response.message, -1);
-      return false;
-    }
-
-    const results = response.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
-    results.forEach((result) => {
-      if (result.bailedOut === undefined) result.bailedOut = false;
-      if (result.blindMode === undefined) result.blindMode = false;
-      if (result.lazyMode === undefined) result.lazyMode = false;
-      if (result.difficulty === undefined) result.difficulty = "normal";
-      if (result.funbox === undefined) result.funbox = "none";
-      if (result.language === undefined || result.language === null) {
-        result.language = "english";
-      }
-      if (result.numbers === undefined) result.numbers = false;
-      if (result.punctuation === undefined) result.punctuation = false;
-      if (result.quoteLength === undefined) result.quoteLength = -1;
-      if (result.restartCount === undefined) result.restartCount = 0;
-      if (result.incompleteTestSeconds === undefined) {
-        result.incompleteTestSeconds = 0;
-      }
-      if (result.afkDuration === undefined) result.afkDuration = 0;
-      if (result.tags === undefined) result.tags = [];
-    });
-    dbSnapshot.results = results?.sort((a, b) => b.timestamp - a.timestamp);
-    return true;
   }
+
+  const response = await Ape.results.get(offset);
+
+  if (response.status !== 200) {
+    Notifications.add("Error getting results: " + response.message, -1);
+    return false;
+  }
+
+  const results = response.data as MonkeyTypes.Result<MonkeyTypes.Mode>[];
+  results?.sort((a, b) => b.timestamp - a.timestamp);
+  results.forEach((result) => {
+    if (result.bailedOut === undefined) result.bailedOut = false;
+    if (result.blindMode === undefined) result.blindMode = false;
+    if (result.lazyMode === undefined) result.lazyMode = false;
+    if (result.difficulty === undefined) result.difficulty = "normal";
+    if (result.funbox === undefined) result.funbox = "none";
+    if (result.language === undefined || result.language === null) {
+      result.language = "english";
+    }
+    if (result.numbers === undefined) result.numbers = false;
+    if (result.punctuation === undefined) result.punctuation = false;
+    if (result.quoteLength === undefined) result.quoteLength = -1;
+    if (result.restartCount === undefined) result.restartCount = 0;
+    if (result.incompleteTestSeconds === undefined) {
+      result.incompleteTestSeconds = 0;
+    }
+    if (result.afkDuration === undefined) result.afkDuration = 0;
+    if (result.tags === undefined) result.tags = [];
+  });
+
+  if (dbSnapshot.results !== undefined) {
+    //merge
+    const oldestTimestamp =
+      dbSnapshot.results[dbSnapshot.results.length - 1].timestamp;
+    const resultsWithoutDuplicates = results.filter(
+      (it) => it.timestamp < oldestTimestamp
+    );
+    dbSnapshot.results.push(...resultsWithoutDuplicates);
+  } else {
+    dbSnapshot.results = results;
+  }
+  return true;
 }
 
 function _getCustomThemeById(
