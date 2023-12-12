@@ -168,11 +168,11 @@ export function reset(immediate = false): void {
 
   clearTimeout(ctx.resetTimeOut);
   const body = $(document.body);
-  body.css("transition", "all .25s, transform 0.8s");
+  body.css("transition", "all .5s, transform 0.8s");
   body.css("transform", `translate(0,0)`);
   setTimeout(
     () => {
-      body.css("transition", "all .25s, transform .05s");
+      body.css("transition", "all .5s, transform .05s");
       $("html").css("overflow", "inherit");
       $("html").css("overflow-y", "scroll");
     },

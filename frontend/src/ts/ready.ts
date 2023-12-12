@@ -8,10 +8,10 @@ import * as Focus from "./test/focus";
 import * as CookiePopup from "./popups/cookie-popup";
 import * as PSA from "./elements/psa";
 import * as ConnectionState from "./states/connection";
-import { Workbox } from "workbox-window";
+// import { Workbox } from "workbox-window";
 import * as FunboxList from "./test/funbox/funbox-list";
 //@ts-ignore
-import Konami from "konami";
+// import Konami from "konami";
 import { log } from "./controllers/analytics-controller";
 import { envConfig } from "./constants/env-config";
 import * as ServerConfiguration from "./ape/server-configuration";
@@ -39,7 +39,7 @@ $(document).ready(() => {
 
   CookiePopup.check();
 
-  $("body").css("transition", "background .25s, transform .05s");
+  $("body").css("transition", "background .5s, transform .05s");
   if (Config.quickRestart !== "off") {
     $("#restartTestButton").addClass("hidden");
   }

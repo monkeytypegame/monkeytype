@@ -14,7 +14,7 @@ export function show(): void {
   outOfFocusTimeouts.push(
     setTimeout(() => {
       $("#words, #koInputVisualContainer")
-        .css("transition", "0.25s")
+        .css("transition", "1.0s")
         .addClass("blurred");
       $(".outOfFocusWarning").removeClass("hidden");
     }, 1000)
