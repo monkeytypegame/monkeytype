@@ -1181,6 +1181,13 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "regal",
+    "bgColor": "#00539C",
+    "mainColor": "#ffffff",
+    "subColor": "#EEA47F",
+    "textColor": "#ffffff"
   }
 
 ]
