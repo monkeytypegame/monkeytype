@@ -3,10 +3,8 @@
   flex-direction: column;
   gap: 2rem;
 
-  h2 {
-    font-size: 1rem;
+  key {
     margin: 0;
-    font-weight: unset;
   }
 
   .created {
@@ -14,7 +12,7 @@
     color: var(--sub-color);
   }
 
-  .section {
+  section {
     display: grid;
     gap: 0.25rem;
 
