@@ -56,9 +56,13 @@ export async function update(
     let mainHtml = "";
     let restHtml = "";
 
+    if (profile.isPremium) {
+      mainHtml = getHTMLById(15);
+    }
+
     for (const badge of profile.inventory.badges) {
       if (badge.selected === true) {
-        mainHtml = getHTMLById(badge.id);
+        mainHtml += getHTMLById(badge.id);
       } else {
         restHtml += getHTMLById(badge.id, true);
       }

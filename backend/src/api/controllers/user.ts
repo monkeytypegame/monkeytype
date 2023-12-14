@@ -708,6 +708,8 @@ export async function getProfile(
     lbOptOut,
   } = user;
 
+  const isPremium = await UserDAL.checkIfUserIsPremium(user.uid, user);
+
   const validTimePbs = _.pick(personalBests?.time, "15", "30", "60", "120");
   const validWordsPbs = _.pick(personalBests?.words, "10", "25", "50", "100");
 
@@ -734,6 +736,7 @@ export async function getProfile(
     streak: streak?.length ?? 0,
     maxStreak: streak?.maxLength ?? 0,
     lbOptOut,
+    isPremium,
   };
 
   if (banned) {

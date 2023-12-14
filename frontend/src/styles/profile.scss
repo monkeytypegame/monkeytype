@@ -368,6 +368,10 @@
           color: var(--error-color);
         }
       }
+      .badges {
+        display: flex;
+        gap: 0.5rem;
+      }
       .badge {
         width: max-content;
         font-size: 0.7em;

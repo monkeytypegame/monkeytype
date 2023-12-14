@@ -116,8 +116,8 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     name: "Prime Ape",
     description: "Paying for a monthly subscription",
     icon: "fa-dollar-sign",
-    color: "var(--text-color)",
-    background: "var(--sub-color)",
+    color: "var(--bg-color)",
+    background: "var(--main-color)",
   },
 };
 
