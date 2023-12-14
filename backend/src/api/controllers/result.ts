@@ -497,6 +497,7 @@ export async function addResult(
         discordAvatar: user.discordAvatar,
         discordId: user.discordId,
         badgeId: selectedBadgeId,
+        isPremium: await UserDAL.checkIfUserIsPremium(user.uid, user),
       },
       dailyLeaderboardsConfig
     );

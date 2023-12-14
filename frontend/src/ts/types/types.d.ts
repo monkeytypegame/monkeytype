@@ -553,20 +553,17 @@ declare namespace MonkeyTypes {
 
   interface LeaderboardEntry {
     uid: string;
-    difficulty: string;
     timestamp: number;
-    language: string;
     wpm: number;
     consistency: number | "-";
-    punctuation: boolean;
     acc: number;
     raw: number;
-    uid?: string;
     name: string;
     discordId?: string;
     discordAvatar?: string;
     badgeId?: number;
     rank: number;
+    isPremium?: boolean;
     count?: number;
     hidden?: boolean;
   }

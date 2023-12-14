@@ -14,6 +14,7 @@ interface DailyLeaderboardEntry {
   discordAvatar?: string;
   discordId?: string;
   badgeId?: number;
+  isPremium?: boolean;
 }
 
 interface GetRankResponse {

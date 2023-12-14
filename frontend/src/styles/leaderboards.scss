@@ -156,6 +156,10 @@
             grid-row: 1/2;
             grid-column: 1/2;
           }
+          .badges {
+            display: flex;
+            gap: 0.5rem;
+          }
           .badge {
             font-size: 0.6rem;
           }

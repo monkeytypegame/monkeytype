@@ -341,8 +341,11 @@ async function fillTable(lb: LbKey): Promise<void> {
       <div class="lbav">${avatar}</div>
       <a href="${location.origin}/profile/${
       entry.uid
-    }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
+    }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name} </a>
+    <div class="badges">
+      ${entry.isPremium ? getPremiumHTML() : ""}
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+      </div>
     </div>
     </td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>
@@ -886,5 +889,12 @@ $("header nav").on("click", ".textButton", (e) => {
     show();
   }
 });
+
+function getPremiumHTML(): string {
+  return `<div class="badge" aria-label="Paying for a monthly subscription" data-balloon-pos="right" style="background: var(--sub-color);color: var(--text-color);">
+    <i class="fas fa-dollar-sign"></i>
+    <div class="text">Prime Ape</div>
+  </div>`;
+}
 
 Skeleton.save(wrapperId);
