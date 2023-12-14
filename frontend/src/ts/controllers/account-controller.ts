@@ -113,6 +113,9 @@ async function getDataAndInit(): Promise<boolean> {
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
   $("nav .textButton.account > .text").text(snapshot.name);
+  if (snapshot.isPremium) {
+    $("nav .textButton.account").addClass("premium");
+  }
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
