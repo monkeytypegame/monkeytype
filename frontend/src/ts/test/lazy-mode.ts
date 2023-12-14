@@ -1,9 +1,12 @@
 const accents: [string, string][] = [
-  ["áàâäåãąą́āą̄ă", "a"],
+  ["áàâåãąą́āą̄ă", "a"],
+  ["ä", "ae"],
   ["éèêëẽęę́ēę̄ėě", "e"],
   ["íìîïĩįį́īį̄ı", "i"],
-  ["óòôöøõóōǫǫ́ǭő", "o"],
-  ["úùûüŭũúūůű", "u"],
+  ["óòôøõóōǫǫ́ǭő", "o"],
+  ["ö", "oe"],
+  ["úùûŭũúūůű", "u"],
+  ["ü", "ue"],
   ["ńňñ", "n"],
   ["çĉčć", "c"],
   ["řŕṛ", "r"],
@@ -61,7 +64,7 @@ export function replaceAccents(
       accent[0].includes(char.toLowerCase())
     );
     if (accent) {
-      newWordArray.push(accent[1]);
+      newWordArray.push(...accent[1]);
     } else {
       newWordArray.push(char);
     }
