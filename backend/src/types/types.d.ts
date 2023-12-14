@@ -201,18 +201,16 @@ declare namespace MonkeyTypes {
     _id: ObjectId;
     acc: number;
     consistency: number;
-    difficulty: Difficulty;
-    lazyMode: boolean;
-    language: string;
-    punctuation: boolean;
     raw: number;
     wpm: number;
     timestamp: number;
     uid: string;
     name: string;
+    discordId?: string;
+    discortAvatar?: string;
     rank: number;
-    badges?: Badge[];
     badgeId?: number;
+    isPremium?: boolean;
   }
 
   interface CustomTheme {
