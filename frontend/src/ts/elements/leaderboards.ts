@@ -343,7 +343,7 @@ async function fillTable(lb: LbKey): Promise<void> {
       entry.uid
     }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name} </a>
     <div class="badges">
-      ${entry.isPremium ? getPremiumHTML() : ""}
+      ${entry.isPremium ? getBadgeHTMLbyId(15) : ""}
       ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
       </div>
     </div>
@@ -889,12 +889,5 @@ $("header nav").on("click", ".textButton", (e) => {
     show();
   }
 });
-
-function getPremiumHTML(): string {
-  return `<div class="badge" aria-label="Paying for a monthly subscription" data-balloon-pos="right" style="background: var(--sub-color);color: var(--text-color);">
-    <i class="fas fa-dollar-sign"></i>
-    <div class="text">Prime Ape</div>
-  </div>`;
-}
 
 Skeleton.save(wrapperId);

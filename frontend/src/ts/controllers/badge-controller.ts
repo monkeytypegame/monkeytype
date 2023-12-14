@@ -111,6 +111,14 @@ const badges: Record<number, MonkeyTypes.UserBadge> = {
     color: "var(--bg-color)",
     background: "var(--main-color)",
   },
+  15: {
+    id: 15,
+    name: "Prime Ape",
+    description: "Paying for a monthly subscription",
+    icon: "fa-dollar-sign",
+    color: "var(--text-color)",
+    background: "var(--sub-color)",
+  },
 };
 
 export function getHTMLById(
