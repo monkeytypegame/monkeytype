@@ -127,8 +127,8 @@
 
       table {
         width: 100%;
-        border-spacing: 0;
-        border-collapse: collapse;
+        border-spacing: 0 0.2rem;
+        border-collapse: separate;
 
         .avatarNameBadge {
           display: grid;
@@ -197,9 +197,12 @@
         }
 
         tbody {
-          color: var(--text-color);
+          td {
+            color: var(--text-color);
+            background: var(--bg-color);
+          }
 
-          tr:nth-child(odd) td {
+          tr:not(.premium):nth-child(odd) td {
             background: var(--sub-alt-color);
           }
           td:nth-child(1) {
