@@ -16,14 +16,14 @@
     display: grid;
     gap: 0.25rem;
 
-    .bigtitle {
+    h2 {
       font-size: 2rem;
       line-height: 2rem;
       color: var(--sub-color);
       margin: 0 0 1rem 0;
     }
 
-    .title {
+    h3 {
       font-size: 1rem;
       line-height: 1rem;
       color: var(--sub-color);
