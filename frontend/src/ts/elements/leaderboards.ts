@@ -290,6 +290,10 @@ async function fillTable(lb: LbKey): Promise<void> {
     return;
   }
 
+  const themeByName: Map<string, MonkeyTypes.Theme> = new Map(
+    (await Misc.getThemesList()).map((it) => [it.name, it])
+  );
+
   let side: string;
   if (lb === "15") {
     side = "left";
@@ -312,7 +316,7 @@ async function fillTable(lb: LbKey): Promise<void> {
     }
     let meClassString = "";
     if (entry.name === loggedInUserName) {
-      meClassString = ' class="me"';
+      meClassString = "me";
     }
     const date = new Date(entry.timestamp);
 
@@ -326,8 +330,25 @@ async function fillTable(lb: LbKey): Promise<void> {
       avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
     }
 
+    let styleString = "";
+
+    if (entry.isPremium === true /* && entry.theme !== undefined */) {
+      meClassString += " premium";
+
+      const theme = themeByName.get(
+        //test data so far, need to fetch from user.profileTheme
+        entry.name === "premium2" ? "retrocast" : "norse"
+      ) as MonkeyTypes.Theme;
+
+      styleString = `style="
+        --main-color:${theme.mainColor};
+        --text-color:${theme.textColor};
+        --bg-color:${theme.bgColor};
+        --sub-color:${theme.subColor};"`.replace(/\s+/g, " ");
+    }
+
     html += `
-    <tr ${meClassString}>
+    <tr class="${meClassString}" ${styleString}>
     <td>${
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
