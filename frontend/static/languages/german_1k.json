@@ -1,8 +1,13 @@
 {
   "name": "german_1k",
   "_comment": "http://wortschatz.informatik.uni-leipzig.de/index_js.html",
-
   "bcp47": "de-DE",
+  "accents": [
+    ["ä", "ae"],
+    ["ö", "oe"],
+    ["ü", "ue"],
+    ["ß", "ss"]
+  ],
   "words": [
     "der",
     "die",
