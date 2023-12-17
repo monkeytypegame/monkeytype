@@ -144,7 +144,7 @@ export function restart(options = {} as RestartOptions): void {
     event?.preventDefault();
     return;
   }
-  if (ActivePage.get() === "test" && !TestUI.resultVisible) {
+  if (ActivePage.get() === "test") {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") event?.preventDefault();
       if (

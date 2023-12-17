@@ -95,10 +95,6 @@ export default class Users {
     );
   }
 
-  async getTags(): Ape.EndpointResponse {
-    return await this.httpClient.get(`${BASE_PATH}/tags`);
-  }
-
   async createTag(tagName: string): Ape.EndpointResponse {
     return await this.httpClient.post(`${BASE_PATH}/tags`, {
       payload: { tagName },

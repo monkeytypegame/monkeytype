@@ -297,7 +297,6 @@ export const profanities = [
   "chraa",
   "chuj",
   "cunt",
-  "d4mn",
   "daygo",
   "dego",
   "dick",
