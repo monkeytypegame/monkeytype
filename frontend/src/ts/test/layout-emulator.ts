@@ -219,7 +219,9 @@ export async function getCharFromEvent(
 }
 
 function updateAltGrState(event: JQuery.KeyboardEventBase): void {
-  if (event.code !== "AltRight") return;
+  const shouldHandleLeftAlt =
+    event.code === "AltLeft" && navigator.userAgent.includes("Mac");
+  if (event.code !== "AltRight" && !shouldHandleLeftAlt) return;
   if (event.type === "keydown") isAltGrPressed = true;
   if (event.type === "keyup") isAltGrPressed = false;
 }
