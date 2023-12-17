@@ -91,6 +91,13 @@
     "textColor": "#f6f0e9"
   },
   {
+    "name": "red_bull",
+    "bgColor": "#222265",
+    "mainColor": "#ffc906",
+    "subColor": "#d2dbe9",
+    "textColor": "#ffc906"
+  },
+  {
     "name": "red_samurai",
     "bgColor": "#84202c",
     "mainColor": "#c79e6e",
@@ -1182,5 +1189,4 @@
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
   }
-
 ]
