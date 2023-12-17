@@ -17,9 +17,10 @@ body {
 }
 
 main {
-  transform: rotateX(35deg);
+  perspective: 500px;
+  overflow: hidden;
 }
 
-#contentWrapper {
-  perspective: 500px;
+main .page {
+  transform: rotateX(35deg);
 }
