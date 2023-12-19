@@ -381,7 +381,6 @@ export const profanities = [
   "skribz",
   "skurwysyn",
   "sphencter",
-  "spic",
   "spierdalaj",
   "splooge",
   "suka",
