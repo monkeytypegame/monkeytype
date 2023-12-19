@@ -44,34 +44,31 @@ const accents: [string, string][] = [
 
 export function replaceAccents(
   word: string,
-  accentsOverride?: MonkeyTypes.Accents
+  additionalAccents?: MonkeyTypes.Accents
 ): string {
   if (!word) return word;
 
-  const accentsArray = accentsOverride || accents;
+  const accentsArray = [...(additionalAccents || []), ...accents];
   const uppercased = word.toUpperCase();
-  const cases = Array(word.length);
+  const cases = [...word].map((it, i) => it == uppercased[i]);
   const newWordArray: string[] = [];
 
   for (let i = 0; i < word.length; i++) {
     const char = word[i];
-    const uppercasedChar = uppercased[i];
-    cases[i] = char === uppercasedChar ? 1 : 0;
+    const isUpperCase = cases[i];
     const accent = accentsArray.find((accent) =>
       accent[0].includes(char.toLowerCase())
     );
-    if (accent) {
-      newWordArray.push(...accent[1]);
-    } else {
-      newWordArray.push(char);
-    }
-  }
 
-  if (cases.includes(1)) {
-    for (let i = 0; i < cases.length; i++) {
-      if (cases[i] === 1) {
-        newWordArray[i] = newWordArray[i].toUpperCase();
+    if (accent) {
+      if (isUpperCase) {
+        newWordArray.push(accent[1].substring(0, 1).toUpperCase());
+        newWordArray.push(accent[1].substring(1));
+      } else {
+        newWordArray.push(accent[1]);
       }
+    } else {
+      newWordArray.push(isUpperCase ? char.toUpperCase() : char);
     }
   }
 
