@@ -11,6 +11,7 @@ import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
 import { debounce } from "throttle-debounce";
+import "select2";
 
 const wrapperId = "leaderboardsWrapper";
 

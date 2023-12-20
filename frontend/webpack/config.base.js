@@ -1,4 +1,5 @@
-const { resolve } = require("path");
+const { resolve, join } = require("path");
+const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -107,6 +108,14 @@ const BASE_CONFIG = {
           },
         },
       ],
+    }),
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery",
+      jQueryColor: "jquery-color",
+      jQueryEasing: "jquery.easing",
+      select2: "select2",
+      html2canvas: "html2canvas",
     }),
     new HtmlWebpackPlugin({
       filename: "./index.html",

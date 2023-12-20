@@ -41,6 +41,10 @@ import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
 
+import "jquery";
+import "jquery-color";
+import "jquery.easing";
+
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
 const extendedGlobal = global as ExtendedGlobal;
