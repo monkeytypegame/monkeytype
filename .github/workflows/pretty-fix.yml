@@ -38,7 +38,7 @@ jobs:
           git config user.name 'monkeytypegeorge'
           git config user.email 'monkeytypegeorge@gmail.com'
           git add .
-          git commit -m 'Prettier fix'
+          git commit -m 'refactor: run prettier'
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v4
