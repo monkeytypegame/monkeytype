@@ -486,7 +486,7 @@ export async function generateWords(
       }
       const ret = [];
       for (const word of funboxSection) {
-        ret.push(applyFunboxesToWord(word));
+        ret.push(applyLazyModeToWord(applyFunboxesToWord(word), language));
       }
       return {
         words: ret,
