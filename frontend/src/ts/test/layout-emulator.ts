@@ -215,13 +215,13 @@ export async function getCharFromEvent(
     .concat(layoutKeys["row4"])
     .concat(layoutKeys["row5"]);
 
-  let mapIndex = null;
+  let mapIndex: number | null = null;
   for (let i = 0; i < keyEventCodes.length; i++) {
     if (event.code === keyEventCodes[i]) {
       mapIndex = i;
     }
   }
-  if (!mapIndex) {
+  if (mapIndex === null) {
     if (event.code.includes("Numpad")) {
       return event.key;
     } else {
