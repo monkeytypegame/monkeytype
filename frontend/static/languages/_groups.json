@@ -20,6 +20,10 @@
     "languages": ["spanish", "spanish_1k", "spanish_10k", "spanish_650k"]
   },
   {
+  "name": "euskera",
+  "languages": ["euskera"]
+  },
+  {
     "name": "french",
     "languages": [
       "french",
