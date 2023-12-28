@@ -11,15 +11,16 @@
 }
 
 body {
-  background-image: url("https://thumbs.gfycat.com/SlimyClassicAsianconstablebutterfly-size_restricted.gif");
+  background-image: url("https://media0.giphy.com/media/5VD0q2EDp2gvNQVCIN/giphy.gif");
   background-size: cover;
   background-position: center;
 }
 
 main {
-  transform: rotateX(35deg);
+  perspective: 500px;
+  overflow: hidden;
 }
 
-#contentWrapper {
-  perspective: 500px;
+main .page {
+  transform: rotateX(35deg);
 }
