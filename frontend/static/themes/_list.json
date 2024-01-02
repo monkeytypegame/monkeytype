@@ -1181,6 +1181,13 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "mystic_night",
+    "bgColor": "#1f1d2e",
+    "mainColor": "#7e5bef",
+    "subColor": "#6f4dd2",
+    "textColor": "#efe6ff"
   }
 
 ]
