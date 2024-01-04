@@ -237,7 +237,7 @@ function getInputWords(): string[] {
 
   let inputWords = [...TestInput.input.history];
 
-  if (currTestInput.length > 0) {
+  if (TestState.isActive) {
     inputWords.push(currTestInput);
   }
 
@@ -258,7 +258,7 @@ function getTargetWords(): string[] {
     ...(Config.mode === "zen" ? TestInput.input.history : TestWords.words.list),
   ];
 
-  if (currTestInput.length > 0) {
+  if (TestState.isActive) {
     targetWords.push(
       Config.mode === "zen" ? currTestInput : TestWords.words.getCurrent()
     );
