@@ -229,7 +229,7 @@ export function removeAfkData(): void {
   TestInput.rawHistory.splice(testSeconds);
 }
 
-export function countChars(): CharCount {
+function countChars(): CharCount {
   let correctWordChars = 0;
   let correctChars = 0;
   let incorrectChars = 0;
