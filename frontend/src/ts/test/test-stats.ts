@@ -271,9 +271,6 @@ function countChars(): CharCount {
     );
   }
 
-  console.log(inputWords);
-  console.log(targetWords);
-
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i];
     const targetWord = targetWords[i];
