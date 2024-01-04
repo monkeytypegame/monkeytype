@@ -229,7 +229,7 @@ export function removeAfkData(): void {
   TestInput.rawHistory.splice(testSeconds);
 }
 
-function countChars(): CharCount {
+export function countChars(): CharCount {
   let correctWordChars = 0;
   let correctChars = 0;
   let incorrectChars = 0;
@@ -241,43 +241,59 @@ function countChars(): CharCount {
   const containsKorean = TestInput.input.getKoreanStatus();
   const currTestInput = !containsKorean
     ? TestInput.input.current
-    : Hangul.disassemble(TestInput.input.current);
+    : Hangul.disassemble(TestInput.input.current).join("");
 
-  for (let i = 0; i < TestInput.input.history.length; i++) {
-    const word: string = !containsKorean
-      ? //english
-        Config.mode === "zen"
-        ? (TestInput.input.getHistory(i) as string)
-        : TestWords.words.get(i)
-      : //korean
+  const inputWords = [
+    ...(!containsKorean
+      ? TestInput.input.history
+      : TestInput.input.history.map((w) => Hangul.disassemble(w).join(""))),
+  ];
+
+  const targetWords = [
+    ...(!containsKorean
+      ? Config.mode === "zen"
+        ? TestInput.input.history
+        : TestWords.words.list
+      : Config.mode === "zen"
+      ? TestInput.input.history.map((w) => Hangul.disassemble(w).join(""))
+      : TestWords.words.list.map((w) => Hangul.disassemble(w).join(""))),
+  ];
+
+  if (currTestInput.length > 0) {
+    inputWords.push(currTestInput);
+
+    targetWords.push(
       Config.mode === "zen"
-      ? Hangul.disassemble(TestInput.input.getHistory(i) as string).join("")
-      : Hangul.disassemble(TestWords.words.get(i)).join("");
+        ? currTestInput
+        : !containsKorean
+        ? TestWords.words.getCurrent()
+        : Hangul.disassemble(TestWords.words.getCurrent() ?? "").join("")
+    );
+  }
 
-    if (TestInput.input.getHistory(i) === "") {
-      //last word that was not started
-      continue;
-    }
-    const historyWord: string = !containsKorean
-      ? (TestInput.input.getHistory(i) as string)
-      : Hangul.disassemble(TestInput.input.getHistory(i) as string).join("");
+  console.log(inputWords);
+  console.log(targetWords);
 
-    if (historyWord === word) {
+  for (let i = 0; i < inputWords.length; i++) {
+    const inputWord = inputWords[i];
+    const targetWord = targetWords[i];
+
+    if (inputWord === targetWord) {
       //the word is correct
-      correctWordChars += word.length;
-      correctChars += word.length;
+      correctWordChars += targetWord.length;
+      correctChars += targetWord.length;
       if (
-        i < TestInput.input.history.length - 1 &&
-        Misc.getLastChar(historyWord as string) !== "\n"
+        i < inputWords.length - 1 &&
+        Misc.getLastChar(inputWord as string) !== "\n"
       ) {
         correctspaces++;
       }
-    } else if (historyWord.length >= word.length) {
+    } else if (inputWord.length >= targetWord.length) {
       //too many chars
-      for (let c = 0; c < historyWord.length; c++) {
-        if (c < word.length) {
+      for (let c = 0; c < inputWord.length; c++) {
+        if (c < targetWord.length) {
           //on char that still has a word list pair
-          if (historyWord[c] === word[c]) {
+          if (inputWord[c] === targetWord[c]) {
             correctChars++;
           } else {
             incorrectChars++;
@@ -294,10 +310,10 @@ function countChars(): CharCount {
         incorrect: 0,
         missed: 0,
       };
-      for (let c = 0; c < word.length; c++) {
-        if (c < historyWord.length) {
+      for (let c = 0; c < targetWord.length; c++) {
+        if (c < inputWord.length) {
           //on char that still has a word list pair
-          if (historyWord[c] === word[c]) {
+          if (inputWord[c] === targetWord[c]) {
             toAdd.correct++;
           } else {
             toAdd.incorrect++;
@@ -309,49 +325,15 @@ function countChars(): CharCount {
       }
       correctChars += toAdd.correct;
       incorrectChars += toAdd.incorrect;
-      if (i === TestInput.input.history.length - 1 && Config.mode === "time") {
+      if (i === inputWords.length - 1 && Config.mode === "time") {
         //last word - check if it was all correct - add to correct word chars
         if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {
         missedChars += toAdd.missed;
       }
     }
-    if (i < TestInput.input.history.length - 1) {
+    if (i < inputWords.length - 1) {
       spaces++;
-    }
-  }
-  if (currTestInput !== "") {
-    const word =
-      Config.mode === "zen"
-        ? currTestInput
-        : !containsKorean
-        ? TestWords.words.getCurrent()
-        : Hangul.disassemble(TestWords.words.getCurrent() ?? "");
-    //check whats currently typed
-    const toAdd = {
-      correct: 0,
-      incorrect: 0,
-      missed: 0,
-    };
-    for (let c = 0; c < word.length; c++) {
-      if (c < currTestInput.length) {
-        //on char that still has a word list pair
-        if (currTestInput[c] === word[c]) {
-          toAdd.correct++;
-        } else {
-          toAdd.incorrect++;
-        }
-      } else {
-        //on char that is extra
-        toAdd.missed++;
-      }
-    }
-    correctChars += toAdd.correct;
-    incorrectChars += toAdd.incorrect;
-    missedChars += toAdd.missed;
-    if (toAdd.incorrect === 0) {
-      //word is correct so far, add chars
-      correctWordChars += toAdd.correct;
     }
   }
   if (
