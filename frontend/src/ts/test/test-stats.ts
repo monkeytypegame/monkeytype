@@ -237,12 +237,12 @@ function getInputWords(): string[] {
 
   let inputWords = [...TestInput.input.history];
 
-  if (containsKorean) {
-    inputWords = [...inputWords.map((w) => Hangul.disassemble(w).join(""))];
-  }
-
   if (currTestInput.length > 0) {
     inputWords.push(currTestInput);
+  }
+
+  if (containsKorean) {
+    inputWords = inputWords.map((w) => Hangul.disassemble(w).join(""));
   }
 
   return inputWords;
@@ -265,7 +265,7 @@ function getTargetWords(): string[] {
   }
 
   if (containsKorean) {
-    targetWords = [...targetWords.map((w) => Hangul.disassemble(w).join(""))];
+    targetWords = targetWords.map((w) => Hangul.disassemble(w).join(""));
   }
 
   return targetWords;
