@@ -229,6 +229,48 @@ export function removeAfkData(): void {
   TestInput.rawHistory.splice(testSeconds);
 }
 
+function getInputWords(): string[] {
+  const containsKorean = TestInput.input.getKoreanStatus();
+  const currTestInput = !containsKorean
+    ? TestInput.input.current
+    : Hangul.disassemble(TestInput.input.current).join("");
+
+  let inputWords = [...TestInput.input.history];
+
+  if (containsKorean) {
+    inputWords = [...inputWords.map((w) => Hangul.disassemble(w).join(""))];
+  }
+
+  if (currTestInput.length > 0) {
+    inputWords.push(currTestInput);
+  }
+
+  return inputWords;
+}
+
+function getTargetWords(): string[] {
+  const containsKorean = TestInput.input.getKoreanStatus();
+  const currTestInput = !containsKorean
+    ? TestInput.input.current
+    : Hangul.disassemble(TestInput.input.current).join("");
+
+  let targetWords = [
+    ...(Config.mode === "zen" ? TestInput.input.history : TestWords.words.list),
+  ];
+
+  if (currTestInput.length > 0) {
+    targetWords.push(
+      Config.mode === "zen" ? currTestInput : TestWords.words.getCurrent()
+    );
+  }
+
+  if (containsKorean) {
+    targetWords = [...targetWords.map((w) => Hangul.disassemble(w).join(""))];
+  }
+
+  return targetWords;
+}
+
 function countChars(): CharCount {
   let correctWordChars = 0;
   let correctChars = 0;
@@ -238,38 +280,8 @@ function countChars(): CharCount {
   let spaces = 0;
   let correctspaces = 0;
 
-  const containsKorean = TestInput.input.getKoreanStatus();
-  const currTestInput = !containsKorean
-    ? TestInput.input.current
-    : Hangul.disassemble(TestInput.input.current).join("");
-
-  const inputWords = [
-    ...(!containsKorean
-      ? TestInput.input.history
-      : TestInput.input.history.map((w) => Hangul.disassemble(w).join(""))),
-  ];
-
-  const targetWords = [
-    ...(!containsKorean
-      ? Config.mode === "zen"
-        ? TestInput.input.history
-        : TestWords.words.list
-      : Config.mode === "zen"
-      ? TestInput.input.history.map((w) => Hangul.disassemble(w).join(""))
-      : TestWords.words.list.map((w) => Hangul.disassemble(w).join(""))),
-  ];
-
-  if (currTestInput.length > 0) {
-    inputWords.push(currTestInput);
-
-    targetWords.push(
-      Config.mode === "zen"
-        ? currTestInput
-        : !containsKorean
-        ? TestWords.words.getCurrent()
-        : Hangul.disassemble(TestWords.words.getCurrent() ?? "").join("")
-    );
-  }
+  const inputWords = getInputWords();
+  const targetWords = getTargetWords();
 
   for (let i = 0; i < inputWords.length; i++) {
     const inputWord = inputWords[i];
