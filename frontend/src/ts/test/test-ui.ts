@@ -21,6 +21,7 @@ import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
+import * as BadgeController from "../controllers/badge-controller";
 
 const debouncedZipfCheck = debounce(250, () => {
   Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
@@ -445,11 +446,15 @@ export async function screenshot(): Promise<void> {
     format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
   );
   if (Auth?.currentUser) {
-    $(".pageTest .ssWatermark").text(
-      DB.getSnapshot()?.name +
-        " | " +
-        format(dateNow, "dd MMM yyyy HH:mm") +
-        " | monkeytype.com  "
+    const name = DB.getSnapshot()?.name;
+    const currentDate = format(dateNow, "dd MMM yyyy HH:mm");
+    let icon = "";
+    if (DB.getSnapshot()?.isPremium) {
+      icon = `<i class="fa ${BadgeController.getById(15).icon}"></i> `;
+    }
+
+    $(".pageTest .ssWatermark").html(
+      `${name} ${icon}| ${currentDate} | monkeytype.com`
     );
   }
   $(".pageTest .buttons").addClass("hidden");
