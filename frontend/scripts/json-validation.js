@@ -529,7 +529,7 @@ function validateLanguages() {
           type: "array",
           items: { type: "string", minLength: 1 },
         },
-        accents: {
+        additionalAccents: {
           type: "array",
           items: {
             type: "array",

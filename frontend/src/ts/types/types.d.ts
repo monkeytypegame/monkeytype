@@ -49,7 +49,7 @@ declare namespace MonkeyTypes {
     ligatures?: boolean;
     orderedByFrequency?: boolean;
     words: string[];
-    accents: Accents;
+    additionalAccents: Accents;
     bcp47?: string;
     originalPunctuation?: boolean;
   }
