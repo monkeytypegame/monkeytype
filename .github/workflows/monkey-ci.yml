@@ -108,6 +108,9 @@ jobs:
       - name: Build
         run: npm run pr-check-ts
 
+      - name: Test
+        run: npm run test-fe
+
   ci-assets:
     name: ci-assets
     needs: [pre-ci]

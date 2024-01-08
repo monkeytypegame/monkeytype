@@ -82,6 +82,26 @@
     "while",
     "with",
     "yield",
-    "const"
+    "const",
+    "bool",
+    "byte",
+    "sbyte",
+    "int16",
+    "uint16",
+    "int",
+    "uint",
+    "int64",
+    "uint64",
+    "nativeint",
+    "unativeint",
+    "decimal",
+    "float",
+    "double",
+    "float32",
+    "single",
+    "char",
+    "string",
+    "unit",
+    "bigint"
   ]
 }

@@ -857,7 +857,50 @@
       "text": "Este es mi gusto, no un buen gusto, no un mal gusto, pero sí mi gusto, del cual no me avergüenzo ni lo oculto. Este es mi camino, ¿dónde está el suyo?",
       "source": "Friedrich Nietzsche",
       "length": 150,
-      "id": 159
+      "id": 149
+    },
+    {
+      "text": "Errar es humano, pero más lo es culpar de ello a otros",
+      "source": "Baltasar Gracián",
+      "length": 54,
+      "id": 150
+    },
+    {
+      "text": "El pesimista se queja del viento, el optimista espera que este cambie, pero el realista ajusta las velas.",
+      "source": "William Wars",
+      "length": 105,
+      "id": 151
+    },
+    {
+      "text": "Si haces lo que siempre has hecho, obtendrás lo que siempre has conseguido. No es lo que hacemos de vez en cuando lo que da forma a nuestras vidas, sino lo que hacemos constantemente.",
+      "source": "Tony Robbins",
+      "length": 183,
+      "id": 152
+    },
+    {
+      "text": "Algo malo debe de tener el trabajo o los ricos ya lo habrían acaparado.",
+      "source": "Cantinflas",
+      "length": 71,
+      "id": 153
+    },
+    {
+      "text": "La vida es como montar en bicicleta . Para mantener el equilibrio tienes que avanza.",
+      "source": "Albert Einstein",
+      "length": 84,
+      "id": 154
+    },
+    {
+      "text": "Qué maravilloso es que nadie tenga que esperar ni un segundo para empezar a mejorar el mundo.",
+      "source": "Anne Frank",
+      "length": 93,
+      "id": 155
+    },
+    {
+      "text": "La felicidad es interior, no exterior; por lo tanto, no depende de lo que tenemos, sino de lo que somos.",
+      "source": "Pablo Neruda",
+      "length": 104,
+      "id": 156
     }
+    
   ]
 }
