@@ -231,14 +231,11 @@ export function removeAfkData(): void {
 
 function getInputWords(): string[] {
   const containsKorean = TestInput.input.getKoreanStatus();
-  const currTestInput = !containsKorean
-    ? TestInput.input.current
-    : Hangul.disassemble(TestInput.input.current).join("");
 
   let inputWords = [...TestInput.input.history];
 
   if (TestState.isActive) {
-    inputWords.push(currTestInput);
+    inputWords.push(TestInput.input.current);
   }
 
   if (containsKorean) {
@@ -250,9 +247,6 @@ function getInputWords(): string[] {
 
 function getTargetWords(): string[] {
   const containsKorean = TestInput.input.getKoreanStatus();
-  const currTestInput = !containsKorean
-    ? TestInput.input.current
-    : Hangul.disassemble(TestInput.input.current).join("");
 
   let targetWords = [
     ...(Config.mode === "zen" ? TestInput.input.history : TestWords.words.list),
@@ -260,7 +254,9 @@ function getTargetWords(): string[] {
 
   if (TestState.isActive) {
     targetWords.push(
-      Config.mode === "zen" ? currTestInput : TestWords.words.getCurrent()
+      Config.mode === "zen"
+        ? TestInput.input.current
+        : TestWords.words.getCurrent()
     );
   }
 
