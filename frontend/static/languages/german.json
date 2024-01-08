@@ -1,7 +1,7 @@
 {
   "name": "german",
   "bcp47": "de-DE",
-  "accents": [
+  "additionalAccents": [
     ["ä", "ae"],
     ["ö", "oe"],
     ["ü", "ue"]

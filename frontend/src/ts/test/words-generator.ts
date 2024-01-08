@@ -329,7 +329,7 @@ function applyLazyModeToWord(
   language: MonkeyTypes.LanguageObject
 ): string {
   if (Config.lazyMode === true && !language.noLazyMode) {
-    word = LazyMode.replaceAccents(word, language.accents);
+    word = LazyMode.replaceAccents(word, language.additionalAccents);
   }
   return word;
 }
