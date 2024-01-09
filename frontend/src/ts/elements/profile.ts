@@ -68,7 +68,10 @@ export async function update(
     details.find(".allBadges").empty().append(restHtml);
   }
 
-  details.find(".name").text(profile.name);
+  details
+    .find(".name")
+    .text(profile.name)
+    .attr("aria-label", profile.email ?? "");
 
   if (banned) {
     details

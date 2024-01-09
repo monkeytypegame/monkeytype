@@ -608,6 +608,7 @@ declare namespace MonkeyTypes {
     streakHourOffset?: number;
     lbOptOut?: boolean;
     isPremium?: boolean;
+    email?: string;
   }
 
   interface UserDetails {
