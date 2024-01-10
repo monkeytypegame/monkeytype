@@ -76,6 +76,8 @@ export async function punctuateWord(
           word += ".";
         } else if (currentLanguage === "nepali") {
           word += "।";
+        } else if (currentLanguage === "japanese") {
+          word += "。";
         } else {
           word += ".";
         }
@@ -91,12 +93,16 @@ export async function punctuateWord(
           word += "؟";
         } else if (currentLanguage === "greek") {
           word += ";";
+        } else if (currentLanguage === "japanese") {
+          word += "？";
         } else {
           word += "?";
         }
       } else {
         if (currentLanguage === "french") {
           word = "!";
+        } else if (currentLanguage === "japanese") {
+          word += "！";
         } else {
           word += "!";
         }
@@ -132,6 +138,8 @@ export async function punctuateWord(
       const bracket = brackets[index];
 
       word = `${bracket[0]}${word}${bracket[1]}`;
+    } else if (currentLanguage === "japanese") {
+      word = `（${word}）`;
     } else {
       word = `(${word})`;
     }
@@ -182,6 +190,8 @@ export async function punctuateWord(
       currentLanguage === "kurdish"
     ) {
       word += "،";
+    } else if (currentLanguage === "japanese") {
+      word += "、";
     } else {
       word += ",";
     }
