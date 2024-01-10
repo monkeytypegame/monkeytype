@@ -45,7 +45,7 @@
     "@typescript-eslint/strict-boolean-expressions": [
       // change this to error after fixing all occurrences
       "warn",
-      { "allowNullableBoolean": true }
+      { "allowNullableBoolean": true, "allowNullableNumber": true }
     ],
     // "import/default": "off",
     "import/no-unresolved": [
