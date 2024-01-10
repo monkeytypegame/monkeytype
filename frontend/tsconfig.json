@@ -4,7 +4,7 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "CommonJS",
     "moduleResolution": "node",
-    "types": ["jquery", "select2", "node"],
+    "types": ["jquery", "select2", "node", "jest"],
     "allowUmdGlobalAccess": true,
     "resolveJsonModule": true,
     "outDir": "./build",
@@ -36,5 +36,6 @@
     }
   },
   "include": ["./src/**/*.ts"],
-  "files": ["src/ts/modules.d.ts"]
+  "files": ["src/ts/modules.d.ts"],
+  "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
 }
