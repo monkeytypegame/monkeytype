@@ -1,6 +1,6 @@
 {
   "name": "pinyin_10k",
-  "accents": [
+  "additionalAccents": [
     ["āáǎà", "a"],
     ["ōóǒò", "o"],
     ["ēéěè", "e"],

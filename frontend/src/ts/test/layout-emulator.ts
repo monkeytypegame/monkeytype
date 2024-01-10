@@ -3,40 +3,26 @@ import * as Misc from "../utils/misc";
 import { capsState } from "./caps-warning";
 import * as Notifications from "../elements/notifications";
 
-function shouldCapslockUseSecondCharLocation(keyLocation: string): boolean {
-  return [
-    "KeyQ",
-    "KeyW",
-    "KeyE",
-    "KeyR",
-    "KeyT",
-    "KeyY",
-    "KeyU",
-    "KeyI",
-    "KeyO",
-    "KeyP",
-    "KeyA",
-    "KeyS",
-    "KeyD",
-    "KeyF",
-    "KeyG",
-    "KeyH",
-    "KeyJ",
-    "KeyK",
-    "KeyL",
-    "KeyZ",
-    "KeyX",
-    "KeyC",
-    "KeyV",
-    "KeyB",
-    "KeyN",
-    "KeyM",
-  ].includes(keyLocation);
-}
+let isAltGrPressed = false;
+const isPunctuationPattern = /\p{P}/u;
 
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
 ): Promise<string | null> {
+  function emulatedLayoutGetVariantIndex(
+    event: JQuery.KeyDownEvent,
+    keyVariants: string
+  ): number {
+    let isCapitalized = event.shiftKey;
+    const altGrIndex = isAltGrPressed && keyVariants.length > 2 ? 2 : 0;
+    const isNotPunctuation = !isPunctuationPattern.test(
+      keyVariants.slice(altGrIndex, altGrIndex + 2)
+    );
+    if (capsState && isNotPunctuation) {
+      isCapitalized = !event.shiftKey;
+    }
+    return (isCapitalized ? 1 : 0) + altGrIndex;
+  }
   let layout;
 
   try {
@@ -215,31 +201,30 @@ export async function getCharFromEvent(
     .concat(layoutKeys["row4"])
     .concat(layoutKeys["row5"]);
 
-  let mapIndex: number | null = null;
-  for (let i = 0; i < keyEventCodes.length; i++) {
-    if (event.code === keyEventCodes[i]) {
-      mapIndex = i;
-    }
-  }
-  if (mapIndex === null) {
+  const mapIndex = keyEventCodes.indexOf(event.code);
+  if (mapIndex === -1) {
     if (event.code.includes("Numpad")) {
       return event.key;
     } else {
       return null;
     }
   }
-
-  const capsSwap = shouldCapslockUseSecondCharLocation(event.code);
-  const charIndex =
-    (capsState && !event.shiftKey && capsSwap) ||
-    (capsState && event.shiftKey && !capsSwap) ||
-    (!capsState && event.shiftKey)
-      ? 1
-      : 0;
-  const char = layoutMap[mapIndex][charIndex];
+  const variant = emulatedLayoutGetVariantIndex(event, layoutMap[mapIndex]);
+  const char = layoutMap[mapIndex][variant];
   if (char) {
     return char;
   } else {
     return event.key;
   }
 }
+
+function updateAltGrState(event: JQuery.KeyboardEventBase): void {
+  const shouldHandleLeftAlt =
+    event.code === "AltLeft" && navigator.userAgent.includes("Mac");
+  if (event.code !== "AltRight" && !shouldHandleLeftAlt) return;
+  if (event.type === "keydown") isAltGrPressed = true;
+  if (event.type === "keyup") isAltGrPressed = false;
+}
+
+$(document).on("keydown", updateAltGrState);
+$(document).on("keyup", updateAltGrState);

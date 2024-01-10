@@ -12,6 +12,7 @@
     "install-windows": ".\\bin\\install.cmd",
     "docker": "cd backend && docker compose up",
     "test-be": "cd backend && npm run test",
+    "test-fe": "cd frontend && npm run test",
     "dev": "concurrently --kill-others \"npm run dev-fe\" \"npm run dev-be\"",
     "dev-be": "cd backend && npm run dev",
     "dev-fe": "cd frontend && npm run dev",

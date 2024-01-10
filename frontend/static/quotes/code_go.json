@@ -306,6 +306,18 @@
       "source": "tmrts/go-patterns - concurrency/bounded_parallelism.go",
       "length": 348,
       "id": 50
+    },
+    {
+      "text": "var freeList = make(chan *Buffer, 100)\n var serverChan = make(chan *Buffer)\n func client() {\n for {\n var b *Buffer\n select {\n case b = <-freeList:\n default:\n b = new(Buffer)\n }\n load(b)\n serverChan <- b\n }\n }",
+      "source": "Go Documentation - Paralells",
+      "length": 208,
+      "id": 51
+    },
+    {
+      "text": "package main\n import (\n 'flag'\n 'html/template'\n 'log'\n 'net/http'\n )\n var addr = flag.String('addr', ':1718', 'http service address')\n var templ = template.Must(template.New('qr').Parse(templateStr))\n func main() { \nflag.Parse()\n http.Handle('/', http.HandlerFunc(QR))\n err := http.ListenAndServe(*addr, nil)\n if err != nil { \nlog.Fatal('ListenAndServe:', err)\n }\n }\n func QR(w http.ResponseWriter, req *http.Request) {\n templ.Execute(w, req.FormValue('s'))\n }",
+      "source": "Go Documentation - Paralells",
+      "length": 461,
+      "id": 52
     }
   ]
 }
