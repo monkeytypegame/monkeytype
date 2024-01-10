@@ -53,6 +53,7 @@
     "html-webpack-plugin": "5.5.0",
     "jest": "27.5.1",
     "jest-environment-node": "27.5.1",
+    "jquery": "3.7.1",
     "json-minimizer-webpack-plugin": "3.3.0",
     "jsonschema": "1.4.0",
     "madge": "5.0.1",
