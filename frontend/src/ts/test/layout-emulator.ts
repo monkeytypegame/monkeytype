@@ -32,7 +32,7 @@ export async function getCharFromEvent(
       Misc.createErrorMessage(e, "Failed to emulate event"),
       -1
     );
-    return event.key;
+    return null;
   }
 
   let keyEventCodes: string[] = [];
@@ -214,7 +214,7 @@ export async function getCharFromEvent(
   if (char) {
     return char;
   } else {
-    return event.key;
+    return null;
   }
 }
 
