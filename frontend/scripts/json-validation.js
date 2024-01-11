@@ -219,25 +219,25 @@ function validateOthers() {
             properties: {
               row1: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 13,
                 maxItems: 13,
               },
               row2: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 13,
                 maxItems: 13,
               },
               row3: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 11,
                 maxItems: 11,
               },
               row4: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 10,
                 maxItems: 10,
               },
@@ -263,25 +263,25 @@ function validateOthers() {
             properties: {
               row1: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 13,
                 maxItems: 13,
               },
               row2: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 12,
                 maxItems: 12,
               },
               row3: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 12,
                 maxItems: 12,
               },
               row4: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 11,
                 maxItems: 11,
               },
