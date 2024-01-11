@@ -1,0 +1,272 @@
+:root {
+  --bg-color: #101820;
+  --main-color: #eedaea;
+  --caret-color: #eedaea;
+  --sub-color: #cf6bdd;
+  --sub-alt-color: #292136;
+  --text-color: #eedaea;
+  --error-color: #ff5253;
+  --error-extra-color: #e3002b;
+  --colorful-error-color: #ff5253;
+  --colorful-error-extra-color: #e3002b;
+}
+
+/* background and effects */
+.customBackground {
+  background-image: url("https://i.pinimg.com/originals/00/62/1e/00621e7df9037736d770d9ac0152da9b.gif") !important;
+  background-size: cover;
+  background-position: center !important;
+  background-repeat: no-repeat;
+  transition: filter 1s ease !important;
+  filter: blur(0px) brightness(0.5) saturate(0.7) opacity(0.1) ;
+}
+
+/*Button Colors*/
+
+nav .textButton:nth-child(1) {
+  color: #e4002b;
+}
+
+nav .textButton:nth-child(2) {
+  color: #c53562;
+}
+
+nav .textButton:nth-child(3) {
+  color: #95549e;
+}
+
+nav .textButton:nth-child(4) {
+  color: #6744a1;
+}
+
+nav .textButton:nth-child(5),
+nav .textButton:nth-child(6) {
+  color: #393c73;
+}
+
+/* clean command line */
+
+#commandLine {
+  background: none !important;
+}
+#commandLineWrapper {
+  background: none;
+  backdrop-filter: blur(5px) brightness(0.5);
+  transition: 0.5s ease;
+}
+#commandLine input {
+  background: none !important;
+}
+#commandLine > div:first-child {
+  border-radius: 0;
+  border-bottom: 1px solid var(--sub-color) !important;
+}
+
+/* command line scrollbar */
+
+#commandLine .suggestions {
+  scrollbar-width: none !important;
+  scrollbar-color: rgba(255, 255, 255, .1) transparent !important;
+}
+#commandLine .suggestions:hover {
+  scrollbar-width: thin !important;
+}
+#commandLine .suggestions::-webkit-scrollbar {
+  width: 0px;
+}
+#commandLine .suggestions:hover::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* icon animations*/
+
+@keyframes spin {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+@keyframes spinBackwards {
+  100% {
+    transform: rotate(-1turn);
+  }
+}
+@keyframes moveRight {
+  50% {
+    opacity: 0;
+    transform: translateX(20px) scale(0.9);
+  }
+  51% {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.9);
+  }
+}
+@keyframes moveLeft {
+  50% {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.9);
+  }
+  51% {
+    opacity: 0;
+    transform: translateX(20px) scale(0.9);
+  }
+}
+@keyframes bounce {
+  50% {
+    transform: translateY(-0.5rem);
+  }
+}
+@keyframes fade {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes grow {
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* apply icon animations */
+
+.view-start:hover i {
+  animation: moveLeft 1s ease infinite;
+}
+.view-leaderboards:hover i {
+  animation: bounce 1s ease infinite;
+}
+.view-about:hover i {
+  animation: fade 1s ease infinite;
+}
+.view-settings:hover i {
+  animation: spin 1s ease infinite;
+}
+.view-account:hover i,
+.view-login:hover i {
+  animation: grow 1s ease infinite;
+}
+#restartTestButtonWithSameWordset:hover i,
+#restartTestButtonWithSameWordset:focus i {
+  animation: spinBackwards 1s ease infinite;
+}
+#restartTestButton:hover i,
+#restartTestButton:focus i {
+  animation: spin 1s ease infinite;
+}
+#nextTestButton:hover i,
+#nextTestButton:focus i {
+  animation: moveRight 1s ease infinite;
+}
+#practiseWordsButton:hover i,
+#practiseWordsButton:focus i {
+  animation: bounce 1s ease infinite;
+}
+#showWordHistoryButton:hover i,
+#showWordHistoryButton:focus i {
+  animation: fade 1s ease infinite;
+}
+#watchReplayButton:hover i,
+#watchReplayButton:focus i {
+  animation: moveLeft 1s ease infinite;
+}
+#saveScreenshotButton:hover i,
+#saveScreenshotButton:focus i {
+  animation: grow 1s ease infinite;
+}
+
+
+
+/* force font on logo */
+
+/**:not(i) {
+  font-family: var(--font) !important;
+}*/
+
+/* hide bottom */
+#bottom {
+  display: none;
+}
+
+/* center menu */
+#top {
+  grid-template-columns: 1fr auto 1fr;
+}
+
+/* increase menu gap */
+#menu {
+  gap: 1rem;
+}
+
+/* hide account name */
+
+/*.icon-button .text {
+  display: none;
+}*/
+
+/* typing test margins */
+
+#middle {
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+/* change logo text */
+
+#top .logo .text {
+  visibility: hidden;
+}
+
+#top .logo .text .top:after {
+  content: 'Peace Comes From Nature';
+  visibility: visible;
+  display: block;
+  position: relative;
+  margin-top: -.7rem;
+  margin-left: -.15rem;
+}
+
+#top .logo .text:after {
+  content: 'Sakura';
+  visibility: visible;
+  display: block;
+  position: relative;
+  margin-top: -2rem;
+}
+
+/* caret width */
+
+#caret.default {
+  width: 1px;
+}
+
+/* change live wpm and acc text size */
+
+#liveWpm,
+#liveAcc {
+  font-size: 7rem;
+}
+
+/* letter fading */
+
+#words letter.correct {
+  animation: fadeOut 3s ease forwards;
+}
+
+@keyframes fadeOut {
+  100% {
+    opacity: 0;
+  }
+}
+
+/* text shadow */
+
+body {
+  text-shadow: 1px 1px 3px #00000050 !important;
+}
+
+/* remove shadow when test starts */
+
+#top.focus #menu,
+#top.focus #menu .text-button {
+  text-shadow: none;
+}
+
