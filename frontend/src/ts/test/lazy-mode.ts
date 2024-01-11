@@ -71,7 +71,7 @@ export function replaceAccents(
     const isUpperCase = cases[i];
     const accent = findAccent(char, additionalAccents);
 
-    if (accent) {
+    if (accent !== undefined) {
       if (isUpperCase) {
         newWordArray.push(accent.substring(0, 1).toUpperCase());
         newWordArray.push(accent.substring(1));
