@@ -1,5 +1,12 @@
 [
   {
+    "name": "sakura",
+    "bgColor": "#101820",
+    "mainColor": "#eedaea",
+    "subColor": "#cf6bdd",
+    "textColor": "#eedaea"
+  },
+  {
     "name": "dark_note",
     "bgColor": "#1f1f1f",
     "mainColor": "#f2c17b",

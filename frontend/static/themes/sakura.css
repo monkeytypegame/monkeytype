@@ -157,7 +157,7 @@ nav .textButton:nth-child(6) {
   animation: moveRight 1s ease infinite;
 }
 #practiseWordsButton:hover i,
-#practiseWordsButton:focus i {
+#practiseWordsButtxon:focus i {
   animation: bounce 1s ease infinite;
 }
 #showWordHistoryButton:hover i,
