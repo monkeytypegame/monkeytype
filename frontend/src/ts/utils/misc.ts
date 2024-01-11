@@ -1516,25 +1516,36 @@ export async function checkIfLanguageSupportsZipf(
   return "unknown";
 }
 
-export function getStartOfDayTimestamp(timestamp: number): number {
-  return timestamp - (timestamp % 86400000);
-}
-
 export function getCurrentDayTimestamp(): number {
   const currentTime = Date.now();
   return getStartOfDayTimestamp(currentTime);
 }
 
-export function isYesterday(timestamp: number): boolean {
-  const yesterday = getStartOfDayTimestamp(Date.now() - 86400000);
-  const date = getStartOfDayTimestamp(timestamp);
+const MILISECONDS_IN_HOUR = 3600000;
+const MILLISECONDS_IN_DAY = 86400000;
+
+export function getStartOfDayTimestamp(
+  timestamp: number,
+  offsetMilis = 0
+): number {
+  return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
+}
+
+export function isYesterday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const yesterday = getStartOfDayTimestamp(
+    Date.now() - MILLISECONDS_IN_DAY,
+    offsetMilis
+  );
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return yesterday === date;
 }
 
-export function isToday(timestamp: number): boolean {
-  const today = getStartOfDayTimestamp(Date.now());
-  const date = getStartOfDayTimestamp(timestamp);
+export function isToday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const today = getStartOfDayTimestamp(Date.now(), offsetMilis);
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return today === date;
 }
