@@ -415,7 +415,7 @@ let languageBeforeQuoteMode: string | undefined;
 export async function init(): Promise<void> {
   console.debug("Initializing test");
   testReinitCount++;
-  if (testReinitCount >= 5) {
+  if (testReinitCount >= 4) {
     TestUI.setTestRestarting(false);
     Notifications.add(
       "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
