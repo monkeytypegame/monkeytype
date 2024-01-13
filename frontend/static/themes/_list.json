@@ -1181,5 +1181,12 @@
       "mainColor": "#363636",
       "subColor": "#4f4f4f",
       "textColor": "#1f1f1f"
+    },
+    {
+      "name": "pastel_harmony",
+      "bgColor": "#1e1e24",
+      "mainColor": "#ea7af4",
+      "subColor": "#ffffff",
+      "textColor": "#c8b6bc"
     }
   ]
