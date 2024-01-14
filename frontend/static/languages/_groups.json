@@ -411,7 +411,7 @@
   },
   {
     "name": "belarusian",
-    "languages": ["belarusian_1k"]
+    "languages": ["belarusian", "belarusian_1k"]
   },
   {
     "name": "azerbaijani",
