@@ -16,6 +16,10 @@ describe("lazy-mode", () => {
       const result = replaceAccents("Héllö", [["ö", "oe"]]);
       expect(result).toBe("Helloe");
     });
+    it("should remove accent if empty", () => {
+      const result = replaceAccents("خصوصًا", [["ٌ", ""]]);
+      expect(result).toBe("خصوصا");
+    });
     it("should ignore empty word", () => {
       const result = replaceAccents("");
       expect(result).toBe("");
