@@ -477,6 +477,10 @@
     "languages": ["pashto"]
   },
   {
+    "name": "euskera",
+    "languages": ["euskera"]
+  },
+  {
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
   },
