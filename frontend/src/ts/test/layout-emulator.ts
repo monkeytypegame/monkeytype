@@ -9,10 +9,10 @@ const isPunctuationPattern = /\p{P}/u;
 export async function getCharFromEvent(
   event: JQuery.KeyDownEvent
 ): Promise<string | null> {
-  function emulatedLayoutGetVariantIndex(
+  function emulatedLayoutGetVariant(
     event: JQuery.KeyDownEvent,
     keyVariants: string
-  ): number {
+  ): string | undefined {
     let isCapitalized = event.shiftKey;
     const altGrIndex = isAltGrPressed && keyVariants.length > 2 ? 2 : 0;
     const isNotPunctuation = !isPunctuationPattern.test(
@@ -21,7 +21,12 @@ export async function getCharFromEvent(
     if (capsState && isNotPunctuation) {
       isCapitalized = !event.shiftKey;
     }
-    return (isCapitalized ? 1 : 0) + altGrIndex;
+
+    const altVersion = keyVariants[(isCapitalized ? 1 : 0) + altGrIndex];
+    const nonAltVersion = keyVariants[isCapitalized ? 1 : 0];
+    const defaultVersion = keyVariants[0];
+
+    return altVersion || nonAltVersion || defaultVersion;
   }
   let layout;
 
@@ -193,6 +198,10 @@ export async function getCharFromEvent(
     ];
   }
 
+  if (!keyEventCodes.includes(event.code)) {
+    return null;
+  }
+
   const layoutKeys = layout.keys;
 
   const layoutMap = layoutKeys["row1"]
@@ -209,10 +218,9 @@ export async function getCharFromEvent(
       return null;
     }
   }
-  const variant = emulatedLayoutGetVariantIndex(event, layoutMap[mapIndex]);
-  const char = layoutMap[mapIndex][variant];
-  if (char) {
-    return char;
+  const charVariant = emulatedLayoutGetVariant(event, layoutMap[mapIndex]);
+  if (charVariant !== undefined) {
+    return charVariant;
   } else {
     return null;
   }
