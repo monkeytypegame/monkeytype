@@ -131,14 +131,20 @@ export async function update(
 
     const dayInMilis = 1000 * 60 * 60 * 24;
     const milisOffset = (profile.streakHourOffset ?? 0) * 3600000;
-    const timeDif = formatDistanceToNowStrict(
-      Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset
-    );
+    let target = Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset;
+    if (target < Date.now()) {
+      target += dayInMilis;
+    }
+    const timeDif = formatDistanceToNowStrict(target);
 
     console.debug("Streak hour offset");
     console.debug("date.now()", Date.now(), new Date(Date.now()));
     console.debug("dayInMilis", dayInMilis);
     console.debug("milisOffset", milisOffset);
+    console.debug(
+      "difTarget",
+      new Date(Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset)
+    );
     console.debug("timeDif", timeDif);
     console.debug(
       "Misc.getCurrentDayTimestamp()",
@@ -149,8 +155,14 @@ export async function update(
 
     if (lastResult) {
       //check if the last result is from today
-      const isToday = Misc.isToday(lastResult.timestamp);
-      const isYesterday = Misc.isYesterday(lastResult.timestamp);
+      const isToday = Misc.isToday(
+        lastResult.timestamp,
+        profile.streakHourOffset
+      );
+      const isYesterday = Misc.isYesterday(
+        lastResult.timestamp,
+        profile.streakHourOffset
+      );
 
       console.debug(
         "lastResult.timestamp",
