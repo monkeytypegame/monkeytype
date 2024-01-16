@@ -1183,10 +1183,10 @@
       "textColor": "#1f1f1f"
     },
     {
-      "name": "pastel_harmony",
-      "bgColor": "#1e1e24",
-      "mainColor": "#ea7af4",
-      "subColor": "#ffffff",
-      "textColor": "#c8b6bc"
+      "name": "lavender_notes",
+      "bgColor": "#eaeaea",
+      "mainColor": "#eab54a",
+      "subColor": "#794f79",
+      "textColor": "#2b2a2a"
     }
   ]

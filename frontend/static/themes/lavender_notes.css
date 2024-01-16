@@ -1,0 +1,180 @@
+:root {
+    --bg-color: #eaeaea;
+    --main-color: #eab54a;
+    --caret-color: #66cccc;
+    --sub-color: #794f79;
+    --sub-alt-color: #1a1a1a;
+    --text-color: #2b2a2a;
+    --error-color: #e74c3c;
+    --error-extra-color: #5a5a5a;
+    --colorful-error-color: var(--error-color);
+    --colorful-error-extra-color: var(--error-extra-color);
+    --theme-bg-stripe-color: #434653;
+    --theme-bg-stripe-opacity: 0.1;
+    --theme-accent-stripe-color: #ff9f59;
+    --current-color: var(--text-color);
+}
+
+.colorfulMode {
+    --current-color: var(--main-color);
+}
+
+nav .textButton:first-child {
+    background: #00ff7f;
+}
+
+nav .textButton:nth-child(2) {
+    background: #1abc9c;
+}
+
+nav .textButton:nth-child(3) {
+    background: #3498db;
+}
+
+nav .textButton:nth-child(4) {
+    background: #27ae60;
+}
+
+nav .textButton:nth-child(7) {
+    background: #f39c12;
+}
+
+nav .textButton:nth-child(8) {
+    background: #e74c3c;
+}
+
+#testConfig .row, .button {
+    --roundness: 10px;
+}
+
+body {
+    position: relative;
+}
+
+body:after, body:before {
+    content: "";
+    display: block;
+    height: 100%;
+    opacity: var(--theme-bg-stripe-opacity);
+    position: absolute;
+    top: 0;
+    z-index: -9999;
+}
+
+body:after {
+    background-image: linear-gradient(0deg, var(--theme-bg-stripe-color) .1em, transparent .1em, transparent 100%);
+    background-size: 1em 2em;
+    left: 0;
+    width: 100%;
+}
+
+body:before {
+    background: var(--theme-accent-stripe-color);
+    left: 10vw;
+    width: .1em;
+}
+
+#commandLineWrapper #commandLine {
+    --roundness: 8px;
+}
+
+#wordsWrapper .word.error {
+    border-bottom: 2px solid var(--error-color);
+}
+
+#words .word.error {
+    text-shadow: 0 0 2px var(--error-color);
+}
+
+#words .word letter.incorrect:not(.extra),
+#words.colorfulMode .word letter.incorrect:not(.extra) {
+    color: var(--current-color);
+}
+
+#words .word letter.incorrect,
+#words.colorfulMode .word letter.incorrect {
+    text-decoration: line-through;
+    text-decoration-color: var(--error-color);
+    text-decoration-thickness: 2px;
+}
+
+#wordsWrapper {
+    --c-dot: var(--text-color);
+    --c-dot--error: var(--error-color);
+}
+
+.colorfulMode {
+    --c-dot: var(--main-color);
+    --c-dot--error: var(--colorful-error-color);
+}
+
+#wordsWrapper .word:not(.active) letter.correct,
+#wordsWrapper .word:not(.active) letter.incorrect {
+    animation: shimmer 0.5s ease-out 0ms 1 forwards;
+}
+
+#wordsWrapper .word:not(.active) letter.correct:after,
+#wordsWrapper .word:not(.active) letter.incorrect:after {
+    animation: fadeIn 0.3s ease-in-out 0.1s 1 forwards;
+}
+
+.word letter {
+    position: relative;
+}
+
+#wordsWrapper .word letter:after {
+    border-radius: 50%;
+    content: "";
+    height: 0.5em;
+    left: 50%;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.5em;
+}
+
+#wordsWrapper .word letter.correct:after {
+    background: var(--c-dot);
+}
+
+#wordsWrapper .word letter.incorrect:after {
+    background: var(--c-dot--error);
+}
+
+hint {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+#wordsWrapper .word:not(.active) letter.incorrect hint {
+    opacity: 0;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    75% {
+        opacity: 0.4;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
