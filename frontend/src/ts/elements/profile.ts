@@ -131,26 +131,32 @@ export async function update(
 
     const dayInMilis = 1000 * 60 * 60 * 24;
     const milisOffset = (profile.streakHourOffset ?? 0) * 3600000;
-    let target = Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset;
-    if (target < Date.now()) {
-      target += dayInMilis;
-    }
-    const timeDif = formatDistanceToNowStrict(target);
 
+    // Get the current day in local time at 00:00
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    // Add our offset hours
+    let resetTarget =
+      startOfDay.getTime() + Misc.getLocalTimeStreakResetHour(milisOffset);
+
+    // If the target is in the past, the next reset is tomorrow, so we add a day
+    if (resetTarget < Date.now()) {
+      resetTarget += dayInMilis;
+    }
+
+    const timeDif = formatDistanceToNowStrict(resetTarget);
+    console.debug("startOfDay", startOfDay);
+    console.debug(
+      "Hour at which to reset",
+      Misc.getLocalTimeStreakResetHour(milisOffset) / 3600000
+    );
+    console.debug("milisOffset", milisOffset);
+    console.debug("reset target", new Date(resetTarget));
+    console.debug("timeDif", timeDif);
     console.debug("Streak hour offset");
     console.debug("date.now()", Date.now(), new Date(Date.now()));
     console.debug("dayInMilis", dayInMilis);
-    console.debug("milisOffset", milisOffset);
-    console.debug(
-      "difTarget",
-      new Date(Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset)
-    );
-    console.debug("timeDif", timeDif);
-    console.debug(
-      "Misc.getCurrentDayTimestamp()",
-      Misc.getCurrentDayTimestamp(),
-      new Date(Misc.getCurrentDayTimestamp())
-    );
     console.debug("profile.streakHourOffset", profile.streakHourOffset);
 
     if (lastResult) {

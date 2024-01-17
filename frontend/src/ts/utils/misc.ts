@@ -1524,6 +1524,13 @@ export function getCurrentDayTimestamp(): number {
 const MILISECONDS_IN_HOUR = 3600000;
 const MILLISECONDS_IN_DAY = 86400000;
 
+export function getLocalTimeStreakResetHour(offsetMilis: number): number {
+  // The modulo operator will ensure the offset will always wrap around to
+  // a value between 0 and 24 hours. e.g: a -6 offset will provide a value of
+  // 18 hours (in miliseconds), corresponding to 6pm
+  return (MILLISECONDS_IN_DAY + offsetMilis) % MILLISECONDS_IN_DAY;
+}
+
 export function getStartOfDayTimestamp(
   timestamp: number,
   offsetMilis = 0
