@@ -38,7 +38,7 @@ export async function removePreset(
   const { presetId } = req.params;
   const { uid } = req.ctx.decodedToken;
 
-  await PresetDAL.removePreset(uid, presetId);
+  await PresetDAL.removePreset(uid, presetId as string);
 
   return new MonkeyResponse("Preset deleted");
 }
