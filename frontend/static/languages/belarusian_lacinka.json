@@ -1,6 +1,6 @@
 {
   "name": "belarusian_lacinka",
-  "noLazyMode": true,
+  "noLazyMode": false,
   "words": [
     "jon",
     "i",
