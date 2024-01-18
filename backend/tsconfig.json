@@ -13,7 +13,8 @@
     "esModuleInterop": true,
     "strictNullChecks": true,
     "skipLibCheck": false,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true
   },
   "ts-node": {
     "files": true
