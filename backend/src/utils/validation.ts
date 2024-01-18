@@ -22,7 +22,7 @@ export function isUsernameValid(name: string): boolean {
     return false;
   }
 
-  const isProfanity = profanities.find((profanity) =>
+  const isProfanity = profanities.some((profanity) =>
     normalizedName.includes(profanity)
   );
   if (isProfanity) {
@@ -177,7 +177,7 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>
-        f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+        f.properties?.some((fp) => fp.startsWith("toPush:")) ||
         f.frontendFunctions?.includes("pullSection")
     ).length <= 1;
   const oneApplyCSSMax =

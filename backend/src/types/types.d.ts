@@ -326,7 +326,7 @@ declare namespace MonkeyTypes {
   interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
     keySpacing: number[] | "toolong";
     keyDuration: number[] | "toolong";
-    customText: MonkeyTypes.CustomText;
+    customText?: MonkeyTypes.CustomText;
     wpmConsistency: number;
     lang: string;
     challenge?: string | null;
