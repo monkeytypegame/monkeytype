@@ -11,19 +11,19 @@
         "text": "fun main(args : Array<String>) {\n\tprintln(\"Hello, World!\")\n}",
         "source": "Programiz - Kotlin Hello World",
         "id": 1,
-        "length": 49
+        "length": 60
       },
       {
         "text": "fun main() {\n\tvar name = \"John\"\n\tval birthyear = 1975\n\tprintln(name)\n\tprintln(birthyear)\n}",
         "source": "W3Schools - Kotlin Variables",
         "id": 2,
-        "length": 84
+        "length": 90
       },
       {
         "text": "fun bubbleSort(array: IntArray) {\n\tval n = array.size\n\tfor (i in 0 until n - 1) {\n\t\tfor (j in 0 until n - i - 1) {\n\t\t\tif (array[j] > array[j + 1]) {\n\t\t\t\tval temp = array[j]\n\t\t\t\tarray[j] = array[j + 1]\n\t\t\t\tarray[j + 1] = temp\n\t\t\t}\n\t\t}\n\t}\n}",
         "source": "ChatGPT - Kotlin Bubble Sort",
         "id": 3,
-        "length": 235
+        "length": 238
       }
     ]
 }
