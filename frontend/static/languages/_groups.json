@@ -414,6 +414,10 @@
     "languages": ["belarusian", "belarusian_1k"]
   },
   {
+    "name": "belarusian_lacinka",
+    "languages": ["belarusian_lacinka", "belarusian_lacinka_1k"]
+  },
+  {
     "name": "azerbaijani",
     "languages": ["azerbaijani", "azerbaijani_1k"]
   },
