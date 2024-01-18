@@ -381,7 +381,7 @@ export function smooth(
     let count = 0;
     let sum = 0;
     for (let j = from; j < to && j < arr.length; j += 1) {
-      sum += get(arr[j]);
+      sum += get(arr[j] as number);
       count += 1;
     }
 
@@ -418,7 +418,9 @@ export function median(arr: number[]): number {
   try {
     const mid = Math.floor(arr.length / 2),
       nums = [...arr].sort((a, b) => a - b);
-    return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+    return arr.length % 2 !== 0
+      ? (nums[mid] as number)
+      : ((nums[mid - 1] as number) + (nums[mid] as number)) / 2;
   } catch (e) {
     return 0;
   }
@@ -518,7 +520,7 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
    */
   for (let v = 0; v < values_length; v++) {
     x = v + 1;
-    y = values_y[v];
+    y = values_y[v] as number;
     sum_x += x;
     sum_y += y;
     sum_xx += x * x;
@@ -662,7 +664,7 @@ export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
   for (let i = 0; i < numString.length; i++) {
-    ret += arabicIndic[parseInt(numString[i])];
+    ret += arabicIndic[parseInt(numString[i] as string)];
   }
   return ret;
 }
@@ -671,7 +673,7 @@ export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
   for (let i = 0; i < numString.length; i++) {
-    ret += nepaliIndic[parseInt(numString[i])];
+    ret += nepaliIndic[parseInt(numString[i] as string)];
   }
   return ret;
 }
@@ -820,7 +822,8 @@ export function findGetParameter(
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
-      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+      if (tmp[0] === parameterName)
+        result = decodeURIComponent(tmp[1] as string);
     });
   return result;
 }
@@ -1070,7 +1073,12 @@ export function convertRGBtoHEX(rgb: string): string | undefined {
 
     return ("0" + parseInt(i).toString(16)).slice(-2);
   }
-  return "#" + hexCode(match[1]) + hexCode(match[2]) + hexCode(match[3]);
+  return (
+    "#" +
+    hexCode(match[1] as string) +
+    hexCode(match[2] as string) +
+    hexCode(match[3] as string)
+  );
 }
 
 interface LastIndex extends String {
@@ -1081,7 +1089,7 @@ interface LastIndex extends String {
   regex: RegExp
 ): number {
   const match = this.match(regex);
-  return match ? this.lastIndexOf(match[match.length - 1]) : -1;
+  return match ? this.lastIndexOf(match[match.length - 1] as string) : -1;
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
@@ -1280,13 +1288,13 @@ export function shuffle<T>(elements: T[]): void {
   for (let i = elements.length - 1; i > 0; --i) {
     const j = randomIntFromRange(0, i);
     const temp = elements[j];
-    elements[j] = elements[i];
-    elements[i] = temp;
+    elements[j] = elements[i] as T;
+    elements[i] = temp as T;
   }
 }
 
 export function randomElementFromArray<T>(array: T[]): T {
-  return array[randomIntFromRange(0, array.length - 1)];
+  return array[randomIntFromRange(0, array.length - 1)] as T;
 }
 
 export function nthElementFromArray<T>(
@@ -1409,7 +1417,7 @@ export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
   const cache = new Map<P, Promise<ReturnType<T>>>();
 
   return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-    const key = getKey ? getKey.apply(args) : args[0];
+    const key = getKey ? getKey.apply(args) : (args[0] as P);
 
     if (cache.has(key)) {
       const ret = await cache.get(key);
@@ -1481,10 +1489,17 @@ export function loadCSS(href: string, prepend = false): void {
   link.type = "text/css";
   link.rel = "stylesheet";
   link.href = href;
+
+  const head = document.getElementsByTagName("head")[0];
+
+  if (head === undefined) {
+    throw new Error("Could not load CSS - head is undefined");
+  }
+
   if (prepend) {
-    document.getElementsByTagName("head")[0].prepend(link);
+    head.prepend(link);
   } else {
-    document.getElementsByTagName("head")[0].appendChild(link);
+    head.appendChild(link);
   }
 }
 
@@ -1651,9 +1666,8 @@ export function convertToMorse(word: string): string {
   let morseWord = "";
 
   const deAccentedWord = replaceSpecialChars(word);
-  console.log(deAccentedWord);
   for (let i = 0; i < deAccentedWord.length; i++) {
-    const letter = morseCode[deAccentedWord.toLowerCase()[i]];
+    const letter = morseCode[deAccentedWord.toLowerCase()[i] as string];
     morseWord += letter ? letter + "/" : "";
   }
   return morseWord;
@@ -1700,6 +1714,11 @@ export function getNumberWithMagnitude(num: number): {
     "trillion",
     "quadrillion",
     "quintillion",
+    "sextillion",
+    "septillion",
+    "octillion",
+    "nonillion",
+    "decillion",
   ];
   let unitIndex = 0;
   let roundedNum = num;
@@ -1709,7 +1728,7 @@ export function getNumberWithMagnitude(num: number): {
     unitIndex++;
   }
 
-  const unit = units[unitIndex];
+  const unit = units[unitIndex] ? (units[unitIndex] as string) : "unknown";
 
   return {
     rounded: Math.round(roundedNum),
