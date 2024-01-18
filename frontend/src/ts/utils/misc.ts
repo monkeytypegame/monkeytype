@@ -1516,9 +1516,10 @@ export async function checkIfLanguageSupportsZipf(
   return "unknown";
 }
 
-export function getCurrentDayTimestamp(): number {
+export function getCurrentDayTimestamp(hourOffset = 0): number {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
   const currentTime = Date.now();
-  return getStartOfDayTimestamp(currentTime);
+  return getStartOfDayTimestamp(currentTime, offsetMilis);
 }
 
 const MILISECONDS_IN_HOUR = 3600000;
