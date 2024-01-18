@@ -562,7 +562,10 @@ export async function init(): Promise<void> {
   }
 
   for (let i = 0; i < generatedWords.length; i++) {
-    TestWords.words.push(generatedWords[i], generatedSectionIndexes[i]);
+    TestWords.words.push(
+      generatedWords[i] as string,
+      generatedSectionIndexes[i] as number
+    );
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -836,7 +839,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
     //multiply last element of rawBefore by scale, and round it
     rawPerSecond[rawPerSecond.length - 1] = Math.round(
-      rawPerSecond[rawPerSecond.length - 1] * timescale
+      (rawPerSecond[rawPerSecond.length - 1] as number) * timescale
     );
   }
 
@@ -878,7 +881,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   completedEvent.chartData.err = [];
   for (let i = 0; i < TestInput.errorHistory.length; i++) {
-    completedEvent.chartData.err.push(TestInput.errorHistory[i].count);
+    completedEvent.chartData.err.push(TestInput.errorHistory[i]?.count ?? 0);
   }
 
   if (Config.mode === "quote") {
