@@ -170,7 +170,7 @@ function loadOldReplay(): number {
       startingIndex = i + 1;
     }
   });
-  const time = Math.floor(replayData[startingIndex].time / 1000);
+  const time = Math.floor(replayData[startingIndex]?.time / 1000);
   updateStatsString(time);
 
   return startingIndex;

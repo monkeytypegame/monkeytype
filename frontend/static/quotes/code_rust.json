@@ -725,7 +725,7 @@
       "id": 121,
       "length": 90,
       "source": "Epoch seconds to date object - programming-idioms.org",
-      "text": "extern crate chrono;\nuse chrono::prelude::*:\nlet d = NaiveDateTime::from_timestamp(ts, 0);"
+      "text": "extern crate chrono;\nuse chrono::prelude::*;\nlet d = NaiveDateTime::from_timestamp(ts, 0);"
     },
     {
       "id": 122,

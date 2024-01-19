@@ -111,7 +111,7 @@ body::before {
   position: relative;
 }
 
-#wordsWrapper .word letter::after {
+#words:not(.withLigatures) .word letter::after {
   content: "";
   position: absolute;
   top: 50%;
