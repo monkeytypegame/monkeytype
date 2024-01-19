@@ -9,13 +9,13 @@ async function main(): Promise<void> {
     Queues.map(async (queue) => {
       const counts = await queue.getJobCounts();
 
-      const active = counts.active;
-      const completed = counts.completed;
-      const failed = counts.failed;
+      const active = counts["active"];
+      const completed = counts["completed"];
+      const failed = counts["failed"];
 
-      const waiting = counts.waiting;
-      const paused = counts.paused;
-      const delayed = counts.delayed;
+      const waiting = counts["waiting"];
+      const paused = counts["paused"];
+      const delayed = counts["delayed"];
       const waitingChildren = counts["waiting-children"];
 
       const waitingTotal = waiting + paused + delayed + waitingChildren;

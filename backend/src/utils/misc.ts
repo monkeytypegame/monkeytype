@@ -300,5 +300,5 @@ export function stringToNumberOrDefault(
 }
 
 export function isDevEnvironment(): boolean {
-  return process.env.MODE === "dev";
+  return process.env["MODE"] === "dev";
 }
