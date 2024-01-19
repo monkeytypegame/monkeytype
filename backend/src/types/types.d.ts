@@ -258,6 +258,7 @@ declare namespace MonkeyTypes {
     lazyMode: boolean;
     language: string;
     punctuation: boolean;
+    numbers?: boolean;
     raw: number;
     wpm: number;
     timestamp: number;

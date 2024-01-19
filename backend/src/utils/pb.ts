@@ -72,7 +72,8 @@ function matchesPersonalBest(
     result.difficulty === undefined ||
     result.language === undefined ||
     result.punctuation === undefined ||
-    result.lazyMode === undefined
+    result.lazyMode === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (matchesPersonalBest)");
   }
@@ -83,8 +84,15 @@ function matchesPersonalBest(
   const samePunctuation = result.punctuation === personalBest.punctuation;
   const sameDifficulty = result.difficulty === personalBest.difficulty;
   const sameLanguage = result.language === personalBest.language;
+  const sameNumbers = result.numbers === !!personalBest.numbers;
 
-  return sameLazyMode && samePunctuation && sameDifficulty && sameLanguage;
+  return (
+    sameLazyMode &&
+    samePunctuation &&
+    sameDifficulty &&
+    sameLanguage &&
+    sameNumbers
+  );
 }
 
 function updatePersonalBest(
@@ -103,7 +111,8 @@ function updatePersonalBest(
     result.acc === undefined ||
     result.consistency === undefined ||
     result.rawWpm === undefined ||
-    result.wpm === undefined
+    result.wpm === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (updatePersonalBest)");
   }
@@ -116,6 +125,7 @@ function updatePersonalBest(
   personalBest.consistency = result.consistency;
   personalBest.raw = result.rawWpm;
   personalBest.wpm = result.wpm;
+  personalBest.numbers = result.numbers;
   personalBest.timestamp = Date.now();
 
   return true;
@@ -130,7 +140,8 @@ function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
     result.acc === undefined ||
     result.consistency === undefined ||
     result.rawWpm === undefined ||
-    result.wpm === undefined
+    result.wpm === undefined ||
+    result.numbers === undefined
   ) {
     throw new Error("Missing result data (buildPersonalBest)");
   }
@@ -143,6 +154,7 @@ function buildPersonalBest(result: Result): MonkeyTypes.PersonalBest {
     punctuation: result.punctuation,
     raw: result.rawWpm,
     wpm: result.wpm,
+    numbers: result.numbers,
     timestamp: Date.now(),
   };
 }
