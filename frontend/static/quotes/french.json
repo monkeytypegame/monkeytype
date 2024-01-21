@@ -1146,6 +1146,52 @@
       "source": "Orelsan - Jour meilleur",
       "length": 96,
       "id": 193
+    },
+    {
+      "text":"Je n’ai jamais rien volé... sauf une écuelle, un jour, à un chien... qui en avait deux",
+      "source":"Joseph Bouvier dans Le juge et l'assassin (1976)",
+      "length": 86,
+      "id": 194
+    },
+    {
+      "text": "On ne peut pas faire l’amour du matin au soir. C’est pour ça qu’on a inventé le travail.",
+      "source": "Dr Bicard dans 'L’Homme qui aimait les femmes' de François Truffaut (1977)",
+      "length": 88,
+      "id": 195
+    },
+    {
+      "text": "Le temps qui passe est un traître, mais il laisse des souvenirs.",
+      "source": "La Haine de Mathieu Kassovitz (1995)",
+      "length": 64,
+      "id": 196
+    },
+    {
+      "text": "Il n'y a rien de plus fort au monde que la douceur.",
+      "source": "Cyrano de Bergerac de Jean-Paul Rappeneau (1990)",
+      "length": 51,
+      "id": 197
+    },
+    {
+      "text": "La vie n'est qu'un long calvaire. C'est pourquoi il est essentiel d'y ajouter des moments de joie et d'amour.",
+      "source": "Amélie Poulain de Jean-Pierre Jeunet (2001)",
+      "length": 109,
+      "id": 198
+    },
+    {
+      "text": "L'amour n'est pas seulement un sentiment, c'est un art aussi.",
+      "source": "Anna Karénine de Léon Tolstoï",
+      "length": 61,
+      "id": 199
+    },{
+      "text": "Le bonheur n'est réel que lorsqu'il est partagé.",
+      "source": "Into the Wild de Sean Penn (2007)",
+      "length": 48,
+      "id": 200
     }
+    
+    
+    
+    
+    
   ]
 }
