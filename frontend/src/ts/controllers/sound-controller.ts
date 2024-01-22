@@ -271,8 +271,16 @@ function init(): void {
 
 export function previewClick(val: string): void {
   if (clickSounds === null) init();
-  (clickSounds as ClickSounds)[val][0].sounds[0].seek(0);
-  (clickSounds as ClickSounds)[val][0].sounds[0].play();
+
+  const safeClickSounds = clickSounds as ClickSounds;
+
+  const clickSoundIds = Object.keys(safeClickSounds);
+  if (!clickSoundIds.includes(val)) return;
+
+  //@ts-expect-error
+  safeClickSounds[val][0].sounds[0].seek(0);
+  //@ts-expect-error
+  safeClickSounds[val][0].sounds[0].play();
 }
 
 let currentCode = "KeyA";
@@ -306,7 +314,7 @@ function bindToNote(
   octaveOffset = 0
 ): GetNoteFrequencyCallback {
   return (octave: number): number => {
-    return noteFrequencies[octave + octaveOffset];
+    return noteFrequencies[octave + octaveOffset] ?? 0;
   };
 }
 
@@ -457,7 +465,9 @@ function playScale(scale: ValidScales, scaleMeta: ScaleData): void {
     scaleMeta.direction = 1;
   }
 
-  const currentFrequency = notes[scales[scale][randomNote]][scaleMeta.octave];
+  const note = scales[scale][randomNote] as ValidNotes;
+
+  const currentFrequency = notes[note][scaleMeta.octave] as number;
 
   const oscillatorNode = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
@@ -488,7 +498,7 @@ export function playNote(
 
   const baseOctave = 3;
   const octave = baseOctave + (leftState || rightState || capsState ? 1 : 0);
-  const currentFrequency = codeToNote[currentCode](octave);
+  const currentFrequency = codeToNote[currentCode]?.(octave);
 
   const oscillatorNode = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
@@ -503,7 +513,7 @@ export function playNote(
   oscillatorNode.connect(gainNode);
   gainNode.connect(audioCtx.destination);
 
-  oscillatorNode.frequency.value = currentFrequency;
+  oscillatorNode.frequency.value = currentFrequency as number;
   oscillatorNode.start(audioCtx.currentTime);
   gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.15); //remove click sound
   oscillatorNode.stop(audioCtx.currentTime + 0.5);
@@ -528,28 +538,33 @@ export function playClick(codeOverride?: string): void {
 
   if (clickSounds === null) init();
 
-  const randomSound = randomElementFromArray(
-    (clickSounds as ClickSounds)[Config.playSoundOnClick]
-  );
+  const sounds = (clickSounds as ClickSounds)[Config.playSoundOnClick];
+
+  if (sounds === undefined) throw new Error("Invalid click sound ID");
+
+  const randomSound = randomElementFromArray(sounds);
+  const soundToPlay = randomSound.sounds[randomSound.counter] as Howl;
 
   randomSound.counter++;
   if (randomSound.counter === 2) randomSound.counter = 0;
-  randomSound.sounds[randomSound.counter].seek(0);
-  randomSound.sounds[randomSound.counter].play();
+  soundToPlay.seek(0);
+  soundToPlay.play();
 }
 
 export function playError(): void {
   if (Config.playSoundOnError === "off") return;
   if (errorSounds === null) initErrorSound();
 
-  const randomSound = randomElementFromArray(
-    (errorSounds as ErrorSounds)[Config.playSoundOnError]
-  );
+  const sounds = (errorSounds as ErrorSounds)[Config.playSoundOnError];
+  if (sounds === undefined) throw new Error("Invalid error sound ID");
+
+  const randomSound = randomElementFromArray(sounds);
+  const soundToPlay = randomSound.sounds[randomSound.counter] as Howl;
 
   randomSound.counter++;
   if (randomSound.counter === 2) randomSound.counter = 0;
-  randomSound.sounds[randomSound.counter].seek(0);
-  randomSound.sounds[randomSound.counter].play();
+  soundToPlay.seek(0);
+  soundToPlay.play();
 }
 
 function setVolume(val: number): void {
