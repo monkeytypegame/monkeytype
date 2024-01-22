@@ -494,7 +494,9 @@ export function roundTo2(num: number): number {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
-export function findLineByLeastSquares(values_y: number[]): number[][] {
+export function findLineByLeastSquares(
+  values_y: number[]
+): [[number, number], [number, number]] | null {
   let sum_x = 0;
   let sum_y = 0;
   let sum_xy = 0;
@@ -512,7 +514,7 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
    * Nothing to do.
    */
   if (values_length === 0) {
-    return [[], []];
+    return null;
   }
 
   /*
@@ -535,8 +537,11 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
   const m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
   const b = sum_y / count - (m * sum_x) / count;
 
-  const returnpoint1 = [1, 1 * m + b];
-  const returnpoint2 = [values_length, values_length * m + b];
+  const returnpoint1 = [1, 1 * m + b] as [number, number];
+  const returnpoint2 = [values_length, values_length * m + b] as [
+    number,
+    number
+  ];
   return [returnpoint1, returnpoint2];
 }
 

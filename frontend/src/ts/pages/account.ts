@@ -522,13 +522,15 @@ async function fillContent(): Promise<void> {
       resultDate.setMilliseconds(0);
       const resultTimestamp = resultDate.getTime();
 
-      if (Object.keys(activityChartData).includes(String(resultTimestamp))) {
-        activityChartData[resultTimestamp].amount++;
-        activityChartData[resultTimestamp].time +=
+      const dataForTimestamp = activityChartData[resultTimestamp];
+
+      if (dataForTimestamp !== undefined) {
+        dataForTimestamp.amount++;
+        dataForTimestamp.time +=
           result.testDuration +
           result.incompleteTestSeconds -
           (result.afkDuration ?? 0);
-        activityChartData[resultTimestamp].totalWpm += result.wpm;
+        dataForTimestamp.totalWpm += result.wpm;
       } else {
         activityChartData[resultTimestamp] = {
           amount: 1,
@@ -675,26 +677,29 @@ async function fillContent(): Promise<void> {
   const wpmStepSize = typingSpeedUnit.historyStepSize;
 
   // let lastTimestamp = 0;
-  Object.keys(activityChartData).forEach((date) => {
+  for (const date of Object.keys(activityChartData)) {
     const dateInt = parseInt(date);
+    const dataPoint = activityChartData[dateInt];
+
+    if (dataPoint === undefined) continue;
+
     activityChartData_amount.push({
       x: dateInt,
-      y: activityChartData[dateInt].amount,
+      y: dataPoint.amount,
     });
     activityChartData_time.push({
       x: dateInt,
-      y: activityChartData[dateInt].time / 60,
-      amount: activityChartData[dateInt].amount,
+      y: dataPoint.time / 60,
+      amount: dataPoint.amount,
     });
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Misc.roundTo2(
-        typingSpeedUnit.fromWpm(activityChartData[dateInt].totalWpm) /
-          activityChartData[dateInt].amount
+        typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount
       ),
     });
     // lastTimestamp = date;
-  });
+  }
 
   const accountActivityScaleOptions = (
     ChartController.accountActivity.options as ScaleChartOptions<"bar" | "line">
@@ -746,7 +751,7 @@ async function fillContent(): Promise<void> {
     const pb: { x: number; y: number }[] = [];
 
     for (let i = chartData.length - 1; i >= 0; i--) {
-      const a = chartData[i];
+      const a = chartData[i] as MonkeyTypes.HistoryChartData;
       if (a.y > currentPb) {
         currentPb = a.y;
         pb.push(a);
@@ -756,7 +761,7 @@ async function fillContent(): Promise<void> {
     // add last point to pb
     pb.push({
       x: 1,
-      y: pb[pb.length - 1].y,
+      y: Misc.lastElementFromArray(pb).y,
     });
 
     const avgTen = [];
@@ -1010,19 +1015,16 @@ async function fillContent(): Promise<void> {
   const wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
   const trend = Misc.findLineByLeastSquares(wpmPoints);
-
-  const wpmChange = trend[1][1] - trend[0][1];
-
-  const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
-
-  const plus = wpmChangePerHour > 0 ? "+" : "";
-
-  $(".pageAccount .group.chart .below .text").text(
-    `Speed change per hour spent typing: ${
-      plus + Misc.roundTo2(typingSpeedUnit.fromWpm(wpmChangePerHour))
-    } ${Config.typingSpeedUnit}`
-  );
-
+  if (trend) {
+    const wpmChange = trend[1][1] - trend[0][1];
+    const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
+    const plus = wpmChangePerHour > 0 ? "+" : "";
+    $(".pageAccount .group.chart .below .text").text(
+      `Speed change per hour spent typing: ${
+        plus + Misc.roundTo2(typingSpeedUnit.fromWpm(wpmChangePerHour))
+      } ${Config.typingSpeedUnit}`
+    );
+  }
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   if (chartData.length || accChartData.length) {
@@ -1205,7 +1207,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", (event) => {
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
   MiniResultChart.updateData(
-    filteredResults[parseInt(filteredId)].chartData as MonkeyTypes.ChartData
+    filteredResults[parseInt(filteredId)]?.chartData as MonkeyTypes.ChartData
   );
   MiniResultChart.show();
   MiniResultChart.updatePosition(
