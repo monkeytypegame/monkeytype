@@ -922,7 +922,8 @@ async function loadWordsHistory(): Promise<boolean> {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
   for (let i = 0; i < TestInput.input.history.length + 2; i++) {
-    const input = <string>TestInput.input.getHistory(i);
+    const input = TestInput.input.getHistory(i);
+    const corrected = TestInput.corrected.getHistory(i);
     const word = TestWords.words.get(i);
     const containsKorean =
       input?.match(
@@ -933,14 +934,11 @@ async function loadWordsHistory(): Promise<boolean> {
       );
     let wordEl = "";
     try {
-      if (input === "") throw new Error("empty input word");
-      if (
-        TestInput.corrected.getHistory(i) !== undefined &&
-        TestInput.corrected.getHistory(i) !== ""
-      ) {
+      if (!input) throw new Error("empty input word");
+      if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
-          ? TestInput.corrected.getHistory(i)
-          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
+          ? corrected
+          : Hangul.assemble(corrected.split(""));
         wordEl = `<div class='word nocursor' burst="${
           TestInput.burstHistory[i]
         }" input="${correctedChar
@@ -995,19 +993,22 @@ async function loadWordsHistory(): Promise<boolean> {
         //input is shorter or equal (loop over word list)
         loop = word.length;
       }
+
+      if (corrected === undefined) throw new Error("empty corrected word");
+
       for (let c = 0; c < loop; c++) {
         let correctedChar;
         try {
           correctedChar = !containsKorean
-            ? TestInput.corrected.getHistory(i)[c]
-            : Hangul.assemble(TestInput.corrected.getHistory(i).split(""))[c];
+            ? corrected[c]
+            : Hangul.assemble(corrected.split(""))[c];
         } catch (e) {
           correctedChar = undefined;
         }
         let extraCorrected = "";
         const historyWord: string = !containsKorean
-          ? TestInput.corrected.getHistory(i)
-          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
+          ? corrected
+          : Hangul.assemble(corrected.split(""));
         if (
           c + 1 === loop &&
           historyWord !== undefined &&

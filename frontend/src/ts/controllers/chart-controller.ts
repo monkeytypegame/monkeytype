@@ -225,11 +225,17 @@ export const result: ChartWithUpdateColors<
               try {
                 const keypressIndex = Math.round(parseFloat(ti.label)) - 1;
                 const wordsToHighlight =
-                  TestInput.errorHistory[keypressIndex].words;
+                  TestInput.errorHistory[keypressIndex]?.words;
 
                 const unique = [...new Set(wordsToHighlight)];
                 const firstHighlightWordIndex = unique[0];
                 const lastHighlightWordIndex = unique[unique.length - 1];
+                if (
+                  firstHighlightWordIndex === undefined ||
+                  lastHighlightWordIndex === undefined
+                ) {
+                  return "";
+                }
                 ResultWordHighlight.highlightWordsInRange(
                   firstHighlightWordIndex,
                   lastHighlightWordIndex

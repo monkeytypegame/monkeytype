@@ -41,7 +41,7 @@ const particleSize = 4;
 const particleFade = 0.6;
 const particleInitVel = 1500;
 const particleBounceMod = 0.3;
-const particleCreateCount = [6, 3];
+const particleCreateCount: [number, number] = [6, 3];
 const shakeAmount = 10;
 
 function createCanvas(): HTMLCanvasElement {
@@ -132,8 +132,8 @@ function render(): void {
   ctx.context2d.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
   const keep = [];
-  for (let i = 0; i < ctx.particles.length; i++) {
-    const particle = ctx.particles[i];
+  // for (let i = 0; i < ctx.particles.length; i++) {
+  for (const particle of ctx.particles) {
     if (particle.alpha < 0.1) continue;
 
     updateParticle(particle);

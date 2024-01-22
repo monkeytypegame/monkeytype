@@ -62,6 +62,7 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
+
   resultScaleOptions["wpm"].title.text = typingSpeedUnit.fullUnitString;
 
   const chartData1 = [
@@ -875,7 +876,9 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
-      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
+      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(
+        quoteId
+      ) as number;
       dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
     }
   } else {
