@@ -642,8 +642,9 @@ export const accountActivity: ChartWithUpdateColors<
           mode: "index",
           callbacks: {
             title: function (tooltipItem): string {
-              const resultData = tooltipItem[0].dataset.data[
-                tooltipItem[0].dataIndex
+              const firstItem = tooltipItem[0] as TooltipItem<"bar" | "line">;
+              const resultData = firstItem.dataset.data[
+                firstItem.dataIndex
               ] as MonkeyTypes.ActivityChartDataPoint;
               return format(new Date(resultData.x), "dd MMM yyyy");
             },
