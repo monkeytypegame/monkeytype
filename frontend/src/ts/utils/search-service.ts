@@ -57,7 +57,8 @@ function normalizedTermFrequency(
 ): number {
   return (
     ALPHA +
-    (1 - ALPHA) * (document.termFrequencies[term] / document.maxTermFrequency)
+    (1 - ALPHA) *
+      ((document.termFrequencies[term] as number) / document.maxTermFrequency)
   );
 }
 
@@ -90,12 +91,12 @@ export const buildSearchService = <T>(
       if (!(stemmedToken in normalizedTokenToOriginal)) {
         normalizedTokenToOriginal[stemmedToken] = new Set<string>();
       }
-      normalizedTokenToOriginal[stemmedToken].add(token);
+      normalizedTokenToOriginal[stemmedToken]?.add(token);
 
       if (!(stemmedToken in reverseIndex)) {
         reverseIndex[stemmedToken] = new Set<InternalDocument>();
       }
-      reverseIndex[stemmedToken].add(internalDocument);
+      reverseIndex[stemmedToken]?.add(internalDocument);
 
       if (!(stemmedToken in internalDocument.termFrequencies)) {
         internalDocument.termFrequencies[stemmedToken] = 0;
@@ -104,7 +105,7 @@ export const buildSearchService = <T>(
       internalDocument.termFrequencies[stemmedToken]++;
       maxTermFrequency = Math.max(
         maxTermFrequency,
-        internalDocument.termFrequencies[stemmedToken]
+        internalDocument.termFrequencies[stemmedToken] as number
       );
     });
 
@@ -137,7 +138,7 @@ export const buildSearchService = <T>(
         const isSimilar = similarity >= 1 - options.fuzzyMatchSensitivity;
 
         if (matchesSearchToken || isSimilar) {
-          const documentMatches = reverseIndex[token];
+          const documentMatches = reverseIndex[token] as Set<InternalDocument>;
 
           const idf = inverseDocumentFrequency(
             documents.length,
@@ -161,7 +162,7 @@ export const buildSearchService = <T>(
             results.set(document.id, currentScore + scoreForToken);
           });
 
-          normalizedTokenToOriginal[token].forEach((originalToken) => {
+          normalizedTokenToOriginal[token]?.forEach((originalToken) => {
             matchedTokens.add(originalToken);
           });
         }
@@ -172,7 +173,7 @@ export const buildSearchService = <T>(
       .sort((match1, match2) => {
         return match2[1] - match1[1];
       })
-      .map((match) => documents[match[0]]);
+      .map((match) => documents[match[0]]) as T[];
 
     searchResult.results = orderedResults;
     searchResult.matchedQueryTerms = [...matchedTokens];

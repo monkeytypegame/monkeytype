@@ -956,7 +956,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended
-  if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
+  if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
     const burst = TestStats.calculateBurst();
     TestInput.pushBurstToHistory(burst);
   }
@@ -1108,9 +1108,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
       TestInput.input.history.length < TestWords.words.length
     ) {
       // They bailed out
+
+      const historyLength = TestInput.input.getHistory()?.length as number;
       const newProgress =
-        CustomText.getCustomTextLongProgress(customTextName) +
-        TestInput.input.getHistory().length;
+        CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
       Notifications.add("Long custom text progress saved", 1, {
         duration: 5,
