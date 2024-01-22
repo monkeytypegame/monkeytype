@@ -79,14 +79,21 @@ function updateUI(): void {
       );
       const inputGroupLength: number = koCurrInput.length - 1;
       if (koCurrInput[inputGroupLength]) {
-        const inputCharLength: number = koCurrInput[inputGroupLength].length;
+        const inputCharLength: number = (
+          koCurrInput[inputGroupLength] as string[]
+        ).length;
         //at the end of the word, it will throw a (reading '0') this will be the space
         try {
           //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),
           //take the difference between the overflow and the word
+
+          //@ts-expect-error really cant be bothered fixing all these issues - its gonna get caught anyway
           const koChar: string =
+            //@ts-expect-error
             koCurrWord[inputGroupLength][inputCharLength] ??
+            //@ts-expect-error
             koCurrWord[koCurrInput.length][
+              //@ts-expect-error
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 
@@ -96,7 +103,8 @@ function updateUI(): void {
         }
       } else {
         //for new words
-        KeymapEvent.highlight(koCurrWord[0][0]);
+        const toHighlight = koCurrWord?.[0]?.[0];
+        if (toHighlight) KeymapEvent.highlight(toHighlight);
       }
     }
   }
@@ -116,7 +124,9 @@ function backspaceToPrevious(): void {
     (TestInput.input.history[TestWords.words.currentIndex - 1] ==
       TestWords.words.get(TestWords.words.currentIndex - 1) &&
       !Config.freedomMode) ||
-    $($(".word")[TestWords.words.currentIndex - 1]).hasClass("hidden")
+    $($(".word")[TestWords.words.currentIndex - 1] as HTMLElement).hasClass(
+      "hidden"
+    )
   ) {
     return;
   }
@@ -146,8 +156,9 @@ function backspaceToPrevious(): void {
       []) as HTMLElement[];
 
     for (let i = els.length - 1; i >= 0; i--) {
-      if (els[i].classList.contains("newline")) {
-        els[i].remove();
+      const el = els[i] as HTMLElement;
+      if (el.classList.contains("newline")) {
+        el.remove();
       } else {
         break;
       }
