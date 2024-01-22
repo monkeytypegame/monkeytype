@@ -13,11 +13,12 @@
   },
   "ignorePatterns": [
     "backend/__tests__/**/*",
-    "backend/setup-tests.ts",
     "backend/jest.config.ts",
     "**/*.css",
     "**/*.scss",
-    "frontend/static/js/*"
+    "frontend/static/js/*",
+    "frontend/__tests__/**/*",
+    "frontend/jest.config.ts"
   ],
   "extends": [
     "eslint:recommended",

@@ -110,7 +110,7 @@ export function setCustomText(
 export function deleteCustomText(name: string, long = false): void {
   const customText = long ? getCustomTextLongObject() : getCustomTextObject();
 
-  if (customText[name]) delete customText[name];
+  if (customText[name] != undefined) delete customText[name];
 
   if (long) {
     window.localStorage.setItem("customTextLong", JSON.stringify(customText));

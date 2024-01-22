@@ -76,6 +76,8 @@ export async function punctuateWord(
           word += ".";
         } else if (currentLanguage === "nepali") {
           word += "।";
+        } else if (currentLanguage === "japanese") {
+          word += "。";
         } else {
           word += ".";
         }
@@ -91,12 +93,16 @@ export async function punctuateWord(
           word += "؟";
         } else if (currentLanguage === "greek") {
           word += ";";
+        } else if (currentLanguage === "japanese") {
+          word += "？";
         } else {
           word += "?";
         }
       } else {
         if (currentLanguage === "french") {
           word = "!";
+        } else if (currentLanguage === "japanese") {
+          word += "！";
         } else {
           word += "!";
         }
@@ -132,6 +138,8 @@ export async function punctuateWord(
       const bracket = brackets[index];
 
       word = `${bracket[0]}${word}${bracket[1]}`;
+    } else if (currentLanguage === "japanese") {
+      word = `（${word}）`;
     } else {
       word = `(${word})`;
     }
@@ -182,6 +190,8 @@ export async function punctuateWord(
       currentLanguage === "kurdish"
     ) {
       word += "،";
+    } else if (currentLanguage === "japanese") {
+      word += "、";
     } else {
       word += ",";
     }
@@ -261,30 +271,24 @@ function getFunboxWordsFrequency():
   return undefined;
 }
 
-async function getFunboxSection(limit: number): Promise<string[]> {
+async function getFunboxSection(): Promise<string[]> {
   const ret = [];
   const sectionFunbox = FunboxList.get(Config.funbox).find(
     (f) => f.functions?.pullSection
   );
   if (sectionFunbox?.functions?.pullSection) {
-    while (ret.length < limit) {
-      const section = await sectionFunbox.functions.pullSection(
-        Config.language
-      );
+    const section = await sectionFunbox.functions.pullSection(Config.language);
 
-      if (section === false) {
-        UpdateConfig.toggleFunbox(sectionFunbox.name);
-        throw new Error("Failed to pull section");
+    if (section === false || section === undefined) {
+      UpdateConfig.toggleFunbox(sectionFunbox.name);
+      throw new Error("Failed to pull section");
+    }
+
+    for (const word of section.words) {
+      if (ret.length >= Config.words && Config.mode === "words") {
+        break;
       }
-
-      if (section === undefined) continue;
-
-      for (const word of section.words) {
-        if (ret.length >= Config.words && Config.mode === "words") {
-          break;
-        }
-        ret.push(word);
-      }
+      ret.push(word);
     }
   }
   return ret;
@@ -329,7 +333,7 @@ function applyLazyModeToWord(
   language: MonkeyTypes.LanguageObject
 ): string {
   if (Config.lazyMode === true && !language.noLazyMode) {
-    word = LazyMode.replaceAccents(word, language.accents);
+    word = LazyMode.replaceAccents(word, language.additionalAccents);
   }
   return word;
 }
@@ -432,6 +436,8 @@ export class WordGenError extends Error {
 
 let currentQuote: string[] = [];
 
+let isCurrentlyUsingFunboxSection = false;
+
 export async function generateWords(
   language: MonkeyTypes.LanguageObject
 ): Promise<{
@@ -449,6 +455,13 @@ export async function generateWords(
     words: [],
     sectionIndexes: [],
   };
+
+  const sectionFunbox = FunboxList.get(Config.funbox).find(
+    (f) => f.functions?.pullSection
+  );
+  isCurrentlyUsingFunboxSection =
+    sectionFunbox?.functions?.pullSection !== undefined;
+
   const limit = getWordsLimit();
 
   const wordOrder = getQuoteOrCustomModeWordOrder();
@@ -478,22 +491,6 @@ export async function generateWords(
     Config.mode === "words" ||
     Config.mode === "custom"
   ) {
-    const funboxSection = await getFunboxSection(limit);
-    if (funboxSection.length > 0) {
-      const indexes = [];
-      for (let i = 0; i < funboxSection.length; i++) {
-        indexes.push(i);
-      }
-      const ret = [];
-      for (const word of funboxSection) {
-        ret.push(applyLazyModeToWord(applyFunboxesToWord(word), language));
-      }
-      return {
-        words: ret,
-        sectionIndexes: indexes,
-      };
-    }
-
     let stop = false;
     let i = 0;
     while (stop === false) {
@@ -662,7 +659,10 @@ export async function getNextWord(
   const previousWord2Raw = previousWord2
     .replace(/[.?!":\-,']/g, "")
     .toLowerCase();
+
   if (currentSection.length === 0) {
+    const funboxSection = await getFunboxSection();
+
     if (Config.mode === "quote") {
       randomWord = currentQuote[wordIndex];
     } else if (
@@ -694,6 +694,8 @@ export async function getNextWord(
         regenerationCount++;
         randomWord = wordset.randomWord(funboxFrequency);
       }
+    } else if (isCurrentlyUsingFunboxSection) {
+      randomWord = funboxSection.join(" ");
     } else {
       let regenarationCount = 0; //infinite loop emergency stop button
       let firstAfterSplit = randomWord.split(" ")[0].toLowerCase();
@@ -749,7 +751,8 @@ export async function getNextWord(
     !Config.punctuation &&
     !Config.language.startsWith("german") &&
     !Config.language.startsWith("swiss_german") &&
-    !Config.language.startsWith("code")
+    !Config.language.startsWith("code") &&
+    !isCurrentlyUsingFunboxSection
   ) {
     randomWord = randomWord.toLowerCase();
   }
@@ -763,7 +766,11 @@ export async function getNextWord(
     randomWord = randomWord.replace(/ß/g, "ss");
   }
 
-  if (Config.punctuation && !language.originalPunctuation === true) {
+  if (
+    Config.punctuation &&
+    !language.originalPunctuation === true &&
+    !isCurrentlyUsingFunboxSection
+  ) {
     randomWord = await punctuateWord(
       previousWord,
       randomWord,

@@ -73,14 +73,14 @@ export async function getResults(
       : req.ctx.configuration.results.limits.regularUser;
 
   const onOrAfterTimestamp = parseInt(
-    req.query.onOrAfterTimestamp as string,
+    req.query["onOrAfterTimestamp"] as string,
     10
   );
   let limit = stringToNumberOrDefault(
-    req.query.limit as string,
+    req.query["limit"] as string,
     Math.min(req.ctx.configuration.results.maxBatchSize, maxLimit)
   );
-  const offset = stringToNumberOrDefault(req.query.offset as string, 0);
+  const offset = stringToNumberOrDefault(req.query["offset"] as string, 0);
 
   //check if premium features are disabled and current call exceeds the limit for regular users
   if (

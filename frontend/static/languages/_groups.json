@@ -252,7 +252,16 @@
   },
   {
     "name": "romanian",
-    "languages": ["romanian"]
+    "languages": [
+      "romanian",
+      "romanian_1k",
+      "romanian_5k",
+      "romanian_10k",
+      "romanian_25k",
+      "romanian_50k",
+      "romanian_100k",
+      "romanian_200k"
+    ]
   },
   {
     "name": "finnish",
@@ -411,7 +420,11 @@
   },
   {
     "name": "belarusian",
-    "languages": ["belarusian_1k"]
+    "languages": ["belarusian", "belarusian_1k"]
+  },
+  {
+    "name": "belarusian_lacinka",
+    "languages": ["belarusian_lacinka", "belarusian_lacinka_1k"]
   },
   {
     "name": "azerbaijani",
@@ -475,6 +488,10 @@
   {
     "name": "pashto",
     "languages": ["pashto"]
+  },
+  {
+    "name": "euskera",
+    "languages": ["euskera"]
   },
   {
     "name": "lorem_ipsum",
