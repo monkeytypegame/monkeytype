@@ -1181,5 +1181,11 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
-  }
+  },
+  {
+    "name": "coder",
+    "bgColor": "#3D3B40",
+    "mainColor": "#525CEB",
+    "subColor": "#646367"
+}
 ]
