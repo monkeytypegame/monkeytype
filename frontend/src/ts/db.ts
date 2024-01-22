@@ -267,9 +267,10 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     if (result.tags === undefined) result.tags = [];
   });
 
-  if (dbSnapshot.results !== undefined) {
+  if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {
     //merge
-    const oldestTimestamp = lastElementFromArray(dbSnapshot.results).timestamp;
+    const oldestTimestamp = lastElementFromArray(dbSnapshot.results)
+      ?.timestamp as number;
     const resultsWithoutDuplicates = results.filter(
       (it) => it.timestamp < oldestTimestamp
     );

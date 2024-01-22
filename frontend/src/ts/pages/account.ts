@@ -761,7 +761,7 @@ async function fillContent(): Promise<void> {
     // add last point to pb
     pb.push({
       x: 1,
-      y: Misc.lastElementFromArray(pb).y,
+      y: Misc.lastElementFromArray(pb)?.y as number,
     });
 
     const avgTen = [];

@@ -1747,8 +1747,8 @@ export function numberWithSpaces(x: number): string {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
-export function lastElementFromArray<T>(array: T[]): T {
-  return array[array.length - 1] as T;
+export function lastElementFromArray<T>(array: T[]): T | undefined {
+  return array[array.length - 1];
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES
