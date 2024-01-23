@@ -97,13 +97,11 @@ body::before {
   --c-dot--error: var(--colorful-error-color);
 }
 
-#wordsWrapper .word:not(.active) letter.correct,
-#wordsWrapper .word:not(.active) letter.incorrect {
+#wordsWrapper .word:has(~ .active) letter {
   animation: toDust 200ms ease-out 0ms 1 forwards;
 }
 
-#wordsWrapper .word:not(.active) letter.correct::after,
-#wordsWrapper .word:not(.active) letter.incorrect::after {
+#wordsWrapper .word:has(~ .active) letter::after {
   animation: fadeIn 100ms ease-in 100ms 1 forwards;
 }
 
@@ -123,7 +121,7 @@ body::before {
   opacity: 0;
 }
 
-#wordsWrapper .word letter.correct::after {
+#wordsWrapper .word:has(~ .active) letter::after {
   background: var(--c-dot);
 }
 

@@ -130,8 +130,9 @@ export async function update(
     const lastResult = results?.[0];
 
     const dayInMilis = 1000 * 60 * 60 * 24;
-    const milisOffset = (profile.streakHourOffset ?? 0) * 3600000;
-    let target = Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset;
+
+    let target =
+      Misc.getCurrentDayTimestamp(profile.streakHourOffset) + dayInMilis;
     if (target < Date.now()) {
       target += dayInMilis;
     }
@@ -140,10 +141,11 @@ export async function update(
     console.debug("Streak hour offset");
     console.debug("date.now()", Date.now(), new Date(Date.now()));
     console.debug("dayInMilis", dayInMilis);
-    console.debug("milisOffset", milisOffset);
     console.debug(
       "difTarget",
-      new Date(Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset)
+      new Date(
+        Misc.getCurrentDayTimestamp(profile.streakHourOffset) + dayInMilis
+      )
     );
     console.debug("timeDif", timeDif);
     console.debug(

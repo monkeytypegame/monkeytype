@@ -18,8 +18,8 @@ import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
 async function bootServer(port: number): Promise<Server> {
   try {
     Logger.info(`Starting server version ${version}`);
-    Logger.info(`Starting server in ${process.env.MODE} mode`);
-    Logger.info(`Connecting to database ${process.env.DB_NAME}...`);
+    Logger.info(`Starting server in ${process.env["MODE"]} mode`);
+    Logger.info(`Connecting to database ${process.env["DB_NAME"]}...`);
     await db.connect();
     Logger.success("Connected to database");
 
@@ -81,6 +81,6 @@ async function bootServer(port: number): Promise<Server> {
   });
 }
 
-const PORT = parseInt(process.env.PORT ?? "5005", 10);
+const PORT = parseInt(process.env["PORT"] ?? "5005", 10);
 
 bootServer(PORT);

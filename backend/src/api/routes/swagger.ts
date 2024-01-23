@@ -24,8 +24,8 @@ function addSwaggerMiddlewares(app: Application): void {
       swaggerSpec: internalSwaggerSpec,
       onAuthenticate: (_req, username, password) => {
         return (
-          username === process.env.STATS_USERNAME &&
-          password === process.env.STATS_PASSWORD
+          username === process.env["STATS_USERNAME"] &&
+          password === process.env["STATS_PASSWORD"]
         );
       },
     })
