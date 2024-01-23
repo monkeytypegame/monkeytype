@@ -29,31 +29,31 @@
         "text": "val numbers = listOf(1, 2, 3, 4, 5)\nval doubled = numbers.map { it * 2 }",
         "source": " ChatGPT - List Manipulation",
         "id": 4,
-        "length": 76
+        "length": 72
       },
       {
         "text": "val x = 10\nif (x > 5) {\n\tprintln(\"x is greater than 5\")\n} else {\n\tprintln(\"x is not greater than 5\")\n}",
         "source": "ChatGPT - Conditional Statement",
         "id": 5,
-        "length": 124
+        "length": 102
       },
       {
         "text": "val day = 4\n\nval result = when (day) {\n\t1 -> \"Monday\"\n\t2 -> \"Tuesday\"\n\t3 -> \"Wednesday\"\n\t4 -> \"Thursday\"\n\t5 -> \"Friday\"\n\t6 -> \"Saturday\"\n\t7 -> \"Sunday\"\n\telse -> \"Invalid day.\"\n}\nprintln(result)",
         "source": "W3Schools - When Statement",
         "id": 6,
-        "length": 228
+        "length": 193
       },
       {
         "text": "val cars = arrayOf(\"Volvo\", \"BMW\", \"Ford\", \"Mazda\")\nfor (x in cars) {\n\tprintln(x)\n}",
         "source": "W3Schools - For Loop",
         "id": 7,
-        "length": 84
+        "length": 83
       },
       {
         "text": "fun fibonacci(n: Int): Long {\n\treturn if (n <= 1) {\n\t\tn.toLong()\n\t} else {\n\t\tvar a = 0L\n\t\tvar b = 1L\n\t\tvar result = 0L\n\n\t\tfor (i in 2..n) {\n\t\t\tresult = a + b\n\t\t\ta = b\n\t\t\tb = result\n\t\t}\n\n\t\tresult\n\t\t}\n\t}\n",
         "source": "ChatGPT - Fibonacci",
         "id": 8,
-        "length": 264
+        "length": 202
       }
   ]
 }
