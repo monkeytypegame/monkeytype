@@ -68,7 +68,8 @@ import * as Misc from "../utils/misc";
 class ChartWithUpdateColors<
   TType extends ChartType = ChartType,
   TData = DefaultDataPoint<TType>,
-  TLabel = unknown
+  TLabel = unknown,
+  DatasetIds = never
 > extends Chart<TType, TData, TLabel> {
   constructor(
     item: ChartItem,
@@ -80,13 +81,26 @@ class ChartWithUpdateColors<
   updateColors(): void {
     updateColors(this);
   }
+
+  getDataset(id: DatasetIds): ChartDataset<TType, TData> {
+    //@ts-ignore
+    return this.data.datasets?.find((x) => x.yAxisID === id);
+  }
+
+  getScale(
+    id: DatasetIds extends never ? never : "x" | DatasetIds
+  ): DatasetIds extends never ? never : CartesianScaleOptions {
+    //@ts-ignore
+    return this.options.scales[id];
+  }
 }
 
 let prevTi: TooltipItem<"line" | "scatter"> | undefined;
 export const result: ChartWithUpdateColors<
   "line" | "scatter",
   number[],
-  string
+  string,
+  "wpm" | "raw" | "error"
 > = new ChartWithUpdateColors(
   document.querySelector("#wpmChart") as HTMLCanvasElement,
   {
