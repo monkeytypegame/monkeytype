@@ -261,7 +261,7 @@ function authenticateGithubWebhook(): Handler {
     //authorize github webhook
     const { "x-hub-signature-256": authHeader } = req.headers;
 
-    const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
+    const webhookSecret = process.env["GITHUB_WEBHOOK_SECRET"];
 
     try {
       if (!webhookSecret) {

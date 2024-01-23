@@ -1,5 +1,3 @@
-type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
-
 declare namespace MonkeyTypes {
   type Configuration = import("@backend/types/shared").Configuration;
   type ValidModeRule = import("@backend/types/shared").ValidModeRule;
@@ -254,16 +252,16 @@ declare namespace MonkeyTypes {
     | `wordOrder:${FunboxWordOrder}`;
 
   interface FunboxFunctions {
-    getWord?: (wordset?: Misc.Wordset, wordIndex?: number) => string;
+    getWord?: (wordset?: Wordset, wordIndex?: number) => string;
     punctuateWord?: (word: string) => string;
-    withWords?: (words?: string[]) => Promise<Misc.Wordset>;
+    withWords?: (words?: string[]) => Promise<Wordset>;
     alterText?: (word: string) => string;
     applyConfig?: () => void;
     applyGlobalCSS?: () => void;
     clearGlobal?: () => void;
     rememberSettings?: () => void;
     toggleScript?: (params: string[]) => void;
-    pullSection?: (language?: string) => Promise<Misc.Section | false>;
+    pullSection?: (language?: string) => Promise<Section | false>;
     handleSpace?: () => void;
     handleChar?: (char: string) => string;
     isCharCorrect?: (char: string, originalChar: string) => boolean;
@@ -552,7 +550,6 @@ declare namespace MonkeyTypes {
   }
 
   interface LeaderboardEntry {
-    uid: string;
     difficulty: string;
     timestamp: number;
     language: string;
@@ -692,11 +689,13 @@ declare namespace MonkeyTypes {
     } & Record<string, boolean>;
   }
 
-  type Group<G extends keyof ResultFilters> = G extends G
+  type Group<G extends keyof ResultFilters = keyof ResultFilters> = G extends G
     ? ResultFilters[G]
     : never;
 
-  type Filter<G extends Group> = G extends G ? keyof ResultFilters[G] : never;
+  type Filter<G extends Group = Group> = G extends keyof ResultFilters
+    ? keyof ResultFilters[G]
+    : never;
 
   interface TimerStats {
     dateNow: number;
@@ -912,9 +911,9 @@ declare namespace MonkeyTypes {
   type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
 
   interface TypingSpeedUnitSettings {
-    fromWpm: (number) => number;
-    toWpm: (number) => number;
-    convertWithUnitSuffix: (number, boolean) => string;
+    fromWpm: (number: number) => number;
+    toWpm: (number: number) => number;
+    convertWithUnitSuffix: (number: number, withDecimals: boolean) => string;
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;

@@ -16,7 +16,7 @@ declare namespace Ape {
   type HttpClientMethod = (
     endpoint: string,
     config?: RequestOptions
-  ) => Promise<HttpClientResponse>;
+  ) => Promise<HttpClientResponse<unknown>>;
 
   interface HttpClient {
     get: HttpClientMethod;
