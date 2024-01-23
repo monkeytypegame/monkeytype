@@ -10,7 +10,8 @@ import * as Skeleton from "../popups/skeleton";
 function reset(): void {
   $(".pageAbout .contributors").empty();
   $(".pageAbout .supporters").empty();
-  ChartController.globalSpeedHistogram.data.datasets[0].data = [];
+
+  ChartController.globalSpeedHistogram.getDataset("count").data = [];
   ChartController.globalSpeedHistogram.updateColors();
 }
 
@@ -36,7 +37,8 @@ function updateStatsAndHistogram(): void {
     );
     ChartController.globalSpeedHistogram.data.labels =
       bucketedSpeedStats.labels;
-    ChartController.globalSpeedHistogram.data.datasets[0].data =
+
+    ChartController.globalSpeedHistogram.getDataset("count").data =
       bucketedSpeedStats.data;
   }
   if (typingStatsResponseData) {
