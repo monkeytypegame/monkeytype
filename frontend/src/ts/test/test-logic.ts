@@ -348,7 +348,6 @@ export function restart(options = {} as RestartOptions): void {
       } else {
         TestConfig.show();
       }
-      }
       TestConfig.show();
       AdController.destroyResult();
 
@@ -450,7 +449,7 @@ export async function init(): Promise<void> {
 
   testReinitCount++;
   if (testReinitCount >= 5) {
-      //todo figure out what to do if this happens in tribe
+    //todo figure out what to do if this happens in tribe
     TestUI.setTestRestarting(false);
     Notifications.add(
       "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
