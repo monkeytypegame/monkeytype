@@ -48,7 +48,7 @@ const requireDailyLeaderboardsEnabled = validateConfiguration({
 
 router.get(
   "/",
-  authenticateRequest({ isPublic: true, acceptApeKeys: true }),
+  authenticateRequest({ isPublic: true }),
   withApeRateLimiter(RateLimit.leaderboardsGet),
   validateRequest({
     query: LEADERBOARD_VALIDATION_SCHEMA_WITH_LIMIT,

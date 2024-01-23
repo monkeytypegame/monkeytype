@@ -74,7 +74,7 @@
       "id": 12
     },
     {
-      "text": "Es un hombre, pero podría ser otra cosa: una catástrofe, un rugido, el viento. Sentado en una butaca baja cubierta por una manta de lana, viste camisa de jean, un suéter beige que tiene varios agujeros, un pantalón de corderoy. A sus espaldas, una puerta vidriada separa la sala de un balcón en el que se ven dos sillas y, más allá, un terreno cubierto por arbustos. Después, el océano Pacífico, las olas que muerden rocas como corazones negros.",
+      "text": "Es un hombre, pero podría ser otra cosa: una catástrofe, un rugido, el viento. Sentado en una butaca baja cubierta por una manta de lana, viste camisa de jean, un suéter beige que tiene varios agujeros, un pantalón de corderoy. A sus espaldas, una puerta vidriada separa la sala de un balcón en el que se ven dos sillas y, más allá, un terreno cubierto por arbustos. Después, el Océano Pacífico, las olas que muerden rocas como corazones negros.",
       "source": "Leila Guerriero, Buscando a Nicanor",
       "length": 445,
       "id": 13
@@ -176,9 +176,9 @@
       "id": 29
     },
     {
-      "text": "-No se puede decir señores apus -lo amonestó Dionisio-. Porque apu quiere decir señor en quechua. Y toda repetición es una ofensa, señor cabo, como dice el vals.\\n-Tampoco se debe de decir señor cabo -replicó Lituma-. Cabo o señor, pero las dos cosas juntas es tomadura de pelo. Aunque, usted siempre está tomándole el pelo a la gente.",
+      "text": "-No se puede decir señores apus -lo amonestó Dionisio-. Porque apu quiere decir señor en quechua. Y toda repetición es una ofensa, señor cabo, como dice el vals.\n-Tampoco se debe de decir señor cabo -replicó Lituma-. Cabo o señor, pero las dos cosas juntas es tomadura de pelo. Aunque, usted siempre está tomándole el pelo a la gente.",
       "source": "Mario Vargas Llosa, Lituma en los Andes",
-      "length": 335,
+      "length": 334,
       "id": 30
     },
     {
@@ -186,12 +186,6 @@
       "source": "Continuidad de los Parques, Julio Cortázar, 1964",
       "length": 416,
       "id": 31
-    },
-    {
-      "text": "Discúlpame, ¿vos querés que nos caguemos bien a trompadas?",
-      "source": "Gerónimo Benavides \"Momo\"",
-      "length": 58,
-      "id": 32
     },
     {
       "text": "Sin embargo, frente a la opresión, el saqueo y el abandono, nuestra respuesta es la vida. Ni los diluvios ni las pestes, ni las hambrunas ni los cataclismos, ni siquiera las guerras eternas a través de los siglos y los siglos han conseguido reducir la ventaja tenaz de la vida sobre la muerte.",
@@ -314,12 +308,6 @@
       "id": 52
     },
     {
-      "text": "GitHub es una compañía sin fines de lucro que ofrece un servicio de hosting de repositorios almacenados en la nube. Esencialmente, hace que sea más fácil para individuos y equipos usar Git como la versión de control y colaboración.",
-      "source": "https://kinsta.com/es/base-de-conocimiento/que-es-github/",
-      "length": 231,
-      "id": 53
-    },
-    {
       "text": "Estar en paz consigo mismo es el medio más seguro de comenzar a estarlo con los demás.",
       "source": "Fray Luis de Leon",
       "length": 86,
@@ -338,9 +326,9 @@
       "id": 56
     },
     {
-      "text": "Me pregunto si las estrellas se iluminan con el fin de que algún día, cada uno pueda encontrar la suya.",
+      "text": "Me pregunto si las estrellas se iluminan con el fin de que, algún día, cada uno pueda encontrar la suya.",
       "source": "El Principito",
-      "length": 103,
+      "length": 104,
       "id": 57
     },
     {
@@ -525,7 +513,7 @@
     },
     {
       "text": "No estimes el dinero en más ni en menos de lo que vale, porque es un buen siervo y un mal amo.",
-      "source": "Alejandro Dumas (hijo)",
+      "source": "Alejandro Dumas",
       "length": 94,
       "id": 89
     },
@@ -620,12 +608,6 @@
       "id": 104
     },
     {
-      "text": "Control, aquí Cola Roja Cinco. Nos acercamos al punto de lanzamiento...",
-      "source": "Counter-Strike: Deleted Scenes",
-      "length": 71,
-      "id": 105
-    },
-    {
       "text": "Hay un axioma de derecho de gran profundidad: A menos que el pensamiento del malo nazca en una organización degenerada, la naturaleza humana repele el crimen, sin embargo, la civilización nos ha dado necesidades, vicios, apetitos que a veces ahogan nuestros buenos instintos y nos conducen al mal.",
       "source": "Alexandre Dumas",
       "length": 297,
@@ -680,9 +662,9 @@
       "id": 114
     },
     {
-      "text": "Mi nombre es Yoshikage Kira. Tengo 33 años de edad. Mi casa está en la sección noreste de Morioh, donde están todas las villas, y no estoy casado. Trabajo como empleado para los grandes almacenes Kame Yu y llego a casa todos los días a las 8 p.m. como muy tarde. No fumo, pero bebo de vez en cuando. Me acuesto a las 11 p. m. y me aseguro de dormir ocho horas, pase lo que pase. Después de tomar un vaso de leche tibia y hacer unos veinte minutos de estiramientos antes de acostarme, no suelo tener problemas para dormir hasta la mañana. Al igual que un bebé, me despierto sin fatiga ni estrés por la mañana.",
+      "text": "Mi nombre es Yoshikage Kira. Tengo 33 años de edad. Mi casa está en la sección noreste de Morioh, donde están todas las villas, y no estoy casado. Trabajo como empleado para los grandes almacenes Kame Yu y llego a casa todos los días a las 8 p.m. como muy tarde. No fumo, pero bebo de vez en cuando. Me acuesto a las 11 p.m. y me aseguro de dormir ocho horas, pase lo que pase. Después de tomar un vaso de leche tibia y hacer unos veinte minutos de estiramientos antes de acostarme, no suelo tener problemas para dormir hasta la mañana. Al igual que un bebé, me despierto sin fatiga ni estrés por la mañana.",
       "source": "Yoshikage Kira - Jojo's Bizzare Adventure",
-      "length": 608,
+      "length": 607,
       "id": 115
     },
     {
@@ -696,12 +678,6 @@
       "source": "Naruto Uzumaki - Naruto Shippuden",
       "length": 464,
       "id": 117
-    },
-    {
-      "text": "Mi nombre es Sasuke Uchiha me disgustan muchas cosas y no me gusta nada en particular, lo que yo tengo no es un sueño porque va a convertirse en realidad, voy a restablecer mi clan y a destruir a alguien en específico.",
-      "source": "Sasuke Uchiha - Naruto",
-      "length": 218,
-      "id": 118
     },
     {
       "text": "La voluntad heredada, la era del destino y los sueños de la gente. Esas son cosas que nunca serán detenidas. Siempre y cuando la gente siga persiguiendo el significado de la libertad, nadie podrá quitárselas nunca... ¡Esas cosas nunca dejarán de existir!",
@@ -782,12 +758,6 @@
       "id": 131
     },
     {
-      "text": "Hemos cambiado las cartas por mensajes de texto, las serenatas por links de spotify, nuestras palabras de amor por tiktoks que dicen \"amarnos\". ¿Dónde ha quedado el verdadero romance? Debemos volver a sentir de manera tangible, sentirnos de cerca y no a través de una pantalla. Debemos aprender a amarnos de verdad.",
-      "source": "Eduardo Josué Gómez Moreira",
-      "length": 315,
-      "id": 132
-    },
-    {
       "text": "Emerge tu recuerdo de la noche en que estoy. El río anuda al mar su lamento obstinado. Abandonado como los muelles en el alba. Es la hora de partir, oh abandonado! Sobre mi corazón llueven frías corolas. Oh sentina de escombros, feroz cueva de náufragos! En ti se acumularon las guerras y los vuelos. De ti alzaron las alas los pájaros del canto. Todo te lo tragaste, como la lejanía. Como el mar, como el tiempo. Todo en ti fue naufragio!",
       "source": "Pablo Neruda - La canción desesperada",
       "length": 439,
@@ -840,6 +810,132 @@
       "source": "Pablo Escobar",
       "length": 70,
       "id": 141
+    },
+    {
+      "text": "El verdadero modo de vengarse de un enemigo, es no asemejársele.",
+      "source": "Marco Aurelio",
+      "length": 64,
+      "id": 142
+    },
+    {
+      "text": "Si no conviene, no lo hagas; si no es verdad, no lo digas. Sé dueño de tus inclinaciones.",
+      "source": "Marco Aurelio",
+      "length": 89,
+      "id": 143
+    },
+    {
+      "text": "Todas las cosas se hallan entrelazadas entre sí y su común vínculo es sagrado y casi ninguna es extraña a la otra, porque todas están coordinadas y contribuyen al orden del mismo mundo.",
+      "source": "Marco Aurelio",
+      "length": 185,
+      "id": 144
+    },
+    {
+      "text": "Me llamo Maximo Décimo Meridio, Comandante de los ejércitos del Norte, General de las legiones felix, Leal servidor del verdadero emperador Marco Aurelio, Padre de un hijo asesinado, Marido de una mujer asesinada y alcanzaré mi venganza en esta vida o en la otra.",
+      "source": "Maximo Décimo Meridio - Gladiator",
+      "length": 263,
+      "id": 145
+    },
+    {
+      "text": "Podrás amenazarme, encadenarme, encerrarme o exiliarme. Pero yo te recuerdo que ni Zeus podría quitarme el poder de decidir mi actitud.",
+      "source": "Epicteto",
+      "length": 135,
+      "id": 146
+    },
+    {
+      "text": "Nada, a mi modo de ver, es una mejor prueba de una mente bien ordenada que la capacidad de un hombre de detenerse justo donde está y pasar algún tiempo en su propia compañía.",
+      "source": "Seneca",
+      "length": 174,
+      "id": 147
+    },
+    {
+      "text": "Por mucho que lo intentes, por mucho que te esfuerces, es posible que todo salga mal. De hecho, es probable que la mayor parte de las cosas que creías que iban a salir de una manera, salgan de otra. Porque la realidad va su aire. No puedes gobernarla tanto como crees.",
+      "source": "Así es la put* vida - Jordi Wild",
+      "length": 268,
+      "id": 148
+    },
+    {
+      "text": "Este es mi gusto, no un buen gusto, no un mal gusto, pero sí mi gusto, del cual no me avergüenzo ni lo oculto. Este es mi camino, ¿dónde está el suyo?",
+      "source": "Friedrich Nietzsche",
+      "length": 150,
+      "id": 149
+    },
+    {
+      "text": "Errar es humano, pero más lo es culpar de ello a otros",
+      "source": "Baltasar Gracián",
+      "length": 54,
+      "id": 150
+    },
+    {
+      "text": "El pesimista se queja del viento, el optimista espera que este cambie, pero el realista ajusta las velas.",
+      "source": "William Wars",
+      "length": 105,
+      "id": 151
+    },
+    {
+      "text": "Si haces lo que siempre has hecho, obtendrás lo que siempre has conseguido. No es lo que hacemos de vez en cuando lo que da forma a nuestras vidas, sino lo que hacemos constantemente.",
+      "source": "Tony Robbins",
+      "length": 183,
+      "id": 152
+    },
+    {
+      "text": "Algo malo debe de tener el trabajo o los ricos ya lo habrían acaparado.",
+      "source": "Cantinflas",
+      "length": 71,
+      "id": 153
+    },
+    {
+      "text": "La vida es como montar en bicicleta. Para mantener el equilibrio tienes que avanzar.",
+      "source": "Albert Einstein",
+      "length": 84,
+      "id": 154
+    },
+    {
+      "text": "Qué maravilloso es que nadie tenga que esperar ni un segundo para empezar a mejorar el mundo.",
+      "source": "Anne Frank",
+      "length": 93,
+      "id": 155
+    },
+    {
+      "text": "La felicidad es interior, no exterior; por lo tanto, no depende de lo que tenemos, sino de lo que somos.",
+      "source": "Pablo Neruda",
+      "length": 104,
+      "id": 156
+    },
+    {
+      "text": "Hemos cambiado las cartas por mensajes de texto, las flores por fotos de ellas y la hermosa sensación de acariciar nuestra tez uno al otro, por una videollamada. ¿Dónde ha quedado el verdadero romance? ¿Dónde ha quedado la verdadera forma del amor? Expresar y sentir de manera tangible es lo que necesitamos.",
+      "source": "Eduardo Gómez",
+      "length": 308,
+      "id": 157
+    },
+    {
+      "text": "De hecho son varias las canciones que hablan de ti y ni si quiera sé porqué escribo esto si apenas nos conocemos, sin embargo, he estado tan cerca del cielo cuando tus fauces conocí. Estoy muy sonriente, creo que debería dejar de pensar en ti.",
+      "source": "Eduardo Gómez - No solo una",
+      "length": 243,
+      "id": 158
+    },
+    {
+      "text": "Por tus ojos verdes yo me perdería, sirena de aquellas que Ulises, sagaz, amaba y temía. Por tus ojos verdes yo me perdería. Por tus ojos verdes en lo que, fugaz, brillar suele, a veces, la melancolía; por tus ojos verdes tan llenos de paz, misteriosos como la esperanza mía; por tus ojos verdes, conjuro eficaz, yo me salvaría.",
+      "source": "Amado Nervo - Madrigal",
+      "length": 328,
+      "id": 159
+    },
+    {
+      "text": "A veces tengo ganas de estar muerto para sentir, bajo la tierra húmeda de mis jugos, que me crece una flor rompiéndome el pecho, una flor, y decir: Esta flor, para usted.",
+      "source": "Nicolás Guillén - A veces",
+      "length": 170,
+      "id": 160
+    },
+    {
+      "text": "A veces mis latidos son muy fuertes, solo a veces lejos de tu ausencia.",
+      "source": "Eduardo Gómez - Cosas Que Nunca Te Dije",
+      "length": 71,
+      "id": 161
+    },
+    {
+      "text": "Dentro de mi echó raíces la idea de ser alguien para ti, ser la persona con la que mirarías las estrellas tiritar, cantarte mis canciones de amor y demostrarte quien soy. Como una flor inconcebible has crecido tú, echando raíces imaginarias.",
+      "source": "Eduardo Gómez - Cosas Que Nunca Te Dije",
+      "length": 241,
+      "id": 162
     }
   ]
 }

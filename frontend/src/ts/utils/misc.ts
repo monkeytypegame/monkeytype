@@ -1,6 +1,7 @@
 import * as Loader from "../elements/loader";
 import { normal as normalBlend } from "color-blend";
 import * as Random from "../utils/random";
+import { envConfig } from "../constants/env-config";
 
 async function fetchJson<T>(url: string): Promise<T> {
   try {
@@ -1362,7 +1363,9 @@ export async function getDiscordAvatarUrl(
   try {
     const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
 
-    const response = await fetch(avatarUrl);
+    const response = await fetch(avatarUrl, {
+      method: "HEAD",
+    });
     if (!response.ok) {
       return null;
     }
@@ -1493,12 +1496,8 @@ export function loadCSS(href: string, prepend = false): void {
   }
 }
 
-export function isLocalhost(): boolean {
-  return (
-    location.hostname === "localhost" ||
-    location.hostname === "127.0.0.1" ||
-    location.hostname === ""
-  );
+export function isDevEnvironment(): boolean {
+  return envConfig.isDevelopment;
 }
 
 export function getBinary(): string {
@@ -1525,25 +1524,37 @@ export async function checkIfLanguageSupportsZipf(
   return "unknown";
 }
 
-export function getStartOfDayTimestamp(timestamp: number): number {
-  return timestamp - (timestamp % 86400000);
-}
-
-export function getCurrentDayTimestamp(): number {
+export function getCurrentDayTimestamp(hourOffset = 0): number {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
   const currentTime = Date.now();
-  return getStartOfDayTimestamp(currentTime);
+  return getStartOfDayTimestamp(currentTime, offsetMilis);
 }
 
-export function isYesterday(timestamp: number): boolean {
-  const yesterday = getStartOfDayTimestamp(Date.now() - 86400000);
-  const date = getStartOfDayTimestamp(timestamp);
+const MILISECONDS_IN_HOUR = 3600000;
+const MILLISECONDS_IN_DAY = 86400000;
+
+export function getStartOfDayTimestamp(
+  timestamp: number,
+  offsetMilis = 0
+): number {
+  return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
+}
+
+export function isYesterday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const yesterday = getStartOfDayTimestamp(
+    Date.now() - MILLISECONDS_IN_DAY,
+    offsetMilis
+  );
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return yesterday === date;
 }
 
-export function isToday(timestamp: number): boolean {
-  const today = getStartOfDayTimestamp(Date.now());
-  const date = getStartOfDayTimestamp(timestamp);
+export function isToday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const today = getStartOfDayTimestamp(Date.now(), offsetMilis);
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return today === date;
 }
@@ -1666,6 +1677,58 @@ export function typedKeys<T extends object>(
 //https://ricardometring.com/javascript-replace-special-characters
 export function replaceSpecialChars(str: string): string {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Remove accents
+}
+
+export function reloadAfter(seconds: number): void {
+  setTimeout(() => {
+    window.location.reload();
+  }, seconds * 1000);
+}
+
+export function updateTitle(title?: string): void {
+  const local = isDevEnvironment() ? "localhost - " : "";
+
+  if (!title) {
+    document.title =
+      local + "Monkeytype | A minimalistic, customizable typing test";
+  } else {
+    document.title = local + title;
+  }
+}
+
+export function getNumberWithMagnitude(num: number): {
+  rounded: number;
+  roundedTo2: number;
+  orderOfMagnitude: string;
+} {
+  const units = [
+    "",
+    "thousand",
+    "million",
+    "billion",
+    "trillion",
+    "quadrillion",
+    "quintillion",
+  ];
+  let unitIndex = 0;
+  let roundedNum = num;
+
+  while (roundedNum >= 1000) {
+    roundedNum /= 1000;
+    unitIndex++;
+  }
+
+  const unit = units[unitIndex];
+
+  return {
+    rounded: Math.round(roundedNum),
+    roundedTo2: roundTo2(roundedNum),
+    orderOfMagnitude: unit,
+  };
+}
+
+export function numberWithSpaces(x: number): string {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

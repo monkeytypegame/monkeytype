@@ -1,5 +1,5 @@
 import Config from "../config";
-import Howler, { Howl } from "howler";
+import { Howler, Howl } from "howler";
 import * as ConfigEvent from "../observables/config-event";
 import {
   createErrorMessage,
@@ -12,17 +12,52 @@ import * as Notifications from "../elements/notifications";
 
 interface ClickSounds {
   [key: string]: {
-    sounds: Howler.Howl[];
+    sounds: Howl[];
     counter: number;
   }[];
 }
 
-let errorSound: Howler.Howl | null = null;
+interface ErrorSounds {
+  [key: string]: {
+    sounds: Howl[];
+    counter: number;
+  }[];
+}
+
+let errorSounds: ErrorSounds | null = null;
 let clickSounds: ClickSounds | null = null;
 
 function initErrorSound(): void {
-  if (errorSound !== null) return;
-  errorSound = new Howl({ src: ["../sound/error.wav"] });
+  if (errorSounds !== null) return;
+  errorSounds = {
+    1: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/error1/error1_1.wav" }),
+          new Howl({ src: "../sound/error1/error1_1.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+    2: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/error2/error2_1.wav" }),
+          new Howl({ src: "../sound/error2/error2_1.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+    3: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/error3/error3_1.wav" }),
+          new Howl({ src: "../sound/error3/error3_1.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+  };
 }
 
 function init(): void {
@@ -504,14 +539,21 @@ export function playClick(codeOverride?: string): void {
 }
 
 export function playError(): void {
-  if (!Config.playSoundOnError) return;
-  if (errorSound === null) initErrorSound();
-  (errorSound as Howler.Howl).seek(0);
-  (errorSound as Howler.Howl).play();
+  if (Config.playSoundOnError === "off") return;
+  if (errorSounds === null) initErrorSound();
+
+  const randomSound = randomElementFromArray(
+    (errorSounds as ErrorSounds)[Config.playSoundOnError]
+  );
+
+  randomSound.counter++;
+  if (randomSound.counter === 2) randomSound.counter = 0;
+  randomSound.sounds[randomSound.counter].seek(0);
+  randomSound.sounds[randomSound.counter].play();
 }
 
 function setVolume(val: number): void {
-  Howler.Howler.volume(val);
+  Howler.volume(val);
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

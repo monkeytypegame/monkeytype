@@ -24,8 +24,9 @@ import {
   Router,
   static as expressStatic,
 } from "express";
+import { isDevEnvironment } from "../../utils/misc";
 
-// const pathOverride = process.env.API_PATH_OVERRIDE;
+// const pathOverride = process.env["API_PATH_OVERRIDE"];
 const pathOverride = "";
 
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
@@ -53,7 +54,12 @@ function addApiRoutes(app: Application): void {
   // Cannot be added to the route map because it needs to be added before the maintenance handler
   app.use("/configuration", configuration);
 
-  if (process.env.MODE === "dev") {
+  if (isDevEnvironment()) {
+    //disable csp to allow assets to load from unsecured http
+    app.use((req, res, next) => {
+      res.setHeader("Content-Security-Policy", "");
+      return next();
+    });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
   }
 
@@ -62,7 +68,8 @@ function addApiRoutes(app: Application): void {
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
       const inMaintenance =
-        process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
+        process.env["MAINTENANCE"] === "true" ||
+        req.ctx.configuration.maintenance;
 
       if (inMaintenance) {
         res.status(503).json({ message: "Server is down for maintenance" });

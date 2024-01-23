@@ -34,9 +34,14 @@ export function check(): void {
   }
 }
 
+export function isVisible(): boolean {
+  return visible;
+}
+
 export function show(): void {
   Skeleton.append(wrapperId);
   $("#cookiePopupWrapper").removeClass("hidden");
+  visible = true;
   if (
     $("#cookiePopupWrapper")[0] === undefined ||
     $("#cookiePopupWrapper").is(":visible") === false ||
@@ -53,7 +58,7 @@ export function show(): void {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 125, () => {
+      .animate({ opacity: 1 }, 0, () => {
         if (
           $("#cookiePopupWrapper").is(":visible") === false ||
           $("#cookiePopupWrapper").outerHeight(true) === 0

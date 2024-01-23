@@ -10,7 +10,9 @@
       "english_450k",
       "english_commonly_misspelled",
       "english_contractions",
-      "english_doubleletter"
+      "english_doubleletter",
+      "english_shakespearean",
+      "english_old"
     ]
   },
   {
@@ -80,7 +82,8 @@
       "chinese_simplified",
       "chinese_simplified_1k",
       "chinese_simplified_5k",
-      "chinese_simplified_10k, chinese_simplified_50k, chinese_simplified_100k"
+      "chinese_simplified_10k",
+      "chinese_simplified_50k"
     ]
   },
   {
@@ -144,11 +147,7 @@
   },
   {
     "name": "kurdish_central",
-    "languages": [
-      "kurdish_central",
-      "kurdish_central_2k",
-      "kurdish_central_45k"
-    ]
+    "languages": ["kurdish_central", "kurdish_central_2k", "kurdish_central_4k"]
   },
   {
     "name": "greek",
@@ -249,11 +248,20 @@
   },
   {
     "name": "malay",
-    "languages": ["malay"]
+    "languages": ["malay", "malay_1k"]
   },
   {
     "name": "romanian",
-    "languages": ["romanian"]
+    "languages": [
+      "romanian",
+      "romanian_1k",
+      "romanian_5k",
+      "romanian_10k",
+      "romanian_25k",
+      "romanian_50k",
+      "romanian_100k",
+      "romanian_200k"
+    ]
   },
   {
     "name": "finnish",
@@ -307,7 +315,7 @@
   },
   {
     "name": "serbian",
-    "languages": ["serbian"]
+    "languages": ["serbian", "serbian_latin"]
   },
   {
     "name": "georgian",
@@ -387,7 +395,7 @@
   },
   {
     "name": "sanskrit",
-    "languages": ["sanskrit"]
+    "languages": ["sanskrit", "sanskrit_roman"]
   },
   {
     "name": "nepali",
@@ -412,7 +420,11 @@
   },
   {
     "name": "belarusian",
-    "languages": ["belarusian_1k"]
+    "languages": ["belarusian", "belarusian_1k"]
+  },
+  {
+    "name": "belarusian_lacinka",
+    "languages": ["belarusian_lacinka", "belarusian_lacinka_1k"]
   },
   {
     "name": "azerbaijani",
@@ -478,6 +490,10 @@
     "languages": ["pashto"]
   },
   {
+    "name": "euskera",
+    "languages": ["euskera"]
+  },
+  {
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
   },
@@ -500,10 +516,12 @@
       "code_haskell",
       "code_html",
       "code_nim",
+      "code_nix",
       "code_pascal",
       "code_java",
       "code_kotlin",
       "code_go",
+      "code_rockstar",
       "code_rust",
       "code_ruby",
       "code_r",

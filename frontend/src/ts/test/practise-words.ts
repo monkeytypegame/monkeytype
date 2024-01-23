@@ -140,7 +140,7 @@ export function resetBefore(): void {
   before.customText = null;
 }
 
-export function showPopup(focus = false): void {
+export function showPopup(): void {
   if (Config.mode === "zen") {
     Notifications.add("Practice words is unsupported in zen mode", 0);
     return;
@@ -152,10 +152,7 @@ export function showPopup(focus = false): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        if (focus) {
-          console.log("focusing");
-          $("#practiseWordsPopup .missed").trigger("focus");
-        }
+        $(`#${wrapperId}`).trigger("focus");
       });
   }
 }
@@ -190,21 +187,10 @@ $("#practiseWordsPopupWrapper .button").on("keypress", (e) => {
   }
 });
 
-$("#practiseWordsPopupWrapper .button.both").on("focusout", (e) => {
-  e.preventDefault();
-  $("#practiseWordsPopup .missed").trigger("focus");
-});
-
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isPopupVisible(wrapperId)) {
     hidePopup();
     event.preventDefault();
-  }
-});
-
-$(document).on("keypress", "#practiseWordsButton", (event) => {
-  if (event.key === "Enter") {
-    showPopup(true);
   }
 });
 

@@ -220,8 +220,18 @@ function updateSuggested(): void {
     });
   }
   showFound();
-  activeIndex = 0;
+
+  // display background hover effect for selected language
+  const scrollTarget = $(".suggestions .entry .icon i.fa-check");
+  const entryIndex = scrollTarget.parent().parent().attr("index");
+  if (entryIndex !== undefined) {
+    activeIndex = parseInt(entryIndex);
+  } else {
+    activeIndex = 0;
+  }
+
   updateActiveEntry();
+  keepActiveEntryInView();
 }
 
 function show(): void {
@@ -700,7 +710,7 @@ $(document).on("keydown", (e) => {
         (e.key === "p" || e.key === "n" || e.key === "j" || e.key === "k"))
     ) {
       e.preventDefault();
-      $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
+      $("#commandLineWrapper #commandLine .suggestions .entry").off(
         "mouseenter mouseleave"
       );
       const entries = $(".suggestions .entry");
@@ -811,7 +821,29 @@ $(".pageTribe").on(
   }
 );
 
-$("#bottom").on("click", ".leftright .right .current-theme", (e) => {
+$(".pageTribe").on(
+  "click",
+  ".tribePage.lobby .currentConfig .groups .group",
+  (e) => {
+    if (TribeState.getSelf()?.isLeader) {
+      const commands = $(e.currentTarget).attr(
+        "commands"
+      ) as CommandlineLists.ListsObjectKeys;
+      const command = $(e.currentTarget).attr("command") as string;
+      if (command !== undefined) {
+        if (command === "changeCustomText") {
+          CustomTextPopup.show();
+        }
+      } else if (commands !== undefined) {
+        const commandsList = CommandlineLists.getList(commands);
+        CommandlineLists.pushCurrent(commandsList);
+        show();
+      }
+    }
+  }
+);
+
+$("footer").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
       if (Auth?.currentUser) {
@@ -840,12 +872,12 @@ $("#bottom").on("click", ".leftright .right .current-theme", (e) => {
   }
 });
 
-$(".supportButtons .button.ads").on("click", () => {
+$(".supportButtons button.ads").on("click", () => {
   CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
   show();
 });
 
-$(document.body).on("click", "#supportMeWrapper .button.ads", () => {
+$(document.body).on("click", "#supportMeWrapper button.ads", () => {
   CommandlineLists.pushCurrent(CommandlineLists.getList("enableAds"));
   show();
 });

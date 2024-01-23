@@ -1,6 +1,10 @@
 {
   "hooks": {
-    "before:init": ["npm run lint", "npm run test-be"],
+    "before:init": [
+      "npm run lint",
+      "npm run test-be",
+      "cd frontend && npx gulp build-production"
+    ],
     "before:release": [
       "sh ./bin/deployBackend.sh",
       "cd frontend && npm run deploy-live",
@@ -9,7 +13,7 @@
   },
   "git": {
     "commitMessage": "chore: release v${version}",
-    "requireCleanWorkingDir": true,
+    "requireCleanWorkingDir": false,
     "changelog": "node bin/buildChangelog.mjs"
   },
   "github": {
@@ -18,5 +22,11 @@
   "npm": {
     "publish": false,
     "ignoreVersion": true
+  },
+  "plugins": {
+    "@csmith/release-it-calver-plugin": {
+      "format": "yy.ww.minor",
+      "increment": "calendar.minor"
+    }
   }
 }

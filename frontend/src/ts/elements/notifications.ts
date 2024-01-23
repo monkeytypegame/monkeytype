@@ -6,7 +6,7 @@ import * as NotificationEvent from "../observables/notification-event";
 
 function updateMargin(): void {
   const height = $("#bannerCenter").height() as number;
-  $("#centerContent").css(
+  $("#contentWrapper").css(
     "padding-top",
     height + Misc.convertRemToPixels(2) + "px"
   );
@@ -66,15 +66,15 @@ class Notification {
   //-1 - bad
   show(): void {
     let cls = "notice";
-    let icon = `<i class="fas fa-fw fa-exclamation"></i>`;
+    let icon = `<i class="fas fa-info-circle"></i>`;
     let title = "Notice";
     if (this.level === 1) {
       cls = "good";
-      icon = `<i class="fas fa-fw fa-check"></i>`;
+      icon = `<i class="fas fa-check-circle"></i>`;
       title = "Success";
     } else if (this.level === -1) {
       cls = "bad";
-      icon = `<i class="fas fa-fw fa-times"></i>`;
+      icon = `<i class="fas fa-times-circle"></i>`;
       title = "Error";
       console.error(this.message);
     }
@@ -103,11 +103,10 @@ class Notification {
       }
       const oldHeight = $("#notificationCenter .history").height() as number;
       $("#notificationCenter .history").prepend(`
-          
+
           <div class="notif ${cls}" id=${this.id}>
-              <div class="icon">${icon}</div>
-              <div class="message"><div class="title">${title}</div>${this.message}</div>
-          </div>     
+              <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
+          </div>
 
           `);
       const newHeight = $("#notificationCenter .history").height() as number;
@@ -122,11 +121,10 @@ class Notification {
           () => {
             $("#notificationCenter .history").css("margin-top", 0);
             $("#notificationCenter .history").prepend(`
-          
+
                   <div class="notif ${cls}" id=${this.id}>
-                      <div class="icon">${icon}</div>
-                      <div class="message"><div class="title">${title}</div>${this.message}</div>
-                  </div>     
+                      <div class="message"><div class="title"><div class="icon">${icon}</div>${title}</div>${this.message}</div>
+                  </div>
 
               `);
             $(`#notificationCenter .notif[id='${this.id}']`)
@@ -153,7 +151,7 @@ class Notification {
             });
           }
         );
-      $(`#notificationCenter .notif[id='${this.id}']`).hover(() => {
+      $(`#notificationCenter .notif[id='${this.id}']`).on("hover", () => {
         $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
       });
     } else if (this.type === "banner") {
@@ -258,19 +256,10 @@ function updateClearAllButton(): void {
   }
 }
 
-interface AddNotificationOptions {
-  important?: boolean;
-  duration?: number;
-  customTitle?: string;
-  customIcon?: string;
-  closeCallback?: () => void;
-  allowHTML?: boolean;
-}
-
 export function add(
   message: string,
   level = 0,
-  options: AddNotificationOptions = {}
+  options: MonkeyTypes.AddNotificationOptions = {}
 ): void {
   NotificationEvent.dispatch(message, level, options.customTitle);
 

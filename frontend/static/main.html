@@ -33,21 +33,21 @@
           <div id="ad-vertical-left"></div>
         </div>
       </div>
-      <div id="centerContent" class="hidden">
-        <%= compilation.assets["html/top.html"].source() %>
-        <div id="middle" style="height: 100%">
+      <div id="contentWrapper" class="hidden">
+        <%= compilation.assets["html/header.html"].source() %>
+        <main style="height: 100%">
           <%= compilation.assets["html/pages/loading.html"].source() %> <%=
-          compilation.assets["html/pages/test.html"].source() %> <%=
           compilation.assets["html/pages/about.html"].source() %> <%=
           compilation.assets["html/pages/settings.html"].source() %> <%=
           compilation.assets["html/pages/login.html"].source() %> <%=
           compilation.assets["html/pages/account.html"].source() %> <%=
           compilation.assets["html/pages/tribe.html"].source() %> <%=
           compilation.assets["html/pages/profile.html"].source() %> <%=
+          compilation.assets["html/pages/test.html"].source() %> <%=
           compilation.assets["html/pages/404.html"].source() %>
-        </div>
+        </main>
 
-        <%= compilation.assets["html/bottom.html"].source() %>
+        <%= compilation.assets["html/footer.html"].source() %>
 
         <div id="ad-footer-wrapper" class="ad advertisement ad-h focus">
           <div class="icon"><i class="fas fa-ad"></i></div>
@@ -65,9 +65,9 @@
         </div>
       </div>
     </div>
-    <script src="/./js/jquery-3.5.1.min.js"></script>
+    <script src="/./js/jquery-3.7.1.min.js"></script>
     <script src="/./js/jquery.color.min.js"></script>
-    <script src="/./js/easing.min.js"></script>
+    <script src="/./js/easing-1.4.1.min.js"></script>
     <script src="/./js/html2canvas.min.js"></script>
     <script src="/./js/select2.min.js"></script>
     <script

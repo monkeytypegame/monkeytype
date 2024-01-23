@@ -20,13 +20,15 @@ export function update(wpm: number, raw: number): void {
   liveWpmElement.innerHTML = number.toString();
 }
 
+let state = false;
+
 export function show(): void {
   if (!Config.showLiveWpm) return;
   if (!TestState.isActive) return;
+  if (state) return;
   if (Config.timerStyle === "mini") {
-    if (!miniLiveWpmElement.classList.contains("hidden")) return;
     $(miniLiveWpmElement)
-      .stop(true, true)
+      .stop(true, false)
       .removeClass("hidden")
       .css("opacity", 0)
       .animate(
@@ -36,9 +38,8 @@ export function show(): void {
         125
       );
   } else {
-    if (!liveWpmElement.classList.contains("hidden")) return;
     $(liveWpmElement)
-      .stop(true, true)
+      .stop(true, false)
       .removeClass("hidden")
       .css("opacity", 0)
       .animate(
@@ -48,11 +49,13 @@ export function show(): void {
         125
       );
   }
+  state = true;
 }
 
 export function hide(): void {
+  if (!state) return;
   $(liveWpmElement)
-    .stop(true, true)
+    .stop(true, false)
     .animate(
       {
         opacity: 0,
@@ -63,7 +66,7 @@ export function hide(): void {
       }
     );
   $(miniLiveWpmElement)
-    .stop(true, true)
+    .stop(true, false)
     .animate(
       {
         opacity: 0,
@@ -73,6 +76,7 @@ export function hide(): void {
         miniLiveWpmElement.classList.add("hidden");
       }
     );
+  state = false;
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {

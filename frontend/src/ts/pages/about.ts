@@ -53,25 +53,41 @@ function updateStatsAndHistogram(): void {
     $(".pageAbout #totalTimeTypingStat .valSmall").text("years");
     $(".pageAbout #totalTimeTypingStat").attr(
       "aria-label",
-      Math.round(secondsRounded / 3600) + " hours"
+      Misc.numberWithSpaces(Math.round(secondsRounded / 3600)) + " hours"
+    );
+
+    const startedWithMagnitude = Misc.getNumberWithMagnitude(
+      typingStatsResponseData.testsStarted
     );
 
     $(".pageAbout #totalStartedTestsStat .val").text(
-      Math.round(typingStatsResponseData.testsStarted / 1000000)
+      startedWithMagnitude.rounded < 10
+        ? startedWithMagnitude.roundedTo2
+        : startedWithMagnitude.rounded
     );
-    $(".pageAbout #totalStartedTestsStat .valSmall").text("million");
+    $(".pageAbout #totalStartedTestsStat .valSmall").text(
+      startedWithMagnitude.orderOfMagnitude
+    );
     $(".pageAbout #totalStartedTestsStat").attr(
       "aria-label",
-      typingStatsResponseData.testsStarted + " tests"
+      Misc.numberWithSpaces(typingStatsResponseData.testsStarted) + " tests"
+    );
+
+    const completedWIthMagnitude = Misc.getNumberWithMagnitude(
+      typingStatsResponseData.testsCompleted
     );
 
     $(".pageAbout #totalCompletedTestsStat .val").text(
-      Math.round(typingStatsResponseData.testsCompleted / 1000000)
+      completedWIthMagnitude.rounded < 10
+        ? completedWIthMagnitude.roundedTo2
+        : completedWIthMagnitude.rounded
     );
-    $(".pageAbout #totalCompletedTestsStat .valSmall").text("million");
+    $(".pageAbout #totalCompletedTestsStat .valSmall").text(
+      completedWIthMagnitude.orderOfMagnitude
+    );
     $(".pageAbout #totalCompletedTestsStat").attr(
       "aria-label",
-      typingStatsResponseData.testsCompleted + " tests"
+      Misc.numberWithSpaces(typingStatsResponseData.testsCompleted) + " tests"
     );
   }
 }
@@ -196,7 +212,7 @@ export const page = new Page(
     Skeleton.remove("pageAbout");
   },
   async () => {
-    Skeleton.append("pageAbout", "middle");
+    Skeleton.append("pageAbout", "main");
     fill();
   },
   async () => {

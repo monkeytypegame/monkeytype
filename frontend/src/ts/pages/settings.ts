@@ -251,7 +251,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setPlaySoundOnError,
     "button",
     () => {
-      if (Config.playSoundOnError) Sound.playError();
+      if (Config.playSoundOnError !== "off") Sound.playError();
     }
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["playSoundOnClick"] = new SettingsGroup(
@@ -681,6 +681,21 @@ export function hideAccountSection(): void {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
   $(`.pageSettings .section.needsAccount`).addClass("hidden");
+  $(".pageSettings .quickNav .accountTitleLink").addClass("hidden");
+}
+
+function showAccountSection(): void {
+  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
+  $(`.settingsGroup.account`).removeClass("hidden");
+  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
+  $(".pageSettings .quickNav .accountTitleLink").removeClass("hidden");
+  refreshTagsSettingsSection();
+  refreshPresetsSettingsSection();
+  updateDiscordSection();
+
+  if (DB.getSnapshot()?.lbOptOut === true) {
+    $(".pageSettings .section.optOutOfLeaderboards").remove();
+  }
 }
 
 export function updateDiscordSection(): void {
@@ -787,21 +802,23 @@ function refreshTagsSettingsSection(): void {
       // }
       tagsEl.append(`
 
-      <div class="buttons tag" id="${tag._id}">
-        <div class="button tagButton ${tag.active ? "active" : ""}" active="${
+      <div class="buttons tag" data-id="${tag._id}" data-name="${
+        tag.name
+      }" data-display="${tag.display}">
+        <button class="tagButton ${tag.active ? "active" : ""}" active="${
         tag.active
       }">
-          <div class="title">${tag.display}</div>
-        </div>
-        <div class="clearPbButton button">
+          ${tag.display}
+        </button>
+        <button class="clearPbButton">
           <i class="fas fa-crown fa-fw"></i>
-        </div>
-        <div class="editButton button">
+        </button>
+        <button class="editButton">
           <i class="fas fa-pen fa-fw"></i>
-        </div>
-        <div class="removeButton button">
+        </button>
+        <button class="removeButton">
           <i class="fas fa-trash fa-fw"></i>
-        </div>
+        </button>
       </div>
 
       `);
@@ -817,16 +834,14 @@ function refreshPresetsSettingsSection(): void {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
-      <div class="buttons preset" id="${preset._id}">
-        <div class="button presetButton">
-          <div class="title">${preset.display}</div>
-        </div>
-        <div class="editButton button">
+      <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
+        <button class="presetButton">${preset.display}</button>
+        <button class="editButton">
           <i class="fas fa-pen fa-fw"></i>
-        </div>
-        <div class="removeButton button">
+        </button>
+        <button class="removeButton">
           <i class="fas fa-trash fa-fw"></i>
-        </div>
+        </button>
       </div>
       
       `);
@@ -834,19 +849,6 @@ function refreshPresetsSettingsSection(): void {
     $(".pageSettings .section.presets").removeClass("hidden");
   } else {
     $(".pageSettings .section.presets").addClass("hidden");
-  }
-}
-
-function showAccountSection(): void {
-  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
-  $(`.settingsGroup.account`).removeClass("hidden");
-  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
-  refreshTagsSettingsSection();
-  refreshPresetsSettingsSection();
-  updateDiscordSection();
-
-  if (DB.getSnapshot()?.lbOptOut === true) {
-    $(".pageSettings .section.optOutOfLeaderboards").remove();
   }
 }
 
@@ -920,42 +922,16 @@ export async function update(groupUpdate = true): Promise<void> {
 }
 
 function toggleSettingsGroup(groupName: string): void {
-  $(`.pageSettings .settingsGroup.${groupName}`)
-    .stop(true, true)
-    .slideToggle(250)
-    .toggleClass("slideup");
-  if ($(`.pageSettings .settingsGroup.${groupName}`).hasClass("slideup")) {
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}] .fas`)
-      .stop(true, true)
-      .animate(
-        {
-          deg: -90,
-        },
-        {
-          duration: 250,
-          step: function (now) {
-            $(this).css({
-              transform: "rotate(" + now + "deg)",
-            });
-          },
-        }
-      );
+  const groupEl = $(`.pageSettings .settingsGroup.${groupName}`);
+  groupEl.stop(true, true).slideToggle(250).toggleClass("slideup");
+  if (groupEl.hasClass("slideup")) {
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).addClass(
+      "rotateIcon"
+    );
   } else {
-    $(`.pageSettings .sectionGroupTitle[group=${groupName}] .fas`)
-      .stop(true, true)
-      .animate(
-        {
-          deg: 0,
-        },
-        {
-          duration: 250,
-          step: function (now) {
-            $(this).css({
-              transform: "rotate(" + now + "deg)",
-            });
-          },
-        }
-      );
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}]`).removeClass(
+      "rotateIcon"
+    );
   }
 }
 
@@ -1064,7 +1040,7 @@ $(".pageSettings .section.tags").on(
   ".tagsList .tag .tagButton",
   (e) => {
     const target = e.currentTarget;
-    const tagid = $(target).parent(".tag").attr("id") as string;
+    const tagid = $(target).parent(".tag").attr("data-id") as string;
     TagController.toggle(tagid);
     $(target).toggleClass("active");
   }
@@ -1075,7 +1051,7 @@ $(".pageSettings .section.presets").on(
   ".presetsList .preset .presetButton",
   (e) => {
     const target = e.currentTarget;
-    const presetid = $(target).parent(".preset").attr("id") as string;
+    const presetid = $(target).parent(".preset").attr("data-id") as string;
     console.log("Applying Preset");
     configEventDisabled = true;
     PresetController.apply(presetid);
@@ -1119,7 +1095,8 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
   }
 );
 
-$(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
+$(".pageSettings .section.customBackgroundSize .inputAndButton input").on(
+  "keypress",
   (e) => {
     if (e.key === "Enter") {
       UpdateConfig.setCustomBackground(
@@ -1144,22 +1121,25 @@ $(".pageSettings .section.fontSize .inputAndButton .save").on("click", () => {
   }
 });
 
-$(".pageSettings .section.fontSize .inputAndButton input").keypress((e) => {
-  if (e.key === "Enter") {
-    const didConfigSave = UpdateConfig.setFontSize(
-      parseFloat(
-        $(
-          ".pageSettings .section.fontSize .inputAndButton input"
-        ).val() as string
-      )
-    );
-    if (didConfigSave === true) {
-      Notifications.add("Saved", 1, {
-        duration: 1,
-      });
+$(".pageSettings .section.fontSize .inputAndButton input").on(
+  "keypress",
+  (e) => {
+    if (e.key === "Enter") {
+      const didConfigSave = UpdateConfig.setFontSize(
+        parseFloat(
+          $(
+            ".pageSettings .section.fontSize .inputAndButton input"
+          ).val() as string
+        )
+      );
+      if (didConfigSave === true) {
+        Notifications.add("Saved", 1, {
+          duration: 1,
+        });
+      }
     }
   }
-});
+);
 
 $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
@@ -1176,7 +1156,8 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   }
 );
 
-$(".pageSettings .section.customLayoutfluid .inputAndButton .input").keypress(
+$(".pageSettings .section.customLayoutfluid .inputAndButton .input").on(
+  "keypress",
   (e) => {
     if (e.key === "Enter") {
       UpdateConfig.setCustomLayoutfluid(
@@ -1265,7 +1246,7 @@ export const page = new Page(
     reset();
   },
   async () => {
-    Skeleton.append("pageSettings", "middle");
+    Skeleton.append("pageSettings", "main");
     await fillSettingsPage();
     await update(false);
   },

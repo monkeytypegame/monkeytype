@@ -134,6 +134,10 @@ $(`#shareTestSettingsPopupWrapper label input`).on("change", () => {
   updateSubgroups();
 });
 
+$("#shareTestSettingsPopupWrapper textarea.url").on("click", () => {
+  $("#shareTestSettingsPopupWrapper textarea.url").trigger("select");
+});
+
 $("#shareTestSettingsPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "shareTestSettingsPopupWrapper") {
     hide();

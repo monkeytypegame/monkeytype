@@ -23,7 +23,6 @@ import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 
-import * as PbCrown from "./pb-crown";
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "../elements/account-button";
@@ -66,6 +65,7 @@ import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import tribeSocket from "../tribe/tribe-socket";
 import * as Wordset from "./wordset";
+import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -162,7 +162,7 @@ export function restart(options = {} as RestartOptions): void {
     event?.preventDefault();
     return;
   }
-  if (ActivePage.get() === "test" && !TestUI.resultVisible) {
+  if (ActivePage.get() === "test") {
     if (!ManualRestart.get()) {
       if (Config.mode !== "zen") event?.preventDefault();
       if (
@@ -179,6 +179,8 @@ export function restart(options = {} as RestartOptions): void {
           message = "Press shift + tab or use your mouse to confirm.";
         } else if (Config.quickRestart === "esc") {
           message = "Press shift + escape or use your mouse to confirm.";
+        } else if (Config.quickRestart === "enter") {
+          message = "Press shift + enter or use your mouse to confirm.";
         }
         Notifications.add(
           `Quick restart disabled in long tests. ${message}`,
@@ -190,19 +192,26 @@ export function restart(options = {} as RestartOptions): void {
         );
         return;
       }
-      // }else{
-      //   return;
-      // }
     }
   }
-  if (TestState.isActive) {
-    if (
-      Config.repeatQuotes === "typing" &&
-      Config.mode === "quote" &&
-      Config.language.startsWith(TestWords.randomQuote.language)
-    ) {
-      options.withSameWordset = true;
+
+  if (options.withSameWordset) {
+    const funboxToPush = FunboxList.get(Config.funbox)
+      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+      ?.properties?.find((fp) => fp.startsWith("toPush:"));
+    if (funboxToPush) {
+      Notifications.add(
+        "You can't repeat a test with currently active funboxes",
+        0,
+        {
+          important: true,
+        }
+      );
+      options.withSameWordset = false;
     }
+  }
+
+  if (TestState.isActive) {
     if (TestState.isRepeated) {
       options.withSameWordset = true;
     }
@@ -222,17 +231,14 @@ export function restart(options = {} as RestartOptions): void {
     }
   }
 
-  if (Config.mode === "zen") {
-    $("#words").empty();
-  }
-
-  if (Config.language.startsWith("korean")) {
-    koInputVisual.innerText = " ";
-    Config.mode !== "zen"
-      ? $("#koInputVisualContainer").show()
-      : $("#koInputVisualContainer").hide();
-  } else {
-    $("#koInputVisualContainer").hide();
+  if (
+    Config.mode === "quote" &&
+    TestWords.randomQuote &&
+    Config.language.startsWith(TestWords.randomQuote.language) &&
+    Config.repeatQuotes === "typing" &&
+    (TestState.isActive || failReason !== "")
+  ) {
+    options.withSameWordset = true;
   }
 
   if (
@@ -263,15 +269,6 @@ export function restart(options = {} as RestartOptions): void {
     PractiseWords.resetBefore();
   }
 
-  let repeatWithPace = false;
-  if (TestUI.resultVisible && Config.repeatedPace && options.withSameWordset) {
-    repeatWithPace = true;
-  }
-
-  $("#words").stop(true, true);
-  $("#words .smoothScroller").stop(true, true).remove();
-
-  testReinitCount = 0;
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
@@ -292,19 +289,21 @@ export function restart(options = {} as RestartOptions): void {
   Monkey.hide();
   TestInput.input.setKoreanStatus(false);
   LayoutfluidFunboxTimer.hide();
-
-  $("#showWordHistoryButton").removeClass("loaded");
-  $("#restartTestButton").blur();
   MemoryFunboxTimer.reset();
   QuoteRatePopup.clearQuoteStats();
-  // if (ActivePage.get() === "test" && window.scrollY > 0) {
-  // window.scrollTo({ top: 0, behavior: "smooth" });
-  // }
-  $("#wordsInput").val(" ");
-
   TestUI.reset();
 
-  $("#timerNumber").css("opacity", 0);
+  if (TestUI.resultVisible) {
+    if (Config.randomTheme !== "off") {
+      ThemeController.randomizeTheme();
+    }
+    AccountButton.skipXpBreakdown();
+  }
+
+  if (!ConnectionState.get()) {
+    ConnectionState.showOfflineBanner();
+  }
+
   let el = null;
   if (TestUI.resultVisible) {
     //results are being displayed
@@ -312,19 +311,6 @@ export function restart(options = {} as RestartOptions): void {
   } else {
     //words are being displayed
     el = $("#typingTest");
-  }
-  if (TestUI.resultVisible) {
-    if (
-      Config.randomTheme !== "off" &&
-      !PageTransition.get()
-      // && Config.customThemeId === ""
-    ) {
-      ThemeController.randomizeTheme();
-    }
-    AccountButton.skipXpBreakdown();
-  }
-  if (!ConnectionState.get()) {
-    ConnectionState.showOfflineBanner();
   }
   TestUI.setResultVisible(false);
   PageTransition.set(true);
@@ -335,8 +321,22 @@ export function restart(options = {} as RestartOptions): void {
     },
     options.noAnim ? 0 : 125,
     async () => {
+      $("#result").addClass("hidden");
+      $("#typingTest").css("opacity", 0).removeClass("hidden");
+      $("#wordsInput").val(" ");
+
+      if (Config.language.startsWith("korean")) {
+        koInputVisual.innerText = " ";
+        Config.mode !== "zen"
+          ? $("#koInputVisualContainer").show()
+          : $("#koInputVisualContainer").hide();
+      } else {
+        $("#koInputVisualContainer").hide();
+      }
+
+      Focus.set(false);
       if (ActivePage.get() === "test") {
-        AdController.updateTestPageAds(false);
+        AdController.updateFooterAndVerticalAds(false);
         if (TribeState.getState() < 5) {
           Focus.set(false);
         } else {
@@ -348,40 +348,21 @@ export function restart(options = {} as RestartOptions): void {
       } else {
         TestConfig.show();
       }
-      TestUI.focusWords();
-      $("#monkey .fast").stop(true, true).css("opacity", 0);
-      $("#monkey").stop(true, true).css({ animationDuration: "0s" });
-      $("#typingTest").css("opacity", 0).removeClass("hidden");
-      $("#wordsInput").val(" ");
-      AdController.destroyResult();
-      $("#resultWordsHistory .words").empty();
-      $("#resultReplay #replayWords").empty();
-      let shouldQuoteRepeat = false;
-      if (
-        Config.mode === "quote" &&
-        Config.repeatQuotes === "typing" &&
-        failReason !== ""
-      ) {
-        shouldQuoteRepeat = true;
       }
+      TestConfig.show();
+      AdController.destroyResult();
 
       await Funbox.rememberSettings();
 
-      if (options.withSameWordset) {
-        const funboxToPush = FunboxList.get(Config.funbox)
-          .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-          ?.properties?.find((fp) => fp.startsWith("toPush:"));
-        if (funboxToPush) {
-          const toPushCount = +funboxToPush.split(":")[1];
-          const toPush = [];
-          for (let i = 0; i < toPushCount; i++) {
-            toPush.push(TestWords.words.get(i));
-          }
-          TestWords.words.reset();
-          toPush.forEach((word, index) => TestWords.words.push(word, index));
-        }
+      testReinitCount = 0;
+      failReason = "";
+
+      let repeatWithPace = false;
+      if (Config.repeatedPace && options.withSameWordset) {
+        repeatWithPace = true;
       }
-      if (!options.withSameWordset && !shouldQuoteRepeat) {
+
+      if (!options.withSameWordset) {
         TestState.setRepeated(false);
         TestState.setPaceRepeat(repeatWithPace);
         await init();
@@ -389,46 +370,25 @@ export function restart(options = {} as RestartOptions): void {
       } else {
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
-        TestState.setActive(false);
         Replay.stopReplayRecording();
         TestWords.words.resetCurrentIndex();
         TestInput.input.reset();
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
           KeymapEvent.highlight(
-            TestWords.words
-              .getCurrent()
-              .substring(
-                TestInput.input.current.length,
-                TestInput.input.current.length + 1
-              )
-              .toString()
+            Misc.nthElementFromArray(
+              [...TestWords.words.getCurrent()],
+              0
+            ) as string
           );
         }
         Funbox.toggleScript(TestWords.words.getCurrent());
         await PaceCaret.init();
       }
-      failReason = "";
+
       if (Config.mode === "quote") {
         TestState.setRepeated(false);
       }
-      if (Config.keymapMode !== "off") {
-        Keymap.show();
-      } else {
-        Keymap.hide();
-      }
-      (<HTMLElement>(
-        document.querySelector("#miniTimerAndLiveWpm .wpm")
-      )).innerHTML = "0";
-      (<HTMLElement>(
-        document.querySelector("#miniTimerAndLiveWpm .acc")
-      )).innerHTML = "100%";
-      (<HTMLElement>(
-        document.querySelector("#miniTimerAndLiveWpm .burst")
-      )).innerHTML = "0";
-      (<HTMLElement>document.querySelector("#liveWpm")).innerHTML = "0";
-      (<HTMLElement>document.querySelector("#liveAcc")).innerHTML = "100%";
-      (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
 
       for (const f of FunboxList.get(Config.funbox)) {
         if (f.functions?.restart) f.functions.restart();
@@ -438,25 +398,10 @@ export function restart(options = {} as RestartOptions): void {
         Last10Average.update().then(() => {
           ModesNotice.update();
         });
+      } else {
+        ModesNotice.update();
       }
 
-      const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
-      let fbtext = "";
-      if (Config.funbox !== "none") {
-        fbtext = " " + Config.funbox.split("#").join(" ");
-      }
-      $(".pageTest #premidTestMode").text(
-        `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
-      );
-      $(".pageTest #premidSecondsLeft").text(Config.time);
-
-      $("#result").addClass("hidden");
-      $("#testModesNotice").removeClass("hidden").css({
-        opacity: 1,
-      });
-      // resetPaceCaret();
-      ModesNotice.update();
-      ManualRestart.reset();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -467,14 +412,24 @@ export function restart(options = {} as RestartOptions): void {
           },
           options.noAnim ? 0 : 125,
           () => {
+            (<HTMLElement>(
+              document.querySelector("#miniTimerAndLiveWpm .wpm")
+            )).innerHTML = "0";
+            (<HTMLElement>(
+              document.querySelector("#miniTimerAndLiveWpm .acc")
+            )).innerHTML = "100%";
+            (<HTMLElement>(
+              document.querySelector("#miniTimerAndLiveWpm .burst")
+            )).innerHTML = "0";
+            (<HTMLElement>document.querySelector("#liveWpm")).innerHTML = "0";
+            (<HTMLElement>document.querySelector("#liveAcc")).innerHTML =
+              "100%";
+            (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
+
             TestUI.setTestRestarting(false);
-            // resetPaceCaret();
-            PbCrown.hide();
-            TestTimer.clear();
-            if (!Misc.isPopupVisible("commandLineWrapper")) {
-              TestUI.focusWords();
-            }
-            // ChartController.result.update();
+            TestUI.focusWords();
+            TestUI.updatePremid();
+            ManualRestart.reset();
             PageTransition.set(false);
           }
         );
@@ -495,7 +450,7 @@ export async function init(): Promise<void> {
 
   testReinitCount++;
   if (testReinitCount >= 5) {
-    //todo figure out what to do if this happens in tribe
+      //todo figure out what to do if this happens in tribe
     TestUI.setTestRestarting(false);
     Notifications.add(
       "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
@@ -507,7 +462,6 @@ export async function init(): Promise<void> {
     return;
   }
 
-  TestState.setActive(false);
   MonkeyPower.reset();
   Replay.stopReplayRecording();
   TestWords.words.reset();
@@ -620,6 +574,7 @@ export async function init(): Promise<void> {
 
   let hasTab = false;
   let hasNumbers = false;
+  let hasNewline = false;
 
   for (const word of generatedWords) {
     if (/\t/g.test(word) && !hasTab) {
@@ -628,10 +583,14 @@ export async function init(): Promise<void> {
     if (/\d/g.test(word) && !hasNumbers) {
       hasNumbers = true;
     }
+    if (/\n/g.test(word) && !hasNewline) {
+      hasNewline = true;
+    }
   }
 
   TestWords.setHasTab(hasTab);
   TestWords.setHasNumbers(hasNumbers);
+  TestWords.setHasNewline(hasNewline);
 
   if (beforeHasNumbers !== hasNumbers) {
     Keymap.refresh();
@@ -1033,12 +992,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TestUI.setResultVisible(true);
   TestState.setActive(false);
   Replay.stopReplayRecording();
-  Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
   TribeDelta.hide();
   TribeDelta.hideBar();
-  PbCrown.hide();
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
@@ -1189,7 +1146,12 @@ export async function finish(difficultyFailed = false): Promise<void> {
     TestStats.setInvalid();
     dontSave = true;
     resolve.valid = false;
-  } else if (completedEvent.acc < 75 || completedEvent.acc > 100) {
+  } else if (
+    (!DB.getSnapshot()?.lbOptOut &&
+      (completedEvent.acc < 75 || completedEvent.acc > 100)) ||
+    (DB.getSnapshot()?.lbOptOut === true &&
+      (completedEvent.acc < 50 || completedEvent.acc > 100))
+  ) {
     Notifications.add("Test invalid - accuracy", 0);
     TestStats.setInvalid();
     dontSave = true;
@@ -1404,7 +1366,6 @@ async function saveResult(
   const response = await Ape.results.save(completedEvent);
 
   AccountButton.loading(false);
-  Result.hideCrown();
 
   if (response.status !== 200) {
     //only allow retry if status is not in this list
@@ -1578,12 +1539,6 @@ $(".pageTest").on("click", "#testModesNotice .textButton.restart", () => {
   restart();
 });
 
-$(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.key === "Enter") {
-    restart();
-  }
-});
-
 $(".pageTest").on("click", "#restartTestButton", () => {
   if (TribeState.getState() >= 5) return;
   ManualRestart.set();
@@ -1641,18 +1596,6 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
   restart({
     withSameWordset: true,
   });
-});
-
-$(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
-  if (Config.mode === "zen") {
-    Notifications.add("Repeat test disabled in zen mode");
-    return;
-  }
-  if (event.key === "Enter") {
-    restart({
-      withSameWordset: true,
-    });
-  }
 });
 
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
@@ -1757,7 +1700,7 @@ $("#popups").on(
   }
 );
 
-$("#top").on("click", "#menu #startTestButton, .logo", () => {
+$("header").on("click", "nav #startTestButton, #logo", () => {
   if (ActivePage.get() === "test") restart();
 });
 
@@ -1765,9 +1708,18 @@ $("#top").on("click", "#menu #startTestButton, .logo", () => {
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (ActivePage.get() === "test") {
+    if (eventKey === "language") {
+      //automatically enable lazy mode for arabic
+      if (
+        (eventValue as string)?.startsWith("arabic") &&
+        ArabicLazyMode.get()
+      ) {
+        UpdateConfig.setLazyMode(true, true);
+      }
+      restart();
+    }
     if (eventKey === "difficulty" && !nosave) restart();
     if (eventKey === "showAllLines" && !nosave) restart();
-    if (eventKey === "keymapMode" && !nosave) restart();
     if (eventKey === "tapeMode" && !nosave) restart();
     if (
       eventKey === "customLayoutFluid" &&
@@ -1775,9 +1727,29 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     ) {
       restart();
     }
+
+    if (
+      eventKey === "keymapMode" &&
+      eventValue === "next" &&
+      Config.mode !== "zen"
+    ) {
+      setTimeout(() => {
+        KeymapEvent.highlight(
+          Misc.nthElementFromArray(
+            [...TestWords.words.getCurrent()],
+            0
+          ) as string
+        );
+      }, 0);
+    }
   }
-  if (eventKey === "lazyMode" && eventValue === false && !nosave) {
-    rememberLazyMode = false;
+  if (eventKey === "lazyMode" && !nosave) {
+    if (Config.language.startsWith("arabic")) {
+      ArabicLazyMode.set(eventValue as boolean);
+    }
+    if (eventValue === false) {
+      rememberLazyMode = false;
+    }
   }
 });
 

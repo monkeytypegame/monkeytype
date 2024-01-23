@@ -7,6 +7,7 @@ import * as DiscordUtils from "../../utils/discord";
 import {
   MILLISECONDS_IN_DAY,
   buildAgentLog,
+  isDevEnvironment,
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
@@ -25,6 +26,7 @@ import { ObjectId } from "mongodb";
 import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
+import { removeTokensFromCacheByUid } from "../../utils/auth";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -99,10 +101,9 @@ export async function sendVerificationEmail(
     link = await FirebaseAdmin()
       .auth()
       .generateEmailVerificationLink(email, {
-        url:
-          process.env.MODE === "dev"
-            ? "http://localhost:3000"
-            : "https://monkeytype.com",
+        url: isDevEnvironment()
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
       });
   } catch (e) {
     if (
@@ -115,13 +116,19 @@ export async function sendVerificationEmail(
     if (e.code === "auth/user-not-found") {
       throw new MonkeyError(
         500,
-        "Auth user not found when the user was found in the database",
+        "Auth user not found when the user was found in the database. Contact support with this error message and your email",
         JSON.stringify({
           decodedTokenEmail: email,
           userInfoEmail: userInfo.email,
           stack: e.stack,
         }),
         userInfo.uid
+      );
+    }
+    if (e.message.includes("Internal error encountered.")) {
+      throw new MonkeyError(
+        500,
+        "Firebase failed to generate an email verification link. Please try again later."
       );
     }
     throw e;
@@ -155,10 +162,9 @@ export async function sendForgotPasswordEmail(
   const link = await FirebaseAdmin()
     .auth()
     .generatePasswordResetLink(email, {
-      url:
-        process.env.MODE === "dev"
-          ? "http://localhost:3000"
-          : "https://monkeytype.com",
+      url: isDevEnvironment()
+        ? "http://localhost:3000"
+        : "https://monkeytype.com",
     });
   await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
 
@@ -193,7 +199,7 @@ export async function resetUser(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "reset user");
-  await Promise.all([
+  const promises = [
     UserDAL.resetUser(uid),
     deleteAllApeKeys(uid),
     deleteAllPresets(uid),
@@ -203,7 +209,12 @@ export async function resetUser(
       uid,
       req.ctx.configuration.dailyLeaderboards
     ),
-  ]);
+  ];
+
+  if (userInfo.discordId) {
+    promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
+  }
+  await Promise.all(promises);
   Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
@@ -282,7 +293,9 @@ export async function updateEmail(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
-  const { newEmail } = req.body;
+  let { newEmail } = req.body;
+
+  newEmail = newEmail.toLowerCase();
 
   try {
     await UserDAL.updateEmail(uid, newEmail);
@@ -323,14 +336,26 @@ export async function getUser(
       //if the user is in the auth system but not in the db, its possible that the user was created by bypassing captcha
       //since there is no data in the database anyway, we can just delete the user from the auth system
       //and ask them to sign up again
-
-      await FirebaseAdmin().auth().deleteUser(uid);
-      throw new MonkeyError(
-        404,
-        "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
-        "get user",
-        uid
-      );
+      try {
+        await FirebaseAdmin().auth().deleteUser(uid);
+        throw new MonkeyError(
+          404,
+          "User not found in the database, but found in the auth system. We have deleted the ghost user from the auth system. Please sign up again.",
+          "get user",
+          uid
+        );
+      } catch (e) {
+        if (e.code === "auth/user-not-found") {
+          throw new MonkeyError(
+            404,
+            "User not found in the database or the auth system. Please sign up again.",
+            "get user",
+            uid
+          );
+        } else {
+          throw e;
+        }
+      }
     } else {
       throw e;
     }
@@ -346,6 +371,7 @@ export async function getUser(
 
   const agentLog = buildAgentLog(req);
   Logger.logToDb("user_data_requested", agentLog, uid);
+  UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
 
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
@@ -357,9 +383,12 @@ export async function getUser(
     UserDAL.flagForNameChange(uid);
   }
 
+  const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
+
   const userData = {
     ...getRelevantUserInfo(userInfo),
     inboxUnreadSize: inboxUnreadSize,
+    isPremium,
   };
 
   return new MonkeyResponse("User data retrieved", userData);
@@ -876,4 +905,13 @@ export async function toggleBan(
   return new MonkeyResponse(`Ban toggled`, {
     banned: !user.banned,
   });
+}
+
+export async function revokeAllTokens(
+  req: MonkeyTypes.Request
+): Promise<MonkeyResponse> {
+  const { uid } = req.ctx.decodedToken;
+  await FirebaseAdmin().auth().revokeRefreshTokens(uid);
+  removeTokensFromCacheByUid(uid);
+  return new MonkeyResponse("All tokens revoked");
 }

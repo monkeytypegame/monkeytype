@@ -12,7 +12,7 @@ export const page = new Page(
     Skeleton.remove("pageProfileSearch");
   },
   async () => {
-    Skeleton.append("pageProfileSearch", "middle");
+    Skeleton.append("pageProfileSearch", "main");
     $(".page.pageProfileSearch input").val("");
   },
   async () => {

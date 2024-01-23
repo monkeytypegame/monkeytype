@@ -37,15 +37,15 @@
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <style>
-      #top {
+      header {
         font-size: 2.5rem;
       }
 
-      #middle {
+      main {
         color: var(--text-color);
       }
 
-      #centerContent {
+      #contentWrapper {
         align-items: flex-start;
       }
 
@@ -64,9 +64,9 @@
   </head>
 
   <body>
-    <div id="centerContent">
-      <div id="top">
-        <div class="logo">
+    <div id="contentWrapper">
+      <header>
+        <div id="logo">
           <div class="icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -111,8 +111,8 @@
             <span style="color: var(--main-color)">Security Policy</span>
           </div>
         </div>
-      </div>
-      <div id="middle">
+      </header>
+      <main>
         <p>
           We take the security and integrity of Monkeytype very seriously. If
           you have found a vulnerability, please report it
@@ -163,20 +163,20 @@
           condition, create significant strains on critical resources, or
           negatively impact users of the site outside of test accounts.
         </p>
-      </div>
+      </main>
     </div>
   </body>
   <script defer>
     function copyUserName() {
       if (true) {
-        navigator.clipboard.writeText("Miodec#1512");
+        navigator.clipboard.writeText("@miodec");
         alert("Copied To Clipboard!");
       } else {
         alert("Unable to copy username");
       }
     }
 
-    document.querySelector("#top").addEventListener("click", () => {
+    document.querySelector("header").addEventListener("click", () => {
       window.location = "/";
     });
   </script>

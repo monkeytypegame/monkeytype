@@ -10,6 +10,9 @@
   justify-content: center;
   align-items: center;
   padding: 2rem 0;
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 #customTextPopupWrapper {
@@ -90,7 +93,7 @@
 
     .buttonsTop {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 1rem;
     }
 
@@ -205,7 +208,6 @@
 
 #saveCustomTextPopupWrapper {
   #saveCustomTextPopup {
-    color: var(--sub-color);
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -223,6 +225,7 @@
 }
 
 #wordFilterPopupWrapper {
+  padding: 2rem;
   #wordFilterPopup {
     color: var(--sub-color);
     background: var(--bg-color);
@@ -232,7 +235,9 @@
     grid-template-areas: "top top top" "left divider right" "bottom bottom bottom";
     grid-template-columns: 1fr auto 1fr;
     gap: 2rem;
-    width: 800px;
+    max-width: 800px;
+    overflow-y: scroll;
+    max-height: 100%;
 
     .top {
       grid-area: top;
@@ -583,9 +588,12 @@
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
-    display: grid;
-    gap: 1rem;
     width: 400px;
+
+    form {
+      display: grid;
+      gap: 1rem;
+    }
 
     .title {
       font-size: 1.5rem;
@@ -780,17 +788,10 @@
       margin-top: 0.25rem;
       display: grid;
       gap: 1rem;
-      grid-template-columns: 1fr 1fr;
-      .openSettings {
-        grid-column: span 2;
-      }
     }
     .settings {
       display: grid;
       gap: 1rem;
-      .customTextCheckbox {
-        background: var(--sub-color);
-      }
       .cookie label {
         display: grid;
         gap: 0 1rem;
@@ -805,9 +806,10 @@
         .description {
           grid-area: description;
         }
-        .customTextCheckbox {
-          place-self: center;
+        input[type="checkbox"] {
+          align-self: center;
           grid-area: check;
+          font-size: 2em;
         }
       }
       .cookie.ads label {
@@ -976,10 +978,28 @@
       }
     }
 
-    #extraResults {
-      text-align: center;
-      color: var(--sub-color);
+    #quoteSearchPageNavigator {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
     }
+
+    .prevPage,
+    .nextPage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    #pageInfo {
+      flex: 1;
+      text-align: center;
+      max-width: 20rem;
+      color: var(--sub-color);
+      padding: 0.5rem 1.5rem;
+    }
+
     #quoteSearchResults {
       display: grid;
       gap: 0.5rem;
@@ -1320,7 +1340,11 @@
 
     label {
       color: var(--sub-color);
-      margin-bottom: -1rem;
+      margin-bottom: -0.5rem;
+    }
+
+    .red {
+      color: var(--error-color);
     }
 
     // .text {
@@ -1550,6 +1574,7 @@
       grid-template-columns: 1fr 1fr 1fr;
       gap: 1rem;
 
+      button,
       .button {
         display: block;
         width: 100%;
@@ -1586,15 +1611,6 @@
       display: grid;
       gap: 1rem;
       grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    .checkbox {
-      display: flex;
-      align-items: center;
-    }
-
-    .checkbox input[type="checkbox"] {
-      margin-right: 0.5em;
     }
 
     .title {
@@ -1729,6 +1745,12 @@
       color: var(--sub-color);
     }
   }
+}
+
+#tagsEdit form,
+#presetEdit form {
+  display: grid;
+  gap: 1rem;
 }
 
 #editProfilePopup {

@@ -76,7 +76,7 @@ $("#customWordAmountPopupWrapper input").on("keypress", (e) => {
   }
 });
 
-$("#customWordAmountPopupWrapper .button").on("click", () => {
+$("#customWordAmountPopupWrapper button").on("click", () => {
   apply();
 });
 

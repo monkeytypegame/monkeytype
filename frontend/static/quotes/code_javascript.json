@@ -14,57 +14,57 @@
       "length": 282
     },
     {
-      "text": "export function capitalizeFirstLetter(str) {\\n\\treturn str.charAt(0).toUpperCase() + str.slice(1);\\n}",
+      "text": "export function capitalizeFirstLetter(str) {\n\treturn str.charAt(0).toUpperCase() + str.slice(1);\n}",
       "source": "Monkeytype Sourcecode",
-      "length": 101,
+      "length": 98,
       "id": 2
     },
     {
-      "text": "export function roundTo2(num) {\\n\\treturn Math.round((num + Number.EPSILON) * 100) / 100;\\n}",
+      "text": "export function roundTo2(num) {\n\treturn Math.round((num + Number.EPSILON) * 100) / 100;\n}",
       "source": "Monkeytype Sourcecode",
-      "length": 92,
+      "length": 89,
       "id": 3
     },
     {
-      "text": "export default function App(props) {\\n\\treturn (\\n\\t\\t<div {...props}>\\n\\t\\t\\tHello World!\\n\\t\\t</div>\\n\\t);\\n}",
+      "text": "export default function App(props) {\n\treturn (\n\t\t<div {...props}>\n\t\t\tHello World!\n\t\t</div>\n\t);\n}",
       "source": "Basic React.js Example",
-      "length": 111,
+      "length": 96,
       "id": 4
     },
     {
-      "text": "const arrayToHtmlList = (arr, listID) =>\\n\\t(el => (\\n\\t\\t(el = document.querySelector('#' + listID)),\\n\\t\\t(el.innerHTML += arr.map(item => `<li>${item}</li>`).join(''))\\n\\t))();",
+      "text": "const arrayToHtmlList = (arr, listID) =>\n\t(el => (\n\t\t(el = document.querySelector('#' + listID)),\n\t\t(el.innerHTML += arr.map(item => `<li>${item}</li>`).join(''))\n\t))();",
       "source": "GitHub Gist - fatosmorina/array_to_html.js",
-      "length": 179,
+      "length": 169,
       "id": 5
     },
     {
-      "text": "subdivide(quadrant) {\\n\\tswitch (quadrant) {\\n\\t\\tcase 'ne':\\n\\t\\t\\treturn new Rectangle(this.x + this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);\\n\\t\\tcase 'nw':\\n\\t\\t\\treturn new Rectangle(this.x - this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);\\n\\t\\tcase 'se':\\n\\t\\t\\treturn new Rectangle(this.x + this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);\\n\\t\\tcase 'sw':\\n\\t\\treturn new Rectangle(this.x - this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);\\n\\t}\\n}",
+      "text": "subdivide(quadrant) {\n\tswitch (quadrant) {\n\t\tcase 'ne':\n\t\t\treturn new Rectangle(this.x + this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);\n\t\tcase 'nw':\n\t\t\treturn new Rectangle(this.x - this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);\n\t\tcase 'se':\n\t\t\treturn new Rectangle(this.x + this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);\n\t\tcase 'sw':\n\t\treturn new Rectangle(this.x - this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);\n\t}\n}",
       "source": "Github - CodingTrain/QuadTree",
-      "length": 494,
+      "length": 462,
       "id": 6
     },
     {
-      "text": "canvas.parent('rgb-Canvas');\\nlet colors = [];\\nlet labels = [];\\nfor (let record of data.entries) {\\n\\tlet col = [record.r / 255, record.g / 255, record.b / 255];\\n\\tcolors.push(col);\\n\\tlabels.push(labelList.indexOf(record.label));\\n}",
+      "text": "canvas.parent('rgb-Canvas');\nlet colors = [];\nlet labels = [];\nfor (let record of data.entries) {\n\tlet col = [record.r / 255, record.g / 255, record.b / 255];\n\tcolors.push(col);\n\tlabels.push(labelList.indexOf(record.label));\n}",
       "source": "GitHub - CodingTrain/ColorClassifer-TensorFlow.js",
-      "length": 236,
+      "length": 226,
       "id": 7
     },
     {
-      "text": "$('button').click(function(){\\n\\t$.post('demo_test_post.asp',\\n{\\n\\t\\tname: 'Donald Duck',\\n\\t\\tcity: 'Duckburg'\\n\\t},\n\\tfunction(data, status){\\n\\t\\talert('Data: ' + data + '\nStatus: ' + status);\\n\\t});\\n});",
+      "text": "$('button').click(function(){\n\t$.post('demo_test_post.asp',\n{\n\t\tname: 'Donald Duck',\n\t\tcity: 'Duckburg'\n\t},\n\tfunction(data, status){\n\t\talert('Data: ' + data + '\nStatus: ' + status);\n\t});\n});",
       "source": "W3Schools - jQuery Get/Post",
-      "length": 208,
+      "length": 190,
       "id": 8
     },
     {
-      "text": "const points = [40, 100, 1, 5, 25, 10];\\n\\nfor (let i = points.length -1; i > 0; i--) {\\n\\tlet j = Math.floor(Math.random() * i)\\n\\tlet k = points[i]\\n\\tpoints[i] = points[j]\\n\\tpoints[j] = k\\n}",
+      "text": "const points = [40, 100, 1, 5, 25, 10];\n\nfor (let i = points.length -1; i > 0; i--) {\n\tlet j = Math.floor(Math.random() * i)\n\tlet k = points[i]\n\tpoints[i] = points[j]\n\tpoints[j] = k\n}",
       "source": "W3Schools JS Array Sort - Fisher Bates Method",
-      "length": 194,
+      "length": 183,
       "id": 9
     },
     {
-      "text": "function quicksort(arr){\\n\\tvar pivot = arr[0];\\n\\n\\tvar left = [];\\n\\tvar right = [];\\n\\n\\tfor (var i = 1; i < arr.length; i++) {\\n\\t\\tarr[i] < pivot ? left.push(arr[i]) : right.push(arr[i]);\\n\\t}\\n\\n\\treturn quicksort(left).concat(pivot, quicksort(right));\\n}",
+      "text": "function quicksort(arr){\n\tvar pivot = arr[0];\n\n\tvar left = [];\n\tvar right = [];\n\n\tfor (var i = 1; i < arr.length; i++) {\n\t\tarr[i] < pivot ? left.push(arr[i]) : right.push(arr[i]);\n\t}\n\n\treturn quicksort(left).concat(pivot, quicksort(right));\n}",
       "source": "JavaScript Quicksort Algorithm",
-      "length": 261,
+      "length": 242,
       "id": 10
     },
     {

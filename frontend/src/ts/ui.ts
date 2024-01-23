@@ -7,7 +7,7 @@ import * as ConfigEvent from "./observables/config-event";
 import { debounce, throttle } from "throttle-debounce";
 import * as TestUI from "./test/test-ui";
 import { get as getActivePage } from "./states/active-page";
-import { isLocalhost } from "./utils/misc";
+import { isDevEnvironment } from "./utils/misc";
 
 function updateKeytips(): void {
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
@@ -25,25 +25,29 @@ function updateKeytips(): void {
   }
 
   if (Config.quickRestart === "esc") {
-    $("#bottom .keyTips").html(`
+    $("footer .keyTips").html(`
     <key>esc</key> - restart test<br>
     <key>tab</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   } else if (Config.quickRestart === "tab") {
-    $("#bottom .keyTips").html(`
+    $("footer .keyTips").html(`
     <key>tab</key> - restart test<br>
       <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
+  } else if (Config.quickRestart === "enter") {
+    $("footer .keyTips").html(`
+    <key>enter</key> - restart test<br>
+      <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   } else {
-    $("#bottom .keyTips").html(`
+    $("footer .keyTips").html(`
     <key>tab</key> + <key>enter</key> - restart test<br>
     <key>esc</key> or <key>${modifierKey}</key>+<key>shift</key>+<key>p</key> - command line`);
   }
 }
 
-if (isLocalhost()) {
+if (isDevEnvironment()) {
   window.onerror = function (error): void {
     Notifications.add(error.toString(), -1);
   };
-  $("#top .logo .top").text("localhost");
+  $("header #logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`

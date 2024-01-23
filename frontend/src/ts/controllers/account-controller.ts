@@ -19,7 +19,6 @@ import * as URLHandler from "../utils/url-handler";
 import * as Account from "../pages/account";
 import * as Alerts from "../elements/alerts";
 import {
-  EmailAuthProvider,
   GoogleAuthProvider,
   browserSessionPersistence,
   browserLocalPersistence,
@@ -29,8 +28,6 @@ import {
   setPersistence,
   updateProfile,
   linkWithPopup,
-  linkWithCredential,
-  reauthenticateWithPopup,
   getAdditionalUserInfo,
   User as UserType,
   Unsubscribe,
@@ -57,7 +54,9 @@ async function sendVerificationEmail(): Promise<void> {
   }
 
   Loader.show();
+  $(".sendVerificationEmail").prop("disabled", true);
   const result = await Ape.users.verificationEmail();
+  $(".sendVerificationEmail").prop("disabled", false);
   if (result.status !== 200) {
     Loader.hide();
     Notifications.add(
@@ -103,7 +102,7 @@ async function getDataAndInit(): Promise<boolean> {
     const msg = e.message || e;
     Notifications.add("Failed to get user data: " + msg, -1);
 
-    $("#top #menu .account").css("opacity", 1);
+    $("header nav .account").css("opacity", 1);
     return false;
   }
   if (ActivePage.get() === "loading") {
@@ -113,7 +112,7 @@ async function getDataAndInit(): Promise<boolean> {
   }
   LoadingPage.updateText("Applying settings...");
   const snapshot = DB.getSnapshot() as MonkeyTypes.Snapshot;
-  $("#menu .textButton.account > .text").text(snapshot.name);
+  $("nav .textButton.account > .text").text(snapshot.name);
   showFavoriteQuoteLength();
 
   ResultFilters.loadTags(snapshot.tags);
@@ -197,7 +196,9 @@ export async function loadUser(user: UserType): Promise<void> {
   // var providerData = user.providerData;
   LoginPage.hidePreloader();
 
-  $("#top .signInOut .icon").html(`<i class="fas fa-fw fa-sign-out-alt"></i>`);
+  $("header .signInOut .icon").html(
+    `<i class="fas fa-fw fa-sign-out-alt"></i>`
+  );
 
   // showFavouriteThemesAtTheTop();
 
@@ -229,12 +230,12 @@ if (Auth && ConnectionState.get()) {
     console.log(`auth state changed, user ${user ? true : false}`);
     console.debug(user);
     if (user) {
-      $("#top .signInOut .icon").html(
+      $("header .signInOut .icon").html(
         `<i class="fas fa-fw fa-sign-out-alt"></i>`
       );
       await loadUser(user);
     } else {
-      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
+      $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       if (window.location.pathname === "/account") {
         window.history.replaceState("", "", "/login");
       }
@@ -265,13 +266,13 @@ if (Auth && ConnectionState.get()) {
     }
   });
 } else {
-  $("#menu .signInOut").addClass("hidden");
+  $("nav .signInOut").addClass("hidden");
 
   $("document").ready(async () => {
     // await UpdateConfig.loadPromise;
     const search = window.location.search;
     const hash = window.location.hash;
-    $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
+    $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
     if (window.location.pathname === "/account") {
       window.history.replaceState("", "", "/login");
     }
@@ -311,7 +312,6 @@ async function signIn(): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  LoginPage.disableSignInButton();
   const email = ($(".pageLogin .login input")[0] as HTMLInputElement).value;
   const password = ($(".pageLogin .login input")[1] as HTMLInputElement).value;
 
@@ -320,7 +320,6 @@ async function signIn(): Promise<void> {
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
     LoginPage.enableSignUpButton();
-    LoginPage.enableSignInButton();
     return;
   }
 
@@ -346,7 +345,6 @@ async function signIn(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      LoginPage.enableSignInButton();
       LoginPage.updateSignupButton();
     });
 }
@@ -368,7 +366,6 @@ async function signInWithGoogle(): Promise<void> {
   LoginPage.showPreloader();
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
-  LoginPage.disableSignInButton();
   authListener();
   const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
     ? browserLocalPersistence
@@ -398,7 +395,6 @@ async function signInWithGoogle(): Promise<void> {
       Notifications.add(message, -1);
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      LoginPage.enableSignInButton();
       LoginPage.updateSignupButton();
     });
 }
@@ -427,55 +423,6 @@ async function addGoogleAuth(): Promise<void> {
     });
 }
 
-export async function addPasswordAuth(
-  email: string,
-  password: string
-): Promise<void> {
-  if (Auth === undefined) {
-    Notifications.add("Authentication uninitialized", -1, {
-      duration: 3,
-    });
-    return;
-  }
-  Loader.show();
-  const user = Auth.currentUser;
-  if (user === null) return;
-  if (
-    user.providerData.find((provider) => provider.providerId === "google.com")
-  ) {
-    try {
-      await reauthenticateWithPopup(user, gmailProvider);
-    } catch (e) {
-      Loader.hide();
-      const message = Misc.createErrorMessage(e, "Failed to reauthenticate");
-      return Notifications.add(message, -1);
-    }
-  }
-
-  const credential = EmailAuthProvider.credential(email, password);
-  linkWithCredential(user, credential)
-    .then(async function () {
-      Settings.updateAuthSections();
-      const response = await Ape.users.updateEmail(email, user.email as string);
-      Loader.hide();
-      if (response.status !== 200) {
-        return Notifications.add(
-          "Password authentication added but updating the database email failed. This shouldn't happen, please contact support. Error: " +
-            response.message,
-          -1
-        );
-      }
-      Notifications.add("Password authentication added", 1);
-    })
-    .catch(function (error) {
-      Loader.hide();
-      Notifications.add(
-        "Failed to add password authentication: " + error.message,
-        -1
-      );
-    });
-}
-
 export function signOut(): void {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
@@ -494,9 +441,9 @@ export function signOut(): void {
       AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
-      $(".pageLogin .button").removeClass("disabled");
-      $(".pageLogin input").prop("disabled", false);
-      $("#top .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
+      LoginPage.enableSignUpButton();
+      LoginPage.enableInputs();
+      $("header .signInOut .icon").html(`<i class="far fa-fw fa-user"></i>`);
       setTimeout(() => {
         hideFavoriteQuoteLength();
       }, 125);
@@ -575,7 +522,7 @@ async function signUp(): Promise<void> {
   }
 
   // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
-  if (!Misc.isLocalhost() && !Misc.isPasswordStrong(password)) {
+  if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
     Notifications.add(
       "Password must contain at least one capital letter, number, a special character and must be between 8 and 64 characters long",
       0,
@@ -612,9 +559,7 @@ async function signUp(): Promise<void> {
     await updateProfile(createdAuthUser.user, { displayName: nname });
     await sendVerificationEmail();
     AllTimeStats.clear();
-    $("#menu .textButton.account .text").text(nname);
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    $("nav .textButton.account .text").text(nname);
     LoginPage.hidePreloader();
     await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
@@ -659,17 +604,12 @@ async function signUp(): Promise<void> {
   }
 }
 
-$(".pageLogin .login input").keyup((e) => {
-  if (e.key === "Enter") {
-    signIn();
-  }
-});
-
-$(".pageLogin .login .button.signIn").on("click", () => {
+$(".pageLogin .login form").on("submit", (e) => {
+  e.preventDefault();
   signIn();
 });
 
-$(".pageLogin .login .button.signInWithGoogle").on("click", () => {
+$(".pageLogin .login button.signInWithGoogle").on("click", () => {
   signInWithGoogle();
 });
 
@@ -677,7 +617,7 @@ $(".pageLogin .login .button.signInWithGoogle").on("click", () => {
 // signInWithGitHub();
 // });
 
-$("#top .signInOut").on("click", () => {
+$("header .signInOut").on("click", () => {
   if (Auth === undefined) {
     Notifications.add("Authentication uninitialized", -1, {
       duration: 3,
@@ -692,15 +632,8 @@ $("#top .signInOut").on("click", () => {
   }
 });
 
-$(".pageLogin .register input").keyup((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  if (e.key === "Enter") {
-    signUp();
-  }
-});
-
-$(".pageLogin .register .button").on("click", () => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
+$(".pageLogin .register form").on("submit", (e) => {
+  e.preventDefault();
   signUp();
 });
 

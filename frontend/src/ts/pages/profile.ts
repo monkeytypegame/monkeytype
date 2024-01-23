@@ -74,13 +74,13 @@ function reset(): void {
           <div class="value">-</div>
         </div>
         <div class="buttonGroup">
-          <div
-            class="userReportButton button"
+          <button
+            class="userReportButton"
             data-balloon-pos="left"
             aria-label="Report user"
           >
             <i class="fas fa-flag"></i>
-          </div>
+          </button>
         </div>
       </div>
       <div class="leaderboardsPositions">
@@ -153,7 +153,7 @@ function reset(): void {
             <div class="acc">-</div>
           </div>
         </div>
-      </div>`);
+      </div><div class="lbOptOutReminder hidden"></div>`);
 }
 
 interface UpdateOptions {
@@ -218,7 +218,7 @@ export const page = new Page<undefined | Profile.ProfileData>(
     reset();
   },
   async (options) => {
-    Skeleton.append("pageProfile", "middle");
+    Skeleton.append("pageProfile", "main");
     const uidOrName = options?.params?.["uidOrName"];
     if (uidOrName) {
       $(".page.pageProfile .preloader").removeClass("hidden");

@@ -8,27 +8,21 @@ import * as Misc from "../utils/misc";
 import TypoList from "../utils/typo-list";
 
 export function enableSignUpButton(): void {
-  $(".page.pageLogin .register.side .button").removeClass("disabled");
+  $(".page.pageLogin .register.side button").prop("disabled", false);
 }
 
 export function disableSignUpButton(): void {
-  $(".page.pageLogin .register.side .button").addClass("disabled");
-}
-
-export function enableSignInButton(): void {
-  $(".page.pageLogin .login.side .button").removeClass("disabled");
-}
-
-export function disableSignInButton(): void {
-  $(".page.pageLogin .login.side .button").addClass("disabled");
+  $(".page.pageLogin .register.side button").prop("disabled", true);
 }
 
 export function enableInputs(): void {
   $(".pageLogin input").prop("disabled", false);
+  $(".pageLogin button").prop("disabled", false);
 }
 
 export function disableInputs(): void {
   $(".pageLogin input").prop("disabled", true);
+  $(".pageLogin button").prop("disabled", true);
 }
 
 export function showPreloader(): void {
@@ -134,7 +128,7 @@ const checkPassword = (): void => {
   ).val() as string;
 
   // Force user to use a capital letter, number, special character and reasonable length when setting up an account and changing password
-  if (!Misc.isLocalhost() && !Misc.isPasswordStrong(password)) {
+  if (!Misc.isDevEnvironment() && !Misc.isPasswordStrong(password)) {
     if (password.length < 8) {
       passwordIndicator.show("short", "Password must be at least 8 characters");
     } else if (password.length > 64) {
@@ -337,9 +331,9 @@ export const page = new Page(
     Skeleton.remove("pageLogin");
   },
   async () => {
-    Skeleton.append("pageLogin", "middle");
-    $(".pageLogin .button").removeClass("disabled");
-    $(".pageLogin input").prop("disabled", false);
+    Skeleton.append("pageLogin", "main");
+    enableInputs();
+    enableSignUpButton();
   },
   async () => {
     //

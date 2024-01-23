@@ -9,7 +9,9 @@ function show(): void {
   $("#supportMeWrapper")
     .css("opacity", 0)
     .removeClass("hidden")
-    .animate({ opacity: 1 }, 125);
+    .animate({ opacity: 1 }, 125, () => {
+      $(`#${wrapperId}`).trigger("focus");
+    });
 }
 
 function hide(): void {
@@ -25,26 +27,18 @@ $("#supportMeButton").on("click", () => {
   show();
 });
 
-$("#middle").on("click", ".pageAbout #supportMeAboutButton", () => {
+$("main").on("click", ".pageAbout #supportMeAboutButton", () => {
   show();
 });
 
-$("#popups").on("click", "#supportMeWrapper", () => {
-  hide();
-});
-
-$("#popups").on("click", "#supportMeWrapper .button.ads", () => {
-  hide();
-});
-
-$("#popups").on("click", "#supportMeWrapper a.button", () => {
-  hide();
-});
-
-$(document).on("keypress", "#supportMeButton, #supportMeAboutButton", (e) => {
-  if (e.key === "Enter") {
-    $(e.currentTarget).trigger("click");
+$("#popups").on("click", "#supportMeWrapper", (e) => {
+  if ($(e.target).attr("id") === "supportMeWrapper") {
+    hide();
   }
+});
+
+$("#popups").on("click", "#supportMeWrapper button", () => {
+  hide();
 });
 
 $(document).on("keydown", (e) => {

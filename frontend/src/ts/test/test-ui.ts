@@ -23,6 +23,7 @@ import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as PractiseWords from "./practise-words";
+import * as ActivePage from "../states/active-page";
 
 const debouncedZipfCheck = debounce(250, () => {
   Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
@@ -129,6 +130,10 @@ export function focusWords(): void {
   }
 }
 
+export function blurWords(): void {
+  $("#wordsInput").trigger("blur");
+}
+
 export function updateActiveElement(
   backspace?: boolean,
   initial = false
@@ -229,6 +234,7 @@ function shouldUpdateWordsInputPosition(): boolean {
 }
 
 export function updateWordsInputPosition(initial = false): void {
+  if (ActivePage.get() !== "test") return;
   if (Config.tapeMode !== "off" && !initial) return;
   const el = document.querySelector("#wordsInput") as HTMLElement;
   const activeWord = document.querySelector(
@@ -285,6 +291,7 @@ export function updateWordsInputPosition(initial = false): void {
 }
 
 function updateWordsHeight(force = false): void {
+  if (ActivePage.get() !== "test") return;
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = <number>(
@@ -419,8 +426,10 @@ export async function screenshot(): Promise<void> {
     $(".pageTest .buttons").removeClass("hidden");
     $("noscript").removeClass("hidden");
     $("#nocss").removeClass("hidden");
-    $("#top, #bottom").removeClass("invisible");
+    $("header, footer").removeClass("invisible");
     $("#result").removeClass("noBalloons");
+    $(".wordInputHighlight").removeClass("hidden");
+    $(".highlightContainer").removeClass("hidden");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (!Auth?.currentUser) {
@@ -428,6 +437,10 @@ export async function screenshot(): Promise<void> {
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
       "smooth";
+
+    FunboxList.get(Config.funbox).forEach((f) =>
+      f.functions?.applyGlobalCSS?.()
+    );
     if (TribeState.getState() > 5) {
       $(".pageTest #result .inviteLink").removeClass("hidden");
     }
@@ -462,9 +475,13 @@ export async function screenshot(): Promise<void> {
   $("#ad-result-small-wrapper").addClass("hidden");
   $("#testConfig").addClass("hidden");
   $(".page.pageTest").prepend("<div class='screenshotSpacer'></div>");
-  $("#top, #bottom").addClass("invisible");
+  $("header, footer").addClass("invisible");
   $("#result").addClass("noBalloons");
+  $(".wordInputHighlight").addClass("hidden");
+  $(".highlightContainer").addClass("hidden");
   if (revertCookie) $("#cookiePopupWrapper").addClass("hidden");
+
+  FunboxList.get(Config.funbox).forEach((f) => f.functions?.clearGlobal?.());
 
   (document.querySelector("html") as HTMLElement).style.scrollBehavior = "auto";
   window.scrollTo({
@@ -775,6 +792,18 @@ export function scrollTape(): void {
   }
 }
 
+export function updatePremid(): void {
+  const mode2 = Misc.getMode2(Config, TestWords.randomQuote);
+  let fbtext = "";
+  if (Config.funbox !== "none") {
+    fbtext = " " + Config.funbox.split("#").join(" ");
+  }
+  $(".pageTest #premidTestMode").text(
+    `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
+  );
+  $(".pageTest #premidSecondsLeft").text(Config.time);
+}
+
 let currentLinesAnimating = 0;
 
 export function lineJump(currentTop: number): void {
@@ -1048,7 +1077,7 @@ export function toggleResultWords(noAnimation = false): void {
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
 
-      if (!$("#showWordHistoryButton").hasClass("loaded")) {
+      if ($("#resultWordsHistory .words .word").length === 0) {
         $("#words").html(
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
@@ -1098,20 +1127,6 @@ export async function applyBurstHeatmap(): Promise<void> {
       burstlist[index] = Math.round(typingSpeedUnit.fromWpm(burst));
     });
 
-    if (
-      TestInput.input.getHistory(TestInput.input.getHistory().length - 1)
-        ?.length !== TestWords.words.getCurrent()?.length
-    ) {
-      burstlist = burstlist.splice(0, burstlist.length - 1);
-    }
-
-    const median = Misc.median(burstlist);
-    const adatm: number[] = [];
-    burstlist.forEach((burst) => {
-      adatm.push(Math.abs(median - burst));
-    });
-    const step = Misc.mean(adatm);
-
     const themeColors = await ThemeColors.getAll();
 
     let colors = [
@@ -1138,25 +1153,28 @@ export async function applyBurstHeatmap(): Promise<void> {
       unreachedColor = themeColors.subAlt;
     }
 
+    const burstlistSorted = burstlist.sort((a, b) => a - b);
+    const burstlistLength = burstlist.length;
+
     const steps = [
       {
         val: 0,
         colorId: 0,
       },
       {
-        val: median - step * 1.5,
+        val: burstlistSorted[(burstlistLength * 0.15) | 0],
         colorId: 1,
       },
       {
-        val: median - step * 0.5,
+        val: burstlistSorted[(burstlistLength * 0.35) | 0],
         colorId: 2,
       },
       {
-        val: median + step * 0.5,
+        val: burstlistSorted[(burstlistLength * 0.65) | 0],
         colorId: 3,
       },
       {
-        val: median + step * 1.5,
+        val: burstlistSorted[(burstlistLength * 0.85) | 0],
         colorId: 4,
       },
     ];
@@ -1166,11 +1184,15 @@ export async function applyBurstHeatmap(): Promise<void> {
       if (index === 0) {
         string = `<${Math.round(steps[index + 1].val)}`;
       } else if (index === 4) {
-        string = `${Math.round(step.val - 1)}+`;
+        string = `${Math.round(step.val)}+`;
       } else {
-        string = `${Math.round(step.val)}-${
-          Math.round(steps[index + 1].val) - 1
-        }`;
+        if (step.val != steps[index + 1].val) {
+          string = `${Math.round(step.val)}-${
+            Math.round(steps[index + 1].val) - 1
+          }`;
+        } else {
+          string = `${Math.round(step.val)}-${Math.round(step.val)}`;
+        }
       }
 
       $("#resultWordsHistory .heatmapLegend .box" + index).html(
@@ -1228,12 +1250,6 @@ export function highlightMode(mode?: MonkeyTypes.HighlightMode): void {
 
 $(".pageTest").on("click", "#saveScreenshotButton", () => {
   screenshot();
-});
-
-$("#saveScreenshotButton").on("keypress", (e) => {
-  if (e.key === "Enter") {
-    screenshot();
-  }
 });
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
@@ -1327,12 +1343,6 @@ $(document.body).on("click", "#practiseWordsButton", () => {
   PractiseWords.showPopup();
 });
 
-$(document).on("keypress", "#showWordHistoryButton", (event) => {
-  if (event.key === "Enter") {
-    toggleResultWords();
-  }
-});
-
 $(".pageTest").on("click", "#showWordHistoryButton", () => {
   toggleResultWords();
 });
@@ -1344,5 +1354,15 @@ $("#wordsWrapper").on("click", () => {
 $(document).on("keypress", () => {
   if (resultVisible) {
     skipXpBreakdown();
+  }
+});
+
+ConfigEvent.subscribe((key, value) => {
+  if (key === "quickRestart") {
+    if (value === "off") {
+      $(".pageTest #restartTestButton").removeClass("hidden");
+    } else {
+      $(".pageTest #restartTestButton").addClass("hidden");
+    }
   }
 });

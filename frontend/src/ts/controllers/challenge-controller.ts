@@ -204,7 +204,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     Notifications.add(message, -1);
     ManualRestart.set();
     setTimeout(() => {
-      $("#top .config").removeClass("hidden");
+      $("header .config").removeClass("hidden");
       $(".page.pageTest").removeClass("hidden");
     }, 250);
     return false;
@@ -217,7 +217,7 @@ export async function setup(challengeName: string): Promise<boolean> {
       Notifications.add("Challenge not found", 0);
       ManualRestart.set();
       setTimeout(() => {
-        $("#top .config").removeClass("hidden");
+        $("header .config").removeClass("hidden");
         $(".page.pageTest").removeClass("hidden");
       }, 250);
       return false;
@@ -307,7 +307,7 @@ export async function setup(challengeName: string): Promise<boolean> {
     }
     ManualRestart.set();
     notitext = challenge.message;
-    $("#top .config").removeClass("hidden");
+    $("header .config").removeClass("hidden");
     $(".page.pageTest").removeClass("hidden");
 
     if (notitext === undefined) {

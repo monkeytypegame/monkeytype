@@ -2,7 +2,7 @@ import joi from "joi";
 
 const RESULT_SCHEMA = joi
   .object({
-    acc: joi.number().min(75).max(100).required(),
+    acc: joi.number().min(50).max(100).required(),
     afkDuration: joi.number().min(0).required(),
     bailedOut: joi.boolean().required(),
     blindMode: joi.boolean().required(),

@@ -224,7 +224,7 @@ $("#quoteRatePopupWrapper").on("click", (e) => {
   }
 });
 
-$("#quoteRatePopupWrapper .stars .star").hover((e) => {
+$("#quoteRatePopupWrapper .stars .star").on("mouseenter mouseleave", (e) => {
   const ratingHover = parseInt($(e.currentTarget).attr("rating") as string);
   refreshStars(ratingHover);
 });
@@ -234,7 +234,7 @@ $("#quoteRatePopupWrapper .stars .star").on("click", (e) => {
   rating = ratingHover;
 });
 
-$("#quoteRatePopupWrapper .stars .star").mouseout(() => {
+$("#quoteRatePopupWrapper .stars .star").on("mouseout", () => {
   $(`#quoteRatePopup .star`).removeClass("active");
   refreshStars();
 });

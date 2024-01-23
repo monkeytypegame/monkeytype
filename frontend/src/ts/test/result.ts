@@ -8,7 +8,6 @@ import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
 import QuotesController from "../controllers/quotes-controller";
 import * as DB from "../db";
-import * as Keymap from "../elements/keymap";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
@@ -33,6 +32,9 @@ import * as TribeButtons from "../tribe/tribe-buttons";
 import * as TribeChat from "../tribe/tribe-chat";
 import * as TribeChartController from "../tribe/tribe-chart-controller";
 import * as ConfigEvent from "../observables/config-event";
+import * as Focus from "./focus";
+import * as CustomText from "./custom-text";
+import * as CustomTextState from "./../states/custom-text-name";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -265,8 +267,11 @@ function updateWpmAndAcc(): void {
     );
   } else {
     //not showing decimal places
-    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm);
-    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(result.rawWpm);
+    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm, true);
+    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(
+      result.rawWpm,
+      true
+    );
     if (Config.typingSpeedUnit != "wpm") {
       wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
@@ -716,6 +721,8 @@ export async function update(
   ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
+  hideCrown();
+  $("#resultWordsHistory .words").empty();
   $("#result #resultWordsHistory").addClass("hidden");
   $("#retrySavingResultButton").addClass("hidden");
   $(".pageTest #result #rateQuoteButton .icon")
@@ -723,9 +730,8 @@ export async function update(
     .addClass("far");
   $(".pageTest #result #rateQuoteButton .rating").text("");
   $(".pageTest #result #rateQuoteButton").addClass("hidden");
-  $("#testModesNotice").css("opacity", 0);
   $("#words").removeClass("blurred");
-  $("#wordsInput").blur();
+  $("#wordsInput").trigger("blur");
   $("#result .stats .time .bottom .afk").text("");
   if (Auth?.currentUser) {
     $("#result .loginTip").addClass("hidden");
@@ -765,8 +771,8 @@ export async function update(
   }
 
   if (GlarsesMode.get()) {
-    $("#middle #result .noStressMessage").remove();
-    $("#middle #result").prepend(`
+    $("main #result .noStressMessage").remove();
+    $("main #result").prepend(`
 
       <div class='noStressMessage' style="
         text-align: center;
@@ -778,28 +784,28 @@ export async function update(
       </div>
 
     `);
-    $("#middle #result .stats").addClass("hidden");
-    $("#middle #result .chart").addClass("hidden");
-    $("#middle #result #resultWordsHistory").addClass("hidden");
-    $("#middle #result #resultReplay").addClass("hidden");
-    $("#middle #result .loginTip").addClass("hidden");
-    $("#middle #result #showWordHistoryButton").addClass("hidden");
-    $("#middle #result #watchReplayButton").addClass("hidden");
-    $("#middle #result #saveScreenshotButton").addClass("hidden");
+    $("main #result .stats").addClass("hidden");
+    $("main #result .chart").addClass("hidden");
+    $("main #result #resultWordsHistory").addClass("hidden");
+    $("main #result #resultReplay").addClass("hidden");
+    $("main #result .loginTip").addClass("hidden");
+    $("main #result #showWordHistoryButton").addClass("hidden");
+    $("main #result #watchReplayButton").addClass("hidden");
+    $("main #result #saveScreenshotButton").addClass("hidden");
 
     console.log(
       `Test Completed: ${result.wpm} wpm ${result.acc}% acc ${result.rawWpm} raw ${result.consistency}% consistency`
     );
   } else {
-    $("#middle #result .stats").removeClass("hidden");
-    $("#middle #result .chart").removeClass("hidden");
-    // $("#middle #result #resultWordsHistory").removeClass("hidden");
+    $("main #result .stats").removeClass("hidden");
+    $("main #result .chart").removeClass("hidden");
+    // $("main #result #resultWordsHistory").removeClass("hidden");
     if (!Auth?.currentUser) {
-      $("#middle #result .loginTip").removeClass("hidden");
+      $("main #result .loginTip").removeClass("hidden");
     }
-    $("#middle #result #showWordHistoryButton").removeClass("hidden");
-    $("#middle #result #watchReplayButton").removeClass("hidden");
-    $("#middle #result #saveScreenshotButton").removeClass("hidden");
+    $("main #result #showWordHistoryButton").removeClass("hidden");
+    $("main #result #watchReplayButton").removeClass("hidden");
+    $("main #result #saveScreenshotButton").removeClass("hidden");
   }
 
   if (window.scrollY > 0) {
@@ -815,15 +821,14 @@ export async function update(
     $("#result"),
     250,
     async () => {
+      $("#result").trigger("focus");
       AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
 
-      $("#result").trigger("focus");
       window.scrollTo({ top: 0 });
       TribeChat.scrollChat();
-      $("#testModesNotice").addClass("hidden");
       const room = TribeState.getRoom();
       if (room?.users) {
         for (const userId of Object.keys(room.users)) {
@@ -835,16 +840,29 @@ export async function update(
       }
     },
     async () => {
+      Focus.set(false);
       $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
         {
           opacity: 1,
         },
         125
       );
-      if (Config.alwaysShowWordsHistory && !GlarsesMode.get()) {
+
+      const canQuickRestart = Misc.canQuickRestart(
+        Config.mode,
+        Config.words,
+        Config.time,
+        CustomText,
+        CustomTextState.isCustomTextLong() ?? false
+      );
+
+      if (
+        Config.alwaysShowWordsHistory &&
+        canQuickRestart &&
+        !GlarsesMode.get()
+      ) {
         TestUI.toggleResultWords(true);
       }
-      Keymap.hide();
 
       //tribe
       $("#result .bottom .buttons div").addClass("hidden");
@@ -869,7 +887,7 @@ export async function update(
       $("#result #showWordHistoryButton").removeClass("hidden");
       $("#result #saveScreenshotButton").removeClass("hidden");
 
-      AdController.updateTestPageAds(true);
+      AdController.updateFooterAndVerticalAds(true);
     }
   );
 }

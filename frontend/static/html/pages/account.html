@@ -90,22 +90,22 @@
           <div class="value">-</div>
         </div>
         <div class="buttonGroup">
-          <div
-            class="editProfileButton button"
+          <button
+            class="editProfileButton"
             data-balloon-pos="left"
             aria-label="Edit profile"
             role="button"
           >
             <i class="fas fa-pen"></i>
-          </div>
-          <div
+          </button>
+          <button
             class="copyLink button"
             data-balloon-pos="left"
             aria-label="Copy public link"
             role="button"
           >
             <i class="fas fa-link"></i>
-          </div>
+          </button>
         </div>
       </div>
       <div class="leaderboardsPositions">
@@ -117,46 +117,6 @@
         <div class="group t60">
           <div class="testType">60 seconds</div>
           <div class="pos">-</div>
-        </div>
-      </div>
-      <div class="pbsWords">
-        <div class="group">
-          <div class="quick">
-            <div class="test">10 words</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
-          </div>
-        </div>
-        <div class="group">
-          <div class="quick">
-            <div class="test">25 words</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
-          </div>
-        </div>
-        <div class="group">
-          <div class="quick">
-            <div class="test">50 words</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
-          </div>
-        </div>
-        <div class="group">
-          <div class="quick">
-            <div class="test">100 words</div>
-            <div class="wpm">-</div>
-            <div class="acc">-</div>
-          </div>
-        </div>
-        <div class="buttonGroup">
-          <div
-            class="showAllButton button"
-            data-balloon-pos="left"
-            aria-label="Show all personal bests"
-            role="button"
-          >
-            <i class="fas fa-ellipsis-v"></i>
-          </div>
         </div>
       </div>
       <div class="pbsTime">
@@ -190,7 +150,47 @@
         </div>
         <div class="buttonGroup">
           <div
-            class="showAllButton button"
+            class="showAllButton"
+            data-balloon-pos="left"
+            aria-label="Show all personal bests"
+            role="button"
+          >
+            <i class="fas fa-ellipsis-v"></i>
+          </div>
+        </div>
+      </div>
+      <div class="pbsWords">
+        <div class="group">
+          <div class="quick">
+            <div class="test">10 words</div>
+            <div class="wpm">-</div>
+            <div class="acc">-</div>
+          </div>
+        </div>
+        <div class="group">
+          <div class="quick">
+            <div class="test">25 words</div>
+            <div class="wpm">-</div>
+            <div class="acc">-</div>
+          </div>
+        </div>
+        <div class="group">
+          <div class="quick">
+            <div class="test">50 words</div>
+            <div class="wpm">-</div>
+            <div class="acc">-</div>
+          </div>
+        </div>
+        <div class="group">
+          <div class="quick">
+            <div class="test">100 words</div>
+            <div class="wpm">-</div>
+            <div class="acc">-</div>
+          </div>
+        </div>
+        <div class="buttonGroup">
+          <div
+            class="showAllButton"
             data-balloon-pos="left"
             aria-label="Show all personal bests"
             role="button"
@@ -311,6 +311,28 @@
       <div id="ad-account-1-small"></div>
     </div>
 
+    <div class="group resultBatches hidden">
+      <!-- <div class="title">result history</div> -->
+      <div class="bars">
+        <div class="leftText downloaded">Result history:</div>
+        <div class="bar downloaded">
+          <div class="fill"></div>
+        </div>
+        <div class="rightText downloaded">-</div>
+        <div class="leftText limit">Result limit:</div>
+        <div class="bar limit">
+          <div class="fill"></div>
+          <!-- <div class="indicator">
+            <div class="text">completed tests</div>
+            <div class="line"></div>
+          </div> -->
+        </div>
+        <div class="rightText limit">-</div>
+      </div>
+      <div class="text"></div>
+      <button class="loadMoreResults">load more</button>
+    </div>
+
     <div class="group presetFilterButtons hidden">
       <div class="buttonsAndTitle">
         <div class="title">filter presets</div>
@@ -328,10 +350,10 @@
       <div class="buttonsAndTitle" style="grid-column: 1/3">
         <div class="title">filters</div>
         <div class="buttons">
-          <div class="button allFilters">all</div>
-          <div class="button currentConfigFilter">current settings</div>
-          <div class="button toggleAdvancedFilters">advanced</div>
-          <div class="button createFilterPresetBtn">save as preset</div>
+          <button class="allFilters">all</button>
+          <button class="currentConfigFilter">current settings</button>
+          <button class="toggleAdvancedFilters">advanced</button>
+          <button class="createFilterPresetBtn">save as preset</button>
         </div>
       </div>
       <div
@@ -340,11 +362,11 @@
       >
         <!-- <div class="title">date</div> -->
         <div class="buttons filterGroup" group="date">
-          <div class="button" filter="last_day">last day</div>
-          <div class="button" filter="last_week">last week</div>
-          <div class="button" filter="last_month">last month</div>
-          <div class="button" filter="last_3months">last 3 months</div>
-          <div class="button" filter="all">all time</div>
+          <button filter="last_day">last day</button>
+          <button filter="last_week">last week</button>
+          <button filter="last_month">last month</button>
+          <button filter="last_3months">last 3 months</button>
+          <button filter="all">all time</button>
         </div>
       </div>
     </div>
@@ -352,75 +374,75 @@
       <div class="buttonsAndTitle" style="grid-column: 1/3">
         <div class="title">advanced filters</div>
         <div class="buttons">
-          <div class="button noFilters">clear filters</div>
+          <button class="noFilters">clear filters</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
         <div class="title">difficulty</div>
         <div class="buttons filterGroup" group="difficulty">
-          <div class="button" filter="normal">normal</div>
-          <div class="button" filter="expert">expert</div>
-          <div class="button" filter="master">master</div>
+          <button filter="normal">normal</button>
+          <button filter="expert">expert</button>
+          <button filter="master">master</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
         <div class="title">personal best</div>
         <div class="buttons filterGroup" group="pb">
-          <div class="button" filter="no">no</div>
-          <div class="button" filter="yes">yes</div>
+          <button filter="no">no</button>
+          <button filter="yes">yes</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
         <div class="title">mode</div>
         <div class="buttons filterGroup" group="mode">
-          <div class="button" filter="words">words</div>
-          <div class="button" filter="time">time</div>
-          <div class="button" filter="quote">quote</div>
-          <div class="button" filter="zen">zen</div>
-          <div class="button" filter="custom">custom</div>
+          <button filter="words">words</button>
+          <button filter="time">time</button>
+          <button filter="quote">quote</button>
+          <button filter="zen">zen</button>
+          <button filter="custom">custom</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
         <div class="title">quote length</div>
         <div class="buttons filterGroup" group="quoteLength">
-          <div class="button" filter="short">short</div>
-          <div class="button" filter="medium">medium</div>
-          <div class="button" filter="long">long</div>
-          <div class="button" filter="thicc">thicc</div>
+          <button filter="short">short</button>
+          <button filter="medium">medium</button>
+          <button filter="long">long</button>
+          <button filter="thicc">thicc</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
         <div class="title">words</div>
         <div class="buttons filterGroup" group="words">
-          <div class="button" filter="10">10</div>
-          <div class="button" filter="25">25</div>
-          <div class="button" filter="50">50</div>
-          <div class="button" filter="100">100</div>
-          <div class="button" filter="custom">custom</div>
+          <button filter="10">10</button>
+          <button filter="25">25</button>
+          <button filter="50">50</button>
+          <button filter="100">100</button>
+          <button filter="custom">custom</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
         <div class="title">time</div>
         <div class="buttons filterGroup" group="time">
-          <div class="button" filter="15">15</div>
-          <div class="button" filter="30">30</div>
-          <div class="button" filter="60">60</div>
-          <div class="button" filter="120">120</div>
-          <div class="button" filter="custom">custom</div>
+          <button filter="15">15</button>
+          <button filter="30">30</button>
+          <button filter="60">60</button>
+          <button filter="120">120</button>
+          <button filter="custom">custom</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
         <div class="title">punctuation</div>
         <div class="buttons filterGroup" group="punctuation">
-          <div class="button" filter="on">on</div>
-          <div class="button" filter="off">off</div>
+          <button filter="on">on</button>
+          <button filter="off">off</button>
         </div>
       </div>
       <div class="buttonsAndTitle">
         <div class="title">numbers</div>
         <div class="buttons filterGroup" group="numbers">
-          <div class="button" filter="on">on</div>
-          <div class="button" filter="off">off</div>
+          <button filter="on">on</button>
+          <button filter="off">off</button>
         </div>
       </div>
       <div class="buttonsAndTitle tags" style="grid-column: 1/3">
@@ -451,18 +473,22 @@
       <div class="below">
         <div class="text"></div>
         <div class="buttons">
-          <div class="toggleAccuracyOnChart button">
+          <button class="toggleResultsOnChart">
+            <i class="fas fa-keyboard"></i>
+            Results
+          </button>
+          <button class="toggleAccuracyOnChart">
             <i class="fas fa-bullseye"></i>
             Accuracy
-          </div>
-          <div class="toggleAverage10OnChart button">
+          </button>
+          <button class="toggleAverage10OnChart">
             <i class="fas fa-chart-line"></i>
             Avg of 10
-          </div>
-          <div class="toggleAverage100OnChart button">
+          </button>
+          <button class="toggleAverage100OnChart">
             <i class="fas fa-chart-line"></i>
             Avg of 100
-          </div>
+          </button>
         </div>
       </div>
     </div>

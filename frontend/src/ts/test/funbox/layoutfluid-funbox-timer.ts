@@ -25,9 +25,10 @@ export function updateTime(sec: number, layout: string): void {
 }
 
 export function updateWords(words: number, layout: string): void {
-  let str = `${capitalizeFirstLetter(layout)} in: ${words} words`;
+  const layoutName = capitalizeFirstLetter(layout.replace(/_/g, " "));
+  let str = `${layoutName} in: ${words} words`;
   if (words === 1) {
-    str = `${capitalizeFirstLetter(layout)} starting next word`;
+    str = `${layoutName} starting next word`;
   }
   $("#typingTest #layoutfluidTimer").text(str);
 }

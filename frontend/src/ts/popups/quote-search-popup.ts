@@ -30,6 +30,9 @@ export function setSelectedId(val: number): void {
 
 const searchServiceCache: Record<string, SearchService<MonkeyTypes.Quote>> = {};
 
+const pageSize = 100;
+let currentPageNumber = 1;
+
 function getSearchService<T>(
   language: string,
   data: T[],
@@ -176,18 +179,33 @@ async function updateResults(searchText: string): Promise<void> {
   const resultsList = $("#quoteSearchResults");
   resultsList.empty();
 
-  quotesToShow.slice(0, 100).forEach((quote) => {
+  const totalPages = Math.ceil(quotesToShow.length / pageSize);
+
+  $("#quoteSearchPageNavigator .nextPage").toggleClass(
+    "disabled",
+    currentPageNumber >= totalPages
+  );
+  $("#quoteSearchPageNavigator .prevPage").toggleClass(
+    "disabled",
+    currentPageNumber <= 1
+  );
+
+  if (quotesToShow.length === 0) {
+    $("#pageInfo").html("No search results");
+    return;
+  }
+
+  const startIndex = (currentPageNumber - 1) * pageSize;
+  const endIndex = Math.min(currentPageNumber * pageSize, quotesToShow.length);
+
+  $("#pageInfo").html(
+    `${startIndex + 1} - ${endIndex} of ${quotesToShow.length}`
+  );
+
+  quotesToShow.slice(startIndex, endIndex).forEach((quote) => {
     const quoteSearchResult = buildQuoteSearchResult(quote, matchedQueryTerms);
     resultsList.append(quoteSearchResult);
   });
-
-  const resultsExceededText =
-    quotesToShow.length > 100
-      ? "<span style='opacity: 0.5'>(only showing 100)</span>"
-      : "";
-  $("#extraResults").html(
-    `${quotesToShow.length} result(s) ${resultsExceededText}`
-  );
 }
 
 export async function show(clearText = true): Promise<void> {
@@ -251,6 +269,7 @@ export async function show(clearText = true): Promise<void> {
         if (clearText) {
           $("#quoteSearchPopup input").trigger("focus").trigger("select");
         }
+        currentPageNumber = 1;
         updateResults(quoteSearchInputValue);
       });
   }
@@ -303,6 +322,7 @@ export function apply(val: number): boolean {
 const searchForQuotes = debounce(250, (): void => {
   const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
     .value;
+  currentPageNumber = 1;
   updateResults(searchText);
 });
 
@@ -312,6 +332,21 @@ $("#quoteSearchPopupWrapper .searchBox").on("keyup", (e) => {
 });
 
 $("#quoteSearchPopupWrapper .quoteLengthFilter").on("change", searchForQuotes);
+
+$(
+  "#quoteSearchPageNavigator .nextPage, #quoteSearchPageNavigator .prevPage"
+).on("click", function () {
+  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+    .value;
+
+  if ($(this).hasClass("nextPage")) {
+    currentPageNumber++;
+  } else {
+    currentPageNumber--;
+  }
+
+  updateResults(searchText);
+});
 
 $("#quoteSearchPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {

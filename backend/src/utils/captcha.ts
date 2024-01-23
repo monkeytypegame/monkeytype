@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { isDevEnvironment } from "./misc";
 
 interface CaptchaData {
   success: boolean;
@@ -8,7 +9,7 @@ interface CaptchaData {
 }
 
 export async function verify(captcha: string): Promise<boolean> {
-  if (process.env.MODE === "dev") {
+  if (isDevEnvironment()) {
     return true;
   }
   const response = await fetch(
@@ -16,7 +17,7 @@ export async function verify(captcha: string): Promise<boolean> {
     {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captcha}`,
+      body: `secret=${process.env["RECAPTCHA_SECRET"]}&response=${captcha}`,
     }
   );
 

@@ -1,3 +1,4 @@
+import { throttle } from "throttle-debounce";
 import * as Notifications from "../elements/notifications";
 import * as ConnectionEvent from "../observables/connection-event";
 import * as TestState from "../test/test-state";
@@ -28,8 +29,7 @@ export function showOfflineBanner(): void {
   }
 }
 
-ConnectionEvent.subscribe((newState) => {
-  state = newState;
+const throttledHandleState = throttle(10000, () => {
   if (state) {
     Notifications.add("You're back online", 1, {
       customTitle: "Connection",
@@ -43,6 +43,11 @@ ConnectionEvent.subscribe((newState) => {
   } else if (!TestState.isActive) {
     showOfflineBanner();
   }
+});
+
+ConnectionEvent.subscribe((newState) => {
+  state = newState;
+  throttledHandleState();
 });
 
 window.addEventListener("load", () => {

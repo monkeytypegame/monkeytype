@@ -14,7 +14,7 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up date environment variables
         run: |
           echo "BRANCH_TITLE=pretty-fix-$(date +%s)" >> $GITHUB_ENV
@@ -38,7 +38,7 @@ jobs:
           git config user.name 'monkeytypegeorge'
           git config user.email 'monkeytypegeorge@gmail.com'
           git add .
-          git commit -m 'Prettier fix'
+          git commit -m 'refactor: run prettier'
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v4

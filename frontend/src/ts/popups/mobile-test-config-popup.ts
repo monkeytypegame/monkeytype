@@ -14,9 +14,9 @@ const wrapperId = "mobileTestConfigPopupWrapper";
 const el = $("#mobileTestConfigPopup");
 
 function update(): void {
-  el.find(".button").removeClass("active");
+  el.find("button").removeClass("active");
 
-  el.find(`.modeGroup .button[mode='${Config.mode}']`).addClass("active");
+  el.find(`.modeGroup button[data-mode='${Config.mode}']`).addClass("active");
   el.find(".timeGroup").addClass("hidden");
   el.find(".wordsGroup").addClass("hidden");
   el.find(".quoteGroup").addClass("hidden");
@@ -36,17 +36,21 @@ function update(): void {
   }
 
   if (Config.mode === "time") {
-    el.find(`.timeGroup .button[time='${Config.time}']`).addClass("active");
+    el.find(`.timeGroup button[data-time='${Config.time}']`).addClass("active");
     el.find(".punctuation").removeClass("disabled");
     el.find(".numbers").removeClass("disabled");
   } else if (Config.mode === "words") {
-    el.find(`.wordsGroup .button[words='${Config.words}']`).addClass("active");
+    el.find(`.wordsGroup button[data-words='${Config.words}']`).addClass(
+      "active"
+    );
     el.find(".punctuation").removeClass("disabled");
     el.find(".numbers").removeClass("disabled");
   } else if (Config.mode === "quote") {
-    el.find(`.quoteGroup .button[quote='${Config.quoteLength}']`).addClass(
-      "active"
-    );
+    for (const ql of Config.quoteLength) {
+      el.find(`.quoteGroup button[data-quoteLength='${ql}']`).addClass(
+        "active"
+      );
+    }
     el.find(".punctuation").addClass("disabled");
     el.find(".numbers").addClass("disabled");
   } else if (Config.mode === "zen") {
@@ -99,8 +103,8 @@ $("#mobileTestConfig").on("click", () => {
   showPopup();
 });
 
-el.find(".wordsGroup .button").on("click", (e) => {
-  const wrd = $(e.currentTarget).attr("words");
+el.find(".wordsGroup button").on("click", (e) => {
+  const wrd = $(e.currentTarget).attr("data-words");
 
   if (wrd === "custom") {
     hidePopup();
@@ -113,8 +117,8 @@ el.find(".wordsGroup .button").on("click", (e) => {
   }
 });
 
-el.find(".timeGroup .button").on("click", (e) => {
-  const time = $(e.currentTarget).attr("time");
+el.find(".timeGroup button").on("click", (e) => {
+  const time = $(e.currentTarget).attr("data-time");
 
   if (time === "custom") {
     hidePopup();
@@ -127,9 +131,9 @@ el.find(".timeGroup .button").on("click", (e) => {
   }
 });
 
-el.find(".quoteGroup .button").on("click", (e) => {
+el.find(".quoteGroup button").on("click", (e) => {
   let len: number | number[] = parseInt(
-    $(e.currentTarget).attr("quote") ?? "0",
+    $(e.currentTarget).attr("data-quoteLength") ?? "0",
     10
   );
   if (len === -2) {
@@ -167,15 +171,15 @@ el.find(".numbers").on("click", () => {
   TestLogic.restart();
 });
 
-el.find(".modeGroup .button").on("click", (e) => {
+el.find(".modeGroup button").on("click", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
-  const mode = $(e.currentTarget).attr("mode");
+  const mode = $(e.currentTarget).attr("data-mode");
   UpdateConfig.setMode(mode as MonkeyTypes.Mode);
   ManualRestart.set();
   TestLogic.restart();
 });
 
-$("#mobileTestConfigPopupWrapper .button").on("click", () => {
+$("#mobileTestConfigPopupWrapper button").on("click", () => {
   // hidePopup();
   update();
 });

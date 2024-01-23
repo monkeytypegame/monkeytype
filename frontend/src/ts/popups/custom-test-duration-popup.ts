@@ -135,7 +135,7 @@ $("#customTestDurationPopupWrapper").on("click", (e) => {
   }
 });
 
-$("#customTestDurationPopupWrapper input").keyup((e) => {
+$("#customTestDurationPopupWrapper input").on("keyup", (e) => {
   previewDuration();
 
   if (e.key === "Enter") {
@@ -143,7 +143,7 @@ $("#customTestDurationPopupWrapper input").keyup((e) => {
   }
 });
 
-$("#customTestDurationPopupWrapper .button").on("click", () => {
+$("#customTestDurationPopupWrapper button").on("click", () => {
   apply();
 });
 

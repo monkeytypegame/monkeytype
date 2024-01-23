@@ -1,109 +1,13 @@
+type Configuration = import("../types/shared").Configuration;
+
 type ObjectId = import("mongodb").ObjectId;
 
 type ExpressRequest = import("express").Request;
 
 declare namespace MonkeyTypes {
-  interface ValidModeRule {
-    language: string;
-    mode: string;
-    mode2: string;
-  }
-
-  interface Configuration {
-    maintenance: boolean;
-    quotes: {
-      reporting: {
-        enabled: boolean;
-        maxReports: number;
-        contentReportLimit: number;
-      };
-      submissionsEnabled: boolean;
-      maxFavorites: number;
-    };
-    results: {
-      savingEnabled: boolean;
-      objectHashCheckEnabled: boolean;
-      filterPresets: {
-        enabled: boolean;
-        maxPresetsPerUser: number;
-      };
-    };
-    users: {
-      signUp: boolean;
-      lastHashesCheck: {
-        enabled: boolean;
-        maxHashes: number;
-      };
-      autoBan: {
-        enabled: boolean;
-        maxCount: number;
-        maxHours: number;
-      };
-      profiles: {
-        enabled: boolean;
-      };
-      discordIntegration: {
-        enabled: boolean;
-      };
-      xp: {
-        enabled: boolean;
-        funboxBonus: number;
-        gainMultiplier: number;
-        maxDailyBonus: number;
-        minDailyBonus: number;
-        streak: {
-          enabled: boolean;
-          maxStreakDays: number;
-          maxStreakMultiplier: number;
-        };
-      };
-      inbox: {
-        enabled: boolean;
-        maxMail: number;
-      };
-    };
-    admin: {
-      endpointsEnabled: boolean;
-    };
-    apeKeys: {
-      endpointsEnabled: boolean;
-      acceptKeys: boolean;
-      maxKeysPerUser: number;
-      apeKeyBytes: number;
-      apeKeySaltRounds: number;
-    };
-    rateLimiting: {
-      badAuthentication: {
-        enabled: boolean;
-        penalty: number;
-        flaggedStatusCodes: number[];
-      };
-    };
-    dailyLeaderboards: {
-      enabled: boolean;
-      leaderboardExpirationTimeInDays: number;
-      maxResults: number;
-      validModeRules: ValidModeRule[];
-      scheduleRewardsModeRules: ValidModeRule[];
-      topResultsToAnnounce: number;
-      xpRewardBrackets: RewardBracket[];
-    };
-    leaderboards: {
-      weeklyXp: {
-        enabled: boolean;
-        expirationTimeInDays: number;
-        xpRewardBrackets: RewardBracket[];
-      };
-    };
-  }
-
-  interface RewardBracket {
-    minRank: number;
-    maxRank: number;
-    minReward: number;
-    maxReward: number;
-  }
-
+  type Configuration = import("./shared").Configuration;
+  type ValidModeRule = import("./shared").ValidModeRule;
+  type RewardBracket = import("./shared").RewardBracket;
   interface DecodedToken {
     type: "Bearer" | "ApeKey" | "None";
     uid: string;
@@ -157,6 +61,8 @@ declare namespace MonkeyTypes {
     rewards: AllRewards[];
   }
 
+  type UserIpHistory = string[];
+
   interface User {
     autoBanTimestamps?: number[];
     addedAt: number;
@@ -193,6 +99,8 @@ declare namespace MonkeyTypes {
     streak?: UserStreak;
     lastReultHashes?: string[];
     lbOptOut?: boolean;
+    premium?: PremiumInfo;
+    ips?: UserIpHistory;
   }
 
   interface UserStreak {
@@ -268,7 +176,7 @@ declare namespace MonkeyTypes {
       [language: string]: boolean;
     };
     funbox: {
-      none?: boolean;
+      none: boolean;
       [funbox: string]: boolean;
     };
   }
@@ -454,16 +362,18 @@ declare namespace MonkeyTypes {
   }
 
   interface PublicStats {
-    _id: string;
+    _id: "stats";
     testsCompleted: number;
     testsStarted: number;
     timeTyping: number;
-    type: string;
   }
 
-  interface PublicSpeedStats {
-    _id: string;
-    type: "speedStats";
+  type PublicSpeedStats = PublicSpeedStatsMongoEntry &
+    PublicSpeedStatsByLanguage;
+  interface PublicSpeedStatsMongoEntry {
+    _id: "speedStatsHistogram";
+  }
+  interface PublicSpeedStatsByLanguage {
     [language_mode_mode2: string]: Record<string, number>;
   }
 
@@ -483,5 +393,10 @@ declare namespace MonkeyTypes {
     properties?: string[];
     frontendForcedConfig?: Record<string, string[] | boolean[]>;
     frontendFunctions?: string[];
+  }
+
+  interface PremiumInfo {
+    startTimestamp: number;
+    expirationTimestamp: number;
   }
 }

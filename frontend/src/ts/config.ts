@@ -17,6 +17,7 @@ import {
 } from "./test/funbox/funbox-validation";
 import * as TribeState from "./tribe/tribe-state";
 import * as TribeConfigSyncEvent from "./observables/tribe-config-sync-event";
+import { reloadAfter } from "./utils/misc";
 
 export let localStorageConfig: MonkeyTypes.Config;
 
@@ -156,8 +157,13 @@ export function setMode(
   return true;
 }
 
-export function setPlaySoundOnError(val: boolean, nosave?: boolean): boolean {
-  if (!isConfigValueValid("play sound on error", val, ["boolean"])) {
+export function setPlaySoundOnError(
+  val: MonkeyTypes.PlaySoundOnError,
+  nosave?: boolean
+): boolean {
+  if (
+    !isConfigValueValid("play sound on error", val, [["off", "1", "2", "3"]])
+  ) {
     return false;
   }
 
@@ -329,7 +335,26 @@ function setAccountChart(
     return false;
   }
 
+  if (array.length !== 4) {
+    array = ["on", "on", "on", "on"];
+  }
+
   config.accountChart = array;
+  saveToLocalStorage("accountChart", nosave);
+  ConfigEvent.dispatch("accountChart", config.accountChart);
+
+  return true;
+}
+
+export function setAccountChartResults(
+  value: boolean,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("account chart results", value, ["boolean"])) {
+    return false;
+  }
+
+  config.accountChart[0] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -344,7 +369,7 @@ export function setAccountChartAccuracy(
     return false;
   }
 
-  config.accountChart[0] = value ? "on" : "off";
+  config.accountChart[1] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -359,7 +384,7 @@ export function setAccountChartAvg10(
     return false;
   }
 
-  config.accountChart[1] = value ? "on" : "off";
+  config.accountChart[2] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -374,7 +399,7 @@ export function setAccountChartAvg100(
     return false;
   }
 
-  config.accountChart[2] = value ? "on" : "off";
+  config.accountChart[3] = value ? "on" : "off";
   saveToLocalStorage("accountChart", nosave);
   ConfigEvent.dispatch("accountChart", config.accountChart);
 
@@ -394,6 +419,7 @@ export function setStopOnError(
   config.stopOnError = soe;
   if (config.stopOnError !== "off") {
     config.confidenceMode = "off";
+    saveToLocalStorage("confidenceMode", nosave);
   }
   saveToLocalStorage("stopOnError", nosave);
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
@@ -572,6 +598,7 @@ export function setMinAccCustom(
 ): boolean {
   if (!isConfigValueValid("min acc custom", val, ["number"])) return false;
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
+  if (val > 100) val = 100;
 
   config.minAccCustom = val;
   saveToLocalStorage("minAccCustom", nosave);
@@ -696,9 +723,7 @@ export function setAds(val: MonkeyTypes.Ads, nosave?: boolean): boolean {
   config.ads = val;
   saveToLocalStorage("ads", nosave);
   if (!nosave) {
-    setTimeout(() => {
-      location.reload();
-    }, 3000);
+    reloadAfter(3);
     Notifications.add("Ad settings changed. Refreshing...", 0);
   }
   ConfigEvent.dispatch("ads", config.ads);
@@ -785,17 +810,17 @@ export function setPageWidth(
   }
 
   config.pageWidth = val;
-  $("#centerContent").removeClass("wide125");
-  $("#centerContent").removeClass("wide150");
-  $("#centerContent").removeClass("wide200");
-  $("#centerContent").removeClass("widemax");
+  $("#contentWrapper").removeClass("wide125");
+  $("#contentWrapper").removeClass("wide150");
+  $("#contentWrapper").removeClass("wide200");
+  $("#contentWrapper").removeClass("widemax");
   $("#app").removeClass("wide125");
   $("#app").removeClass("wide150");
   $("#app").removeClass("wide200");
   $("#app").removeClass("widemax");
 
   if (val !== "100") {
-    $("#centerContent").addClass("wide" + val);
+    $("#contentWrapper").addClass("wide" + val);
     $("#app").addClass("wide" + val);
   }
   saveToLocalStorage("pageWidth", nosave);
@@ -1101,9 +1126,9 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 
   config.showKeyTips = keyTips;
   if (config.showKeyTips) {
-    $("#bottom .keyTips").removeClass("hidden");
+    $("footer .keyTips").removeClass("hidden");
   } else {
-    $("#bottom .keyTips").addClass("hidden");
+    $("footer .keyTips").addClass("hidden");
   }
   saveToLocalStorage("showKeyTips", nosave);
   ConfigEvent.dispatch("showKeyTips", config.showKeyTips);
@@ -1261,20 +1286,17 @@ export function setSmoothLineScroll(mode: boolean, nosave?: boolean): boolean {
 
 //quick restart
 export function setQuickRestartMode(
-  mode: "off" | "esc" | "tab",
+  mode: "off" | "esc" | "tab" | "enter",
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("quick restart mode", mode, [["off", "esc", "tab"]])
+    !isConfigValueValid("quick restart mode", mode, [
+      ["off", "esc", "tab", "enter"],
+    ])
   ) {
     return false;
   }
 
-  if (mode === "off") {
-    $(".pageTest #restartTestButton").removeClass("hidden");
-  } else {
-    $(".pageTest #restartTestButton").addClass("hidden");
-  }
   config.quickRestart = mode;
   saveToLocalStorage("quickRestart", nosave);
   ConfigEvent.dispatch("quickRestart", config.quickRestart);
@@ -1319,7 +1341,7 @@ export function setFontFamily(font: string, nosave?: boolean): boolean {
   config.fontFamily = font;
   document.documentElement.style.setProperty(
     "--font",
-    `"${font.replace(/_/g, " ")}", "Roboto Mono", "Vazirmatn"`
+    `"${font.replace(/_/g, " ")}", "Roboto Mono", "Vazirmatn", monospace`
   );
   saveToLocalStorage("fontFamily", nosave);
   ConfigEvent.dispatch("fontFamily", config.fontFamily);
@@ -1356,6 +1378,8 @@ export function setConfidenceMode(
   if (config.confidenceMode !== "off") {
     config.freedomMode = false;
     config.stopOnError = "off";
+    saveToLocalStorage("freedomMode", nosave);
+    saveToLocalStorage("stopOnError", nosave);
   }
   saveToLocalStorage("confidenceMode", nosave);
   ConfigEvent.dispatch("confidenceMode", config.confidenceMode, nosave);
@@ -2100,6 +2124,10 @@ function replaceLegacyValues(
   //@ts-ignore
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
+  }
+
+  if (typeof configObj.playSoundOnError === "boolean") {
+    configObj.playSoundOnError = configObj.playSoundOnError ? "1" : "off";
   }
 
   return configObj;

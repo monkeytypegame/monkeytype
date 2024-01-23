@@ -6,6 +6,7 @@ import { incrementBadAuth } from "./rate-limit";
 import { NextFunction, Response } from "express";
 import { MonkeyResponse, handleMonkeyResponse } from "../utils/monkey-response";
 import { recordClientErrorByVersion } from "../utils/prometheus";
+import { isDevEnvironment } from "../utils/misc";
 
 async function errorHandlingMiddleware(
   error: Error,
@@ -42,7 +43,7 @@ async function errorHandlingMiddleware(
       recordClientErrorByVersion(req.headers["x-client-version"] as string);
     }
 
-    if (process.env.MODE !== "dev" && monkeyResponse.status >= 500) {
+    if (!isDevEnvironment() && monkeyResponse.status >= 500) {
       const { uid, errorId } = monkeyResponse.data;
 
       try {

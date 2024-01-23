@@ -22,7 +22,7 @@ export function show(action: string, id?: string, name?: string): void {
   if (action === "add") {
     $("#presetWrapper #presetEdit").attr("action", "add");
     $("#presetWrapper #presetEdit .title").html("Add new preset");
-    $("#presetWrapper #presetEdit .button").html(`add`);
+    $("#presetWrapper #presetEdit button").html(`add`);
     $("#presetWrapper #presetEdit input.text").val("");
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label").addClass("hidden");
@@ -30,7 +30,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit").attr("action", "edit");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Edit preset");
-    $("#presetWrapper #presetEdit .button").html(`save`);
+    $("#presetWrapper #presetEdit button").html(`save`);
     $("#presetWrapper #presetEdit input.text").val(name);
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label input").prop("checked", false);
@@ -39,7 +39,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit").attr("action", "remove");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Delete preset " + name);
-    $("#presetWrapper #presetEdit .button").html("Delete");
+    $("#presetWrapper #presetEdit button").html("Delete");
     $("#presetWrapper #presetEdit input.text").addClass("hidden");
     $("#presetWrapper #presetEdit label").addClass("hidden");
   }
@@ -50,7 +50,12 @@ export function show(action: string, id?: string, name?: string): void {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
-        $("#presetWrapper #presetEdit input").trigger("focus");
+        const input = $("#presetWrapper #presetEdit input");
+        if (!input.hasClass("hidden")) {
+          $("#presetWrapper #presetEdit input").trigger("focus");
+        } else {
+          $("#presetWrapper").trigger("focus");
+        }
       });
   }
 }
@@ -169,14 +174,9 @@ $("#presetWrapper").on("click", (e) => {
   }
 });
 
-$("#presetWrapper #presetEdit .button").on("click", () => {
+$("#presetWrapper #presetEdit form").on("submit", (e) => {
+  e.preventDefault();
   apply();
-});
-
-$("#presetWrapper #presetEdit input").on("keypress", (e) => {
-  if (e.key === "Enter") {
-    apply();
-  }
 });
 
 $(".pageSettings .section.presets").on("click", ".addPresetButton", () => {
@@ -184,15 +184,22 @@ $(".pageSettings .section.presets").on("click", ".addPresetButton", () => {
 });
 
 $(".pageSettings .section.presets").on("click", ".editButton", (e) => {
-  const presetid = $(e.currentTarget).parent(".preset").attr("id");
-  const name = $(e.currentTarget).siblings(".button").children(".title").text();
+  const presetid = $(e.currentTarget).parent(".preset").attr("data-id");
+  const name = $(e.currentTarget).parent(".preset").attr("data-display");
   show("edit", presetid, name);
 });
 
 $(".pageSettings .section.presets").on("click", ".removeButton", (e) => {
-  const presetid = $(e.currentTarget).parent(".preset").attr("id");
-  const name = $(e.currentTarget).siblings(".button").children(".title").text();
+  const presetid = $(e.currentTarget).parent(".preset").attr("data-id");
+  const name = $(e.currentTarget).parent(".preset").attr("data-display");
   show("remove", presetid, name);
+});
+
+$(document).on("keydown", (event) => {
+  if (event.key === "Escape" && isPopupVisible(wrapperId)) {
+    hide();
+    event.preventDefault();
+  }
 });
 
 Skeleton.save(wrapperId);

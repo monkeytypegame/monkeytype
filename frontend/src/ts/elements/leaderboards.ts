@@ -10,6 +10,7 @@ import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
+import { debounce } from "throttle-debounce";
 
 const wrapperId = "leaderboardsWrapper";
 
@@ -38,6 +39,13 @@ let currentRank: {
 } = {
   "15": {},
   "60": {},
+};
+
+let currentAvatars: {
+  [key in LbKey]: (string | null)[];
+} = {
+  "15": [],
+  "60": [],
 };
 
 const requesting = {
@@ -74,6 +82,11 @@ function reset(): void {
   currentRank = {
     "15": {},
     "60": {},
+  };
+
+  currentAvatars = {
+    "15": [],
+    "60": [],
   };
 }
 
@@ -147,7 +160,7 @@ function updateFooter(lb: LbKey): void {
   }
 
   if (
-    !Misc.isLocalhost() &&
+    !Misc.isDevEnvironment() &&
     (DB.getSnapshot()?.typingStats?.timeTyping ?? 0) < 7200
   ) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
@@ -274,12 +287,12 @@ function checkLbMemory(lb: LbKey): void {
   }
 }
 
-async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
+async function fillTable(lb: LbKey): Promise<void> {
   if (!currentData[lb]) {
     return;
   }
 
-  let side;
+  let side: string;
   if (lb === "15") {
     side = "left";
   } else {
@@ -295,47 +308,8 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   const loggedInUserName = DB.getSnapshot()?.name;
 
-  const snap = DB.getSnapshot();
-
-  const avatarUrlPromises = currentData[lb].map(async (entry) => {
-    const isCurrentUser =
-      Auth?.currentUser &&
-      entry.uid === Auth?.currentUser.uid &&
-      snap &&
-      snap.discordAvatar &&
-      snap.discordId;
-
-    const entryHasAvatar = entry.discordAvatar && entry.discordId;
-
-    const avatarSource: Partial<
-      MonkeyTypes.Snapshot | MonkeyTypes.LeaderboardEntry
-    > = (isCurrentUser && snap) || (entryHasAvatar && entry) || {};
-
-    return Misc.getDiscordAvatarUrl(
-      avatarSource.discordId,
-      avatarSource.discordAvatar
-    );
-  });
-
-  const avatarUrls = (await Promise.allSettled(avatarUrlPromises)).map(
-    (promise) => {
-      if (promise.status === "fulfilled") {
-        return promise.value;
-      }
-
-      return null;
-    }
-  );
-
-  let a = currentData[lb].length - leaderboardSingleLimit;
-  let b = currentData[lb].length;
-  if (a < 0) a = 0;
-  if (prepend) {
-    a = 0;
-    b = prepend;
-  }
   let html = "";
-  for (let i = a; i < b; i++) {
+  for (let i = 0; i < currentData[lb].length; i++) {
     const entry = currentData[lb][i] as MonkeyTypes.LeaderboardEntry;
     if (!entry) {
       break;
@@ -353,9 +327,8 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
 
     let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
-    const currentEntryAvatarUrl = avatarUrls[i];
-    if (currentEntryAvatarUrl !== null) {
-      avatar = `<div class="avatar" style="background-image:url(${currentEntryAvatarUrl})"></div>`;
+    if (entry.discordAvatar) {
+      avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
     }
 
     html += `
@@ -364,7 +337,8 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
     <td>
-    <div class="avatarNameBadge">${avatar}
+    <div class="avatarNameBadge">
+      <div class="lbav">${avatar}</div>
       <a href="${location.origin}/profile/${
       entry.uid
     }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
@@ -384,12 +358,7 @@ async function fillTable(lb: LbKey, prepend?: number): Promise<void> {
   </tr>
   `;
   }
-
-  if (!prepend) {
-    $(`#leaderboardsWrapper table.${side} tbody`).append(html);
-  } else {
-    $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
-  }
+  $(`#leaderboardsWrapper table.${side} tbody`).html(html);
 }
 
 const showYesterdayButton = $("#leaderboardsWrapper .showYesterdayButton");
@@ -503,7 +472,6 @@ async function update(): Promise<void> {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [lb15Data, lb60Data, lb15Rank, lb60Rank] = responses.map(
     (response) => response.data
   );
@@ -515,12 +483,17 @@ async function update(): Promise<void> {
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
-  leaderboardKeys.forEach((leaderboardTime: LbKey) => {
-    hideLoader(leaderboardTime);
-    clearBody(leaderboardTime);
-    updateFooter(leaderboardTime);
-    checkLbMemory(leaderboardTime);
-    fillTable(leaderboardTime);
+  leaderboardKeys.forEach((lbKey) => {
+    hideLoader(lbKey);
+    clearBody(lbKey);
+    updateFooter(lbKey);
+    checkLbMemory(lbKey);
+    fillTable(lbKey);
+
+    getAvatarUrls(currentData[lbKey]).then((urls) => {
+      currentAvatars[lbKey] = urls;
+      fillAvatars(lbKey);
+    });
   });
 
   $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
@@ -566,6 +539,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
 
   if (response.status !== 200 || data.length === 0) {
     hideLoader(lb);
+    requesting[lb] = false;
     return;
   }
   if (prepend) {
@@ -576,7 +550,17 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   if (prepend && !limitVal) {
     limitVal = leaderboardSingleLimit - 1;
   }
-  await fillTable(lb, limitVal);
+  await fillTable(lb);
+
+  getAvatarUrls(data).then((urls) => {
+    if (prepend) {
+      currentAvatars[lb].unshift(...urls);
+    } else {
+      currentAvatars[lb].push(...urls);
+    }
+    fillAvatars(lb);
+  });
+
   hideLoader(lb);
   requesting[lb] = false;
 }
@@ -603,13 +587,53 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 
   clearBody(lb);
   currentData[lb] = [];
+  currentAvatars[lb] = [];
   if (response.status !== 200 || data.length === 0) {
     hideLoader(lb);
     return;
   }
   currentData[lb] = data;
   await fillTable(lb);
+
+  getAvatarUrls(data).then((urls) => {
+    currentAvatars[lb] = urls;
+    fillAvatars(lb);
+  });
+
   hideLoader(lb);
+}
+
+async function getAvatarUrls(
+  data: MonkeyTypes.LeaderboardEntry[]
+): Promise<(string | null)[]> {
+  return Promise.allSettled(
+    data.map(async (entry) =>
+      Misc.getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
+    )
+  ).then((promises) => {
+    return promises.map((promise) => {
+      if (promise.status === "fulfilled") {
+        return promise.value;
+      }
+      return null;
+    });
+  });
+}
+
+function fillAvatars(lb: LbKey): void {
+  const side = lb === "15" ? "left" : "right";
+  const elements = $(`#leaderboardsWrapper table.${side} tbody .lbav`);
+  currentAvatars[lb].forEach((url, index) => {
+    if (url !== null) {
+      $(elements[index]).html(
+        `<div class="avatar" style="background-image:url(${url})"></div>`
+      );
+    } else {
+      $(elements[index]).html(
+        `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`
+      );
+    }
+  });
 }
 
 export function show(): void {
@@ -710,42 +734,44 @@ languageSelector.on("select2:select", (e) => {
 
 let leftScrollEnabled = true;
 
-$("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    requestMore("15", true);
+    debouncedRequestMore("15", true);
   }
 });
 
-$("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
+const debouncedRequestMore = debounce(500, requestMore);
+
+$("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round(elem.outerHeight() as number) + 50
   ) {
-    requestMore("15");
+    debouncedRequestMore("15");
   }
 });
 
 let rightScrollEnabled = true;
 
-$("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
   if (!rightScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    requestMore("60", true);
+    debouncedRequestMore("60", true);
   }
 });
 
-$("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
+$("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
   const elem = $(e.currentTarget);
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round((elem.outerHeight() as number) + 50)
   ) {
-    requestMore("60");
+    debouncedRequestMore("60");
   }
 });
 
@@ -855,15 +881,9 @@ $(document).on("keydown", (event) => {
   }
 });
 
-$("#top #menu").on("click", ".textButton", (e) => {
+$("header nav").on("click", ".textButton", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
     show();
-  }
-});
-
-$(document).on("keypress", "#top #menu .textButton", (e) => {
-  if (e.key === "Enter") {
-    $(e.currentTarget).trigger("click");
   }
 });
 

@@ -33,21 +33,21 @@ export function update(): void {
 
   if (!snapshot) return;
 
-  if (DB.getSnapshot()?.customThemes.length === 0) {
+  if (snapshot.customThemes.length === 0) {
     return;
   }
-  DB.getSnapshot()?.customThemes.forEach((theme) => {
+  snapshot.customThemes.forEach((theme) => {
     subgroup.list.push({
       id: "setCustomThemeId" + theme._id,
-      display: theme.name,
+      display: theme.name.replace(/_/gi, " "),
       configValue: theme._id,
       hover: (): void => {
-        ThemeController.preview(theme._id, true);
+        ThemeController.preview("custom", theme.colors);
       },
       exec: (): void => {
         // UpdateConfig.setCustomThemeId(theme._id);
         UpdateConfig.setCustomTheme(true);
-        ThemeController.set(theme._id, true);
+        UpdateConfig.setCustomThemeColors(theme.colors);
       },
     });
   });

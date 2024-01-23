@@ -161,7 +161,7 @@ export function canSetFunboxWithConfig(
   } else {
     funboxToCheck += "#" + funbox;
   }
-  let errorCount = 0;
+  const errors = [];
   for (const [configKey, configValue] of Object.entries(config)) {
     if (
       !canSetConfigWithCurrentFunboxes(
@@ -171,18 +171,29 @@ export function canSetFunboxWithConfig(
         true
       )
     ) {
-      errorCount += 1;
+      errors.push({
+        key: configKey,
+        value: configValue,
+      });
     }
   }
-  if (errorCount > 0) {
+  if (errors.length > 0) {
+    const errorStrings = [];
+    for (const error of errors) {
+      errorStrings.push(
+        `${Misc.capitalizeFirstLetter(
+          Misc.camelCaseToWords(error.key)
+        )} cannot be set to ${error.value}.`
+      );
+    }
     Notifications.add(
-      `You can't enable ${funbox.replace(
-        /_/g,
-        " "
-      )} with currently active config.`,
+      `You can't enable ${funbox.replace(/_/g, " ")}:<br>${errorStrings.join(
+        "<br>"
+      )}`,
       0,
       {
         duration: 5,
+        allowHTML: true,
       }
     );
     return false;
@@ -254,13 +265,17 @@ export function areFunboxesCompatible(
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "symmetricChars")
     ).length === 0;
-  const canSpeak =
-    funboxesToCheck.filter((f) =>
-      f.properties?.find((fp) => fp === "speaks" || fp === "unspeakable")
-    ).length <= 1;
-  const hasLanguageToSpeak =
+  const oneCanSpeakMax =
+    funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
+      .length <= 1;
+  const hasLanguageToSpeakAndNoUnspeakable =
     funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
       .length === 0 ||
+    (funboxesToCheck.filter((f) => f.properties?.find((fp) => fp === "speaks"))
+      .length === 1 &&
+      funboxesToCheck.filter((f) =>
+        f.properties?.find((fp) => fp === "unspeakable")
+      ).length === 0) ||
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "ignoresLanguage")
     ).length === 0;
@@ -307,8 +322,8 @@ export function areFunboxesCompatible(
     noFrequencyChangesConflicts &&
     capitalisationChangePosibility &&
     noConflictsWithSymmetricChars &&
-    canSpeak &&
-    hasLanguageToSpeak &&
+    oneCanSpeakMax &&
+    hasLanguageToSpeakAndNoUnspeakable &&
     oneToPushOrPullSectionMax &&
     oneApplyCSSMax &&
     onePunctuateWordMax &&

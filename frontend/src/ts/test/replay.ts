@@ -1,5 +1,6 @@
 import config from "../config";
 import * as Sound from "../controllers/sound-controller";
+import * as TestInput from "./test-input";
 
 type ReplayAction =
   | "correctLetter"
@@ -86,7 +87,7 @@ export function pauseReplay(): void {
 
 function playSound(error = false): void {
   if (error) {
-    if (config.playSoundOnError) {
+    if (config.playSoundOnError !== "off") {
       Sound.playError();
     } else {
       Sound.playClick();
@@ -169,8 +170,9 @@ function loadOldReplay(): number {
       startingIndex = i + 1;
     }
   });
-  const time = Math.floor(replayData[startingIndex].time / 1000);
-  $("#replayStopwatch").text(time + "s");
+  const time = Math.floor(replayData[startingIndex]?.time / 1000);
+  updateStatsString(time);
+
   return startingIndex;
 }
 
@@ -212,7 +214,7 @@ function startReplayRecording(): void {
     //hide replay display if user left it open
     toggleReplayDisplay();
   }
-  $("#replayStopwatch").text(0 + "s");
+  $("#replayStats").text("");
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;
@@ -231,6 +233,12 @@ function addReplayEvent(action: ReplayAction, value?: number | string): void {
 
   const timeDelta = performance.now() - replayStartTime;
   replayData.push({ action: action, value: value, time: timeDelta });
+}
+
+function updateStatsString(time: number): void {
+  const wpm = TestInput.wpmHistory[time - 1] ?? 0;
+  const statsString = `${wpm}wpm\t${time}s`;
+  $("#replayStats").text(statsString);
 }
 
 function playReplay(): void {
@@ -253,7 +261,7 @@ function playReplay(): void {
     const time = swTime;
     stopwatchList.push(
       setTimeout(() => {
-        $("#replayStopwatch").text(time + "s");
+        updateStatsString(time);
       }, time * 1000 - lastTime)
     );
     swTime++;
@@ -307,12 +315,6 @@ $("#replayWords").on("click", "letter", (event) => {
 
   initializeReplayPrompt();
   loadOldReplay();
-});
-
-$(document).on("keypress", "#watchReplayButton", (event) => {
-  if (event.key === "Enter") {
-    toggleReplayDisplay();
-  }
 });
 
 $(".pageTest").on("click", "#watchReplayButton", () => {

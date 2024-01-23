@@ -1,4 +1,4 @@
-<div id="bottom">
+<footer>
   <div id="commandLineMobileButton">
     <i class="fas fa-terminal"></i>
   </div>
@@ -19,14 +19,14 @@
   </div>
   <div class="leftright">
     <div class="left">
-      <div tabindex="0" class="textButton" id="contactPopupButton">
+      <button class="textButton" id="contactPopupButton">
         <i class="fas fa-fw fa-envelope"></i>
         <div class="text">Contact</div>
-      </div>
-      <div tabindex="0" id="supportMeButton" class="textButton">
+      </button>
+      <button id="supportMeButton" class="textButton">
         <i class="fas fa-fw fa-donate"></i>
         <div class="text">Support</div>
-      </div>
+      </button>
       <a
         href="https://github.com/monkeytypegame/monkeytype"
         class="textButton"
@@ -69,25 +69,23 @@
       </a>
     </div>
     <div class="right">
-      <div
+      <button
         class="current-theme textButton"
         aria-label="Shift-click to toggle custom theme"
         data-balloon-pos="left"
       >
         <i class="fas fa-fw fa-palette"></i>
         <div class="text">serika dark</div>
-      </div>
-      <div id="versionGroup" class="hidden">
-        <div class="version textButton">
-          <i class="fas fa-fw fa-code-branch"></i>
-          <div class="text">version</div>
-        </div>
+      </button>
+      <button class="currentVersion textButton">
+        <i class="fas fa-fw fa-code-branch"></i>
+        <div class="text">version</div>
         <key id="newVersionIndicator" class="hidden">new</key>
-      </div>
+      </button>
       <!-- <div>
         <i class="fas fa-file"></i>
         Terms & Conditions
       </div> -->
     </div>
   </div>
-</div>
+</footer>

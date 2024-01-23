@@ -320,6 +320,24 @@ const FunboxList: MonkeyTypes.FunboxMetadata[] = [
     properties: ["noLigatures"],
     name: "crt",
   },
+  {
+    name: "backwards",
+    properties: [
+      "noLigatures",
+      "conflictsWithSymmetricChars",
+      "wordOrder:reverse",
+    ],
+    frontendFunctions: ["applyCSS"],
+    canGetPb: true,
+    difficultyLevel: 3,
+  },
+  {
+    canGetPb: true,
+    difficultyLevel: 1,
+    properties: ["noLigatures"],
+    frontendFunctions: ["alterText"],
+    name: "ddoouubblleedd",
+  },
 ];
 
 export default FunboxList;

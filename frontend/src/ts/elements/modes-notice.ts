@@ -57,6 +57,12 @@ export async function update(): Promise<void> {
     }
   }
 
+  if (TestWords.hasNewline && Config.quickRestart === "enter") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`
+    );
+  }
+
   const customTextName = CustomTextState.getCustomTextName();
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
@@ -147,7 +153,8 @@ export async function update(): Promise<void> {
     if (Auth?.currentUser && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
         ? getTypingSpeedUnit(Config.typingSpeedUnit).convertWithUnitSuffix(
-            avgWPM
+            avgWPM,
+            Config.alwaysShowDecimalPlaces
           )
         : "";
 

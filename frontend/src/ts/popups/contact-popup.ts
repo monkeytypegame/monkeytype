@@ -17,16 +17,6 @@ $(document.body).on("click", "#contactPopupWrapper", (e) => {
   }
 });
 
-$(document.body).on(
-  "keypress",
-  "#contactPopupButton, #contactPopupButton2",
-  (e) => {
-    if (e.key === "Enter") {
-      $(e.currentTarget).trigger("click");
-    }
-  }
-);
-
 $(document).on("keydown", (e) => {
   if (e.key === "Escape" && isPopupVisible(wrapperId)) {
     hide();

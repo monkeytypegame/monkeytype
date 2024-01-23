@@ -13,11 +13,13 @@ import Logger from "./utils/logger";
 import * as EmailClient from "./init/email-client";
 import { init as initFirebaseAdmin } from "./init/firebase-admin";
 
+import { createIndicies as leaderboardDbSetup } from "./dal/leaderboards";
+
 async function bootServer(port: number): Promise<Server> {
   try {
     Logger.info(`Starting server version ${version}`);
-    Logger.info(`Starting server in ${process.env.MODE} mode`);
-    Logger.info(`Connecting to database ${process.env.DB_NAME}...`);
+    Logger.info(`Starting server in ${process.env["MODE"]} mode`);
+    Logger.info(`Connecting to database ${process.env["DB_NAME"]}...`);
     await db.connect();
     Logger.success("Connected to database");
 
@@ -63,6 +65,9 @@ async function bootServer(port: number): Promise<Server> {
     jobs.forEach((job) => job.start());
     Logger.success("Cron jobs started");
 
+    Logger.info("Setting up leaderboard indicies...");
+    await leaderboardDbSetup();
+
     recordServerVersion(version);
   } catch (error) {
     Logger.error("Failed to boot server");
@@ -76,6 +81,6 @@ async function bootServer(port: number): Promise<Server> {
   });
 }
 
-const PORT = parseInt(process.env.PORT ?? "5005", 10);
+const PORT = parseInt(process.env["PORT"] ?? "5005", 10);
 
 bootServer(PORT);

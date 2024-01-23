@@ -29,6 +29,7 @@ export function show(callbackOnHide: () => void): void {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 125, () => {
         hydrateInputs();
+        $("#editProfilePopupWrapper").trigger("focus");
       });
   }
 }
@@ -132,6 +133,31 @@ async function updateProfile(): Promise<void> {
   if (!snapshot) return;
   const updates = buildUpdatesFromInputs();
 
+  // check for length resctrictions before sending server requests
+  const githubLengthLimit = 39;
+  if (
+    updates.socialProfiles.github &&
+    updates.socialProfiles.github.length > githubLengthLimit
+  ) {
+    Notifications.add(
+      `GitHub username exceeds maximum allowed length (${githubLengthLimit} characters).`,
+      -1
+    );
+    return;
+  }
+
+  const twitterLengthLimit = 20;
+  if (
+    updates.socialProfiles.twitter &&
+    updates.socialProfiles.twitter.length > twitterLengthLimit
+  ) {
+    Notifications.add(
+      `Twitter username exceeds maximum allowed length (${twitterLengthLimit} characters).`,
+      -1
+    );
+    return;
+  }
+
   Loader.show();
   const response = await Ape.users.updateProfile(
     updates,
@@ -164,7 +190,8 @@ $("#editProfilePopupWrapper").on("mousedown", (e) => {
   }
 });
 
-$("#editProfilePopupWrapper .edit-profile-submit").on("click", async () => {
+$("#editProfilePopupWrapper #editProfilePopup").on("submit", async (e) => {
+  e.preventDefault();
   await updateProfile();
 });
 

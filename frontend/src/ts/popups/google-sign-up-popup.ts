@@ -108,7 +108,7 @@ async function apply(): Promise<void> {
       await sendEmailVerification(signedInUser.user);
       AllTimeStats.clear();
       Notifications.add("Account created", 1);
-      $("#menu .textButton.account .text").text(name);
+      $("nav .textButton.account .text").text(name);
       LoginPage.enableInputs();
       LoginPage.hidePreloader();
       await AccountController.loadUser(signedInUser.user);
@@ -140,7 +140,6 @@ async function apply(): Promise<void> {
     Notifications.add(message, -1);
     LoginPage.hidePreloader();
     LoginPage.enableInputs();
-    LoginPage.enableSignInButton();
     LoginPage.enableSignUpButton();
     if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
       await Ape.users.delete();

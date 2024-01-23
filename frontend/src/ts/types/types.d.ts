@@ -1,6 +1,8 @@
-type typesSeparatedWithHash<T> = T | `${T}#${typesSeparatedWithHash<T>}`;
-
 declare namespace MonkeyTypes {
+  type Configuration = import("@backend/types/shared").Configuration;
+  type ValidModeRule = import("@backend/types/shared").ValidModeRule;
+  type RewardBracket = import("@backend/types/shared").RewardBracket;
+
   type PageName =
     | "loading"
     | "test"
@@ -28,6 +30,15 @@ declare namespace MonkeyTypes {
     languages: string[];
   }
 
+  interface AddNotificationOptions {
+    important?: boolean;
+    duration?: number;
+    customTitle?: string;
+    customIcon?: string;
+    closeCallback?: () => void;
+    allowHTML?: boolean;
+  }
+
   type Accents = [string, string][];
 
   interface LanguageObject {
@@ -37,7 +48,7 @@ declare namespace MonkeyTypes {
     ligatures?: boolean;
     orderedByFrequency?: boolean;
     words: string[];
-    accents: Accents;
+    additionalAccents: Accents;
     bcp47?: string;
     originalPunctuation?: boolean;
   }
@@ -130,13 +141,15 @@ declare namespace MonkeyTypes {
     | "12"
     | "13";
 
+  type PlaySoundOnError = "off" | "1" | "2" | "3";
+
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
   type PaceCaret = "off" | "average" | "pb" | "last" | "custom" | "daily";
 
   type PageWidth = "100" | "125" | "150" | "200" | "max";
 
-  type AccountChart = ("off" | "on")[];
+  type AccountChart = ["off" | "on", "off" | "on", "off" | "on", "off" | "on"];
 
   type MinimumWordsPerMinute = "off" | "custom";
 
@@ -218,6 +231,8 @@ declare namespace MonkeyTypes {
 
   type FunboxWordsFrequency = "normal" | "zipf";
 
+  type FunboxWordOrder = "normal" | "reverse";
+
   type FunboxProperty =
     | "symmetricChars"
     | "conflictsWithSymmetricChars"
@@ -234,22 +249,23 @@ declare namespace MonkeyTypes {
     | "nospace"
     | `toPush:${number}`
     | "noInfiniteDuration"
-    | "changesWordsFrequency";
+    | "changesWordsFrequency"
+    | `wordOrder:${FunboxWordOrder}`;
 
   type TribeDelta = "off" | "text" | "bar";
   type TribeCarets = "off" | "noNames" | "on";
 
   interface FunboxFunctions {
-    getWord?: (wordset?: Misc.Wordset, wordIndex?: number) => string;
+    getWord?: (wordset?: Wordset, wordIndex?: number) => string;
     punctuateWord?: (word: string) => string;
-    withWords?: (words?: string[]) => Promise<Misc.Wordset>;
+    withWords?: (words?: string[]) => Promise<Wordset>;
     alterText?: (word: string) => string;
     applyConfig?: () => void;
     applyGlobalCSS?: () => void;
     clearGlobal?: () => void;
     rememberSettings?: () => void;
     toggleScript?: (params: string[]) => void;
-    pullSection?: (language?: string) => Promise<Misc.Section | false>;
+    pullSection?: (language?: string) => Promise<Section | false>;
     handleSpace?: () => void;
     handleChar?: (char: string) => string;
     isCharCorrect?: (char: string, originalChar: string) => boolean;
@@ -427,7 +443,7 @@ declare namespace MonkeyTypes {
     showLiveWpm: boolean;
     showTimerProgress: boolean;
     smoothCaret: SmoothCaretMode;
-    quickRestart: "off" | "esc" | "tab";
+    quickRestart: "off" | "esc" | "tab" | "enter";
     punctuation: boolean;
     numbers: boolean;
     words: WordsModes;
@@ -465,7 +481,7 @@ declare namespace MonkeyTypes {
     alwaysShowWordsHistory: boolean;
     singleListCommandLine: SingleListCommandLine;
     capsLockWarning: boolean;
-    playSoundOnError: boolean;
+    playSoundOnError: PlaySoundOnError;
     playSoundOnClick: PlaySoundOnClick;
     soundVolume: SoundVolume;
     startGraphsAtZero: boolean;
@@ -540,7 +556,6 @@ declare namespace MonkeyTypes {
   }
 
   interface LeaderboardEntry {
-    uid: string;
     difficulty: string;
     timestamp: number;
     language: string;
@@ -595,6 +610,7 @@ declare namespace MonkeyTypes {
     maxStreak: number;
     streakHourOffset?: number;
     lbOptOut?: boolean;
+    isPremium?: boolean;
   }
 
   interface UserDetails {
@@ -679,11 +695,13 @@ declare namespace MonkeyTypes {
     } & Record<string, boolean>;
   }
 
-  type Group<G extends keyof ResultFilters> = G extends G
+  type Group<G extends keyof ResultFilters = keyof ResultFilters> = G extends G
     ? ResultFilters[G]
     : never;
 
-  type Filter<G extends Group> = G extends G ? keyof ResultFilters[G] : never;
+  type Filter<G extends Group = Group> = G extends keyof ResultFilters
+    ? keyof ResultFilters[G]
+    : never;
 
   interface TimerStats {
     dateNow: number;
@@ -793,6 +811,7 @@ declare namespace MonkeyTypes {
 
   interface Quote {
     text: string;
+    britishText?: string;
     source: string;
     length: number;
     id: number;
@@ -824,6 +843,7 @@ declare namespace MonkeyTypes {
 
   interface Layout {
     keymapShowTopRow: boolean;
+    matrixShowRightColumn?: boolean;
     type: "iso" | "ansi" | "ortho" | "matrix";
     keys: Keys;
   }
@@ -903,9 +923,9 @@ declare namespace MonkeyTypes {
   type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
 
   interface TypingSpeedUnitSettings {
-    fromWpm: (number) => number;
-    toWpm: (number) => number;
-    convertWithUnitSuffix: (number) => string;
+    fromWpm: (number: number) => number;
+    toWpm: (number: number) => number;
+    convertWithUnitSuffix: (number: number, withDecimals: boolean) => string;
     fullUnitString: string;
     histogramDataBucketSize: number;
     historyStepSize: number;

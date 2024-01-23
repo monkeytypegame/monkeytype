@@ -104,6 +104,19 @@ function validateOthers() {
       console.log("Themes JSON schema is \u001b[31minvalid\u001b[0m");
       return reject(new Error(themesValidator.errors));
     }
+    //check if files exist
+    for (const theme of themesData) {
+      const themeName = theme.name;
+      const fileName = `${themeName}.css`;
+      const themePath = `./static/themes/${fileName}`;
+      if (!fs.existsSync(themePath)) {
+        console.log(`File ${fileName} was \u001b[31mnot found\u001b[0m`);
+        // return reject(new Error(`File for theme ${themeName} does not exist`));
+        return reject(
+          `Could not find file ${fileName} for theme ${themeName} - make sure the file exists and is named correctly`
+        );
+      }
+    }
 
     //challenges
     const challengesSchema = {
@@ -206,25 +219,25 @@ function validateOthers() {
             properties: {
               row1: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 13,
                 maxItems: 13,
               },
               row2: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 13,
                 maxItems: 13,
               },
               row3: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 11,
                 maxItems: 11,
               },
               row4: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 10,
                 maxItems: 10,
               },
@@ -250,25 +263,25 @@ function validateOthers() {
             properties: {
               row1: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 13,
                 maxItems: 13,
               },
               row2: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 12,
                 maxItems: 12,
               },
               row3: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 12,
                 maxItems: 12,
               },
               row4: {
                 type: "array",
-                items: { type: "string", minLength: 1, maxLength: 2 },
+                items: { type: "string", minLength: 1, maxLength: 4 },
                 minItems: 11,
                 maxItems: 11,
               },
@@ -516,7 +529,7 @@ function validateLanguages() {
           type: "array",
           items: { type: "string", minLength: 1 },
         },
-        accents: {
+        additionalAccents: {
           type: "array",
           items: {
             type: "array",

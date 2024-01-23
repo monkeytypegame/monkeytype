@@ -66,6 +66,16 @@ function itemIsAddingQuotes(item) {
   return scopeIsQuote && messageAdds;
 }
 
+function itemIsAddressingQuoteReports(item) {
+  const scopeIsQuote =
+    item.scope?.includes("quote") || item.scope?.includes("quotes");
+
+  const messageReport =
+    item.message.includes("report") || item.message.includes("reports");
+
+  return scopeIsQuote && messageReport;
+}
+
 const titles = {
   feat: "Features",
   impr: "Improvements",
@@ -86,12 +96,21 @@ function buildSection(type, allItems) {
 
   const items = allItems.filter((item) => item.type === type);
 
+  if (items.length === 0) {
+    return "";
+  }
+
   for (let item of items) {
     const scope = item.scope ? `**${item.scope}:** ` : "";
     const usernames =
       item.usernames.length > 0 ? ` (${item.usernames.join(", ")})` : "";
-    const pr = item.pr ? ` (${getPrLink(item.pr)})` : "";
-    const hash = ` (${getCommitLink(item.shortHash, item.hash)})`;
+    const pr =
+      item.prs.length > 0
+        ? ` (${item.prs.map((p) => getPrLink(p)).join(", ")})`
+        : "";
+    const hash = ` (${item.hashes
+      .map((h) => getCommitLink(h.short, h.full))
+      .join(", ")})`;
 
     ret += `- ${scope}${item.message}${usernames}${pr}${hash}\n`;
   }
@@ -108,7 +127,7 @@ async function main() {
     //split line based on the format: d2739e4f193137db4d86450f0d50b3489d75c106 d2739e4f1 style: adjusted testConfig and modesNotice.
     //use regex to split
     const [_, hash, shortHash, fullMessage] = line.split(
-      /(\w{40}) (\w{9}) (.*)/
+      /(\w{40}) (\w{9,10}) (.*)/
     );
 
     //split message using regex based on fix(language): spelling mistakes in Nepali wordlist and quotes (sapradhan) (#4528)
@@ -126,38 +145,67 @@ async function main() {
       pr = message2;
     }
 
+    const prs = pr ? pr.split(", ") : [];
+
     if (type && message) {
       log.push({
-        hash,
-        shortHash,
+        hashes: [
+          {
+            short: shortHash,
+            full: hash,
+          },
+        ],
         type,
         scope,
         message,
         usernames,
-        pr,
+        prs,
       });
     } else {
       console.warn("skipping line due to invalid format: " + line);
     }
   }
 
-  log = log.filter((item) => Object.keys(titles).includes(item.type));
-
+  let quoteAddCommits = log.filter((item) => itemIsAddingQuotes(item));
   log = log.filter((item) => !itemIsAddingQuotes(item));
 
-  let quoteAddCommits = log.filter((item) => itemIsAddingQuotes(item));
+  let quoteReportCommits = log.filter((item) =>
+    itemIsAddressingQuoteReports(item)
+  );
+  log = log.filter((item) => !itemIsAddressingQuoteReports(item));
 
   if (quoteAddCommits.length > 0) {
-    throw new Error("TODO");
+    log.push({
+      hashes: quoteAddCommits.map((item) => item.hashes).flat(),
+      type: "impr",
+      scope: "quote",
+      message: "add quotes in various languages",
+      usernames: quoteAddCommits.map((item) => item.usernames).flat(),
+      prs: quoteAddCommits.map((item) => item.prs).flat(),
+    });
+  }
+
+  if (quoteReportCommits.length > 0) {
+    log.push({
+      hashes: quoteReportCommits.map((item) => item.hashes).flat(),
+      type: "fix",
+      scope: "quote",
+      message: "update or remove quotes reported by users",
+      usernames: quoteReportCommits.map((item) => item.usernames).flat(),
+      prs: quoteReportCommits.map((item) => item.prs).flat(),
+    });
   }
 
   let final = "";
 
-  final += header + "\n\n";
+  final += header + "\n\n\n";
 
   const sections = [];
   for (const type of Object.keys(titles)) {
-    sections.push(buildSection(type, log));
+    const section = buildSection(type, log);
+    if (section) {
+      sections.push(section);
+    }
   }
 
   final += sections.join("\n\n");

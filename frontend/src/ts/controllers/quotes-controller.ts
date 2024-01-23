@@ -3,8 +3,9 @@ import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 import Config from "../config";
 
-interface Quote {
+interface JsonQuote {
   text: string;
+  britishText?: string;
   source: string;
   length: number;
   id: number;
@@ -12,7 +13,7 @@ interface Quote {
 
 interface QuoteData {
   language: string;
-  quotes: Quote[];
+  quotes: JsonQuote[];
   groups: number[][];
 }
 
@@ -65,9 +66,10 @@ class QuotesController {
         };
 
         // Transform JSON Quote schema to MonkeyTypes Quote schema
-        data.quotes.forEach((quote: Quote) => {
+        data.quotes.forEach((quote: JsonQuote) => {
           const monkeyTypeQuote: MonkeyTypes.Quote = {
             text: quote.text,
+            britishText: quote.britishText,
             source: quote.source,
             length: quote.length,
             id: quote.id,

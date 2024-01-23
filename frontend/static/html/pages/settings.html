@@ -13,10 +13,9 @@
     <key>esc</key>
     )
   </div>
-  <!-- <div class="sectionGroupTitle">quick navigation</div> -->
   <div class="settingsGroup quickNav">
     <div class="links">
-      <a class="textButton" href="#group_account">account</a>
+      <a class="textButton accountTitleLink" href="#group_account">account</a>
       <a class="textButton" href="#group_behavior">behavior</a>
       <a class="textButton" href="#group_input">input</a>
       <a class="textButton" href="#group_sound">sound</a>
@@ -37,10 +36,14 @@
     <div id="ad-settings-1-small"></div>
   </div>
 
-  <div id="group_account" class="sectionGroupTitle hidden" group="account">
+  <button
+    id="group_account"
+    class="text sectionGroupTitle hidden"
+    group="account"
+  >
     <i class="fas fa-chevron-down"></i>
     <span>account</span>
-  </div>
+  </button>
   <div class="settingsGroup account hidden">
     <div class="section discordIntegration">
       <div class="groupTitle">
@@ -56,7 +59,7 @@
         give you a role.
       </div>
       <div class="buttons">
-        <div class="button getLinkAndGoToOauth">Link with Discord</div>
+        <button class="getLinkAndGoToOauth">link</button>
       </div>
       <div class="info hidden">
         <div>
@@ -64,17 +67,17 @@
           Your accounts are linked!
         </div>
         <div id="discordButtonGroup">
-          <div
+          <button
             id="updateDiscordAvatarButton"
             class="textButton getLinkAndGoToOauth"
           >
             <i class="fas fa-sync-alt" aria-hidden="true"></i>
             Update avatar
-          </div>
-          <div id="unlinkDiscordButton" class="textButton">
+          </button>
+          <button id="unlinkDiscordButton" class="textButton">
             <i class="fas fa-unlink" aria-hidden="true"></i>
             Unlink
-          </div>
+          </button>
         </div>
       </div>
     </div>
@@ -89,19 +92,8 @@
         remain active until you deactivate them, or refresh the page.
       </div>
       <div class="tagsListAndButton">
-        <div class="tagsList">
-          <div class="tag" id="0">
-            <div class="active">
-              <i class="fas fa-check-square"></i>
-            </div>
-            <div class="title">staggered</div>
-            <div class="editButton"><i class="fas fa-pen"></i></div>
-            <div class="removeButton">
-              <i class="fas fa-trash"></i>
-            </div>
-          </div>
-        </div>
-        <div class="button addTagButton"><i class="fas fa-plus"></i></div>
+        <div class="tagsList"></div>
+        <button class="addTagButton fullWidth">add tag</button>
       </div>
     </div>
     <div class="section presets">
@@ -114,29 +106,31 @@
         edit your preset if you make any changes - they don't save on their own.
       </div>
       <div class="presetsListAndButton">
-        <div class="presetsList">
-          <div class="buttons preset" id="0">
-            <div class="presetButton button">
-              <div class="title">staggered</div>
-            </div>
-            <div class="editButton button">
-              <i class="fas fa-pen"></i>
-            </div>
-            <div class="removeButton button">
-              <i class="fas fa-trash"></i>
-            </div>
-          </div>
-        </div>
-        <div class="button addPresetButton"><i class="fas fa-plus"></i></div>
+        <div class="presetsList"></div>
+        <button class="addPresetButton fullWidth">add preset</button>
+      </div>
+    </div>
+    <div class="section">
+      <div class="groupTitle">
+        <i class="fas fa-user"></i>
+        <span>more account settings</span>
+      </div>
+      <div class="text">
+        You can access more account settings (such as changing your name,
+        password, resetting or deleting your account) in the danger zone
+        section.
+      </div>
+      <div class="buttons">
+        <a class="button" href="#group_dangerZone">go to the danger zone</a>
       </div>
     </div>
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_behavior" class="sectionGroupTitle" group="behavior">
+  <button id="group_behavior" class="text sectionGroupTitle" group="behavior">
     <i class="fas fa-chevron-down"></i>
     <span>behavior</span>
-  </div>
+  </button>
   <div class="settingsGroup behavior">
     <div class="section difficulty">
       <div class="groupTitle">
@@ -545,10 +539,10 @@
     </div>
     <div class="sectionSpacer"></div>
   </div>
-  <div id="group_input" class="sectionGroupTitle" group="input">
+  <button id="group_input" class="text sectionGroupTitle" group="input">
     <i class="fas fa-chevron-down"></i>
     input
-  </div>
+  </button>
   <div class="settingsGroup input">
     <div class="section freedomMode">
       <div class="groupTitle">
@@ -942,10 +936,87 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_sound" class="sectionGroupTitle" group="sound">
+  <button id="group_tribe" class="sectionGroupTitle" group="tribe">
+    <i class="fas fa-chevron-down"></i>
+    tribe
+  </button>
+  <div class="settingsGroup tribe">
+    <div class="section tribeDelta">
+      <div class="groupTitle">
+        <i class="fas fa-exchange-alt"></i>
+        <span>tribe delta</span>
+      </div>
+      <div class="text">
+        Display the speed difference to the leader / person in second place
+        (depending on your position in the race).
+      </div>
+      <div class="buttons">
+        <div
+          class="button"
+          tribeDelta="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          tribeDelta="text"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          text
+        </div>
+        <div
+          class="button"
+          tribeDelta="bar"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          bar
+        </div>
+      </div>
+    </div>
+    <div class="section tribeCarets">
+      <div class="groupTitle">
+        <i class="fas fa-i-cursor"></i>
+        <span>tribe carets</span>
+      </div>
+      <div class="text">Display carets for other players during the race.</div>
+      <div class="buttons">
+        <div
+          class="button"
+          tribeCarets="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          off
+        </div>
+        <div
+          class="button"
+          tribeCarets="noNames"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          no names
+        </div>
+        <div
+          class="button"
+          tribeCarets="on"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          on
+        </div>
+      </div>
+    </div>
+    <div class="sectionSpacer"></div>
+  </div>
+
+  <button id="group_sound" class="text sectionGroupTitle" group="sound">
     <i class="fas fa-chevron-down"></i>
     sound
-  </div>
+  </button>
   <div class="settingsGroup sound">
     <div class="section soundVolume">
       <div class="groupTitle">
@@ -1101,7 +1172,7 @@
         </div>
       </div>
     </div>
-    <div class="section playSoundOnError">
+    <div class="section playSoundOnError fullWidth">
       <div class="groupTitle">
         <i class="fas fa-volume-mute"></i>
         <span>play sound on error</span>
@@ -1113,7 +1184,7 @@
       <div class="buttons">
         <div
           class="button"
-          playSoundOnError="false"
+          playSoundOnError="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1121,21 +1192,37 @@
         </div>
         <div
           class="button"
-          playSoundOnError="true"
+          playSoundOnError="1"
           tabindex="0"
           onclick="this.blur();"
         >
-          on
+          damage
+        </div>
+        <div
+          class="button"
+          playSoundOnError="2"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          triangle
+        </div>
+        <div
+          class="button"
+          playSoundOnError="3"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          square
         </div>
       </div>
     </div>
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_caret" class="sectionGroupTitle" group="caret">
+  <button id="group_caret" class="text sectionGroupTitle" group="caret">
     <i class="fas fa-chevron-down"></i>
     caret
-  </div>
+  </button>
   <div class="settingsGroup caret">
     <div class="section smoothCaret" section="">
       <div class="groupTitle">
@@ -1389,18 +1476,22 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_appearance" class="sectionGroupTitle" group="appearance">
+  <button
+    id="group_appearance"
+    class="text sectionGroupTitle"
+    group="appearance"
+  >
     <i class="fas fa-chevron-down"></i>
     appearance
-  </div>
+  </button>
   <div class="settingsGroup appearance">
     <div class="section timerStyle" section="">
       <div class="groupTitle">
-        <i class="fas fa-clock"></i>
-        <span>timer/progress style</span>
+        <i class="fas fa-chart-pie"></i>
+        <span>live progress style</span>
       </div>
       <div class="text">
-        Change the style of the timer/progress during a timed test.
+        Change the style of the timer/word count during a timed test.
       </div>
       <div class="buttons">
         <div
@@ -1431,11 +1522,12 @@
     </div>
     <div class="section timerColor" section="">
       <div class="groupTitle">
-        <i class="fas fa-clock"></i>
-        <span>timer/progress color</span>
+        <i class="fas fa-chart-pie"></i>
+        <span>live progress color</span>
       </div>
       <div class="text">
-        Change the color of the timer/progress number/bar and live speed number.
+        Change the color of the timer/word count number/bar and live speed
+        number.
       </div>
       <div class="buttons">
         <div
@@ -1474,11 +1566,11 @@
     </div>
     <div class="section timerOpacity" section="">
       <div class="groupTitle">
-        <i class="fas fa-clock"></i>
-        <span>timer/progress opacity</span>
+        <i class="fas fa-chart-pie"></i>
+        <span>live progress opacity</span>
       </div>
       <div class="text">
-        Change the opacity of the timer/progress number/bar and live speed
+        Change the opacity of the timer/word count number/bar and live speed
         number.
       </div>
       <div class="buttons">
@@ -2008,10 +2100,10 @@
     <div id="ad-settings-3-small"></div>
   </div>
 
-  <div id="group_theme" class="sectionGroupTitle" group="theme">
+  <button id="group_theme" class="text sectionGroupTitle" group="theme">
     <i class="fas fa-chevron-down"></i>
     theme
-  </div>
+  </button>
   <div class="settingsGroup theme">
     <div class="section flipTestColors">
       <div class="groupTitle">
@@ -2157,7 +2249,7 @@
       </div>
       <div class="text">
         Enabling this will automatically switch the theme between light and dark
-        depending on the system theme (this will not override custom theme).
+        depending on the system theme.
       </div>
       <div class="buttons">
         <div
@@ -2490,10 +2582,14 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_hideElements" class="sectionGroupTitle" group="hideElements">
+  <button
+    id="group_hideElements"
+    class="text sectionGroupTitle"
+    group="hideElements"
+  >
     <i class="fas fa-chevron-down"></i>
     hide elements
-  </div>
+  </button>
   <div class="settingsGroup hideElements">
     <div class="section showLiveWpm">
       <div class="groupTitle">
@@ -2576,12 +2672,12 @@
     </div>
     <div class="section showTimerProgress">
       <div class="groupTitle">
-        <i class="fas fa-clock"></i>
-        <span>timer/progress</span>
+        <i class="fas fa-chart-pie"></i>
+        <span>live progress</span>
       </div>
       <div class="text">
-        Displays a live timer for timed tests and progress for words/custom
-        tests.
+        Displays a live timer for timed tests and word count for word based
+        tests (word, quote or custom mode).
       </div>
       <div class="buttons">
         <div
@@ -2726,10 +2822,14 @@
     <div class="sectionSpacer"></div>
   </div>
 
-  <div id="group_dangerZone" class="sectionGroupTitle" group="dangerZone">
+  <button
+    id="group_dangerZone"
+    class="text sectionGroupTitle"
+    group="dangerZone"
+  >
     <i class="fas fa-chevron-down"></i>
     danger zone
-  </div>
+  </button>
   <div class="settingsGroup dangerZone">
     <div class="section importexportSettings">
       <div class="groupTitle">
@@ -2931,6 +3031,28 @@
         </div>
       </div>
     </div>
+    <div class="section revokeAllTokens">
+      <div class="groupTitle">
+        <i class="fas fa-user-slash"></i>
+        <span>revoke all tokens</span>
+      </div>
+      <div class="text">
+        Revokes all tokens connected to your account. Do this if you think
+        someone else has access to your account.
+        <br />
+        <span class="red">This will log you out of all devices.</span>
+      </div>
+      <div class="buttons">
+        <div
+          class="button danger"
+          id="revokeAllTokens"
+          tabindex="0"
+          onclick="this.blur();"
+        >
+          revoke all tokens
+        </div>
+      </div>
+    </div>
     <div class="section resetSettings">
       <div class="groupTitle">
         <i class="fas fa-redo-alt"></i>
@@ -3038,6 +3160,5 @@
         </div>
       </div>
     </div>
-    <div class="sectionSpacer"></div>
   </div>
 </div>

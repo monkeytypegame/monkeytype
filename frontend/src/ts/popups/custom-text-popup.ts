@@ -227,6 +227,11 @@ $(`${popup} .randomInputFields .sectioncount input`).on("keypress", () => {
 function apply(): void {
   let text = ($(`${popup} textarea`).val() as string).normalize();
 
+  if (text === "") {
+    Notifications.add("Text cannot be empty", 0);
+    return;
+  }
+
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
 
@@ -236,14 +241,14 @@ function apply(): void {
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
-  text = text.replace(/\\\\t/gm, "\t");
-  text = text.replace(/\\\\n/gm, "\n");
-  text = text.replace(/\\t/gm, "\t");
-  text = text.replace(/\\n/gm, "\n");
+  if ($(`${popup} .replaceControlCharacters input`).prop("checked")) {
+    text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
+    text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
+    text = text.replace(/\\\\t/gm, "\\t");
+    text = text.replace(/\\\\n/gm, "\\n");
+  }
+
   text = text.replace(/ +/gm, " ");
-  // text = text.replace(/(\r\n)+/g, "\r\n");
-  // text = text.replace(/(\n)+/g, "\n");
-  // text = text.replace(/(\r)+/g, "\r");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   if ($(`${popup} .typographyCheck input`).prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
@@ -266,7 +271,8 @@ function apply(): void {
     }
   }
 
-  CustomText.setText(text.split(CustomText.delimiter));
+  const words = text.split(CustomText.delimiter).filter((word) => word !== "");
+  CustomText.setText(words);
 
   CustomText.setWord(
     parseInt(($(`${popup} .wordcount input`).val() as string) || "-1")
@@ -360,7 +366,7 @@ $(document).on("keydown", (event) => {
 });
 
 $("#popups").on("click", `${popup} .wordfilter`, () => {
-  hide({ noAnim: true });
+  hide({ noAnim: true, resetState: false });
   WordFilterPopup.show(true, () => {
     show(true);
   });
@@ -382,6 +388,32 @@ $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
 
 $(`#customTextPopupWrapper .longCustomTextWarning .button`).on("click", () => {
   $(`#customTextPopup .longCustomTextWarning`).addClass("hidden");
+});
+
+$(`#fileInput`).on("change", () => {
+  const file = ($(`#fileInput`)[0] as HTMLInputElement).files?.[0];
+  if (file) {
+    if (file.type !== "text/plain") {
+      Notifications.add("File is not a text file", -1, {
+        duration: 5,
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+
+    reader.onload = (readerEvent): void => {
+      const content = readerEvent.target?.result as string;
+      $(`${popup} textarea`).val(content);
+      $(`#fileInput`).val("");
+    };
+    reader.onerror = (): void => {
+      Notifications.add("Failed to read file", -1, {
+        duration: 5,
+      });
+    };
+  }
 });
 
 Skeleton.save(skeletonId);

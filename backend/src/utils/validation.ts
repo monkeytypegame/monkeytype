@@ -131,6 +131,10 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "nospace" || fp.startsWith("toPush"))
     ).length <= 1;
+  const oneWordOrderMax =
+    funboxesToCheck.filter((f) =>
+      f.properties?.find((fp) => fp.startsWith("wordOrder"))
+    ).length <= 1;
   const oneChangesWordsVisibilityMax =
     funboxesToCheck.filter((f) =>
       f.properties?.find((fp) => fp === "changesWordsVisibility")
@@ -229,6 +233,7 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
     onePunctuateWordMax &&
     oneCharCheckerMax &&
     oneCharReplacerMax &&
-    noConfigConflicts
+    noConfigConflicts &&
+    oneWordOrderMax
   );
 }

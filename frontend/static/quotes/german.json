@@ -14,12 +14,6 @@
       "id": 1
     },
     {
-      "text": "Es ist dem Feind gelungen, die Front in breiter Formation zu durchbrechen. Im Süden hat der Gegner Zossen genommen und stößt auf Stahnsdorf vor. Der Feind operiert jetzt am nördlichen Stadtrand zwischen Frohnau und Pankow und im Osten ist der Feind bis zur Linie Lichtenberg, Mahlsdorf und Kahrlshorst gelangt. Mit dem Angriff Steiners wird das alles in Ordnung kommen. Mein Führer... Steiner... Steiner konnte nicht genügend Kräfte für einen Angriff massieren. Der Angriff Steiners ist nicht erfolgt. Es bleiben im Raum: Keitel, Jodl, Krebs und Burgdorf. Das war ein Befehl! Der Angriff Steiners war ein Befehl! Wer sind Sie, dass Sie es wagen, sich meinem Befehl zu widersetzen? So weit ist es also gekommen? Das Militär hat mich belogen! Jeder hat mich belogen, sogar die SS! Die gesamte Generalität ist nichts als ein Haufen niederträchtiger, treuloser Feiglinge!",
-      "source": "Der Untergang/Downfall",
-      "length": 867,
-      "id": 2
-    },
-    {
       "text": "Das Schönste, was wir erleben können, ist das Geheimnisvolle.",
       "source": "Albert Einstein",
       "length": 61,
@@ -32,7 +26,7 @@
       "id": 4
     },
     {
-      "text": "Die Welt ist viel zu gefährlich, um darin zu leben - nicht wegen der Menschen, die Böses tun, sondern wegen der Menschen, die daneben stehen und sie gewähren lassen.",
+      "text": "Die Welt ist viel zu gefährlich, um darin zu leben - nicht wegen den Menschen, die Böses tun, sondern wegen den Menschen, die daneben stehen und sie gewähren lassen.",
       "source": "Albert Einstein",
       "length": 165,
       "id": 5
@@ -1490,12 +1484,6 @@
       "id": 254
     },
     {
-      "text": "Nicht gleich auf den Kopf, das verwirrt das Opfer. Dann fühlt er nicht den nächsten Schlag.",
-      "source": "Batman – The Dark Knight",
-      "length": 91,
-      "id": 255
-    },
-    {
       "text": "Weil es das ist, was nötig ist. Weil die Wahrheit manchmal nicht gut genug ist. Manchmal verdienen die Menschen mehr. Manchmal verdienen die Menschen, dass ihr Vertrauen belohnt wird…",
       "source": "Batman – The Dark Knight",
       "length": 183,
@@ -2067,7 +2055,7 @@
     },
     {
       "text": "Manche glauben, die Sterne würden oben näher erscheinen. Stimmt nicht. Hier oben erkennt man erst, wie fern sie wirklich sind.",
-      "source": "Unbekannt",
+      "source": "Ally Condie, Reached",
       "length": 126,
       "id": 351
     },
@@ -2168,9 +2156,9 @@
       "id": 369
     },
     {
-      "text": "Wer über seine Gefühle spricht, nimmt diesen Gefühlen ihren Sinn und Zweck. Sobald man versucht, die menschlichen Erfahrungen in Wort zu fassen, degradiert man sie zu einem bloßen Publikumssport. Alles braucht einen Grund und einen Namen.",
+      "text": "Wer über seine Gefühle spricht, nimmt diesen Gefühlen ihren Sinn und Zweck. Sobald man versucht, die menschlichen Erfahrungen in Worte zu fassen, degradiert man sie zu einem bloßen Publikumssport. Alles braucht einen Grund und einen Namen.",
       "source": "Skulduggery Pleasant – Passage der Totenbeschwörer",
-      "length": 238,
+      "length": 239,
       "id": 370
     },
     {
@@ -2238,12 +2226,6 @@
       "source": "Der Soldat James Ryan",
       "length": 70,
       "id": 381
-    },
-    {
-      "text": "Der Krieg schult uns die Sinne, weckt in uns den Willen zur Tat, vervollkommnet unsere psychische Konstitution und bringt den Mann dazu sich von jetzt auf gleich Aug in Aug als Mann mit dem Manne zu messen.",
-      "source": "Der Soldat James Ryan",
-      "length": 206,
-      "id": 382
     },
     {
       "text": "Meine liebe Mrs. Ryan, es erfüllt mich mit aufrichtiger Freude, Ihnen mitteilen zu können, dass Ihr Sohn, Private James Ryan, wohlauf ist, und sich auf dem Heimweg von den Schlachtfeldern Europas befindet. Laut Meldungen von der Front erfüllte James seine Pflicht mit großem Mut und unerschütterlicher Hingabe, selbst nachdem er von dem tragischen Verlust erfahren hatte, den Ihre Familie in diesem Feldzug zur Befreiung der Welt von Tyrannei und Unterdrückung erlitten hat. Im Namen des Kriegsministers, der United States Army und der Bürger einer dankbaren Nation wünsche ich Ihnen von Herzen Gesundheit, und viele glückliche Jahre, mit Ihrem Sohn James an Ihrer Seite.",
@@ -2402,7 +2384,7 @@
       "id": 410
     },
     {
-      "text": "Aber bis dahin kann ich eine Menge falsch machen, wenn nicht sogar eine weltweite Krise auslösen. Fragen sie mal Giordano. Ein falsches Lächeln, eine falsche Referenz, die falsche Kommunikation - und puff! Das 18. Jahrhundert steht in Brand.",
+      "text": "Aber bis dahin kann ich eine Menge falsch machen, wenn nicht sogar eine weltweite Krise auslösen. Fragen Sie mal Giordano. Ein falsches Lächeln, eine falsche Referenz, die falsche Kommunikation - und puff! Das 18. Jahrhundert steht in Brand.",
       "source": "Edelstein Trilogie – Smaragdgrün",
       "length": 241,
       "id": 411
@@ -2690,7 +2672,7 @@
       "id": 459
     },
     {
-      "text": "Es wäre lächerlich, sich einzubilden, dass sämtliche Bekannten eines Menschen zu hundert Prozent Wesen aus Fleisch und Blut sind. Viele der engsten Freunde, die man hat, bestehen ja nur aus einem Zitat, einem unbedachten Gedanken, während andere aus einem jämmerlichen Körper bestehen, wie Imker, aber von Tausenden fliegender, surrender Gedanken umgeben sind.",
+      "text": "Es wäre lächerlich, sich einzubilden, dass sämtliche Bekannten eines Menschen zu hundert Prozent Wesen aus Fleisch und Blut sind. Viele der engsten Freunde, die man hat, bestehen ja nur aus einem Zitat, einem unbedachten Gedanken, während andere aus einem jämmerlichen Körper bestehen, wie Imker, aber von tausenden fliegender, surrender Gedanken umgeben sind.",
       "source": "Der Mondtrinker",
       "length": 360,
       "id": 460
@@ -2826,12 +2808,6 @@
       "source": "Der Fluch der Dunkelelben – Zwergenblut",
       "length": 215,
       "id": 482
-    },
-    {
-      "text": "Andrew lud sechs Patronen in die Trommel. Er nahm zwar an, dass er mehr als eine kaum brauchen würde, aber man wusste ja nie. Schließlich brachte er sich zum ersten Mal um.",
-      "source": "Die Landkarte der Zeit",
-      "length": 172,
-      "id": 483
     },
     {
       "text": "Ich habe die Erfahrung gemacht, dass ich nicht immer das bekommen kann, was ich gerne möchte. Also habe ich gelernt, immer das zu mögen, was ich bekomme.",
@@ -3216,12 +3192,6 @@
       "source": "Angela Merkel",
       "length": 386,
       "id": 550
-    },
-    {
-      "text": "Steige aus dem Bett, dreh den Swag auf, schaue kurz in den Spiegel, ich sag: \"Whatup?\"",
-      "source": "Money Boy - Dreh den Swag auf",
-      "length": 86,
-      "id": 551
     },
     {
       "text": "Sieh dir diese kleine Karte an. So viel bedeutet sie. Die Vorderseite ist schlicht weiß, dezent, das Firmenlogo in Silber. Die Rückseite enthält alle wichtigen Informationen: Name, Adresse, Telefonnummern, E-Mail-Adresse. Die Schriftart ist etwas kühn, aber nicht aufdringlich. Ein Hauch von Vanille.",

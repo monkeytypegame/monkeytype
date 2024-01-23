@@ -38,16 +38,16 @@ export async function update(
 
   details.find(".placeholderAvatar").removeClass("hidden");
   if (profile.discordAvatar && profile.discordId && !banned) {
-    const avatarUrl = await Misc.getDiscordAvatarUrl(
+    Misc.getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
       256
-    );
-
-    if (avatarUrl) {
-      details.find(".placeholderAvatar").addClass("hidden");
-      details.find(".avatar").css("background-image", `url(${avatarUrl})`);
-    }
+    ).then((avatarUrl) => {
+      if (avatarUrl) {
+        details.find(".placeholderAvatar").addClass("hidden");
+        details.find(".avatar").css("background-image", `url(${avatarUrl})`);
+      }
+    });
   } else {
     details.find(".avatar").removeAttr("style");
   }
@@ -84,6 +84,17 @@ export async function update(
       .append(
         `<div class="bannedIcon" aria-label="This account has opted out of leaderboards" data-balloon-pos="up"><i class="fas fa-crown"></i></div>`
       );
+
+    if (where === "profile") {
+      profileElement
+        .find(".lbOptOutReminder")
+        .removeClass("hidden")
+        .text(
+          "Note: This account has opted out of the leaderboards, meaning their results aren't verified by the anticheat system and may not be legitimate."
+        );
+    } else {
+      profileElement.find(".lbOptOutReminder").addClass("hidden");
+    }
   }
 
   setTimeout(() => {
@@ -119,14 +130,49 @@ export async function update(
     const lastResult = results?.[0];
 
     const dayInMilis = 1000 * 60 * 60 * 24;
-    const milisOffset = (profile.streakHourOffset ?? 0) * 3600000;
-    const timeDif = formatDistanceToNowStrict(
-      Misc.getCurrentDayTimestamp() + dayInMilis + milisOffset
+
+    let target =
+      Misc.getCurrentDayTimestamp(profile.streakHourOffset) + dayInMilis;
+    if (target < Date.now()) {
+      target += dayInMilis;
+    }
+    const timeDif = formatDistanceToNowStrict(target);
+
+    console.debug("Streak hour offset");
+    console.debug("date.now()", Date.now(), new Date(Date.now()));
+    console.debug("dayInMilis", dayInMilis);
+    console.debug(
+      "difTarget",
+      new Date(
+        Misc.getCurrentDayTimestamp(profile.streakHourOffset) + dayInMilis
+      )
     );
+    console.debug("timeDif", timeDif);
+    console.debug(
+      "Misc.getCurrentDayTimestamp()",
+      Misc.getCurrentDayTimestamp(),
+      new Date(Misc.getCurrentDayTimestamp())
+    );
+    console.debug("profile.streakHourOffset", profile.streakHourOffset);
 
     if (lastResult) {
       //check if the last result is from today
-      const isToday = Misc.isToday(lastResult.timestamp);
+      const isToday = Misc.isToday(
+        lastResult.timestamp,
+        profile.streakHourOffset
+      );
+      const isYesterday = Misc.isYesterday(
+        lastResult.timestamp,
+        profile.streakHourOffset
+      );
+
+      console.debug(
+        "lastResult.timestamp",
+        lastResult.timestamp,
+        new Date(lastResult.timestamp)
+      );
+      console.debug("isToday", isToday);
+      console.debug("isYesterday", isYesterday);
 
       const offsetString = profile.streakHourOffset
         ? `(${profile.streakHourOffset > 0 ? "+" : ""}${
@@ -141,6 +187,8 @@ export async function update(
         hoverText += `\nClaimed today: no`;
         hoverText += `\nStreak lost in: ${timeDif} ${offsetString}`;
       }
+
+      console.debug(hoverText);
 
       if (profile.streakHourOffset === undefined) {
         hoverText += `\n\nIf the streak reset time doesn't line up with your timezone, you can change it in Settings > Danger zone > Update streak hour offset.`;
@@ -197,7 +245,7 @@ export async function update(
             git
           )}/' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             git
-          )}" data-balloon-pos="up"><i class="fab fa-fw fa-github"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-github"></i></a>`
         );
       }
 
@@ -208,7 +256,7 @@ export async function update(
             twitter
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             twitter
-          )}" data-balloon-pos="up"><i class="fab fa-fw fa-twitter"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fab fa-fw fa-twitter"></i></a>`
         );
       }
 
@@ -224,7 +272,7 @@ export async function update(
             website
           )}' target="_blank" rel="nofollow me" aria-label="${Misc.escapeHTML(
             websiteName ?? ""
-          )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe"></i></a>`
+          )}" data-balloon-pos="up" class="textButton"><i class="fas fa-fw fa-globe"></i></a>`
         );
       }
     }

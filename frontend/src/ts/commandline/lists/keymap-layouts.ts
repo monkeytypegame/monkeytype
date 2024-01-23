@@ -29,6 +29,7 @@ function update(layouts: MonkeyTypes.Layouts): void {
     id: "changeKeymapLayoutOverrideSync",
     display: "emulator sync",
     configValue: "overrideSync",
+    alias: "default",
     exec: (): void => {
       UpdateConfig.setKeymapLayout("overrideSync");
       TestLogic.restart();

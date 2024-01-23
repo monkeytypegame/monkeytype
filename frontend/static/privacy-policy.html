@@ -37,11 +37,11 @@
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <style>
-      #top {
+      header {
         font-size: 2.5rem;
       }
 
-      #middle {
+      main {
         color: var(--text-color);
       }
 
@@ -60,9 +60,9 @@
   </head>
 
   <body>
-    <div id="centerContent">
-      <div id="top">
-        <div class="logo">
+    <div id="contentWrapper">
+      <header>
+        <div id="logo">
           <div class="icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -107,14 +107,14 @@
             <span style="color: var(--main-color)">Privacy Policy</span>
           </div>
         </div>
-      </div>
-      <div id="middle">
+      </header>
+      <main>
         <p>
           <!-- make sure to update this date every time the policy is changed -->
         </p>
 
         <p>Effective date: September 8, 2021</p>
-        <p>Last updated: Jun 27, 2023</p>
+        <p>Last updated: Oct 24, 2023</p>
         <p>
           Thanks for trusting Monkeytype ('Monkeytype', 'we', 'us', 'our') with
           your personal information! We take our responsibility to you very
@@ -292,9 +292,9 @@
         </p>
         <p>
           All the ads served by us come through a third-party advertising
-          company, Enthusiast Gaming. When you first load our website, before
-          any ads are displayed, you are presented with a consent form (from a
-          "Content Management Platform", or CMP).
+          company, Playwire. When you first load our website, before any ads are
+          displayed, you are presented with a consent form (from a "Content
+          Management Platform", or CMP).
         </p>
         <p>
           Depending on the consent you provide in this form, various pieces of
@@ -305,26 +305,6 @@
           at any time by deleting the cookies from your Internet browser. Once
           deleted, the consent form from the CMP will be displayed to you again
           when you visit next time.
-        </p>
-        <p>
-          The CMP that we use belongs to Quantcast (you can see it here listed
-          on the website of the Interactive Advertising Bureau (IAB), an
-          organization that develops industry standards, conducts research, and
-          provides legal support for the online advertising industry). If you
-          previously provided consent using Quantcast's CMP (such as on a
-          different website that also uses it), those consent preferences will
-          be used by us, and you may not see the consent form when you load our
-          website. If at any time you are unsure of your consent preferences
-          with regards to our advertisements, we recommend deleting your
-          browser's cookies, or heading to the "Update cookie preferences"
-          section of the settings page.
-        </p>
-        <h1 id="Advertisements2">Advertisements Part 2</h1>
-        <p>
-          <i>
-            This section only applies for the duration of Monkeytype's
-            Advertiser A/B Test, beginning on the 26th of June 2023.
-          </i>
         </p>
         <p><i>Common ID Cookie</i></p>
         <p id="cookieP">
@@ -348,15 +328,10 @@
         <p>
           FOR EU USERS ONLY: When you use our site, pre-selected companies may
           access and use certain information on your device and about your
-          interests to serve ads or personalized content. You may revisit or
-          change consent-choices at any time by clicking
-          <a
-            href="#tcfapi"
-            onclick="if(window.__tcfapi === undefined){console.warn('User is not in the EU - Consent Choices can only be configured when User is in the EU')}else{ramp.showCmpModal()}"
-          >
-            here
-          </a>
-          .
+          interests to serve ads or personalized content. To change your
+          consent-choices, go to Monkeytype > Settings > Danger Zone section >
+          Update cookie preferences. From there you can open the CMP by clicking
+          "Click to change your preferences on ad related cookies"
         </p>
 
         <h1 id="Cookies">What are cookies?</h1>
@@ -375,7 +350,7 @@
           >
             HTTP cookie
           </a>
-          on Wikipedia.
+          &nbsp; on Wikipedia.
         </p>
 
         <h1 id="Usage_of_Cookies">How do we use cookies?</h1>
@@ -443,11 +418,11 @@
         <p>
           Advertising related inquiries:
           <a
-            href="mailto: bizdev@enthusiastgaming.com"
+            href="https://www.playwire.com/contact-direct-sales"
             target="_blank"
             rel="noopener noreferrer"
           >
-            bizdev@enthusiastgaming.com
+            https://www.playwire.com/contact-direct-sales
           </a>
         </p>
         Discord:
@@ -456,22 +431,22 @@
           data-balloon-pos="up"
           onclick="copyUserName()"
         >
-          Miodec#1512
+          @miodec
         </span>
-      </div>
+      </main>
     </div>
   </body>
   <script defer>
     function copyUserName() {
       if (true) {
-        navigator.clipboard.writeText("Miodec#1512");
+        navigator.clipboard.writeText("@miodec");
         alert("Copied To Clipboard!");
       } else {
         alert("Unable to copy username");
       }
     }
 
-    document.querySelector("#top").addEventListener("click", () => {
+    document.querySelector("header").addEventListener("click", () => {
       window.location = "/";
     });
   </script>

@@ -5,10 +5,12 @@ import * as TestLogic from "../test/test-logic";
 import * as Funbox from "../test/funbox/funbox";
 import * as TestConfig from "../test/test-config";
 import Page from "./page";
-import { updateTestPageAds } from "../controllers/ad-controller";
+import { updateFooterAndVerticalAds } from "../controllers/ad-controller";
 import * as ModesNotice from "../elements/modes-notice";
 import * as Keymap from "../elements/keymap";
 import * as TribeState from "../tribe/tribe-state";
+import * as TestConfig from "../test/test-config";
+import * as CookiePopup from "../popups/cookie-popup";
 
 export const page = new Page(
   "test",
@@ -21,13 +23,13 @@ export const page = new Page(
     });
     Funbox.clear();
     ModesNotice.update();
-    $("#wordsInput").focusout();
+    $("#wordsInput").trigger("focusout");
   },
   async () => {
-    updateTestPageAds(true);
+    updateFooterAndVerticalAds(true);
   },
   async (options) => {
-    updateTestPageAds(false);
+    updateFooterAndVerticalAds(false);
     if (TribeState.getState() > 5) {
       TestConfig.hide();
     } else {
@@ -39,10 +41,16 @@ export const page = new Page(
       noAnim: true,
       tribeOverride: options.tribeOverride ?? false,
     });
+    TestConfig.instantUpdate();
     Funbox.activate();
     Keymap.refresh();
   },
   async () => {
-    TestUI.focusWords();
+    if (CookiePopup.isVisible()) {
+      TestUI.blurWords();
+      $("#cookiePopupWrapper").trigger("focus");
+    } else {
+      TestUI.focusWords();
+    }
   }
 );

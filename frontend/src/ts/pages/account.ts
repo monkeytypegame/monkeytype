@@ -21,6 +21,8 @@ import type { ScaleChartOptions, LinearScaleOptions } from "chart.js";
 import * as ConfigEvent from "../observables/config-event";
 import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
+import * as Loader from "../elements/loader";
+import * as ResultBatches from "../elements/result-batches";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -221,6 +223,8 @@ async function fillContent(): Promise<void> {
 
   PbTables.update(snapshot.personalBests);
   Profile.update("account", snapshot);
+
+  ResultBatches.update();
 
   chartData = [];
   accChartData = [];
@@ -679,7 +683,7 @@ async function fillContent(): Promise<void> {
     });
     activityChartData_time.push({
       x: dateInt,
-      y: Misc.roundTo2(activityChartData[dateInt].time),
+      y: activityChartData[dateInt].time / 60,
       amount: activityChartData[dateInt].amount,
     });
     activityChartData_avgWpm.push({
@@ -796,8 +800,10 @@ async function fillContent(): Promise<void> {
   }
 
   const wpms = chartData.map((r) => r.y);
-  const minWpmChartVal = Math.min(...wpms);
-  const maxWpmChartVal = Math.max(...wpms);
+  const minWpm = Math.min(...wpms);
+  const maxWpm = Math.max(...wpms);
+  const minWpmChartVal = isFinite(minWpm) ? minWpm : 0;
+  const maxWpmChartVal = isFinite(maxWpm) ? maxWpm : 0;
   const maxWpmChartValWithBuffer =
     Math.floor(maxWpmChartVal) +
     (wpmStepSize - (Math.floor(maxWpmChartVal) % wpmStepSize));
@@ -1045,15 +1051,15 @@ async function fillContent(): Promise<void> {
   );
 }
 
-export async function downloadResults(): Promise<void> {
-  if (DB.getSnapshot()?.results !== undefined) return;
-  const results = await DB.getUserResults();
+export async function downloadResults(offset?: number): Promise<void> {
+  const results = await DB.getUserResults(offset);
   if (results === false && !ConnectionState.get()) {
     Notifications.add("Could not get results - you are offline", -1, {
       duration: 5,
     });
     return;
   }
+
   TodayTracker.addAllFromToday();
   if (results) {
     ResultFilters.updateActive();
@@ -1157,16 +1163,20 @@ function sortAndRefreshHistory(
   loadMoreLines();
 }
 
-$(".pageAccount .toggleAccuracyOnChart").on("click", () => {
-  UpdateConfig.setAccountChartAccuracy(!(Config.accountChart[0] === "on"));
+$(".pageAccount button.toggleResultsOnChart").on("click", () => {
+  UpdateConfig.setAccountChartResults(!(Config.accountChart[0] === "on"));
 });
 
-$(".pageAccount .toggleAverage10OnChart").on("click", () => {
-  UpdateConfig.setAccountChartAvg10(!(Config.accountChart[1] === "on"));
+$(".pageAccount button.toggleAccuracyOnChart").on("click", () => {
+  UpdateConfig.setAccountChartAccuracy(!(Config.accountChart[1] === "on"));
 });
 
-$(".pageAccount .toggleAverage100OnChart").on("click", () => {
-  UpdateConfig.setAccountChartAvg100(!(Config.accountChart[2] === "on"));
+$(".pageAccount button.toggleAverage10OnChart").on("click", () => {
+  UpdateConfig.setAccountChartAvg10(!(Config.accountChart[2] === "on"));
+});
+
+$(".pageAccount button.toggleAverage100OnChart").on("click", () => {
+  UpdateConfig.setAccountChartAvg100(!(Config.accountChart[3] === "on"));
 });
 
 $(".pageAccount .loadMoreButton").on("click", () => {
@@ -1247,7 +1257,7 @@ $(".pageAccount .group.history").on("click", ".history-date-header", () => {
 // Resets sorting to by date' when applying filers (normal or advanced)
 $(".pageAccount .group.history").on(
   "click",
-  ".buttonsAndTitle .buttons .button",
+  ".buttonsAndTitle .buttons button",
   () => {
     // We want to 'force' descending sort:
     sortAndRefreshHistory("timestamp", ".history-date-header", true);
@@ -1256,7 +1266,7 @@ $(".pageAccount .group.history").on(
 
 $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "click",
-  ".button",
+  "button",
   () => {
     setTimeout(() => {
       update();
@@ -1293,6 +1303,17 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
   );
 });
 
+$(".pageAccount button.loadMoreResults").on("click", async () => {
+  const offset = DB.getSnapshot()?.results?.length || 0;
+
+  Loader.show();
+  ResultBatches.disableButton();
+
+  await downloadResults(offset);
+  await fillContent();
+  Loader.hide();
+});
+
 ConfigEvent.subscribe((eventKey) => {
   if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
     update();
@@ -1312,7 +1333,7 @@ export const page = new Page(
     Skeleton.remove("pageAccount");
   },
   async () => {
-    Skeleton.append("pageAccount", "middle");
+    Skeleton.append("pageAccount", "main");
     await ResultFilters.appendButtons();
     ResultFilters.updateActive();
     await Misc.sleep(0);
@@ -1321,15 +1342,18 @@ export const page = new Page(
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
     }
+
     await update();
     await Misc.sleep(0);
     updateChartColors();
     $(".pageAccount .content p.accountVerificatinNotice").remove();
     if (Auth?.currentUser?.emailVerified === false) {
       $(".pageAccount .content").prepend(
-        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. <a class="sendVerificationEmail">Send the verification email again</a>.`
+        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
       );
     }
+
+    ResultBatches.showOrHideIfNeeded();
   },
   async () => {
     //
