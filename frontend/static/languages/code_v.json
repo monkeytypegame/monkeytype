@@ -1,5 +1,5 @@
 {
-  "name": "code_swift",
+  "name": "code_v",
   "noLazyMode": true,
   "words": [
     "struct",
@@ -28,7 +28,6 @@
     "pub",
     "nil",
     "break",
-    "main",
     "return"
   ]
 }
