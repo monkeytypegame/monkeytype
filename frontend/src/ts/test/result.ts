@@ -1,8 +1,4 @@
-import {
-  Chart,
-  type PluginChartOptions,
-  type ScaleChartOptions,
-} from "chart.js";
+import { Chart, type PluginChartOptions } from "chart.js";
 import Config from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
@@ -713,9 +709,6 @@ export async function update(
   randomQuote: MonkeyTypes.Quote,
   dontSave: boolean
 ): Promise<void> {
-  resultScaleOptions = (
-    ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-  ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
   hideCrown();

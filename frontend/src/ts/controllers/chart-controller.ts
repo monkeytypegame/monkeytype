@@ -271,7 +271,14 @@ export const accountHistory: ChartWithUpdateColors<
   | MonkeyTypes.HistoryChartData[]
   | MonkeyTypes.AccChartData[]
   | MonkeyTypes.OtherChartData[],
-  string
+  string,
+  | "wpm"
+  | "pb"
+  | "acc"
+  | "wpmAvgTen"
+  | "accAvgTen"
+  | "wpmAvgHundred"
+  | "accAvgHundred"
 > = new ChartWithUpdateColors(
   document.querySelector(
     ".pageAccount #accountHistoryChart"
@@ -550,7 +557,8 @@ export const accountHistory: ChartWithUpdateColors<
 export const accountActivity: ChartWithUpdateColors<
   "bar" | "line",
   MonkeyTypes.ActivityChartDataPoint[],
-  string
+  string,
+  "count" | "avgWpm"
 > = new ChartWithUpdateColors(
   document.querySelector(
     ".pageAccount #accountActivityChart"
@@ -694,7 +702,8 @@ export const accountActivity: ChartWithUpdateColors<
 export const accountHistogram: ChartWithUpdateColors<
   "bar",
   MonkeyTypes.ActivityChartDataPoint[],
-  string
+  string,
+  "count"
 > = new ChartWithUpdateColors(
   document.querySelector(
     ".pageAccount #accountHistogramChart"
@@ -796,7 +805,8 @@ export const accountHistogram: ChartWithUpdateColors<
 export const globalSpeedHistogram: ChartWithUpdateColors<
   "bar",
   MonkeyTypes.ActivityChartDataPoint[],
-  string
+  string,
+  "count"
 > = new ChartWithUpdateColors(
   document.querySelector(
     ".pageAbout #publicStatsHistogramChart"
@@ -864,7 +874,8 @@ export const globalSpeedHistogram: ChartWithUpdateColors<
 export const miniResult: ChartWithUpdateColors<
   "line" | "scatter",
   number[],
-  string
+  string,
+  "wpm" | "raw" | "error"
 > = new ChartWithUpdateColors(
   document.querySelector(".pageAccount #miniResultChart") as HTMLCanvasElement,
   {
