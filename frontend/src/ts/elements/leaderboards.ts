@@ -748,7 +748,8 @@ const debouncedRequestMore = debounce(500, requestMore);
 
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
-  const elem = $(e.currentTarget);
+  const elem = $(e.currentTarget) as JQuery<HTMLElement>;
+  if (!elem || !elem[0]) return;
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round(elem.outerHeight() as number) + 50
@@ -768,7 +769,8 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
 });
 
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
-  const elem = $(e.currentTarget);
+  const elem = $(e.currentTarget) as JQuery<HTMLElement>;
+  if (!elem || !elem[0]) return;
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round((elem.outerHeight() as number) + 50)
