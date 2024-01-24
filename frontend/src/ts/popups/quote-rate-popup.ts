@@ -208,8 +208,6 @@ async function submit(): Promise<void> {
     Notifications.add("Rating submitted", 1);
   }
 
-  console.log(quoteRatings);
-
   snapshot.quoteRatings = quoteRatings;
   DB.setSnapshot(snapshot);
 
