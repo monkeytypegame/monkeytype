@@ -307,8 +307,7 @@ export function forceKeyup(now: number): void {
   const avg = roundTo2(mean(keypressTimings.duration.array));
   const keysOrder = Object.entries(keyDownData);
   keysOrder.sort((a, b) => a[1].timestamp - b[1].timestamp);
-  for (let i = 0; i < keysOrder.length - 1; i++) {
-    const keyOrder = keysOrder[i] as [string, Keydata];
+  for (const keyOrder of keysOrder) {
     recordKeyupTime(now, keyOrder[0]);
   }
   const last = keysOrder[keysOrder.length - 1]?.[0] as string;
