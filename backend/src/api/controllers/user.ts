@@ -144,31 +144,30 @@ export async function sendForgotPasswordEmail(
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
 
-  let auth;
   try {
-    auth = await FirebaseAdmin().auth().getUserByEmail(email);
-  } catch (e) {
-    if (e.code === "auth/user-not-found") {
-      throw new MonkeyError(404, "User not found");
-    }
-    throw e;
+    const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
+    const userInfo = await UserDAL.getUser(
+      uid,
+      "request forgot password email"
+    );
+
+    const link = await FirebaseAdmin()
+      .auth()
+      .generatePasswordResetLink(email, {
+        url: isDevEnvironment()
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
+      });
+
+    await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
+  } catch {
+    return new MonkeyResponse(
+      "Password reset request received. If the email is valid, you will receive an email shortly."
+    );
   }
-
-  const userInfo = await UserDAL.getUser(
-    auth.uid,
-    "request forgot password email"
+  return new MonkeyResponse(
+    "Password reset request received. If the email is valid, you will receive an email shortly."
   );
-
-  const link = await FirebaseAdmin()
-    .auth()
-    .generatePasswordResetLink(email, {
-      url: isDevEnvironment()
-        ? "http://localhost:3000"
-        : "https://monkeytype.com",
-    });
-  await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
-
-  return new MonkeyResponse("Email sent if user was found");
 }
 
 export async function deleteUser(
