@@ -55,6 +55,7 @@ import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Wordset from "./wordset";
+import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -1521,7 +1522,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (ActivePage.get() === "test") {
     if (eventKey === "language") {
       //automatically enable lazy mode for arabic
-      if ((eventValue as string)?.startsWith("arabic")) {
+      if (
+        (eventValue as string)?.startsWith("arabic") &&
+        ArabicLazyMode.get()
+      ) {
         UpdateConfig.setLazyMode(true, true);
       }
       restart();
@@ -1551,8 +1555,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       }, 0);
     }
   }
-  if (eventKey === "lazyMode" && eventValue === false && !nosave) {
-    rememberLazyMode = false;
+  if (eventKey === "lazyMode" && !nosave) {
+    if (Config.language.startsWith("arabic")) {
+      ArabicLazyMode.set(eventValue as boolean);
+    }
+    if (eventValue === false) {
+      rememberLazyMode = false;
+    }
   }
 });
 

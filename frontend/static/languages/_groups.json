@@ -252,7 +252,16 @@
   },
   {
     "name": "romanian",
-    "languages": ["romanian"]
+    "languages": [
+      "romanian",
+      "romanian_1k",
+      "romanian_5k",
+      "romanian_10k",
+      "romanian_25k",
+      "romanian_50k",
+      "romanian_100k",
+      "romanian_200k"
+    ]
   },
   {
     "name": "finnish",
