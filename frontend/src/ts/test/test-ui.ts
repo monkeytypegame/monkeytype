@@ -183,7 +183,9 @@ function getWordHTML(word: string): string {
     }
   }
   retval += "</div>";
-  if (newlineafter) retval += "<div class='newline'></div>";
+  if (newlineafter) {
+    retval += "<div class='newline'></div><div class='after-newline'></div>";
+  }
   return retval;
 }
 
@@ -219,6 +221,9 @@ export function showWords(): void {
   $("#words").html(wordsHTML);
 
   updateWordsHeight(true);
+  if (Config.tapeMode !== "off") {
+    updateNewlineIndent();
+  }
   updateActiveElement(undefined, true);
   Caret.updatePosition();
   updateWordsInputPosition(true);
@@ -371,6 +376,32 @@ function updateWordsHeight(force = false): void {
 
   if (Config.mode === "zen") {
     $(<Element>document.querySelector(".word")).remove();
+  }
+}
+
+export function updateNewlineIndent(): void {
+  const children = $("#words").children();
+  let leftSize = 0;
+  let hadNl = false;
+  let foundWord = false;
+  for (let i = 0; i < children.length; i++) {
+    if (!foundWord) {
+      if ($(children[i]).hasClass("word")) {
+        leftSize += $(children[i]).outerWidth(true) ?? 0;
+        foundWord = true;
+      } else {
+        $(children[i]).remove();
+      }
+    } else {
+      if ($(children[i]).hasClass("newline")) {
+        hadNl = true;
+      } else if (hadNl) {
+        $(children[i]).css("margin-left", leftSize);
+        hadNl = false;
+      } else {
+        leftSize += $(children[i]).outerWidth(true) ?? 0;
+      }
+    }
   }
 }
 
@@ -722,7 +753,11 @@ export function updateWordElement(
     }
   }
   wordAtIndex.innerHTML = ret;
-  if (newlineafter) $("#words").append("<div class='newline'></div>");
+  if (newlineafter) {
+    $("#words").append(
+      "<div class='newline'></div><div class='after-newline'></div>"
+    );
+  }
 }
 
 export function scrollTape(): void {
@@ -766,6 +801,10 @@ export function scrollTape(): void {
   }
   const newMargin = wordsWrapperWidth / 2 - (fullWordsWidth + currentWordWidth);
   if (Config.smoothLineScroll) {
+    if (Config.mode === "zen") {
+      $("#words").css("height", "fit-content");
+      $("#wordsWrapper").css("height", "");
+    }
     $("#words")
       .stop(true, false)
       .animate(

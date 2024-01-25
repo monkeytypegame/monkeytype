@@ -964,6 +964,7 @@ $(document).on("keydown", async (event) => {
       setWordsInput(" " + TestInput.input.current);
       if (Config.tapeMode !== "off") {
         TestUI.scrollTape();
+        TestUI.updateNewlineIndent();
       }
     }
   }
@@ -1330,6 +1331,7 @@ $("#wordsInput").on("input", (event) => {
   updateUI();
   if (Config.tapeMode !== "off") {
     TestUI.scrollTape();
+    TestUI.updateNewlineIndent();
   }
 
   const statebefore = CompositionState.getComposing();
