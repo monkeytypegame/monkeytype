@@ -2,6 +2,7 @@
     "name": "gujarati",
     "rightToLeft": false,
     "ligatures": true,
+    "noLazyMode": true,
     "bcp47": "gu",
     "words": [
       "મને",
