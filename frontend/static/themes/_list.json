@@ -1181,5 +1181,12 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
+  },
+  {
+    "name": "oiran_dark",
+    "bgColor": "#040519",
+    "mainColor": "#166091",
+    "subColor": "#981C5B",
+    "textColor": "#B78254"
   }
 ]
