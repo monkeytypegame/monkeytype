@@ -1589,7 +1589,10 @@ list["forgotPassword"] = new SimplePopup(
 
     return {
       status: 1,
-      message: "Password reset email sent",
+      message: result.message,
+      notificationOptions: {
+        duration: 8,
+      },
     };
   },
   (thisPopup) => {
