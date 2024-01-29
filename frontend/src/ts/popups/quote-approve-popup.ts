@@ -131,8 +131,12 @@ $("#quoteApprovePopupWrapper .button.refreshList").on("click", () => {
 
 $("#popups").on("click", "#quoteApprovePopup .quote .undo", async (e) => {
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
-  $(`#quoteApprovePopup .quote[id=${index}] .text`).val(quotes[index].text);
-  $(`#quoteApprovePopup .quote[id=${index}] .source`).val(quotes[index].source);
+  $(`#quoteApprovePopup .quote[id=${index}] .text`).val(
+    quotes[index]?.text ?? ""
+  );
+  $(`#quoteApprovePopup .quote[id=${index}] .source`).val(
+    quotes[index]?.source ?? ""
+  );
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).addClass("disabled");
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).removeClass("hidden");
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).addClass("hidden");

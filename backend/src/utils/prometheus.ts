@@ -80,7 +80,7 @@ export function setLeaderboard(
   language: string,
   mode: string,
   mode2: string,
-  times: number[]
+  times: [number, number, number, number]
 ): void {
   leaderboardUpdate.set({ language, mode, mode2, step: "aggregate" }, times[0]);
   leaderboardUpdate.set({ language, mode, mode2, step: "loop" }, times[1]);

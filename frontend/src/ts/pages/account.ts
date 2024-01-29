@@ -195,16 +195,17 @@ async function updateChartColors(): Promise<void> {
 
 function reset(): void {
   $(".pageAccount .history table tbody").empty();
-  ChartController.accountHistogram.data.datasets[0].data = [];
-  ChartController.accountActivity.data.datasets[0].data = [];
-  ChartController.accountActivity.data.datasets[1].data = [];
-  ChartController.accountHistory.data.datasets[0].data = [];
-  ChartController.accountHistory.data.datasets[1].data = [];
-  ChartController.accountHistory.data.datasets[2].data = [];
-  ChartController.accountHistory.data.datasets[3].data = [];
-  ChartController.accountHistory.data.datasets[4].data = [];
-  ChartController.accountHistory.data.datasets[5].data = [];
-  ChartController.accountHistory.data.datasets[6].data = [];
+
+  ChartController.accountHistogram.getDataset("count").data = [];
+  ChartController.accountActivity.getDataset("count").data = [];
+  ChartController.accountActivity.getDataset("avgWpm").data = [];
+  ChartController.accountHistory.getDataset("wpm").data = [];
+  ChartController.accountHistory.getDataset("pb").data = [];
+  ChartController.accountHistory.getDataset("acc").data = [];
+  ChartController.accountHistory.getDataset("wpmAvgTen").data = [];
+  ChartController.accountHistory.getDataset("accAvgTen").data = [];
+  ChartController.accountHistory.getDataset("wpmAvgHundred").data = [];
+  ChartController.accountHistory.getDataset("accAvgHundred").data = [];
 }
 
 let totalSecondsFiltered = 0;
@@ -522,13 +523,15 @@ async function fillContent(): Promise<void> {
       resultDate.setMilliseconds(0);
       const resultTimestamp = resultDate.getTime();
 
-      if (Object.keys(activityChartData).includes(String(resultTimestamp))) {
-        activityChartData[resultTimestamp].amount++;
-        activityChartData[resultTimestamp].time +=
+      const dataForTimestamp = activityChartData[resultTimestamp];
+
+      if (dataForTimestamp !== undefined) {
+        dataForTimestamp.amount++;
+        dataForTimestamp.time +=
           result.testDuration +
           result.incompleteTestSeconds -
           (result.afkDuration ?? 0);
-        activityChartData[resultTimestamp].totalWpm += result.wpm;
+        dataForTimestamp.totalWpm += result.wpm;
       } else {
         activityChartData[resultTimestamp] = {
           amount: 1,
@@ -675,26 +678,29 @@ async function fillContent(): Promise<void> {
   const wpmStepSize = typingSpeedUnit.historyStepSize;
 
   // let lastTimestamp = 0;
-  Object.keys(activityChartData).forEach((date) => {
+  for (const date of Object.keys(activityChartData)) {
     const dateInt = parseInt(date);
+    const dataPoint = activityChartData[dateInt];
+
+    if (dataPoint === undefined) continue;
+
     activityChartData_amount.push({
       x: dateInt,
-      y: activityChartData[dateInt].amount,
+      y: dataPoint.amount,
     });
     activityChartData_time.push({
       x: dateInt,
-      y: activityChartData[dateInt].time / 60,
-      amount: activityChartData[dateInt].amount,
+      y: dataPoint.time / 60,
+      amount: dataPoint.amount,
     });
     activityChartData_avgWpm.push({
       x: dateInt,
       y: Misc.roundTo2(
-        typingSpeedUnit.fromWpm(activityChartData[dateInt].totalWpm) /
-          activityChartData[dateInt].amount
+        typingSpeedUnit.fromWpm(dataPoint.totalWpm) / dataPoint.amount
       ),
     });
     // lastTimestamp = date;
-  });
+  }
 
   const accountActivityScaleOptions = (
     ChartController.accountActivity.options as ScaleChartOptions<"bar" | "line">
@@ -707,9 +713,9 @@ async function fillContent(): Promise<void> {
   accountActivityAvgWpmOptions.title.text = "Average " + Config.typingSpeedUnit;
   accountActivityAvgWpmOptions.ticks.stepSize = wpmStepSize;
 
-  ChartController.accountActivity.data.datasets[0].data =
-    activityChartData_time;
-  ChartController.accountActivity.data.datasets[1].data =
+  ChartController.accountActivity.getDataset("count").data =
+    activityChartData_amount;
+  ChartController.accountActivity.getDataset("avgWpm").data =
     activityChartData_avgWpm;
 
   const histogramChartDataBucketed: { x: number; y: number }[] = [];
@@ -728,7 +734,7 @@ async function fillContent(): Promise<void> {
   });
 
   ChartController.accountHistogram.data.labels = labels;
-  ChartController.accountHistogram.data.datasets[0].data =
+  ChartController.accountHistogram.getDataset("count").data =
     histogramChartDataBucketed;
 
   const accountHistoryScaleOptions = (
@@ -746,7 +752,7 @@ async function fillContent(): Promise<void> {
     const pb: { x: number; y: number }[] = [];
 
     for (let i = chartData.length - 1; i >= 0; i--) {
-      const a = chartData[i];
+      const a = chartData[i] as MonkeyTypes.HistoryChartData;
       if (a.y > currentPb) {
         currentPb = a.y;
         pb.push(a);
@@ -756,7 +762,7 @@ async function fillContent(): Promise<void> {
     // add last point to pb
     pb.push({
       x: 1,
-      y: pb[pb.length - 1].y,
+      y: Misc.lastElementFromArray(pb)?.y as number,
     });
 
     const avgTen = [];
@@ -788,15 +794,17 @@ async function fillContent(): Promise<void> {
       avgHundredAcc.push({ x: i + 1, y: accAvgHundredValue });
     }
 
-    ChartController.accountHistory.data.datasets[0].data = chartData;
-    ChartController.accountHistory.data.datasets[1].data = pb;
-    ChartController.accountHistory.data.datasets[2].data = accChartData;
-    ChartController.accountHistory.data.datasets[3].data = avgTen;
-    ChartController.accountHistory.data.datasets[4].data = avgTenAcc;
-    ChartController.accountHistory.data.datasets[5].data = avgHundred;
-    ChartController.accountHistory.data.datasets[6].data = avgHundredAcc;
+    ChartController.accountHistory.getDataset("wpm").data = chartData;
+    ChartController.accountHistory.getDataset("pb").data = pb;
+    ChartController.accountHistory.getDataset("acc").data = accChartData;
+    ChartController.accountHistory.getDataset("wpmAvgTen").data = avgTen;
+    ChartController.accountHistory.getDataset("accAvgTen").data = avgTenAcc;
+    ChartController.accountHistory.getDataset("wpmAvgHundred").data =
+      avgHundred;
+    ChartController.accountHistory.getDataset("accAvgHundred").data =
+      avgHundredAcc;
 
-    accountHistoryScaleOptions["x"].max = chartData.length + 1;
+    ChartController.accountHistory.getScale("x").max = chartData.length + 1;
   }
 
   const wpms = chartData.map((r) => r.y);
@@ -813,23 +821,27 @@ async function fillContent(): Promise<void> {
 
   accountHistoryWpmOptions.ticks.stepSize = wpmStepSize;
 
-  accountHistoryScaleOptions["pb"].max = maxWpmChartValWithBuffer;
-  accountHistoryScaleOptions["wpmAvgTen"].max = maxWpmChartValWithBuffer;
-  accountHistoryScaleOptions["wpmAvgHundred"].max = maxWpmChartValWithBuffer;
+  ChartController.accountHistory.getScale("pb").max = maxWpmChartValWithBuffer;
+  ChartController.accountHistory.getScale("wpmAvgTen").max =
+    maxWpmChartValWithBuffer;
+  ChartController.accountHistory.getScale("wpmAvgHundred").max =
+    maxWpmChartValWithBuffer;
 
   if (!Config.startGraphsAtZero) {
     const minWpmChartValFloor =
       Math.floor(minWpmChartVal / wpmStepSize) * wpmStepSize;
 
-    accountHistoryWpmOptions.min = minWpmChartValFloor;
-    accountHistoryScaleOptions["pb"].min = minWpmChartValFloor;
-    accountHistoryScaleOptions["wpmAvgTen"].min = minWpmChartValFloor;
-    accountHistoryScaleOptions["wpmAvgHundred"].min = minWpmChartValFloor;
+    ChartController.accountHistory.getScale("wpm").min = minWpmChartValFloor;
+    ChartController.accountHistory.getScale("pb").min = minWpmChartValFloor;
+    ChartController.accountHistory.getScale("wpmAvgTen").min =
+      minWpmChartValFloor;
+    ChartController.accountHistory.getScale("wpmAvgHundred").min =
+      minWpmChartValFloor;
   } else {
-    accountHistoryWpmOptions.min = 0;
-    accountHistoryScaleOptions["pb"].min = 0;
-    accountHistoryScaleOptions["wpmAvgTen"].min = 0;
-    accountHistoryScaleOptions["wpmAvgHundred"].min = 0;
+    ChartController.accountHistory.getScale("wpm").min = 0;
+    ChartController.accountHistory.getScale("pb").min = 0;
+    ChartController.accountHistory.getScale("wpmAvgTen").min = 0;
+    ChartController.accountHistory.getScale("wpmAvgHundred").min = 0;
   }
 
   if (!chartData || chartData.length === 0) {
@@ -1010,19 +1022,16 @@ async function fillContent(): Promise<void> {
   const wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
   const trend = Misc.findLineByLeastSquares(wpmPoints);
-
-  const wpmChange = trend[1][1] - trend[0][1];
-
-  const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
-
-  const plus = wpmChangePerHour > 0 ? "+" : "";
-
-  $(".pageAccount .group.chart .below .text").text(
-    `Speed change per hour spent typing: ${
-      plus + Misc.roundTo2(typingSpeedUnit.fromWpm(wpmChangePerHour))
-    } ${Config.typingSpeedUnit}`
-  );
-
+  if (trend) {
+    const wpmChange = trend[1][1] - trend[0][1];
+    const wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
+    const plus = wpmChangePerHour > 0 ? "+" : "";
+    $(".pageAccount .group.chart .below .text").text(
+      `Speed change per hour spent typing: ${
+        plus + Misc.roundTo2(typingSpeedUnit.fromWpm(wpmChangePerHour))
+      } ${Config.typingSpeedUnit}`
+    );
+  }
   $(".pageAccount .estimatedWordsTyped .val").text(totalEstimatedWords);
 
   if (chartData.length || accChartData.length) {
@@ -1112,8 +1121,8 @@ function sortAndRefreshHistory(
       );
     }
   } else if (
-    parseInt(filteredResults[0][key] as string) <=
-    parseInt(filteredResults[filteredResults.length - 1][key] as string)
+    parseInt(filteredResults?.[0]?.[key] as string) <=
+    parseInt(filteredResults?.[filteredResults.length - 1]?.[key] as string)
   ) {
     descending = true;
     $(headerClass).append(
@@ -1132,22 +1141,17 @@ function sortAndRefreshHistory(
     let highest = -1;
     let idx = -1;
 
-    for (let i = 0; i < filteredResults.length; i++) {
+    // for (let i = 0; i < filteredResults.length; i++) {
+    for (const [i, result] of filteredResults.entries()) {
       //find the lowest wpm with index not already parsed
       if (!descending) {
-        if (
-          (filteredResults[i][key] as number) <= lowest &&
-          !parsedIndexes.includes(i)
-        ) {
-          lowest = filteredResults[i][key] as number;
+        if ((result[key] as number) <= lowest && !parsedIndexes.includes(i)) {
+          lowest = result[key] as number;
           idx = i;
         }
       } else {
-        if (
-          (filteredResults[i][key] as number) >= highest &&
-          !parsedIndexes.includes(i)
-        ) {
-          highest = filteredResults[i][key] as number;
+        if ((result[key] as number) >= highest && !parsedIndexes.includes(i)) {
+          highest = result[key] as number;
           idx = i;
         }
       }
@@ -1156,7 +1160,9 @@ function sortAndRefreshHistory(
     temp.push(filteredResults[idx]);
     parsedIndexes.push(idx);
   }
-  filteredResults = temp;
+  filteredResults = temp as MonkeyTypes.Result<
+    keyof MonkeyTypes.PersonalBests
+  >[];
 
   $(".pageAccount .history table tbody").empty();
   visibleTableLines = 0;
@@ -1205,7 +1211,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", (event) => {
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
   MiniResultChart.updateData(
-    filteredResults[parseInt(filteredId)].chartData as MonkeyTypes.ChartData
+    filteredResults[parseInt(filteredId)]?.chartData as MonkeyTypes.ChartData
   );
   MiniResultChart.show();
   MiniResultChart.updatePosition(

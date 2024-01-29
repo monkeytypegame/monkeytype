@@ -96,7 +96,11 @@ const miniTimerNumberElement = document.querySelector(
 
 function getCurrentCount(): number {
   if (Config.mode === "custom" && CustomText.isSectionRandom) {
-    return TestWords.words.sectionIndexList[TestWords.words.currentIndex] - 1;
+    return (
+      (TestWords.words.sectionIndexList[
+        TestWords.words.currentIndex
+      ] as number) - 1
+    );
   } else {
     return TestInput.input.history.length;
   }

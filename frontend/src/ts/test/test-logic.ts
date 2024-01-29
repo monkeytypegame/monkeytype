@@ -563,7 +563,10 @@ export async function init(): Promise<void> {
   }
 
   for (let i = 0; i < generatedWords.length; i++) {
-    TestWords.words.push(generatedWords[i], generatedSectionIndexes[i]);
+    TestWords.words.push(
+      generatedWords[i] as string,
+      generatedSectionIndexes[i] as number
+    );
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -837,7 +840,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
     //multiply last element of rawBefore by scale, and round it
     rawPerSecond[rawPerSecond.length - 1] = Math.round(
-      rawPerSecond[rawPerSecond.length - 1] * timescale
+      (rawPerSecond[rawPerSecond.length - 1] as number) * timescale
     );
   }
 
@@ -879,7 +882,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   completedEvent.chartData.err = [];
   for (let i = 0; i < TestInput.errorHistory.length; i++) {
-    completedEvent.chartData.err.push(TestInput.errorHistory[i].count);
+    completedEvent.chartData.err.push(TestInput.errorHistory[i]?.count ?? 0);
   }
 
   if (Config.mode === "quote") {
@@ -953,7 +956,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended
-  if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
+  if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
     const burst = TestStats.calculateBurst();
     TestInput.pushBurstToHistory(burst);
   }
@@ -1105,9 +1108,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
       TestInput.input.history.length < TestWords.words.length
     ) {
       // They bailed out
+
+      const historyLength = TestInput.input.getHistory()?.length as number;
       const newProgress =
-        CustomText.getCustomTextLongProgress(customTextName) +
-        TestInput.input.getHistory().length;
+        CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
       Notifications.add("Long custom text progress saved", 1, {
         duration: 5,

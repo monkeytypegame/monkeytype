@@ -1,10 +1,12 @@
 type SetFunction<T> = (param: T, nosave?: boolean) => boolean;
 
+type ValueAndSetFunction<T> = {
+  value: T;
+  setFunction: SetFunction<T>;
+};
+
 type SettingsMemory<T> = {
-  [key: string]: {
-    value: T;
-    setFunction: SetFunction<T>;
-  };
+  [key: string]: ValueAndSetFunction<T>;
 };
 
 let settingsMemory: SettingsMemory<MonkeyTypes.ConfigValues> = {};
@@ -22,7 +24,10 @@ export function save<T extends MonkeyTypes.ConfigValues>(
 
 export function load(): void {
   Object.keys(settingsMemory).forEach((setting) => {
-    settingsMemory[setting].setFunction(settingsMemory[setting].value, true);
+    const memory = settingsMemory[
+      setting
+    ] as ValueAndSetFunction<MonkeyTypes.ConfigValues>;
+    memory.setFunction(memory.value, true);
   });
   settingsMemory = {};
 }

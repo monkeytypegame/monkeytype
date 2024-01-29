@@ -122,7 +122,7 @@ export async function load(): Promise<void> {
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
-        newTags[tag] = filters.tags[tag];
+        newTags[tag] = filters.tags[tag] as boolean;
       } else {
         newTags[tag] = true;
       }
@@ -394,7 +394,7 @@ export function updateActive(): void {
             if (snapshot === undefined) return id;
             const name = snapshot.tags?.filter((t) => t._id === id)[0];
             if (name !== undefined) {
-              return snapshot.tags?.filter((t) => t._id === id)[0].display;
+              return snapshot.tags?.filter((t) => t._id === id)[0]?.display;
             }
             return name;
           })

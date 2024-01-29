@@ -1,13 +1,8 @@
-type Configuration = import("../types/shared").Configuration;
-
 type ObjectId = import("mongodb").ObjectId;
 
 type ExpressRequest = import("express").Request;
 
 declare namespace MonkeyTypes {
-  type Configuration = import("./shared").Configuration;
-  type ValidModeRule = import("./shared").ValidModeRule;
-  type RewardBracket = import("./shared").RewardBracket;
   interface DecodedToken {
     type: "Bearer" | "ApeKey" | "None";
     uid: string;
@@ -15,7 +10,7 @@ declare namespace MonkeyTypes {
   }
 
   interface Context {
-    configuration: Configuration;
+    configuration: SharedTypes.Configuration;
     decodedToken: DecodedToken;
   }
 

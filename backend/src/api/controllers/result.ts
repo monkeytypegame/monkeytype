@@ -644,7 +644,7 @@ interface XpResult {
 
 async function calculateXp(
   result,
-  xpConfiguration: MonkeyTypes.Configuration["users"]["xp"],
+  xpConfiguration: SharedTypes.Configuration["users"]["xp"],
   uid: string,
   currentTotalXp: number,
   streak: number

@@ -68,9 +68,15 @@ type CustomTextLongObject = Record<string, { text: string; progress: number }>;
 
 export function getCustomText(name: string, long = false): string[] {
   if (long) {
-    return getCustomTextLongObject()[name]["text"].split(/ +/);
+    const customText = getCustomTextLongObject()[name];
+    if (customText === undefined)
+      throw new Error(`Custom text ${name} not found`);
+    return customText.text.split(/ +/);
   } else {
-    return getCustomTextObject()[name].split(/ +/);
+    const customText = getCustomTextObject()[name];
+    if (customText === undefined)
+      throw new Error(`Custom text ${name} not found`);
+    return customText.split(/ +/);
   }
 }
 
@@ -87,10 +93,15 @@ export function setCustomText(
       progress: 0,
     };
 
+    const textByName = customText[name];
+    if (textByName === undefined) {
+      throw new Error("Custom text not found");
+    }
+
     if (typeof text === "string") {
-      customText[name]["text"] = text;
+      textByName.text = text;
     } else {
-      customText[name]["text"] = text.join(" ");
+      textByName.text = text.join(" ");
     }
 
     window.localStorage.setItem("customTextLong", JSON.stringify(customText));
@@ -120,23 +131,21 @@ export function deleteCustomText(name: string, long = false): void {
 }
 
 export function getCustomTextLongProgress(name: string): number {
-  const customText = getCustomTextLongObject();
+  const customText = getCustomTextLongObject()[name];
+  if (customText === undefined) throw new Error("Custom text not found");
 
-  return customText[name]["progress"] ?? 0;
+  return customText.progress ?? 0;
 }
 
 export function setCustomTextLongProgress(
   name: string,
   progress: number
 ): void {
-  const customTextProgress = getCustomTextLongObject();
+  const customText = getCustomTextLongObject()[name];
+  if (customText === undefined) throw new Error("Custom text not found");
 
-  customTextProgress[name]["progress"] = progress;
-
-  window.localStorage.setItem(
-    "customTextLong",
-    JSON.stringify(customTextProgress)
-  );
+  customText.progress = progress;
+  window.localStorage.setItem("customTextLong", JSON.stringify(customText));
 }
 
 function getCustomTextObject(): CustomTextObject {

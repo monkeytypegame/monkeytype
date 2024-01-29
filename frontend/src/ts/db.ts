@@ -5,7 +5,7 @@ import DefaultConfig from "./constants/default-config";
 import { Auth } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
-import { getFunboxList } from "./utils/misc";
+import { getFunboxList, lastElementFromArray } from "./utils/misc";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -267,10 +267,10 @@ export async function getUserResults(offset?: number): Promise<boolean> {
     if (result.tags === undefined) result.tags = [];
   });
 
-  if (dbSnapshot.results !== undefined) {
+  if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {
     //merge
-    const oldestTimestamp =
-      dbSnapshot.results[dbSnapshot.results.length - 1].timestamp;
+    const oldestTimestamp = lastElementFromArray(dbSnapshot.results)
+      ?.timestamp as number;
     const resultsWithoutDuplicates = results.filter(
       (it) => it.timestamp < oldestTimestamp
     );

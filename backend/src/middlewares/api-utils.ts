@@ -23,7 +23,7 @@ const emptyMiddleware = (
  * the criteria.
  */
 function validateConfiguration(
-  options: ValidationOptions<MonkeyTypes.Configuration>
+  options: ValidationOptions<SharedTypes.Configuration>
 ): RequestHandler {
   const {
     criteria,
@@ -176,7 +176,7 @@ function validateRequest(
 
         const { error } = joiSchema.validate(req[key] ?? {});
         if (error) {
-          const errorMessage = error.details[0].message;
+          const errorMessage = error.details[0]?.message;
           throw new MonkeyError(
             422,
             validationErrorMessage ??
