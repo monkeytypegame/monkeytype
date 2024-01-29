@@ -26,7 +26,7 @@ import {
 } from "express";
 import { isDevEnvironment } from "../../utils/misc";
 
-const pathOverride = process.env.API_PATH_OVERRIDE;
+const pathOverride = process.env["API_PATH_OVERRIDE"];
 const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
@@ -66,7 +66,8 @@ function addApiRoutes(app: Application): void {
   app.use(
     (req: MonkeyTypes.Request, res: Response, next: NextFunction): void => {
       const inMaintenance =
-        process.env.MAINTENANCE === "true" || req.ctx.configuration.maintenance;
+        process.env["MAINTENANCE"] === "true" ||
+        req.ctx.configuration.maintenance;
 
       if (inMaintenance) {
         res.status(503).json({ message: "Server is down for maintenance" });

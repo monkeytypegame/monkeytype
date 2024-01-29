@@ -261,7 +261,7 @@ async function animateXpBreakdown(
   xpBreakdown.append(
     `<div class='text next'>time typing +${breakdown["base"]}</div>`
   );
-  total += breakdown["base"];
+  total += breakdown["base"] ?? 0;
   if (breakdown["100%"]) {
     await Misc.sleep(delay);
     await append(`perfect +${breakdown["100%"]}`);

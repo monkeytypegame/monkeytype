@@ -12,7 +12,12 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "strictNullChecks": true,
-    "skipLibCheck": false
+    "skipLibCheck": false,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true
   },
   "ts-node": {
     "files": true

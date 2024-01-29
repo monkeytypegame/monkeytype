@@ -252,7 +252,16 @@
   },
   {
     "name": "romanian",
-    "languages": ["romanian"]
+    "languages": [
+      "romanian",
+      "romanian_1k",
+      "romanian_5k",
+      "romanian_10k",
+      "romanian_25k",
+      "romanian_50k",
+      "romanian_100k",
+      "romanian_200k"
+    ]
   },
   {
     "name": "finnish",
@@ -389,6 +398,10 @@
     "languages": ["sanskrit", "sanskrit_roman"]
   },
   {
+    "name": "gujarati",
+    "languages": ["gujarati"]
+  }, 
+  {
     "name": "nepali",
     "languages": ["nepali", "nepali_1k"]
   },
@@ -411,7 +424,11 @@
   },
   {
     "name": "belarusian",
-    "languages": ["belarusian_1k"]
+    "languages": ["belarusian", "belarusian_1k"]
+  },
+  {
+    "name": "belarusian_lacinka",
+    "languages": ["belarusian_lacinka", "belarusian_lacinka_1k"]
   },
   {
     "name": "azerbaijani",
@@ -477,6 +494,10 @@
     "languages": ["pashto"]
   },
   {
+    "name": "euskera",
+    "languages": ["euskera"]
+  },
+  {
     "name": "lorem_ipsum",
     "languages": ["lorem_ipsum"]
   },
@@ -530,7 +551,8 @@
       "code_zig",
       "code_gdscript",
       "code_gdscript_2",
-      "code_assembly"
+      "code_assembly",
+      "code_v"
     ]
   }
 ]

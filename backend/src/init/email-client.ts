@@ -127,8 +127,9 @@ const EMAIL_TEMPLATES_DIRECTORY = join(__dirname, "../../email-templates");
 const cachedTemplates: Record<string, string> = {};
 
 async function getTemplate(name: string): Promise<string> {
-  if (cachedTemplates[name]) {
-    return cachedTemplates[name];
+  const cachedTemp = cachedTemplates[name];
+  if (cachedTemp) {
+    return cachedTemp;
   }
 
   const template = await fs.promises.readFile(

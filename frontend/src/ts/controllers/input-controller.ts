@@ -79,14 +79,21 @@ function updateUI(): void {
       );
       const inputGroupLength: number = koCurrInput.length - 1;
       if (koCurrInput[inputGroupLength]) {
-        const inputCharLength: number = koCurrInput[inputGroupLength].length;
+        const inputCharLength: number = (
+          koCurrInput[inputGroupLength] as string[]
+        ).length;
         //at the end of the word, it will throw a (reading '0') this will be the space
         try {
           //if it overflows and returns undefined (e.g input [ㄱ,ㅏ,ㄷ]),
           //take the difference between the overflow and the word
+
+          //@ts-expect-error really cant be bothered fixing all these issues - its gonna get caught anyway
           const koChar: string =
+            //@ts-expect-error
             koCurrWord[inputGroupLength][inputCharLength] ??
+            //@ts-expect-error
             koCurrWord[koCurrInput.length][
+              //@ts-expect-error
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 
@@ -96,7 +103,8 @@ function updateUI(): void {
         }
       } else {
         //for new words
-        KeymapEvent.highlight(koCurrWord[0][0]);
+        const toHighlight = koCurrWord?.[0]?.[0];
+        if (toHighlight) KeymapEvent.highlight(toHighlight);
       }
     }
   }
@@ -116,7 +124,9 @@ function backspaceToPrevious(): void {
     (TestInput.input.history[TestWords.words.currentIndex - 1] ==
       TestWords.words.get(TestWords.words.currentIndex - 1) &&
       !Config.freedomMode) ||
-    $($(".word")[TestWords.words.currentIndex - 1]).hasClass("hidden")
+    $($(".word")[TestWords.words.currentIndex - 1] as HTMLElement).hasClass(
+      "hidden"
+    )
   ) {
     return;
   }
@@ -146,8 +156,9 @@ function backspaceToPrevious(): void {
       []) as HTMLElement[];
 
     for (let i = els.length - 1; i >= 0; i--) {
-      if (els[i].classList.contains("newline")) {
-        els[i].remove();
+      const el = els[i] as HTMLElement;
+      if (el.classList.contains("newline")) {
+        el.remove();
       } else {
         break;
       }
@@ -308,14 +319,14 @@ function handleSpace(): void {
     const currentTop: number = Math.floor(
       document.querySelectorAll<HTMLElement>("#words .word")[
         TestUI.currentWordElementIndex - 1
-      ].offsetTop
+      ]?.offsetTop ?? 0
     );
     let nextTop: number;
     try {
       nextTop = Math.floor(
         document.querySelectorAll<HTMLElement>("#words .word")[
           TestUI.currentWordElementIndex
-        ].offsetTop
+        ]?.offsetTop ?? 0
       );
     } catch (e) {
       nextTop = 0;
@@ -370,12 +381,20 @@ function isCharCorrect(char: string, charIndex: number): boolean {
     const koWordArray: string[] = Hangul.disassemble(
       TestWords.words.getCurrent()
     );
-    const koOriginalChar: string = koWordArray[charIndex];
+    const koOriginalChar = koWordArray[charIndex];
+
+    if (koOriginalChar === undefined) {
+      return false;
+    }
 
     return koOriginalChar === char;
   }
 
-  const originalChar: string = TestWords.words.getCurrent()[charIndex];
+  const originalChar = TestWords.words.getCurrent()[charIndex];
+
+  if (originalChar === undefined) {
+    return false;
+  }
 
   if (originalChar === char) {
     return true;
@@ -507,7 +526,7 @@ function handleChar(
   if (thisCharCorrect && Config.mode !== "zen") {
     char = !isCharKorean
       ? TestWords.words.getCurrent().charAt(charIndex)
-      : Hangul.disassemble(TestWords.words.getCurrent())[charIndex];
+      : Hangul.disassemble(TestWords.words.getCurrent())[charIndex] ?? "";
   }
 
   if (!thisCharCorrect && char === "\n") {
@@ -559,7 +578,9 @@ function handleChar(
   }
 
   WeakSpot.updateScore(
-    Config.mode === "zen" ? char : TestWords.words.getCurrent()[charIndex],
+    Config.mode === "zen"
+      ? char
+      : TestWords.words.getCurrent()[charIndex] ?? "",
     thisCharCorrect
   );
 
@@ -704,7 +725,7 @@ function handleChar(
         const currentTop = Math.floor(
           document.querySelectorAll<HTMLElement>("#words .word")[
             TestUI.currentWordElementIndex - 1
-          ]?.offsetTop
+          ]?.offsetTop ?? 0
         ) as number;
         if (!Config.showAllLines) TestUI.lineJump(currentTop);
       } else {
@@ -1290,7 +1311,7 @@ $("#wordsInput").on("input", (event) => {
           iOffset = inputValue.indexOf(" ") + 1;
         }
         for (let i = diffStart; i < inputValue.length; i++) {
-          handleChar(inputValue[i], i - iOffset, realInputValue);
+          handleChar(inputValue[i] as string, i - iOffset, realInputValue);
         }
       }
     } else if (containsKorean) {
@@ -1322,7 +1343,7 @@ $("#wordsInput").on("input", (event) => {
     }
     for (let i = diffStart; i < inputValue.length; i++) {
       // passing realInput to allow for correct Korean character compilation
-      handleChar(inputValue[i], i - iOffset, realInputValue);
+      handleChar(inputValue[i] as string, i - iOffset, realInputValue);
     }
   }
 

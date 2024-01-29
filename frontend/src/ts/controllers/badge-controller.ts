@@ -160,6 +160,6 @@ export function getHTMLById(
   }</div>`;
 }
 
-export function getById(id: number): MonkeyTypes.UserBadge {
+export function getById(id: number): MonkeyTypes.UserBadge | undefined {
   return badges[id];
 }

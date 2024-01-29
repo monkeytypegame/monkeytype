@@ -55,6 +55,7 @@ import * as MemoryFunboxTimer from "./funbox/memory-funbox-timer";
 import * as KeymapEvent from "../observables/keymap-event";
 import * as LayoutfluidFunboxTimer from "../test/funbox/layoutfluid-funbox-timer";
 import * as Wordset from "./wordset";
+import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
@@ -415,7 +416,7 @@ let languageBeforeQuoteMode: string | undefined;
 export async function init(): Promise<void> {
   console.debug("Initializing test");
   testReinitCount++;
-  if (testReinitCount >= 5) {
+  if (testReinitCount >= 4) {
     TestUI.setTestRestarting(false);
     Notifications.add(
       "Too many test reinitialization attempts. Something is going very wrong. Please contact support.",
@@ -562,7 +563,10 @@ export async function init(): Promise<void> {
   }
 
   for (let i = 0; i < generatedWords.length; i++) {
-    TestWords.words.push(generatedWords[i], generatedSectionIndexes[i]);
+    TestWords.words.push(
+      generatedWords[i] as string,
+      generatedSectionIndexes[i] as number
+    );
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
@@ -836,7 +840,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
     //multiply last element of rawBefore by scale, and round it
     rawPerSecond[rawPerSecond.length - 1] = Math.round(
-      rawPerSecond[rawPerSecond.length - 1] * timescale
+      (rawPerSecond[rawPerSecond.length - 1] as number) * timescale
     );
   }
 
@@ -878,7 +882,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   completedEvent.chartData.err = [];
   for (let i = 0; i < TestInput.errorHistory.length; i++) {
-    completedEvent.chartData.err.push(TestInput.errorHistory[i].count);
+    completedEvent.chartData.err.push(TestInput.errorHistory[i]?.count ?? 0);
   }
 
   if (Config.mode === "quote") {
@@ -952,7 +956,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended
-  if (TestInput.burstHistory.length !== TestInput.input.getHistory().length) {
+  if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
     const burst = TestStats.calculateBurst();
     TestInput.pushBurstToHistory(burst);
   }
@@ -1104,9 +1108,10 @@ export async function finish(difficultyFailed = false): Promise<void> {
       TestInput.input.history.length < TestWords.words.length
     ) {
       // They bailed out
+
+      const historyLength = TestInput.input.getHistory()?.length as number;
       const newProgress =
-        CustomText.getCustomTextLongProgress(customTextName) +
-        TestInput.input.getHistory().length;
+        CustomText.getCustomTextLongProgress(customTextName) + historyLength;
       CustomText.setCustomTextLongProgress(customTextName, newProgress);
       Notifications.add("Long custom text progress saved", 1, {
         duration: 5,
@@ -1521,7 +1526,10 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (ActivePage.get() === "test") {
     if (eventKey === "language") {
       //automatically enable lazy mode for arabic
-      if ((eventValue as string)?.startsWith("arabic")) {
+      if (
+        (eventValue as string)?.startsWith("arabic") &&
+        ArabicLazyMode.get()
+      ) {
         UpdateConfig.setLazyMode(true, true);
       }
       restart();
@@ -1551,8 +1559,13 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       }, 0);
     }
   }
-  if (eventKey === "lazyMode" && eventValue === false && !nosave) {
-    rememberLazyMode = false;
+  if (eventKey === "lazyMode" && !nosave) {
+    if (Config.language.startsWith("arabic")) {
+      ArabicLazyMode.set(eventValue as boolean);
+    }
+    if (eventValue === false) {
+      rememberLazyMode = false;
+    }
   }
 });
 

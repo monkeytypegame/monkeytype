@@ -92,7 +92,9 @@ export async function updatePosition(): Promise<void> {
     } else {
       let inputWidth = 0;
       for (let i = 0; i < inputLen; i++) {
-        inputWidth += $(currentWordNodeList[i]).outerWidth(true) as number;
+        inputWidth += $(currentWordNodeList[i] as HTMLElement).outerWidth(
+          true
+        ) as number;
       }
       newLeft =
         wordsWrapperWidth / 2 +

@@ -108,7 +108,7 @@ export async function highlightWordsInRange(
 
   // For each line...
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-    const highlightEl: HTMLElement = highlightEls[lineIndex];
+    const highlightEl = highlightEls[lineIndex] as HTMLElement;
     const inputWordsContainer: HTMLElement = highlightEl
       .children[0] as HTMLElement;
     highlightEl.classList.remove("highlight-hidden");
@@ -122,15 +122,15 @@ export async function highlightWordsInRange(
       inputWordsContainer.classList.remove("withAnimation");
     }
 
+    const position = newHighlightElementPositions[lineIndex];
+    if (!position) continue;
+
     // Update highlight element positions
-    highlightEl.style.right =
-      newHighlightElementPositions[lineIndex].highlightRight + "px";
+    highlightEl.style.right = position.highlightRight + "px";
     // inputWordsContainer.style.right = 0 + "px";
 
-    inputWordsContainer.style.left =
-      newHighlightElementPositions[lineIndex].inputContainerLeft + "px";
-    highlightEl.style.left =
-      newHighlightElementPositions[lineIndex].highlightLeft + "px";
+    inputWordsContainer.style.left = position.inputContainerLeft + "px";
+    highlightEl.style.left = position.highlightLeft + "px";
   }
 
   // Update flags and variables
@@ -143,7 +143,7 @@ export async function highlightWordsInRange(
 // Function to clear all highlights
 export function clear(): void {
   for (let i = 0; i < highlightEls.length; i++) {
-    const highlightEl = highlightEls[i];
+    const highlightEl = highlightEls[i] as HTMLElement;
     highlightEl.classList.add("highlight-hidden");
   }
   isFirstHighlightSinceClear = true;
@@ -156,7 +156,7 @@ export function destroy(): void {
 
   // Remove highlight containers from DOM
   for (let i = 0; i < highlightContainerEls.length; i++) {
-    const highlightContainerEl = highlightContainerEls[i];
+    const highlightContainerEl = highlightContainerEls[i] as HTMLElement;
     highlightContainerEl.remove();
   }
 
@@ -203,7 +203,7 @@ async function init(): Promise<boolean> {
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   isLanguageRightToLeft = currentLanguage.rightToLeft;
 
-  RWH_el = $("#resultWordsHistory")[0];
+  RWH_el = $("#resultWordsHistory")[0] as HTMLElement;
   RWH_rect = RWH_el.getBoundingClientRect();
   wordEls = $(RWH_el).find(".words .word[input]");
 
@@ -220,14 +220,14 @@ async function init(): Promise<boolean> {
   // Construct lines array and wordIndexToLineIndexDict
   wordIndexToLineIndexDict[0] = 0;
   for (let i = 1; i < wordEls.length; i++) {
-    const word = wordEls[i];
-    const prevWord = wordEls[i - 1];
+    const word = wordEls[i] as HTMLElement;
+    const prevWord = wordEls[i - 1] as HTMLElement;
 
     if (word.offsetTop != prevWord.offsetTop) {
       currLineIndex++;
       lineRect = Misc.getBoundingRectOfElements([
-        wordEls[prevLineEndWordIndex + 1],
-        wordEls[i - 1],
+        wordEls[prevLineEndWordIndex + 1] as HTMLElement,
+        prevWord,
       ]);
       lines.push({
         firstWordIndex: prevLineEndWordIndex + 1,
@@ -241,8 +241,8 @@ async function init(): Promise<boolean> {
 
   // Construct last line
   lineRect = Misc.getBoundingRectOfElements([
-    wordEls[prevLineEndWordIndex + 1],
-    wordEls[wordEls.length - 1],
+    wordEls[prevLineEndWordIndex + 1] as HTMLElement,
+    wordEls[wordEls.length - 1] as HTMLElement,
   ]);
   lines.push({
     firstWordIndex: prevLineEndWordIndex + 1,
@@ -299,7 +299,7 @@ async function init(): Promise<boolean> {
     inputWordsContainerEl.className = "inputWordsContainer";
 
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
-      const wordEl = wordEls[i];
+      const wordEl = wordEls[i] as HTMLElement;
       const userInputString = wordEl.getAttribute("input");
 
       if (!userInputString) {
@@ -355,127 +355,149 @@ function getHighlightElementPositions(
   lastWordIndex: number,
   isRTL = false
 ): HighlightPosition[] {
-  const lineIndexOfFirstWord = wordIndexToLineIndexDict[firstWordIndex];
-  const highlightPositions: HighlightPosition[] = new Array(lines.length)
-    .fill(null)
-    .map(() => ({
-      highlightLeft: 0,
-      highlightRight: 0,
-      inputContainerLeft: 0,
-      inputContainerRight: 0,
-    }));
+  const lineIndexOfFirstWord = wordIndexToLineIndexDict[
+    firstWordIndex
+  ] as number;
+  const highlightPositions = new Array(lines.length).fill(null).map(() => ({
+    highlightLeft: 0,
+    highlightRight: 0,
+    inputContainerLeft: 0,
+    inputContainerRight: 0,
+  })) as HighlightPosition[];
 
   const highlightWidth: number = getHighlightWidth(
     firstWordIndex,
     lastWordIndex
   );
 
+  const firstWordEl = wordEls[firstWordIndex];
+  const line = lines[lineIndexOfFirstWord];
+  const linePos = highlightPositions[lineIndexOfFirstWord];
+  const container = highlightContainerEls[lineIndexOfFirstWord];
+  const inputContainer = inputWordsContainerEls[lineIndexOfFirstWord];
+
+  if (
+    firstWordEl === undefined ||
+    line === undefined ||
+    linePos === undefined ||
+    container === undefined ||
+    inputContainer === undefined
+  ) {
+    return highlightPositions;
+  }
+
   // Get origin for line highlight starts at
   if (!isRTL) {
-    highlightPositions[lineIndexOfFirstWord].highlightLeft =
-      wordEls[firstWordIndex].offsetLeft;
-    highlightPositions[lineIndexOfFirstWord].highlightRight =
-      lines[lineIndexOfFirstWord].rect.width -
-      (highlightPositions[lineIndexOfFirstWord].highlightLeft +
-        highlightWidth) +
-      PADDING_X;
+    linePos.highlightLeft = firstWordEl.offsetLeft;
+    linePos.highlightRight =
+      line.rect.width - (linePos.highlightLeft + highlightWidth) + PADDING_X;
   } else {
-    const offsetLeftOfHighlightContainer =
-      highlightContainerEls[lineIndexOfFirstWord].offsetLeft;
+    const offsetLeftOfHighlightContainer = container.offsetLeft;
 
-    highlightPositions[lineIndexOfFirstWord].highlightRight =
-      lines[lineIndexOfFirstWord].rect.width -
-      (wordEls[firstWordIndex].offsetLeft +
-        wordEls[firstWordIndex].offsetWidth) +
+    linePos.highlightRight =
+      line.rect.width -
+      (firstWordEl.offsetLeft + firstWordEl.offsetWidth) +
       offsetLeftOfHighlightContainer +
       PADDING_OFFSET_X;
 
-    highlightPositions[lineIndexOfFirstWord].highlightLeft =
-      lines[lineIndexOfFirstWord].rect.width -
-      (highlightPositions[lineIndexOfFirstWord].highlightRight +
-        highlightWidth) +
-      PADDING_X;
+    linePos.highlightLeft =
+      line.rect.width - (linePos.highlightRight + highlightWidth) + PADDING_X;
   }
 
   if (!isRTL) {
-    highlightPositions[lineIndexOfFirstWord].inputContainerLeft =
-      -1 * highlightPositions[lineIndexOfFirstWord].highlightLeft;
+    linePos.inputContainerLeft = -1 * linePos.highlightLeft;
   } else {
-    highlightPositions[lineIndexOfFirstWord].inputContainerLeft =
+    linePos.inputContainerLeft =
       -1 *
-      (inputWordsContainerEls[lineIndexOfFirstWord].getBoundingClientRect()
-        .width -
+      (inputContainer.getBoundingClientRect().width -
         highlightWidth -
-        highlightPositions[lineIndexOfFirstWord].highlightRight);
+        linePos.highlightRight);
   }
 
   // Calculate offsets for lines above, going from zero to lineIndexOfWord
   for (let i = lineIndexOfFirstWord - 1; i >= 0; i--) {
+    const position = highlightPositions[i];
+    const nextPosition = highlightPositions[i + 1];
+    const line = lines[i];
+    const container = inputWordsContainerEls[i];
+    if (
+      position === undefined ||
+      line === undefined ||
+      nextPosition === undefined ||
+      container === undefined
+    )
+      continue;
+
     if (!isRTL) {
-      highlightPositions[i].highlightLeft =
-        highlightPositions[i + 1].highlightLeft +
-        lines[i].rect.width +
-        PADDING_X;
+      position.highlightLeft =
+        nextPosition.highlightLeft + line.rect.width + PADDING_X;
 
-      highlightPositions[i].highlightRight =
-        lines[i].rect.width -
-        (highlightPositions[i].highlightLeft + highlightWidth) +
-        PADDING_X;
+      position.highlightRight =
+        line.rect.width - (position.highlightLeft + highlightWidth) + PADDING_X;
 
-      highlightPositions[i].inputContainerLeft =
-        -1 * highlightPositions[i].highlightLeft;
+      position.inputContainerLeft = -1 * position.highlightLeft;
     } else {
-      highlightPositions[i].highlightRight =
-        highlightPositions[i + 1].highlightRight +
-        lines[i].rect.width +
+      position.highlightRight =
+        nextPosition.highlightRight + line.rect.width + PADDING_X;
+
+      position.highlightLeft =
+        line.rect.width -
+        (position.highlightRight + highlightWidth) +
         PADDING_X;
 
-      highlightPositions[i].highlightLeft =
-        lines[i].rect.width -
-        (highlightPositions[i].highlightRight + highlightWidth) +
-        PADDING_X;
-
-      highlightPositions[i].inputContainerLeft =
+      position.inputContainerLeft =
         -1 *
-        (inputWordsContainerEls[i].getBoundingClientRect().width -
+        (container.getBoundingClientRect().width -
           highlightWidth -
-          highlightPositions[i].highlightRight);
+          position.highlightRight);
     }
   }
 
   // Calculate offsets for lines below, going from lineIndexOfWord to lines.length
   for (let i = lineIndexOfFirstWord + 1; i < lines.length; i++) {
+    const position = highlightPositions[i];
+    const previousLine = lines[i - 1];
+    const line = lines[i];
+    const prevHighlightPosition = highlightPositions[i - 1];
+    const container = inputWordsContainerEls[i];
+
+    if (
+      position === undefined ||
+      previousLine === undefined ||
+      line === undefined ||
+      prevHighlightPosition === undefined ||
+      container === undefined
+    )
+      continue;
+
     if (!isRTL) {
-      highlightPositions[i].highlightLeft =
+      position.highlightLeft =
         -1 *
-        (lines[i - 1].rect.width -
-          highlightPositions[i - 1].highlightLeft +
+        (previousLine.rect.width -
+          prevHighlightPosition.highlightLeft +
           PADDING_X);
 
-      highlightPositions[i].highlightRight =
-        lines[i].rect.width -
-        (highlightPositions[i].highlightLeft + highlightWidth) +
-        PADDING_X;
+      position.highlightRight =
+        line.rect.width - (position.highlightLeft + highlightWidth) + PADDING_X;
 
-      highlightPositions[i].inputContainerLeft =
-        -1 * highlightPositions[i].highlightLeft;
+      position.inputContainerLeft = -1 * position.highlightLeft;
     } else {
-      highlightPositions[i].highlightRight =
+      position.highlightRight =
         -1 *
-        (lines[i - 1].rect.width -
-          highlightPositions[i - 1].highlightRight +
+        (previousLine.rect.width -
+          prevHighlightPosition.highlightRight +
           PADDING_X);
 
-      highlightPositions[i].highlightLeft =
-        lines[i].rect.width -
-        (highlightPositions[i].highlightRight + highlightWidth) +
+      position.highlightLeft =
+        line.rect.width -
+        (position.highlightRight + highlightWidth) +
         PADDING_X;
 
-      highlightPositions[i].inputContainerLeft =
+      position.inputContainerLeft =
         -1 *
-        (inputWordsContainerEls[i].getBoundingClientRect().width -
+        (container.getBoundingClientRect().width -
           highlightWidth -
-          highlightPositions[i].highlightRight);
+          position.highlightRight);
     }
   }
 
@@ -490,16 +512,34 @@ function getHighlightWidth(
   const lineIndexOfWordStart = wordIndexToLineIndexDict[wordStartIndex];
   const lineIndexOfWordEnd = wordIndexToLineIndexDict[wordEndIndex];
 
+  if (lineIndexOfWordStart === undefined || lineIndexOfWordEnd === undefined) {
+    return 0;
+  }
+
+  const startWord = wordEls[wordStartIndex];
+  const endWord = wordEls[wordEndIndex];
+  const inputEndWord = inputWordEls[wordEndIndex];
+  const startLineLastWord =
+    wordEls[lines[lineIndexOfWordStart]?.lastWordIndex ?? -1];
+  const endLineFirstWord =
+    wordEls[lines[lineIndexOfWordEnd]?.firstWordIndex ?? -1];
+
+  if (
+    startWord === undefined ||
+    endWord === undefined ||
+    inputEndWord === undefined ||
+    startLineLastWord === undefined ||
+    endLineFirstWord === undefined
+  ) {
+    return 0;
+  }
+
   // If highlight is just one line...
   if (lineIndexOfWordStart == lineIndexOfWordEnd) {
-    const highlightRect = Misc.getBoundingRectOfElements([
-      wordEls[wordStartIndex],
-      wordEls[wordEndIndex],
-    ]);
-    const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
+    const highlightRect = Misc.getBoundingRectOfElements([startWord, endWord]);
+    const lastWordElRect = endWord.getBoundingClientRect();
 
-    const lastInputWordElRect =
-      inputWordEls[wordEndIndex].getBoundingClientRect();
+    const lastInputWordElRect = inputEndWord.getBoundingClientRect();
     let width = highlightRect.width + PADDING_X;
     width -= lastWordElRect.width - lastInputWordElRect.width;
     return width;
@@ -507,29 +547,28 @@ function getHighlightWidth(
 
   // Multiple lines
   const firstLineBounds = Misc.getBoundingRectOfElements([
-    wordEls[wordStartIndex],
-    wordEls[lines[lineIndexOfWordStart].lastWordIndex],
+    startWord,
+    startLineLastWord,
   ]);
 
   const lastLineBounds = Misc.getBoundingRectOfElements([
-    wordEls[lines[lineIndexOfWordEnd].firstWordIndex],
-    wordEls[wordEndIndex],
+    endLineFirstWord,
+    endWord,
   ]);
 
   let width = firstLineBounds.width + lastLineBounds.width;
 
   // Add middle line highlights to width
   for (let i = lineIndexOfWordStart + 1; i < lineIndexOfWordEnd; i++) {
-    width += lines[i].rect.width;
+    width += (lines[i] as Line).rect.width;
   }
 
   // Account for padding
   width += 2 * PADDING_X * (lineIndexOfWordEnd - lineIndexOfWordStart);
 
   // Subtract difference between last wordEl and last inputWordEl
-  const lastWordElRect = wordEls[wordEndIndex].getBoundingClientRect();
-  const lastInputWordElRect =
-    inputWordEls[wordEndIndex].getBoundingClientRect();
+  const lastWordElRect = endWord.getBoundingClientRect();
+  const lastInputWordElRect = inputEndWord.getBoundingClientRect();
   width -= lastWordElRect.width - lastInputWordElRect.width;
   return width;
 }

@@ -71,6 +71,7 @@ node_modules_bak/
 #vs code
 .vscode
 *.code-workspace
+!monkeytype.code-workspace
 
 .idea
 

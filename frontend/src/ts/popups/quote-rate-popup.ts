@@ -175,10 +175,14 @@ async function submit(): Promise<void> {
   if (!snapshot) return;
   const quoteRatings = snapshot.quoteRatings ?? {};
 
-  if (quoteRatings?.[currentQuote.language]?.[currentQuote.id]) {
-    const oldRating = quoteRatings[currentQuote.language][currentQuote.id];
+  const languageRatings = quoteRatings?.[currentQuote.language] ?? {};
+
+  if (languageRatings?.[currentQuote.id]) {
+    const oldRating = quoteRatings[currentQuote.language]?.[
+      currentQuote.id
+    ] as number;
     const diff = rating - oldRating;
-    quoteRatings[currentQuote.language][currentQuote.id] = rating;
+    languageRatings[currentQuote.id] = rating;
     quoteStats = {
       ratings: quoteStats?.ratings,
       totalRating: isNaN(quoteStats?.totalRating as number)
@@ -189,10 +193,7 @@ async function submit(): Promise<void> {
     } as QuoteStats;
     Notifications.add("Rating updated", 1);
   } else {
-    if (!quoteRatings[currentQuote.language]) {
-      quoteRatings[currentQuote.language] = {};
-    }
-    quoteRatings[currentQuote.language][currentQuote.id] = rating;
+    languageRatings[currentQuote.id] = rating;
     if (quoteStats?.ratings && quoteStats.totalRating) {
       quoteStats.ratings++;
       quoteStats.totalRating += rating;
