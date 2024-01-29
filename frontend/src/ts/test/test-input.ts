@@ -156,7 +156,9 @@ class Input {
     return ret;
   }
 
-  getHistory(i?: number): string | string[] {
+  getHistory(): string[];
+  getHistory(i: number): string | undefined;
+  getHistory(i?: number): unknown {
     if (i === undefined) {
       return this.history;
     } else {
@@ -197,7 +199,7 @@ class Corrected {
     this.resetHistory();
   }
 
-  getHistory(i: number): string {
+  getHistory(i: number): string | undefined {
     return this.history[i];
   }
 
@@ -305,12 +307,13 @@ export function forceKeyup(now: number): void {
   const avg = roundTo2(mean(keypressTimings.duration.array));
   const keysOrder = Object.entries(keyDownData);
   keysOrder.sort((a, b) => a[1].timestamp - b[1].timestamp);
-  for (let i = 0; i < keysOrder.length - 1; i++) {
-    recordKeyupTime(now, keysOrder[i][0]);
+  for (const keyOrder of keysOrder) {
+    recordKeyupTime(now, keyOrder[0]);
   }
-  const last = keysOrder[keysOrder.length - 1];
-  if (last !== undefined) {
-    keypressTimings.duration.array[keyDownData[last[0]].index] = avg;
+  const last = keysOrder[keysOrder.length - 1]?.[0] as string;
+  const index = keyDownData[last]?.index;
+  if (last !== undefined && index !== undefined) {
+    keypressTimings.duration.array[index] = avg;
   }
 }
 
@@ -324,10 +327,12 @@ export function recordKeyupTime(now: number, key: string): void {
     key = "NoCode" + noCodeIndex;
   }
 
-  if (keyDownData[key] === undefined) return;
+  const keyDownDataForKey = keyDownData[key];
 
-  const diff = Math.abs(keyDownData[key].timestamp - now);
-  keypressTimings.duration.array[keyDownData[key].index] = diff;
+  if (keyDownDataForKey === undefined) return;
+
+  const diff = Math.abs(keyDownDataForKey.timestamp - now);
+  keypressTimings.duration.array[keyDownDataForKey.index] = diff;
 
   console.debug("Keyup recorded", key, diff);
   delete keyDownData[key];
@@ -357,7 +362,7 @@ export function recordKeydownTime(now: number, key: string): void {
   };
   keypressTimings.duration.array.push(0);
 
-  updateOverlap(keyDownData[key].timestamp);
+  updateOverlap(keyDownData[key]?.timestamp as number);
 
   if (keypressTimings.spacing.last !== -1) {
     const diff = Math.abs(now - keypressTimings.spacing.last);

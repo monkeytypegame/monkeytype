@@ -18,7 +18,7 @@ export async function update(): Promise<void> {
       Config.difficulty,
       Config.lazyMode
     )
-  ).map(Misc.roundTo2);
+  ).map(Misc.roundTo2) as [number, number];
 
   averageWPM = Config.alwaysShowDecimalPlaces ? wpm : Math.round(wpm);
   averageAcc = Config.alwaysShowDecimalPlaces ? acc : Math.floor(acc);

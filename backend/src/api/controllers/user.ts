@@ -280,7 +280,7 @@ export async function checkName(
   const { name } = req.params;
   const { uid } = req.ctx.decodedToken;
 
-  const available = await UserDAL.isNameAvailable(name, uid);
+  const available = await UserDAL.isNameAvailable(name as string, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }
@@ -513,7 +513,7 @@ export async function removeResultFilterPreset(
   const { uid } = req.ctx.decodedToken;
   const { presetId } = req.params;
 
-  await UserDAL.removeResultFilterPreset(uid, presetId);
+  await UserDAL.removeResultFilterPreset(uid, presetId as string);
   return new MonkeyResponse("Result filter preset deleted");
 }
 
@@ -533,7 +533,7 @@ export async function clearTagPb(
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
 
-  await UserDAL.removeTagPb(uid, tagId);
+  await UserDAL.removeTagPb(uid, tagId as string);
   return new MonkeyResponse("Tag PB cleared");
 }
 
@@ -553,7 +553,7 @@ export async function removeTag(
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
 
-  await UserDAL.removeTag(uid, tagId);
+  await UserDAL.removeTag(uid, tagId as string);
   return new MonkeyResponse("Tag deleted");
 }
 
@@ -687,8 +687,8 @@ export async function getProfile(
 
   const user =
     isUid !== undefined
-      ? await UserDAL.getUser(uidOrName, "get user profile")
-      : await UserDAL.getUserByName(uidOrName, "get user profile");
+      ? await UserDAL.getUser(uidOrName as string, "get user profile")
+      : await UserDAL.getUserByName(uidOrName as string, "get user profile");
 
   const {
     name,

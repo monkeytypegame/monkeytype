@@ -143,6 +143,12 @@ export class DailyLeaderboard {
       "false"
     );
 
+    if (results === undefined) {
+      throw new Error(
+        "Redis returned undefined when getting daily leaderboard results"
+      );
+    }
+
     const resultsWithRanks: LbEntryWithRank[] = results.map(
       (resultJSON, index) => ({
         ...JSON.parse(resultJSON),
@@ -165,6 +171,7 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
+    // @ts-ignore
     const [[, rank], [, count], [, result], [, minScore]] = await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)

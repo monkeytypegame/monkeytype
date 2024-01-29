@@ -75,7 +75,7 @@ function updateNumbers(): void {
   );
 }
 
-function loadConfig(config: number[]): void {
+function loadConfig(config: MonkeyTypes.CustomBackgroundFilter): void {
   filters.blur.value = config[0];
   filters.brightness.value = config[1];
   filters.saturate.value = config[2];
@@ -128,8 +128,8 @@ const debouncedSave = debounce(2000, async () => {
 });
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "customBackgroundFilter") {
-    loadConfig((eventValue as string[]).map((ev) => parseFloat(ev)));
+  if (eventKey === "customBackgroundFilter" && eventValue) {
+    loadConfig(eventValue as MonkeyTypes.CustomBackgroundFilter);
     apply();
   }
 });

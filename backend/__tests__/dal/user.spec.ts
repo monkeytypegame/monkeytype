@@ -383,7 +383,7 @@ describe("UserDal", () => {
     const user = await UserDAL.getUser("TestID", "test add result filters");
     const createdFilter = user.resultFilterPresets ?? [];
 
-    expect(result).toStrictEqual(createdFilter[0]._id);
+    expect(result).toStrictEqual(createdFilter[0]?._id);
   });
 
   it("updateProfile should appropriately handle multiple profile updates", async () => {

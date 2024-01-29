@@ -164,8 +164,8 @@ async function apply(
     const colors = customColorsOverride ?? Config.customThemeColors;
 
     for (let i = 0; i < colorVars.length; i++) {
-      const colorVar = colorVars[i];
-      document.documentElement.style.setProperty(colorVar, colors[i]);
+      const colorVar = colorVars[i] as string;
+      document.documentElement.style.setProperty(colorVar, colors[i] as string);
     }
   }
 
@@ -273,7 +273,7 @@ export async function randomizeTheme(): Promise<void> {
     await changeThemeList();
     if (themesList.length === 0) return;
   }
-  randomTheme = themesList[randomThemeIndex];
+  randomTheme = themesList[randomThemeIndex] as string;
   randomThemeIndex++;
 
   if (randomThemeIndex >= themesList.length) {

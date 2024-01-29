@@ -13,6 +13,7 @@
     "esModuleInterop": true,
     "strictNullChecks": true,
     "skipLibCheck": false,
+    "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noFallthroughCasesInSwitch": true,

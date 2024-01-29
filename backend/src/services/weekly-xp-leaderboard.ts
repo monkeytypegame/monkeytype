@@ -136,11 +136,23 @@ export class WeeklyXpLeaderboard {
       "true"
     );
 
+    if (results === undefined) {
+      throw new Error(
+        "Redis returned undefined when getting weekly leaderboard results"
+      );
+    }
+
+    if (scores === undefined) {
+      throw new Error(
+        "Redis returned undefined when getting weekly leaderboard scores"
+      );
+    }
+
     const resultsWithRanks: WeeklyXpLeaderboardEntry[] = results.map(
       (resultJSON: string, index: number) => ({
         ...JSON.parse(resultJSON),
         rank: minRank + index + 1,
-        totalXp: parseInt(scores[index], 10),
+        totalXp: parseInt(scores[index] as string, 10),
       })
     );
 
@@ -161,6 +173,7 @@ export class WeeklyXpLeaderboard {
 
     connection.set;
 
+    // @ts-ignore
     const [[, rank], [, totalXp], [, count], [, result]] = await connection
       .multi()
       .zrevrank(weeklyXpLeaderboardScoresKey, uid)

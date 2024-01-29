@@ -77,7 +77,7 @@ describe("ResultDal", () => {
 
       //THEN
       expect(results).toHaveLength(10);
-      let last = results[0].timestamp;
+      let last = results[0]?.timestamp as number;
       results.forEach((it) => {
         expect(it.tags).toContain("current");
         expect(it.timestamp).toBeGreaterThanOrEqual(last);

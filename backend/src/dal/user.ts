@@ -717,7 +717,7 @@ export async function addFavoriteQuote(
   if (user.favoriteQuotes) {
     if (
       user.favoriteQuotes[language] &&
-      user.favoriteQuotes[language].includes(quoteId)
+      user.favoriteQuotes[language]?.includes(quoteId)
     ) {
       return;
     }
@@ -756,7 +756,7 @@ export async function removeFavoriteQuote(
   if (
     !user.favoriteQuotes ||
     !user.favoriteQuotes[language] ||
-    !user.favoriteQuotes[language].includes(quoteId)
+    !user.favoriteQuotes[language]?.includes(quoteId)
   ) {
     return;
   }
