@@ -13,7 +13,7 @@ interface JsonQuote {
 interface QuoteData {
   language: string;
   quotes: JsonQuote[];
-  groups: number[][];
+  groups: [number, number][];
 }
 
 interface QuoteCollection {
@@ -139,7 +139,7 @@ class QuotesController {
       shuffle(this.quoteQueue);
     }
 
-    const randomQuote = this.quoteQueue[this.queueIndex];
+    const randomQuote = this.quoteQueue[this.queueIndex] as MonkeyTypes.Quote;
 
     this.queueIndex += 1;
 
@@ -151,7 +151,7 @@ class QuotesController {
       return null;
     }
 
-    return this.quoteQueue[this.queueIndex];
+    return this.quoteQueue[this.queueIndex] as MonkeyTypes.Quote;
   }
 
   getRandomFavoriteQuote(language: string): MonkeyTypes.Quote | null {
@@ -169,7 +169,7 @@ class QuotesController {
         return;
       }
 
-      quoteIds.push(...favoriteQuotes[language]);
+      quoteIds.push(...(favoriteQuotes[language] ?? []));
     });
 
     if (quoteIds.length === 0) {
@@ -196,7 +196,7 @@ class QuotesController {
       if (normalizedQuoteLanguage !== normalizeLanguage(language)) {
         return false;
       }
-      return favoriteQuotes[language].includes(id.toString());
+      return (favoriteQuotes[language] ?? []).includes(id.toString());
     });
 
     return matchedLanguage !== undefined;

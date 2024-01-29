@@ -133,6 +133,9 @@ function buildPbHtml(
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   try {
     const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
+
+    if (pbData === undefined) throw new Error("No PB data found");
+
     const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
       dateText = format(date, "dd MMM yyyy");

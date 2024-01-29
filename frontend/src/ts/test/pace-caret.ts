@@ -182,7 +182,9 @@ export function update(expectedStepEnd: number): void {
       const newIndex =
         settings.currentWordIndex -
         (TestWords.words.currentIndex - TestUI.currentWordElementIndex);
-      const word = document.querySelectorAll("#words .word")[newIndex];
+      const word = document.querySelectorAll("#words .word")[
+        newIndex
+      ] as HTMLElement;
       if (settings.currentLetterIndex === -1) {
         currentLetter = <HTMLElement>word.querySelectorAll("letter")[0];
       } else {

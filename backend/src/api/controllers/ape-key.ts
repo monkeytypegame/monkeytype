@@ -67,7 +67,7 @@ export async function editApeKey(
   const { name, enabled } = req.body;
   const { uid } = req.ctx.decodedToken;
 
-  await ApeKeysDAL.editApeKey(uid, apeKeyId, name, enabled);
+  await ApeKeysDAL.editApeKey(uid, apeKeyId as string, name, enabled);
 
   return new MonkeyResponse("ApeKey updated");
 }
@@ -78,7 +78,7 @@ export async function deleteApeKey(
   const { apeKeyId } = req.params;
   const { uid } = req.ctx.decodedToken;
 
-  await ApeKeysDAL.deleteApeKey(uid, apeKeyId);
+  await ApeKeysDAL.deleteApeKey(uid, apeKeyId as string);
 
   return new MonkeyResponse("ApeKey deleted");
 }

@@ -39,11 +39,13 @@ export function checkFunboxForcedConfigs(
         //push keys to forcedConfigs, if they don't exist. if they do, intersect the values
         for (const key in fb.forcedConfig) {
           if (forcedConfigs[key] === undefined) {
-            forcedConfigs[key] = fb.forcedConfig[key];
+            forcedConfigs[key] = fb.forcedConfig[
+              key
+            ] as MonkeyTypes.ConfigValues[];
           } else {
             forcedConfigs[key] = Misc.intersect(
-              forcedConfigs[key],
-              fb.forcedConfig[key],
+              forcedConfigs[key] as MonkeyTypes.ConfigValues[],
+              fb.forcedConfig[key] as MonkeyTypes.ConfigValues[],
               true
             );
           }
@@ -55,11 +57,13 @@ export function checkFunboxForcedConfigs(
     if (forcedConfigs[key] === undefined) {
       return { result: true };
     } else {
-      if (forcedConfigs[key].length === 0) {
+      if (forcedConfigs[key]?.length === 0) {
         throw new Error("No intersection of forced configs");
       }
       return {
-        result: forcedConfigs[key].includes(<MonkeyTypes.ConfigValues>value),
+        result: (forcedConfigs[key] ?? []).includes(
+          <MonkeyTypes.ConfigValues>value
+        ),
         forcedConfigs: forcedConfigs[key],
       };
     }
@@ -300,14 +304,17 @@ export function areFunboxesCompatible(
     for (const key in f.forcedConfig) {
       if (allowedConfig[key]) {
         if (
-          Misc.intersect(allowedConfig[key], f.forcedConfig[key], true)
-            .length === 0
+          Misc.intersect(
+            allowedConfig[key] as MonkeyTypes.ConfigValues[],
+            f.forcedConfig[key] as MonkeyTypes.ConfigValues[],
+            true
+          ).length === 0
         ) {
           noConfigConflicts = false;
           break;
         }
       } else {
-        allowedConfig[key] = f.forcedConfig[key];
+        allowedConfig[key] = f.forcedConfig[key] as MonkeyTypes.ConfigValues[];
       }
     }
   }

@@ -11,7 +11,7 @@ const wrapperId = "pbTablesPopupWrapper";
 
 function update(mode: MonkeyTypes.Mode): void {
   $("#pbTablesPopup table tbody").empty();
-  $($("#pbTablesPopup table thead tr td")[0]).text(mode);
+  $($("#pbTablesPopup table thead tr td")[0] as HTMLElement).text(mode);
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
@@ -25,7 +25,7 @@ function update(mode: MonkeyTypes.Mode): void {
   const list: PersonalBest[] = [];
   (Object.keys(allmode2) as MonkeyTypes.Mode2<MonkeyTypes.Mode>[]).forEach(
     function (key) {
-      let pbs = allmode2[key];
+      let pbs = allmode2[key] ?? [];
       pbs = pbs.sort(function (a, b) {
         return b.wpm - a.wpm;
         // if (a.difficulty === b.difficulty) {

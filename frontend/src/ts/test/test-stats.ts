@@ -280,8 +280,8 @@ function countChars(): CharCount {
   const targetWords = getTargetWords();
 
   for (let i = 0; i < inputWords.length; i++) {
-    const inputWord = inputWords[i];
-    const targetWord = targetWords[i];
+    const inputWord = inputWords[i] as string;
+    const targetWord = targetWords[i] as string;
 
     if (inputWord === targetWord) {
       //the word is correct

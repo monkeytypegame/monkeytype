@@ -135,7 +135,7 @@ export async function punctuateWord(
       }
 
       const index = Math.floor(r * brackets.length);
-      const bracket = brackets[index];
+      const bracket = brackets[index] as string;
 
       word = `${bracket[0]}${word}${bracket[1]}`;
     } else if (currentLanguage === "japanese") {
@@ -387,7 +387,7 @@ export function getWordsLimit(): number {
 
   //funboxes
   if (funboxToPush) {
-    limit = +funboxToPush.split(":")[1];
+    limit = +(funboxToPush.split(":")[1] as string);
   }
 
   //make sure the limit is not higher than the word count
@@ -664,14 +664,14 @@ export async function getNextWord(
     const funboxSection = await getFunboxSection();
 
     if (Config.mode === "quote") {
-      randomWord = currentQuote[wordIndex];
+      randomWord = currentQuote[wordIndex] as string;
     } else if (
       Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
       !CustomText.isSectionRandom
     ) {
-      randomWord = CustomText.text[sectionIndex];
+      randomWord = CustomText.text[sectionIndex] as string;
     } else if (
       Config.mode === "custom" &&
       (CustomText.isWordRandom ||
@@ -698,7 +698,7 @@ export async function getNextWord(
       randomWord = funboxSection.join(" ");
     } else {
       let regenarationCount = 0; //infinite loop emergency stop button
-      let firstAfterSplit = randomWord.split(" ")[0].toLowerCase();
+      let firstAfterSplit = (randomWord.split(" ")[0] as string).toLowerCase();
       while (
         regenarationCount < 100 &&
         (previousWordRaw === firstAfterSplit ||
@@ -716,7 +716,7 @@ export async function getNextWord(
       ) {
         regenarationCount++;
         randomWord = wordset.randomWord(funboxFrequency);
-        firstAfterSplit = randomWord.split(" ")[0];
+        firstAfterSplit = randomWord.split(" ")[0] as string;
       }
     }
     randomWord = randomWord.replace(/ +/g, " ");

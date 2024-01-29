@@ -394,6 +394,8 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const nameField = nameFieldjQ[0];
   const upperLimit = Misc.convertRemToPixels(2);
 
+  if (!nameField || !nameFieldParent) return;
+
   nameField.style.fontSize = `10px`;
   const parentWidth = nameFieldParent.clientWidth;
   const widthAt10 = nameField.clientWidth;
