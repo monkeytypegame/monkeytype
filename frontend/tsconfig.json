@@ -36,6 +36,6 @@
     }
   },
   "include": ["./src/**/*.ts"],
-  "files": ["src/ts/modules.d.ts"],
+  "files": ["src/ts/modules.d.ts", "../shared-types/types.d.ts"],
   "exclude": ["node_modules", "build", "setup-tests.ts", "**/*.spec.ts"]
 }

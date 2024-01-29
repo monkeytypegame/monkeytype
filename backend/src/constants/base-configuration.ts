@@ -3,7 +3,7 @@
  * To add a new configuration. Simply add it to this object.
  * When changing this template, please follow the principle of "Secure by default" (https://en.wikipedia.org/wiki/Secure_by_default).
  */
-export const BASE_CONFIGURATION: MonkeyTypes.Configuration = {
+export const BASE_CONFIGURATION: SharedTypes.Configuration = {
   maintenance: false,
   results: {
     savingEnabled: false,
@@ -141,7 +141,7 @@ type Schema<T> = {
     : never;
 };
 
-export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<MonkeyTypes.Configuration> =
+export const CONFIGURATION_FORM_SCHEMA: ObjectSchema<SharedTypes.Configuration> =
   {
     type: "object",
     label: "Server Configuration",
