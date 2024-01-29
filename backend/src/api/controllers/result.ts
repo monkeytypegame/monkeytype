@@ -385,15 +385,6 @@ export async function addResult(
     }
   }
 
-  // delete completedEvent.keySpacing;
-  // delete completedEvent.keyDuration;
-  // delete completedEvent.smoothConsistency;
-  // delete completedEvent.wpmConsistency;
-  // delete completedEvent.keyOverlap;
-  // delete completedEvent.lastKeyToEnd;
-  // delete completedEvent.startToFirstKey;
-  // delete completedEvent.charTotal;
-
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];
     if (!resulthash) {
