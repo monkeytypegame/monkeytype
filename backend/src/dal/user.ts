@@ -847,7 +847,7 @@ interface AddToInboxBulkEntry {
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],
-  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+  inboxConfig: SharedTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -875,7 +875,7 @@ export async function addToInboxBulk(
 export async function addToInbox(
   uid: string,
   mail: MonkeyTypes.MonkeyMail[],
-  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+  inboxConfig: SharedTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 

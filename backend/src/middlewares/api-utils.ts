@@ -23,7 +23,7 @@ const emptyMiddleware = (
  * the criteria.
  */
 function validateConfiguration(
-  options: ValidationOptions<MonkeyTypes.Configuration>
+  options: ValidationOptions<SharedTypes.Configuration>
 ): RequestHandler {
   const {
     criteria,

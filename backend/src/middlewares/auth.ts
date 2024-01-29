@@ -105,7 +105,7 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
 
 async function authenticateWithAuthHeader(
   authHeader: string,
-  configuration: MonkeyTypes.Configuration,
+  configuration: SharedTypes.Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (authHeader === undefined || authHeader === "") {
@@ -215,7 +215,7 @@ async function authenticateWithBearerToken(
 
 async function authenticateWithApeKey(
   key: string,
-  configuration: MonkeyTypes.Configuration,
+  configuration: SharedTypes.Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (!configuration.apeKeys.acceptKeys) {
