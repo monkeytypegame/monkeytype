@@ -29,7 +29,7 @@ import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 
-let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
+let result: SharedTypes.Result<SharedTypes.Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -700,7 +700,7 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote): void {
 }
 
 export async function update(
-  res: MonkeyTypes.Result<MonkeyTypes.Mode>,
+  res: SharedTypes.Result<SharedTypes.Mode>,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,

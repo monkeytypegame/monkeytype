@@ -60,8 +60,7 @@ import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
-export let notSignedInLastResult: MonkeyTypes.Result<MonkeyTypes.Mode> | null =
-  null;
+export let notSignedInLastResult: SharedTypes.CompletedEvent | null = null;
 
 export function clearNotSignedInResult(): void {
   notSignedInLastResult = null;
@@ -676,25 +675,15 @@ export async function addWord(): Promise<void> {
   TestUI.addWord(randomWord.word);
 }
 
-interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
-  keySpacing: number[] | "toolong";
-  keyDuration: number[] | "toolong";
-  customText: MonkeyTypes.CustomText;
-  wpmConsistency: number;
-  lang: string;
-  challenge?: string | null;
-  keyOverlap: number;
-  lastKeyToEnd: number;
-  startToFirstKey: number;
-  charTotal: number;
-}
-
-type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
-  chartData: Partial<MonkeyTypes.ChartData>;
+type PartialCompletedEvent = Omit<
+  Partial<SharedTypes.CompletedEvent>,
+  "chartData"
+> & {
+  chartData: Partial<SharedTypes.ChartData>;
 };
 
 interface RetrySaving {
-  completedEvent: CompletedEvent | null;
+  completedEvent: SharedTypes.CompletedEvent | null;
   canRetry: boolean;
 }
 
@@ -733,7 +722,9 @@ export async function retrySavingResult(): Promise<void> {
   saveResult(completedEvent, true);
 }
 
-function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
+function buildCompletedEvent(
+  difficultyFailed: boolean
+): SharedTypes.CompletedEvent {
   //build completed event object
   const completedEvent: PartialCompletedEvent = {
     wpm: undefined,
@@ -895,7 +886,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   completedEvent.mode2 = Misc.getMode2(Config, TestWords.randomQuote);
 
   if (Config.mode === "custom") {
-    completedEvent.customText = <MonkeyTypes.CustomText>{};
+    completedEvent.customText = <SharedTypes.CustomText>{};
     completedEvent.customText.textLen = CustomText.text.length;
     completedEvent.customText.isWordRandom = CustomText.isWordRandom;
     completedEvent.customText.isTimeRandom = CustomText.isTimeRandom;
@@ -918,7 +909,7 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
 
-  return <CompletedEvent>completedEvent;
+  return <SharedTypes.CompletedEvent>completedEvent;
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
@@ -1210,7 +1201,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 }
 
 async function saveResult(
-  completedEvent: CompletedEvent,
+  completedEvent: SharedTypes.CompletedEvent,
   isRetrying: boolean
 ): Promise<void> {
   if (!TestState.savingEnabled) {
@@ -1417,7 +1408,7 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
+  const mode = ($(e.currentTarget).attr("mode") ?? "time") as SharedTypes.Mode;
   if (mode === undefined) return;
   UpdateConfig.setMode(mode);
   ManualRestart.set();

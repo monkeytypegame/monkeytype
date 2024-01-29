@@ -71,7 +71,7 @@ declare namespace MonkeyTypes {
     lbPersonalBests?: LbPersonalBests;
     name: string;
     customThemes?: CustomTheme[];
-    personalBests: PersonalBests;
+    personalBests: SharedTypes.PersonalBests;
     quoteRatings?: UserQuoteRatings;
     startedTests?: number;
     tags?: UserTag[];
@@ -86,7 +86,7 @@ declare namespace MonkeyTypes {
     favoriteQuotes?: Record<string, string[]>;
     needsToChangeName?: boolean;
     discordAvatar?: string;
-    resultFilterPresets?: ResultFilters[];
+    resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;
     profileDetails?: UserProfileDetails;
     inventory?: UserInventory;
     xp?: number;
@@ -114,89 +114,36 @@ declare namespace MonkeyTypes {
     selected?: boolean;
   }
 
-  interface ResultFilters {
-    _id: ObjectId;
-    name: string;
-    difficulty: {
-      normal: boolean;
-      expert: boolean;
-      master: boolean;
-    };
-    mode: {
-      words: boolean;
-      time: boolean;
-      quote: boolean;
-      zen: boolean;
-      custom: boolean;
-    };
-    words: {
-      10: boolean;
-      25: boolean;
-      50: boolean;
-      100: boolean;
-      custom: boolean;
-    };
-    time: {
-      15: boolean;
-      30: boolean;
-      60: boolean;
-      120: boolean;
-      custom: boolean;
-    };
-    quoteLength: {
-      short: boolean;
-      medium: boolean;
-      long: boolean;
-      thicc: boolean;
-    };
-    punctuation: {
-      on: boolean;
-      off: boolean;
-    };
-    numbers: {
-      on: boolean;
-      off: boolean;
-    };
-    date: {
-      last_day: boolean;
-      last_week: boolean;
-      last_month: boolean;
-      last_3months: boolean;
-      all: boolean;
-    };
-    tags: {
-      [tagId: string]: boolean;
-    };
-    language: {
-      [language: string]: boolean;
-    };
-    funbox: {
-      none: boolean;
-      [funbox: string]: boolean;
-    };
-  }
-
   type UserQuoteRatings = Record<string, Record<string, number>>;
 
   interface LbPersonalBests {
     time: {
       [key: number]: {
-        [key: string]: PersonalBest;
+        [key: string]: SharedTypes.PersonalBest;
       };
     };
   }
 
+  type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
+    _id: ObjectId;
+  };
+
+  type WithObjectIdArray<T extends { _id: string }[]> = Omit<T, "_id"> &
+    {
+      _id: ObjectId;
+    }[];
+
   interface UserTag {
     _id: ObjectId;
     name: string;
-    personalBests: PersonalBests;
+    personalBests: SharedTypes.PersonalBests;
   }
 
   interface LeaderboardEntry {
     _id: ObjectId;
     acc: number;
     consistency: number;
-    difficulty: Difficulty;
+    difficulty: SharedTypes.Difficulty;
     lazyMode: boolean;
     language: string;
     punctuation: boolean;
@@ -236,105 +183,6 @@ declare namespace MonkeyTypes {
     submittedBy: string;
     timestamp: number;
     approved: boolean;
-  }
-
-  type Mode = keyof PersonalBests;
-
-  type Mode2<M extends Mode> = keyof PersonalBests[M];
-
-  type StringNumber = `${number}`;
-
-  type Difficulty = "normal" | "expert" | "master";
-
-  interface PersonalBest {
-    acc: number;
-    consistency: number;
-    difficulty: Difficulty;
-    lazyMode: boolean;
-    language: string;
-    punctuation: boolean;
-    raw: number;
-    wpm: number;
-    timestamp: number;
-  }
-
-  interface PersonalBests {
-    time: Record<StringNumber, PersonalBest[]>;
-    words: Record<StringNumber, PersonalBest[]>;
-    quote: Record<StringNumber, PersonalBest[]>;
-    custom: Partial<Record<"custom", PersonalBest[]>>;
-    zen: Partial<Record<"zen", PersonalBest[]>>;
-  }
-
-  interface ChartData {
-    wpm: number[];
-    raw: number[];
-    err: number[];
-  }
-
-  interface KeyStats {
-    average: number;
-    sd: number;
-  }
-
-  interface IncompleteTest {
-    acc: number;
-    seconds: number;
-  }
-
-  interface Result<M extends Mode> {
-    _id: ObjectId;
-    wpm: number;
-    rawWpm: number;
-    charStats: number[];
-    correctChars?: number; // --------------
-    incorrectChars?: number; // legacy results
-    acc: number;
-    mode: M;
-    mode2: Mode2<M>;
-    quoteLength: number;
-    timestamp: number;
-    restartCount: number;
-    incompleteTestSeconds: number;
-    incompleteTests: IncompleteTest[];
-    testDuration: number;
-    afkDuration: number;
-    tags: string[];
-    consistency: number;
-    keyConsistency: number;
-    chartData: ChartData | "toolong";
-    uid: string;
-    keySpacingStats: KeyStats;
-    keyDurationStats: KeyStats;
-    isPb?: boolean;
-    bailedOut?: boolean;
-    blindMode?: boolean;
-    lazyMode?: boolean;
-    difficulty: Difficulty;
-    funbox?: string;
-    language: string;
-    numbers?: boolean;
-    punctuation?: boolean;
-    hash?: string;
-  }
-
-  interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
-    keySpacing: number[] | "toolong";
-    keyDuration: number[] | "toolong";
-    customText: MonkeyTypes.CustomText;
-    wpmConsistency: number;
-    lang: string;
-    challenge?: string | null;
-  }
-
-  interface CustomText {
-    text: string[];
-    isWordRandom: boolean;
-    isTimeRandom: boolean;
-    word: number;
-    time: number;
-    delimiter: string;
-    textLen?: number;
   }
 
   interface PSA {

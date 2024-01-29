@@ -23,7 +23,7 @@ export function clearActive(): void {
 }
 
 export function verify(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Mode>
 ): string | null {
   try {
     if (TestState.activeChallenge) {
@@ -295,10 +295,10 @@ export async function setup(challengeName: string): Promise<boolean> {
       } else if (challenge.parameters[1] === "time") {
         UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
       }
-      UpdateConfig.setMode(challenge.parameters[1] as MonkeyTypes.Mode, true);
+      UpdateConfig.setMode(challenge.parameters[1] as SharedTypes.Mode, true);
       if (challenge.parameters[3] !== undefined) {
         UpdateConfig.setDifficulty(
-          challenge.parameters[3] as MonkeyTypes.Difficulty,
+          challenge.parameters[3] as SharedTypes.Difficulty,
           true
         );
       }
