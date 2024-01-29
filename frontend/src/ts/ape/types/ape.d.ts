@@ -13,18 +13,17 @@ declare namespace Ape {
 
   type EndpointResponse<Data = any> = Promise<HttpClientResponse<Data>>;
 
-  type HttpClientMethod = (
+  type HttpClientMethod<Data = any> = (
     endpoint: string,
     config?: RequestOptions
-  ) => Promise<HttpClientResponse<unknown>>;
+  ) => EndpointResponse<Data>;
 
-  interface HttpClient {
-    get: HttpClientMethod;
-    post: HttpClientMethod;
-    put: HttpClientMethod;
-    patch: HttpClientMethod;
-    delete: HttpClientMethod;
-  }
+  type HttpMethodTypes = "get" | "post" | "put" | "patch" | "delete";
 
-  type HttpMethodTypes = keyof HttpClient;
+  type HttpClient = {
+    [Method in HttpMethodTypes]: <Data = unknown>(
+      endpoint: string,
+      config?: RequestOptions
+    ) => EndpointResponse<Data>;
+  };
 }

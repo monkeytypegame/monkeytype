@@ -359,8 +359,8 @@ $("#popups").on(
   "#quoteSearchPopup #gotoSubmitQuoteButton",
   async () => {
     Loader.show();
-    const isSubmissionEnabled = (await Ape.quotes.isSubmissionEnabled()).data
-      .isEnabled;
+    const isSubmissionEnabled =
+      (await Ape.quotes.isSubmissionEnabled()).data?.isEnabled ?? false;
     Loader.hide();
     if (!isSubmissionEnabled) {
       Notifications.add(

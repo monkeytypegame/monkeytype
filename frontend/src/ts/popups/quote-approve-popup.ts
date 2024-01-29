@@ -7,15 +7,7 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteApprovePopupWrapper";
 
-interface Quote {
-  _id: string;
-  text: string;
-  source: string;
-  language: string;
-  timestamp: number;
-}
-
-let quotes: Quote[] = [];
+let quotes: QuotesApe.Quote[] = [];
 
 function updateList(): void {
   $("#quoteApprovePopupWrapper .quotes").empty();
@@ -74,7 +66,7 @@ async function getQuotes(): Promise<void> {
     );
   }
 
-  quotes = response.data;
+  quotes = response.data ?? [];
   updateList();
 }
 
