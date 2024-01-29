@@ -162,7 +162,7 @@ declare namespace SharedTypes {
     acc: number;
     mode: M;
     mode2: Mode2<M>;
-    quoteLength: number;
+    quoteLength?: number;
     timestamp: number;
     restartCount: number;
     incompleteTestSeconds: number;
@@ -218,6 +218,7 @@ declare namespace SharedTypes {
       | "tags"
       | "incompleteTests"
       | "customText"
+      | "quoteLength"
     > & {
       correctChars?: number; // --------------
       incorrectChars?: number; // legacy results
@@ -236,13 +237,14 @@ declare namespace SharedTypes {
       tags?: string[];
       name: string;
       customText?: CustomText;
+      quoteLength?: number;
     }
   >;
 
   interface CompletedEvent extends Result<Mode> {
     keySpacing: number[] | "toolong";
     keyDuration: number[] | "toolong";
-    customText: CustomText;
+    customText?: CustomText;
     wpmConsistency: number;
     lang: string;
     challenge?: string | null;

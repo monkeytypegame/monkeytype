@@ -50,6 +50,7 @@ export function buildDbResult(
   if (ce.numbers === false) delete res.numbers;
   if (ce.punctuation === false) delete res.punctuation;
   if (ce.mode !== "custom") delete res.customText;
+  if (ce.mode !== "quote") delete res.quoteLength;
   if (ce.restartCount === 0) delete res.restartCount;
   if (ce.incompleteTestSeconds === 0) delete res.incompleteTestSeconds;
   if (ce.afkDuration === 0) delete res.afkDuration;
