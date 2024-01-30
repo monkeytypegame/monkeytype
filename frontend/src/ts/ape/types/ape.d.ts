@@ -18,12 +18,13 @@ declare namespace Ape {
     config?: RequestOptions
   ) => EndpointResponse<Data>;
 
-  type HttpMethodTypes = "get" | "post" | "put" | "patch" | "delete";
+  interface HttpClient {
+    get: HttpClientMethod;
+    post: HttpClientMethod;
+    put: HttpClientMethod;
+    patch: HttpClientMethod;
+    delete: HttpClientMethod;
+  }
 
-  type HttpClient = {
-    [Method in HttpMethodTypes]: <Data = unknown>(
-      endpoint: string,
-      config?: RequestOptions
-    ) => EndpointResponse<Data>;
-  };
+  type HttpMethodTypes = keyof HttpClient;
 }
