@@ -33,9 +33,9 @@ declare namespace QuotesApe {
   type GetIsSubmissionEnabled = { isEnabled: boolean };
   type GetRating = QuoteRating | null;
 
-  type PostQuotes = void;
+  type PostQuotes = null;
   type PostApprove = ApproveReturn;
-  type PostReject = void;
+  type PostReject = null;
   type PostRating = QuoteRating | null;
-  type PostReport = void;
+  type PostReport = null;
 }
