@@ -135,6 +135,8 @@ declare namespace MonkeyTypes {
     | "11"
     | "12"
     | "13";
+    | "14";
+    | "15";
 
   type PlaySoundOnError = "off" | "1" | "2" | "3";
 

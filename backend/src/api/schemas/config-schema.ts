@@ -91,7 +91,7 @@ const CONFIG_SCHEMA = joi.object({
   playSoundOnError: joi.string().valid("off", ..._.range(1, 4).map(_.toString)),
   playSoundOnClick: joi.alternatives().try(
     joi.boolean(), //todo remove soon
-    joi.string().valid("off", ..._.range(1, 14).map(_.toString))
+    joi.string().valid("off", ..._.range(1, 16).map(_.toString))
   ),
   soundVolume: joi.string().valid("0.1", "0.5", "1.0"),
   startGraphsAtZero: joi.boolean(),

@@ -266,6 +266,136 @@ function init(): void {
         counter: 0,
       },
     ],
+    14: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_1.wav" }),
+          new Howl({ src: "../sound/click14/click14_1.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_2.wav" }),
+          new Howl({ src: "../sound/click14/click14_2.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_3.wav" }),
+          new Howl({ src: "../sound/click14/click14_3.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_4.wav" }),
+          new Howl({ src: "../sound/click14/click14_4.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_5.wav" }),
+          new Howl({ src: "../sound/click14/click14_5.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_6.wav" }),
+          new Howl({ src: "../sound/click14/click14_6.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_7.wav" }),
+          new Howl({ src: "../sound/click14/click14_7.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_8.wav" }),
+          new Howl({ src: "../sound/click14/click14_8.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_9.wav" }),
+          new Howl({ src: "../sound/click14/click14_9.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_10.wav" }),
+          new Howl({ src: "../sound/click14/click14_10.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_11.wav" }),
+          new Howl({ src: "../sound/click14/click14_11.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_12.wav" }),
+          new Howl({ src: "../sound/click14/click14_12.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_13.wav" }),
+          new Howl({ src: "../sound/click14/click14_13.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+    15: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/click15/click15_1.wav" }),
+          new Howl({ src: "../sound/click15/click15_1.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click15/click15_2.wav" }),
+          new Howl({ src: "../sound/click15/click15_2.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click15/click15_3.wav" }),
+          new Howl({ src: "../sound/click15/click15_3.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click15/click15_4.wav" }),
+          new Howl({ src: "../sound/click15/click15_4.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click15/click15_5.wav" }),
+          new Howl({ src: "../sound/click15/click15_5.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
   };
 }
 
