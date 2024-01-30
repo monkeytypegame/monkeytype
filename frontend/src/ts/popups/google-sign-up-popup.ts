@@ -29,7 +29,7 @@ function show(credential: UserCredential): void {
   if (!isPopupVisible(wrapperId)) {
     CaptchaController.reset("googleSignUpPopup");
     CaptchaController.render(
-      $("#googleSignUpPopupWrapper .captcha")[0],
+      $("#googleSignUpPopupWrapper .captcha")[0] as HTMLElement,
       "googleSignUpPopup"
     );
     enableInput();

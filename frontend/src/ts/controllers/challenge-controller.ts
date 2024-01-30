@@ -49,6 +49,11 @@ export function verify(
             TestState.activeChallenge.requirements[
               requirementType as keyof typeof TestState.activeChallenge.requirements
             ];
+
+          if (requirementValue === undefined) {
+            throw new Error("Requirement value is undefined");
+          }
+
           if (requirementType === "wpm") {
             const wpmMode = Object.keys(requirementValue)[0];
             if (wpmMode === "exact") {
@@ -98,10 +103,15 @@ export function verify(
             }
           } else if (requirementType === "funbox") {
             const funboxMode = requirementValue["exact"]
-              .toString()
+              ?.toString()
               .split("#")
               .sort()
               .join("#");
+
+            if (funboxMode === undefined) {
+              throw new Error("Funbox mode is undefined");
+            }
+
             if (funboxMode !== result.funbox) {
               requirementsMet = false;
               for (const f of funboxMode.split("#")) {

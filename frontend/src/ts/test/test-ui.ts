@@ -147,8 +147,9 @@ export function updateActiveElement(
     active.classList.remove("active");
   }
   try {
-    const activeWord =
-      document.querySelectorAll("#words .word")[currentWordElementIndex];
+    const activeWord = document.querySelectorAll("#words .word")[
+      currentWordElementIndex
+    ] as Element;
     activeWord.classList.add("active");
     activeWord.classList.remove("error");
     activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
@@ -329,7 +330,7 @@ function updateWordsHeight(force = false): void {
       const words = document.querySelectorAll("#words .word");
       let wrapperHeight = 0;
 
-      const wordComputedStyle = window.getComputedStyle(words[0]);
+      const wordComputedStyle = window.getComputedStyle(words[0] as Element);
       const wordTopMargin = parseInt(wordComputedStyle.marginTop);
       const wordBottomMargin = parseInt(wordComputedStyle.marginBottom);
 
@@ -628,7 +629,7 @@ export function updateWordElement(
         correctClass = "";
       }
 
-      let currentLetter = currentWord[i];
+      let currentLetter = currentWord[i] as string;
       let tabChar = "";
       let nlChar = "";
       if (funbox?.functions?.getWordHtml) {
@@ -698,7 +699,7 @@ export function updateWordElement(
 
     for (let i = input.length; i < currentWord.length; i++) {
       if (funbox?.functions?.getWordHtml) {
-        ret += funbox.functions.getWordHtml(currentWord[i], true);
+        ret += funbox.functions.getWordHtml(currentWord[i] as string, true);
       } else if (currentWord[i] === "\t") {
         ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
       } else if (currentWord[i] === "\n") {
@@ -739,7 +740,7 @@ export function scrollTape(): void {
       const forWordLeft = Math.floor(word.offsetLeft);
       const forWordWidth = Math.floor(word.offsetWidth);
       if (forWordLeft < 0 - forWordWidth) {
-        const toPush = $($("#words .word")[i]);
+        const toPush = $($("#words .word")[i] as HTMLElement);
         toHide.push(toPush);
         widthToHide += toPush.outerWidth(true) ?? 0;
       }
@@ -759,7 +760,9 @@ export function scrollTape(): void {
         const words = document.querySelectorAll("#words .word");
         currentWordWidth +=
           $(
-            words[currentWordElementIndex].querySelectorAll("letter")[i]
+            words[currentWordElementIndex]?.querySelectorAll("letter")[
+              i
+            ] as HTMLElement
           ).outerWidth(true) ?? 0;
       }
     }
@@ -804,13 +807,14 @@ export function lineJump(currentTop: number): void {
     const toHide: JQuery<HTMLElement>[] = [];
     const wordElements = $("#words .word");
     for (let i = 0; i < currentWordElementIndex; i++) {
-      if ($(wordElements[i]).hasClass("hidden")) continue;
-      const forWordTop = Math.floor(wordElements[i].offsetTop);
+      const el = $(wordElements[i] as HTMLElement);
+      if (el.hasClass("hidden")) continue;
+      const forWordTop = Math.floor((el[0] as HTMLElement).offsetTop);
       if (
         forWordTop <
         (Config.tapeMode === "off" ? hideBound - 10 : hideBound + 10)
       ) {
-        toHide.push($($("#words .word")[i]));
+        toHide.push($($("#words .word")[i] as HTMLElement));
       }
     }
     const wordHeight = <number>(
@@ -918,7 +922,8 @@ async function loadWordsHistory(): Promise<boolean> {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
   for (let i = 0; i < TestInput.input.history.length + 2; i++) {
-    const input = <string>TestInput.input.getHistory(i);
+    const input = TestInput.input.getHistory(i);
+    const corrected = TestInput.corrected.getHistory(i);
     const word = TestWords.words.get(i);
     const containsKorean =
       input?.match(
@@ -929,14 +934,11 @@ async function loadWordsHistory(): Promise<boolean> {
       );
     let wordEl = "";
     try {
-      if (input === "") throw new Error("empty input word");
-      if (
-        TestInput.corrected.getHistory(i) !== undefined &&
-        TestInput.corrected.getHistory(i) !== ""
-      ) {
+      if (!input) throw new Error("empty input word");
+      if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
-          ? TestInput.corrected.getHistory(i)
-          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
+          ? corrected
+          : Hangul.assemble(corrected.split(""));
         wordEl = `<div class='word nocursor' burst="${
           TestInput.burstHistory[i]
         }" input="${correctedChar
@@ -991,19 +993,22 @@ async function loadWordsHistory(): Promise<boolean> {
         //input is shorter or equal (loop over word list)
         loop = word.length;
       }
+
+      if (corrected === undefined) throw new Error("empty corrected word");
+
       for (let c = 0; c < loop; c++) {
         let correctedChar;
         try {
           correctedChar = !containsKorean
-            ? TestInput.corrected.getHistory(i)[c]
-            : Hangul.assemble(TestInput.corrected.getHistory(i).split(""))[c];
+            ? corrected[c]
+            : Hangul.assemble(corrected.split(""))[c];
         } catch (e) {
           correctedChar = undefined;
         }
         let extraCorrected = "";
         const historyWord: string = !containsKorean
-          ? TestInput.corrected.getHistory(i)
-          : Hangul.assemble(TestInput.corrected.getHistory(i).split(""));
+          ? corrected
+          : Hangul.assemble(corrected.split(""));
         if (
           c + 1 === loop &&
           historyWord !== undefined &&
@@ -1148,34 +1153,33 @@ export async function applyBurstHeatmap(): Promise<void> {
         colorId: 0,
       },
       {
-        val: burstlistSorted[(burstlistLength * 0.15) | 0],
+        val: burstlistSorted[(burstlistLength * 0.15) | 0] as number,
         colorId: 1,
       },
       {
-        val: burstlistSorted[(burstlistLength * 0.35) | 0],
+        val: burstlistSorted[(burstlistLength * 0.35) | 0] as number,
         colorId: 2,
       },
       {
-        val: burstlistSorted[(burstlistLength * 0.65) | 0],
+        val: burstlistSorted[(burstlistLength * 0.65) | 0] as number,
         colorId: 3,
       },
       {
-        val: burstlistSorted[(burstlistLength * 0.85) | 0],
+        val: burstlistSorted[(burstlistLength * 0.85) | 0] as number,
         colorId: 4,
       },
     ];
 
     steps.forEach((step, index) => {
+      const nextStep = steps[index + 1];
       let string = "";
-      if (index === 0) {
-        string = `<${Math.round(steps[index + 1].val)}`;
+      if (index === 0 && nextStep) {
+        string = `<${Math.round(nextStep.val)}`;
       } else if (index === 4) {
         string = `${Math.round(step.val)}+`;
-      } else {
-        if (step.val != steps[index + 1].val) {
-          string = `${Math.round(step.val)}-${
-            Math.round(steps[index + 1].val) - 1
-          }`;
+      } else if (nextStep) {
+        if (step.val != nextStep.val) {
+          string = `${Math.round(step.val)}-${Math.round(nextStep.val) - 1}`;
         } else {
           string = `${Math.round(step.val)}-${Math.round(step.val)}`;
         }
@@ -1198,14 +1202,14 @@ export async function applyBurstHeatmap(): Promise<void> {
         steps.forEach((step) => {
           if (wordBurstVal >= step.val) {
             $(word).addClass("heatmapInherit");
-            $(word).css("color", colors[step.colorId]);
+            $(word).css("color", colors[step.colorId] as string);
           }
         });
       }
     });
 
     $("#resultWordsHistory .heatmapLegend .boxes .box").each((index, box) => {
-      $(box).css("background", colors[index]);
+      $(box).css("background", colors[index] as string);
     });
   } else {
     $("#resultWordsHistory .heatmapLegend").addClass("hidden");
@@ -1218,7 +1222,7 @@ export async function applyBurstHeatmap(): Promise<void> {
 
 export function highlightBadWord(index: number, showError: boolean): void {
   if (!showError) return;
-  $($("#words .word")[index]).addClass("error");
+  $($("#words .word")[index] as HTMLElement).addClass("error");
 }
 
 export function highlightMode(mode?: MonkeyTypes.HighlightMode): void {

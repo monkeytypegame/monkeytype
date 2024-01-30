@@ -717,7 +717,7 @@ export async function addFavoriteQuote(
   if (user.favoriteQuotes) {
     if (
       user.favoriteQuotes[language] &&
-      user.favoriteQuotes[language].includes(quoteId)
+      user.favoriteQuotes[language]?.includes(quoteId)
     ) {
       return;
     }
@@ -756,7 +756,7 @@ export async function removeFavoriteQuote(
   if (
     !user.favoriteQuotes ||
     !user.favoriteQuotes[language] ||
-    !user.favoriteQuotes[language].includes(quoteId)
+    !user.favoriteQuotes[language]?.includes(quoteId)
   ) {
     return;
   }
@@ -847,7 +847,7 @@ interface AddToInboxBulkEntry {
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],
-  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+  inboxConfig: SharedTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -875,7 +875,7 @@ export async function addToInboxBulk(
 export async function addToInbox(
   uid: string,
   mail: MonkeyTypes.MonkeyMail[],
-  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+  inboxConfig: SharedTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 

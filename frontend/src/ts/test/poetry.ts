@@ -18,11 +18,14 @@ export class Poem extends Section {
   cleanUpText(): void {
     let count = 0;
     const scrubbedWords = [];
+
     for (let i = 0; i < this.words.length; i++) {
+      const word = this.words[i] as string;
       let scrubbed = "";
-      for (let j = 0; j < this.words[i].length; j++) {
-        if (!bannedChars.includes(this.words[i][j])) {
-          scrubbed += this.words[i][j];
+      for (let j = 0; j < word.length; j++) {
+        const char = word[j] as string;
+        if (!bannedChars.includes(char)) {
+          scrubbed += char;
         }
       }
 
