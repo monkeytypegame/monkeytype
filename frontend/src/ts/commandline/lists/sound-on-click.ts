@@ -174,11 +174,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "fist fight",
       configValue: "14",
       hover: (): void => {
-        SoundController.scaleConfigurations["14"].preview();
+        SoundController.previewClick("14");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("14");
-        SoundController.scaleConfigurations["14"].preview();
+        SoundController.playClick();
       },
     },
     {
@@ -186,11 +186,11 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "plastic toy",
       configValue: "15",
       hover: (): void => {
-        SoundController.scaleConfigurations["15"].preview();
+        SoundController.previewClick("15");
       },
       exec: (): void => {
         UpdateConfig.setPlaySoundOnClick("15");
-        SoundController.scaleConfigurations["15"].preview();
+        SoundController.playClick();
       },
     },
   ],
