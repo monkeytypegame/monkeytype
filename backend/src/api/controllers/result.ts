@@ -213,6 +213,9 @@ export async function addResult(
   }
 
   const resulthash = completedEvent.hash;
+  if (!resulthash) {
+    throw new MonkeyError(400, "Missing result hash");
+  }
   delete completedEvent.hash;
   delete completedEvent.stringified;
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
@@ -387,9 +390,7 @@ export async function addResult(
 
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];
-    if (!resulthash) {
-      throw new MonkeyError(400, "Missing result hash");
-    } else if (lastHashes.includes(resulthash)) {
+    if (lastHashes.includes(resulthash)) {
       Logger.logToDb(
         "duplicate_result",
         {
