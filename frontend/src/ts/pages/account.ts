@@ -672,8 +672,8 @@ async function fillContent(): Promise<void> {
   loadMoreLines();
   ////////
 
-  const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
-  const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
+  const activityChartData_timeAndAmount: MonkeyTypes.ActivityChartDataPoint[] =
+    [];
   const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
   const wpmStepSize = typingSpeedUnit.historyStepSize;
 
@@ -684,11 +684,7 @@ async function fillContent(): Promise<void> {
 
     if (dataPoint === undefined) continue;
 
-    activityChartData_amount.push({
-      x: dateInt,
-      y: dataPoint.amount,
-    });
-    activityChartData_time.push({
+    activityChartData_timeAndAmount.push({
       x: dateInt,
       y: dataPoint.time / 60,
       amount: dataPoint.amount,
@@ -714,7 +710,7 @@ async function fillContent(): Promise<void> {
   accountActivityAvgWpmOptions.ticks.stepSize = wpmStepSize;
 
   ChartController.accountActivity.getDataset("count").data =
-    activityChartData_amount;
+    activityChartData_timeAndAmount;
   ChartController.accountActivity.getDataset("avgWpm").data =
     activityChartData_avgWpm;
 
