@@ -36,7 +36,7 @@ const simpleOutputFormat = format.printf((log) => {
 });
 
 const coloredOutputFormat = format.printf((log) => {
-  let color = undefined;
+  let color: chalk;
 
   switch (log.level) {
     case "error":
