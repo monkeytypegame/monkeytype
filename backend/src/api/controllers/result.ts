@@ -195,7 +195,6 @@ export async function addResult(
     );
   }
 
-  //todo add a type here
   const completedEvent = Object.assign(
     {},
     req.body.result
