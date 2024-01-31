@@ -411,21 +411,21 @@ export async function addResult(
     }
   }
 
-  try {
+  if (completedEvent.keyDurationStats) {
     completedEvent.keyDurationStats.average = roundTo2(
       completedEvent.keyDurationStats.average
     );
     completedEvent.keyDurationStats.sd = roundTo2(
       completedEvent.keyDurationStats.sd
     );
+  }
+  if (completedEvent.keySpacingStats) {
     completedEvent.keySpacingStats.average = roundTo2(
       completedEvent.keySpacingStats.average
     );
     completedEvent.keySpacingStats.sd = roundTo2(
       completedEvent.keySpacingStats.sd
     );
-  } catch (e) {
-    //
   }
 
   let isPb = false;

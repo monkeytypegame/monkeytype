@@ -56,5 +56,8 @@ export function buildDbResult(
   if (ce.afkDuration === 0) delete res.afkDuration;
   if (ce.tags.length === 0) delete res.tags;
 
+  if (ce.keySpacingStats === undefined) delete res.keySpacingStats;
+  if (ce.keyDurationStats === undefined) delete res.keyDurationStats;
+
   return res;
 }

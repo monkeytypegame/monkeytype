@@ -174,8 +174,8 @@ declare namespace SharedTypes {
     keyConsistency: number;
     chartData: ChartData | "toolong";
     uid: string;
-    keySpacingStats: KeyStats;
-    keyDurationStats: KeyStats;
+    keySpacingStats?: KeyStats;
+    keyDurationStats?: KeyStats;
     isPb: boolean;
     bailedOut: boolean;
     blindMode: boolean;
