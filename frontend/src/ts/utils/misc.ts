@@ -1175,7 +1175,7 @@ export async function swapElements(
 
 export function getMode2<M extends keyof SharedTypes.PersonalBests>(
   config: MonkeyTypes.Config,
-  randomQuote: MonkeyTypes.Quote
+  randomQuote: MonkeyTypes.Quote | null
 ): SharedTypes.Mode2<M> {
   const mode = config.mode;
   let retVal: string;
@@ -1189,7 +1189,7 @@ export function getMode2<M extends keyof SharedTypes.PersonalBests>(
   } else if (mode === "zen") {
     retVal = "zen";
   } else if (mode === "quote") {
-    retVal = randomQuote.id.toString();
+    retVal = `${randomQuote?.id ?? -1}`;
   } else {
     throw new Error("Invalid mode");
   }

@@ -608,7 +608,7 @@ export async function addWord(): Promise<void> {
       TestWords.words.length >= CustomText.text.length) ||
     (Config.mode === "quote" &&
       TestWords.words.length >=
-        (TestWords.randomQuote.textSplit?.length ?? 0)) ||
+        (TestWords.randomQuote?.textSplit?.length ?? 0)) ||
     (Config.mode === "custom" &&
       CustomText.isSectionRandom &&
       WordsGenerator.sectionIndex >= CustomText.section &&
@@ -834,6 +834,8 @@ function buildCompletedEvent(
     language = Config.language.replace(/_\d*k$/g, "");
   }
 
+  const quoteLength = TestWords.randomQuote?.group ?? -1;
+
   const completedEvent = {
     wpm: stats.wpm,
     rawWpm: stats.wpmRaw,
@@ -847,7 +849,7 @@ function buildCompletedEvent(
     acc: stats.acc,
     mode: Config.mode,
     mode2: Misc.getMode2(Config, TestWords.randomQuote),
-    quoteLength: TestWords.randomQuote.group,
+    quoteLength: quoteLength,
     punctuation: Config.punctuation,
     numbers: Config.numbers,
     lazyMode: Config.lazyMode,
