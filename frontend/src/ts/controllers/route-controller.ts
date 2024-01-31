@@ -117,7 +117,7 @@ const routes: Route[] = [
       PageController.change("profile", {
         force: true,
         params: {
-          uidOrName: params["uidOrName"],
+          uidOrName: params["uidOrName"] as string,
         },
         data: options.data,
       });

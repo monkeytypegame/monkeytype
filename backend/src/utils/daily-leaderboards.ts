@@ -36,9 +36,9 @@ export class DailyLeaderboard {
   private leaderboardScoresKeyName: string;
   private leaderboardModeKey: string;
   private customTime: number;
-  private modeRule: MonkeyTypes.ValidModeRule;
+  private modeRule: SharedTypes.ValidModeRule;
 
-  constructor(modeRule: MonkeyTypes.ValidModeRule, customTime = -1) {
+  constructor(modeRule: SharedTypes.ValidModeRule, customTime = -1) {
     const { language, mode, mode2 } = modeRule;
 
     this.leaderboardModeKey = `${language}:${mode}:${mode2}`;
@@ -67,7 +67,7 @@ export class DailyLeaderboard {
 
   public async addResult(
     entry: DailyLeaderboardEntry,
-    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
   ): Promise<number> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -123,7 +123,7 @@ export class DailyLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
   ): Promise<LbEntryWithRank[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -143,6 +143,12 @@ export class DailyLeaderboard {
       "false"
     );
 
+    if (results === undefined) {
+      throw new Error(
+        "Redis returned undefined when getting daily leaderboard results"
+      );
+    }
+
     const resultsWithRanks: LbEntryWithRank[] = results.map(
       (resultJSON, index) => ({
         ...JSON.parse(resultJSON),
@@ -155,7 +161,7 @@ export class DailyLeaderboard {
 
   public async getRank(
     uid: string,
-    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
   ): Promise<GetRankResponse | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -165,6 +171,7 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
+    // @ts-ignore
     const [[, rank], [, count], [, result], [, minScore]] = await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)
@@ -197,7 +204,7 @@ export class DailyLeaderboard {
 
 export async function purgeUserFromDailyLeaderboards(
   uid: string,
-  configuration: MonkeyTypes.Configuration["dailyLeaderboards"]
+  configuration: SharedTypes.Configuration["dailyLeaderboards"]
 ): Promise<void> {
   const connection = RedisClient.getConnection();
   if (!connection || !configuration.enabled) {
@@ -209,8 +216,8 @@ export async function purgeUserFromDailyLeaderboards(
 }
 
 function isValidModeRule(
-  modeRule: MonkeyTypes.ValidModeRule,
-  modeRules: MonkeyTypes.ValidModeRule[]
+  modeRule: SharedTypes.ValidModeRule,
+  modeRules: SharedTypes.ValidModeRule[]
 ): boolean {
   const { language, mode, mode2 } = modeRule;
 
@@ -226,7 +233,7 @@ export function getDailyLeaderboard(
   language: string,
   mode: string,
   mode2: string,
-  dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"],
+  dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
   customTimestamp = -1
 ): DailyLeaderboard | null {
   const { validModeRules, enabled } = dailyLeaderboardsConfig;

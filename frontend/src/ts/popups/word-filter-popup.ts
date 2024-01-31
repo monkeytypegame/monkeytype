@@ -248,8 +248,7 @@ async function filter(language: string): Promise<string[]> {
   } else {
     minLength = parseInt(minLengthInput);
   }
-  for (let i = 0; i < languageWordList.words.length; i++) {
-    const word = languageWordList.words[i];
+  for (const word of languageWordList.words) {
     const test1 = regincl.test(word);
     const test2 = regexcl.test(word);
     if (
@@ -308,6 +307,12 @@ $("#wordFilterPopup .button.generateButton").on("click", async () => {
   const layoutName = $("#wordFilterPopup .layoutInput").val() as string;
 
   const presetToApply = presets[presetName];
+
+  if (presetToApply === undefined) {
+    Notifications.add(`Preset ${presetName} not found`, -1);
+    return;
+  }
+
   const layout = await Misc.getLayout(layoutName);
 
   $("#wordIncludeInput").val(

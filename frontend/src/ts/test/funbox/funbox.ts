@@ -50,7 +50,7 @@ class CharDistribution {
       }
     }
 
-    return Object.keys(this.chars)[0];
+    return Object.keys(this.chars)[0] as string;
   }
 }
 
@@ -70,7 +70,7 @@ class PseudolangWordGenerator extends Wordset {
         if (!(prefix in this.ngrams)) {
           this.ngrams[prefix] = new CharDistribution();
         }
-        this.ngrams[prefix].addChar(c);
+        (this.ngrams[prefix] as CharDistribution).addChar(c);
         prefix = (prefix + c).slice(-prefixSize);
       }
     }
@@ -120,7 +120,7 @@ FunboxList.setFunboxFunctions("tts", {
       Notifications.add("Failed to load text-to-speech script", -1);
       return;
     }
-    TTSEvent.dispatch(params[0]);
+    if (params[0]) TTSEvent.dispatch(params[0]);
   },
 });
 
@@ -206,12 +206,15 @@ FunboxList.setFunboxFunctions("arrows", {
 
 FunboxList.setFunboxFunctions("rAnDoMcAsE", {
   alterText(word: string): string {
-    let randomcaseword = word[0];
+    let randomcaseword = word[0] as string;
     for (let i = 1; i < word.length; i++) {
-      if (randomcaseword[i - 1] === randomcaseword[i - 1].toUpperCase()) {
-        randomcaseword += word[i].toLowerCase();
+      if (
+        randomcaseword[i - 1] ===
+        (randomcaseword[i - 1] as string).toUpperCase()
+      ) {
+        randomcaseword += (word[i] as string).toLowerCase();
       } else {
-        randomcaseword += word[i].toUpperCase();
+        randomcaseword += (word[i] as string).toUpperCase();
       }
     }
     return randomcaseword;
@@ -232,18 +235,10 @@ FunboxList.setFunboxFunctions("capitals", {
 
 FunboxList.setFunboxFunctions("layoutfluid", {
   applyConfig(): void {
-    UpdateConfig.setLayout(
-      Config.customLayoutfluid.split("#")[0]
-        ? Config.customLayoutfluid.split("#")[0]
-        : "qwerty",
-      true
-    );
-    UpdateConfig.setKeymapLayout(
-      Config.customLayoutfluid.split("#")[0]
-        ? Config.customLayoutfluid.split("#")[0]
-        : "qwerty",
-      true
-    );
+    const layout = Config.customLayoutfluid.split("#")[0] ?? "qwerty";
+
+    UpdateConfig.setLayout(layout, true);
+    UpdateConfig.setKeymapLayout(layout, true);
   },
   rememberSettings(): void {
     save("keymapMode", Config.keymapMode, UpdateConfig.setKeymapMode);
@@ -268,13 +263,13 @@ FunboxList.setFunboxFunctions("layoutfluid", {
       if (layouts[index]) {
         if (mod <= 3 && layouts[index + 1]) {
           LayoutfluidFunboxTimer.show();
-          LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1]);
+          LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1] as string);
         } else {
           LayoutfluidFunboxTimer.hide();
         }
         if (mod === wordsPerLayout) {
-          UpdateConfig.setLayout(layouts[index]);
-          UpdateConfig.setKeymapLayout(layouts[index]);
+          UpdateConfig.setLayout(layouts[index] as string);
+          UpdateConfig.setKeymapLayout(layouts[index] as string);
           if (mod > 3) {
             LayoutfluidFunboxTimer.hide();
           }
@@ -715,9 +710,10 @@ FunboxList.setFunboxFunctions("crt", {
       const versionMatch = navigator.userAgent.match(
         /.*Version\/([0-9]*)\.([0-9]*).*/
       );
-      const mainVersion = versionMatch !== null ? parseInt(versionMatch[1]) : 0;
+      const mainVersion =
+        versionMatch !== null ? parseInt(versionMatch[1] ?? "0") : 0;
       const minorVersion =
-        versionMatch !== null ? parseInt(versionMatch[2]) : 0;
+        versionMatch !== null ? parseInt(versionMatch[2] ?? "0") : 0;
       if (mainVersion <= 16 && minorVersion <= 5) {
         Notifications.add(
           "CRT is not available on Safari 16.5 or earlier.",
