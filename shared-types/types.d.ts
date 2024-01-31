@@ -246,7 +246,6 @@ declare namespace SharedTypes {
     keyDuration: number[] | "toolong";
     customText?: CustomText;
     wpmConsistency: number;
-    lang: string;
     challenge?: string | null;
     keyOverlap: number;
     lastKeyToEnd: number;
