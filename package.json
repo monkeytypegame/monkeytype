@@ -58,7 +58,7 @@
     "lint-staged": "13.2.3",
     "prettier": "2.5.1",
     "release-it": "16.1.4",
-    "typescript": "4.9.5"
+    "typescript": "5.3.3"
   },
   "lint-staged": {
     "*.{json,scss,css,html}": [
