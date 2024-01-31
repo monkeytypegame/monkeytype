@@ -223,6 +223,8 @@ declare namespace SharedTypes {
       correctChars?: number; // --------------
       incorrectChars?: number; // legacy results
       // --------------
+      name: string;
+      // -------------- fields that might be removed to save space
       bailedOut?: boolean;
       blindMode?: boolean;
       lazyMode?: boolean;
@@ -235,7 +237,6 @@ declare namespace SharedTypes {
       incompleteTestSeconds?: number;
       afkDuration?: number;
       tags?: string[];
-      name: string;
       customText?: CustomText;
       quoteLength?: number;
     }
