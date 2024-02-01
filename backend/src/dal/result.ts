@@ -11,7 +11,7 @@ export async function addResult(
   uid: string,
   result: MonkeyTypesResult
 ): Promise<{ insertedId: ObjectId }> {
-  let user;
+  let user: MonkeyTypes.User | null = null;
   try {
     user = await getUser(uid, "add result");
   } catch (e) {
@@ -118,6 +118,6 @@ export async function getResults(
   }
 
   const results = await query.toArray();
-  if (!results) throw new MonkeyError(404, "Result not found");
+  if (results === undefined) throw new MonkeyError(404, "Result not found");
   return results;
 }
