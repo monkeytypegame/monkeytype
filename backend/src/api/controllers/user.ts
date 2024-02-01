@@ -571,7 +571,7 @@ export async function updateLbMemory(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
-  const mode2 = req.body.mode2 as MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+  const mode2 = req.body.mode2 as SharedTypes.Mode2<SharedTypes.Mode>;
 
   await UserDAL.updateLbMemory(uid, mode, mode2, language, rank);
   return new MonkeyResponse("Leaderboard memory updated");

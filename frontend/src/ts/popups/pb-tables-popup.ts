@@ -3,13 +3,13 @@ import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
 
-interface PersonalBest extends MonkeyTypes.PersonalBest {
-  mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+interface PersonalBest extends SharedTypes.PersonalBest {
+  mode2: SharedTypes.Mode2<SharedTypes.Mode>;
 }
 
 const wrapperId = "pbTablesPopupWrapper";
 
-function update(mode: MonkeyTypes.Mode): void {
+function update(mode: SharedTypes.Mode): void {
   $("#pbTablesPopup table tbody").empty();
   $($("#pbTablesPopup table thead tr td")[0] as HTMLElement).text(mode);
 
@@ -23,7 +23,7 @@ function update(mode: MonkeyTypes.Mode): void {
   if (allmode2 === undefined) return;
 
   const list: PersonalBest[] = [];
-  (Object.keys(allmode2) as MonkeyTypes.Mode2<MonkeyTypes.Mode>[]).forEach(
+  (Object.keys(allmode2) as SharedTypes.Mode2<SharedTypes.Mode>[]).forEach(
     function (key) {
       let pbs = allmode2[key] ?? [];
       pbs = pbs.sort(function (a, b) {
@@ -40,7 +40,7 @@ function update(mode: MonkeyTypes.Mode): void {
     }
   );
 
-  let mode2memory: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+  let mode2memory: SharedTypes.Mode2<SharedTypes.Mode>;
 
   list.forEach((pb) => {
     let dateText = `-<br><span class="sub">-</span>`;
@@ -78,7 +78,7 @@ function update(mode: MonkeyTypes.Mode): void {
   });
 }
 
-function show(mode: MonkeyTypes.Mode): void {
+function show(mode: SharedTypes.Mode): void {
   Skeleton.append(wrapperId);
   if (!isPopupVisible(wrapperId)) {
     update(mode);

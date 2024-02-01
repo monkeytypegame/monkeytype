@@ -15,9 +15,13 @@ const mockPersonalBest = {
   timestamp: 13123123,
 };
 
-const mockResultFilter = {
-  _id: new ObjectId(),
+const mockResultFilter: SharedTypes.ResultFilters = {
+  _id: "id",
   name: "sfdkjhgdf",
+  pb: {
+    no: true,
+    yes: true,
+  },
   difficulty: {
     normal: true,
     expert: false,

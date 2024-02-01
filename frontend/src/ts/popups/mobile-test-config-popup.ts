@@ -174,7 +174,7 @@ el.find(".numbers").on("click", () => {
 el.find(".modeGroup button").on("click", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = $(e.currentTarget).attr("data-mode");
-  UpdateConfig.setMode(mode as MonkeyTypes.Mode);
+  UpdateConfig.setMode(mode as SharedTypes.Mode);
   ManualRestart.set();
   TestLogic.restart();
 });

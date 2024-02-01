@@ -78,7 +78,7 @@
     "workbox-webpack-plugin": "6.5.4"
   },
   "dependencies": {
-    "axios": "0.21.4",
+    "axios": "1.6.4",
     "canvas-confetti": "1.5.1",
     "chart.js": "3.7.1",
     "chartjs-adapter-date-fns": "2.0.0",

@@ -16,7 +16,7 @@ function hide(): void {
   $(".pageAccount .miniResultChartBg").stop(true, true).fadeOut(125);
 }
 
-export function updateData(data: MonkeyTypes.ChartData): void {
+export function updateData(data: SharedTypes.ChartData): void {
   // let data = filteredResults[filteredId].chartData;
   let labels = [];
   for (let i = 1; i <= data.wpm.length; i++) {
