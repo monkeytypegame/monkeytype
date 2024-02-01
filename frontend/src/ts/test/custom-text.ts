@@ -105,7 +105,7 @@ export function setCustomText(
       textByName.text = text.join(" ");
     }
 
-    window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+    setLocalStorageLong(customText);
   } else {
     const customText = getLocalStorage();
 
@@ -115,7 +115,7 @@ export function setCustomText(
       customText[name] = text.join(" ");
     }
 
-    window.localStorage.setItem("customText", JSON.stringify(customText));
+    setLocalStorage(customText);
   }
 }
 
@@ -125,9 +125,9 @@ export function deleteCustomText(name: string, long = false): void {
   if (customText[name] != undefined) delete customText[name];
 
   if (long) {
-    window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+    setLocalStorageLong(customText);
   } else {
-    window.localStorage.setItem("customText", JSON.stringify(customText));
+    setLocalStorage(customText);
   }
 }
 
@@ -146,7 +146,7 @@ export function setCustomTextLongProgress(
   if (customText === undefined) throw new Error("Custom text not found");
 
   customText.progress = progress;
-  window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+  setLocalStorageLong(customText);
 }
 
 function getLocalStorage(): CustomTextObject {
