@@ -68,7 +68,7 @@ export async function getResult(
 
 export async function getLastResult(
   uid: string
-): Promise<Partial<MonkeyTypesResult>> {
+): Promise<Omit<MonkeyTypesResult, "uid">> {
   const [lastResult] = await db
     .collection<MonkeyTypesResult>("results")
     .find({ uid })

@@ -34,15 +34,6 @@ export async function getLeaderboard(
     );
   }
 
-  if (!leaderboard) {
-    throw new MonkeyError(
-      404,
-      `No ${mode} ${mode2} leaderboard found`,
-      `getLeaderboard${mode}${mode2}`,
-      uid
-    );
-  }
-
   const normalizedLeaderboard = _.map(leaderboard, (entry) => {
     return uid && entry.uid === uid
       ? entry
