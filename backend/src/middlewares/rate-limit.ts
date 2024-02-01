@@ -59,7 +59,7 @@ export async function badAuthRateLimiterHandler(
   next: NextFunction
 ): Promise<void> {
   const badAuthEnabled =
-    req.ctx.configuration.rateLimiting.badAuthentication.enabled;
+    req?.ctx?.configuration?.rateLimiting?.badAuthentication?.enabled;
   if (badAuthEnabled) {
     return next();
   }
@@ -87,7 +87,7 @@ export async function incrementBadAuth(
   status: number
 ): Promise<void> {
   const { enabled, penalty, flaggedStatusCodes } =
-    req.ctx.configuration.rateLimiting.badAuthentication;
+    req?.ctx?.configuration?.rateLimiting?.badAuthentication ?? {};
 
   if (!enabled || !flaggedStatusCodes.includes(status)) {
     return;
