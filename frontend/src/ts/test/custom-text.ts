@@ -157,6 +157,14 @@ function getLocalStorageLong(): CustomTextLongObject {
   return JSON.parse(window.localStorage.getItem("customTextLong") ?? "{}");
 }
 
+function setLocalStorage(data: CustomTextObject): void {
+  window.localStorage.setItem("customText", JSON.stringify(data));
+}
+
+function setLocalStorageLong(data: CustomTextLongObject): void {
+  window.localStorage.setItem("customTextLong", JSON.stringify(data));
+}
+
 export function getCustomTextNames(long = false): string[] {
   if (long) {
     return Object.keys(getLocalStorageLong());
