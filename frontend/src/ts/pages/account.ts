@@ -544,8 +544,8 @@ async function fillContent(): Promise<void> {
       }
 
       const bucketSize = typingSpeedUnit.histogramDataBucketSize;
-      const bucket = Math.round(
-        typingSpeedUnit.fromWpm(result.wpm) / bucketSize
+      const bucket = Math.floor(
+        Math.round(typingSpeedUnit.fromWpm(result.wpm)) / bucketSize
       );
 
       //grow array if needed
