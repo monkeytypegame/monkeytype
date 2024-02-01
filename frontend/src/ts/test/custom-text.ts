@@ -119,7 +119,7 @@ export function setCustomText(
   }
 }
 
-export function deleteCustomText(name: string, long = false): void {
+export function deleteCustomText(name: string, long: boolean): void {
   const customText = long ? getLocalStorageLong() : getLocalStorage();
 
   if (customText[name] != undefined) delete customText[name];
