@@ -45,7 +45,7 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
     const { authorization: authHeader } = req.headers;
 
     try {
-      if (authHeader) {
+      if (authHeader !== undefined) {
         token = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
@@ -183,25 +183,31 @@ async function authenticateWithBearerToken(
   } catch (error) {
     const errorCode = error?.errorInfo?.code;
 
-    if (errorCode?.includes("auth/id-token-expired")) {
+    if (errorCode?.includes("auth/id-token-expired") as boolean | undefined) {
       throw new MonkeyError(
         401,
         "Token expired - please login again",
         "authenticateWithBearerToken"
       );
-    } else if (errorCode?.includes("auth/id-token-revoked")) {
+    } else if (
+      errorCode?.includes("auth/id-token-revoked") as boolean | undefined
+    ) {
       throw new MonkeyError(
         401,
         "Token revoked - please login again",
         "authenticateWithBearerToken"
       );
-    } else if (errorCode?.includes("auth/user-not-found")) {
+    } else if (
+      errorCode?.includes("auth/user-not-found") as boolean | undefined
+    ) {
       throw new MonkeyError(
         404,
         "User not found",
         "authenticateWithBearerToken"
       );
-    } else if (errorCode?.includes("auth/argument-error")) {
+    } else if (
+      errorCode?.includes("auth/argument-error") as boolean | undefined
+    ) {
       throw new MonkeyError(
         400,
         "Incorrect Bearer token format",
@@ -230,7 +236,12 @@ async function authenticateWithApeKey(
     const decodedKey = base64UrlDecode(key);
     const [keyId, apeKey] = decodedKey.split(".");
 
-    if (!keyId || !apeKey) {
+    if (
+      keyId === undefined ||
+      keyId === "" ||
+      apeKey === undefined ||
+      apeKey === ""
+    ) {
       throw new MonkeyError(400, "Malformed ApeKey");
     }
 
@@ -275,7 +286,7 @@ async function authenticateWithUid(
   }
   const [uid, email] = token.split("|");
 
-  if (!uid) {
+  if (uid === undefined || uid === "") {
     throw new MonkeyError(401, "Missing uid");
   }
 
@@ -298,9 +309,9 @@ function authenticateGithubWebhook(): Handler {
     const webhookSecret = process.env["GITHUB_WEBHOOK_SECRET"];
 
     try {
-      if (!webhookSecret) {
+      if (webhookSecret === undefined) {
         throw new MonkeyError(500, "Missing Github Webhook Secret");
-      } else if (!authHeader) {
+      } else if (authHeader === undefined) {
         throw new MonkeyError(401, "Missing Github signature header");
       } else {
         const signature = crypto

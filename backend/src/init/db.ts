@@ -21,14 +21,14 @@ export async function connect(): Promise<void> {
     DB_NAME,
   } = process.env;
 
-  if (!DB_URI || !DB_NAME) {
+  if (!(DB_URI ?? "") || !(DB_NAME ?? "")) {
     throw new Error("No database configuration provided");
   }
 
   const connectionOptions: MongoClientOptions = {
     connectTimeoutMS: 2000,
     serverSelectionTimeoutMS: 2000,
-    auth: !(DB_USERNAME && DB_PASSWORD)
+    auth: !(DB_USERNAME !== undefined && DB_PASSWORD !== undefined)
       ? undefined
       : {
           username: DB_USERNAME,
@@ -58,7 +58,7 @@ export async function connect(): Promise<void> {
 export const getDb = (): Db | undefined => db;
 
 export function collection<T>(collectionName: string): Collection<WithId<T>> {
-  if (!db) {
+  if (db === undefined) {
     throw new MonkeyError(500, "Database is not initialized.");
   }
 

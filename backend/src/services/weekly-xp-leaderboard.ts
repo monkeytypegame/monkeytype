@@ -91,7 +91,9 @@ export class WeeklyXpLeaderboard {
     );
     const totalTimeTypedSeconds =
       timeTypedSeconds +
-      ((currentEntry && JSON.parse(currentEntry)?.timeTypedSeconds) || 0);
+      ((currentEntry !== null &&
+        (JSON.parse(currentEntry)?.timeTypedSeconds as number | undefined)) ||
+        0);
 
     const [rank]: [number, void] = await Promise.all([
       // @ts-ignore

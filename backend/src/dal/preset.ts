@@ -51,7 +51,9 @@ export async function editPreset(
   config: any
 ): Promise<void> {
   const presetUpdates =
-    config && Object.keys(config).length > 0 ? { name, config } : { name };
+    config !== undefined && Object.keys(config).length > 0
+      ? { name, config }
+      : { name };
   await db
     .collection(COLLECTION_NAME)
     .updateOne(getPresetKeyFilter(uid, presetId), { $set: presetUpdates });
