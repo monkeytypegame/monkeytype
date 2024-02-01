@@ -29,7 +29,7 @@ import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 
-let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
+let result: SharedTypes.Result<SharedTypes.Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -546,7 +546,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   });
 }
 
-function updateTestType(randomQuote: MonkeyTypes.Quote): void {
+function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
   let testType = "";
 
   testType += Config.mode;
@@ -556,7 +556,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   } else if (Config.mode === "words") {
     testType += " " + Config.words;
   } else if (Config.mode === "quote") {
-    if (randomQuote.group !== undefined) {
+    if (randomQuote?.group !== undefined) {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
@@ -653,8 +653,15 @@ function updateOther(
   }
 }
 
-export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
+export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
   if (Config.mode === "quote") {
+    if (randomQuote === null) {
+      console.error(
+        "Failed to update quote rating button: randomQuote is null"
+      );
+      return;
+    }
+
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
     if (userqr) {
@@ -674,39 +681,48 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
   }
 }
 
-function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote): void {
+function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
+  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
+
+  if (Config.mode !== "quote" || Auth?.currentUser === null) {
+    icon.parent().addClass("hidden");
+    return;
+  }
+
+  if (randomQuote === null) {
+    console.error(
+      "Failed to update quote favorite button: randomQuote is null"
+    );
+    return;
+  }
+
   quoteLang = Config.mode === "quote" ? randomQuote.language : "";
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
-  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
-
-  if (Config.mode === "quote" && Auth?.currentUser) {
-    const userFav = QuotesController.isQuoteFavorite(randomQuote);
-
-    icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
-    icon.parent().removeClass("hidden");
-  } else {
-    icon.parent().addClass("hidden");
-  }
+  const userFav = QuotesController.isQuoteFavorite(randomQuote);
+  icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
+  icon.parent().removeClass("hidden");
 }
 
-function updateQuoteSource(randomQuote: MonkeyTypes.Quote): void {
+function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
   if (Config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
-    $("#result .stats .source .bottom").html(randomQuote.source);
+    $("#result .stats .source .bottom").html(
+      randomQuote?.source ?? "Error: Source unknown"
+    );
   } else {
     $("#result .stats .source").addClass("hidden");
   }
 }
 
 export async function update(
-  res: MonkeyTypes.Result<MonkeyTypes.Mode>,
+  res: SharedTypes.Result<SharedTypes.Mode>,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
   isRepeated: boolean,
   tooShort: boolean,
-  randomQuote: MonkeyTypes.Quote,
+  randomQuote: MonkeyTypes.Quote | null,
   dontSave: boolean
 ): Promise<void> {
   resultAnnotation = [];

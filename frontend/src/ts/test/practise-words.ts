@@ -19,7 +19,7 @@ interface BeforeCustomText {
 }
 
 interface Before {
-  mode: MonkeyTypes.Mode | null;
+  mode: SharedTypes.Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
   customText: BeforeCustomText | null;

@@ -10,16 +10,6 @@ declare namespace MonkeyTypes {
     | "profileSearch"
     | "404";
 
-  type Difficulty = "normal" | "expert" | "master";
-
-  type Mode = keyof PersonalBests;
-
-  type Mode2<M extends Mode> = M extends M ? keyof PersonalBests[M] : never;
-
-  type StringNumber = `${number}`;
-
-  type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
-
   interface LanguageGroup {
     name: string;
     languages: string[];
@@ -294,16 +284,6 @@ declare namespace MonkeyTypes {
     hasCSS?: boolean;
   }
 
-  interface CustomText {
-    text: string[];
-    isWordRandom: boolean;
-    isTimeRandom: boolean;
-    word: number;
-    time: number;
-    delimiter: string;
-    textLen?: number;
-  }
-
   interface PresetConfig extends MonkeyTypes.Config {
     tags: string[];
   }
@@ -315,31 +295,11 @@ declare namespace MonkeyTypes {
     config: ConfigChanges;
   }
 
-  interface PersonalBest {
-    acc: number;
-    consistency: number;
-    difficulty: Difficulty;
-    lazyMode: boolean;
-    language: string;
-    punctuation: boolean;
-    raw: number;
-    wpm: number;
-    timestamp: number;
-  }
-
-  interface PersonalBests {
-    time: Record<StringNumber, PersonalBest[]>;
-    words: Record<StringNumber, PersonalBest[]>;
-    quote: Record<StringNumber, PersonalBest[]>;
-    custom: Partial<Record<"custom", PersonalBest[]>>;
-    zen: Partial<Record<"zen", PersonalBest[]>>;
-  }
-
   interface Tag {
     _id: string;
     name: string;
     display: string;
-    personalBests: PersonalBests;
+    personalBests: SharedTypes.PersonalBests;
     active?: boolean;
   }
 
@@ -356,59 +316,6 @@ declare namespace MonkeyTypes {
     timeTyping: number;
     startedTests: number;
     completedTests: number;
-  }
-
-  interface ChartData {
-    wpm: number[];
-    raw: number[];
-    err: number[];
-    unsmoothedRaw?: number[];
-  }
-
-  interface KeyStats {
-    average: number;
-    sd: number;
-  }
-
-  interface IncompleteTest {
-    acc: number;
-    seconds: number;
-  }
-
-  interface Result<M extends Mode> {
-    _id: string;
-    wpm: number;
-    rawWpm: number;
-    charStats: number[];
-    correctChars?: number; // --------------
-    incorrectChars?: number; // legacy results
-    acc: number;
-    mode: M;
-    mode2: Mode2<M>;
-    quoteLength: number;
-    timestamp: number;
-    restartCount: number;
-    incompleteTestSeconds: number;
-    incompleteTests: IncompleteTest[];
-    testDuration: number;
-    afkDuration: number;
-    tags: string[];
-    consistency: number;
-    keyConsistency: number;
-    chartData: ChartData | "toolong";
-    uid: string;
-    keySpacingStats: KeyStats;
-    keyDurationStats: KeyStats;
-    isPb?: boolean;
-    bailedOut?: boolean;
-    blindMode?: boolean;
-    lazyMode?: boolean;
-    difficulty: Difficulty;
-    funbox?: string;
-    language: string;
-    numbers?: boolean;
-    punctuation?: boolean;
-    hash?: string;
   }
 
   interface ApeKey {
@@ -440,12 +347,12 @@ declare namespace MonkeyTypes {
     numbers: boolean;
     words: WordsModes;
     time: TimeModes;
-    mode: Mode;
+    mode: SharedTypes.Mode;
     quoteLength: QuoteLength[];
     language: string;
     fontSize: number;
     freedomMode: boolean;
-    difficulty: Difficulty;
+    difficulty: SharedTypes.Difficulty;
     blindMode: boolean;
     quickEnd: boolean;
     caretStyle: CaretStyle;
@@ -518,7 +425,7 @@ declare namespace MonkeyTypes {
     | string[]
     | MonkeyTypes.QuoteLength[]
     | MonkeyTypes.HighlightMode
-    | MonkeyTypes.ResultFilters
+    | SharedTypes.ResultFilters
     | MonkeyTypes.CustomBackgroundFilter
     | null
     | undefined;
@@ -574,9 +481,9 @@ declare namespace MonkeyTypes {
     banned?: boolean;
     emailVerified?: boolean;
     quoteRatings?: QuoteRatings;
-    results?: Result<Mode>[];
+    results?: SharedTypes.Result<SharedTypes.Mode>[];
     verified?: boolean;
-    personalBests: PersonalBests;
+    personalBests: SharedTypes.PersonalBests;
     name: string;
     customThemes: CustomTheme[];
     presets?: Preset[];
@@ -593,7 +500,7 @@ declare namespace MonkeyTypes {
     details?: UserDetails;
     inventory?: UserInventory;
     addedAt: number;
-    filterPresets: ResultFilters[];
+    filterPresets: SharedTypes.ResultFilters[];
     xp: number;
     inboxUnreadSize: number;
     streak: number;
@@ -624,74 +531,14 @@ declare namespace MonkeyTypes {
 
   type FavoriteQuotes = Record<string, string[]>;
 
-  interface ResultFilters {
-    _id: string;
-    name: string;
-    pb: {
-      no: boolean;
-      yes: boolean;
-    };
-    difficulty: {
-      normal: boolean;
-      expert: boolean;
-      master: boolean;
-    };
-    mode: {
-      words: boolean;
-      time: boolean;
-      quote: boolean;
-      zen: boolean;
-      custom: boolean;
-    };
-    words: {
-      "10": boolean;
-      "25": boolean;
-      "50": boolean;
-      "100": boolean;
-      custom: boolean;
-    };
-    time: {
-      "15": boolean;
-      "30": boolean;
-      "60": boolean;
-      "120": boolean;
-      custom: boolean;
-    };
-    quoteLength: {
-      short: boolean;
-      medium: boolean;
-      long: boolean;
-      thicc: boolean;
-    };
-    punctuation: {
-      on: boolean;
-      off: boolean;
-    };
-    numbers: {
-      on: boolean;
-      off: boolean;
-    };
-    date: {
-      last_day: boolean;
-      last_week: boolean;
-      last_month: boolean;
-      last_3months: boolean;
-      all: boolean;
-    };
-    tags: Record<string, boolean>;
-    language: Record<string, boolean>;
-    funbox: {
-      none?: boolean;
-    } & Record<string, boolean>;
-  }
+  type Group<
+    G extends keyof SharedTypes.ResultFilters = keyof SharedTypes.ResultFilters
+  > = G extends G ? SharedTypes.ResultFilters[G] : never;
 
-  type Group<G extends keyof ResultFilters = keyof ResultFilters> = G extends G
-    ? ResultFilters[G]
-    : never;
-
-  type Filter<G extends Group = Group> = G extends keyof ResultFilters
-    ? keyof ResultFilters[G]
-    : never;
+  type Filter<G extends Group = Group> =
+    G extends keyof SharedTypes.ResultFilters
+      ? keyof SharedTypes.ResultFilters[G]
+      : never;
 
   interface TimerStats {
     dateNow: number;

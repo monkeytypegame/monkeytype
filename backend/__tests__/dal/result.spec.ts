@@ -2,7 +2,7 @@ import * as ResultDal from "../../src/dal/result";
 import { ObjectId } from "mongodb";
 import * as UserDal from "../../src/dal/user";
 
-type MonkeyTypesResult = MonkeyTypes.Result<MonkeyTypes.Mode>;
+type MonkeyTypesResult = SharedTypes.DBResult<SharedTypes.Mode>;
 
 let uid: string = "";
 const timestamp = Date.now() - 60000;
@@ -55,6 +55,8 @@ async function createDummyData(
       keyDurationStats: { average: 0, sd: 0 },
       difficulty: "normal",
       language: "english",
+      isPb: false,
+      name: "Test",
     } as MonkeyTypesResult);
   }
 }

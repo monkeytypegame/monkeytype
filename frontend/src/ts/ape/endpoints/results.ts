@@ -10,7 +10,7 @@ export default class Results {
   }
 
   async save(
-    result: MonkeyTypes.Result<MonkeyTypes.Mode>
+    result: SharedTypes.Result<SharedTypes.Mode>
   ): Ape.EndpointResponse {
     return await this.httpClient.post(BASE_PATH, {
       payload: { result },

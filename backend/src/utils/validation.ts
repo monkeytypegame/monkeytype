@@ -57,7 +57,7 @@ export function isTagPresetNameValid(name: string): boolean {
   return VALID_NAME_PATTERN.test(name);
 }
 
-export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
+export function isTestTooShort(result: SharedTypes.CompletedEvent): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;
 
   if (mode === "time") {

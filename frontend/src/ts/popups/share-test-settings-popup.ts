@@ -14,13 +14,13 @@ function getCheckboxValue(checkbox: string): boolean {
 }
 
 type SharedTestSettings = [
-  MonkeyTypes.Mode | null,
-  MonkeyTypes.Mode2<MonkeyTypes.Mode> | null,
-  MonkeyTypes.CustomText | null,
+  SharedTypes.Mode | null,
+  SharedTypes.Mode2<SharedTypes.Mode> | null,
+  SharedTypes.CustomText | null,
   boolean | null,
   boolean | null,
   string | null,
-  MonkeyTypes.Difficulty | null,
+  SharedTypes.Difficulty | null,
   string | null
 ];
 
@@ -45,7 +45,7 @@ function updateURL(): void {
     settings[1] = getMode2(
       Config,
       randomQuote
-    ) as MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+    ) as SharedTypes.Mode2<SharedTypes.Mode>;
   }
 
   if (getCheckboxValue("customText")) {

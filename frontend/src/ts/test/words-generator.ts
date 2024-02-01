@@ -323,7 +323,8 @@ async function applyBritishEnglishToWord(
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
   if (!/english/.test(Config.language)) return word;
-  if (Config.mode === "quote" && TestWords.randomQuote.britishText) return word;
+  if (Config.mode === "quote" && TestWords.randomQuote?.britishText)
+    return word;
 
   return await BritishEnglish.replace(word, previousWord);
 }
@@ -607,6 +608,10 @@ async function generateQuoteWords(
   }
 
   TestWords.setRandomQuote(rq);
+
+  if (TestWords.randomQuote === null) {
+    throw new WordGenError("Random quote is null");
+  }
 
   if (TestWords.randomQuote.textSplit === undefined) {
     throw new WordGenError("Random quote textSplit is undefined");

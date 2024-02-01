@@ -89,7 +89,7 @@ export function setLeaderboard(
 }
 
 export function incrementResult(
-  res: MonkeyTypes.Result<MonkeyTypes.Mode>
+  res: SharedTypes.Result<SharedTypes.Mode>
 ): void {
   const {
     mode,

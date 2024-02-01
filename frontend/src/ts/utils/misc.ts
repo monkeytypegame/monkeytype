@@ -1013,7 +1013,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: MonkeyTypes.CustomText,
+  CustomText: SharedTypes.CustomText,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
@@ -1173,10 +1173,10 @@ export async function swapElements(
   return;
 }
 
-export function getMode2<M extends keyof MonkeyTypes.PersonalBests>(
+export function getMode2<M extends keyof SharedTypes.PersonalBests>(
   config: MonkeyTypes.Config,
-  randomQuote: MonkeyTypes.Quote
-): MonkeyTypes.Mode2<M> {
+  randomQuote: MonkeyTypes.Quote | null
+): SharedTypes.Mode2<M> {
   const mode = config.mode;
   let retVal: string;
 
@@ -1189,16 +1189,16 @@ export function getMode2<M extends keyof MonkeyTypes.PersonalBests>(
   } else if (mode === "zen") {
     retVal = "zen";
   } else if (mode === "quote") {
-    retVal = randomQuote.id.toString();
+    retVal = `${randomQuote?.id ?? -1}`;
   } else {
     throw new Error("Invalid mode");
   }
 
-  return retVal as MonkeyTypes.Mode2<M>;
+  return retVal as SharedTypes.Mode2<M>;
 }
 
 export async function downloadResultsCSV(
-  array: MonkeyTypes.Result<MonkeyTypes.Mode>[]
+  array: SharedTypes.Result<SharedTypes.Mode>[]
 ): Promise<void> {
   Loader.show();
   const csvString = [
@@ -1228,7 +1228,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: MonkeyTypes.Result<MonkeyTypes.Mode>) => [
+    ...array.map((item: SharedTypes.Result<SharedTypes.Mode>) => [
       item._id,
       item.isPb,
       item.wpm,

@@ -245,6 +245,10 @@ $("#quoteRatePopupWrapper .submitButton").on("click", () => {
 });
 
 $(".pageTest #rateQuoteButton").on("click", async () => {
+  if (TestWords.randomQuote === null) {
+    Notifications.add("Failed to show quote rating popup: no quote", -1);
+    return;
+  }
   show(TestWords.randomQuote);
 });
 

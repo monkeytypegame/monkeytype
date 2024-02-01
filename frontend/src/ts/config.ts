@@ -105,7 +105,7 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
+export function setMode(mode: SharedTypes.Mode, nosave?: boolean): boolean {
   if (
     !isConfigValueValid("mode", mode, [
       ["time", "words", "quote", "zen", "custom"],
@@ -205,7 +205,7 @@ export function setSoundVolume(
 
 //difficulty
 export function setDifficulty(
-  diff: MonkeyTypes.Difficulty,
+  diff: SharedTypes.Difficulty,
   nosave?: boolean
 ): boolean {
   if (
