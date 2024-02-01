@@ -122,12 +122,12 @@ export function setCustomText(
 export function deleteCustomText(name: string, long: boolean): void {
   const customText = long ? getLocalStorageLong() : getLocalStorage();
 
-  if (customText[name] != undefined) delete customText[name];
+  delete customText[name];
 
   if (long) {
-    setLocalStorageLong(customText);
+    setLocalStorageLong(customText as CustomTextLongObject);
   } else {
-    setLocalStorage(customText);
+    setLocalStorage(customText as CustomTextObject);
   }
 }
 
@@ -142,11 +142,12 @@ export function setCustomTextLongProgress(
   name: string,
   progress: number
 ): void {
-  const customText = getLocalStorageLong()[name];
+  const customTexts = getLocalStorageLong();
+  const customText = customTexts[name];
   if (customText === undefined) throw new Error("Custom text not found");
 
   customText.progress = progress;
-  setLocalStorageLong(customText);
+  setLocalStorageLong(customTexts);
 }
 
 function getLocalStorage(): CustomTextObject {
