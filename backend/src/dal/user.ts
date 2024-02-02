@@ -10,6 +10,8 @@ import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 
 const SECONDS_PER_HOUR = 3600;
 
+type Result = Omit<SharedTypes.DBResult<SharedTypes.Mode>, "_id" | "name">;
+
 // Export for use in tests
 export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
   db.collection<MonkeyTypes.User>("users");
@@ -230,7 +232,7 @@ export async function isDiscordIdAvailable(
 
 export async function addResultFilterPreset(
   uid: string,
-  filter: MonkeyTypes.ResultFilters,
+  filter: SharedTypes.ResultFilters,
   maxFiltersPerUser: number
 ): Promise<ObjectId> {
   // ensure limit not reached
@@ -261,8 +263,8 @@ export async function removeResultFilterPreset(
   const filterId = new ObjectId(_id);
   if (
     user.resultFilterPresets === undefined ||
-    user.resultFilterPresets.filter((t) => t._id.toHexString() === _id)
-      .length === 0
+    user.resultFilterPresets.filter((t) => t._id.toString() === _id).length ===
+      0
   ) {
     throw new MonkeyError(404, "Custom filter not found");
   }
@@ -383,8 +385,8 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
 
 export async function updateLbMemory(
   uid: string,
-  mode: MonkeyTypes.Mode,
-  mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>,
+  mode: SharedTypes.Mode,
+  mode2: SharedTypes.Mode2<SharedTypes.Mode>,
   language: string,
   rank: number
 ): Promise<void> {
@@ -406,7 +408,7 @@ export async function updateLbMemory(
 export async function checkIfPb(
   uid: string,
   user: MonkeyTypes.User,
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: Result
 ): Promise<boolean> {
   const { mode } = result;
 
@@ -448,7 +450,7 @@ export async function checkIfPb(
 export async function checkIfTagPb(
   uid: string,
   user: MonkeyTypes.User,
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: Result
 ): Promise<string[]> {
   if (user.tags === undefined || user.tags.length === 0) {
     return [];
@@ -463,11 +465,11 @@ export async function checkIfTagPb(
 
   const tagsToCheck: MonkeyTypes.UserTag[] = [];
   user.tags.forEach((userTag) => {
-    resultTags.forEach((resultTag) => {
+    for (const resultTag of resultTags ?? []) {
       if (resultTag === userTag._id.toHexString()) {
         tagsToCheck.push(userTag);
       }
-    });
+    }
   });
 
   const ret: string[] = [];
@@ -676,7 +678,7 @@ export async function getPersonalBests(
   uid: string,
   mode: string,
   mode2?: string
-): Promise<MonkeyTypes.PersonalBest> {
+): Promise<SharedTypes.PersonalBest> {
   const user = await getUser(uid, "get personal bests");
 
   if (mode2) {

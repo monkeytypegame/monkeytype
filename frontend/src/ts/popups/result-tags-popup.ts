@@ -155,7 +155,7 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
     duration: 2,
   });
   DB.getSnapshot()?.results?.forEach(
-    (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
+    (result: SharedTypes.Result<SharedTypes.Mode>) => {
       if (result._id === resultId) {
         result.tags = newTags;
       }

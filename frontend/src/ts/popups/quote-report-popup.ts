@@ -168,6 +168,10 @@ $("#quoteReportPopupWrapper .submit").on("click", async () => {
 });
 
 $(".pageTest #reportQuoteButton").on("click", async () => {
+  if (TestWords.randomQuote === null) {
+    Notifications.add("Failed to show quote report popup: no quote", -1);
+    return;
+  }
   show({
     quoteId: TestWords.randomQuote?.id,
     noAnim: false,

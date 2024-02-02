@@ -175,7 +175,7 @@ export async function refresh(
       }
       let rowElement = "";
       if (row === "row1" && (!showTopRow || isSteno)) {
-        return;
+        continue;
       }
 
       if (
@@ -199,7 +199,7 @@ export async function refresh(
       }
 
       if (row === "row5") {
-        if (isSteno) return;
+        if (isSteno) continue;
         const layoutDisplay = layoutString.replace(/_/g, " ");
         let letterStyle = "";
         if (Config.keymapLegendStyle === "blank") {
