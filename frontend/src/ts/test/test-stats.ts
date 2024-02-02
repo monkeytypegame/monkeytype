@@ -35,10 +35,10 @@ export let start: number, end: number;
 export let start2: number, end2: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: MonkeyTypes.Result<MonkeyTypes.Mode>;
+export let lastResult: SharedTypes.Result<SharedTypes.Mode>;
 
 export function setLastResult(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Mode>
 ): void {
   lastResult = result;
 }
@@ -104,7 +104,7 @@ export function restart(): void {
 export let restartCount = 0;
 export let incompleteSeconds = 0;
 
-export let incompleteTests: MonkeyTypes.IncompleteTest[] = [];
+export let incompleteTests: SharedTypes.IncompleteTest[] = [];
 
 export function incrementRestartCount(): void {
   restartCount++;

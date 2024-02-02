@@ -60,8 +60,7 @@ import * as ArabicLazyMode from "../states/arabic-lazy-mode";
 let failReason = "";
 const koInputVisual = document.getElementById("koInputVisual") as HTMLElement;
 
-export let notSignedInLastResult: MonkeyTypes.Result<MonkeyTypes.Mode> | null =
-  null;
+export let notSignedInLastResult: SharedTypes.CompletedEvent | null = null;
 
 export function clearNotSignedInResult(): void {
   notSignedInLastResult = null;
@@ -609,7 +608,7 @@ export async function addWord(): Promise<void> {
       TestWords.words.length >= CustomText.text.length) ||
     (Config.mode === "quote" &&
       TestWords.words.length >=
-        (TestWords.randomQuote.textSplit?.length ?? 0)) ||
+        (TestWords.randomQuote?.textSplit?.length ?? 0)) ||
     (Config.mode === "custom" &&
       CustomText.isSectionRandom &&
       WordsGenerator.sectionIndex >= CustomText.section &&
@@ -676,25 +675,8 @@ export async function addWord(): Promise<void> {
   TestUI.addWord(randomWord.word);
 }
 
-interface CompletedEvent extends MonkeyTypes.Result<MonkeyTypes.Mode> {
-  keySpacing: number[] | "toolong";
-  keyDuration: number[] | "toolong";
-  customText: MonkeyTypes.CustomText;
-  wpmConsistency: number;
-  lang: string;
-  challenge?: string | null;
-  keyOverlap: number;
-  lastKeyToEnd: number;
-  startToFirstKey: number;
-  charTotal: number;
-}
-
-type PartialCompletedEvent = Omit<Partial<CompletedEvent>, "chartData"> & {
-  chartData: Partial<MonkeyTypes.ChartData>;
-};
-
 interface RetrySaving {
-  completedEvent: CompletedEvent | null;
+  completedEvent: SharedTypes.CompletedEvent | null;
   canRetry: boolean;
 }
 
@@ -733,86 +715,30 @@ export async function retrySavingResult(): Promise<void> {
   saveResult(completedEvent, true);
 }
 
-function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
+function buildCompletedEvent(
+  difficultyFailed: boolean
+): SharedTypes.CompletedEvent {
   //build completed event object
-  const completedEvent: PartialCompletedEvent = {
-    wpm: undefined,
-    rawWpm: undefined,
-    charStats: undefined,
-    charTotal: undefined,
-    acc: undefined,
-    mode: Config.mode,
-    mode2: undefined,
-    quoteLength: -1,
-    punctuation: Config.punctuation,
-    numbers: Config.numbers,
-    lazyMode: Config.lazyMode,
-    timestamp: Date.now(),
-    language: Config.language,
-    restartCount: TestStats.restartCount,
-    incompleteTests: TestStats.incompleteTests,
-    incompleteTestSeconds:
-      TestStats.incompleteSeconds < 0
-        ? 0
-        : Misc.roundTo2(TestStats.incompleteSeconds),
-    difficulty: Config.difficulty,
-    blindMode: Config.blindMode,
-    tags: undefined,
-    keySpacing: TestInput.keypressTimings.spacing.array,
-    keyDuration: TestInput.keypressTimings.duration.array,
-    keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
-    lastKeyToEnd: undefined,
-    startToFirstKey: undefined,
-    consistency: undefined,
-    keyConsistency: undefined,
-    funbox: Config.funbox,
-    bailedOut: TestState.bailedOut,
-    chartData: {
-      wpm: TestInput.wpmHistory,
-      raw: undefined,
-      err: undefined,
-    },
-    customText: undefined,
-    testDuration: undefined,
-    afkDuration: undefined,
-  };
-
-  const stfk = Misc.roundTo2(
+  let stfk = Misc.roundTo2(
     TestInput.keypressTimings.spacing.first - TestStats.start
   );
-
-  if (stfk < 0) {
-    completedEvent.startToFirstKey = 0;
-  } else {
-    completedEvent.startToFirstKey = stfk;
+  if (stfk < 0 || Config.mode === "zen") {
+    stfk = 0;
   }
 
-  const lkte = Misc.roundTo2(
+  let lkte = Misc.roundTo2(
     TestStats.end - TestInput.keypressTimings.spacing.last
   );
-
   if (lkte < 0 || Config.mode === "zen") {
-    completedEvent.lastKeyToEnd = 0;
-  } else {
-    completedEvent.lastKeyToEnd = lkte;
+    lkte = 0;
   }
-
   // stats
   const stats = TestStats.calculateStats();
   if (stats.time % 1 !== 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
-  PaceCaret.setLastTestWpm(stats.wpm);
-  completedEvent.wpm = stats.wpm;
-  completedEvent.rawWpm = stats.wpmRaw;
-  completedEvent.charStats = [
-    stats.correctChars + stats.correctSpaces,
-    stats.incorrectChars,
-    stats.extraChars,
-    stats.missedChars,
-  ];
-  completedEvent.charTotal = stats.allChars;
-  completedEvent.acc = stats.acc;
+
+  PaceCaret.setLastTestWpm(stats.wpm); //todo why is this in here?
 
   // if the last second was not rounded, add another data point to the history
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
@@ -865,60 +791,99 @@ function buildCompletedEvent(difficultyFailed: boolean): CompletedEvent {
   if (!keyConsistency || isNaN(keyConsistency)) {
     keyConsistency = 0;
   }
-  completedEvent.keyConsistency = keyConsistency;
-  completedEvent.consistency = consistency;
-  completedEvent.chartData.raw = rawPerSecond;
+
+  const chartErr = [];
+  for (let i = 0; i < TestInput.errorHistory.length; i++) {
+    chartErr.push(TestInput.errorHistory[i]?.count ?? 0);
+  }
+
+  const chartData = {
+    wpm: TestInput.wpmHistory,
+    raw: rawPerSecond,
+    err: chartErr,
+  };
 
   //wpm consistency
-  const stddev3 = Misc.stdDev(completedEvent.chartData.wpm ?? []);
-  const avg3 = Misc.mean(completedEvent.chartData.wpm ?? []);
-  const wpmConsistency = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
-  completedEvent.wpmConsistency = isNaN(wpmConsistency) ? 0 : wpmConsistency;
+  const stddev3 = Misc.stdDev(chartData.wpm ?? []);
+  const avg3 = Misc.mean(chartData.wpm ?? []);
+  const wpmCons = Misc.roundTo2(Misc.kogasa(stddev3 / avg3));
+  const wpmConsistency = isNaN(wpmCons) ? 0 : wpmCons;
 
-  completedEvent.testDuration = parseFloat(stats.time.toString());
-  completedEvent.afkDuration = TestStats.calculateAfkSeconds(
-    completedEvent.testDuration
-  );
-
-  completedEvent.chartData.err = [];
-  for (let i = 0; i < TestInput.errorHistory.length; i++) {
-    completedEvent.chartData.err.push(TestInput.errorHistory[i]?.count ?? 0);
-  }
-
-  if (Config.mode === "quote") {
-    completedEvent.quoteLength = TestWords.randomQuote.group;
-    completedEvent.language = Config.language.replace(/_\d*k$/g, "");
-  } else {
-    delete completedEvent.quoteLength;
-  }
-
-  completedEvent.mode2 = Misc.getMode2(Config, TestWords.randomQuote);
-
+  let customText: SharedTypes.CustomText | null = null;
   if (Config.mode === "custom") {
-    completedEvent.customText = <MonkeyTypes.CustomText>{};
-    completedEvent.customText.textLen = CustomText.text.length;
-    completedEvent.customText.isWordRandom = CustomText.isWordRandom;
-    completedEvent.customText.isTimeRandom = CustomText.isTimeRandom;
-    completedEvent.customText.word = CustomText.word;
-    completedEvent.customText.time = CustomText.time;
-  } else {
-    delete completedEvent.customText;
+    customText = <SharedTypes.CustomText>{};
+    customText.textLen = CustomText.text.length;
+    customText.isWordRandom = CustomText.isWordRandom;
+    customText.isTimeRandom = CustomText.isTimeRandom;
+    customText.word = CustomText.word;
+    customText.time = CustomText.time;
   }
 
   //tags
   const activeTagsIds: string[] = [];
-  try {
-    DB.getSnapshot()?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        activeTagsIds.push(tag._id);
-      }
-    });
-  } catch (e) {}
-  completedEvent.tags = activeTagsIds;
+  for (const tag of DB.getSnapshot()?.tags ?? []) {
+    if (tag.active === true) {
+      activeTagsIds.push(tag._id);
+    }
+  }
+
+  const duration = parseFloat(stats.time.toString());
+  const afkDuration = TestStats.calculateAfkSeconds(duration);
+  let language = Config.language;
+  if (Config.mode === "quote") {
+    language = Config.language.replace(/_\d*k$/g, "");
+  }
+
+  const quoteLength = TestWords.randomQuote?.group ?? -1;
+
+  const completedEvent = {
+    wpm: stats.wpm,
+    rawWpm: stats.wpmRaw,
+    charStats: [
+      stats.correctChars + stats.correctSpaces,
+      stats.incorrectChars,
+      stats.extraChars,
+      stats.missedChars,
+    ],
+    charTotal: stats.allChars,
+    acc: stats.acc,
+    mode: Config.mode,
+    mode2: Misc.getMode2(Config, TestWords.randomQuote),
+    quoteLength: quoteLength,
+    punctuation: Config.punctuation,
+    numbers: Config.numbers,
+    lazyMode: Config.lazyMode,
+    timestamp: Date.now(),
+    language: language,
+    restartCount: TestStats.restartCount,
+    incompleteTests: TestStats.incompleteTests,
+    incompleteTestSeconds:
+      TestStats.incompleteSeconds < 0
+        ? 0
+        : Misc.roundTo2(TestStats.incompleteSeconds),
+    difficulty: Config.difficulty,
+    blindMode: Config.blindMode,
+    tags: activeTagsIds,
+    keySpacing: TestInput.keypressTimings.spacing.array,
+    keyDuration: TestInput.keypressTimings.duration.array,
+    keyOverlap: Misc.roundTo2(TestInput.keyOverlap.total),
+    lastKeyToEnd: lkte,
+    startToFirstKey: stfk,
+    consistency: consistency,
+    wpmConsistency: wpmConsistency,
+    keyConsistency: keyConsistency,
+    funbox: Config.funbox,
+    bailedOut: TestState.bailedOut,
+    chartData: chartData,
+    customText: customText,
+    testDuration: duration,
+    afkDuration: afkDuration,
+  } as SharedTypes.CompletedEvent;
 
   if (completedEvent.mode !== "custom") delete completedEvent.customText;
+  if (completedEvent.mode !== "quote") delete completedEvent.quoteLength;
 
-  return <CompletedEvent>completedEvent;
+  return completedEvent;
 }
 
 export async function finish(difficultyFailed = false): Promise<void> {
@@ -1210,7 +1175,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 }
 
 async function saveResult(
-  completedEvent: CompletedEvent,
+  completedEvent: SharedTypes.CompletedEvent,
   isRetrying: boolean
 ): Promise<void> {
   if (!TestState.savingEnabled) {
@@ -1417,7 +1382,7 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as MonkeyTypes.Mode;
+  const mode = ($(e.currentTarget).attr("mode") ?? "time") as SharedTypes.Mode;
   if (mode === undefined) return;
   UpdateConfig.setMode(mode);
   ManualRestart.set();
