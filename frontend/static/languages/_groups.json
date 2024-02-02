@@ -399,7 +399,7 @@
   },
   {
     "name": "gujarati",
-    "languages": ["gujarati"]
+    "languages": ["gujarati", "gujarati_1k"]
   }, 
   {
     "name": "nepali",
