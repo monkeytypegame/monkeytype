@@ -49,7 +49,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setShowLiveWpm,
     "button",
     () => {
-      groups["keymapMode"].updateInput();
+      groups["keymapMode"]?.updateInput();
     }
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["showLiveAcc"] = new SettingsGroup(
@@ -77,7 +77,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setKeymapMode,
     "button",
     () => {
-      groups["showLiveWpm"].updateInput();
+      groups["showLiveWpm"]?.updateInput();
     },
     () => {
       if (Config.keymapMode === "off") {
@@ -131,7 +131,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setFreedomMode,
     "button",
     () => {
-      groups["confidenceMode"].updateInput();
+      groups["confidenceMode"]?.updateInput();
     }
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["strictSpace"] = new SettingsGroup(
@@ -149,8 +149,8 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setConfidenceMode,
     "button",
     () => {
-      groups["freedomMode"].updateInput();
-      groups["stopOnError"].updateInput();
+      groups["freedomMode"]?.updateInput();
+      groups["stopOnError"]?.updateInput();
     }
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["indicateTypos"] = new SettingsGroup(
@@ -238,7 +238,7 @@ async function initGroups(): Promise<void> {
     UpdateConfig.setStopOnError,
     "button",
     () => {
-      groups["confidenceMode"].updateInput();
+      groups["confidenceMode"]?.updateInput();
     }
   ) as SettingsGroup<MonkeyTypes.ConfigValues>;
   groups["soundVolume"] = new SettingsGroup(
@@ -656,7 +656,7 @@ async function fillSettingsPage(): Promise<void> {
     groupsInitialized = true;
   } else {
     for (const groupKey of Object.keys(groups)) {
-      groups[groupKey].updateInput();
+      groups[groupKey]?.updateInput();
     }
   }
   setEventDisabled(false);
@@ -846,7 +846,7 @@ export async function update(groupUpdate = true): Promise<void> {
   // Object.keys(groups).forEach((group) => {
   if (groupUpdate) {
     for (const group of Object.keys(groups)) {
-      groups[group].updateInput();
+      groups[group]?.updateInput();
     }
   }
 

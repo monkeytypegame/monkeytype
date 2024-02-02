@@ -218,7 +218,10 @@ export async function getCharFromEvent(
       return null;
     }
   }
-  const charVariant = emulatedLayoutGetVariant(event, layoutMap[mapIndex]);
+  const charVariant = emulatedLayoutGetVariant(
+    event,
+    layoutMap[mapIndex] ?? ""
+  );
   if (charVariant !== undefined) {
     return charVariant;
   } else {

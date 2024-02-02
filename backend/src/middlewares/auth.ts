@@ -105,10 +105,35 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
 
 async function authenticateWithAuthHeader(
   authHeader: string,
-  configuration: MonkeyTypes.Configuration,
+  configuration: SharedTypes.Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
+  if (authHeader === undefined || authHeader === "") {
+    throw new MonkeyError(
+      401,
+      "Missing authentication header",
+      "authenticateWithAuthHeader"
+    );
+  }
+
   const [authScheme, token] = authHeader.split(" ");
+
+  if (authScheme === undefined) {
+    throw new MonkeyError(
+      401,
+      "Missing authentication scheme",
+      "authenticateWithAuthHeader"
+    );
+  }
+
+  if (token === undefined) {
+    throw new MonkeyError(
+      401,
+      "Missing authentication token",
+      "authenticateWithAuthHeader"
+    );
+  }
+
   const normalizedAuthScheme = authScheme.trim();
 
   switch (normalizedAuthScheme) {
@@ -190,7 +215,7 @@ async function authenticateWithBearerToken(
 
 async function authenticateWithApeKey(
   key: string,
-  configuration: MonkeyTypes.Configuration,
+  configuration: SharedTypes.Configuration,
   options: RequestAuthenticationOptions
 ): Promise<MonkeyTypes.DecodedToken> {
   if (!configuration.apeKeys.acceptKeys) {
@@ -204,6 +229,10 @@ async function authenticateWithApeKey(
   try {
     const decodedKey = base64UrlDecode(key);
     const [keyId, apeKey] = decodedKey.split(".");
+
+    if (!keyId || !apeKey) {
+      throw new MonkeyError(400, "Malformed ApeKey");
+    }
 
     const targetApeKey = await getApeKey(keyId);
     if (!targetApeKey) {
@@ -244,11 +273,16 @@ async function authenticateWithUid(
   if (!isDevEnvironment()) {
     throw new MonkeyError(401, "Baerer type uid is not supported");
   }
-  const uidAndEmail = token.split("|");
+  const [uid, email] = token.split("|");
+
+  if (!uid) {
+    throw new MonkeyError(401, "Missing uid");
+  }
+
   return {
     type: "Bearer",
-    uid: uidAndEmail[0],
-    email: uidAndEmail.length > 1 ? uidAndEmail[1] : "",
+    uid: uid,
+    email: email ?? "",
   };
 }
 

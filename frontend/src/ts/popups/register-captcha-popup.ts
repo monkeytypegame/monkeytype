@@ -18,7 +18,7 @@ export function show(): void {
     });
     CaptchaController.reset("register");
     CaptchaController.render(
-      $("#registerCaptchaPopup .g-recaptcha")[0],
+      $("#registerCaptchaPopup .g-recaptcha")[0] as HTMLElement,
       "register",
       (token) => {
         resolvePromise(token);

@@ -10,7 +10,8 @@ import * as Skeleton from "../popups/skeleton";
 function reset(): void {
   $(".pageAbout .contributors").empty();
   $(".pageAbout .supporters").empty();
-  ChartController.globalSpeedHistogram.data.datasets[0].data = [];
+
+  ChartController.globalSpeedHistogram.getDataset("count").data = [];
   ChartController.globalSpeedHistogram.updateColors();
 }
 
@@ -36,7 +37,8 @@ function updateStatsAndHistogram(): void {
     );
     ChartController.globalSpeedHistogram.data.labels =
       bucketedSpeedStats.labels;
-    ChartController.globalSpeedHistogram.data.datasets[0].data =
+
+    ChartController.globalSpeedHistogram.getDataset("count").data =
       bucketedSpeedStats.data;
   }
   if (typingStatsResponseData) {
@@ -183,15 +185,17 @@ function getHistogramDataBucketed(data: Record<string, number>): {
   const keys = Object.keys(data).sort(
     (a, b) => parseInt(a, 10) - parseInt(b, 10)
   );
-  for (let i = 0; i < keys.length; i++) {
-    const bucket = parseInt(keys[i], 10);
+  // for (let i = 0; i < keys.length; i++) {
+  for (const [i, key] of keys.entries()) {
+    const nextKey = keys[i + 1];
+    const bucket = parseInt(key, 10);
     histogramChartDataBucketed.push({
       x: bucket,
-      y: data[bucket],
+      y: data[bucket] as number,
     });
     labels.push(`${bucket} - ${bucket + 9}`);
-    if (bucket + 10 !== parseInt(keys[i + 1], 10)) {
-      for (let j = bucket + 10; j < parseInt(keys[i + 1], 10); j += 10) {
+    if (nextKey !== undefined && bucket + 10 !== parseInt(nextKey, 10)) {
+      for (let j = bucket + 10; j < parseInt(nextKey, 10); j += 10) {
         histogramChartDataBucketed.push({ x: j, y: 0 });
         labels.push(`${j} - ${j + 9}`);
       }

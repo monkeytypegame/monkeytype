@@ -1,8 +1,4 @@
-import {
-  Chart,
-  type PluginChartOptions,
-  type ScaleChartOptions,
-} from "chart.js";
+import { Chart, type PluginChartOptions } from "chart.js";
 import Config from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
@@ -47,9 +43,6 @@ export function toggleUnsmoothedRaw(): void {
 }
 
 let resultAnnotation: AnnotationOptions<"line">[] = [];
-let resultScaleOptions = (
-  ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-).scales;
 
 async function updateGraph(): Promise<void> {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
@@ -62,7 +55,9 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  resultScaleOptions["wpm"].title.text = typingSpeedUnit.fullUnitString;
+
+  ChartController.result.getScale("wpm").title.text =
+    typingSpeedUnit.fullUnitString;
 
   const chartData1 = [
     ...TestInput.wpmHistory.map((a) =>
@@ -95,9 +90,9 @@ async function updateGraph(): Promise<void> {
   }
 
   ChartController.result.data.labels = labels;
-  ChartController.result.data.datasets[0].data = chartData1;
-  ChartController.result.data.datasets[1].data = smoothedRawData;
-  ChartController.result.data.datasets[0].label = Config.typingSpeedUnit;
+  ChartController.result.getDataset("wpm").data = chartData1;
+  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
+  ChartController.result.getDataset("raw").data = smoothedRawData;
 
   maxChartVal = Math.max(
     ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
@@ -107,14 +102,15 @@ async function updateGraph(): Promise<void> {
     const minChartVal = Math.min(
       ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
     );
-    resultScaleOptions["wpm"].min = minChartVal;
-    resultScaleOptions["raw"].min = minChartVal;
+
+    ChartController.result.getScale("wpm").min = minChartVal;
+    ChartController.result.getScale("raw").min = minChartVal;
   } else {
-    resultScaleOptions["wpm"].min = 0;
-    resultScaleOptions["raw"].min = 0;
+    ChartController.result.getScale("wpm").min = 0;
+    ChartController.result.getScale("raw").min = 0;
   }
 
-  ChartController.result.data.datasets[2].data = result.chartData.err;
+  ChartController.result.getDataset("error").data = result.chartData.err;
 
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
@@ -132,7 +128,7 @@ async function updateGraph(): Promise<void> {
       id: "funbox-label",
       type: "line",
       scaleID: "wpm",
-      value: resultScaleOptions["wpm"].min,
+      value: ChartController.result.getScale("wpm").min,
       borderColor: "transparent",
       borderWidth: 1,
       borderDash: [2, 2],
@@ -155,9 +151,11 @@ async function updateGraph(): Promise<void> {
     });
   }
 
-  resultScaleOptions["wpm"].max = maxChartVal;
-  resultScaleOptions["raw"].max = maxChartVal;
-  resultScaleOptions["error"].max = Math.max(...result.chartData.err);
+  ChartController.result.getScale("wpm").max = maxChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
+  ChartController.result.getScale("error").max = Math.max(
+    ...result.chartData.err
+  );
 }
 
 export async function updateGraphPBLine(): Promise<void> {
@@ -207,8 +205,9 @@ export async function updateGraphPBLine(): Promise<void> {
   ) {
     maxChartVal = Math.round(parseFloat(chartlpb) + lpbRange);
   }
-  resultScaleOptions["wpm"].max = maxChartVal;
-  resultScaleOptions["raw"].max = maxChartVal;
+
+  ChartController.result.getScale("wpm").max = maxChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
@@ -710,9 +709,6 @@ export async function update(
   randomQuote: MonkeyTypes.Quote,
   dontSave: boolean
 ): Promise<void> {
-  resultScaleOptions = (
-    ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-  ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
   hideCrown();
@@ -875,7 +871,9 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
-      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
+      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(
+        quoteId
+      ) as number;
       dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
     }
   } else {
@@ -897,10 +895,10 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 });
 
 ConfigEvent.subscribe(async (eventKey) => {
-  if (eventKey === "typingSpeedUnit" && TestUI.resultVisible) {
-    resultScaleOptions = (
-      ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-    ).scales;
+  if (
+    ["typingSpeedUnit", "startGraphsAtZero"].includes(eventKey) &&
+    TestUI.resultVisible
+  ) {
     resultAnnotation = [];
 
     updateWpmAndAcc();

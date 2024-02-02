@@ -513,13 +513,13 @@ async function update(): Promise<void> {
 }
 
 async function requestMore(lb: LbKey, prepend = false): Promise<void> {
-  if (prepend && currentData[lb][0].rank === 1) return;
+  if (prepend && currentData[lb][0]?.rank === 1) return;
   if (requesting[lb]) return;
   requesting[lb] = true;
   showLoader(lb);
-  let skipVal = currentData[lb][currentData[lb].length - 1].rank;
+  let skipVal = currentData[lb][currentData[lb].length - 1]?.rank as number;
   if (prepend) {
-    skipVal = currentData[lb][0].rank - leaderboardSingleLimit;
+    skipVal = (currentData[lb][0]?.rank ?? 0) - leaderboardSingleLimit;
   }
   let limitVal;
   if (skipVal < 0) {
@@ -623,17 +623,19 @@ async function getAvatarUrls(
 function fillAvatars(lb: LbKey): void {
   const side = lb === "15" ? "left" : "right";
   const elements = $(`#leaderboardsWrapper table.${side} tbody .lbav`);
-  currentAvatars[lb].forEach((url, index) => {
+
+  for (const [index, url] of currentAvatars[lb].entries()) {
+    const element = elements[index] as HTMLElement;
     if (url !== null) {
-      $(elements[index]).html(
+      $(element).html(
         `<div class="avatar" style="background-image:url(${url})"></div>`
       );
     } else {
-      $(elements[index]).html(
+      $(element).html(
         `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`
       );
     }
-  });
+  }
 }
 
 export function show(): void {
@@ -746,7 +748,8 @@ const debouncedRequestMore = debounce(500, requestMore);
 
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
-  const elem = $(e.currentTarget);
+  const elem = $(e.currentTarget) as JQuery<HTMLElement>;
+  if (!elem || !elem[0]) return;
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round(elem.outerHeight() as number) + 50
@@ -766,7 +769,8 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
 });
 
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
-  const elem = $(e.currentTarget);
+  const elem = $(e.currentTarget) as JQuery<HTMLElement>;
+  if (!elem || !elem[0]) return;
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round((elem.outerHeight() as number) + 50)

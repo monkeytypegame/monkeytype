@@ -37,9 +37,9 @@ async function updateLeaderboardAndNotifyChanges(
   const newRecords = top10AfterUpdate.filter((record) => {
     const userId = record.uid;
 
+    const previousMapUser = previousRecordsMap[userId];
     const userImprovedRank =
-      userId in previousRecordsMap &&
-      previousRecordsMap[userId].rank > record.rank;
+      previousMapUser && previousMapUser.rank > record.rank;
 
     const newUserInTop10 = !(userId in previousRecordsMap);
 

@@ -54,7 +54,60 @@ interface ExecReturn {
   afterHide?: () => void;
 }
 
-const list: { [key: string]: SimplePopup } = {};
+type PopupKey =
+  | "updateEmail"
+  | "updateName"
+  | "updatePassword"
+  | "removeGoogleAuth"
+  | "addPasswordAuth"
+  | "deleteAccount"
+  | "resetAccount"
+  | "clearTagPb"
+  | "optOutOfLeaderboards"
+  | "clearTagPb"
+  | "applyCustomFont"
+  | "resetPersonalBests"
+  | "resetSettings"
+  | "revokeAllTokens"
+  | "unlinkDiscord"
+  | "generateApeKey"
+  | "viewApeKey"
+  | "deleteApeKey"
+  | "editApeKey"
+  | "deleteCustomText"
+  | "deleteCustomTextLong"
+  | "resetProgressCustomTextLong"
+  | "updateCustomTheme"
+  | "deleteCustomTheme"
+  | "forgotPassword";
+
+const list: Record<PopupKey, SimplePopup | undefined> = {
+  updateEmail: undefined,
+  updateName: undefined,
+  updatePassword: undefined,
+  removeGoogleAuth: undefined,
+  addPasswordAuth: undefined,
+  deleteAccount: undefined,
+  resetAccount: undefined,
+  clearTagPb: undefined,
+  optOutOfLeaderboards: undefined,
+  applyCustomFont: undefined,
+  resetPersonalBests: undefined,
+  resetSettings: undefined,
+  revokeAllTokens: undefined,
+  unlinkDiscord: undefined,
+  generateApeKey: undefined,
+  viewApeKey: undefined,
+  deleteApeKey: undefined,
+  editApeKey: undefined,
+  deleteCustomText: undefined,
+  deleteCustomTextLong: undefined,
+  resetProgressCustomTextLong: undefined,
+  updateCustomTheme: undefined,
+  deleteCustomTheme: undefined,
+  forgotPassword: undefined,
+};
+
 class SimplePopup {
   parameters: string[];
   wrapper: JQuery;
@@ -246,7 +299,9 @@ class SimplePopup {
         });
       } else {
         this.enableInputs();
-        $($("#simplePopup").find("input")[0]).trigger("focus");
+        $($("#simplePopup").find("input")[0] as HTMLInputElement).trigger(
+          "focus"
+        );
       }
     });
   }
@@ -279,7 +334,9 @@ class SimplePopup {
       .removeClass("hidden")
       .animate({ opacity: 1 }, noAnimation ? 0 : 125, () => {
         if (this.inputs.length > 0) {
-          $($("#simplePopup").find("input")[0]).trigger("focus");
+          $($("#simplePopup").find("input")[0] as HTMLInputElement).trigger(
+            "focus"
+          );
         } else {
           $("#simplePopup button").trigger("focus");
         }
@@ -340,8 +397,8 @@ $("#simplePopupWrapper").on("mousedown", (e) => {
 
 $("#popups").on("submit", "#simplePopupWrapper form", (e) => {
   e.preventDefault();
-  const id = $("#simplePopup").attr("popupId") ?? "";
-  list[id].exec();
+  const id = $("#simplePopup").attr("popupId") as PopupKey;
+  (list[id] as SimplePopup).exec();
 });
 
 type ReauthMethod = "passwordOnly" | "passwordFirst";
@@ -421,7 +478,7 @@ async function reauthenticate(
   }
 }
 
-list["updateEmail"] = new SimplePopup(
+list.updateEmail = new SimplePopup(
   "updateEmail",
   "text",
   "Update Email",
@@ -613,7 +670,7 @@ list["updateName"] = new SimplePopup(
     const snapshot = DB.getSnapshot();
     if (!user || !snapshot) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
-      thisPopup.inputs[0].hidden = true;
+      (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
     if (snapshot.needsToChangeName === true) {
@@ -988,7 +1045,7 @@ list["clearTagPb"] = new SimplePopup(
   `Are you sure you want to clear this tags PB?`,
   "Clear",
   async (thisPopup) => {
-    const tagId = thisPopup.parameters[0];
+    const tagId = thisPopup.parameters[0] as string;
     const response = await Ape.users.deleteTagPersonalBest(tagId);
     if (response.status !== 200) {
       return {
@@ -1186,7 +1243,7 @@ list["revokeAllTokens"] = new SimplePopup(
     const snapshot = DB.getSnapshot();
     if (!user || !snapshot) return;
     if (!user.providerData.find((p) => p?.providerId === "password")) {
-      thisPopup.inputs[0].hidden = true;
+      (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "reauthenticate to revoke all tokens";
     }
   },
@@ -1265,7 +1322,7 @@ list["generateApeKey"] = new SimplePopup(
       status: 1,
       message: "Key generated",
       afterHide: (): void => {
-        list["viewApeKey"].show([data.apeKey]);
+        showPopup("viewApeKey", [data.apeKey]);
       },
     };
   },
@@ -1299,7 +1356,8 @@ list["viewApeKey"] = new SimplePopup(
     };
   },
   (_thisPopup) => {
-    _thisPopup.inputs[0].initVal = _thisPopup.parameters[0];
+    (_thisPopup.inputs[0] as Input).initVal = _thisPopup
+      .parameters[0] as string;
   },
   (_thisPopup) => {
     _thisPopup.canClose = false;
@@ -1320,7 +1378,7 @@ list["deleteApeKey"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    const response = await Ape.apeKeys.delete(_thisPopup.parameters[0]);
+    const response = await Ape.apeKeys.delete(_thisPopup.parameters[0] ?? "");
     if (response.status !== 200) {
       return {
         status: -1,
@@ -1356,7 +1414,7 @@ list["editApeKey"] = new SimplePopup(
   "",
   "Edit",
   async (_thisPopup, input) => {
-    const response = await Ape.apeKeys.update(_thisPopup.parameters[0], {
+    const response = await Ape.apeKeys.update(_thisPopup.parameters[0] ?? "", {
       name: input,
     });
     if (response.status !== 200) {
@@ -1389,7 +1447,7 @@ list["deleteCustomText"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0]);
+    CustomText.deleteCustomText(_thisPopup.parameters[0] as string);
     CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show(true);
 
@@ -1414,7 +1472,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0], true);
+    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
     CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show(true);
 
@@ -1439,10 +1497,12 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   "Are you sure?",
   "Reset",
   async (_thisPopup) => {
-    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0], 0);
+    CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
     SavedTextsPopup.show(true);
     CustomText.setPopupTextareaState(
-      CustomText.getCustomText(_thisPopup.parameters[0], true).join(" ")
+      CustomText.getCustomText(_thisPopup.parameters[0] as string, true).join(
+        " "
+      )
     );
     return {
       status: 1,
@@ -1534,7 +1594,7 @@ list["updateCustomTheme"] = new SimplePopup(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (!customTheme) return;
-    _thisPopup.inputs[0].initVal = customTheme.name;
+    (_thisPopup.inputs[0] as Input).initVal = customTheme.name;
   },
   (_thisPopup) => {
     //
@@ -1549,7 +1609,7 @@ list["deleteCustomTheme"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    await DB.deleteCustomTheme(_thisPopup.parameters[0]);
+    await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
     ThemePicker.refreshButtons();
 
     return {
@@ -1600,9 +1660,9 @@ list["forgotPassword"] = new SimplePopup(
       `.pageLogin .login input[name="current-email"]`
     ).val() as string;
     if (inputValue) {
-      thisPopup.inputs[0].initVal = inputValue;
+      (thisPopup.inputs[0] as Input).initVal = inputValue;
       setTimeout(() => {
-        $("#simplePopup").find("input")[0].select();
+        ($("#simplePopup").find("input")[0] as HTMLInputElement).select();
       }, 1);
     }
   },
@@ -1611,8 +1671,21 @@ list["forgotPassword"] = new SimplePopup(
   }
 );
 
+function showPopup(
+  key: PopupKey,
+  showParams = [] as string[],
+  noAnimation = false
+): void {
+  const popup = list[key];
+  if (popup === undefined) {
+    Notifications.add("Failed to show popup - popup is not defined", -1);
+    return;
+  }
+  popup.show(showParams, noAnimation);
+}
+
 $(".pageLogin #forgotPasswordButton").on("click", () => {
-  list["forgotPassword"].show();
+  showPopup("forgotPassword");
 });
 
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
@@ -1622,7 +1695,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").on(
       Notifications.add("You are offline", 0, { duration: 2 });
       return;
     }
-    list["unlinkDiscord"].show();
+    showPopup("unlinkDiscord");
   }
 );
 
@@ -1631,7 +1704,7 @@ $(".pageSettings #removeGoogleAuth").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["removeGoogleAuth"].show();
+  showPopup("removeGoogleAuth");
 });
 
 $("#resetSettingsButton").on("click", () => {
@@ -1639,7 +1712,7 @@ $("#resetSettingsButton").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["resetSettings"].show();
+  showPopup("resetSettings");
 });
 
 $("#revokeAllTokens").on("click", () => {
@@ -1647,7 +1720,7 @@ $("#revokeAllTokens").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["revokeAllTokens"].show();
+  showPopup("revokeAllTokens");
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", () => {
@@ -1655,7 +1728,7 @@ $(".pageSettings #resetPersonalBestsButton").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["resetPersonalBests"].show();
+  showPopup("resetPersonalBests");
 });
 
 $(".pageSettings #updateAccountName").on("click", () => {
@@ -1663,7 +1736,7 @@ $(".pageSettings #updateAccountName").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["updateName"].show();
+  showPopup("updateName");
 });
 
 $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
@@ -1671,7 +1744,7 @@ $("#bannerCenter").on("click", ".banner .text .openNameChange", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["updateName"].show();
+  showPopup("updateName");
 });
 
 $(".pageSettings #addPasswordAuth").on("click", () => {
@@ -1679,7 +1752,7 @@ $(".pageSettings #addPasswordAuth").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["addPasswordAuth"].show();
+  showPopup("addPasswordAuth");
 });
 
 $(".pageSettings #emailPasswordAuth").on("click", () => {
@@ -1687,7 +1760,7 @@ $(".pageSettings #emailPasswordAuth").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["updateEmail"].show();
+  showPopup("updateEmail");
 });
 
 $(".pageSettings #passPasswordAuth").on("click", () => {
@@ -1695,7 +1768,7 @@ $(".pageSettings #passPasswordAuth").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["updatePassword"].show();
+  showPopup("updatePassword");
 });
 
 $(".pageSettings #deleteAccount").on("click", () => {
@@ -1703,7 +1776,7 @@ $(".pageSettings #deleteAccount").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["deleteAccount"].show();
+  showPopup("deleteAccount");
 });
 
 $(".pageSettings #resetAccount").on("click", () => {
@@ -1711,7 +1784,7 @@ $(".pageSettings #resetAccount").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["resetAccount"].show();
+  showPopup("resetAccount");
 });
 
 $(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
@@ -1719,7 +1792,7 @@ $(".pageSettings #optOutOfLeaderboardsButton").on("click", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["optOutOfLeaderboards"].show();
+  showPopup("optOutOfLeaderboards");
 });
 
 $("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
@@ -1727,7 +1800,7 @@ $("#popups").on("click", "#apeKeysPopup .generateApeKey", () => {
     Notifications.add("You are offline", 0, { duration: 2 });
     return;
   }
-  list["generateApeKey"].show();
+  showPopup("generateApeKey");
 });
 
 $(".pageSettings").on(
@@ -1740,7 +1813,7 @@ $(".pageSettings").on(
     }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
-    list["deleteCustomTheme"].show([customThemeId]);
+    showPopup("deleteCustomTheme", [customThemeId]);
   }
 );
 
@@ -1754,7 +1827,7 @@ $(".pageSettings").on(
     }
     const $parentElement = $(e.currentTarget).parent(".customTheme.button");
     const customThemeId = $parentElement.attr("customThemeId") as string;
-    list["updateCustomTheme"].show([customThemeId]);
+    showPopup("updateCustomTheme", [customThemeId]);
   }
 );
 
@@ -1763,7 +1836,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .list .savedText .button.delete`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    list["deleteCustomText"].show([name], true);
+    showPopup("deleteCustomText", [name], true);
   }
 );
 
@@ -1772,7 +1845,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .listLong .savedText .button.delete`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    list["deleteCustomTextLong"].show([name], true);
+    showPopup("deleteCustomTextLong", [name], true);
   }
 );
 
@@ -1781,7 +1854,7 @@ $("#popups").on(
   `#savedTextsPopupWrapper .listLong .savedText .button.resetProgress`,
   (e) => {
     const name = $(e.target).siblings(".button.name").text();
-    list["resetProgressCustomTextLong"].show([name], true);
+    showPopup("resetProgressCustomTextLong", [name], true);
   }
 );
 
@@ -1791,7 +1864,7 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.delete", (e) => {
     return;
   }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  list["deleteApeKey"].show([keyId]);
+  showPopup("deleteApeKey", [keyId]);
 });
 
 $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
@@ -1800,11 +1873,11 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
     return;
   }
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
-  list["editApeKey"].show([keyId]);
+  showPopup("editApeKey", [keyId]);
 });
 
 $(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
-  list["applyCustomFont"].show([]);
+  showPopup("applyCustomFont", []);
 });
 
 $(document).on("keydown", (event) => {
