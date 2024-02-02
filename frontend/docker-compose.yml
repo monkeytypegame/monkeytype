@@ -1,7 +1,8 @@
+name: monkeytype
 services:
-  monkeytype-frontend:
+  frontend:
     container_name: monkeytype-frontend
-    image: node:gallium-bullseye
+    image: node:18.17.1
     restart: on-failure
     ports:
       - "3000:3000"
