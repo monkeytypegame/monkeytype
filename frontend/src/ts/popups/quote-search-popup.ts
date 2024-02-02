@@ -56,9 +56,10 @@ function highlightMatches(text: string, matchedText: string[]): string {
   const words = splitByAndKeep(text, `.,"/#!$%^&*;:{}=-_\`~() `.split(""));
 
   const normalizedWords = words.map((word) => {
-    const shouldHighlight = matchedText.find((match) => {
-      return word.startsWith(match);
-    });
+    const shouldHighlight =
+      matchedText.find((match) => {
+        return word.startsWith(match);
+      }) !== undefined;
     return shouldHighlight ? `<span class="highlight">${word}</span>` : word;
   });
 

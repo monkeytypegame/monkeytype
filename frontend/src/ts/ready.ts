@@ -43,7 +43,9 @@ $(document).ready(() => {
   if (Config.quickRestart !== "off") {
     $("#restartTestButton").addClass("hidden");
   }
-  if (!window.localStorage.getItem("merchbannerclosed")) {
+  const merchBannerClosed =
+    window.localStorage.getItem("merchbannerclosed") === "true";
+  if (!merchBannerClosed) {
     Notifications.addBanner(
       `Check out our merchandise, available at <a target="_blank" rel="noopener" href="https://monkeytype.store/">monkeytype.store</a>`,
       1,

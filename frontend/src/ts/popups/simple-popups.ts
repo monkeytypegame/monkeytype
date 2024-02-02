@@ -207,7 +207,7 @@ class SimplePopup {
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
-          if (input.type) {
+          if (input.type !== undefined && input.type !== "") {
             if (input.type === "textarea") {
               el.find(".inputs").append(`
                 <textarea

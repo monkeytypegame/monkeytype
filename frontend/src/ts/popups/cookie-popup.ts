@@ -15,7 +15,7 @@ interface Accepted {
 }
 
 function getAcceptedObject(): Accepted | null {
-  const acceptedCookies = localStorage.getItem("acceptedCookies");
+  const acceptedCookies = localStorage.getItem("acceptedCookies") ?? "";
   if (acceptedCookies) {
     return JSON.parse(acceptedCookies);
   } else {

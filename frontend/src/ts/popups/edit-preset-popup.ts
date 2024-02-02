@@ -26,7 +26,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit input.text").val("");
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label").addClass("hidden");
-  } else if (action === "edit" && id && name) {
+  } else if (action === "edit" && id !== undefined && name !== undefined) {
     $("#presetWrapper #presetEdit").attr("action", "edit");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Edit preset");
@@ -35,7 +35,7 @@ export function show(action: string, id?: string, name?: string): void {
     $("#presetWrapper #presetEdit input.text").removeClass("hidden");
     $("#presetWrapper #presetEdit label input").prop("checked", false);
     $("#presetWrapper #presetEdit label").removeClass("hidden");
-  } else if (action === "remove" && id) {
+  } else if (action === "remove" && id !== undefined && name !== undefined) {
     $("#presetWrapper #presetEdit").attr("action", "remove");
     $("#presetWrapper #presetEdit").attr("presetid", id);
     $("#presetWrapper #presetEdit .title").html("Delete preset " + name);

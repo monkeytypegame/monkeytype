@@ -54,12 +54,12 @@ export async function getQuoteStats(
     return;
   }
 
-  if (!response.data) {
+  if (response.data === undefined) {
     return {} as QuoteStats;
   }
 
   quoteStats = response.data as QuoteStats;
-  if (quoteStats && !quoteStats.average) {
+  if (quoteStats !== undefined && !quoteStats.average) {
     quoteStats.average = getRatingAverage(quoteStats);
   }
 

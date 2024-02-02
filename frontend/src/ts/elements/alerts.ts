@@ -320,7 +320,7 @@ function fillNotifications(): void {
         title = "Success";
       }
 
-      if (customTitle) {
+      if (customTitle !== undefined) {
         title = customTitle;
       }
 

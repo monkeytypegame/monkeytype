@@ -25,7 +25,7 @@ async function getData(): Promise<void> {
 
 function refreshList(): void {
   const data = apeKeys;
-  if (!data) return;
+  if (data === undefined) return;
   const table = $("#apeKeysPopupWrapper table tbody");
   table.empty();
   const apeKeyIds = Object.keys(data);
@@ -134,7 +134,7 @@ $("#popups").on("click", "#apeKeysPopup table .keyButtons .button", () => {
 $("#popups").on("click", "#apeKeysPopup table .textButton", async (e) => {
   const keyId = $(e.target).closest("tr").attr("keyId") as string;
   const key = apeKeys?.[keyId];
-  if (!key || !apeKeys) return;
+  if (!key || apeKeys === undefined) return;
   Loader.show();
   const response = await Ape.apeKeys.update(keyId, { enabled: !key.enabled });
   Loader.hide();

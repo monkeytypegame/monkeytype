@@ -70,7 +70,7 @@ export async function highlightWordsInRange(
 
   // Early exit if highlight range has not changed
   if (
-    highlightRange &&
+    highlightRange !== undefined &&
     firstWordIndex === highlightRange[0] &&
     lastWordIndex === highlightRange[1]
   ) {
@@ -300,7 +300,7 @@ async function init(): Promise<boolean> {
 
     for (let i = line.firstWordIndex; i <= line.lastWordIndex; i += 1) {
       const wordEl = wordEls[i] as HTMLElement;
-      const userInputString = wordEl.getAttribute("input");
+      const userInputString = wordEl.getAttribute("input") ?? "";
 
       if (!userInputString) {
         continue;

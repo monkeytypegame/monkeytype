@@ -108,7 +108,7 @@ async function submitReport(): Promise<void> {
   const comment = $("#quoteReportPopup .comment").val() as string;
   const captcha = captchaResponse as string;
 
-  if (!quoteId) {
+  if (quoteId === undefined) {
     return Notifications.add("Please select a quote");
   }
 

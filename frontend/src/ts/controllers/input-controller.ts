@@ -699,7 +699,9 @@ function handleChar(
     if (
       isLastWord &&
       (wordIsTheSame || shouldQuickEnd) &&
-      (!isChinese || (realInputValue && charIndex + 2 == realInputValue.length))
+      (!isChinese ||
+        (realInputValue !== undefined &&
+          charIndex + 2 == realInputValue.length))
     ) {
       TestLogic.finish();
       return;
