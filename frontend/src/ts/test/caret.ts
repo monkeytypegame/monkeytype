@@ -53,9 +53,9 @@ export async function updatePosition(): Promise<void> {
 
   if (!currentWordNodeList) return;
 
-  const currentLetter: HTMLElement = currentWordNodeList[
-    currentLetterIndex
-  ] as HTMLElement;
+  const currentLetter = currentWordNodeList[currentLetterIndex] as
+    | HTMLElement
+    | undefined;
 
   const previousLetter: HTMLElement = currentWordNodeList[
     Math.min(currentLetterIndex - 1, currentWordNodeList.length - 1)
@@ -64,7 +64,7 @@ export async function updatePosition(): Promise<void> {
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
   const letterPosLeft =
-    (currentLetter
+    (currentLetter !== undefined
       ? currentLetter.offsetLeft
       : previousLetter.offsetLeft + previousLetter.offsetWidth) +
     (!isLanguageRightToLeft

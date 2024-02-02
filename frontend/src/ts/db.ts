@@ -129,10 +129,13 @@ export async function initSnapshot(): Promise<
     snap.streakHourOffset =
       hourOffset === undefined || hourOffset === null ? undefined : hourOffset;
 
-    if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
+    if (
+      userData.lbMemory?.time15 !== undefined ||
+      userData.lbMemory?.time60 !== undefined
+    ) {
       //old memory format
       snap.lbMemory = {} as MonkeyTypes.LeaderboardMemory;
-    } else if (userData.lbMemory) {
+    } else if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
     // if (ActivePage.get() === "loading") {
@@ -141,7 +144,7 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(32);
     // }
     // LoadingPage.updateText("Downloading config...");
-    if (configData) {
+    if (configData !== undefined) {
       const newConfig = {
         ...DefaultConfig,
       };

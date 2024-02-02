@@ -99,7 +99,7 @@ export function canSetConfigWithCurrentFunboxes(
             f.functions?.withWords ||
             f.properties?.includes("changesCapitalisation") ||
             f.properties?.includes("nospace") ||
-            f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+            (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
             f.properties?.includes("changesWordsVisibility") ||
             f.properties?.includes("speaks") ||
             f.properties?.includes("changesLayout") ||
@@ -286,7 +286,7 @@ export function areFunboxesCompatible(
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>
-        f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+        (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
         f.functions?.pullSection
     ).length <= 1;
   const oneApplyCSSMax =

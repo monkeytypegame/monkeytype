@@ -78,7 +78,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    const newResultFilters = window.localStorage.getItem("resultFilters");
+    const newResultFilters = window.localStorage.getItem("resultFilters") ?? "";
 
     if (!newResultFilters) {
       filters = defaultResultFilters;
@@ -334,7 +334,8 @@ export function updateActive(): void {
 
       if (groupAboveChartDisplay === undefined) return;
 
-      if (getFilter(group, filter)) {
+      const filterValue = getFilter(group, filter);
+      if (filterValue === false) {
         groupAboveChartDisplay["array"]?.push(filter);
       } else {
         if (groupAboveChartDisplay["all"] !== undefined) {
@@ -351,7 +352,7 @@ export function updateActive(): void {
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
         );
       }
-      if (getFilter(group, filter)) {
+      if (filterValue === true) {
         buttonEl.addClass("active");
       } else {
         buttonEl.removeClass("active");
@@ -468,10 +469,10 @@ function toggle<G extends keyof SharedTypes.ResultFilters>(
     if (group === "date") {
       setAllFilters("date", false);
     }
-    const newValue = !filters[group][
-      filter
-    ] as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
-    filters[group][filter] = newValue;
+    const currentValue = filters[group][filter] as boolean;
+    const newValue = !currentValue;
+    filters[group][filter] =
+      newValue as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
     save();
   } catch (e) {
     Notifications.add(

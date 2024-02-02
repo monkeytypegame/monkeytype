@@ -87,7 +87,7 @@ function showFound(): void {
       }
       if (list.configKey) {
         if (
-          (obj.configValueMode &&
+          (obj.configValueMode !== undefined &&
             obj.configValueMode === "include" &&
             (
               Config[list.configKey] as (
@@ -110,7 +110,7 @@ function showFound(): void {
         iconHTML = "";
       }
       let customStyle = "";
-      if (obj.customStyle) {
+      if (obj.customStyle !== undefined) {
         customStyle = obj.customStyle;
       }
 
@@ -150,7 +150,7 @@ function showFound(): void {
           }
           if (
             (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
-            !ThemeController.randomTheme
+            !(ThemeController.randomTheme ?? "")
           ) {
             ThemeController.clearPreview();
           }
@@ -189,7 +189,7 @@ function updateSuggested(): void {
     return;
   }
   //ignore the preceeding ">"s in the command line input
-  if (inputVal[0] && inputVal[0][0] === ">") {
+  if (inputVal[0] !== undefined && inputVal[0][0] === ">") {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
   }
   if (inputVal[0] === "" && inputVal.length === 1) {
@@ -273,7 +273,7 @@ function show(): void {
 function hide(shouldFocusTestUI = true): void {
   UpdateConfig.previewFontFamily(Config.fontFamily);
   // applyCustomThemeColors();
-  if (!ThemeController.randomTheme) {
+  if (!(ThemeController.randomTheme ?? "")) {
     ThemeController.clearPreview();
   }
   $("#commandLineWrapper")
@@ -594,7 +594,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
         }
         if (
           (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
-          !ThemeController.randomTheme
+          !(ThemeController.randomTheme ?? "")
         ) {
           ThemeController.clearPreview();
         }
@@ -758,7 +758,7 @@ $(document).on("keydown", (e) => {
             }
             if (
               (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
-              !ThemeController.randomTheme
+              !(ThemeController.randomTheme ?? "")
             ) {
               ThemeController.clearPreview();
             }

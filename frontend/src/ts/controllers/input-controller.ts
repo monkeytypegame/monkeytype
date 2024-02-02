@@ -104,7 +104,7 @@ function updateUI(): void {
       } else {
         //for new words
         const toHighlight = koCurrWord?.[0]?.[0];
-        if (toHighlight) KeymapEvent.highlight(toHighlight);
+        if (toHighlight !== undefined) KeymapEvent.highlight(toHighlight);
       }
     }
   }
