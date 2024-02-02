@@ -80,5 +80,5 @@ export function hide(): void {
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showLiveWpm") eventValue ? show() : hide();
+  if (eventKey === "showLiveWpm") (eventValue as boolean) ? show() : hide();
 });

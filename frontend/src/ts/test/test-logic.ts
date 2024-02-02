@@ -178,9 +178,10 @@ export function restart(options = {} as RestartOptions): void {
   }
 
   if (options.withSameWordset) {
-    const funboxToPush = FunboxList.get(Config.funbox)
-      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-      ?.properties?.find((fp) => fp.startsWith("toPush:"));
+    const funboxToPush =
+      FunboxList.get(Config.funbox)
+        .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+        ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
     if (funboxToPush) {
       Notifications.add(
         "You can't repeat a test with currently active funboxes",
@@ -215,7 +216,7 @@ export function restart(options = {} as RestartOptions): void {
 
   if (
     Config.mode === "quote" &&
-    TestWords.randomQuote &&
+    TestWords.randomQuote !== null &&
     Config.language.startsWith(TestWords.randomQuote.language) &&
     Config.repeatQuotes === "typing" &&
     (TestState.isActive || failReason !== "")
@@ -444,7 +445,7 @@ export async function init(): Promise<void> {
     );
   }
 
-  if (!language || (language && language.name !== Config.language)) {
+  if (!language || language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
     await init();
     return;
@@ -478,7 +479,7 @@ export async function init(): Promise<void> {
     }
   } else {
     if (
-      languageBeforeQuoteMode &&
+      languageBeforeQuoteMode !== undefined &&
       Config.language === languageBeforeQuoteMode.split("_")[0]
     ) {
       UpdateConfig.setLanguage(languageBeforeQuoteMode);
@@ -590,8 +591,8 @@ export async function addWord(): Promise<void> {
   const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
-  const toPushCount: string | undefined = funboxToPush?.split(":")[1];
-  if (toPushCount) bound = +toPushCount - 1;
+  const toPushCount = funboxToPush?.split(":")[1];
+  if (toPushCount !== undefined) bound = +toPushCount - 1;
   if (
     TestWords.words.length - TestInput.input.history.length > bound ||
     (Config.mode === "words" &&
@@ -1230,7 +1231,7 @@ async function saveResult(
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
-  if (response?.data?.xp) {
+  if (response?.data?.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
     AccountButton.updateXpBar(
       snapxp,
@@ -1240,13 +1241,13 @@ async function saveResult(
     DB.addXp(response.data.xp);
   }
 
-  if (response?.data?.streak) {
+  if (response?.data?.streak !== undefined) {
     DB.setStreak(response.data.streak);
   }
 
-  if (response?.data?.insertedId) {
+  if (response?.data?.insertedId !== undefined) {
     completedEvent._id = response.data.insertedId;
-    if (response?.data?.isPb) {
+    if (response?.data?.isPb !== undefined && response.data.isPb === true) {
       completedEvent.isPb = true;
     }
     DB.saveLocalResult(completedEvent);
@@ -1260,10 +1261,11 @@ async function saveResult(
 
   AnalyticsController.log("testCompleted");
 
-  if (response?.data?.isPb) {
+  if (response?.data?.isPb !== undefined && response.data.isPb === true) {
     //new pb
     if (
       //@ts-expect-error TODO fix this
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
     ) {
       Result.showConfetti();
@@ -1295,7 +1297,7 @@ async function saveResult(
   //   );
   // }
 
-  if (!response?.data?.dailyLeaderboardRank) {
+  if (response?.data?.dailyLeaderboardRank === undefined) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
   } else {
     $("#result .stats .dailyLeaderboard")
@@ -1470,8 +1472,8 @@ $("#popups").on(
   "#quoteSearchPopup #quoteSearchResults .searchResult",
   (e) => {
     if (
-      e.target.classList.contains("report") ||
-      e.target.classList.contains("favorite")
+      (e.target.classList.contains("report") as boolean) ||
+      (e.target.classList.contains("favorite") as boolean)
     ) {
       return;
     }

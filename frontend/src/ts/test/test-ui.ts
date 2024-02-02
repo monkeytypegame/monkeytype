@@ -557,7 +557,7 @@ export function updateWordElement(
   showError = !Config.blindMode,
   inputOverride?: string
 ): void {
-  const input = inputOverride || TestInput.input.current;
+  const input = inputOverride ?? TestInput.input.current;
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
@@ -928,13 +928,14 @@ async function loadWordsHistory(): Promise<boolean> {
     const containsKorean =
       input?.match(
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
-      ) ||
-      word?.match(
+      ) !== null ||
+      word.match(
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
-      );
+      ) !== null;
     let wordEl = "";
     try {
-      if (!input) throw new Error("empty input word");
+      if (input === undefined || input === "")
+        throw new Error("empty input word");
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
           ? corrected
