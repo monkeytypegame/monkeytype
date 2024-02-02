@@ -469,10 +469,10 @@ function toggle<G extends keyof SharedTypes.ResultFilters>(
     if (group === "date") {
       setAllFilters("date", false);
     }
-    const currentValue = filters[group][filter] as boolean;
+    const currentValue = filters[group][filter] as unknown as boolean;
     const newValue = !currentValue;
     filters[group][filter] =
-      newValue as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
+      newValue as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
     save();
   } catch (e) {
     Notifications.add(
