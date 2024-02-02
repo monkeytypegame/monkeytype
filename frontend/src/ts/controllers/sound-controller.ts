@@ -358,6 +358,27 @@ function init(): void {
         ],
         counter: 0,
       },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_14.wav" }),
+          new Howl({ src: "../sound/click14/click14_14.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_15.wav" }),
+          new Howl({ src: "../sound/click14/click14_15.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click14/click14_16.wav" }),
+          new Howl({ src: "../sound/click14/click14_16.wav" }),
+        ],
+        counter: 0,
+      },
     ],
     15: [
       {
