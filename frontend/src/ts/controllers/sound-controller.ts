@@ -57,6 +57,29 @@ function initErrorSound(): void {
         counter: 0,
       },
     ],
+    4: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/error4/error4_1.wav" }),
+          new Howl({ src: "../sound/error4/error4_1.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/error4/error4_2.wav" }),
+          new Howl({ src: "../sound/error4/error4_2.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/error4/error4_3.wav" }),
+          new Howl({ src: "../sound/error4/error4_3.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
   };
 }
 
@@ -355,27 +378,6 @@ function init(): void {
         sounds: [
           new Howl({ src: "../sound/click14/click14_13.wav" }),
           new Howl({ src: "../sound/click14/click14_13.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_14.wav" }),
-          new Howl({ src: "../sound/click14/click14_14.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_15.wav" }),
-          new Howl({ src: "../sound/click14/click14_15.wav" }),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Howl({ src: "../sound/click14/click14_16.wav" }),
-          new Howl({ src: "../sound/click14/click14_16.wav" }),
         ],
         counter: 0,
       },
