@@ -411,7 +411,6 @@ export function restart(options = {} as RestartOptions): void {
 
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
-let languageBeforeQuoteMode: string | undefined;
 export async function init(): Promise<void> {
   console.debug("Initializing test");
   testReinitCount++;
@@ -457,34 +456,6 @@ export async function init(): Promise<void> {
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
       UpdateConfig.setQuoteLength(-1);
-    }
-    let group;
-    try {
-      group = await Misc.findCurrentGroup(Config.language);
-    } catch (e) {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to find current language group")
-      );
-      return;
-    }
-    if (
-      group &&
-      group.name !== "code" &&
-      group.name !== "other" &&
-      group.name !== Config.language
-    ) {
-      languageBeforeQuoteMode = Config.language;
-      UpdateConfig.setLanguage(group.name);
-    }
-  } else {
-    if (
-      languageBeforeQuoteMode &&
-      Config.language === languageBeforeQuoteMode.split("_")[0]
-    ) {
-      UpdateConfig.setLanguage(languageBeforeQuoteMode);
-      languageBeforeQuoteMode = undefined;
-      await init();
-      return;
     }
   }
 

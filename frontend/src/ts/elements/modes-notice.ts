@@ -84,8 +84,14 @@ export async function update(): Promise<void> {
   }
 
   if (Config.mode !== "zen") {
+    let language = Config.language;
+
+    if (Config.mode === "quote") {
+      language = language.split(/_\d+k$/)[0] as string;
+    }
+
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
+      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${language.replace(
         /_/g,
         " "
       )}</div>`
