@@ -233,10 +233,10 @@ export async function update(
   let socials = false;
 
   if (!banned) {
-    bio = profile.details?.bio !== undefined ? true : false;
+    bio = profile.details?.bio ?? "" ? true : false;
     details.find(".bio .value").text(profile.details?.bio ?? "");
 
-    keyboard = profile.details?.keyboard !== undefined ? true : false;
+    keyboard = profile.details?.keyboard ?? "" ? true : false;
     details.find(".keyboard .value").text(profile.details?.keyboard ?? "");
 
     if (
