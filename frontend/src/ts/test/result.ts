@@ -565,7 +565,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + result.language.replace(/_/g, " ");
+    testType += "<br>" + Misc.getLanguageDisplayString(result.language);
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
