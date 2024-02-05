@@ -2,6 +2,8 @@ import * as Loader from "../elements/loader";
 import { normal as normalBlend } from "color-blend";
 import { envConfig } from "../constants/env-config";
 
+//todo split this file into smaller util files (grouped by functionality)
+
 async function fetchJson<T>(url: string): Promise<T> {
   try {
     if (!url) throw new Error("No URL");

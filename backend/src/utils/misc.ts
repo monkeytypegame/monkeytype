@@ -1,6 +1,8 @@
 import _ from "lodash";
 import uaparser from "ua-parser-js";
 
+//todo split this file into smaller util files (grouped by functionality)
+
 export function roundTo2(num: number): number {
   return _.round(num, 2);
 }
