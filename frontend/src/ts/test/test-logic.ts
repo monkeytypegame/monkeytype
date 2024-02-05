@@ -338,6 +338,7 @@ export function restart(options = {} as RestartOptions): void {
         await init();
         await PaceCaret.init();
       } else {
+        await Funbox.activate();
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
         Replay.stopReplayRecording();
