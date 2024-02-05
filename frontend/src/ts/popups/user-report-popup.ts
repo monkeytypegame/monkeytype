@@ -91,7 +91,7 @@ async function submitReport(): Promise<void> {
 
   if (reason === "Suspected cheating" && state.lbOptOut) {
     return Notifications.add(
-      "You cannot report this user for suspected cheating as they have opted out of the leaderboard.",
+      "You cannot report this user for suspected cheating as they have opted out of the leaderboards.",
       0,
       {
         duration: 10,

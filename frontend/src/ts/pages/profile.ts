@@ -195,8 +195,10 @@ async function update(options: UpdateOptions): Promise<void> {
 $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
   const uid = $(".page.pageProfile .profile").attr("uid") ?? "";
   const name = $(".page.pageProfile .profile").attr("name") ?? "";
+  const lbOptOut =
+    ($(".page.pageProfile .profile").attr("lbOptOut") ?? "false") === "true";
 
-  UserReportPopup.show({ uid, name });
+  UserReportPopup.show({ uid, name, lbOptOut });
 });
 
 export const page = new Page<undefined | Profile.ProfileData>(
