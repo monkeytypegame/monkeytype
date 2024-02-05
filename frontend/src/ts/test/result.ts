@@ -24,6 +24,7 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
+import * as Funbox from "./funbox/funbox";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -860,6 +861,7 @@ export async function update(
         TestUI.toggleResultWords(true);
       }
       AdController.updateFooterAndVerticalAds(true);
+      Funbox.clear();
     }
   );
 }

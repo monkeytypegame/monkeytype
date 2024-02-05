@@ -887,7 +887,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TimerProgress.hide();
   OutOfFocus.hide();
   TestTimer.clear();
-  Funbox.clear();
   Monkey.hide();
   ModesNotice.update();
 
