@@ -43,8 +43,7 @@
     "@typescript-eslint/no-var-requires": "off",
     // "@typescript-eslint/no-floating-promises": "error", // consider adding this
     "@typescript-eslint/strict-boolean-expressions": [
-      // change this to error after fixing all occurrences
-      "warn",
+      "error",
       { "allowNullableBoolean": true, "allowNullableNumber": true }
     ],
     // "import/default": "off",
