@@ -802,7 +802,7 @@ function buildCompletedEvent(
   const afkDuration = TestStats.calculateAfkSeconds(duration);
   let language = Config.language;
   if (Config.mode === "quote") {
-    language = Config.language.replace(/_\d*k$/g, "");
+    language = Misc.removeLanguageSize(Config.language);
   }
 
   const quoteLength = TestWords.randomQuote?.group ?? -1;
