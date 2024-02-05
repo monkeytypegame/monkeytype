@@ -755,13 +755,9 @@ export async function getProfile(
   );
 
   const allTime15EnglishRank =
-    allTime15English !== false && allTime15English !== undefined
-      ? allTime15English.rank
-      : undefined;
+    (allTime15English === false ? null : allTime15English)?.rank ?? null;
   const allTime60EnglishRank =
-    allTime60English !== false && allTime60English !== undefined
-      ? allTime60English.rank
-      : undefined;
+    (allTime60English === false ? null : allTime60English)?.rank ?? null;
 
   const alltimelbs = {
     time: {
