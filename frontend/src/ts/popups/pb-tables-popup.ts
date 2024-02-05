@@ -1,7 +1,7 @@
 import * as DB from "../db";
 import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
-import { isPopupVisible } from "../utils/misc";
+import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
 
 interface PersonalBest extends SharedTypes.PersonalBest {
   mode2: SharedTypes.Mode2<SharedTypes.Mode>;
@@ -68,7 +68,7 @@ function update(mode: SharedTypes.Mode): void {
           }</span>
         </td>
         <td>${pb.difficulty}</td>
-        <td>${pb.language ? pb.language.replace(/_/g, " ") : "-"}</td>
+        <td>${pb.language ? getLanguageDisplayString(pb.language) : "-"}</td>
         <td>${pb.punctuation ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${pb.lazyMode ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${dateText}</td>

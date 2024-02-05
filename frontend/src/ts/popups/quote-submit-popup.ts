@@ -58,7 +58,7 @@ export async function show(noAnim = false): Promise<void> {
     );
     await initDropdown();
     $("#quoteSubmitPopup #submitQuoteLanguage").val(
-      Config.language.replace(/_\d*k$/g, "")
+      Misc.removeLanguageSize(Config.language)
     );
     $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
     $("#quoteSubmitPopup input").val("");
