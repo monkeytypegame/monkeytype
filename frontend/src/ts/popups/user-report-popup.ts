@@ -9,15 +9,18 @@ const wrapperId = "userReportPopupWrapper";
 
 interface State {
   userUid?: string;
+  lbOptOut?: boolean;
 }
 
 const state: State = {
   userUid: undefined,
+  lbOptOut: undefined,
 };
 
 interface ShowOptions {
   uid: string;
   name: string;
+  lbOptOut: boolean;
 }
 
 export async function show(options: ShowOptions): Promise<void> {
@@ -30,6 +33,7 @@ export async function show(options: ShowOptions): Promise<void> {
 
     const { name } = options;
     state.userUid = options.uid;
+    state.lbOptOut = options.lbOptOut;
 
     $("#userReportPopup .user").text(name);
     $("#userReportPopup .reason").val("Inappropriate name");
@@ -83,6 +87,16 @@ async function submitReport(): Promise<void> {
 
   if (!comment) {
     return Notifications.add("Please provide a comment");
+  }
+
+  if (reason === "Suspected cheating" && state.lbOptOut) {
+    return Notifications.add(
+      "You cannot report this user for suspected cheating as they have opted out of the leaderboard.",
+      0,
+      {
+        duration: 10,
+      }
+    );
   }
 
   const characterDifference = comment.length - 250;
