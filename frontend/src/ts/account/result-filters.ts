@@ -318,10 +318,11 @@ type AboveChartDisplay = Partial<
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  Misc.typedKeys(getFilters()).forEach((group) => {
+
+  for (const group of Misc.typedKeys(getFilters())) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
-      return;
+      continue;
     }
 
     aboveChartDisplay[group] = {
@@ -329,10 +330,10 @@ export function updateActive(): void {
       array: [],
     };
 
-    Misc.typedKeys(getGroup(group)).forEach((filter) => {
+    for (const filter of Misc.typedKeys(getGroup(group))) {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
-      if (groupAboveChartDisplay === undefined) return;
+      if (groupAboveChartDisplay === undefined) continue;
 
       const filterValue = getFilter(group, filter);
       if (filterValue === false) {
@@ -357,8 +358,8 @@ export function updateActive(): void {
       } else {
         buttonEl.removeClass("active");
       }
-    });
-  });
+    }
+  }
 
   function addText(group: keyof SharedTypes.ResultFilters): string {
     let ret = "";
@@ -452,6 +453,8 @@ export function updateActive(): void {
 
   //tags
   chartString += addText("tags");
+
+  console.log(chartString);
 
   setTimeout(() => {
     $(".pageAccount .group.chart .above").html(chartString);
