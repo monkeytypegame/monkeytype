@@ -336,7 +336,7 @@ export function updateActive(): void {
       if (groupAboveChartDisplay === undefined) continue;
 
       const filterValue = getFilter(group, filter);
-      if (filterValue === false) {
+      if (filterValue === true) {
         groupAboveChartDisplay["array"]?.push(filter);
       } else {
         if (groupAboveChartDisplay["all"] !== undefined) {
