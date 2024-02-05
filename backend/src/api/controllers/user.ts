@@ -895,13 +895,14 @@ export async function toggleBan(
 
   const user = await UserDAL.getUser(uid, "toggle ban");
   const discordId = user.discordId;
+  const discordIdIsValid = discordId !== undefined && discordId !== "";
 
   if (user.banned) {
     UserDAL.setBanned(uid, false);
-    if (discordId !== undefined) GeorgeQueue.userBanned(discordId, false);
+    if (discordIdIsValid) GeorgeQueue.userBanned(discordId, false);
   } else {
     UserDAL.setBanned(uid, true);
-    if (discordId !== undefined) GeorgeQueue.userBanned(discordId, true);
+    if (discordIdIsValid) GeorgeQueue.userBanned(discordId, true);
   }
 
   return new MonkeyResponse(`Ban toggled`, {
