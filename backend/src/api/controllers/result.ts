@@ -440,7 +440,7 @@ export async function addResult(
 
   if (completedEvent.mode === "time" && completedEvent.mode2 === "60") {
     incrementBananas(uid, completedEvent.wpm);
-    if (isPb && user.discordId !== undefined) {
+    if (isPb && user.discordId !== undefined && user.discordId !== "") {
       GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
     }
   }
@@ -449,7 +449,8 @@ export async function addResult(
     completedEvent.challenge !== null &&
     completedEvent.challenge !== undefined &&
     AutoRoleList.includes(completedEvent.challenge) &&
-    user.discordId !== undefined
+    user.discordId !== undefined &&
+    user.discordId !== ""
   ) {
     GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
   } else {
