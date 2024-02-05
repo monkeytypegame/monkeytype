@@ -6,7 +6,7 @@ import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Skeleton from "./skeleton";
-import { isPopupVisible } from "../utils/misc";
+import { isPopupVisible, removeLanguageSize } from "../utils/misc";
 
 const wrapperId = "quoteReportPopupWrapper";
 
@@ -103,7 +103,7 @@ async function submitReport(): Promise<void> {
   }
 
   const quoteId = state.quoteToReport?.id.toString();
-  const quoteLanguage = Config.language.replace(/_\d*k$/g, "");
+  const quoteLanguage = removeLanguageSize(Config.language);
   const reason = $("#quoteReportPopup .reason").val() as string;
   const comment = $("#quoteReportPopup .comment").val() as string;
   const captcha = captchaResponse as string;
@@ -168,6 +168,10 @@ $("#quoteReportPopupWrapper .submit").on("click", async () => {
 });
 
 $(".pageTest #reportQuoteButton").on("click", async () => {
+  if (TestWords.randomQuote === null) {
+    Notifications.add("Failed to show quote report popup: no quote", -1);
+    return;
+  }
   show({
     quoteId: TestWords.randomQuote?.id,
     noAnim: false,

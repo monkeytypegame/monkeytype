@@ -62,7 +62,7 @@ export async function init(): Promise<void> {
   const mode2 = Misc.getMode2(
     Config,
     TestWords.randomQuote
-  ) as MonkeyTypes.Mode2<typeof Config.mode>;
+  ) as SharedTypes.Mode2<typeof Config.mode>;
   let wpm;
   if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
@@ -182,7 +182,9 @@ export function update(expectedStepEnd: number): void {
       const newIndex =
         settings.currentWordIndex -
         (TestWords.words.currentIndex - TestUI.currentWordElementIndex);
-      const word = document.querySelectorAll("#words .word")[newIndex];
+      const word = document.querySelectorAll("#words .word")[
+        newIndex
+      ] as HTMLElement;
       if (settings.currentLetterIndex === -1) {
         currentLetter = <HTMLElement>word.querySelectorAll("letter")[0];
       } else {

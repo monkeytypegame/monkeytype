@@ -120,7 +120,7 @@ export function setPunctuation(
 }
 
 export function setMode(
-  mode: MonkeyTypes.Mode,
+  mode: SharedTypes.Mode,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -225,7 +225,7 @@ export function setSoundVolume(
 
 //difficulty
 export function setDifficulty(
-  diff: MonkeyTypes.Difficulty,
+  diff: SharedTypes.Difficulty,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {

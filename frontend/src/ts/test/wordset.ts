@@ -14,7 +14,7 @@ export class Wordset {
 
   public randomWord(mode: MonkeyTypes.FunboxWordsFrequency): string {
     if (mode === "zipf") {
-      return this.words[dreymarIndex(this.words.length)];
+      return this.words[dreymarIndex(this.words.length)] as string;
     } else {
       return randomElementFromArray(this.words);
     }

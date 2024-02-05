@@ -256,7 +256,9 @@ function apply(): void {
   if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked")) {
     let periods = true;
     if (
-      $($(`${popup} .replaceNewLinesButtons .button`)[0]).hasClass("active")
+      $(
+        $(`${popup} .replaceNewLinesButtons .button`)[0] as HTMLElement
+      ).hasClass("active")
     ) {
       periods = false;
     }

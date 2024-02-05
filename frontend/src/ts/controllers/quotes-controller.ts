@@ -1,4 +1,8 @@
-import { randomElementFromArray, shuffle } from "../utils/misc";
+import {
+  randomElementFromArray,
+  removeLanguageSize,
+  shuffle,
+} from "../utils/misc";
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 import Config from "../config";
@@ -14,7 +18,7 @@ interface JsonQuote {
 interface QuoteData {
   language: string;
   quotes: JsonQuote[];
-  groups: number[][];
+  groups: [number, number][];
 }
 
 interface QuoteCollection {
@@ -31,10 +35,6 @@ const defaultQuoteCollection: QuoteCollection = {
   groups: [],
 };
 
-function normalizeLanguage(language: string): string {
-  return language.replace(/_\d*k$/g, "");
-}
-
 class QuotesController {
   private quoteCollection: QuoteCollection = defaultQuoteCollection;
 
@@ -46,7 +46,7 @@ class QuotesController {
     quoteLengths?: number[],
     reshuffle?: boolean
   ): Promise<QuoteCollection> {
-    const normalizedLanguage = normalizeLanguage(language);
+    const normalizedLanguage = removeLanguageSize(language);
 
     if (this.quoteCollection.language !== normalizedLanguage || reshuffle) {
       try {
@@ -151,7 +151,7 @@ class QuotesController {
       shuffle(this.quoteQueue);
     }
 
-    const randomQuote = this.quoteQueue[this.queueIndex];
+    const randomQuote = this.quoteQueue[this.queueIndex] as MonkeyTypes.Quote;
 
     this.queueIndex += 1;
 
@@ -163,7 +163,7 @@ class QuotesController {
       return null;
     }
 
-    return this.quoteQueue[this.queueIndex];
+    return this.quoteQueue[this.queueIndex] as MonkeyTypes.Quote;
   }
 
   getRandomFavoriteQuote(language: string): MonkeyTypes.Quote | null {
@@ -172,16 +172,16 @@ class QuotesController {
       return null;
     }
 
-    const normalizedLanguage = normalizeLanguage(language);
+    const normalizedLanguage = removeLanguageSize(language);
     const quoteIds: string[] = [];
     const { favoriteQuotes } = snapshot;
 
     Object.keys(favoriteQuotes).forEach((language) => {
-      if (normalizeLanguage(language) !== normalizedLanguage) {
+      if (removeLanguageSize(language) !== normalizedLanguage) {
         return;
       }
 
-      quoteIds.push(...favoriteQuotes[language]);
+      quoteIds.push(...(favoriteQuotes[language] ?? []));
     });
 
     if (quoteIds.length === 0) {
@@ -202,13 +202,13 @@ class QuotesController {
 
     const { favoriteQuotes } = snapshot;
 
-    const normalizedQuoteLanguage = normalizeLanguage(quoteLanguage);
+    const normalizedQuoteLanguage = removeLanguageSize(quoteLanguage);
 
     const matchedLanguage = Object.keys(favoriteQuotes).find((language) => {
-      if (normalizedQuoteLanguage !== normalizeLanguage(language)) {
+      if (normalizedQuoteLanguage !== removeLanguageSize(language)) {
         return false;
       }
-      return favoriteQuotes[language].includes(id.toString());
+      return (favoriteQuotes[language] ?? []).includes(id.toString());
     });
 
     return matchedLanguage !== undefined;

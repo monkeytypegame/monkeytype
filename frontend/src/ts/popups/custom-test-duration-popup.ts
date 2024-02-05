@@ -11,7 +11,7 @@ function parseInput(input: string): number {
   const re = /((-\s*)?\d+(\.\d+)?\s*[hms]?)/g;
   const seconds = [...input.toLowerCase().matchAll(re)]
     .map((match) => {
-      const part = match[0];
+      const part = match[0] as string;
       const duration = parseFloat(part.replace(/\s+/g, ""));
 
       if (part.includes("h")) {

@@ -1,8 +1,4 @@
-import {
-  Chart,
-  type PluginChartOptions,
-  type ScaleChartOptions,
-} from "chart.js";
+import { Chart, type PluginChartOptions } from "chart.js";
 import Config from "../config";
 import * as AdController from "../controllers/ad-controller";
 import * as ChartController from "../controllers/chart-controller";
@@ -35,11 +31,12 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
+import * as Funbox from "./funbox/funbox";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 
-let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
+let result: SharedTypes.Result<SharedTypes.Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -53,9 +50,6 @@ export function toggleUnsmoothedRaw(): void {
 }
 
 let resultAnnotation: AnnotationOptions<"line">[] = [];
-let resultScaleOptions = (
-  ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-).scales;
 
 async function updateGraph(): Promise<void> {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
@@ -68,7 +62,9 @@ async function updateGraph(): Promise<void> {
       labels.push(i.toString());
     }
   }
-  resultScaleOptions["wpm"].title.text = typingSpeedUnit.fullUnitString;
+
+  ChartController.result.getScale("wpm").title.text =
+    typingSpeedUnit.fullUnitString;
 
   const chartData1 = [
     ...TestInput.wpmHistory.map((a) =>
@@ -101,9 +97,9 @@ async function updateGraph(): Promise<void> {
   }
 
   ChartController.result.data.labels = labels;
-  ChartController.result.data.datasets[0].data = chartData1;
-  ChartController.result.data.datasets[1].data = smoothedRawData;
-  ChartController.result.data.datasets[0].label = Config.typingSpeedUnit;
+  ChartController.result.getDataset("wpm").data = chartData1;
+  ChartController.result.getDataset("wpm").label = Config.typingSpeedUnit;
+  ChartController.result.getDataset("raw").data = smoothedRawData;
 
   maxChartVal = Math.max(
     ...[Math.max(...smoothedRawData), Math.max(...chartData1)]
@@ -113,14 +109,15 @@ async function updateGraph(): Promise<void> {
     const minChartVal = Math.min(
       ...[Math.min(...smoothedRawData), Math.min(...chartData1)]
     );
-    resultScaleOptions["wpm"].min = minChartVal;
-    resultScaleOptions["raw"].min = minChartVal;
+
+    ChartController.result.getScale("wpm").min = minChartVal;
+    ChartController.result.getScale("raw").min = minChartVal;
   } else {
-    resultScaleOptions["wpm"].min = 0;
-    resultScaleOptions["raw"].min = 0;
+    ChartController.result.getScale("wpm").min = 0;
+    ChartController.result.getScale("raw").min = 0;
   }
 
-  ChartController.result.data.datasets[2].data = result.chartData.err;
+  ChartController.result.getDataset("error").data = result.chartData.err;
 
   const fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
@@ -138,7 +135,7 @@ async function updateGraph(): Promise<void> {
       id: "funbox-label",
       type: "line",
       scaleID: "wpm",
-      value: resultScaleOptions["wpm"].min,
+      value: ChartController.result.getScale("wpm").min,
       borderColor: "transparent",
       borderWidth: 1,
       borderDash: [2, 2],
@@ -161,9 +158,11 @@ async function updateGraph(): Promise<void> {
     });
   }
 
-  resultScaleOptions["wpm"].max = maxChartVal;
-  resultScaleOptions["raw"].max = maxChartVal;
-  resultScaleOptions["error"].max = Math.max(...result.chartData.err);
+  ChartController.result.getScale("wpm").max = maxChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
+  ChartController.result.getScale("error").max = Math.max(
+    ...result.chartData.err
+  );
 }
 
 export async function updateGraphPBLine(): Promise<void> {
@@ -213,8 +212,9 @@ export async function updateGraphPBLine(): Promise<void> {
   ) {
     maxChartVal = Math.round(parseFloat(chartlpb) + lpbRange);
   }
-  resultScaleOptions["wpm"].max = maxChartVal;
-  resultScaleOptions["raw"].max = maxChartVal;
+
+  ChartController.result.getScale("wpm").max = maxChartVal;
+  ChartController.result.getScale("raw").max = maxChartVal;
 }
 
 function updateWpmAndAcc(): void {
@@ -553,7 +553,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   });
 }
 
-function updateTestType(randomQuote: MonkeyTypes.Quote): void {
+function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
   let testType = "";
 
   testType += Config.mode;
@@ -563,7 +563,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   } else if (Config.mode === "words") {
     testType += " " + Config.words;
   } else if (Config.mode === "quote") {
-    if (randomQuote.group !== undefined) {
+    if (randomQuote?.group !== undefined) {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
@@ -572,7 +572,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + result.language.replace(/_/g, " ");
+    testType += "<br>" + Misc.getLanguageDisplayString(result.language);
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
@@ -660,8 +660,15 @@ function updateOther(
   }
 }
 
-export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
+export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
   if (Config.mode === "quote") {
+    if (randomQuote === null) {
+      console.error(
+        "Failed to update quote rating button: randomQuote is null"
+      );
+      return;
+    }
+
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
     if (userqr) {
@@ -681,44 +688,50 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
   }
 }
 
-function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote): void {
+function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
+  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
+
+  if (Config.mode !== "quote" || Auth?.currentUser === null) {
+    icon.parent().addClass("hidden");
+    return;
+  }
+
+  if (randomQuote === null) {
+    console.error(
+      "Failed to update quote favorite button: randomQuote is null"
+    );
+    return;
+  }
+
   quoteLang = Config.mode === "quote" ? randomQuote.language : "";
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
-  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
-
-  if (Config.mode === "quote" && Auth?.currentUser) {
-    const userFav = QuotesController.isQuoteFavorite(randomQuote);
-
-    icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
-    icon.parent().removeClass("hidden");
-  } else {
-    icon.parent().addClass("hidden");
-  }
+  const userFav = QuotesController.isQuoteFavorite(randomQuote);
+  icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
+  icon.parent().removeClass("hidden");
 }
 
-function updateQuoteSource(randomQuote: MonkeyTypes.Quote): void {
+function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
   if (Config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
-    $("#result .stats .source .bottom").html(randomQuote.source);
+    $("#result .stats .source .bottom").html(
+      randomQuote?.source ?? "Error: Source unknown"
+    );
   } else {
     $("#result .stats .source").addClass("hidden");
   }
 }
 
 export async function update(
-  res: MonkeyTypes.Result<MonkeyTypes.Mode>,
+  res: SharedTypes.Result<SharedTypes.Mode>,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
   isRepeated: boolean,
   tooShort: boolean,
-  randomQuote: MonkeyTypes.Quote,
+  randomQuote: MonkeyTypes.Quote | null,
   dontSave: boolean
 ): Promise<void> {
-  resultScaleOptions = (
-    ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-  ).scales;
   resultAnnotation = [];
   result = Object.assign({}, res);
   hideCrown();
@@ -888,6 +901,7 @@ export async function update(
       $("#result #saveScreenshotButton").removeClass("hidden");
 
       AdController.updateFooterAndVerticalAds(true);
+      Funbox.clear();
     }
   );
 }
@@ -915,7 +929,9 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
-      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
+      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(
+        quoteId
+      ) as number;
       dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
     }
   } else {
@@ -937,10 +953,10 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 });
 
 ConfigEvent.subscribe(async (eventKey) => {
-  if (eventKey === "typingSpeedUnit" && TestUI.resultVisible) {
-    resultScaleOptions = (
-      ChartController.result.options as ScaleChartOptions<"line" | "scatter">
-    ).scales;
+  if (
+    ["typingSpeedUnit", "startGraphsAtZero"].includes(eventKey) &&
+    TestUI.resultVisible
+  ) {
     resultAnnotation = [];
 
     updateWpmAndAcc();

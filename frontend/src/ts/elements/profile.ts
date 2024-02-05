@@ -25,6 +25,7 @@ export async function update(
 
   profileElement.attr("uid", profile.uid ?? "");
   profileElement.attr("name", profile.name ?? "");
+  profileElement.attr("lbOptOut", `${profile.lbOptOut ?? false}`);
 
   // ============================================================================
   // DO FREAKING NOT USE .HTML OR .APPEND HERE - USER INPUT!!!!!!
@@ -393,6 +394,8 @@ export function updateNameFontSize(where: ProfileViewPaths): void {
   const nameFieldParent = nameFieldjQ.parent()[0];
   const nameField = nameFieldjQ[0];
   const upperLimit = Misc.convertRemToPixels(2);
+
+  if (!nameField || !nameFieldParent) return;
 
   nameField.style.fontSize = `10px`;
   const parentWidth = nameFieldParent.clientWidth;

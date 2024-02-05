@@ -57,7 +57,7 @@ export function isTagPresetNameValid(name: string): boolean {
   return VALID_NAME_PATTERN.test(name);
 }
 
-export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
+export function isTestTooShort(result: SharedTypes.CompletedEvent): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;
 
   if (mode === "time") {
@@ -199,19 +199,18 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
   for (const f of funboxesToCheck) {
     if (!f.frontendForcedConfig) continue;
     for (const key in f.frontendForcedConfig) {
-      if (allowedConfig[key]) {
+      const allowedConfigValue = allowedConfig[key];
+      const funboxValue = f.frontendForcedConfig[key];
+      if (allowedConfigValue !== undefined && funboxValue !== undefined) {
         if (
-          intersect<string | boolean>(
-            allowedConfig[key],
-            f.frontendForcedConfig[key],
-            true
-          ).length === 0
+          intersect<string | boolean>(allowedConfigValue, funboxValue, true)
+            .length === 0
         ) {
           noConfigConflicts = false;
           break;
         }
-      } else {
-        allowedConfig[key] = f.frontendForcedConfig[key];
+      } else if (funboxValue !== undefined) {
+        allowedConfig[key] = funboxValue;
       }
     }
   }

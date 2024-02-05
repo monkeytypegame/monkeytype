@@ -141,7 +141,7 @@ $("#popups").on("click", "#apeKeysPopup table .textButton", async (e) => {
   if (response.status !== 200) {
     return Notifications.add("Failed to update key: " + response.message, -1);
   }
-  apeKeys[keyId].enabled = !key.enabled;
+  key.enabled = !key.enabled;
   refreshList();
   if (key.enabled) {
     Notifications.add("Key active", 1);

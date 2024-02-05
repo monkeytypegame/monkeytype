@@ -128,7 +128,7 @@ Misc.getLanguageList()
 Misc.getFunboxList()
   .then((funboxes) => {
     updateFunboxCommands(funboxes);
-    if (FunboxCommands[0].subgroup) {
+    if (FunboxCommands[0]?.subgroup) {
       FunboxCommands[0].subgroup.beforeList = (): void => {
         updateFunboxCommands(funboxes);
       };
@@ -475,27 +475,27 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
 };
 
 const lists = {
-  keymapLayouts: KeymapLayoutsCommands[0].subgroup,
-  enableAds: EnableAdsCommands[0].subgroup,
-  customThemesList: CustomThemesListCommands[0].subgroup,
-  themes: ThemesCommands[0].subgroup,
-  loadChallenge: LoadChallengeCommands[0].subgroup,
-  languages: LanguagesCommands[0].subgroup,
-  difficulty: DifficultyCommands[0].subgroup,
-  lazyMode: LazyModeCommands[0].subgroup,
-  paceCaretMode: PaceCaretModeCommands[0].subgroup,
-  showAverage: ShowAverageCommands[0].subgroup,
-  minWpm: MinWpmCommands[0].subgroup,
-  minAcc: MinAccCommands[0].subgroup,
-  minBurst: MinBurstCommands[0].subgroup,
-  funbox: FunboxCommands[0].subgroup,
-  confidenceMode: ConfidenceModeCommands[0].subgroup,
-  stopOnError: StopOnErrorCommands[0].subgroup,
-  layouts: LayoutsCommands[0].subgroup,
-  oppositeShiftMode: OppositeShiftModeCommands[0].subgroup,
-  tags: TagsCommands[0].subgroup,
-  resultSaving: ResultSavingCommands[0].subgroup,
-  blindMode: BlindModeCommands[0].subgroup,
+  keymapLayouts: KeymapLayoutsCommands[0]?.subgroup,
+  enableAds: EnableAdsCommands[0]?.subgroup,
+  customThemesList: CustomThemesListCommands[0]?.subgroup,
+  themes: ThemesCommands[0]?.subgroup,
+  loadChallenge: LoadChallengeCommands[0]?.subgroup,
+  languages: LanguagesCommands[0]?.subgroup,
+  difficulty: DifficultyCommands[0]?.subgroup,
+  lazyMode: LazyModeCommands[0]?.subgroup,
+  paceCaretMode: PaceCaretModeCommands[0]?.subgroup,
+  showAverage: ShowAverageCommands[0]?.subgroup,
+  minWpm: MinWpmCommands[0]?.subgroup,
+  minAcc: MinAccCommands[0]?.subgroup,
+  minBurst: MinBurstCommands[0]?.subgroup,
+  funbox: FunboxCommands[0]?.subgroup,
+  confidenceMode: ConfidenceModeCommands[0]?.subgroup,
+  stopOnError: StopOnErrorCommands[0]?.subgroup,
+  layouts: LayoutsCommands[0]?.subgroup,
+  oppositeShiftMode: OppositeShiftModeCommands[0]?.subgroup,
+  tags: TagsCommands[0]?.subgroup,
+  resultSaving: ResultSavingCommands[0]?.subgroup,
+  blindMode: BlindModeCommands[0]?.subgroup,
   mode: ModeCommands[0].subgroup,
   time: TimeCommands[0].subgroup,
   words: WordsCommands[0].subgroup,
@@ -527,4 +527,8 @@ export function setCurrent(val: MonkeyTypes.CommandsSubgroup[]): void {
 
 export function pushCurrent(val: MonkeyTypes.CommandsSubgroup): void {
   current.push(val);
+}
+
+export function getCurrent(): MonkeyTypes.CommandsSubgroup {
+  return current[current.length - 1] as MonkeyTypes.CommandsSubgroup;
 }

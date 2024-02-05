@@ -73,8 +73,8 @@ export async function instantUpdate(): Promise<void> {
 }
 
 export async function update(
-  previous: MonkeyTypes.Mode,
-  current: MonkeyTypes.Mode
+  previous: SharedTypes.Mode,
+  current: SharedTypes.Mode
 ): Promise<void> {
   if (previous === current) return;
   $("#testConfig .mode .textButton").removeClass("active");
@@ -282,8 +282,8 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   if (ActivePage.get() !== "test") return;
   if (eventKey === "mode") {
     update(
-      eventPreviousValue as MonkeyTypes.Mode,
-      eventValue as MonkeyTypes.Mode
+      eventPreviousValue as SharedTypes.Mode,
+      eventValue as SharedTypes.Mode
     );
 
     let m2;

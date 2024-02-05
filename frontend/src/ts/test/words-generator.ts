@@ -137,7 +137,7 @@ export async function punctuateWord(
       }
 
       const index = Math.floor(r * brackets.length);
-      const bracket = brackets[index];
+      const bracket = brackets[index] as string;
 
       word = `${bracket[0]}${word}${bracket[1]}`;
     } else if (currentLanguage === "japanese") {
@@ -325,7 +325,8 @@ async function applyBritishEnglishToWord(
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
   if (!/english/.test(Config.language)) return word;
-  if (Config.mode === "quote" && TestWords.randomQuote.britishText) return word;
+  if (Config.mode === "quote" && TestWords.randomQuote?.britishText)
+    return word;
 
   return await BritishEnglish.replace(word, previousWord);
 }
@@ -389,7 +390,7 @@ export function getWordsLimit(): number {
 
   //funboxes
   if (funboxToPush) {
-    limit = +funboxToPush.split(":")[1];
+    limit = +(funboxToPush.split(":")[1] as string);
   }
 
   //make sure the limit is not higher than the word count
@@ -599,7 +600,7 @@ async function generateQuoteWords(
     rq = randomQuote;
   }
 
-  rq.language = Config.language.replace(/_\d*k$/g, "");
+  rq.language = Misc.removeLanguageSize(Config.language);
   rq.text = rq.text.replace(/ +/gm, " ");
   rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   rq.text = rq.text.replace(/…/g, "...");
@@ -612,6 +613,10 @@ async function generateQuoteWords(
   }
 
   TestWords.setRandomQuote(rq);
+
+  if (TestWords.randomQuote === null) {
+    throw new WordGenError("Random quote is null");
+  }
 
   if (TestWords.randomQuote.textSplit === undefined) {
     throw new WordGenError("Random quote textSplit is undefined");
@@ -669,14 +674,14 @@ export async function getNextWord(
     const funboxSection = await getFunboxSection();
 
     if (Config.mode === "quote") {
-      randomWord = currentQuote[wordIndex];
+      randomWord = currentQuote[wordIndex] as string;
     } else if (
       Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
       !CustomText.isSectionRandom
     ) {
-      randomWord = CustomText.text[sectionIndex];
+      randomWord = CustomText.text[sectionIndex] as string;
     } else if (
       Config.mode === "custom" &&
       (CustomText.isWordRandom ||
@@ -703,7 +708,7 @@ export async function getNextWord(
       randomWord = funboxSection.join(" ");
     } else {
       let regenarationCount = 0; //infinite loop emergency stop button
-      let firstAfterSplit = randomWord.split(" ")[0].toLowerCase();
+      let firstAfterSplit = (randomWord.split(" ")[0] as string).toLowerCase();
       while (
         regenarationCount < 100 &&
         (previousWordRaw === firstAfterSplit ||
@@ -721,7 +726,7 @@ export async function getNextWord(
       ) {
         regenarationCount++;
         randomWord = wordset.randomWord(funboxFrequency);
-        firstAfterSplit = randomWord.split(" ")[0];
+        firstAfterSplit = randomWord.split(" ")[0] as string;
       }
     }
     randomWord = randomWord.replace(/ +/g, " ");

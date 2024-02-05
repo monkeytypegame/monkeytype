@@ -59,7 +59,7 @@ export class WeeklyXpLeaderboard {
   }
 
   public async addResult(
-    weeklyXpLeaderboardConfig: MonkeyTypes.Configuration["leaderboards"]["weeklyXp"],
+    weeklyXpLeaderboardConfig: SharedTypes.Configuration["leaderboards"]["weeklyXp"],
     opts: AddResultOpts
   ): Promise<number> {
     const { entry, xpGained, timeTypedSeconds } = opts;
@@ -116,7 +116,7 @@ export class WeeklyXpLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    weeklyXpLeaderboardConfig: MonkeyTypes.Configuration["leaderboards"]["weeklyXp"]
+    weeklyXpLeaderboardConfig: SharedTypes.Configuration["leaderboards"]["weeklyXp"]
   ): Promise<WeeklyXpLeaderboardEntry[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
@@ -136,11 +136,23 @@ export class WeeklyXpLeaderboard {
       "true"
     );
 
+    if (results === undefined) {
+      throw new Error(
+        "Redis returned undefined when getting weekly leaderboard results"
+      );
+    }
+
+    if (scores === undefined) {
+      throw new Error(
+        "Redis returned undefined when getting weekly leaderboard scores"
+      );
+    }
+
     const resultsWithRanks: WeeklyXpLeaderboardEntry[] = results.map(
       (resultJSON: string, index: number) => ({
         ...JSON.parse(resultJSON),
         rank: minRank + index + 1,
-        totalXp: parseInt(scores[index], 10),
+        totalXp: parseInt(scores[index] as string, 10),
       })
     );
 
@@ -149,7 +161,7 @@ export class WeeklyXpLeaderboard {
 
   public async getRank(
     uid: string,
-    weeklyXpLeaderboardConfig: MonkeyTypes.Configuration["leaderboards"]["weeklyXp"]
+    weeklyXpLeaderboardConfig: SharedTypes.Configuration["leaderboards"]["weeklyXp"]
   ): Promise<WeeklyXpLeaderboardEntry | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !weeklyXpLeaderboardConfig.enabled) {
@@ -161,6 +173,7 @@ export class WeeklyXpLeaderboard {
 
     connection.set;
 
+    // @ts-ignore
     const [[, rank], [, totalXp], [, count], [, result]] = await connection
       .multi()
       .zrevrank(weeklyXpLeaderboardScoresKey, uid)
@@ -183,7 +196,7 @@ export class WeeklyXpLeaderboard {
 }
 
 export function get(
-  weeklyXpLeaderboardConfig: MonkeyTypes.Configuration["leaderboards"]["weeklyXp"],
+  weeklyXpLeaderboardConfig: SharedTypes.Configuration["leaderboards"]["weeklyXp"],
   customTimestamp?: number
 ): WeeklyXpLeaderboard | null {
   const { enabled } = weeklyXpLeaderboardConfig;

@@ -116,7 +116,7 @@ describe("LeaderboardsDal", () => {
 });
 
 function expectedLbEntry(rank: number, user: MonkeyTypes.User, time: string) {
-  const lbBest: MonkeyTypes.PersonalBest =
+  const lbBest: SharedTypes.PersonalBest =
     user.lbPersonalBests?.time[time].english;
 
   return {
@@ -166,8 +166,8 @@ async function createUser(
 }
 
 function lbBests(
-  pb15?: MonkeyTypes.PersonalBest,
-  pb60?: MonkeyTypes.PersonalBest
+  pb15?: SharedTypes.PersonalBest,
+  pb60?: SharedTypes.PersonalBest
 ): MonkeyTypes.LbPersonalBests {
   const result = { time: {} };
   if (pb15) result.time["15"] = { english: pb15 };
@@ -179,7 +179,7 @@ function pb(
   wpm: number,
   acc: number = 90,
   timestamp: number = 1
-): MonkeyTypes.PersonalBest {
+): SharedTypes.PersonalBest {
   return {
     acc,
     consistency: 100,

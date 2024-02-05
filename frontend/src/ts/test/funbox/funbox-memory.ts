@@ -4,11 +4,13 @@ type SetFunction<T> = (
   tribeOverride?: boolean
 ) => boolean;
 
+type ValueAndSetFunction<T> = {
+  value: T;
+  setFunction: SetFunction<T>;
+};
+
 type SettingsMemory<T> = {
-  [key: string]: {
-    value: T;
-    setFunction: SetFunction<T>;
-  };
+  [key: string]: ValueAndSetFunction<T>;
 };
 
 let settingsMemory: SettingsMemory<MonkeyTypes.ConfigValues> = {};
@@ -26,11 +28,10 @@ export function save<T extends MonkeyTypes.ConfigValues>(
 
 export function load(tribeOverride = false): void {
   Object.keys(settingsMemory).forEach((setting) => {
-    settingsMemory[setting].setFunction(
-      settingsMemory[setting].value,
-      true,
-      tribeOverride
-    );
+    const memory = settingsMemory[
+      setting
+    ] as ValueAndSetFunction<MonkeyTypes.ConfigValues>;
+    memory.setFunction(memory.value, true, tribeOverride);
   });
   settingsMemory = {};
 }

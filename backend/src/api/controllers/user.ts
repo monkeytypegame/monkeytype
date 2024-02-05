@@ -144,31 +144,30 @@ export async function sendForgotPasswordEmail(
 ): Promise<MonkeyResponse> {
   const { email } = req.body;
 
-  let auth;
   try {
-    auth = await FirebaseAdmin().auth().getUserByEmail(email);
-  } catch (e) {
-    if (e.code === "auth/user-not-found") {
-      throw new MonkeyError(404, "User not found");
-    }
-    throw e;
+    const uid = (await FirebaseAdmin().auth().getUserByEmail(email)).uid;
+    const userInfo = await UserDAL.getUser(
+      uid,
+      "request forgot password email"
+    );
+
+    const link = await FirebaseAdmin()
+      .auth()
+      .generatePasswordResetLink(email, {
+        url: isDevEnvironment()
+          ? "http://localhost:3000"
+          : "https://monkeytype.com",
+      });
+
+    await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
+  } catch {
+    return new MonkeyResponse(
+      "Password reset request received. If the email is valid, you will receive an email shortly."
+    );
   }
-
-  const userInfo = await UserDAL.getUser(
-    auth.uid,
-    "request forgot password email"
+  return new MonkeyResponse(
+    "Password reset request received. If the email is valid, you will receive an email shortly."
   );
-
-  const link = await FirebaseAdmin()
-    .auth()
-    .generatePasswordResetLink(email, {
-      url: isDevEnvironment()
-        ? "http://localhost:3000"
-        : "https://monkeytype.com",
-    });
-  await emailQueue.sendForgotPasswordEmail(email, userInfo.name, link);
-
-  return new MonkeyResponse("Email sent if user was found");
 }
 
 export async function deleteUser(
@@ -281,7 +280,7 @@ export async function checkName(
   const { name } = req.params;
   const { uid } = req.ctx.decodedToken;
 
-  const available = await UserDAL.isNameAvailable(name, uid);
+  const available = await UserDAL.isNameAvailable(name as string, uid);
   if (!available) {
     throw new MonkeyError(409, "Username unavailable");
   }
@@ -514,7 +513,7 @@ export async function removeResultFilterPreset(
   const { uid } = req.ctx.decodedToken;
   const { presetId } = req.params;
 
-  await UserDAL.removeResultFilterPreset(uid, presetId);
+  await UserDAL.removeResultFilterPreset(uid, presetId as string);
   return new MonkeyResponse("Result filter preset deleted");
 }
 
@@ -534,7 +533,7 @@ export async function clearTagPb(
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
 
-  await UserDAL.removeTagPb(uid, tagId);
+  await UserDAL.removeTagPb(uid, tagId as string);
   return new MonkeyResponse("Tag PB cleared");
 }
 
@@ -554,7 +553,7 @@ export async function removeTag(
   const { uid } = req.ctx.decodedToken;
   const { tagId } = req.params;
 
-  await UserDAL.removeTag(uid, tagId);
+  await UserDAL.removeTag(uid, tagId as string);
   return new MonkeyResponse("Tag deleted");
 }
 
@@ -572,7 +571,7 @@ export async function updateLbMemory(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
-  const mode2 = req.body.mode2 as MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+  const mode2 = req.body.mode2 as SharedTypes.Mode2<SharedTypes.Mode>;
 
   await UserDAL.updateLbMemory(uid, mode, mode2, language, rank);
   return new MonkeyResponse("Leaderboard memory updated");
@@ -688,8 +687,8 @@ export async function getProfile(
 
   const user =
     isUid !== undefined
-      ? await UserDAL.getUser(uidOrName, "get user profile")
-      : await UserDAL.getUserByName(uidOrName, "get user profile");
+      ? await UserDAL.getUser(uidOrName as string, "get user profile")
+      : await UserDAL.getUserByName(uidOrName as string, "get user profile");
 
   const {
     name,
