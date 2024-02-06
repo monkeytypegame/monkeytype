@@ -21,19 +21,24 @@ export async function connect(): Promise<void> {
     DB_NAME,
   } = process.env;
 
-  if (!(DB_URI ?? "") || !(DB_NAME ?? "")) {
+  const authProvided = DB_USERNAME !== undefined && DB_PASSWORD !== undefined;
+  const uriProvided = DB_URI !== undefined;
+
+  if (!authProvided || !uriProvided) {
     throw new Error("No database configuration provided");
   }
+
+  const auth = authProvided
+    ? {
+        username: DB_USERNAME,
+        password: DB_PASSWORD,
+      }
+    : undefined;
 
   const connectionOptions: MongoClientOptions = {
     connectTimeoutMS: 2000,
     serverSelectionTimeoutMS: 2000,
-    auth: !(DB_USERNAME !== undefined && DB_PASSWORD !== undefined)
-      ? undefined
-      : {
-          username: DB_USERNAME,
-          password: DB_PASSWORD,
-        },
+    auth: auth,
     authMechanism: DB_AUTH_MECHANISM as AuthMechanism | undefined,
     authSource: DB_AUTH_SOURCE,
   };
