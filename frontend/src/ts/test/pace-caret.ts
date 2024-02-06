@@ -295,5 +295,5 @@ export function start(): void {
 }
 
 ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "paceCaret") init();
+  if (eventKey === "paceCaret") void init();
 });

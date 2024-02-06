@@ -281,7 +281,7 @@ export function hideFavoriteQuoteLength(): void {
 ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   if (ActivePage.get() !== "test") return;
   if (eventKey === "mode") {
-    update(
+    void update(
       eventPreviousValue as SharedTypes.Mode,
       eventValue as SharedTypes.Mode
     );

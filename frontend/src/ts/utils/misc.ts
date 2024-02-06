@@ -898,24 +898,24 @@ export function toggleFullscreen(): void {
     !document.msFullscreenElement
   ) {
     if (elem.requestFullscreen !== undefined) {
-      elem.requestFullscreen();
+      void elem.requestFullscreen();
     } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen();
+      void elem.msRequestFullscreen();
     } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
+      void elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
       // @ts-ignore
-      elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
     if (document.exitFullscreen !== undefined) {
-      document.exitFullscreen();
+      void document.exitFullscreen();
     } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
+      void document.msExitFullscreen();
     } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
+      void document.mozCancelFullScreen();
     } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
+      void document.webkitExitFullscreen();
     }
   }
 }
@@ -1146,8 +1146,8 @@ export async function swapElements(
                 opacity: 1,
               },
               totalDuration / 2,
-              () => {
-                callback();
+              async () => {
+                await callback();
               }
             );
         }

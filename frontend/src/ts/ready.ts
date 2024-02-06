@@ -22,10 +22,14 @@ if (Misc.isDevEnvironment()) {
     `<a class='button configureAPI' href='${envConfig.backendUrl}/configure/' target='_blank' aria-label="Configure API" data-balloon-pos="right"><i class="fas fa-fw fa-server"></i></a>`
   );
 } else {
-  Misc.getLatestReleaseFromGitHub().then((v) => {
-    $("footer .currentVersion .text").text(v);
-    NewVersionNotification.show(v);
-  });
+  Misc.getLatestReleaseFromGitHub()
+    .then((v) => {
+      $("footer .currentVersion .text").text(v);
+      void NewVersionNotification.show(v);
+    })
+    .catch((e) => {
+      $("footer .currentVersion .text").text("unknown");
+    });
 }
 
 ManualRestart.set();
@@ -83,8 +87,8 @@ $(document).ready(() => {
     .stop(true, true)
     .animate({ opacity: 1 }, 250);
   if (ConnectionState.get()) {
-    PSA.show();
-    ServerConfiguration.sync();
+    void PSA.show();
+    void ServerConfiguration.sync();
   }
   MonkeyPower.init();
 
@@ -96,12 +100,14 @@ if ("serviceWorker" in navigator) {
     // disabling service workers on localhost - they dont really work well with local development
     // and cause issues with hot reloading
     if (Misc.isDevEnvironment()) {
-      navigator.serviceWorker.getRegistrations().then(function (registrations) {
-        for (const registration of registrations) {
-          // if (registration.scope !== "https://monkeytype.com/")
-          registration.unregister();
-        }
-      });
+      void navigator.serviceWorker
+        .getRegistrations()
+        .then(function (registrations) {
+          for (const registration of registrations) {
+            // if (registration.scope !== "https://monkeytype.com/")
+            void registration.unregister();
+          }
+        });
     } else {
       const wb = new Workbox("/service-worker.js");
 
@@ -140,7 +146,7 @@ if ("serviceWorker" in navigator) {
           console.log("Service worker registration succeeded:", registration);
 
           setInterval(() => {
-            wb.update(); //check for updates every 15 minutes
+            void wb.update(); //check for updates every 15 minutes
           }, 900000);
         })
         .catch((e) => {
@@ -151,13 +157,13 @@ if ("serviceWorker" in navigator) {
 }
 
 window.onerror = function (message, url, line, column, error): void {
-  log("error", {
+  void log("error", {
     error: error?.stack ?? "",
   });
 };
 
 window.onunhandledrejection = function (e): void {
-  log("error", {
+  void log("error", {
     error: e.reason.stack ?? "",
   });
 };
