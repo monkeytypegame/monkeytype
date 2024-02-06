@@ -392,6 +392,9 @@ export async function getUser(
   }
 
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
+  if (isPremium) {
+    userInfo.inventory = addPremiumBadge(userInfo.inventory);
+  }
 
   const userData = {
     ...getRelevantUserInfo(userInfo),
@@ -781,10 +784,7 @@ export async function getProfile(
 
   const isPremium = await UserDAL.checkIfUserIsPremium(user.uid, user);
   if (isPremium) {
-    if (user.inventory === undefined) {
-      user.inventory = { badges: [] };
-    }
-    user.inventory.badges.push({ id: BadgeIds.PREMIUM, important: true });
+    user.inventory = addPremiumBadge(user.inventory);
   }
 
   const profileData = {
@@ -930,4 +930,12 @@ export async function revokeAllTokens(
   await FirebaseAdmin().auth().revokeRefreshTokens(uid);
   removeTokensFromCacheByUid(uid);
   return new MonkeyResponse("All tokens revoked");
+}
+
+function addPremiumBadge(
+  inventory?: MonkeyTypes.UserInventory
+): MonkeyTypes.UserInventory {
+  const results = inventory ?? { badges: [] };
+  results.badges.push({ id: BadgeIds.PREMIUM, important: true });
+  return results;
 }

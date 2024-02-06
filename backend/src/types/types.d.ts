@@ -153,7 +153,7 @@ declare namespace MonkeyTypes {
     discordAvatar?: string;
     rank: number;
     selectedBadgeId?: number;
-    importantBadgeIds?: number;
+    importantBadgeIds?: number[];
   }
 
   interface CustomTheme {

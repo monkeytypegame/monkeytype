@@ -332,7 +332,11 @@ async function fillTable(lb: LbKey): Promise<void> {
       <a href="${location.origin}/profile/${
       entry.uid
     }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
-      ${entry.badgeId ? getBadgeHTMLbyId(entry.badgeId) : ""}
+      ${
+        entry.selectedBadgeId !== undefined
+          ? getBadgeHTMLbyId(entry.selectedBadgeId)
+          : ""
+      }
     </div>
     </td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>

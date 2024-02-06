@@ -76,17 +76,19 @@ function hydrateInputs(): void {
   websiteInput.val(socialProfiles?.website ?? "");
   badgeIdsSelect.html("");
 
-  badges?.forEach((badge: MonkeyTypes.Badge) => {
-    if (badge.selected) {
-      currentSelectedBadgeId = badge.id;
-    }
+  badges
+    ?.filter((badge) => badge.important !== true)
+    ?.forEach((badge) => {
+      if (badge.selected) {
+        currentSelectedBadgeId = badge.id;
+      }
 
-    const badgeOption = getHTMLById(badge.id, false, true);
-    const badgeWrapper = `<div class="badgeSelectionItem ${
-      badge.selected ? "selected" : ""
-    }" selection-id=${badge.id}>${badgeOption}</div>`;
-    badgeIdsSelect.append(badgeWrapper);
-  });
+      const badgeOption = getHTMLById(badge.id, false, true);
+      const badgeWrapper = `<div class="badgeSelectionItem ${
+        badge.selected ? "selected" : ""
+      }" selection-id=${badge.id}>${badgeOption}</div>`;
+      badgeIdsSelect.append(badgeWrapper);
+    });
 
   badgeIdsSelect.prepend(
     `<div class="badgeSelectionItem ${

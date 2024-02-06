@@ -247,6 +247,7 @@ declare namespace MonkeyTypes {
   type Badge = {
     id: number;
     selected?: boolean;
+    important?: boolean;
   };
 
   type FavoriteQuotes = Record<string, string[]>;
