@@ -151,7 +151,7 @@ async function fill(): Promise<void> {
     contributors = [];
   }
 
-  getStatsAndHistogramData().then(() => {
+  void getStatsAndHistogramData().then(() => {
     updateStatsAndHistogram();
   });
 
@@ -217,7 +217,7 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageAbout", "main");
-    fill();
+    void fill();
   },
   async () => {
     //

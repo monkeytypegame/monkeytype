@@ -218,9 +218,9 @@ async function fillContent(): Promise<void> {
   if (!snapshot) return;
 
   PbTables.update(snapshot.personalBests);
-  Profile.update("account", snapshot);
+  void Profile.update("account", snapshot);
 
-  ResultBatches.update();
+  void ResultBatches.update();
 
   chartData = [];
   accChartData = [];
@@ -502,7 +502,7 @@ async function fillContent(): Promise<void> {
         console.error(e);
         ResultFilters.reset();
         ResultFilters.updateActive();
-        update();
+        void update();
       }
       //filters done
       //=======================================
@@ -1036,7 +1036,7 @@ async function fillContent(): Promise<void> {
   ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
   Focus.set(false);
-  Misc.swapElements(
+  void Misc.swapElements(
     $(".pageAccount .preloader"),
     $(".pageAccount .content"),
     250,
@@ -1266,7 +1266,7 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "button",
   () => {
     setTimeout(() => {
-      update();
+      void update();
     }, 0);
   }
 );
@@ -1274,14 +1274,14 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
 $(".pageAccount .group.presetFilterButtons").on(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
-  (e) => {
-    ResultFilters.setFilterPreset($(e.target).data("id"));
-    update();
+  async (e) => {
+    await ResultFilters.setFilterPreset($(e.target).data("id"));
+    void update();
   }
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
-  Misc.downloadResultsCSV(filteredResults);
+  void Misc.downloadResultsCSV(filteredResults);
 });
 
 $(".pageAccount .profile").on("click", ".details .copyLink", () => {
@@ -1313,7 +1313,7 @@ $(".pageAccount button.loadMoreResults").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
-    update();
+    void update();
   }
 });
 
@@ -1342,7 +1342,7 @@ export const page = new Page(
 
     await update();
     await Misc.sleep(0);
-    updateChartColors();
+    void updateChartColors();
     $(".pageAccount .content p.accountVerificatinNotice").remove();
     if (Auth?.currentUser?.emailVerified === false) {
       $(".pageAccount .content").prepend(

@@ -73,7 +73,7 @@ async function lookupProfile(): Promise<void> {
 $(".page.pageProfileSearch form").on("submit", (e) => {
   e.preventDefault();
   if (areInputsDisabled()) return;
-  lookupProfile();
+  void lookupProfile();
 });
 
 Skeleton.save("pageProfileSearch");
