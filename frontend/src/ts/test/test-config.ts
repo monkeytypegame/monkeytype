@@ -256,13 +256,13 @@ export function updateExtras(
       ).addClass("active");
     });
   } else if (key === "numbers") {
-    if (value === true) {
+    if (value === false) {
       $("#testConfig .numbersMode.textButton").removeClass("active");
     } else {
       $("#testConfig .numbersMode.textButton").addClass("active");
     }
   } else if (key === "punctuation") {
-    if (value === true) {
+    if (value === false) {
       $("#testConfig .punctuationMode.textButton").removeClass("active");
     } else {
       $("#testConfig .punctuationMode.textButton").addClass("active");
