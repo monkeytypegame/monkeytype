@@ -209,7 +209,7 @@ export async function update(
   const timeToRunIndex = (end2 - start2) / 1000;
   const timeToSaveHistogram = (end3 - start3) / 1000; // not sent to prometheus yet
 
-  Logger.logToDb(
+  void Logger.logToDb(
     `system_lb_update_${language}_${mode}_${mode2}`,
     `Aggregate ${timeToRunAggregate}s, loop 0s, insert 0s, index ${timeToRunIndex}s, histogram ${timeToSaveHistogram}`
   );
