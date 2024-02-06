@@ -69,12 +69,6 @@
       // enable the rule specifically for TypeScript files
       "files": ["*.ts", "*.tsx"],
       "rules": {
-        // "@typescript-eslint/strict-boolean-expressions": [
-        //   "error",
-        //   {
-        //     "allowString": false
-        //   }
-        // ],
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "error",
