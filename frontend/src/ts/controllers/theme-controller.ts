@@ -183,7 +183,7 @@ async function apply(
 function updateFooterThemeName(nameOverride?: string): void {
   let str = Config.theme;
   if (Config.customTheme) str = "custom";
-  if (nameOverride !== undefined) str = nameOverride;
+  if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
   $(".current-theme .text").text(str);
 }
