@@ -51,7 +51,7 @@ export async function editPreset(
   config: any
 ): Promise<void> {
   const presetUpdates =
-    config !== undefined && Object.keys(config).length > 0
+    config !== undefined && config !== null && Object.keys(config).length > 0
       ? { name, config }
       : { name };
   await db
