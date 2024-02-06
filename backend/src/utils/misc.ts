@@ -64,9 +64,10 @@ export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
   const {
     device: { vendor, model, type },
   } = agent;
-  if (vendor !== undefined) {
-    agentLog.device = `${vendor} ${model} ${type}`;
-  }
+
+  agentLog.device = `${vendor ?? "unknown vendor"} ${
+    model ?? "unknown model"
+  } ${type ?? "unknown type"}`;
 
   return agentLog;
 }
