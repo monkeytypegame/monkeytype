@@ -38,7 +38,7 @@ export async function init(): Promise<void> {
 
   const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT } = process.env;
 
-  if (!EMAIL_HOST || !EMAIL_USER || !EMAIL_PASS) {
+  if (!(EMAIL_HOST ?? "") || !(EMAIL_USER ?? "") || !(EMAIL_PASS ?? "")) {
     if (isDevEnvironment()) {
       Logger.warning(
         "No email client configuration provided. Running without email."
@@ -128,7 +128,7 @@ const cachedTemplates: Record<string, string> = {};
 
 async function getTemplate(name: string): Promise<string> {
   const cachedTemp = cachedTemplates[name];
-  if (cachedTemp) {
+  if (cachedTemp !== undefined) {
     return cachedTemp;
   }
 

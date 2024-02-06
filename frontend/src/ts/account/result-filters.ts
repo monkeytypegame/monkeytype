@@ -78,7 +78,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    const newResultFilters = window.localStorage.getItem("resultFilters");
+    const newResultFilters = window.localStorage.getItem("resultFilters") ?? "";
 
     if (!newResultFilters) {
       filters = defaultResultFilters;
@@ -318,10 +318,11 @@ type AboveChartDisplay = Partial<
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  Misc.typedKeys(getFilters()).forEach((group) => {
+
+  for (const group of Misc.typedKeys(getFilters())) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
-      return;
+      continue;
     }
 
     aboveChartDisplay[group] = {
@@ -329,12 +330,13 @@ export function updateActive(): void {
       array: [],
     };
 
-    Misc.typedKeys(getGroup(group)).forEach((filter) => {
+    for (const filter of Misc.typedKeys(getGroup(group))) {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
-      if (groupAboveChartDisplay === undefined) return;
+      if (groupAboveChartDisplay === undefined) continue;
 
-      if (getFilter(group, filter)) {
+      const filterValue = getFilter(group, filter);
+      if (filterValue === true) {
         groupAboveChartDisplay["array"]?.push(filter);
       } else {
         if (groupAboveChartDisplay["all"] !== undefined) {
@@ -351,13 +353,13 @@ export function updateActive(): void {
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
         );
       }
-      if (getFilter(group, filter)) {
+      if (filterValue === true) {
         buttonEl.addClass("active");
       } else {
         buttonEl.removeClass("active");
       }
-    });
-  });
+    }
+  }
 
   function addText(group: keyof SharedTypes.ResultFilters): string {
     let ret = "";
@@ -468,10 +470,10 @@ function toggle<G extends keyof SharedTypes.ResultFilters>(
     if (group === "date") {
       setAllFilters("date", false);
     }
-    const newValue = !filters[group][
-      filter
-    ] as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
-    filters[group][filter] = newValue;
+    const currentValue = filters[group][filter] as unknown as boolean;
+    const newValue = !currentValue;
+    filters[group][filter] =
+      newValue as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
     save();
   } catch (e) {
     Notifications.add(
@@ -652,9 +654,8 @@ export async function appendButtons(): Promise<void> {
   if (languageList) {
     let html = "";
     for (const language of languageList) {
-      html += `<button filter="${language}">${language.replace(
-        "_",
-        " "
+      html += `<button filter="${language}">${Misc.getLanguageDisplayString(
+        language
       )}</button>`;
     }
     const el = document.querySelector(

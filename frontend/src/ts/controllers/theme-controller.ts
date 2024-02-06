@@ -88,7 +88,7 @@ export async function loadStyle(name: string): Promise<void> {
       }, 100)
     );
     $("#nextTheme").remove();
-    const headScript = document.querySelector("#currentTheme") as Element;
+    const headScript = document.querySelector("#currentTheme");
     const link = document.createElement("link");
     link.type = "text/css";
     link.rel = "stylesheet";
@@ -119,7 +119,7 @@ export async function loadStyle(name: string): Promise<void> {
       link.href = `/./themes/${name}.css`;
     }
 
-    if (!headScript) {
+    if (headScript === null) {
       console.debug("Theme controller appending link to the head", link);
       document.head.appendChild(link);
     } else {
@@ -183,7 +183,7 @@ async function apply(
 function updateFooterThemeName(nameOverride?: string): void {
   let str = Config.theme;
   if (Config.customTheme) str = "custom";
-  if (nameOverride) str = nameOverride;
+  if (nameOverride !== undefined && nameOverride !== "") str = nameOverride;
   str = str.replace(/_/g, " ");
   $(".current-theme .text").text(str);
 }
@@ -365,7 +365,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     changeThemeList();
   }
   if (eventKey === "customTheme") {
-    eventValue ? await set("custom") : await set(Config.theme);
+    (eventValue as boolean) ? await set("custom") : await set(Config.theme);
   }
   if (eventKey === "customThemeColors") {
     nosave ? preview("custom") : await set("custom");
@@ -378,7 +378,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     await clearPreview(false);
     if (Config.autoSwitchTheme) {
       if (
-        window.matchMedia &&
+        window.matchMedia !== undefined &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
       ) {
         await set(Config.themeDark, true);
@@ -386,7 +386,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
         await set(Config.themeLight, true);
       }
     } else {
-      if (eventValue) {
+      if (eventValue as boolean) {
         await set("custom");
       } else {
         await set(Config.theme);
@@ -397,9 +397,9 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (eventKey === "customBackground") applyCustomBackground();
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
   if (eventKey === "autoSwitchTheme") {
-    if (eventValue) {
+    if (eventValue as boolean) {
       if (
-        window.matchMedia &&
+        window.matchMedia !== undefined &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
       ) {
         await set(Config.themeDark, true);
@@ -414,7 +414,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
     eventKey === "themeLight" &&
     Config.autoSwitchTheme &&
     !(
-      window.matchMedia &&
+      window.matchMedia !== undefined &&
       window.matchMedia("(prefers-color-scheme: dark)").matches
     ) &&
     !nosave
@@ -424,7 +424,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (
     eventKey === "themeDark" &&
     Config.autoSwitchTheme &&
-    window.matchMedia &&
+    window.matchMedia !== undefined &&
     window.matchMedia("(prefers-color-scheme: dark)").matches &&
     !nosave
   ) {

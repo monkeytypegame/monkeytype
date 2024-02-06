@@ -154,7 +154,7 @@ async function getDataAndInit(): Promise<boolean> {
 
   if (
     snapshot.config &&
-    (!UpdateConfig.localStorageConfig || !areConfigsEqual)
+    (UpdateConfig.localStorageConfig === undefined || !areConfigsEqual)
   ) {
     console.log(
       "no local config or local and db configs are different - applying db"
@@ -323,7 +323,9 @@ async function signIn(): Promise<void> {
     return;
   }
 
-  const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
+  const persistence = ($(".pageLogin .login #rememberMe input").prop(
+    "checked"
+  ) as boolean)
     ? browserLocalPersistence
     : browserSessionPersistence;
 
@@ -367,7 +369,9 @@ async function signInWithGoogle(): Promise<void> {
   LoginPage.disableInputs();
   LoginPage.disableSignUpButton();
   authListener();
-  const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
+  const persistence = ($(".pageLogin .login #rememberMe input").prop(
+    "checked"
+  ) as boolean)
     ? browserLocalPersistence
     : browserSessionPersistence;
 
@@ -468,7 +472,7 @@ async function signUp(): Promise<void> {
   }
   RegisterCaptchaPopup.show();
   const captchaToken = await RegisterCaptchaPopup.promise;
-  if (!captchaToken) {
+  if (captchaToken === undefined || captchaToken === "") {
     Notifications.add("Please complete the captcha", -1);
     return;
   }

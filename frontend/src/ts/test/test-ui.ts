@@ -27,7 +27,7 @@ const debouncedZipfCheck = debounce(250, () => {
     if (supports === "no") {
       Notifications.add(
         `${Misc.capitalizeFirstLetter(
-          Config.language.replace(/_/g, " ")
+          Misc.getLanguageDisplayString(Config.language)
         )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
         0,
         {
@@ -38,7 +38,7 @@ const debouncedZipfCheck = debounce(250, () => {
     if (supports === "unknown") {
       Notifications.add(
         `${Misc.capitalizeFirstLetter(
-          Config.language.replace(/_/g, " ")
+          Misc.getLanguageDisplayString(Config.language)
         )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
         0,
         {
@@ -557,7 +557,7 @@ export function updateWordElement(
   showError = !Config.blindMode,
   inputOverride?: string
 ): void {
-  const input = inputOverride || TestInput.input.current;
+  const input = inputOverride ?? TestInput.input.current;
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
@@ -789,7 +789,9 @@ export function updatePremid(): void {
     fbtext = " " + Config.funbox.split("#").join(" ");
   }
   $(".pageTest #premidTestMode").text(
-    `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
+    `${Config.mode} ${mode2} ${Misc.getLanguageDisplayString(
+      Config.language
+    )}${fbtext}`
   );
   $(".pageTest #premidSecondsLeft").text(Config.time);
 }
@@ -928,13 +930,14 @@ async function loadWordsHistory(): Promise<boolean> {
     const containsKorean =
       input?.match(
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
-      ) ||
-      word?.match(
+      ) !== null ||
+      word.match(
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
-      );
+      ) !== null;
     let wordEl = "";
     try {
-      if (!input) throw new Error("empty input word");
+      if (input === undefined || input === "")
+        throw new Error("empty input word");
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
           ? corrected

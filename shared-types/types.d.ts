@@ -158,7 +158,7 @@ declare namespace SharedTypes {
     _id: string;
     wpm: number;
     rawWpm: number;
-    charStats: number[];
+    charStats: [number, number, number, number];
     acc: number;
     mode: M;
     mode2: Mode2<M>;

@@ -104,7 +104,7 @@ function updateUI(): void {
       } else {
         //for new words
         const toHighlight = koCurrWord?.[0]?.[0];
-        if (toHighlight) KeymapEvent.highlight(toHighlight);
+        if (toHighlight !== undefined) KeymapEvent.highlight(toHighlight);
       }
     }
   }
@@ -699,7 +699,9 @@ function handleChar(
     if (
       isLastWord &&
       (wordIsTheSame || shouldQuickEnd) &&
-      (!isChinese || (realInputValue && charIndex + 2 == realInputValue.length))
+      (!isChinese ||
+        (realInputValue !== undefined &&
+          charIndex + 2 == realInputValue.length))
     ) {
       TestLogic.finish();
       return;

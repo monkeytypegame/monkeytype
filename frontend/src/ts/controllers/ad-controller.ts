@@ -176,7 +176,7 @@ export async function checkCookieblocker(): Promise<void> {
       }
       //@ts-ignore
       window.__tcfapi("getTCData", 2, (tcData, success) => {
-        if (success) {
+        if (success as boolean) {
           if (tcData.eventStatus === "cmpuishown") {
             cookieBlocker = true;
           } else {

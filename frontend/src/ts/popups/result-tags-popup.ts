@@ -92,7 +92,7 @@ $(".pageAccount").on("click", ".group.history #resultEditTags", (f) => {
 });
 
 $(".pageTest").on("click", ".tags .editTagsButton", () => {
-  if (DB.getSnapshot()?.tags?.length ?? 0 > 0) {
+  if ((DB.getSnapshot()?.tags?.length ?? 0) > 0) {
     const resultid = $(".pageTest .tags .editTagsButton").attr(
       "result-id"
     ) as string;
@@ -230,7 +230,7 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
 
       newTags.forEach((tag, index) => {
         if (checked.includes(tag)) return;
-        if (responseTagPbs.includes(tag)) {
+        if (responseTagPbs.includes(tag) as boolean) {
           html += `<div tagid="${tag}" data-balloon-pos="up">${tagNames[index]}<i class="fas fa-crown"></i></div>`;
         } else {
           html += `<div tagid="${tag}">${tagNames[index]}</div>`;

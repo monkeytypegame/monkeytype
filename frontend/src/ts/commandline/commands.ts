@@ -303,8 +303,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
       input: true,
       exec: (input): void => {
-        if (!input) input = "";
-        UpdateConfig.setCustomBackground(input);
+        UpdateConfig.setCustomBackground(input ?? "");
       },
     },
     ...CustomBackgroundSizeCommands,
@@ -362,7 +361,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       alias: "import config",
       input: true,
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined || input === "") return;
         try {
           UpdateConfig.apply(JSON.parse(input));
           UpdateConfig.saveFullConfigToLocalStorage();

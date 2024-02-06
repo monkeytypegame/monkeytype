@@ -11,7 +11,7 @@ type Result = Omit<SharedTypes.DBResult<SharedTypes.Mode>, "_id" | "name">;
 
 export function canFunboxGetPb(result: Result): boolean {
   const funbox = result.funbox;
-  if (!funbox || funbox === "none") return true;
+  if (funbox === undefined || funbox === "" || funbox === "none") return true;
 
   let ret = true;
   const resultFunboxes = funbox.split("#");
@@ -38,9 +38,9 @@ export function checkAndUpdatePb(
   userPb[mode] ??= {};
   userPb[mode][mode2] ??= [];
 
-  const personalBestMatch = userPb[mode][mode2].find(
-    (pb: SharedTypes.PersonalBest) => matchesPersonalBest(result, pb)
-  );
+  const personalBestMatch = (
+    userPb[mode][mode2] as SharedTypes.PersonalBest[]
+  ).find((pb) => matchesPersonalBest(result, pb));
 
   let isPb = true;
 
@@ -158,8 +158,8 @@ function updateLeaderboardPersonalBests(
   const mode2 = result.mode2 as SharedTypes.Mode2<"time">;
 
   lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
-  const lbMode2 = lbPersonalBests[mode][mode2];
-  if (!lbMode2 || Array.isArray(lbMode2)) {
+  const lbMode2 = lbPersonalBests[mode][mode2] as MonkeyTypes.LbPersonalBests;
+  if (lbMode2 === undefined || Array.isArray(lbMode2)) {
     lbPersonalBests[mode][mode2] = {};
   }
 
@@ -168,7 +168,7 @@ function updateLeaderboardPersonalBests(
   userPersonalBests[mode][mode2].forEach((pb: SharedTypes.PersonalBest) => {
     const language = pb.language;
     if (
-      !bestForEveryLanguage[language] ||
+      bestForEveryLanguage[language] === undefined ||
       bestForEveryLanguage[language].wpm < pb.wpm
     ) {
       bestForEveryLanguage[language] = pb;
@@ -178,7 +178,8 @@ function updateLeaderboardPersonalBests(
   _.each(
     bestForEveryLanguage,
     (pb: SharedTypes.PersonalBest, language: string) => {
-      const languageDoesNotExist = !lbPersonalBests[mode][mode2][language];
+      const languageDoesNotExist =
+        lbPersonalBests[mode][mode2][language] === undefined;
 
       if (
         languageDoesNotExist ||

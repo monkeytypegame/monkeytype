@@ -476,7 +476,7 @@ export const accountHistory: ChartWithUpdateColors<
 
           intersect: false,
           external: function (ctx): void {
-            if (!ctx) return;
+            if (ctx === undefined) return;
             ctx.tooltip.options.displayColors = false;
           },
           filter: function (tooltipItem): boolean {
@@ -1119,7 +1119,7 @@ async function updateColors<
 
   //@ts-ignore
   chart.data.datasets[0].borderColor = (ctx): string => {
-    const isPb = ctx.raw?.["isPb"];
+    const isPb = ctx.raw?.["isPb"] as boolean;
     const color = isPb ? textcolor : maincolor;
     return color;
   };
@@ -1139,7 +1139,7 @@ async function updateColors<
     if (chart.config.type === "line") {
       dataset0.pointBackgroundColor = (ctx): string => {
         //@ts-ignore
-        const isPb = ctx.raw?.["isPb"];
+        const isPb = ctx.raw?.["isPb"] as boolean;
         const color = isPb ? textcolor : maincolor;
         return color;
       };
@@ -1154,7 +1154,7 @@ async function updateColors<
 
   const dataset1 = chart.data.datasets[1] as ChartDataset<"line", TData>;
 
-  if (dataset1) {
+  if (dataset1 !== undefined) {
     if (dataset1.type === undefined) {
       if (chart.config.type === "line") {
         dataset1.pointBackgroundColor = subcolor;
