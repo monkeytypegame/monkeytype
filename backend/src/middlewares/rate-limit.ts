@@ -16,9 +16,9 @@ const getKey = (req: MonkeyTypes.Request, _res: Response): string => {
 
 const getKeyWithUid = (req: MonkeyTypes.Request, _res: Response): string => {
   const uid = req?.ctx?.decodedToken?.uid;
-  const useUid = uid.length > 0 && uid !== undefined;
+  const useUid = uid !== undefined && uid !== "";
 
-  return (useUid || getKey(req, _res)) as string;
+  return useUid ? uid : getKey(req, _res);
 };
 
 export const customHandler = (
