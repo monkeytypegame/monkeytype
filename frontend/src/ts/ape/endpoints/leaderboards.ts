@@ -29,6 +29,7 @@ export default class Leaderboards {
       daysBefore,
     } = query;
     const includeDaysBefore = (isDaily ?? false) && (daysBefore ?? 0) > 0;
+
     const searchQuery = {
       language,
       mode,
@@ -45,7 +46,7 @@ export default class Leaderboards {
 
   async getRank(query: LeaderboardQuery): Ape.EndpointResponse {
     const { language, mode, mode2, isDaily, daysBefore } = query;
-    const includeDaysBefore = (isDaily && daysBefore) as number | undefined;
+    const includeDaysBefore = (isDaily ?? false) && (daysBefore ?? 0) > 0;
 
     const searchQuery = {
       language,
