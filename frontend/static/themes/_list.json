@@ -1181,11 +1181,12 @@
     "mainColor": "#363636",
     "subColor": "#4f4f4f",
     "textColor": "#1f1f1f"
-  }
+  },
   {
     "name": "navy_seal",
     "bgColor": "#081730",
     "mainColor": "e2b714",
     "subColor": "70a3f0",
     "textColor": "f9e834"
+  }
 ]
