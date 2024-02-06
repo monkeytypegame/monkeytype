@@ -454,8 +454,6 @@ export function updateActive(): void {
   //tags
   chartString += addText("tags");
 
-  console.log(chartString);
-
   setTimeout(() => {
     $(".pageAccount .group.chart .above").html(chartString);
   }, 0);
