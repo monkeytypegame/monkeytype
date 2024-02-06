@@ -73,6 +73,7 @@
     "string",
     "table",
     "task",
-    "utf8"
+    "utf8",
+    "buffer"
   ]
 }
