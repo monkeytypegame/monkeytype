@@ -325,7 +325,8 @@ async function applyBritishEnglishToWord(
   if (!/english/.test(Config.language)) return word;
   if (
     Config.mode === "quote" &&
-    TestWords.randomQuote?.britishText !== undefined
+    TestWords.randomQuote?.britishText !== undefined &&
+    TestWords.randomQuote?.britishText !== ""
   ) {
     return word;
   }
@@ -607,7 +608,11 @@ async function generateQuoteWords(
   rq.text = rq.text.replace(/…/g, "...");
   rq.text = rq.text.trim();
 
-  if (rq.britishText !== undefined && Config.britishEnglish) {
+  if (
+    rq.britishText !== undefined &&
+    rq.britishText !== "" &&
+    Config.britishEnglish
+  ) {
     rq.textSplit = rq.britishText.split(" ");
   } else {
     rq.textSplit = rq.text.split(" ");
