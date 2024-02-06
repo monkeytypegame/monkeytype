@@ -681,7 +681,7 @@ export async function getPersonalBests(
 ): Promise<SharedTypes.PersonalBest> {
   const user = await getUser(uid, "get personal bests");
 
-  if (mode2) {
+  if (mode2 !== undefined) {
     return user.personalBests?.[mode]?.[mode2];
   }
 

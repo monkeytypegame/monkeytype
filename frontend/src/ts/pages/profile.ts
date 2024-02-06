@@ -160,7 +160,7 @@ async function update(options: UpdateOptions): Promise<void> {
     $(".page.pageProfile .preloader").addClass("hidden");
     Profile.update("profile", options.data);
     PbTables.update(options.data.personalBests, true);
-  } else if (options.uidOrName) {
+  } else if (options.uidOrName !== undefined && options.uidOrName !== "") {
     const response =
       getParamExists === true
         ? await Ape.users.getProfileByUid(options.uidOrName)
@@ -214,7 +214,7 @@ export const page = new Page<undefined | Profile.ProfileData>(
   },
   async (options) => {
     Skeleton.append("pageProfile", "main");
-    const uidOrName = options?.params?.["uidOrName"];
+    const uidOrName = options?.params?.["uidOrName"] ?? "";
     if (uidOrName) {
       $(".page.pageProfile .preloader").removeClass("hidden");
       $(".page.pageProfile .search").addClass("hidden");

@@ -31,7 +31,7 @@ export async function connect(): Promise<void> {
 
   const { REDIS_URI } = process.env;
 
-  if (!REDIS_URI) {
+  if (!(REDIS_URI ?? "")) {
     if (isDevEnvironment()) {
       Logger.warning("No redis configuration provided. Running without redis.");
       return;
@@ -74,7 +74,7 @@ export function isConnected(): boolean {
 
 export function getConnection(): IORedis.Redis | undefined {
   const status = connection?.status;
-  if (!connection || status !== "ready") {
+  if (connection === undefined || status !== "ready") {
     return undefined;
   }
 

@@ -28,7 +28,7 @@ export async function add(
   language: string,
   uid: string
 ): Promise<AddQuoteReturn | void> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const quote = {
     _id: new ObjectId(),
     text: text,
@@ -82,7 +82,7 @@ export async function add(
 }
 
 export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const where: {
     approved: boolean;
     language?: string;
@@ -124,7 +124,7 @@ export async function approve(
   editSource: string,
   name: string
 ): Promise<ApproveReturn> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   //check mod status
   const targetQuote = await db
     .collection<MonkeyTypes.NewQuote>("new-quotes")
@@ -197,6 +197,6 @@ export async function approve(
 }
 
 export async function refuse(quoteId: string): Promise<void> {
-  if (!git) throw new MonkeyError(500, "Git not available.");
+  if (git === undefined) throw new MonkeyError(500, "Git not available.");
   await db.collection("new-quotes").deleteOne({ _id: new ObjectId(quoteId) });
 }

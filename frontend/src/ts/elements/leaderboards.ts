@@ -197,8 +197,8 @@ function updateFooter(lb: LbKey): void {
     return;
   }
 
-  let toppercent;
-  if (currentTimeRange === "allTime" && lbRank && lbRank?.rank) {
+  let toppercent = "";
+  if (currentTimeRange === "allTime" && lbRank !== undefined && lbRank?.rank) {
     const num = Misc.roundTo2(
       (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
@@ -221,7 +221,7 @@ function updateFooter(lb: LbKey): void {
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
     <div class="sub">${
-      !entry.consistency || entry.consistency === "-"
+      entry.consistency === undefined || entry.consistency === "-"
         ? "-"
         : entry.consistency.toFixed(2) + "%"
     }</div></td>
@@ -288,7 +288,7 @@ function checkLbMemory(lb: LbKey): void {
 }
 
 async function fillTable(lb: LbKey): Promise<void> {
-  if (!currentData[lb]) {
+  if (currentData[lb] === undefined) {
     return;
   }
 
@@ -310,8 +310,8 @@ async function fillTable(lb: LbKey): Promise<void> {
 
   let html = "";
   for (let i = 0; i < currentData[lb].length; i++) {
-    const entry = currentData[lb][i] as MonkeyTypes.LeaderboardEntry;
-    if (!entry) {
+    const entry = currentData[lb][i];
+    if (entry === undefined) {
       break;
     }
     if (entry.hidden) return;
@@ -327,7 +327,7 @@ async function fillTable(lb: LbKey): Promise<void> {
 
     let avatar = `<div class="avatarPlaceholder"><i class="fas fa-user-circle"></i></div>`;
 
-    if (entry.discordAvatar) {
+    if (entry.discordAvatar !== undefined) {
       avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
     }
 
@@ -349,7 +349,7 @@ async function fillTable(lb: LbKey): Promise<void> {
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
     <div class="sub">${
-      !entry.consistency || entry.consistency === "-"
+      entry.consistency === undefined || entry.consistency === "-"
         ? "-"
         : entry.consistency.toFixed(2) + "%"
     }</div></td>
@@ -748,8 +748,8 @@ const debouncedRequestMore = debounce(500, requestMore);
 
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
-  const elem = $(e.currentTarget) as JQuery<HTMLElement>;
-  if (!elem || !elem[0]) return;
+  const elem = $(e.currentTarget);
+  if (elem === undefined || elem[0] === undefined) return;
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round(elem.outerHeight() as number) + 50
@@ -769,8 +769,8 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
 });
 
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
-  const elem = $(e.currentTarget) as JQuery<HTMLElement>;
-  if (!elem || !elem[0]) return;
+  const elem = $(e.currentTarget);
+  if (elem === undefined || elem[0] === undefined) return;
   if (
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round((elem.outerHeight() as number) + 50)

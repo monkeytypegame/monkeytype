@@ -39,7 +39,7 @@ export async function getRank(
   mode2: string,
   language: string,
   uid: string
-): Promise<GetRankResponse | false | void> {
+): Promise<GetRankResponse | false> {
   if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
   const entry = await db
     .collection<MonkeyTypes.LeaderboardEntry>(

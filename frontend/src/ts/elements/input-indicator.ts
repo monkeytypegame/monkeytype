@@ -35,7 +35,7 @@ export class InputIndicator {
             : ""
         }
         data-balloon-pos="up"
-        ${option.message ? `aria-label="${option.message}"` : ""}
+        ${option.message ?? "" ? `aria-label="${option.message}"` : ""}
       >
         <i class="fas fa-fw ${option.icon} ${
         option.spinIcon ? "fa-spin" : ""
@@ -64,7 +64,7 @@ export class InputIndicator {
 
     indicator.removeClass("hidden");
 
-    if (messageOverride) {
+    if (messageOverride !== undefined && messageOverride !== "") {
       if (messageOverride.length > 20) {
         indicator.attr("data-balloon-length", "large");
       } else {

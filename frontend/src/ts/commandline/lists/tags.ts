@@ -30,7 +30,11 @@ const commands: MonkeyTypes.Command[] = [
 function update(): void {
   const snapshot = DB.getSnapshot();
   subgroup.list = [];
-  if (!snapshot || !snapshot.tags || snapshot.tags.length === 0) {
+  if (
+    snapshot === undefined ||
+    snapshot.tags === undefined ||
+    snapshot.tags.length === 0
+  ) {
     subgroup.list.push({
       id: "createTag",
       display: "Create tag",

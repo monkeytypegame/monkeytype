@@ -1835,7 +1835,7 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
 export function apply(
   configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
 ): void {
-  if (!configToApply) return;
+  if (configToApply === undefined) return;
 
   configToApply = replaceLegacyValues(configToApply);
 

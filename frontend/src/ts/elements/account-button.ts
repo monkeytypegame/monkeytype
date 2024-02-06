@@ -107,10 +107,10 @@ export async function update(
         width: (Misc.getLevel(xp) % 1) * 100 + "%",
       });
     }
-    if (discordAvatar && discordId) {
+    if ((discordAvatar ?? "") && (discordId ?? "")) {
       Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
         (discordAvatarUrl) => {
-          if (discordAvatarUrl) {
+          if (discordAvatarUrl !== null) {
             $("header nav .account .avatar").css(
               "background-image",
               `url(${discordAvatarUrl})`
