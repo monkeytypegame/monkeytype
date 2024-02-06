@@ -25,7 +25,7 @@ let acceptedCookies: {
   security: boolean;
   analytics: boolean;
 } | null;
-if (lsString !== undefined && lsString !== null) {
+if (lsString !== undefined && lsString !== null && lsString !== "") {
   acceptedCookies = JSON.parse(lsString);
 } else {
   acceptedCookies = null;

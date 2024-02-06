@@ -110,7 +110,7 @@ function showFound(): void {
         iconHTML = "";
       }
       let customStyle = "";
-      if (obj.customStyle !== undefined) {
+      if (obj.customStyle !== undefined && obj.customStyle !== "") {
         customStyle = obj.customStyle;
       }
 
