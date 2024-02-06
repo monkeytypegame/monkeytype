@@ -179,7 +179,6 @@ function updateLeaderboardPersonalBests(
     bestForEveryLanguage,
     (pb: SharedTypes.PersonalBest, language: string) => {
       const languageDoesNotExist =
-        lbPersonalBests[mode][mode2][language] === "" ||
         lbPersonalBests[mode][mode2][language] === undefined;
 
       if (
