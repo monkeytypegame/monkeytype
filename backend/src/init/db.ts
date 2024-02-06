@@ -27,8 +27,9 @@ export async function connect(): Promise<void> {
     DB_PASSWORD !== undefined &&
     DB_PASSWORD !== "";
   const uriProvided = DB_URI !== undefined && DB_URI !== "";
+  const nameProvided = DB_NAME !== undefined && DB_NAME !== "";
 
-  if (!authProvided || !uriProvided) {
+  if (!nameProvided || !uriProvided) {
     throw new Error("No database configuration provided");
   }
 
