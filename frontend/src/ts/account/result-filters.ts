@@ -654,9 +654,8 @@ export async function appendButtons(): Promise<void> {
   if (languageList) {
     let html = "";
     for (const language of languageList) {
-      html += `<button filter="${language}">${language.replace(
-        "_",
-        " "
+      html += `<button filter="${language}">${Misc.getLanguageDisplayString(
+        language
       )}</button>`;
     }
     const el = document.querySelector(

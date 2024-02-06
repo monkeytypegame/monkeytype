@@ -602,7 +602,7 @@ async function generateQuoteWords(
     rq = randomQuote;
   }
 
-  rq.language = Config.language.replace(/_\d*k$/g, "");
+  rq.language = Misc.removeLanguageSize(Config.language);
   rq.text = rq.text.replace(/ +/gm, " ");
   rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   rq.text = rq.text.replace(/…/g, "...");

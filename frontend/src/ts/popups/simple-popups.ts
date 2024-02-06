@@ -1447,7 +1447,7 @@ list["deleteCustomText"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0] as string);
+    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
     CustomTextState.setCustomTextName("", undefined);
     SavedTextsPopup.show(true);
 

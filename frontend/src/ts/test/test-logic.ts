@@ -339,6 +339,7 @@ export function restart(options = {} as RestartOptions): void {
         await init();
         await PaceCaret.init();
       } else {
+        await Funbox.activate();
         TestState.setRepeated(true);
         TestState.setPaceRepeat(repeatWithPace);
         Replay.stopReplayRecording();
@@ -412,7 +413,6 @@ export function restart(options = {} as RestartOptions): void {
 
 let rememberLazyMode: boolean;
 let testReinitCount = 0;
-let languageBeforeQuoteMode: string | undefined;
 export async function init(): Promise<void> {
   console.debug("Initializing test");
   testReinitCount++;
@@ -458,34 +458,6 @@ export async function init(): Promise<void> {
   if (Config.mode === "quote") {
     if (Config.quoteLength.includes(-3) && !Auth?.currentUser) {
       UpdateConfig.setQuoteLength(-1);
-    }
-    let group;
-    try {
-      group = await Misc.findCurrentGroup(Config.language);
-    } catch (e) {
-      console.error(
-        Misc.createErrorMessage(e, "Failed to find current language group")
-      );
-      return;
-    }
-    if (
-      group &&
-      group.name !== "code" &&
-      group.name !== "other" &&
-      group.name !== Config.language
-    ) {
-      languageBeforeQuoteMode = Config.language;
-      UpdateConfig.setLanguage(group.name);
-    }
-  } else {
-    if (
-      languageBeforeQuoteMode !== undefined &&
-      Config.language === languageBeforeQuoteMode.split("_")[0]
-    ) {
-      UpdateConfig.setLanguage(languageBeforeQuoteMode);
-      languageBeforeQuoteMode = undefined;
-      await init();
-      return;
     }
   }
 
@@ -832,7 +804,7 @@ function buildCompletedEvent(
   const afkDuration = TestStats.calculateAfkSeconds(duration);
   let language = Config.language;
   if (Config.mode === "quote") {
-    language = Config.language.replace(/_\d*k$/g, "");
+    language = Misc.removeLanguageSize(Config.language);
   }
 
   const quoteLength = TestWords.randomQuote?.group ?? -1;
@@ -917,7 +889,6 @@ export async function finish(difficultyFailed = false): Promise<void> {
   TimerProgress.hide();
   OutOfFocus.hide();
   TestTimer.clear();
-  Funbox.clear();
   Monkey.hide();
   ModesNotice.update();
 

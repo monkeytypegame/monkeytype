@@ -2,6 +2,8 @@ import * as Loader from "../elements/loader";
 import { normal as normalBlend } from "color-blend";
 import { envConfig } from "../constants/env-config";
 
+//todo split this file into smaller util files (grouped by functionality)
+
 async function fetchJson<T>(url: string): Promise<T> {
   try {
     if (!url) throw new Error("No URL");
@@ -1753,6 +1755,23 @@ export function numberWithSpaces(x: number): string {
 
 export function lastElementFromArray<T>(array: T[]): T | undefined {
   return array[array.length - 1];
+}
+
+export function getLanguageDisplayString(
+  language: string,
+  noSizeString = false
+): string {
+  let out = "";
+  if (noSizeString) {
+    out = removeLanguageSize(language);
+  } else {
+    out = language;
+  }
+  return out.replace(/_/g, " ");
+}
+
+export function removeLanguageSize(language: string): string {
+  return language.replace(/_\d*k$/g, "");
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

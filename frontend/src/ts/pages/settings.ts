@@ -439,7 +439,7 @@ async function fillSettingsPage(): Promise<void> {
       let langComboBox = `<optgroup label="${group.name}">`;
       group.languages.forEach((language: string) => {
         langComboBox += `<option value="${language}">
-        ${language.replace(/_/g, " ")}
+        ${Misc.getLanguageDisplayString(language)}
       </option>`;
       });
       langComboBox += `</optgroup>`;
