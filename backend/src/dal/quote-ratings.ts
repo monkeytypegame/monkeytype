@@ -26,7 +26,7 @@ export async function submit(
 
   const quoteRating = await get(quoteId, language);
   if (quoteRating === null) {
-    throw new Error("Quote rating not found");
+    throw new Error("Quote rating is null after adding rating?");
   }
   const average = parseFloat(
     (
