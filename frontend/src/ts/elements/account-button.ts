@@ -107,7 +107,7 @@ export async function update(
         width: (Misc.getLevel(xp) % 1) * 100 + "%",
       });
     }
-    if (discordAvatar !== undefined && discordId !== undefined) {
+    if ((discordAvatar ?? "") && (discordId ?? "")) {
       Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
         (discordAvatarUrl) => {
           if (discordAvatarUrl !== null) {
