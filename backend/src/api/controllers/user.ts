@@ -27,6 +27,7 @@ import * as ReportDAL from "../../dal/report";
 import emailQueue from "../../queues/email-queue";
 import FirebaseAdmin from "../../init/firebase-admin";
 import { removeTokensFromCacheByUid } from "../../utils/auth";
+import * as BadgeIds from "../../constants/badge-ids";
 
 async function verifyCaptcha(captcha: string): Promise<void> {
   if (!(await verify(captcha))) {
@@ -783,7 +784,7 @@ export async function getProfile(
     if (user.inventory === undefined) {
       user.inventory = { badges: [] };
     }
-    user.inventory.badges.push({ id: 15, important: true });
+    user.inventory.badges.push({ id: BadgeIds.PREMIUM, important: true });
   }
 
   const profileData = {

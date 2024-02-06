@@ -44,6 +44,7 @@ import * as WeeklyXpLeaderboard from "../../services/weekly-xp-leaderboard";
 import { UAParser } from "ua-parser-js";
 import { canFunboxGetPb } from "../../utils/pb";
 import { buildDbResult } from "../../utils/result";
+import * as BadgeIds from "../../constants/badge-ids";
 
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
@@ -489,7 +490,7 @@ export async function addResult(
   const importantBadgeIds: number[] = [];
   const isPremium = await UserDAL.checkIfUserIsPremium(user.uid, user);
   if (isPremium) {
-    importantBadgeIds.push(15);
+    importantBadgeIds.push(BadgeIds.PREMIUM);
   }
 
   if (dailyLeaderboard && validResultCriteria) {
@@ -523,11 +524,12 @@ export async function addResult(
         (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
       )
       .flat() ?? []
-  ).includes(14);
+  ).includes(BadgeIds.ALL_YEAR_LONG);
 
   const shouldGetBadge =
     streak >= 365 &&
-    user.inventory?.badges?.find((b) => b.id === 14) === undefined &&
+    user.inventory?.badges?.find((b) => b.id === BadgeIds.ALL_YEAR_LONG) ===
+      undefined &&
     !badgeWaitingInInbox;
 
   if (shouldGetBadge) {
@@ -538,7 +540,7 @@ export async function addResult(
         {
           type: "badge",
           item: {
-            id: 14,
+            id: BadgeIds.ALL_YEAR_LONG,
           },
         },
       ],

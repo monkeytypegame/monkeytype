@@ -3,6 +3,7 @@ import Logger from "../utils/logger";
 import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
+import * as BadgeIds from "../constants/badge-ids";
 
 const leaderboardUpdating: Record<string, boolean> = {};
 
@@ -146,7 +147,7 @@ export async function update(
 
                         var importantBadgeIds = undefined;
                         var isPremium = expiration !== undefined && (expiration === -1 || new Date(expiration)>currentTime) || undefined;
-                        if(isPremium){ importantBadgeIds = [15]; }
+                        if(isPremium){ importantBadgeIds = [${BadgeIds.PREMIUM}]; }
 
                         return {rank:row_number, selectedBadgeId, importantBadgeIds};
                       }`,
