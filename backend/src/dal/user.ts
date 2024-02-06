@@ -804,7 +804,7 @@ export async function recordAutoBanEvent(
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
-  void void Logger.logToDb(
+  void Logger.logToDb(
     "user_auto_banned",
     { autoBanTimestamps, banningUser },
     uid
@@ -1002,11 +1002,7 @@ export async function updateStreak(
   if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
-    void void Logger.logToDb(
-      "streak_lost",
-      JSON.parse(JSON.stringify(streak)),
-      uid
-    );
+    void Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
     streak.length = 1;
   }
 

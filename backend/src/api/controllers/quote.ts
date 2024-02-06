@@ -70,7 +70,7 @@ export async function approveQuote(
   }
 
   const data = await NewQuotesDAL.approve(quoteId, editText, editSource, name);
-  void void Logger.logToDb("system_quote_approved", data, uid);
+  void Logger.logToDb("system_quote_approved", data, uid);
 
   return new MonkeyResponse(data.message, data.quote);
 }

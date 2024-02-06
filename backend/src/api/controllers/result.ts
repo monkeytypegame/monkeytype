@@ -106,7 +106,7 @@ export async function getResults(
     limit,
     offset,
   });
-  void void Logger.logToDb(
+  void Logger.logToDb(
     "user_results_requested",
     {
       limit,
@@ -133,7 +133,7 @@ export async function deleteAll(
   const { uid } = req.ctx.decodedToken;
 
   await ResultDAL.deleteAll(uid);
-  void void Logger.logToDb("user_results_deleted", "", uid);
+  void Logger.logToDb("user_results_deleted", "", uid);
   return new MonkeyResponse("All results deleted");
 }
 
@@ -220,7 +220,7 @@ export async function addResult(
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const serverhash = objectHash(completedEvent);
     if (serverhash !== resulthash) {
-      void void Logger.logToDb(
+      void Logger.logToDb(
         "incorrect_result_hash",
         {
           serverhash,
@@ -324,7 +324,7 @@ export async function addResult(
   const earliestPossible = (lastResultTimestamp ?? 0) + testDurationMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
   if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
-    void void Logger.logToDb(
+    void Logger.logToDb(
       "invalid_result_spacing",
       {
         lastTimestamp: lastResultTimestamp,
@@ -394,7 +394,7 @@ export async function addResult(
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];
     if (lastHashes.includes(resulthash)) {
-      void void Logger.logToDb(
+      void Logger.logToDb(
         "duplicate_result",
         {
           lastHashes,
@@ -604,7 +604,7 @@ export async function addResult(
   await UserDAL.incrementXp(uid, xpGained.xp);
 
   if (isPb) {
-    void void Logger.logToDb(
+    void Logger.logToDb(
       "user_new_pb",
       `${completedEvent.mode + " " + completedEvent.mode2} ${
         completedEvent.wpm
