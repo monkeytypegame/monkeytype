@@ -112,6 +112,7 @@ declare namespace MonkeyTypes {
   type Badge = {
     id: number;
     selected?: boolean;
+    important?: boolean;
   };
 
   type UserQuoteRatings = Record<string, Record<string, number>>;
@@ -135,11 +136,31 @@ declare namespace MonkeyTypes {
     personalBests: SharedTypes.PersonalBests;
   };
 
-  type CustomTheme = {
+  interface LeaderboardEntry {
+    _id: ObjectId;
+    acc: number;
+    consistency: number;
+    difficulty: SharedTypes.Config.Difficulty;
+    lazyMode: boolean;
+    language: string;
+    punctuation: boolean;
+    raw: number;
+    wpm: number;
+    timestamp: number;
+    uid: string;
+    name: string;
+    discordId?: string;
+    discordAvatar?: string;
+    rank: number;
+    selectedBadgeId?: number;
+    importantBadgeIds?: number;
+  }
+
+  interface CustomTheme {
     _id: ObjectId;
     name: string;
     colors: string[];
-  };
+  }
 
   type ApeKeyDB = SharedTypes.ApeKey & {
     _id: ObjectId;

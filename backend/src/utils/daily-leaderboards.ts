@@ -13,7 +13,8 @@ type DailyLeaderboardEntry = {
   timestamp: number;
   discordAvatar?: string;
   discordId?: string;
-  badgeId?: number;
+  selectedBadgeId?: number;
+  importantBadgeIds?: number[];
 };
 
 type GetRankResponse = {

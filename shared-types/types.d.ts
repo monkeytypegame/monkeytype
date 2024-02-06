@@ -451,7 +451,8 @@ declare namespace SharedTypes {
     discordId?: string;
     discordAvatar?: string;
     rank: number;
-    badgeId: number | null;
+    selectedBadgeId?: number;
+    importantBadgeIds?: number[];
   }
 
   type PostResultResponse = {

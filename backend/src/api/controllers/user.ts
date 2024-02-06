@@ -703,7 +703,6 @@ export async function getProfile(
   const {
     name,
     banned,
-    inventory,
     profileDetails,
     personalBests,
     completedTests,
@@ -779,9 +778,17 @@ export async function getProfile(
     },
   };
 
+  const isPremium = await UserDAL.checkIfUserIsPremium(user.uid, user);
+  if (isPremium) {
+    if (user.inventory === undefined) {
+      user.inventory = { badges: [] };
+    }
+    user.inventory.badges.push({ id: 15, important: true });
+  }
+
   const profileData = {
     ...baseProfile,
-    inventory,
+    inventory: user.inventory,
     details: profileDetails,
     allTimeLbs: alltimelbs,
     uid: user.uid,

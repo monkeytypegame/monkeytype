@@ -50,10 +50,10 @@ describe("LeaderboardsDal", () => {
       const lb = result.map((it) => _.omit(it, ["_id"]));
 
       expect(lb).toEqual([
-        expectedLbEntry(1, rank1, "15"),
-        expectedLbEntry(2, rank2, "15"),
-        expectedLbEntry(3, rank3, "15"),
-        expectedLbEntry(4, rank4, "15"),
+        expectedLbEntry("15", { rank: 1, user: rank1 }),
+        expectedLbEntry("15", { rank: 2, user: rank2 }),
+        expectedLbEntry("15", { rank: 3, user: rank3 }),
+        expectedLbEntry("15", { rank: 4, user: rank4 }),
       ]);
     });
     it("should create leaderboard time english 60", async () => {
@@ -76,10 +76,10 @@ describe("LeaderboardsDal", () => {
       const lb = result.map((it) => _.omit(it, ["_id"]));
 
       expect(lb).toEqual([
-        expectedLbEntry(1, rank1, "60"),
-        expectedLbEntry(2, rank2, "60"),
-        expectedLbEntry(3, rank3, "60"),
-        expectedLbEntry(4, rank4, "60"),
+        expectedLbEntry("60", { rank: 1, user: rank1 }),
+        expectedLbEntry("60", { rank: 2, user: rank2 }),
+        expectedLbEntry("60", { rank: 3, user: rank3 }),
+        expectedLbEntry("60", { rank: 4, user: rank4 }),
       ]);
     });
     it("should not include discord properties for users without discord connection", async () => {
@@ -154,15 +154,100 @@ describe("LeaderboardsDal", () => {
       //THEN
       expect(result).toEqual({ "20": 2, "110": 2 });
     });
+
+    it("should create leaderboard with badges", async () => {
+      //GIVEN
+      const noBadge = await createUser(lbBests(pb(4)));
+      const oneBadgeSelected = await createUser(lbBests(pb(3)), {
+        inventory: { badges: [{ id: 1, selected: true }] },
+      });
+      const oneBadgeNotSelected = await createUser(lbBests(pb(2)), {
+        inventory: { badges: [{ id: 1, selected: false }] },
+      });
+      const multipleBadges = await createUser(lbBests(pb(1)), {
+        inventory: {
+          badges: [
+            { id: 1, selected: false },
+            { id: 2, selected: true },
+            { id: 3, selected: true },
+          ],
+        },
+      });
+
+      //WHEN
+      await LeaderboardsDal.update("time", "15", "english");
+      const result = (await LeaderboardsDal.get(
+        "time",
+        "15",
+        "english",
+        0
+      )) as MonkeyTypes.LeaderboardEntry[];
+
+      //THEN
+      const lb = result.map((it) => _.omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("15", { rank: 1, user: noBadge }),
+        expectedLbEntry("15", {
+          rank: 2,
+          user: oneBadgeSelected,
+          selectedBadgeId: 1,
+        }),
+        expectedLbEntry("15", { rank: 3, user: oneBadgeNotSelected }),
+        expectedLbEntry("15", {
+          rank: 4,
+          user: multipleBadges,
+          selectedBadgeId: 2,
+        }),
+      ]);
+    });
+
+    it("should create leaderboard with premium", async () => {
+      //GIVEN
+      const noPremium = await createUser(lbBests(pb(4)));
+      const lifetime = await createUser(lbBests(pb(3)), premium(-1));
+      const validPremium = await createUser(lbBests(pb(2)), premium(10));
+      const expiredPremium = await createUser(lbBests(pb(1)), premium(-10));
+
+      //WHEN
+      await LeaderboardsDal.update("time", "15", "english");
+      const result = (await LeaderboardsDal.get(
+        "time",
+        "15",
+        "english",
+        0
+      )) as MonkeyTypes.LeaderboardEntry[];
+
+      //THEN
+      const lb = result.map((it) => _.omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("15", { rank: 1, user: noPremium }),
+        expectedLbEntry("15", {
+          rank: 2,
+          user: lifetime,
+          importantBadgeIds: [15],
+        }),
+        expectedLbEntry("15", {
+          rank: 3,
+          user: validPremium,
+          importantBadgeIds: [15],
+        }),
+        expectedLbEntry("15", { rank: 4, user: expiredPremium }),
+      ]);
+    });
   });
 });
 
-function expectedLbEntry(rank: number, user: MonkeyTypes.User, time: string) {
+function expectedLbEntry(
+  time: string,
+  { rank, user, selectedBadgeId, importantBadgeIds }: ExpectedLbEntry
+) {
   const lbBest: SharedTypes.PersonalBest =
     user.lbPersonalBests?.time[time].english;
 
   return {
-    rank,
+    rank: rank,
     uid: user.uid,
     name: user.name,
     wpm: lbBest.wpm,
@@ -172,7 +257,8 @@ function expectedLbEntry(rank: number, user: MonkeyTypes.User, time: string) {
     consistency: lbBest.consistency,
     discordId: user.discordId,
     discordAvatar: user.discordAvatar,
-    badgeId: 2,
+    selectedBadgeId: selectedBadgeId,
+    importantBadgeIds: importantBadgeIds,
   };
 }
 
@@ -192,12 +278,6 @@ async function createUser(
           timeTyping: 7200,
           discordId: "discord " + uid,
           discordAvatar: "avatar " + uid,
-          inventory: {
-            badges: [
-              { id: 1, selected: false },
-              { id: 2, selected: true },
-            ],
-          },
           ...userProperties,
           lbPersonalBests,
         },
@@ -233,4 +313,23 @@ function pb(
     wpm,
     timestamp,
   };
+}
+
+function premium(expirationDeltaSeconds) {
+  return {
+    premium: {
+      startTimestamp: 0,
+      expirationTimestamp:
+        expirationDeltaSeconds === -1
+          ? -1
+          : Date.now() + expirationDeltaSeconds * 1000,
+    },
+  };
+}
+
+interface ExpectedLbEntry {
+  rank: number;
+  user: MonkeyTypes.User;
+  selectedBadgeId?: number;
+  importantBadgeIds?: number[];
 }

@@ -486,6 +486,11 @@ export async function addResult(
     (isDevEnvironment() || (user.timeTyping ?? 0) > 7200);
 
   const selectedBadgeId = user.inventory?.badges?.find((b) => b.selected)?.id;
+  const importantBadgeIds: number[] = [];
+  const isPremium = await UserDAL.checkIfUserIsPremium(user.uid, user);
+  if (isPremium) {
+    importantBadgeIds.push(15);
+  }
 
   if (dailyLeaderboard && validResultCriteria) {
     incrementDailyLeaderboard(
@@ -504,7 +509,8 @@ export async function addResult(
         uid,
         discordAvatar: user.discordAvatar,
         discordId: user.discordId,
-        badgeId: selectedBadgeId,
+        selectedBadgeId: selectedBadgeId,
+        importantBadgeIds: importantBadgeIds,
       },
       dailyLeaderboardsConfig
     );
