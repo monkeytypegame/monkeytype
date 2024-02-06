@@ -818,7 +818,7 @@ export function findGetParameter(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride !== undefined) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
@@ -841,7 +841,7 @@ export function checkIfGetParameterExists(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride !== undefined) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
