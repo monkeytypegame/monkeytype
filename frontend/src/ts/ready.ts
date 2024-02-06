@@ -33,7 +33,7 @@ if (Misc.isDevEnvironment()) {
 }
 
 ManualRestart.set();
-UpdateConfig.loadFromLocalStorage();
+void UpdateConfig.loadFromLocalStorage();
 Focus.set(true, true);
 
 $(document).ready(() => {

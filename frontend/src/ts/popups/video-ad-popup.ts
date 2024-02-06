@@ -77,7 +77,7 @@ export function egVideoListener(options: Record<string, string>): void {
 }
 
 $(".pageTest #watchVideoAdButton").on("click", () => {
-  show();
+  void show();
 });
 
 Skeleton.save(wrapperId);

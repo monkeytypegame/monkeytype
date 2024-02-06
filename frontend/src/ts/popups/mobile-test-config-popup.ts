@@ -139,7 +139,7 @@ el.find(".quoteGroup button").on("click", (e) => {
   if (len === -2) {
     // UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
     hidePopup();
-    QuoteSearchPopup.show();
+    void QuoteSearchPopup.show();
   } else {
     if (len === -1) {
       len = [0, 1, 2, 3];

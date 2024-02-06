@@ -34,13 +34,13 @@ function hide(): void {
   if (isPopupVisible(wrapperId)) {
     if ($("#settingsImportWrapper input").val() !== "") {
       try {
-        UpdateConfig.apply(
+        void UpdateConfig.apply(
           JSON.parse($("#settingsImportWrapper input").val() as string)
         );
       } catch (e) {
         Notifications.add("Failed to import settings: " + e, -1);
       }
-      UpdateConfig.saveFullConfigToLocalStorage();
+      void UpdateConfig.saveFullConfigToLocalStorage();
     }
     $("#settingsImportWrapper")
       .stop(true, true)

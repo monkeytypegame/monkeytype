@@ -260,7 +260,7 @@ function checkLbMemory(lb: LbKey): void {
   if (rank) {
     const difference = memory - rank;
     if (difference > 0) {
-      DB.updateLbMemory("time", lb, "english", rank, true);
+      void DB.updateLbMemory("time", lb, "english", rank, true);
       if (memory !== 0) {
         $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
           ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
@@ -269,7 +269,7 @@ function checkLbMemory(lb: LbKey): void {
         );
       }
     } else if (difference < 0) {
-      DB.updateLbMemory("time", lb, "english", rank, true);
+      void DB.updateLbMemory("time", lb, "english", rank, true);
       if (memory !== 0) {
         $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
           ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
@@ -483,14 +483,14 @@ async function update(): Promise<void> {
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
-  leaderboardKeys.forEach((lbKey) => {
+  leaderboardKeys.forEach(async (lbKey) => {
     hideLoader(lbKey);
     clearBody(lbKey);
     updateFooter(lbKey);
     checkLbMemory(lbKey);
-    fillTable(lbKey);
+    await fillTable(lbKey);
 
-    getAvatarUrls(currentData[lbKey]).then((urls) => {
+    void getAvatarUrls(currentData[lbKey]).then((urls) => {
       currentAvatars[lbKey] = urls;
       fillAvatars(lbKey);
     });
@@ -552,7 +552,7 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
   }
   await fillTable(lb);
 
-  getAvatarUrls(data).then((urls) => {
+  void getAvatarUrls(data).then((urls) => {
     if (prepend) {
       currentAvatars[lb].unshift(...urls);
     } else {
@@ -595,7 +595,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   currentData[lb] = data;
   await fillTable(lb);
 
-  getAvatarUrls(data).then((urls) => {
+  void getAvatarUrls(data).then((urls) => {
     currentAvatars[lb] = urls;
     fillAvatars(lb);
   });
@@ -673,7 +673,7 @@ export function show(): void {
         },
         125,
         () => {
-          update();
+          void update();
           startTimer();
         }
       );
@@ -731,7 +731,7 @@ const languageSelector = $(
 languageSelector.on("select2:select", (e) => {
   currentLanguage = e.params.data.id;
   updateTitle();
-  update();
+  void update();
 });
 
 let leftScrollEnabled = true;
@@ -740,7 +740,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
   if (!leftScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    debouncedRequestMore("15", true);
+    void debouncedRequestMore("15", true);
   }
 });
 
@@ -754,7 +754,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").on("scroll", (e) => {
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round(elem.outerHeight() as number) + 50
   ) {
-    debouncedRequestMore("15");
+    void debouncedRequestMore("15");
   }
 });
 
@@ -764,7 +764,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
   if (!rightScrollEnabled) return;
   const elem = $(e.currentTarget);
   if (Math.round(elem.scrollTop() as number) <= 50) {
-    debouncedRequestMore("60", true);
+    void debouncedRequestMore("60", true);
   }
 });
 
@@ -775,7 +775,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").on("scroll", (e) => {
     Math.round(elem[0].scrollHeight - (elem.scrollTop() as number)) <=
     Math.round((elem.outerHeight() as number) + 50)
   ) {
-    debouncedRequestMore("60");
+    void debouncedRequestMore("60");
   }
 });
 
@@ -861,7 +861,7 @@ $(
   languageSelector.prop("disabled", true);
   languageSelector.val("english");
   languageSelector.trigger("change");
-  update();
+  void update();
 });
 
 $(
@@ -870,12 +870,12 @@ $(
   currentTimeRange = "daily";
   updateYesterdayButton();
   languageSelector.prop("disabled", false);
-  update();
+  void update();
 });
 
 $("#leaderboardsWrapper .showYesterdayButton").on("click", () => {
   showingYesterday = !showingYesterday;
-  update();
+  void update();
 });
 
 $(document).on("keydown", (event) => {

@@ -113,7 +113,7 @@ async function apply(): Promise<void> {
           custom: {},
         },
       });
-      Settings.update();
+      void Settings.update();
     }
   } else if (action === "edit") {
     const response = await Ape.users.editTag(tagId, tagName);
@@ -128,7 +128,7 @@ async function apply(): Promise<void> {
           tag.display = propTagName;
         }
       });
-      Settings.update();
+      void Settings.update();
     }
   } else if (action === "remove") {
     const response = await Ape.users.deleteTag(tagId);
@@ -142,7 +142,7 @@ async function apply(): Promise<void> {
           DB.getSnapshot()?.tags?.splice(index, 1);
         }
       });
-      Settings.update();
+      void Settings.update();
     }
   } else if (action === "clearPb") {
     const response = await Ape.users.deleteTagPersonalBest(tagId);
@@ -162,7 +162,7 @@ async function apply(): Promise<void> {
           };
         }
       });
-      Settings.update();
+      void Settings.update();
     }
   }
   Loader.hide();
@@ -176,7 +176,7 @@ $("#tagsWrapper").on("click", (e) => {
 
 $("#tagsWrapper #tagsEdit form").on("submit", (e) => {
   e.preventDefault();
-  apply();
+  void apply();
 });
 
 $(".pageSettings .section.tags").on("click", ".addTagButton", () => {
