@@ -1,4 +1,4 @@
-import simpleGit from "simple-git";
+import { simpleGit } from "simple-git";
 import { ObjectId } from "mongodb";
 import path from "path";
 import { existsSync, writeFileSync } from "fs";
