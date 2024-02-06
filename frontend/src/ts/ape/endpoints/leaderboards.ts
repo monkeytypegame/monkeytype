@@ -28,8 +28,7 @@ export default class Leaderboards {
       limit = 50,
       daysBefore,
     } = query;
-    const includeDaysBefore = (isDaily && daysBefore) as number | undefined;
-
+    const includeDaysBefore = (isDaily ?? false) && (daysBefore ?? 0) > 0;
     const searchQuery = {
       language,
       mode,
