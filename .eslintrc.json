@@ -78,7 +78,7 @@
           }
         ],
         "@typescript-eslint/promise-function-async": "warn",
-        // "@typescript-eslint/no-floating-promises": "error", // consider adding this
+        "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/strict-boolean-expressions": [
           "error",
           { "allowNullableBoolean": true, "allowNullableNumber": true }
