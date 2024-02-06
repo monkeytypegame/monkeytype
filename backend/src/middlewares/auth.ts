@@ -309,9 +309,13 @@ function authenticateGithubWebhook(): Handler {
     const webhookSecret = process.env["GITHUB_WEBHOOK_SECRET"];
 
     try {
-      if (webhookSecret === undefined) {
+      if (webhookSecret === undefined || webhookSecret === "") {
         throw new MonkeyError(500, "Missing Github Webhook Secret");
-      } else if (authHeader === undefined) {
+      } else if (
+        authHeader === undefined ||
+        authHeader === "" ||
+        authHeader.length === 0
+      ) {
         throw new MonkeyError(401, "Missing Github signature header");
       } else {
         const signature = crypto
