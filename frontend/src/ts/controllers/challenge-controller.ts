@@ -282,7 +282,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] !== null) {
-        Funbox.activate(<string>challenge.parameters[2]);
+        void Funbox.activate(<string>challenge.parameters[2]);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);

@@ -12,7 +12,7 @@ function reset(): void {
   $(".pageAbout .supporters").empty();
 
   ChartController.globalSpeedHistogram.getDataset("count").data = [];
-  ChartController.globalSpeedHistogram.updateColors();
+  void ChartController.globalSpeedHistogram.updateColors();
 }
 
 interface HistogramData {
@@ -31,7 +31,7 @@ let typingStatsResponseData: TypingStatsData | undefined;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {
-    ChartController.globalSpeedHistogram.updateColors();
+    void ChartController.globalSpeedHistogram.updateColors();
     const bucketedSpeedStats = getHistogramDataBucketed(
       speedHistogramResponseData
     );

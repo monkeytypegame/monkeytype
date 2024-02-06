@@ -78,8 +78,8 @@ class ChartWithUpdateColors<
     super(item, config);
   }
 
-  updateColors(): void {
-    updateColors(this);
+  async updateColors(): Promise<void> {
+    await updateColors(this);
   }
 
   getDataset(id: DatasetIds): ChartDataset<TType, TData> {
@@ -250,7 +250,7 @@ export const result: ChartWithUpdateColors<
                 ) {
                   return "";
                 }
-                ResultWordHighlight.highlightWordsInRange(
+                void ResultWordHighlight.highlightWordsInRange(
                   firstHighlightWordIndex,
                   lastHighlightWordIndex
                 );
@@ -1038,7 +1038,7 @@ function updateResults(updateChart = true): void {
   accountHistory.getDataset("wpmAvgHundred").hidden = !resultsOn;
   accountHistory.getScale("wpm").display = resultsOn;
 
-  if (updateChart) accountHistory.updateColors();
+  if (updateChart) void accountHistory.updateColors();
 }
 
 function updateAccuracy(updateChart = true): void {
@@ -1066,7 +1066,7 @@ function updateAccuracy(updateChart = true): void {
     accountHistory.getScale("accAvgHundred").min = minAccRoundedTo10;
   }
 
-  if (updateChart) accountHistory.updateColors();
+  if (updateChart) void accountHistory.updateColors();
 }
 
 function updateAverage10(updateChart = true): void {
@@ -1081,7 +1081,7 @@ function updateAverage10(updateChart = true): void {
   if (resultsOn) {
     accountHistory.getDataset("wpmAvgTen").hidden = !avg10On;
   }
-  if (updateChart) accountHistory.updateColors();
+  if (updateChart) void accountHistory.updateColors();
 }
 
 function updateAverage100(updateChart = true): void {
@@ -1096,7 +1096,7 @@ function updateAverage100(updateChart = true): void {
   if (resultsOn) {
     accountHistory.getDataset("wpmAvgHundred").hidden = !avg100On;
   }
-  if (updateChart) accountHistory.updateColors();
+  if (updateChart) void accountHistory.updateColors();
 }
 
 async function updateColors<
@@ -1271,12 +1271,12 @@ function setDefaultFontFamily(font: string): void {
 
 export function updateAllChartColors(): void {
   ThemeColors.update();
-  accountHistory.updateColors();
-  accountHistogram.updateColors();
-  globalSpeedHistogram.updateColors();
-  result.updateColors();
-  accountActivity.updateColors();
-  miniResult.updateColors();
+  void accountHistory.updateColors();
+  void accountHistogram.updateColors();
+  void globalSpeedHistogram.updateColors();
+  void result.updateColors();
+  void accountActivity.updateColors();
+  void miniResult.updateColors();
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
