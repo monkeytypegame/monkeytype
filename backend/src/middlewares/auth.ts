@@ -45,7 +45,7 @@ function authenticateRequest(authOptions = DEFAULT_OPTIONS): Handler {
     const { authorization: authHeader } = req.headers;
 
     try {
-      if (authHeader !== undefined) {
+      if (authHeader !== undefined && authHeader !== "") {
         token = await authenticateWithAuthHeader(
           authHeader,
           req.ctx.configuration,
