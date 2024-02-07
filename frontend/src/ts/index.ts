@@ -1,5 +1,10 @@
 // this file should be concatenated at the top of the legacy ts files
 
+import "jquery";
+import "jquery-color";
+import "jquery.easing";
+import "select2";
+
 import "../styles/index.scss";
 import "./firebase";
 
@@ -40,11 +45,6 @@ import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
-
-import "jquery";
-import "jquery-color";
-import "jquery.easing";
-import "select2";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
