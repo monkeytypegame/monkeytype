@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { resolve, join } = require("path");
 const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
@@ -115,7 +116,6 @@ const BASE_CONFIG = {
       jQueryColor: "jquery-color",
       jQueryEasing: "jquery.easing",
       select2: "select2",
-      html2canvas: "html2canvas",
     }),
     new HtmlWebpackPlugin({
       filename: "./index.html",
