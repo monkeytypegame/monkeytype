@@ -6,7 +6,7 @@ import * as ConnectionState from "../states/connection";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
 
-let apeKeys: ApeKeysApe.GetApeKeys | null = {};
+let apeKeys: Ape.ApeKeys.GetApeKeys | null = {};
 
 const wrapperId = "apeKeysPopupWrapper";
 

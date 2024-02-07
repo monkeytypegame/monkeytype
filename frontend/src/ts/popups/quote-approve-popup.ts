@@ -7,7 +7,7 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteApprovePopupWrapper";
 
-let quotes: QuotesApe.Quote[] = [];
+let quotes: Ape.Quotes.Quote[] = [];
 
 function updateList(): void {
   $("#quoteApprovePopupWrapper .quotes").empty();

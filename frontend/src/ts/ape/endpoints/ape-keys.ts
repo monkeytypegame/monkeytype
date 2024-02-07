@@ -5,14 +5,14 @@ export default class ApeKeys {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointResponse<ApeKeysApe.GetApeKeys> {
+  async get(): Ape.EndpointResponse<Ape.ApeKeys.GetApeKeys> {
     return await this.httpClient.get(BASE_PATH);
   }
 
   async generate(
     name: string,
     enabled: boolean
-  ): Ape.EndpointResponse<ApeKeysApe.GenerateApeKey> {
+  ): Ape.EndpointResponse<Ape.ApeKeys.GenerateApeKey> {
     const payload = { name, enabled };
     return await this.httpClient.post(BASE_PATH, { payload });
   }
