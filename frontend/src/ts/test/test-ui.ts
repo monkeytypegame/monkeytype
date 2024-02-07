@@ -21,6 +21,7 @@ import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
+import html2canvas from "html2canvas";
 
 const debouncedZipfCheck = debounce(250, () => {
   Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
