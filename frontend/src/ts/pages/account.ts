@@ -503,6 +503,7 @@ async function fillContent(): Promise<void> {
         ResultFilters.reset();
         ResultFilters.updateActive();
         void update();
+        return;
       }
       //filters done
       //=======================================
