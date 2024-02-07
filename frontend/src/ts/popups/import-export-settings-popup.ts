@@ -30,11 +30,11 @@ export function show(mode: string, config?: string): void {
   }
 }
 
-function hide(): void {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     if ($("#settingsImportWrapper input").val() !== "") {
       try {
-        void UpdateConfig.apply(
+        await UpdateConfig.apply(
           JSON.parse($("#settingsImportWrapper input").val() as string)
         );
       } catch (e) {
@@ -53,12 +53,12 @@ function hide(): void {
 }
 
 $("#settingsImportWrapper .button").on("click", () => {
-  hide();
+  void hide();
 });
 
 $("#settingsImportWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "settingsImportWrapper") {
-    hide();
+    void hide();
   }
 });
 
