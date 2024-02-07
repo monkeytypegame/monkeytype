@@ -144,19 +144,12 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(32);
     // }
     // LoadingPage.updateText("Downloading config...");
-    if (configData !== undefined && configData !== null) {
-      const newConfig = {
+    if (configData === undefined || configData === null) {
+      snap.config = {
         ...DefaultConfig,
       };
-
-      for (const key in configData.config) {
-        const value = configData.config[key];
-        (newConfig[
-          key as keyof MonkeyTypes.Config
-        ] as typeof configData[typeof key]) = value;
-      }
-
-      snap.config = newConfig;
+    } else {
+      snap.config = mergeWithDefaultConfig(configData.config);
     }
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(67.5);
