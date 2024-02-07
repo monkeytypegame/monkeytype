@@ -600,6 +600,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
   mode: M,
   mode2: MonkeyTypes.Mode2<M>,
   punctuation: boolean,
+  numbers: boolean,
   language: string,
   difficulty: MonkeyTypes.Difficulty,
   lazyMode: boolean,
@@ -636,6 +637,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
     ).forEach((pb) => {
       if (
         pb.punctuation === punctuation &&
+        !!pb.numbers === numbers &&
         pb.difficulty === difficulty &&
         pb.language === language &&
         (pb.lazyMode === lazyMode ||
@@ -666,6 +668,7 @@ export async function saveLocalPB<M extends MonkeyTypes.Mode>(
         raw,
         timestamp: Date.now(),
         consistency,
+        numbers,
       });
     }
   }

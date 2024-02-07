@@ -329,6 +329,7 @@ declare namespace MonkeyTypes {
     raw: number;
     wpm: number;
     timestamp: number;
+    numbers?: boolean;
   }
 
   interface PersonalBests {

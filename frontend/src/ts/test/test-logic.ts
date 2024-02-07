@@ -1304,6 +1304,7 @@ async function saveResult(
       Config.mode,
       completedEvent.mode2,
       Config.punctuation,
+      Config.numbers,
       Config.language,
       Config.difficulty,
       Config.lazyMode,
