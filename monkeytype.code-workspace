@@ -9,6 +9,10 @@
 			"path":"frontend",
 		},
 		{
+			"name":"shared-types",
+			"path":"shared-types",
+		},
+		{
 			"name":"root",
 			"path": "./"
 		}
@@ -17,10 +21,10 @@
 		 "files.exclude": {
             "frontend": true,
             "backend": true,
+			"shared-types": true,
         },
         "jest.disabledWorkspaceFolders": [
-            "root"
+            "root","shared-types"
         ]
-		
 	}
 }
