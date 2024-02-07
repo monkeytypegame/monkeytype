@@ -763,18 +763,22 @@ export function updateAuthSections(): void {
 function setActiveFunboxButton(): void {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
   $(`.pageSettings .section.funbox .button`).removeClass("disabled");
-  Misc.getFunboxList().then((funboxModes) => {
-    funboxModes.forEach((funbox) => {
-      if (
-        !areFunboxesCompatible(Config.funbox, funbox.name) &&
-        !Config.funbox.split("#").includes(funbox.name)
-      ) {
-        $(
-          `.pageSettings .section.funbox .button[funbox='${funbox.name}']`
-        ).addClass("disabled");
-      }
+  Misc.getFunboxList()
+    .then((funboxModes) => {
+      funboxModes.forEach((funbox) => {
+        if (
+          !areFunboxesCompatible(Config.funbox, funbox.name) &&
+          !Config.funbox.split("#").includes(funbox.name)
+        ) {
+          $(
+            `.pageSettings .section.funbox .button[funbox='${funbox.name}']`
+          ).addClass("disabled");
+        }
+      });
+    })
+    .catch((e) => {
+      Notifications.add(`Failed to update funbox buttons: ${e.message}`, -1);
     });
-  });
   Config.funbox.split("#").forEach((funbox) => {
     $(`.pageSettings .section.funbox .button[funbox='${funbox}']`).addClass(
       "active"
@@ -1046,7 +1050,7 @@ $(".pageSettings .section.presets").on(
     configEventDisabled = true;
     PresetController.apply(presetid);
     configEventDisabled = false;
-    update();
+    void update();
   }
 );
 
@@ -1071,7 +1075,7 @@ $(".pageSettings .sectionGroupTitle").on("click", (e) => {
 });
 
 $(".pageSettings .section.apeKeys #showApeKeysPopup").on("click", () => {
-  ApeKeysPopup.show();
+  void ApeKeysPopup.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
@@ -1134,7 +1138,7 @@ $(".pageSettings .section.fontSize .inputAndButton input").on(
 $(".pageSettings .section.customLayoutfluid .inputAndButton .save").on(
   "click",
   () => {
-    UpdateConfig.setCustomLayoutfluid(
+    void UpdateConfig.setCustomLayoutfluid(
       $(
         ".pageSettings .section.customLayoutfluid .inputAndButton input"
       ).val() as MonkeyTypes.CustomLayoutFluidSpaces
@@ -1150,7 +1154,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndButton .input").on(
   "keypress",
   (e) => {
     if (e.key === "Enter") {
-      UpdateConfig.setCustomLayoutfluid(
+      void UpdateConfig.setCustomLayoutfluid(
         $(
           ".pageSettings .section.customLayoutfluid .inputAndButton input"
         ).val() as MonkeyTypes.CustomLayoutFluidSpaces
@@ -1203,7 +1207,7 @@ $(".pageSettings .section.autoSwitchThemeInputs").on(
 $(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
   "click",
   () => {
-    Ape.users.getOauthLink().then((res) => {
+    void Ape.users.getOauthLink().then((res) => {
       window.open(res.data.url, "_self");
     });
   }
@@ -1220,7 +1224,7 @@ ConfigEvent.subscribe((eventKey) => {
   }
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings" && eventKey !== "theme") {
-    update();
+    void update();
   }
 });
 

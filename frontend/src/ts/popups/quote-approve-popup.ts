@@ -75,7 +75,7 @@ export async function show(noAnim = false): Promise<void> {
 
   if (!isPopupVisible(wrapperId)) {
     quotes = [];
-    getQuotes();
+    await getQuotes();
     $("#quoteApprovePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -118,7 +118,7 @@ $("#quoteApprovePopupWrapper").on("mousedown", (e) => {
 
 $("#quoteApprovePopupWrapper .button.refreshList").on("click", () => {
   $("#quoteApprovePopupWrapper .quotes").empty();
-  getQuotes();
+  void getQuotes();
 });
 
 $("#popups").on("click", "#quoteApprovePopup .quote .undo", async (e) => {

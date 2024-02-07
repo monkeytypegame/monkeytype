@@ -127,7 +127,7 @@ async function getDataAndInit(): Promise<boolean> {
         ResultFilters.defaultResultFilters.funbox[funbox.name] = true;
       });
       // filters = defaultResultFilters;
-      ResultFilters.load();
+      void ResultFilters.load();
     })
     .catch((e) => {
       console.log(
@@ -159,7 +159,7 @@ async function getDataAndInit(): Promise<boolean> {
     console.log(
       "no local config or local and db configs are different - applying db"
     );
-    UpdateConfig.apply(snapshot.config);
+    await UpdateConfig.apply(snapshot.config);
     UpdateConfig.saveFullConfigToLocalStorage(true);
   }
   AccountButton.loading(false);
@@ -185,7 +185,7 @@ export async function loadUser(user: UserType): Promise<void> {
   }
   const { discordId, discordAvatar, xp, inboxUnreadSize } =
     DB.getSnapshot() as MonkeyTypes.Snapshot;
-  AccountButton.update(xp, discordId, discordAvatar);
+  void AccountButton.update(xp, discordId, discordAvatar);
   Alerts.setNotificationBubbleVisible(inboxUnreadSize > 0);
   // var displayName = user.displayName;
   // var email = user.email;
@@ -247,7 +247,7 @@ if (Auth && ConnectionState.get()) {
 
     URLHandler.loadCustomThemeFromUrl(search);
     URLHandler.loadTestSettingsFromUrl(search);
-    URLHandler.linkDiscord(hash);
+    void URLHandler.linkDiscord(hash);
 
     if (/challenge_.+/g.test(window.location.pathname)) {
       Notifications.add(
@@ -281,7 +281,7 @@ if (Auth && ConnectionState.get()) {
 
     URLHandler.loadCustomThemeFromUrl(search);
     URLHandler.loadTestSettingsFromUrl(search);
-    URLHandler.linkDiscord(hash);
+    void URLHandler.linkDiscord(hash);
 
     if (/challenge_.+/g.test(window.location.pathname)) {
       Notifications.add(
@@ -442,7 +442,7 @@ export function signOut(): void {
       });
       AllTimeStats.clear();
       Settings.hideAccountSection();
-      AccountButton.update();
+      void AccountButton.update();
       navigate("/login");
       DB.setSnapshot(undefined);
       LoginPage.enableSignUpButton();
@@ -610,11 +610,11 @@ async function signUp(): Promise<void> {
 
 $(".pageLogin .login form").on("submit", (e) => {
   e.preventDefault();
-  signIn();
+  void signIn();
 });
 
 $(".pageLogin .login button.signInWithGoogle").on("click", () => {
-  signInWithGoogle();
+  void signInWithGoogle();
 });
 
 // $(".pageLogin .login .button.signInWithGitHub").on("click",(e) => {
@@ -638,7 +638,7 @@ $("header .signInOut").on("click", () => {
 
 $(".pageLogin .register form").on("submit", (e) => {
   e.preventDefault();
-  signUp();
+  void signUp();
 });
 
 $(".pageSettings #addGoogleAuth").on("click", async () => {
@@ -648,7 +648,7 @@ $(".pageSettings #addGoogleAuth").on("click", async () => {
     });
     return;
   }
-  addGoogleAuth();
+  void addGoogleAuth();
 });
 
 $(".pageAccount").on("click", ".sendVerificationEmail", () => {
@@ -658,5 +658,5 @@ $(".pageAccount").on("click", ".sendVerificationEmail", () => {
     });
     return;
   }
-  sendVerificationEmail();
+  void sendVerificationEmail();
 });

@@ -11,7 +11,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "off",
       exec: (): void => {
         UpdateConfig.setOppositeShiftMode("off");
-        ModesNotice.update();
+        void ModesNotice.update();
       },
     },
     {
@@ -20,7 +20,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "on",
       exec: (): void => {
         UpdateConfig.setOppositeShiftMode("on");
-        ModesNotice.update();
+        void ModesNotice.update();
       },
     },
     {
@@ -29,7 +29,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       configValue: "keymap",
       exec: (): void => {
         UpdateConfig.setOppositeShiftMode("keymap");
-        ModesNotice.update();
+        void ModesNotice.update();
       },
     },
   ],

@@ -263,7 +263,7 @@ $(".page.pageLogin .register.side .usernameInput").on("input", () => {
       return nameIndicator.hide();
     } else {
       nameIndicator.show("checking");
-      checkNameDebounced();
+      void checkNameDebounced();
     }
   }, 1);
 });

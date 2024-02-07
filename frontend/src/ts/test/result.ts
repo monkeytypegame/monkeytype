@@ -379,14 +379,14 @@ export function showConfetti(): void {
   const duration = Date.now() + 125;
 
   (function f(): void {
-    confetti({
+    void confetti({
       particleCount: 5,
       angle: 60,
       spread: 75,
       origin: { x: 0 },
       colors: colors,
     });
-    confetti({
+    void confetti({
       particleCount: 5,
       angle: 120,
       spread: 75,
@@ -483,7 +483,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
-        DB.saveLocalTagPB(
+        await DB.saveLocalTagPB(
           tag._id,
           Config.mode,
           result.mode2,
@@ -670,15 +670,19 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
         .removeClass("far")
         .addClass("fas");
     }
-    QuoteRatePopup.getQuoteStats(randomQuote).then((quoteStats) => {
-      $(".pageTest #result #rateQuoteButton .rating").text(
-        quoteStats?.average?.toFixed(1) ?? ""
-      );
-      $(".pageTest #result #rateQuoteButton")
-        .css({ opacity: 0 })
-        .removeClass("hidden")
-        .css({ opacity: 1 });
-    });
+    QuoteRatePopup.getQuoteStats(randomQuote)
+      .then((quoteStats) => {
+        $(".pageTest #result #rateQuoteButton .rating").text(
+          quoteStats?.average?.toFixed(1) ?? ""
+        );
+      })
+      .catch((e) => {
+        $(".pageTest #result #rateQuoteButton .rating").text("?");
+      });
+    $(".pageTest #result #rateQuoteButton")
+      .css({ opacity: 0 })
+      .removeClass("hidden")
+      .css({ opacity: 1 });
   }
 }
 
@@ -765,7 +769,7 @@ export async function update(
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
     .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
     resultAnnotation;
-  ChartController.result.updateColors();
+  void ChartController.result.updateColors();
   ChartController.result.resize();
 
   if (
@@ -823,13 +827,13 @@ export async function update(
 
   TestConfig.hide();
 
-  Misc.swapElements(
+  void Misc.swapElements(
     $("#typingTest"),
     $("#result"),
     250,
     async () => {
       $("#result").trigger("focus");
-      AdController.renderResult();
+      void AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
@@ -861,7 +865,7 @@ export async function update(
         TestUI.toggleResultWords(true);
       }
       AdController.updateFooterAndVerticalAds(true);
-      Funbox.clear();
+      void Funbox.clear();
     }
   );
 }
@@ -922,12 +926,12 @@ ConfigEvent.subscribe(async (eventKey) => {
     updateWpmAndAcc();
     await updateGraph();
     await updateGraphPBLine();
-    TestUI.applyBurstHeatmap();
+    void TestUI.applyBurstHeatmap();
 
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
       .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
       resultAnnotation;
-    ChartController.result.updateColors();
+    void ChartController.result.updateColors();
     ChartController.result.resize();
   }
 });

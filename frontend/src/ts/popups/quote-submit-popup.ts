@@ -98,7 +98,7 @@ $("#quoteSubmitPopupWrapper").on("mousedown", (e) => {
 });
 
 $("#popups").on("click", "#quoteSubmitPopup #submitQuoteButton", () => {
-  submitQuote();
+  void submitQuote();
 });
 
 $("#quoteSubmitPopupWrapper textarea").on("input", () => {
@@ -115,7 +115,7 @@ $("#quoteSubmitPopupWrapper textarea").on("input", () => {
 
 $("#quoteSubmitPopupWrapper input").on("keydown", (e) => {
   if (e.key === "Enter") {
-    submitQuote();
+    void submitQuote();
   }
 });
 

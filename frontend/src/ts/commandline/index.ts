@@ -152,7 +152,7 @@ function showFound(): void {
             (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
             !(ThemeController.randomTheme ?? "")
           ) {
-            ThemeController.clearPreview();
+            void ThemeController.clearPreview();
           }
           if (!/font/gi.test(obj.id)) {
             UpdateConfig.previewFontFamily(Config.fontFamily);
@@ -274,7 +274,7 @@ function hide(shouldFocusTestUI = true): void {
   UpdateConfig.previewFontFamily(Config.fontFamily);
   // applyCustomThemeColors();
   if (!(ThemeController.randomTheme ?? "")) {
-    ThemeController.clearPreview();
+    void ThemeController.clearPreview();
   }
   $("#commandLineWrapper")
     .stop(true, true)
@@ -336,7 +336,7 @@ function trigger(command: string): void {
     }
   });
   if (!subgroup && !input && !sticky) {
-    AnalyticsController.log("usedCommandLine", { command });
+    void AnalyticsController.log("usedCommandLine", { command });
     hide(shouldFocusTestUI);
   }
 }
@@ -550,7 +550,7 @@ $("#commandInput input").on("keydown", (e) => {
         if (obj.exec) obj.exec(value);
       }
     });
-    AnalyticsController.log("usedCommandLine", { command: command ?? "" });
+    void AnalyticsController.log("usedCommandLine", { command: command ?? "" });
     hide();
   }
   return;
@@ -596,7 +596,7 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
           (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
           !(ThemeController.randomTheme ?? "")
         ) {
-          ThemeController.clearPreview();
+          void ThemeController.clearPreview();
         }
         if (!/font/gi.test(obj.id)) {
           UpdateConfig.previewFontFamily(Config.fontFamily);
@@ -760,7 +760,7 @@ $(document).on("keydown", (e) => {
               (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
               !(ThemeController.randomTheme ?? "")
             ) {
-              ThemeController.clearPreview();
+              void ThemeController.clearPreview();
             }
             if (!/font/gi.test(obj.id)) {
               UpdateConfig.previewFontFamily(Config.fontFamily);

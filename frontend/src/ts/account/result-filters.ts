@@ -220,7 +220,7 @@ async function createFilterPresetCallback(name: string): Promise<void> {
   Loader.hide();
   if (result.status === 200) {
     addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
-    updateFilterPresets();
+    void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
     Notifications.add("Error creating filter preset: " + result.message, -1);
@@ -254,7 +254,7 @@ async function deleteFilterPreset(id: string): Promise<void> {
   Loader.hide();
   if (result.status === 200) {
     removeFilterPresetFromSnapshot(id);
-    updateFilterPresets();
+    void updateFilterPresets();
     reset();
     Notifications.add("Filter preset deleted", 1);
   } else {
@@ -710,7 +710,7 @@ export async function appendButtons(): Promise<void> {
     );
   }
 
-  updateFilterPresets();
+  void updateFilterPresets();
 }
 
 export function removeButtons(): void {
@@ -726,14 +726,14 @@ export function removeButtons(): void {
 }
 
 $(".pageAccount .topFilters button.createFilterPresetBtn").on("click", () => {
-  startCreateFilterPreset();
+  void startCreateFilterPreset();
 });
 
 $(".group.presetFilterButtons .filterBtns").on(
   "click",
   ".filterPresets .delete-filter-preset",
   (e) => {
-    deleteFilterPreset($(e.currentTarget).data("id"));
+    void deleteFilterPreset($(e.currentTarget).data("id"));
   }
 );
 

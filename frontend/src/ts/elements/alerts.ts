@@ -39,7 +39,7 @@ function hide(): void {
     const badgesClaimed: string[] = [];
     let totalXpClaimed = 0;
     if (mailToMarkRead.length > 0 || mailToDelete.length > 0) {
-      Ape.users
+      void Ape.users
         .updateInbox({
           mailIdsToMarkRead:
             mailToMarkRead.length > 0 ? mailToMarkRead : undefined,
@@ -93,7 +93,7 @@ function hide(): void {
         },
         100,
         () => {
-          mailUpdatedPromise.then(() => {
+          void mailUpdatedPromise.then(() => {
             if (badgesClaimed.length > 0) {
               Notifications.add(
                 `New badge${
@@ -109,7 +109,7 @@ function hide(): void {
             }
             if (totalXpClaimed > 0) {
               const snapxp = DB.getSnapshot()?.xp ?? 0;
-              AccountButton.updateXpBar(snapxp, totalXpClaimed);
+              void AccountButton.updateXpBar(snapxp, totalXpClaimed);
               DB.addXp(totalXpClaimed);
             }
           });
@@ -161,7 +161,7 @@ async function show(): Promise<void> {
         100,
         () => {
           if (Auth?.currentUser) {
-            getAccountAlerts();
+            void getAccountAlerts();
           }
         }
       );
@@ -433,7 +433,7 @@ $("#alertsPopupWrapper .accountAlerts").on("click", ".deleteAll", () => {
 });
 
 $("header nav .showAlerts").on("click", () => {
-  show();
+  void show();
 });
 
 $("#alertsPopupWrapper").on("mousedown", (e) => {

@@ -54,7 +54,7 @@ export function updateData(data: SharedTypes.ChartData): void {
     ChartController.miniResult.getScale("raw").min = 0;
   }
 
-  ChartController.miniResult.updateColors();
+  void ChartController.miniResult.updateColors();
 }
 
 $(document).on("keydown", (event) => {

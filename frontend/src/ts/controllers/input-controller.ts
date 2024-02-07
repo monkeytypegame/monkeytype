@@ -60,7 +60,7 @@ function updateUI(): void {
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     if (!Config.language.startsWith("korean")) {
-      KeymapEvent.highlight(
+      void KeymapEvent.highlight(
         TestWords.words
           .getCurrent()
           .charAt(TestInput.input.current.length)
@@ -97,14 +97,14 @@ function updateUI(): void {
               inputCharLength - koCurrWord[inputGroupLength].length
             ];
 
-          KeymapEvent.highlight(koChar);
+          void KeymapEvent.highlight(koChar);
         } catch (e) {
-          KeymapEvent.highlight("");
+          void KeymapEvent.highlight("");
         }
       } else {
         //for new words
         const toHighlight = koCurrWord?.[0]?.[0];
-        if (toHighlight !== undefined) KeymapEvent.highlight(toHighlight);
+        if (toHighlight !== undefined) void KeymapEvent.highlight(toHighlight);
       }
     }
   }
@@ -165,7 +165,7 @@ function backspaceToPrevious(): void {
     }
   }
 
-  Caret.updatePosition();
+  void Caret.updatePosition();
   Replay.addReplayEvent("backWord");
 }
 
@@ -198,7 +198,7 @@ function handleSpace(): void {
   dontInsertSpace = true;
 
   const burst: number = TestStats.calculateBurst();
-  LiveBurst.update(Math.round(burst));
+  void LiveBurst.update(Math.round(burst));
   TestInput.pushBurstToHistory(burst);
 
   const nospace =
@@ -209,7 +209,7 @@ function handleSpace(): void {
   //correct word or in zen mode
   const isWordCorrect: boolean =
     currentWord === TestInput.input.current || Config.mode === "zen";
-  MonkeyPower.addPower(isWordCorrect, true);
+  void MonkeyPower.addPower(isWordCorrect, true);
   TestInput.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
     if (Config.indicateTypos !== "off" && Config.stopOnError === "letter") {
@@ -221,7 +221,7 @@ function handleSpace(): void {
     TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
     TestUI.updateActiveElement();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    Caret.updatePosition();
+    void Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     if (!nospace) {
@@ -230,7 +230,7 @@ function handleSpace(): void {
     Replay.addReplayEvent("submitCorrectWord");
     if (TestWords.words.currentIndex === TestWords.words.length) {
       //submitted last word (checking this in case the test doesnt stop automatically on correct last keypress)
-      TestLogic.finish();
+      void TestLogic.finish();
       return;
     }
   } else {
@@ -264,7 +264,7 @@ function handleSpace(): void {
         dontInsertSpace = false;
         Replay.addReplayEvent("incorrectLetter", "_");
         TestUI.updateWordElement(true);
-        Caret.updatePosition();
+        void Caret.updatePosition();
       }
       return;
     }
@@ -278,7 +278,7 @@ function handleSpace(): void {
     TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
     TestUI.updateActiveElement();
     Funbox.toggleScript(TestWords.words.getCurrent());
-    Caret.updatePosition();
+    void Caret.updatePosition();
     TestInput.incrementKeypressCount();
     TestInput.pushKeypressWord(TestWords.words.currentIndex);
     if (Config.difficulty === "expert" || Config.difficulty === "master") {
@@ -286,7 +286,7 @@ function handleSpace(): void {
       return;
     } else if (TestWords.words.currentIndex === TestWords.words.length) {
       //submitted last word that is incorrect
-      TestLogic.finish();
+      void TestLogic.finish();
       return;
     }
     Replay.addReplayEvent("submitErrorWord");
@@ -348,7 +348,7 @@ function handleSpace(): void {
   // }
 
   if (Config.keymapMode === "react") {
-    KeymapEvent.flash(" ", true);
+    void KeymapEvent.flash(" ", true);
   }
   if (
     Config.mode === "words" ||
@@ -364,7 +364,7 @@ function handleSpace(): void {
     Config.mode === "custom" ||
     Config.mode === "quote"
   ) {
-    TestLogic.addWord();
+    void TestLogic.addWord();
   }
 }
 
@@ -565,11 +565,11 @@ function handleChar(
   ) {
     TestInput.input.current = resultingWord;
     TestUI.updateWordElement();
-    Caret.updatePosition();
+    void Caret.updatePosition();
     return;
   }
 
-  MonkeyPower.addPower(thisCharCorrect);
+  void MonkeyPower.addPower(thisCharCorrect);
   TestInput.incrementAccuracy(thisCharCorrect);
 
   if (!thisCharCorrect) {
@@ -596,7 +596,7 @@ function handleChar(
 
   //keymap
   if (Config.keymapMode === "react") {
-    KeymapEvent.flash(char, thisCharCorrect);
+    void MonkeyPower.addPower(thisCharCorrect);
   }
 
   if (Config.difficulty !== "master") {
@@ -703,7 +703,7 @@ function handleChar(
         (realInputValue !== undefined &&
           charIndex + 2 == realInputValue.length))
     ) {
-      TestLogic.finish();
+      void TestLogic.finish();
       return;
     }
   }
@@ -757,7 +757,7 @@ function handleChar(
   }
 
   if (char !== "\n") {
-    Caret.updatePosition();
+    void Caret.updatePosition();
   }
 }
 
@@ -1031,7 +1031,7 @@ $(document).on("keydown", async (event) => {
   if (event.key === "Enter") {
     if (event.shiftKey) {
       if (Config.mode === "zen") {
-        TestLogic.finish();
+        void TestLogic.finish();
       } else if (
         !Misc.canQuickRestart(
           Config.mode,
@@ -1056,7 +1056,7 @@ $(document).on("keydown", async (event) => {
           }
         } else {
           TestState.setBailedOut(true);
-          TestLogic.finish();
+          void TestLogic.finish();
         }
       }
     } else {
@@ -1328,7 +1328,7 @@ $("#wordsInput").on("input", (event) => {
     }
 
     TestUI.updateWordElement();
-    Caret.updatePosition();
+    void Caret.updatePosition();
     if (!CompositionState.getComposing()) {
       Replay.addReplayEvent("setLetterIndex", currTestInput.length - 1);
     }

@@ -61,7 +61,7 @@ export async function createNewUser(
   }
 
   await UserDAL.addUser(name, email, uid);
-  Logger.logToDb("user_created", `${name} ${email}`, uid);
+  void Logger.logToDb("user_created", `${name} ${email}`, uid);
 
   return new MonkeyResponse("User created");
 }
@@ -187,7 +187,11 @@ export async function deleteUser(
     ),
   ]);
 
-  Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
+  void Logger.logToDb(
+    "user_deleted",
+    `${userInfo.email} ${userInfo.name}`,
+    uid
+  );
 
   return new MonkeyResponse("User deleted");
 }
@@ -214,7 +218,7 @@ export async function resetUser(
     promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
   }
   await Promise.all(promises);
-  Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
+  void Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
 }
@@ -235,7 +239,7 @@ export async function updateName(
   }
 
   await UserDAL.updateName(uid, name, user.name);
-  Logger.logToDb(
+  void Logger.logToDb(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,
     uid
@@ -254,7 +258,7 @@ export async function clearPb(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  Logger.logToDb("user_cleared_pbs", "", uid);
+  void Logger.logToDb("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
 }
@@ -269,7 +273,7 @@ export async function optOutOfLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
+  void Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
 
   return new MonkeyResponse("User opted out of leaderboards");
 }
@@ -302,7 +306,11 @@ export async function updateEmail(
     throw new MonkeyError(404, e.message, "update email", uid);
   }
 
-  Logger.logToDb("user_email_updated", `changed email to ${newEmail}`, uid);
+  void Logger.logToDb(
+    "user_email_updated",
+    `changed email to ${newEmail}`,
+    uid
+  );
 
   return new MonkeyResponse("Email updated");
 }
@@ -369,8 +377,8 @@ export async function getUser(
   };
 
   const agentLog = buildAgentLog(req);
-  Logger.logToDb("user_data_requested", agentLog, uid);
-  UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
+  void Logger.logToDb("user_data_requested", agentLog, uid);
+  void UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
 
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
@@ -379,7 +387,7 @@ export async function getUser(
 
   if (!userInfo.name) {
     userInfo.needsToChangeName = true;
-    UserDAL.flagForNameChange(uid);
+    await UserDAL.flagForNameChange(uid);
   }
 
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
@@ -466,8 +474,8 @@ export async function linkDiscord(
 
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
-  GeorgeQueue.linkDiscord(discordId, uid);
-  Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
+  await GeorgeQueue.linkDiscord(discordId, uid);
+  void Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", {
     discordId,
@@ -486,9 +494,9 @@ export async function unlinkDiscord(
     throw new MonkeyError(404, "User does not have a linked Discord account");
   }
 
-  GeorgeQueue.unlinkDiscord(discordId, uid);
+  await GeorgeQueue.unlinkDiscord(discordId, uid);
   await UserDAL.unlinkDiscord(uid);
-  Logger.logToDb("user_discord_unlinked", discordId, uid);
+  void Logger.logToDb("user_discord_unlinked", discordId, uid);
 
   return new MonkeyResponse("Discord account unlinked");
 }
@@ -894,11 +902,11 @@ export async function toggleBan(
   const discordIdIsValid = discordId !== undefined && discordId !== "";
 
   if (user.banned) {
-    UserDAL.setBanned(uid, false);
-    if (discordIdIsValid) GeorgeQueue.userBanned(discordId, false);
+    await UserDAL.setBanned(uid, false);
+    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, false);
   } else {
-    UserDAL.setBanned(uid, true);
-    if (discordIdIsValid) GeorgeQueue.userBanned(discordId, true);
+    await UserDAL.setBanned(uid, true);
+    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, true);
   }
 
   return new MonkeyResponse(`Ban toggled`, {

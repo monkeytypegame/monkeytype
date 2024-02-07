@@ -40,8 +40,8 @@ function update(): void {
         Settings.setEventDisabled(true);
         PresetController.apply(preset._id);
         Settings.setEventDisabled(false);
-        Settings.update();
-        ModesNotice.update();
+        void Settings.update();
+        void ModesNotice.update();
       },
     });
   });
