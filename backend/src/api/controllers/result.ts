@@ -443,9 +443,9 @@ export async function addResult(
   }
 
   if (completedEvent.mode === "time" && completedEvent.mode2 === "60") {
-    await incrementBananas(uid, completedEvent.wpm);
+    void incrementBananas(uid, completedEvent.wpm);
     if (isPb && user.discordId !== undefined && user.discordId !== "") {
-      await GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
+      void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
     }
   }
 
@@ -456,7 +456,7 @@ export async function addResult(
     user.discordId !== undefined &&
     user.discordId !== ""
   ) {
-    await GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
+    void GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
   } else {
     delete completedEvent.challenge;
   }
@@ -464,7 +464,7 @@ export async function addResult(
   const afk = completedEvent.afkDuration ?? 0;
   const totalDurationTypedSeconds =
     completedEvent.testDuration + completedEvent.incompleteTestSeconds - afk;
-  await updateTypingStats(
+  void updateTypingStats(
     uid,
     completedEvent.restartCount,
     totalDurationTypedSeconds
