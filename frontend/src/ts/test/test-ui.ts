@@ -22,6 +22,7 @@ import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import html2canvas from "html2canvas";
+import * as BadgeController from "../controllers/badge-controller";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
@@ -442,17 +443,16 @@ export async function screenshot(): Promise<void> {
   const dateNow = new Date(Date.now());
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
-  $(".pageTest .ssWatermark").text(
-    format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
-  );
-  if (isAuthenticated()) {
-    $(".pageTest .ssWatermark").text(
-      DB.getSnapshot()?.name +
-        " | " +
-        format(dateNow, "dd MMM yyyy HH:mm") +
-        " | monkeytype.com  "
-    );
+
+  const ssWatermark = [format(dateNow, "dd MMM yyyy HH:mm"), "monkeytype.com"];
+  if (DB.getSnapshot()?.name !== undefined) {
+    let userText = DB.getSnapshot()?.name ?? "";
+    if (DB.getSnapshot()?.isPremium)
+      userText += " " + BadgeController.getById(15)?.name;
+    ssWatermark.unshift(userText);
   }
+  $(".pageTest .ssWatermark").html(ssWatermark.join(" | "));
+
   $(".pageTest .buttons").addClass("hidden");
   $("#notificationCenter").addClass("hidden");
   $("#commandLineMobileButton").addClass("hidden");
