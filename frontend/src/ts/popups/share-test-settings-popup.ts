@@ -140,13 +140,13 @@ $("#shareTestSettingsPopupWrapper textarea.url").on("click", () => {
 
 $("#shareTestSettingsPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "shareTestSettingsPopupWrapper") {
-    hide();
+    void hide();
   }
 });
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isPopupVisible(wrapperId)) {
-    hide();
+    void hide();
     event.preventDefault();
   }
 });

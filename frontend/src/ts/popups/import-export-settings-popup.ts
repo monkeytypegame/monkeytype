@@ -30,17 +30,17 @@ export function show(mode: string, config?: string): void {
   }
 }
 
-function hide(): void {
+async function hide(): Promise<void> {
   if (isPopupVisible(wrapperId)) {
     if ($("#settingsImportWrapper input").val() !== "") {
       try {
-        UpdateConfig.apply(
+        await UpdateConfig.apply(
           JSON.parse($("#settingsImportWrapper input").val() as string)
         );
       } catch (e) {
         Notifications.add("Failed to import settings: " + e, -1);
       }
-      UpdateConfig.saveFullConfigToLocalStorage();
+      void UpdateConfig.saveFullConfigToLocalStorage();
     }
     $("#settingsImportWrapper")
       .stop(true, true)
@@ -53,12 +53,12 @@ function hide(): void {
 }
 
 $("#settingsImportWrapper .button").on("click", () => {
-  hide();
+  void hide();
 });
 
 $("#settingsImportWrapper").on("click", (e) => {
   if ($(e.target).attr("id") === "settingsImportWrapper") {
-    hide();
+    void hide();
   }
 });
 

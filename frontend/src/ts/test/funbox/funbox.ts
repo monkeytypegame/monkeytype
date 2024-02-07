@@ -120,7 +120,7 @@ FunboxList.setFunboxFunctions("tts", {
       Notifications.add("Failed to load text-to-speech script", -1);
       return;
     }
-    if (params[0] !== undefined) TTSEvent.dispatch(params[0]);
+    if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
   },
 });
 
@@ -278,7 +278,7 @@ FunboxList.setFunboxFunctions("layoutfluid", {
         LayoutfluidFunboxTimer.hide();
       }
       setTimeout(() => {
-        KeymapEvent.highlight(
+        void KeymapEvent.highlight(
           TestWords.words
             .getCurrent()
             .charAt(TestInput.input.current.length)
@@ -293,7 +293,7 @@ FunboxList.setFunboxFunctions("layoutfluid", {
   restart(): void {
     if (this.applyConfig) this.applyConfig();
     setTimeout(() => {
-      KeymapEvent.highlight(
+      void KeymapEvent.highlight(
         TestWords.words
           .getCurrent()
           .substring(

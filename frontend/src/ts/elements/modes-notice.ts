@@ -26,7 +26,7 @@ ConfigEvent.subscribe((eventKey) => {
       "typingSpeedUnit",
     ].includes(eventKey)
   ) {
-    update();
+    void update();
   }
 });
 

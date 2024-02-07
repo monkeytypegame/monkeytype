@@ -164,7 +164,7 @@ async function apply(): Promise<void> {
     }
   }
 
-  Settings.update();
+  void Settings.update();
   Loader.hide();
 }
 
@@ -176,7 +176,7 @@ $("#presetWrapper").on("click", (e) => {
 
 $("#presetWrapper #presetEdit form").on("submit", (e) => {
   e.preventDefault();
-  apply();
+  void apply();
 });
 
 $(".pageSettings .section.presets").on("click", ".addPresetButton", () => {

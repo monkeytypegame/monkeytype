@@ -49,7 +49,7 @@ export async function update(
     profile.discordId !== undefined &&
     !banned
   ) {
-    Misc.getDiscordAvatarUrl(
+    void Misc.getDiscordAvatarUrl(
       profile.discordId,
       profile.discordAvatar,
       256
@@ -420,7 +420,7 @@ $(".details .editProfileButton").on("click", () => {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   EditProfilePopup.show(() => {
-    update("account", snapshot);
+    void update("account", snapshot);
   });
 });
 

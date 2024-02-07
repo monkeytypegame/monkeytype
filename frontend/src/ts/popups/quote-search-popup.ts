@@ -271,7 +271,7 @@ export async function show(clearText = true): Promise<void> {
           $("#quoteSearchPopup input").trigger("focus").trigger("select");
         }
         currentPageNumber = 1;
-        updateResults(quoteSearchInputValue);
+        void updateResults(quoteSearchInputValue);
       });
   }
 }
@@ -324,7 +324,7 @@ const searchForQuotes = debounce(250, (): void => {
   const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
     .value;
   currentPageNumber = 1;
-  updateResults(searchText);
+  void updateResults(searchText);
 });
 
 $("#quoteSearchPopupWrapper .searchBox").on("keyup", (e) => {
@@ -346,7 +346,7 @@ $(
     currentPageNumber--;
   }
 
-  updateResults(searchText);
+  void updateResults(searchText);
 });
 
 $("#quoteSearchPopupWrapper").on("mousedown", (e) => {
@@ -374,13 +374,13 @@ $("#popups").on(
       return;
     }
     hide();
-    QuoteSubmitPopup.show(true);
+    void QuoteSubmitPopup.show(true);
   }
 );
 
 $("#popups").on("click", "#quoteSearchPopup #goToApproveQuotes", () => {
   hide();
-  QuoteApprovePopup.show(true);
+  void QuoteApprovePopup.show(true);
 });
 
 $("#popups").on("click", "#quoteSearchPopup .report", async (e) => {
@@ -388,11 +388,11 @@ $("#popups").on("click", "#quoteSearchPopup .report", async (e) => {
   const quoteIdSelectedForReport = parseInt(quoteId);
 
   hide(true, false);
-  QuoteReportPopup.show({
+  void QuoteReportPopup.show({
     quoteId: quoteIdSelectedForReport,
     noAnim: true,
     previousPopupShowCallback: () => {
-      show(false);
+      void show(false);
     },
   });
 });
@@ -466,7 +466,7 @@ $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   const len = parseInt($(e.currentTarget).attr("quoteLength") ?? "0");
   if (len === -2) {
-    show();
+    void show();
   }
 });
 

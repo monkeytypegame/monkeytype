@@ -9,6 +9,7 @@ type PossibleType =
   | "undefined"
   | "null"
   | "stringArray"
+  | "layoutfluid"
   | string[]
   | number[];
 

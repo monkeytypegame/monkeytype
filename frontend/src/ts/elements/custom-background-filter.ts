@@ -117,7 +117,7 @@ $(".section.customBackgroundFilter .opacity input").on("input", () => {
 });
 
 $(".section.customBackgroundFilter input").on("input", () => {
-  debouncedSave();
+  void debouncedSave();
 });
 
 const debouncedSave = debounce(2000, async () => {

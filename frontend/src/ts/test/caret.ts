@@ -167,7 +167,7 @@ export async function updatePosition(): Promise<void> {
 export function show(): void {
   if ($("#result").hasClass("hidden")) {
     caret.classList.remove("hidden");
-    updatePosition();
+    void updatePosition();
     startAnimation();
   }
 }

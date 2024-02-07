@@ -120,12 +120,12 @@ async function submitReport(): Promise<void> {
   }
 
   Notifications.add("Report submitted. Thank you!", 1);
-  hide();
+  void hide();
 }
 
 $("#userReportPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "userReportPopupWrapper") {
-    hide();
+    void hide();
   }
 });
 

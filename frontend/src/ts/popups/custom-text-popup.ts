@@ -375,21 +375,21 @@ $(document).on("keydown", (event) => {
 
 $("#popups").on("click", `${popup} .wordfilter`, () => {
   hide({ noAnim: true, resetState: false });
-  WordFilterPopup.show(true, () => {
+  void WordFilterPopup.show(true, () => {
     show(true);
   });
 });
 
 $(`${popup} .buttonsTop .showSavedTexts`).on("click", () => {
   hide({ noAnim: true });
-  SavedTextsPopup.show(true, () => {
+  void SavedTextsPopup.show(true, () => {
     show(true);
   });
 });
 
 $(`#customTextPopupWrapper .buttonsTop .saveCustomText`).on("click", () => {
   hide({ noAnim: true, resetState: false });
-  SaveCustomTextPopup.show(true, () => {
+  void SaveCustomTextPopup.show(true, () => {
     show(true);
   });
 });

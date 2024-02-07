@@ -98,7 +98,7 @@ function updateData(): void {
   $(`#quoteRatePopup .quote .source .val`).text(currentQuote.source);
   $(`#quoteRatePopup .quote .id .val`).text(currentQuote.id);
   $(`#quoteRatePopup .quote .length .val`).text(lengthDesc as string);
-  updateRatingStats();
+  void updateRatingStats();
 }
 
 function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
@@ -241,7 +241,7 @@ $("#quoteRatePopupWrapper .stars .star").on("mouseout", () => {
 });
 
 $("#quoteRatePopupWrapper .submitButton").on("click", () => {
-  submit();
+  void submit();
 });
 
 $(".pageTest #rateQuoteButton").on("click", async () => {

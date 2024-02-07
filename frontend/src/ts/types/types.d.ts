@@ -647,14 +647,6 @@ declare namespace MonkeyTypes {
     textSplit?: string[];
   }
 
-  interface PSA {
-    sticky?: boolean;
-    message: string;
-    _id: string;
-    level?: number;
-    date?: number;
-  }
-
   interface ThemeColors {
     bg: string;
     main: string;

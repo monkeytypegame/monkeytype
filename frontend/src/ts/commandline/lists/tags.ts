@@ -61,7 +61,7 @@ function update(): void {
       });
 
       DB.setSnapshot(snapshot);
-      ModesNotice.update();
+      void ModesNotice.update();
       TagController.saveActiveToLocalStorage();
     },
   });
@@ -80,13 +80,13 @@ function update(): void {
       noIcon: true,
       display: dis,
       sticky: true,
-      exec: (): void => {
+      exec: async (): Promise<void> => {
         TagController.toggle(tag._id);
-        ModesNotice.update();
+        void ModesNotice.update();
 
         if (Config.paceCaret === "average") {
-          PaceCaret.init();
-          ModesNotice.update();
+          await PaceCaret.init();
+          void ModesNotice.update();
         }
 
         let txt = tag.display;

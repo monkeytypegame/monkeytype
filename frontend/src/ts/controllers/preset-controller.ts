@@ -8,9 +8,9 @@ export function apply(_id: string): void {
   // console.log(DB.getSnapshot().presets);
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
-  snapshot.presets?.forEach((preset) => {
+  snapshot.presets?.forEach(async (preset) => {
     if (preset._id === _id) {
-      UpdateConfig.apply(preset.config);
+      await UpdateConfig.apply(preset.config);
       TagController.clear(true);
       if (preset.config.tags) {
         preset.config.tags.forEach((tagid) => {

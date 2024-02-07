@@ -106,7 +106,7 @@ export async function getResults(
     limit,
     offset,
   });
-  Logger.logToDb(
+  void Logger.logToDb(
     "user_results_requested",
     {
       limit,
@@ -133,7 +133,7 @@ export async function deleteAll(
   const { uid } = req.ctx.decodedToken;
 
   await ResultDAL.deleteAll(uid);
-  Logger.logToDb("user_results_deleted", "", uid);
+  void Logger.logToDb("user_results_deleted", "", uid);
   return new MonkeyResponse("All results deleted");
 }
 
@@ -220,7 +220,7 @@ export async function addResult(
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const serverhash = objectHash(completedEvent);
     if (serverhash !== resulthash) {
-      Logger.logToDb(
+      void Logger.logToDb(
         "incorrect_result_hash",
         {
           serverhash,
@@ -324,7 +324,7 @@ export async function addResult(
   const earliestPossible = (lastResultTimestamp ?? 0) + testDurationMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
   if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "invalid_result_spacing",
       {
         lastTimestamp: lastResultTimestamp,
@@ -370,7 +370,11 @@ export async function addResult(
               subject: "Banned",
               body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
-            UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+            await UserDAL.addToInbox(
+              uid,
+              [mail],
+              req.ctx.configuration.users.inbox
+            );
             user.banned = true;
           }
         }
@@ -390,7 +394,7 @@ export async function addResult(
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];
     if (lastHashes.includes(resulthash)) {
-      Logger.logToDb(
+      void Logger.logToDb(
         "duplicate_result",
         {
           lastHashes,
@@ -439,9 +443,9 @@ export async function addResult(
   }
 
   if (completedEvent.mode === "time" && completedEvent.mode2 === "60") {
-    incrementBananas(uid, completedEvent.wpm);
+    void incrementBananas(uid, completedEvent.wpm);
     if (isPb && user.discordId !== undefined && user.discordId !== "") {
-      GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
+      void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
     }
   }
 
@@ -452,7 +456,7 @@ export async function addResult(
     user.discordId !== undefined &&
     user.discordId !== ""
   ) {
-    GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
+    void GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
   } else {
     delete completedEvent.challenge;
   }
@@ -460,12 +464,15 @@ export async function addResult(
   const afk = completedEvent.afkDuration ?? 0;
   const totalDurationTypedSeconds =
     completedEvent.testDuration + completedEvent.incompleteTestSeconds - afk;
-  updateTypingStats(
+  void updateTypingStats(
     uid,
     completedEvent.restartCount,
     totalDurationTypedSeconds
   );
-  PublicDAL.updateStats(completedEvent.restartCount, totalDurationTypedSeconds);
+  void PublicDAL.updateStats(
+    completedEvent.restartCount,
+    totalDurationTypedSeconds
+  );
 
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
   const dailyLeaderboard = getDailyLeaderboard(
@@ -535,7 +542,7 @@ export async function addResult(
         },
       ],
     });
-    UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+    await UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
   }
 
   const xpGained = await calculateXp(
@@ -597,7 +604,7 @@ export async function addResult(
   await UserDAL.incrementXp(uid, xpGained.xp);
 
   if (isPb) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "user_new_pb",
       `${completedEvent.mode + " " + completedEvent.mode2} ${
         completedEvent.wpm

@@ -185,12 +185,6 @@ declare namespace MonkeyTypes {
     approved: boolean;
   }
 
-  interface PSA {
-    sticky?: boolean;
-    message: string;
-    level?: number;
-  }
-
   type ReportTypes = "quote" | "user";
 
   interface Report {
