@@ -15,7 +15,7 @@ import {
   canSetConfigWithCurrentFunboxes,
   canSetFunboxWithConfig,
 } from "./test/funbox/funbox-validation";
-import { reloadAfter } from "./utils/misc";
+import { reloadAfter, typedKeys } from "./utils/misc";
 
 export let localStorageConfig: MonkeyTypes.Config;
 
@@ -2024,6 +2024,19 @@ export function getConfigChanges(): MonkeyTypes.PresetConfig {
       (configChanges[key] as typeof config[typeof key]) = config[key];
     });
   return configChanges;
+}
+
+export function mergeWithDefaultConfig(
+  config: Partial<MonkeyTypes.Config>
+): MonkeyTypes.Config {
+  const mergedConfig = {} as MonkeyTypes.Config;
+  for (const key of typedKeys(DefaultConfig)) {
+    const newValue =
+      config[key] ?? (DefaultConfig[key] as MonkeyTypes.ConfigValue);
+    //@ts-ignore cant be bothered to deal with this
+    mergedConfig[key] = newValue;
+  }
+  return mergedConfig;
 }
 
 export const loadPromise = new Promise((v) => {
