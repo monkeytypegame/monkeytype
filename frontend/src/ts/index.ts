@@ -44,6 +44,7 @@ import "./controllers/profile-search-controller";
 import "jquery";
 import "jquery-color";
 import "jquery.easing";
+import "select2";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
