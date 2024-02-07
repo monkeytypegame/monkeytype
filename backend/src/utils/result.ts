@@ -55,10 +55,11 @@ export function buildDbResult(
   if (ce.incompleteTestSeconds === 0) delete res.incompleteTestSeconds;
   if (ce.afkDuration === 0) delete res.afkDuration;
   if (ce.tags.length === 0) delete res.tags;
-  if (ce.isPb === false) delete res.isPb;
 
   if (ce.keySpacingStats === undefined) delete res.keySpacingStats;
   if (ce.keyDurationStats === undefined) delete res.keyDurationStats;
+
+  if (res.isPb === false) delete res.isPb;
 
   return res;
 }
