@@ -1,4 +1,4 @@
-import { mergeWithDefaultConfig } from "../../src/ts/config";
+import { mergeWithDefaultConfig } from "../../src/ts/utils/config";
 import DefaultConfig from "../../src/ts/constants/default-config";
 
 describe("config.ts", () => {

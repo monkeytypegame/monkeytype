@@ -6,7 +6,7 @@ import { Auth } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 import { getFunboxList, lastElementFromArray } from "./utils/misc";
-import { mergeWithDefaultConfig } from "./config";
+import { mergeWithDefaultConfig } from "./utils/config";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
