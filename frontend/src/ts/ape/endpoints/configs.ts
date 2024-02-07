@@ -5,11 +5,13 @@ export default class Configs {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointResponse {
+  async get(): Ape.EndpointResponse<ConfigsApe.GetConfig> {
     return await this.httpClient.get(BASE_PATH);
   }
 
-  async save(config: MonkeyTypes.Config): Ape.EndpointResponse {
+  async save(
+    config: MonkeyTypes.Config
+  ): Ape.EndpointResponse<ConfigsApe.PostConfig> {
     return await this.httpClient.patch(BASE_PATH, { payload: { config } });
   }
 }

@@ -6,6 +6,7 @@ import { Auth } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 import { getFunboxList, lastElementFromArray } from "./utils/misc";
+import { mergeWithDefaultConfig } from "./config";
 
 let dbSnapshot: MonkeyTypes.Snapshot | undefined;
 
@@ -79,11 +80,11 @@ export async function initSnapshot(): Promise<
       };
     }
 
-    const [userData, configData, presetsData] = [
-      userResponse,
-      configResponse,
-      presetsResponse,
-    ].map((response) => response.data);
+    const configData = configResponse.data;
+
+    const [userData, presetsData] = [userResponse, presetsResponse].map(
+      (response) => response.data
+    );
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
