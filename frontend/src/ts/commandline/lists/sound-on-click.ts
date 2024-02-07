@@ -183,7 +183,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
     },
     {
       id: "setSoundOnClick15",
-      display: "plastic toy",
+      display: "rubber keys",
       configValue: "15",
       hover: (): void => {
         SoundController.previewClick("15");
