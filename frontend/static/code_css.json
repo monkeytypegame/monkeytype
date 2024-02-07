@@ -1,0 +1,17 @@
+{
+  "language": "code_css",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+  {
+    "text": ".container {display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: row;}",
+    "source": "puts things in center using flexbox :)",
+    "id": 1,
+    "length": 109
+  }
+  ]
+}
