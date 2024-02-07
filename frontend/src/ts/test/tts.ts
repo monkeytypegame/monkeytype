@@ -8,7 +8,7 @@ let voice: SpeechSynthesisUtterance | undefined;
 export async function setLanguage(lang = Config.language): Promise<void> {
   if (!voice) return;
   const language = await Misc.getLanguage(lang);
-  const bcp = language.bcp47 ? language.bcp47 : "en-US";
+  const bcp = language.bcp47 ?? "en-US";
   voice.lang = bcp;
 }
 

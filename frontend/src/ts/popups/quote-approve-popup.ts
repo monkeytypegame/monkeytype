@@ -7,15 +7,7 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteApprovePopupWrapper";
 
-interface Quote {
-  _id: string;
-  text: string;
-  source: string;
-  language: string;
-  timestamp: number;
-}
-
-let quotes: Quote[] = [];
+let quotes: QuotesApe.Quote[] = [];
 
 function updateList(): void {
   $("#quoteApprovePopupWrapper .quotes").empty();
@@ -74,7 +66,7 @@ async function getQuotes(): Promise<void> {
     );
   }
 
-  quotes = response.data;
+  quotes = response.data ?? [];
   updateList();
 }
 
@@ -131,8 +123,12 @@ $("#quoteApprovePopupWrapper .button.refreshList").on("click", () => {
 
 $("#popups").on("click", "#quoteApprovePopup .quote .undo", async (e) => {
   const index = parseInt($(e.target).closest(".quote").attr("id") as string);
-  $(`#quoteApprovePopup .quote[id=${index}] .text`).val(quotes[index].text);
-  $(`#quoteApprovePopup .quote[id=${index}] .source`).val(quotes[index].source);
+  $(`#quoteApprovePopup .quote[id=${index}] .text`).val(
+    quotes[index]?.text ?? ""
+  );
+  $(`#quoteApprovePopup .quote[id=${index}] .source`).val(
+    quotes[index]?.source ?? ""
+  );
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).addClass("disabled");
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).removeClass("hidden");
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).addClass("hidden");

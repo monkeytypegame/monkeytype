@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   pre-ci:
+    if: github.event.pull_request.draft == false
     name: pre-ci
     runs-on: ubuntu-latest
     outputs:
@@ -107,6 +108,9 @@ jobs:
 
       - name: Build
         run: npm run pr-check-ts
+
+      - name: Test
+        run: npm run test-fe
 
   ci-assets:
     name: ci-assets

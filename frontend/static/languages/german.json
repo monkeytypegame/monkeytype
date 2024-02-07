@@ -1,6 +1,11 @@
 {
   "name": "german",
   "bcp47": "de-DE",
+  "additionalAccents": [
+    ["ä", "ae"],
+    ["ö", "oe"],
+    ["ü", "ue"]
+  ],
   "words": [
     "der",
     "die",

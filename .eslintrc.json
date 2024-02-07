@@ -13,11 +13,12 @@
   },
   "ignorePatterns": [
     "backend/__tests__/**/*",
-    "backend/setup-tests.ts",
     "backend/jest.config.ts",
     "**/*.css",
     "**/*.scss",
-    "frontend/static/js/*"
+    "frontend/static/js/*",
+    "frontend/__tests__/**/*",
+    "frontend/jest.config.ts"
   ],
   "extends": [
     "eslint:recommended",
@@ -37,14 +38,6 @@
     "no-empty": ["error", { "allowEmptyCatch": true }],
     "no-var": 2,
     "no-duplicate-imports": ["error"],
-    "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-var-requires": "off",
-    // "@typescript-eslint/no-floating-promises": "error", // consider adding these
-    // "@typescript-eslint/strict-boolean-expressions": [
-    //   "warn",
-    //   { "allowNullableBoolean": true }
-    // ],
     // "import/default": "off",
     "import/no-unresolved": [
       "error",
@@ -68,18 +61,12 @@
       // enable the rule specifically for TypeScript files
       "files": ["*.ts", "*.tsx"],
       "rules": {
-        // "@typescript-eslint/strict-boolean-expressions": [
-        //   "error",
-        //   {
-        //     "allowString": false
-        //   }
-        // ],
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
-        "@typescript-eslint/no-empty-function": "error",
+        "@typescript-eslint/no-empty-function": "warn",
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
-          "error",
+          "warn",
           { "argsIgnorePattern": "^(_|e|event)", "varsIgnorePattern": "^_" }
         ],
         "@typescript-eslint/no-var-requires": "error",
@@ -90,7 +77,12 @@
             "checksVoidReturn": false
           }
         ],
-        "@typescript-eslint/promise-function-async": "warn"
+        "@typescript-eslint/promise-function-async": "warn",
+        // "@typescript-eslint/no-floating-promises": "error", // consider adding this
+        "@typescript-eslint/strict-boolean-expressions": [
+          "error",
+          { "allowNullableBoolean": true, "allowNullableNumber": true }
+        ]
         // "@typescript-eslint/no-unnecessary-condition": "error" TODO ADD THIS
       },
       "parserOptions": {

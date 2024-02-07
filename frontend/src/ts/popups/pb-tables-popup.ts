@@ -1,17 +1,17 @@
 import * as DB from "../db";
 import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
-import { isPopupVisible } from "../utils/misc";
+import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
 
-interface PersonalBest extends MonkeyTypes.PersonalBest {
-  mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+interface PersonalBest extends SharedTypes.PersonalBest {
+  mode2: SharedTypes.Mode2<SharedTypes.Mode>;
 }
 
 const wrapperId = "pbTablesPopupWrapper";
 
-function update(mode: MonkeyTypes.Mode): void {
+function update(mode: SharedTypes.Mode): void {
   $("#pbTablesPopup table tbody").empty();
-  $($("#pbTablesPopup table thead tr td")[0]).text(mode);
+  $($("#pbTablesPopup table thead tr td")[0] as HTMLElement).text(mode);
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
@@ -23,9 +23,9 @@ function update(mode: MonkeyTypes.Mode): void {
   if (allmode2 === undefined) return;
 
   const list: PersonalBest[] = [];
-  (Object.keys(allmode2) as MonkeyTypes.Mode2<MonkeyTypes.Mode>[]).forEach(
+  (Object.keys(allmode2) as SharedTypes.Mode2<SharedTypes.Mode>[]).forEach(
     function (key) {
-      let pbs = allmode2[key];
+      let pbs = allmode2[key] ?? [];
       pbs = pbs.sort(function (a, b) {
         return b.wpm - a.wpm;
         // if (a.difficulty === b.difficulty) {
@@ -40,7 +40,7 @@ function update(mode: MonkeyTypes.Mode): void {
     }
   );
 
-  let mode2memory: MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+  let mode2memory: SharedTypes.Mode2<SharedTypes.Mode>;
 
   list.forEach((pb) => {
     let dateText = `-<br><span class="sub">-</span>`;
@@ -68,7 +68,7 @@ function update(mode: MonkeyTypes.Mode): void {
           }</span>
         </td>
         <td>${pb.difficulty}</td>
-        <td>${pb.language ? pb.language.replace(/_/g, " ") : "-"}</td>
+        <td>${pb.language ? getLanguageDisplayString(pb.language) : "-"}</td>
         <td>${pb.punctuation ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${pb.lazyMode ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${dateText}</td>
@@ -78,7 +78,7 @@ function update(mode: MonkeyTypes.Mode): void {
   });
 }
 
-function show(mode: MonkeyTypes.Mode): void {
+function show(mode: SharedTypes.Mode): void {
   Skeleton.append(wrapperId);
   if (!isPopupVisible(wrapperId)) {
     update(mode);

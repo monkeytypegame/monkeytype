@@ -103,11 +103,11 @@ function layoutfluid(): void {
 
     if (flooredSwitchTimes.includes(time + 3)) {
       LayoutfluidFunboxTimer.show();
-      LayoutfluidFunboxTimer.updateTime(3, layouts[index + 1]);
+      LayoutfluidFunboxTimer.updateTime(3, layouts[index + 1] as string);
     } else if (flooredSwitchTimes.includes(time + 2)) {
-      LayoutfluidFunboxTimer.updateTime(2, layouts[index + 1]);
+      LayoutfluidFunboxTimer.updateTime(2, layouts[index + 1] as string);
     } else if (flooredSwitchTimes.includes(time + 1)) {
-      LayoutfluidFunboxTimer.updateTime(1, layouts[index + 1]);
+      LayoutfluidFunboxTimer.updateTime(1, layouts[index + 1] as string);
     }
 
     if (Config.layout !== layout && layout !== undefined) {

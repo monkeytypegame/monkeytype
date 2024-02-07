@@ -6,7 +6,7 @@ import Ape from "../ape/index";
 import * as Loader from "../elements/loader";
 import { showNewResultFilterPresetPopup } from "../popups/new-result-filter-preset-popup";
 
-export const defaultResultFilters: MonkeyTypes.ResultFilters = {
+export const defaultResultFilters: SharedTypes.ResultFilters = {
   _id: "default-result-filters-id",
   name: "default result filters",
   pb: {
@@ -78,7 +78,7 @@ function save(): void {
 
 export async function load(): Promise<void> {
   try {
-    const newResultFilters = window.localStorage.getItem("resultFilters");
+    const newResultFilters = window.localStorage.getItem("resultFilters") ?? "";
 
     if (!newResultFilters) {
       filters = defaultResultFilters;
@@ -122,7 +122,7 @@ export async function load(): Promise<void> {
 
     Object.keys(defaultResultFilters.tags).forEach((tag) => {
       if (filters.tags[tag] !== undefined) {
-        newTags[tag] = filters.tags[tag];
+        newTags[tag] = filters.tags[tag] as boolean;
       } else {
         newTags[tag] = true;
       }
@@ -198,12 +198,12 @@ export async function setFilterPreset(id: string): Promise<void> {
 }
 
 function deepCopyFilter(
-  filter: MonkeyTypes.ResultFilters
-): MonkeyTypes.ResultFilters {
+  filter: SharedTypes.ResultFilters
+): SharedTypes.ResultFilters {
   return JSON.parse(JSON.stringify(filter));
 }
 
-function addFilterPresetToSnapshot(filter: MonkeyTypes.ResultFilters): void {
+function addFilterPresetToSnapshot(filter: SharedTypes.ResultFilters): void {
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
   DB.setSnapshot({
@@ -270,13 +270,13 @@ function deSelectFilterPreset(): void {
   ).removeClass("active");
 }
 
-function getFilters(): MonkeyTypes.ResultFilters {
+function getFilters(): SharedTypes.ResultFilters {
   return filters;
 }
 
-function getGroup<G extends keyof MonkeyTypes.ResultFilters>(
+function getGroup<G extends keyof SharedTypes.ResultFilters>(
   group: G
-): MonkeyTypes.ResultFilters[G] {
+): SharedTypes.ResultFilters[G] {
   return filters[group];
 }
 
@@ -284,15 +284,15 @@ function getGroup<G extends keyof MonkeyTypes.ResultFilters>(
 //   filters[group][filter] = value;
 // }
 
-export function getFilter<G extends keyof MonkeyTypes.ResultFilters>(
+export function getFilter<G extends keyof SharedTypes.ResultFilters>(
   group: G,
   filter: MonkeyTypes.Filter<G>
-): MonkeyTypes.ResultFilters[G][MonkeyTypes.Filter<G>] {
+): SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>] {
   return filters[group][filter];
 }
 
 function setAllFilters(
-  group: keyof MonkeyTypes.ResultFilters,
+  group: keyof SharedTypes.ResultFilters,
   value: boolean
 ): void {
   Object.keys(getGroup(group)).forEach((filter) => {
@@ -313,15 +313,16 @@ export function reset(): void {
 }
 
 type AboveChartDisplay = Partial<
-  Record<keyof MonkeyTypes.ResultFilters, { all: boolean; array?: string[] }>
+  Record<keyof SharedTypes.ResultFilters, { all: boolean; array?: string[] }>
 >;
 
 export function updateActive(): void {
   const aboveChartDisplay: AboveChartDisplay = {};
-  Misc.typedKeys(getFilters()).forEach((group) => {
+
+  for (const group of Misc.typedKeys(getFilters())) {
     // id and name field do not correspond to any ui elements, no need to update
     if (group === "_id" || group === "name") {
-      return;
+      continue;
     }
 
     aboveChartDisplay[group] = {
@@ -329,12 +330,13 @@ export function updateActive(): void {
       array: [],
     };
 
-    Misc.typedKeys(getGroup(group)).forEach((filter) => {
+    for (const filter of Misc.typedKeys(getGroup(group))) {
       const groupAboveChartDisplay = aboveChartDisplay[group];
 
-      if (groupAboveChartDisplay === undefined) return;
+      if (groupAboveChartDisplay === undefined) continue;
 
-      if (getFilter(group, filter)) {
+      const filterValue = getFilter(group, filter);
+      if (filterValue === true) {
         groupAboveChartDisplay["array"]?.push(filter);
       } else {
         if (groupAboveChartDisplay["all"] !== undefined) {
@@ -351,15 +353,15 @@ export function updateActive(): void {
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] button[filter="${filter}"]`
         );
       }
-      if (getFilter(group, filter)) {
+      if (filterValue === true) {
         buttonEl.addClass("active");
       } else {
         buttonEl.removeClass("active");
       }
-    });
-  });
+    }
+  }
 
-  function addText(group: keyof MonkeyTypes.ResultFilters): string {
+  function addText(group: keyof SharedTypes.ResultFilters): string {
     let ret = "";
     ret += "<div class='group'>";
     if (group === "difficulty") {
@@ -394,7 +396,7 @@ export function updateActive(): void {
             if (snapshot === undefined) return id;
             const name = snapshot.tags?.filter((t) => t._id === id)[0];
             if (name !== undefined) {
-              return snapshot.tags?.filter((t) => t._id === id)[0].display;
+              return snapshot.tags?.filter((t) => t._id === id)[0]?.display;
             }
             return name;
           })
@@ -457,7 +459,7 @@ export function updateActive(): void {
   }, 0);
 }
 
-function toggle<G extends keyof MonkeyTypes.ResultFilters>(
+function toggle<G extends keyof SharedTypes.ResultFilters>(
   group: G,
   filter: MonkeyTypes.Filter<G>
 ): void {
@@ -468,10 +470,10 @@ function toggle<G extends keyof MonkeyTypes.ResultFilters>(
     if (group === "date") {
       setAllFilters("date", false);
     }
-    const newValue = !filters[group][
-      filter
-    ] as unknown as MonkeyTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
-    filters[group][filter] = newValue;
+    const currentValue = filters[group][filter] as unknown as boolean;
+    const newValue = !currentValue;
+    filters[group][filter] =
+      newValue as unknown as SharedTypes.ResultFilters[G][MonkeyTypes.Filter<G>];
     save();
   } catch (e) {
     Notifications.add(
@@ -490,7 +492,7 @@ $(
 ).on("click", "button", (e) => {
   const group = $(e.target)
     .parents(".buttons")
-    .attr("group") as keyof MonkeyTypes.ResultFilters;
+    .attr("group") as keyof SharedTypes.ResultFilters;
   const filter = $(e.target).attr("filter") as MonkeyTypes.Filter<typeof group>;
   if ($(e.target).hasClass("allFilters")) {
     Misc.typedKeys(getFilters()).forEach((group) => {
@@ -652,9 +654,8 @@ export async function appendButtons(): Promise<void> {
   if (languageList) {
     let html = "";
     for (const language of languageList) {
-      html += `<button filter="${language}">${language.replace(
-        "_",
-        " "
+      html += `<button filter="${language}">${Misc.getLanguageDisplayString(
+        language
       )}</button>`;
     }
     const el = document.querySelector(
@@ -737,11 +738,11 @@ $(".group.presetFilterButtons .filterBtns").on(
 );
 
 function verifyResultFiltersStructure(
-  filterIn: MonkeyTypes.ResultFilters
-): MonkeyTypes.ResultFilters {
+  filterIn: SharedTypes.ResultFilters
+): SharedTypes.ResultFilters {
   const filter = deepCopyFilter(filterIn);
   Object.entries(defaultResultFilters).forEach((entry) => {
-    const key = entry[0] as keyof MonkeyTypes.ResultFilters;
+    const key = entry[0] as keyof SharedTypes.ResultFilters;
     const value = entry[1];
     if (filter[key] === undefined) {
       filter[key] = value;

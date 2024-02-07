@@ -74,5 +74,5 @@ export function hide(): void {
 }
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "showLiveAcc") eventValue ? show() : hide();
+  if (eventKey === "showLiveAcc") (eventValue as boolean) ? show() : hide();
 });

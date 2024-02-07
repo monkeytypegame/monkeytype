@@ -30,6 +30,8 @@ function updateLongTextWarning(): void {
   }
 }
 
+//todo: rewrite this file to use a state object instead of constantly directly accessing the DOM
+
 export function show(noAnim = false): void {
   Skeleton.append(skeletonId);
   if (!Misc.isElementVisible(wrapper)) {
@@ -51,12 +53,14 @@ export function show(noAnim = false): void {
       $(`${popup} .delimiterCheck input`).prop("checked", false);
     }
 
-    if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
+    if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
       $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
     } else {
       $(`${popup} .inputs .randomInputFields`).addClass("disabled");
     }
-    if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked")) {
+    if (
+      $(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean
+    ) {
       $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
     } else {
       $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
@@ -89,7 +93,7 @@ export function show(noAnim = false): void {
 
 $(`${popup} .delimiterCheck input`).on("change", () => {
   let delimiter;
-  if ($(`${popup} .delimiterCheck input`).prop("checked")) {
+  if ($(`${popup} .delimiterCheck input`).prop("checked") as boolean) {
     delimiter = "|";
 
     $(`${popup} .randomInputFields .sectioncount `).removeClass("hidden");
@@ -165,7 +169,7 @@ $(wrapper).on("mousedown", (e) => {
 });
 
 $(`${popup} .inputs .randomWordsCheckbox input`).on("change", () => {
-  if ($(`${popup} .randomWordsCheckbox input`).prop("checked")) {
+  if ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) {
     $(`${popup} .inputs .randomInputFields`).removeClass("disabled");
   } else {
     $(`${popup} .inputs .randomInputFields`).addClass("disabled");
@@ -173,7 +177,7 @@ $(`${popup} .inputs .randomWordsCheckbox input`).on("change", () => {
 });
 
 $(`${popup} .replaceNewlineWithSpace input`).on("change", () => {
-  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked")) {
+  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean) {
     $(`${popup} .inputs .replaceNewLinesButtons`).removeClass("disabled");
   } else {
     $(`${popup} .inputs .replaceNewLinesButtons`).addClass("disabled");
@@ -241,7 +245,9 @@ function apply(): void {
   //replace zero width characters
   text = text.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "");
 
-  if ($(`${popup} .replaceControlCharacters input`).prop("checked")) {
+  if (
+    $(`${popup} .replaceControlCharacters input`).prop("checked") as boolean
+  ) {
     text = text.replace(/([^\\]|^)\\t/gm, "$1\t");
     text = text.replace(/([^\\]|^)\\n/gm, "$1\n");
     text = text.replace(/\\\\t/gm, "\\t");
@@ -250,13 +256,15 @@ function apply(): void {
 
   text = text.replace(/ +/gm, " ");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if ($(`${popup} .typographyCheck input`).prop("checked")) {
+  if ($(`${popup} .typographyCheck input`).prop("checked") as boolean) {
     text = Misc.cleanTypographySymbols(text);
   }
-  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked")) {
+  if ($(`${popup} .replaceNewlineWithSpace input`).prop("checked") as boolean) {
     let periods = true;
     if (
-      $($(`${popup} .replaceNewLinesButtons .button`)[0]).hasClass("active")
+      $(
+        $(`${popup} .replaceNewLinesButtons .button`)[0] as HTMLElement
+      ).hasClass("active")
     ) {
       periods = false;
     }
@@ -285,19 +293,19 @@ function apply(): void {
     parseInt(($(`${popup} .sectioncount input`).val() as string) || "-1")
   );
   CustomText.setIsWordRandom(
-    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
       CustomText.word > -1
   );
   CustomText.setIsTimeRandom(
-    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
       CustomText.time > -1
   );
   CustomText.setIsSectionRandom(
-    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
       CustomText.section > -1
   );
   if (
-    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
     !CustomText.isTimeRandom &&
     !CustomText.isWordRandom &&
     !CustomText.isSectionRandom
@@ -313,7 +321,7 @@ function apply(): void {
   }
 
   if (
-    $(`${popup} .randomWordsCheckbox input`).prop("checked") &&
+    ($(`${popup} .randomWordsCheckbox input`).prop("checked") as boolean) &&
     CustomText.isTimeRandom &&
     CustomText.isWordRandom
   ) {

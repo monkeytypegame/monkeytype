@@ -23,7 +23,7 @@ export function clearActive(): void {
 }
 
 export function verify(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Mode>
 ): string | null {
   try {
     if (TestState.activeChallenge) {
@@ -34,7 +34,7 @@ export function verify(
         return null;
       }
 
-      if (!TestState.activeChallenge.requirements) {
+      if (TestState.activeChallenge.requirements === undefined) {
         Notifications.add(
           `${TestState.activeChallenge.display} challenge passed!`,
           1
@@ -49,6 +49,11 @@ export function verify(
             TestState.activeChallenge.requirements[
               requirementType as keyof typeof TestState.activeChallenge.requirements
             ];
+
+          if (requirementValue === undefined) {
+            throw new Error("Requirement value is undefined");
+          }
+
           if (requirementType === "wpm") {
             const wpmMode = Object.keys(requirementValue)[0];
             if (wpmMode === "exact") {
@@ -98,10 +103,15 @@ export function verify(
             }
           } else if (requirementType === "funbox") {
             const funboxMode = requirementValue["exact"]
-              .toString()
+              ?.toString()
               .split("#")
               .sort()
               .join("#");
+
+            if (funboxMode === undefined) {
+              throw new Error("Funbox mode is undefined");
+            }
+
             if (funboxMode !== result.funbox) {
               requirementsMet = false;
               for (const f of funboxMode.split("#")) {
@@ -111,8 +121,9 @@ export function verify(
                   failReasons.push(`${f} funbox not active`);
                 }
               }
-              if (result.funbox?.split("#")) {
-                for (const f of result.funbox.split("#")) {
+              const funboxSplit = result.funbox?.split("#");
+              if (funboxSplit !== undefined && funboxSplit.length > 0) {
+                for (const f of funboxSplit) {
                   if (
                     funboxMode.split("#").find((rf) => rf === f) === undefined
                   ) {
@@ -285,10 +296,10 @@ export async function setup(challengeName: string): Promise<boolean> {
       } else if (challenge.parameters[1] === "time") {
         UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
       }
-      UpdateConfig.setMode(challenge.parameters[1] as MonkeyTypes.Mode, true);
+      UpdateConfig.setMode(challenge.parameters[1] as SharedTypes.Mode, true);
       if (challenge.parameters[3] !== undefined) {
         UpdateConfig.setDifficulty(
-          challenge.parameters[3] as MonkeyTypes.Difficulty,
+          challenge.parameters[3] as SharedTypes.Difficulty,
           true
         );
       }

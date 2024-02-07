@@ -311,7 +311,7 @@ $(window).on("resize", () => {
 
 $("#notificationCenter .clearAll").on("click", () => {
   $("#notificationCenter .notif.bad").each((_, element) => {
-    $(element)[0].click();
+    $(element)[0]?.click();
   });
   visibleStickyNotifications = 0;
   updateClearAllButton();

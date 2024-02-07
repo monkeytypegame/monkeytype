@@ -66,8 +66,10 @@ function hide(): void {
                 totalXpClaimed += r.item as number;
               } else if (r.type === "badge") {
                 const badge = BadgeController.getById(r.item.id);
-                badgesClaimed.push(badge.name);
-                DB.addBadge(r.item);
+                if (badge) {
+                  badgesClaimed.push(badge.name);
+                  DB.addBadge(r.item);
+                }
               }
             }
           }
@@ -318,7 +320,7 @@ function fillNotifications(): void {
         title = "Success";
       }
 
-      if (customTitle) {
+      if (customTitle !== undefined) {
         title = customTitle;
       }
 

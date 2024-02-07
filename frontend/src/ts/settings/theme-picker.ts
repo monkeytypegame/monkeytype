@@ -255,12 +255,11 @@ export function setCustomInputs(noThemeUpdate = false): void {
   $(
     ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
   ).each((_index, element: HTMLElement) => {
-    const currentColor =
-      Config.customThemeColors[
-        ThemeController.colorVars.indexOf(
-          $(element).find("input.color").attr("id") as string
-        )
-      ];
+    const currentColor = Config.customThemeColors[
+      ThemeController.colorVars.indexOf(
+        $(element).find("input.color").attr("id") as string
+      )
+    ] as string;
     updateColors($(element), currentColor, false, noThemeUpdate);
   });
 }

@@ -2,6 +2,8 @@ import * as Loader from "../elements/loader";
 import { normal as normalBlend } from "color-blend";
 import { envConfig } from "../constants/env-config";
 
+//todo split this file into smaller util files (grouped by functionality)
+
 async function fetchJson<T>(url: string): Promise<T> {
   try {
     if (!url) throw new Error("No URL");
@@ -381,7 +383,7 @@ export function smooth(
     let count = 0;
     let sum = 0;
     for (let j = from; j < to && j < arr.length; j += 1) {
-      sum += get(arr[j]);
+      sum += get(arr[j] as number);
       count += 1;
     }
 
@@ -418,7 +420,9 @@ export function median(arr: number[]): number {
   try {
     const mid = Math.floor(arr.length / 2),
       nums = [...arr].sort((a, b) => a - b);
-    return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+    return arr.length % 2 !== 0
+      ? (nums[mid] as number)
+      : ((nums[mid - 1] as number) + (nums[mid] as number)) / 2;
   } catch (e) {
     return 0;
   }
@@ -492,7 +496,9 @@ export function roundTo2(num: number): number {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
-export function findLineByLeastSquares(values_y: number[]): number[][] {
+export function findLineByLeastSquares(
+  values_y: number[]
+): [[number, number], [number, number]] | null {
   let sum_x = 0;
   let sum_y = 0;
   let sum_xy = 0;
@@ -510,7 +516,7 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
    * Nothing to do.
    */
   if (values_length === 0) {
-    return [[], []];
+    return null;
   }
 
   /*
@@ -518,7 +524,7 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
    */
   for (let v = 0; v < values_length; v++) {
     x = v + 1;
-    y = values_y[v];
+    y = values_y[v] as number;
     sum_x += x;
     sum_y += y;
     sum_xx += x * x;
@@ -533,8 +539,11 @@ export function findLineByLeastSquares(values_y: number[]): number[][] {
   const m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
   const b = sum_y / count - (m * sum_x) / count;
 
-  const returnpoint1 = [1, 1 * m + b];
-  const returnpoint2 = [values_length, values_length * m + b];
+  const returnpoint1 = [1, 1 * m + b] as [number, number];
+  const returnpoint2 = [values_length, values_length * m + b] as [
+    number,
+    number
+  ];
   return [returnpoint1, returnpoint2];
 }
 
@@ -662,7 +671,7 @@ export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
   for (let i = 0; i < numString.length; i++) {
-    ret += arabicIndic[parseInt(numString[i])];
+    ret += arabicIndic[parseInt(numString[i] as string)];
   }
   return ret;
 }
@@ -671,7 +680,7 @@ export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
   for (let i = 0; i < numString.length; i++) {
-    ret += nepaliIndic[parseInt(numString[i])];
+    ret += nepaliIndic[parseInt(numString[i] as string)];
   }
   return ret;
 }
@@ -811,7 +820,7 @@ export function findGetParameter(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
@@ -820,7 +829,8 @@ export function findGetParameter(
     .split("&")
     .forEach(function (item) {
       tmp = item.split("=");
-      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+      if (tmp[0] === parameterName)
+        result = decodeURIComponent(tmp[1] as string);
     });
   return result;
 }
@@ -833,7 +843,7 @@ export function checkIfGetParameterExists(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
@@ -887,7 +897,7 @@ export function toggleFullscreen(): void {
     !document.webkitFullscreenElement &&
     !document.msFullscreenElement
   ) {
-    if (elem.requestFullscreen) {
+    if (elem.requestFullscreen !== undefined) {
       elem.requestFullscreen();
     } else if (elem.msRequestFullscreen) {
       elem.msRequestFullscreen();
@@ -898,7 +908,7 @@ export function toggleFullscreen(): void {
       elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
-    if (document.exitFullscreen) {
+    if (document.exitFullscreen !== undefined) {
       document.exitFullscreen();
     } else if (document.msExitFullscreen) {
       document.msExitFullscreen();
@@ -1005,7 +1015,7 @@ export function canQuickRestart(
   mode: string,
   words: number,
   time: number,
-  CustomText: MonkeyTypes.CustomText,
+  CustomText: SharedTypes.CustomText,
   customTextIsLong: boolean
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
@@ -1070,7 +1080,12 @@ export function convertRGBtoHEX(rgb: string): string | undefined {
 
     return ("0" + parseInt(i).toString(16)).slice(-2);
   }
-  return "#" + hexCode(match[1]) + hexCode(match[2]) + hexCode(match[3]);
+  return (
+    "#" +
+    hexCode(match[1] as string) +
+    hexCode(match[2] as string) +
+    hexCode(match[3] as string)
+  );
 }
 
 interface LastIndex extends String {
@@ -1081,7 +1096,7 @@ interface LastIndex extends String {
   regex: RegExp
 ): number {
   const match = this.match(regex);
-  return match ? this.lastIndexOf(match[match.length - 1]) : -1;
+  return match ? this.lastIndexOf(match[match.length - 1] as string) : -1;
 };
 
 export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
@@ -1160,10 +1175,10 @@ export async function swapElements(
   return;
 }
 
-export function getMode2<M extends keyof MonkeyTypes.PersonalBests>(
+export function getMode2<M extends keyof SharedTypes.PersonalBests>(
   config: MonkeyTypes.Config,
-  randomQuote: MonkeyTypes.Quote
-): MonkeyTypes.Mode2<M> {
+  randomQuote: MonkeyTypes.Quote | null
+): SharedTypes.Mode2<M> {
   const mode = config.mode;
   let retVal: string;
 
@@ -1176,16 +1191,16 @@ export function getMode2<M extends keyof MonkeyTypes.PersonalBests>(
   } else if (mode === "zen") {
     retVal = "zen";
   } else if (mode === "quote") {
-    retVal = randomQuote.id.toString();
+    retVal = `${randomQuote?.id ?? -1}`;
   } else {
     throw new Error("Invalid mode");
   }
 
-  return retVal as MonkeyTypes.Mode2<M>;
+  return retVal as SharedTypes.Mode2<M>;
 }
 
 export async function downloadResultsCSV(
-  array: MonkeyTypes.Result<MonkeyTypes.Mode>[]
+  array: SharedTypes.Result<SharedTypes.Mode>[]
 ): Promise<void> {
   Loader.show();
   const csvString = [
@@ -1215,7 +1230,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: MonkeyTypes.Result<MonkeyTypes.Mode>) => [
+    ...array.map((item: SharedTypes.Result<SharedTypes.Mode>) => [
       item._id,
       item.isPb,
       item.wpm,
@@ -1280,13 +1295,13 @@ export function shuffle<T>(elements: T[]): void {
   for (let i = elements.length - 1; i > 0; --i) {
     const j = randomIntFromRange(0, i);
     const temp = elements[j];
-    elements[j] = elements[i];
-    elements[i] = temp;
+    elements[j] = elements[i] as T;
+    elements[i] = temp as T;
   }
 }
 
 export function randomElementFromArray<T>(array: T[]): T {
-  return array[randomIntFromRange(0, array.length - 1)];
+  return array[randomIntFromRange(0, array.length - 1)] as T;
 }
 
 export function nthElementFromArray<T>(
@@ -1310,7 +1325,7 @@ export function createErrorMessage(error: unknown, message: string): string {
 
   const objectWithMessage = error as { message?: string };
 
-  if (objectWithMessage?.message) {
+  if (objectWithMessage?.message !== undefined) {
     return `${message}: ${objectWithMessage.message}`;
   }
 
@@ -1347,10 +1362,14 @@ export async function getDiscordAvatarUrl(
   discordAvatar?: string,
   discordAvatarSize = 32
 ): Promise<string | null> {
-  if (!discordId || !discordAvatar) {
+  if (
+    discordId === undefined ||
+    discordId === "" ||
+    discordAvatar === undefined ||
+    discordAvatar === ""
+  ) {
     return null;
   }
-
   // An invalid request to this URL will return a 404.
   try {
     const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
@@ -1409,7 +1428,7 @@ export function memoizeAsync<P, T extends <B>(...args: P[]) => Promise<B>>(
   const cache = new Map<P, Promise<ReturnType<T>>>();
 
   return (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
-    const key = getKey ? getKey.apply(args) : args[0];
+    const key = getKey ? getKey.apply(args) : (args[0] as P);
 
     if (cache.has(key)) {
       const ret = await cache.get(key);
@@ -1466,7 +1485,7 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
-  return el.textContent || el.innerText || "";
+  return (el.textContent as string) || el.innerText || "";
 }
 
 export function camelCaseToWords(str: string): string {
@@ -1481,10 +1500,17 @@ export function loadCSS(href: string, prepend = false): void {
   link.type = "text/css";
   link.rel = "stylesheet";
   link.href = href;
+
+  const head = document.getElementsByTagName("head")[0];
+
+  if (head === undefined) {
+    throw new Error("Could not load CSS - head is undefined");
+  }
+
   if (prepend) {
-    document.getElementsByTagName("head")[0].prepend(link);
+    head.prepend(link);
   } else {
-    document.getElementsByTagName("head")[0].appendChild(link);
+    head.appendChild(link);
   }
 }
 
@@ -1516,25 +1542,37 @@ export async function checkIfLanguageSupportsZipf(
   return "unknown";
 }
 
-export function getStartOfDayTimestamp(timestamp: number): number {
-  return timestamp - (timestamp % 86400000);
-}
-
-export function getCurrentDayTimestamp(): number {
+export function getCurrentDayTimestamp(hourOffset = 0): number {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
   const currentTime = Date.now();
-  return getStartOfDayTimestamp(currentTime);
+  return getStartOfDayTimestamp(currentTime, offsetMilis);
 }
 
-export function isYesterday(timestamp: number): boolean {
-  const yesterday = getStartOfDayTimestamp(Date.now() - 86400000);
-  const date = getStartOfDayTimestamp(timestamp);
+const MILISECONDS_IN_HOUR = 3600000;
+const MILLISECONDS_IN_DAY = 86400000;
+
+export function getStartOfDayTimestamp(
+  timestamp: number,
+  offsetMilis = 0
+): number {
+  return timestamp - ((timestamp - offsetMilis) % MILLISECONDS_IN_DAY);
+}
+
+export function isYesterday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const yesterday = getStartOfDayTimestamp(
+    Date.now() - MILLISECONDS_IN_DAY,
+    offsetMilis
+  );
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return yesterday === date;
 }
 
-export function isToday(timestamp: number): boolean {
-  const today = getStartOfDayTimestamp(Date.now());
-  const date = getStartOfDayTimestamp(timestamp);
+export function isToday(timestamp: number, hourOffset = 0): boolean {
+  const offsetMilis = hourOffset * MILISECONDS_IN_HOUR;
+  const today = getStartOfDayTimestamp(Date.now(), offsetMilis);
+  const date = getStartOfDayTimestamp(timestamp, offsetMilis);
 
   return today === date;
 }
@@ -1640,10 +1678,9 @@ export function convertToMorse(word: string): string {
   let morseWord = "";
 
   const deAccentedWord = replaceSpecialChars(word);
-  console.log(deAccentedWord);
   for (let i = 0; i < deAccentedWord.length; i++) {
-    const letter = morseCode[deAccentedWord.toLowerCase()[i]];
-    morseWord += letter ? letter + "/" : "";
+    const letter = morseCode[deAccentedWord.toLowerCase()[i] as string];
+    morseWord += letter !== undefined ? letter + "/" : "";
   }
   return morseWord;
 }
@@ -1668,7 +1705,7 @@ export function reloadAfter(seconds: number): void {
 export function updateTitle(title?: string): void {
   const local = isDevEnvironment() ? "localhost - " : "";
 
-  if (!title) {
+  if (title === undefined || title === "") {
     document.title =
       local + "Monkeytype | A minimalistic, customizable typing test";
   } else {
@@ -1689,6 +1726,11 @@ export function getNumberWithMagnitude(num: number): {
     "trillion",
     "quadrillion",
     "quintillion",
+    "sextillion",
+    "septillion",
+    "octillion",
+    "nonillion",
+    "decillion",
   ];
   let unitIndex = 0;
   let roundedNum = num;
@@ -1698,7 +1740,7 @@ export function getNumberWithMagnitude(num: number): {
     unitIndex++;
   }
 
-  const unit = units[unitIndex];
+  const unit = units[unitIndex] ?? "unknown";
 
   return {
     rounded: Math.round(roundedNum),
@@ -1709,6 +1751,27 @@ export function getNumberWithMagnitude(num: number): {
 
 export function numberWithSpaces(x: number): string {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+export function lastElementFromArray<T>(array: T[]): T | undefined {
+  return array[array.length - 1];
+}
+
+export function getLanguageDisplayString(
+  language: string,
+  noSizeString = false
+): string {
+  let out = "";
+  if (noSizeString) {
+    out = removeLanguageSize(language);
+  } else {
+    out = language;
+  }
+  return out.replace(/_/g, " ");
+}
+
+export function removeLanguageSize(language: string): string {
+  return language.replace(/_\d*k$/g, "");
 }
 
 // DO NOT ALTER GLOBAL OBJECTSONSTRUCTOR, IT WILL BREAK RESULT HASHES

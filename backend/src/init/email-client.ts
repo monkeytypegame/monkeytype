@@ -38,7 +38,7 @@ export async function init(): Promise<void> {
 
   const { EMAIL_HOST, EMAIL_USER, EMAIL_PASS, EMAIL_PORT } = process.env;
 
-  if (!EMAIL_HOST || !EMAIL_USER || !EMAIL_PASS) {
+  if (!(EMAIL_HOST ?? "") || !(EMAIL_USER ?? "") || !(EMAIL_PASS ?? "")) {
     if (isDevEnvironment()) {
       Logger.warning(
         "No email client configuration provided. Running without email."
@@ -127,8 +127,9 @@ const EMAIL_TEMPLATES_DIRECTORY = join(__dirname, "../../email-templates");
 const cachedTemplates: Record<string, string> = {};
 
 async function getTemplate(name: string): Promise<string> {
-  if (cachedTemplates[name]) {
-    return cachedTemplates[name];
+  const cachedTemp = cachedTemplates[name];
+  if (cachedTemp !== undefined) {
+    return cachedTemp;
   }
 
   const template = await fs.promises.readFile(

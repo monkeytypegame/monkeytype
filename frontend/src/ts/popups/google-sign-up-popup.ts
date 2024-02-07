@@ -29,7 +29,7 @@ function show(credential: UserCredential): void {
   if (!isPopupVisible(wrapperId)) {
     CaptchaController.reset("googleSignUpPopup");
     CaptchaController.render(
-      $("#googleSignUpPopupWrapper .captcha")[0],
+      $("#googleSignUpPopupWrapper .captcha")[0] as HTMLElement,
       "googleSignUpPopup"
     );
     enableInput();
@@ -53,7 +53,7 @@ async function hide(): Promise<void> {
       });
       LoginPage.hidePreloader();
       LoginPage.enableInputs();
-      if (signedInUser && getAdditionalUserInfo(signedInUser)?.isNewUser) {
+      if (getAdditionalUserInfo(signedInUser)?.isNewUser) {
         Ape.users.delete();
         signedInUser.user.delete();
       }
@@ -256,7 +256,7 @@ $(document).on("keydown", (event) => {
 });
 
 subscribeToSignUpEvent((signedInUser, isNewUser) => {
-  if (signedInUser && isNewUser) {
+  if (signedInUser !== undefined && isNewUser) {
     show(signedInUser);
   }
 });

@@ -5,11 +5,11 @@ export default class Quotes {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointResponse {
+  async get(): Ape.EndpointResponse<QuotesApe.GetQuotes> {
     return await this.httpClient.get(BASE_PATH);
   }
 
-  async isSubmissionEnabled(): Ape.EndpointResponse {
+  async isSubmissionEnabled(): Ape.EndpointResponse<QuotesApe.GetIsSubmissionEnabled> {
     return await this.httpClient.get(`${BASE_PATH}/isSubmissionEnabled`);
   }
 
@@ -18,7 +18,7 @@ export default class Quotes {
     source: string,
     language: string,
     captcha: string
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<QuotesApe.PostQuotes> {
     const payload = {
       text,
       source,
@@ -33,7 +33,7 @@ export default class Quotes {
     quoteSubmissionId: string,
     editText?: string,
     editSource?: string
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<QuotesApe.PostApprove> {
     const payload = {
       quoteId: quoteSubmissionId,
       editText,
@@ -43,13 +43,17 @@ export default class Quotes {
     return await this.httpClient.post(`${BASE_PATH}/approve`, { payload });
   }
 
-  async rejectSubmission(quoteSubmissionId: string): Ape.EndpointResponse {
+  async rejectSubmission(
+    quoteSubmissionId: string
+  ): Ape.EndpointResponse<QuotesApe.PostReject> {
     return await this.httpClient.post(`${BASE_PATH}/reject`, {
       payload: { quoteId: quoteSubmissionId },
     });
   }
 
-  async getRating(quote: MonkeyTypes.Quote): Ape.EndpointResponse {
+  async getRating(
+    quote: MonkeyTypes.Quote
+  ): Ape.EndpointResponse<QuotesApe.GetRating> {
     const searchQuery = {
       quoteId: quote.id,
       language: quote.language,
@@ -61,7 +65,7 @@ export default class Quotes {
   async addRating(
     quote: MonkeyTypes.Quote,
     rating: number
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<QuotesApe.PostRating> {
     const payload = {
       quoteId: quote.id,
       rating,
@@ -77,7 +81,7 @@ export default class Quotes {
     reason: string,
     comment: string,
     captcha: string
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<QuotesApe.PostReport> {
     const payload = {
       quoteId,
       quoteLanguage,

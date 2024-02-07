@@ -56,9 +56,10 @@ function highlightMatches(text: string, matchedText: string[]): string {
   const words = splitByAndKeep(text, `.,"/#!$%^&*;:{}=-_\`~() `.split(""));
 
   const normalizedWords = words.map((word) => {
-    const shouldHighlight = matchedText.find((match) => {
-      return word.startsWith(match);
-    });
+    const shouldHighlight =
+      matchedText.find((match) => {
+        return word.startsWith(match);
+      }) !== undefined;
     return shouldHighlight ? `<span class="highlight">${word}</span>` : word;
   });
 
@@ -359,8 +360,8 @@ $("#popups").on(
   "#quoteSearchPopup #gotoSubmitQuoteButton",
   async () => {
     Loader.show();
-    const isSubmissionEnabled = (await Ape.quotes.isSubmissionEnabled()).data
-      .isEnabled;
+    const isSubmissionEnabled =
+      (await Ape.quotes.isSubmissionEnabled()).data?.isEnabled ?? false;
     Loader.hide();
     if (!isSubmissionEnabled) {
       Notifications.add(
@@ -427,8 +428,9 @@ $("#popups").on(
 
       if (response.status === 200) {
         $button.removeClass("fas").addClass("far");
-        const quoteIndex =
-          dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(quoteId);
+        const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(
+          quoteId
+        ) as number;
         dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
       }
     } else {

@@ -107,10 +107,10 @@ export async function update(
         width: (Misc.getLevel(xp) % 1) * 100 + "%",
       });
     }
-    if (discordAvatar && discordId) {
+    if ((discordAvatar ?? "") && (discordId ?? "")) {
       Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
         (discordAvatarUrl) => {
-          if (discordAvatarUrl) {
+          if (discordAvatarUrl !== null) {
             $("header nav .account .avatar").css(
               "background-image",
               `url(${discordAvatarUrl})`
@@ -261,7 +261,7 @@ async function animateXpBreakdown(
   xpBreakdown.append(
     `<div class='text next'>time typing +${breakdown["base"]}</div>`
   );
-  total += breakdown["base"];
+  total += breakdown["base"] ?? 0;
   if (breakdown["100%"]) {
     await Misc.sleep(delay);
     await append(`perfect +${breakdown["100%"]}`);

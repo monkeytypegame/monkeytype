@@ -2,8 +2,8 @@ const parent = document.getElementById("popups") as HTMLElement;
 const skeletons = new Map<string, HTMLElement>();
 
 export function save(id: string, removeAfter = true): void {
-  const el = document.getElementById(id) as HTMLElement;
-  if (!el) throw new Error(`Element with id ${id} not found`);
+  const el = document.getElementById(id) ?? undefined;
+  if (el === undefined) throw new Error(`Element with id ${id} not found`);
   skeletons.set(id, el);
   if (removeAfter) remove(id);
 }
