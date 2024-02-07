@@ -43,7 +43,11 @@ async function errorHandlingMiddleware(
       recordClientErrorByVersion(req.headers["x-client-version"] as string);
     }
 
-    if (!isDevEnvironment() && monkeyResponse.status >= 500) {
+    if (
+      !isDevEnvironment() &&
+      monkeyResponse.status >= 500 &&
+      monkeyResponse.status !== 503
+    ) {
       const { uid, errorId } = monkeyResponse.data;
 
       try {
