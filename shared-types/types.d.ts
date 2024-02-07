@@ -318,4 +318,12 @@ declare namespace SharedTypes {
       none?: boolean;
     } & Record<string, boolean>;
   }
+
+  interface PSA {
+    _id: string;
+    message: string;
+    sticky?: boolean;
+    level?: number;
+    date?: number;
+  }
 }
