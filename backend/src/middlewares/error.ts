@@ -47,7 +47,7 @@ async function errorHandlingMiddleware(
       const { uid, errorId } = monkeyResponse.data;
 
       try {
-        await void Logger.logToDb(
+        await Logger.logToDb(
           "system_error",
           `${monkeyResponse.status} ${errorId} ${error.message} ${error.stack}`,
           uid
