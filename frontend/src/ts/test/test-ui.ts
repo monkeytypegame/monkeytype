@@ -21,32 +21,32 @@ import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
+import html2canvas from "html2canvas";
 
-const debouncedZipfCheck = debounce(250, () => {
-  Misc.checkIfLanguageSupportsZipf(Config.language).then((supports) => {
-    if (supports === "no") {
-      Notifications.add(
-        `${Misc.capitalizeFirstLetter(
-          Config.language.replace(/_/g, " ")
-        )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
-        0,
-        {
-          duration: 7,
-        }
-      );
-    }
-    if (supports === "unknown") {
-      Notifications.add(
-        `${Misc.capitalizeFirstLetter(
-          Config.language.replace(/_/g, " ")
-        )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
-        0,
-        {
-          duration: 7,
-        }
-      );
-    }
-  });
+const debouncedZipfCheck = debounce(250, async () => {
+  const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);
+  if (supports === "no") {
+    Notifications.add(
+      `${Misc.capitalizeFirstLetter(
+        Misc.getLanguageDisplayString(Config.language)
+      )} does not support Zipf funbox, because the list is not ordered by frequency. Please try another word list.`,
+      0,
+      {
+        duration: 7,
+      }
+    );
+  }
+  if (supports === "unknown") {
+    Notifications.add(
+      `${Misc.capitalizeFirstLetter(
+        Misc.getLanguageDisplayString(Config.language)
+      )} may not support Zipf funbox, because we don't know if it's ordered by frequency or not. If you would like to add this label, please contact us.`,
+      0,
+      {
+        duration: 7,
+      }
+    );
+  }
 });
 
 ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
@@ -54,7 +54,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     (eventKey === "language" || eventKey === "funbox") &&
     Config.funbox.split("#").includes("zipf")
   ) {
-    debouncedZipfCheck();
+    void debouncedZipfCheck();
   }
   if (eventKey === "fontSize" && !nosave) {
     setTimeout(() => {
@@ -63,7 +63,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
     }, 0);
   }
 
-  if (eventKey === "theme") applyBurstHeatmap();
+  if (eventKey === "theme") void applyBurstHeatmap();
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
@@ -75,7 +75,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
   if (eventKey === "flipTestColors") flipColors(eventValue);
   if (eventKey === "colorfulMode") colorful(eventValue);
   if (eventKey === "highlightMode") updateWordElement(eventValue);
-  if (eventKey === "burstHeatmap") applyBurstHeatmap();
+  if (eventKey === "burstHeatmap") void applyBurstHeatmap();
 });
 
 export let currentWordElementIndex = 0;
@@ -221,7 +221,7 @@ export function showWords(): void {
 
   updateWordsHeight(true);
   updateActiveElement(undefined, true);
-  Caret.updatePosition();
+  void Caret.updatePosition();
   updateWordsInputPosition(true);
 }
 
@@ -557,7 +557,7 @@ export function updateWordElement(
   showError = !Config.blindMode,
   inputOverride?: string
 ): void {
-  const input = inputOverride || TestInput.input.current;
+  const input = inputOverride ?? TestInput.input.current;
   const wordAtIndex = <Element>document.querySelector("#words .word.active");
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
@@ -789,7 +789,9 @@ export function updatePremid(): void {
     fbtext = " " + Config.funbox.split("#").join(" ");
   }
   $(".pageTest #premidTestMode").text(
-    `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
+    `${Config.mode} ${mode2} ${Misc.getLanguageDisplayString(
+      Config.language
+    )}${fbtext}`
   );
   $(".pageTest #premidSecondsLeft").text(Config.time);
 }
@@ -928,13 +930,14 @@ async function loadWordsHistory(): Promise<boolean> {
     const containsKorean =
       input?.match(
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
-      ) ||
-      word?.match(
+      ) !== null ||
+      word.match(
         /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
-      );
+      ) !== null;
     let wordEl = "";
     try {
-      if (!input) throw new Error("empty input word");
+      if (input === undefined || input === "")
+        throw new Error("empty input word");
       if (corrected !== undefined && corrected !== "") {
         const correctedChar = !containsKorean
           ? corrected
@@ -1072,22 +1075,22 @@ export function toggleResultWords(noAnimation = false): void {
         $("#words").html(
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
-        loadWordsHistory().then(() => {
+        loadWordsHistory().finally(() => {
           if (Config.burstHeatmap) {
-            applyBurstHeatmap();
+            void applyBurstHeatmap();
           }
           $("#resultWordsHistory")
             .removeClass("hidden")
             .css("display", "none")
             .slideDown(noAnimation ? 0 : 250, () => {
               if (Config.burstHeatmap) {
-                applyBurstHeatmap();
+                void applyBurstHeatmap();
               }
             });
         });
       } else {
         if (Config.burstHeatmap) {
-          applyBurstHeatmap();
+          void applyBurstHeatmap();
         }
         $("#resultWordsHistory")
           .removeClass("hidden")
@@ -1239,7 +1242,7 @@ export function highlightMode(mode?: MonkeyTypes.HighlightMode): void {
 }
 
 $(".pageTest").on("click", "#saveScreenshotButton", () => {
-  screenshot();
+  void screenshot();
 });
 
 $(".pageTest #copyWordsListButton").on("click", async () => {

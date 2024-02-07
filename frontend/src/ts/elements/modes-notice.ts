@@ -8,7 +8,7 @@ import * as ConfigEvent from "../observables/config-event";
 import { Auth } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import { roundTo2 } from "../utils/misc";
+import { getLanguageDisplayString, roundTo2 } from "../utils/misc";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -26,7 +26,7 @@ ConfigEvent.subscribe((eventKey) => {
       "typingSpeedUnit",
     ].includes(eventKey)
   ) {
-    update();
+    void update();
   }
 });
 
@@ -85,9 +85,9 @@ export async function update(): Promise<void> {
 
   if (Config.mode !== "zen") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
-        /_/g,
-        " "
+      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${getLanguageDisplayString(
+        Config.language,
+        Config.mode === "quote"
       )}</div>`
     );
   }

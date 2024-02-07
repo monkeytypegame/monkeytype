@@ -81,7 +81,7 @@ function clearTables(isProfile: boolean): void {
 }
 
 export function update(
-  personalBests?: MonkeyTypes.PersonalBests,
+  personalBests?: SharedTypes.PersonalBests,
   isProfile = false
 ): void {
   clearTables(isProfile);
@@ -94,8 +94,8 @@ export function update(
   $(`.page${source} .profile .pbsTime`).html("");
   $(`.page${source} .profile .pbsWords`).html("");
 
-  const timeMode2s: MonkeyTypes.Mode2<"time">[] = ["15", "30", "60", "120"];
-  const wordMode2s: MonkeyTypes.Mode2<"words">[] = ["10", "25", "50", "100"];
+  const timeMode2s: SharedTypes.Mode2<"time">[] = ["15", "30", "60", "120"];
+  const wordMode2s: SharedTypes.Mode2<"words">[] = ["10", "25", "50", "100"];
 
   timeMode2s.forEach((mode2) => {
     text += buildPbHtml(personalBests, "time", mode2);
@@ -122,9 +122,9 @@ export function update(
 }
 
 function buildPbHtml(
-  pbs: MonkeyTypes.PersonalBests,
+  pbs: SharedTypes.PersonalBests,
   mode: "time" | "words",
-  mode2: MonkeyTypes.StringNumber
+  mode2: SharedTypes.StringNumber
 ): string {
   let retval = "";
   let dateText = "";

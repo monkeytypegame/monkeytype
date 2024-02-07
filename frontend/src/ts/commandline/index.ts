@@ -87,7 +87,7 @@ function showFound(): void {
       }
       if (list.configKey) {
         if (
-          (obj.configValueMode &&
+          (obj.configValueMode !== undefined &&
             obj.configValueMode === "include" &&
             (
               Config[list.configKey] as (
@@ -110,7 +110,7 @@ function showFound(): void {
         iconHTML = "";
       }
       let customStyle = "";
-      if (obj.customStyle) {
+      if (obj.customStyle !== undefined && obj.customStyle !== "") {
         customStyle = obj.customStyle;
       }
 
@@ -150,9 +150,9 @@ function showFound(): void {
           }
           if (
             (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
-            !ThemeController.randomTheme
+            !(ThemeController.randomTheme ?? "")
           ) {
-            ThemeController.clearPreview();
+            void ThemeController.clearPreview();
           }
           if (!/font/gi.test(obj.id)) {
             UpdateConfig.previewFontFamily(Config.fontFamily);
@@ -189,7 +189,7 @@ function updateSuggested(): void {
     return;
   }
   //ignore the preceeding ">"s in the command line input
-  if (inputVal[0] && inputVal[0][0] === ">") {
+  if (inputVal[0] !== undefined && inputVal[0][0] === ">") {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
   }
   if (inputVal[0] === "" && inputVal.length === 1) {
@@ -273,8 +273,8 @@ function show(): void {
 function hide(shouldFocusTestUI = true): void {
   UpdateConfig.previewFontFamily(Config.fontFamily);
   // applyCustomThemeColors();
-  if (!ThemeController.randomTheme) {
-    ThemeController.clearPreview();
+  if (!(ThemeController.randomTheme ?? "")) {
+    void ThemeController.clearPreview();
   }
   $("#commandLineWrapper")
     .stop(true, true)
@@ -336,7 +336,7 @@ function trigger(command: string): void {
     }
   });
   if (!subgroup && !input && !sticky) {
-    AnalyticsController.log("usedCommandLine", { command });
+    void AnalyticsController.log("usedCommandLine", { command });
     hide(shouldFocusTestUI);
   }
 }
@@ -550,7 +550,7 @@ $("#commandInput input").on("keydown", (e) => {
         if (obj.exec) obj.exec(value);
       }
     });
-    AnalyticsController.log("usedCommandLine", { command: command ?? "" });
+    void AnalyticsController.log("usedCommandLine", { command: command ?? "" });
     hide();
   }
   return;
@@ -594,9 +594,9 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
         }
         if (
           (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
-          !ThemeController.randomTheme
+          !(ThemeController.randomTheme ?? "")
         ) {
-          ThemeController.clearPreview();
+          void ThemeController.clearPreview();
         }
         if (!/font/gi.test(obj.id)) {
           UpdateConfig.previewFontFamily(Config.fontFamily);
@@ -758,9 +758,9 @@ $(document).on("keydown", (e) => {
             }
             if (
               (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
-              !ThemeController.randomTheme
+              !(ThemeController.randomTheme ?? "")
             ) {
-              ThemeController.clearPreview();
+              void ThemeController.clearPreview();
             }
             if (!/font/gi.test(obj.id)) {
               UpdateConfig.previewFontFamily(Config.fontFamily);

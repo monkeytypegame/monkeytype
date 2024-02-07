@@ -401,5 +401,8 @@ export const regexProfanities = profanities.map((profanity) => {
 });
 
 export function findProfanities(string: string): string[] {
-  return profanities.filter((profanity) => string.includes(profanity)) || [];
+  const filtered = profanities.filter((profanity) =>
+    string.includes(profanity)
+  );
+  return filtered ?? [];
 }

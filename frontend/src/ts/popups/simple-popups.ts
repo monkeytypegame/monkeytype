@@ -207,7 +207,7 @@ class SimplePopup {
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
-          if (input.type) {
+          if (input.type !== undefined && input.type !== "") {
             if (input.type === "textarea") {
               el.find(".inputs").append(`
                 <textarea
@@ -286,13 +286,13 @@ class SimplePopup {
 
     this.disableInputs();
     Loader.show();
-    this.execFn(this, ...vals).then((res) => {
+    void this.execFn(this, ...vals).then((res) => {
       Loader.hide();
       if (res.showNotification ?? true) {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }
       if (res.status === 1) {
-        this.hide().then(() => {
+        void this.hide().then(() => {
           if (res.afterHide) {
             res.afterHide();
           }
@@ -367,7 +367,7 @@ class SimplePopup {
 
 function hide(): void {
   if (activePopup) {
-    activePopup.hide();
+    void activePopup.hide();
     return;
   }
   $("#simplePopupWrapper")
@@ -382,7 +382,7 @@ function hide(): void {
 $("#simplePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
     if (activePopup) {
-      activePopup.hide();
+      void activePopup.hide();
       return;
     }
     $("#simplePopupWrapper")
@@ -956,7 +956,7 @@ list["resetAccount"] = new SimplePopup(
     }
 
     Notifications.add("Resetting settings...", 0);
-    UpdateConfig.reset();
+    await UpdateConfig.reset();
 
     Notifications.add("Resetting account...", 0);
     const response = await Ape.users.reset();
@@ -1187,7 +1187,7 @@ list["resetSettings"] = new SimplePopup(
   "Are you sure you want to reset all your settings?",
   "Reset",
   async () => {
-    UpdateConfig.reset();
+    await UpdateConfig.reset();
     return {
       status: 1,
       message: "Settings reset",
@@ -1278,7 +1278,7 @@ list["unlinkDiscord"] = new SimplePopup(
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    AccountButton.update();
+    void AccountButton.update();
     DB.setSnapshot(snap);
     Settings.updateDiscordSection();
 
@@ -1316,7 +1316,8 @@ list["generateApeKey"] = new SimplePopup(
       };
     }
 
-    const data = response.data;
+    //if response is 200 data is guaranteed to not be null
+    const data = response.data as Ape.ApeKeys.GenerateApeKey;
 
     return {
       status: 1,
@@ -1349,7 +1350,7 @@ list["viewApeKey"] = new SimplePopup(
   "This is your new Ape Key. Please keep it safe. You will only see it once!",
   "Close",
   async (_thisPopup) => {
-    ApeKeysPopup.show();
+    void ApeKeysPopup.show();
     return {
       status: 1,
       message: "Key generated",
@@ -1386,7 +1387,7 @@ list["deleteApeKey"] = new SimplePopup(
       };
     }
 
-    ApeKeysPopup.show();
+    void ApeKeysPopup.show();
 
     return {
       status: 1,
@@ -1424,7 +1425,7 @@ list["editApeKey"] = new SimplePopup(
       };
     }
 
-    ApeKeysPopup.show();
+    void ApeKeysPopup.show();
 
     return {
       status: 1,
@@ -1447,9 +1448,9 @@ list["deleteCustomText"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0] as string);
+    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
     CustomTextState.setCustomTextName("", undefined);
-    SavedTextsPopup.show(true);
+    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
@@ -1474,7 +1475,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   async (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
     CustomTextState.setCustomTextName("", undefined);
-    SavedTextsPopup.show(true);
+    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
@@ -1498,7 +1499,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   "Reset",
   async (_thisPopup) => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
-    SavedTextsPopup.show(true);
+    void SavedTextsPopup.show(true);
     CustomText.setPopupTextareaState(
       CustomText.getCustomText(_thisPopup.parameters[0] as string, true).join(
         " "
@@ -1579,7 +1580,7 @@ list["updateCustomTheme"] = new SimplePopup(
       };
     }
     UpdateConfig.setCustomThemeColors(newColors);
-    ThemePicker.refreshButtons();
+    void ThemePicker.refreshButtons();
 
     return {
       status: 1,
@@ -1610,7 +1611,7 @@ list["deleteCustomTheme"] = new SimplePopup(
   "Delete",
   async (_thisPopup) => {
     await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
-    ThemePicker.refreshButtons();
+    void ThemePicker.refreshButtons();
 
     return {
       status: 1,

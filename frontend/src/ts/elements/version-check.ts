@@ -13,8 +13,8 @@ export async function show(version: string): Promise<void> {
     return;
   }
   if (memory === version) return;
-  caches.keys().then(function (names) {
-    for (const name of names) caches.delete(name);
+  void caches.keys().then(function (names) {
+    for (const name of names) void caches.delete(name);
   });
   $("#newVersionIndicator").removeClass("hidden");
   setMemory(version);

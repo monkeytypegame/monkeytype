@@ -126,13 +126,13 @@ export function getHTMLById(
   }
 
   let style = "";
-  if (badge?.background) {
+  if (badge?.background !== undefined) {
     style += `background: ${badge.background};`;
   }
-  if (badge?.color) {
+  if (badge?.color !== undefined) {
     style += `color: ${badge.color};`;
   }
-  if (badge?.customStyle) {
+  if (badge?.customStyle !== undefined) {
     style += badge.customStyle;
   }
 
@@ -147,7 +147,7 @@ export function getHTMLById(
   }
 
   let icon = "";
-  if (badge?.icon) {
+  if (badge?.icon !== undefined) {
     icon = `<i class="fas ${noText ? "fa-fw" : ""} ${badge.icon}"></i>`;
   } else {
     icon = `<i class="fas fa-question"></i>`;

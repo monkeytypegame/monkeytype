@@ -4,7 +4,7 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "CommonJS",
     "moduleResolution": "node",
-    "types": ["jquery", "select2", "node", "jest"],
+    "types": ["node", "jest"],
     "allowUmdGlobalAccess": true,
     "resolveJsonModule": true,
     "outDir": "./build",

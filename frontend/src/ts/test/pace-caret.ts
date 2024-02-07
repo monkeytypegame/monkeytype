@@ -62,7 +62,7 @@ export async function init(): Promise<void> {
   const mode2 = Misc.getMode2(
     Config,
     TestWords.randomQuote
-  ) as MonkeyTypes.Mode2<typeof Config.mode>;
+  ) as SharedTypes.Mode2<typeof Config.mode>;
   let wpm;
   if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
@@ -295,5 +295,5 @@ export function start(): void {
 }
 
 ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "paceCaret") init();
+  if (eventKey === "paceCaret") void init();
 });

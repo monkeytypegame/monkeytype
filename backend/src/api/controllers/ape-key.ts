@@ -7,7 +7,7 @@ import { MonkeyResponse } from "../../utils/monkey-response";
 import { base64UrlEncode } from "../../utils/misc";
 import { ObjectId } from "mongodb";
 
-function cleanApeKey(apeKey: MonkeyTypes.ApeKey): Partial<MonkeyTypes.ApeKey> {
+function cleanApeKey(apeKey: MonkeyTypes.ApeKeyDB): SharedTypes.ApeKey {
   return _.omit(apeKey, "hash", "_id", "uid", "useCount");
 }
 
@@ -39,7 +39,7 @@ export async function generateApeKey(
   const apiKey = randomBytes(apeKeyBytes).toString("base64url");
   const saltyHash = await hash(apiKey, apeKeySaltRounds);
 
-  const apeKey: MonkeyTypes.ApeKey = {
+  const apeKey: MonkeyTypes.ApeKeyDB = {
     _id: new ObjectId(),
     name,
     enabled,

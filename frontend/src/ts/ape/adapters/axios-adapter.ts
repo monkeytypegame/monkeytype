@@ -18,7 +18,7 @@ async function adaptRequestOptions(
   options: Ape.RequestOptions
 ): Promise<AxiosRequestConfig> {
   const currentUser = Auth?.currentUser;
-  const idToken = currentUser && (await getIdToken(currentUser));
+  const idToken = (currentUser && (await getIdToken(currentUser))) ?? "";
 
   return {
     params: options.searchQuery,

@@ -274,7 +274,7 @@ function toggleFavourite(themeName: string): void {
     newList.push(themeName);
     UpdateConfig.setFavThemes(newList);
   }
-  UpdateConfig.saveFullConfigToLocalStorage();
+  void UpdateConfig.saveFullConfigToLocalStorage();
 }
 
 function saveCustomThemeColors(): void {
@@ -304,9 +304,9 @@ export function updateActiveTab(forced = false): void {
     $presetTabButton.removeClass("active");
     if (!$customTabButton.hasClass("active") || forced) {
       $customTabButton.addClass("active");
-      refreshButtons();
+      void refreshButtons();
     }
-    Misc.swapElements(
+    void Misc.swapElements(
       $('.pageSettings [tabContent="preset"]'),
       $('.pageSettings [tabContent="custom"]'),
       250
@@ -315,9 +315,9 @@ export function updateActiveTab(forced = false): void {
     $customTabButton.removeClass("active");
     if (!$presetTabButton.hasClass("active") || forced) {
       $presetTabButton.addClass("active");
-      refreshButtons();
+      void refreshButtons();
     }
-    Misc.swapElements(
+    void Misc.swapElements(
       $('.pageSettings [tabContent="custom"]'),
       $('.pageSettings [tabContent="preset"]'),
       250
@@ -488,7 +488,7 @@ $(".pageSettings .saveCustomThemeButton").on("click", async () => {
 });
 
 ConfigEvent.subscribe((eventKey) => {
-  if (eventKey === "customThemeId") refreshButtons();
+  if (eventKey === "customThemeId") void refreshButtons();
   if (eventKey === "theme" && ActivePage.get() === "settings") {
     updateActiveButton();
   }

@@ -1,8 +1,8 @@
 type SubscribeFunction = (
   key: string,
-  newValue?: MonkeyTypes.ConfigValues,
+  newValue?: MonkeyTypes.ConfigValue,
   nosave?: boolean,
-  previousValue?: MonkeyTypes.ConfigValues,
+  previousValue?: MonkeyTypes.ConfigValue,
   fullConfig?: MonkeyTypes.Config
 ) => void;
 
@@ -14,9 +14,9 @@ export function subscribe(fn: SubscribeFunction): void {
 
 export function dispatch(
   key: string,
-  newValue?: MonkeyTypes.ConfigValues,
+  newValue?: MonkeyTypes.ConfigValue,
   nosave?: boolean,
-  previousValue?: MonkeyTypes.ConfigValues,
+  previousValue?: MonkeyTypes.ConfigValue,
   fullConfig?: MonkeyTypes.Config
 ): void {
   subscribers.forEach((fn) => {

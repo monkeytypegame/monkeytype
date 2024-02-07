@@ -1,5 +1,7 @@
 import * as db from "../init/db";
 
-export async function get(): Promise<MonkeyTypes.PSA[]> {
-  return await db.collection<MonkeyTypes.PSA>("psa").find().toArray();
+type PSA = MonkeyTypes.WithObjectId<SharedTypes.PSA>;
+
+export async function get(): Promise<PSA[]> {
+  return await db.collection<PSA>("psa").find().toArray();
 }

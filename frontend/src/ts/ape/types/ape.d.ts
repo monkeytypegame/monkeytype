@@ -13,10 +13,10 @@ declare namespace Ape {
 
   type EndpointResponse<Data = any> = Promise<HttpClientResponse<Data>>;
 
-  type HttpClientMethod = (
+  type HttpClientMethod<Data = any> = (
     endpoint: string,
     config?: RequestOptions
-  ) => Promise<HttpClientResponse<unknown>>;
+  ) => EndpointResponse<Data>;
 
   interface HttpClient {
     get: HttpClientMethod;

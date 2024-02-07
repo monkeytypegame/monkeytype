@@ -24,12 +24,13 @@ import * as ConfigEvent from "../observables/config-event";
 import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
+import * as Funbox from "./funbox/funbox";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 import Ape from "../ape";
 
-let result: MonkeyTypes.Result<MonkeyTypes.Mode>;
+let result: SharedTypes.Result<SharedTypes.Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -378,14 +379,14 @@ export function showConfetti(): void {
   const duration = Date.now() + 125;
 
   (function f(): void {
-    confetti({
+    void confetti({
       particleCount: 5,
       angle: 60,
       spread: 75,
       origin: { x: 0 },
       colors: colors,
     });
-    confetti({
+    void confetti({
       particleCount: 5,
       angle: 120,
       spread: 75,
@@ -482,7 +483,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
     ) {
       if (tpb < result.wpm) {
         //new pb for that tag
-        DB.saveLocalTagPB(
+        await DB.saveLocalTagPB(
           tag._id,
           Config.mode,
           result.mode2,
@@ -546,7 +547,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
   });
 }
 
-function updateTestType(randomQuote: MonkeyTypes.Quote): void {
+function updateTestType(randomQuote: MonkeyTypes.Quote | null): void {
   let testType = "";
 
   testType += Config.mode;
@@ -556,7 +557,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
   } else if (Config.mode === "words") {
     testType += " " + Config.words;
   } else if (Config.mode === "quote") {
-    if (randomQuote.group !== undefined) {
+    if (randomQuote?.group !== undefined) {
       testType += " " + ["short", "medium", "long", "thicc"][randomQuote.group];
     }
   }
@@ -565,7 +566,7 @@ function updateTestType(randomQuote: MonkeyTypes.Quote): void {
       f.properties?.includes("ignoresLanguage")
     ) !== undefined;
   if (Config.mode !== "custom" && !ignoresLanguage) {
-    testType += "<br>" + result.language.replace(/_/g, " ");
+    testType += "<br>" + Misc.getLanguageDisplayString(result.language);
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
@@ -653,8 +654,15 @@ function updateOther(
   }
 }
 
-export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
+export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
   if (Config.mode === "quote") {
+    if (randomQuote === null) {
+      console.error(
+        "Failed to update quote rating button: randomQuote is null"
+      );
+      return;
+    }
+
     const userqr =
       DB.getSnapshot()?.quoteRatings?.[randomQuote.language]?.[randomQuote.id];
     if (userqr) {
@@ -662,51 +670,64 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote): void {
         .removeClass("far")
         .addClass("fas");
     }
-    QuoteRatePopup.getQuoteStats(randomQuote).then((quoteStats) => {
-      $(".pageTest #result #rateQuoteButton .rating").text(
-        quoteStats?.average?.toFixed(1) ?? ""
-      );
-      $(".pageTest #result #rateQuoteButton")
-        .css({ opacity: 0 })
-        .removeClass("hidden")
-        .css({ opacity: 1 });
-    });
+    QuoteRatePopup.getQuoteStats(randomQuote)
+      .then((quoteStats) => {
+        $(".pageTest #result #rateQuoteButton .rating").text(
+          quoteStats?.average?.toFixed(1) ?? ""
+        );
+      })
+      .catch((e) => {
+        $(".pageTest #result #rateQuoteButton .rating").text("?");
+      });
+    $(".pageTest #result #rateQuoteButton")
+      .css({ opacity: 0 })
+      .removeClass("hidden")
+      .css({ opacity: 1 });
   }
 }
 
-function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote): void {
+function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
+  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
+
+  if (Config.mode !== "quote" || Auth?.currentUser === null) {
+    icon.parent().addClass("hidden");
+    return;
+  }
+
+  if (randomQuote === null) {
+    console.error(
+      "Failed to update quote favorite button: randomQuote is null"
+    );
+    return;
+  }
+
   quoteLang = Config.mode === "quote" ? randomQuote.language : "";
   quoteId = Config.mode === "quote" ? randomQuote.id.toString() : "";
 
-  const icon = $(".pageTest #result #favoriteQuoteButton .icon");
-
-  if (Config.mode === "quote" && Auth?.currentUser) {
-    const userFav = QuotesController.isQuoteFavorite(randomQuote);
-
-    icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
-    icon.parent().removeClass("hidden");
-  } else {
-    icon.parent().addClass("hidden");
-  }
+  const userFav = QuotesController.isQuoteFavorite(randomQuote);
+  icon.removeClass(userFav ? "far" : "fas").addClass(userFav ? "fas" : "far");
+  icon.parent().removeClass("hidden");
 }
 
-function updateQuoteSource(randomQuote: MonkeyTypes.Quote): void {
+function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
   if (Config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
-    $("#result .stats .source .bottom").html(randomQuote.source);
+    $("#result .stats .source .bottom").html(
+      randomQuote?.source ?? "Error: Source unknown"
+    );
   } else {
     $("#result .stats .source").addClass("hidden");
   }
 }
 
 export async function update(
-  res: MonkeyTypes.Result<MonkeyTypes.Mode>,
+  res: SharedTypes.Result<SharedTypes.Mode>,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,
   isRepeated: boolean,
   tooShort: boolean,
-  randomQuote: MonkeyTypes.Quote,
+  randomQuote: MonkeyTypes.Quote | null,
   dontSave: boolean
 ): Promise<void> {
   resultAnnotation = [];
@@ -748,7 +769,7 @@ export async function update(
   ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
     .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
     resultAnnotation;
-  ChartController.result.updateColors();
+  void ChartController.result.updateColors();
   ChartController.result.resize();
 
   if (
@@ -806,13 +827,13 @@ export async function update(
 
   TestConfig.hide();
 
-  Misc.swapElements(
+  void Misc.swapElements(
     $("#typingTest"),
     $("#result"),
     250,
     async () => {
       $("#result").trigger("focus");
-      AdController.renderResult();
+      void AdController.renderResult();
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
@@ -844,6 +865,7 @@ export async function update(
         TestUI.toggleResultWords(true);
       }
       AdController.updateFooterAndVerticalAds(true);
+      void Funbox.clear();
     }
   );
 }
@@ -904,12 +926,12 @@ ConfigEvent.subscribe(async (eventKey) => {
     updateWpmAndAcc();
     await updateGraph();
     await updateGraphPBLine();
-    TestUI.applyBurstHeatmap();
+    void TestUI.applyBurstHeatmap();
 
     ((ChartController.result.options as PluginChartOptions<"line" | "scatter">)
       .plugins.annotation.annotations as AnnotationOptions<"line">[]) =
       resultAnnotation;
-    ChartController.result.updateColors();
+    void ChartController.result.updateColors();
     ChartController.result.resize();
   }
 });

@@ -33,12 +33,12 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: MonkeyTypes.Result<MonkeyTypes.Mode>[] = [];
+let filteredResults: SharedTypes.Result<SharedTypes.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  if (!filteredResults || filteredResults.length === 0) return;
+  if (filteredResults === undefined || filteredResults.length === 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
@@ -145,19 +145,14 @@ function loadMoreLines(lineIndex?: number): void {
       consistency = result.consistency.toFixed(2) + "%";
     }
 
-    let pb = result.isPb?.toString();
-    if (pb) {
+    let pb = "";
+    if (result.isPb === true) {
       pb = '<i class="fas fa-fw fa-crown"></i>';
     } else {
       pb = "";
     }
 
-    let charStats = "-";
-    if (result.charStats) {
-      charStats = result.charStats.join("/");
-    } else {
-      charStats = result.correctChars + "/" + result.incorrectChars + "/-/-";
-    }
+    const charStats = result.charStats.join("/");
 
     const date = new Date(result.timestamp);
     $(".pageAccount .history table tbody").append(`
@@ -185,11 +180,11 @@ function loadMoreLines(lineIndex?: number): void {
 }
 
 async function updateChartColors(): Promise<void> {
-  ChartController.accountHistory.updateColors();
+  await ChartController.accountHistory.updateColors();
   await Misc.sleep(0);
-  ChartController.accountActivity.updateColors();
+  await ChartController.accountActivity.updateColors();
   await Misc.sleep(0);
-  ChartController.accountHistogram.updateColors();
+  await ChartController.accountHistogram.updateColors();
   await Misc.sleep(0);
 }
 
@@ -223,9 +218,9 @@ async function fillContent(): Promise<void> {
   if (!snapshot) return;
 
   PbTables.update(snapshot.personalBests);
-  Profile.update("account", snapshot);
+  void Profile.update("account", snapshot);
 
-  ResultBatches.update();
+  void ResultBatches.update();
 
   chartData = [];
   accChartData = [];
@@ -279,7 +274,7 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .history table tbody").empty();
 
   DB.getSnapshot()?.results?.forEach(
-    (result: MonkeyTypes.Result<MonkeyTypes.Mode>) => {
+    (result: SharedTypes.Result<SharedTypes.Mode>) => {
       // totalSeconds += tt;
 
       //apply filters
@@ -311,7 +306,7 @@ async function fillContent(): Promise<void> {
         }
 
         if (result.mode === "time") {
-          let timefilter: MonkeyTypes.Mode2<"time"> | "custom" = "custom";
+          let timefilter: SharedTypes.Mode2<"time"> | "custom" = "custom";
           if (
             ["15", "30", "60", "120"].includes(
               `${result.mode2}` //legacy results could have a number in mode2
@@ -331,7 +326,7 @@ async function fillContent(): Promise<void> {
             return;
           }
         } else if (result.mode === "words") {
-          let wordfilter: MonkeyTypes.Mode2Custom<"words"> = "custom";
+          let wordfilter: SharedTypes.Mode2Custom<"words"> = "custom";
           if (
             ["10", "25", "50", "100", "200"].includes(
               `${result.mode2}` //legacy results could have a number in mode2
@@ -507,7 +502,8 @@ async function fillContent(): Promise<void> {
         console.error(e);
         ResultFilters.reset();
         ResultFilters.updateActive();
-        update();
+        void update();
+        return;
       }
       //filters done
       //=======================================
@@ -545,7 +541,7 @@ async function fillContent(): Promise<void> {
 
       const bucketSize = typingSpeedUnit.histogramDataBucketSize;
       const bucket = Math.floor(
-        typingSpeedUnit.fromWpm(result.wpm) / bucketSize
+        Math.round(typingSpeedUnit.fromWpm(result.wpm)) / bucketSize
       );
 
       //grow array if needed
@@ -672,8 +668,8 @@ async function fillContent(): Promise<void> {
   loadMoreLines();
   ////////
 
-  const activityChartData_amount: MonkeyTypes.ActivityChartDataPoint[] = [];
-  const activityChartData_time: MonkeyTypes.ActivityChartDataPoint[] = [];
+  const activityChartData_timeAndAmount: MonkeyTypes.ActivityChartDataPoint[] =
+    [];
   const activityChartData_avgWpm: MonkeyTypes.ActivityChartDataPoint[] = [];
   const wpmStepSize = typingSpeedUnit.historyStepSize;
 
@@ -684,11 +680,7 @@ async function fillContent(): Promise<void> {
 
     if (dataPoint === undefined) continue;
 
-    activityChartData_amount.push({
-      x: dateInt,
-      y: dataPoint.amount,
-    });
-    activityChartData_time.push({
+    activityChartData_timeAndAmount.push({
       x: dateInt,
       y: dataPoint.time / 60,
       amount: dataPoint.amount,
@@ -714,7 +706,7 @@ async function fillContent(): Promise<void> {
   accountActivityAvgWpmOptions.ticks.stepSize = wpmStepSize;
 
   ChartController.accountActivity.getDataset("count").data =
-    activityChartData_amount;
+    activityChartData_timeAndAmount;
   ChartController.accountActivity.getDataset("avgWpm").data =
     activityChartData_avgWpm;
 
@@ -844,7 +836,7 @@ async function fillContent(): Promise<void> {
     ChartController.accountHistory.getScale("wpmAvgHundred").min = 0;
   }
 
-  if (!chartData || chartData.length === 0) {
+  if (chartData === undefined || chartData.length === 0) {
     $(".pageAccount .group.noDataError").removeClass("hidden");
     $(".pageAccount .group.chart").addClass("hidden");
     $(".pageAccount .group.dailyActivityChart").addClass("hidden");
@@ -1045,7 +1037,7 @@ async function fillContent(): Promise<void> {
   ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
   Focus.set(false);
-  Misc.swapElements(
+  void Misc.swapElements(
     $(".pageAccount .preloader"),
     $(".pageAccount .content"),
     250,
@@ -1160,8 +1152,8 @@ function sortAndRefreshHistory(
     temp.push(filteredResults[idx]);
     parsedIndexes.push(idx);
   }
-  filteredResults = temp as MonkeyTypes.Result<
-    keyof MonkeyTypes.PersonalBests
+  filteredResults = temp as SharedTypes.Result<
+    keyof SharedTypes.PersonalBests
   >[];
 
   $(".pageAccount .history table tbody").empty();
@@ -1192,7 +1184,7 @@ $(".pageAccount .loadMoreButton").on("click", () => {
 $(".pageAccount #accountHistoryChart").on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
-  if (!window) return;
+  if (window === undefined) return;
   const windowHeight = $(window).height() ?? 0;
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
   const scrollTo = offset - windowHeight / 2;
@@ -1211,7 +1203,7 @@ $(".pageAccount").on("click", ".miniResultChartButton", (event) => {
   const filteredId = $(event.currentTarget).attr("filteredResultsId");
   if (filteredId === undefined) return;
   MiniResultChart.updateData(
-    filteredResults[parseInt(filteredId)]?.chartData as MonkeyTypes.ChartData
+    filteredResults[parseInt(filteredId)]?.chartData as SharedTypes.ChartData
   );
   MiniResultChart.show();
   MiniResultChart.updatePosition(
@@ -1275,7 +1267,7 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "button",
   () => {
     setTimeout(() => {
-      update();
+      void update();
     }, 0);
   }
 );
@@ -1283,14 +1275,14 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
 $(".pageAccount .group.presetFilterButtons").on(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
-  (e) => {
-    ResultFilters.setFilterPreset($(e.target).data("id"));
-    update();
+  async (e) => {
+    await ResultFilters.setFilterPreset($(e.target).data("id"));
+    void update();
   }
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
-  Misc.downloadResultsCSV(filteredResults);
+  void Misc.downloadResultsCSV(filteredResults);
 });
 
 $(".pageAccount .profile").on("click", ".details .copyLink", () => {
@@ -1322,7 +1314,7 @@ $(".pageAccount button.loadMoreResults").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
-    update();
+    void update();
   }
 });
 
@@ -1351,7 +1343,7 @@ export const page = new Page(
 
     await update();
     await Misc.sleep(0);
-    updateChartColors();
+    void updateChartColors();
     $(".pageAccount .content p.accountVerificatinNotice").remove();
     if (Auth?.currentUser?.emailVerified === false) {
       $(".pageAccount .content").prepend(

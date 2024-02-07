@@ -15,7 +15,7 @@ interface Accepted {
 }
 
 function getAcceptedObject(): Accepted | null {
-  const acceptedCookies = localStorage.getItem("acceptedCookies");
+  const acceptedCookies = localStorage.getItem("acceptedCookies") ?? "";
   if (acceptedCookies) {
     return JSON.parse(acceptedCookies);
   } else {
@@ -115,7 +115,7 @@ $("#cookiePopup .acceptAll").on("click", () => {
   };
   setAcceptedObject(accepted);
   activateAnalytics();
-  hide();
+  void hide();
 });
 
 $("#cookiePopup .rejectAll").on("click", () => {
@@ -124,7 +124,7 @@ $("#cookiePopup .rejectAll").on("click", () => {
     analytics: false,
   };
   setAcceptedObject(accepted);
-  hide();
+  void hide();
 });
 
 $("#cookiePopup .acceptSelected").on("click", () => {
@@ -134,7 +134,7 @@ $("#cookiePopup .acceptSelected").on("click", () => {
     analytics,
   };
   setAcceptedObject(accepted);
-  hide();
+  void hide();
 
   if (analytics === true) {
     activateAnalytics();

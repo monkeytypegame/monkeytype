@@ -68,12 +68,13 @@ type CustomTextLongObject = Record<string, { text: string; progress: number }>;
 
 export function getCustomText(name: string, long = false): string[] {
   if (long) {
-    const customText = getCustomTextLongObject()[name];
+    const customTextLong = getLocalStorageLong();
+    const customText = customTextLong[name];
     if (customText === undefined)
       throw new Error(`Custom text ${name} not found`);
     return customText.text.split(/ +/);
   } else {
-    const customText = getCustomTextObject()[name];
+    const customText = getLocalStorage()[name];
     if (customText === undefined)
       throw new Error(`Custom text ${name} not found`);
     return customText.split(/ +/);
@@ -86,7 +87,7 @@ export function setCustomText(
   long = false
 ): void {
   if (long) {
-    const customText = getCustomTextLongObject();
+    const customText = getLocalStorageLong();
 
     customText[name] = {
       text: "",
@@ -104,9 +105,9 @@ export function setCustomText(
       textByName.text = text.join(" ");
     }
 
-    window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+    setLocalStorageLong(customText);
   } else {
-    const customText = getCustomTextObject();
+    const customText = getLocalStorage();
 
     if (typeof text === "string") {
       customText[name] = text;
@@ -114,24 +115,24 @@ export function setCustomText(
       customText[name] = text.join(" ");
     }
 
-    window.localStorage.setItem("customText", JSON.stringify(customText));
+    setLocalStorage(customText);
   }
 }
 
-export function deleteCustomText(name: string, long = false): void {
-  const customText = long ? getCustomTextLongObject() : getCustomTextObject();
+export function deleteCustomText(name: string, long: boolean): void {
+  const customText = long ? getLocalStorageLong() : getLocalStorage();
 
-  if (customText[name] != undefined) delete customText[name];
+  delete customText[name];
 
   if (long) {
-    window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+    setLocalStorageLong(customText as CustomTextLongObject);
   } else {
-    window.localStorage.setItem("customText", JSON.stringify(customText));
+    setLocalStorage(customText as CustomTextObject);
   }
 }
 
 export function getCustomTextLongProgress(name: string): number {
-  const customText = getCustomTextLongObject()[name];
+  const customText = getLocalStorageLong()[name];
   if (customText === undefined) throw new Error("Custom text not found");
 
   return customText.progress ?? 0;
@@ -141,25 +142,34 @@ export function setCustomTextLongProgress(
   name: string,
   progress: number
 ): void {
-  const customText = getCustomTextLongObject()[name];
+  const customTexts = getLocalStorageLong();
+  const customText = customTexts[name];
   if (customText === undefined) throw new Error("Custom text not found");
 
   customText.progress = progress;
-  window.localStorage.setItem("customTextLong", JSON.stringify(customText));
+  setLocalStorageLong(customTexts);
 }
 
-function getCustomTextObject(): CustomTextObject {
+function getLocalStorage(): CustomTextObject {
   return JSON.parse(window.localStorage.getItem("customText") ?? "{}");
 }
 
-function getCustomTextLongObject(): CustomTextLongObject {
+function getLocalStorageLong(): CustomTextLongObject {
   return JSON.parse(window.localStorage.getItem("customTextLong") ?? "{}");
+}
+
+function setLocalStorage(data: CustomTextObject): void {
+  window.localStorage.setItem("customText", JSON.stringify(data));
+}
+
+function setLocalStorageLong(data: CustomTextLongObject): void {
+  window.localStorage.setItem("customTextLong", JSON.stringify(data));
 }
 
 export function getCustomTextNames(long = false): string[] {
   if (long) {
-    return Object.keys(getCustomTextLongObject());
+    return Object.keys(getLocalStorageLong());
   } else {
-    return Object.keys(getCustomTextObject());
+    return Object.keys(getLocalStorage());
   }
 }

@@ -47,9 +47,9 @@ export default class Users {
     });
   }
 
-  async updateLeaderboardMemory<M extends MonkeyTypes.Mode>(
+  async updateLeaderboardMemory<M extends SharedTypes.Mode>(
     mode: string,
-    mode2: MonkeyTypes.Mode2<M>,
+    mode2: SharedTypes.Mode2<M>,
     language: string,
     rank: number
   ): Ape.EndpointResponse {
@@ -82,7 +82,7 @@ export default class Users {
   }
 
   async addResultFilterPreset(
-    filter: MonkeyTypes.ResultFilters
+    filter: SharedTypes.ResultFilters
   ): Ape.EndpointResponse {
     return await this.httpClient.post(`${BASE_PATH}/resultFilterPresets`, {
       payload: filter,

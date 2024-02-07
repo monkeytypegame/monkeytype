@@ -7,15 +7,7 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "quoteApprovePopupWrapper";
 
-interface Quote {
-  _id: string;
-  text: string;
-  source: string;
-  language: string;
-  timestamp: number;
-}
-
-let quotes: Quote[] = [];
+let quotes: Ape.Quotes.Quote[] = [];
 
 function updateList(): void {
   $("#quoteApprovePopupWrapper .quotes").empty();
@@ -74,7 +66,7 @@ async function getQuotes(): Promise<void> {
     );
   }
 
-  quotes = response.data;
+  quotes = response.data ?? [];
   updateList();
 }
 
@@ -83,7 +75,7 @@ export async function show(noAnim = false): Promise<void> {
 
   if (!isPopupVisible(wrapperId)) {
     quotes = [];
-    getQuotes();
+    await getQuotes();
     $("#quoteApprovePopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -126,7 +118,7 @@ $("#quoteApprovePopupWrapper").on("mousedown", (e) => {
 
 $("#quoteApprovePopupWrapper .button.refreshList").on("click", () => {
   $("#quoteApprovePopupWrapper .quotes").empty();
-  getQuotes();
+  void getQuotes();
 });
 
 $("#popups").on("click", "#quoteApprovePopup .quote .undo", async (e) => {

@@ -29,18 +29,18 @@ let configToSend = {} as MonkeyTypes.Config;
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
-    DB.saveConfig(configToSend).then(() => {
+    void DB.saveConfig(configToSend).then(() => {
       AccountButton.loading(false);
     });
   }
   configToSend = {} as MonkeyTypes.Config;
 });
 
-async function saveToLocalStorage(
+function saveToLocalStorage(
   key: keyof MonkeyTypes.Config,
   nosave = false,
   noDbCheck = false
-): Promise<void> {
+): void {
   if (nosave) return;
 
   const localToSave = config;
@@ -49,21 +49,19 @@ async function saveToLocalStorage(
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
     (configToSend[key] as typeof config[typeof key]) = config[key];
-    await saveToDatabase();
+    void saveToDatabase();
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
 
-export async function saveFullConfigToLocalStorage(
-  noDbCheck = false
-): Promise<void> {
+export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
   const save = config;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
   if (!noDbCheck) {
     AccountButton.loading(true);
-    await DB.saveConfig(save);
+    void DB.saveConfig(save);
     AccountButton.loading(false);
   }
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
@@ -105,7 +103,7 @@ export function setPunctuation(punc: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setMode(mode: MonkeyTypes.Mode, nosave?: boolean): boolean {
+export function setMode(mode: SharedTypes.Mode, nosave?: boolean): boolean {
   if (
     !isConfigValueValid("mode", mode, [
       ["time", "words", "quote", "zen", "custom"],
@@ -209,7 +207,7 @@ export function setSoundVolume(
 
 //difficulty
 export function setDifficulty(
-  diff: MonkeyTypes.Difficulty,
+  diff: SharedTypes.Difficulty,
   nosave?: boolean
 ): boolean {
   if (
@@ -1520,7 +1518,7 @@ export function setLanguage(language: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("language", language, ["string"])) return false;
 
   config.language = language;
-  AnalyticsController.log("changedLanguage", { language });
+  void AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
   ConfigEvent.dispatch("language", config.language);
 
@@ -1836,10 +1834,10 @@ export function setBurstHeatmap(value: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function apply(
+export async function apply(
   configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
-): void {
-  if (!configToApply) return;
+): Promise<void> {
+  if (configToApply === undefined) return;
 
   configToApply = replaceLegacyValues(configToApply);
 
@@ -1862,7 +1860,7 @@ export function apply(
       configObj.autoSwitchTheme,
       true
     );
-    setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    await setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
@@ -1952,13 +1950,13 @@ export function apply(
   }
 }
 
-export function reset(): void {
+export async function reset(): Promise<void> {
   ConfigEvent.dispatch("fullConfigChange");
-  apply(DefaultConfig);
+  await apply(DefaultConfig);
   saveFullConfigToLocalStorage();
 }
 
-export function loadFromLocalStorage(): void {
+export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
   const newConfigString = window.localStorage.getItem("config");
   let newConfig: MonkeyTypes.Config;
@@ -1972,11 +1970,11 @@ export function loadFromLocalStorage(): void {
     } catch (e) {
       newConfig = {} as MonkeyTypes.Config;
     }
-    apply(newConfig);
+    await apply(newConfig);
     localStorageConfig = newConfig;
     saveFullConfigToLocalStorage(true);
   } else {
-    reset();
+    await reset();
   }
   // TestLogic.restart(false, true);
   loadDone();

@@ -58,7 +58,7 @@ export async function show(noAnim = false): Promise<void> {
     );
     await initDropdown();
     $("#quoteSubmitPopup #submitQuoteLanguage").val(
-      Config.language.replace(/_\d*k$/g, "")
+      Misc.removeLanguageSize(Config.language)
     );
     $("#quoteSubmitPopup #submitQuoteLanguage").trigger("change");
     $("#quoteSubmitPopup input").val("");
@@ -98,7 +98,7 @@ $("#quoteSubmitPopupWrapper").on("mousedown", (e) => {
 });
 
 $("#popups").on("click", "#quoteSubmitPopup #submitQuoteButton", () => {
-  submitQuote();
+  void submitQuote();
 });
 
 $("#quoteSubmitPopupWrapper textarea").on("input", () => {
@@ -115,7 +115,7 @@ $("#quoteSubmitPopupWrapper textarea").on("input", () => {
 
 $("#quoteSubmitPopupWrapper input").on("keydown", (e) => {
   if (e.key === "Enter") {
-    submitQuote();
+    void submitQuote();
   }
 });
 

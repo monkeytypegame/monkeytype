@@ -158,9 +158,9 @@ async function update(options: UpdateOptions): Promise<void> {
   const getParamExists = checkIfGetParameterExists("isUid");
   if (options.data) {
     $(".page.pageProfile .preloader").addClass("hidden");
-    Profile.update("profile", options.data);
+    await Profile.update("profile", options.data);
     PbTables.update(options.data.personalBests, true);
-  } else if (options.uidOrName) {
+  } else if (options.uidOrName !== undefined && options.uidOrName !== "") {
     const response =
       getParamExists === true
         ? await Ape.users.getProfileByUid(options.uidOrName)
@@ -185,7 +185,7 @@ async function update(options: UpdateOptions): Promise<void> {
       window.history.replaceState(null, "", `/profile/${response.data.name}`);
     }
 
-    Profile.update("profile", response.data);
+    await Profile.update("profile", response.data);
     PbTables.update(response.data.personalBests, true);
   } else {
     Notifications.add("Missing update parameter!", -1);
@@ -195,8 +195,10 @@ async function update(options: UpdateOptions): Promise<void> {
 $(".page.pageProfile").on("click", ".profile .userReportButton", () => {
   const uid = $(".page.pageProfile .profile").attr("uid") ?? "";
   const name = $(".page.pageProfile .profile").attr("name") ?? "";
+  const lbOptOut =
+    ($(".page.pageProfile .profile").attr("lbOptOut") ?? "false") === "true";
 
-  UserReportPopup.show({ uid, name });
+  void UserReportPopup.show({ uid, name, lbOptOut });
 });
 
 export const page = new Page<undefined | Profile.ProfileData>(
@@ -212,13 +214,13 @@ export const page = new Page<undefined | Profile.ProfileData>(
   },
   async (options) => {
     Skeleton.append("pageProfile", "main");
-    const uidOrName = options?.params?.["uidOrName"];
+    const uidOrName = options?.params?.["uidOrName"] ?? "";
     if (uidOrName) {
       $(".page.pageProfile .preloader").removeClass("hidden");
       $(".page.pageProfile .search").addClass("hidden");
       $(".page.pageProfile .content").removeClass("hidden");
       reset();
-      update({
+      void update({
         uidOrName,
         data: options?.data,
       });

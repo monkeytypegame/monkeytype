@@ -27,7 +27,7 @@ import {
 import { isDevEnvironment } from "../../utils/misc";
 
 const pathOverride = process.env["API_PATH_OVERRIDE"];
-const BASE_ROUTE = pathOverride ? `/${pathOverride}` : "";
+const BASE_ROUTE = pathOverride !== undefined ? `/${pathOverride}` : "";
 const APP_START_TIME = Date.now();
 
 const API_ROUTE_MAP = {
@@ -76,7 +76,8 @@ function addApiRoutes(app: Application): void {
 
       if (req.path === "/psas") {
         const clientVersion =
-          req.headers["x-client-version"] || req.headers["client-version"];
+          (req.headers["x-client-version"] as string) ||
+          req.headers["client-version"];
         recordClientVersion(clientVersion?.toString() ?? "unknown");
       }
 

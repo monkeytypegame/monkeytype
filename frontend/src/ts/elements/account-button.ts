@@ -107,10 +107,10 @@ export async function update(
         width: (Misc.getLevel(xp) % 1) * 100 + "%",
       });
     }
-    if (discordAvatar && discordId) {
-      Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
+    if ((discordAvatar ?? "") && (discordId ?? "")) {
+      void Misc.getDiscordAvatarUrl(discordId, discordAvatar).then(
         (discordAvatarUrl) => {
-          if (discordAvatarUrl) {
+          if (discordAvatarUrl !== null) {
             $("header nav .account .avatar").css(
               "background-image",
               `url(${discordAvatarUrl})`
@@ -377,7 +377,7 @@ async function animateXpBar(
       SlowTimer.get() ? 0 : 1000,
       "easeOutExpo"
     );
-    flashLevel();
+    void flashLevel();
     barEl.css("width", `0%`);
   } else if (Math.floor(startingLevel) === Math.floor(endingLevel)) {
     await Misc.promiseAnimation(
@@ -396,7 +396,7 @@ async function animateXpBar(
     while (toAnimate > 1) {
       if (toAnimate - 1 < 1) {
         if (firstOneDone) {
-          flashLevel();
+          void flashLevel();
           barEl.css("width", "0%");
         }
         await Misc.promiseAnimation(
@@ -410,7 +410,7 @@ async function animateXpBar(
         toAnimate--;
       } else {
         if (firstOneDone) {
-          flashLevel();
+          void flashLevel();
           barEl.css("width", "0%");
         }
         await Misc.promiseAnimation(
@@ -426,7 +426,7 @@ async function animateXpBar(
       firstOneDone = true;
     }
 
-    flashLevel();
+    void flashLevel();
     barEl.css("width", "0%");
     await Misc.promiseAnimation(
       barEl,

@@ -23,7 +23,7 @@ export function clearActive(): void {
 }
 
 export function verify(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Mode>
 ): string | null {
   try {
     if (TestState.activeChallenge) {
@@ -34,7 +34,7 @@ export function verify(
         return null;
       }
 
-      if (!TestState.activeChallenge.requirements) {
+      if (TestState.activeChallenge.requirements === undefined) {
         Notifications.add(
           `${TestState.activeChallenge.display} challenge passed!`,
           1
@@ -121,8 +121,9 @@ export function verify(
                   failReasons.push(`${f} funbox not active`);
                 }
               }
-              if (result.funbox?.split("#")) {
-                for (const f of result.funbox.split("#")) {
+              const funboxSplit = result.funbox?.split("#");
+              if (funboxSplit !== undefined && funboxSplit.length > 0) {
+                for (const f of funboxSplit) {
                   if (
                     funboxMode.split("#").find((rf) => rf === f) === undefined
                   ) {
@@ -281,7 +282,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] !== null) {
-        Funbox.activate(<string>challenge.parameters[2]);
+        void Funbox.activate(<string>challenge.parameters[2]);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);
@@ -295,10 +296,10 @@ export async function setup(challengeName: string): Promise<boolean> {
       } else if (challenge.parameters[1] === "time") {
         UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
       }
-      UpdateConfig.setMode(challenge.parameters[1] as MonkeyTypes.Mode, true);
+      UpdateConfig.setMode(challenge.parameters[1] as SharedTypes.Mode, true);
       if (challenge.parameters[3] !== undefined) {
         UpdateConfig.setDifficulty(
-          challenge.parameters[3] as MonkeyTypes.Difficulty,
+          challenge.parameters[3] as SharedTypes.Difficulty,
           true
         );
       }

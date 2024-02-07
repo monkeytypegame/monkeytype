@@ -6,7 +6,7 @@ import * as Notifications from "../elements/notifications";
 import QuotesController from "../controllers/quotes-controller";
 import * as CaptchaController from "../controllers/captcha-controller";
 import * as Skeleton from "./skeleton";
-import { isPopupVisible } from "../utils/misc";
+import { isPopupVisible, removeLanguageSize } from "../utils/misc";
 
 const wrapperId = "quoteReportPopupWrapper";
 
@@ -103,12 +103,12 @@ async function submitReport(): Promise<void> {
   }
 
   const quoteId = state.quoteToReport?.id.toString();
-  const quoteLanguage = Config.language.replace(/_\d*k$/g, "");
+  const quoteLanguage = removeLanguageSize(Config.language);
   const reason = $("#quoteReportPopup .reason").val() as string;
   const comment = $("#quoteReportPopup .comment").val() as string;
   const captcha = captchaResponse as string;
 
-  if (!quoteId) {
+  if (quoteId === undefined || quoteId === "") {
     return Notifications.add("Please select a quote");
   }
 
@@ -142,12 +142,12 @@ async function submitReport(): Promise<void> {
   }
 
   Notifications.add("Report submitted. Thank you!", 1);
-  hide();
+  void hide();
 }
 
 $("#quoteReportPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteReportPopupWrapper") {
-    hide();
+    void hide();
   }
 });
 
@@ -168,7 +168,11 @@ $("#quoteReportPopupWrapper .submit").on("click", async () => {
 });
 
 $(".pageTest #reportQuoteButton").on("click", async () => {
-  show({
+  if (TestWords.randomQuote === null) {
+    Notifications.add("Failed to show quote report popup: no quote", -1);
+    return;
+  }
+  void show({
     quoteId: TestWords.randomQuote?.id,
     noAnim: false,
   });

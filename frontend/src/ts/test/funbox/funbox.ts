@@ -120,7 +120,7 @@ FunboxList.setFunboxFunctions("tts", {
       Notifications.add("Failed to load text-to-speech script", -1);
       return;
     }
-    if (params[0]) TTSEvent.dispatch(params[0]);
+    if (params[0] !== undefined) void TTSEvent.dispatch(params[0]);
   },
 });
 
@@ -260,8 +260,8 @@ FunboxList.setFunboxFunctions("layoutfluid", {
       const mod =
         wordsPerLayout - ((TestWords.words.currentIndex + 1) % wordsPerLayout);
 
-      if (layouts[index]) {
-        if (mod <= 3 && layouts[index + 1]) {
+      if (layouts[index] as string) {
+        if (mod <= 3 && (layouts[index + 1] as string)) {
           LayoutfluidFunboxTimer.show();
           LayoutfluidFunboxTimer.updateWords(mod, layouts[index + 1] as string);
         } else {
@@ -278,7 +278,7 @@ FunboxList.setFunboxFunctions("layoutfluid", {
         LayoutfluidFunboxTimer.hide();
       }
       setTimeout(() => {
-        KeymapEvent.highlight(
+        void KeymapEvent.highlight(
           TestWords.words
             .getCurrent()
             .charAt(TestInput.input.current.length)
@@ -293,7 +293,7 @@ FunboxList.setFunboxFunctions("layoutfluid", {
   restart(): void {
     if (this.applyConfig) this.applyConfig();
     setTimeout(() => {
-      KeymapEvent.highlight(
+      void KeymapEvent.highlight(
         TestWords.words
           .getCurrent()
           .substring(
@@ -430,7 +430,7 @@ FunboxList.setFunboxFunctions("poetry", {
 
 FunboxList.setFunboxFunctions("wikipedia", {
   async pullSection(lang?: string): Promise<Misc.Section | false> {
-    return getSection(lang ? lang : "english");
+    return getSection((lang ?? "") || "english");
   },
 });
 
@@ -556,7 +556,7 @@ export async function clear(): Promise<boolean> {
       ?.attr("class")
       ?.split(/\s+/)
       ?.filter((it) => !it.startsWith("fb-"))
-      ?.join(" ") || ""
+      ?.join(" ") ?? ""
   );
 
   $("#funBoxTheme").removeAttr("href");
@@ -639,7 +639,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     if (check.result === false) {
       if (check.forcedConfigs && check.forcedConfigs.length > 0) {
         if (configKey === "mode") {
-          UpdateConfig.setMode(check.forcedConfigs[0] as MonkeyTypes.Mode);
+          UpdateConfig.setMode(check.forcedConfigs[0] as SharedTypes.Mode);
         }
         if (configKey === "words") {
           UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
@@ -768,7 +768,7 @@ async function applyFunboxCSS(): Promise<boolean> {
       ? "funbox/" + activeFunboxWithTheme.name + ".css"
       : "";
 
-  const currentTheme = $theme.attr("href") || null;
+  const currentTheme = ($theme.attr("href") ?? "") || null;
 
   if (activeTheme != currentTheme) {
     $theme.attr("href", activeTheme);
