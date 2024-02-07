@@ -163,17 +163,12 @@ declare namespace MonkeyTypes {
     colors: string[];
   }
 
-  interface ApeKey {
+  type ApeKeyDB = SharedTypes.ApeKey & {
     _id: ObjectId;
     uid: string;
-    name: string;
     hash: string;
-    createdOn: number;
-    modifiedOn: number;
-    lastUsedOn: number;
     useCount: number;
-    enabled: boolean;
-  }
+  };
 
   interface NewQuote {
     _id: ObjectId;

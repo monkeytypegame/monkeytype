@@ -318,18 +318,6 @@ declare namespace MonkeyTypes {
     completedTests: number;
   }
 
-  interface ApeKey {
-    name: string;
-    enabled: boolean;
-    createdOn: number;
-    modifiedOn: number;
-    lastUsedOn: number;
-  }
-
-  interface ApeKeys {
-    [key: string]: ApeKey;
-  }
-
   interface Config {
     theme: string;
     themeLight: string;

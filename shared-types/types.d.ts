@@ -330,10 +330,19 @@ declare namespace SharedTypes {
   interface SpeedHistogram {
     [key: string]: number;
   }
+
   interface PublicTypingStats {
     type: string;
     timeTyping: number;
     testsCompleted: number;
     testsStarted: number;
+  }
+
+  interface ApeKey {
+    name: string;
+    enabled: boolean;
+    createdOn: number;
+    modifiedOn: number;
+    lastUsedOn: number;
   }
 }

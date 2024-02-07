@@ -1316,7 +1316,8 @@ list["generateApeKey"] = new SimplePopup(
       };
     }
 
-    const data = response.data;
+    //if response is 200 data is guaranteed to not be null
+    const data = response.data as ApeKeysApe.GenerateApeKey;
 
     return {
       status: 1,

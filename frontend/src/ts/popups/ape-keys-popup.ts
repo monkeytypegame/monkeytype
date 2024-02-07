@@ -6,7 +6,7 @@ import * as ConnectionState from "../states/connection";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
 
-let apeKeys: MonkeyTypes.ApeKeys = {};
+let apeKeys: ApeKeysApe.GetApeKeys | null = {};
 
 const wrapperId = "apeKeysPopupWrapper";
 
@@ -20,12 +20,12 @@ async function getData(): Promise<void> {
     return undefined;
   }
 
-  apeKeys = response.data as MonkeyTypes.ApeKeys;
+  apeKeys = response.data;
 }
 
 function refreshList(): void {
   const data = apeKeys;
-  if (data === undefined) return;
+  if (data === undefined || data === null) return;
   const table = $("#apeKeysPopupWrapper table tbody");
   table.empty();
   const apeKeyIds = Object.keys(data);
@@ -36,7 +36,7 @@ function refreshList(): void {
     return;
   }
   apeKeyIds.forEach((apeKeyId) => {
-    const key = data[apeKeyId] as MonkeyTypes.ApeKey;
+    const key = data[apeKeyId] as SharedTypes.ApeKey;
     table.append(`
       <tr keyId="${apeKeyId}">
         <td>
