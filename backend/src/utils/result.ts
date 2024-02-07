@@ -59,5 +59,7 @@ export function buildDbResult(
   if (ce.keySpacingStats === undefined) delete res.keySpacingStats;
   if (ce.keyDurationStats === undefined) delete res.keyDurationStats;
 
+  if (res.isPb === false) delete res.isPb;
+
   return res;
 }

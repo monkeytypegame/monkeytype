@@ -145,8 +145,8 @@ function loadMoreLines(lineIndex?: number): void {
       consistency = result.consistency.toFixed(2) + "%";
     }
 
-    let pb = result.isPb?.toString();
-    if (pb) {
+    let pb = "";
+    if (result.isPb === true) {
       pb = '<i class="fas fa-fw fa-crown"></i>';
     } else {
       pb = "";

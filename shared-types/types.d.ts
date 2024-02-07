@@ -219,6 +219,7 @@ declare namespace SharedTypes {
       | "incompleteTests"
       | "customText"
       | "quoteLength"
+      | "isPb"
     > & {
       correctChars?: number; // --------------
       incorrectChars?: number; // legacy results
@@ -239,6 +240,7 @@ declare namespace SharedTypes {
       tags?: string[];
       customText?: CustomText;
       quoteLength?: number;
+      isPb?: boolean;
     }
   >;
 
