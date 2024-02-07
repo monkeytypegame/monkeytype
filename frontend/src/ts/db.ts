@@ -144,7 +144,7 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(32);
     // }
     // LoadingPage.updateText("Downloading config...");
-    if (configData !== undefined) {
+    if (configData !== undefined && configData !== null) {
       const newConfig = {
         ...DefaultConfig,
       };
@@ -201,21 +201,23 @@ export async function initSnapshot(): Promise<
     //   LoadingPage.updateBar(64);
     // }
     // LoadingPage.updateText("Downloading presets...");
-    snap.presets = presetsData;
 
-    snap.presets?.forEach((preset) => {
-      preset.display = preset.name.replaceAll("_", " ");
-    });
+    if (presetsData !== undefined && presetsData !== null) {
+      snap.presets = presetsData;
+      snap.presets?.forEach((preset) => {
+        preset.display = preset.name.replaceAll("_", " ");
+      });
 
-    snap.presets = snap.presets?.sort((a, b) => {
-      if (a.name > b.name) {
-        return 1;
-      } else if (a.name < b.name) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
+      snap.presets = snap.presets?.sort((a, b) => {
+        if (a.name > b.name) {
+          return 1;
+        } else if (a.name < b.name) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    }
 
     dbSnapshot = snap;
     return dbSnapshot;
