@@ -326,4 +326,14 @@ declare namespace SharedTypes {
     level?: number;
     date?: number;
   }
+
+  interface SpeedHistogram {
+    [key: string]: number;
+  }
+  interface PublicTypingStats {
+    type: string;
+    timeTyping: number;
+    testsCompleted: number;
+    testsStarted: number;
+  }
 }

@@ -15,19 +15,8 @@ function reset(): void {
   void ChartController.globalSpeedHistogram.updateColors();
 }
 
-interface HistogramData {
-  [key: string]: number;
-}
-
-interface TypingStatsData {
-  type: string;
-  timeTyping: number;
-  testsCompleted: number;
-  testsStarted: number;
-}
-
-let speedHistogramResponseData: HistogramData | undefined;
-let typingStatsResponseData: TypingStatsData | undefined;
+let speedHistogramResponseData: SharedTypes.SpeedHistogram | null;
+let typingStatsResponseData: SharedTypes.PublicTypingStats | null;
 
 function updateStatsAndHistogram(): void {
   if (speedHistogramResponseData) {

@@ -198,22 +198,6 @@ declare namespace MonkeyTypes {
     comment: string;
   }
 
-  interface PublicStats {
-    _id: "stats";
-    testsCompleted: number;
-    testsStarted: number;
-    timeTyping: number;
-  }
-
-  type PublicSpeedStats = PublicSpeedStatsMongoEntry &
-    PublicSpeedStatsByLanguage;
-  interface PublicSpeedStatsMongoEntry {
-    _id: "speedStatsHistogram";
-  }
-  interface PublicSpeedStatsByLanguage {
-    [language_mode_mode2: string]: Record<string, number>;
-  }
-
   interface QuoteRating {
     _id: string;
     average: number;
