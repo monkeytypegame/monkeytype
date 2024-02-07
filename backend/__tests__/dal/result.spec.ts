@@ -35,7 +35,7 @@ async function createDummyData(
       _id: new ObjectId(),
       wpm: i,
       rawWpm: i,
-      charStats: [],
+      charStats: [0, 0, 0, 0],
       acc: 0,
       mode: "time",
       mode2: "10" as never,
