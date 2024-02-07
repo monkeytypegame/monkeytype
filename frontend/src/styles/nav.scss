@@ -55,7 +55,8 @@ nav {
         transition: 0.125s;
       }
 
-      .level {
+      .level,
+      .premium {
         transition: 0.125s;
         width: max-content;
         font-size: 0.65em;
@@ -65,6 +66,12 @@ nav {
         background: var(--sub-color);
         padding: 0.4em 0.4em;
         border-radius: calc(var(--roundness) / 2);
+      }
+
+      .premium .fas {
+        //too stupid to make it work
+        font-size: 0.65em;
+        line-height: 0.65em;
       }
 
       .xpBar {
@@ -107,7 +114,8 @@ nav {
           }
         }
       }
-      &:hover .level {
+      &:hover .level,
+      &:hover .premium {
         background-color: var(--text-color);
       }
     }
@@ -294,7 +302,8 @@ header {
         color: transparent;
       }
       .avatar,
-      .levelAndBar {
+      .levelAndBar,
+      .premium {
         opacity: 0 !important;
       }
     }
