@@ -418,17 +418,7 @@ declare namespace MonkeyTypes {
     tapeMode: TapeMode;
   }
 
-  type ConfigValues =
-    | string
-    | number
-    | boolean
-    | string[]
-    | MonkeyTypes.QuoteLength[]
-    | MonkeyTypes.HighlightMode
-    | SharedTypes.ResultFilters
-    | MonkeyTypes.CustomBackgroundFilter
-    | null
-    | undefined;
+  type ConfigValue = Config[keyof Config];
 
   interface ConfigChanges extends Partial<MonkeyTypes.Config> {
     tags?: string[];

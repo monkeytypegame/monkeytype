@@ -21,11 +21,11 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 import * as Skeleton from "../popups/skeleton";
 
-interface SettingsGroups<T extends MonkeyTypes.ConfigValues> {
+interface SettingsGroups<T extends MonkeyTypes.ConfigValue> {
   [key: string]: SettingsGroup<T>;
 }
 
-export const groups: SettingsGroups<MonkeyTypes.ConfigValues> = {};
+export const groups: SettingsGroups<MonkeyTypes.ConfigValue> = {};
 
 async function initGroups(): Promise<void> {
   await UpdateConfig.loadPromise;
@@ -33,17 +33,17 @@ async function initGroups(): Promise<void> {
     "smoothCaret",
     UpdateConfig.setSmoothCaret,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["difficulty"] = new SettingsGroup(
     "difficulty",
     UpdateConfig.setDifficulty,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["quickRestart"] = new SettingsGroup(
     "quickRestart",
     UpdateConfig.setQuickRestartMode,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["showLiveWpm"] = new SettingsGroup(
     "showLiveWpm",
     UpdateConfig.setShowLiveWpm,
@@ -51,27 +51,27 @@ async function initGroups(): Promise<void> {
     () => {
       groups["keymapMode"]?.updateInput();
     }
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["showLiveAcc"] = new SettingsGroup(
     "showLiveAcc",
     UpdateConfig.setShowLiveAcc,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["showLiveBurst"] = new SettingsGroup(
     "showLiveBurst",
     UpdateConfig.setShowLiveBurst,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["showTimerProgress"] = new SettingsGroup(
     "showTimerProgress",
     UpdateConfig.setShowTimerProgress,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["showAverage"] = new SettingsGroup(
     "showAverage",
     UpdateConfig.setShowAverage,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["keymapMode"] = new SettingsGroup(
     "keymapMode",
     UpdateConfig.setKeymapMode,
@@ -92,27 +92,27 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .section.keymapShowTopRow").removeClass("hidden");
       }
     }
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["keymapMatrix"] = new SettingsGroup(
     "keymapStyle",
     UpdateConfig.setKeymapStyle,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["keymapLayout"] = new SettingsGroup(
     "keymapLayout",
     UpdateConfig.setKeymapLayout,
     "select"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["keymapLegendStyle"] = new SettingsGroup(
     "keymapLegendStyle",
     UpdateConfig.setKeymapLegendStyle,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["keymapShowTopRow"] = new SettingsGroup(
     "keymapShowTopRow",
     UpdateConfig.setKeymapShowTopRow,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["showKeyTips"] = new SettingsGroup(
     "showKeyTips",
     UpdateConfig.setKeyTips,
@@ -125,7 +125,7 @@ async function initGroups(): Promise<void> {
         $(".pageSettings .tip").addClass("hidden");
       }
     }
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["freedomMode"] = new SettingsGroup(
     "freedomMode",
     UpdateConfig.setFreedomMode,
@@ -133,17 +133,17 @@ async function initGroups(): Promise<void> {
     () => {
       groups["confidenceMode"]?.updateInput();
     }
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["strictSpace"] = new SettingsGroup(
     "strictSpace",
     UpdateConfig.setStrictSpace,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["oppositeShiftMode"] = new SettingsGroup(
     "oppositeShiftMode",
     UpdateConfig.setOppositeShiftMode,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["confidenceMode"] = new SettingsGroup(
     "confidenceMode",
     UpdateConfig.setConfidenceMode,
@@ -152,87 +152,87 @@ async function initGroups(): Promise<void> {
       groups["freedomMode"]?.updateInput();
       groups["stopOnError"]?.updateInput();
     }
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["indicateTypos"] = new SettingsGroup(
     "indicateTypos",
     UpdateConfig.setIndicateTypos,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["hideExtraLetters"] = new SettingsGroup(
     "hideExtraLetters",
     UpdateConfig.setHideExtraLetters,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["blindMode"] = new SettingsGroup(
     "blindMode",
     UpdateConfig.setBlindMode,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["quickEnd"] = new SettingsGroup(
     "quickEnd",
     UpdateConfig.setQuickEnd,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["repeatQuotes"] = new SettingsGroup(
     "repeatQuotes",
     UpdateConfig.setRepeatQuotes,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["ads"] = new SettingsGroup(
     "ads",
     UpdateConfig.setAds,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["alwaysShowWordsHistory"] = new SettingsGroup(
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["britishEnglish"] = new SettingsGroup(
     "britishEnglish",
     UpdateConfig.setBritishEnglish,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["singleListCommandLine"] = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["capsLockWarning"] = new SettingsGroup(
     "capsLockWarning",
     UpdateConfig.setCapsLockWarning,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["flipTestColors"] = new SettingsGroup(
     "flipTestColors",
     UpdateConfig.setFlipTestColors,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["showOutOfFocusWarning"] = new SettingsGroup(
     "showOutOfFocusWarning",
     UpdateConfig.setShowOutOfFocusWarning,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["colorfulMode"] = new SettingsGroup(
     "colorfulMode",
     UpdateConfig.setColorfulMode,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["startGraphsAtZero"] = new SettingsGroup(
     "startGraphsAtZero",
     UpdateConfig.setStartGraphsAtZero,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["autoSwitchTheme"] = new SettingsGroup(
     "autoSwitchTheme",
     UpdateConfig.setAutoSwitchTheme,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["randomTheme"] = new SettingsGroup(
     "randomTheme",
     UpdateConfig.setRandomTheme,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["stopOnError"] = new SettingsGroup(
     "stopOnError",
     UpdateConfig.setStopOnError,
@@ -240,12 +240,12 @@ async function initGroups(): Promise<void> {
     () => {
       groups["confidenceMode"]?.updateInput();
     }
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["soundVolume"] = new SettingsGroup(
     "soundVolume",
     UpdateConfig.setSoundVolume,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["playSoundOnError"] = new SettingsGroup(
     "playSoundOnError",
     UpdateConfig.setPlaySoundOnError,
@@ -253,7 +253,7 @@ async function initGroups(): Promise<void> {
     () => {
       if (Config.playSoundOnError !== "off") Sound.playError();
     }
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["playSoundOnClick"] = new SettingsGroup(
     "playSoundOnClick",
     UpdateConfig.setPlaySoundOnClick,
@@ -261,102 +261,102 @@ async function initGroups(): Promise<void> {
     () => {
       if (Config.playSoundOnClick !== "off") Sound.playClick("KeyQ");
     }
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["showAllLines"] = new SettingsGroup(
     "showAllLines",
     UpdateConfig.setShowAllLines,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["paceCaret"] = new SettingsGroup(
     "paceCaret",
     UpdateConfig.setPaceCaret,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["repeatedPace"] = new SettingsGroup(
     "repeatedPace",
     UpdateConfig.setRepeatedPace,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["minWpm"] = new SettingsGroup(
     "minWpm",
     UpdateConfig.setMinWpm,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["minAcc"] = new SettingsGroup(
     "minAcc",
     UpdateConfig.setMinAcc,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["minBurst"] = new SettingsGroup(
     "minBurst",
     UpdateConfig.setMinBurst,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["smoothLineScroll"] = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["lazyMode"] = new SettingsGroup(
     "lazyMode",
     UpdateConfig.setLazyMode,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["layout"] = new SettingsGroup(
     "layout",
     UpdateConfig.setLayout,
     "select"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["language"] = new SettingsGroup(
     "language",
     UpdateConfig.setLanguage,
     "select"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["fontSize"] = new SettingsGroup(
     "fontSize",
     UpdateConfig.setFontSize,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["pageWidth"] = new SettingsGroup(
     "pageWidth",
     UpdateConfig.setPageWidth,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["caretStyle"] = new SettingsGroup(
     "caretStyle",
     UpdateConfig.setCaretStyle,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["paceCaretStyle"] = new SettingsGroup(
     "paceCaretStyle",
     UpdateConfig.setPaceCaretStyle,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["timerStyle"] = new SettingsGroup(
     "timerStyle",
     UpdateConfig.setTimerStyle,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["highlightMode"] = new SettingsGroup(
     "highlightMode",
     UpdateConfig.setHighlightMode,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["tapeMode"] = new SettingsGroup(
     "tapeMode",
     UpdateConfig.setTapeMode,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["timerOpacity"] = new SettingsGroup(
     "timerOpacity",
     UpdateConfig.setTimerOpacity,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["timerColor"] = new SettingsGroup(
     "timerColor",
     UpdateConfig.setTimerColor,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["fontFamily"] = new SettingsGroup(
     "fontFamily",
     UpdateConfig.setFontFamily,
@@ -375,22 +375,22 @@ async function initGroups(): Promise<void> {
         customButton.text("Custom");
       }
     }
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["alwaysShowDecimalPlaces"] = new SettingsGroup(
     "alwaysShowDecimalPlaces",
     UpdateConfig.setAlwaysShowDecimalPlaces,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["typingSpeedUnit"] = new SettingsGroup(
     "typingSpeedUnit",
     UpdateConfig.setTypingSpeedUnit,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   groups["customBackgroundSize"] = new SettingsGroup(
     "customBackgroundSize",
     UpdateConfig.setCustomBackgroundSize,
     "button"
-  ) as SettingsGroup<MonkeyTypes.ConfigValues>;
+  ) as SettingsGroup<MonkeyTypes.ConfigValue>;
   // groups.customLayoutfluid = new SettingsGroup(
   //   "customLayoutfluid",
   //   UpdateConfig.setCustomLayoutfluid

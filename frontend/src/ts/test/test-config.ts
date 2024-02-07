@@ -228,7 +228,7 @@ export async function update(
 
 export function updateExtras(
   key: string,
-  value: MonkeyTypes.ConfigValues
+  value: MonkeyTypes.ConfigValue
 ): void {
   if (key === "time") {
     $("#testConfig .time .textButton").removeClass("active");
@@ -296,12 +296,12 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
       m2 = Config.quoteLength;
     }
 
-    updateExtras(Config.mode, m2);
+    if (m2 !== undefined) updateExtras(Config.mode, m2);
   } else if (
     ["time", "quoteLength", "words", "numbers", "punctuation"].includes(
       eventKey
     )
   ) {
-    updateExtras(eventKey, eventValue);
+    if (eventValue !== undefined) updateExtras(eventKey, eventValue);
   }
 });

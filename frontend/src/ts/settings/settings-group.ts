@@ -1,6 +1,6 @@
 import Config from "../config";
 
-export default class SettingsGroup<T extends MonkeyTypes.ConfigValues> {
+export default class SettingsGroup<T extends MonkeyTypes.ConfigValue> {
   public configName: string;
   public configValue: T;
   public configFunction: (param: T, nosave?: boolean) => boolean;
