@@ -44,7 +44,7 @@ export function reinstate(): boolean {
 }
 
 export async function refreshVisible(): Promise<void> {
-  //@ts-expect-error
+  ////@ts-expect-error
   // const adDivs = Object.keys(window.egAdPack.gptAdSlots);
   // const visibleAdDivs = [];
   // for (let i = 0; i < adDivs.length; i++) {

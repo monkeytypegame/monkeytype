@@ -59,7 +59,7 @@ function normalizedTermFrequency(
 }
 
 function tokenize(text: string): string[] {
-  return text.match(/[^\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]+/g) || [];
+  return text.match(/[^\\\][.,"/#!?$%^&*;:{}=\-_`~()\s]+/g) ?? [];
 }
 
 export const buildSearchService = <T>(

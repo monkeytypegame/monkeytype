@@ -251,7 +251,7 @@ export function updateWordsInputPosition(initial = false): void {
 
   const wordsWrapperTop =
     (document.querySelector("#wordsWrapper") as HTMLElement | null)
-      ?.offsetTop || 0;
+      ?.offsetTop ?? 0;
 
   if (Config.tapeMode !== "off") {
     el.style.top =
@@ -566,14 +566,14 @@ export function updateWordElement(
   let newlineafter = false;
 
   if (Config.mode === "zen") {
-    for (let i = 0; i < TestInput.input.current.length; i++) {
-      if (TestInput.input.current[i] === "\t") {
+    for (const char of TestInput.input.current) {
+      if (char === "\t") {
         ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-      } else if (TestInput.input.current[i] === "\n") {
+      } else if (char === "\n") {
         newlineafter = true;
         ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
-        ret += `<letter class="correct">${TestInput.input.current[i]}</letter>`;
+        ret += `<letter class="correct">${char}</letter>`;
       }
     }
   } else {
@@ -588,6 +588,7 @@ export function updateWordElement(
         : input.length;
       if (
         input.search(Misc.trailingComposeChars) < currentWord.length &&
+        // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
         currentWord.slice(0, inputWithoutComposeLength) ===
           input.slice(0, inputWithoutComposeLength)
       ) {
@@ -605,6 +606,7 @@ export function updateWordElement(
       if (
         input.search(Misc.trailingComposeChars) <
           Hangul.d(koCurrentWord).length &&
+        // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
         koCurrentWord.slice(0, inputWithoutComposeLength) ===
           koInput.slice(0, inputWithoutComposeLength)
       ) {
@@ -1052,8 +1054,8 @@ async function loadWordsHistory(): Promise<boolean> {
     } catch (e) {
       try {
         wordEl = "<div class='word'>";
-        for (let c = 0; c < word.length; c++) {
-          wordEl += "<letter>" + word[c] + "</letter>";
+        for (const char of word) {
+          wordEl += "<letter>" + char + "</letter>";
         }
         wordEl += "</div>";
       } catch {}
@@ -1233,7 +1235,7 @@ export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
     $("#words")
       ?.attr("class")
       ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("highlight-")) || [];
+      ?.filter((it) => !it.startsWith("highlight-")) ?? [];
   if (mode != null) {
     existing.push("highlight-" + mode.replaceAll("_", "-"));
   }

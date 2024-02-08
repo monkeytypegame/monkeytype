@@ -670,8 +670,8 @@ export function getNumbers(len: number): string {
 export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += arabicIndic[parseInt(numString[i] as string)];
+  for (const char of numString) {
+    ret += arabicIndic[parseInt(char)];
   }
   return ret;
 }
@@ -679,8 +679,8 @@ export function convertNumberToArabic(numString: string): string {
 export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += nepaliIndic[parseInt(numString[i] as string)];
+  for (const char of numString) {
+    ret += nepaliIndic[parseInt(char)];
   }
   return ret;
 }
@@ -873,6 +873,8 @@ export function objectToQueryString<T extends string | number | boolean>(
 }
 
 declare global {
+  // type gets a "Duplicate identifier" error
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Document {
     mozCancelFullScreen?: () => Promise<void>;
     msRequestFullscreen?: () => Promise<void>;
@@ -882,6 +884,7 @@ declare global {
     msFullscreenElement?: Element;
     webkitFullscreenElement?: Element;
   }
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface HTMLElement {
     msRequestFullscreen?: () => Promise<void>;
     mozRequestFullScreen?: () => Promise<void>;
