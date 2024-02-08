@@ -4,11 +4,11 @@ import * as Misc from "../../utils/misc";
 
 export function checkFunboxForcedConfigs(
   key: string,
-  value: MonkeyTypes.ConfigValue,
+  value: SharedTypes.ConfigValue,
   funbox: string
 ): {
   result: boolean;
-  forcedConfigs?: Array<MonkeyTypes.ConfigValue>;
+  forcedConfigs?: Array<SharedTypes.ConfigValue>;
 } {
   if (FunboxList.get(funbox).length === 0) return { result: true };
 
@@ -32,7 +32,7 @@ export function checkFunboxForcedConfigs(
       return { result: true };
     }
   } else {
-    const forcedConfigs: Record<string, MonkeyTypes.ConfigValue[]> = {};
+    const forcedConfigs: Record<string, SharedTypes.ConfigValue[]> = {};
     // collect all forced configs
     for (const fb of FunboxList.get(funbox)) {
       if (fb.forcedConfig) {
@@ -41,11 +41,11 @@ export function checkFunboxForcedConfigs(
           if (forcedConfigs[key] === undefined) {
             forcedConfigs[key] = fb.forcedConfig[
               key
-            ] as MonkeyTypes.ConfigValue[];
+            ] as SharedTypes.ConfigValue[];
           } else {
             forcedConfigs[key] = Misc.intersect(
-              forcedConfigs[key] as MonkeyTypes.ConfigValue[],
-              fb.forcedConfig[key] as MonkeyTypes.ConfigValue[],
+              forcedConfigs[key] as SharedTypes.ConfigValue[],
+              fb.forcedConfig[key] as SharedTypes.ConfigValue[],
               true
             );
           }
@@ -62,7 +62,7 @@ export function checkFunboxForcedConfigs(
       }
       return {
         result: (forcedConfigs[key] ?? []).includes(
-          <MonkeyTypes.ConfigValue>value
+          <SharedTypes.ConfigValue>value
         ),
         forcedConfigs: forcedConfigs[key],
       };
@@ -75,7 +75,7 @@ export function checkFunboxForcedConfigs(
 // if it returns false, show a notification and return false
 export function canSetConfigWithCurrentFunboxes(
   key: string,
-  value: MonkeyTypes.ConfigValue,
+  value: SharedTypes.ConfigValue,
   funbox: string,
   noNotification = false
 ): boolean {
@@ -156,7 +156,7 @@ export function canSetConfigWithCurrentFunboxes(
 
 export function canSetFunboxWithConfig(
   funbox: string,
-  config: MonkeyTypes.Config
+  config: SharedTypes.Config
 ): boolean {
   console.log("cansetfunboxwithconfig", funbox, config.mode);
   let funboxToCheck = config.funbox;
@@ -305,8 +305,8 @@ export function areFunboxesCompatible(
       if (allowedConfig[key]) {
         if (
           Misc.intersect(
-            allowedConfig[key] as MonkeyTypes.ConfigValue[],
-            f.forcedConfig[key] as MonkeyTypes.ConfigValue[],
+            allowedConfig[key] as SharedTypes.ConfigValue[],
+            f.forcedConfig[key] as SharedTypes.ConfigValue[],
             true
           ).length === 0
         ) {
@@ -314,7 +314,7 @@ export function areFunboxesCompatible(
           break;
         }
       } else {
-        allowedConfig[key] = f.forcedConfig[key] as MonkeyTypes.ConfigValue[];
+        allowedConfig[key] = f.forcedConfig[key] as SharedTypes.ConfigValue[];
       }
     }
   }

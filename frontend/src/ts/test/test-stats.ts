@@ -35,10 +35,10 @@ export let start: number, end: number;
 export let start2: number, end2: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: SharedTypes.Result<SharedTypes.Mode>;
+export let lastResult: SharedTypes.Result<SharedTypes.Config.Mode>;
 
 export function setLastResult(
-  result: SharedTypes.Result<SharedTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Config.Mode>
 ): void {
   lastResult = result;
 }

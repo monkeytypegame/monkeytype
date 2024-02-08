@@ -47,9 +47,9 @@ export default class Users {
     });
   }
 
-  async updateLeaderboardMemory<M extends SharedTypes.Mode>(
+  async updateLeaderboardMemory<M extends SharedTypes.Config.Mode>(
     mode: string,
-    mode2: SharedTypes.Mode2<M>,
+    mode2: SharedTypes.Config.Mode2<M>,
     language: string,
     rank: number
   ): Ape.EndpointResponse {

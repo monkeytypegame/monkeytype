@@ -30,7 +30,7 @@ function update(): void {
   const snapshot = DB.getSnapshot();
   subgroup.list = [];
   if (!snapshot || !snapshot.presets || snapshot.presets.length === 0) return;
-  snapshot.presets.forEach((preset: MonkeyTypes.Preset) => {
+  snapshot.presets.forEach((preset: MonkeyTypes.SnapshotPreset) => {
     const dis = preset.display;
 
     subgroup.list.push({
