@@ -1184,9 +1184,9 @@
   },
   {
     "name": "anti_hero",
-    "bgColor": "#00002c",
+    "bgColor": "#00002e",
     "mainColor": "#ff7575",
     "subColor": "#ff3d8b",
-    "textColor": "#ffa8a8"
+    "textColor": "#f5a3ea"
   }
 ]
