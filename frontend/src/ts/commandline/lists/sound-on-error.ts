@@ -40,6 +40,15 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         SoundController.playError();
       },
     },
+    {
+      id: "setPlaySoundOnError3",
+      display: "punch miss",
+      configValue: "4",
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnError("4");
+        SoundController.playError();
+      },
+    },
   ],
 };
 

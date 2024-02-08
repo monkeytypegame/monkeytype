@@ -262,7 +262,7 @@ class SimplePopup {
   exec(): void {
     if (!this.canClose) return;
     const vals: string[] = [];
-    $.each($("#simplePopup input"), (_, el) => {
+    $.each($("#simplePopup input, #simplePopup textarea"), (_, el) => {
       if ($(el).is(":checkbox")) {
         vals.push($(el).is(":checked") ? "true" : "false");
       } else {
@@ -1363,10 +1363,10 @@ list["viewApeKey"] = new SimplePopup(
   (_thisPopup) => {
     _thisPopup.canClose = false;
     $("#simplePopup textarea").css("height", "110px");
-    $("#simplePopup .button").addClass("hidden");
+    $("#simplePopup .submitButton").addClass("hidden");
     setTimeout(() => {
       _thisPopup.canClose = true;
-      $("#simplePopup .button").removeClass("hidden");
+      $("#simplePopup .submitButton").removeClass("hidden");
     }, 5000);
   }
 );
