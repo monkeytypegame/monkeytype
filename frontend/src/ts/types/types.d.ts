@@ -124,9 +124,11 @@ declare namespace MonkeyTypes {
     | "10"
     | "11"
     | "12"
-    | "13";
+    | "13"
+    | "14"
+    | "15";
 
-  type PlaySoundOnError = "off" | "1" | "2" | "3";
+  type PlaySoundOnError = "off" | "1" | "2" | "3" | "4";
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
