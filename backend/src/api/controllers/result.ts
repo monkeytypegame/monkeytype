@@ -169,18 +169,6 @@ export async function updateTags(
   });
 }
 
-type AddResultData = {
-  isPb: boolean;
-  tagPbs: string[];
-  insertedId: ObjectId;
-  dailyLeaderboardRank?: number;
-  weeklyXpLeaderboardRank?: number;
-  xp: number;
-  dailyXpBonus: boolean;
-  xpBreakdown: Record<string, number>;
-  streak: number;
-};
-
 export async function addResult(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {

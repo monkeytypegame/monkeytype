@@ -159,7 +159,7 @@ async function authenticateWithBearerToken(
   try {
     const decodedToken = await verifyIdToken(
       token,
-      options.requireFreshToken || options.noCache
+      (options.requireFreshToken ?? false) || (options.noCache ?? false)
     );
 
     if (options.requireFreshToken) {

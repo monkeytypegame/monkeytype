@@ -98,7 +98,7 @@ export class WeeklyXpLeaderboard {
     const totalTimeTypedSeconds =
       timeTypedSeconds + (currentEntryTimeTypedSeconds ?? 0);
 
-    const [rank]: [number, void] = await Promise.all([
+    const [rank] = await Promise.all([
       // @ts-expect-error
       connection.addResultIncrement(
         2,

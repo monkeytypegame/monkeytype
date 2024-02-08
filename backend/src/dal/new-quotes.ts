@@ -27,7 +27,7 @@ export async function add(
   source: string,
   language: string,
   uid: string
-): Promise<AddQuoteReturn | void> {
+): Promise<AddQuoteReturn | undefined> {
   if (git === undefined) throw new MonkeyError(500, "Git not available.");
   const quote = {
     _id: new ObjectId(),
@@ -79,6 +79,7 @@ export async function add(
     return { duplicateId, similarityScore };
   }
   await db.collection("new-quotes").insertOne(quote);
+  return undefined;
 }
 
 export async function get(language: string): Promise<MonkeyTypes.NewQuote[]> {
