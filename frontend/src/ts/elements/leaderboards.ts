@@ -321,6 +321,9 @@ async function fillTable(lb: LbKey): Promise<void> {
       avatar = `<div class="avatarPlaceholder"><i class="fas fa-circle-notch fa-spin"></i></div>`;
     }
 
+    const importantBadges =
+      entry.importantBadgeIds?.map((it) => getBadgeHTMLbyId(it, true)) ?? "";
+
     html += `
     <tr ${meClassString}>
     <td>${
@@ -332,11 +335,14 @@ async function fillTable(lb: LbKey): Promise<void> {
       <a href="${location.origin}/profile/${
       entry.uid
     }?isUid" class="entryName" uid=${entry.uid} router-link>${entry.name}</a>
-      ${
-        entry.selectedBadgeId !== undefined
-          ? getBadgeHTMLbyId(entry.selectedBadgeId)
-          : ""
-      }
+      <div class="badges">
+        ${importantBadges} 
+        ${
+          entry.selectedBadgeId !== undefined
+            ? getBadgeHTMLbyId(entry.selectedBadgeId)
+            : ""
+        }
+      </div>
     </div>
     </td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.wpm).toFixed(2)}<br>

@@ -159,6 +159,11 @@
           .badge {
             font-size: 0.6rem;
           }
+          .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25em;
+          }
         }
 
         tr td:first-child {
