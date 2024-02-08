@@ -10,7 +10,7 @@ export default class Configs {
   }
 
   async save(
-    config: MonkeyTypes.Config
+    config: SharedTypes.Config
   ): Ape.EndpointResponse<Ape.Configs.PostConfig> {
     return await this.httpClient.patch(BASE_PATH, { payload: { config } });
   }

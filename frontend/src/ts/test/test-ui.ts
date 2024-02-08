@@ -67,7 +67,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
-    highlightMode(eventValue as MonkeyTypes.HighlightMode);
+    highlightMode(eventValue as SharedTypes.Config.HighlightMode);
     updateActiveElement();
   }
 
@@ -1228,7 +1228,7 @@ export function highlightBadWord(index: number, showError: boolean): void {
   $($("#words .word")[index] as HTMLElement).addClass("error");
 }
 
-export function highlightMode(mode?: MonkeyTypes.HighlightMode): void {
+export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
   const existing =
     $("#words")
       ?.attr("class")

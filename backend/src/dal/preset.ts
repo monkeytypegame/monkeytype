@@ -1,11 +1,15 @@
 import MonkeyError from "../utils/error";
 import * as db from "../init/db";
-import { ObjectId, Filter } from "mongodb";
+import { ObjectId, Filter, Collection, WithId } from "mongodb";
 
 const MAX_PRESETS = 10;
-const COLLECTION_NAME = "presets";
 
-function getPresetKeyFilter(uid: string, keyId: string): Filter<any> {
+type DBConfigPreset = SharedTypes.WithObjectId<SharedTypes.DBConfigPreset>;
+
+function getPresetKeyFilter(
+  uid: string,
+  keyId: string
+): Filter<DBConfigPreset> {
   return {
     _id: new ObjectId(keyId),
     uid,
@@ -16,10 +20,11 @@ interface PresetCreationResult {
   presetId: string;
 }
 
-// TODO: Add typings for presets/configs, must look into shared type declarations.
-export async function getPresets(uid: string): Promise<any[]> {
-  const presets = await db
-    .collection(COLLECTION_NAME)
+export const getPresetsCollection = (): Collection<WithId<DBConfigPreset>> =>
+  db.collection<DBConfigPreset>("presets");
+
+export async function getPresets(uid: string): Promise<DBConfigPreset[]> {
+  const presets = await getPresetsCollection()
     .find({ uid })
     .sort({ timestamp: -1 })
     .toArray(); // this needs to be changed to later take patreon into consideration
@@ -36,9 +41,12 @@ export async function addPreset(
     throw new MonkeyError(409, "Too many presets");
   }
 
-  const preset = await db
-    .collection(COLLECTION_NAME)
-    .insertOne({ uid, name, config } as any);
+  const preset = await getPresetsCollection().insertOne({
+    _id: new ObjectId(),
+    uid,
+    name,
+    config,
+  });
   return {
     presetId: preset.insertedId.toHexString(),
   };
@@ -54,18 +62,18 @@ export async function editPreset(
     config !== undefined && config !== null && Object.keys(config).length > 0
       ? { name, config }
       : { name };
-  await db
-    .collection(COLLECTION_NAME)
-    .updateOne(getPresetKeyFilter(uid, presetId), { $set: presetUpdates });
+  await getPresetsCollection().updateOne(getPresetKeyFilter(uid, presetId), {
+    $set: presetUpdates,
+  });
 }
 
 export async function removePreset(
   uid: string,
   presetId: string
 ): Promise<void> {
-  const deleteResult = await db
-    .collection(COLLECTION_NAME)
-    .deleteOne(getPresetKeyFilter(uid, presetId));
+  const deleteResult = await getPresetsCollection().deleteOne(
+    getPresetKeyFilter(uid, presetId)
+  );
 
   if (deleteResult.deletedCount === 0) {
     throw new MonkeyError(404, "Preset not found");
@@ -73,5 +81,5 @@ export async function removePreset(
 }
 
 export async function deleteAllPresets(uid: string): Promise<void> {
-  await db.collection(COLLECTION_NAME).deleteMany({ uid });
+  await getPresetsCollection().deleteMany({ uid });
 }

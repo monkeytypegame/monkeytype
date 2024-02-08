@@ -5,7 +5,7 @@ import * as db from "../init/db";
 
 import { getUser, getTags } from "./user";
 
-type DBResult = SharedTypes.DBResult<SharedTypes.Mode>;
+type DBResult = SharedTypes.DBResult<SharedTypes.Config.Mode>;
 
 export async function addResult(
   uid: string,

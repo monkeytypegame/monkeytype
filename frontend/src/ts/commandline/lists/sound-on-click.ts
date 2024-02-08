@@ -169,6 +169,30 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         SoundController.scaleConfigurations["13"].preview();
       },
     },
+    {
+      id: "setSoundOnClick14",
+      display: "fist fight",
+      configValue: "14",
+      hover: (): void => {
+        SoundController.previewClick("14");
+      },
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnClick("14");
+        SoundController.playClick();
+      },
+    },
+    {
+      id: "setSoundOnClick15",
+      display: "rubber keys",
+      configValue: "15",
+      hover: (): void => {
+        SoundController.previewClick("15");
+      },
+      exec: (): void => {
+        UpdateConfig.setPlaySoundOnClick("15");
+        SoundController.playClick();
+      },
+    },
   ],
 };
 
