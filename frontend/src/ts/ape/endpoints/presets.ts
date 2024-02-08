@@ -5,14 +5,14 @@ export default class Presets {
     this.httpClient = httpClient;
   }
 
-  async get(): Ape.EndpointResponse {
+  async get(): Ape.EndpointResponse<Ape.Presets.GetPresets> {
     return await this.httpClient.get(BASE_PATH);
   }
 
   async add(
     presetName: string,
     configChanges: MonkeyTypes.ConfigChanges
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<Ape.Presets.PostConfig> {
     const payload = {
       name: presetName,
       config: configChanges,
@@ -25,7 +25,7 @@ export default class Presets {
     presetId: string,
     presetName: string,
     configChanges: MonkeyTypes.ConfigChanges
-  ): Ape.EndpointResponse {
+  ): Ape.EndpointResponse<Ape.Presets.PatchConfig> {
     const payload = {
       _id: presetId,
       name: presetName,
@@ -35,7 +35,9 @@ export default class Presets {
     return await this.httpClient.patch(BASE_PATH, { payload });
   }
 
-  async delete(presetId: string): Ape.EndpointResponse {
+  async delete(
+    presetId: string
+  ): Ape.EndpointResponse<Ape.Presets.DeleteConfig> {
     return await this.httpClient.delete(`${BASE_PATH}/${presetId}`);
   }
 }

@@ -427,4 +427,15 @@ declare namespace SharedTypes {
   }
 
   type ConfigValue = Config[keyof Config];
+
+  type ConfigPreset = Partial<Config> & {
+    tags?: string[];
+  };
+
+  interface DBConfigPreset {
+    _id: string;
+    uid: string;
+    name: string;
+    config: SharedTypes.ConfigPreset;
+  }
 }

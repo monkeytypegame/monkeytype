@@ -81,10 +81,9 @@ export async function initSnapshot(): Promise<
     }
 
     const configData = configResponse.data;
+    const presetsData = presetsResponse.data;
 
-    const [userData, presetsData] = [userResponse, presetsResponse].map(
-      (response) => response.data
-    );
+    const [userData] = [userResponse].map((response) => response.data);
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -197,10 +196,13 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading presets...");
 
     if (presetsData !== undefined && presetsData !== null) {
-      snap.presets = presetsData;
-      snap.presets?.forEach((preset) => {
-        preset.display = preset.name.replaceAll("_", " ");
-      });
+      const presetsWithDisplay = presetsData.map((preset) => {
+        return {
+          ...preset,
+          display: preset.name.replace(/_/gi, " "),
+        };
+      }) as MonkeyTypes.SnapshotPreset[];
+      snap.presets = presetsWithDisplay;
 
       snap.presets = snap.presets?.sort((a, b) => {
         if (a.name > b.name) {

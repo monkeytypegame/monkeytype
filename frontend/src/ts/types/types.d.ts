@@ -159,12 +159,9 @@ declare namespace MonkeyTypes {
     tags: string[];
   }
 
-  interface Preset {
-    _id: string;
-    name: string;
+  type SnapshotPreset = SharedTypes.DBConfigPreset & {
     display: string;
-    config: ConfigChanges;
-  }
+  };
 
   interface Tag {
     _id: string;
@@ -241,7 +238,7 @@ declare namespace MonkeyTypes {
     personalBests: SharedTypes.PersonalBests;
     name: string;
     customThemes: CustomTheme[];
-    presets?: Preset[];
+    presets?: SnapshotPreset[];
     tags: Tag[];
     favouriteThemes?: string[];
     lbMemory?: LeaderboardMemory;
