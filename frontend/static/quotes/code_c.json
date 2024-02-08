@@ -72,6 +72,24 @@
       "source": "The C Programming Language (K&R)",
       "length": 109,
       "id": 11
+    },
+    {
+      "text": "void vterm_keyboard_start_paste(VTerm *vt)\n{\n\tif(vt->state->mode.bracketpaste)\n\t\tvterm_push_output_sprintf_ctrl(vt, C1_CSI, \"200~\");\n}\n\nvoid vterm_keyboard_end_paste(VTerm *vt)\n{\n\tif(vt->state->mode.bracketpaste)\n\t\tvterm_push_output_sprintf_ctrl(vt, C1_CSI, \"201~\");\n}",
+      "source": "Vim Source Code",
+      "length": 268,
+      "id": 12
+    },
+    {
+      "text": "void\ngtk_css_section_unref (GtkCssSection *section)\n{\n\tg_return_if_fail (section != NULL);\n\n\tsection->ref_count -= 1;\n\tif (section->ref_count > 0)\n\t\treturn;\n\n\tif (section->parent)\n\t\tgtk_css_section_unref (section->parent);\n\tif (section->file)\n\t\tg_object_unref (section->file);\n\n\tg_free (section);\n}",
+      "source": "GTK Source Code",
+      "length": 298,
+      "id": 13
+    },
+    {
+      "text": "long\n_ttelldir (_TDIR * dirp)\n{\n\terrno = 0;\n\n\tif (!dirp)\n\t\t{\n\t\t\terrno = EFAULT;\n\t\t\treturn -1;\n\t\t}\n\treturn dirp->dd_stat;\n}",
+      "source": "GLib Source Code",
+      "length": 122,
+      "id": 14
     }
   ]
 }
