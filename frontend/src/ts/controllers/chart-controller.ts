@@ -71,6 +71,7 @@ class ChartWithUpdateColors<
   TLabel = unknown,
   DatasetIds = never
 > extends Chart<TType, TData, TLabel> {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(
     item: ChartItem,
     config: ChartConfiguration<TType, TData, TLabel>

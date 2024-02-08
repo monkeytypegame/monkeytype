@@ -333,6 +333,7 @@ export function recordKeyupTime(now: number, key: string): void {
   keypressTimings.duration.array[keyDownDataForKey.index] = diff;
 
   console.debug("Keyup recorded", key, diff);
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete keyDownData[key];
 
   updateOverlap(now);

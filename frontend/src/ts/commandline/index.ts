@@ -189,7 +189,7 @@ function updateSuggested(): void {
     return;
   }
   //ignore the preceeding ">"s in the command line input
-  if (inputVal[0] !== undefined && inputVal[0].startsWith(">")) {
+  if (inputVal[0]?.startsWith(">")) {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
   }
   if (inputVal[0] === "" && inputVal.length === 1) {

@@ -769,8 +769,8 @@ function buildCompletedEvent(
   }
 
   const chartErr = [];
-  for (let i = 0; i < TestInput.errorHistory.length; i++) {
-    chartErr.push(TestInput.errorHistory[i]?.count ?? 0);
+  for (const error of TestInput.errorHistory) {
+    chartErr.push(error.count ?? 0);
   }
 
   const chartData = {
