@@ -38653,67 +38653,55 @@
       "text": "If there is magic on this planet, it is contained in water.",
       "source": "Loren Eiseley",
       "length": 59,
-      "id": 7027
+      "id": 7026
     },
     {
       "text": "If the world's a veil of tears, smile till rainbows span it.",
       "source": "Lucy Larcom",
       "length": 60,
-      "id": 7028
+      "id": 7027
     },
     {
       "text": "Life is in a land full of thorns and weeds, there is always a space in which the good seed can grow.",
       "source": "Jorge Mario Bergoglio",
       "length": 100,
+      "id": 7028
+    },
+    {
+      "text": "There are some things… you pledge to yourself that you won't do, you forbid yourself... And then suddenly they happen all by themselves… and you're left just watching yourself with surprise, and convincing yourself that it wasn't your fault…",
+      "source": "Metro 2033",
+      "length": 245,
       "id": 7029
     },
     {
-      "text": "Soap trusted you. I thought I could too. So, why in bloody hell, does Makarov know you?",
-      "source": "Cpt. Price - Call of Duty: Modern Warfare 3",
-      "length": 87,
+      "text": "He who is brave and patient enough to peer into the darkness his whole life, will be first to see a flicker of light in it.",
+      "source": "Metro 2033",
+      "length": 123,
       "id": 7030
-    },
-    {
-      "text": "There are some things that you don't want to do and you pledge to yourself that you won't do, you forbid yourself, and then suddenly they happen all by themselves. You don't even have time to think about them, and they don't make it to the cognitive centers of the brain: they just happen and that's it, and you're left just watching yourself with surprise, and convincing yourself that it wasn't your fault, it just happened all by itself.",
-      "source": "Metro 2033",
-      "length": 440,
-      "id": 7031
-    },
-    {
-      "text": "He who is brave and patient enough to peer into the darkness his whole life will be first to see a flicker of light in it.",
-      "source": "Metro 2033",
-      "length": 122,
-      "id": 7032
     },
     {
       "text": "I need a room full of mirrors so I can be surrounded by winners.",
       "source": "Kanye West",
       "length": 64,
-      "id": 7033
+      "id": 7031
     },
     {
       "text": "I survived because the fire inside me burned brighter than the fire around me.",
       "source": "Fallout: New Vegas - Joshua Graham",
       "length": 78,
-      "id": 7034
-    },
-    {
-      "text": "Wanna break from the ads? If you tap now to watch a short video, you will receive 30 minutes of ad-free music… Yes, Really! If you tap now to watch a short video, you will receive 30 minutes of ad-free music!",
-      "source": "Spotify",
-      "length": 208,
-      "id": 7035
+      "id": 7032
     },
     {
       "text": "We know little about love. Love is like a pear. A pear is sweet and has a distinct shape. Try to define the shape of a pear.",
       "source": "Dandelion - The Witcher: The Time of Contempt",
       "length": 124,
-      "id": 7036
+      "id": 7033
     },
     {
       "text": "All roads lead back to one's home. Not your birthplace maybe, but home.",
       "source": "Fallout New Vegas - Ulysses",
       "length": 70,
-      "id": 7037
+      "id": 7034
     }
   ]
 }
