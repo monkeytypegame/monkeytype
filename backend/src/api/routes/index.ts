@@ -59,6 +59,12 @@ function addApiRoutes(app: Application): void {
       return next();
     });
     app.use("/configure", expressStatic(join(__dirname, "../../../private")));
+
+    //simulate delay for all requests
+    // app.use(async (req, res, next) => {
+    //   await new Promise((resolve) => setTimeout(resolve, 1000));
+    //   next();
+    // });
   }
 
   addSwaggerMiddlewares(app);
