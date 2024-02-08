@@ -14,6 +14,12 @@
     margin: -0.25em;
     padding: 0.25em;
 
+    h2 {
+      margin: 0;
+      font-size: 1em;
+      font-weight: unset;
+    }
+
     .fas {
       transition: transform 0.25s;
     }
@@ -276,6 +282,10 @@
           &.customTheme {
             grid-template-columns: 1fr;
             margin-top: 1rem;
+            p {
+              grid-area: unset;
+              align-self: center;
+            }
             .colorText {
               color: var(--text-color);
             }
