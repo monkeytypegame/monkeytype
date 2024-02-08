@@ -454,4 +454,16 @@ declare namespace SharedTypes {
     badgeId: number | null;
     hidden?: boolean;
   }
+
+  type PostResultResponse = {
+    isPb: boolean;
+    tagPbs: string[];
+    insertedId: string;
+    dailyLeaderboardRank?: number;
+    weeklyXpLeaderboardRank?: number;
+    xp: number;
+    dailyXpBonus: boolean;
+    xpBreakdown: Record<string, number>;
+    streak: number;
+  };
 }
