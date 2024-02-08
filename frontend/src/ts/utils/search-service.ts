@@ -1,34 +1,30 @@
 import { stemmer } from "stemmer";
 import levenshtein from "damerau-levenshtein";
 
-export interface SearchService<T> {
+export type SearchService<T> = {
   query: (query: string) => SearchResult<T>;
-}
+};
 
-interface SearchServiceOptions {
+type SearchServiceOptions = {
   fuzzyMatchSensitivity: number;
   scoreForSimilarMatch: number;
   scoreForExactMatch: number;
-}
+};
 
-interface InternalDocument {
+type InternalDocument = {
   id: number;
   maxTermFrequency: number;
   termFrequencies: Record<string, number>;
-}
+};
 
-interface ReverseIndex {
-  [key: string]: Set<InternalDocument>;
-}
+type ReverseIndex = Record<string, Set<InternalDocument>>;
 
-interface TokenMap {
-  [key: string]: Set<string>;
-}
+type TokenMap = Record<string, Set<string>>;
 
-interface SearchResult<T> {
+type SearchResult<T> = {
   results: T[];
   matchedQueryTerms: string[];
-}
+};
 
 export type TextExtractor<T> = (document: T) => string;
 

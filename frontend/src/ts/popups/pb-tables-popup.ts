@@ -3,9 +3,9 @@ import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
 import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
 
-interface PersonalBest extends SharedTypes.PersonalBest {
+type PersonalBest = {
   mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
-}
+} & SharedTypes.PersonalBest;
 
 const wrapperId = "pbTablesPopupWrapper";
 

@@ -195,7 +195,7 @@ function updateFooter(lb: LbKey): void {
     const num = Misc.roundTo2(
       (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
-    if (currentRank[lb]["rank"] === 1) {
+    if (currentRank[lb].rank === 1) {
       toppercent = "GOAT";
     } else {
       toppercent = `Top ${num}%`;

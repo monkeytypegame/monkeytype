@@ -23,10 +23,10 @@ type Line = {
 let lines: Line[] = [];
 
 // JQuery collection of all word elements
-let wordEls: JQuery<HTMLElement>;
+let wordEls: JQuery;
 
 // Dictionary mapping word indices to line indices
-let wordIndexToLineIndexDict: { [wordIndex: number]: number } = {};
+let wordIndexToLineIndexDict: Record<number, number> = {};
 
 // Array of container elements for highlights
 let highlightContainerEls: HTMLElement[] = [];

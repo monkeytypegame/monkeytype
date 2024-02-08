@@ -180,7 +180,7 @@ export async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
   AccountButton.loading(true);
-  if ((await getDataAndInit()) === false) {
+  if (!(await getDataAndInit())) {
     signOut();
   }
   const { discordId, discordAvatar, xp, inboxUnreadSize } =

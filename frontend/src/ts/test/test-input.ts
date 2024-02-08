@@ -72,7 +72,7 @@ const keysToTrack = [
   "NoCode", //android (smells) and some keyboards might send no location data - need to use this as a fallback
 ];
 
-interface KeypressTimings {
+type KeypressTimings = {
   spacing: {
     first: number;
     last: number;
@@ -81,17 +81,17 @@ interface KeypressTimings {
   duration: {
     array: number[];
   };
-}
+};
 
-interface Keydata {
+type Keydata = {
   timestamp: number;
   index: number;
-}
+};
 
-interface ErrorHistoryObject {
+type ErrorHistoryObject = {
   count: number;
   words: number[];
-}
+};
 
 class Input {
   current: string;
@@ -221,9 +221,7 @@ export const corrected = new Corrected();
 export let keypressCountHistory: number[] = [];
 let currentKeypressCount = 0;
 export let currentBurstStart = 0;
-export let missedWords: {
-  [word: string]: number;
-} = {};
+export let missedWords: Record<string, number> = {};
 export let accuracy = {
   correct: 0,
   incorrect: 0,

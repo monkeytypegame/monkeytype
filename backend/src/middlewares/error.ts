@@ -76,7 +76,7 @@ async function errorHandlingMiddleware(
     }
 
     if (monkeyResponse.status < 500) {
-      delete monkeyResponse.data["errorId"];
+      delete monkeyResponse.data.errorId;
     }
 
     return handleMonkeyResponse(monkeyResponse, res);

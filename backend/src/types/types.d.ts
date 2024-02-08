@@ -3,24 +3,24 @@ type ObjectId = import("mongodb").ObjectId;
 type ExpressRequest = import("express").Request;
 
 declare namespace MonkeyTypes {
-  interface DecodedToken {
+  type DecodedToken = {
     type: "Bearer" | "ApeKey" | "None";
     uid: string;
     email: string;
-  }
+  };
 
-  interface Context {
+  type Context = {
     configuration: SharedTypes.Configuration;
     decodedToken: DecodedToken;
-  }
+  };
 
-  interface Request extends ExpressRequest {
+  type Request = {
     ctx: Readonly<Context>;
-  }
+  } & ExpressRequest;
 
   // Data Model
 
-  interface UserProfileDetails {
+  type UserProfileDetails = {
     bio?: string;
     keyboard?: string;
     socialProfiles: {
@@ -28,37 +28,37 @@ declare namespace MonkeyTypes {
       github?: string;
       website?: string;
     };
-  }
+  };
 
-  interface Reward<T> {
+  type Reward<T> = {
     type: string;
     item: T;
-  }
+  };
 
-  interface XpReward extends Reward<number> {
+  type XpReward = {
     type: "xp";
     item: number;
-  }
+  } & Reward<number>;
 
-  interface BadgeReward extends Reward<Badge> {
+  type BadgeReward = {
     type: "badge";
     item: Badge;
-  }
+  } & Reward<Badge>;
 
   type AllRewards = XpReward | BadgeReward;
 
-  interface MonkeyMail {
+  type MonkeyMail = {
     id: string;
     subject: string;
     body: string;
     timestamp: number;
     read: boolean;
     rewards: AllRewards[];
-  }
+  };
 
   type UserIpHistory = string[];
 
-  interface User {
+  type User = {
     autoBanTimestamps?: number[];
     addedAt: number;
     verified?: boolean;
@@ -96,33 +96,29 @@ declare namespace MonkeyTypes {
     lbOptOut?: boolean;
     premium?: PremiumInfo;
     ips?: UserIpHistory;
-  }
+  };
 
-  interface UserStreak {
+  type UserStreak = {
     lastResultTimestamp: number;
     length: number;
     maxLength: number;
     hourOffset?: number;
-  }
+  };
 
-  interface UserInventory {
+  type UserInventory = {
     badges: Badge[];
-  }
+  };
 
-  interface Badge {
+  type Badge = {
     id: number;
     selected?: boolean;
-  }
+  };
 
   type UserQuoteRatings = Record<string, Record<string, number>>;
 
-  interface LbPersonalBests {
-    time: {
-      [key: number]: {
-        [key: string]: SharedTypes.PersonalBest;
-      };
-    };
-  }
+  type LbPersonalBests = {
+    time: Record<number, Record<string, SharedTypes.PersonalBest>>;
+  };
 
   type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
     _id: ObjectId;
@@ -133,17 +129,17 @@ declare namespace MonkeyTypes {
       _id: ObjectId;
     }[];
 
-  interface UserTag {
+  type UserTag = {
     _id: ObjectId;
     name: string;
     personalBests: SharedTypes.PersonalBests;
-  }
+  };
 
-  interface CustomTheme {
+  type CustomTheme = {
     _id: ObjectId;
     name: string;
     colors: string[];
-  }
+  };
 
   type ApeKeyDB = SharedTypes.ApeKey & {
     _id: ObjectId;
@@ -152,7 +148,7 @@ declare namespace MonkeyTypes {
     useCount: number;
   };
 
-  interface NewQuote {
+  type NewQuote = {
     _id: ObjectId;
     text: string;
     source: string;
@@ -160,11 +156,11 @@ declare namespace MonkeyTypes {
     submittedBy: string;
     timestamp: number;
     approved: boolean;
-  }
+  };
 
   type ReportTypes = "quote" | "user";
 
-  interface Report {
+  type Report = {
     _id: ObjectId;
     id: string;
     type: ReportTypes;
@@ -173,28 +169,28 @@ declare namespace MonkeyTypes {
     contentId: string;
     reason: string;
     comment: string;
-  }
+  };
 
-  interface QuoteRating {
+  type QuoteRating = {
     _id: string;
     average: number;
     language: string;
     quoteId: number;
     ratings: number;
     totalRating: number;
-  }
+  };
 
-  interface FunboxMetadata {
+  type FunboxMetadata = {
     name: string;
     canGetPb: boolean;
     difficultyLevel: number;
     properties?: string[];
     frontendForcedConfig?: Record<string, string[] | boolean[]>;
     frontendFunctions?: string[];
-  }
+  };
 
-  interface PremiumInfo {
+  type PremiumInfo = {
     startTimestamp: number;
     expirationTimestamp: number;
-  }
+  };
 }

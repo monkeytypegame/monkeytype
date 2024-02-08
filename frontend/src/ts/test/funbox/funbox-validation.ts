@@ -8,7 +8,7 @@ export function checkFunboxForcedConfigs(
   funbox: string
 ): {
   result: boolean;
-  forcedConfigs?: Array<SharedTypes.ConfigValue>;
+  forcedConfigs?: SharedTypes.ConfigValue[];
 } {
   if (FunboxList.get(funbox).length === 0) return { result: true };
 
@@ -62,7 +62,7 @@ export function checkFunboxForcedConfigs(
       }
       return {
         result: (forcedConfigs[key] ?? []).includes(
-          <SharedTypes.ConfigValue>value
+          value as SharedTypes.ConfigValue
         ),
         forcedConfigs: forcedConfigs[key],
       };

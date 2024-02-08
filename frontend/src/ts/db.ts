@@ -402,7 +402,7 @@ async function _getUserHighestWpm<M extends SharedTypes.Config.Mode>(
         result.language === language &&
         result.difficulty === difficulty &&
         (result.lazyMode === lazyMode ||
-          (result.lazyMode === undefined && lazyMode === false))
+          (result.lazyMode === undefined && !lazyMode))
       ) {
         if (result.wpm > topWpm) {
           topWpm = result.wpm;
@@ -452,7 +452,7 @@ export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
-            (result.lazyMode === undefined && lazyMode === false)) &&
+            (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
             activeTagIds.some((tagId) => result.tags.includes(tagId)))
         ) {
@@ -530,7 +530,7 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
-            (result.lazyMode === undefined && lazyMode === false)) &&
+            (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
             activeTagIds.some((tagId) => result.tags.includes(tagId)))
         ) {
@@ -594,8 +594,7 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
           pb.punctuation === punctuation &&
           pb.difficulty === difficulty &&
           pb.language === language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
+          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
         ) {
           ret = pb.wpm;
         }
@@ -654,8 +653,7 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
         pb.punctuation === punctuation &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode ||
-          (pb.lazyMode === undefined && lazyMode === false))
+        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
       ) {
         found = true;
         pb.wpm = wpm;
@@ -733,8 +731,7 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
           pb.punctuation === punctuation &&
           pb.difficulty === difficulty &&
           pb.language === language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
+          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
       )?.wpm ?? 0;
 
     return ret;
@@ -792,8 +789,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
           pb.punctuation === punctuation &&
           pb.difficulty === difficulty &&
           pb.language === language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
+          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
         ) {
           found = true;
           pb.wpm = wpm;

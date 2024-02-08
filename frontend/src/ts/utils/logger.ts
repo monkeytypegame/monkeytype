@@ -21,7 +21,7 @@ function info(...args: unknown[]): void {
   nativeLog(
     "%cINFO",
     "background:#4CAF50;color: #111;padding:0 5px;border-radius:10px",
-    //@ts-ignore
+    //@ts-expect-error
     ...args
   );
 }

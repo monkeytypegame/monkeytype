@@ -110,10 +110,7 @@ export async function update(
 
   const puncAndNumEl = $("#testConfig .puncAndNum");
 
-  if (
-    puncAndNumVisible[previous] === false &&
-    puncAndNumVisible[current] === true
-  ) {
+  if (!puncAndNumVisible[previous] && puncAndNumVisible[current]) {
     //show
 
     puncAndNumEl.css("maxWidth", "");
@@ -136,10 +133,7 @@ export async function update(
         animTime,
         easing.both
       );
-  } else if (
-    puncAndNumVisible[previous] === true &&
-    puncAndNumVisible[current] === false
-  ) {
+  } else if (puncAndNumVisible[previous] && !puncAndNumVisible[current]) {
     //hide
     $("#testConfig .leftSpacer").addClass("scrolled");
     puncAndNumEl

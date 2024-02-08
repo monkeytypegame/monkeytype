@@ -4,7 +4,7 @@ import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 
-const leaderboardUpdating: { [key: string]: boolean } = {};
+const leaderboardUpdating: Record<string, boolean> = {};
 
 export async function get(
   mode: string,
@@ -28,11 +28,11 @@ export async function get(
   return preset;
 }
 
-interface GetRankResponse {
+type GetRankResponse = {
   count: number;
   rank: number | null;
   entry: SharedTypes.LeaderboardEntry | null;
-}
+};
 
 export async function getRank(
   mode: string,

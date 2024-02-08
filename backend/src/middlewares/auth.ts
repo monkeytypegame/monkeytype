@@ -14,12 +14,12 @@ import {
 import crypto from "crypto";
 import { performance } from "perf_hooks";
 
-interface RequestAuthenticationOptions {
+type RequestAuthenticationOptions = {
   isPublic?: boolean;
   acceptApeKeys?: boolean;
   requireFreshToken?: boolean;
   noCache?: boolean;
-}
+};
 
 const DEFAULT_OPTIONS: RequestAuthenticationOptions = {
   isPublic: false,

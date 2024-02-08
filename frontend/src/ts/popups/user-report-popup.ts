@@ -7,21 +7,21 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "userReportPopupWrapper";
 
-interface State {
+type State = {
   userUid?: string;
   lbOptOut?: boolean;
-}
+};
 
 const state: State = {
   userUid: undefined,
   lbOptOut: undefined,
 };
 
-interface ShowOptions {
+type ShowOptions = {
   uid: string;
   name: string;
   lbOptOut: boolean;
-}
+};
 
 export async function show(options: ShowOptions): Promise<void> {
   Skeleton.append(wrapperId);

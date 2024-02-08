@@ -41,11 +41,11 @@ export class Poem extends Section {
   }
 }
 
-interface PoemObject {
+type PoemObject = {
   lines: string[];
   title: string;
   author: string;
-}
+};
 
 export async function getPoem(): Promise<Section | false> {
   console.log("Getting poem");

@@ -693,7 +693,7 @@ export async function getPersonalBests(
 
 export async function getStats(
   uid: string
-): Promise<{ [key: string]: number | undefined }> {
+): Promise<Record<string, number | undefined>> {
   const user = await getUser(uid, "get stats");
 
   return {
@@ -849,10 +849,10 @@ export async function getInbox(
   return user.inbox ?? [];
 }
 
-interface AddToInboxBulkEntry {
+type AddToInboxBulkEntry = {
   uid: string;
   mail: MonkeyTypes.MonkeyMail[];
-}
+};
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],

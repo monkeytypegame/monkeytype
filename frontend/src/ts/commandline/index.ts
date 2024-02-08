@@ -79,7 +79,7 @@ function showFound(): void {
   $.each(list.list, (_index, obj) => {
     if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
       let icon = obj.icon ?? "fa-chevron-right";
-      const faIcon = /^fa-/g.test(icon);
+      const faIcon = icon.startsWith("fa-");
       if (!faIcon) {
         icon = `<div class="textIcon">${icon}</div>`;
       } else {
@@ -189,7 +189,7 @@ function updateSuggested(): void {
     return;
   }
   //ignore the preceeding ">"s in the command line input
-  if (inputVal[0] !== undefined && inputVal[0][0] === ">") {
+  if (inputVal[0] !== undefined && inputVal[0].startsWith(">")) {
     inputVal[0] = inputVal[0].replace(/^>+/, "");
   }
   if (inputVal[0] === "" && inputVal.length === 1) {
@@ -689,7 +689,7 @@ $(document).on("keydown", (e) => {
         if (
           Config.singleListCommandLine === "manual" &&
           isSingleListCommandLineActive() &&
-          inputVal[0] !== ">"
+          !inputVal.startsWith(">")
         ) {
           restoreOldCommandLine(false);
           updateSuggested();

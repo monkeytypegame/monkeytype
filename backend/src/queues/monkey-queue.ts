@@ -42,9 +42,7 @@ export class MonkeyQueue<T> {
     await this.jobQueue.add(taskName, task, jobOpts);
   }
 
-  async getJobCounts(): Promise<{
-    [index: string]: number;
-  }> {
+  async getJobCounts(): Promise<Record<string, number>> {
     if (this.jobQueue === undefined) {
       return {};
     }

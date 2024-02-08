@@ -21,9 +21,10 @@ import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 import * as Skeleton from "../popups/skeleton";
 
-interface SettingsGroups<T extends SharedTypes.ConfigValue> {
-  [key: string]: SettingsGroup<T>;
-}
+type SettingsGroups<T extends SharedTypes.ConfigValue> = Record<
+  string,
+  SettingsGroup<T>
+>;
 
 export const groups: SettingsGroups<SharedTypes.ConfigValue> = {};
 
@@ -1023,7 +1024,7 @@ $(".pageSettings .section.minBurst").on("click", ".button.save", () => {
 
 //funbox
 $(".pageSettings .section.funbox").on("click", ".button", (e) => {
-  const funbox = <string>$(e.currentTarget).attr("funbox");
+  const funbox = $(e.currentTarget).attr("funbox") as string;
   toggleFunbox(funbox);
   setActiveFunboxButton();
 });
@@ -1123,7 +1124,7 @@ $(".pageSettings .section.fontSize .inputAndButton input").on(
           ).val() as string
         )
       );
-      if (didConfigSave === true) {
+      if (didConfigSave) {
         Notifications.add("Saved", 1, {
           duration: 1,
         });

@@ -9,10 +9,10 @@ const wrapperId = "cookiePopupWrapper";
 
 let visible = false;
 
-interface Accepted {
+type Accepted = {
   security: boolean;
   analytics: boolean;
-}
+};
 
 function getAcceptedObject(): Accepted | null {
   const acceptedCookies = localStorage.getItem("acceptedCookies") ?? "";
@@ -44,7 +44,7 @@ export function show(): void {
   visible = true;
   if (
     $("#cookiePopupWrapper")[0] === undefined ||
-    $("#cookiePopupWrapper").is(":visible") === false ||
+    !$("#cookiePopupWrapper").is(":visible") ||
     $("#cookiePopupWrapper").outerHeight(true) === 0
   ) {
     //removed by cookie popup blocking extension
@@ -60,7 +60,7 @@ export function show(): void {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 0, () => {
         if (
-          $("#cookiePopupWrapper").is(":visible") === false ||
+          !$("#cookiePopupWrapper").is(":visible") ||
           $("#cookiePopupWrapper").outerHeight(true) === 0
         ) {
           visible = false;
@@ -100,7 +100,7 @@ function verifyVisible(): void {
   if (!visible) return;
   if (
     $("#cookiePopupWrapper")[0] === undefined ||
-    $("#cookiePopupWrapper").is(":visible") === false ||
+    !$("#cookiePopupWrapper").is(":visible") ||
     $("#cookiePopupWrapper").outerHeight(true) === 0
   ) {
     //removed by cookie popup blocking extension
