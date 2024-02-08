@@ -438,4 +438,20 @@ declare namespace SharedTypes {
     name: string;
     config: SharedTypes.ConfigPreset;
   }
+
+  interface LeaderboardEntry {
+    _id: string;
+    wpm: number;
+    acc: number;
+    timestamp: number;
+    raw: number;
+    consistency: number | "-";
+    uid: string;
+    name: string;
+    discordId: string | null | undefined;
+    discordAvatar: string | null | undefined;
+    rank: number;
+    badgeId: number | null;
+    hidden?: boolean;
+  }
 }
