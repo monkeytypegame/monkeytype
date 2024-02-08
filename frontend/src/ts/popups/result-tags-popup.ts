@@ -149,7 +149,8 @@ $("#resultEditTagsPanelWrapper .confirmButton").on("click", async () => {
     );
   }
 
-  const responseTagPbs = response.data.tagPbs;
+  //can do this because the response will not be null if the status is 200
+  const responseTagPbs = response.data?.tagPbs ?? [];
 
   Notifications.add("Tags updated", 1, {
     duration: 2,

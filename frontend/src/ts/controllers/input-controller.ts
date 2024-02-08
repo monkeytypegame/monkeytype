@@ -596,7 +596,7 @@ function handleChar(
 
   //keymap
   if (Config.keymapMode === "react") {
-    void MonkeyPower.addPower(thisCharCorrect);
+    void KeymapEvent.flash(char, thisCharCorrect);
   }
 
   if (Config.difficulty !== "master") {

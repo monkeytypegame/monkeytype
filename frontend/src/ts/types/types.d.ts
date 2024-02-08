@@ -200,27 +200,8 @@ declare namespace MonkeyTypes {
 
   interface Leaderboards {
     time: {
-      [key in 15 | 60]: LeaderboardEntry[];
+      [key in 15 | 60]: SharedTypes.LeaderboardEntry[];
     };
-  }
-
-  interface LeaderboardEntry {
-    difficulty: string;
-    timestamp: number;
-    language: string;
-    wpm: number;
-    consistency: number | "-";
-    punctuation: boolean;
-    acc: number;
-    raw: number;
-    uid?: string;
-    name: string;
-    discordId?: string;
-    discordAvatar?: string;
-    badgeId?: number;
-    rank: number;
-    count?: number;
-    hidden?: boolean;
   }
 
   interface QuoteRatings {

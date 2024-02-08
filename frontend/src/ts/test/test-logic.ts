@@ -1198,7 +1198,7 @@ async function saveResult(
 
   $("#result .stats .tags .editTagsButton").attr(
     "result-id",
-    response.data.insertedId
+    response.data?.insertedId as string //if status is 200 then response.data is not null or undefined
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 

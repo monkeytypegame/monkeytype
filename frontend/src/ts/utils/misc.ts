@@ -1364,8 +1364,10 @@ export async function getDiscordAvatarUrl(
 ): Promise<string | null> {
   if (
     discordId === undefined ||
+    discordId === null ||
     discordId === "" ||
     discordAvatar === undefined ||
+    discordAvatar === null ||
     discordAvatar === ""
   ) {
     return null;
