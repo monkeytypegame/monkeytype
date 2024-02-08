@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-type Result = SharedTypes.DBResult<SharedTypes.Mode>;
+type Result = SharedTypes.DBResult<SharedTypes.Config.Mode>;
 
 export function buildDbResult(
   completedEvent: SharedTypes.CompletedEvent,

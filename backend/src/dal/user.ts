@@ -10,7 +10,10 @@ import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 
 const SECONDS_PER_HOUR = 3600;
 
-type Result = Omit<SharedTypes.DBResult<SharedTypes.Mode>, "_id" | "name">;
+type Result = Omit<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>,
+  "_id" | "name"
+>;
 
 // Export for use in tests
 export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
@@ -385,8 +388,8 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
 
 export async function updateLbMemory(
   uid: string,
-  mode: SharedTypes.Mode,
-  mode2: SharedTypes.Mode2<SharedTypes.Mode>,
+  mode: SharedTypes.Config.Mode,
+  mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>,
   language: string,
   rank: number
 ): Promise<void> {

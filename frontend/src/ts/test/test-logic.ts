@@ -1355,7 +1355,8 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as SharedTypes.Mode;
+  const mode = ($(e.currentTarget).attr("mode") ??
+    "time") as SharedTypes.Config.Mode;
   if (mode === undefined) return;
   UpdateConfig.setMode(mode);
   ManualRestart.set();
@@ -1384,8 +1385,8 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
-    MonkeyTypes.QuoteLength
+  let len: SharedTypes.Config.QuoteLength | SharedTypes.Config.QuoteLength[] = <
+    SharedTypes.Config.QuoteLength
   >parseInt($(e.currentTarget).attr("quoteLength") ?? "1");
   if (len !== -2) {
     if (len === -1) {

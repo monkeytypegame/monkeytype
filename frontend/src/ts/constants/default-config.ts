@@ -1,4 +1,4 @@
-export default <MonkeyTypes.Config>{
+export default <SharedTypes.Config>{
   theme: "serika_dark",
   themeLight: "serika",
   themeDark: "serika_dark",

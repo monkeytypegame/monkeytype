@@ -101,13 +101,13 @@ export function loadCustomThemeFromUrl(getOverride?: string): void {
 }
 
 type SharedTestSettings = [
-  SharedTypes.Mode | null,
-  SharedTypes.Mode2<SharedTypes.Mode> | null,
+  SharedTypes.Config.Mode | null,
+  SharedTypes.Config.Mode2<SharedTypes.Config.Mode> | null,
   SharedTypes.CustomText | null,
   boolean | null,
   boolean | null,
   string | null,
-  SharedTypes.Difficulty | null,
+  SharedTypes.Config.Difficulty | null,
   string | null
 ];
 
