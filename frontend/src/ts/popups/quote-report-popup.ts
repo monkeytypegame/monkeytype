@@ -108,7 +108,7 @@ async function submitReport(): Promise<void> {
   const comment = $("#quoteReportPopup .comment").val() as string;
   const captcha = captchaResponse as string;
 
-  if (!quoteId) {
+  if (quoteId === undefined || quoteId === "") {
     return Notifications.add("Please select a quote");
   }
 
@@ -142,12 +142,12 @@ async function submitReport(): Promise<void> {
   }
 
   Notifications.add("Report submitted. Thank you!", 1);
-  hide();
+  void hide();
 }
 
 $("#quoteReportPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteReportPopupWrapper") {
-    hide();
+    void hide();
   }
 });
 
@@ -172,7 +172,7 @@ $(".pageTest #reportQuoteButton").on("click", async () => {
     Notifications.add("Failed to show quote report popup: no quote", -1);
     return;
   }
-  show({
+  void show({
     quoteId: TestWords.randomQuote?.id,
     noAnim: false,
   });

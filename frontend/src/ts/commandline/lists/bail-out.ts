@@ -39,7 +39,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
       display: "Yes, I am sure",
       exec: (): void => {
         TestState.setBailedOut(true);
-        TestLogic.finish();
+        void TestLogic.finish();
       },
       available: (): boolean => {
         return canBailOut();

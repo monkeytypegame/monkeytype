@@ -163,17 +163,12 @@ declare namespace MonkeyTypes {
     colors: string[];
   }
 
-  interface ApeKey {
+  type ApeKeyDB = SharedTypes.ApeKey & {
     _id: ObjectId;
     uid: string;
-    name: string;
     hash: string;
-    createdOn: number;
-    modifiedOn: number;
-    lastUsedOn: number;
     useCount: number;
-    enabled: boolean;
-  }
+  };
 
   interface NewQuote {
     _id: ObjectId;
@@ -183,12 +178,6 @@ declare namespace MonkeyTypes {
     submittedBy: string;
     timestamp: number;
     approved: boolean;
-  }
-
-  interface PSA {
-    sticky?: boolean;
-    message: string;
-    level?: number;
   }
 
   type ReportTypes = "quote" | "user";
@@ -202,22 +191,6 @@ declare namespace MonkeyTypes {
     contentId: string;
     reason: string;
     comment: string;
-  }
-
-  interface PublicStats {
-    _id: "stats";
-    testsCompleted: number;
-    testsStarted: number;
-    timeTyping: number;
-  }
-
-  type PublicSpeedStats = PublicSpeedStatsMongoEntry &
-    PublicSpeedStatsByLanguage;
-  interface PublicSpeedStatsMongoEntry {
-    _id: "speedStatsHistogram";
-  }
-  interface PublicSpeedStatsByLanguage {
-    [language_mode_mode2: string]: Record<string, number>;
   }
 
   interface QuoteRating {

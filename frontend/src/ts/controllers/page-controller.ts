@@ -63,41 +63,44 @@ export async function change(
     const previousPage = pages[ActivePage.get()];
     const nextPage = pages[pageName];
 
-    previousPage?.beforeHide({
-      tribeOverride: options.tribeOverride ?? false,
-    });
-    PageTransition.set(true);
-    $(".page").removeClass("active");
-    Misc.swapElements(
-      previousPage.element,
-      nextPage.element,
-      250,
-      async () => {
-        PageTransition.set(false);
-        nextPage.element.addClass("active");
-        resolve(true);
-        nextPage?.afterShow();
-        AdController.reinstate();
-      },
-      async () => {
-        if (nextPage.name === "test") {
-          Misc.updateTitle();
-        } else {
-          Misc.updateTitle(
-            Misc.capitalizeFirstLetterOfEachWord(nextPage.name) +
-              " | Monkeytype"
-          );
-        }
-        Focus.set(false);
-        ActivePage.set(nextPage.name);
-        previousPage?.afterHide();
-        await nextPage?.beforeShow({
-          params: options.params,
-          // @ts-expect-error
-          data: options.data,
-          tribeOverride: options.tribeOverride ?? false,
-        });
-      }
-    );
+    void previousPage
+      ?.beforeHide({
+        tribeOverride: options.tribeOverride ?? false,
+      })
+      .then(() => {
+        PageTransition.set(true);
+        $(".page").removeClass("active");
+        void Misc.swapElements(
+          previousPage.element,
+          nextPage.element,
+          250,
+          async () => {
+            PageTransition.set(false);
+            nextPage.element.addClass("active");
+            resolve(true);
+            await nextPage?.afterShow();
+            void AdController.reinstate();
+          },
+          async () => {
+            if (nextPage.name === "test") {
+              Misc.updateTitle();
+            } else {
+              Misc.updateTitle(
+                Misc.capitalizeFirstLetterOfEachWord(nextPage.name) +
+                  " | Monkeytype"
+              );
+            }
+            Focus.set(false);
+            ActivePage.set(nextPage.name);
+            await previousPage?.afterHide();
+            await nextPage?.beforeShow({
+              params: options.params,
+              // @ts-expect-error
+              data: options.data,
+              tribeOverride: options.tribeOverride ?? false,
+            });
+          }
+        );
+      });
   });
 }

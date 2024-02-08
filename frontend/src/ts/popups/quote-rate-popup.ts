@@ -54,12 +54,12 @@ export async function getQuoteStats(
     return;
   }
 
-  if (!response.data) {
+  if (response.data === undefined) {
     return {} as QuoteStats;
   }
 
   quoteStats = response.data as QuoteStats;
-  if (quoteStats && !quoteStats.average) {
+  if (quoteStats !== undefined && !quoteStats.average) {
     quoteStats.average = getRatingAverage(quoteStats);
   }
 
@@ -98,7 +98,7 @@ function updateData(): void {
   $(`#quoteRatePopup .quote .source .val`).text(currentQuote.source);
   $(`#quoteRatePopup .quote .id .val`).text(currentQuote.id);
   $(`#quoteRatePopup .quote .length .val`).text(lengthDesc as string);
-  updateRatingStats();
+  void updateRatingStats();
 }
 
 function show(quote: MonkeyTypes.Quote, shouldReset = true): void {
@@ -241,7 +241,7 @@ $("#quoteRatePopupWrapper .stars .star").on("mouseout", () => {
 });
 
 $("#quoteRatePopupWrapper .submitButton").on("click", () => {
-  submit();
+  void submit();
 });
 
 $(".pageTest #rateQuoteButton").on("click", async () => {

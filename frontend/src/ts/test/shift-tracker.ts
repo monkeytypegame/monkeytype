@@ -175,7 +175,7 @@ $(document).on("keydown", (e) => {
   }
 
   if (Config.keymapLegendStyle === "dynamic") {
-    updateKeymapLegendCasing();
+    void updateKeymapLegendCasing();
   }
 });
 
@@ -186,7 +186,7 @@ $(document).on("keyup", (e) => {
   }
 
   if (Config.keymapLegendStyle === "dynamic") {
-    updateKeymapLegendCasing();
+    void updateKeymapLegendCasing();
   }
 });
 

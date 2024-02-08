@@ -4,11 +4,11 @@ import * as Misc from "../../utils/misc";
 
 export function checkFunboxForcedConfigs(
   key: string,
-  value: MonkeyTypes.ConfigValues,
+  value: MonkeyTypes.ConfigValue,
   funbox: string
 ): {
   result: boolean;
-  forcedConfigs?: Array<MonkeyTypes.ConfigValues>;
+  forcedConfigs?: Array<MonkeyTypes.ConfigValue>;
 } {
   if (FunboxList.get(funbox).length === 0) return { result: true };
 
@@ -32,7 +32,7 @@ export function checkFunboxForcedConfigs(
       return { result: true };
     }
   } else {
-    const forcedConfigs: Record<string, MonkeyTypes.ConfigValues[]> = {};
+    const forcedConfigs: Record<string, MonkeyTypes.ConfigValue[]> = {};
     // collect all forced configs
     for (const fb of FunboxList.get(funbox)) {
       if (fb.forcedConfig) {
@@ -41,11 +41,11 @@ export function checkFunboxForcedConfigs(
           if (forcedConfigs[key] === undefined) {
             forcedConfigs[key] = fb.forcedConfig[
               key
-            ] as MonkeyTypes.ConfigValues[];
+            ] as MonkeyTypes.ConfigValue[];
           } else {
             forcedConfigs[key] = Misc.intersect(
-              forcedConfigs[key] as MonkeyTypes.ConfigValues[],
-              fb.forcedConfig[key] as MonkeyTypes.ConfigValues[],
+              forcedConfigs[key] as MonkeyTypes.ConfigValue[],
+              fb.forcedConfig[key] as MonkeyTypes.ConfigValue[],
               true
             );
           }
@@ -62,7 +62,7 @@ export function checkFunboxForcedConfigs(
       }
       return {
         result: (forcedConfigs[key] ?? []).includes(
-          <MonkeyTypes.ConfigValues>value
+          <MonkeyTypes.ConfigValue>value
         ),
         forcedConfigs: forcedConfigs[key],
       };
@@ -75,7 +75,7 @@ export function checkFunboxForcedConfigs(
 // if it returns false, show a notification and return false
 export function canSetConfigWithCurrentFunboxes(
   key: string,
-  value: MonkeyTypes.ConfigValues,
+  value: MonkeyTypes.ConfigValue,
   funbox: string,
   noNotification = false
 ): boolean {
@@ -99,7 +99,7 @@ export function canSetConfigWithCurrentFunboxes(
             f.functions?.withWords ||
             f.properties?.includes("changesCapitalisation") ||
             f.properties?.includes("nospace") ||
-            f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+            (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
             f.properties?.includes("changesWordsVisibility") ||
             f.properties?.includes("speaks") ||
             f.properties?.includes("changesLayout") ||
@@ -286,7 +286,7 @@ export function areFunboxesCompatible(
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>
-        f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+        (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
         f.functions?.pullSection
     ).length <= 1;
   const oneApplyCSSMax =
@@ -305,8 +305,8 @@ export function areFunboxesCompatible(
       if (allowedConfig[key]) {
         if (
           Misc.intersect(
-            allowedConfig[key] as MonkeyTypes.ConfigValues[],
-            f.forcedConfig[key] as MonkeyTypes.ConfigValues[],
+            allowedConfig[key] as MonkeyTypes.ConfigValue[],
+            f.forcedConfig[key] as MonkeyTypes.ConfigValue[],
             true
           ).length === 0
         ) {
@@ -314,7 +314,7 @@ export function areFunboxesCompatible(
           break;
         }
       } else {
-        allowedConfig[key] = f.forcedConfig[key] as MonkeyTypes.ConfigValues[];
+        allowedConfig[key] = f.forcedConfig[key] as MonkeyTypes.ConfigValue[];
       }
     }
   }

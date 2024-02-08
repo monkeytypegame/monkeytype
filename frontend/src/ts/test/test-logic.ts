@@ -89,9 +89,9 @@ export function startTest(now: number): boolean {
   }
 
   if (Auth?.currentUser) {
-    AnalyticsController.log("testStarted");
+    void AnalyticsController.log("testStarted");
   } else {
-    AnalyticsController.log("testStartedNoLogin");
+    void AnalyticsController.log("testStartedNoLogin");
   }
 
   TestState.setActive(true);
@@ -123,7 +123,7 @@ export function startTest(now: number): boolean {
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
-  TestTimer.start();
+  void TestTimer.start();
   return true;
 }
 
@@ -195,9 +195,10 @@ export function restart(options = {} as RestartOptions): void {
   }
 
   if (options.withSameWordset) {
-    const funboxToPush = FunboxList.get(Config.funbox)
-      .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
-      ?.properties?.find((fp) => fp.startsWith("toPush:"));
+    const funboxToPush =
+      FunboxList.get(Config.funbox)
+        .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
+        ?.properties?.find((fp) => fp.startsWith("toPush:")) ?? "";
     if (funboxToPush) {
       Notifications.add(
         "You can't repeat a test with currently active funboxes",
@@ -232,7 +233,7 @@ export function restart(options = {} as RestartOptions): void {
 
   if (
     Config.mode === "quote" &&
-    TestWords.randomQuote &&
+    TestWords.randomQuote !== null &&
     Config.language.startsWith(TestWords.randomQuote.language) &&
     Config.repeatQuotes === "typing" &&
     (TestState.isActive || failReason !== "")
@@ -294,7 +295,7 @@ export function restart(options = {} as RestartOptions): void {
 
   if (TestUI.resultVisible) {
     if (Config.randomTheme !== "off") {
-      ThemeController.randomizeTheme();
+      void ThemeController.randomizeTheme();
     }
     AccountButton.skipXpBreakdown();
   }
@@ -374,7 +375,7 @@ export function restart(options = {} as RestartOptions): void {
         TestInput.input.reset();
         TestUI.showWords();
         if (Config.keymapMode === "next" && Config.mode !== "zen") {
-          KeymapEvent.highlight(
+          void KeymapEvent.highlight(
             Misc.nthElementFromArray(
               [...TestWords.words.getCurrent()],
               0
@@ -394,11 +395,11 @@ export function restart(options = {} as RestartOptions): void {
       }
 
       if (Config.showAverage !== "off") {
-        Last10Average.update().then(() => {
-          ModesNotice.update();
+        Last10Average.update().finally(() => {
+          void ModesNotice.update();
         });
       } else {
-        ModesNotice.update();
+        void ModesNotice.update();
       }
 
       $("#typingTest")
@@ -477,7 +478,7 @@ export async function init(): Promise<void> {
     );
   }
 
-  if (!language || (language && language.name !== Config.language)) {
+  if (!language || language.name !== Config.language) {
     UpdateConfig.setLanguage("english");
     await init();
     return;
@@ -563,7 +564,7 @@ export async function init(): Promise<void> {
   TestWords.setHasNewline(hasNewline);
 
   if (beforeHasNumbers !== hasNumbers) {
-    Keymap.refresh();
+    void Keymap.refresh();
   }
 
   for (let i = 0; i < generatedWords.length; i++) {
@@ -574,7 +575,7 @@ export async function init(): Promise<void> {
   }
 
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    KeymapEvent.highlight(
+    void KeymapEvent.highlight(
       Misc.nthElementFromArray([...TestWords.words.getCurrent()], 0) as string
     );
   }
@@ -595,8 +596,8 @@ export async function addWord(): Promise<void> {
   const funboxToPush = FunboxList.get(Config.funbox)
     .find((f) => f.properties?.find((fp) => fp.startsWith("toPush")))
     ?.properties?.find((fp) => fp.startsWith("toPush:"));
-  const toPushCount: string | undefined = funboxToPush?.split(":")[1];
-  if (toPushCount) bound = +toPushCount - 1;
+  const toPushCount = funboxToPush?.split(":")[1];
+  if (toPushCount !== undefined) bound = +toPushCount - 1;
   if (
     TestWords.words.length - TestInput.input.history.length > bound ||
     (Config.mode === "words" &&
@@ -723,7 +724,7 @@ export async function retrySavingResult(): Promise<void> {
     err: [...(completedEvent.chartData as MonkeyTypes.ChartData).err],
   };
 
-  saveResult(completedEvent, tribeChartData, true);
+  await saveResult(completedEvent, tribeChartData, true);
 }
 
 function buildCompletedEvent(
@@ -941,7 +942,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   OutOfFocus.hide();
   TestTimer.clear();
   Monkey.hide();
-  ModesNotice.update();
+  void ModesNotice.update();
 
   //need one more calculation for the last word if test auto ended
   if (TestInput.burstHistory.length !== TestInput.input.getHistory()?.length) {
@@ -1165,7 +1166,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   if (!Auth?.currentUser) {
     $(".pageTest #result #rateQuoteButton").addClass("hidden");
     $(".pageTest #result #reportQuoteButton").addClass("hidden");
-    AnalyticsController.log("testCompletedNoLogin");
+    void AnalyticsController.log("testCompletedNoLogin");
     if (!dontSave) notSignedInLastResult = completedEvent;
     dontSave = true;
     // resolveTestSavePromise({
@@ -1212,7 +1213,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
   }
 
   if (dontSave) {
-    AnalyticsController.log("testCompletedInvalid");
+    void AnalyticsController.log("testCompletedInvalid");
     resolveTestSavePromise(resolve);
     TribeResults.send({
       wpm: completedEvent.wpm,
@@ -1243,7 +1244,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   completedEvent.hash = objectHash(completedEvent);
 
-  saveResult(completedEvent, tribeChartData, false);
+  await saveResult(completedEvent, tribeChartData, false);
 }
 
 async function saveResult(
@@ -1346,9 +1347,9 @@ async function saveResult(
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
-  if (response?.data?.xp) {
+  if (response?.data?.xp !== undefined) {
     const snapxp = DB.getSnapshot()?.xp ?? 0;
-    AccountButton.updateXpBar(
+    void AccountButton.updateXpBar(
       snapxp,
       response.data.xp,
       response.data.xpBreakdown
@@ -1356,13 +1357,13 @@ async function saveResult(
     DB.addXp(response.data.xp);
   }
 
-  if (response?.data?.streak) {
+  if (response?.data?.streak !== undefined) {
     DB.setStreak(response.data.streak);
   }
 
-  if (response?.data?.insertedId) {
+  if (response?.data?.insertedId !== undefined) {
     completedEvent._id = response.data.insertedId;
-    if (response?.data?.isPb) {
+    if (response?.data?.isPb !== undefined && response.data.isPb === true) {
       completedEvent.isPb = true;
     }
     DB.saveLocalResult(completedEvent);
@@ -1374,19 +1375,20 @@ async function saveResult(
     );
   }
 
-  AnalyticsController.log("testCompleted");
+  void AnalyticsController.log("testCompleted");
 
-  if (response?.data?.isPb) {
+  if (response?.data?.isPb !== undefined && response.data.isPb === true) {
     //new pb
     if (
       //@ts-expect-error TODO fix this
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       DB.getSnapshot()?.personalBests?.[Config.mode]?.[completedEvent.mode2]
     ) {
       Result.showConfetti();
     }
     Result.showCrown();
     await Result.updateCrown();
-    DB.saveLocalPB(
+    await DB.saveLocalPB(
       Config.mode,
       completedEvent.mode2,
       Config.punctuation,
@@ -1411,7 +1413,7 @@ async function saveResult(
   //   );
   // }
 
-  if (!response?.data?.dailyLeaderboardRank) {
+  if (response?.data?.dailyLeaderboardRank === undefined) {
     $("#result .stats .dailyLeaderboard").addClass("hidden");
   } else {
     $("#result .stats .dailyLeaderboard")
@@ -1462,7 +1464,7 @@ export function fail(reason: string): void {
   TestInput.pushKeypressesToHistory();
   TestInput.pushErrorToHistory();
   TestInput.pushAfkToHistory();
-  finish(true);
+  void finish(true);
   if (!TestState.savingEnabled) return;
   const testSeconds = TestStats.calculateTestSeconds(performance.now());
   const afkseconds = TestStats.calculateAfkSeconds(testSeconds);
@@ -1628,8 +1630,8 @@ $("#popups").on(
   "#quoteSearchPopup #quoteSearchResults .searchResult",
   (e) => {
     if (
-      e.target.classList.contains("report") ||
-      e.target.classList.contains("favorite")
+      (e.target.classList.contains("report") as boolean) ||
+      (e.target.classList.contains("favorite") as boolean)
     ) {
       return;
     }
@@ -1673,7 +1675,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
       Config.mode !== "zen"
     ) {
       setTimeout(() => {
-        KeymapEvent.highlight(
+        void KeymapEvent.highlight(
           Misc.nthElementFromArray(
             [...TestWords.words.getCurrent()],
             0
@@ -1695,5 +1697,5 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 TimerEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "start") startTest(performance.now());
   if (eventKey === "fail" && eventValue !== undefined) fail(eventValue);
-  if (eventKey === "finish") finish();
+  if (eventKey === "finish") void finish();
 });

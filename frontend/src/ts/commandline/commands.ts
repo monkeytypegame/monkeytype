@@ -197,7 +197,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-search",
       exec: (): void => {
         UpdateConfig.setMode("quote");
-        QuoteSearchPopup.show();
+        void QuoteSearchPopup.show();
       },
       shouldFocusTestUI: false,
     },
@@ -239,7 +239,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-tint",
       exec: (input): void => {
         if (input === undefined) return;
-        UpdateConfig.setCustomLayoutfluid(
+        void UpdateConfig.setCustomLayoutfluid(
           input as MonkeyTypes.CustomLayoutFluidSpaces
         );
       },
@@ -309,8 +309,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       },
       input: true,
       exec: (input): void => {
-        if (!input) input = "";
-        UpdateConfig.setCustomBackground(input);
+        UpdateConfig.setCustomBackground(input ?? "");
       },
     },
     ...CustomBackgroundSizeCommands,
@@ -358,7 +357,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       alias: "support donate",
       icon: "fa-ad",
       exec: (): void => {
-        VideoAdPopup.show();
+        void VideoAdPopup.show();
       },
     },
     {
@@ -367,12 +366,12 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       icon: "fa-cog",
       alias: "import config",
       input: true,
-      exec: (input): void => {
-        if (!input) return;
+      exec: async (input): Promise<void> => {
+        if (input === undefined || input === "") return;
         try {
-          UpdateConfig.apply(JSON.parse(input));
+          await UpdateConfig.apply(JSON.parse(input));
           UpdateConfig.saveFullConfigToLocalStorage();
-          Settings.update();
+          void Settings.update();
           Notifications.add("Done", 1);
         } catch (e) {
           Notifications.add(

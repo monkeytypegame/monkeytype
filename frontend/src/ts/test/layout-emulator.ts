@@ -22,8 +22,8 @@ export async function getCharFromEvent(
       isCapitalized = !event.shiftKey;
     }
 
-    const altVersion = keyVariants[(isCapitalized ? 1 : 0) + altGrIndex];
-    const nonAltVersion = keyVariants[isCapitalized ? 1 : 0];
+    const altVersion = keyVariants[(isCapitalized ? 1 : 0) + altGrIndex] ?? "";
+    const nonAltVersion = keyVariants[isCapitalized ? 1 : 0] ?? "";
     const defaultVersion = keyVariants[0];
 
     return altVersion || nonAltVersion || defaultVersion;

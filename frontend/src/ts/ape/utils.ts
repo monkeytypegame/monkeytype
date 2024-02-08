@@ -3,7 +3,7 @@ type ShouldRetryCallback<ResponseDataType> = (
   response?: Ape.HttpClientResponse<ResponseDataType>
 ) => boolean;
 
-interface RetryOptions<ResponseDataType = any> {
+interface RetryOptions<ResponseDataType = unknown> {
   shouldRetry?: ShouldRetryCallback<ResponseDataType>;
   retryAttempts?: number;
   retryDelayMs?: number;

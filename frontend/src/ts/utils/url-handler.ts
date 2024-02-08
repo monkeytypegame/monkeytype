@@ -39,7 +39,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
     if (!snapshot) return;
 
     const { discordId, discordAvatar } = response.data;
-    if (discordId) {
+    if (discordId !== undefined) {
       snapshot.discordId = discordId;
     } else {
       snapshot.discordAvatar = discordAvatar;
@@ -47,7 +47,7 @@ export async function linkDiscord(hashOverride: string): Promise<void> {
 
     DB.setSnapshot(snapshot);
 
-    AccountButton.update(undefined, discordId, discordAvatar);
+    void AccountButton.update(undefined, discordId, discordAvatar);
 
     Settings.updateDiscordSection();
   }
@@ -120,12 +120,12 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   const applied: { [key: string]: string } = {};
 
-  if (de[0]) {
+  if (de[0] !== null) {
     UpdateConfig.setMode(de[0], true);
     applied["mode"] = de[0];
   }
 
-  if (de[1]) {
+  if (de[1] !== null) {
     if (Config.mode === "time") {
       UpdateConfig.setTimeConfig(parseInt(de[1], 10), true);
     } else if (Config.mode === "words") {
@@ -138,7 +138,7 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     applied["mode2"] = de[1];
   }
 
-  if (de[2]) {
+  if (de[2] !== null) {
     const customTextSettings = de[2];
     CustomText.setPopupTextareaState(
       customTextSettings["text"].join(customTextSettings["delimiter"])
@@ -156,27 +156,27 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
     applied["custom text settings"] = "";
   }
 
-  if (de[3]) {
+  if (de[3] !== null) {
     UpdateConfig.setPunctuation(de[3], true);
     applied["punctuation"] = de[3] ? "on" : "off";
   }
 
-  if (de[4]) {
+  if (de[4] !== null) {
     UpdateConfig.setNumbers(de[4], true);
     applied["numbers"] = de[4] ? "on" : "off";
   }
 
-  if (de[5]) {
+  if (de[5] !== null) {
     UpdateConfig.setLanguage(de[5], true);
     applied["language"] = de[5];
   }
 
-  if (de[6]) {
+  if (de[6] !== null) {
     UpdateConfig.setDifficulty(de[6], true);
     applied["difficulty"] = de[6];
   }
 
-  if (de[7]) {
+  if (de[7] !== null) {
     UpdateConfig.setFunbox(de[7], true);
     applied["funbox"] = de[7];
   }
@@ -187,7 +187,9 @@ export function loadTestSettingsFromUrl(getOverride?: string): void {
 
   Object.keys(applied).forEach((setKey) => {
     const set = applied[setKey];
-    appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
+    if (set !== undefined) {
+      appliedString += `${setKey}${set ? ": " + set : ""}<br>`;
+    }
   });
 
   if (appliedString !== "") {

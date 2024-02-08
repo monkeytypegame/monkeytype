@@ -117,7 +117,7 @@ $(".section.customBackgroundFilter .opacity input").on("input", () => {
 });
 
 $(".section.customBackgroundFilter input").on("input", () => {
-  debouncedSave();
+  void debouncedSave();
 });
 
 const debouncedSave = debounce(2000, async () => {
@@ -128,7 +128,7 @@ const debouncedSave = debounce(2000, async () => {
 });
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
-  if (eventKey === "customBackgroundFilter" && eventValue) {
+  if (eventKey === "customBackgroundFilter" && (eventValue as boolean)) {
     loadConfig(eventValue as MonkeyTypes.CustomBackgroundFilter);
     apply();
   }

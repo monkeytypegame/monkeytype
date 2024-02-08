@@ -1,5 +1,10 @@
 // this file should be concatenated at the top of the legacy ts files
 
+import "jquery";
+import "jquery-color";
+import "jquery.easing";
+import "select2";
+
 import "../styles/index.scss";
 import "./firebase";
 

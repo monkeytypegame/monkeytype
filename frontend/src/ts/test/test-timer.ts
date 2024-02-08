@@ -281,7 +281,7 @@ export async function start(): Promise<void> {
         return;
       }
 
-      timerStep();
+      void timerStep();
 
       expected += interval;
       loop();

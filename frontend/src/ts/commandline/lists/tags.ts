@@ -30,7 +30,11 @@ const commands: MonkeyTypes.Command[] = [
 function update(): void {
   const snapshot = DB.getSnapshot();
   subgroup.list = [];
-  if (!snapshot || !snapshot.tags || snapshot.tags.length === 0) {
+  if (
+    snapshot === undefined ||
+    snapshot.tags === undefined ||
+    snapshot.tags.length === 0
+  ) {
     subgroup.list.push({
       id: "createTag",
       display: "Create tag",
@@ -57,7 +61,7 @@ function update(): void {
       });
 
       DB.setSnapshot(snapshot);
-      ModesNotice.update();
+      void ModesNotice.update();
       TagController.saveActiveToLocalStorage();
     },
   });
@@ -76,13 +80,13 @@ function update(): void {
       noIcon: true,
       display: dis,
       sticky: true,
-      exec: (): void => {
+      exec: async (): Promise<void> => {
         TagController.toggle(tag._id);
-        ModesNotice.update();
+        void ModesNotice.update();
 
         if (Config.paceCaret === "average") {
-          PaceCaret.init();
-          ModesNotice.update();
+          await PaceCaret.init();
+          void ModesNotice.update();
         }
 
         let txt = tag.display;

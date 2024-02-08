@@ -125,9 +125,11 @@ declare namespace MonkeyTypes {
     | "10"
     | "11"
     | "12"
-    | "13";
+    | "13"
+    | "14"
+    | "15";
 
-  type PlaySoundOnError = "off" | "1" | "2" | "3";
+  type PlaySoundOnError = "off" | "1" | "2" | "3" | "4";
 
   type SoundVolume = "0.1" | "0.5" | "1.0";
 
@@ -322,18 +324,6 @@ declare namespace MonkeyTypes {
     completedTests: number;
   }
 
-  interface ApeKey {
-    name: string;
-    enabled: boolean;
-    createdOn: number;
-    modifiedOn: number;
-    lastUsedOn: number;
-  }
-
-  interface ApeKeys {
-    [key: string]: ApeKey;
-  }
-
   interface Config {
     theme: string;
     themeLight: string;
@@ -424,17 +414,7 @@ declare namespace MonkeyTypes {
     tribeCarets: TribeCarets;
   }
 
-  type ConfigValues =
-    | string
-    | number
-    | boolean
-    | string[]
-    | MonkeyTypes.QuoteLength[]
-    | MonkeyTypes.HighlightMode
-    | SharedTypes.ResultFilters
-    | MonkeyTypes.CustomBackgroundFilter
-    | null
-    | undefined;
+  type ConfigValue = Config[keyof Config];
 
   interface ConfigChanges extends Partial<MonkeyTypes.Config> {
     tags?: string[];
@@ -661,14 +641,6 @@ declare namespace MonkeyTypes {
     group: number;
     language: string;
     textSplit?: string[];
-  }
-
-  interface PSA {
-    sticky?: boolean;
-    message: string;
-    _id: string;
-    level?: number;
-    date?: number;
   }
 
   interface ThemeColors {

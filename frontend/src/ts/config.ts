@@ -31,18 +31,18 @@ let configToSend = {} as MonkeyTypes.Config;
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
-    DB.saveConfig(configToSend).then(() => {
+    void DB.saveConfig(configToSend).then(() => {
       AccountButton.loading(false);
     });
   }
   configToSend = {} as MonkeyTypes.Config;
 });
 
-async function saveToLocalStorage(
+function saveToLocalStorage(
   key: keyof MonkeyTypes.Config,
   nosave = false,
   noDbCheck = false
-): Promise<void> {
+): void {
   if (nosave) return;
 
   const localToSave = config;
@@ -51,21 +51,19 @@ async function saveToLocalStorage(
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
     (configToSend[key] as typeof config[typeof key]) = config[key];
-    await saveToDatabase();
+    void saveToDatabase();
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
 
-export async function saveFullConfigToLocalStorage(
-  noDbCheck = false
-): Promise<void> {
+export function saveFullConfigToLocalStorage(noDbCheck = false): void {
   console.log("saving full config to localStorage");
   const save = config;
   const stringified = JSON.stringify(save);
   window.localStorage.setItem("config", stringified);
   if (!noDbCheck) {
     AccountButton.loading(true);
-    await DB.saveConfig(save);
+    void DB.saveConfig(save);
     AccountButton.loading(false);
   }
   ConfigEvent.dispatch("saveToLocalStorage", stringified);
@@ -162,7 +160,9 @@ export function setPlaySoundOnError(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("play sound on error", val, [["off", "1", "2", "3"]])
+    !isConfigValueValid("play sound on error", val, [
+      ["off", "1", "2", "3", "4"],
+    ])
   ) {
     return false;
   }
@@ -195,6 +195,8 @@ export function setPlaySoundOnClick(
         "11",
         "12",
         "13",
+        "14",
+        "15",
       ],
     ])
   ) {
@@ -1598,7 +1600,7 @@ export function setLanguage(
   if (!TribeState.canChangeConfig(tribeOverride)) return false;
 
   config.language = language;
-  AnalyticsController.log("changedLanguage", { language });
+  void AnalyticsController.log("changedLanguage", { language });
   saveToLocalStorage("language", nosave);
   if (!tribeOverride) TribeConfigSyncEvent.dispatch();
   ConfigEvent.dispatch("language", config.language);
@@ -1948,10 +1950,40 @@ export function setTribeCarets(
   return true;
 }
 
-export function apply(
+export function setTribeDelta(
+  value: MonkeyTypes.TribeDelta,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("tribe delta", value, [["off", "text", "bar"]])) {
+    return false;
+  }
+
+  config.tribeDelta = value;
+  saveToLocalStorage("tribeDelta", nosave);
+  ConfigEvent.dispatch("tribeDelta", config.tribeDelta, nosave);
+
+  return true;
+}
+
+export function setTribeCarets(
+  value: MonkeyTypes.TribeCarets,
+  nosave?: boolean
+): boolean {
+  if (!isConfigValueValid("tribe carets", value, [["off", "noNames", "on"]])) {
+    return false;
+  }
+
+  config.tribeCarets = value;
+  saveToLocalStorage("tribeCarets", nosave);
+  ConfigEvent.dispatch("tribeCarets", config.tribeCarets, nosave);
+
+  return true;
+}
+
+export async function apply(
   configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
-): void {
-  if (!configToApply) return;
+): Promise<void> {
+  if (configToApply === undefined) return;
 
   configToApply = replaceLegacyValues(configToApply);
 
@@ -1974,7 +2006,7 @@ export function apply(
       configObj.autoSwitchTheme,
       true
     );
-    setCustomLayoutfluid(configObj.customLayoutfluid, true);
+    await setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
@@ -2067,13 +2099,13 @@ export function apply(
   }
 }
 
-export function reset(): void {
+export async function reset(): Promise<void> {
   ConfigEvent.dispatch("fullConfigChange");
-  apply(DefaultConfig);
+  await apply(DefaultConfig);
   saveFullConfigToLocalStorage();
 }
 
-export function loadFromLocalStorage(): void {
+export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
   const newConfigString = window.localStorage.getItem("config");
   let newConfig: MonkeyTypes.Config;
@@ -2087,11 +2119,11 @@ export function loadFromLocalStorage(): void {
     } catch (e) {
       newConfig = {} as MonkeyTypes.Config;
     }
-    apply(newConfig);
+    await apply(newConfig);
     localStorageConfig = newConfig;
     saveFullConfigToLocalStorage(true);
   } else {
-    reset();
+    await reset();
   }
   // TestLogic.restart(false, true);
   loadDone();

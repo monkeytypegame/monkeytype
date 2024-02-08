@@ -38,7 +38,7 @@ let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
   const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  if (!filteredResults || filteredResults.length === 0) return;
+  if (filteredResults === undefined || filteredResults.length === 0) return;
   let newVisibleLines;
   if (lineIndex && lineIndex > visibleTableLines) {
     newVisibleLines = Math.ceil(lineIndex / 10) * 10;
@@ -145,8 +145,8 @@ function loadMoreLines(lineIndex?: number): void {
       consistency = result.consistency.toFixed(2) + "%";
     }
 
-    let pb = result.isPb?.toString();
-    if (pb) {
+    let pb = "";
+    if (result.isPb === true) {
       pb = '<i class="fas fa-fw fa-crown"></i>';
     } else {
       pb = "";
@@ -180,11 +180,11 @@ function loadMoreLines(lineIndex?: number): void {
 }
 
 async function updateChartColors(): Promise<void> {
-  ChartController.accountHistory.updateColors();
+  await ChartController.accountHistory.updateColors();
   await Misc.sleep(0);
-  ChartController.accountActivity.updateColors();
+  await ChartController.accountActivity.updateColors();
   await Misc.sleep(0);
-  ChartController.accountHistogram.updateColors();
+  await ChartController.accountHistogram.updateColors();
   await Misc.sleep(0);
 }
 
@@ -218,9 +218,9 @@ async function fillContent(): Promise<void> {
   if (!snapshot) return;
 
   PbTables.update(snapshot.personalBests);
-  Profile.update("account", snapshot);
+  void Profile.update("account", snapshot);
 
-  ResultBatches.update();
+  void ResultBatches.update();
 
   chartData = [];
   accChartData = [];
@@ -502,7 +502,8 @@ async function fillContent(): Promise<void> {
         console.error(e);
         ResultFilters.reset();
         ResultFilters.updateActive();
-        update();
+        void update();
+        return;
       }
       //filters done
       //=======================================
@@ -835,7 +836,7 @@ async function fillContent(): Promise<void> {
     ChartController.accountHistory.getScale("wpmAvgHundred").min = 0;
   }
 
-  if (!chartData || chartData.length === 0) {
+  if (chartData === undefined || chartData.length === 0) {
     $(".pageAccount .group.noDataError").removeClass("hidden");
     $(".pageAccount .group.chart").addClass("hidden");
     $(".pageAccount .group.dailyActivityChart").addClass("hidden");
@@ -1036,7 +1037,7 @@ async function fillContent(): Promise<void> {
   ChartController.accountHistogram.update();
   LoadingPage.updateBar(100, true);
   Focus.set(false);
-  Misc.swapElements(
+  void Misc.swapElements(
     $(".pageAccount .preloader"),
     $(".pageAccount .content"),
     250,
@@ -1183,7 +1184,7 @@ $(".pageAccount .loadMoreButton").on("click", () => {
 $(".pageAccount #accountHistoryChart").on("click", () => {
   const index: number = ChartController.accountHistoryActiveIndex;
   loadMoreLines(index);
-  if (!window) return;
+  if (window === undefined) return;
   const windowHeight = $(window).height() ?? 0;
   const offset = $(`#result-${index}`).offset()?.top ?? 0;
   const scrollTo = offset - windowHeight / 2;
@@ -1266,7 +1267,7 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
   "button",
   () => {
     setTimeout(() => {
-      update();
+      void update();
     }, 0);
   }
 );
@@ -1274,14 +1275,14 @@ $(".pageAccount .group.topFilters, .pageAccount .filterButtons").on(
 $(".pageAccount .group.presetFilterButtons").on(
   "click",
   ".filterBtns .filterPresets .select-filter-preset",
-  (e) => {
-    ResultFilters.setFilterPreset($(e.target).data("id"));
-    update();
+  async (e) => {
+    await ResultFilters.setFilterPreset($(e.target).data("id"));
+    void update();
   }
 );
 
 $(".pageAccount .content .group.aboveHistory .exportCSV").on("click", () => {
-  Misc.downloadResultsCSV(filteredResults);
+  void Misc.downloadResultsCSV(filteredResults);
 });
 
 $(".pageAccount .profile").on("click", ".details .copyLink", () => {
@@ -1313,7 +1314,7 @@ $(".pageAccount button.loadMoreResults").on("click", async () => {
 
 ConfigEvent.subscribe((eventKey) => {
   if (ActivePage.get() === "account" && eventKey === "typingSpeedUnit") {
-    update();
+    void update();
   }
 });
 
@@ -1342,7 +1343,7 @@ export const page = new Page(
 
     await update();
     await Misc.sleep(0);
-    updateChartColors();
+    void updateChartColors();
     $(".pageAccount .content p.accountVerificatinNotice").remove();
     if (Auth?.currentUser?.emailVerified === false) {
       $(".pageAccount .content").prepend(

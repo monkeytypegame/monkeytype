@@ -20,7 +20,7 @@ export function updateText(text: string): void {
 
 export async function showBar(): Promise<void> {
   return new Promise((resolve) => {
-    Misc.swapElements(
+    void Misc.swapElements(
       $(".pageLoading .preloader .icon"),
       $(".pageLoading .preloader .barWrapper"),
       125,
@@ -28,7 +28,7 @@ export async function showBar(): Promise<void> {
         resolve();
       }
     );
-    Misc.swapElements(
+    void Misc.swapElements(
       $(".pageAccount .preloader .icon"),
       $(".pageAccount .preloader .barWrapper"),
       125,

@@ -158,7 +158,7 @@ declare namespace SharedTypes {
     _id: string;
     wpm: number;
     rawWpm: number;
-    charStats: number[];
+    charStats: [number, number, number, number];
     acc: number;
     mode: M;
     mode2: Mode2<M>;
@@ -219,6 +219,7 @@ declare namespace SharedTypes {
       | "incompleteTests"
       | "customText"
       | "quoteLength"
+      | "isPb"
     > & {
       correctChars?: number; // --------------
       incorrectChars?: number; // legacy results
@@ -239,6 +240,7 @@ declare namespace SharedTypes {
       tags?: string[];
       customText?: CustomText;
       quoteLength?: number;
+      isPb?: boolean;
     }
   >;
 
@@ -315,5 +317,32 @@ declare namespace SharedTypes {
     funbox: {
       none?: boolean;
     } & Record<string, boolean>;
+  }
+
+  interface PSA {
+    _id: string;
+    message: string;
+    sticky?: boolean;
+    level?: number;
+    date?: number;
+  }
+
+  interface SpeedHistogram {
+    [key: string]: number;
+  }
+
+  interface PublicTypingStats {
+    type: string;
+    timeTyping: number;
+    testsCompleted: number;
+    testsStarted: number;
+  }
+
+  interface ApeKey {
+    name: string;
+    enabled: boolean;
+    createdOn: number;
+    modifiedOn: number;
+    lastUsedOn: number;
   }
 }

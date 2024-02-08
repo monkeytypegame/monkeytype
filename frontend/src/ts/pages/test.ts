@@ -21,8 +21,8 @@ export const page = new Page(
     TestLogic.restart({
       tribeOverride: options.tribeOverride ?? false,
     });
-    Funbox.clear();
-    ModesNotice.update();
+    void Funbox.clear();
+    void ModesNotice.update();
     $("#wordsInput").trigger("focusout");
   },
   async () => {
@@ -41,9 +41,9 @@ export const page = new Page(
       noAnim: true,
       tribeOverride: options.tribeOverride ?? false,
     });
-    TestConfig.instantUpdate();
-    Funbox.activate();
-    Keymap.refresh();
+    void TestConfig.instantUpdate();
+    void Funbox.activate();
+    void Keymap.refresh();
   },
   async () => {
     if (CookiePopup.isVisible()) {

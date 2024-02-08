@@ -106,7 +106,7 @@ export async function getResults(
     limit,
     offset,
   });
-  Logger.logToDb(
+  void Logger.logToDb(
     "user_results_requested",
     {
       limit,
@@ -133,7 +133,7 @@ export async function deleteAll(
   const { uid } = req.ctx.decodedToken;
 
   await ResultDAL.deleteAll(uid);
-  Logger.logToDb("user_results_deleted", "", uid);
+  void Logger.logToDb("user_results_deleted", "", uid);
   return new MonkeyResponse("All results deleted");
 }
 
@@ -149,10 +149,10 @@ export async function updateTags(
   if (!result.difficulty) {
     result.difficulty = "normal";
   }
-  if (!result.language) {
+  if (!(result.language ?? "")) {
     result.language = "english";
   }
-  if (!result.funbox) {
+  if (!(result.funbox ?? "")) {
     result.funbox = "none";
   }
   if (!result.lazyMode) {
@@ -214,7 +214,7 @@ export async function addResult(
   }
 
   const resulthash = completedEvent.hash;
-  if (!resulthash) {
+  if (resulthash === undefined || resulthash === "") {
     throw new MonkeyError(400, "Missing result hash");
   }
   delete completedEvent.hash;
@@ -222,7 +222,7 @@ export async function addResult(
   if (req.ctx.configuration.results.objectHashCheckEnabled) {
     const serverhash = objectHash(completedEvent);
     if (serverhash !== resulthash) {
-      Logger.logToDb(
+      void Logger.logToDb(
         "incorrect_result_hash",
         {
           serverhash,
@@ -271,7 +271,7 @@ export async function addResult(
     if (
       !validateResult(
         completedEvent,
-        (req.headers["x-client-version"] ||
+        ((req.headers["x-client-version"] as string) ||
           req.headers["client-version"]) as string,
         JSON.stringify(new UAParser(req.headers["user-agent"]).getResult()),
         user.lbOptOut === true
@@ -311,22 +311,22 @@ export async function addResult(
   // }
 
   //convert result test duration to miliseconds
-  const testDurationMilis = completedEvent.testDuration * 1000;
   //get latest result ordered by timestamp
-  let lastResultTimestamp;
+  let lastResultTimestamp: null | number = null;
   try {
     lastResultTimestamp = (await ResultDAL.getLastResult(uid)).timestamp;
   } catch (e) {
-    lastResultTimestamp = null;
+    //
   }
 
   completedEvent.timestamp = Math.floor(Date.now() / 1000) * 1000;
 
   //check if now is earlier than last result plus duration (-1 second as a buffer)
-  const earliestPossible = lastResultTimestamp + testDurationMilis;
+  const testDurationMilis = completedEvent.testDuration * 1000;
+  const earliestPossible = (lastResultTimestamp ?? 0) + testDurationMilis;
   const nowNoMilis = Math.floor(Date.now() / 1000) * 1000;
   if (lastResultTimestamp && nowNoMilis < earliestPossible - 1000) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "invalid_result_spacing",
       {
         lastTimestamp: lastResultTimestamp,
@@ -372,7 +372,11 @@ export async function addResult(
               subject: "Banned",
               body: "Your account has been automatically banned for triggering the anticheat system. If you believe this is a mistake, please contact support.",
             });
-            UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+            await UserDAL.addToInbox(
+              uid,
+              [mail],
+              req.ctx.configuration.users.inbox
+            );
             user.banned = true;
           }
         }
@@ -392,7 +396,7 @@ export async function addResult(
   if (req.ctx.configuration.users.lastHashesCheck.enabled) {
     let lastHashes = user.lastReultHashes ?? [];
     if (lastHashes.includes(resulthash)) {
-      Logger.logToDb(
+      void Logger.logToDb(
         "duplicate_result",
         {
           lastHashes,
@@ -441,18 +445,20 @@ export async function addResult(
   }
 
   if (completedEvent.mode === "time" && completedEvent.mode2 === "60") {
-    incrementBananas(uid, completedEvent.wpm);
-    if (isPb && user.discordId) {
-      GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
+    void incrementBananas(uid, completedEvent.wpm);
+    if (isPb && user.discordId !== undefined && user.discordId !== "") {
+      void GeorgeQueue.updateDiscordRole(user.discordId, completedEvent.wpm);
     }
   }
 
   if (
-    completedEvent.challenge &&
+    completedEvent.challenge !== null &&
+    completedEvent.challenge !== undefined &&
     AutoRoleList.includes(completedEvent.challenge) &&
-    user.discordId
+    user.discordId !== undefined &&
+    user.discordId !== ""
   ) {
-    GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
+    void GeorgeQueue.awardChallenge(user.discordId, completedEvent.challenge);
   } else {
     delete completedEvent.challenge;
   }
@@ -460,12 +466,15 @@ export async function addResult(
   const afk = completedEvent.afkDuration ?? 0;
   const totalDurationTypedSeconds =
     completedEvent.testDuration + completedEvent.incompleteTestSeconds - afk;
-  updateTypingStats(
+  void updateTypingStats(
     uid,
     completedEvent.restartCount,
     totalDurationTypedSeconds
   );
-  PublicDAL.updateStats(completedEvent.restartCount, totalDurationTypedSeconds);
+  void PublicDAL.updateStats(
+    completedEvent.restartCount,
+    totalDurationTypedSeconds
+  );
 
   const dailyLeaderboardsConfig = req.ctx.configuration.dailyLeaderboards;
   const dailyLeaderboard = getDailyLeaderboard(
@@ -535,7 +544,7 @@ export async function addResult(
         },
       ],
     });
-    UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
+    await UserDAL.addToInbox(uid, [mail], req.ctx.configuration.users.inbox);
   }
 
   const xpGained = await calculateXp(
@@ -597,7 +606,7 @@ export async function addResult(
   await UserDAL.incrementXp(uid, xpGained.xp);
 
   if (isPb) {
-    Logger.logToDb(
+    void Logger.logToDb(
       "user_new_pb",
       `${completedEvent.mode + " " + completedEvent.mode2} ${
         completedEvent.wpm
@@ -638,7 +647,7 @@ interface XpResult {
 }
 
 async function calculateXp(
-  result,
+  result: SharedTypes.CompletedEvent,
   xpConfiguration: SharedTypes.Configuration["users"]["xp"],
   uid: string,
   currentTotalXp: number,
@@ -738,7 +747,7 @@ async function calculateXp(
   }
 
   let incompleteXp = 0;
-  if (incompleteTests && incompleteTests.length > 0) {
+  if (incompleteTests !== undefined && incompleteTests.length > 0) {
     incompleteTests.forEach((it: { acc: number; seconds: number }) => {
       let modifier = (it.acc - 50) / 50;
       if (modifier < 0) modifier = 0;

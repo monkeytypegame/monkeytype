@@ -13,7 +13,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         return Config.customBackgroundFilter[0].toString();
       },
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined || input === "") return;
         const newFilters = Config.customBackgroundFilter;
         newFilters[0] = parseFloat(input);
         UpdateConfig.setCustomBackgroundFilter(newFilters);
@@ -28,7 +28,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         return Config.customBackgroundFilter[1].toString();
       },
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined || input === "") return;
         const newFilters = Config.customBackgroundFilter;
         newFilters[1] = parseFloat(input);
         UpdateConfig.setCustomBackgroundFilter(newFilters);
@@ -43,7 +43,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         return Config.customBackgroundFilter[2].toString();
       },
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined || input === "") return;
         const newFilters = Config.customBackgroundFilter;
         newFilters[2] = parseFloat(input);
         UpdateConfig.setCustomBackgroundFilter(newFilters);
@@ -58,7 +58,7 @@ const subgroup: MonkeyTypes.CommandsSubgroup = {
         return Config.customBackgroundFilter[3].toString();
       },
       exec: (input): void => {
-        if (!input) return;
+        if (input === undefined || input === "") return;
         const newFilters = Config.customBackgroundFilter;
         newFilters[3] = parseFloat(input);
         UpdateConfig.setCustomBackgroundFilter(newFilters);

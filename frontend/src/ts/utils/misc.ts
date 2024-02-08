@@ -832,7 +832,7 @@ export function findGetParameter(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
@@ -855,7 +855,7 @@ export function checkIfGetParameterExists(
   let tmp = [];
 
   let search = location.search;
-  if (getOverride) {
+  if (getOverride !== undefined && getOverride !== "") {
     search = getOverride;
   }
 
@@ -909,25 +909,25 @@ export function toggleFullscreen(): void {
     !document.webkitFullscreenElement &&
     !document.msFullscreenElement
   ) {
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
+    if (elem.requestFullscreen !== undefined) {
+      void elem.requestFullscreen();
     } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen();
+      void elem.msRequestFullscreen();
     } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
+      void elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
       // @ts-ignore
-      elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
+    if (document.exitFullscreen !== undefined) {
+      void document.exitFullscreen();
     } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
+      void document.msExitFullscreen();
     } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
+      void document.mozCancelFullScreen();
     } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
+      void document.webkitExitFullscreen();
     }
   }
 }
@@ -1154,8 +1154,8 @@ export async function swapElements(
                 opacity: 1,
               },
               totalDuration / 2,
-              () => {
-                callback();
+              async () => {
+                await callback();
               }
             );
         }
@@ -1333,7 +1333,7 @@ export function createErrorMessage(error: unknown, message: string): string {
 
   const objectWithMessage = error as { message?: string };
 
-  if (objectWithMessage?.message) {
+  if (objectWithMessage?.message !== undefined) {
     return `${message}: ${objectWithMessage.message}`;
   }
 
@@ -1370,10 +1370,14 @@ export async function getDiscordAvatarUrl(
   discordAvatar?: string,
   discordAvatarSize = 32
 ): Promise<string | null> {
-  if (!discordId || !discordAvatar) {
+  if (
+    discordId === undefined ||
+    discordId === "" ||
+    discordAvatar === undefined ||
+    discordAvatar === ""
+  ) {
     return null;
   }
-
   // An invalid request to this URL will return a 404.
   try {
     const avatarUrl = `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}.png?size=${discordAvatarSize}`;
@@ -1489,7 +1493,7 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
 export function htmlToText(html: string): string {
   const el = document.createElement("div");
   el.innerHTML = html;
-  return el.textContent || el.innerText || "";
+  return (el.textContent as string) || el.innerText || "";
 }
 
 export function camelCaseToWords(str: string): string {
@@ -1684,7 +1688,7 @@ export function convertToMorse(word: string): string {
   const deAccentedWord = replaceSpecialChars(word);
   for (let i = 0; i < deAccentedWord.length; i++) {
     const letter = morseCode[deAccentedWord.toLowerCase()[i] as string];
-    morseWord += letter ? letter + "/" : "";
+    morseWord += letter !== undefined ? letter + "/" : "";
   }
   return morseWord;
 }
@@ -1709,7 +1713,7 @@ export function reloadAfter(seconds: number): void {
 export function updateTitle(title?: string): void {
   const local = isDevEnvironment() ? "localhost - " : "";
 
-  if (!title) {
+  if (title === undefined || title === "") {
     document.title =
       local + "Monkeytype | A minimalistic, customizable typing test";
   } else {
@@ -1744,7 +1748,7 @@ export function getNumberWithMagnitude(num: number): {
     unitIndex++;
   }
 
-  const unit = units[unitIndex] ? (units[unitIndex] as string) : "unknown";
+  const unit = units[unitIndex] ?? "unknown";
 
   return {
     rounded: Math.round(roundedNum),

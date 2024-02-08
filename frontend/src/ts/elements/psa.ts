@@ -18,7 +18,7 @@ function setMemory(id: string): void {
   window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
 }
 
-async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
+async function getLatest(): Promise<SharedTypes.PSA[] | null> {
   const response = await Ape.psas.get();
 
   if (response.status === 500) {
@@ -54,7 +54,7 @@ async function getLatest(): Promise<MonkeyTypes.PSA[] | null> {
   } else if (response.status !== 200) {
     return null;
   }
-  return response.data as MonkeyTypes.PSA[];
+  return response.data;
 }
 
 export async function show(): Promise<void> {

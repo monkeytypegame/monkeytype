@@ -44,9 +44,9 @@ function init(): void {
       return;
     }
     if (choice === "eg") {
-      EG.refreshVisible();
+      void EG.refreshVisible();
     } else {
-      PW.refreshVisible();
+      void PW.refreshVisible();
     }
   }, 60000);
 
@@ -176,7 +176,7 @@ export async function checkCookieblocker(): Promise<void> {
       }
       //@ts-ignore
       window.__tcfapi("getTCData", 2, (tcData, success) => {
-        if (success) {
+        if (success as boolean) {
           if (tcData.eventStatus === "cmpuishown") {
             cookieBlocker = true;
           } else {
@@ -247,7 +247,7 @@ export async function renderResult(): Promise<void> {
   if (choice === "eg") {
     EG.renderResult(widerThanBreakpoint);
   } else {
-    PW.renderResult();
+    void PW.renderResult();
   }
 }
 

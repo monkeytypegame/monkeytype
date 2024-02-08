@@ -13,16 +13,16 @@ type SettingsMemory<T> = {
   [key: string]: ValueAndSetFunction<T>;
 };
 
-let settingsMemory: SettingsMemory<MonkeyTypes.ConfigValues> = {};
+let settingsMemory: SettingsMemory<MonkeyTypes.ConfigValue> = {};
 
-export function save<T extends MonkeyTypes.ConfigValues>(
+export function save<T extends MonkeyTypes.ConfigValue>(
   settingName: string,
   value: T,
   setFunction: SetFunction<T>
 ): void {
   settingsMemory[settingName] ??= {
     value,
-    setFunction: setFunction as SetFunction<MonkeyTypes.ConfigValues>,
+    setFunction: setFunction as SetFunction<MonkeyTypes.ConfigValue>,
   };
 }
 
@@ -30,7 +30,7 @@ export function load(tribeOverride = false): void {
   Object.keys(settingsMemory).forEach((setting) => {
     const memory = settingsMemory[
       setting
-    ] as ValueAndSetFunction<MonkeyTypes.ConfigValues>;
+    ] as ValueAndSetFunction<MonkeyTypes.ConfigValue>;
     memory.setFunction(memory.value, true, tribeOverride);
   });
   settingsMemory = {};

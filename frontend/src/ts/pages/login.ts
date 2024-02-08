@@ -263,16 +263,20 @@ $(".page.pageLogin .register.side .usernameInput").on("input", () => {
       return nameIndicator.hide();
     } else {
       nameIndicator.show("checking");
-      checkNameDebounced();
+      void checkNameDebounced();
     }
   }, 1);
 });
 
 $(".page.pageLogin .register.side .emailInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .emailInput").val() &&
-    !$(".page.pageLogin .register.side .verifyEmailInput").val()
-  ) {
+  const emailInputValue = $(
+    ".page.pageLogin .register.side .emailInput"
+  ).val() as string;
+  const verifyInputValue = $(
+    ".page.pageLogin .register.side .verifyEmailInput"
+  ).val() as string;
+
+  if (!emailInputValue && !verifyInputValue) {
     emailIndicator.hide();
     verifyEmailIndicator.hide();
     return;
@@ -282,10 +286,14 @@ $(".page.pageLogin .register.side .emailInput").on("input", () => {
 });
 
 $(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .emailInput").val() &&
-    !$(".page.pageLogin .register.side .verifyEmailInput").val()
-  ) {
+  const emailInputValue = $(
+    ".page.pageLogin .register.side .emailInput"
+  ).val() as string;
+  const verifyInputValue = $(
+    ".page.pageLogin .register.side .verifyEmailInput"
+  ).val() as string;
+
+  if (!emailInputValue && !verifyInputValue) {
     emailIndicator.hide();
     verifyEmailIndicator.hide();
     return;
@@ -294,10 +302,14 @@ $(".page.pageLogin .register.side .verifyEmailInput").on("input", () => {
 });
 
 $(".page.pageLogin .register.side .passwordInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .passwordInput").val() &&
-    !$(".page.pageLogin .register.side .verifyPasswordInput").val()
-  ) {
+  const passwordInputValue = $(
+    ".page.pageLogin .register.side .passwordInput"
+  ).val() as string;
+  const verifyPasswordInputValue = $(
+    ".page.pageLogin .register.side .verifyPasswordInput"
+  ).val() as string;
+
+  if (!passwordInputValue && !verifyPasswordInputValue) {
     passwordIndicator.hide();
     verifyPasswordIndicator.hide();
     return;
@@ -307,10 +319,14 @@ $(".page.pageLogin .register.side .passwordInput").on("input", () => {
 });
 
 $(".page.pageLogin .register.side .verifyPasswordInput").on("input", () => {
-  if (
-    !$(".page.pageLogin .register.side .passwordInput").val() &&
-    !$(".page.pageLogin .register.side .verifyPasswordInput").val()
-  ) {
+  const passwordInputValue = $(
+    ".page.pageLogin .register.side .passwordInput"
+  ).val() as string;
+  const verifyPasswordInputValue = $(
+    ".page.pageLogin .register.side .verifyPasswordInput"
+  ).val() as string;
+
+  if (!passwordInputValue && !verifyPasswordInputValue) {
     passwordIndicator.hide();
     verifyPasswordIndicator.hide();
     return;
