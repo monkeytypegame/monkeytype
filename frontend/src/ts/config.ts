@@ -1839,6 +1839,8 @@ export async function apply(
 ): Promise<void> {
   if (configToApply === undefined) return;
 
+  ConfigEvent.dispatch("fullConfigChange");
+
   configToApply = replaceLegacyValues(configToApply);
 
   const configObj = configToApply as MonkeyTypes.Config;
@@ -1948,10 +1950,10 @@ export async function apply(
       config
     );
   }
+  ConfigEvent.dispatch("fullConfigChangeFinished");
 }
 
 export async function reset(): Promise<void> {
-  ConfigEvent.dispatch("fullConfigChange");
   await apply(DefaultConfig);
   saveFullConfigToLocalStorage();
 }

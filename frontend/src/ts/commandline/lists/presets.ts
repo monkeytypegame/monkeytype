@@ -36,9 +36,9 @@ function update(): void {
     subgroup.list.push({
       id: "applyPreset" + preset._id,
       display: dis,
-      exec: (): void => {
+      exec: async (): Promise<void> => {
         Settings.setEventDisabled(true);
-        PresetController.apply(preset._id);
+        await PresetController.apply(preset._id);
         Settings.setEventDisabled(false);
         void Settings.update();
         void ModesNotice.update();
