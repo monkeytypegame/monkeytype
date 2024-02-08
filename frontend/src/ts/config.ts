@@ -143,7 +143,9 @@ export function setPlaySoundOnError(
   nosave?: boolean
 ): boolean {
   if (
-    !isConfigValueValid("play sound on error", val, [["off", "1", "2", "3"]])
+    !isConfigValueValid("play sound on error", val, [
+      ["off", "1", "2", "3", "4"],
+    ])
   ) {
     return false;
   }
@@ -176,6 +178,8 @@ export function setPlaySoundOnClick(
         "11",
         "12",
         "13",
+        "14",
+        "15",
       ],
     ])
   ) {
