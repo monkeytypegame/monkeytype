@@ -49,8 +49,10 @@ declare namespace SharedTypes.Config {
     | "10"
     | "11"
     | "12"
-    | "13";
-  type PlaySoundOnError = "off" | "1" | "2" | "3";
+    | "13"
+    | "14"
+    | "15";
+  type PlaySoundOnError = "off" | "1" | "2" | "3" | "4";
   type SoundVolume = "0.1" | "0.5" | "1.0";
   type PaceCaret = "off" | "average" | "pb" | "last" | "custom" | "daily";
   type PageWidth = "100" | "125" | "150" | "200" | "max";
