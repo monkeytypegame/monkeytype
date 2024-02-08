@@ -1333,14 +1333,15 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageAccount", "main");
-    await ResultFilters.appendButtons();
-    ResultFilters.updateActive();
-    await Misc.sleep(0);
     if (DB.getSnapshot()?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
+      await LoadingPage.showBar();
     }
+    await ResultFilters.appendButtons();
+    ResultFilters.updateActive();
+    await Misc.sleep(0);
 
     void update().then(() => {
       void updateChartColors();
