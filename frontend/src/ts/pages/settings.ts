@@ -1043,13 +1043,10 @@ $(".pageSettings .section.tags").on(
 $(".pageSettings .section.presets").on(
   "click",
   ".presetsList .preset .presetButton",
-  (e) => {
+  async (e) => {
     const target = e.currentTarget;
     const presetid = $(target).parent(".preset").attr("data-id") as string;
-    console.log("Applying Preset");
-    configEventDisabled = true;
-    PresetController.apply(presetid);
-    configEventDisabled = false;
+    await PresetController.apply(presetid);
     void update();
   }
 );
@@ -1217,11 +1214,12 @@ let configEventDisabled = false;
 export function setEventDisabled(value: boolean): void {
   configEventDisabled = value;
 }
+
 ConfigEvent.subscribe((eventKey) => {
   if (eventKey === "fullConfigChange") setEventDisabled(true);
-  if (eventKey === "fullConfigChangeFinished") {
-    setEventDisabled(false);
-  }
+  if (eventKey === "fullConfigChangeFinished") setEventDisabled(false);
+
+  //make sure the page doesnt update a billion times when applying a preset/config at once
   if (configEventDisabled || eventKey === "saveToLocalStorage") return;
   if (ActivePage.get() === "settings" && eventKey !== "theme") {
     void update();
