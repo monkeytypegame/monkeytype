@@ -1342,17 +1342,16 @@ export const page = new Page(
       $(".pageAccount .preloader").removeClass("hidden");
     }
 
-    await update();
-    await Misc.sleep(0);
-    void updateChartColors();
-    $(".pageAccount .content p.accountVerificatinNotice").remove();
-    if (Auth?.currentUser?.emailVerified === false) {
-      $(".pageAccount .content").prepend(
-        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
-      );
-    }
-
-    ResultBatches.showOrHideIfNeeded();
+    void update().then(() => {
+      void updateChartColors();
+      $(".pageAccount .content p.accountVerificatinNotice").remove();
+      if (Auth?.currentUser?.emailVerified === false) {
+        $(".pageAccount .content").prepend(
+          `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
+        );
+      }
+      ResultBatches.showOrHideIfNeeded();
+    });
   },
   async () => {
     //
