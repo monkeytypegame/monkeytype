@@ -621,7 +621,9 @@ export async function addResult(
     );
   }
 
-  const data: AddResultData = {
+  const data: Omit<SharedTypes.PostResultResponse, "insertedId"> & {
+    insertedId: ObjectId;
+  } = {
     isPb,
     tagPbs,
     insertedId: addedResult.insertedId,
