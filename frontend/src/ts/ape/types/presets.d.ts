@@ -2,9 +2,9 @@
 // for some reason when using the dot notaion, the types are not being recognized as used
 declare namespace Ape.Presets {
   type GetPresets = SharedTypes.DBConfigPreset[];
-  type PostConfig = {
+  type PostPreset = {
     presetId: string;
   };
-  type PatchConfig = null;
-  type DeleteConfig = null;
+  type PatchPreset = null;
+  type DeltePreset = null;
 }
