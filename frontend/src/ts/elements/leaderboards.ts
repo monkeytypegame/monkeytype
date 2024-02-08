@@ -21,21 +21,14 @@ let showingYesterday = false;
 type LbKey = "15" | "60";
 
 let currentData: {
-  [key in LbKey]: MonkeyTypes.LeaderboardEntry[];
+  [key in LbKey]: SharedTypes.LeaderboardEntry[];
 } = {
   "15": [],
   "60": [],
 };
 
-interface GetRankResponse {
-  minWpm: number;
-  count: number;
-  rank: number | null;
-  entry: MonkeyTypes.LeaderboardEntry | null;
-}
-
 let currentRank: {
-  [key in LbKey]: GetRankResponse | Record<string, never>;
+  [key in LbKey]: Ape.Leaderboards.GetRank | Record<string, never>;
 } = {
   "15": {},
   "60": {},
@@ -438,7 +431,7 @@ async function update(): Promise<void> {
 
   const timeModes = ["15", "60"];
 
-  const leaderboardRequests = timeModes.map(async (mode2) => {
+  const lbDataRequests = timeModes.map(async (mode2) => {
     return Ape.leaderboards.get({
       language: currentLanguage,
       mode: "time",
@@ -447,8 +440,11 @@ async function update(): Promise<void> {
     });
   });
 
+  const lbRankRequests: Promise<
+    Ape.HttpClientResponse<Ape.Leaderboards.GetRank>
+  >[] = [];
   if (Auth?.currentUser) {
-    leaderboardRequests.push(
+    lbRankRequests.push(
       ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
           language: currentLanguage,
@@ -460,26 +456,28 @@ async function update(): Promise<void> {
     );
   }
 
-  const responses = await Promise.all(leaderboardRequests);
+  const responses = await Promise.all(lbDataRequests);
+  const rankResponses = await Promise.all(lbRankRequests);
 
-  const failedResponse = responses.find((response) => response.status !== 200);
-  if (failedResponse) {
+  const atLeastOneFailed =
+    responses.find((response) => response.status !== 200) ||
+    rankResponses.find((response) => response.status !== 200);
+  if (atLeastOneFailed) {
     hideLoader("15");
     hideLoader("60");
     return Notifications.add(
-      "Failed to load leaderboards: " + failedResponse.message,
+      "Failed to load leaderboards: " + atLeastOneFailed.message,
       -1
     );
   }
 
-  const [lb15Data, lb60Data, lb15Rank, lb60Rank] = responses.map(
-    (response) => response.data
-  );
+  const [lb15Data, lb60Data] = responses.map((response) => response.data);
+  const [lb15Rank, lb60Rank] = rankResponses.map((response) => response.data);
 
-  currentData["15"] = lb15Data;
-  currentData["60"] = lb60Data;
-  currentRank["15"] = lb15Rank;
-  currentRank["60"] = lb60Rank;
+  if (lb15Data !== undefined && lb15Data !== null) currentData["15"] = lb15Data;
+  if (lb60Data !== undefined && lb60Data !== null) currentData["60"] = lb60Data;
+  if (lb15Rank !== undefined && lb15Rank !== null) currentRank["15"] = lb15Rank;
+  if (lb60Rank !== undefined && lb60Rank !== null) currentRank["60"] = lb60Rank;
 
   const leaderboardKeys: LbKey[] = ["15", "60"];
 
@@ -535,9 +533,9 @@ async function requestMore(lb: LbKey, prepend = false): Promise<void> {
     limit: limitVal,
     ...getDailyLeaderboardQuery(),
   });
-  const data: MonkeyTypes.LeaderboardEntry[] = response.data;
+  const data = response.data;
 
-  if (response.status !== 200 || data.length === 0) {
+  if (response.status !== 200 || data === null || data.length === 0) {
     hideLoader(lb);
     requesting[lb] = false;
     return;
@@ -575,7 +573,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
     skip,
     ...getDailyLeaderboardQuery(),
   });
-  const data: MonkeyTypes.LeaderboardEntry[] = response.data;
+  const data = response.data;
 
   if (response.status === 503) {
     Notifications.add(
@@ -588,7 +586,7 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
   clearBody(lb);
   currentData[lb] = [];
   currentAvatars[lb] = [];
-  if (response.status !== 200 || data.length === 0) {
+  if (response.status !== 200 || data === null || data.length === 0) {
     hideLoader(lb);
     return;
   }
@@ -604,11 +602,14 @@ async function requestNew(lb: LbKey, skip: number): Promise<void> {
 }
 
 async function getAvatarUrls(
-  data: MonkeyTypes.LeaderboardEntry[]
+  data: Ape.Leaderboards.GetLeaderboard
 ): Promise<(string | null)[]> {
   return Promise.allSettled(
     data.map(async (entry) =>
-      Misc.getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
+      Misc.getDiscordAvatarUrl(
+        entry.discordId ?? undefined,
+        entry.discordAvatar ?? undefined
+      )
     )
   ).then((promises) => {
     return promises.map((promise) => {
