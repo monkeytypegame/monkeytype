@@ -77,6 +77,8 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
         .trigger("change.select2");
     } else if (this.mode === "button") {
       $(
+        // this cant be an object?
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         `.pageSettings .section.${this.configName} .button[${this.configName}='${this.configValue}']`
       ).addClass("active");
     }

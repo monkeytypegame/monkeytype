@@ -152,7 +152,7 @@ function backspaceToPrevious(): void {
   if (Config.mode === "zen") {
     TimerProgress.update();
 
-    const els: HTMLElement[] = (document.querySelector("#words")?.children ||
+    const els = (document.querySelector("#words")?.children ??
       []) as HTMLElement[];
 
     for (let i = els.length - 1; i >= 0; i--) {

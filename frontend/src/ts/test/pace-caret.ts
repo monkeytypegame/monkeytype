@@ -202,7 +202,9 @@ export function update(expectedStepEnd: number): void {
         currentLetterWidth === undefined ||
         caretWidth === undefined
       ) {
-        throw ``;
+        throw new Error(
+          "Undefined current letter height, width or caret width."
+        );
       }
 
       newTop =
@@ -262,7 +264,7 @@ export function update(expectedStepEnd: number): void {
 }
 
 export function reset(): void {
-  if (settings !== null && settings.timeout !== null) {
+  if (settings?.timeout != null) {
     clearTimeout(settings.timeout);
   }
   settings = null;

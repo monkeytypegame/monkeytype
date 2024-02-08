@@ -750,7 +750,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
     $body
       ?.attr("class")
       ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("fb-")) || [];
+      ?.filter((it) => !it.startsWith("fb-")) ?? [];
 
   $body.attr("class", [...currentClasses, ...activeFbClasses].join(" "));
 

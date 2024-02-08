@@ -36,7 +36,7 @@ export function show(callbackOnHide: () => void): void {
 
 function hide(): void {
   if (isPopupVisible(wrapperId)) {
-    callbackFuncOnHide && callbackFuncOnHide();
+    callbackFuncOnHide?.();
     $("#editProfilePopupWrapper")
       .stop(true, true)
       .css("opacity", 1)

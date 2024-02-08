@@ -61,19 +61,23 @@ export async function initSnapshot(): Promise<
       Ape.presets.get(),
     ]);
 
+    //these objects are explicitly handled so its ok to throw that way
     if (userResponse.status !== 200) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         message: `${userResponse.message} (user)`,
         responseCode: userResponse.status,
       };
     }
     if (configResponse.status !== 200) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         message: `${configResponse.message} (config)`,
         responseCode: configResponse.status,
       };
     }
     if (presetsResponse.status !== 200) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         message: `${presetsResponse.message} (presets)`,
         responseCode: presetsResponse.status,
@@ -901,7 +905,7 @@ export function saveLocalResult(
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot !== null && snapshot.results !== undefined) {
+  if (snapshot?.results !== undefined) {
     snapshot.results.unshift(result);
 
     setSnapshot(snapshot);
@@ -914,7 +918,7 @@ export function updateLocalStats(started: number, time: number): void {
   if (snapshot.typingStats === undefined) {
     snapshot.typingStats = {} as MonkeyTypes.TypingStats;
   }
-  if (snapshot !== null && snapshot.typingStats !== undefined) {
+  if (snapshot?.typingStats !== undefined) {
     if (snapshot.typingStats.timeTyping === undefined) {
       snapshot.typingStats.timeTyping = time;
     } else {

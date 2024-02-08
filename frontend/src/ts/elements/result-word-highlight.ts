@@ -142,8 +142,7 @@ export async function highlightWordsInRange(
 
 // Function to clear all highlights
 export function clear(): void {
-  for (let i = 0; i < highlightEls.length; i++) {
-    const highlightEl = highlightEls[i] as HTMLElement;
+  for (const highlightEl of highlightEls) {
     highlightEl.classList.add("highlight-hidden");
   }
   isFirstHighlightSinceClear = true;
@@ -155,8 +154,7 @@ export function destroy(): void {
   if (!isInitialized) return;
 
   // Remove highlight containers from DOM
-  for (let i = 0; i < highlightContainerEls.length; i++) {
-    const highlightContainerEl = highlightContainerEls[i] as HTMLElement;
+  for (const highlightContainerEl of highlightContainerEls) {
     highlightContainerEl.remove();
   }
 

@@ -459,14 +459,15 @@ async function update(): Promise<void> {
   const responses = await Promise.all(lbDataRequests);
   const rankResponses = await Promise.all(lbRankRequests);
 
-  const atLeastOneFailed =
-    responses.find((response) => response.status !== 200) ||
-    rankResponses.find((response) => response.status !== 200);
-  if (atLeastOneFailed) {
+  const failedResponses = [
+    ...(responses.filter((response) => response.status !== 200) ?? []),
+    ...(rankResponses.filter((response) => response.status !== 200) ?? []),
+  ];
+  if (failedResponses.length > 0) {
     hideLoader("15");
     hideLoader("60");
     return Notifications.add(
-      "Failed to load leaderboards: " + atLeastOneFailed.message,
+      "Failed to load leaderboards: " + failedResponses[0]?.message,
       -1
     );
   }

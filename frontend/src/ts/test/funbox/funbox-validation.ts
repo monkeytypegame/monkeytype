@@ -93,16 +93,16 @@ export function canSetConfigWithCurrentFunboxes(
       fb = fb.concat(
         FunboxList.get(funbox).filter(
           (f) =>
-            f.functions?.getWord ||
-            f.functions?.pullSection ||
-            f.functions?.alterText ||
-            f.functions?.withWords ||
-            f.properties?.includes("changesCapitalisation") ||
-            f.properties?.includes("nospace") ||
-            (f.properties?.find((fp) => fp.startsWith("toPush:")) ?? "") ||
-            f.properties?.includes("changesWordsVisibility") ||
-            f.properties?.includes("speaks") ||
-            f.properties?.includes("changesLayout") ||
+            f.functions?.getWord ??
+            f.functions?.pullSection ??
+            f.functions?.alterText ??
+            f.functions?.withWords ??
+            f.properties?.includes("changesCapitalisation") ??
+            f.properties?.includes("nospace") ??
+            f.properties?.find((fp) => fp.startsWith("toPush:")) ??
+            f.properties?.includes("changesWordsVisibility") ??
+            f.properties?.includes("speaks") ??
+            f.properties?.includes("changesLayout") ??
             f.properties?.includes("changesWordsFrequency")
         )
       );
@@ -111,9 +111,9 @@ export function canSetConfigWithCurrentFunboxes(
       fb = fb.concat(
         FunboxList.get(funbox).filter(
           (f) =>
-            f.functions?.getWord ||
-            f.functions?.pullSection ||
-            f.functions?.withWords ||
+            f.functions?.getWord ??
+            f.functions?.pullSection ??
+            f.functions?.withWords ??
             f.properties?.includes("changesWordsFrequency")
         )
       );
@@ -225,8 +225,8 @@ export function areFunboxesCompatible(
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.functions?.getWord ||
-        f.functions?.pullSection ||
+        f.functions?.getWord ??
+        f.functions?.pullSection ??
         f.functions?.withWords
     ).length <= 1;
   const layoutUsability =

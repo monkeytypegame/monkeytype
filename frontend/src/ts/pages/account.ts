@@ -1302,7 +1302,7 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
 });
 
 $(".pageAccount button.loadMoreResults").on("click", async () => {
-  const offset = DB.getSnapshot()?.results?.length || 0;
+  const offset = DB.getSnapshot()?.results?.length ?? 0;
 
   Loader.show();
   ResultBatches.disableButton();

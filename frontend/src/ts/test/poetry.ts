@@ -19,11 +19,9 @@ export class Poem extends Section {
     let count = 0;
     const scrubbedWords = [];
 
-    for (let i = 0; i < this.words.length; i++) {
-      const word = this.words[i] as string;
+    for (const word of this.words) {
       let scrubbed = "";
-      for (let j = 0; j < word.length; j++) {
-        const char = word[j] as string;
+      for (const char of word) {
         if (!bannedChars.includes(char)) {
           scrubbed += char;
         }

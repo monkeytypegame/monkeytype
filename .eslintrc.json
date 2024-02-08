@@ -86,7 +86,8 @@
         //
         "@typescript-eslint/non-nullable-type-assertion-style": "off",
         "@typescript-eslint/no-unnecessary-condition": "off",
-        "@typescript-eslint/consistent-type-definitions": ["warn", "type"]
+        "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
+        "@typescript-eslint/no-invalid-void-type": "off"
       },
       "parserOptions": {
         "ecmaVersion": 12,
