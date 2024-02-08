@@ -4,6 +4,7 @@ import { performance } from "perf_hooks";
 import { setLeaderboard } from "../utils/prometheus";
 import { isDevEnvironment } from "../utils/misc";
 import * as BadgeIds from "../constants/badge-ids";
+import { getCachedConfiguration } from "../init/configuration";
 
 const leaderboardUpdating: Record<string, boolean> = {};
 
@@ -66,6 +67,8 @@ export async function update(
   message: string;
   rank?: number;
 }> {
+  const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
+    .premium.enabled;
   const key = `lbPersonalBests.${mode}.${mode2}.${language}`;
   const lbCollectionName = `leaderboards.${language}.${mode}.${mode2}`;
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
@@ -146,7 +149,7 @@ export async function update(
                         }
 
                         var importantBadgeIds = undefined;
-                        var isPremium = expiration !== undefined && (expiration === -1 || new Date(expiration)>currentTime) || undefined;
+                        var isPremium = ${premiumFeaturesEnabled} && expiration !== undefined && (expiration === -1 || new Date(expiration)>currentTime) || undefined;
                         if(isPremium){ importantBadgeIds = [${BadgeIds.PREMIUM}]; }
 
                         return {rank:row_number, selectedBadgeId, importantBadgeIds};

@@ -7,6 +7,7 @@ import MonkeyError from "../utils/error";
 import { Collection, ObjectId, WithId, Long, UpdateFilter } from "mongodb";
 import Logger from "../utils/logger";
 import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
+import { getCachedConfiguration } from "../init/configuration";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -1045,6 +1046,10 @@ export async function checkIfUserIsPremium(
   uid: string,
   userInfoOverride?: MonkeyTypes.User
 ): Promise<boolean> {
+  if ((await getCachedConfiguration(true)).users.premium.enabled !== true) {
+    return false;
+  }
+
   const user = userInfoOverride ?? (await getUser(uid, "checkIfUserIsPremium"));
   const expirationDate = user.premium?.expirationTimestamp;
 

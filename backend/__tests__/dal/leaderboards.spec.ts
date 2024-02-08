@@ -3,8 +3,10 @@ import { ObjectId } from "mongodb";
 import * as UserDal from "../../src/dal/user";
 import * as LeaderboardsDal from "../../src/dal/leaderboards";
 import * as PublicDal from "../../src/dal/public";
-
+import * as Configuration from "../../src/init/configuration";
 import * as DB from "../../src/init/db";
+
+const configuration = Configuration.getCachedConfiguration();
 
 describe("LeaderboardsDal", () => {
   describe("update", () => {
@@ -203,6 +205,7 @@ describe("LeaderboardsDal", () => {
     });
 
     it("should create leaderboard with premium", async () => {
+      await enablePremiumFeatures(true);
       //GIVEN
       const noPremium = await createUser(lbBests(pb(4)));
       const lifetime = await createUser(lbBests(pb(3)), premium(-1));
@@ -234,6 +237,31 @@ describe("LeaderboardsDal", () => {
           importantBadgeIds: [15],
         }),
         expectedLbEntry("15", { rank: 4, user: expiredPremium }),
+      ]);
+    });
+    it("should create leaderboard without premium if feature disabled", async () => {
+      await enablePremiumFeatures(false);
+      //GIVEN
+      const lifetime = await createUser(lbBests(pb(3)), premium(-1));
+
+      //WHEN
+      await LeaderboardsDal.update("time", "15", "english");
+      const result = (await LeaderboardsDal.get(
+        "time",
+        "15",
+        "english",
+        0
+      )) as MonkeyTypes.LeaderboardEntry[];
+
+      //THEN
+      const lb = result.map((it) => _.omit(it, ["_id"]));
+
+      expect(lb).toEqual([
+        expectedLbEntry("15", {
+          rank: 1,
+          user: lifetime,
+          importantBadgeIds: undefined,
+        }),
       ]);
     });
   });
@@ -332,4 +360,14 @@ interface ExpectedLbEntry {
   user: MonkeyTypes.User;
   selectedBadgeId?: number;
   importantBadgeIds?: number[];
+}
+
+async function enablePremiumFeatures(premium: boolean): Promise<void> {
+  const mockConfig = _.merge(await configuration, {
+    users: { premium: { enabled: premium } },
+  });
+
+  jest
+    .spyOn(Configuration, "getCachedConfiguration")
+    .mockResolvedValue(mockConfig);
 }
