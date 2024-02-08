@@ -143,7 +143,7 @@ declare namespace MonkeyTypes {
     _id: ObjectId;
     acc: number;
     consistency: number;
-    difficulty: SharedTypes.Difficulty;
+    difficulty: SharedTypes.Config.Difficulty;
     lazyMode: boolean;
     language: string;
     punctuation: boolean;

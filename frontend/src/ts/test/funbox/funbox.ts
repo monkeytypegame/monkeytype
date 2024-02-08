@@ -639,7 +639,9 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
     if (check.result === false) {
       if (check.forcedConfigs && check.forcedConfigs.length > 0) {
         if (configKey === "mode") {
-          UpdateConfig.setMode(check.forcedConfigs[0] as SharedTypes.Mode);
+          UpdateConfig.setMode(
+            check.forcedConfigs[0] as SharedTypes.Config.Mode
+          );
         }
         if (configKey === "words") {
           UpdateConfig.setWordCount(check.forcedConfigs[0] as number);
@@ -655,7 +657,7 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
         }
         if (configKey === "highlightMode") {
           UpdateConfig.setHighlightMode(
-            check.forcedConfigs[0] as MonkeyTypes.HighlightMode
+            check.forcedConfigs[0] as SharedTypes.Config.HighlightMode
           );
         }
       } else {

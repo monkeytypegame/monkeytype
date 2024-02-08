@@ -359,7 +359,7 @@ const codeToNote: Record<string, GetNoteFrequencyCallback> = {
 };
 
 type DynamicClickSounds = Extract<
-  MonkeyTypes.PlaySoundOnClick,
+  SharedTypes.Config.PlaySoundOnClick,
   "8" | "9" | "10" | "11"
 >;
 type SupportedOscillatorTypes = Exclude<OscillatorType, "custom">;
@@ -431,7 +431,7 @@ const defaultScaleData: ScaleData = {
 };
 
 export const scaleConfigurations: Record<
-  Extract<MonkeyTypes.PlaySoundOnClick, "12" | "13">,
+  Extract<SharedTypes.Config.PlaySoundOnClick, "12" | "13">,
   ScaleMeta
 > = {
   "12": {

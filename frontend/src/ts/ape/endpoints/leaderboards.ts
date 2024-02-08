@@ -2,7 +2,7 @@ const BASE_PATH = "/leaderboards";
 
 interface LeaderboardQuery {
   language: string;
-  mode: SharedTypes.Mode;
+  mode: SharedTypes.Config.Mode;
   mode2: string;
   isDaily?: boolean;
   daysBefore?: number;
