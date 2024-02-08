@@ -45,6 +45,7 @@ import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
+import { isDevEnvironment } from "./utils/misc";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
@@ -71,3 +72,8 @@ extendedGlobal.toggleUnsmoothedRaw = Result.toggleUnsmoothedRaw;
 extendedGlobal.egVideoListener = egVideoListener;
 
 extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;
+
+if (isDevEnvironment()) {
+  //@ts-ignore
+  extendedGlobal.$ = $;
+}

@@ -12,12 +12,12 @@ export async function get(
   language: string,
   skip: number,
   limit = 50
-): Promise<MonkeyTypes.LeaderboardEntry[] | false> {
+): Promise<SharedTypes.LeaderboardEntry[] | false> {
   if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
   if (limit > 50 || limit <= 0) limit = 50;
   if (skip < 0) skip = 0;
   const preset = await db
-    .collection<MonkeyTypes.LeaderboardEntry>(
+    .collection<SharedTypes.LeaderboardEntry>(
       `leaderboards.${language}.${mode}.${mode2}`
     )
     .find()
@@ -31,7 +31,7 @@ export async function get(
 interface GetRankResponse {
   count: number;
   rank: number | null;
-  entry: MonkeyTypes.LeaderboardEntry | null;
+  entry: SharedTypes.LeaderboardEntry | null;
 }
 
 export async function getRank(
@@ -42,7 +42,7 @@ export async function getRank(
 ): Promise<GetRankResponse | false> {
   if (leaderboardUpdating[`${language}_${mode}_${mode2}`]) return false;
   const entry = await db
-    .collection<MonkeyTypes.LeaderboardEntry>(
+    .collection<SharedTypes.LeaderboardEntry>(
       `leaderboards.${language}.${mode}.${mode2}`
     )
     .findOne({ uid });
@@ -71,7 +71,7 @@ export async function update(
   const start1 = performance.now();
   const lb = db
     .collection<MonkeyTypes.User>("users")
-    .aggregate<MonkeyTypes.LeaderboardEntry>(
+    .aggregate<SharedTypes.LeaderboardEntry>(
       [
         {
           $match: {

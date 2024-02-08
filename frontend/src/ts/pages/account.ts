@@ -1333,26 +1333,26 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageAccount", "main");
-    await ResultFilters.appendButtons();
-    ResultFilters.updateActive();
-    await Misc.sleep(0);
     if (DB.getSnapshot()?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
+      await LoadingPage.showBar();
     }
-
-    await update();
+    await ResultFilters.appendButtons();
+    ResultFilters.updateActive();
     await Misc.sleep(0);
-    void updateChartColors();
-    $(".pageAccount .content p.accountVerificatinNotice").remove();
-    if (Auth?.currentUser?.emailVerified === false) {
-      $(".pageAccount .content").prepend(
-        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
-      );
-    }
 
-    ResultBatches.showOrHideIfNeeded();
+    void update().then(() => {
+      void updateChartColors();
+      $(".pageAccount .content p.accountVerificatinNotice").remove();
+      if (Auth?.currentUser?.emailVerified === false) {
+        $(".pageAccount .content").prepend(
+          `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
+        );
+      }
+      ResultBatches.showOrHideIfNeeded();
+    });
   },
   async () => {
     //

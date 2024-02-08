@@ -245,7 +245,10 @@ export async function addResult(
     throw new MonkeyError(400, "Impossible funbox combination");
   }
 
-  if (completedEvent.keySpacing !== "toolong") {
+  if (
+    completedEvent.keySpacing !== "toolong" &&
+    completedEvent.keySpacing.length > 0
+  ) {
     completedEvent.keySpacingStats = {
       average:
         completedEvent.keySpacing.reduce(
@@ -255,7 +258,10 @@ export async function addResult(
     };
   }
 
-  if (completedEvent.keyDuration !== "toolong") {
+  if (
+    completedEvent.keyDuration !== "toolong" &&
+    completedEvent.keyDuration.length > 0
+  ) {
     completedEvent.keyDurationStats = {
       average:
         completedEvent.keyDuration.reduce(
