@@ -60,18 +60,25 @@ nav {
         transition: 0.125s;
         width: max-content;
         font-size: 0.65em;
-        line-height: 0.65em;
         align-self: center;
         color: var(--bg-color);
         background: var(--sub-color);
         padding: 0.4em 0.4em;
         border-radius: calc(var(--roundness) / 2);
+        height: 2em;
+        display: grid;
+        align-items: center;
       }
 
-      .premium .fas {
-        //too stupid to make it work
-        font-size: 0.65em;
-        line-height: 0.65em;
+      .premium {
+        .icon {
+          width: unset;
+          height: unset;
+        }
+        .fas {
+          font-size: 0.85em;
+          padding-top: 0.1em;
+        }
       }
 
       .xpBar {
