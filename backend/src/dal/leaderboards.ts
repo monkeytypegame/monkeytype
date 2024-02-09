@@ -125,8 +125,12 @@ export async function update(
           $addFields: {
             [`${key}.uid`]: "$uid",
             [`${key}.name`]: "$name",
-            [`${key}.discordId`]: "$discordId",
-            [`${key}.discordAvatar`]: "$discordAvatar",
+            [`${key}.discordId`]: {
+              $ifNull: ["$discordId", "$$REMOVE"],
+            },
+            [`${key}.discordAvatar`]: {
+              $ifNull: ["$discordAvatar", "$$REMOVE"],
+            },
             [`${key}.rank`]: {
               $function: {
                 body: "function() {try {row_number+= 1;} catch (e) {row_number= 1;}return row_number;}",

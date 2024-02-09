@@ -143,7 +143,7 @@ function updateFooter(lb: LbKey): void {
     side = "right";
   }
 
-  if (!Auth?.currentUser) {
+  if (Auth?.currentUser === undefined) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;"></>
@@ -307,7 +307,6 @@ async function fillTable(lb: LbKey): Promise<void> {
     if (entry === undefined) {
       break;
     }
-    if (entry.hidden) return;
     let meClassString = "";
     if (entry.name === loggedInUserName) {
       meClassString = ' class="me"';
@@ -443,7 +442,7 @@ async function update(): Promise<void> {
   const lbRankRequests: Promise<
     Ape.HttpClientResponse<Ape.Leaderboards.GetRank>
   >[] = [];
-  if (Auth?.currentUser) {
+  if (Auth?.currentUser !== undefined) {
     lbRankRequests.push(
       ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
@@ -606,10 +605,7 @@ async function getAvatarUrls(
 ): Promise<(string | null)[]> {
   return Promise.allSettled(
     data.map(async (entry) =>
-      Misc.getDiscordAvatarUrl(
-        entry.discordId ?? undefined,
-        entry.discordAvatar ?? undefined
-      )
+      Misc.getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
     )
   ).then((promises) => {
     return promises.map((promise) => {
@@ -646,7 +642,7 @@ export function show(): void {
   }
   Skeleton.append(wrapperId);
   if (!Misc.isPopupVisible("leaderboardsWrapper")) {
-    if (Auth?.currentUser) {
+    if (Auth?.currentUser !== undefined) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
       );
