@@ -1247,6 +1247,6 @@ export const page = new Page(
   }
 );
 
-$(() => {
+$(async () => {
   Skeleton.save("pageSettings");
 });

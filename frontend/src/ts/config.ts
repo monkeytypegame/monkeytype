@@ -1850,6 +1850,7 @@ export async function apply(
     }
   );
   if (configObj !== undefined && configObj !== null) {
+    setAds(configObj.ads, true);
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setThemes(
@@ -1937,7 +1938,6 @@ export async function apply(
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
-    setAds(configObj.ads, true);
 
     ConfigEvent.dispatch(
       "configApplied",
