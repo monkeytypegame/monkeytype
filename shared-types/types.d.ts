@@ -108,20 +108,12 @@ declare namespace SharedTypes {
     };
   }
 
-  type Difficulty = "normal" | "expert" | "master";
-
-  type Mode = keyof PersonalBests;
-
-  type Mode2<M extends Mode> = M extends M ? keyof PersonalBests[M] : never;
-
   type StringNumber = `${number}`;
-
-  type Mode2Custom<M extends Mode> = Mode2<M> | "custom";
 
   interface PersonalBest {
     acc: number;
     consistency: number;
-    difficulty: Difficulty;
+    difficulty: SharedTypes.Config.Difficulty;
     lazyMode: boolean;
     language: string;
     punctuation: boolean;
@@ -154,14 +146,14 @@ declare namespace SharedTypes {
     sd: number;
   }
 
-  interface Result<M extends Mode> {
+  interface Result<M extends SharedTypes.Config.Mode> {
     _id: string;
     wpm: number;
     rawWpm: number;
     charStats: [number, number, number, number];
     acc: number;
     mode: M;
-    mode2: Mode2<M>;
+    mode2: SharedTypes.Config.Mode2<M>;
     quoteLength?: number;
     timestamp: number;
     restartCount: number;
@@ -180,7 +172,7 @@ declare namespace SharedTypes {
     bailedOut: boolean;
     blindMode: boolean;
     lazyMode: boolean;
-    difficulty: Difficulty;
+    difficulty: SharedTypes.Config.Difficulty;
     funbox: string;
     language: string;
     numbers: boolean;
@@ -201,7 +193,7 @@ declare namespace SharedTypes {
     _id: ObjectId;
   };
 
-  type DBResult<T extends SharedTypes.Mode> = WithObjectId<
+  type DBResult<T extends SharedTypes.Config.Mode> = WithObjectId<
     Omit<
       SharedTypes.Result<T>,
       | "bailedOut"
@@ -229,7 +221,7 @@ declare namespace SharedTypes {
       bailedOut?: boolean;
       blindMode?: boolean;
       lazyMode?: boolean;
-      difficulty?: SharedTypes.Difficulty;
+      difficulty?: SharedTypes.Config.Difficulty;
       funbox?: string;
       language?: string;
       numbers?: boolean;
@@ -244,7 +236,7 @@ declare namespace SharedTypes {
     }
   >;
 
-  interface CompletedEvent extends Result<Mode> {
+  interface CompletedEvent extends Result<SharedTypes.Config.Mode> {
     keySpacing: number[] | "toolong";
     keyDuration: number[] | "toolong";
     customText?: CustomText;
@@ -345,4 +337,133 @@ declare namespace SharedTypes {
     modifiedOn: number;
     lastUsedOn: number;
   }
+
+  interface Config {
+    theme: string;
+    themeLight: string;
+    themeDark: string;
+    autoSwitchTheme: boolean;
+    customTheme: boolean;
+    customThemeColors: string[];
+    favThemes: string[];
+    showKeyTips: boolean;
+    showLiveWpm: boolean;
+    showTimerProgress: boolean;
+    smoothCaret: SharedTypes.Config.SmoothCaret;
+    quickRestart: SharedTypes.Config.QuickRestart;
+    punctuation: boolean;
+    numbers: boolean;
+    words: number;
+    time: number;
+    mode: SharedTypes.Config.Mode;
+    quoteLength: SharedTypes.Config.QuoteLength[];
+    language: string;
+    fontSize: number;
+    freedomMode: boolean;
+    difficulty: SharedTypes.Config.Difficulty;
+    blindMode: boolean;
+    quickEnd: boolean;
+    caretStyle: SharedTypes.Config.CaretStyle;
+    paceCaretStyle: SharedTypes.Config.CaretStyle;
+    flipTestColors: boolean;
+    layout: string;
+    funbox: string;
+    confidenceMode: SharedTypes.Config.ConfidenceMode;
+    indicateTypos: SharedTypes.Config.IndicateTypos;
+    timerStyle: SharedTypes.Config.TimerStyle;
+    colorfulMode: boolean;
+    randomTheme: SharedTypes.Config.RandomTheme;
+    timerColor: SharedTypes.Config.TimerColor;
+    timerOpacity: SharedTypes.Config.TimerOpacity;
+    stopOnError: SharedTypes.Config.StopOnError;
+    showAllLines: boolean;
+    keymapMode: SharedTypes.Config.KeymapMode;
+    keymapStyle: SharedTypes.Config.KeymapStyle;
+    keymapLegendStyle: SharedTypes.Config.KeymapLegendStyle;
+    keymapLayout: string;
+    keymapShowTopRow: SharedTypes.Config.KeymapShowTopRow;
+    fontFamily: string;
+    smoothLineScroll: boolean;
+    alwaysShowDecimalPlaces: boolean;
+    alwaysShowWordsHistory: boolean;
+    singleListCommandLine: SharedTypes.Config.SingleListCommandLine;
+    capsLockWarning: boolean;
+    playSoundOnError: SharedTypes.Config.PlaySoundOnError;
+    playSoundOnClick: SharedTypes.Config.PlaySoundOnClick;
+    soundVolume: SharedTypes.Config.SoundVolume;
+    startGraphsAtZero: boolean;
+    showOutOfFocusWarning: boolean;
+    paceCaret: SharedTypes.Config.PaceCaret;
+    paceCaretCustomSpeed: number;
+    repeatedPace: boolean;
+    pageWidth: SharedTypes.Config.PageWidth;
+    accountChart: SharedTypes.Config.AccountChart;
+    minWpm: SharedTypes.Config.MinimumWordsPerMinute;
+    minWpmCustomSpeed: number;
+    highlightMode: SharedTypes.Config.HighlightMode;
+    typingSpeedUnit: SharedTypes.Config.TypingSpeedUnit;
+    ads: SharedTypes.Config.Ads;
+    hideExtraLetters: boolean;
+    strictSpace: boolean;
+    minAcc: SharedTypes.Config.MinimumAccuracy;
+    minAccCustom: number;
+    showLiveAcc: boolean;
+    showLiveBurst: boolean;
+    monkey: boolean;
+    repeatQuotes: SharedTypes.Config.RepeatQuotes;
+    oppositeShiftMode: SharedTypes.Config.OppositeShiftMode;
+    customBackground: string;
+    customBackgroundSize: SharedTypes.Config.CustomBackgroundSize;
+    customBackgroundFilter: SharedTypes.Config.CustomBackgroundFilter;
+    customLayoutfluid: SharedTypes.Config.CustomLayoutFluid;
+    monkeyPowerLevel: SharedTypes.Config.MonkeyPowerLevel;
+    minBurst: SharedTypes.Config.MinimumBurst;
+    minBurstCustomSpeed: number;
+    burstHeatmap: boolean;
+    britishEnglish: boolean;
+    lazyMode: boolean;
+    showAverage: SharedTypes.Config.ShowAverage;
+    tapeMode: SharedTypes.Config.TapeMode;
+  }
+
+  type ConfigValue = Config[keyof Config];
+
+  type ConfigPreset = Partial<Config> & {
+    tags?: string[];
+  };
+
+  interface DBConfigPreset {
+    _id: string;
+    uid: string;
+    name: string;
+    config: SharedTypes.ConfigPreset;
+  }
+
+  interface LeaderboardEntry {
+    _id: string;
+    wpm: number;
+    acc: number;
+    timestamp: number;
+    raw: number;
+    consistency: number | "-";
+    uid: string;
+    name: string;
+    discordId: string | null | undefined;
+    discordAvatar: string | null | undefined;
+    rank: number;
+    badgeId: number | null;
+    hidden?: boolean;
+  }
+
+  type PostResultResponse = {
+    isPb: boolean;
+    tagPbs: string[];
+    insertedId: string;
+    dailyLeaderboardRank?: number;
+    weeklyXpLeaderboardRank?: number;
+    xp: number;
+    dailyXpBonus: boolean;
+    xpBreakdown: Record<string, number>;
+    streak: number;
+  };
 }

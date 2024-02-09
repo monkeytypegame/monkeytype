@@ -590,7 +590,9 @@ $(".pageAccount .topFilters button.currentConfigFilter").on("click", () => {
       "thicc",
     ];
     filterName.forEach((ql, index) => {
-      if (Config.quoteLength.includes(index as MonkeyTypes.QuoteLength)) {
+      if (
+        Config.quoteLength.includes(index as SharedTypes.Config.QuoteLength)
+      ) {
         filters["quoteLength"][ql] = true;
       } else {
         filters["quoteLength"][ql] = false;

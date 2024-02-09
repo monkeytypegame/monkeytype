@@ -38,143 +38,14 @@ declare namespace MonkeyTypes {
     originalPunctuation?: boolean;
   }
 
-  type WordsModes = number;
-
-  type TimeModes = number;
-
   type DefaultWordsModes = 10 | 25 | 50 | 100;
 
   type DefaultTimeModes = 15 | 30 | 60 | 120;
 
   type QuoteModes = "short" | "medium" | "long" | "thicc";
 
-  type QuoteLength = -3 | -2 | -1 | 0 | 1 | 2 | 3;
-
-  type CaretStyle =
-    | "off"
-    | "default"
-    | "block"
-    | "outline"
-    | "underline"
-    | "carrot"
-    | "banana";
-
-  type ConfidenceMode = "off" | "on" | "max";
-
-  type TimerStyle = "bar" | "text" | "mini";
-
-  type RandomTheme = "off" | "on" | "fav" | "light" | "dark" | "custom";
-
-  type TimerColor = "black" | "sub" | "text" | "main";
-
-  type TimerOpacity = "0.25" | "0.5" | "0.75" | "1";
-
-  type StopOnError = "off" | "word" | "letter";
-
-  type KeymapMode = "off" | "static" | "react" | "next";
-
-  type KeymapStyle =
-    | "staggered"
-    | "alice"
-    | "matrix"
-    | "split"
-    | "split_matrix"
-    | "steno"
-    | "steno_matrix";
-
-  type KeymapLegendStyle = "lowercase" | "uppercase" | "blank" | "dynamic";
-
-  type KeymapShowTopRow = "always" | "layout" | "never";
-
-  type ShowAverage = "off" | "speed" | "acc" | "both";
-
-  type SmoothCaretMode = "off" | "slow" | "medium" | "fast";
-
-  type TapeMode = "off" | "letter" | "word";
-
-  type SingleListCommandLine = "manual" | "on";
-
-  /*
-    off = off
-    1 = click
-    2 = beep
-    3 = pop
-    4 = nk creams
-    5 = typewriter
-    6 = osu
-    7 = hitmarker
-    8 = sine
-    9 = sawtooth
-    10 = square
-    11 = triangle
-    12 = pentatonic
-    13 = wholetone
-  */
-  type PlaySoundOnClick =
-    | "off"
-    | "1"
-    | "2"
-    | "3"
-    | "4"
-    | "5"
-    | "6"
-    | "7"
-    | "8"
-    | "9"
-    | "10"
-    | "11"
-    | "12"
-    | "13";
-
-  type PlaySoundOnError = "off" | "1" | "2" | "3";
-
-  type SoundVolume = "0.1" | "0.5" | "1.0";
-
-  type PaceCaret = "off" | "average" | "pb" | "last" | "custom" | "daily";
-
-  type PageWidth = "100" | "125" | "150" | "200" | "max";
-
-  type AccountChart = ["off" | "on", "off" | "on", "off" | "on", "off" | "on"];
-
-  type MinimumWordsPerMinute = "off" | "custom";
-
-  type HighlightMode =
-    | "off"
-    | "letter"
-    | "word"
-    | "next_word"
-    | "next_two_words"
-    | "next_three_words";
-
-  type Ads = "off" | "result" | "on" | "sellout";
-
-  type MinimumAccuracy = "off" | "custom";
-
-  type RepeatQuotes = "off" | "typing";
-
-  type OppositeShiftMode = "off" | "on" | "keymap";
-
-  type CustomBackgroundSize = "cover" | "contain" | "max";
-
-  type CustomBackgroundFilter = [number, number, number, number, number];
-
-  /*
-    off = off
-    1 = mellow
-    2 = high
-    3 = ultra
-    4 = over 9000
-  */
-  type MonkeyPowerLevel = "off" | "1" | "2" | "3" | "4";
-
-  type MinimumBurst = "off" | "fixed" | "flex";
-
-  type IndicateTypos = "off" | "below" | "replace";
-
-  type CustomLayoutFluid = `${string}#${string}#${string}`;
-
   type CustomLayoutFluidSpaces =
-    | CustomLayoutFluid
+    | SharedTypes.Config.CustomLayoutFluid
     | `${string} ${string} ${string}`;
 
   interface HistoryChartData {
@@ -265,7 +136,7 @@ declare namespace MonkeyTypes {
   }
 
   interface FunboxForcedConfig {
-    [key: string]: ConfigValues[];
+    [key: string]: SharedTypes.ConfigValue[];
     // punctuation?: boolean;
     // numbers?: boolean;
     // highlightMode?: typesSeparatedWithHash<HighlightMode>;
@@ -284,16 +155,13 @@ declare namespace MonkeyTypes {
     hasCSS?: boolean;
   }
 
-  interface PresetConfig extends MonkeyTypes.Config {
+  interface PresetConfig extends SharedTypes.Config {
     tags: string[];
   }
 
-  interface Preset {
-    _id: string;
-    name: string;
+  type SnapshotPreset = SharedTypes.DBConfigPreset & {
     display: string;
-    config: ConfigChanges;
-  }
+  };
 
   interface Tag {
     _id: string;
@@ -318,102 +186,8 @@ declare namespace MonkeyTypes {
     completedTests: number;
   }
 
-  interface Config {
-    theme: string;
-    themeLight: string;
-    themeDark: string;
-    autoSwitchTheme: boolean;
-    customTheme: boolean;
-    customThemeColors: string[];
-    favThemes: string[];
-    showKeyTips: boolean;
-    showLiveWpm: boolean;
-    showTimerProgress: boolean;
-    smoothCaret: SmoothCaretMode;
-    quickRestart: "off" | "esc" | "tab" | "enter";
-    punctuation: boolean;
-    numbers: boolean;
-    words: WordsModes;
-    time: TimeModes;
-    mode: SharedTypes.Mode;
-    quoteLength: QuoteLength[];
-    language: string;
-    fontSize: number;
-    freedomMode: boolean;
-    difficulty: SharedTypes.Difficulty;
-    blindMode: boolean;
-    quickEnd: boolean;
-    caretStyle: CaretStyle;
-    paceCaretStyle: CaretStyle;
-    flipTestColors: boolean;
-    layout: string;
-    funbox: string;
-    confidenceMode: ConfidenceMode;
-    indicateTypos: IndicateTypos;
-    timerStyle: TimerStyle;
-    colorfulMode: boolean;
-    randomTheme: RandomTheme;
-    timerColor: TimerColor;
-    timerOpacity: TimerOpacity;
-    stopOnError: StopOnError;
-    showAllLines: boolean;
-    keymapMode: KeymapMode;
-    keymapStyle: KeymapStyle;
-    keymapLegendStyle: KeymapLegendStyle;
-    keymapLayout: string;
-    keymapShowTopRow: KeymapShowTopRow;
-    fontFamily: string;
-    smoothLineScroll: boolean;
-    alwaysShowDecimalPlaces: boolean;
-    alwaysShowWordsHistory: boolean;
-    singleListCommandLine: SingleListCommandLine;
-    capsLockWarning: boolean;
-    playSoundOnError: PlaySoundOnError;
-    playSoundOnClick: PlaySoundOnClick;
-    soundVolume: SoundVolume;
-    startGraphsAtZero: boolean;
-    showOutOfFocusWarning: boolean;
-    paceCaret: PaceCaret;
-    paceCaretCustomSpeed: number;
-    repeatedPace: boolean;
-    pageWidth: PageWidth;
-    accountChart: AccountChart;
-    minWpm: MinimumWordsPerMinute;
-    minWpmCustomSpeed: number;
-    highlightMode: HighlightMode;
-    typingSpeedUnit: TypingSpeedUnit;
-    ads: Ads;
-    hideExtraLetters: boolean;
-    strictSpace: boolean;
-    minAcc: MinimumAccuracy;
-    minAccCustom: number;
-    showLiveAcc: boolean;
-    showLiveBurst: boolean;
-    monkey: boolean;
-    repeatQuotes: RepeatQuotes;
-    oppositeShiftMode: OppositeShiftMode;
-    customBackground: string;
-    customBackgroundSize: CustomBackgroundSize;
-    customBackgroundFilter: CustomBackgroundFilter;
-    customLayoutfluid: CustomLayoutFluid;
-    monkeyPowerLevel: MonkeyPowerLevel;
-    minBurst: MinimumBurst;
-    minBurstCustomSpeed: number;
-    burstHeatmap: boolean;
-    britishEnglish: boolean;
-    lazyMode: boolean;
-    showAverage: ShowAverage;
-    tapeMode: TapeMode;
-  }
-
-  type ConfigValue = Config[keyof Config];
-
-  interface ConfigChanges extends Partial<MonkeyTypes.Config> {
+  interface ConfigChanges extends Partial<SharedTypes.Config> {
     tags?: string[];
-  }
-
-  interface DefaultConfig extends Config {
-    wordCount: WordsModes;
   }
 
   interface LeaderboardMemory {
@@ -426,27 +200,8 @@ declare namespace MonkeyTypes {
 
   interface Leaderboards {
     time: {
-      [key in 15 | 60]: LeaderboardEntry[];
+      [key in 15 | 60]: SharedTypes.LeaderboardEntry[];
     };
-  }
-
-  interface LeaderboardEntry {
-    difficulty: string;
-    timestamp: number;
-    language: string;
-    wpm: number;
-    consistency: number | "-";
-    punctuation: boolean;
-    acc: number;
-    raw: number;
-    uid?: string;
-    name: string;
-    discordId?: string;
-    discordAvatar?: string;
-    badgeId?: number;
-    rank: number;
-    count?: number;
-    hidden?: boolean;
   }
 
   interface QuoteRatings {
@@ -459,19 +214,19 @@ declare namespace MonkeyTypes {
     banned?: boolean;
     emailVerified?: boolean;
     quoteRatings?: QuoteRatings;
-    results?: SharedTypes.Result<SharedTypes.Mode>[];
+    results?: SharedTypes.Result<SharedTypes.Config.Mode>[];
     verified?: boolean;
     personalBests: SharedTypes.PersonalBests;
     name: string;
     customThemes: CustomTheme[];
-    presets?: Preset[];
+    presets?: SnapshotPreset[];
     tags: Tag[];
     favouriteThemes?: string[];
     lbMemory?: LeaderboardMemory;
     typingStats?: TypingStats;
     quoteMod?: boolean;
     discordId?: string;
-    config?: Config;
+    config?: SharedTypes.Config;
     favoriteQuotes: FavoriteQuotes;
     needsToChangeName?: boolean;
     discordAvatar?: string;
@@ -527,7 +282,7 @@ declare namespace MonkeyTypes {
 
   interface Global {
     snapshot(): Snapshot | undefined;
-    config: Config;
+    config: SharedTypes.Config;
     toggleFilterDebug(): void;
     glarsesMode(): void;
     stats(): void;
@@ -611,7 +366,7 @@ declare namespace MonkeyTypes {
 
   interface CommandsSubgroup {
     title: string;
-    configKey?: keyof Config;
+    configKey?: keyof SharedTypes.Config;
     list: Command[];
     beforeList?: () => void;
   }
@@ -720,8 +475,6 @@ declare namespace MonkeyTypes {
   }
 
   type AllRewards = XpReward | BadgeReward;
-
-  type TypingSpeedUnit = "wpm" | "cpm" | "wps" | "cps" | "wph";
 
   interface TypingSpeedUnitSettings {
     fromWpm: (number: number) => number;

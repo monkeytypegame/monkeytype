@@ -19,7 +19,7 @@ interface BeforeCustomText {
 }
 
 interface Before {
-  mode: SharedTypes.Mode | null;
+  mode: SharedTypes.Config.Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
   customText: BeforeCustomText | null;

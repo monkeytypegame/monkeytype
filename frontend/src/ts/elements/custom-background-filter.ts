@@ -75,7 +75,7 @@ function updateNumbers(): void {
   );
 }
 
-function loadConfig(config: MonkeyTypes.CustomBackgroundFilter): void {
+function loadConfig(config: SharedTypes.Config.CustomBackgroundFilter): void {
   filters.blur.value = config[0];
   filters.brightness.value = config[1];
   filters.saturate.value = config[2];
@@ -123,13 +123,13 @@ $(".section.customBackgroundFilter input").on("input", () => {
 const debouncedSave = debounce(2000, async () => {
   const arr = Object.keys(filters).map(
     (filterKey) => filters[filterKey as keyof typeof filters].value
-  ) as MonkeyTypes.CustomBackgroundFilter;
+  ) as SharedTypes.Config.CustomBackgroundFilter;
   UpdateConfig.setCustomBackgroundFilter(arr, false);
 });
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "customBackgroundFilter" && (eventValue as boolean)) {
-    loadConfig(eventValue as MonkeyTypes.CustomBackgroundFilter);
+    loadConfig(eventValue as SharedTypes.Config.CustomBackgroundFilter);
     apply();
   }
 });

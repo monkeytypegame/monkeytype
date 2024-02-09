@@ -1176,9 +1176,9 @@ export async function swapElements(
 }
 
 export function getMode2<M extends keyof SharedTypes.PersonalBests>(
-  config: MonkeyTypes.Config,
+  config: SharedTypes.Config,
   randomQuote: MonkeyTypes.Quote | null
-): SharedTypes.Mode2<M> {
+): SharedTypes.Config.Mode2<M> {
   const mode = config.mode;
   let retVal: string;
 
@@ -1196,11 +1196,11 @@ export function getMode2<M extends keyof SharedTypes.PersonalBests>(
     throw new Error("Invalid mode");
   }
 
-  return retVal as SharedTypes.Mode2<M>;
+  return retVal as SharedTypes.Config.Mode2<M>;
 }
 
 export async function downloadResultsCSV(
-  array: SharedTypes.Result<SharedTypes.Mode>[]
+  array: SharedTypes.Result<SharedTypes.Config.Mode>[]
 ): Promise<void> {
   Loader.show();
   const csvString = [
@@ -1230,7 +1230,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: SharedTypes.Result<SharedTypes.Mode>) => [
+    ...array.map((item: SharedTypes.Result<SharedTypes.Config.Mode>) => [
       item._id,
       item.isPb,
       item.wpm,
@@ -1364,8 +1364,10 @@ export async function getDiscordAvatarUrl(
 ): Promise<string | null> {
   if (
     discordId === undefined ||
+    discordId === null ||
     discordId === "" ||
     discordAvatar === undefined ||
+    discordAvatar === null ||
     discordAvatar === ""
   ) {
     return null;

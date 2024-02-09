@@ -33,7 +33,7 @@ export function toggleFilterDebug(): void {
   }
 }
 
-let filteredResults: SharedTypes.Result<SharedTypes.Mode>[] = [];
+let filteredResults: SharedTypes.Result<SharedTypes.Config.Mode>[] = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(lineIndex?: number): void {
@@ -274,7 +274,7 @@ async function fillContent(): Promise<void> {
   $(".pageAccount .history table tbody").empty();
 
   DB.getSnapshot()?.results?.forEach(
-    (result: SharedTypes.Result<SharedTypes.Mode>) => {
+    (result: SharedTypes.Result<SharedTypes.Config.Mode>) => {
       // totalSeconds += tt;
 
       //apply filters
@@ -306,7 +306,8 @@ async function fillContent(): Promise<void> {
         }
 
         if (result.mode === "time") {
-          let timefilter: SharedTypes.Mode2<"time"> | "custom" = "custom";
+          let timefilter: SharedTypes.Config.Mode2<"time"> | "custom" =
+            "custom";
           if (
             ["15", "30", "60", "120"].includes(
               `${result.mode2}` //legacy results could have a number in mode2
@@ -326,7 +327,7 @@ async function fillContent(): Promise<void> {
             return;
           }
         } else if (result.mode === "words") {
-          let wordfilter: SharedTypes.Mode2Custom<"words"> = "custom";
+          let wordfilter: SharedTypes.Config.Mode2Custom<"words"> = "custom";
           if (
             ["10", "25", "50", "100", "200"].includes(
               `${result.mode2}` //legacy results could have a number in mode2
@@ -1332,26 +1333,26 @@ export const page = new Page(
   },
   async () => {
     Skeleton.append("pageAccount", "main");
-    await ResultFilters.appendButtons();
-    ResultFilters.updateActive();
-    await Misc.sleep(0);
     if (DB.getSnapshot()?.results === undefined) {
       $(".pageLoading .fill, .pageAccount .fill").css("width", "0%");
       $(".pageAccount .content").addClass("hidden");
       $(".pageAccount .preloader").removeClass("hidden");
+      await LoadingPage.showBar();
     }
-
-    await update();
+    await ResultFilters.appendButtons();
+    ResultFilters.updateActive();
     await Misc.sleep(0);
-    void updateChartColors();
-    $(".pageAccount .content p.accountVerificatinNotice").remove();
-    if (Auth?.currentUser?.emailVerified === false) {
-      $(".pageAccount .content").prepend(
-        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
-      );
-    }
 
-    ResultBatches.showOrHideIfNeeded();
+    void update().then(() => {
+      void updateChartColors();
+      $(".pageAccount .content p.accountVerificatinNotice").remove();
+      if (Auth?.currentUser?.emailVerified === false) {
+        $(".pageAccount .content").prepend(
+          `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified - <button class="sendVerificationEmail">send the verification email again</button>`
+        );
+      }
+      ResultBatches.showOrHideIfNeeded();
+    });
   },
   async () => {
     //

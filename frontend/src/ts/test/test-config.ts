@@ -73,8 +73,8 @@ export async function instantUpdate(): Promise<void> {
 }
 
 export async function update(
-  previous: SharedTypes.Mode,
-  current: SharedTypes.Mode
+  previous: SharedTypes.Config.Mode,
+  current: SharedTypes.Config.Mode
 ): Promise<void> {
   if (previous === current) return;
   $("#testConfig .mode .textButton").removeClass("active");
@@ -228,7 +228,7 @@ export async function update(
 
 export function updateExtras(
   key: string,
-  value: MonkeyTypes.ConfigValue
+  value: SharedTypes.ConfigValue
 ): void {
   if (key === "time") {
     $("#testConfig .time .textButton").removeClass("active");
@@ -250,7 +250,7 @@ export function updateExtras(
     ).addClass("active");
   } else if (key === "quoteLength") {
     $("#testConfig .quoteLength .textButton").removeClass("active");
-    (value as MonkeyTypes.QuoteLength[]).forEach((ql) => {
+    (value as SharedTypes.Config.QuoteLength[]).forEach((ql) => {
       $(
         "#testConfig .quoteLength .textButton[quoteLength='" + ql + "']"
       ).addClass("active");
@@ -282,8 +282,8 @@ ConfigEvent.subscribe((eventKey, eventValue, _nosave, eventPreviousValue) => {
   if (ActivePage.get() !== "test") return;
   if (eventKey === "mode") {
     void update(
-      eventPreviousValue as SharedTypes.Mode,
-      eventValue as SharedTypes.Mode
+      eventPreviousValue as SharedTypes.Config.Mode,
+      eventValue as SharedTypes.Config.Mode
     );
 
     let m2;
