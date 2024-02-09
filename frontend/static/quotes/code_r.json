@@ -1,0 +1,24 @@
+{
+  "language": "code_r",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999],
+  ],
+    "quotes": [
+      {
+        "text": "ggplot(data = sample_df, mapping = aes(x = group, y = value)) + geom_point() + geom_point(data = group_means_df, mapping = aes(x = group, y = group_mean), color = \"red\", size = 3)",
+        "source": "tidyverse - ggplot2 plot.R",
+        "id": 1,
+        "length": 179
+      },
+      {
+        "text": "starwars %>% filter(!is.na(height)) %>% slice_max(height, n = 3)",
+        "source": "tidyverse - dplyr vignette",
+        "id": 2,
+        "length": 64
+      }
+    ]
+}
+        
