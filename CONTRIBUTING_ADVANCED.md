@@ -46,7 +46,7 @@ The account system will not let you create an account without a Firebase project
 
 1. Enable Firebase Authentication
 
-   - In the Firebase console, go to `Authentication > Sign-in method`
+   - In the Firebase console, go to `Build > Authentication > Sign-in method`
    - Click on `Email/Password`, enable it, and save
    - Click on `Google`, add a support email, and save
 
