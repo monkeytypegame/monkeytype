@@ -143,7 +143,7 @@ function updateFooter(lb: LbKey): void {
     side = "right";
   }
 
-  if (!Auth?.currentUser) {
+  if (Auth?.currentUser === undefined) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;"></>
@@ -195,7 +195,7 @@ function updateFooter(lb: LbKey): void {
     const num = Misc.roundTo2(
       (lbRank.rank / (currentRank[lb].count as number)) * 100
     );
-    if (currentRank[lb]["rank"] === 1) {
+    if (currentRank[lb].rank === 1) {
       toppercent = "GOAT";
     } else {
       toppercent = `Top ${num}%`;
@@ -307,7 +307,6 @@ async function fillTable(lb: LbKey): Promise<void> {
     if (entry === undefined) {
       break;
     }
-    if (entry.hidden) return;
     let meClassString = "";
     if (entry.name === loggedInUserName) {
       meClassString = ' class="me"';
@@ -443,7 +442,7 @@ async function update(): Promise<void> {
   const lbRankRequests: Promise<
     Ape.HttpClientResponse<Ape.Leaderboards.GetRank>
   >[] = [];
-  if (Auth?.currentUser) {
+  if (Auth?.currentUser !== undefined) {
     lbRankRequests.push(
       ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
@@ -459,14 +458,15 @@ async function update(): Promise<void> {
   const responses = await Promise.all(lbDataRequests);
   const rankResponses = await Promise.all(lbRankRequests);
 
-  const atLeastOneFailed =
-    responses.find((response) => response.status !== 200) ||
-    rankResponses.find((response) => response.status !== 200);
-  if (atLeastOneFailed) {
+  const failedResponses = [
+    ...(responses.filter((response) => response.status !== 200) ?? []),
+    ...(rankResponses.filter((response) => response.status !== 200) ?? []),
+  ];
+  if (failedResponses.length > 0) {
     hideLoader("15");
     hideLoader("60");
     return Notifications.add(
-      "Failed to load leaderboards: " + atLeastOneFailed.message,
+      "Failed to load leaderboards: " + failedResponses[0]?.message,
       -1
     );
   }
@@ -606,10 +606,7 @@ async function getAvatarUrls(
 ): Promise<(string | null)[]> {
   return Promise.allSettled(
     data.map(async (entry) =>
-      Misc.getDiscordAvatarUrl(
-        entry.discordId ?? undefined,
-        entry.discordAvatar ?? undefined
-      )
+      Misc.getDiscordAvatarUrl(entry.discordId, entry.discordAvatar)
     )
   ).then((promises) => {
     return promises.map((promise) => {
@@ -646,7 +643,7 @@ export function show(): void {
   }
   Skeleton.append(wrapperId);
   if (!Misc.isPopupVisible("leaderboardsWrapper")) {
-    if (Auth?.currentUser) {
+    if (Auth?.currentUser !== undefined) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
       );

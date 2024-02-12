@@ -10,16 +10,16 @@ import { isPopupVisible, removeLanguageSize } from "../utils/misc";
 
 const wrapperId = "quoteReportPopupWrapper";
 
-interface State {
+type State = {
   previousPopupShowCallback?: () => void;
   quoteToReport?: MonkeyTypes.Quote;
-}
+};
 
-interface Options {
+type Options = {
   quoteId: number;
   previousPopupShowCallback?: () => void;
   noAnim: boolean;
-}
+};
 
 const state: State = {
   previousPopupShowCallback: undefined,

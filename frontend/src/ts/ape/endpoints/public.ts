@@ -1,10 +1,10 @@
 const BASE_PATH = "/public";
 
-interface SpeedStatsQuery {
+type SpeedStatsQuery = {
   language: string;
   mode: string;
   mode2: string;
-}
+};
 
 export default class Public {
   constructor(private httpClient: Ape.HttpClient) {

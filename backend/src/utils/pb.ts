@@ -1,11 +1,11 @@
 import _ from "lodash";
 import FunboxList from "../constants/funbox-list";
 
-interface CheckAndUpdatePbResult {
+type CheckAndUpdatePbResult = {
   isPb: boolean;
   personalBests: SharedTypes.PersonalBests;
   lbPersonalBests?: MonkeyTypes.LbPersonalBests;
-}
+};
 
 type Result = Omit<
   SharedTypes.DBResult<SharedTypes.Config.Mode>,

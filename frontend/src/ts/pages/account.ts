@@ -146,7 +146,7 @@ function loadMoreLines(lineIndex?: number): void {
     }
 
     let pb = "";
-    if (result.isPb === true) {
+    if (result.isPb) {
       pb = '<i class="fas fa-fw fa-crown"></i>';
     } else {
       pb = "";
@@ -258,13 +258,14 @@ async function fillContent(): Promise<void> {
   let totalCons10 = 0;
   let consCount = 0;
 
-  interface ActivityChartData {
-    [key: number]: {
+  type ActivityChartData = Record<
+    number,
+    {
       amount: number;
       time: number;
       totalWpm: number;
-    };
-  }
+    }
+  >;
 
   const activityChartData: ActivityChartData = {};
   const histogramChartData: number[] = [];
@@ -279,9 +280,7 @@ async function fillContent(): Promise<void> {
 
       //apply filters
       try {
-        if (
-          !ResultFilters.getFilter("pb", result.isPb === true ? "yes" : "no")
-        ) {
+        if (!ResultFilters.getFilter("pb", result.isPb ? "yes" : "no")) {
           if (filterDebug) {
             console.log(`skipping result due to pb filter`, result);
           }
@@ -1055,7 +1054,7 @@ async function fillContent(): Promise<void> {
 
 export async function downloadResults(offset?: number): Promise<void> {
   const results = await DB.getUserResults(offset);
-  if (results === false && !ConnectionState.get()) {
+  if (!results && !ConnectionState.get()) {
     Notifications.add("Could not get results - you are offline", -1, {
       duration: 5,
     });
@@ -1103,7 +1102,7 @@ function sortAndRefreshHistory(
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
   if (forceDescending !== null) {
-    if (forceDescending === true) {
+    if (forceDescending) {
       $(headerClass).append(
         '<i class="fas fa-sort-down" aria-hidden="true"></i>'
       );
@@ -1303,7 +1302,7 @@ $(".pageAccount .profile").on("click", ".details .copyLink", () => {
 });
 
 $(".pageAccount button.loadMoreResults").on("click", async () => {
-  const offset = DB.getSnapshot()?.results?.length || 0;
+  const offset = DB.getSnapshot()?.results?.length ?? 0;
 
   Loader.show();
   ResultBatches.disableButton();

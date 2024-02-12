@@ -8,7 +8,7 @@ export function mergeWithDefaultConfig(
   for (const key of typedKeys(DefaultConfig)) {
     const newValue =
       config[key] ?? (DefaultConfig[key] as SharedTypes.ConfigValue);
-    //@ts-ignore cant be bothered to deal with this
+    //@ts-expect-error cant be bothered to deal with this
     mergedConfig[key] = newValue;
   }
   return mergedConfig;

@@ -83,7 +83,7 @@ export async function sendVerificationEmail(
         );
       })
   ).emailVerified;
-  if (isVerified === true) {
+  if (isVerified) {
     throw new MonkeyError(400, "Email already verified");
   }
 

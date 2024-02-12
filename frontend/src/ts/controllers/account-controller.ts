@@ -99,8 +99,9 @@ async function getDataAndInit(): Promise<boolean> {
         }
       );
     }
-    const msg = e.message || e;
+    const msg = e.message || "Unknown error";
     Notifications.add("Failed to get user data: " + msg, -1);
+    console.error(e);
 
     $("header nav .account").css("opacity", 1);
     return false;
@@ -180,7 +181,7 @@ export async function loadUser(user: UserType): Promise<void> {
   // User is signed in.
   PageTransition.set(false);
   AccountButton.loading(true);
-  if ((await getDataAndInit()) === false) {
+  if (!(await getDataAndInit())) {
     signOut();
   }
   const { discordId, discordAvatar, xp, inboxUnreadSize } =
@@ -557,7 +558,7 @@ async function signUp(): Promise<void> {
       createdAuthUser.user.uid
     );
     if (signInResponse.status !== 200) {
-      throw signInResponse;
+      throw new Error(`Failed to sign in: ${signInResponse.message}`);
     }
 
     await updateProfile(createdAuthUser.user, { displayName: nname });

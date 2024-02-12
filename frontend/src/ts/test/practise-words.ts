@@ -10,20 +10,20 @@ import { isPopupVisible } from "../utils/misc";
 
 const wrapperId = "practiseWordsPopupWrapper";
 
-interface BeforeCustomText {
+type BeforeCustomText = {
   text: string[];
   isTimeRandom: boolean;
   isWordRandom: boolean;
   time: number;
   word: number;
-}
+};
 
-interface Before {
+type Before = {
   mode: SharedTypes.Config.Mode | null;
   punctuation: boolean | null;
   numbers: boolean | null;
   customText: BeforeCustomText | null;
-}
+};
 
 export const before: Before = {
   mode: null,

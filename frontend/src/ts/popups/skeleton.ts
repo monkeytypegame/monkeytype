@@ -22,7 +22,7 @@ type ParentOverride = "main";
 export function append(id: string, parentOverride?: ParentOverride): void {
   const popup = skeletons.get(id) as HTMLElement;
   if (parentOverride) {
-    (<HTMLElement>document.querySelector(parentOverride)).append(popup);
+    (document.querySelector(parentOverride) as HTMLElement).append(popup);
   } else {
     parent.append(popup);
   }

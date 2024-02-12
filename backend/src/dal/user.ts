@@ -693,7 +693,7 @@ export async function getPersonalBests(
 
 export async function getStats(
   uid: string
-): Promise<{ [key: string]: number | undefined }> {
+): Promise<Record<string, number | undefined>> {
   const user = await getUser(uid, "get stats");
 
   return {
@@ -720,10 +720,7 @@ export async function addFavoriteQuote(
   const user = await getUser(uid, "add favorite quote");
 
   if (user.favoriteQuotes) {
-    if (
-      user.favoriteQuotes[language] &&
-      user.favoriteQuotes[language]?.includes(quoteId)
-    ) {
+    if (user.favoriteQuotes[language]?.includes(quoteId)) {
       return;
     }
 
@@ -758,11 +755,7 @@ export async function removeFavoriteQuote(
 ): Promise<void> {
   const user = await getUser(uid, "remove favorite quote");
 
-  if (
-    !user.favoriteQuotes ||
-    !user.favoriteQuotes[language] ||
-    !user.favoriteQuotes[language]?.includes(quoteId)
-  ) {
+  if (!user.favoriteQuotes?.[language]?.includes(quoteId)) {
     return;
   }
 
@@ -849,10 +842,10 @@ export async function getInbox(
   return user.inbox ?? [];
 }
 
-interface AddToInboxBulkEntry {
+type AddToInboxBulkEntry = {
   uid: string;
   mail: MonkeyTypes.MonkeyMail[];
-}
+};
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],

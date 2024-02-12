@@ -5,9 +5,7 @@ type ValueAndSetFunction<T> = {
   setFunction: SetFunction<T>;
 };
 
-type SettingsMemory<T> = {
-  [key: string]: ValueAndSetFunction<T>;
-};
+type SettingsMemory<T> = Record<string, ValueAndSetFunction<T>>;
 
 let settingsMemory: SettingsMemory<SharedTypes.ConfigValue> = {};
 

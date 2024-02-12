@@ -82,6 +82,26 @@ describe("LeaderboardsDal", () => {
         expectedLbEntry(4, rank4, "60"),
       ]);
     });
+    it("should not include discord properties for users without discord connection", async () => {
+      //GIVEN
+      const rank1 = await createUser(lbBests(pb(90), pb(100, 90, 2)), {
+        discordId: undefined,
+        discordAvatar: undefined,
+      });
+
+      //WHEN
+      await LeaderboardsDal.update("time", "60", "english");
+      const lb = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        0
+      )) as SharedTypes.LeaderboardEntry[];
+
+      //THEN
+      expect(lb[0]).not.toHaveProperty("discordId");
+      expect(lb[0]).not.toHaveProperty("discordAvatar");
+    });
 
     it("should update public speedHistogram for time english 15", async () => {
       //GIVEN

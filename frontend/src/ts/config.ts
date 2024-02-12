@@ -49,7 +49,7 @@ function saveToLocalStorage(
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
     (configToSend[key] as typeof config[typeof key]) = config[key];
-    void saveToDatabase();
+    saveToDatabase();
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
@@ -956,7 +956,7 @@ export function setTapeMode(
     return false;
   }
 
-  if (mode !== "off" && config.showAllLines === true) {
+  if (mode !== "off" && config.showAllLines) {
     setShowAllLines(false, true);
   }
 
@@ -1362,7 +1362,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
   config.theme = name;
-  if (config.customTheme === true) setCustomTheme(false);
+  if (config.customTheme) setCustomTheme(false);
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
 
@@ -1984,7 +1984,7 @@ function replaceLegacyValues(
 ): SharedTypes.Config | MonkeyTypes.ConfigChanges {
   const configObj = configToApply as SharedTypes.Config;
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.quickTab === true) {
     configObj.quickRestart = "tab";
   }
@@ -1993,17 +1993,17 @@ function replaceLegacyValues(
     configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.swapEscAndTab === true) {
     configObj.quickRestart = "esc";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.alwaysShowCPM === true) {
     configObj.typingSpeedUnit = "cpm";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
   }

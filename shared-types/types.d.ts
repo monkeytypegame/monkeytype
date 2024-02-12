@@ -448,11 +448,10 @@ declare namespace SharedTypes {
     consistency: number | "-";
     uid: string;
     name: string;
-    discordId: string | null | undefined;
-    discordAvatar: string | null | undefined;
+    discordId?: string;
+    discordAvatar?: string;
     rank: number;
     badgeId: number | null;
-    hidden?: boolean;
   }
 
   type PostResultResponse = {
