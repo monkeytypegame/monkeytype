@@ -74,6 +74,6 @@ extendedGlobal.egVideoListener = egVideoListener;
 extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;
 
 if (isDevEnvironment()) {
-  //@ts-ignore
+  //@ts-expect-error
   extendedGlobal.$ = $;
 }

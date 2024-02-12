@@ -24,7 +24,7 @@ import * as LayoutfluidFunboxTimer from "./layoutfluid-funbox-timer";
 const prefixSize = 2;
 
 class CharDistribution {
-  public chars: { [char: string]: number };
+  public chars: Record<string, number>;
   public count: number;
   constructor() {
     this.chars = {};
@@ -55,7 +55,7 @@ class CharDistribution {
 }
 
 class PseudolangWordGenerator extends Wordset {
-  public ngrams: { [prefix: string]: CharDistribution } = {};
+  public ngrams: Record<string, CharDistribution> = {};
   constructor(words: string[]) {
     super(words);
     // Can generate an unbounded number of words in theory.
@@ -635,8 +635,8 @@ export async function activate(funbox?: string): Promise<boolean | undefined> {
       configValue,
       Config.funbox
     );
-    if (check.result === true) continue;
-    if (check.result === false) {
+    if (check.result) continue;
+    if (!check.result) {
       if (check.forcedConfigs && check.forcedConfigs.length > 0) {
         if (configKey === "mode") {
           UpdateConfig.setMode(
@@ -750,7 +750,7 @@ async function setFunboxBodyClasses(): Promise<boolean> {
     $body
       ?.attr("class")
       ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("fb-")) || [];
+      ?.filter((it) => !it.startsWith("fb-")) ?? [];
 
   $body.attr("class", [...currentClasses, ...activeFbClasses].join(" "));
 

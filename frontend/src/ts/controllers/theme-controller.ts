@@ -377,10 +377,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (eventKey === "setThemes") {
     await clearPreview(false);
     if (Config.autoSwitchTheme) {
-      if (
-        window.matchMedia !== undefined &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      ) {
+      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
         await set(Config.themeDark, true);
       } else {
         await set(Config.themeLight, true);
@@ -398,10 +395,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (eventKey === "customBackgroundSize") applyCustomBackgroundSize();
   if (eventKey === "autoSwitchTheme") {
     if (eventValue as boolean) {
-      if (
-        window.matchMedia !== undefined &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      ) {
+      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
         await set(Config.themeDark, true);
       } else {
         await set(Config.themeLight, true);
@@ -413,10 +407,7 @@ ConfigEvent.subscribe(async (eventKey, eventValue, nosave) => {
   if (
     eventKey === "themeLight" &&
     Config.autoSwitchTheme &&
-    !(
-      window.matchMedia !== undefined &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) &&
+    !window.matchMedia?.("(prefers-color-scheme: dark)").matches &&
     !nosave
   ) {
     await set(Config.themeLight, true);

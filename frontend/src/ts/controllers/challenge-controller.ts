@@ -44,7 +44,7 @@ export function verify(
         let requirementsMet = true;
         const failReasons = [];
         for (const requirementType in TestState.activeChallenge.requirements) {
-          if (requirementsMet === false) return null;
+          if (!requirementsMet) return null;
           const requirementValue =
             TestState.activeChallenge.requirements[
               requirementType as keyof typeof TestState.activeChallenge.requirements
@@ -282,7 +282,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] !== null) {
-        void Funbox.activate(<string>challenge.parameters[2]);
+        void Funbox.activate(challenge.parameters[2] as string);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);

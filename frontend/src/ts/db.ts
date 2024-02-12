@@ -61,19 +61,23 @@ export async function initSnapshot(): Promise<
       Ape.presets.get(),
     ]);
 
+    //these objects are explicitly handled so its ok to throw that way
     if (userResponse.status !== 200) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         message: `${userResponse.message} (user)`,
         responseCode: userResponse.status,
       };
     }
     if (configResponse.status !== 200) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         message: `${configResponse.message} (config)`,
         responseCode: configResponse.status,
       };
     }
     if (presetsResponse.status !== 200) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         message: `${presetsResponse.message} (presets)`,
         responseCode: presetsResponse.status,
@@ -402,7 +406,7 @@ async function _getUserHighestWpm<M extends SharedTypes.Config.Mode>(
         result.language === language &&
         result.difficulty === difficulty &&
         (result.lazyMode === lazyMode ||
-          (result.lazyMode === undefined && lazyMode === false))
+          (result.lazyMode === undefined && !lazyMode))
       ) {
         if (result.wpm > topWpm) {
           topWpm = result.wpm;
@@ -452,7 +456,7 @@ export async function getUserAverage10<M extends SharedTypes.Config.Mode>(
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
-            (result.lazyMode === undefined && lazyMode === false)) &&
+            (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
             activeTagIds.some((tagId) => result.tags.includes(tagId)))
         ) {
@@ -530,7 +534,7 @@ export async function getUserDailyBest<M extends SharedTypes.Config.Mode>(
           result.language === language &&
           result.difficulty === difficulty &&
           (result.lazyMode === lazyMode ||
-            (result.lazyMode === undefined && lazyMode === false)) &&
+            (result.lazyMode === undefined && !lazyMode)) &&
           (activeTagIds.length === 0 ||
             activeTagIds.some((tagId) => result.tags.includes(tagId)))
         ) {
@@ -594,8 +598,7 @@ export async function getLocalPB<M extends SharedTypes.Config.Mode>(
           pb.punctuation === punctuation &&
           pb.difficulty === difficulty &&
           pb.language === language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
+          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
         ) {
           ret = pb.wpm;
         }
@@ -654,8 +657,7 @@ export async function saveLocalPB<M extends SharedTypes.Config.Mode>(
         pb.punctuation === punctuation &&
         pb.difficulty === difficulty &&
         pb.language === language &&
-        (pb.lazyMode === lazyMode ||
-          (pb.lazyMode === undefined && lazyMode === false))
+        (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
       ) {
         found = true;
         pb.wpm = wpm;
@@ -733,8 +735,7 @@ export async function getLocalTagPB<M extends SharedTypes.Config.Mode>(
           pb.punctuation === punctuation &&
           pb.difficulty === difficulty &&
           pb.language === language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
+          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
       )?.wpm ?? 0;
 
     return ret;
@@ -792,8 +793,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
           pb.punctuation === punctuation &&
           pb.difficulty === difficulty &&
           pb.language === language &&
-          (pb.lazyMode === lazyMode ||
-            (pb.lazyMode === undefined && lazyMode === false))
+          (pb.lazyMode === lazyMode || (pb.lazyMode === undefined && !lazyMode))
         ) {
           found = true;
           pb.wpm = wpm;
@@ -905,7 +905,7 @@ export function saveLocalResult(
   const snapshot = getSnapshot();
   if (!snapshot) return;
 
-  if (snapshot !== null && snapshot.results !== undefined) {
+  if (snapshot?.results !== undefined) {
     snapshot.results.unshift(result);
 
     setSnapshot(snapshot);
@@ -918,7 +918,7 @@ export function updateLocalStats(started: number, time: number): void {
   if (snapshot.typingStats === undefined) {
     snapshot.typingStats = {} as MonkeyTypes.TypingStats;
   }
-  if (snapshot !== null && snapshot.typingStats !== undefined) {
+  if (snapshot?.typingStats !== undefined) {
     if (snapshot.typingStats.timeTyping === undefined) {
       snapshot.typingStats.timeTyping = time;
     } else {

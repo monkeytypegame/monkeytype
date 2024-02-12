@@ -1,12 +1,12 @@
 import fetch from "node-fetch";
 import { isDevEnvironment } from "./misc";
 
-interface CaptchaData {
+type CaptchaData = {
   success: boolean;
   challenge_ts?: number;
   hostname: string;
   "error-codes"?: string[];
-}
+};
 
 export async function verify(captcha: string): Promise<boolean> {
   if (isDevEnvironment()) {
