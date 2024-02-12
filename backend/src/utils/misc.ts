@@ -45,11 +45,11 @@ export function base64UrlDecode(data: string): string {
   return Buffer.from(data, "base64url").toString();
 }
 
-interface AgentLog {
+type AgentLog = {
   ip: string;
   agent: string;
   device?: string;
-}
+};
 
 export function buildAgentLog(req: MonkeyTypes.Request): AgentLog {
   const agent = uaparser(req.headers["user-agent"]);
@@ -287,7 +287,7 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   let t;
   if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
   const filtered = a.filter(function (e) {
-    return b.indexOf(e) > -1;
+    return b.includes(e);
   });
   return removeDuplicates ? [...new Set(filtered)] : filtered;
 }

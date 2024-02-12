@@ -16,9 +16,9 @@ function getPresetKeyFilter(
   };
 }
 
-interface PresetCreationResult {
+type PresetCreationResult = {
   presetId: string;
-}
+};
 
 export const getPresetsCollection = (): Collection<WithId<DBConfigPreset>> =>
   db.collection<DBConfigPreset>("presets");

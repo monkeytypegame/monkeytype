@@ -152,7 +152,7 @@ function backspaceToPrevious(): void {
   if (Config.mode === "zen") {
     TimerProgress.update();
 
-    const els: HTMLElement[] = (document.querySelector("#words")?.children ||
+    const els = (document.querySelector("#words")?.children ??
       []) as HTMLElement[];
 
     for (let i = els.length - 1; i >= 0; i--) {
@@ -661,7 +661,7 @@ function handleChar(
   //update the active word top, but only once
   if (testInputLength === 1 && TestWords.words.currentIndex === 0) {
     TestUI.setActiveWordTop(
-      (<HTMLElement>document.querySelector("#words .active"))?.offsetTop
+      (document.querySelector("#words .active") as HTMLElement)?.offsetTop
     );
   }
 
@@ -1298,7 +1298,7 @@ $("#wordsInput").on("input", (event) => {
     if (containsChinese) {
       if (
         currTestInput.length - inputValue.length <= 2 &&
-        currTestInput.slice(0, currTestInput.length) === currTestInput
+        currTestInput.startsWith(currTestInput)
       ) {
         TestInput.input.current = inputValue;
       } else {

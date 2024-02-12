@@ -7,11 +7,11 @@ const wrapperId = "wordFilterPopupWrapper";
 
 let initialised = false;
 
-interface FilterPreset {
+type FilterPreset = {
   display: string;
   getIncludeString: (layout: MonkeyTypes.Layout) => string[];
   getExcludeString: (layout: MonkeyTypes.Layout) => string[];
-}
+};
 
 const presets: Record<string, FilterPreset> = {
   homeKeys: {

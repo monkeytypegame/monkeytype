@@ -116,8 +116,8 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.frontendFunctions?.includes("getWord") ||
-        f.frontendFunctions?.includes("pullSection") ||
+        f.frontendFunctions?.includes("getWord") ??
+        f.frontendFunctions?.includes("pullSection") ??
         f.frontendFunctions?.includes("withWords")
     ).length <= 1;
   const layoutUsability =
@@ -177,7 +177,7 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>
-        f.properties?.some((fp) => fp.startsWith("toPush:")) ||
+        f.properties?.some((fp) => fp.startsWith("toPush:")) ??
         f.frontendFunctions?.includes("pullSection")
     ).length <= 1;
   const oneApplyCSSMax =

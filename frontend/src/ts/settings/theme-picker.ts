@@ -34,7 +34,7 @@ function updateActiveButton(): void {
 }
 
 function updateColors(
-  colorPicker: JQuery<HTMLElement>,
+  colorPicker: JQuery,
   color: string,
   onlyStyle = false,
   noThemeUpdate = false
@@ -196,16 +196,16 @@ export async function refreshButtons(): Promise<void> {
             <div class="favButton active"><i class="fas fa-star"></i></div>
             <div class="text">${theme.name.replace(/_/g, " ")}</div>
             <div class="themeBubbles" style="background: ${
-              theme["bgColor"]
-            };outline: 0.25rem solid ${theme["bgColor"]};">
+              theme.bgColor
+            };outline: 0.25rem solid ${theme.bgColor};">
               <div class="themeBubble" style="background: ${
-                theme["mainColor"]
+                theme.mainColor
               }"></div>
               <div class="themeBubble" style="background: ${
-                theme["subColor"]
+                theme.subColor
               }"></div>
               <div class="themeBubble" style="background: ${
-                theme["textColor"]
+                theme.textColor
               }"></div>
             </div>
             </div>
@@ -232,17 +232,11 @@ export async function refreshButtons(): Promise<void> {
         <div class="favButton"><i class="far fa-star"></i></div>
         <div class="text">${theme.name.replace(/_/g, " ")}</div>
         <div class="themeBubbles" style="background: ${
-          theme["bgColor"]
-        };outline: 0.25rem solid ${theme["bgColor"]};">
-          <div class="themeBubble" style="background: ${
-            theme["mainColor"]
-          }"></div>
-          <div class="themeBubble" style="background: ${
-            theme["subColor"]
-          }"></div>
-          <div class="themeBubble" style="background: ${
-            theme["textColor"]
-          }"></div>
+          theme.bgColor
+        };outline: 0.25rem solid ${theme.bgColor};">
+          <div class="themeBubble" style="background: ${theme.mainColor}"></div>
+          <div class="themeBubble" style="background: ${theme.subColor}"></div>
+          <div class="themeBubble" style="background: ${theme.textColor}"></div>
         </div>
         </div>
         `;
@@ -270,11 +264,11 @@ function toggleFavourite(themeName: string): void {
     UpdateConfig.setFavThemes(Config.favThemes.filter((t) => t !== themeName));
   } else {
     // add to favourites
-    const newList: Array<string> = Config.favThemes;
+    const newList: string[] = Config.favThemes;
     newList.push(themeName);
     UpdateConfig.setFavThemes(newList);
   }
-  void UpdateConfig.saveFullConfigToLocalStorage();
+  UpdateConfig.saveFullConfigToLocalStorage();
 }
 
 function saveCustomThemeColors(): void {

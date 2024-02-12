@@ -6,26 +6,26 @@ import {
 import { subscribe } from "../observables/config-event";
 import * as DB from "../db";
 
-interface JsonQuote {
+type JsonQuote = {
   text: string;
   britishText?: string;
   source: string;
   length: number;
   id: number;
-}
+};
 
-interface QuoteData {
+type QuoteData = {
   language: string;
   quotes: JsonQuote[];
   groups: [number, number][];
-}
+};
 
-interface QuoteCollection {
+type QuoteCollection = {
   quotes: MonkeyTypes.Quote[];
   length: number;
   language: string | null;
   groups: MonkeyTypes.Quote[][];
-}
+};
 
 const defaultQuoteCollection: QuoteCollection = {
   quotes: [],

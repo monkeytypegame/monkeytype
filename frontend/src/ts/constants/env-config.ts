@@ -1,11 +1,11 @@
-interface Config {
+type Config = {
   backendUrl: string;
   isDevelopment: boolean;
-}
+};
 
-// @ts-ignore
+// @ts-expect-error
 const backendUrl = BACKEND_URL;
-// @ts-ignore
+// @ts-expect-error
 const isDevelopment = IS_DEVELOPMENT;
 
 export const envConfig: Config = {

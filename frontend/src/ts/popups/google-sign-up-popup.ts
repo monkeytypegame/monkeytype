@@ -100,7 +100,7 @@ async function apply(): Promise<void> {
     if (name.length === 0) throw new Error("Name cannot be empty");
     const response = await Ape.users.create(name, captcha);
     if (response.status !== 200) {
-      throw response;
+      throw new Error(`Failed to create user: ${response.message}`);
     }
 
     if (response.status === 200) {

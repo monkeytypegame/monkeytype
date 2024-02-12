@@ -10,19 +10,21 @@ import { leftState, rightState } from "../test/shift-tracker";
 import { capsState } from "../test/caps-warning";
 import * as Notifications from "../elements/notifications";
 
-interface ClickSounds {
-  [key: string]: {
+type ClickSounds = Record<
+  string,
+  {
     sounds: Howl[];
     counter: number;
-  }[];
-}
+  }[]
+>;
 
-interface ErrorSounds {
-  [key: string]: {
+type ErrorSounds = Record<
+  string,
+  {
     sounds: Howl[];
     counter: number;
-  }[];
-}
+  }[]
+>;
 
 let errorSounds: ErrorSounds | null = null;
 let clickSounds: ClickSounds | null = null;
@@ -509,11 +511,11 @@ const scales: Record<ValidScales, ValidNotes[]> = {
   wholetone: ["C", "D", "E", "Gb", "Ab", "Bb"],
 };
 
-interface ScaleData {
+type ScaleData = {
   octave: number; // current octave of scale
   direction: number; // whether scale is ascending or descending
   position: number; // current position in scale
-}
+};
 
 function createPreviewScale(scaleName: ValidScales): () => void {
   // We use a JavaScript closure to create a preview function that can be called multiple times and progress through the scale
@@ -529,11 +531,11 @@ function createPreviewScale(scaleName: ValidScales): () => void {
   };
 }
 
-interface ScaleMeta {
+type ScaleMeta = {
   name: ValidScales;
   preview: ReturnType<typeof createPreviewScale>;
   meta: ScaleData;
-}
+};
 
 const defaultScaleData: ScaleData = {
   position: 0,

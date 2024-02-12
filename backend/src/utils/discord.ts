@@ -3,7 +3,7 @@ import { isDevEnvironment } from "./misc";
 
 const BASE_URL = "https://discord.com/api";
 
-interface DiscordUser {
+type DiscordUser = {
   id: string;
   username: string;
   discriminator: string;
@@ -19,7 +19,7 @@ interface DiscordUser {
   flags?: number;
   premium_type?: number;
   public_flags?: number;
-}
+};
 
 export async function getDiscordUser(
   tokenType: string,
