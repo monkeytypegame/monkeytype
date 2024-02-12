@@ -511,17 +511,18 @@ export async function addResult(
   }
 
   const streak = await UserDAL.updateStreak(uid, completedEvent.timestamp);
+  const badgeWaitingInInbox = (
+    user.inbox
+      ?.map((i) =>
+        (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
+      )
+      .flat() ?? []
+  ).includes(14);
 
   const shouldGetBadge =
     streak >= 365 &&
     user.inventory?.badges?.find((b) => b.id === 14) === undefined &&
-    !(
-      user.inbox
-        ?.map((i) =>
-          (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
-        )
-        .flat() ?? []
-    ).includes(14);
+    !badgeWaitingInInbox;
 
   if (shouldGetBadge) {
     const mail = buildMonkeyMail({
