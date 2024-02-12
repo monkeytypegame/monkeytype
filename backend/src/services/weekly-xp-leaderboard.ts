@@ -178,7 +178,8 @@ export class WeeklyXpLeaderboard {
 
     connection.set;
 
-    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
+    // @ts-ignore
     const [[, rank], [, totalXp], [, count], [, result]] = await connection
       .multi()
       .zrevrank(weeklyXpLeaderboardScoresKey, uid)
