@@ -120,12 +120,12 @@ export async function refreshButtons(): Promise<void> {
 
     if (!Auth?.currentUser) {
       $(
-        ".pageSettings .section.themes .customThemeEdit .saveCustomThemeButton"
+        ".pageSettings .section.themes .customThemeEdit #saveCustomThemeButton"
       ).text("save");
       return;
     } else {
       $(
-        ".pageSettings .section.themes .customThemeEdit .saveCustomThemeButton"
+        ".pageSettings .section.themes .customThemeEdit #saveCustomThemeButton"
       ).text("save as new");
     }
 
@@ -462,7 +462,7 @@ $("#shareCustomThemeButton").on("click", () => {
   ShareCustomThemePopup.show();
 });
 
-$(".pageSettings .saveCustomThemeButton").on("click", async () => {
+$(".pageSettings #saveCustomThemeButton").on("click", async () => {
   saveCustomThemeColors();
   if (Auth?.currentUser) {
     const newCustomTheme = {
