@@ -435,8 +435,7 @@ async function reauthenticate(
 
   try {
     const passwordAuthEnabled =
-      user?.providerData.some((p) => p?.providerId === "password") !==
-      undefined;
+      user.providerData.some((p) => p?.providerId === "password") !== undefined;
 
     if (!passwordAuthEnabled && method === "passwordOnly") {
       return {
@@ -1888,7 +1887,7 @@ console.log(list);
 
 function isPasswordLogin(): boolean {
   return (
-    getAuthenticatedUser().providerData.find(
+    Auth?.currentUser?.providerData.find(
       (p) => p?.providerId === "password"
     ) !== undefined
   );

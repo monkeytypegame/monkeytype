@@ -2,7 +2,7 @@ import Ape from "./ape";
 import * as Notifications from "./elements/notifications";
 import * as LoadingPage from "./pages/loading";
 import DefaultConfig from "./constants/default-config";
-import { Auth } from "./firebase";
+import { isAuthenticated } from "./firebase";
 import { defaultSnap } from "./constants/default-snapshot";
 import * as ConnectionState from "./states/connection";
 import { getFunboxList, lastElementFromArray } from "./utils/misc";
@@ -45,7 +45,7 @@ export async function initSnapshot(): Promise<
   //send api request with token that returns tags, presets, and data needed for snap
   const snap = { ...defaultSnap };
   try {
-    if (!Auth?.currentUser) return false;
+    if (!isAuthenticated()) return false;
     // if (ActivePage.get() === "loading") {
     //   LoadingPage.updateBar(22.5);
     // } else {
@@ -228,8 +228,8 @@ export async function initSnapshot(): Promise<
 }
 
 export async function getUserResults(offset?: number): Promise<boolean> {
-  const user = Auth?.currentUser;
-  if (!user) return false;
+  if (!isAuthenticated()) return false;
+
   if (!dbSnapshot) return false;
   if (
     dbSnapshot.results !== undefined &&
@@ -336,8 +336,7 @@ export async function editCustomTheme(
   themeId: string,
   newTheme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
-  const user = Auth?.currentUser;
-  if (!user) return false;
+  if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
@@ -367,8 +366,7 @@ export async function editCustomTheme(
 }
 
 export async function deleteCustomTheme(themeId: string): Promise<boolean> {
-  const user = Auth?.currentUser;
-  if (!user) return false;
+  if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
   const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
@@ -891,7 +889,7 @@ export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
 }
 
 export async function saveConfig(config: SharedTypes.Config): Promise<void> {
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     const response = await Ape.configs.save(config);
     if (response.status !== 200) {
       Notifications.add("Failed to save config: " + response.message, -1);

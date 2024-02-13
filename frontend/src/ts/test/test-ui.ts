@@ -15,7 +15,7 @@ import * as CompositionState from "../states/composition";
 import * as ConfigEvent from "../observables/config-event";
 import * as Hangul from "hangul-js";
 import format from "date-fns/format";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import { skipXpBreakdown } from "../elements/account-button";
 import * as FunboxList from "./funbox/funbox-list";
 import { debounce } from "throttle-debounce";
@@ -425,7 +425,7 @@ export async function screenshot(): Promise<void> {
     $(".highlightContainer").removeClass("hidden");
     if (revertCookie) $("#cookiePopupWrapper").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       $(".pageTest .loginTip").removeClass("hidden");
     }
     (document.querySelector("html") as HTMLElement).style.scrollBehavior =
@@ -445,7 +445,7 @@ export async function screenshot(): Promise<void> {
   $(".pageTest .ssWatermark").text(
     format(dateNow, "dd MMM yyyy HH:mm") + " | monkeytype.com "
   );
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     $(".pageTest .ssWatermark").text(
       DB.getSnapshot()?.name +
         " | " +

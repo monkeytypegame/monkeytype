@@ -14,7 +14,7 @@ import * as ActivePage from "../states/active-page";
 import * as ApeKeysPopup from "../popups/ape-keys-popup";
 import * as CookiePopup from "../popups/cookie-popup";
 import Page from "./page";
-import { Auth } from "../firebase";
+import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import Ape from "../ape";
 import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
@@ -691,7 +691,7 @@ function showAccountSection(): void {
 
 export function updateDiscordSection(): void {
   //no code and no discord
-  if (!Auth?.currentUser) {
+  if (!isAuthenticated()) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
     if (!DB.getSnapshot()) return;
@@ -718,8 +718,8 @@ export function updateAuthSections(): void {
   $(".pageSettings .section.passwordAuthSettings .button").addClass("hidden");
   $(".pageSettings .section.googleAuthSettings .button").addClass("hidden");
 
-  const user = Auth?.currentUser;
-  if (!user) return;
+  if (!isAuthenticated()) return;
+  const user = getAuthenticatedUser();
 
   const passwordProvider = user.providerData.find(
     (provider) => provider.providerId === "password"
@@ -788,7 +788,7 @@ function setActiveFunboxButton(): void {
 }
 
 function refreshTagsSettingsSection(): void {
-  if (Auth?.currentUser && DB.getSnapshot()) {
+  if (isAuthenticated() && DB.getSnapshot()) {
     const tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot()?.tags?.forEach((tag) => {
       // let tagPbString = "No PB found";
@@ -825,7 +825,7 @@ function refreshTagsSettingsSection(): void {
 }
 
 function refreshPresetsSettingsSection(): void {
-  if (Auth?.currentUser && DB.getSnapshot()) {
+  if (isAuthenticated() && DB.getSnapshot()) {
     const presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.SnapshotPreset) => {
       presetsEl.append(`
@@ -896,7 +896,7 @@ export async function update(groupUpdate = true): Promise<void> {
     $(".pageSettings .section.customBackgroundFilter").addClass("hidden");
   }
 
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     showAccountSection();
   } else {
     hideAccountSection();

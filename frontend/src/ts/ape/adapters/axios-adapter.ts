@@ -1,4 +1,4 @@
-import { Auth } from "../../firebase";
+import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { getIdToken } from "firebase/auth";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { CLIENT_VERSION } from "../../version";
@@ -17,8 +17,9 @@ type AxiosClientDataMethod = (
 async function adaptRequestOptions(
   options: Ape.RequestOptions
 ): Promise<AxiosRequestConfig> {
-  const currentUser = Auth?.currentUser;
-  const idToken = (currentUser && (await getIdToken(currentUser))) ?? "";
+  const idToken = isAuthenticated()
+    ? await getIdToken(getAuthenticatedUser())
+    : "";
 
   return {
     params: options.searchQuery,
