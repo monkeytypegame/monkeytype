@@ -66,7 +66,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
     if (this.setCallback) this.setCallback();
   }
 
-  updateInput(): void {
+  updateUI(): void {
     this.configValue = Config[this.configName as keyof typeof Config] as T;
     $(`.pageSettings .section.${this.configName} .button`).removeClass(
       "active"
