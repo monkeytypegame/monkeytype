@@ -1,5 +1,5 @@
 import { getSnapshot } from "../db";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as Misc from "../utils/misc";
 import { getAll } from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
@@ -100,7 +100,7 @@ export async function update(
   discordId?: string,
   discordAvatar?: string
 ): Promise<void> {
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     if (xp !== undefined) {
       $("header nav .level").text(Math.floor(Misc.getLevel(xp)));
       $("header nav .bar").css({

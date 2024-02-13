@@ -5,7 +5,7 @@ import * as Misc from "../utils/misc";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Notifications from "./notifications";
 import format from "date-fns/format";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import differenceInSeconds from "date-fns/differenceInSeconds";
 import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller";
 import * as ConnectionState from "../states/connection";
@@ -143,7 +143,7 @@ function updateFooter(lb: LbKey): void {
     side = "right";
   }
 
-  if (Auth?.currentUser === undefined) {
+  if (!isAuthenticated()) {
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
       <td colspan="6" style="text-align:center;"></>
@@ -442,7 +442,7 @@ async function update(): Promise<void> {
   const lbRankRequests: Promise<
     Ape.HttpClientResponse<Ape.Leaderboards.GetRank>
   >[] = [];
-  if (Auth?.currentUser !== undefined) {
+  if (isAuthenticated()) {
     lbRankRequests.push(
       ...timeModes.map(async (mode2) => {
         return Ape.leaderboards.getRank({
@@ -643,7 +643,7 @@ export function show(): void {
   }
   Skeleton.append(wrapperId);
   if (!Misc.isPopupVisible("leaderboardsWrapper")) {
-    if (Auth?.currentUser !== undefined) {
+    if (isAuthenticated()) {
       $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
         "disabled"
       );

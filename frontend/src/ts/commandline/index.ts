@@ -9,7 +9,7 @@ import * as AnalyticsController from "../controllers/analytics-controller";
 import * as PageTransition from "../states/page-transition";
 import * as TestWords from "../test/test-words";
 import * as ActivePage from "../states/active-page";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import {
   isAnyPopupVisible,
   isElementVisible,
@@ -804,7 +804,7 @@ $(".pageTest").on("click", "#testModesNotice .textButton", (event) => {
 $("footer").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
-      if (Auth?.currentUser) {
+      if (isAuthenticated()) {
         if ((DB.getSnapshot()?.customThemes.length ?? 0) < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);

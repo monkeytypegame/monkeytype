@@ -7,7 +7,7 @@ import * as DB from "../db";
 import * as Loader from "../elements/loader";
 import * as Notifications from "../elements/notifications";
 import * as ThemeColors from "../elements/theme-colors";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as QuoteRatePopup from "../popups/quote-rate-popup";
 import * as GlarsesMode from "../states/glarses-mode";
 import * as SlowTimer from "../states/slow-timer";
@@ -689,7 +689,7 @@ export function updateRateQuote(randomQuote: MonkeyTypes.Quote | null): void {
 function updateQuoteFavorite(randomQuote: MonkeyTypes.Quote | null): void {
   const icon = $(".pageTest #result #favoriteQuoteButton .icon");
 
-  if (Config.mode !== "quote" || Auth?.currentUser === null) {
+  if (Config.mode !== "quote" || !isAuthenticated()) {
     icon.parent().addClass("hidden");
     return;
   }
@@ -744,7 +744,7 @@ export async function update(
   $("#words").removeClass("blurred");
   $("#wordsInput").trigger("blur");
   $("#result .stats .time .bottom .afk").text("");
-  if (Auth?.currentUser) {
+  if (isAuthenticated()) {
     $("#result .loginTip").addClass("hidden");
   } else {
     $("#result .loginTip").removeClass("hidden");
@@ -811,7 +811,7 @@ export async function update(
     $("main #result .stats").removeClass("hidden");
     $("main #result .chart").removeClass("hidden");
     // $("main #result #resultWordsHistory").removeClass("hidden");
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       $("main #result .loginTip").removeClass("hidden");
     }
     $("main #result #showWordHistoryButton").removeClass("hidden");
