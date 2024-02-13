@@ -70,7 +70,7 @@ ConfigEvent.subscribe((eventKey, eventValue, nosave) => {
 
   if (eventValue === undefined) return;
   if (eventKey === "highlightMode") {
-    highlightMode(eventValue as MonkeyTypes.HighlightMode);
+    highlightMode(eventValue as SharedTypes.Config.HighlightMode);
     updateActiveElement();
   }
 
@@ -105,7 +105,7 @@ export function setActiveWordTop(val: number): void {
 let restartingResolve: null | ((value?: unknown) => void);
 export function setTestRestarting(val: boolean): void {
   testRestarting = val;
-  if (val === true) {
+  if (val) {
     testRestartingPromise = new Promise((resolve) => {
       restartingResolve = resolve;
     });
@@ -155,7 +155,7 @@ export function updateActiveElement(
     ] as Element;
     activeWord.classList.add("active");
     activeWord.classList.remove("error");
-    activeWordTop = (<HTMLElement>document.querySelector("#words .active"))
+    activeWordTop = (document.querySelector("#words .active") as HTMLElement)
       .offsetTop;
     if (Config.highlightMode === "word") {
       activeWord.querySelectorAll("letter").forEach((e) => {
@@ -213,7 +213,7 @@ export function showWords(): void {
   let wordsHTML = "";
   if (Config.mode !== "zen") {
     for (let i = 0; i < TestWords.words.length; i++) {
-      wordsHTML += getWordHTML(<string>TestWords.words.get(i));
+      wordsHTML += getWordHTML(TestWords.words.get(i) as string);
     }
   } else {
     wordsHTML =
@@ -254,7 +254,7 @@ export function updateWordsInputPosition(initial = false): void {
 
   const wordsWrapperTop =
     (document.querySelector("#wordsWrapper") as HTMLElement | null)
-      ?.offsetTop || 0;
+      ?.offsetTop ?? 0;
 
   if (Config.tapeMode !== "off") {
     el.style.top =
@@ -295,12 +295,12 @@ function updateWordsHeight(force = false): void {
   if (ActivePage.get() !== "test") return;
   if (!force && Config.mode !== "custom") return;
   $("#wordsWrapper").removeClass("hidden");
-  const wordHeight = <number>(
-    $(<Element>document.querySelector(".word")).outerHeight(true)
-  );
-  const wordsHeight = <number>(
-    $(<Element>document.querySelector("#words")).outerHeight(true)
-  );
+  const wordHeight = $(document.querySelector(".word") as Element).outerHeight(
+    true
+  ) as number;
+  const wordsHeight = $(
+    document.querySelector("#words") as Element
+  ).outerHeight(true) as number;
   if (
     Config.showAllLines &&
     Config.mode !== "time" &&
@@ -379,7 +379,7 @@ function updateWordsHeight(force = false): void {
   }
 
   if (Config.mode === "zen") {
-    $(<Element>document.querySelector(".word")).remove();
+    $(document.querySelector(".word") as Element).remove();
   }
 }
 
@@ -491,12 +491,12 @@ export async function screenshot(): Promise<void> {
   const src = $("#result");
   const sourceX = src.offset()?.left ?? 0; /*X position from div#target*/
   const sourceY = src.offset()?.top ?? 0; /*Y position from div#target*/
-  const sourceWidth = <number>(
-    src.outerWidth(true)
-  ); /*clientWidth/offsetWidth from div#target*/
-  const sourceHeight = <number>(
-    src.outerHeight(true)
-  ); /*clientHeight/offsetHeight from div#target*/
+  const sourceWidth = src.outerWidth(
+    true
+  ) as number; /*clientWidth/offsetWidth from div#target*/
+  const sourceHeight = src.outerHeight(
+    true
+  ) as number; /*clientHeight/offsetHeight from div#target*/
   try {
     const paddingX = Misc.convertRemToPixels(2);
     const paddingY = Misc.convertRemToPixels(2);
@@ -527,7 +527,7 @@ export async function screenshot(): Promise<void> {
         if (blob) {
           //check if on firefox
           if (
-            navigator.userAgent.toLowerCase().indexOf("firefox") > -1 &&
+            navigator.userAgent.toLowerCase().includes("firefox") &&
             !firefoxClipboardNotificatoinShown
           ) {
             firefoxClipboardNotificatoinShown = true;
@@ -571,7 +571,7 @@ export function updateWordElement(
   inputOverride?: string
 ): void {
   const input = inputOverride ?? TestInput.input.current;
-  const wordAtIndex = <Element>document.querySelector("#words .word.active");
+  const wordAtIndex = document.querySelector("#words .word.active") as Element;
   const currentWord = TestWords.words.getCurrent();
   if (!currentWord && Config.mode !== "zen") return;
   let ret = "";
@@ -579,14 +579,14 @@ export function updateWordElement(
   let newlineafter = false;
 
   if (Config.mode === "zen") {
-    for (let i = 0; i < TestInput.input.current.length; i++) {
-      if (TestInput.input.current[i] === "\t") {
+    for (const char of TestInput.input.current) {
+      if (char === "\t") {
         ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right fa-fw"></i></letter>`;
-      } else if (TestInput.input.current[i] === "\n") {
+      } else if (char === "\n") {
         newlineafter = true;
         ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-level-down-alt fa-rotate-90 fa-fw"></i></letter>`;
       } else {
-        ret += `<letter class="correct">${TestInput.input.current[i]}</letter>`;
+        ret += `<letter class="correct">${char}</letter>`;
       }
     }
   } else {
@@ -601,6 +601,7 @@ export function updateWordElement(
         : input.length;
       if (
         input.search(Misc.trailingComposeChars) < currentWord.length &&
+        // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
         currentWord.slice(0, inputWithoutComposeLength) ===
           input.slice(0, inputWithoutComposeLength)
       ) {
@@ -618,6 +619,7 @@ export function updateWordElement(
       if (
         input.search(Misc.trailingComposeChars) <
           Hangul.d(koCurrentWord).length &&
+        // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
         koCurrentWord.slice(0, inputWithoutComposeLength) ===
           koInput.slice(0, inputWithoutComposeLength)
       ) {
@@ -740,15 +742,15 @@ export function updateWordElement(
 }
 
 export function scrollTape(): void {
-  const wordsWrapperWidth = (<HTMLElement>(
-    document.querySelector("#wordsWrapper")
-  )).offsetWidth;
+  const wordsWrapperWidth = (
+    document.querySelector("#wordsWrapper") as HTMLElement
+  ).offsetWidth;
   let fullWordsWidth = 0;
-  const toHide: JQuery<HTMLElement>[] = [];
+  const toHide: JQuery[] = [];
   let widthToHide = 0;
   if (currentWordElementIndex > 0) {
     for (let i = 0; i < currentWordElementIndex; i++) {
-      const word = <HTMLElement>document.querySelectorAll("#words .word")[i];
+      const word = document.querySelectorAll("#words .word")[i] as HTMLElement;
       fullWordsWidth += $(word).outerWidth(true) ?? 0;
       const forWordLeft = Math.floor(word.offsetLeft);
       const forWordWidth = Math.floor(word.offsetWidth);
@@ -819,7 +821,7 @@ export function lineJump(currentTop: number): void {
   ) {
     const hideBound = currentTop;
 
-    const toHide: JQuery<HTMLElement>[] = [];
+    const toHide: JQuery[] = [];
     const wordElements = $("#words .word");
     for (let i = 0; i < currentWordElementIndex; i++) {
       const el = $(wordElements[i] as HTMLElement);
@@ -832,9 +834,9 @@ export function lineJump(currentTop: number): void {
         toHide.push($($("#words .word")[i] as HTMLElement));
       }
     }
-    const wordHeight = <number>(
-      $(<Element>document.querySelector(".word")).outerHeight(true)
-    );
+    const wordHeight = $(
+      document.querySelector(".word") as Element
+    ).outerHeight(true) as number;
     if (Config.smoothLineScroll && toHide.length > 0) {
       lineTransition = true;
       const smoothScroller = $("#words .smoothScroller");
@@ -864,20 +866,20 @@ export function lineJump(currentTop: number): void {
         .animate(
           {
             top:
-              (<HTMLElement>document.querySelector("#paceCaret"))?.offsetTop -
+              (document.querySelector("#paceCaret") as HTMLElement)?.offsetTop -
               wordHeight,
           },
           SlowTimer.get() ? 0 : 125
         );
 
-      const newCss: { [key: string]: string } = {
+      const newCss: Record<string, string> = {
         marginTop: `-${wordHeight * (currentLinesAnimating + 1)}px`,
       };
 
       if (Config.tapeMode !== "off") {
-        const wordsWrapperWidth = (<HTMLElement>(
-          document.querySelector("#wordsWrapper")
-        )).offsetWidth;
+        const wordsWrapperWidth = (
+          document.querySelector("#wordsWrapper") as HTMLElement
+        ).offsetWidth;
         const newMargin = wordsWrapperWidth / 2;
         newCss["marginLeft"] = `${newMargin}px`;
       }
@@ -886,9 +888,9 @@ export function lineJump(currentTop: number): void {
         .stop(true, false)
         .animate(newCss, SlowTimer.get() ? 0 : 125, () => {
           currentLinesAnimating = 0;
-          activeWordTop = (<HTMLElement>(
-            document.querySelector("#words .active")
-          )).offsetTop;
+          activeWordTop = (
+            document.querySelector("#words .active") as HTMLElement
+          ).offsetTop;
 
           currentWordElementIndex -= toHide.length;
           lineTransition = false;
@@ -900,7 +902,7 @@ export function lineJump(currentTop: number): void {
       currentWordElementIndex -= toHide.length;
       $("#paceCaret").css({
         top:
-          (<HTMLElement>document.querySelector("#paceCaret")).offsetTop -
+          (document.querySelector("#paceCaret") as HTMLElement).offsetTop -
           wordHeight,
       });
     }
@@ -1066,8 +1068,8 @@ async function loadWordsHistory(): Promise<boolean> {
     } catch (e) {
       try {
         wordEl = "<div class='word'>";
-        for (let c = 0; c < word.length; c++) {
-          wordEl += "<letter>" + word[c] + "</letter>";
+        for (const char of word) {
+          wordEl += "<letter>" + char + "</letter>";
         }
         wordEl += "</div>";
       } catch {}
@@ -1242,12 +1244,12 @@ export function highlightBadWord(index: number, showError: boolean): void {
   $($("#words .word")[index] as HTMLElement).addClass("error");
 }
 
-export function highlightMode(mode?: MonkeyTypes.HighlightMode): void {
+export function highlightMode(mode?: SharedTypes.Config.HighlightMode): void {
   const existing =
     $("#words")
       ?.attr("class")
       ?.split(/\s+/)
-      ?.filter((it) => !it.startsWith("highlight-")) || [];
+      ?.filter((it) => !it.startsWith("highlight-")) ?? [];
   if (mode != null) {
     existing.push("highlight-" + mode.replaceAll("_", "-"));
   }
@@ -1265,7 +1267,7 @@ $(".pageTest #copyWordsListButton").on("click", async () => {
     if (Config.mode === "zen") {
       words = TestInput.input.history.join(" ");
     } else {
-      words = (<string[]>TestWords.words.get())
+      words = (TestWords.words.get() as string[])
         .slice(0, TestInput.input.history.length)
         .join(" ");
     }
@@ -1299,7 +1301,7 @@ $(".pageTest #result #wpmChart").on("mouseenter", () => {
 $(".pageTest #resultWordsHistory").on("mouseenter", ".words .word", (e) => {
   if (resultVisible) {
     const input = $(e.currentTarget).attr("input");
-    const burst = parseInt(<string>$(e.currentTarget).attr("burst"));
+    const burst = parseInt($(e.currentTarget).attr("burst") as string);
     if (input !== undefined) {
       $(e.currentTarget).append(
         `<div class="wordInputHighlight withSpeed">

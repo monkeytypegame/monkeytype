@@ -3,13 +3,13 @@ import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
 import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
 
-interface PersonalBest extends SharedTypes.PersonalBest {
-  mode2: SharedTypes.Mode2<SharedTypes.Mode>;
-}
+type PersonalBest = {
+  mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
+} & SharedTypes.PersonalBest;
 
 const wrapperId = "pbTablesPopupWrapper";
 
-function update(mode: SharedTypes.Mode): void {
+function update(mode: SharedTypes.Config.Mode): void {
   $("#pbTablesPopup table tbody").empty();
   $($("#pbTablesPopup table thead tr td")[0] as HTMLElement).text(mode);
 
@@ -23,24 +23,24 @@ function update(mode: SharedTypes.Mode): void {
   if (allmode2 === undefined) return;
 
   const list: PersonalBest[] = [];
-  (Object.keys(allmode2) as SharedTypes.Mode2<SharedTypes.Mode>[]).forEach(
-    function (key) {
-      let pbs = allmode2[key] ?? [];
-      pbs = pbs.sort(function (a, b) {
-        return b.wpm - a.wpm;
-        // if (a.difficulty === b.difficulty) {
-        //   return (a.language < b.language ? -1 : 1);
-        // }
-        // return (a.difficulty < b.difficulty ? -1 : 1)
-      });
-      pbs.forEach(function (pb) {
-        pb.mode2 = key;
-        list.push(pb);
-      });
-    }
-  );
+  (
+    Object.keys(allmode2) as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>[]
+  ).forEach(function (key) {
+    let pbs = allmode2[key] ?? [];
+    pbs = pbs.sort(function (a, b) {
+      return b.wpm - a.wpm;
+      // if (a.difficulty === b.difficulty) {
+      //   return (a.language < b.language ? -1 : 1);
+      // }
+      // return (a.difficulty < b.difficulty ? -1 : 1)
+    });
+    pbs.forEach(function (pb) {
+      pb.mode2 = key;
+      list.push(pb);
+    });
+  });
 
-  let mode2memory: SharedTypes.Mode2<SharedTypes.Mode>;
+  let mode2memory: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
 
   list.forEach((pb) => {
     let dateText = `-<br><span class="sub">-</span>`;
@@ -78,7 +78,7 @@ function update(mode: SharedTypes.Mode): void {
   });
 }
 
-function show(mode: SharedTypes.Mode): void {
+function show(mode: SharedTypes.Config.Mode): void {
   Skeleton.append(wrapperId);
   if (!isPopupVisible(wrapperId)) {
     update(mode);

@@ -112,7 +112,7 @@ async function apply(): Promise<void> {
   if (action === "add") {
     const response = await Ape.presets.add(presetName, configChanges);
 
-    if (response.status !== 200) {
+    if (response.status !== 200 || response.data === null) {
       Notifications.add(
         "Failed to add preset: " +
           response.message.replace(presetName, propPresetName),
@@ -127,7 +127,7 @@ async function apply(): Promise<void> {
         config: configChanges,
         display: propPresetName,
         _id: response.data.presetId,
-      });
+      } as MonkeyTypes.SnapshotPreset);
     }
   } else if (action === "edit") {
     const response = await Ape.presets.edit(
@@ -141,8 +141,8 @@ async function apply(): Promise<void> {
     } else {
       Notifications.add("Preset updated", 1);
       const preset = snapshotPresets.filter(
-        (preset: MonkeyTypes.Preset) => preset._id === presetId
-      )[0] as MonkeyTypes.Preset;
+        (preset: MonkeyTypes.SnapshotPreset) => preset._id === presetId
+      )[0] as MonkeyTypes.SnapshotPreset;
       preset.name = presetName;
       preset.display = presetName.replace(/_/g, " ");
       if (updateConfig) {
@@ -156,11 +156,13 @@ async function apply(): Promise<void> {
       Notifications.add("Failed to remove preset: " + response.message, -1);
     } else {
       Notifications.add("Preset removed", 1);
-      snapshotPresets.forEach((preset: MonkeyTypes.Preset, index: number) => {
-        if (preset._id === presetId) {
-          snapshotPresets.splice(index, 1);
+      snapshotPresets.forEach(
+        (preset: MonkeyTypes.SnapshotPreset, index: number) => {
+          if (preset._id === presetId) {
+            snapshotPresets.splice(index, 1);
+          }
         }
-      });
+      );
     }
   }
 

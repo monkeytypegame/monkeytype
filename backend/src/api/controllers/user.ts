@@ -83,7 +83,7 @@ export async function sendVerificationEmail(
         );
       })
   ).emailVerified;
-  if (isVerified === true) {
+  if (isVerified) {
     throw new MonkeyError(400, "Email already verified");
   }
 
@@ -580,7 +580,8 @@ export async function updateLbMemory(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
-  const mode2 = req.body.mode2 as SharedTypes.Mode2<SharedTypes.Mode>;
+  const mode2 = req.body
+    .mode2 as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
 
   await UserDAL.updateLbMemory(uid, mode, mode2, language, rank);
   return new MonkeyResponse("Leaderboard memory updated");

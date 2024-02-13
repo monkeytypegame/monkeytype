@@ -1,4 +1,4 @@
-export default <MonkeyTypes.Config>{
+export default {
   theme: "serika_dark",
   themeLight: "serika",
   themeDark: "serika_dark",
@@ -97,4 +97,4 @@ export default <MonkeyTypes.Config>{
   tapeMode: "off",
   tribeDelta: "bar",
   tribeCarets: "on",
-};
+} as SharedTypes.Config;

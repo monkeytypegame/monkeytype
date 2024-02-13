@@ -1,6 +1,6 @@
 import Config from "../config";
 
-export default class SettingsGroup<T extends MonkeyTypes.ConfigValue> {
+export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
   public configName: string;
   public configValue: T;
   public configFunction: (param: T, nosave?: boolean) => boolean;
@@ -77,6 +77,8 @@ export default class SettingsGroup<T extends MonkeyTypes.ConfigValue> {
         .trigger("change.select2");
     } else if (this.mode === "button") {
       $(
+        // this cant be an object?
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         `.pageSettings .section.${this.configName} .button[${this.configName}='${this.configValue}']`
       ).addClass("active");
     }

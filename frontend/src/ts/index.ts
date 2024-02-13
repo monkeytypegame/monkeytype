@@ -52,6 +52,7 @@ import "./elements/fps-counter";
 import "./popups/tribe-room-code-popup";
 import "./popups/tribe-browse-public-rooms-popup";
 import "./controllers/profile-search-controller";
+import { isDevEnvironment } from "./utils/misc";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
 
@@ -90,3 +91,8 @@ extendedGlobal.tribeCarets = TribeCarets;
 extendedGlobal.createTribeRoom = TribeSocket.default.out.room.create;
 
 extendedGlobal.toggleDebugLogs = Logger.toggleDebugLogs;
+
+if (isDevEnvironment()) {
+  //@ts-expect-error
+  extendedGlobal.$ = $;
+}

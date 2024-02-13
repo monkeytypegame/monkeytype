@@ -90,7 +90,7 @@ export async function show(): Promise<void> {
 
     Alerts.addPSA(psa.message, psa.level ?? -1);
 
-    if (localmemory.includes(psa._id) && (psa.sticky ?? false) === false) {
+    if (localmemory.includes(psa._id) && !(psa.sticky ?? false)) {
       return;
     }
 

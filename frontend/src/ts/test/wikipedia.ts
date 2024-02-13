@@ -36,16 +36,16 @@ export async function getTLD(
   }
 }
 
-interface Post {
+type Post = {
   title: string;
   author: string;
   pageid: number;
-}
+};
 
-interface SectionObject {
+type SectionObject = {
   title: string;
   author: string;
-}
+};
 
 export async function getSection(language: string): Promise<Section> {
   // console.log("Getting section");

@@ -9,8 +9,8 @@ export function buildMonkeyMail(
     id: v4(),
     subject: options.subject ?? "",
     body: options.body ?? "",
-    timestamp: options.timestamp || Date.now(),
+    timestamp: options.timestamp ?? Date.now(),
     read: false,
-    rewards: options.rewards || [],
+    rewards: options.rewards ?? [],
   };
 }

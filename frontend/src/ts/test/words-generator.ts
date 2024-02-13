@@ -324,7 +324,7 @@ async function applyBritishEnglishToWord(
   previousWord: string
 ): Promise<string> {
   if (!Config.britishEnglish) return word;
-  if (!/english/.test(Config.language)) return word;
+  if (!Config.language.includes("english")) return word;
   if (
     Config.mode === "quote" &&
     TestWords.randomQuote?.britishText !== undefined &&
@@ -340,7 +340,7 @@ function applyLazyModeToWord(
   word: string,
   language: MonkeyTypes.LanguageObject
 ): string {
-  if (Config.lazyMode === true && !language.noLazyMode) {
+  if (Config.lazyMode && !language.noLazyMode) {
     word = LazyMode.replaceAccents(word, language.additionalAccents);
   }
   return word;
@@ -503,7 +503,7 @@ export async function generateWords(
   ) {
     let stop = false;
     let i = 0;
-    while (stop === false) {
+    while (!stop) {
       const nextWord = await getNextWord(
         wordset,
         i,
@@ -789,7 +789,7 @@ export async function getNextWord(
 
   if (
     Config.punctuation &&
-    !language.originalPunctuation === true &&
+    !language.originalPunctuation &&
     !isCurrentlyUsingFunboxSection
   ) {
     randomWord = await punctuateWord(

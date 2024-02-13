@@ -25,11 +25,7 @@
     "plugin:json/recommended",
     "plugin:import/recommended",
     "plugin:import/typescript",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
     "prettier"
-    // "plugin:@typescript-eslint/recommended-requiring-type-checking"
-    // "plugin:@typescript-eslint/strict"
   ],
   "plugins": ["json", "require-path-exists", "@typescript-eslint"],
   "rules": {
@@ -60,11 +56,16 @@
     {
       // enable the rule specifically for TypeScript files
       "files": ["*.ts", "*.tsx"],
+      "extends": [
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/strict"
+        // "plugin:@typescript-eslint/recommended-requiring-type-checking"
+      ],
       "rules": {
         "@typescript-eslint/explicit-function-return-type": ["error"],
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "warn",
-        "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
           "warn",
           { "argsIgnorePattern": "^(_|e|event)", "varsIgnorePattern": "^_" }
@@ -82,8 +83,12 @@
         "@typescript-eslint/strict-boolean-expressions": [
           "error",
           { "allowNullableBoolean": true, "allowNullableNumber": true }
-        ]
-        // "@typescript-eslint/no-unnecessary-condition": "error" TODO ADD THIS
+        ],
+        //
+        "@typescript-eslint/non-nullable-type-assertion-style": "off",
+        "@typescript-eslint/no-unnecessary-condition": "off",
+        "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
+        "@typescript-eslint/no-invalid-void-type": "off"
       },
       "parserOptions": {
         "ecmaVersion": 12,

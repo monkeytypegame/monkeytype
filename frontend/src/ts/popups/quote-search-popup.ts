@@ -303,12 +303,12 @@ function hide(noAnim = false, focusWords = true): void {
 export function apply(val: number): boolean {
   if (isNaN(val)) {
     val = parseInt(
-      (<HTMLInputElement>document.getElementById("searchBox")).value as string
+      (document.getElementById("searchBox") as HTMLInputElement).value as string
     );
   }
   let ret;
   if (val !== null && !isNaN(val) && val >= 0) {
-    UpdateConfig.setQuoteLength(-2 as MonkeyTypes.QuoteLength, false);
+    UpdateConfig.setQuoteLength(-2 as SharedTypes.Config.QuoteLength, false);
     selectedId = val;
     ManualRestart.set();
     ret = true;
@@ -321,7 +321,7 @@ export function apply(val: number): boolean {
 }
 
 const searchForQuotes = debounce(250, (): void => {
-  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+  const searchText = (document.getElementById("searchBox") as HTMLInputElement)
     .value;
   currentPageNumber = 1;
   void updateResults(searchText);
@@ -337,7 +337,7 @@ $("#quoteSearchPopupWrapper .quoteLengthFilter").on("change", searchForQuotes);
 $(
   "#quoteSearchPageNavigator .nextPage, #quoteSearchPageNavigator .prevPage"
 ).on("click", function () {
-  const searchText = (<HTMLInputElement>document.getElementById("searchBox"))
+  const searchText = (document.getElementById("searchBox") as HTMLInputElement)
     .value;
 
   if ($(this).hasClass("nextPage")) {

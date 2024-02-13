@@ -46,7 +46,7 @@ import { canFunboxGetPb } from "../../utils/pb";
 import { buildDbResult } from "../../utils/result";
 
 try {
-  if (anticheatImplemented() === false) throw new Error("undefined");
+  if (!anticheatImplemented()) throw new Error("undefined");
   Logger.success("Anticheat module loaded");
 } catch (e) {
   if (isDevEnvironment()) {
@@ -86,7 +86,7 @@ export async function getResults(
   //check if premium features are disabled and current call exceeds the limit for regular users
   if (
     userHasPremium &&
-    premiumFeaturesEnabled === false &&
+    !premiumFeaturesEnabled &&
     limit + offset > req.ctx.configuration.results.limits.regularUser
   ) {
     throw new MonkeyError(503, "Premium feature disabled.");
@@ -169,18 +169,6 @@ export async function updateTags(
   });
 }
 
-interface AddResultData {
-  isPb: boolean;
-  tagPbs: string[];
-  insertedId: ObjectId;
-  dailyLeaderboardRank?: number;
-  weeklyXpLeaderboardRank?: number;
-  xp: number;
-  dailyXpBonus: boolean;
-  xpBreakdown: Record<string, number>;
-  streak: number;
-}
-
 export async function addResult(
   req: MonkeyTypes.Request
 ): Promise<MonkeyResponse> {
@@ -247,7 +235,10 @@ export async function addResult(
     throw new MonkeyError(400, "Impossible funbox combination");
   }
 
-  if (completedEvent.keySpacing !== "toolong") {
+  if (
+    completedEvent.keySpacing !== "toolong" &&
+    completedEvent.keySpacing.length > 0
+  ) {
     completedEvent.keySpacingStats = {
       average:
         completedEvent.keySpacing.reduce(
@@ -257,7 +248,10 @@ export async function addResult(
     };
   }
 
-  if (completedEvent.keyDuration !== "toolong") {
+  if (
+    completedEvent.keyDuration !== "toolong" &&
+    completedEvent.keyDuration.length > 0
+  ) {
     completedEvent.keyDurationStats = {
       average:
         completedEvent.keyDuration.reduce(
@@ -519,17 +513,18 @@ export async function addResult(
   }
 
   const streak = await UserDAL.updateStreak(uid, completedEvent.timestamp);
+  const badgeWaitingInInbox = (
+    user.inbox
+      ?.map((i) =>
+        (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
+      )
+      .flat() ?? []
+  ).includes(14);
 
   const shouldGetBadge =
     streak >= 365 &&
     user.inventory?.badges?.find((b) => b.id === 14) === undefined &&
-    (
-      user.inbox
-        ?.map((i) =>
-          (i.rewards ?? []).map((r) => (r.type === "badge" ? r.item.id : null))
-        )
-        .flat() ?? []
-    ).includes(14) === false;
+    !badgeWaitingInInbox;
 
   if (shouldGetBadge) {
     const mail = buildMonkeyMail({
@@ -617,7 +612,9 @@ export async function addResult(
     );
   }
 
-  const data: AddResultData = {
+  const data: Omit<SharedTypes.PostResultResponse, "insertedId"> & {
+    insertedId: ObjectId;
+  } = {
     isPb,
     tagPbs,
     insertedId: addedResult.insertedId,
@@ -640,11 +637,11 @@ export async function addResult(
   return new MonkeyResponse("Result saved", data);
 }
 
-interface XpResult {
+type XpResult = {
   xp: number;
   dailyBonus?: boolean;
   breakdown?: Record<string, number>;
-}
+};
 
 async function calculateXp(
   result: SharedTypes.CompletedEvent,

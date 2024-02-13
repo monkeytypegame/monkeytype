@@ -108,7 +108,7 @@ function apply(): void {
   const val = parseInput($("#customTestDurationPopup input").val() as string);
 
   if (val !== null && !isNaN(val) && val >= 0 && isFinite(val)) {
-    UpdateConfig.setTimeConfig(val as MonkeyTypes.TimeModes);
+    UpdateConfig.setTimeConfig(val);
     ManualRestart.set();
     TestLogic.restart();
     if (val >= 1800) {

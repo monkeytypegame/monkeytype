@@ -4,7 +4,7 @@ import DefaultConfig from "../../src/ts/constants/default-config";
 describe("config.ts", () => {
   describe("mergeWithDefaultConfig", () => {
     it("should carry over properties from the default config", () => {
-      const partialConfig = {} as Partial<MonkeyTypes.Config>;
+      const partialConfig = {} as Partial<SharedTypes.Config>;
 
       const result = mergeWithDefaultConfig(partialConfig);
       expect(result).toEqual(expect.objectContaining(DefaultConfig));
@@ -15,7 +15,7 @@ describe("config.ts", () => {
     it("should not merge properties which are not in the default config (legacy properties)", () => {
       const partialConfig = {
         legacy: true,
-      } as Partial<MonkeyTypes.Config>;
+      } as Partial<SharedTypes.Config>;
 
       const result = mergeWithDefaultConfig(partialConfig);
       expect(result).toEqual(expect.objectContaining(DefaultConfig));
@@ -27,7 +27,7 @@ describe("config.ts", () => {
         hideExtraLetters: true,
         time: 120,
         accountChart: ["off", "off", "off", "off"],
-      } as Partial<MonkeyTypes.Config>;
+      } as Partial<SharedTypes.Config>;
 
       const result = mergeWithDefaultConfig(partialConfig);
       expect(result.mode).toEqual("quote");

@@ -14,12 +14,12 @@ import * as PageTransition from "../states/page-transition";
 import * as AdController from "../controllers/ad-controller";
 import * as Focus from "../test/focus";
 
-interface ChangeOptions {
+type ChangeOptions = {
   force?: boolean;
-  params?: { [key: string]: string };
+  params?: Record<string, string>;
   data?: unknown;
   tribeOverride?: boolean;
-}
+};
 
 export async function change(
   pageName: MonkeyTypes.PageName,

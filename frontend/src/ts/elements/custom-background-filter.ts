@@ -48,15 +48,15 @@ export function apply(): void {
 }
 
 function syncSliders(): void {
-  $(".section.customBackgroundFilter .blur input").val(filters["blur"].value);
+  $(".section.customBackgroundFilter .blur input").val(filters.blur.value);
   $(".section.customBackgroundFilter .brightness input").val(
-    filters["brightness"].value
+    filters.brightness.value
   );
   $(".section.customBackgroundFilter .saturate input").val(
-    filters["saturate"].value
+    filters.saturate.value
   );
   $(".section.customBackgroundFilter .opacity input").val(
-    filters["opacity"].value
+    filters.opacity.value
   );
 }
 
@@ -75,7 +75,7 @@ function updateNumbers(): void {
   );
 }
 
-function loadConfig(config: MonkeyTypes.CustomBackgroundFilter): void {
+function loadConfig(config: SharedTypes.Config.CustomBackgroundFilter): void {
   filters.blur.value = config[0];
   filters.brightness.value = config[1];
   filters.saturate.value = config[2];
@@ -85,7 +85,7 @@ function loadConfig(config: MonkeyTypes.CustomBackgroundFilter): void {
 }
 
 $(".section.customBackgroundFilter .blur input").on("input", () => {
-  filters["blur"].value = parseFloat(
+  filters.blur.value = parseFloat(
     $(".section.customBackgroundFilter .blur input").val() as string
   );
   updateNumbers();
@@ -93,7 +93,7 @@ $(".section.customBackgroundFilter .blur input").on("input", () => {
 });
 
 $(".section.customBackgroundFilter .brightness input").on("input", () => {
-  filters["brightness"].value = parseFloat(
+  filters.brightness.value = parseFloat(
     $(".section.customBackgroundFilter .brightness input").val() as string
   );
   updateNumbers();
@@ -101,7 +101,7 @@ $(".section.customBackgroundFilter .brightness input").on("input", () => {
 });
 
 $(".section.customBackgroundFilter .saturate input").on("input", () => {
-  filters["saturate"].value = parseFloat(
+  filters.saturate.value = parseFloat(
     $(".section.customBackgroundFilter .saturate input").val() as string
   );
   updateNumbers();
@@ -109,7 +109,7 @@ $(".section.customBackgroundFilter .saturate input").on("input", () => {
 });
 
 $(".section.customBackgroundFilter .opacity input").on("input", () => {
-  filters["opacity"].value = parseFloat(
+  filters.opacity.value = parseFloat(
     $(".section.customBackgroundFilter .opacity input").val() as string
   );
   updateNumbers();
@@ -123,13 +123,13 @@ $(".section.customBackgroundFilter input").on("input", () => {
 const debouncedSave = debounce(2000, async () => {
   const arr = Object.keys(filters).map(
     (filterKey) => filters[filterKey as keyof typeof filters].value
-  ) as MonkeyTypes.CustomBackgroundFilter;
+  ) as SharedTypes.Config.CustomBackgroundFilter;
   UpdateConfig.setCustomBackgroundFilter(arr, false);
 });
 
 ConfigEvent.subscribe((eventKey, eventValue) => {
   if (eventKey === "customBackgroundFilter" && (eventValue as boolean)) {
-    loadConfig(eventValue as MonkeyTypes.CustomBackgroundFilter);
+    loadConfig(eventValue as SharedTypes.Config.CustomBackgroundFilter);
     apply();
   }
 });

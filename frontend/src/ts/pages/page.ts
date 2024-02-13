@@ -1,8 +1,8 @@
-interface Options<T> {
+type Options<T> = {
   params?: Record<string, string>;
   data?: T;
   tribeOverride?: boolean;
-}
+};
 
 interface PageFunctionOptions {
   params?: { [key: string]: string };

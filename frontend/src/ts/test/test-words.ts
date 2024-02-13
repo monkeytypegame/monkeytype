@@ -11,7 +11,6 @@ class Words {
     this.currentIndex = 0;
   }
 
-  get(): string[];
   get(i?: undefined, raw?: boolean): string[];
   get(i: number, raw?: boolean): string;
   get(i?: number | undefined, raw = false): string | string[] | undefined {

@@ -1,24 +1,13 @@
 const BASE_PATH = "/leaderboards";
 
-interface LeaderboardQuery {
-  language: string;
-  mode: SharedTypes.Mode;
-  mode2: string;
-  isDaily?: boolean;
-  daysBefore?: number;
-}
-
-interface LeadeboardQueryWithPagination extends LeaderboardQuery {
-  skip?: number;
-  limit?: number;
-}
-
 export default class Leaderboards {
   constructor(private httpClient: Ape.HttpClient) {
     this.httpClient = httpClient;
   }
 
-  async get(query: LeadeboardQueryWithPagination): Ape.EndpointResponse {
+  async get(
+    query: Ape.Leaderboards.QueryWithPagination
+  ): Ape.EndpointResponse<Ape.Leaderboards.GetLeaderboard> {
     const {
       language,
       mode,
@@ -44,7 +33,9 @@ export default class Leaderboards {
     return await this.httpClient.get(endpointPath, { searchQuery });
   }
 
-  async getRank(query: LeaderboardQuery): Ape.EndpointResponse {
+  async getRank(
+    query: Ape.Leaderboards.Query
+  ): Ape.EndpointResponse<Ape.Leaderboards.GetRank> {
     const { language, mode, mode2, isDaily, daysBefore } = query;
     const includeDaysBefore = (isDaily ?? false) && (daysBefore ?? 0) > 0;
 

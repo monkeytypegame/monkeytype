@@ -127,14 +127,14 @@ export function startTest(now: number): boolean {
   return true;
 }
 
-interface RestartOptions {
+type RestartOptions = {
   withSameWordset?: boolean;
   nosave?: boolean;
   event?: JQuery.KeyDownEvent;
   practiseMissed?: boolean;
   noAnim?: boolean;
   tribeOverride?: boolean;
-}
+};
 
 // withSameWordset = false,
 // _?: boolean, // this is nosave and should be renamed to nosave when needed
@@ -412,19 +412,22 @@ export function restart(options = {} as RestartOptions): void {
           },
           options.noAnim ? 0 : 125,
           () => {
-            (<HTMLElement>(
-              document.querySelector("#miniTimerAndLiveWpm .wpm")
-            )).innerHTML = "0";
-            (<HTMLElement>(
-              document.querySelector("#miniTimerAndLiveWpm .acc")
-            )).innerHTML = "100%";
-            (<HTMLElement>(
-              document.querySelector("#miniTimerAndLiveWpm .burst")
-            )).innerHTML = "0";
-            (<HTMLElement>document.querySelector("#liveWpm")).innerHTML = "0";
-            (<HTMLElement>document.querySelector("#liveAcc")).innerHTML =
+            (
+              document.querySelector("#miniTimerAndLiveWpm .wpm") as HTMLElement
+            ).innerHTML = "0";
+            (
+              document.querySelector("#miniTimerAndLiveWpm .acc") as HTMLElement
+            ).innerHTML = "100%";
+            (
+              document.querySelector(
+                "#miniTimerAndLiveWpm .burst"
+              ) as HTMLElement
+            ).innerHTML = "0";
+            (document.querySelector("#liveWpm") as HTMLElement).innerHTML = "0";
+            (document.querySelector("#liveAcc") as HTMLElement).innerHTML =
               "100%";
-            (<HTMLElement>document.querySelector("#liveBurst")).innerHTML = "0";
+            (document.querySelector("#liveBurst") as HTMLElement).innerHTML =
+              "0";
 
             TestUI.setTestRestarting(false);
             TestUI.focusWords();
@@ -494,24 +497,24 @@ export async function init(): Promise<void> {
     }
   }
 
-  if (Config.tapeMode !== "off" && language.rightToLeft === true) {
+  if (Config.tapeMode !== "off" && language.rightToLeft) {
     Notifications.add("This language does not support tape mode.", 0, {
       important: true,
     });
     UpdateConfig.setTapeMode("off");
   }
 
-  if (Config.lazyMode === true && language.noLazyMode) {
+  if (Config.lazyMode && language.noLazyMode) {
     rememberLazyMode = true;
     Notifications.add("This language does not support lazy mode.", 0, {
       important: true,
     });
     UpdateConfig.setLazyMode(false, true);
-  } else if (rememberLazyMode === true && !language.noLazyMode) {
+  } else if (rememberLazyMode && !language.noLazyMode) {
     UpdateConfig.setLazyMode(true, true);
   }
 
-  if (Config.lazyMode === false && !language.noLazyMode) {
+  if (!Config.lazyMode && !language.noLazyMode) {
     rememberLazyMode = false;
   }
 
@@ -681,10 +684,10 @@ export async function addWord(): Promise<void> {
   TestUI.addWord(randomWord.word);
 }
 
-interface RetrySaving {
+type RetrySaving = {
   completedEvent: SharedTypes.CompletedEvent | null;
   canRetry: boolean;
-}
+};
 
 const retrySaving: RetrySaving = {
   completedEvent: null,
@@ -805,8 +808,8 @@ function buildCompletedEvent(
   }
 
   const chartErr = [];
-  for (let i = 0; i < TestInput.errorHistory.length; i++) {
-    chartErr.push(TestInput.errorHistory[i]?.count ?? 0);
+  for (const error of TestInput.errorHistory) {
+    chartErr.push(error.count ?? 0);
   }
 
   const chartData = {
@@ -823,7 +826,7 @@ function buildCompletedEvent(
 
   let customText: SharedTypes.CustomText | null = null;
   if (Config.mode === "custom") {
-    customText = <SharedTypes.CustomText>{};
+    customText = {} as SharedTypes.CustomText;
     customText.textLen = CustomText.text.length;
     customText.isWordRandom = CustomText.isWordRandom;
     customText.isTimeRandom = CustomText.isTimeRandom;
@@ -989,7 +992,7 @@ export async function finish(difficultyFailed = false): Promise<void> {
 
   //afk check
   const kps = TestInput.afkHistory.slice(-5);
-  let afkDetected = kps.every((afk) => afk === true);
+  let afkDetected = kps.every((afk) => afk);
   if (TestState.bailedOut) afkDetected = false;
 
   const mode2Number = parseInt(completedEvent.mode2);
@@ -1343,7 +1346,7 @@ async function saveResult(
 
   $("#result .stats .tags .editTagsButton").attr(
     "result-id",
-    response.data.insertedId
+    response.data?.insertedId as string //if status is 200 then response.data is not null or undefined
   );
   $("#result .stats .tags .editTagsButton").removeClass("invisible");
 
@@ -1363,7 +1366,7 @@ async function saveResult(
 
   if (response?.data?.insertedId !== undefined) {
     completedEvent._id = response.data.insertedId;
-    if (response?.data?.isPb !== undefined && response.data.isPb === true) {
+    if (response?.data?.isPb !== undefined && response.data.isPb) {
       completedEvent.isPb = true;
     }
     DB.saveLocalResult(completedEvent);
@@ -1377,7 +1380,7 @@ async function saveResult(
 
   void AnalyticsController.log("testCompleted");
 
-  if (response?.data?.isPb !== undefined && response.data.isPb === true) {
+  if (response?.data?.isPb !== undefined && response.data.isPb) {
     //new pb
     if (
       //@ts-expect-error TODO fix this
@@ -1542,7 +1545,8 @@ $(".pageTest").on("click", "#restartTestButtonWithSameWordset", () => {
 $(".pageTest").on("click", "#testConfig .mode .textButton", (e) => {
   if (TestUI.testRestarting) return;
   if ($(e.currentTarget).hasClass("active")) return;
-  const mode = ($(e.currentTarget).attr("mode") ?? "time") as SharedTypes.Mode;
+  const mode = ($(e.currentTarget).attr("mode") ??
+    "time") as SharedTypes.Config.Mode;
   if (mode === undefined) return;
   UpdateConfig.setMode(mode);
   ManualRestart.set();
@@ -1571,9 +1575,10 @@ $(".pageTest").on("click", "#testConfig .time .textButton", (e) => {
 
 $(".pageTest").on("click", "#testConfig .quoteLength .textButton", (e) => {
   if (TestUI.testRestarting) return;
-  let len: MonkeyTypes.QuoteLength | MonkeyTypes.QuoteLength[] = <
-    MonkeyTypes.QuoteLength
-  >parseInt($(e.currentTarget).attr("quoteLength") ?? "1");
+  let len: SharedTypes.Config.QuoteLength | SharedTypes.Config.QuoteLength[] =
+    parseInt(
+      $(e.currentTarget).attr("quoteLength") ?? "1"
+    ) as SharedTypes.Config.QuoteLength;
   if (len !== -2) {
     if (len === -1) {
       len = [0, 1, 2, 3];
@@ -1637,7 +1642,7 @@ $("#popups").on(
     }
     const sid = parseInt($(e.currentTarget).attr("id") ?? "");
     QuoteSearchPopup.setSelectedId(sid);
-    if (QuoteSearchPopup.apply(sid) === true) restart();
+    if (QuoteSearchPopup.apply(sid)) restart();
   }
 );
 

@@ -23,7 +23,7 @@ export function clearActive(): void {
 }
 
 export function verify(
-  result: SharedTypes.Result<SharedTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Config.Mode>
 ): string | null {
   try {
     if (TestState.activeChallenge) {
@@ -44,7 +44,7 @@ export function verify(
         let requirementsMet = true;
         const failReasons = [];
         for (const requirementType in TestState.activeChallenge.requirements) {
-          if (requirementsMet === false) return null;
+          if (!requirementsMet) return null;
           const requirementValue =
             TestState.activeChallenge.requirements[
               requirementType as keyof typeof TestState.activeChallenge.requirements
@@ -156,7 +156,7 @@ export function verify(
             for (const configKey in requirementValue) {
               const configValue = requirementValue[configKey];
               if (
-                Config[configKey as keyof MonkeyTypes.Config] !== configValue
+                Config[configKey as keyof SharedTypes.Config] !== configValue
               ) {
                 requirementsMet = false;
                 failReasons.push(`${configKey} not set to ${configValue}`);
@@ -282,7 +282,7 @@ export async function setup(challengeName: string): Promise<boolean> {
         UpdateConfig.setTheme(challenge.parameters[1] as string);
       }
       if (challenge.parameters[2] !== null) {
-        void Funbox.activate(<string>challenge.parameters[2]);
+        void Funbox.activate(challenge.parameters[2] as string);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);
@@ -296,10 +296,13 @@ export async function setup(challengeName: string): Promise<boolean> {
       } else if (challenge.parameters[1] === "time") {
         UpdateConfig.setTimeConfig(challenge.parameters[2] as number, true);
       }
-      UpdateConfig.setMode(challenge.parameters[1] as SharedTypes.Mode, true);
+      UpdateConfig.setMode(
+        challenge.parameters[1] as SharedTypes.Config.Mode,
+        true
+      );
       if (challenge.parameters[3] !== undefined) {
         UpdateConfig.setDifficulty(
-          challenge.parameters[3] as SharedTypes.Difficulty,
+          challenge.parameters[3] as SharedTypes.Config.Difficulty,
           true
         );
       }

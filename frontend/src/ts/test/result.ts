@@ -36,7 +36,7 @@ import * as Funbox from "./funbox/funbox";
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
 
-let result: SharedTypes.Result<SharedTypes.Mode>;
+let result: SharedTypes.Result<SharedTypes.Config.Mode>;
 let maxChartVal: number;
 
 let useUnsmoothedRaw = false;
@@ -185,11 +185,11 @@ export async function updateGraphPBLine(): Promise<void> {
     id: "lpb",
     scaleID: "wpm",
     value: chartlpb,
-    borderColor: themecolors["sub"],
+    borderColor: themecolors.sub,
     borderWidth: 1,
     borderDash: [2, 2],
     label: {
-      backgroundColor: themecolors["sub"],
+      backgroundColor: themecolors.sub,
       font: {
         family: Config.fontFamily.replace(/_/g, " "),
         size: 11,
@@ -197,7 +197,7 @@ export async function updateGraphPBLine(): Promise<void> {
         weight: Chart.defaults.font.weight as string,
         lineHeight: Chart.defaults.font.lineHeight as number,
       },
-      color: themecolors["bg"],
+      color: themecolors.bg,
       padding: 3,
       borderRadius: 3,
       position: "center",
@@ -518,11 +518,11 @@ async function updateTags(dontSave: boolean): Promise<void> {
           id: "tpb",
           scaleID: "wpm",
           value: typingSpeedUnit.fromWpm(tpb),
-          borderColor: themecolors["sub"],
+          borderColor: themecolors.sub,
           borderWidth: 1,
           borderDash: [2, 2],
           label: {
-            backgroundColor: themecolors["sub"],
+            backgroundColor: themecolors.sub,
             font: {
               family: Config.fontFamily.replace(/_/g, " "),
               size: 11,
@@ -530,7 +530,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
               weight: Chart.defaults.font.weight as string,
               lineHeight: Chart.defaults.font.lineHeight as number,
             },
-            color: themecolors["bg"],
+            color: themecolors.bg,
             padding: 3,
             borderRadius: 3,
             position: annotationSide,
@@ -727,7 +727,7 @@ function updateQuoteSource(randomQuote: MonkeyTypes.Quote | null): void {
 }
 
 export async function update(
-  res: SharedTypes.Result<SharedTypes.Mode>,
+  res: SharedTypes.Result<SharedTypes.Config.Mode>,
   difficultyFailed: boolean,
   failReason: string,
   afkDetected: boolean,

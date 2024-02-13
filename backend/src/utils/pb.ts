@@ -1,13 +1,16 @@
 import _ from "lodash";
 import FunboxList from "../constants/funbox-list";
 
-interface CheckAndUpdatePbResult {
+type CheckAndUpdatePbResult = {
   isPb: boolean;
   personalBests: SharedTypes.PersonalBests;
   lbPersonalBests?: MonkeyTypes.LbPersonalBests;
-}
+};
 
-type Result = Omit<SharedTypes.DBResult<SharedTypes.Mode>, "_id" | "name">;
+type Result = Omit<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>,
+  "_id" | "name"
+>;
 
 export function canFunboxGetPb(result: Result): boolean {
   const funbox = result.funbox;
@@ -32,7 +35,7 @@ export function checkAndUpdatePb(
   result: Result
 ): CheckAndUpdatePbResult {
   const mode = result.mode;
-  const mode2 = result.mode2 as SharedTypes.Mode2<"time">;
+  const mode2 = result.mode2 as SharedTypes.Config.Mode2<"time">;
 
   const userPb = userPersonalBests ?? {};
   userPb[mode] ??= {};
@@ -155,7 +158,7 @@ function updateLeaderboardPersonalBests(
   }
 
   const mode = result.mode;
-  const mode2 = result.mode2 as SharedTypes.Mode2<"time">;
+  const mode2 = result.mode2 as SharedTypes.Config.Mode2<"time">;
 
   lbPersonalBests[mode] = lbPersonalBests[mode] ?? {};
   const lbMode2 = lbPersonalBests[mode][mode2] as MonkeyTypes.LbPersonalBests;

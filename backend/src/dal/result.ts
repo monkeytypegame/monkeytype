@@ -5,7 +5,7 @@ import * as db from "../init/db";
 
 import { getUser, getTags } from "./user";
 
-type DBResult = SharedTypes.DBResult<SharedTypes.Mode>;
+type DBResult = SharedTypes.DBResult<SharedTypes.Config.Mode>;
 
 export async function addResult(
   uid: string,
@@ -81,11 +81,11 @@ export async function getResultByTimestamp(
   return await db.collection<DBResult>("results").findOne({ uid, timestamp });
 }
 
-interface GetResultsOpts {
+type GetResultsOpts = {
   onOrAfterTimestamp?: number;
   limit?: number;
   offset?: number;
-}
+};
 
 export async function getResults(
   uid: string,

@@ -35,24 +35,24 @@ import * as ThemeController from "../controllers/theme-controller";
 
 const wrapperId = "simplePopupWrapper";
 
-interface Input {
+type Input = {
   placeholder?: string;
   type?: string;
   initVal: string;
   hidden?: boolean;
   disabled?: boolean;
   label?: string;
-}
+};
 
 let activePopup: SimplePopup | null = null;
 
-interface ExecReturn {
+type ExecReturn = {
   status: 1 | 0 | -1;
   message: string;
   showNotification?: false;
   notificationOptions?: MonkeyTypes.AddNotificationOptions;
   afterHide?: () => void;
-}
+};
 
 type PopupKey =
   | "updateEmail"
@@ -403,16 +403,16 @@ $("#popups").on("submit", "#simplePopupWrapper form", (e) => {
 
 type ReauthMethod = "passwordOnly" | "passwordFirst";
 
-interface ReauthSuccess {
+type ReauthSuccess = {
   status: 1;
   message: string;
   user: User;
-}
+};
 
-interface ReauthFailed {
+type ReauthFailed = {
   status: -1 | 0;
   message: string;
-}
+};
 
 async function reauthenticate(
   method: ReauthMethod,
@@ -548,7 +548,7 @@ list.updateEmail = new SimplePopup(
   }
 );
 
-list["removeGoogleAuth"] = new SimplePopup(
+list.removeGoogleAuth = new SimplePopup(
   "removeGoogleAuth",
   "text",
   "Remove Google Authentication",
@@ -602,7 +602,7 @@ list["removeGoogleAuth"] = new SimplePopup(
   }
 );
 
-list["updateName"] = new SimplePopup(
+list.updateName = new SimplePopup(
   "updateName",
   "text",
   "Update Name",
@@ -683,7 +683,7 @@ list["updateName"] = new SimplePopup(
   }
 );
 
-list["updatePassword"] = new SimplePopup(
+list.updatePassword = new SimplePopup(
   "updatePassword",
   "text",
   "Update Password",
@@ -768,7 +768,7 @@ list["updatePassword"] = new SimplePopup(
   }
 );
 
-list["addPasswordAuth"] = new SimplePopup(
+list.addPasswordAuth = new SimplePopup(
   "addPasswordAuth",
   "text",
   "Add Password Authentication",
@@ -860,7 +860,7 @@ list["addPasswordAuth"] = new SimplePopup(
   }
 );
 
-list["deleteAccount"] = new SimplePopup(
+list.deleteAccount = new SimplePopup(
   "deleteAccount",
   "text",
   "Delete Account",
@@ -933,7 +933,7 @@ list["deleteAccount"] = new SimplePopup(
   }
 );
 
-list["resetAccount"] = new SimplePopup(
+list.resetAccount = new SimplePopup(
   "resetAccount",
   "text",
   "Reset Account",
@@ -987,7 +987,7 @@ list["resetAccount"] = new SimplePopup(
   }
 );
 
-list["optOutOfLeaderboards"] = new SimplePopup(
+list.optOutOfLeaderboards = new SimplePopup(
   "optOutOfLeaderboards",
   "text",
   "Opt out of leaderboards",
@@ -1037,7 +1037,7 @@ list["optOutOfLeaderboards"] = new SimplePopup(
   }
 );
 
-list["clearTagPb"] = new SimplePopup(
+list.clearTagPb = new SimplePopup(
   "clearTagPb",
   "text",
   "Clear Tag PB",
@@ -1092,7 +1092,7 @@ list["clearTagPb"] = new SimplePopup(
   }
 );
 
-list["applyCustomFont"] = new SimplePopup(
+list.applyCustomFont = new SimplePopup(
   "applyCustomFont",
   "text",
   "Custom font",
@@ -1115,7 +1115,7 @@ list["applyCustomFont"] = new SimplePopup(
   }
 );
 
-list["resetPersonalBests"] = new SimplePopup(
+list.resetPersonalBests = new SimplePopup(
   "resetPersonalBests",
   "text",
   "Reset Personal Bests",
@@ -1179,7 +1179,7 @@ list["resetPersonalBests"] = new SimplePopup(
   }
 );
 
-list["resetSettings"] = new SimplePopup(
+list.resetSettings = new SimplePopup(
   "resetSettings",
   "text",
   "Reset Settings",
@@ -1201,7 +1201,7 @@ list["resetSettings"] = new SimplePopup(
   }
 );
 
-list["revokeAllTokens"] = new SimplePopup(
+list.revokeAllTokens = new SimplePopup(
   "revokeAllTokens",
   "text",
   "Revoke All Tokens",
@@ -1252,7 +1252,7 @@ list["revokeAllTokens"] = new SimplePopup(
   }
 );
 
-list["unlinkDiscord"] = new SimplePopup(
+list.unlinkDiscord = new SimplePopup(
   "unlinkDiscord",
   "text",
   "Unlink Discord",
@@ -1295,7 +1295,7 @@ list["unlinkDiscord"] = new SimplePopup(
   }
 );
 
-list["generateApeKey"] = new SimplePopup(
+list.generateApeKey = new SimplePopup(
   "generateApeKey",
   "text",
   "Generate new key",
@@ -1335,7 +1335,7 @@ list["generateApeKey"] = new SimplePopup(
   }
 );
 
-list["viewApeKey"] = new SimplePopup(
+list.viewApeKey = new SimplePopup(
   "viewApeKey",
   "text",
   "Ape Key",
@@ -1371,7 +1371,7 @@ list["viewApeKey"] = new SimplePopup(
   }
 );
 
-list["deleteApeKey"] = new SimplePopup(
+list.deleteApeKey = new SimplePopup(
   "deleteApeKey",
   "text",
   "Delete Ape Key",
@@ -1402,7 +1402,7 @@ list["deleteApeKey"] = new SimplePopup(
   }
 );
 
-list["editApeKey"] = new SimplePopup(
+list.editApeKey = new SimplePopup(
   "editApeKey",
   "text",
   "Edit Ape Key",
@@ -1440,7 +1440,7 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
-list["deleteCustomText"] = new SimplePopup(
+list.deleteCustomText = new SimplePopup(
   "deleteCustomText",
   "text",
   "Delete custom text",
@@ -1465,7 +1465,7 @@ list["deleteCustomText"] = new SimplePopup(
   }
 );
 
-list["deleteCustomTextLong"] = new SimplePopup(
+list.deleteCustomTextLong = new SimplePopup(
   "deleteCustomTextLong",
   "text",
   "Delete custom text",
@@ -1490,7 +1490,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   }
 );
 
-list["resetProgressCustomTextLong"] = new SimplePopup(
+list.resetProgressCustomTextLong = new SimplePopup(
   "resetProgressCustomTextLong",
   "text",
   "Reset progress for custom text",
@@ -1518,7 +1518,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   }
 );
 
-list["updateCustomTheme"] = new SimplePopup(
+list.updateCustomTheme = new SimplePopup(
   "updateCustomTheme",
   "text",
   "Update custom theme",
@@ -1602,7 +1602,7 @@ list["updateCustomTheme"] = new SimplePopup(
   }
 );
 
-list["deleteCustomTheme"] = new SimplePopup(
+list.deleteCustomTheme = new SimplePopup(
   "deleteCustomTheme",
   "text",
   "Delete Custom Theme",
@@ -1626,7 +1626,7 @@ list["deleteCustomTheme"] = new SimplePopup(
   }
 );
 
-list["forgotPassword"] = new SimplePopup(
+list.forgotPassword = new SimplePopup(
   "forgotPassword",
   "text",
   "Forgot Password",

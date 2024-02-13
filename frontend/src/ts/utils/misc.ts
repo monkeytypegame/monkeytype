@@ -682,8 +682,8 @@ export function getNumbers(len: number): string {
 export function convertNumberToArabic(numString: string): string {
   const arabicIndic = "٠١٢٣٤٥٦٧٨٩";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += arabicIndic[parseInt(numString[i] as string)];
+  for (const char of numString) {
+    ret += arabicIndic[parseInt(char)];
   }
   return ret;
 }
@@ -691,8 +691,8 @@ export function convertNumberToArabic(numString: string): string {
 export function convertNumberToNepali(numString: string): string {
   const nepaliIndic = "०१२३४५६७८९";
   let ret = "";
-  for (let i = 0; i < numString.length; i++) {
-    ret += nepaliIndic[parseInt(numString[i] as string)];
+  for (const char of numString) {
+    ret += nepaliIndic[parseInt(char)];
   }
   return ret;
 }
@@ -885,6 +885,8 @@ export function objectToQueryString<T extends string | number | boolean>(
 }
 
 declare global {
+  // type gets a "Duplicate identifier" error
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Document {
     mozCancelFullScreen?: () => Promise<void>;
     msRequestFullscreen?: () => Promise<void>;
@@ -894,6 +896,7 @@ declare global {
     msFullscreenElement?: Element;
     webkitFullscreenElement?: Element;
   }
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface HTMLElement {
     msRequestFullscreen?: () => Promise<void>;
     mozRequestFullScreen?: () => Promise<void>;
@@ -916,7 +919,7 @@ export function toggleFullscreen(): void {
     } else if (elem.mozRequestFullScreen) {
       void elem.mozRequestFullScreen();
     } else if (elem.webkitRequestFullscreen) {
-      // @ts-ignore
+      // @ts-expect-error
       void elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
     }
   } else {
@@ -987,8 +990,8 @@ export function cleanTypographySymbols(textToClean: string): string {
 
 export function isUsernameValid(name: string): boolean {
   if (name === null || name === undefined || name === "") return false;
-  if (/miodec/.test(name.toLowerCase())) return false;
-  if (/bitly/.test(name.toLowerCase())) return false;
+  if (name.toLowerCase().includes("miodec")) return false;
+  if (name.toLowerCase().includes("bitly")) return false;
   if (name.length > 14) return false;
   if (/^\..*/.test(name.toLowerCase())) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
@@ -1028,7 +1031,7 @@ export function canQuickRestart(
 ): boolean {
   const wordsLong = mode === "words" && (words >= 1000 || words === 0);
   const timeLong = mode === "time" && (time >= 900 || time === 0);
-  const customTextLong = mode === "custom" && customTextIsLong === true;
+  const customTextLong = mode === "custom" && customTextIsLong;
   const customTextRandomWordsLong =
     mode === "custom" && CustomText.isWordRandom && CustomText.word >= 1000;
   const customTextRandomTimeLong =
@@ -1096,9 +1099,9 @@ export function convertRGBtoHEX(rgb: string): string | undefined {
   );
 }
 
-interface LastIndex extends String {
+type LastIndex = {
   lastIndexOfRegex(regex: RegExp): number;
-}
+} & string;
 
 (String.prototype as LastIndex).lastIndexOfRegex = function (
   regex: RegExp
@@ -1184,9 +1187,9 @@ export async function swapElements(
 }
 
 export function getMode2<M extends keyof SharedTypes.PersonalBests>(
-  config: MonkeyTypes.Config,
+  config: SharedTypes.Config,
   randomQuote: MonkeyTypes.Quote | null
-): SharedTypes.Mode2<M> {
+): SharedTypes.Config.Mode2<M> {
   const mode = config.mode;
   let retVal: string;
 
@@ -1204,11 +1207,11 @@ export function getMode2<M extends keyof SharedTypes.PersonalBests>(
     throw new Error("Invalid mode");
   }
 
-  return retVal as SharedTypes.Mode2<M>;
+  return retVal as SharedTypes.Config.Mode2<M>;
 }
 
 export async function downloadResultsCSV(
-  array: SharedTypes.Result<SharedTypes.Mode>[]
+  array: SharedTypes.Result<SharedTypes.Config.Mode>[]
 ): Promise<void> {
   Loader.show();
   const csvString = [
@@ -1238,7 +1241,7 @@ export async function downloadResultsCSV(
       "tags",
       "timestamp",
     ],
-    ...array.map((item: SharedTypes.Result<SharedTypes.Mode>) => [
+    ...array.map((item: SharedTypes.Result<SharedTypes.Config.Mode>) => [
       item._id,
       item.isPb,
       item.wpm,
@@ -1404,7 +1407,7 @@ export function getXpForLevel(level: number): number {
 }
 
 export async function promiseAnimation(
-  el: JQuery<HTMLElement>,
+  el: JQuery,
   animation: Record<string, string>,
   duration: number,
   easing: string
@@ -1485,7 +1488,7 @@ export function intersect<T>(a: T[], b: T[], removeDuplicates = false): T[] {
   let t;
   if (b.length > a.length) (t = b), (b = a), (a = t); // indexOf to loop over shorter
   const filtered = a.filter(function (e) {
-    return b.indexOf(e) > -1;
+    return b.includes(e);
   });
   return removeDuplicates ? [...new Set(filtered)] : filtered;
 }
@@ -1626,7 +1629,7 @@ export function getBoundingRectOfElements(elements: HTMLElement[]): DOMRect {
   };
 }
 export function convertToMorse(word: string): string {
-  const morseCode: { [id: string]: string } = {
+  const morseCode: Record<string, string> = {
     a: ".-",
     b: "-...",
     c: "-.-.",

@@ -19,7 +19,7 @@ import * as TribeState from "./tribe/tribe-state";
 import * as TribeConfigSyncEvent from "./observables/tribe-config-sync-event";
 import { reloadAfter } from "./utils/misc";
 
-export let localStorageConfig: MonkeyTypes.Config;
+export let localStorageConfig: SharedTypes.Config;
 
 let loadDone: (value?: unknown) => void;
 
@@ -27,7 +27,7 @@ const config = {
   ...DefaultConfig,
 };
 
-let configToSend = {} as MonkeyTypes.Config;
+let configToSend = {} as SharedTypes.Config;
 const saveToDatabase = debounce(1000, () => {
   if (Object.keys(configToSend).length > 0) {
     AccountButton.loading(true);
@@ -35,11 +35,11 @@ const saveToDatabase = debounce(1000, () => {
       AccountButton.loading(false);
     });
   }
-  configToSend = {} as MonkeyTypes.Config;
+  configToSend = {} as SharedTypes.Config;
 });
 
 function saveToLocalStorage(
-  key: keyof MonkeyTypes.Config,
+  key: keyof SharedTypes.Config,
   nosave = false,
   noDbCheck = false
 ): void {
@@ -51,7 +51,7 @@ function saveToLocalStorage(
   window.localStorage.setItem("config", localToSaveStringified);
   if (!noDbCheck) {
     (configToSend[key] as typeof config[typeof key]) = config[key];
-    void saveToDatabase();
+    saveToDatabase();
   }
   ConfigEvent.dispatch("saveToLocalStorage", localToSaveStringified);
 }
@@ -118,7 +118,7 @@ export function setPunctuation(
 }
 
 export function setMode(
-  mode: SharedTypes.Mode,
+  mode: SharedTypes.Config.Mode,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -156,7 +156,7 @@ export function setMode(
 }
 
 export function setPlaySoundOnError(
-  val: MonkeyTypes.PlaySoundOnError,
+  val: SharedTypes.Config.PlaySoundOnError,
   nosave?: boolean
 ): boolean {
   if (
@@ -175,7 +175,7 @@ export function setPlaySoundOnError(
 }
 
 export function setPlaySoundOnClick(
-  val: MonkeyTypes.PlaySoundOnClick,
+  val: SharedTypes.Config.PlaySoundOnClick,
   nosave?: boolean
 ): boolean {
   if (
@@ -211,7 +211,7 @@ export function setPlaySoundOnClick(
 }
 
 export function setSoundVolume(
-  val: MonkeyTypes.SoundVolume,
+  val: SharedTypes.Config.SoundVolume,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("sound volume", val, [["0.1", "0.5", "1.0"]])) {
@@ -227,7 +227,7 @@ export function setSoundVolume(
 
 //difficulty
 export function setDifficulty(
-  diff: SharedTypes.Difficulty,
+  diff: SharedTypes.Config.Difficulty,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -328,7 +328,7 @@ export function setBlindMode(blind: boolean, nosave?: boolean): boolean {
 }
 
 function setAccountChart(
-  array: MonkeyTypes.AccountChart,
+  array: SharedTypes.Config.AccountChart,
   nosave?: boolean
 ): boolean {
   if (
@@ -409,7 +409,7 @@ export function setAccountChartAvg100(
 }
 
 export function setStopOnError(
-  soe: MonkeyTypes.StopOnError,
+  soe: SharedTypes.Config.StopOnError,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -449,7 +449,7 @@ export function setAlwaysShowDecimalPlaces(
 }
 
 export function setTypingSpeedUnit(
-  val: MonkeyTypes.TypingSpeedUnit,
+  val: SharedTypes.Config.TypingSpeedUnit,
   nosave?: boolean
 ): boolean {
   if (
@@ -486,7 +486,7 @@ export function setShowOutOfFocusWarning(
 
 //pace caret
 export function setPaceCaret(
-  val: MonkeyTypes.PaceCaret,
+  val: SharedTypes.Config.PaceCaret,
   nosave?: boolean
 ): boolean {
   if (
@@ -541,7 +541,7 @@ export function setRepeatedPace(pace: boolean, nosave?: boolean): boolean {
 
 //min wpm
 export function setMinWpm(
-  minwpm: MonkeyTypes.MinimumWordsPerMinute,
+  minwpm: SharedTypes.Config.MinimumWordsPerMinute,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -578,7 +578,7 @@ export function setMinWpmCustomSpeed(
 
 //min acc
 export function setMinAcc(
-  min: MonkeyTypes.MinimumAccuracy,
+  min: SharedTypes.Config.MinimumAccuracy,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -612,7 +612,7 @@ export function setMinAccCustom(
 
 //min burst
 export function setMinBurst(
-  min: MonkeyTypes.MinimumBurst,
+  min: SharedTypes.Config.MinimumBurst,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -665,7 +665,7 @@ export function setAlwaysShowWordsHistory(
 
 //single list command line
 export function setSingleListCommandLine(
-  option: MonkeyTypes.SingleListCommandLine,
+  option: SharedTypes.Config.SingleListCommandLine,
   nosave?: boolean
 ): boolean {
   if (
@@ -717,7 +717,7 @@ export function setQuickEnd(qe: boolean, nosave?: boolean): boolean {
   return true;
 }
 
-export function setAds(val: MonkeyTypes.Ads, nosave?: boolean): boolean {
+export function setAds(val: SharedTypes.Config.Ads, nosave?: boolean): boolean {
   if (!isConfigValueValid("ads", val, [["off", "result", "on", "sellout"]])) {
     return false;
   }
@@ -734,7 +734,7 @@ export function setAds(val: MonkeyTypes.Ads, nosave?: boolean): boolean {
 }
 
 export function setRepeatQuotes(
-  val: MonkeyTypes.RepeatQuotes,
+  val: SharedTypes.Config.RepeatQuotes,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("repeat quotes", val, [["off", "typing"]])) {
@@ -783,7 +783,7 @@ export function setStrictSpace(val: boolean, nosave?: boolean): boolean {
 
 //opposite shift space
 export function setOppositeShiftMode(
-  val: MonkeyTypes.OppositeShiftMode,
+  val: SharedTypes.Config.OppositeShiftMode,
   nosave?: boolean
 ): boolean {
   if (
@@ -800,7 +800,7 @@ export function setOppositeShiftMode(
 }
 
 export function setPageWidth(
-  val: MonkeyTypes.PageWidth,
+  val: SharedTypes.Config.PageWidth,
   nosave?: boolean
 ): boolean {
   if (
@@ -832,7 +832,7 @@ export function setPageWidth(
 }
 
 export function setCaretStyle(
-  caretStyle: MonkeyTypes.CaretStyle,
+  caretStyle: SharedTypes.Config.CaretStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -874,7 +874,7 @@ export function setCaretStyle(
 }
 
 export function setPaceCaretStyle(
-  caretStyle: MonkeyTypes.CaretStyle,
+  caretStyle: SharedTypes.Config.CaretStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -959,7 +959,7 @@ export function setShowLiveBurst(live: boolean, nosave?: boolean): boolean {
 }
 
 export function setShowAverage(
-  value: MonkeyTypes.ShowAverage,
+  value: SharedTypes.Config.ShowAverage,
   nosave?: boolean
 ): boolean {
   if (
@@ -978,7 +978,7 @@ export function setShowAverage(
 }
 
 export function setHighlightMode(
-  mode: MonkeyTypes.HighlightMode,
+  mode: SharedTypes.Config.HighlightMode,
   nosave?: boolean
 ): boolean {
   if (
@@ -1008,14 +1008,14 @@ export function setHighlightMode(
 }
 
 export function setTapeMode(
-  mode: MonkeyTypes.TapeMode,
+  mode: SharedTypes.Config.TapeMode,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("tape mode", mode, [["off", "letter", "word"]])) {
     return false;
   }
 
-  if (mode !== "off" && config.showAllLines === true) {
+  if (mode !== "off" && config.showAllLines) {
     setShowAllLines(false, true);
   }
 
@@ -1037,7 +1037,7 @@ export function setHideExtraLetters(val: boolean, nosave?: boolean): boolean {
 }
 
 export function setTimerStyle(
-  style: MonkeyTypes.TimerStyle,
+  style: SharedTypes.Config.TimerStyle,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("timer style", style, [["bar", "text", "mini"]])) {
@@ -1052,7 +1052,7 @@ export function setTimerStyle(
 }
 
 export function setTimerColor(
-  color: MonkeyTypes.TimerColor,
+  color: SharedTypes.Config.TimerColor,
   nosave?: boolean
 ): boolean {
   if (
@@ -1104,7 +1104,7 @@ export function setTimerColor(
   return true;
 }
 export function setTimerOpacity(
-  opacity: MonkeyTypes.TimerOpacity,
+  opacity: SharedTypes.Config.TimerOpacity,
   nosave?: boolean
 ): boolean {
   if (
@@ -1140,7 +1140,7 @@ export function setKeyTips(keyTips: boolean, nosave?: boolean): boolean {
 
 //mode
 export function setTimeConfig(
-  time: MonkeyTypes.TimeModes,
+  time: number,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -1164,7 +1164,7 @@ export function setTimeConfig(
 
 //quote length
 export function setQuoteLength(
-  len: MonkeyTypes.QuoteLength[] | MonkeyTypes.QuoteLength,
+  len: SharedTypes.Config.QuoteLength[] | SharedTypes.Config.QuoteLength,
   nosave?: boolean,
   multipleMode?: boolean,
   tribeOverride = false
@@ -1188,7 +1188,7 @@ export function setQuoteLength(
     if (len === null || isNaN(len) || len < -3 || len > 3) {
       len = 1;
     }
-    len = parseInt(len.toString()) as MonkeyTypes.QuoteLength;
+    len = parseInt(len.toString()) as SharedTypes.Config.QuoteLength;
 
     if (len === -1) {
       config.quoteLength = [0, 1, 2, 3];
@@ -1213,7 +1213,7 @@ export function setQuoteLength(
 }
 
 export function setWordCount(
-  wordCount: MonkeyTypes.WordsModes,
+  wordCount: number,
   nosave?: boolean,
   tribeOverride = false
 ): boolean {
@@ -1238,7 +1238,7 @@ export function setWordCount(
 
 //caret
 export function setSmoothCaret(
-  mode: MonkeyTypes.SmoothCaretMode,
+  mode: SharedTypes.Config["smoothCaret"],
   nosave?: boolean
 ): boolean {
   if (
@@ -1369,7 +1369,7 @@ export function setFreedomMode(freedom: boolean, nosave?: boolean): boolean {
 }
 
 export function setConfidenceMode(
-  cm: MonkeyTypes.ConfidenceMode,
+  cm: SharedTypes.Config.ConfidenceMode,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("confidence mode", cm, [["off", "on", "max"]])) {
@@ -1390,7 +1390,7 @@ export function setConfidenceMode(
 }
 
 export function setIndicateTypos(
-  value: MonkeyTypes.IndicateTypos,
+  value: SharedTypes.Config.IndicateTypos,
   nosave?: boolean
 ): boolean {
   if (
@@ -1436,7 +1436,7 @@ export function setTheme(name: string, nosave?: boolean): boolean {
   if (!isConfigValueValid("theme", name, ["string"])) return false;
 
   config.theme = name;
-  if (config.customTheme === true) setCustomTheme(false);
+  if (config.customTheme) setCustomTheme(false);
   saveToLocalStorage("theme", nosave);
   ConfigEvent.dispatch("theme", config.theme);
 
@@ -1497,7 +1497,7 @@ function setThemes(
 }
 
 export function setRandomTheme(
-  val: MonkeyTypes.RandomTheme,
+  val: SharedTypes.Config.RandomTheme,
   nosave?: boolean
 ): boolean {
   if (
@@ -1619,7 +1619,7 @@ export function setMonkey(monkey: boolean, nosave?: boolean): boolean {
 }
 
 export function setKeymapMode(
-  mode: MonkeyTypes.KeymapMode,
+  mode: SharedTypes.Config.KeymapMode,
   nosave?: boolean
 ): boolean {
   if (
@@ -1640,7 +1640,7 @@ export function setKeymapMode(
 }
 
 export function setKeymapLegendStyle(
-  style: MonkeyTypes.KeymapLegendStyle,
+  style: SharedTypes.Config.KeymapLegendStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -1682,7 +1682,7 @@ export function setKeymapLegendStyle(
 }
 
 export function setKeymapStyle(
-  style: MonkeyTypes.KeymapStyle,
+  style: SharedTypes.Config.KeymapStyle,
   nosave?: boolean
 ): boolean {
   if (
@@ -1720,7 +1720,7 @@ export function setKeymapLayout(layout: string, nosave?: boolean): boolean {
 }
 
 export function setKeymapShowTopRow(
-  show: MonkeyTypes.KeymapShowTopRow,
+  show: SharedTypes.Config.KeymapShowTopRow,
   nosave?: boolean
 ): boolean {
   if (
@@ -1844,7 +1844,7 @@ export async function setCustomLayoutfluid(
   const customLayoutfluid = trimmed.replace(
     / /g,
     "#"
-  ) as MonkeyTypes.CustomLayoutFluid;
+  ) as SharedTypes.Config.CustomLayoutFluid;
 
   config.customLayoutfluid = customLayoutfluid;
   saveToLocalStorage("customLayoutfluid", nosave);
@@ -1854,7 +1854,7 @@ export async function setCustomLayoutfluid(
 }
 
 export function setCustomBackgroundSize(
-  value: MonkeyTypes.CustomBackgroundSize,
+  value: SharedTypes.Config.CustomBackgroundSize,
   nosave?: boolean
 ): boolean {
   if (
@@ -1873,7 +1873,7 @@ export function setCustomBackgroundSize(
 }
 
 export function setCustomBackgroundFilter(
-  array: MonkeyTypes.CustomBackgroundFilter,
+  array: SharedTypes.Config.CustomBackgroundFilter,
   nosave?: boolean
 ): boolean {
   if (!isConfigValueValid("custom background filter", array, ["numberArray"])) {
@@ -1888,7 +1888,7 @@ export function setCustomBackgroundFilter(
 }
 
 export function setMonkeyPowerLevel(
-  level: MonkeyTypes.MonkeyPowerLevel,
+  level: SharedTypes.Config.MonkeyPowerLevel,
   nosave?: boolean
 ): boolean {
   if (
@@ -1981,14 +1981,16 @@ export function setTribeCarets(
 }
 
 export async function apply(
-  configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
+  configToApply: SharedTypes.Config | MonkeyTypes.ConfigChanges
 ): Promise<void> {
   if (configToApply === undefined) return;
 
+  ConfigEvent.dispatch("fullConfigChange");
+
   configToApply = replaceLegacyValues(configToApply);
 
-  const configObj = configToApply as MonkeyTypes.Config;
-  (Object.keys(DefaultConfig) as (keyof MonkeyTypes.Config)[]).forEach(
+  const configObj = configToApply as SharedTypes.Config;
+  (Object.keys(DefaultConfig) as (keyof SharedTypes.Config)[]).forEach(
     (configKey) => {
       if (configObj[configKey] === undefined) {
         const newValue = DefaultConfig[configKey];
@@ -1997,6 +1999,7 @@ export async function apply(
     }
   );
   if (configObj !== undefined && configObj !== null) {
+    setAds(configObj.ads, true);
     setThemeLight(configObj.themeLight, true);
     setThemeDark(configObj.themeDark, true);
     setThemes(
@@ -2084,7 +2087,6 @@ export async function apply(
     setLazyMode(configObj.lazyMode, true);
     setShowAverage(configObj.showAverage, true);
     setTapeMode(configObj.tapeMode, true);
-    setAds(configObj.ads, true);
 
     setTribeDelta(configObj.tribeDelta, true);
     setTribeCarets(configObj.tribeCarets, true);
@@ -2097,10 +2099,10 @@ export async function apply(
       config
     );
   }
+  ConfigEvent.dispatch("fullConfigChangeFinished");
 }
 
 export async function reset(): Promise<void> {
-  ConfigEvent.dispatch("fullConfigChange");
   await apply(DefaultConfig);
   saveFullConfigToLocalStorage();
 }
@@ -2108,7 +2110,7 @@ export async function reset(): Promise<void> {
 export async function loadFromLocalStorage(): Promise<void> {
   console.log("loading localStorage config");
   const newConfigString = window.localStorage.getItem("config");
-  let newConfig: MonkeyTypes.Config;
+  let newConfig: SharedTypes.Config;
   if (
     newConfigString !== undefined &&
     newConfigString !== null &&
@@ -2117,7 +2119,7 @@ export async function loadFromLocalStorage(): Promise<void> {
     try {
       newConfig = JSON.parse(newConfigString);
     } catch (e) {
-      newConfig = {} as MonkeyTypes.Config;
+      newConfig = {} as SharedTypes.Config;
     }
     await apply(newConfig);
     localStorageConfig = newConfig;
@@ -2130,11 +2132,11 @@ export async function loadFromLocalStorage(): Promise<void> {
 }
 
 function replaceLegacyValues(
-  configToApply: MonkeyTypes.Config | MonkeyTypes.ConfigChanges
-): MonkeyTypes.Config | MonkeyTypes.ConfigChanges {
-  const configObj = configToApply as MonkeyTypes.Config;
+  configToApply: SharedTypes.Config | MonkeyTypes.ConfigChanges
+): SharedTypes.Config | MonkeyTypes.ConfigChanges {
+  const configObj = configToApply as SharedTypes.Config;
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.quickTab === true) {
     configObj.quickRestart = "tab";
   }
@@ -2143,17 +2145,17 @@ function replaceLegacyValues(
     configObj.smoothCaret = configObj.smoothCaret ? "medium" : "off";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.swapEscAndTab === true) {
     configObj.quickRestart = "esc";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.alwaysShowCPM === true) {
     configObj.typingSpeedUnit = "cpm";
   }
 
-  //@ts-ignore
+  //@ts-expect-error
   if (configObj.showAverage === "wpm") {
     configObj.showAverage = "speed";
   }
@@ -2167,7 +2169,7 @@ function replaceLegacyValues(
 
 export function getConfigChanges(): MonkeyTypes.PresetConfig {
   const configChanges = {} as MonkeyTypes.PresetConfig;
-  (Object.keys(config) as (keyof MonkeyTypes.Config)[])
+  (Object.keys(config) as (keyof SharedTypes.Config)[])
     .filter((key) => {
       return config[key] !== DefaultConfig[key];
     })
