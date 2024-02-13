@@ -9,6 +9,10 @@ import { createErrorMessage, isDevEnvironment } from "./utils/misc";
 export let app: FirebaseApp | undefined;
 export let Auth: AuthType | undefined;
 
+export function isAuthenticated(): boolean {
+  return Auth?.currentUser !== undefined && Auth?.currentUser !== null;
+}
+
 try {
   app = initializeApp(firebaseConfig);
   Auth = getAuth(app);
