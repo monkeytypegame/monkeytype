@@ -136,11 +136,11 @@ declare namespace MonkeyTypes {
     personalBests: SharedTypes.PersonalBests;
   };
 
-  interface CustomTheme {
+  type CustomTheme = {
     _id: ObjectId;
     name: string;
     colors: string[];
-  }
+  };
 
   type ApeKeyDB = SharedTypes.ApeKey & {
     _id: ObjectId;
