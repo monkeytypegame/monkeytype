@@ -990,7 +990,7 @@ $(".pageSettings .section[data-config-name='paceCaret']").on(
 
 $(".pageSettings .section[data-config-name='paceCaret']").on(
   "click",
-  ".button.save",
+  "button.save",
   () => {
     const inputValue = parseInt(
       $(
@@ -1022,7 +1022,7 @@ $(".pageSettings .section[data-config-name='minWpm']").on(
 
 $(".pageSettings .section[data-config-name='minWpm']").on(
   "click",
-  ".button.save",
+  "button.save",
   () => {
     const inputValue = parseInt(
       $(
@@ -1052,7 +1052,7 @@ $(".pageSettings .section[data-config-name='minAcc']").on(
 
 $(".pageSettings .section[data-config-name='minAcc']").on(
   "click",
-  ".button.save",
+  "button.save",
   () => {
     UpdateConfig.setMinAccCustom(
       parseInt(
@@ -1082,7 +1082,7 @@ $(".pageSettings .section[data-config-name='minBurst']").on(
 
 $(".pageSettings .section[data-config-name='minBurst']").on(
   "click",
-  ".button.save",
+  "button.save",
   () => {
     const inputValue = parseInt(
       $(
@@ -1155,7 +1155,7 @@ $(".pageSettings .section.apeKeys #showApeKeysPopup").on("click", () => {
 });
 
 $(
-  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton .save"
+  ".pageSettings .section[data-config-name='customBackgroundSize'] .inputAndButton button.save"
 ).on("click", () => {
   UpdateConfig.setCustomBackground(
     $(
@@ -1177,7 +1177,7 @@ $(
 });
 
 $(
-  ".pageSettings .section[data-config-name='fontSize'] .inputAndButton .save"
+  ".pageSettings .section[data-config-name='fontSize'] .inputAndButton button.save"
 ).on("click", () => {
   const didConfigSave = UpdateConfig.setFontSize(
     parseFloat(
@@ -1213,7 +1213,7 @@ $(
 });
 
 $(
-  ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton .save"
+  ".pageSettings .section[data-config-name='customLayoutfluid'] .inputAndButton button.save"
 ).on("click", () => {
   void UpdateConfig.setCustomLayoutfluid(
     $(

@@ -42,7 +42,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
     } else if (this.mode === "button") {
       $(".pageSettings").on(
         "click",
-        `.section[data-config-name='${this.configName}'] .button`,
+        `.section[data-config-name='${this.configName}'] button`,
         (e) => {
           const target = $(e.currentTarget);
           if (
@@ -81,7 +81,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
   updateUI(): void {
     this.configValue = Config[this.configName as keyof typeof Config] as T;
     $(
-      `.pageSettings .section[data-config-name='${this.configName}'] .button`
+      `.pageSettings .section[data-config-name='${this.configName}'] button`
     ).removeClass("active");
     if (this.mode === "select") {
       $(`.pageSettings .section[data-config-name='${this.configName}'] select`)
@@ -91,7 +91,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
       $(
         // this cant be an object?
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        `.pageSettings .section[data-config-name='${this.configName}'] .button[data-config-value='${this.configValue}']`
+        `.pageSettings .section[data-config-name='${this.configName}'] button[data-config-value='${this.configValue}']`
       ).addClass("active");
     }
     if (this.updateCallback) this.updateCallback();
