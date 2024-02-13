@@ -740,8 +740,8 @@ export function updateDiscordSection(): void {
 }
 
 export function updateAuthSections(): void {
-  $(".pageSettings .section.passwordAuthSettings .button").addClass("hidden");
-  $(".pageSettings .section.googleAuthSettings .button").addClass("hidden");
+  $(".pageSettings .section.passwordAuthSettings button").addClass("hidden");
+  $(".pageSettings .section.googleAuthSettings button").addClass("hidden");
 
   const user = Auth?.currentUser;
   if (!user) return;
@@ -1253,7 +1253,7 @@ $(".pageSettings .quickNav .links a").on("click", (e) => {
   isOpen && toggleSettingsGroup(settingsGroup);
 });
 
-$(".pageSettings .section.updateCookiePreferences .button").on("click", () => {
+$(".pageSettings .section.updateCookiePreferences button").on("click", () => {
   CookiePopup.show();
   CookiePopup.showSettings();
 });

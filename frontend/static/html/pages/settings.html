@@ -1510,22 +1510,8 @@
       </div>
       <div class="text">Import or export the settings as JSON.</div>
       <div class="buttons">
-        <div
-          class="button"
-          id="importSettingsButton"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          import
-        </div>
-        <div
-          class="button"
-          id="exportSettingsButton"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          export
-        </div>
+        <button id="importSettingsButton">import</button>
+        <button id="exportSettingsButton">export</button>
       </div>
     </div>
     <div class="section" data-config-name="ads">
@@ -1569,14 +1555,7 @@
         More endpoints will be added in the future.
       </div>
       <div class="buttons">
-        <div
-          class="button"
-          id="showApeKeysPopup"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          open
-        </div>
+        <button id="showApeKeysPopup">open</button>
       </div>
     </div>
     <div class="section updateCookiePreferences">
@@ -1589,7 +1568,7 @@
         change your preferences here.
       </div>
       <div class="buttons">
-        <div class="button" tabindex="0" onclick="this.blur();">open</div>
+        <button>open</button>
       </div>
     </div>
     <div class="section setStreakHourOffset needsAccount hidden">
@@ -1605,14 +1584,9 @@
         <span class="red">You can only do this once!</span>
       </div>
       <div class="buttons">
-        <div
-          class="button danger"
-          id="setStreakHourOffset"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        <button class="danger" id="setStreakHourOffset">
           update hour offset
-        </div>
+        </button>
       </div>
     </div>
     <div class="section updateAccountName needsAccount hidden">
@@ -1625,14 +1599,7 @@
         days.
       </div>
       <div class="buttons">
-        <div
-          class="button danger"
-          id="updateAccountName"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          update name
-        </div>
+        <button class="danger" id="updateAccountName">update name</button>
       </div>
     </div>
     <div class="section passwordAuthSettings needsAccount hidden">
@@ -1644,30 +1611,11 @@
         Add password authentication, update your password or email.
       </div>
       <div class="buttons vertical">
-        <div
-          class="button danger"
-          id="addPasswordAuth"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        <button class="danger" id="addPasswordAuth">
           add password authentication
-        </div>
-        <div
-          class="button danger"
-          id="emailPasswordAuth"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          update email
-        </div>
-        <div
-          class="button danger"
-          id="passPasswordAuth"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          update password
-        </div>
+        </button>
+        <button class="danger" id="emailPasswordAuth">update email</button>
+        <button class="danger" id="passPasswordAuth">update password</button>
       </div>
     </div>
     <div class="section googleAuthSettings needsAccount hidden">
@@ -1677,22 +1625,12 @@
       </div>
       <div class="text">Add or remove Google authentication.</div>
       <div class="buttons vertical">
-        <div
-          class="button danger"
-          id="addGoogleAuth"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        <button class="danger" id="addGoogleAuth">
           add google authentication
-        </div>
-        <div
-          class="button danger"
-          id="removeGoogleAuth"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        </button>
+        <button class="danger" id="removeGoogleAuth">
           remove google authentication
-        </div>
+        </button>
       </div>
     </div>
     <div class="section revokeAllTokens">
@@ -1707,14 +1645,7 @@
         <span class="red">This will log you out of all devices.</span>
       </div>
       <div class="buttons">
-        <div
-          class="button danger"
-          id="revokeAllTokens"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          revoke all tokens
-        </div>
+        <button class="danger" id="revokeAllTokens">revoke all tokens</button>
       </div>
     </div>
     <div class="section resetSettings">
@@ -1728,14 +1659,7 @@
         <span class="red">You can't undo this action!</span>
       </div>
       <div class="buttons">
-        <div
-          class="button danger"
-          id="resetSettingsButton"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          reset settings
-        </div>
+        <button class="danger" id="resetSettingsButton">reset settings</button>
       </div>
     </div>
     <div class="section resetPersonalBests needsAccount hidden">
@@ -1750,14 +1674,9 @@
         <span class="red">You can't undo this action!</span>
       </div>
       <div class="buttons">
-        <div
-          class="button danger"
-          id="resetPersonalBestsButton"
-          tabindex="0"
-          onclick="this.blur();"
-        >
+        <button class="danger" id="resetPersonalBestsButton">
           reset personal bests
-        </div>
+        </button>
       </div>
     </div>
     <div class="section optOutOfLeaderboards needsAccount hidden">
@@ -1772,14 +1691,7 @@
         <span class="red">You can't undo this action!</span>
       </div>
       <div class="buttons">
-        <div
-          class="button danger"
-          id="optOutOfLeaderboardsButton"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          opt out
-        </div>
+        <button class="danger" id="optOutOfLeaderboardsButton">opt out</button>
       </div>
     </div>
     <div class="section resetAccount needsAccount hidden">
@@ -1793,14 +1705,7 @@
         <span class="red">You can't undo this action!</span>
       </div>
       <div class="buttons">
-        <div
-          class="button danger"
-          id="resetAccount"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          reset account
-        </div>
+        <button class="danger" id="resetAccount">reset account</button>
       </div>
     </div>
     <div class="section deleteAccount needsAccount hidden">
@@ -1814,14 +1719,7 @@
         <span class="red">You can't undo this action!</span>
       </div>
       <div class="buttons">
-        <div
-          class="button danger"
-          id="deleteAccount"
-          tabindex="0"
-          onclick="this.blur();"
-        >
-          delete account
-        </div>
+        <button class="danger" id="deleteAccount">delete account</button>
       </div>
     </div>
   </div>
