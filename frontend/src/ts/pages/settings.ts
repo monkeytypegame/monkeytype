@@ -20,6 +20,7 @@ import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 import * as Skeleton from "../popups/skeleton";
+import * as CustomBackgroundFilter from "../elements/custom-background-filter";
 
 type SettingsGroups<T extends SharedTypes.ConfigValue> = Record<
   string,
@@ -943,6 +944,8 @@ export async function update(groupUpdate = true): Promise<void> {
   } else {
     hideAccountSection();
   }
+
+  CustomBackgroundFilter.updateUI();
 
   const modifierKey = window.navigator.userAgent.toLowerCase().includes("mac")
     ? "cmd"

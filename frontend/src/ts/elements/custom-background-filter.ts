@@ -77,13 +77,17 @@ function updateNumbers(): void {
   );
 }
 
+export function updateUI(): void {
+  syncSliders();
+  updateNumbers();
+}
+
 function loadConfig(config: SharedTypes.Config.CustomBackgroundFilter): void {
   filters.blur.value = config[0];
   filters.brightness.value = config[1];
   filters.saturate.value = config[2];
   filters.opacity.value = config[3];
-  updateNumbers();
-  syncSliders();
+  updateUI();
 }
 
 $(".section[data-config-name='customBackgroundFilter'] .blur input").on(
