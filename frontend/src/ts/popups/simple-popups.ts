@@ -536,7 +536,7 @@ list.updateEmail = new SimplePopup(
   },
   (thisPopup) => {
     if (!isAuthenticated()) return;
-    if (!isPasswordLogin()) {
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -589,7 +589,7 @@ list.removeGoogleAuth = new SimplePopup(
   },
   (thisPopup) => {
     if (!isAuthenticated()) return;
-    if (!isPasswordLogin()) {
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -667,7 +667,7 @@ list.updateName = new SimplePopup(
     if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
-    if (!isPasswordLogin()) {
+    if (!isUsingPasswordAuthentication()) {
       (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
@@ -754,7 +754,7 @@ list.updatePassword = new SimplePopup(
   },
   (thisPopup) => {
     if (!isAuthenticated()) return;
-    if (!isPasswordLogin()) {
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -919,7 +919,7 @@ list.deleteAccount = new SimplePopup(
   },
   (thisPopup) => {
     if (!isAuthenticated()) return;
-    if (!isPasswordLogin()) {
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
     }
@@ -972,7 +972,7 @@ list.resetAccount = new SimplePopup(
   },
   (thisPopup) => {
     if (!isAuthenticated()) return;
-    if (!isPasswordLogin()) {
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -1021,7 +1021,7 @@ list.optOutOfLeaderboards = new SimplePopup(
   },
   (thisPopup) => {
     if (!isAuthenticated()) return;
-    if (!isPasswordLogin()) {
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -1162,7 +1162,7 @@ list.resetPersonalBests = new SimplePopup(
   },
   (thisPopup) => {
     if (!isAuthenticated()) return;
-    if (!isPasswordLogin()) {
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -1235,7 +1235,7 @@ list.revokeAllTokens = new SimplePopup(
     if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
-    if (!isPasswordLogin()) {
+    if (!isUsingPasswordAuthentication()) {
       (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "reauthenticate to revoke all tokens";
     }
@@ -1889,7 +1889,7 @@ Skeleton.save(wrapperId);
 
 console.log(list);
 
-function isPasswordLogin(): boolean {
+function isUsingPasswordAuthentication(): boolean {
   return (
     Auth?.currentUser?.providerData.find(
       (p) => p?.providerId === "password"

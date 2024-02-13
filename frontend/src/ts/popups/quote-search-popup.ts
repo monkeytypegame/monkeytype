@@ -13,7 +13,7 @@ import {
 } from "../utils/search-service";
 import { splitByAndKeep } from "../utils/strings";
 import QuotesController from "../controllers/quotes-controller";
-import { Auth, isAuthenticated } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
