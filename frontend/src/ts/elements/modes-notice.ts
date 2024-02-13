@@ -24,6 +24,7 @@ ConfigEvent.subscribe((eventKey) => {
       "layout",
       "showAverage",
       "typingSpeedUnit",
+      "quickRestart",
     ].includes(eventKey)
   ) {
     void update();
@@ -50,9 +51,13 @@ export async function update(): Promise<void> {
       $(".pageTest #testModesNotice").append(
         `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
       );
-    } else {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + esc to restart</div>`
+      );
+    }
+    if (Config.quickRestart === "tab") {
+      $(".pageTest #testModesNotice").append(
+        `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + tab to restart</div>`
       );
     }
   }
