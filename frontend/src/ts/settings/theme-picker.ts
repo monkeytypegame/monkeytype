@@ -288,10 +288,10 @@ export function updateActiveTab(forced = false): void {
   // Set force to true only when some change for the active tab has taken place
   // Prevent theme buttons from being added twice by doing an update only when the state has changed
   const $presetTabButton = $(
-    ".pageSettings .section.themes .tabs .button[tab='preset']"
+    ".pageSettings .section.themes .tabs button[data-tab='preset']"
   );
   const $customTabButton = $(
-    ".pageSettings .section.themes .tabs .button[tab='custom']"
+    ".pageSettings .section.themes .tabs button[data-tab='custom']"
   );
 
   if (Config.customTheme) {
@@ -322,13 +322,13 @@ export function updateActiveTab(forced = false): void {
 // Add events to the DOM
 
 // Handle click on theme: preset or custom tab
-$(".pageSettings .section.themes .tabs .button").on("click", (e) => {
-  $(".pageSettings .section.themes .tabs .button").removeClass("active");
+$(".pageSettings .section.themes .tabs button").on("click", (e) => {
+  $(".pageSettings .section.themes .tabs button").removeClass("active");
   const $target = $(e.currentTarget);
   $target.addClass("active");
   // setCustomInputs();
   //test
-  if ($target.attr("tab") === "preset") {
+  if ($target.attr("data-tab") === "preset") {
     UpdateConfig.setCustomTheme(false);
   } else {
     UpdateConfig.setCustomTheme(true);
