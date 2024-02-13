@@ -21,7 +21,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
     this.setCallback = setCallback;
     this.updateCallback = updateCallback;
 
-    this.updateInput();
+    this.updateUI();
 
     if (this.mode === "select") {
       $(".pageSettings").on(
@@ -62,7 +62,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
 
   setValue(value: T): void {
     this.configFunction(value);
-    this.updateInput();
+    this.updateUI();
     if (this.setCallback) this.setCallback();
   }
 
