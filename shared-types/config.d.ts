@@ -77,4 +77,6 @@ declare namespace SharedTypes.Config {
   type MinimumBurst = "off" | "fixed" | "flex";
   type ShowAverage = "off" | "speed" | "acc" | "both";
   type TapeMode = "off" | "letter" | "word";
+  type TribeDelta = "off" | "text" | "bar";
+  type TribeCarets = "off" | "noNames" | "on";
 }

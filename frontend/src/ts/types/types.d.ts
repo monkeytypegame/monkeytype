@@ -109,9 +109,6 @@ declare namespace MonkeyTypes {
     | "changesWordsFrequency"
     | `wordOrder:${FunboxWordOrder}`;
 
-  type TribeDelta = "off" | "text" | "bar";
-  type TribeCarets = "off" | "noNames" | "on";
-
   type FunboxFunctions = {
     getWord?: (wordset?: Wordset, wordIndex?: number) => string;
     punctuateWord?: (word: string) => string;

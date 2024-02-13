@@ -424,6 +424,8 @@ declare namespace SharedTypes {
     lazyMode: boolean;
     showAverage: SharedTypes.Config.ShowAverage;
     tapeMode: SharedTypes.Config.TapeMode;
+    tribeDelta: SharedTypes.Config.TribeDelta;
+    tribeCarets: SharedTypes.Config.TribeCarets;
   }
 
   type ConfigValue = Config[keyof Config];
