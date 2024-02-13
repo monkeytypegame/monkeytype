@@ -72,7 +72,6 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
   }
 
   setValue(value: T): void {
-    Notifications.add(`Setting ${this.configName} to ${value}`, 1);
     this.configFunction(value);
     this.updateUI();
     if (this.setCallback) this.setCallback();
