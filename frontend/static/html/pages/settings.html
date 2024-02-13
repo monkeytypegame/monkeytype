@@ -132,7 +132,7 @@
     <span>behavior</span>
   </button>
   <div class="settingsGroup behavior">
-    <div class="section difficulty">
+    <div class="section" data-config-name="difficulty">
       <div class="groupTitle">
         <i class="fas fa-star"></i>
         <span>test difficulty</span>
@@ -145,7 +145,7 @@
       <div class="buttons">
         <div
           class="button"
-          difficulty="normal"
+          data-config-value="normal"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -153,7 +153,7 @@
         </div>
         <div
           class="button"
-          difficulty="expert"
+          data-config-value="expert"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -161,7 +161,7 @@
         </div>
         <div
           class="button"
-          difficulty="master"
+          data-config-value="master"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -169,7 +169,7 @@
         </div>
       </div>
     </div>
-    <div class="section quickRestart" id="quickRestart">
+    <div class="section" data-config-name="quickRestart">
       <div class="groupTitle">
         <i class="fas fa-redo-alt"></i>
         <span>quick restart</span>
@@ -190,7 +190,7 @@
       <div class="buttons">
         <div
           class="button"
-          quickRestart="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -198,7 +198,7 @@
         </div>
         <div
           class="button"
-          quickRestart="tab"
+          data-config-value="tab"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -206,7 +206,7 @@
         </div>
         <div
           class="button"
-          quickRestart="esc"
+          data-config-value="esc"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -214,7 +214,7 @@
         </div>
         <div
           class="button"
-          quickRestart="enter"
+          data-config-value="enter"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -223,7 +223,7 @@
       </div>
     </div>
 
-    <div class="section repeatQuotes" id="repeatQuotes">
+    <div class="section" data-config-name="repeatQuotes">
       <div class="groupTitle">
         <i class="fas fa-sync-alt"></i>
         <span>repeat quotes</span>
@@ -237,7 +237,7 @@
       <div class="buttons">
         <div
           class="button"
-          repeatQuotes="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -245,7 +245,7 @@
         </div>
         <div
           class="button"
-          repeatQuotes="typing"
+          data-config-value="typing"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -257,7 +257,7 @@
       </div>
     </div>
 
-    <div class="section blindMode">
+    <div class="section" data-config-name="blindMode">
       <div class="groupTitle">
         <i class="fas fa-eye-slash"></i>
         <span>blind mode</span>
@@ -269,7 +269,7 @@
       <div class="buttons">
         <div
           class="button"
-          blindMode="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -277,7 +277,7 @@
         </div>
         <div
           class="button"
-          blindMode="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -286,7 +286,7 @@
         </div>
       </div>
     </div>
-    <div class="section alwaysShowWordsHistory">
+    <div class="section" data-config-name="alwaysShowWordsHistory">
       <div class="groupTitle">
         <i class="fas fa-align-left"></i>
         <span>always show words history</span>
@@ -298,22 +298,18 @@
       <div class="buttons">
         <div
           class="button"
-          alwaysShowWordsHistory="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
           off
         </div>
-        <div
-          class="button"
-          alwaysShowWordsHistory="true"
-          onclick="this.blur();"
-        >
+        <div class="button" data-config-value="true" onclick="this.blur();">
           on
         </div>
       </div>
     </div>
-    <div class="section singleListCommandLine">
+    <div class="section" data-config-name="singleListCommandLine">
       <div class="groupTitle">
         <i class="fas fa-list"></i>
         <span>single list command line</span>
@@ -328,7 +324,7 @@
       <div class="buttons">
         <div
           class="button"
-          singleListCommandLine="manual"
+          data-config-value="manual"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -336,7 +332,7 @@
         </div>
         <div
           class="button"
-          singleListCommandLine="on"
+          data-config-value="on"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -344,7 +340,7 @@
         </div>
       </div>
     </div>
-    <div class="section minWpm" section="">
+    <div class="section" data-config-name="minWpm">
       <div class="groupTitle">
         <i class="fas fa-bomb"></i>
         <span>min speed</span>
@@ -363,17 +359,26 @@
             step="1"
             value=""
           />
-          <div class="button save" tabindex="0" onclick="this.blur();">
+          <div
+            class="button save no-auto-handle"
+            tabindex="0"
+            onclick="this.blur();"
+          >
             <i class="fas fa-save fa-fw"></i>
           </div>
         </div>
         <div class="buttons">
-          <div class="button" minWpm="off" tabindex="0" onclick="this.blur();">
+          <div
+            class="button"
+            data-config-value="off"
+            tabindex="0"
+            onclick="this.blur();"
+          >
             off
           </div>
           <div
             class="button"
-            minWpm="custom"
+            data-config-value="custom"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -382,7 +387,7 @@
         </div>
       </div>
     </div>
-    <div class="section minAcc" section="">
+    <div class="section" data-config-name="minAcc">
       <div class="groupTitle">
         <i class="fas fa-bomb"></i>
         <span>min accuracy</span>
@@ -401,17 +406,26 @@
             step="1"
             value=""
           />
-          <div class="button save" tabindex="0" onclick="this.blur();">
+          <div
+            class="button save no-auto-handle"
+            tabindex="0"
+            onclick="this.blur();"
+          >
             <i class="fas fa-save fa-fw"></i>
           </div>
         </div>
         <div class="buttons">
-          <div class="button" minAcc="off" tabindex="0" onclick="this.blur();">
+          <div
+            class="button"
+            data-config-value="off"
+            tabindex="0"
+            onclick="this.blur();"
+          >
             off
           </div>
           <div
             class="button"
-            minAcc="custom"
+            data-config-value="custom"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -420,7 +434,7 @@
         </div>
       </div>
     </div>
-    <div class="section minBurst" section="">
+    <div class="section" data-config-name="minBurst">
       <div class="groupTitle">
         <i class="fas fa-bomb"></i>
         <span>min burst</span>
@@ -441,14 +455,18 @@
             step="1"
             value=""
           />
-          <div class="button save" tabindex="0" onclick="this.blur();">
+          <div
+            class="button save no-auto-handle"
+            tabindex="0"
+            onclick="this.blur();"
+          >
             <i class="fas fa-save fa-fw"></i>
           </div>
         </div>
         <div class="buttons">
           <div
             class="button"
-            minBurst="off"
+            data-config-value="off"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -456,7 +474,7 @@
           </div>
           <div
             class="button"
-            minBurst="fixed"
+            data-config-value="fixed"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -464,7 +482,7 @@
           </div>
           <div
             class="button"
-            minBurst="flex"
+            data-config-value="flex"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -473,7 +491,7 @@
         </div>
       </div>
     </div>
-    <div class="section britishEnglish" section="">
+    <div class="section" data-config-name="britishEnglish">
       <div class="groupTitle">
         <i class="fas fa-language"></i>
         <span>british english</span>
@@ -486,7 +504,7 @@
       <div class="buttons">
         <div
           class="button"
-          britishEnglish="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -494,7 +512,7 @@
         </div>
         <div
           class="button"
-          britishEnglish="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -502,7 +520,7 @@
         </div>
       </div>
     </div>
-    <div class="section language">
+    <div class="section" data-config-name="language">
       <div class="groupTitle">
         <i class="fas fa-language"></i>
         <span>language</span>
@@ -512,7 +530,7 @@
         <select></select>
       </div>
     </div>
-    <div class="section funbox fullWidth">
+    <div class="section fullWidth" data-config-name="funbox">
       <div class="groupTitle">
         <i class="fas fa-gamepad"></i>
         <span>funbox</span>
@@ -525,7 +543,7 @@
       <div class="buttons"></div>
     </div>
     <div class="sectionSpacer"></div>
-    <div class="section customLayoutfluid">
+    <div class="section" data-config-name="customLayoutfluid">
       <div class="groupTitle">
         <i class="fas fa-tint"></i>
         <span>custom layoutfluid</span>
@@ -541,7 +559,11 @@
             class="input"
             tabindex="0"
           />
-          <div class="button save" tabindex="0" onclick="this.blur();">
+          <div
+            class="button save no-auto-handle"
+            tabindex="0"
+            onclick="this.blur();"
+          >
             <i class="fas fa-save fa-fw"></i>
           </div>
         </div>
@@ -554,7 +576,7 @@
     input
   </button>
   <div class="settingsGroup input">
-    <div class="section freedomMode">
+    <div class="section" data-config-name="freedomMode">
       <div class="groupTitle">
         <i class="fas fa-feather-alt"></i>
         <span>freedom mode</span>
@@ -565,7 +587,7 @@
       <div class="buttons">
         <div
           class="button"
-          freedomMode="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -573,7 +595,7 @@
         </div>
         <div
           class="button"
-          freedomMode="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -581,7 +603,7 @@
         </div>
       </div>
     </div>
-    <div class="section strictSpace">
+    <div class="section" data-config-name="strictSpace">
       <div class="groupTitle">
         <i class="fas fa-minus"></i>
         <span>strict space</span>
@@ -593,7 +615,7 @@
       <div class="buttons">
         <div
           class="button"
-          strictSpace="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -601,7 +623,7 @@
         </div>
         <div
           class="button"
-          strictSpace="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -609,7 +631,7 @@
         </div>
       </div>
     </div>
-    <div class="section oppositeShiftMode">
+    <div class="section" data-config-name="oppositeShiftMode">
       <div class="groupTitle">
         <i class="fas fa-exchange-alt"></i>
         <span>opposite shift mode</span>
@@ -632,7 +654,7 @@
       <div class="buttons">
         <div
           class="button"
-          oppositeShiftMode="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -640,7 +662,7 @@
         </div>
         <div
           class="button"
-          oppositeShiftMode="on"
+          data-config-value="on"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -648,7 +670,7 @@
         </div>
         <div
           class="button"
-          oppositeShiftMode="keymap"
+          data-config-value="keymap"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -656,7 +678,7 @@
         </div>
       </div>
     </div>
-    <div class="section stopOnError">
+    <div class="section" data-config-name="stopOnError">
       <div class="groupTitle">
         <i class="fas fa-hand-paper"></i>
         <span>stop on error</span>
@@ -669,7 +691,7 @@
       <div class="buttons">
         <div
           class="button"
-          stopOnError="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -677,7 +699,7 @@
         </div>
         <div
           class="button"
-          stopOnError="word"
+          data-config-value="word"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -685,7 +707,7 @@
         </div>
         <div
           class="button"
-          stopOnError="letter"
+          data-config-value="letter"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -693,7 +715,7 @@
         </div>
       </div>
     </div>
-    <div class="section confidenceMode">
+    <div class="section" data-config-name="confidenceMode">
       <div class="groupTitle">
         <i class="fas fa-backspace"></i>
         <span>confidence mode</span>
@@ -706,7 +728,7 @@
       <div class="buttons">
         <div
           class="button"
-          confidenceMode="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -715,7 +737,7 @@
 
         <div
           class="button"
-          confidenceMode="on"
+          data-config-value="on"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -723,7 +745,7 @@
         </div>
         <div
           class="button"
-          confidenceMode="max"
+          data-config-value="max"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -731,7 +753,7 @@
         </div>
       </div>
     </div>
-    <div class="section quickEnd">
+    <div class="section" data-config-name="quickEnd">
       <div class="groupTitle">
         <i class="fas fa-step-forward"></i>
         <span>quick end</span>
@@ -745,18 +767,23 @@
       <div class="buttons">
         <div
           class="button"
-          quickEnd="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
           off
         </div>
-        <div class="button" quickEnd="true" tabindex="0" onclick="this.blur();">
+        <div
+          class="button"
+          data-config-value="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
           on
         </div>
       </div>
     </div>
-    <div class="section indicateTypos" section="">
+    <div class="section" data-config-name="indicateTypos">
       <div class="groupTitle">
         <i class="fas fa-exclamation"></i>
         <span>indicate typos</span>
@@ -768,7 +795,7 @@
       <div class="buttons">
         <div
           class="button"
-          indicateTypos="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -776,7 +803,7 @@
         </div>
         <div
           class="button"
-          indicateTypos="below"
+          data-config-value="below"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -784,7 +811,7 @@
         </div>
         <div
           class="button"
-          indicateTypos="replace"
+          data-config-value="replace"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -792,7 +819,7 @@
         </div>
       </div>
     </div>
-    <div class="section hideExtraLetters" section="">
+    <div class="section" data-config-name="hideExtraLetters">
       <div class="groupTitle">
         <i class="fas fa-eye-slash"></i>
         <span>hide extra letters</span>
@@ -805,7 +832,7 @@
       <div class="buttons">
         <div
           class="button"
-          hideExtraLetters="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -813,7 +840,7 @@
         </div>
         <div
           class="button"
-          hideExtraLetters="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -821,7 +848,7 @@
         </div>
       </div>
     </div>
-    <div class="section lazyMode">
+    <div class="section" data-config-name="lazyMode">
       <div class="groupTitle">
         <i class="fas fa-couch"></i>
         <span>lazy mode</span>
@@ -833,18 +860,23 @@
       <div class="buttons">
         <div
           class="button"
-          lazyMode="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
           off
         </div>
-        <div class="button" lazyMode="true" tabindex="0" onclick="this.blur();">
+        <div
+          class="button"
+          data-config-value="true"
+          tabindex="0"
+          onclick="this.blur();"
+        >
           on
         </div>
       </div>
     </div>
-    <div class="section layout">
+    <div class="section" data-config-name="layout">
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>layout emulator</span>
@@ -874,7 +906,7 @@
     sound
   </button>
   <div class="settingsGroup sound">
-    <div class="section soundVolume">
+    <div class="section" data-config-name="soundVolume">
       <div class="groupTitle">
         <i class="fas fa-volume-down"></i>
         <span>sound volume</span>
@@ -883,7 +915,7 @@
       <div class="buttons">
         <div
           class="button"
-          soundVolume="0.1"
+          data-config-value="0.1"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -891,7 +923,7 @@
         </div>
         <div
           class="button"
-          soundVolume="0.5"
+          data-config-value="0.5"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -899,7 +931,7 @@
         </div>
         <div
           class="button"
-          soundVolume="1.0"
+          data-config-value="1.0"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -907,7 +939,7 @@
         </div>
       </div>
     </div>
-    <div class="section playSoundOnClick fullWidth">
+    <div class="section fullWidth" data-config-name="playSoundOnClick">
       <div class="groupTitle">
         <i class="fas fa-volume-up"></i>
         <span>play sound on click</span>
@@ -916,7 +948,7 @@
       <div class="buttons">
         <div
           class="button"
-          playSoundOnClick="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -924,7 +956,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="1"
+          data-config-value="1"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -932,7 +964,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="2"
+          data-config-value="2"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -940,7 +972,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="3"
+          data-config-value="3"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -948,7 +980,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="4"
+          data-config-value="4"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -956,7 +988,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="5"
+          data-config-value="5"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -964,7 +996,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="6"
+          data-config-value="6"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -972,7 +1004,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="7"
+          data-config-value="7"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -980,7 +1012,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="8"
+          data-config-value="8"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -988,7 +1020,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="9"
+          data-config-value="9"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -996,7 +1028,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="10"
+          data-config-value="10"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1004,7 +1036,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="11"
+          data-config-value="11"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1012,7 +1044,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="12"
+          data-config-value="12"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1020,7 +1052,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="13"
+          data-config-value="13"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1028,7 +1060,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="14"
+          data-config-value="14"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1036,7 +1068,7 @@
         </div>
         <div
           class="button"
-          playSoundOnClick="15"
+          data-config-value="15"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1044,7 +1076,7 @@
         </div>
       </div>
     </div>
-    <div class="section playSoundOnError fullWidth">
+    <div class="section fullWidth" data-config-name="playSoundOnError">
       <div class="groupTitle">
         <i class="fas fa-volume-mute"></i>
         <span>play sound on error</span>
@@ -1056,7 +1088,7 @@
       <div class="buttons">
         <div
           class="button"
-          playSoundOnError="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1064,7 +1096,7 @@
         </div>
         <div
           class="button"
-          playSoundOnError="1"
+          data-config-value="1"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1072,7 +1104,7 @@
         </div>
         <div
           class="button"
-          playSoundOnError="2"
+          data-config-value="2"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1080,7 +1112,7 @@
         </div>
         <div
           class="button"
-          playSoundOnError="3"
+          data-config-value="3"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1088,7 +1120,7 @@
         </div>
         <div
           class="button"
-          playSoundOnError="4"
+          data-config-value="4"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1104,7 +1136,7 @@
     caret
   </button>
   <div class="settingsGroup caret">
-    <div class="section smoothCaret" section="">
+    <div class="section" data-config-name="smoothCaret">
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>smooth caret</span>
@@ -1115,7 +1147,7 @@
       <div class="buttons">
         <div
           class="button"
-          smoothCaret="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1123,7 +1155,7 @@
         </div>
         <div
           class="button"
-          smoothCaret="slow"
+          data-config-value="slow"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1131,7 +1163,7 @@
         </div>
         <div
           class="button"
-          smoothCaret="medium"
+          data-config-value="medium"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1139,7 +1171,7 @@
         </div>
         <div
           class="button"
-          smoothCaret="fast"
+          data-config-value="fast"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1147,7 +1179,7 @@
         </div>
       </div>
     </div>
-    <div class="section caretStyle" section="">
+    <div class="section" data-config-name="caretStyle">
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>caret style</span>
@@ -1156,7 +1188,7 @@
       <div class="buttons">
         <div
           class="button"
-          caretStyle="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1164,7 +1196,7 @@
         </div>
         <div
           class="button"
-          caretStyle="default"
+          data-config-value="default"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1172,7 +1204,7 @@
         </div>
         <div
           class="button"
-          caretStyle="block"
+          data-config-value="block"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1180,7 +1212,7 @@
         </div>
         <div
           class="button"
-          caretStyle="outline"
+          data-config-value="outline"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1188,7 +1220,7 @@
         </div>
         <div
           class="button"
-          caretStyle="underline"
+          data-config-value="underline"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1196,7 +1228,7 @@
         </div>
       </div>
     </div>
-    <div class="section paceCaret" section="">
+    <div class="section" data-config-name="paceCaret">
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>pace caret</span>
@@ -1217,14 +1249,18 @@
             step="1"
             value=""
           />
-          <div class="button save" tabindex="0" onclick="this.blur();">
+          <div
+            class="button save no-auto-handle"
+            tabindex="0"
+            onclick="this.blur();"
+          >
             <i class="fas fa-save fa-fw"></i>
           </div>
         </div>
         <div class="buttons">
           <div
             class="button"
-            paceCaret="off"
+            data-config-value="off"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -1232,7 +1268,7 @@
           </div>
           <div
             class="button"
-            paceCaret="average"
+            data-config-value="average"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -1240,7 +1276,7 @@
           </div>
           <div
             class="button"
-            paceCaret="pb"
+            data-config-value="pb"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -1248,7 +1284,7 @@
           </div>
           <div
             class="button"
-            paceCaret="last"
+            data-config-value="last"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -1256,7 +1292,7 @@
           </div>
           <div
             class="button"
-            paceCaret="daily"
+            data-config-value="daily"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -1264,7 +1300,7 @@
           </div>
           <div
             class="button"
-            paceCaret="custom"
+            data-config-value="custom"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -1273,7 +1309,7 @@
         </div>
       </div>
     </div>
-    <div class="section repeatedPace" section="">
+    <div class="section" data-config-name="repeatedPace">
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>repeated pace</span>
@@ -1286,7 +1322,7 @@
       <div class="buttons">
         <div
           class="button"
-          repeatedPace="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1294,7 +1330,7 @@
         </div>
         <div
           class="button"
-          repeatedPace="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1302,7 +1338,7 @@
         </div>
       </div>
     </div>
-    <div class="section paceCaretStyle" section="">
+    <div class="section" data-config-name="paceCaretStyle">
       <div class="groupTitle">
         <i class="fas fa-i-cursor"></i>
         <span>pace caret style</span>
@@ -1313,7 +1349,7 @@
       <div class="buttons">
         <div
           class="button"
-          paceCaretStyle="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1321,7 +1357,7 @@
         </div>
         <div
           class="button"
-          paceCaretStyle="default"
+          data-config-value="default"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1329,7 +1365,7 @@
         </div>
         <div
           class="button"
-          paceCaretStyle="block"
+          data-config-value="block"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1337,7 +1373,7 @@
         </div>
         <div
           class="button"
-          paceCaretStyle="outline"
+          data-config-value="outline"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1345,7 +1381,7 @@
         </div>
         <div
           class="button"
-          paceCaretStyle="underline"
+          data-config-value="underline"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1365,7 +1401,7 @@
     appearance
   </button>
   <div class="settingsGroup appearance">
-    <div class="section timerStyle" section="">
+    <div class="section" data-config-name="timerStyle">
       <div class="groupTitle">
         <i class="fas fa-chart-pie"></i>
         <span>live progress style</span>
@@ -1376,7 +1412,7 @@
       <div class="buttons">
         <div
           class="button"
-          timerStyle="bar"
+          data-config-value="bar"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1384,7 +1420,7 @@
         </div>
         <div
           class="button"
-          timerStyle="text"
+          data-config-value="text"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1392,7 +1428,7 @@
         </div>
         <div
           class="button"
-          timerStyle="mini"
+          data-config-value="mini"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1400,7 +1436,7 @@
         </div>
       </div>
     </div>
-    <div class="section timerColor" section="">
+    <div class="section" data-config-name="timerColor">
       <div class="groupTitle">
         <i class="fas fa-chart-pie"></i>
         <span>live progress color</span>
@@ -1412,7 +1448,7 @@
       <div class="buttons">
         <div
           class="button"
-          timerColor="black"
+          data-config-value="black"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1420,7 +1456,7 @@
         </div>
         <div
           class="button"
-          timerColor="sub"
+          data-config-value="sub"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1428,7 +1464,7 @@
         </div>
         <div
           class="button"
-          timerColor="text"
+          data-config-value="text"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1436,7 +1472,7 @@
         </div>
         <div
           class="button"
-          timerColor="main"
+          data-config-value="main"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1444,7 +1480,7 @@
         </div>
       </div>
     </div>
-    <div class="section timerOpacity" section="">
+    <div class="section" data-config-name="timerOpacity">
       <div class="groupTitle">
         <i class="fas fa-chart-pie"></i>
         <span>live progress opacity</span>
@@ -1456,7 +1492,7 @@
       <div class="buttons">
         <div
           class="button"
-          timerOpacity="0.25"
+          data-config-value="0.25"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1464,7 +1500,7 @@
         </div>
         <div
           class="button"
-          timerOpacity="0.5"
+          data-config-value="0.5"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1472,7 +1508,7 @@
         </div>
         <div
           class="button"
-          timerOpacity="0.75"
+          data-config-value="0.75"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1480,7 +1516,7 @@
         </div>
         <div
           class="button"
-          timerOpacity="1"
+          data-config-value="1"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1488,7 +1524,7 @@
         </div>
       </div>
     </div>
-    <div class="section highlightMode fullWidth" section="">
+    <div class="section fullWidth" data-config-name="highlightMode">
       <div class="groupTitle">
         <i class="fas fa-highlighter"></i>
         <span>highlight mode</span>
@@ -1497,7 +1533,7 @@
       <div class="buttons">
         <div
           class="button"
-          highlightMode="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1505,7 +1541,7 @@
         </div>
         <div
           class="button"
-          highlightMode="letter"
+          data-config-value="letter"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1513,7 +1549,7 @@
         </div>
         <div
           class="button"
-          highlightMode="word"
+          data-config-value="word"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1521,7 +1557,7 @@
         </div>
         <div
           class="button"
-          highlightMode="next_word"
+          data-config-value="next_word"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1529,7 +1565,7 @@
         </div>
         <div
           class="button"
-          highlightMode="next_two_words"
+          data-config-value="next_two_words"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1537,7 +1573,7 @@
         </div>
         <div
           class="button"
-          highlightMode="next_three_words"
+          data-config-value="next_three_words"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1545,7 +1581,7 @@
         </div>
       </div>
     </div>
-    <div class="section tapeMode" section="">
+    <div class="section" data-config-name="tapeMode">
       <div class="groupTitle">
         <i class="fas fa-tape"></i>
         <span>tape mode</span>
@@ -1557,23 +1593,33 @@
         monospace font.
       </div>
       <div class="buttons">
-        <div class="button" tapeMode="off" tabindex="0" onclick="this.blur();">
+        <div
+          class="button"
+          data-config-value="off"
+          tabindex="0"
+          onclick="this.blur();"
+        >
           off
         </div>
         <div
           class="button"
-          tapeMode="letter"
+          data-config-value="letter"
           tabindex="0"
           onclick="this.blur();"
         >
           letter
         </div>
-        <div class="button" tapeMode="word" tabindex="0" onclick="this.blur();">
+        <div
+          class="button"
+          data-config-value="word"
+          tabindex="0"
+          onclick="this.blur();"
+        >
           word
         </div>
       </div>
     </div>
-    <div class="section smoothLineScroll">
+    <div class="section" data-config-name="smoothLineScroll">
       <div class="groupTitle">
         <i class="fas fa-align-left"></i>
         <span>smooth line scroll</span>
@@ -1584,7 +1630,7 @@
       <div class="buttons">
         <div
           class="button"
-          smoothLineScroll="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1592,7 +1638,7 @@
         </div>
         <div
           class="button"
-          smoothLineScroll="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1600,7 +1646,7 @@
         </div>
       </div>
     </div>
-    <div class="section showAllLines">
+    <div class="section" data-config-name="showAllLines">
       <div class="groupTitle">
         <i class="fas fa-align-left"></i>
         <span>show all lines</span>
@@ -1614,7 +1660,7 @@
       <div class="buttons">
         <div
           class="button"
-          showAllLines="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1622,7 +1668,7 @@
         </div>
         <div
           class="button"
-          showAllLines="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1630,7 +1676,7 @@
         </div>
       </div>
     </div>
-    <div class="section alwaysShowDecimalPlaces">
+    <div class="section" data-config-name="alwaysShowDecimalPlaces">
       <div class="groupTitle">
         <div class="textIcon">00</div>
         <span>always show decimal places</span>
@@ -1642,7 +1688,7 @@
       <div class="buttons">
         <div
           class="button"
-          alwaysShowDecimalPlaces="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1650,7 +1696,7 @@
         </div>
         <div
           class="button"
-          alwaysShowDecimalPlaces="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1658,7 +1704,7 @@
         </div>
       </div>
     </div>
-    <div class="section typingSpeedUnit">
+    <div class="section" data-config-name="typingSpeedUnit">
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
         <span>typing speed unit</span>
@@ -1667,7 +1713,7 @@
       <div class="buttons">
         <div
           class="button"
-          typingSpeedUnit="wpm"
+          data-config-value="wpm"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1675,7 +1721,7 @@
         </div>
         <div
           class="button"
-          typingSpeedUnit="cpm"
+          data-config-value="cpm"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1683,7 +1729,7 @@
         </div>
         <div
           class="button"
-          typingSpeedUnit="wps"
+          data-config-value="wps"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1691,7 +1737,7 @@
         </div>
         <div
           class="button"
-          typingSpeedUnit="cps"
+          data-config-value="cps"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1699,7 +1745,7 @@
         </div>
       </div>
     </div>
-    <div class="section startGraphsAtZero">
+    <div class="section" data-config-name="startGraphsAtZero">
       <div class="groupTitle">
         <i class="fas fa-chart-line"></i>
         <span>start graphs at zero</span>
@@ -1711,7 +1757,7 @@
       <div class="buttons">
         <div
           class="button"
-          startGraphsAtZero="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1719,7 +1765,7 @@
         </div>
         <div
           class="button"
-          startGraphsAtZero="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1727,7 +1773,7 @@
         </div>
       </div>
     </div>
-    <div class="section fontSize">
+    <div class="section" data-config-name="fontSize">
       <div class="groupTitle">
         <i class="fas fa-font"></i>
         <span>font size</span>
@@ -1741,13 +1787,17 @@
             class="input"
             tabindex="0"
           />
-          <div class="button save" tabindex="0" onclick="this.blur();">
+          <div
+            class="button save no-auto-handle"
+            tabindex="0"
+            onclick="this.blur();"
+          >
             <i class="fas fa-save fa-fw"></i>
           </div>
         </div>
       </div>
     </div>
-    <div class="section fontFamily fullWidth">
+    <div class="section fullWidth" data-config-name="fontFamily">
       <div class="groupTitle">
         <i class="fas fa-font"></i>
         <span>font family</span>
@@ -1755,31 +1805,56 @@
       <!-- <div class="text">Change the font family for the site</div> -->
       <div class="buttons"></div>
     </div>
-    <div class="section pageWidth">
+    <div class="section" data-config-name="pageWidth">
       <div class="groupTitle">
         <i class="fas fa-arrows-alt-h"></i>
         <span>page width</span>
       </div>
       <div class="text">Control the width of the content.</div>
       <div class="buttons">
-        <div class="button" pageWidth="100" tabindex="0" onclick="this.blur();">
+        <div
+          class="button"
+          data-config-value="100"
+          tabindex="0"
+          onclick="this.blur();"
+        >
           100%
         </div>
-        <div class="button" pageWidth="125" tabindex="0" onclick="this.blur();">
+        <div
+          class="button"
+          data-config-value="125"
+          tabindex="0"
+          onclick="this.blur();"
+        >
           125%
         </div>
-        <div class="button" pageWidth="150" tabindex="0" onclick="this.blur();">
+        <div
+          class="button"
+          data-config-value="150"
+          tabindex="0"
+          onclick="this.blur();"
+        >
           150%
         </div>
-        <div class="button" pageWidth="200" tabindex="0" onclick="this.blur();">
+        <div
+          class="button"
+          data-config-value="200"
+          tabindex="0"
+          onclick="this.blur();"
+        >
           200%
         </div>
-        <div class="button" pageWidth="max" tabindex="0" onclick="this.blur();">
+        <div
+          class="button"
+          data-config-value="max"
+          tabindex="0"
+          onclick="this.blur();"
+        >
           max
         </div>
       </div>
     </div>
-    <div class="section keymapMode">
+    <div class="section" data-config-name="keymapMode">
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap</span>
@@ -1791,7 +1866,7 @@
       <div class="buttons">
         <div
           class="button"
-          keymapMode="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1799,7 +1874,7 @@
         </div>
         <div
           class="button"
-          keymapMode="static"
+          data-config-value="static"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1807,7 +1882,7 @@
         </div>
         <div
           class="button"
-          keymapMode="react"
+          data-config-value="react"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1815,7 +1890,7 @@
         </div>
         <div
           class="button"
-          keymapMode="next"
+          data-config-value="next"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1823,7 +1898,7 @@
         </div>
       </div>
     </div>
-    <div class="section keymapLayout">
+    <div class="section" data-config-name="keymapLayout">
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap layout</span>
@@ -1831,7 +1906,7 @@
       <div class="text">Controls which layout is displayed on the keymap.</div>
       <select></select>
     </div>
-    <div class="section keymapStyle fullWidth">
+    <div class="section fullWidth" data-config-name="keymapStyle">
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap style</span>
@@ -1840,7 +1915,7 @@
       <div class="buttons">
         <div
           class="button"
-          keymapStyle="staggered"
+          data-config-value="staggered"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1848,7 +1923,7 @@
         </div>
         <div
           class="button"
-          keymapStyle="alice"
+          data-config-value="alice"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1856,7 +1931,7 @@
         </div>
         <div
           class="button"
-          keymapStyle="matrix"
+          data-config-value="matrix"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1864,7 +1939,7 @@
         </div>
         <div
           class="button"
-          keymapStyle="split"
+          data-config-value="split"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1872,7 +1947,7 @@
         </div>
         <div
           class="button"
-          keymapStyle="split_matrix"
+          data-config-value="split_matrix"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1880,7 +1955,7 @@
         </div>
         <div
           class="button"
-          keymapStyle="steno"
+          data-config-value="steno"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1888,7 +1963,7 @@
         </div>
         <div
           class="button"
-          keymapStyle="steno_matrix"
+          data-config-value="steno_matrix"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1896,7 +1971,7 @@
         </div>
       </div>
     </div>
-    <div class="section keymapLegendStyle fullWidth">
+    <div class="section fullWidth" data-config-name="keymapLegendStyle">
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap legend style</span>
@@ -1904,7 +1979,7 @@
       <div class="buttons">
         <div
           class="button"
-          keymapLegendStyle="lowercase"
+          data-config-value="lowercase"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1912,7 +1987,7 @@
         </div>
         <div
           class="button"
-          keymapLegendStyle="uppercase"
+          data-config-value="uppercase"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1920,7 +1995,7 @@
         </div>
         <div
           class="button"
-          keymapLegendStyle="blank"
+          data-config-value="blank"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1928,7 +2003,7 @@
         </div>
         <div
           class="button"
-          keymapLegendStyle="dynamic"
+          data-config-value="dynamic"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1936,7 +2011,7 @@
         </div>
       </div>
     </div>
-    <div class="section keymapShowTopRow fullWidth">
+    <div class="section fullWidth" data-config-name="keymapShowTopRow">
       <div class="groupTitle">
         <i class="fas fa-keyboard"></i>
         <span>keymap show top row</span>
@@ -1944,7 +2019,7 @@
       <div class="buttons">
         <div
           class="button"
-          keymapShowTopRow="always"
+          data-config-value="always"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1952,7 +2027,7 @@
         </div>
         <div
           class="button"
-          keymapShowTopRow="layout"
+          data-config-value="layout"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1960,7 +2035,7 @@
         </div>
         <div
           class="button"
-          keymapShowTopRow="never"
+          data-config-value="never"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -1985,7 +2060,7 @@
     theme
   </button>
   <div class="settingsGroup theme">
-    <div class="section flipTestColors">
+    <div class="section" data-config-name="flipTestColors">
       <div class="groupTitle">
         <i class="fas fa-adjust"></i>
         <span>flip test colors</span>
@@ -1998,7 +2073,7 @@
       <div class="buttons">
         <div
           class="button"
-          flipTestColors="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2006,7 +2081,7 @@
         </div>
         <div
           class="button"
-          flipTestColors="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2014,7 +2089,7 @@
         </div>
       </div>
     </div>
-    <div class="section colorfulMode">
+    <div class="section" data-config-name="colorfulMode">
       <div class="groupTitle">
         <i class="fas fa-fill-drip"></i>
         <span>colorful mode</span>
@@ -2026,7 +2101,7 @@
       <div class="buttons">
         <div
           class="button"
-          colorfulMode="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2034,7 +2109,7 @@
         </div>
         <div
           class="button"
-          colorfulMode="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2042,7 +2117,7 @@
         </div>
       </div>
     </div>
-    <div class="section customBackgroundSize">
+    <div class="section" data-config-name="customBackgroundSize">
       <div class="groupTitle">
         <i class="fas fa-image"></i>
         <span>custom background</span>
@@ -2061,14 +2136,18 @@
             tabindex="0"
             onClick="this.select();"
           />
-          <div class="button save" tabindex="0" onclick="this.blur();">
+          <div
+            class="button save no-auto-handle"
+            tabindex="0"
+            onclick="this.blur();"
+          >
             <i class="fas fa-save fa-fw"></i>
           </div>
         </div>
         <div class="buttons">
           <div
             class="button"
-            customBackgroundSize="cover"
+            data-config-value="cover"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -2076,7 +2155,7 @@
           </div>
           <div
             class="button"
-            customBackgroundSize="contain"
+            data-config-value="contain"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -2084,7 +2163,7 @@
           </div>
           <div
             class="button"
-            customBackGroundSize="max"
+            data-config-value="max"
             tabindex="0"
             onclick="this.blur();"
           >
@@ -2093,7 +2172,7 @@
         </div>
       </div>
     </div>
-    <div class="section customBackgroundFilter fullWidth">
+    <div class="section fullWidth" data-config-name="customBackgroundFilter">
       <div class="groupTitle">
         <i class="fas fa-sliders-h"></i>
         <span>custom background filter</span>
@@ -2122,7 +2201,7 @@
         </div>
       </div>
     </div>
-    <div class="section autoSwitchTheme">
+    <div class="section" data-config-name="autoSwitchTheme">
       <div class="groupTitle">
         <i class="fas fa-palette"></i>
         <span>auto switch theme</span>
@@ -2134,7 +2213,7 @@
       <div class="buttons">
         <div
           class="button"
-          autoSwitchTheme="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2142,7 +2221,7 @@
         </div>
         <div
           class="button"
-          autoSwitchTheme="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2150,13 +2229,13 @@
         </div>
       </div>
     </div>
-    <div class="section autoSwitchThemeInputs">
+    <div class="section" data-config-name="autoSwitchThemeInputs">
       <div>light</div>
       <div><select class="light"></select></div>
       <div>dark</div>
       <div><select class="dark"></select></div>
     </div>
-    <div class="section randomTheme fullWidth">
+    <div class="section fullWidth" data-config-name="randomTheme">
       <div class="groupTitle">
         <i class="fas fa-random"></i>
         <span>randomize theme</span>
@@ -2171,7 +2250,7 @@
       <div class="buttons">
         <div
           class="button"
-          randomTheme="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2179,7 +2258,7 @@
         </div>
         <div
           class="button"
-          randomTheme="on"
+          data-config-value="on"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2187,7 +2266,7 @@
         </div>
         <div
           class="button"
-          randomTheme="fav"
+          data-config-value="fav"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2195,7 +2274,7 @@
         </div>
         <div
           class="button"
-          randomTheme="light"
+          data-config-value="light"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2203,7 +2282,7 @@
         </div>
         <div
           class="button"
-          randomTheme="dark"
+          data-config-value="dark"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2211,7 +2290,7 @@
         </div>
         <div
           class="button"
-          randomTheme="custom"
+          data-config-value="custom"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2471,7 +2550,7 @@
     hide elements
   </button>
   <div class="settingsGroup hideElements">
-    <div class="section showLiveWpm">
+    <div class="section" data-config-name="showLiveWpm">
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
         <span>live speed</span>
@@ -2482,7 +2561,7 @@
       <div class="buttons">
         <div
           class="button"
-          showLiveWpm="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2490,7 +2569,7 @@
         </div>
         <div
           class="button"
-          showLiveWpm="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2498,7 +2577,7 @@
         </div>
       </div>
     </div>
-    <div class="section showLiveAcc">
+    <div class="section" data-config-name="showLiveAcc">
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
         <span>live accuracy</span>
@@ -2507,7 +2586,7 @@
       <div class="buttons">
         <div
           class="button"
-          showLiveAcc="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2515,7 +2594,7 @@
         </div>
         <div
           class="button"
-          showLiveAcc="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2523,7 +2602,7 @@
         </div>
       </div>
     </div>
-    <div class="section showLiveBurst">
+    <div class="section" data-config-name="showLiveBurst">
       <div class="groupTitle">
         <i class="fas fa-tachometer-alt"></i>
         <span>live burst</span>
@@ -2534,7 +2613,7 @@
       <div class="buttons">
         <div
           class="button"
-          showLiveBurst="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2542,7 +2621,7 @@
         </div>
         <div
           class="button"
-          showLiveBurst="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2550,7 +2629,7 @@
         </div>
       </div>
     </div>
-    <div class="section showTimerProgress">
+    <div class="section" data-config-name="showTimerProgress">
       <div class="groupTitle">
         <i class="fas fa-chart-pie"></i>
         <span>live progress</span>
@@ -2562,7 +2641,7 @@
       <div class="buttons">
         <div
           class="button"
-          showTimerProgress="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2570,7 +2649,7 @@
         </div>
         <div
           class="button"
-          showTimerProgress="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2578,7 +2657,7 @@
         </div>
       </div>
     </div>
-    <div class="section showKeyTips">
+    <div class="section" data-config-name="showKeyTips">
       <div class="groupTitle">
         <i class="fas fa-question"></i>
         <span>key tips</span>
@@ -2587,7 +2666,7 @@
       <div class="buttons">
         <div
           class="button"
-          showKeyTips="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2595,7 +2674,7 @@
         </div>
         <div
           class="button"
-          showKeyTips="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2603,7 +2682,7 @@
         </div>
       </div>
     </div>
-    <div class="section showOutOfFocusWarning">
+    <div class="section" data-config-name="showOutOfFocusWarning">
       <div class="groupTitle">
         <i class="fas fa-exclamation"></i>
         <span>out of focus warning</span>
@@ -2615,7 +2694,7 @@
       <div class="buttons">
         <div
           class="button"
-          showOutOfFocusWarning="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2623,7 +2702,7 @@
         </div>
         <div
           class="button"
-          showOutOfFocusWarning="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2631,7 +2710,7 @@
         </div>
       </div>
     </div>
-    <div class="section capsLockWarning">
+    <div class="section" data-config-name="capsLockWarning">
       <div class="groupTitle">
         <i class="fas fa-exclamation-triangle"></i>
         <span>caps lock warning</span>
@@ -2640,7 +2719,7 @@
       <div class="buttons">
         <div
           class="button"
-          capsLockWarning="false"
+          data-config-value="false"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2648,7 +2727,7 @@
         </div>
         <div
           class="button"
-          capsLockWarning="true"
+          data-config-value="true"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2656,7 +2735,7 @@
         </div>
       </div>
     </div>
-    <div class="section showAverage">
+    <div class="section" data-config-name="showAverage">
       <div class="groupTitle">
         <i class="fas fa-chart-bar"></i>
         <span>average</span>
@@ -2667,7 +2746,7 @@
       <div class="buttons">
         <div
           class="button"
-          showAverage="off"
+          data-config-value="off"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2675,7 +2754,7 @@
         </div>
         <div
           class="button"
-          showAverage="speed"
+          data-config-value="speed"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2683,7 +2762,7 @@
         </div>
         <div
           class="button"
-          showAverage="acc"
+          data-config-value="acc"
           tabindex="0"
           onclick="this.blur();"
         >
@@ -2691,7 +2770,7 @@
         </div>
         <div
           class="button"
-          showAverage="both"
+          data-config-value="both"
           tabindex="0"
           onclick="this.blur();"
         >

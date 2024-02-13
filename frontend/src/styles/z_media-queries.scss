@@ -309,7 +309,7 @@
     .section {
       grid-template-columns: 1.5fr 1fr;
     }
-    .section.autoSwitchThemeInputs {
+    .section[data-config-name="autoSwitchThemeInputs"] {
       grid-template-columns: 1fr 3fr;
     }
   }
@@ -406,7 +406,7 @@
     }
   }
 
-  .pageSettings .section.customBackgroundFilter {
+  .pageSettings .section[data-config-name="customBackgroundFilter"] {
     .groups {
       grid-template-columns: 1fr;
     }
@@ -838,7 +838,7 @@
   }
 
   .pageSettings {
-    .section.customBackgroundFilter .groups .group {
+    .section[data-config-name="customBackgroundFilter"] .groups .group {
       grid-template-columns: auto 1fr;
       .title {
         grid-column: 1/3;

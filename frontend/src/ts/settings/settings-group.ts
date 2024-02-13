@@ -1,4 +1,5 @@
 import Config from "../config";
+import * as Notifications from "../elements/notifications";
 
 export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
   public configName: string;
@@ -26,7 +27,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
     if (this.mode === "select") {
       $(".pageSettings").on(
         "change",
-        `.section.${this.configName} select`,
+        `.section[data-config-name='${this.configName}'] select`,
         (e) => {
           const target = $(e.currentTarget);
           if (
@@ -41,7 +42,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
     } else if (this.mode === "button") {
       $(".pageSettings").on(
         "click",
-        `.section.${this.configName} .button`,
+        `.section[data-config-name='${this.configName}'] .button`,
         (e) => {
           const target = $(e.currentTarget);
           if (
@@ -50,17 +51,28 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
           ) {
             return;
           }
-          let value: string | boolean = target.attr(configName) as string;
-          if (!value) return;
-          if (value === "true") value = true;
-          if (value === "false") value = false;
-          this.setValue(value as T);
+          const value = target.attr(`data-config-value`);
+          if (value === undefined || value === "") {
+            console.error(
+              `Failed to handle settings button click for ${configName}: data-${configName} is missing or empty.`
+            );
+            Notifications.add(
+              "Button is missing data property. Please report this.",
+              -1
+            );
+            return;
+          }
+          let typed = value as T;
+          if (typed === "true") typed = true as T;
+          if (typed === "false") typed = false as T;
+          this.setValue(typed as T);
         }
       );
     }
   }
 
   setValue(value: T): void {
+    Notifications.add(`Setting ${this.configName} to ${value}`, 1);
     this.configFunction(value);
     this.updateUI();
     if (this.setCallback) this.setCallback();
@@ -68,18 +80,18 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
 
   updateUI(): void {
     this.configValue = Config[this.configName as keyof typeof Config] as T;
-    $(`.pageSettings .section.${this.configName} .button`).removeClass(
-      "active"
-    );
+    $(
+      `.pageSettings .section[data-config-name='${this.configName}'] .button`
+    ).removeClass("active");
     if (this.mode === "select") {
-      $(`.pageSettings .section.${this.configName} select`)
+      $(`.pageSettings .section[data-config-name='${this.configName}'] select`)
         .val(this.configValue as string)
         .trigger("change.select2");
     } else if (this.mode === "button") {
       $(
         // this cant be an object?
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        `.pageSettings .section.${this.configName} .button[${this.configName}='${this.configValue}']`
+        `.pageSettings .section[data-config-name='${this.configName}'] .button[data-config-value='${this.configValue}']`
       ).addClass("active");
     }
     if (this.updateCallback) this.updateCallback();

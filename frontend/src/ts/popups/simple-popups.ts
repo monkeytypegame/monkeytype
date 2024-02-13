@@ -1877,9 +1877,13 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
   showPopup("editApeKey", [keyId]);
 });
 
-$(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
-  showPopup("applyCustomFont", []);
-});
+$(".pageSettings").on(
+  "click",
+  ".section[data-config-name='fontFamily'] .button.custom",
+  () => {
+    showPopup("applyCustomFont", []);
+  }
+);
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isElementVisible("#simplePopupWrapper")) {
