@@ -11,7 +11,7 @@ import * as CustomText from "../test/custom-text";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
-import { Auth, isAuthenticated } from "../firebase";
+import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
 import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
@@ -431,11 +431,12 @@ async function reauthenticate(
       message: "User is not signed in",
     };
   }
-  const user = Auth?.currentUser;
+  const user = getAuthenticatedUser();
 
   try {
     const passwordAuthEnabled =
-      user.providerData.some((p) => p?.providerId === "password") !== undefined;
+      user?.providerData.some((p) => p?.providerId === "password") !==
+      undefined;
 
     if (!passwordAuthEnabled && method === "passwordOnly") {
       return {
@@ -1886,7 +1887,9 @@ Skeleton.save(wrapperId);
 console.log(list);
 
 function isPasswordLogin(): boolean {
-  return Auth?.currentUser.providerData.find(
-    (p) => p?.providerId === "password"
+  return (
+    getAuthenticatedUser().providerData.find(
+      (p) => p?.providerId === "password"
+    ) !== undefined
   );
 }
