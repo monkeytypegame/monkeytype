@@ -1046,7 +1046,9 @@ export async function checkIfUserIsPremium(
   uid: string,
   userInfoOverride?: MonkeyTypes.User
 ): Promise<boolean> {
-  if ((await getCachedConfiguration(true)).users.premium.enabled) {
+  const premiumFeaturesEnabled = (await getCachedConfiguration(true)).users
+    .premium.enabled;
+  if (!premiumFeaturesEnabled) {
     return false;
   }
 
