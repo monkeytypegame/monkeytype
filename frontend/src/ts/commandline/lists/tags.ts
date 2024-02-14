@@ -4,7 +4,7 @@ import * as ModesNotice from "../../elements/modes-notice";
 import * as TagController from "../../controllers/tag-controller";
 import Config from "../../config";
 import * as PaceCaret from "../../test/pace-caret";
-import { Auth } from "../../firebase";
+import { isAuthenticated } from "../../firebase";
 
 const subgroup: MonkeyTypes.CommandsSubgroup = {
   title: "Change tags...",
@@ -22,7 +22,7 @@ const commands: MonkeyTypes.Command[] = [
     icon: "fa-tag",
     subgroup,
     available: (): boolean => {
-      return !!Auth?.currentUser;
+      return isAuthenticated();
     },
   },
 ];

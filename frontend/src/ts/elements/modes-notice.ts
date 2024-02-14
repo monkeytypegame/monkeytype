@@ -5,7 +5,7 @@ import * as Last10Average from "../elements/last-10-average";
 import Config from "../config";
 import * as TestWords from "../test/test-words";
 import * as ConfigEvent from "../observables/config-event";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import { getLanguageDisplayString, roundTo2 } from "../utils/misc";
@@ -155,7 +155,7 @@ export async function update(): Promise<void> {
       avgAcc = Math.round(avgAcc);
     }
 
-    if (Auth?.currentUser && avgWPM > 0) {
+    if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
         ? getTypingSpeedUnit(Config.typingSpeedUnit).convertWithUnitSuffix(
             avgWPM,

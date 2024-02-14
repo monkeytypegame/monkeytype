@@ -13,7 +13,7 @@ import {
 } from "../utils/search-service";
 import { splitByAndKeep } from "../utils/strings";
 import QuotesController from "../controllers/quotes-controller";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import { debounce } from "throttle-debounce";
 import Ape from "../ape";
 import * as Loader from "../elements/loader";
@@ -117,7 +117,7 @@ function buildQuoteSearchResult(
     lengthDesc = "thicc";
   }
 
-  const loggedOut = !Auth?.currentUser;
+  const loggedOut = !isAuthenticated();
   const isFav = !loggedOut && QuotesController.isQuoteFavorite(quote);
 
   return `
@@ -219,7 +219,7 @@ export async function show(clearText = true): Promise<void> {
 
     const quoteSearchInputValue = $("#quoteSearchPopup input").val() as string;
 
-    if (!Auth?.currentUser) {
+    if (!isAuthenticated()) {
       $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
       $("#quoteSearchPopup #toggleShowFavorites").addClass("hidden");
     } else {
@@ -454,7 +454,7 @@ $("#popups").on(
 );
 
 $("#popups").on("click", "#quoteSearchPopup #toggleShowFavorites", (e) => {
-  if (!Auth?.currentUser) {
+  if (!isAuthenticated()) {
     // Notifications.add("You need to be logged in to use this feature!", 0);
     return;
   }
