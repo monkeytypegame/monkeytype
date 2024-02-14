@@ -260,7 +260,7 @@ describe("LeaderboardsDal", () => {
         expectedLbEntry("15", {
           rank: 1,
           user: lifetime,
-          importantBadgeIds: undefined,
+          importantBadgeIds: [],
         }),
       ]);
     });

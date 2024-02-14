@@ -2,6 +2,7 @@ import _ from "lodash";
 import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
+import * as BadgeIds from "../constants/badge-ids";
 
 type DailyLeaderboardEntry = {
   uid: string;
@@ -124,7 +125,8 @@ export class DailyLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
+    premiumFeaturesEnabled: boolean
   ): Promise<LbEntryWithRank[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -156,6 +158,15 @@ export class DailyLeaderboard {
         rank: minRank + index + 1,
       })
     );
+
+    if (!premiumFeaturesEnabled) {
+      resultsWithRanks.forEach(
+        (it) =>
+          (it.importantBadgeIds = it.importantBadgeIds?.filter(
+            (val) => val !== BadgeIds.PREMIUM
+          ))
+      );
+    }
 
     return resultsWithRanks;
   }
