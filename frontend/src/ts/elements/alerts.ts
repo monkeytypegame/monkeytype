@@ -1,6 +1,6 @@
 import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
 import Ape from "../ape";
-import { Auth } from "../firebase";
+import { isAuthenticated } from "../firebase";
 import * as AccountButton from "../elements/account-button";
 import * as DB from "../db";
 import * as NotificationEvent from "../observables/notification-event";
@@ -133,7 +133,7 @@ async function show(): Promise<void> {
       "easeOutCubic"
     );
 
-    if (Auth?.currentUser) {
+    if (isAuthenticated()) {
       $("#alertsPopup .accountAlerts").removeClass("hidden");
       $("#alertsPopup .separator.accountSeparator").removeClass("hidden");
       $("#alertsPopup .accountAlerts .list").html(`
@@ -160,7 +160,7 @@ async function show(): Promise<void> {
         },
         100,
         () => {
-          if (Auth?.currentUser) {
+          if (isAuthenticated()) {
             void getAccountAlerts();
           }
         }

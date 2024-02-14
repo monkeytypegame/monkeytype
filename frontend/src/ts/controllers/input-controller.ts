@@ -193,7 +193,7 @@ function handleSpace(): void {
       f.functions.handleSpace();
     }
   }
-  Settings.groups["layout"]?.updateInput();
+  Settings.groups["layout"]?.updateUI();
 
   dontInsertSpace = true;
 
