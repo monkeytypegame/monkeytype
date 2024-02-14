@@ -32,7 +32,7 @@
     "lodash": "4.17.21",
     "lru-cache": "7.10.1",
     "mjml": "4.15.0",
-    "mongodb": "4.17.1",
+    "mongodb": "6.3.0",
     "mustache": "4.2.0",
     "node-fetch": "2.6.7",
     "nodemailer": "6.9.9",
@@ -50,7 +50,7 @@
     "winston": "3.6.0"
   },
   "devDependencies": {
-    "@shelf/jest-mongodb": "2.2.1",
+    "@shelf/jest-mongodb": "4.2.0",
     "@types/bcrypt": "5.0.0",
     "@types/cors": "2.8.12",
     "@types/cron": "1.7.3",
