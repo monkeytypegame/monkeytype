@@ -71,7 +71,7 @@
     "@types/uuid": "8.3.4",
     "ioredis-mock": "7.4.0",
     "jest": "29.7.0",
-    "jest-environment-node": "27.5.1",
+    "jest-environment-node": "29.7.0",
     "supertest": "6.2.3",
     "ts-jest": "29.1.2",
     "ts-node-dev": "2.0.0",
