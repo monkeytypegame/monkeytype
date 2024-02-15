@@ -131,6 +131,9 @@ export async function update(
             [`${key}.discordAvatar`]: {
               $ifNull: ["$discordAvatar", "$$REMOVE"],
             },
+            [`${key}.consistency`]: {
+              $ifNull: [`$${key}.consistency`, "$$REMOVE"],
+            },
             [`${key}.rank`]: {
               $function: {
                 body: "function() {try {row_number+= 1;} catch (e) {row_number= 1;}return row_number;}",

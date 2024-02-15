@@ -445,7 +445,7 @@ declare namespace SharedTypes {
     acc: number;
     timestamp: number;
     raw: number;
-    consistency: number | "-";
+    consistency?: number;
     uid: string;
     name: string;
     discordId?: string;
