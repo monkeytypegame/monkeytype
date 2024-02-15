@@ -9,13 +9,13 @@ const wrapperId = "cookiePopupWrapper";
 
 let visible = false;
 
-interface Accepted {
+type Accepted = {
   security: boolean;
   analytics: boolean;
-}
+};
 
 function getAcceptedObject(): Accepted | null {
-  const acceptedCookies = localStorage.getItem("acceptedCookies");
+  const acceptedCookies = localStorage.getItem("acceptedCookies") ?? "";
   if (acceptedCookies) {
     return JSON.parse(acceptedCookies);
   } else {
@@ -44,7 +44,7 @@ export function show(): void {
   visible = true;
   if (
     $("#cookiePopupWrapper")[0] === undefined ||
-    $("#cookiePopupWrapper").is(":visible") === false ||
+    !$("#cookiePopupWrapper").is(":visible") ||
     $("#cookiePopupWrapper").outerHeight(true) === 0
   ) {
     //removed by cookie popup blocking extension
@@ -60,7 +60,7 @@ export function show(): void {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 0, () => {
         if (
-          $("#cookiePopupWrapper").is(":visible") === false ||
+          !$("#cookiePopupWrapper").is(":visible") ||
           $("#cookiePopupWrapper").outerHeight(true) === 0
         ) {
           visible = false;
@@ -100,7 +100,7 @@ function verifyVisible(): void {
   if (!visible) return;
   if (
     $("#cookiePopupWrapper")[0] === undefined ||
-    $("#cookiePopupWrapper").is(":visible") === false ||
+    !$("#cookiePopupWrapper").is(":visible") ||
     $("#cookiePopupWrapper").outerHeight(true) === 0
   ) {
     //removed by cookie popup blocking extension
@@ -115,7 +115,7 @@ $("#cookiePopup .acceptAll").on("click", () => {
   };
   setAcceptedObject(accepted);
   activateAnalytics();
-  hide();
+  void hide();
 });
 
 $("#cookiePopup .rejectAll").on("click", () => {
@@ -124,7 +124,7 @@ $("#cookiePopup .rejectAll").on("click", () => {
     analytics: false,
   };
   setAcceptedObject(accepted);
-  hide();
+  void hide();
 });
 
 $("#cookiePopup .acceptSelected").on("click", () => {
@@ -134,7 +134,7 @@ $("#cookiePopup .acceptSelected").on("click", () => {
     analytics,
   };
   setAcceptedObject(accepted);
-  hide();
+  void hide();
 
   if (analytics === true) {
     activateAnalytics();

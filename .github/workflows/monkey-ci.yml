@@ -1,7 +1,7 @@
 name: Monkey CI
 
 env:
-  NODE_VERSION: "18.17.1"
+  NODE_VERSION: "18.19.1"
 
 permissions:
   contents: read
@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   pre-ci:
+    if: github.event.pull_request.draft == false
     name: pre-ci
     runs-on: ubuntu-latest
     outputs:

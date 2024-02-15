@@ -44,7 +44,7 @@ describe("LeaderboardsDal", () => {
         "15",
         "english",
         0
-      )) as MonkeyTypes.LeaderboardEntry[];
+      )) as SharedTypes.LeaderboardEntry[];
 
       //THEN
       const lb = result.map((it) => _.omit(it, ["_id"]));
@@ -70,7 +70,7 @@ describe("LeaderboardsDal", () => {
         "60",
         "english",
         0
-      )) as MonkeyTypes.LeaderboardEntry[];
+      )) as SharedTypes.LeaderboardEntry[];
 
       //THEN
       const lb = result.map((it) => _.omit(it, ["_id"]));
@@ -81,6 +81,48 @@ describe("LeaderboardsDal", () => {
         expectedLbEntry(3, rank3, "60"),
         expectedLbEntry(4, rank4, "60"),
       ]);
+    });
+    it("should not include discord properties for users without discord connection", async () => {
+      //GIVEN
+      const rank1 = await createUser(lbBests(pb(90), pb(100, 90, 2)), {
+        discordId: undefined,
+        discordAvatar: undefined,
+      });
+
+      //WHEN
+      await LeaderboardsDal.update("time", "60", "english");
+      const lb = (await LeaderboardsDal.get(
+        "time",
+        "60",
+        "english",
+        0
+      )) as SharedTypes.LeaderboardEntry[];
+
+      //THEN
+      expect(lb[0]).not.toHaveProperty("discordId");
+      expect(lb[0]).not.toHaveProperty("discordAvatar");
+    });
+
+    it("should remove consistency from results if null", async () => {
+      //GIVEN
+      const stats = pb(100, 90, 2);
+      //@ts-ignore
+      stats["consistency"] = undefined;
+
+      await createUser(lbBests(stats));
+
+      //WHEN
+      //WHEN
+      await LeaderboardsDal.update("time", "15", "english");
+      const lb = (await LeaderboardsDal.get(
+        "time",
+        "15",
+        "english",
+        0
+      )) as SharedTypes.LeaderboardEntry[];
+
+      //THEN
+      expect(lb[0]).not.toHaveProperty("consistency");
     });
 
     it("should update public speedHistogram for time english 15", async () => {
@@ -116,7 +158,7 @@ describe("LeaderboardsDal", () => {
 });
 
 function expectedLbEntry(rank: number, user: MonkeyTypes.User, time: string) {
-  const lbBest: MonkeyTypes.PersonalBest =
+  const lbBest: SharedTypes.PersonalBest =
     user.lbPersonalBests?.time[time].english;
 
   return {
@@ -166,8 +208,8 @@ async function createUser(
 }
 
 function lbBests(
-  pb15?: MonkeyTypes.PersonalBest,
-  pb60?: MonkeyTypes.PersonalBest
+  pb15?: SharedTypes.PersonalBest,
+  pb60?: SharedTypes.PersonalBest
 ): MonkeyTypes.LbPersonalBests {
   const result = { time: {} };
   if (pb15) result.time["15"] = { english: pb15 };
@@ -179,7 +221,7 @@ function pb(
   wpm: number,
   acc: number = 90,
   timestamp: number = 1
-): MonkeyTypes.PersonalBest {
+): SharedTypes.PersonalBest {
   return {
     acc,
     consistency: 100,

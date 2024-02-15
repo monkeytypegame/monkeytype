@@ -14,11 +14,12 @@ class MonkeyError extends Error {
     this.uid = uid;
 
     if (isDevEnvironment()) {
-      this.message = stack
-        ? String(message) + "\nStack: " + String(stack)
-        : String(message);
+      this.message =
+        stack ?? ""
+          ? String(message) + "\nStack: " + String(stack)
+          : String(message);
     } else {
-      if (this.stack && this.status >= 500) {
+      if ((this.stack ?? "") && this.status >= 500) {
         this.stack = this.message + "\n" + this.stack;
         this.message = "Internal Server Error " + this.errorId;
       } else {

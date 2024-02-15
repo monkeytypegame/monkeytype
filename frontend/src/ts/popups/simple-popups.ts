@@ -11,7 +11,7 @@ import * as CustomText from "../test/custom-text";
 import * as SavedTextsPopup from "./saved-texts-popup";
 import * as AccountButton from "../elements/account-button";
 import { FirebaseError } from "firebase/app";
-import { Auth } from "../firebase";
+import { Auth, isAuthenticated, getAuthenticatedUser } from "../firebase";
 import * as ConnectionState from "../states/connection";
 import {
   EmailAuthProvider,
@@ -35,24 +35,24 @@ import * as ThemeController from "../controllers/theme-controller";
 
 const wrapperId = "simplePopupWrapper";
 
-interface Input {
+type Input = {
   placeholder?: string;
   type?: string;
   initVal: string;
   hidden?: boolean;
   disabled?: boolean;
   label?: string;
-}
+};
 
 let activePopup: SimplePopup | null = null;
 
-interface ExecReturn {
+type ExecReturn = {
   status: 1 | 0 | -1;
   message: string;
   showNotification?: false;
   notificationOptions?: MonkeyTypes.AddNotificationOptions;
   afterHide?: () => void;
-}
+};
 
 type PopupKey =
   | "updateEmail"
@@ -207,7 +207,7 @@ class SimplePopup {
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
-          if (input.type) {
+          if (input.type !== undefined && input.type !== "") {
             if (input.type === "textarea") {
               el.find(".inputs").append(`
                 <textarea
@@ -262,7 +262,7 @@ class SimplePopup {
   exec(): void {
     if (!this.canClose) return;
     const vals: string[] = [];
-    $.each($("#simplePopup input"), (_, el) => {
+    $.each($("#simplePopup input, #simplePopup textarea"), (_, el) => {
       if ($(el).is(":checkbox")) {
         vals.push($(el).is(":checked") ? "true" : "false");
       } else {
@@ -286,13 +286,13 @@ class SimplePopup {
 
     this.disableInputs();
     Loader.show();
-    this.execFn(this, ...vals).then((res) => {
+    void this.execFn(this, ...vals).then((res) => {
       Loader.hide();
       if (res.showNotification ?? true) {
         Notifications.add(res.message, res.status, res.notificationOptions);
       }
       if (res.status === 1) {
-        this.hide().then(() => {
+        void this.hide().then(() => {
           if (res.afterHide) {
             res.afterHide();
           }
@@ -367,7 +367,7 @@ class SimplePopup {
 
 function hide(): void {
   if (activePopup) {
-    activePopup.hide();
+    void activePopup.hide();
     return;
   }
   $("#simplePopupWrapper")
@@ -382,7 +382,7 @@ function hide(): void {
 $("#simplePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
     if (activePopup) {
-      activePopup.hide();
+      void activePopup.hide();
       return;
     }
     $("#simplePopupWrapper")
@@ -403,39 +403,39 @@ $("#popups").on("submit", "#simplePopupWrapper form", (e) => {
 
 type ReauthMethod = "passwordOnly" | "passwordFirst";
 
-interface ReauthSuccess {
+type ReauthSuccess = {
   status: 1;
   message: string;
   user: User;
-}
+};
 
-interface ReauthFailed {
+type ReauthFailed = {
   status: -1 | 0;
   message: string;
-}
+};
 
 async function reauthenticate(
   method: ReauthMethod,
   password: string
 ): Promise<ReauthSuccess | ReauthFailed> {
-  if (!Auth) {
+  if (Auth === undefined) {
     return {
       status: -1,
       message: "Authentication is not initialized",
     };
   }
-  const user = Auth.currentUser;
-  if (!user) {
+
+  if (!isAuthenticated()) {
     return {
       status: -1,
       message: "User is not signed in",
     };
   }
+  const user = getAuthenticatedUser();
 
   try {
-    const passwordAuthEnabled = user.providerData.some(
-      (p) => p?.providerId === "password"
-    );
+    const passwordAuthEnabled =
+      user.providerData.some((p) => p?.providerId === "password") !== undefined;
 
     if (!passwordAuthEnabled && method === "passwordOnly") {
       return {
@@ -472,7 +472,7 @@ async function reauthenticate(
         status: -1,
         message:
           "Failed to reauthenticate: " +
-          (typedError?.message || JSON.stringify(e)),
+          (typedError?.message ?? JSON.stringify(e)),
       };
     }
   }
@@ -535,9 +535,8 @@ list.updateEmail = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -548,7 +547,7 @@ list.updateEmail = new SimplePopup(
   }
 );
 
-list["removeGoogleAuth"] = new SimplePopup(
+list.removeGoogleAuth = new SimplePopup(
   "removeGoogleAuth",
   "text",
   "Remove Google Authentication",
@@ -589,9 +588,8 @@ list["removeGoogleAuth"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -602,7 +600,7 @@ list["removeGoogleAuth"] = new SimplePopup(
   }
 );
 
-list["updateName"] = new SimplePopup(
+list.updateName = new SimplePopup(
   "updateName",
   "text",
   "Update Name",
@@ -666,10 +664,10 @@ list["updateName"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
+    if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
-    if (!user || !snapshot) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!snapshot) return;
+    if (!isUsingPasswordAuthentication()) {
       (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "Reauthenticate to update";
     }
@@ -683,7 +681,7 @@ list["updateName"] = new SimplePopup(
   }
 );
 
-list["updatePassword"] = new SimplePopup(
+list.updatePassword = new SimplePopup(
   "updatePassword",
   "text",
   "Update Password",
@@ -755,9 +753,8 @@ list["updatePassword"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "";
       thisPopup.text = "Password authentication is not enabled";
@@ -768,7 +765,7 @@ list["updatePassword"] = new SimplePopup(
   }
 );
 
-list["addPasswordAuth"] = new SimplePopup(
+list.addPasswordAuth = new SimplePopup(
   "addPasswordAuth",
   "text",
   "Add Password Authentication",
@@ -860,7 +857,7 @@ list["addPasswordAuth"] = new SimplePopup(
   }
 );
 
-list["deleteAccount"] = new SimplePopup(
+list.deleteAccount = new SimplePopup(
   "deleteAccount",
   "text",
   "Delete Account",
@@ -921,9 +918,8 @@ list["deleteAccount"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to delete";
     }
@@ -933,7 +929,7 @@ list["deleteAccount"] = new SimplePopup(
   }
 );
 
-list["resetAccount"] = new SimplePopup(
+list.resetAccount = new SimplePopup(
   "resetAccount",
   "text",
   "Reset Account",
@@ -956,7 +952,7 @@ list["resetAccount"] = new SimplePopup(
     }
 
     Notifications.add("Resetting settings...", 0);
-    UpdateConfig.reset();
+    await UpdateConfig.reset();
 
     Notifications.add("Resetting account...", 0);
     const response = await Ape.users.reset();
@@ -975,9 +971,8 @@ list["resetAccount"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -987,7 +982,7 @@ list["resetAccount"] = new SimplePopup(
   }
 );
 
-list["optOutOfLeaderboards"] = new SimplePopup(
+list.optOutOfLeaderboards = new SimplePopup(
   "optOutOfLeaderboards",
   "text",
   "Opt out of leaderboards",
@@ -1025,9 +1020,8 @@ list["optOutOfLeaderboards"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -1037,7 +1031,7 @@ list["optOutOfLeaderboards"] = new SimplePopup(
   }
 );
 
-list["clearTagPb"] = new SimplePopup(
+list.clearTagPb = new SimplePopup(
   "clearTagPb",
   "text",
   "Clear Tag PB",
@@ -1092,7 +1086,7 @@ list["clearTagPb"] = new SimplePopup(
   }
 );
 
-list["applyCustomFont"] = new SimplePopup(
+list.applyCustomFont = new SimplePopup(
   "applyCustomFont",
   "text",
   "Custom font",
@@ -1115,7 +1109,7 @@ list["applyCustomFont"] = new SimplePopup(
   }
 );
 
-list["resetPersonalBests"] = new SimplePopup(
+list.resetPersonalBests = new SimplePopup(
   "resetPersonalBests",
   "text",
   "Reset Personal Bests",
@@ -1167,9 +1161,8 @@ list["resetPersonalBests"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
-    if (!user) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!isAuthenticated()) return;
+    if (!isUsingPasswordAuthentication()) {
       thisPopup.inputs = [];
       thisPopup.buttonText = "Reauthenticate to reset";
     }
@@ -1179,7 +1172,7 @@ list["resetPersonalBests"] = new SimplePopup(
   }
 );
 
-list["resetSettings"] = new SimplePopup(
+list.resetSettings = new SimplePopup(
   "resetSettings",
   "text",
   "Reset Settings",
@@ -1187,7 +1180,7 @@ list["resetSettings"] = new SimplePopup(
   "Are you sure you want to reset all your settings?",
   "Reset",
   async () => {
-    UpdateConfig.reset();
+    await UpdateConfig.reset();
     return {
       status: 1,
       message: "Settings reset",
@@ -1201,7 +1194,7 @@ list["resetSettings"] = new SimplePopup(
   }
 );
 
-list["revokeAllTokens"] = new SimplePopup(
+list.revokeAllTokens = new SimplePopup(
   "revokeAllTokens",
   "text",
   "Revoke All Tokens",
@@ -1239,10 +1232,10 @@ list["revokeAllTokens"] = new SimplePopup(
     };
   },
   (thisPopup) => {
-    const user = Auth?.currentUser;
+    if (!isAuthenticated()) return;
     const snapshot = DB.getSnapshot();
-    if (!user || !snapshot) return;
-    if (!user.providerData.find((p) => p?.providerId === "password")) {
+    if (!snapshot) return;
+    if (!isUsingPasswordAuthentication()) {
       (thisPopup.inputs[0] as Input).hidden = true;
       thisPopup.buttonText = "reauthenticate to revoke all tokens";
     }
@@ -1252,7 +1245,7 @@ list["revokeAllTokens"] = new SimplePopup(
   }
 );
 
-list["unlinkDiscord"] = new SimplePopup(
+list.unlinkDiscord = new SimplePopup(
   "unlinkDiscord",
   "text",
   "Unlink Discord",
@@ -1278,7 +1271,7 @@ list["unlinkDiscord"] = new SimplePopup(
 
     snap.discordAvatar = undefined;
     snap.discordId = undefined;
-    AccountButton.update();
+    void AccountButton.update();
     DB.setSnapshot(snap);
     Settings.updateDiscordSection();
 
@@ -1295,7 +1288,7 @@ list["unlinkDiscord"] = new SimplePopup(
   }
 );
 
-list["generateApeKey"] = new SimplePopup(
+list.generateApeKey = new SimplePopup(
   "generateApeKey",
   "text",
   "Generate new key",
@@ -1316,7 +1309,8 @@ list["generateApeKey"] = new SimplePopup(
       };
     }
 
-    const data = response.data;
+    //if response is 200 data is guaranteed to not be null
+    const data = response.data as Ape.ApeKeys.GenerateApeKey;
 
     return {
       status: 1,
@@ -1334,7 +1328,7 @@ list["generateApeKey"] = new SimplePopup(
   }
 );
 
-list["viewApeKey"] = new SimplePopup(
+list.viewApeKey = new SimplePopup(
   "viewApeKey",
   "text",
   "Ape Key",
@@ -1349,7 +1343,7 @@ list["viewApeKey"] = new SimplePopup(
   "This is your new Ape Key. Please keep it safe. You will only see it once!",
   "Close",
   async (_thisPopup) => {
-    ApeKeysPopup.show();
+    void ApeKeysPopup.show();
     return {
       status: 1,
       message: "Key generated",
@@ -1362,15 +1356,15 @@ list["viewApeKey"] = new SimplePopup(
   (_thisPopup) => {
     _thisPopup.canClose = false;
     $("#simplePopup textarea").css("height", "110px");
-    $("#simplePopup .button").addClass("hidden");
+    $("#simplePopup .submitButton").addClass("hidden");
     setTimeout(() => {
       _thisPopup.canClose = true;
-      $("#simplePopup .button").removeClass("hidden");
+      $("#simplePopup .submitButton").removeClass("hidden");
     }, 5000);
   }
 );
 
-list["deleteApeKey"] = new SimplePopup(
+list.deleteApeKey = new SimplePopup(
   "deleteApeKey",
   "text",
   "Delete Ape Key",
@@ -1386,7 +1380,7 @@ list["deleteApeKey"] = new SimplePopup(
       };
     }
 
-    ApeKeysPopup.show();
+    void ApeKeysPopup.show();
 
     return {
       status: 1,
@@ -1401,7 +1395,7 @@ list["deleteApeKey"] = new SimplePopup(
   }
 );
 
-list["editApeKey"] = new SimplePopup(
+list.editApeKey = new SimplePopup(
   "editApeKey",
   "text",
   "Edit Ape Key",
@@ -1424,7 +1418,7 @@ list["editApeKey"] = new SimplePopup(
       };
     }
 
-    ApeKeysPopup.show();
+    void ApeKeysPopup.show();
 
     return {
       status: 1,
@@ -1439,7 +1433,7 @@ list["editApeKey"] = new SimplePopup(
   }
 );
 
-list["deleteCustomText"] = new SimplePopup(
+list.deleteCustomText = new SimplePopup(
   "deleteCustomText",
   "text",
   "Delete custom text",
@@ -1447,9 +1441,9 @@ list["deleteCustomText"] = new SimplePopup(
   "Are you sure?",
   "Delete",
   async (_thisPopup) => {
-    CustomText.deleteCustomText(_thisPopup.parameters[0] as string);
+    CustomText.deleteCustomText(_thisPopup.parameters[0] as string, false);
     CustomTextState.setCustomTextName("", undefined);
-    SavedTextsPopup.show(true);
+    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
@@ -1464,7 +1458,7 @@ list["deleteCustomText"] = new SimplePopup(
   }
 );
 
-list["deleteCustomTextLong"] = new SimplePopup(
+list.deleteCustomTextLong = new SimplePopup(
   "deleteCustomTextLong",
   "text",
   "Delete custom text",
@@ -1474,7 +1468,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   async (_thisPopup) => {
     CustomText.deleteCustomText(_thisPopup.parameters[0] as string, true);
     CustomTextState.setCustomTextName("", undefined);
-    SavedTextsPopup.show(true);
+    void SavedTextsPopup.show(true);
 
     return {
       status: 1,
@@ -1489,7 +1483,7 @@ list["deleteCustomTextLong"] = new SimplePopup(
   }
 );
 
-list["resetProgressCustomTextLong"] = new SimplePopup(
+list.resetProgressCustomTextLong = new SimplePopup(
   "resetProgressCustomTextLong",
   "text",
   "Reset progress for custom text",
@@ -1498,7 +1492,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   "Reset",
   async (_thisPopup) => {
     CustomText.setCustomTextLongProgress(_thisPopup.parameters[0] as string, 0);
-    SavedTextsPopup.show(true);
+    void SavedTextsPopup.show(true);
     CustomText.setPopupTextareaState(
       CustomText.getCustomText(_thisPopup.parameters[0] as string, true).join(
         " "
@@ -1517,7 +1511,7 @@ list["resetProgressCustomTextLong"] = new SimplePopup(
   }
 );
 
-list["updateCustomTheme"] = new SimplePopup(
+list.updateCustomTheme = new SimplePopup(
   "updateCustomTheme",
   "text",
   "Update custom theme",
@@ -1579,7 +1573,7 @@ list["updateCustomTheme"] = new SimplePopup(
       };
     }
     UpdateConfig.setCustomThemeColors(newColors);
-    ThemePicker.refreshButtons();
+    void ThemePicker.refreshButtons();
 
     return {
       status: 1,
@@ -1601,7 +1595,7 @@ list["updateCustomTheme"] = new SimplePopup(
   }
 );
 
-list["deleteCustomTheme"] = new SimplePopup(
+list.deleteCustomTheme = new SimplePopup(
   "deleteCustomTheme",
   "text",
   "Delete Custom Theme",
@@ -1610,7 +1604,7 @@ list["deleteCustomTheme"] = new SimplePopup(
   "Delete",
   async (_thisPopup) => {
     await DB.deleteCustomTheme(_thisPopup.parameters[0] as string);
-    ThemePicker.refreshButtons();
+    void ThemePicker.refreshButtons();
 
     return {
       status: 1,
@@ -1625,7 +1619,7 @@ list["deleteCustomTheme"] = new SimplePopup(
   }
 );
 
-list["forgotPassword"] = new SimplePopup(
+list.forgotPassword = new SimplePopup(
   "forgotPassword",
   "text",
   "Forgot Password",
@@ -1876,9 +1870,13 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
   showPopup("editApeKey", [keyId]);
 });
 
-$(".pageSettings").on("click", ".section.fontFamily .button.custom", () => {
-  showPopup("applyCustomFont", []);
-});
+$(".pageSettings").on(
+  "click",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
+  () => {
+    showPopup("applyCustomFont", []);
+  }
+);
 
 $(document).on("keydown", (event) => {
   if (event.key === "Escape" && isElementVisible("#simplePopupWrapper")) {
@@ -1890,3 +1888,11 @@ $(document).on("keydown", (event) => {
 Skeleton.save(wrapperId);
 
 console.log(list);
+
+function isUsingPasswordAuthentication(): boolean {
+  return (
+    Auth?.currentUser?.providerData.find(
+      (p) => p?.providerId === "password"
+    ) !== undefined
+  );
+}

@@ -10,6 +10,11 @@ import { flattenObjectDeep, isToday, isYesterday } from "../utils/misc";
 
 const SECONDS_PER_HOUR = 3600;
 
+type Result = Omit<
+  SharedTypes.DBResult<SharedTypes.Config.Mode>,
+  "_id" | "name"
+>;
+
 // Export for use in tests
 export const getUsersCollection = (): Collection<WithId<MonkeyTypes.User>> =>
   db.collection<MonkeyTypes.User>("users");
@@ -230,7 +235,7 @@ export async function isDiscordIdAvailable(
 
 export async function addResultFilterPreset(
   uid: string,
-  filter: MonkeyTypes.ResultFilters,
+  filter: SharedTypes.ResultFilters,
   maxFiltersPerUser: number
 ): Promise<ObjectId> {
   // ensure limit not reached
@@ -261,8 +266,8 @@ export async function removeResultFilterPreset(
   const filterId = new ObjectId(_id);
   if (
     user.resultFilterPresets === undefined ||
-    user.resultFilterPresets.filter((t) => t._id.toHexString() === _id)
-      .length === 0
+    user.resultFilterPresets.filter((t) => t._id.toString() === _id).length ===
+      0
   ) {
     throw new MonkeyError(404, "Custom filter not found");
   }
@@ -383,8 +388,8 @@ export async function removeTagPb(uid: string, _id: string): Promise<void> {
 
 export async function updateLbMemory(
   uid: string,
-  mode: MonkeyTypes.Mode,
-  mode2: MonkeyTypes.Mode2<MonkeyTypes.Mode>,
+  mode: SharedTypes.Config.Mode,
+  mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>,
   language: string,
   rank: number
 ): Promise<void> {
@@ -406,7 +411,7 @@ export async function updateLbMemory(
 export async function checkIfPb(
   uid: string,
   user: MonkeyTypes.User,
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: Result
 ): Promise<boolean> {
   const { mode } = result;
 
@@ -448,7 +453,7 @@ export async function checkIfPb(
 export async function checkIfTagPb(
   uid: string,
   user: MonkeyTypes.User,
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: Result
 ): Promise<string[]> {
   if (user.tags === undefined || user.tags.length === 0) {
     return [];
@@ -463,11 +468,11 @@ export async function checkIfTagPb(
 
   const tagsToCheck: MonkeyTypes.UserTag[] = [];
   user.tags.forEach((userTag) => {
-    resultTags.forEach((resultTag) => {
+    for (const resultTag of resultTags ?? []) {
       if (resultTag === userTag._id.toHexString()) {
         tagsToCheck.push(userTag);
       }
-    });
+    }
   });
 
   const ret: string[] = [];
@@ -676,10 +681,10 @@ export async function getPersonalBests(
   uid: string,
   mode: string,
   mode2?: string
-): Promise<MonkeyTypes.PersonalBest> {
+): Promise<SharedTypes.PersonalBest> {
   const user = await getUser(uid, "get personal bests");
 
-  if (mode2) {
+  if (mode2 !== undefined) {
     return user.personalBests?.[mode]?.[mode2];
   }
 
@@ -688,7 +693,7 @@ export async function getPersonalBests(
 
 export async function getStats(
   uid: string
-): Promise<{ [key: string]: number | undefined }> {
+): Promise<Record<string, number | undefined>> {
   const user = await getUser(uid, "get stats");
 
   return {
@@ -715,10 +720,7 @@ export async function addFavoriteQuote(
   const user = await getUser(uid, "add favorite quote");
 
   if (user.favoriteQuotes) {
-    if (
-      user.favoriteQuotes[language] &&
-      user.favoriteQuotes[language]?.includes(quoteId)
-    ) {
+    if (user.favoriteQuotes[language]?.includes(quoteId)) {
       return;
     }
 
@@ -753,11 +755,7 @@ export async function removeFavoriteQuote(
 ): Promise<void> {
   const user = await getUser(uid, "remove favorite quote");
 
-  if (
-    !user.favoriteQuotes ||
-    !user.favoriteQuotes[language] ||
-    !user.favoriteQuotes[language]?.includes(quoteId)
-  ) {
+  if (!user.favoriteQuotes?.[language]?.includes(quoteId)) {
     return;
   }
 
@@ -802,7 +800,11 @@ export async function recordAutoBanEvent(
   }
 
   await getUsersCollection().updateOne({ uid }, { $set: updateObj });
-  Logger.logToDb("user_auto_banned", { autoBanTimestamps, banningUser }, uid);
+  void Logger.logToDb(
+    "user_auto_banned",
+    { autoBanTimestamps, banningUser },
+    uid
+  );
   return ret;
 }
 
@@ -840,14 +842,14 @@ export async function getInbox(
   return user.inbox ?? [];
 }
 
-interface AddToInboxBulkEntry {
+type AddToInboxBulkEntry = {
   uid: string;
   mail: MonkeyTypes.MonkeyMail[];
-}
+};
 
 export async function addToInboxBulk(
   entries: AddToInboxBulkEntry[],
-  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+  inboxConfig: SharedTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -875,7 +877,7 @@ export async function addToInboxBulk(
 export async function addToInbox(
   uid: string,
   mail: MonkeyTypes.MonkeyMail[],
-  inboxConfig: MonkeyTypes.Configuration["users"]["inbox"]
+  inboxConfig: SharedTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
 
@@ -996,7 +998,7 @@ export async function updateStreak(
   if (isYesterday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
     streak.length += 1;
   } else if (!isToday(streak.lastResultTimestamp, streak.hourOffset ?? 0)) {
-    Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
+    void Logger.logToDb("streak_lost", JSON.parse(JSON.stringify(streak)), uid);
     streak.length = 1;
   }
 

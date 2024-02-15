@@ -2,25 +2,25 @@ import * as ThemeColors from "./theme-colors";
 import * as SlowTimer from "../states/slow-timer";
 import Config from "../config";
 
-interface Particle {
+type Particle = {
   x: number;
   y: number;
   color: string;
   alpha: number;
   prev: { x: number; y: number };
   vel: { x: number; y: number };
-}
+};
 
-interface CTX {
+type CTX = {
   particles: Particle[];
-  caret?: JQuery<HTMLElement>;
+  caret?: JQuery;
   canvas?: HTMLCanvasElement;
   context2d?: CanvasRenderingContext2D;
   rendering: boolean;
   lastFrame?: number;
   deltaTime?: number;
   resetTimeOut?: number;
-}
+};
 
 /**
  * @typedef {{ x: number, y: number }} vec2

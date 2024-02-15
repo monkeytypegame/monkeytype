@@ -1,4 +1,6 @@
-const { resolve } = require("path");
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { resolve, join } = require("path");
+const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -107,6 +109,13 @@ const BASE_CONFIG = {
           },
         },
       ],
+    }),
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery",
+      jQueryColor: "jquery-color",
+      jQueryEasing: "jquery.easing",
+      select2: "select2",
     }),
     new HtmlWebpackPlugin({
       filename: "./index.html",

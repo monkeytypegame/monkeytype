@@ -17,8 +17,8 @@ export const page = new Page(
   async () => {
     ManualRestart.set();
     TestLogic.restart();
-    Funbox.clear();
-    ModesNotice.update();
+    void Funbox.clear();
+    void ModesNotice.update();
     $("#wordsInput").trigger("focusout");
   },
   async () => {
@@ -31,9 +31,9 @@ export const page = new Page(
     TestLogic.restart({
       noAnim: true,
     });
-    TestConfig.instantUpdate();
-    Funbox.activate();
-    Keymap.refresh();
+    void TestConfig.instantUpdate();
+    void Funbox.activate();
+    void Keymap.refresh();
   },
   async () => {
     if (CookiePopup.isVisible()) {

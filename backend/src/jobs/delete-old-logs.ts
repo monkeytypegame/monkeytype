@@ -17,7 +17,7 @@ async function deleteOldLogs(): Promise<void> {
     .collection("logs")
     .deleteMany({ timestamp: { $lt: Date.now() - LOG_MAX_AGE_MILLISECONDS } });
 
-  Logger.logToDb(
+  void Logger.logToDb(
     "system_logs_deleted",
     `${data.deletedCount} logs deleted older than ${LOG_MAX_AGE_DAYS} day(s)`,
     undefined

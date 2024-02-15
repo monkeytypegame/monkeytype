@@ -45,7 +45,7 @@ function updateKeytips(): void {
 
 if (isDevEnvironment()) {
   window.onerror = function (error): void {
-    Notifications.add(error.toString(), -1);
+    Notifications.add(JSON.stringify(error), -1);
   };
   $("header #logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
@@ -87,8 +87,8 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 
-const debouncedEvent = debounce(250, async () => {
-  Caret.updatePosition();
+const debouncedEvent = debounce(250, () => {
+  void Caret.updatePosition();
   if (getActivePage() === "test" && !TestUI.resultVisible) {
     if (Config.tapeMode !== "off") {
       TestUI.scrollTape();

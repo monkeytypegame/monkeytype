@@ -9,15 +9,15 @@ export type LaterTaskType =
   | "daily-leaderboard-results"
   | "weekly-xp-leaderboard-results";
 
-export interface LaterTask<T extends LaterTaskType> {
+export type LaterTask<T extends LaterTaskType> = {
   taskName: LaterTaskType;
   ctx: LaterTaskContexts[T];
-}
+};
 
 export type LaterTaskContexts = {
   "daily-leaderboard-results": {
     yesterdayTimestamp: number;
-    modeRule: MonkeyTypes.ValidModeRule;
+    modeRule: SharedTypes.ValidModeRule;
   };
   "weekly-xp-leaderboard-results": {
     lastWeekTimestamp: number;
@@ -82,7 +82,7 @@ class LaterQueue extends MonkeyQueue<LaterTask<LaterTaskType>> {
   async scheduleForTomorrow(
     taskName: LaterTaskType,
     taskId: string,
-    modeRule: MonkeyTypes.ValidModeRule
+    modeRule: SharedTypes.ValidModeRule
   ): Promise<void> {
     const currentDayTimestamp = getCurrentDayTimestamp();
     const jobId = `${taskName}:${currentDayTimestamp}:${taskId}`;

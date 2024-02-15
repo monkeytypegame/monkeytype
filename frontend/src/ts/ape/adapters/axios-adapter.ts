@@ -1,4 +1,4 @@
-import { Auth } from "../../firebase";
+import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { getIdToken } from "firebase/auth";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { CLIENT_VERSION } from "../../version";
@@ -14,11 +14,12 @@ type AxiosClientDataMethod = (
   config: AxiosRequestConfig
 ) => Promise<AxiosResponse>;
 
-async function adaptRequestOptions(
-  options: Ape.RequestOptions
+async function adaptRequestOptions<TQuery, TPayload>(
+  options: Ape.RequestOptionsWithPayload<TQuery, TPayload>
 ): Promise<AxiosRequestConfig> {
-  const currentUser = Auth?.currentUser;
-  const idToken = currentUser && (await getIdToken(currentUser));
+  const idToken = isAuthenticated()
+    ? await getIdToken(getAuthenticatedUser())
+    : "";
 
   return {
     params: options.searchQuery,
@@ -36,11 +37,11 @@ async function adaptRequestOptions(
 function apeifyClientMethod(
   clientMethod: AxiosClientMethod | AxiosClientDataMethod,
   methodType: Ape.HttpMethodTypes
-): Ape.HttpClientMethod {
-  return async (
+): Ape.HttpClientMethod | Ape.HttpClientMethodWithPayload {
+  return async function <TQuery, TPayload, TData>(
     endpoint: string,
-    options: Ape.RequestOptions = {}
-  ): Ape.EndpointResponse => {
+    options: Ape.RequestOptionsWithPayload<TQuery, TPayload> = {}
+  ): Ape.EndpointResponse<TData> {
     let errorMessage = "";
 
     try {

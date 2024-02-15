@@ -3,7 +3,7 @@ import * as RedisClient from "../init/redis";
 import LaterQueue from "../queues/later-queue";
 import { getCurrentDayTimestamp, matchesAPattern, kogascore } from "./misc";
 
-interface DailyLeaderboardEntry {
+type DailyLeaderboardEntry = {
   uid: string;
   name: string;
   wpm: number;
@@ -14,18 +14,18 @@ interface DailyLeaderboardEntry {
   discordAvatar?: string;
   discordId?: string;
   badgeId?: number;
-}
+};
 
-interface GetRankResponse {
+type GetRankResponse = {
   minWpm: number;
   count: number;
   rank: number | null;
   entry: DailyLeaderboardEntry | null;
-}
+};
 
-interface LbEntryWithRank extends DailyLeaderboardEntry {
+type LbEntryWithRank = {
   rank: number;
-}
+} & DailyLeaderboardEntry;
 
 const dailyLeaderboardNamespace = "monkeytype:dailyleaderboard";
 const scoresNamespace = `${dailyLeaderboardNamespace}:scores`;
@@ -36,9 +36,9 @@ export class DailyLeaderboard {
   private leaderboardScoresKeyName: string;
   private leaderboardModeKey: string;
   private customTime: number;
-  private modeRule: MonkeyTypes.ValidModeRule;
+  private modeRule: SharedTypes.ValidModeRule;
 
-  constructor(modeRule: MonkeyTypes.ValidModeRule, customTime = -1) {
+  constructor(modeRule: SharedTypes.ValidModeRule, customTime = -1) {
     const { language, mode, mode2 } = modeRule;
 
     this.leaderboardModeKey = `${language}:${mode}:${mode2}`;
@@ -67,7 +67,7 @@ export class DailyLeaderboard {
 
   public async addResult(
     entry: DailyLeaderboardEntry,
-    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
   ): Promise<number> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -88,7 +88,7 @@ export class DailyLeaderboard {
 
     const resultScore = kogascore(entry.wpm, entry.acc, entry.timestamp);
 
-    // @ts-ignore
+    // @ts-expect-error
     const rank = await connection.addResult(
       2,
       leaderboardScoresKey,
@@ -123,7 +123,7 @@ export class DailyLeaderboard {
   public async getResults(
     minRank: number,
     maxRank: number,
-    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
   ): Promise<LbEntryWithRank[]> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -133,7 +133,7 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-ignore
+    // @ts-expect-error
     const [results]: string[][] = await connection.getResults(
       2,
       leaderboardScoresKey,
@@ -161,7 +161,7 @@ export class DailyLeaderboard {
 
   public async getRank(
     uid: string,
-    dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"]
+    dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"]
   ): Promise<GetRankResponse | null> {
     const connection = RedisClient.getConnection();
     if (!connection || !dailyLeaderboardsConfig.enabled) {
@@ -171,7 +171,7 @@ export class DailyLeaderboard {
     const { leaderboardScoresKey, leaderboardResultsKey } =
       this.getTodaysLeaderboardKeys();
 
-    // @ts-ignore
+    // @ts-expect-error
     const [[, rank], [, count], [, result], [, minScore]] = await connection
       .multi()
       .zrevrank(leaderboardScoresKey, uid)
@@ -204,20 +204,20 @@ export class DailyLeaderboard {
 
 export async function purgeUserFromDailyLeaderboards(
   uid: string,
-  configuration: MonkeyTypes.Configuration["dailyLeaderboards"]
+  configuration: SharedTypes.Configuration["dailyLeaderboards"]
 ): Promise<void> {
   const connection = RedisClient.getConnection();
   if (!connection || !configuration.enabled) {
     return;
   }
 
-  // @ts-ignore
+  // @ts-expect-error
   await connection.purgeResults(0, uid, dailyLeaderboardNamespace);
 }
 
 function isValidModeRule(
-  modeRule: MonkeyTypes.ValidModeRule,
-  modeRules: MonkeyTypes.ValidModeRule[]
+  modeRule: SharedTypes.ValidModeRule,
+  modeRules: SharedTypes.ValidModeRule[]
 ): boolean {
   const { language, mode, mode2 } = modeRule;
 
@@ -233,7 +233,7 @@ export function getDailyLeaderboard(
   language: string,
   mode: string,
   mode2: string,
-  dailyLeaderboardsConfig: MonkeyTypes.Configuration["dailyLeaderboards"],
+  dailyLeaderboardsConfig: SharedTypes.Configuration["dailyLeaderboards"],
   customTimestamp = -1
 ): DailyLeaderboard | null {
   const { validModeRules, enabled } = dailyLeaderboardsConfig;

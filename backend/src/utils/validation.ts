@@ -22,7 +22,7 @@ export function isUsernameValid(name: string): boolean {
     return false;
   }
 
-  const isProfanity = profanities.find((profanity) =>
+  const isProfanity = profanities.some((profanity) =>
     normalizedName.includes(profanity)
   );
   if (isProfanity) {
@@ -57,7 +57,7 @@ export function isTagPresetNameValid(name: string): boolean {
   return VALID_NAME_PATTERN.test(name);
 }
 
-export function isTestTooShort(result: MonkeyTypes.CompletedEvent): boolean {
+export function isTestTooShort(result: SharedTypes.CompletedEvent): boolean {
   const { mode, mode2, customText, testDuration, bailedOut } = result;
 
   if (mode === "time") {
@@ -116,8 +116,8 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
   const oneWordModifierMax =
     funboxesToCheck.filter(
       (f) =>
-        f.frontendFunctions?.includes("getWord") ||
-        f.frontendFunctions?.includes("pullSection") ||
+        f.frontendFunctions?.includes("getWord") ??
+        f.frontendFunctions?.includes("pullSection") ??
         f.frontendFunctions?.includes("withWords")
     ).length <= 1;
   const layoutUsability =
@@ -177,7 +177,7 @@ export function areFunboxesCompatible(funboxesString: string): boolean {
   const oneToPushOrPullSectionMax =
     funboxesToCheck.filter(
       (f) =>
-        f.properties?.find((fp) => fp.startsWith("toPush:")) ||
+        f.properties?.some((fp) => fp.startsWith("toPush:")) ??
         f.frontendFunctions?.includes("pullSection")
     ).length <= 1;
   const oneApplyCSSMax =

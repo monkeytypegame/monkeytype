@@ -8,7 +8,7 @@ export let caretAnimating = true;
 const caret = document.querySelector("#caret") as HTMLElement;
 
 export function stopAnimation(): void {
-  if (caretAnimating === true) {
+  if (caretAnimating) {
     caret.style.animationName = "none";
     caret.style.opacity = "1";
     caretAnimating = false;
@@ -16,7 +16,7 @@ export function stopAnimation(): void {
 }
 
 export function startAnimation(): void {
-  if (caretAnimating === false) {
+  if (!caretAnimating) {
     if (Config.smoothCaret !== "off" && !SlowTimer.get()) {
       caret.style.animationName = "caretFlashSmooth";
     } else {
@@ -53,9 +53,9 @@ export async function updatePosition(): Promise<void> {
 
   if (!currentWordNodeList) return;
 
-  const currentLetter: HTMLElement = currentWordNodeList[
-    currentLetterIndex
-  ] as HTMLElement;
+  const currentLetter = currentWordNodeList[currentLetterIndex] as
+    | HTMLElement
+    | undefined;
 
   const previousLetter: HTMLElement = currentWordNodeList[
     Math.min(currentLetterIndex - 1, currentWordNodeList.length - 1)
@@ -64,7 +64,7 @@ export async function updatePosition(): Promise<void> {
   const currentLanguage = await Misc.getCurrentLanguage(Config.language);
   const isLanguageRightToLeft = currentLanguage.rightToLeft;
   const letterPosLeft =
-    (currentLetter
+    (currentLetter !== undefined
       ? currentLetter.offsetLeft
       : previousLetter.offsetLeft + previousLetter.offsetWidth) +
     (!isLanguageRightToLeft
@@ -82,7 +82,7 @@ export async function updatePosition(): Promise<void> {
   let newLeft = letterPosLeft - (fullWidthCaret ? 0 : caretWidth / 2);
 
   const wordsWrapperWidth =
-    $(<HTMLElement>document.querySelector("#wordsWrapper")).width() ?? 0;
+    $(document.querySelector("#wordsWrapper") as HTMLElement).width() ?? 0;
 
   if (Config.tapeMode === "letter") {
     newLeft = wordsWrapperWidth / 2 - (fullWidthCaret ? 0 : caretWidth / 2);
@@ -121,7 +121,7 @@ export async function updatePosition(): Promise<void> {
   };
 
   if (newWidth !== "") {
-    animation["width"] = newWidth;
+    animation.width = newWidth;
   } else {
     jqcaret.css("width", "");
   }
@@ -167,7 +167,7 @@ export async function updatePosition(): Promise<void> {
 export function show(): void {
   if ($("#result").hasClass("hidden")) {
     caret.classList.remove("hidden");
-    updatePosition();
+    void updatePosition();
     startAnimation();
   }
 }

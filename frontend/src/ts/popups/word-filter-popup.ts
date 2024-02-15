@@ -7,11 +7,11 @@ const wrapperId = "wordFilterPopupWrapper";
 
 let initialised = false;
 
-interface FilterPreset {
+type FilterPreset = {
   display: string;
   getIncludeString: (layout: MonkeyTypes.Layout) => string[];
   getExcludeString: (layout: MonkeyTypes.Layout) => string[];
-}
+};
 
 const presets: Record<string, FilterPreset> = {
   homeKeys: {
@@ -293,13 +293,13 @@ $("#wordFilterPopup .languageInput").one("select2:open", function () {
 $("#wordFilterPopupWrapper .button.addButton").on("mousedown", () => {
   $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
-  apply(false);
+  void apply(false);
 });
 
 $("#wordFilterPopupWrapper .button.setButton").on("mousedown", () => {
   $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
-  apply(true);
+  void apply(true);
 });
 
 $("#wordFilterPopup .button.generateButton").on("click", async () => {

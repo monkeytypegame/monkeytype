@@ -11,7 +11,7 @@ import {
   sanitizeString,
 } from "../../utils/misc";
 import GeorgeQueue from "../../queues/george-queue";
-import admin from "firebase-admin";
+import admin, { FirebaseError } from "firebase-admin";
 import { deleteAllApeKeys } from "../../dal/ape-keys";
 import { deleteAllPresets } from "../../dal/preset";
 import { deleteAll as deleteAllResults } from "../../dal/result";
@@ -61,7 +61,7 @@ export async function createNewUser(
   }
 
   await UserDAL.addUser(name, email, uid);
-  Logger.logToDb("user_created", `${name} ${email}`, uid);
+  void Logger.logToDb("user_created", `${name} ${email}`, uid);
 
   return new MonkeyResponse("User created");
 }
@@ -83,7 +83,7 @@ export async function sendVerificationEmail(
         );
       })
   ).emailVerified;
-  if (isVerified === true) {
+  if (isVerified) {
     throw new MonkeyError(400, "Email already verified");
   }
 
@@ -106,14 +106,15 @@ export async function sendVerificationEmail(
           : "https://monkeytype.com",
       });
   } catch (e) {
+    const firebaseError = e as FirebaseError;
     if (
-      e.code === "auth/internal-error" &&
-      e.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
+      firebaseError.code === "auth/internal-error" &&
+      firebaseError.message.includes("TOO_MANY_ATTEMPTS_TRY_LATER")
     ) {
       // for some reason this error is not handled with a custom auth/ code, so we have to do it manually
       throw new MonkeyError(429, "Too many requests. Please try again later");
     }
-    if (e.code === "auth/user-not-found") {
+    if (firebaseError.code === "auth/user-not-found") {
       throw new MonkeyError(
         500,
         "Auth user not found when the user was found in the database. Contact support with this error message and your email",
@@ -125,13 +126,12 @@ export async function sendVerificationEmail(
         userInfo.uid
       );
     }
-    if (e.message.includes("Internal error encountered.")) {
+    if (firebaseError.message.includes("Internal error encountered.")) {
       throw new MonkeyError(
         500,
         "Firebase failed to generate an email verification link. Please try again later."
       );
     }
-    throw e;
   }
 
   await emailQueue.sendVerificationEmail(email, userInfo.name, link);
@@ -187,7 +187,11 @@ export async function deleteUser(
     ),
   ]);
 
-  Logger.logToDb("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
+  void Logger.logToDb(
+    "user_deleted",
+    `${userInfo.email} ${userInfo.name}`,
+    uid
+  );
 
   return new MonkeyResponse("User deleted");
 }
@@ -210,11 +214,11 @@ export async function resetUser(
     ),
   ];
 
-  if (userInfo.discordId) {
+  if (userInfo.discordId !== undefined && userInfo.discordId !== "") {
     promises.push(GeorgeQueue.unlinkDiscord(userInfo.discordId, uid));
   }
   await Promise.all(promises);
-  Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
+  void Logger.logToDb("user_reset", `${userInfo.email} ${userInfo.name}`, uid);
 
   return new MonkeyResponse("User reset");
 }
@@ -235,7 +239,7 @@ export async function updateName(
   }
 
   await UserDAL.updateName(uid, name, user.name);
-  Logger.logToDb(
+  void Logger.logToDb(
     "user_name_updated",
     `changed name from ${user.name} to ${name}`,
     uid
@@ -254,7 +258,7 @@ export async function clearPb(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  Logger.logToDb("user_cleared_pbs", "", uid);
+  void Logger.logToDb("user_cleared_pbs", "", uid);
 
   return new MonkeyResponse("User's PB cleared");
 }
@@ -269,7 +273,7 @@ export async function optOutOfLeaderboards(
     uid,
     req.ctx.configuration.dailyLeaderboards
   );
-  Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
+  void Logger.logToDb("user_opted_out_of_leaderboards", "", uid);
 
   return new MonkeyResponse("User opted out of leaderboards");
 }
@@ -302,7 +306,11 @@ export async function updateEmail(
     throw new MonkeyError(404, e.message, "update email", uid);
   }
 
-  Logger.logToDb("user_email_updated", `changed email to ${newEmail}`, uid);
+  void Logger.logToDb(
+    "user_email_updated",
+    `changed email to ${newEmail}`,
+    uid
+  );
 
   return new MonkeyResponse("Email updated");
 }
@@ -369,8 +377,8 @@ export async function getUser(
   };
 
   const agentLog = buildAgentLog(req);
-  Logger.logToDb("user_data_requested", agentLog, uid);
-  UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
+  void Logger.logToDb("user_data_requested", agentLog, uid);
+  void UserDAL.logIpAddress(uid, agentLog.ip, userInfo);
 
   let inboxUnreadSize = 0;
   if (req.ctx.configuration.users.inbox.enabled) {
@@ -379,7 +387,7 @@ export async function getUser(
 
   if (!userInfo.name) {
     userInfo.needsToChangeName = true;
-    UserDAL.flagForNameChange(uid);
+    await UserDAL.flagForNameChange(uid);
   }
 
   const isPremium = await UserDAL.checkIfUserIsPremium(uid, userInfo);
@@ -428,7 +436,7 @@ export async function linkDiscord(
 
   const redisToken = await connection.getdel(`discordoauth:${uid}`);
 
-  if (!redisToken || redisToken !== state) {
+  if (!(redisToken ?? "") || redisToken !== state) {
     throw new MonkeyError(403, "Invalid user token");
   }
 
@@ -440,7 +448,7 @@ export async function linkDiscord(
   const { id: discordId, avatar: discordAvatar } =
     await DiscordUtils.getDiscordUser(tokenType, accessToken);
 
-  if (userInfo.discordId) {
+  if (userInfo.discordId !== undefined && userInfo.discordId !== "") {
     await UserDAL.linkDiscord(uid, userInfo.discordId, discordAvatar);
     return new MonkeyResponse("Discord avatar updated", {
       discordId,
@@ -466,8 +474,8 @@ export async function linkDiscord(
 
   await UserDAL.linkDiscord(uid, discordId, discordAvatar);
 
-  GeorgeQueue.linkDiscord(discordId, uid);
-  Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
+  await GeorgeQueue.linkDiscord(discordId, uid);
+  void Logger.logToDb("user_discord_link", `linked to ${discordId}`, uid);
 
   return new MonkeyResponse("Discord account linked", {
     discordId,
@@ -481,13 +489,14 @@ export async function unlinkDiscord(
   const { uid } = req.ctx.decodedToken;
 
   const userInfo = await UserDAL.getUser(uid, "unlink discord");
-  if (!userInfo.discordId) {
+  const discordId = userInfo.discordId;
+  if (discordId === undefined || discordId === "") {
     throw new MonkeyError(404, "User does not have a linked Discord account");
   }
 
-  GeorgeQueue.unlinkDiscord(userInfo.discordId, uid);
+  await GeorgeQueue.unlinkDiscord(discordId, uid);
   await UserDAL.unlinkDiscord(uid);
-  Logger.logToDb("user_discord_unlinked", userInfo.discordId, uid);
+  void Logger.logToDb("user_discord_unlinked", discordId, uid);
 
   return new MonkeyResponse("Discord account unlinked");
 }
@@ -571,7 +580,8 @@ export async function updateLbMemory(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
   const { mode, language, rank } = req.body;
-  const mode2 = req.body.mode2 as MonkeyTypes.Mode2<MonkeyTypes.Mode>;
+  const mode2 = req.body
+    .mode2 as SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
 
   await UserDAL.updateLbMemory(uid, mode, mode2, language, rank);
   return new MonkeyResponse("Leaderboard memory updated");
@@ -753,12 +763,10 @@ export async function getProfile(
     user.uid
   );
 
-  const allTime15EnglishRank = allTime15English
-    ? allTime15English.rank
-    : undefined;
-  const allTime60EnglishRank = allTime60English
-    ? allTime60English.rank
-    : undefined;
+  const allTime15EnglishRank =
+    (allTime15English === false ? null : allTime15English)?.rank ?? null;
+  const allTime60EnglishRank =
+    (allTime60English === false ? null : allTime60English)?.rank ?? null;
 
   const alltimelbs = {
     time: {
@@ -892,13 +900,14 @@ export async function toggleBan(
 
   const user = await UserDAL.getUser(uid, "toggle ban");
   const discordId = user.discordId;
+  const discordIdIsValid = discordId !== undefined && discordId !== "";
 
   if (user.banned) {
-    UserDAL.setBanned(uid, false);
-    if (discordId) GeorgeQueue.userBanned(discordId, false);
+    await UserDAL.setBanned(uid, false);
+    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, false);
   } else {
-    UserDAL.setBanned(uid, true);
-    if (discordId) GeorgeQueue.userBanned(discordId, true);
+    await UserDAL.setBanned(uid, true);
+    if (discordIdIsValid) await GeorgeQueue.userBanned(discordId, true);
   }
 
   return new MonkeyResponse(`Ban toggled`, {

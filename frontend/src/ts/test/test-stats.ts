@@ -6,7 +6,7 @@ import * as TestWords from "./test-words";
 import * as FunboxList from "./funbox/funbox-list";
 import * as TestState from "./test-state";
 
-interface CharCount {
+type CharCount = {
   spaces: number;
   correctWordChars: number;
   allCorrectChars: number;
@@ -14,9 +14,9 @@ interface CharCount {
   extraChars: number;
   missedChars: number;
   correctSpaces: number;
-}
+};
 
-interface Stats {
+type Stats = {
   wpm: number;
   wpmRaw: number;
   acc: number;
@@ -28,17 +28,17 @@ interface Stats {
   time: number;
   spaces: number;
   correctSpaces: number;
-}
+};
 
 export let invalid = false;
 export let start: number, end: number;
 export let start2: number, end2: number;
 export let lastSecondNotRound = false;
 
-export let lastResult: MonkeyTypes.Result<MonkeyTypes.Mode>;
+export let lastResult: SharedTypes.Result<SharedTypes.Config.Mode>;
 
 export function setLastResult(
-  result: MonkeyTypes.Result<MonkeyTypes.Mode>
+  result: SharedTypes.Result<SharedTypes.Config.Mode>
 ): void {
   lastResult = result;
 }
@@ -63,13 +63,13 @@ export function getStats(): unknown {
   };
 
   try {
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.spacing.average =
       (TestInput.keypressTimings.spacing.array as number[]).reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.spacing.array.length;
 
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.spacing.sd = Misc.stdDev(
       TestInput.keypressTimings.spacing.array as number[]
     );
@@ -77,13 +77,13 @@ export function getStats(): unknown {
     //
   }
   try {
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.duration.average =
       (TestInput.keypressTimings.duration.array as number[]).reduce(
         (previous, current) => (current += previous)
       ) / TestInput.keypressTimings.duration.array.length;
 
-    // @ts-ignore
+    // @ts-expect-error
     ret.keypressTimings.duration.sd = Misc.stdDev(
       TestInput.keypressTimings.duration.array as number[]
     );
@@ -104,7 +104,7 @@ export function restart(): void {
 export let restartCount = 0;
 export let incompleteSeconds = 0;
 
-export let incompleteTests: MonkeyTypes.IncompleteTest[] = [];
+export let incompleteTests: SharedTypes.IncompleteTest[] = [];
 
 export function incrementRestartCount(): void {
   restartCount++;
@@ -187,7 +187,7 @@ export function calculateAfkSeconds(testSeconds: number): number {
     //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
     // );
   }
-  const ret = TestInput.afkHistory.filter((afk) => afk === true).length;
+  const ret = TestInput.afkHistory.filter((afk) => afk).length;
   return ret + extraAfk;
 }
 
