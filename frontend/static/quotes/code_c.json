@@ -90,6 +90,108 @@
       "source": "GLib Source Code",
       "length": 122,
       "id": 14
+    },
+    {
+      "text": "static int had_init_audio_ctrl(struct snd_pcm_substream *substream, struct snd_intelhad *intelhaddata)",
+      "source": "Linux Sound Source Code",
+      "length": 102,
+      "id": 15
+    },
+    {
+      "text": "for (; t->map; t++) {\n\tif (t->spk_mask == spk)\n\t\treturn t->map;\n\t}\n\treturn 0;\n}",
+      "source": "Linux Sound Source Code",
+      "length": 79,
+      "id": 16
+    },
+    {
+      "text": "static int had_calculate_maud_value(u32 aud_samp_freq, u32 link_rate)",
+      "source": "Linux Sound Source Code",
+      "length": 69,
+      "id": 17
+    },
+    {
+      "text": "unsigned long long elfcorehdr_addr = ELFCORE_ADDR_MAX;\nEXPORT_SYMBOL_GPL(elfcorehdr_addr);",
+      "source": "Linux Kernel Source Code",
+      "length": 90,
+      "id": 18
+    },
+    {
+      "text": "static int __init setup_elfcorehdr(char *arg)\n{\n\tchar *end;\n\tif (!arg)\n\t\treturn -EINVAL;\n\telfcorehdr_addr = memparse(arg, &end);\n\tif (*end == '@') {\n\t\telfcorehdr_size = elfcorehdr_addr;\n\t\telfcorehdr_addr = memparse(end + 1, &end);\n\t}\n\treturn end > arg ? 0 : -EINVAL;\n}",
+      "source": "Linux Kernel Source Code",
+      "length": 268,
+      "id": 19
+    },
+    {
+      "text": "rcu_read_lock();\ndec_rlimit_ucounts(task_ucounts(p), UCOUNT_RLIMIT_NPROC, 1);\nrcu_read_unlock();",
+      "source": "Linux Kernel Source Code",
+      "length": 96,
+      "id": 20
+    },
+    {
+      "text": "#ifdef CONFIG_POSIX_TIMERS\n\tposix_cpu_timers_exit(tsk);\n\tif (group_dead)\n\t\tposix_cpu_timers_exit_group(tsk);\n#endif",
+      "source": "Linux Kernel Source Code",
+      "id": 21,
+      "length": 115
+    },
+    {
+      "text": "fail_nomem_anon_vma_fork:\n\tmpol_put(vma_policy(tmp));\nfail_nomem_policy:\n\tvm_area_free(tmp);\nfail_nomem:\n\tretval = -ENOMEM;\n\tvm_unacct_memory(charge);\n\tgoto loop_out;",
+      "source": "Linux Kernel Source Code",
+      "length": 166,
+      "id": 22
+    },
+    {
+      "text": "#define short_option(c) ((c) <= CHAR_MAX)",
+      "source": "GNU Make Source Code",
+      "length": 41,
+      "id": 23
+    },
+    {
+      "text": "static int silent_flag;\nstatic const int default_silent_flag = 0;\nstatic enum variable_origin silent_origin = o_default;",
+      "source": "GNU Make Source Code",
+      "length": 120,
+      "id": 24
+    },
+    {
+      "text": "const char *shell;\nchar pwdbuf[256];\nchar *pwd;\nshell = getenv (\"SHELL\");\nif (shell != NULL)\n\tvms_gnv_shell = 1;",
+      "source": "GNU Make Source Code",
+      "length": 112,
+      "id": 25
+    },
+    {
+      "text": "# if defined SIGCHLD\n\tbsd_signal (SIGCHLD, child_handler);\n# endif\n# if defined SIGCLD && SIGCLD != SIGCHLD\n\tbsd_signal (SIGCLD, child_handler);\n# endif",
+      "source": "GNU Make Source Code",
+      "length": 152,
+      "id": 26
+    },
+    {
+      "text": "\tprintf (\"%sGNU Make %s\n\", precede, version_string);\n\tif (!remote_description || *remote_description == '\\0')\n\t\tprintf (_(\"%sBuilt for %s\n\"), precede, make_host);\n\telse\n\t\tprintf (_(\"%sBuilt for %s (%s)\n\"), precede, make_host, remote_description);\n#if MK_OS_W32\n\tprintf (_(\"%sANSI code page: %u\n\"), precede, GetACP ());\n\tprintf (_(\"%sConsole code page: %u\n\"), precede, GetConsoleOutputCP ());\n#endif",
+      "source": "GNU Make Source Code",
+      "length": 398,
+      "id": 27
+    },
+    {
+      "text": "GOptionContext *context;\nGError *error = NULL;\nShellGlobal *global;\nGjsContext *js_context;\nconst char *filename;\nchar *title;\nuint8_t code;",
+      "source": "GNOME Shell Source Code",
+      "length": 140,
+      "id": 28
+    },
+    {
+      "text": "\n#define MIN_DOWNSCALE_SIZE 256.f\n#define MAX_RADIUS 12.f\ntypedef enum\n{\n\tACTOR_PAINTED = 1 << 0,\n\tBLUR_APPLIED = 1 << 1,\n} CacheFlags;",
+      "source": "GNOME Shell Source Code",
+      "length": 135,
+      "id": 29
+    },
+    {
+      "text": "typedef struct\n{\n\tCoglFramebuffer *framebuffer;\n\tCoglPipeline *pipeline;\n\tCoglTexture *texture;\n} FramebufferData;",
+      "source": "GNOME Shell Source Code",
+      "length": 114,
+      "id": 30
+    },
+    {
+      "text": "\nif (error)\n\tkeyval = mods = 0;\nif (accelerator_key)\n\t*accelerator_key = keyval;\nif (accelerator_mods)\n\t*accelerator_mods = mods;",
+      "source": "KDE Plasma Desktop Source Code",
+      "length": 129,
+      "id": 31
     }
   ]
 }
