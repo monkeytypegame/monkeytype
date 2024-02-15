@@ -63,4 +63,36 @@ Add some screenshots of your theme to the pull request. Click "create pull reque
 ## Theme Guidelines
 
 Make sure your theme follows the theme guidelines.
-[Theme guidelines](./CONTRIBUTING.md#theme-guidelines)
+
+Before submitting a theme make sure...
+
+- your theme is unique and isn't visually similar to any we already have.
+- the text color is either black or white (or very close to these colors)
+- your theme has been added to the `_list` file and the `textColor` property is the theme's main color
+- your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
+- your theme has a creative and concise name that doesn't reference specific brands, universities, etc.
+
+
+### Good example
+
+tangerine 
+
+[Link](https://github.com/monkeytypegame/monkeytype/pull/5047)
+
+- Text, error, caret, and background colors are visually aesthetic and are easy to differentiate between
+- Theme is not similar to any existing themes
+- Unique and concise name
+
+![alt text](304412616-53c9549e-2465-45bc-9dd9-45acbfb94444-1.png)
+
+### Not quite as good example
+
+UNC blue
+
+[Link](https://github.com/monkeytypegame/monkeytype/pull/4794)
+
+![alt text](283012440-753889fa-d87d-4f65-8b02-36f8edc1124f.jpeg)
+
+- Text, error, caret, and background colors are easy to differentiate between, but...
+- Theme is similar to existing theme mizu
+- Name is associated with a specific university
