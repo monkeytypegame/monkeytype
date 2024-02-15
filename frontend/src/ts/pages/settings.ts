@@ -478,18 +478,6 @@ async function fillSettingsPage(): Promise<void> {
 
   await Misc.sleep(0);
 
-  const layoutEl = document.querySelector(
-    ".pageSettings .section[data-config-name='layout'] select"
-  ) as HTMLSelectElement;
-  layoutEl.innerHTML = `<option value='default'>off</option>`;
-  let layoutElHTML = "";
-
-  const keymapEl = document.querySelector(
-    ".pageSettings .section[data-config-name='keymapLayout'] select"
-  ) as HTMLSelectElement;
-  keymapEl.innerHTML = `<option value='overrideSync'>emulator sync</option>`;
-  let keymapElHTML = "";
-
   let layoutsList;
   try {
     layoutsList = await Misc.getLayoutsList();
@@ -497,44 +485,47 @@ async function fillSettingsPage(): Promise<void> {
     console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
   }
 
+  const layoutSelectData = [];
+  const keymapLayoutSelectData = [];
+
+  layoutSelectData.push({
+    value: "default",
+    text: "off",
+  });
+
+  keymapLayoutSelectData.push({
+    value: "overrideSync",
+    text: "emulator sync",
+  });
+
   if (layoutsList) {
     for (const layout of Object.keys(layoutsList)) {
       if (layout.toString() !== "korean") {
-        layoutElHTML += `<option value='${layout}'>${layout.replace(
-          /_/g,
-          " "
-        )}</option>`;
+        layoutSelectData.push({
+          value: layout,
+          text: layout.replace(/_/g, " "),
+        });
       }
       if (layout.toString() !== "default") {
-        keymapElHTML += `<option value='${layout}'>${layout.replace(
-          /_/g,
-          " "
-        )}</option>`;
+        keymapLayoutSelectData.push({
+          value: layout,
+          text: layout.replace(/_/g, " "),
+        });
       }
     }
-    layoutEl.innerHTML += layoutElHTML;
-    keymapEl.innerHTML += keymapElHTML;
   }
-  $(layoutEl).select2({
-    width: "100%",
+
+  new SlimSelect({
+    select: ".pageSettings .section[data-config-name='layout'] select",
+    data: layoutSelectData,
   });
-  $(keymapEl).select2({
-    width: "100%",
+
+  new SlimSelect({
+    select: ".pageSettings .section[data-config-name='keymapLayout'] select",
+    data: keymapLayoutSelectData,
   });
 
   await Misc.sleep(0);
-
-  const themeEl1 = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light"
-  ) as HTMLSelectElement;
-  themeEl1.innerHTML = "";
-  let themeEl1HTML = "";
-
-  const themeEl2 = document.querySelector(
-    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark"
-  ) as HTMLSelectElement;
-  themeEl2.innerHTML = "";
-  let themeEl2HTML = "";
 
   let themes;
   try {
@@ -545,39 +536,46 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
+  const themeSelectLightData = [];
+  const themeSelectDarkData = [];
   if (themes) {
     for (const theme of themes) {
-      themeEl1HTML += `<option value='${theme.name}'>${theme.name.replace(
-        /_/g,
-        " "
-      )}</option>`;
-      themeEl2HTML += `<option value='${theme.name}'>${theme.name.replace(
-        /_/g,
-        " "
-      )}</option>`;
+      themeSelectLightData.push({
+        value: theme.name,
+        text: theme.name.replace(/_/g, " "),
+        selected: theme.name === Config.themeLight,
+      });
+      themeSelectDarkData.push({
+        value: theme.name,
+        text: theme.name.replace(/_/g, " "),
+        selected: theme.name === Config.themeDark,
+      });
     }
-    themeEl1.innerHTML = themeEl1HTML;
-    themeEl2.innerHTML = themeEl2HTML;
   }
-  $(themeEl1).select2({
-    width: "100%",
+
+  new SlimSelect({
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light",
+    data: themeSelectLightData,
+    events: {
+      afterChange: (newVal): void => {
+        UpdateConfig.setThemeLight(newVal[0]?.value as string);
+      },
+    },
   });
-  $(themeEl2).select2({
-    width: "100%",
+
+  new SlimSelect({
+    select:
+      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark",
+    data: themeSelectDarkData,
+    events: {
+      afterChange: (newVal): void => {
+        UpdateConfig.setThemeDark(newVal[0]?.value as string);
+      },
+    },
   });
 
   await Misc.sleep(0);
-
-  $(
-    `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light`
-  )
-    .val(Config.themeLight)
-    .trigger("change.select2");
-  $(
-    `.pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark`
-  )
-    .val(Config.themeDark)
-    .trigger("change.select2");
 
   const funboxEl = document.querySelector(
     ".pageSettings .section[data-config-name='funbox'] .buttons"
@@ -1262,30 +1260,6 @@ $(".pageSettings .section.updateCookiePreferences button").on("click", () => {
   CookiePopup.show();
   CookiePopup.showSettings();
 });
-
-$(".pageSettings .section[data-config-name='autoSwitchThemeInputs']").on(
-  "change",
-  `select.light`,
-  (e) => {
-    const target = $(e.currentTarget);
-    if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
-      return;
-    }
-    UpdateConfig.setThemeLight(target.val() as string);
-  }
-);
-
-$(".pageSettings .section[data-config-name='autoSwitchThemeInputs']").on(
-  "change",
-  `select.dark`,
-  (e) => {
-    const target = $(e.currentTarget);
-    if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
-      return;
-    }
-    UpdateConfig.setThemeDark(target.val() as string);
-  }
-);
 
 $(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
   "click",
