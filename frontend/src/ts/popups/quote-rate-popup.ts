@@ -54,7 +54,7 @@ export async function getQuoteStats(
     return;
   }
 
-  if (response.data === undefined) {
+  if (response.data === null) {
     return {} as QuoteStats;
   }
 
