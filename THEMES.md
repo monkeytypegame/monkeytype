@@ -79,11 +79,11 @@ tangerine
 
 [Link](https://github.com/monkeytypegame/monkeytype/pull/5047)
 
+![304412616-53c9549e-2465-45bc-9dd9-45acbfb94444](https://github.com/ptsalmon/monkeytype/assets/91584330/8b23e06e-250b-4d66-9ff5-6fc11f67461a)
+
 - Text, error, caret, and background colors are visually aesthetic and are easy to differentiate between
 - Theme is not similar to any existing themes
 - Unique and concise name
-
-![alt text](304412616-53c9549e-2465-45bc-9dd9-45acbfb94444-1.png)
 
 ### Not quite as good example
 
@@ -91,7 +91,7 @@ UNC blue
 
 [Link](https://github.com/monkeytypegame/monkeytype/pull/4794)
 
-![alt text](283012440-753889fa-d87d-4f65-8b02-36f8edc1124f.jpeg)
+![283012440-753889fa-d87d-4f65-8b02-36f8edc1124f](https://github.com/ptsalmon/monkeytype/assets/91584330/f94c1175-0439-4ff7-93cc-688574c878c7)
 
 - Text, error, caret, and background colors are easy to differentiate between, but...
 - Theme is similar to existing theme mizu
