@@ -409,6 +409,9 @@ select:-webkit-autofill:focus {
       &:focus {
         border: none;
       }
+      &::placeholder {
+        color: var(--sub-color);
+      }
     }
   }
   .ss-list {

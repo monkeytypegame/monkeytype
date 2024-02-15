@@ -471,6 +471,9 @@ async function fillSettingsPage(): Promise<void> {
   new SlimSelect({
     select: ".pageSettings .section[data-config-name='language'] select",
     data: languageSelectData,
+    settings: {
+      searchPlaceholder: "search",
+    },
   });
 
   await Misc.sleep(0);
