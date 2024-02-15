@@ -418,18 +418,16 @@ async function initGroups(): Promise<void> {
   // );
 }
 
-let languageSelect: SlimSelect | undefined;
-
 function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
-  $(".pageSettings .section.languageGroups .buttons").empty();
-  // $(".pageSettings select").empty().select2("destroy");
-  languageSelect?.destroy();
-  languageSelect = undefined;
   $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
   $(".pageSettings .section[data-config-name='fontFamily'] .buttons").empty();
+  for (const select of document.querySelectorAll(".pageSettings select")) {
+    //@ts-expect-error
+    select?.slim?.destroy?.();
+  }
 }
 
 let groupsInitialized = false;
@@ -454,9 +452,6 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
-  languageSelect = new SlimSelect({
-    select: ".pageSettings .section[data-config-name='language'] select",
-  });
   const languageSelectData = [];
   if (languageGroups) {
     for (const group of languageGroups) {
@@ -473,8 +468,10 @@ async function fillSettingsPage(): Promise<void> {
       languageSelectData.push(groupData);
     }
   }
-
-  languageSelect.setData(languageSelectData);
+  new SlimSelect({
+    select: ".pageSettings .section[data-config-name='language'] select",
+    data: languageSelectData,
+  });
 
   await Misc.sleep(0);
 
@@ -1320,8 +1317,8 @@ export const page = new Page(
     //
   },
   async () => {
-    Skeleton.remove("pageSettings");
     reset();
+    Skeleton.remove("pageSettings");
   },
   async () => {
     Skeleton.append("pageSettings", "main");
