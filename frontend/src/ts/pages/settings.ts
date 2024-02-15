@@ -456,21 +456,6 @@ async function fillSettingsPage(): Promise<void> {
 
   languageSelect = new SlimSelect({
     select: ".pageSettings .section[data-config-name='language'] select",
-    // events: {
-    //   beforeChange: (a, b): boolean => {
-    //     console.log("before change");
-    //     console.log(a, b);
-    //     return true;
-    //   },
-    //   afterChange: (a): void => {
-    //     if (configEventDisabled) return;
-    //     console.log("after change");
-    //     console.log(a);
-    //     $(".pageSettings .section[data-config-name='language'] select").trigger(
-    //       "change"
-    //     );
-    //   },
-    // },
   });
   const languageSelectData = [];
   if (languageGroups) {
