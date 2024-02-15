@@ -1,11 +1,11 @@
 // this file should be concatenated at the top of the legacy ts files
 
+console.log("test");
 import "jquery";
 import "jquery-color";
 import "jquery.easing";
 import "select2";
 
-import "../styles/index.scss";
 import "./firebase";
 
 import * as Logger from "./utils/logger";

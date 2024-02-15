@@ -23,6 +23,7 @@
     "defaults"
   ],
   "devDependencies": {
+    "@rollup/plugin-inject": "5.0.5",
     "@types/canvas-confetti": "1.4.3",
     "@types/chartjs-plugin-trendline": "1.0.1",
     "@types/damerau-levenshtein": "1.0.0",
@@ -31,7 +32,7 @@
     "@types/jest": "27.5.0",
     "@types/jquery": "3.5.14",
     "@types/object-hash": "2.2.1",
-    "@types/select2": "4.0.55",
+    "@types/select2": "4.0.63",
     "@types/throttle-debounce": "2.1.0",
     "@types/tinycolor2": "1.4.3",
     "autoprefixer": "10.4.14",
@@ -63,6 +64,7 @@
     "postcss": "8.4.27",
     "postcss-loader": "7.3.3",
     "postcss-scss": "4.0.6",
+    "sass": "1.70.0",
     "sass-loader": "12.6.0",
     "serve": "13.0.2",
     "stream-browserify": "3.0.0",
@@ -71,6 +73,8 @@
     "ts-jest": "29.1.2",
     "ts-loader": "9.2.6",
     "ts-node-dev": "2.0.0",
+    "vite": "5.1.2",
+    "vite-plugin-html-inject": "1.1.2",
     "webpack": "5.72.0",
     "webpack-bundle-analyzer": "4.5.0",
     "webpack-cli": "4.10.0",
@@ -99,7 +103,7 @@
     "konami": "1.6.3",
     "lz-ts": "1.1.2",
     "object-hash": "3.0.0",
-    "select2": "4.1.0-rc.0",
+    "select2": "4.0.13",
     "stemmer": "2.0.0",
     "throttle-debounce": "3.0.1",
     "workbox-window": "6.5.4"
