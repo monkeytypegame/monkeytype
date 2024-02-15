@@ -14,8 +14,8 @@ type AxiosClientDataMethod = (
   config: AxiosRequestConfig
 ) => Promise<AxiosResponse>;
 
-async function adaptRequestOptions(
-  options: Ape.RequestOptions
+async function adaptRequestOptions<TQuery, TPayload>(
+  options: Ape.RequestOptionsWithPayload<TQuery, TPayload>
 ): Promise<AxiosRequestConfig> {
   const idToken = isAuthenticated()
     ? await getIdToken(getAuthenticatedUser())
@@ -37,11 +37,11 @@ async function adaptRequestOptions(
 function apeifyClientMethod(
   clientMethod: AxiosClientMethod | AxiosClientDataMethod,
   methodType: Ape.HttpMethodTypes
-): Ape.HttpClientMethod {
-  return async (
+): Ape.HttpClientMethod | Ape.HttpClientMethodWithPayload {
+  return async function <TQuery, TPayload, TData>(
     endpoint: string,
-    options: Ape.RequestOptions = {}
-  ): Ape.EndpointResponse => {
+    options: Ape.RequestOptionsWithPayload<TQuery, TPayload> = {}
+  ): Ape.EndpointResponse<TData> {
     let errorMessage = "";
 
     try {

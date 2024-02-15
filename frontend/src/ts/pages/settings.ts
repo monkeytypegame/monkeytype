@@ -382,7 +382,7 @@ async function initGroups(): Promise<void> {
     undefined,
     () => {
       const customButton = $(
-        ".pageSettings .section[data-config-name='fontFamily'] .buttons .custom"
+        ".pageSettings .section[data-config-name='fontFamily'] .buttons button[data-config-value='custom']"
       );
       if (
         $(
@@ -643,22 +643,21 @@ async function fillSettingsPage(): Promise<void> {
   if (fontsList) {
     for (const font of fontsList) {
       if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsElHTML += `<div class="button${
+      fontsElHTML += `<button class="${
         Config.fontFamily === font.name ? " active" : ""
       }" style="font-family:${
         font.display !== undefined ? font.display : font.name
-      }" data-config-value="${font.name.replace(/ /g, "_")}" tabindex="0"
-        onclick="this.blur();">${
-          font.display !== undefined ? font.display : font.name
-        }</div>`;
+      }" data-config-value="${font.name.replace(/ /g, "_")}">${
+        font.display !== undefined ? font.display : font.name
+      }</button>`;
     }
 
     fontsElHTML += isCustomFont
-      ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+      ? `<button class="no-auto-handle active" data-config-value="custom">Custom (${Config.fontFamily.replace(
           /_/g,
           " "
-        )})</div>`
-      : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>';
+        )})</button>`
+      : '<button class="no-auto-handle" data-config-value="custom"">Custom</button>';
 
     fontsEl.innerHTML = fontsElHTML;
   }
