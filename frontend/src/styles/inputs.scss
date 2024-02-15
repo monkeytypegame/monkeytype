@@ -387,6 +387,12 @@ select:-webkit-autofill:focus {
     stroke: var(--text-color);
     transition: none;
   }
+  &.ss-disabled {
+    opacity: 0.33;
+    pointer-events: none;
+    background: var(--sub-alt-color);
+    cursor: pointer;
+  }
 }
 
 .ss-content {
