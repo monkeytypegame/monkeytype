@@ -18,6 +18,7 @@ import { getAuthenticatedUser, isAuthenticated } from "../firebase";
 import Ape from "../ape";
 import { areFunboxesCompatible } from "../test/funbox/funbox-validation";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import SlimSelect from "slim-select";
 
 import * as Skeleton from "../popups/skeleton";
 import * as CustomBackgroundFilter from "../elements/custom-background-filter";
@@ -417,12 +418,15 @@ async function initGroups(): Promise<void> {
   // );
 }
 
+let languageSelect: SlimSelect | undefined;
+
 function reset(): void {
   $(".pageSettings .section.themes .favThemes.buttons").empty();
   $(".pageSettings .section.themes .allThemes.buttons").empty();
   $(".pageSettings .section.themes .allCustomThemes.buttons").empty();
   $(".pageSettings .section.languageGroups .buttons").empty();
-  $(".pageSettings select").empty().select2("destroy");
+  // $(".pageSettings select").empty().select2("destroy");
+  languageSelect?.destroy();
   $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
   $(".pageSettings .section[data-config-name='fontFamily'] .buttons").empty();
 }
@@ -436,11 +440,6 @@ async function fillSettingsPage(): Promise<void> {
   }
 
   // Language Selection Combobox
-  const languageEl = document.querySelector(
-    ".pageSettings .section[data-config-name='language'] select"
-  ) as HTMLSelectElement;
-  languageEl.innerHTML = "";
-  let languageElHTML = "";
 
   let languageGroups;
   try {
@@ -454,22 +453,42 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
+  languageSelect = new SlimSelect({
+    select: ".pageSettings .section[data-config-name='language'] select",
+    // events: {
+    //   beforeChange: (a, b): boolean => {
+    //     console.log("before change");
+    //     console.log(a, b);
+    //     return true;
+    //   },
+    //   afterChange: (a): void => {
+    //     if (configEventDisabled) return;
+    //     console.log("after change");
+    //     console.log(a);
+    //     $(".pageSettings .section[data-config-name='language'] select").trigger(
+    //       "change"
+    //     );
+    //   },
+    // },
+  });
+  const languageSelectData = [];
   if (languageGroups) {
     for (const group of languageGroups) {
-      let langComboBox = `<optgroup label="${group.name}">`;
-      group.languages.forEach((language: string) => {
-        langComboBox += `<option value="${language}">
-        ${Misc.getLanguageDisplayString(language)}
-      </option>`;
-      });
-      langComboBox += `</optgroup>`;
-      languageElHTML += langComboBox;
+      const groupData = {
+        label: group.name,
+        options: group.languages.map((language: string) => {
+          return {
+            value: language,
+            text: Misc.getLanguageDisplayString(language),
+            selected: language === Config.language,
+          };
+        }),
+      };
+      languageSelectData.push(groupData);
     }
-    languageEl.innerHTML = languageElHTML;
   }
-  $(languageEl).select2({
-    width: "100%",
-  });
+
+  languageSelect.setData(languageSelectData);
 
   await Misc.sleep(0);
 

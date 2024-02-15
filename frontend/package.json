@@ -100,6 +100,7 @@
     "lz-ts": "1.1.2",
     "object-hash": "3.0.0",
     "select2": "4.1.0-rc.0",
+    "slim-select": "2.8.1",
     "stemmer": "2.0.0",
     "throttle-debounce": "3.0.1",
     "workbox-window": "6.5.4"

@@ -29,6 +29,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
         "change",
         `.section[data-config-name='${this.configName}'] select`,
         (e) => {
+          console.log("handling change event");
           const target = $(e.currentTarget);
           if (
             target.hasClass("disabled") ||
@@ -83,9 +84,15 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
       `.pageSettings .section[data-config-name='${this.configName}'] button`
     ).removeClass("active");
     if (this.mode === "select") {
-      $(`.pageSettings .section[data-config-name='${this.configName}'] select`)
-        .val(this.configValue as string)
-        .trigger("change.select2");
+      const select = document.querySelector(
+        `.pageSettings .section[data-config-name='${this.configName}'] select`
+      ) as HTMLSelectElement;
+
+      select.value = this.configValue as string;
+      select.dispatchEvent(new Event("change"));
+
+      // .val(this.configValue as string)
+      // .trigger("change.select2");
     } else if (this.mode === "button") {
       $(
         // this cant be an object?

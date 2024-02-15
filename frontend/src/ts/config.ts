@@ -1512,6 +1512,7 @@ export function setCustomThemeColors(
 }
 
 export function setLanguage(language: string, nosave?: boolean): boolean {
+  console.log("setting language");
   if (!isConfigValueValid("language", language, ["string"])) return false;
 
   config.language = language;
