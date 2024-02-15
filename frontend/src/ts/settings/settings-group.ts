@@ -1,5 +1,6 @@
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
+import SlimSelect from "slim-select";
 
 export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
   public configName: string;
@@ -85,8 +86,8 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
       select.value = this.configValue as string;
 
       //@ts-expect-error
-      const ss = select.slim;
-      ss?.store.setSelectedBy("value", [this.configValue]);
+      const ss = select.slim as SlimSelect | undefined;
+      ss?.store.setSelectedBy("value", [this.configValue as string]);
       ss?.render.renderValues();
       ss?.render.renderOptions(ss.store.getData());
     } else if (this.mode === "button") {
