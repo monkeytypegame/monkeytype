@@ -22,8 +22,12 @@ const BASE_CONFIG = {
   root: "static",
   build: {
     emptyOutDir: true,
-    outDir: "../dist",
+    outDir: "../vite-build",
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "static/index.html"),
+        emailHandler: path.resolve(__dirname, "static/email-handler.html"),
+      },
       output: {
         assetFileNames: (assetInfo) => {
           let extType = assetInfo.name.split(".").at(1);
