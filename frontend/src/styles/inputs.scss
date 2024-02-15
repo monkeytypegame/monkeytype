@@ -393,6 +393,9 @@ select:-webkit-autofill:focus {
     background: var(--sub-alt-color);
     cursor: pointer;
   }
+  .ss-values .ss-single {
+    margin: 0;
+  }
 }
 
 .ss-content {
@@ -436,7 +439,7 @@ select:-webkit-autofill:focus {
     .ss-option,
     .ss-option:not(.ss-disabled) {
       padding: 0.5em;
-      padding-left: 1em;
+      padding-left: 0.5em;
       color: var(--text-color);
       &.ss-selected {
         background: var(--main-color);
@@ -450,6 +453,10 @@ select:-webkit-autofill:focus {
       // &:last-child {
       //   margin-bottom: 1em;
       // }
+    }
+    .ss-optgroup .ss-option,
+    .ss-optgroup .ss-option:not(.ss-disabled) {
+      padding-left: 1em;
     }
   }
   &.ss-open-below {
