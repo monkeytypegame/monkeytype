@@ -377,11 +377,11 @@ select:-webkit-autofill:focus {
   font-family: var(--font);
   caret-color: var(--main-color);
   line-height: 1.25em;
+  &:focus {
+    box-shadow: inherit;
+  }
   &:focus-visible {
     box-shadow: 0 0 0 0.1rem var(--bg-color), 0 0 0 0.2rem var(--text-color);
-  }
-  &:focus {
-    box-shadow: unset;
   }
   .ss-arrow path {
     stroke: var(--text-color);
@@ -429,7 +429,8 @@ select:-webkit-autofill:focus {
           background: var(--main-color);
           color: var(--bg-color);
         }
-        &:hover {
+        &:hover,
+        &.ss-highlighted {
           background: var(--text-color);
           color: var(--bg-color);
         }
