@@ -16,8 +16,8 @@
     "knip": "knip"
   },
   "engines": {
-    "node": "18.17.1",
-    "npm": "9.6.7"
+    "node": "18.19.1",
+    "npm": "10.2.4"
   },
   "browserslist": [
     "defaults"
