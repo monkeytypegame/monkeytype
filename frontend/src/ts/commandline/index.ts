@@ -500,7 +500,7 @@ $(document).ready(() => {
       } else {
         hide();
       }
-      UpdateConfig.setFontFamily(Config.fontFamily, true);
+      UpdateConfig.previewFontFamily(Config.fontFamily);
       return;
     }
     if (
@@ -619,7 +619,7 @@ $("#commandLineWrapper #commandLine").on(
 $("#commandLineWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hide();
-    UpdateConfig.setFontFamily(Config.fontFamily, true);
+    UpdateConfig.previewFontFamily(Config.fontFamily);
     // if (Config.customTheme === true) {
     //   applyCustomThemeColors();
     // } else {
