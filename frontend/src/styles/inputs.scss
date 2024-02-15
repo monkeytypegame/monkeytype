@@ -414,7 +414,9 @@ select:-webkit-autofill:focus {
   .ss-list {
     .ss-optgroup {
       .ss-optgroup-label {
-        padding: 1em 0.5em;
+        margin-top: 1em;
+        padding: 0.5em;
+        padding-left: 1em;
         .ss-optgroup-label-text {
           color: var(--sub-color);
         }
@@ -431,6 +433,9 @@ select:-webkit-autofill:focus {
           background: var(--text-color);
           color: var(--bg-color);
         }
+        // &:last-child {
+        //   margin-bottom: 1em;
+        // }
       }
     }
   }
