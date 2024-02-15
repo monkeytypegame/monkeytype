@@ -1185,7 +1185,9 @@
   {
     "name": "turquoise",
     "bgColor": "turquoise",
-    "mainColor": "darkBlue"
+    "mainColor": "teal",
+    "subColor": "teal",
+    "textColor": "darkBlue"
   }
 
 ]
