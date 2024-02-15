@@ -427,6 +427,7 @@ function reset(): void {
   $(".pageSettings .section.languageGroups .buttons").empty();
   // $(".pageSettings select").empty().select2("destroy");
   languageSelect?.destroy();
+  languageSelect = undefined;
   $(".pageSettings .section[data-config-name='funbox'] .buttons").empty();
   $(".pageSettings .section[data-config-name='fontFamily'] .buttons").empty();
 }
@@ -895,12 +896,20 @@ function refreshPresetsSettingsSection(): void {
   }
 }
 
+function rerenderSlimSelect(ss: SlimSelect | undefined, value: string): void {
+  ss?.store.setSelectedBy("value", [value]);
+  ss?.render.renderValues();
+  ss?.render.renderOptions(ss.store.getData());
+}
+
 export async function update(groupUpdate = true): Promise<void> {
   // Object.keys(groups).forEach((group) => {
   if (groupUpdate) {
     for (const group of Object.keys(groups)) {
       groups[group]?.updateUI();
     }
+    // move this to the group update ui function if possible in the future
+    rerenderSlimSelect(languageSelect, Config.language);
   }
 
   refreshTagsSettingsSection();

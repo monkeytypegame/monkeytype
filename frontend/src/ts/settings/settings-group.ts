@@ -25,21 +25,16 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
     this.updateUI();
 
     if (this.mode === "select") {
-      $(".pageSettings").on(
-        "change",
-        `.section[data-config-name='${this.configName}'] select`,
-        (e) => {
-          console.log("handling change event");
-          const target = $(e.currentTarget);
-          if (
-            target.hasClass("disabled") ||
-            target.hasClass("no-auto-handle")
-          ) {
-            return;
-          }
-          this.setValue(target.val() as T);
-        }
+      const selectElement = document.querySelector(
+        `.pageSettings .section[data-config-name=${this.configName}] select`
       );
+      selectElement?.addEventListener("change", (e) => {
+        const target = $(e.target as HTMLSelectElement);
+        if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
+          return;
+        }
+        this.setValue(target.val() as T);
+      });
     } else if (this.mode === "button") {
       $(".pageSettings").on(
         "click",
@@ -87,12 +82,7 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
       const select = document.querySelector(
         `.pageSettings .section[data-config-name='${this.configName}'] select`
       ) as HTMLSelectElement;
-
       select.value = this.configValue as string;
-      select.dispatchEvent(new Event("change"));
-
-      // .val(this.configValue as string)
-      // .trigger("change.select2");
     } else if (this.mode === "button") {
       $(
         // this cant be an object?
