@@ -393,8 +393,43 @@ select:-webkit-autofill:focus {
     background: var(--sub-alt-color);
     cursor: pointer;
   }
-  .ss-values .ss-single {
-    margin: 0;
+  .ss-values {
+    .ss-placeholder {
+      padding: 0;
+      margin: 0;
+      color: var(--sub-color);
+    }
+    .ss-single {
+      margin: 0;
+    }
+    .ss-value {
+      animation: unset !important;
+      background-color: unset;
+      .ss-value-text {
+        height: 100%;
+        color: var(--bg-color);
+        background: var(--main-color);
+        border-radius: calc(var(--roundness) / 2) 0 0 calc(var(--roundness) / 2);
+      }
+      .ss-value-delete {
+        border-left: 1px solid var(--bg-color);
+        background: var(--main-color);
+        height: 100%;
+        box-sizing: border-box;
+        width: 100%;
+        border-radius: 0 calc(var(--roundness) / 2) calc(var(--roundness) / 2) 0;
+        transition: background 0.125s;
+        svg path {
+          stroke: var(--bg-color);
+        }
+        &:hover {
+          background: var(--text-color);
+          svg path {
+            stroke: var(--bg-color);
+          }
+        }
+      }
+    }
   }
 }
 
