@@ -83,6 +83,12 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
         `.pageSettings .section[data-config-name='${this.configName}'] select`
       ) as HTMLSelectElement;
       select.value = this.configValue as string;
+
+      //@ts-expect-error
+      const ss = select.slim;
+      ss?.store.setSelectedBy("value", [this.configValue]);
+      ss?.render.renderValues();
+      ss?.render.renderOptions(ss.store.getData());
     } else if (this.mode === "button") {
       $(
         // this cant be an object?
