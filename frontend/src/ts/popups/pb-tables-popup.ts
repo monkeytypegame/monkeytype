@@ -3,8 +3,7 @@ import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
 import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
 import Config from "../config";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
-import * as Misc from "../utils/misc";
+import { formatTypingSpeed, formatPercentage } from "../utils/format";
 
 type PersonalBest = {
   mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
@@ -138,23 +137,3 @@ $(document).on("keydown", (event) => {
 });
 
 Skeleton.save(wrapperId);
-
-function formatTypingSpeed(wpm?: number): string {
-  if (wpm === undefined || wpm === null) return "-";
-
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
-  const result = typingSpeedUnit.fromWpm(wpm);
-  if (Config.alwaysShowDecimalPlaces) {
-    return Misc.roundTo2(result).toFixed(2);
-  }
-  return Math.round(result).toString();
-}
-
-function formatPercentage(percentage?: number): string {
-  if (percentage === undefined || percentage === null) return "-";
-
-  if (Config.alwaysShowDecimalPlaces) {
-    return Misc.roundTo2(percentage).toFixed(2) + "%";
-  }
-  return Math.round(percentage).toString() + "%";
-}
