@@ -1872,7 +1872,7 @@ $("#popups").on("click", "#apeKeysPopup table tbody tr .button.edit", (e) => {
 
 $(".pageSettings").on(
   "click",
-  ".section[data-config-name='fontFamily'] .button.custom",
+  ".section[data-config-name='fontFamily'] button[data-config-value='custom']",
   () => {
     showPopup("applyCustomFont", []);
   }

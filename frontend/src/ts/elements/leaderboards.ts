@@ -214,9 +214,7 @@ function updateFooter(lb: LbKey): void {
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
     <div class="sub">${
-      entry.consistency === undefined || entry.consistency === "-"
-        ? "-"
-        : entry.consistency.toFixed(2) + "%"
+      entry.consistency === undefined ? "-" : entry.consistency.toFixed(2) + "%"
     }</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
@@ -341,9 +339,7 @@ async function fillTable(lb: LbKey): Promise<void> {
     <div class="sub">${entry.acc.toFixed(2)}%</div></td>
     <td class="alignRight">${typingSpeedUnit.fromWpm(entry.raw).toFixed(2)}<br>
     <div class="sub">${
-      entry.consistency === undefined || entry.consistency === "-"
-        ? "-"
-        : entry.consistency.toFixed(2) + "%"
+      entry.consistency === undefined ? "-" : entry.consistency.toFixed(2) + "%"
     }</div></td>
     <td class="alignRight">${format(date, "dd MMM yyyy")}<br>
     <div class='sub'>${format(date, "HH:mm")}</div></td>
