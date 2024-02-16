@@ -1193,7 +1193,7 @@
     "name": "matcha",
     "bgColor": "#73655d",
     "mainColor": "#bbbf7d",
-    "subColor": "#f2ded0",
-    "textColor": "#bfbb7e"
+    "subColor": "#bfbb7e",
+    "textColor": "#f2ded0"
   }
 ]
