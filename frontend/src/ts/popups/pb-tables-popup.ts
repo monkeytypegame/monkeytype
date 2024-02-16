@@ -2,6 +2,9 @@ import * as DB from "../db";
 import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
 import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
+import Config from "../config";
+import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import * as Misc from "../utils/misc";
 
 type PersonalBest = {
   mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
@@ -12,6 +15,9 @@ const wrapperId = "pbTablesPopupWrapper";
 function update(mode: SharedTypes.Config.Mode): void {
   $("#pbTablesPopup table tbody").empty();
   $($("#pbTablesPopup table thead tr td")[0] as HTMLElement).text(mode);
+  $($("#pbTablesPopup table thead tr td span.unit")[0] as HTMLElement).text(
+    Config.typingSpeedUnit
+  );
 
   const snapshot = DB.getSnapshot();
   if (!snapshot) return;
@@ -56,16 +62,14 @@ function update(mode: SharedTypes.Config.Mode): void {
       <tr>
         <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>
         <td>
-          ${pb.wpm.toFixed(2)}
+          ${formatTypingSpeed(pb.wpm)}
           <br />
-          <span class="sub">${pb.acc ? pb.acc + "%" : "-"}</span>
+          <span class="sub">${formatPercentage(pb.acc)}</span>
         </td>
         <td>
-          ${pb.raw ? pb.raw : "-"}
+          ${formatTypingSpeed(pb.raw)}
           <br />
-          <span class="sub">${
-            pb.consistency ? pb.consistency + "%" : "-"
-          }</span>
+          <span class="sub">${formatPercentage(pb.consistency)}</span>
         </td>
         <td>${pb.difficulty}</td>
         <td>${pb.language ? getLanguageDisplayString(pb.language) : "-"}</td>
@@ -134,3 +138,23 @@ $(document).on("keydown", (event) => {
 });
 
 Skeleton.save(wrapperId);
+
+function formatTypingSpeed(wpm?: number): string {
+  if (wpm === undefined || wpm === null) return "-";
+
+  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
+  const result = typingSpeedUnit.fromWpm(wpm);
+  if (Config.alwaysShowDecimalPlaces) {
+    return Misc.roundTo2(result).toFixed(2);
+  }
+  return Math.round(result).toString();
+}
+
+function formatPercentage(percentage?: number): string {
+  if (percentage === undefined || percentage === null) return "-";
+
+  if (Config.alwaysShowDecimalPlaces) {
+    return Misc.roundTo2(percentage).toFixed(2) + "%";
+  }
+  return Math.round(percentage).toString() + "%";
+}
