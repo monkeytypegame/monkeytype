@@ -171,9 +171,9 @@ class Notification {
           ${
             this.duration >= 0
               ? `
-          <div class="closeButton">
+          <button type="button" class="closeButton">
             <i class="fas fa-fw fa-times"></i>
-          </div>
+          </button>
           `
               : `<div class="righticon">${icon}</div>`
           }
