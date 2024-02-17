@@ -35,31 +35,31 @@ export async function update(): Promise<void> {
 
   if (TestState.isRepeated && Config.mode !== "quote") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
+      `<div role="button" class="textButton noInteraction" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
   }
 
   if (!TestState.savingEnabled) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="resultSaving" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`
+      `<div role="button" class="textButton" commands="resultSaving" style="color:var(--error-color);"><i class="fas fa-save"></i>saving disabled</div>`
     );
   }
 
   if (TestWords.hasTab) {
     if (Config.quickRestart === "esc") {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
+        `<div role="button" class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to open commandline</div>`
       );
     } else {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+        `<div role="button" class="textButton noInteraction"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
       );
     }
   }
 
   if (TestWords.hasNewline && Config.quickRestart === "enter") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`
+      `<div role="button" class="textButton noInteraction"><i class="fas fa-level-down-alt fa-rotate-90"></i>shift + enter to restart</div>`
     );
   }
 
@@ -67,25 +67,25 @@ export async function update(): Promise<void> {
   const isLong = CustomTextState.isCustomTextLong();
   if (Config.mode === "custom" && customTextName !== "" && isLong) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-book"></i>${customTextName} (shift + enter to save progress)</div>`
+      `<div role="button" class="textButton noInteraction"><i class="fas fa-book"></i>${customTextName} (shift + enter to save progress)</div>`
     );
   }
 
   if (TestState.activeChallenge) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
+      `<div role="button" class="textButton noInteraction"><i class="fas fa-award"></i>${TestState.activeChallenge.display}</div>`
     );
   }
 
   if (Config.mode === "zen") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton noInteraction"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
+      `<div role="button" class="textButton noInteraction"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
     );
   }
 
   if (Config.mode !== "zen") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
+      `<div role="button" class="textButton" commands="languages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
         /_/g,
         " "
       )}</div>`
@@ -94,23 +94,23 @@ export async function update(): Promise<void> {
 
   if (Config.difficulty === "expert") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="difficulty"><i class="fas fa-star-half-alt"></i>expert</div>`
+      `<div role="button" class="textButton" commands="difficulty"><i class="fas fa-star-half-alt"></i>expert</div>`
     );
   } else if (Config.difficulty === "master") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="difficulty"><i class="fas fa-star"></i>master</div>`
+      `<div role="button" class="textButton" commands="difficulty"><i class="fas fa-star"></i>master</div>`
     );
   }
 
   if (Config.blindMode) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="blindMode"><i class="fas fa-eye-slash"></i>blind</div>`
+      `<div role="button" class="textButton" commands="blindMode"><i class="fas fa-eye-slash"></i>blind</div>`
     );
   }
 
   if (Config.lazyMode) {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="lazyMode"><i class="fas fa-couch"></i>lazy</div>`
+      `<div role="button" class="textButton" commands="lazyMode"><i class="fas fa-couch"></i>lazy</div>`
     );
   }
 
@@ -127,7 +127,7 @@ export async function update(): Promise<void> {
       )} ${Config.typingSpeedUnit})`;
     } catch {}
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
+      `<div role="button" class="textButton" commands="paceCaretMode"><i class="fas fa-tachometer-alt"></i>${
         Config.paceCaret === "average"
           ? "average"
           : Config.paceCaret === "pb"
@@ -165,14 +165,14 @@ export async function update(): Promise<void> {
       const text = `${avgWPMText} ${avgAccText}`.trim();
 
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton" commands="showAverage"><i class="fas fa-chart-bar"></i>avg: ${text}</div>`
+        `<div role="button" class="textButton" commands="showAverage"><i class="fas fa-chart-bar"></i>avg: ${text}</div>`
       );
     }
   }
 
   if (Config.minWpm !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${roundTo2(
+      `<div role="button" class="textButton" commands="minWpm"><i class="fas fa-bomb"></i>min ${roundTo2(
         getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
           Config.minWpmCustomSpeed
         )
@@ -182,13 +182,13 @@ export async function update(): Promise<void> {
 
   if (Config.minAcc !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minAcc"><i class="fas fa-bomb"></i>min ${Config.minAccCustom}% acc</div>`
+      `<div role="button" class="textButton" commands="minAcc"><i class="fas fa-bomb"></i>min ${Config.minAccCustom}% acc</div>`
     );
   }
 
   if (Config.minBurst !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${roundTo2(
+      `<div role="button" class="textButton" commands="minBurst"><i class="fas fa-bomb"></i>min ${roundTo2(
         getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(
           Config.minBurstCustomSpeed
         )
@@ -200,7 +200,7 @@ export async function update(): Promise<void> {
 
   if (Config.funbox !== "none") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox
+      `<div role="button" class="textButton" commands="funbox"><i class="fas fa-gamepad"></i>${Config.funbox
         .replace(/_/g, " ")
         .replace(/#/g, ", ")}</div>`
     );
@@ -208,24 +208,24 @@ export async function update(): Promise<void> {
 
   if (Config.confidenceMode === "on") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="confidenceMode"><i class="fas fa-backspace"></i>confidence</div>`
+      `<div role="button" class="textButton" commands="confidenceMode"><i class="fas fa-backspace"></i>confidence</div>`
     );
   }
   if (Config.confidenceMode === "max") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="confidenceMode"><i class="fas fa-backspace"></i>max confidence</div>`
+      `<div role="button" class="textButton" commands="confidenceMode"><i class="fas fa-backspace"></i>max confidence</div>`
     );
   }
 
   if (Config.stopOnError !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="stopOnError"><i class="fas fa-hand-paper"></i>stop on ${Config.stopOnError}</div>`
+      `<div role="button" class="textButton" commands="stopOnError"><i class="fas fa-hand-paper"></i>stop on ${Config.stopOnError}</div>`
     );
   }
 
   if (Config.layout !== "default") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="layouts"><i class="fas fa-keyboard"></i>emulating ${Config.layout.replace(
+      `<div role="button" class="textButton" commands="layouts"><i class="fas fa-keyboard"></i>emulating ${Config.layout.replace(
         /_/g,
         " "
       )}</div>`
@@ -234,7 +234,7 @@ export async function update(): Promise<void> {
 
   if (Config.oppositeShiftMode !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="textButton" commands="oppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift${
+      `<div role="button" class="textButton" commands="oppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift${
         Config.oppositeShiftMode === "keymap" ? " (keymap)" : ""
       }</div>`
     );
@@ -250,7 +250,7 @@ export async function update(): Promise<void> {
 
     if (tagsString !== "") {
       $(".pageTest #testModesNotice").append(
-        `<div class="textButton" commands="tags"><i class="fas fa-tag"></i>${tagsString.substring(
+        `<div role="button" class="textButton" commands="tags"><i class="fas fa-tag"></i>${tagsString.substring(
           0,
           tagsString.length - 2
         )}</div>`

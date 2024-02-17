@@ -159,8 +159,8 @@ async function updateFilterPresets(): Promise<void> {
 
     for (const filter of filterPresets) {
       html += `<div class="filterPresets">
-      <div class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
-      <div class="button delete-filter-preset" data-id="${filter._id}">
+      <div role="button" class="select-filter-preset button" data-id="${filter._id}">${filter.name} </div>
+      <div role="button" class="button delete-filter-preset" data-id="${filter._id}">
         <i class="fas fa-fw fa-trash"></i>
       </div>
     </div>`;
@@ -652,7 +652,7 @@ export async function appendButtons(): Promise<void> {
   if (languageList) {
     let html = "";
     for (const language of languageList) {
-      html += `<button filter="${language}">${language.replace(
+      html += `<button type="button" filter="${language}">${language.replace(
         "_",
         " "
       )}</button>`;
@@ -674,16 +674,15 @@ export async function appendButtons(): Promise<void> {
   if (funboxList) {
     let html = "";
     for (const funbox of funboxList) {
-      html += `<button filter="${funbox.name}">${funbox.name.replace(
-        /_/g,
-        " "
-      )}</button>`;
+      html += `<button type="button" filter="${
+        funbox.name
+      }">${funbox.name.replace(/_/g, " ")}</button>`;
     }
     const el = document.querySelector(
       ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
     );
     if (el) {
-      el.innerHTML = `<button filter="none">none</button>` + html;
+      el.innerHTML = `<button type="button" filter="none">none</button>` + html;
     }
   }
 
@@ -693,9 +692,9 @@ export async function appendButtons(): Promise<void> {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
-    let html = `<button filter="none">no tag</button>`;
+    let html = `<button type="button" filter="none">no tag</button>`;
     for (const tag of snapshot?.tags ?? []) {
-      html += `<button filter="${tag._id}">${tag.display}</button>`;
+      html += `<button type="button" filter="${tag._id}">${tag.display}</button>`;
     }
     const el = document.querySelector(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"

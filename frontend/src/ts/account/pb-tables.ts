@@ -7,6 +7,7 @@ function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
 
   const showAllButton = `<div class="buttonGroup"><button
+  type="button"
   class="showAllButton"
   data-balloon-pos="left"
   aria-label="Show all personal bests"
@@ -104,6 +105,7 @@ export function update(
   const showAllButton = isProfile
     ? ""
     : `<div class="buttonGroup"><button
+      type="button"
       class="showAllButton"
       data-balloon-pos="left"
       aria-label="Show all personal bests"

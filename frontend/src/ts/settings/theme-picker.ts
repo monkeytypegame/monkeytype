@@ -140,11 +140,13 @@ export async function refreshButtons(): Promise<void> {
       const mainColor = customTheme.colors[1];
 
       customThemesEl.append(
-        `<div class="customTheme button" customThemeId='${customTheme._id}' 
+        `<div role="button" class="customTheme button" customThemeId='${
+          customTheme._id
+        }'
         style="color:${mainColor};background:${bgColor}">
-        <div class="editButton"><i class="fas fa-pen"></i></div>
-        <div class="text">${customTheme.name.replace(/_/g, " ")}</div>
-        <div class="delButton"><i class="fas fa-trash fa-fw"></i></div>
+        <div role="button" class="editButton"><i class="fas fa-pen"></i></div>
+        <span class="text">${customTheme.name.replace(/_/g, " ")}</span>
+        <div role="button" class="delButton"><i class="fas fa-trash fa-fw"></i></div>
         </div>`
       );
     });
@@ -188,13 +190,13 @@ export async function refreshButtons(): Promise<void> {
       for (const theme of themes) {
         if (Config.favThemes.includes(theme.name)) {
           const activeTheme = activeThemeName === theme.name ? "active" : "";
-          favThemesElHTML += `<div class="theme button ${activeTheme}" theme='${
+          favThemesElHTML += `<div role="button" class="theme button ${activeTheme}" theme='${
             theme.name
           }' style="background: ${theme.bgColor}; color: ${
             theme.mainColor
           };outline: 0 solid ${theme.mainColor};">
-            <div class="favButton active"><i class="fas fa-star"></i></div>
-            <div class="text">${theme.name.replace(/_/g, " ")}</div>
+            <div role="button" class="favButton active"><i class="fas fa-star"></i></div>
+            <span class="text">${theme.name.replace(/_/g, " ")}</span>
             <div class="themeBubbles" style="background: ${
               theme["bgColor"]
             };outline: 0.25rem solid ${theme["bgColor"]};">
@@ -224,13 +226,13 @@ export async function refreshButtons(): Promise<void> {
       }
 
       const activeTheme = activeThemeName === theme.name ? "active" : "";
-      themesElHTML += `<div class="theme button ${activeTheme}" theme='${
+      themesElHTML += `<div role="button" class="theme button ${activeTheme}" theme='${
         theme.name
       }' style="background: ${theme.bgColor}; color: ${
         theme.mainColor
       };outline: 0 solid ${theme.mainColor};">
-        <div class="favButton"><i class="far fa-star"></i></div>
-        <div class="text">${theme.name.replace(/_/g, " ")}</div>
+        <div role="button" class="favButton"><i class="far fa-star"></i></div>
+        <span class="text">${theme.name.replace(/_/g, " ")}</span>
         <div class="themeBubbles" style="background: ${
           theme["bgColor"]
         };outline: 0.25rem solid ${theme["bgColor"]};">

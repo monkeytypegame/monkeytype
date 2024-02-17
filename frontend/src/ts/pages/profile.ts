@@ -36,15 +36,15 @@ function reset(): void {
         <div class="separator sep1"></div>
         <div class="typingStats vertical">
           <div class="started">
-            <div class="title">tests started</div>
+            <h2 class="title">tests started</h2>
             <div class="value">-</div>
           </div>
           <div class="completed">
-            <div class="title">tests completed</div>
+            <h2 class="title">tests completed</h2>
             <div class="value">-</div>
           </div>
           <div class="timeTyping">
-            <div class="title">time typing</div>
+            <h2 class="title">time typing</h2>
             <div class="value">-</div>
           </div>
         </div>
@@ -52,22 +52,23 @@ function reset(): void {
 
         <div class="bioAndKeyboard vertical hidden">
           <div class="bio">
-            <div class="title">bio</div>
+            <h2 class="title">bio</h2>
             <div class="value">-</div>
           </div>
           <div class="keyboard hidden">
-            <div class="title">keyboard</div>
+            <h2 class="title">keyboard</h2>
             <div class="value">-</div>
           </div>
         </div>
         <div class="separator sep3 hidden"></div>
 
         <div class="socials big hidden">
-          <div class="title">socials</div>
+          <h2 class="title">socials</h2>
           <div class="value">-</div>
         </div>
         <div class="buttonGroup">
           <button
+            type="button"
             class="userReportButton"
             data-balloon-pos="left"
             aria-label="Report user"

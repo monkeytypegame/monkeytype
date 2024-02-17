@@ -553,7 +553,7 @@ async function fillSettingsPage(): Promise<void> {
   const funboxEl = document.querySelector(
     ".pageSettings .section.funbox .buttons"
   ) as HTMLDivElement;
-  funboxEl.innerHTML = `<div class="funbox button" funbox='none'>none</div>`;
+  funboxEl.innerHTML = `<div role="button" class="funbox button" funbox='none'>none</div>`;
   let funboxElHTML = "";
 
   let funboxList;
@@ -566,7 +566,7 @@ async function fillSettingsPage(): Promise<void> {
   if (funboxList) {
     for (const funbox of funboxList) {
       if (funbox.name === "mirror") {
-        funboxElHTML += `<div class="funbox button" funbox='${
+        funboxElHTML += `<div role="button" class="funbox button" funbox='${
           funbox.name
         }' aria-label="${
           funbox.info
@@ -575,7 +575,7 @@ async function fillSettingsPage(): Promise<void> {
           " "
         )}</div>`;
       } else if (funbox.name === "upside_down") {
-        funboxElHTML += `<div class="funbox button" funbox='${
+        funboxElHTML += `<div role="button class="funbox button" funbox='${
           funbox.name
         }' aria-label="${
           funbox.info
@@ -584,7 +584,7 @@ async function fillSettingsPage(): Promise<void> {
           " "
         )}</div>`;
       } else {
-        funboxElHTML += `<div class="funbox button" funbox='${
+        funboxElHTML += `<div role="button class="funbox button" funbox='${
           funbox.name
         }' aria-label="${
           funbox.info
@@ -619,7 +619,7 @@ async function fillSettingsPage(): Promise<void> {
   if (fontsList) {
     for (const font of fontsList) {
       if (Config.fontFamily === font.name) isCustomFont = false;
-      fontsElHTML += `<div class="button${
+      fontsElHTML += `<div role="button class="button${
         Config.fontFamily === font.name ? " active" : ""
       }" style="font-family:${
         font.display !== undefined ? font.display : font.name
@@ -630,11 +630,11 @@ async function fillSettingsPage(): Promise<void> {
     }
 
     fontsElHTML += isCustomFont
-      ? `<div class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
+      ? `<div role="button class="button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
           /_/g,
           " "
         )})</div>`
-      : '<div class="button no-auto-handle custom" onclick="this.blur();">Custom</div>';
+      : '<div role="button class="button no-auto-handle custom" onclick="this.blur();">Custom</div>';
 
     fontsEl.innerHTML = fontsElHTML;
   }
@@ -795,18 +795,18 @@ function refreshTagsSettingsSection(): void {
       <div class="buttons tag" data-id="${tag._id}" data-name="${
         tag.name
       }" data-display="${tag.display}">
-        <button class="tagButton ${tag.active ? "active" : ""}" active="${
-        tag.active
-      }">
+        <button type="button" class="tagButton ${
+          tag.active ? "active" : ""
+        }" active="${tag.active}">
           ${tag.display}
         </button>
-        <button class="clearPbButton">
+        <button type="button" class="clearPbButton">
           <i class="fas fa-crown fa-fw"></i>
         </button>
-        <button class="editButton">
+        <button type="button" class="editButton">
           <i class="fas fa-pen fa-fw"></i>
         </button>
-        <button class="removeButton">
+        <button type="button" class="removeButton">
           <i class="fas fa-trash fa-fw"></i>
         </button>
       </div>
@@ -825,15 +825,15 @@ function refreshPresetsSettingsSection(): void {
     DB.getSnapshot()?.presets?.forEach((preset: MonkeyTypes.Preset) => {
       presetsEl.append(`
       <div class="buttons preset" data-id="${preset._id}" data-name="${preset.name}" data-display="${preset.display}">
-        <button class="presetButton">${preset.display}</button>
-        <button class="editButton">
+        <button type="button" class="presetButton">${preset.display}</button>
+        <button type="button" class="editButton">
           <i class="fas fa-pen fa-fw"></i>
         </button>
-        <button class="removeButton">
+        <button type="button" class="removeButton">
           <i class="fas fa-trash fa-fw"></i>
         </button>
       </div>
-      
+
       `);
     });
     $(".pageSettings .section.presets").removeClass("hidden");
