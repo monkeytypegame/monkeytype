@@ -39,9 +39,9 @@ const BASE_CONFIG = {
         assetFileNames: (assetInfo) => {
           let extType = assetInfo.name.split(".").at(1);
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
-            extType = "img";
+            extType = "images";
           }
-          return `assets/${extType}/[name].[hash][extname]`;
+          return `${extType}/[name].[hash][extname]`;
         },
         chunkFileNames: "js/[name].[hash].js",
         entryFileNames: "js/[name].[hash].js",
