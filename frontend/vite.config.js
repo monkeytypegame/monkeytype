@@ -26,7 +26,9 @@ const BASE_CONFIG = {
     open: true,
     port: 3000,
   },
-  root: "static",
+  css: {
+    devSourcemap: true,
+  },
   build: {
     emptyOutDir: true,
     outDir: "../vite-build",
