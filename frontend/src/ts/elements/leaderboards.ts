@@ -694,6 +694,7 @@ const languageSelector = new SlimSelect({
     {
       value: "english",
       text: "english",
+      selected: true,
     },
     {
       value: "spanish",
