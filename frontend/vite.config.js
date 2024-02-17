@@ -8,6 +8,7 @@ import {
 // import path from "node:path";
 import inject from "@rollup/plugin-inject";
 import injectHTML from "vite-plugin-html-inject";
+import eslint from "vite-plugin-eslint";
 
 /** @type {UserConfig} */
 const BASE_CONFIG = {
@@ -18,6 +19,7 @@ const BASE_CONFIG = {
       jQueryColor: "jquery-color",
       jQueryEasing: "jquery.easing",
     }),
+    eslint(),
     injectHTML(),
     splitVendorChunkPlugin(),
   ],
