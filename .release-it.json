@@ -3,11 +3,11 @@
     "before:init": [
       "npm run lint",
       "npm run test",
-      "cd frontend && npx gulp build-production"
+      "cd frontend && npm run build-live"
     ],
     "before:release": [
       "sh ./bin/deployBackend.sh",
-      "cd frontend && npm run deploy-live",
+      "cd frontend && firebase deploy -P live --only hosting",
       "sh ./bin/purgeCfCache.sh"
     ]
   },
