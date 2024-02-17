@@ -1,7 +1,7 @@
 import { getAuthenticatedUser, isAuthenticated } from "../../firebase";
 import { getIdToken } from "firebase/auth";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { CLIENT_VERSION } from "../../version";
+import { envConfig } from "../../constants/env-config";
 
 type AxiosClientMethod = (
   endpoint: string,
@@ -29,7 +29,7 @@ async function adaptRequestOptions<TQuery, TPayload>(
       Accept: "application/json",
       "Content-Type": "application/json",
       ...(idToken && { Authorization: `Bearer ${idToken}` }),
-      "X-Client-Version": CLIENT_VERSION,
+      "X-Client-Version": envConfig.clientVersion,
     },
   };
 }

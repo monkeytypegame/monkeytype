@@ -44,6 +44,7 @@ import "./states/connection";
 import "./test/tts";
 import "./elements/fps-counter";
 import "./controllers/profile-search-controller";
+import "./version";
 import { isDevEnvironment } from "./utils/misc";
 
 type ExtendedGlobal = typeof globalThis & MonkeyTypes.Global;
