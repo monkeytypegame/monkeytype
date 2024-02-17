@@ -1,7 +1,7 @@
 import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import * as Format from "../utils/format";
 
 const liveWpmElement = document.querySelector("#liveWpm") as Element;
 const miniLiveWpmElement = document.querySelector(
@@ -13,11 +13,9 @@ export function update(wpm: number, raw: number): void {
   if (Config.blindMode) {
     number = raw;
   }
-  number = Math.round(
-    getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(number)
-  );
-  miniLiveWpmElement.innerHTML = number.toString();
-  liveWpmElement.innerHTML = number.toString();
+  const numberText = Format.typingSpeed(number, { showDecimalPlaces: false });
+  miniLiveWpmElement.innerHTML = numberText;
+  liveWpmElement.innerHTML = numberText;
 }
 
 let state = false;

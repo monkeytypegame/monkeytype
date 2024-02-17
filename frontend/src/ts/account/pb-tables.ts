@@ -1,7 +1,5 @@
 import Config from "../config";
 import format from "date-fns/format";
-import * as Misc from "../utils/misc";
-import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 import * as Format from "../utils/format";
 
 function clearTables(isProfile: boolean): void {
@@ -141,7 +139,6 @@ function buildPbHtml(
   let dateText = "";
   const modeString = `${mode2} ${mode === "time" ? "seconds" : "words"}`;
   const speedUnit = Config.typingSpeedUnit;
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   try {
     const pbData = (pbs[mode][mode2] ?? []).sort((a, b) => b.wpm - a.wpm)[0];
 
