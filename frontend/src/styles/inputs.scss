@@ -270,6 +270,9 @@ select:-webkit-autofill:focus {
       &::placeholder {
         color: var(--sub-color);
       }
+      &::-webkit-search-cancel-button {
+        -webkit-appearance: none;
+      }
     }
   }
   .ss-list {
