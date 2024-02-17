@@ -2032,3 +2032,6 @@ export const loadPromise = new Promise((v) => {
 });
 
 export default config;
+export function getConfig(): SharedTypes.Config {
+  return config;
+}

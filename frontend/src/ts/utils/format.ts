@@ -1,5 +1,5 @@
 import * as Misc from "./misc";
-import Config from "../config";
+import { getConfig } from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 export type FormatOptions = {
@@ -21,7 +21,7 @@ export function typingSpeed(
   const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
   if (wpm === undefined || wpm === null) return options.fallback ?? "";
 
-  const result = getTypingSpeedUnit(Config.typingSpeedUnit).fromWpm(wpm);
+  const result = getTypingSpeedUnit(getConfig().typingSpeedUnit).fromWpm(wpm);
 
   return decimals(result, options);
 }
@@ -47,7 +47,7 @@ function decimals(
   if (
     formatOptions.showDecimalPlaces !== undefined
       ? formatOptions.showDecimalPlaces
-      : Config.alwaysShowDecimalPlaces
+      : getConfig().alwaysShowDecimalPlaces
   ) {
     return Misc.roundTo2(value).toFixed(2) + suffix;
   }
