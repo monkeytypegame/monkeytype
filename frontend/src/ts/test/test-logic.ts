@@ -617,7 +617,7 @@ export async function addWord(): Promise<void> {
 
       let wordCount = 0;
       for (let i = 0; i < section.words.length; i++) {
-        const word = section.words[i];
+        const word = section.words[i] as string;
         if (wordCount >= Config.words && Config.mode === "words") {
           break;
         }
