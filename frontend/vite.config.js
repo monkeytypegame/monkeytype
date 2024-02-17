@@ -10,6 +10,7 @@ import inject from "@rollup/plugin-inject";
 import injectHTML from "vite-plugin-html-inject";
 import eslint from "vite-plugin-eslint";
 import childProcess from "child_process";
+import checker from "vite-plugin-checker";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -46,6 +47,10 @@ const BASE_CONFIG = {
       jQueryEasing: "jquery.easing",
     }),
     eslint(),
+    checker({
+      typescript: true,
+      overlay: true,
+    }),
     injectHTML(),
     splitVendorChunkPlugin(),
   ],
