@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "lint": "eslint \"./**/*.ts\"",
+    "validate-json": "npx gulp validate-json-schema",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
-    "build-live": "npx gulp validate-json-schema && vite build",
+    "build-live": "vite build",
     "live": "npm run build-live && vite preview --port 3000",
     "dev": "vite dev",
-    "deploy-live": "npm run build-live && firebase deploy -P live --only hosting",
-    "deploy-preview": "npm run build-live && firebase hosting:channel:deploy preview -P live --expires 2h",
+    "deploy-live": "npm run validate-json && npm run build-live && firebase deploy -P live --only hosting",
+    "deploy-preview": "npm run validate-json && npm run build-live && firebase hosting:channel:deploy preview -P live --expires 2h",
     "test": "jest --verbose --collect-coverage --runInBand",
     "tsc": "tsc",
     "knip": "knip"
