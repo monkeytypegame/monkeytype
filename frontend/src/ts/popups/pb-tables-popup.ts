@@ -3,7 +3,7 @@ import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
 import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
 import Config from "../config";
-import { formatTypingSpeed, formatPercentage } from "../utils/format";
+import * as Format from "../utils/format";
 
 type PersonalBest = {
   mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;
@@ -61,14 +61,14 @@ function update(mode: SharedTypes.Config.Mode): void {
       <tr>
         <td>${mode2memory === pb.mode2 ? "" : pb.mode2}</td>
         <td>
-          ${formatTypingSpeed(pb.wpm)}
+          ${Format.typingSpeed(pb.wpm)}
           <br />
-          <span class="sub">${formatPercentage(pb.acc)}</span>
+          <span class="sub">${Format.percentage(pb.acc)}</span>
         </td>
         <td>
-          ${formatTypingSpeed(pb.raw)}
+          ${Format.typingSpeed(pb.raw)}
           <br />
-          <span class="sub">${formatPercentage(pb.consistency)}</span>
+          <span class="sub">${Format.percentage(pb.consistency)}</span>
         </td>
         <td>${pb.difficulty}</td>
         <td>${pb.language ? getLanguageDisplayString(pb.language) : "-"}</td>

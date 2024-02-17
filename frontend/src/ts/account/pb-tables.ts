@@ -2,6 +2,7 @@ import Config from "../config";
 import format from "date-fns/format";
 import * as Misc from "../utils/misc";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
+import * as Format from "../utils/format";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
@@ -151,59 +152,21 @@ function buildPbHtml(
       dateText = format(date, "dd MMM yyyy");
     }
 
-    let speedString: number | string = typingSpeedUnit.fromWpm(pbData.wpm);
-    if (Config.alwaysShowDecimalPlaces) {
-      speedString = Misc.roundTo2(speedString).toFixed(2);
-    } else {
-      speedString = Math.round(speedString);
-    }
-    speedString += ` ${speedUnit}`;
-
-    let rawString: number | string = typingSpeedUnit.fromWpm(pbData.raw);
-    if (Config.alwaysShowDecimalPlaces) {
-      rawString = Misc.roundTo2(rawString).toFixed(2);
-    } else {
-      rawString = Math.round(rawString);
-    }
-    rawString += ` raw`;
-
-    let accString: number | string = pbData.acc;
-    if (accString === undefined) {
-      accString = "-";
-    } else {
-      if (Config.alwaysShowDecimalPlaces) {
-        accString = Misc.roundTo2(accString).toFixed(2);
-      } else {
-        accString = Math.floor(accString);
-      }
-    }
-    accString += ` acc`;
-
-    let conString: number | string = pbData.consistency;
-    if (conString === undefined) {
-      conString = "-";
-    } else {
-      if (Config.alwaysShowDecimalPlaces) {
-        conString = Misc.roundTo2(conString).toFixed(2);
-      } else {
-        conString = Math.round(conString);
-      }
-    }
-    conString += ` con`;
-
     retval = `<div class="quick">
       <div class="test">${modeString}</div>
-      <div class="wpm">${Math.round(typingSpeedUnit.fromWpm(pbData.wpm))}</div>
-      <div class="acc">${
-        pbData.acc === undefined ? "-" : Math.floor(pbData.acc) + "%"
-      }</div>
+      <div class="wpm">${Format.typingSpeed(pbData.wpm, {
+        showDecimalPlaces: false,
+      })}</div>
+      <div class="acc">${Format.percentage(pbData.acc, {
+        showDecimalPlaces: false,
+      })}</div>
     </div>
     <div class="fullTest">
       <div>${modeString}</div>
-      <div>${speedString}</div>
-      <div>${rawString}</div>
-      <div>${accString}</div>
-      <div>${conString}</div>
+      <div>${Format.typingSpeed(pbData.wpm, { suffix: ` ${speedUnit}` })}</div>
+      <div>${Format.typingSpeed(pbData.raw, { suffix: " raw" })}</div>
+      <div>${Format.percentage(pbData.acc, { suffix: " acc" })}</div>
+      <div>${Format.percentage(pbData.consistency, { suffix: " con" })}</div>
       <div>${dateText}</div>
     </div>`;
   } catch (e) {
