@@ -156,7 +156,7 @@ $("#popups").on("click", "#quoteApprovePopup .quote .approve", async (e) => {
     );
   }
 
-  Notifications.add("Quote approved. " + response.message ?? "", 1);
+  Notifications.add(`Quote approved. ${response.message ?? ""}`, 1);
   quotes.splice(index, 1);
   updateList();
 });
@@ -215,7 +215,7 @@ $("#popups").on("click", "#quoteApprovePopup .quote .edit", async (e) => {
     );
   }
 
-  Notifications.add("Quote edited and approved. " + response.message ?? "", 1);
+  Notifications.add(`Quote edited and approved. ${response.message ?? ""}`, 1);
   quotes.splice(index, 1);
   updateList();
 });
