@@ -13,7 +13,6 @@ import injectHTML from "vite-plugin-html-inject";
 const BASE_CONFIG = {
   plugins: [
     inject({
-      select2: "select2",
       $: "jquery",
       jQuery: "jquery",
       jQueryColor: "jquery-color",
@@ -64,7 +63,7 @@ const BASE_CONFIG = {
     IS_DEVELOPMENT: JSON.stringify(true),
   },
   optimizeDeps: {
-    include: ["select2", "jquery", "jquery-color", "jquery.easing"],
+    include: ["jquery", "jquery-color", "jquery.easing"],
   },
 };
 
