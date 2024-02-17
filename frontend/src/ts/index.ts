@@ -4,7 +4,6 @@ console.log("test");
 import "jquery";
 import "jquery-color";
 import "jquery.easing";
-import "select2";
 
 import "./firebase";
 
