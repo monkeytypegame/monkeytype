@@ -11,6 +11,7 @@ export type FormatOptions = {
 const FORMAT_DEFAULT_OPTIONS: FormatOptions = {
   suffix: "",
   fallback: "-",
+  showDecimalPlaces: undefined,
 };
 
 export function typingSpeed(
@@ -35,19 +36,20 @@ export function percentage(
   return decimals(percentage, options);
 }
 
-export function decimals(
+function decimals(
   value: number | null | undefined,
   formatOptions: FormatOptions
 ): string {
   if (value === undefined || value === null)
     return formatOptions.fallback ?? "";
+  const suffix = formatOptions.suffix ?? "";
 
   if (
     formatOptions.showDecimalPlaces !== undefined
       ? formatOptions.showDecimalPlaces
       : Config.alwaysShowDecimalPlaces
   ) {
-    return Misc.roundTo2(value).toFixed(2) + (formatOptions.suffix ?? "");
+    return Misc.roundTo2(value).toFixed(2) + suffix;
   }
-  return Math.round(value).toString() + (formatOptions.suffix ?? "");
+  return Math.round(value).toString() + suffix;
 }
