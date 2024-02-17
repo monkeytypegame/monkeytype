@@ -159,7 +159,7 @@
             type="password"
             placeholder="Confirm new password"
           />
-          <div class="button">Change</div>
+          <div role="button" class="button">Change</div>
         </div>
       </main>
     </div>
@@ -306,7 +306,7 @@
           `);
           $("main .preloader").append(`
           <br>
-          <div class="button" onclick="sendPasswordResetEmail('${restoredEmail}')">Send Password Reset Email</div>
+          <div role="button" class="button" onclick="sendPasswordResetEmail('${restoredEmail}')">Send Password Reset Email</div>
           `);
 
           // Account email reverted to restoredEmail
