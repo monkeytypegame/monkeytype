@@ -3,6 +3,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
+    "lint": "eslint \"./**/*.ts\"",
     "audit": "vite-bundle-visualizer",
     "dep-graph": "madge -c -i \"dep-graph.png\" ./src/ts",
     "build-live": "npx gulp validate-json-schema && vite build",
