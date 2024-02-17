@@ -89,7 +89,7 @@ const BASE_CONFIG = {
       process.env.BACKEND_URL || "http://localhost:5005"
     ),
     IS_DEVELOPMENT: JSON.stringify(true),
-    CLIENT_VERSION: "DEVELOPMENT_CLIENT",
+    CLIENT_VERSION: JSON.stringify("DEVELOPMENT_CLIENT"),
   },
   optimizeDeps: {
     include: ["jquery", "jquery-color", "jquery.easing"],
