@@ -11,6 +11,7 @@ import injectHTML from "vite-plugin-html-inject";
 import eslint from "vite-plugin-eslint";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
+import { VitePWA } from "vite-plugin-pwa";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -53,6 +54,27 @@ const BASE_CONFIG = {
     }),
     injectHTML(),
     splitVendorChunkPlugin(),
+    VitePWA({
+      registerType: "autoUpdate",
+      workbox: {
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
+        globIgnores: ["**/.*"],
+        globPatterns: [],
+        runtimeCaching: [
+          {
+            urlPattern: ({ request, url }) => {
+              const sameOrigin =
+                new URL(request.url).origin === new URL(url).origin;
+              const isApi = request.url.includes("api.monkeytype.com");
+              return sameOrigin && !isApi;
+            },
+            handler: "NetworkFirst",
+            options: {},
+          },
+        ],
+      },
+    }),
   ],
   server: {
     open: true,
