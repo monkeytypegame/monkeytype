@@ -1,8 +1,15 @@
-import { defineConfig, splitVendorChunkPlugin, mergeConfig } from "vite";
+import {
+  defineConfig,
+  splitVendorChunkPlugin,
+  mergeConfig,
+  // eslint-disable-next-line no-unused-vars
+  UserConfig,
+} from "vite";
 import path from "node:path";
 import inject from "@rollup/plugin-inject";
 import injectHTML from "vite-plugin-html-inject";
 
+/** @type {UserConfig} */
 const BASE_CONFIG = {
   plugins: [
     inject({
@@ -55,6 +62,7 @@ const BASE_CONFIG = {
   },
 };
 
+/** @type {UserConfig} */
 const BUILD_CONFIG = {
   define: {
     BACKEND_URL: JSON.stringify("https://api.monkeytype.com"),
