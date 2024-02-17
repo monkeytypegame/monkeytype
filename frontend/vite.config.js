@@ -9,6 +9,32 @@ import {
 import inject from "@rollup/plugin-inject";
 import injectHTML from "vite-plugin-html-inject";
 import eslint from "vite-plugin-eslint";
+import childProcess from "child_process";
+
+function pad(numbers, maxLength, fillString) {
+  return numbers.map((number) =>
+    number.toString().padStart(maxLength, fillString)
+  );
+}
+
+function buildClientVersion() {
+  const date = new Date();
+  const versionPrefix = pad(
+    [date.getFullYear(), date.getMonth() + 1, date.getDate()],
+    2,
+    "0"
+  ).join(".");
+  const versionSuffix = pad([date.getHours(), date.getMinutes()], 2, "0").join(
+    "."
+  );
+  const version = [versionPrefix, versionSuffix].join("_");
+
+  const commitHash = childProcess
+    .execSync("git rev-parse --short HEAD")
+    .toString();
+
+  return `${version}.${commitHash}`;
+}
 
 /** @type {UserConfig} */
 const BASE_CONFIG = {
@@ -63,6 +89,7 @@ const BASE_CONFIG = {
       process.env.BACKEND_URL || "http://localhost:5005"
     ),
     IS_DEVELOPMENT: JSON.stringify(true),
+    CLIENT_VERSION: "DEVELOPMENT_CLIENT",
   },
   optimizeDeps: {
     include: ["jquery", "jquery-color", "jquery.easing"],
@@ -74,6 +101,7 @@ const BUILD_CONFIG = {
   define: {
     BACKEND_URL: JSON.stringify("https://api.monkeytype.com"),
     IS_DEVELOPMENT: JSON.stringify(false),
+    CLIENT_VERSION: JSON.stringify(buildClientVersion()),
   },
 };
 
