@@ -1,8 +1,6 @@
 const { webpack } = require("webpack");
 const eslint = require("gulp-eslint-new");
 const { task, src, series, watch } = require("gulp");
-const { resolve } = require("path");
-const fs = require("fs");
 const webpackDevConfig = require("./webpack/config.dev.js");
 const webpackProdConfig = require("./webpack/config.prod.js");
 
@@ -81,7 +79,6 @@ task("validate-other-json-schema", function () {
   return JSONValidation.validateOthers();
 });
 
-task("pr-check-lint-json", series("lint-json"));
 task("pr-check-quote-json", series("validate-quote-json-schema"));
 task("pr-check-language-json", series("validate-language-json-schema"));
 task("pr-check-other-json", series("validate-other-json-schema"));
