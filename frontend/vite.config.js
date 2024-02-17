@@ -80,13 +80,14 @@ const BASE_CONFIG = {
     open: true,
     port: 3000,
   },
-  publicDir: "static",
+  root: "src",
+  publicDir: "../static",
   css: {
     devSourcemap: true,
   },
   build: {
     emptyOutDir: true,
-    outDir: "dist",
+    outDir: "../dist",
     rollupOptions: {
       // input: {
       //   main: path.resolve(__dirname, "index.html"),
