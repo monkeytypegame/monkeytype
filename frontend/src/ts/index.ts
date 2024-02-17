@@ -1,6 +1,4 @@
 // this file should be concatenated at the top of the legacy ts files
-
-console.log("test");
 import "jquery";
 import "jquery-color";
 import "jquery.easing";
