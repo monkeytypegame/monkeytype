@@ -19,6 +19,7 @@ import Ape from "../ape";
 import * as Loader from "../elements/loader";
 import * as Skeleton from "./skeleton";
 import { isPopupVisible } from "../utils/misc";
+import SlimSelect from "slim-select";
 
 const wrapperId = "quoteSearchPopupWrapper";
 
@@ -209,6 +210,8 @@ async function updateResults(searchText: string): Promise<void> {
   });
 }
 
+let lengthSelect: SlimSelect | undefined = undefined;
+
 export async function show(clearText = true): Promise<void> {
   Skeleton.append(wrapperId);
 
@@ -233,31 +236,28 @@ export async function show(clearText = true): Promise<void> {
       $("#quoteSearchPopup #goToApproveQuotes").addClass("hidden");
     }
 
-    $("#quoteSearchPopup .quoteLengthFilter").select2({
-      placeholder: "Filter by length",
-      maximumSelectionLength: Infinity,
-      multiple: true,
-      width: "100%",
+    lengthSelect = new SlimSelect({
+      select: "#quoteSearchPopup .quoteLengthFilter",
+      settings: {
+        showSearch: false,
+        placeholderText: "Filter by length",
+      },
       data: [
         {
-          id: 0,
           text: "short",
-          selected: false,
+          value: "0",
         },
         {
-          id: 1,
           text: "medium",
-          selected: false,
+          value: "1",
         },
         {
-          id: 2,
           text: "long",
-          selected: false,
+          value: "2",
         },
         {
-          id: 3,
           text: "thicc",
-          selected: false,
+          value: "3",
         },
       ],
     });
@@ -288,6 +288,9 @@ function hide(noAnim = false, focusWords = true): void {
         noAnim ? 0 : 125,
         () => {
           $("#quoteSearchPopupWrapper").addClass("hidden");
+
+          lengthSelect?.destroy();
+          lengthSelect = undefined;
 
           if (focusWords) {
             TestUI.focusWords();

@@ -1,5 +1,6 @@
 import Config from "../config";
 import * as Notifications from "../elements/notifications";
+import SlimSelect from "slim-select";
 
 export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
   public configName: string;
@@ -25,20 +26,16 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
     this.updateUI();
 
     if (this.mode === "select") {
-      $(".pageSettings").on(
-        "change",
-        `.section[data-config-name='${this.configName}'] select`,
-        (e) => {
-          const target = $(e.currentTarget);
-          if (
-            target.hasClass("disabled") ||
-            target.hasClass("no-auto-handle")
-          ) {
-            return;
-          }
-          this.setValue(target.val() as T);
-        }
+      const selectElement = document.querySelector(
+        `.pageSettings .section[data-config-name=${this.configName}] select`
       );
+      selectElement?.addEventListener("change", (e) => {
+        const target = $(e.target as HTMLSelectElement);
+        if (target.hasClass("disabled") || target.hasClass("no-auto-handle")) {
+          return;
+        }
+        this.setValue(target.val() as T);
+      });
     } else if (this.mode === "button") {
       $(".pageSettings").on(
         "click",
@@ -83,9 +80,16 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
       `.pageSettings .section[data-config-name='${this.configName}'] button`
     ).removeClass("active");
     if (this.mode === "select") {
-      $(`.pageSettings .section[data-config-name='${this.configName}'] select`)
-        .val(this.configValue as string)
-        .trigger("change.select2");
+      const select = document.querySelector(
+        `.pageSettings .section[data-config-name='${this.configName}'] select`
+      ) as HTMLSelectElement;
+      select.value = this.configValue as string;
+
+      //@ts-expect-error
+      const ss = select.slim as SlimSelect | undefined;
+      ss?.store.setSelectedBy("value", [this.configValue as string]);
+      ss?.render.renderValues();
+      ss?.render.renderOptions(ss.store.getData());
     } else if (this.mode === "button") {
       $(
         // this cant be an object?
