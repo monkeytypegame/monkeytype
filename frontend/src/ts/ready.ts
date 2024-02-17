@@ -37,9 +37,9 @@ void UpdateConfig.loadFromLocalStorage();
 Focus.set(true, true);
 
 $(document).ready(() => {
-  Misc.loadCSS("/./css/slimselect.min.css", true);
-  Misc.loadCSS("/./css/balloon.min.css", true);
-  Misc.loadCSS("/./css/fa.min.css", true);
+  Misc.loadCSS("/css/slimselect.min.css", true);
+  Misc.loadCSS("/css/balloon.min.css", true);
+  Misc.loadCSS("/css/fa.min.css", true);
 
   CookiePopup.check();
 

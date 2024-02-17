@@ -5,7 +5,7 @@ import {
   // eslint-disable-next-line no-unused-vars
   UserConfig,
 } from "vite";
-import path from "node:path";
+// import path from "node:path";
 import inject from "@rollup/plugin-inject";
 import injectHTML from "vite-plugin-html-inject";
 
@@ -26,17 +26,18 @@ const BASE_CONFIG = {
     open: true,
     port: 3000,
   },
+  publicDir: "static",
   css: {
     devSourcemap: true,
   },
   build: {
     emptyOutDir: true,
-    outDir: "../vite-build",
+    outDir: "dist",
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, "static/index.html"),
-        emailHandler: path.resolve(__dirname, "static/email-handler.html"),
-      },
+      // input: {
+      //   main: path.resolve(__dirname, "index.html"),
+      //   emailHandler: path.resolve(__dirname, "static/email-handler.html"),
+      // },
       output: {
         assetFileNames: (assetInfo) => {
           let extType = assetInfo.name.split(".").at(1);
@@ -50,9 +51,12 @@ const BASE_CONFIG = {
       },
     },
   },
-  resolve: {
-    alias: { "/src": path.resolve(process.cwd(), "src"), $: "jquery" },
-  },
+  // resolve: {
+  //   alias: {
+  //     "/src": path.resolve(process.cwd(), "src"),
+  //     $: "jquery",
+  //   },
+  // },
   define: {
     BACKEND_URL: JSON.stringify(
       process.env.BACKEND_URL || "http://localhost:5005"
