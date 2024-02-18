@@ -1,5 +1,5 @@
 import { defineConfig, splitVendorChunkPlugin, mergeConfig } from "vite";
-// import path from "node:path";
+import path from "node:path";
 import inject from "@rollup/plugin-inject";
 import injectHTML from "vite-plugin-html-inject";
 import eslint from "vite-plugin-eslint";
@@ -84,10 +84,13 @@ const BASE_CONFIG = {
     emptyOutDir: true,
     outDir: "../dist",
     rollupOptions: {
-      // input: {
-      //   main: path.resolve(__dirname, "index.html"),
-      //   emailHandler: path.resolve(__dirname, "static/email-handler.html"),
-      // },
+      input: {
+        main: path.resolve(__dirname, "src/index.html"),
+        email: path.resolve(__dirname, "src/email-handler.html"),
+        privacy: path.resolve(__dirname, "src/privacy-policy.html"),
+        security: path.resolve(__dirname, "src/security-policy.html"),
+        terms: path.resolve(__dirname, "src/terms-of-service.html"),
+      },
       output: {
         assetFileNames: (assetInfo) => {
           let extType = assetInfo.name.split(".").at(1);
