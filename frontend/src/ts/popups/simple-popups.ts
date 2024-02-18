@@ -434,8 +434,9 @@ async function reauthenticate(
   const user = getAuthenticatedUser();
 
   try {
-    const passwordAuthEnabled =
-      user.providerData.some((p) => p?.providerId === "password") !== undefined;
+    const passwordAuthEnabled = user.providerData.some(
+      (p) => p?.providerId === "password"
+    );
 
     if (!passwordAuthEnabled && method === "passwordOnly") {
       return {
