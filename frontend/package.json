@@ -97,7 +97,6 @@
     "object-hash": "3.0.0",
     "slim-select": "2.8.1",
     "stemmer": "2.0.0",
-    "throttle-debounce": "3.0.1",
-    "workbox-window": "6.5.4"
+    "throttle-debounce": "3.0.1"
   }
 }
