@@ -12,6 +12,7 @@ import eslint from "vite-plugin-eslint";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
 import { VitePWA } from "vite-plugin-pwa";
+import replace from "vite-plugin-filter-replace";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -126,6 +127,17 @@ const BASE_CONFIG = {
 
 /** @type {UserConfig} */
 const BUILD_CONFIG = {
+  plugins: [
+    replace([
+      {
+        filter: /firebase\.ts$/,
+        replace: {
+          from: /\.\/constants\/firebase-config/gi,
+          to: "./constants/firebase-config-live",
+        },
+      },
+    ]),
+  ],
   define: {
     BACKEND_URL: JSON.stringify("https://api.monkeytype.com"),
     IS_DEVELOPMENT: JSON.stringify(false),
