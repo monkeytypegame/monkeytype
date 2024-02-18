@@ -189,52 +189,46 @@ declare namespace SharedTypes {
     textLen?: number;
   }
 
-  type WithObjectId<T extends { _id: string }> = Omit<T, "_id"> & {
-    _id: ObjectId;
+  type DBResult<T extends SharedTypes.Config.Mode> = Omit<
+    SharedTypes.Result<T>,
+    | "bailedOut"
+    | "blindMode"
+    | "lazyMode"
+    | "difficulty"
+    | "funbox"
+    | "language"
+    | "numbers"
+    | "punctuation"
+    | "restartCount"
+    | "incompleteTestSeconds"
+    | "afkDuration"
+    | "tags"
+    | "incompleteTests"
+    | "customText"
+    | "quoteLength"
+    | "isPb"
+  > & {
+    correctChars?: number; // --------------
+    incorrectChars?: number; // legacy results
+    // --------------
+    name: string;
+    // -------------- fields that might be removed to save space
+    bailedOut?: boolean;
+    blindMode?: boolean;
+    lazyMode?: boolean;
+    difficulty?: SharedTypes.Config.Difficulty;
+    funbox?: string;
+    language?: string;
+    numbers?: boolean;
+    punctuation?: boolean;
+    restartCount?: number;
+    incompleteTestSeconds?: number;
+    afkDuration?: number;
+    tags?: string[];
+    customText?: CustomText;
+    quoteLength?: number;
+    isPb?: boolean;
   };
-
-  type DBResult<T extends SharedTypes.Config.Mode> = WithObjectId<
-    Omit<
-      SharedTypes.Result<T>,
-      | "bailedOut"
-      | "blindMode"
-      | "lazyMode"
-      | "difficulty"
-      | "funbox"
-      | "language"
-      | "numbers"
-      | "punctuation"
-      | "restartCount"
-      | "incompleteTestSeconds"
-      | "afkDuration"
-      | "tags"
-      | "incompleteTests"
-      | "customText"
-      | "quoteLength"
-      | "isPb"
-    > & {
-      correctChars?: number; // --------------
-      incorrectChars?: number; // legacy results
-      // --------------
-      name: string;
-      // -------------- fields that might be removed to save space
-      bailedOut?: boolean;
-      blindMode?: boolean;
-      lazyMode?: boolean;
-      difficulty?: SharedTypes.Config.Difficulty;
-      funbox?: string;
-      language?: string;
-      numbers?: boolean;
-      punctuation?: boolean;
-      restartCount?: number;
-      incompleteTestSeconds?: number;
-      afkDuration?: number;
-      tags?: string[];
-      customText?: CustomText;
-      quoteLength?: number;
-      isPb?: boolean;
-    }
-  >;
 
   interface CompletedEvent extends Result<SharedTypes.Config.Mode> {
     keySpacing: number[] | "toolong";

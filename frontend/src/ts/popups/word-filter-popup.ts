@@ -2,6 +2,7 @@ import * as Misc from "../utils/misc";
 import * as CustomText from "../test/custom-text";
 import * as Notifications from "../elements/notifications";
 import * as Skeleton from "./skeleton";
+import SlimSelect from "slim-select";
 
 const wrapperId = "wordFilterPopupWrapper";
 
@@ -117,14 +118,6 @@ async function init(): Promise<void> {
       return;
     }
 
-    LanguageList.forEach((language) => {
-      let prettyLang = language;
-      prettyLang = prettyLang.replace("_", " ");
-      $("#wordFilterPopup .languageInput").append(`
-        <option value=${language}>${prettyLang}</option>
-      `);
-    });
-
     try {
       LayoutList = await Misc.getLayoutsList();
     } catch (e) {
@@ -137,9 +130,17 @@ async function init(): Promise<void> {
       return;
     }
 
+    LanguageList.forEach((language) => {
+      const prettyLang = language.replace(/_/gi, " ");
+      $("#wordFilterPopup .languageInput").append(`
+        <option value=${language}>${prettyLang}</option>
+      `);
+    });
+
     for (const layout in LayoutList) {
+      const prettyLayout = layout.replace(/_/gi, " ");
       $("#wordFilterPopup .layoutInput").append(`
-      <option value=${layout}>${layout}</option>
+      <option value=${layout}>${prettyLayout}</option>
     `);
     }
 
@@ -153,6 +154,10 @@ async function init(): Promise<void> {
   }
 }
 
+let languageSelect: SlimSelect | undefined = undefined;
+let layoutSelect: SlimSelect | undefined = undefined;
+let presetSelect: SlimSelect | undefined = undefined;
+
 let callbackFuncOnHide: (() => void) | undefined = undefined;
 
 export async function show(
@@ -163,16 +168,14 @@ export async function show(
   if (!Misc.isPopupVisible(wrapperId)) {
     await init();
     callbackFuncOnHide = callbackOnHide;
-    $("#wordFilterPopup .languageInput").select2({
-      width: "100%",
+    languageSelect = new SlimSelect({
+      select: "#wordFilterPopup .languageInput",
     });
-
-    $("#wordFilterPopup .layoutInput").select2({
-      width: "100%",
+    layoutSelect = new SlimSelect({
+      select: "#wordFilterPopup .layoutInput",
     });
-
-    $("#wordFilterPopup .presetInput").select2({
-      width: "100%",
+    presetSelect = new SlimSelect({
+      select: "#wordFilterPopup .presetInput",
     });
     $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
     $("#wordFilterPopupWrapper .button").removeClass("hidden");
@@ -189,12 +192,6 @@ export async function show(
 
 function hide(noAnim = false): void {
   if (Misc.isPopupVisible(wrapperId)) {
-    $("#wordFilterPopup .languageInput").select2("close");
-
-    $("#wordFilterPopup .layoutInput").select2("close");
-
-    $("#wordFilterPopup .presetInput").select2("close");
-
     $("#wordFilterPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
@@ -204,6 +201,12 @@ function hide(noAnim = false): void {
         },
         noAnim ? 0 : 125,
         () => {
+          languageSelect?.destroy();
+          layoutSelect?.destroy();
+          presetSelect?.destroy();
+          languageSelect = undefined;
+          layoutSelect = undefined;
+          presetSelect = undefined;
           $("#wordFilterPopupWrapper").addClass("hidden");
           Skeleton.remove(wrapperId);
           if (callbackFuncOnHide) callbackFuncOnHide();
@@ -284,10 +287,6 @@ $("#wordFilterPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "wordFilterPopupWrapper") {
     hide(true);
   }
-});
-
-$("#wordFilterPopup .languageInput").one("select2:open", function () {
-  $("input.select2-search__field").prop("placeholder", "search");
 });
 
 $("#wordFilterPopupWrapper .button.addButton").on("mousedown", () => {
