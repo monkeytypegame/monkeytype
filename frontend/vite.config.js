@@ -39,7 +39,6 @@ const BASE_CONFIG = {
   plugins: [
     inject({
       $: "jquery",
-      jQuery: "jquery",
       jQueryColor: "jquery-color",
       jQueryEasing: "jquery.easing",
     }),
@@ -47,7 +46,9 @@ const BASE_CONFIG = {
       include: ["src/**/*.ts"],
     }),
     checker({
-      typescript: true,
+      typescript: {
+        root: path.resolve(__dirname, "./"),
+      },
       overlay: true,
     }),
     injectHTML(),
