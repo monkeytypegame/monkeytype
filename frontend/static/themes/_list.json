@@ -1188,5 +1188,12 @@
     "mainColor": "#fe5503",
     "subColor": "#ff9562",
     "textColor": "#3d1705"
+  },
+  {
+    "name": "red_velvet",
+    "bgColor": "#fff5f6",
+    "mainColor": "#f40008",
+    "subColor": "#d6959d",
+    "textColor": "#000000"
   }
 ]
