@@ -48,7 +48,9 @@ const BASE_CONFIG = {
       eslint: {
         lintCommand: `eslint "./ts/**/*.ts"`,
       },
-      overlay: true,
+      overlay: {
+        initialIsOpen: false,
+      },
     }),
     injectHTML(),
     splitVendorChunkPlugin(),
