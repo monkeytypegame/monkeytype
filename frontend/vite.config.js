@@ -51,6 +51,29 @@ const BASE_CONFIG = {
     splitVendorChunkPlugin(),
     VitePWA({
       registerType: "autoUpdate",
+      manifest: {
+        short_name: "Monkeytype",
+        name: "Monkeytype",
+        start_url: "/",
+        icons: [
+          {
+            src: "/images/icons/maskable_icon_x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+          {
+            src: "/images/icons/general_icon_x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+        ],
+        background_color: "#323437",
+        display: "standalone",
+        theme_color: "#323437",
+      },
+      manifestFilename: "manifest.json",
       workbox: {
         clientsClaim: true,
         cleanupOutdatedCaches: true,
