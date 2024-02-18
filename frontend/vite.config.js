@@ -7,6 +7,7 @@ import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
 import { VitePWA } from "vite-plugin-pwa";
 import replace from "vite-plugin-filter-replace";
+import Inspect from "vite-plugin-inspect";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -51,6 +52,7 @@ const BASE_CONFIG = {
     }),
     injectHTML(),
     splitVendorChunkPlugin(),
+    Inspect(),
   ],
   server: {
     open: true,
