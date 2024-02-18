@@ -1,10 +1,4 @@
-import {
-  defineConfig,
-  splitVendorChunkPlugin,
-  mergeConfig,
-  // eslint-disable-next-line no-unused-vars
-  UserConfig,
-} from "vite";
+import { defineConfig, splitVendorChunkPlugin, mergeConfig } from "vite";
 // import path from "node:path";
 import inject from "@rollup/plugin-inject";
 import injectHTML from "vite-plugin-html-inject";
@@ -39,7 +33,7 @@ function buildClientVersion() {
   return `${version}.${commitHash}`;
 }
 
-/** @type {UserConfig} */
+/** @type {import("vite").UserConfig} */
 const BASE_CONFIG = {
   plugins: [
     inject({
@@ -125,7 +119,7 @@ const BASE_CONFIG = {
   },
 };
 
-/** @type {UserConfig} */
+/** @type {import("vite").UserConfig} */
 const BUILD_CONFIG = {
   plugins: [
     replace([
