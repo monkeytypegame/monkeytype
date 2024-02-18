@@ -42,7 +42,9 @@ const BASE_CONFIG = {
       jQueryColor: "jquery-color",
       jQueryEasing: "jquery.easing",
     }),
-    eslint(),
+    eslint({
+      include: ["src/**/*.ts"],
+    }),
     checker({
       typescript: true,
       overlay: true,
@@ -96,9 +98,9 @@ const BASE_CONFIG = {
     IS_DEVELOPMENT: JSON.stringify(true),
     CLIENT_VERSION: JSON.stringify("DEVELOPMENT_CLIENT"),
   },
-  optimizeDeps: {
-    include: ["jquery", "jquery-color", "jquery.easing"],
-  },
+  // optimizeDeps: {
+  //   include: ["jquery", "jquery-color", "jquery.easing"],
+  // },
 };
 
 /** @type {import("vite").UserConfig} */
