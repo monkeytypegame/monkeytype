@@ -1,5 +1,5 @@
 import * as Misc from "./misc";
-import { getConfig } from "../config";
+import Config from "../config";
 import { get as getTypingSpeedUnit } from "../utils/typing-speed-units";
 
 export type FormatOptions = {
@@ -14,42 +14,47 @@ const FORMAT_DEFAULT_OPTIONS: FormatOptions = {
   showDecimalPlaces: undefined,
 };
 
-export function typingSpeed(
-  wpm: number | null | undefined,
-  formatOptions: FormatOptions = FORMAT_DEFAULT_OPTIONS
-): string {
-  const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
-  if (wpm === undefined || wpm === null) return options.fallback ?? "";
+export class Formatting {
+  constructor(private config: SharedTypes.Config) {}
 
-  const result = getTypingSpeedUnit(getConfig().typingSpeedUnit).fromWpm(wpm);
+  typingSpeed(
+    wpm: number | null | undefined,
+    formatOptions: FormatOptions = FORMAT_DEFAULT_OPTIONS
+  ): string {
+    const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
+    if (wpm === undefined || wpm === null) return options.fallback ?? "";
 
-  return decimals(result, options);
-}
+    const result = getTypingSpeedUnit(this.config.typingSpeedUnit).fromWpm(wpm);
 
-export function percentage(
-  percentage: number | null | undefined,
-  formatOptions: FormatOptions = FORMAT_DEFAULT_OPTIONS
-): string {
-  const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
-  options.suffix = "%" + (options.suffix ?? "");
-
-  return decimals(percentage, options);
-}
-
-function decimals(
-  value: number | null | undefined,
-  formatOptions: FormatOptions
-): string {
-  if (value === undefined || value === null)
-    return formatOptions.fallback ?? "";
-  const suffix = formatOptions.suffix ?? "";
-
-  if (
-    formatOptions.showDecimalPlaces !== undefined
-      ? formatOptions.showDecimalPlaces
-      : getConfig().alwaysShowDecimalPlaces
-  ) {
-    return Misc.roundTo2(value).toFixed(2) + suffix;
+    return this.decimals(result, options);
   }
-  return Math.round(value).toString() + suffix;
+  percentage(
+    percentage: number | null | undefined,
+    formatOptions: FormatOptions = FORMAT_DEFAULT_OPTIONS
+  ): string {
+    const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
+    options.suffix = "%" + (options.suffix ?? "");
+
+    return this.decimals(percentage, options);
+  }
+
+  decimals(
+    value: number | null | undefined,
+    formatOptions: FormatOptions
+  ): string {
+    if (value === undefined || value === null)
+      return formatOptions.fallback ?? "";
+    const suffix = formatOptions.suffix ?? "";
+
+    if (
+      formatOptions.showDecimalPlaces !== undefined
+        ? formatOptions.showDecimalPlaces
+        : this.config.alwaysShowDecimalPlaces
+    ) {
+      return Misc.roundTo2(value).toFixed(2) + suffix;
+    }
+    return Math.round(value).toString() + suffix;
+  }
 }
+
+export default new Formatting(Config);

@@ -1,6 +1,6 @@
 import Config from "../config";
-import format from "date-fns/format";
-import * as Format from "../utils/format";
+import dateFormat from "date-fns/format";
+import Format from "../utils/format";
 
 function clearTables(isProfile: boolean): void {
   const source = isProfile ? "Profile" : "Account";
@@ -146,7 +146,7 @@ function buildPbHtml(
 
     const date = new Date(pbData.timestamp);
     if (pbData.timestamp) {
-      dateText = format(date, "dd MMM yyyy");
+      dateText = dateFormat(date, "dd MMM yyyy");
     }
 
     retval = `<div class="quick">
@@ -160,10 +160,14 @@ function buildPbHtml(
     </div>
     <div class="fullTest">
       <div>${modeString}</div>
-      <div>${Format.typingSpeed(pbData.wpm, { suffix: ` ${speedUnit}` })}</div>
+      <div>${Format.typingSpeed(pbData.wpm, {
+        suffix: ` ${speedUnit}`,
+      })}</div>
       <div>${Format.typingSpeed(pbData.raw, { suffix: " raw" })}</div>
       <div>${Format.percentage(pbData.acc, { suffix: " acc" })}</div>
-      <div>${Format.percentage(pbData.consistency, { suffix: " con" })}</div>
+      <div>${Format.percentage(pbData.consistency, {
+        suffix: " con",
+      })}</div>
       <div>${dateText}</div>
     </div>`;
   } catch (e) {
