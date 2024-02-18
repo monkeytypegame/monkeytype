@@ -65,7 +65,6 @@
     "vite": "5.1.2",
     "vite-bundle-visualizer": "1.0.1",
     "vite-plugin-checker": "0.6.4",
-    "vite-plugin-eslint": "1.8.1",
     "vite-plugin-filter-replace": "0.1.13",
     "vite-plugin-html-inject": "1.1.2",
     "vite-plugin-inspect": "0.8.3",

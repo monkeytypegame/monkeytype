@@ -2,7 +2,6 @@ import { defineConfig, splitVendorChunkPlugin, mergeConfig } from "vite";
 import path from "node:path";
 import inject from "@rollup/plugin-inject";
 import injectHTML from "vite-plugin-html-inject";
-import eslint from "vite-plugin-eslint";
 import childProcess from "child_process";
 import { checker } from "vite-plugin-checker";
 import { VitePWA } from "vite-plugin-pwa";
@@ -42,12 +41,12 @@ const BASE_CONFIG = {
       jQueryColor: "jquery-color",
       jQueryEasing: "jquery.easing",
     }),
-    eslint({
-      include: ["src/**/*.ts"],
-    }),
     checker({
       typescript: {
         root: path.resolve(__dirname, "./"),
+      },
+      eslint: {
+        lintCommand: `eslint "./ts/**/*.ts"`,
       },
       overlay: true,
     }),
