@@ -38,8 +38,6 @@ const BASE_CONFIG = {
   plugins: [
     inject({
       $: "jquery",
-      jQueryColor: "jquery-color",
-      jQueryEasing: "jquery.easing",
     }),
     checker({
       typescript: {
