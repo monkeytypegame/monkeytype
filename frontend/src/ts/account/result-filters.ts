@@ -217,7 +217,7 @@ async function createFilterPresetCallback(name: string): Promise<void> {
   const result = await Ape.users.addResultFilterPreset({ ...filters, name });
   Loader.hide();
   if (result.status === 200) {
-    addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
+    addFilterPresetToSnapshot({ ...filters, name, _id: result.data as string });
     void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
@@ -299,7 +299,7 @@ function setAllFilters(
   });
 }
 
-export function loadTags(tags: MonkeyTypes.Tag[]): void {
+export function loadTags(tags: MonkeyTypes.UserTag[]): void {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });

@@ -316,8 +316,8 @@ export async function updateEmail(
 }
 
 function getRelevantUserInfo(
-  user: MonkeyTypes.User
-): Partial<MonkeyTypes.User> {
+  user: MonkeyTypes.DBUser
+): Partial<MonkeyTypes.DBUser> {
   return _.omit(user, [
     "bananas",
     "lbPersonalBests",
@@ -336,7 +336,7 @@ export async function getUser(
 ): Promise<MonkeyResponse> {
   const { uid } = req.ctx.decodedToken;
 
-  let userInfo: MonkeyTypes.User;
+  let userInfo: MonkeyTypes.DBUser;
   try {
     userInfo = await UserDAL.getUser(uid, "get user");
   } catch (e) {
@@ -786,7 +786,7 @@ export async function getProfile(
     details: profileDetails,
     allTimeLbs: alltimelbs,
     uid: user.uid,
-  };
+  } as SharedTypes.UserProfile;
 
   return new MonkeyResponse("Profile retrieved", profileData);
 }
@@ -811,10 +811,13 @@ export async function updateProfile(
     }
   });
 
-  const profileDetailsUpdates: Partial<MonkeyTypes.UserProfileDetails> = {
+  const profileDetailsUpdates: Partial<SharedTypes.UserProfileDetails> = {
     bio: sanitizeString(bio),
     keyboard: sanitizeString(keyboard),
-    socialProfiles: _.mapValues(socialProfiles, sanitizeString),
+    socialProfiles: _.mapValues(
+      socialProfiles,
+      sanitizeString
+    ) as SharedTypes.UserProfileDetails["socialProfiles"],
   };
 
   await UserDAL.updateProfile(uid, profileDetailsUpdates, user.inventory);

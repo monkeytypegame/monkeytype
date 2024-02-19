@@ -1,3 +1,5 @@
+import defaultConfig from "./default-config";
+
 export const defaultSnap: MonkeyTypes.Snapshot = {
   results: undefined,
   personalBests: {
@@ -8,13 +10,15 @@ export const defaultSnap: MonkeyTypes.Snapshot = {
     custom: {},
   },
   name: "",
+  email: "",
+  uid: "",
+  isPremium: false,
+  config: defaultConfig,
   customThemes: [],
   presets: [],
   tags: [],
-  favouriteThemes: [],
   banned: undefined,
   verified: undefined,
-  emailVerified: undefined,
   lbMemory: { time: { 15: { english: 0 }, 60: { english: 0 } } },
   typingStats: {
     timeTyping: 0,

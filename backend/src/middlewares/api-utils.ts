@@ -72,7 +72,7 @@ function checkIfUserIsAdmin(): RequestHandler {
  * Note that this middleware must be used after authentication in the middleware stack.
  */
 function checkUserPermissions(
-  options: ValidationOptions<MonkeyTypes.User>
+  options: ValidationOptions<MonkeyTypes.DBUser>
 ): RequestHandler {
   const { criteria, invalidMessage = "You don't have permission to do this." } =
     options;

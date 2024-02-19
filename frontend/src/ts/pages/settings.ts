@@ -1256,7 +1256,7 @@ $(".pageSettings .section.discordIntegration .getLinkAndGoToOauth").on(
   "click",
   () => {
     void Ape.users.getOauthLink().then((res) => {
-      window.open(res.data.url, "_self");
+      window.open(res.data?.url as string, "_self");
     });
   }
 );

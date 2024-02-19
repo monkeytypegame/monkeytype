@@ -251,7 +251,7 @@ function checkLbMemory(lb: LbKey): void {
     side = "right";
   }
 
-  const memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.["english"] ?? 0;
+  const memory = DB.getSnapshot()?.lbMemory?.["time"]?.[lb]?.["english"] ?? 0;
 
   const rank = currentRank[lb]?.rank;
   if (rank) {

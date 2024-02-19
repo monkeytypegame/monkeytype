@@ -417,7 +417,7 @@ export async function updateCrown(): Promise<void> {
 }
 
 async function updateTags(dontSave: boolean): Promise<void> {
-  const activeTags: MonkeyTypes.Tag[] = [];
+  const activeTags: MonkeyTypes.UserTag[] = [];
   const userTagsCount = DB.getSnapshot()?.tags?.length ?? 0;
   try {
     DB.getSnapshot()?.tags?.forEach((tag) => {
@@ -885,10 +885,10 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("fas").addClass("far");
-      const quoteIndex = dbSnapshot.favoriteQuotes[quoteLang]?.indexOf(
+      const quoteIndex = dbSnapshot.favoriteQuotes?.[quoteLang]?.indexOf(
         quoteId
       ) as number;
-      dbSnapshot.favoriteQuotes[quoteLang]?.splice(quoteIndex, 1);
+      dbSnapshot.favoriteQuotes?.[quoteLang]?.splice(quoteIndex, 1);
     }
   } else {
     // Add to favorites
@@ -900,6 +900,9 @@ $(".pageTest #favoriteQuoteButton").on("click", async () => {
 
     if (response.status === 200) {
       $button.removeClass("far").addClass("fas");
+      if (dbSnapshot.favoriteQuotes === undefined) {
+        dbSnapshot.favoriteQuotes = {};
+      }
       if (!dbSnapshot.favoriteQuotes[quoteLang]) {
         dbSnapshot.favoriteQuotes[quoteLang] = [];
       }
