@@ -143,6 +143,56 @@ describe("format.ts", () => {
       expect(format.percentage(undefined, { suffix: " raw" })).toEqual("-");
     });
   });
+  describe("decimals", () => {
+    it("should format with decimalPlaces from configuration", () => {
+      //no decimals
+      const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
+      expect(noDecimals.decimals(12.5)).toEqual("13");
+      expect(noDecimals.decimals(0)).toEqual("0");
+
+      //with decimals
+      const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
+      expect(withDecimals.decimals(12.5)).toEqual("12.50");
+      expect(withDecimals.decimals(0)).toEqual("0.00");
+    });
+
+    it("should format with fallback", () => {
+      //default fallback
+      const format = getInstance();
+      expect(format.decimals(null)).toEqual("-");
+      expect(format.decimals(undefined)).toEqual("-");
+
+      //provided fallback
+      expect(format.decimals(null, { fallback: "none" })).toEqual("none");
+      expect(format.decimals(null, { fallback: "" })).toEqual("");
+      expect(format.decimals(undefined, { fallback: "none" })).toEqual("none");
+
+      expect(format.decimals(undefined, { fallback: "" })).toEqual("");
+      expect(format.decimals(undefined, { fallback: undefined })).toEqual("");
+    });
+
+    it("should format with decimals", () => {
+      //force with decimals
+      const noDecimals = getInstance({ alwaysShowDecimalPlaces: false });
+      expect(noDecimals.decimals(100, { showDecimalPlaces: true })).toEqual(
+        "100.00"
+      );
+      //force without decimals
+      const withDecimals = getInstance({ alwaysShowDecimalPlaces: true });
+      expect(withDecimals.decimals(100, { showDecimalPlaces: false })).toEqual(
+        "100"
+      );
+    });
+
+    it("should format with suffix", () => {
+      const format = getInstance({ alwaysShowDecimalPlaces: false });
+      expect(format.decimals(100, { suffix: " raw" })).toEqual("100 raw");
+      expect(format.decimals(100, { suffix: undefined })).toEqual("100");
+      expect(format.decimals(0, { suffix: " raw" })).toEqual("0 raw");
+      expect(format.decimals(null, { suffix: " raw" })).toEqual("-");
+      expect(format.decimals(undefined, { suffix: " raw" })).toEqual("-");
+    });
+  });
 });
 
 function getInstance(config?: Partial<SharedTypes.Config>): Formatting {
