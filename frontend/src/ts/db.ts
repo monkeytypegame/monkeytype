@@ -345,9 +345,14 @@ export async function addCustomTheme(
     return false;
   }
 
+  if (response.data === null) {
+    Notifications.add("Error adding custom theme: No data returned", -1);
+    return false;
+  }
+
   const newCustomTheme: MonkeyTypes.CustomTheme = {
     ...theme,
-    _id: response.data.theme._id as string,
+    _id: response.data._id as string,
   };
 
   dbSnapshot.customThemes.push(newCustomTheme);

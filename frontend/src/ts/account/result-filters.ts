@@ -217,7 +217,7 @@ async function createFilterPresetCallback(name: string): Promise<void> {
   const result = await Ape.users.addResultFilterPreset({ ...filters, name });
   Loader.hide();
   if (result.status === 200) {
-    addFilterPresetToSnapshot({ ...filters, name, _id: result.data });
+    addFilterPresetToSnapshot({ ...filters, name, _id: result.data as string });
     void updateFilterPresets();
     Notifications.add("Filter preset created", 1);
   } else {
