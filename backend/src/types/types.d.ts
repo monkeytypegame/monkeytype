@@ -39,46 +39,6 @@ declare namespace MonkeyTypes {
 
   type DBUserTag = WithObjectId<SharedTypes.UserTag>;
 
-  // type User = {
-  //   autoBanTimestamps?: number[];
-  //   addedAt: number;
-  //   verified?: boolean;
-  //   bananas?: number;
-  //   completedTests?: number;
-  //   discordId?: string;
-  //   email: string;
-  //   lastNameChange?: number;
-  //   lbMemory?: object;
-  //   lbPersonalBests?: LbPersonalBests;
-  //   name: string;
-  //   customThemes?: MonkeyTypes.WithObjectIdArray<SharedTypes.CustomTheme[]>;
-  //   personalBests: SharedTypes.PersonalBests;
-  //   quoteRatings?: SharedTypes.UserQuoteRatings;
-  //   startedTests?: number;
-  //   tags?: MonkeyTypes.WithObjectIdArray<SharedTypes.UserTag[]>;
-  //   timeTyping?: number;
-  //   uid: string;
-  //   quoteMod?: boolean;
-  //   configurationMod?: boolean;
-  //   admin?: boolean;
-  //   canReport?: boolean;
-  //   banned?: boolean;
-  //   canManageApeKeys?: boolean;
-  //   favoriteQuotes?: Record<string, string[]>;
-  //   needsToChangeName?: boolean;
-  //   discordAvatar?: string;
-  //   resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;
-  //   profileDetails?: SharedTypes.UserProfileDetails;
-  //   inventory?: SharedTypes.UserInventory;
-  //   xp?: number;
-  //   inbox?: MonkeyMail[];
-  //   streak?: SharedTypes.UserStreak;
-  //   lastReultHashes?: string[];
-  //   lbOptOut?: boolean;
-  //   premium?: SharedTypes.PremiumInfo;
-  //   ips?: UserIpHistory;
-  // };
-
   type LbPersonalBests = {
     time: Record<number, Record<string, SharedTypes.PersonalBest>>;
   };
