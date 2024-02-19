@@ -474,12 +474,12 @@ declare namespace SharedTypes {
   };
 
   type UserProfileDetails = {
-    bio: string;
-    keyboard: string;
+    bio?: string;
+    keyboard?: string;
     socialProfiles: {
-      twitter: string;
-      github: string;
-      website: string;
+      twitter?: string;
+      github?: string;
+      website?: string;
     };
   };
 
