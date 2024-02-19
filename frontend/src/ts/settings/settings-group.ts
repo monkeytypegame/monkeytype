@@ -82,7 +82,12 @@ export default class SettingsGroup<T extends SharedTypes.ConfigValue> {
     if (this.mode === "select") {
       const select = document.querySelector(
         `.pageSettings .section[data-config-name='${this.configName}'] select`
-      ) as HTMLSelectElement;
+      ) as HTMLSelectElement | null;
+
+      if (select === null) {
+        return;
+      }
+
       select.value = this.configValue as string;
 
       //@ts-expect-error
