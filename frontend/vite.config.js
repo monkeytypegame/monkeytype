@@ -7,6 +7,7 @@ import { checker } from "vite-plugin-checker";
 import { VitePWA } from "vite-plugin-pwa";
 import replace from "vite-plugin-filter-replace";
 import Inspect from "vite-plugin-inspect";
+import autoprefixer from "autoprefixer";
 
 function pad(numbers, maxLength, fillString) {
   return numbers.map((number) =>
@@ -62,6 +63,9 @@ const BASE_CONFIG = {
   publicDir: "../static",
   css: {
     devSourcemap: true,
+    postcss: {
+      plugins: [autoprefixer({})],
+    },
   },
   build: {
     emptyOutDir: true,
