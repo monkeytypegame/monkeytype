@@ -452,31 +452,29 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
-  const languageSelectData = [];
+  const element = document.querySelector(
+    ".pageSettings .section[data-config-name='language'] select"
+  ) as Element;
+
+  let html = "";
   if (languageGroups) {
     for (const group of languageGroups) {
-      const groupData = {
-        label: group.name,
-        options: group.languages.map((language: string) => {
-          return {
-            value: language,
-            text: Misc.getLanguageDisplayString(language),
-            selected: language === Config.language,
-          };
-        }),
-      };
-      languageSelectData.push(groupData);
+      html += `<optgroup label="${group.name}">`;
+      for (const language of group.languages) {
+        const selected = language === Config.language ? "selected" : "";
+        const text = Misc.getLanguageDisplayString(language);
+        html += `<option value="${language}" ${selected}>${text}</option>`;
+      }
+      html += `</optgroup>`;
     }
   }
+  element.innerHTML = html;
   new SlimSelect({
-    select: ".pageSettings .section[data-config-name='language'] select",
-    data: languageSelectData,
+    select: element,
     settings: {
       searchPlaceholder: "search",
     },
   });
-
-  await Misc.sleep(0);
 
   let layoutsList;
   try {
@@ -485,47 +483,41 @@ async function fillSettingsPage(): Promise<void> {
     console.error(Misc.createErrorMessage(e, "Failed to refresh keymap"));
   }
 
-  const layoutSelectData = [];
-  const keymapLayoutSelectData = [];
+  const layoutSelectElement = document.querySelector(
+    ".pageSettings .section[data-config-name='layout'] select"
+  ) as Element;
+  const keymapLayoutSelectElement = document.querySelector(
+    ".pageSettings .section[data-config-name='keymapLayout'] select"
+  ) as Element;
 
-  layoutSelectData.push({
-    value: "default",
-    text: "off",
-  });
-
-  keymapLayoutSelectData.push({
-    value: "overrideSync",
-    text: "emulator sync",
-  });
+  let layoutHtml = '<option value="default">off</option>';
+  let keymapLayoutHtml = '<option value="overrideSync">emulator sync</option>';
 
   if (layoutsList) {
     for (const layout of Object.keys(layoutsList)) {
+      const optionHtml = `<option value="${layout}">${layout.replace(
+        /_/g,
+        " "
+      )}</option>`;
       if (layout.toString() !== "korean") {
-        layoutSelectData.push({
-          value: layout,
-          text: layout.replace(/_/g, " "),
-        });
+        layoutHtml += optionHtml;
       }
       if (layout.toString() !== "default") {
-        keymapLayoutSelectData.push({
-          value: layout,
-          text: layout.replace(/_/g, " "),
-        });
+        keymapLayoutHtml += optionHtml;
       }
     }
   }
 
+  layoutSelectElement.innerHTML = layoutHtml;
+  keymapLayoutSelectElement.innerHTML = keymapLayoutHtml;
+
   new SlimSelect({
-    select: ".pageSettings .section[data-config-name='layout'] select",
-    data: layoutSelectData,
+    select: layoutSelectElement,
   });
 
   new SlimSelect({
-    select: ".pageSettings .section[data-config-name='keymapLayout'] select",
-    data: keymapLayoutSelectData,
+    select: keymapLayoutSelectElement,
   });
-
-  await Misc.sleep(0);
 
   let themes;
   try {
@@ -536,27 +528,35 @@ async function fillSettingsPage(): Promise<void> {
     );
   }
 
-  const themeSelectLightData = [];
-  const themeSelectDarkData = [];
+  const themeSelectLightElement = document.querySelector(
+    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light"
+  ) as Element;
+  const themeSelectDarkElement = document.querySelector(
+    ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark"
+  ) as Element;
+
+  let themeSelectLightHtml = "";
+  let themeSelectDarkHtml = "";
+
   if (themes) {
     for (const theme of themes) {
-      themeSelectLightData.push({
-        value: theme.name,
-        text: theme.name.replace(/_/g, " "),
-        selected: theme.name === Config.themeLight,
-      });
-      themeSelectDarkData.push({
-        value: theme.name,
-        text: theme.name.replace(/_/g, " "),
-        selected: theme.name === Config.themeDark,
-      });
+      const optionHtml = `<option value="${theme.name}" ${
+        theme.name === Config.themeLight ? "selected" : ""
+      }>${theme.name.replace(/_/g, " ")}</option>`;
+      themeSelectLightHtml += optionHtml;
+
+      const optionDarkHtml = `<option value="${theme.name}" ${
+        theme.name === Config.themeDark ? "selected" : ""
+      }>${theme.name.replace(/_/g, " ")}</option>`;
+      themeSelectDarkHtml += optionDarkHtml;
     }
   }
 
+  themeSelectLightElement.innerHTML = themeSelectLightHtml;
+  themeSelectDarkElement.innerHTML = themeSelectDarkHtml;
+
   new SlimSelect({
-    select:
-      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.light",
-    data: themeSelectLightData,
+    select: themeSelectLightElement,
     events: {
       afterChange: (newVal): void => {
         UpdateConfig.setThemeLight(newVal[0]?.value as string);
@@ -565,17 +565,13 @@ async function fillSettingsPage(): Promise<void> {
   });
 
   new SlimSelect({
-    select:
-      ".pageSettings .section[data-config-name='autoSwitchThemeInputs'] select.dark",
-    data: themeSelectDarkData,
+    select: themeSelectDarkElement,
     events: {
       afterChange: (newVal): void => {
         UpdateConfig.setThemeDark(newVal[0]?.value as string);
       },
     },
   });
-
-  await Misc.sleep(0);
 
   const funboxEl = document.querySelector(
     ".pageSettings .section[data-config-name='funbox'] .buttons"
@@ -623,8 +619,6 @@ async function fillSettingsPage(): Promise<void> {
     }
     funboxEl.innerHTML = funboxElHTML;
   }
-
-  await Misc.sleep(0);
 
   let isCustomFont = true;
   const fontsEl = document.querySelector(
@@ -677,7 +671,6 @@ async function fillSettingsPage(): Promise<void> {
     Config.customLayoutfluid.replace(/#/g, " ")
   );
 
-  await Misc.sleep(0);
   setEventDisabled(true);
   if (!groupsInitialized) {
     await initGroups();
@@ -688,7 +681,6 @@ async function fillSettingsPage(): Promise<void> {
     }
   }
   setEventDisabled(false);
-  await Misc.sleep(0);
   await ThemePicker.refreshButtons();
   await UpdateConfig.loadPromise;
 }
