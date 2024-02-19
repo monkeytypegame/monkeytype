@@ -26,19 +26,26 @@ export class Formatting {
 
     const result = getTypingSpeedUnit(this.config.typingSpeedUnit).fromWpm(wpm);
 
-    return this.decimals(result, options);
+    return this.number(result, options);
   }
   percentage(
     percentage: number | null | undefined,
-    formatOptions: FormatOptions = FORMAT_DEFAULT_OPTIONS
+    formatOptions: FormatOptions = {}
   ): string {
     const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
     options.suffix = "%" + (options.suffix ?? "");
 
-    return this.decimals(percentage, options);
+    return this.number(percentage, options);
   }
 
-  private decimals(
+  decimals(
+    value: number | null | undefined,
+    formatOptions: FormatOptions = {}
+  ): string {
+    const options = { ...FORMAT_DEFAULT_OPTIONS, ...formatOptions };
+    return this.number(value, options);
+  }
+  private number(
     value: number | null | undefined,
     formatOptions: FormatOptions
   ): string {

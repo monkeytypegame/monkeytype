@@ -219,19 +219,19 @@ function updateWpmAndAcc(): void {
     inf = true;
   }
 
-  if (Config.alwaysShowDecimalPlaces) {
-    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
-    if (inf) {
-      $("#result .stats .wpm .bottom").text("Infinite");
-    } else {
-      $("#result .stats .wpm .bottom").text(
-        Format.typingSpeed(result.wpm, { showDecimalPlaces: true })
-      );
-    }
-    $("#result .stats .raw .bottom").text(
-      Format.typingSpeed(result.rawWpm, { showDecimalPlaces: true })
-    );
+  $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
 
+  if (inf) {
+    $("#result .stats .wpm .bottom").text("Infinite");
+  } else {
+    $("#result .stats .wpm .bottom").text(Format.typingSpeed(result.wpm));
+  }
+  $("#result .stats .raw .bottom").text(Format.typingSpeed(result.rawWpm));
+  $("#result .stats .acc .bottom").text(
+    result.acc === 100 ? "100%" : Format.percentage(result.acc)
+  );
+
+  if (Config.alwaysShowDecimalPlaces) {
     if (Config.typingSpeedUnit != "wpm") {
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
@@ -246,11 +246,6 @@ function updateWpmAndAcc(): void {
       $("#result .stats .raw .bottom").removeAttr("aria-label");
     }
 
-    $("#result .stats .acc .bottom").text(
-      result.acc === 100
-        ? "100%"
-        : Format.percentage(result.acc, { showDecimalPlaces: true })
-    );
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
       time = Misc.secondsToString(Misc.roundTo2(result.testDuration));
@@ -276,23 +271,9 @@ function updateWpmAndAcc(): void {
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
     }
 
-    $("#result .stats .wpm .top .text").text(Config.typingSpeedUnit);
     $("#result .stats .wpm .bottom").attr("aria-label", wpmHover);
-    if (inf) {
-      $("#result .stats .wpm .bottom").text("Infinite");
-    } else {
-      $("#result .stats .wpm .bottom").text(
-        Format.typingSpeed(result.wpm, { showDecimalPlaces: false })
-      );
-    }
-    $("#result .stats .raw .bottom").text(
-      Format.typingSpeed(result.rawWpm, { showDecimalPlaces: false })
-    );
     $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
-    $("#result .stats .acc .bottom").text(
-      Format.percentage(result.acc, { showDecimalPlaces: false })
-    );
     $("#result .stats .acc .bottom").attr(
       "aria-label",
       `${
@@ -338,6 +319,7 @@ function updateTime(): void {
     "aria-label",
     `${result.afkDuration}s afk ${afkSecondsPercent}%`
   );
+
   if (Config.alwaysShowDecimalPlaces) {
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
