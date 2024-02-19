@@ -76,11 +76,7 @@ export async function resetUser(uid: string): Promise<void> {
         profileDetails: {
           bio: "",
           keyboard: "",
-          socialProfiles: {
-            github: "",
-            twitter: "",
-            website: "",
-          },
+          socialProfiles: {},
         },
         favoriteQuotes: {},
         customThemes: [],

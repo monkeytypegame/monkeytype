@@ -33,6 +33,7 @@ declare namespace MonkeyTypes {
     canReport?: boolean;
     lastNameChange?: number;
     canManageApeKeys?: boolean;
+    bananas?: number;
   };
 
   type DBCustomTheme = WithObjectId<SharedTypes.CustomTheme>;
