@@ -1248,23 +1248,37 @@ $(".pageTest").on("click", "#saveScreenshotButton", () => {
 });
 
 $(".pageTest #copyWordsListButton").on("click", async () => {
+  let words;
+  if (Config.mode === "zen") {
+    words = TestInput.input.history.join(" ");
+  } else {
+    words = (TestWords.words.get() as string[])
+      .slice(0, TestInput.input.history.length)
+      .join(" ");
+  }
+  await copyToClipboard(words);
+});
+
+$(".pageTest #copyMissedWordsListButton").on("click", async () => {
+  let words;
+  if (Config.mode === "zen") {
+    words = TestInput.input.history.join(" ");
+  } else {
+    words = Object.keys(TestInput.missedWords ?? {}).join(" ");
+  }
+  await copyToClipboard(words);
+});
+
+async function copyToClipboard(content: string): Promise<void> {
   try {
-    let words;
-    if (Config.mode === "zen") {
-      words = TestInput.input.history.join(" ");
-    } else {
-      words = (TestWords.words.get() as string[])
-        .slice(0, TestInput.input.history.length)
-        .join(" ");
-    }
-    await navigator.clipboard.writeText(words);
+    await navigator.clipboard.writeText(content);
     Notifications.add("Copied to clipboard", 0, {
       duration: 2,
     });
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
-});
+}
 
 $(".pageTest #toggleBurstHeatmap").on("click", async () => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
