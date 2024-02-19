@@ -459,4 +459,81 @@ declare namespace SharedTypes {
     xpBreakdown: Record<string, number>;
     streak: number;
   };
+
+  type UserStreak = {
+    lastResultTimestamp: number;
+    length: number;
+    maxLength: number;
+    hourOffset?: number;
+  };
+
+  type UserTag = {
+    _id: string;
+    name: string;
+    personalBests: PersonalBests;
+  };
+
+  type UserProfileDetails = {
+    bio: string;
+    keyboard: string;
+    socialProfiles: {
+      twitter: string;
+      github: string;
+      website: string;
+    };
+  };
+
+  type CustomTheme = {
+    _id: string;
+    name: string;
+    colors: string[];
+  };
+
+  type PremiumInfo = {
+    startTimestamp: number;
+    expirationTimestamp: number;
+  };
+
+  type UserQuoteRatings = Record<string, Record<string, number>>;
+
+  type UserLbMemory = Record<string, Record<string, Record<string, number>>>;
+
+  type UserInventory = {
+    badges: Badge[];
+  };
+
+  type Badge = {
+    id: number;
+    selected?: boolean;
+  };
+
+  type User = {
+    name: string;
+    email: string;
+    uid: string;
+    addedAt: number;
+    personalBests: PersonalBests;
+    lastReultHashes?: string[]; //todo: fix typo (its in the db too)
+    completedTests?: number;
+    startedTests?: number;
+    timeTyping?: number;
+    streak?: UserStreak;
+    xp?: number;
+    discordId?: string;
+    discordAvatar?: string;
+    tags?: UserTag[];
+    profileDetails?: UserProfileDetails;
+    customThemes?: CustomTheme[];
+    premium?: PremiumInfo;
+    quoteRatings?: UserQuoteRatings;
+    favoriteQuotes?: Record<string, string[]>;
+    lbMemory?: UserLbMemory;
+    inventory?: UserInventory;
+    banned?: boolean;
+    lbOptOut?: boolean;
+    verified?: boolean;
+    needsToChangeName?: boolean;
+    quoteMod?: boolean | string;
+    resultFilterPresets?: ResultFilters[];
+  };
 }

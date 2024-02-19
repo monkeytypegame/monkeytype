@@ -84,10 +84,17 @@ export async function initSnapshot(): Promise<
       };
     }
 
+    const userData = userResponse.data;
     const configData = configResponse.data;
     const presetsData = presetsResponse.data;
 
-    const [userData] = [userResponse].map((response) => response.data);
+    if (userData === null) {
+      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      throw {
+        message: "Request was successful but user data is null",
+        responseCode: 200,
+      };
+    }
 
     snap.name = userData.name;
     snap.personalBests = userData.personalBests;
@@ -110,15 +117,13 @@ export async function initSnapshot(): Promise<
     snap.discordAvatar = userData.discordAvatar;
     snap.needsToChangeName = userData.needsToChangeName;
     snap.typingStats = {
-      timeTyping: userData.timeTyping,
-      startedTests: userData.startedTests,
-      completedTests: userData.completedTests,
+      timeTyping: userData.timeTyping ?? 0,
+      startedTests: userData.startedTests ?? 0,
+      completedTests: userData.completedTests ?? 0,
     };
     snap.quoteMod = userData.quoteMod;
     snap.favoriteQuotes = userData.favoriteQuotes ?? {};
     snap.quoteRatings = userData.quoteRatings;
-    snap.favouriteThemes =
-      userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
     snap.details = userData.profileDetails;
     snap.addedAt = userData.addedAt;
     snap.inventory = userData.inventory;
@@ -133,13 +138,7 @@ export async function initSnapshot(): Promise<
     snap.streakHourOffset =
       hourOffset === undefined || hourOffset === null ? undefined : hourOffset;
 
-    if (
-      userData.lbMemory?.time15 !== undefined ||
-      userData.lbMemory?.time60 !== undefined
-    ) {
-      //old memory format
-      snap.lbMemory = {} as MonkeyTypes.LeaderboardMemory;
-    } else if (userData.lbMemory !== undefined) {
+    if (userData.lbMemory !== undefined) {
       snap.lbMemory = userData.lbMemory;
     }
     // if (ActivePage.get() === "loading") {
@@ -163,24 +162,43 @@ export async function initSnapshot(): Promise<
     // LoadingPage.updateText("Downloading tags...");
     snap.customThemes = userData.customThemes ?? [];
 
-    const userDataTags: MonkeyTypes.Tag[] = userData.tags ?? [];
+    // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
 
-    userDataTags.forEach((tag) => {
-      tag.display = tag.name.replaceAll("_", " ");
-      tag.personalBests ??= {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
+    // userDataTags.forEach((tag) => {
+    //   tag.display = tag.name.replaceAll("_", " ");
+    //   tag.personalBests ??= {
+    //     time: {},
+    //     words: {},
+    //     quote: {},
+    //     zen: {},
+    //     custom: {},
+    //   };
 
-      for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-        tag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
-      }
-    });
+    //   for (const mode of ["time", "words", "quote", "zen", "custom"]) {
+    //     tag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+    //   }
+    // });
 
-    snap.tags = userDataTags;
+    // snap.tags = userDataTags;
+
+    snap.tags =
+      userData.tags?.map((tag) => {
+        const newTag = {
+          ...tag,
+          display: tag.name.replaceAll("_", " "),
+          personalBests: {
+            time: {},
+            words: {},
+            quote: {},
+            zen: {},
+            custom: {},
+          },
+        };
+        for (const mode of ["time", "words", "quote", "zen", "custom"]) {
+          newTag.personalBests[mode as keyof SharedTypes.PersonalBests] ??= {};
+        }
+        return newTag;
+      }) ?? [];
 
     snap.tags = snap.tags?.sort((a, b) => {
       if (a.name > b.name) {
@@ -304,13 +322,17 @@ export async function getUserResults(offset?: number): Promise<boolean> {
 function _getCustomThemeById(
   themeID: string
 ): MonkeyTypes.CustomTheme | undefined {
-  return dbSnapshot?.customThemes.find((t) => t._id === themeID);
+  return dbSnapshot?.customThemes?.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
   theme: MonkeyTypes.RawCustomTheme
 ): Promise<boolean> {
   if (!dbSnapshot) return false;
+
+  if (dbSnapshot.customThemes === undefined) {
+    dbSnapshot.customThemes = [];
+  }
 
   if (dbSnapshot.customThemes.length >= 10) {
     Notifications.add("Too many custom themes!", 0);
@@ -339,7 +361,11 @@ export async function editCustomTheme(
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
-  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  if (dbSnapshot.customThemes === undefined) {
+    dbSnapshot.customThemes = [];
+  }
+
+  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) {
     Notifications.add(
       "Editing failed: Custom theme with id: " + themeId + " does not exist",
@@ -369,7 +395,7 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   if (!isAuthenticated()) return false;
   if (!dbSnapshot) return false;
 
-  const customTheme = dbSnapshot.customThemes.find((t) => t._id === themeId);
+  const customTheme = dbSnapshot.customThemes?.find((t) => t._id === themeId);
   if (!customTheme) return false;
 
   const response = await Ape.users.deleteCustomTheme(themeId);
@@ -378,7 +404,7 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
     return false;
   }
 
-  dbSnapshot.customThemes = dbSnapshot.customThemes.filter(
+  dbSnapshot.customThemes = dbSnapshot.customThemes?.filter(
     (t) => t._id !== themeId
   );
 
@@ -762,7 +788,7 @@ export async function saveLocalTagPB<M extends SharedTypes.Config.Mode>(
   function cont(): void {
     const filteredtag = dbSnapshot?.tags?.filter(
       (t) => t._id === tagId
-    )[0] as MonkeyTypes.Tag;
+    )[0] as MonkeyTypes.UserTag;
 
     filteredtag.personalBests ??= {
       time: {},
@@ -879,8 +905,14 @@ export async function updateLbMemory<M extends SharedTypes.Config.Mode>(
     if (snapshot.lbMemory[timeMode][timeMode2] === undefined) {
       snapshot.lbMemory[timeMode][timeMode2] = {};
     }
-    const current = snapshot.lbMemory[timeMode][timeMode2][language];
-    snapshot.lbMemory[timeMode][timeMode2][language] = rank;
+    const current = snapshot.lbMemory?.[timeMode]?.[timeMode2]?.[language];
+
+    //this is protected above so not sure why it would be undefined
+    const mem = snapshot.lbMemory[timeMode][timeMode2] as Record<
+      string,
+      number
+    >;
+    mem[language] = rank;
     if (api && current !== rank) {
       await Ape.users.updateLeaderboardMemory(mode, mode2, language, rank);
     }
@@ -914,25 +946,16 @@ export function updateLocalStats(started: number, time: number): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
   if (snapshot.typingStats === undefined) {
-    snapshot.typingStats = {} as MonkeyTypes.TypingStats;
+    snapshot.typingStats = {
+      timeTyping: 0,
+      startedTests: 0,
+      completedTests: 0,
+    };
   }
-  if (snapshot?.typingStats !== undefined) {
-    if (snapshot.typingStats.timeTyping === undefined) {
-      snapshot.typingStats.timeTyping = time;
-    } else {
-      snapshot.typingStats.timeTyping += time;
-    }
-    if (snapshot.typingStats.startedTests === undefined) {
-      snapshot.typingStats.startedTests = started;
-    } else {
-      snapshot.typingStats.startedTests += started;
-    }
-    if (snapshot.typingStats.completedTests === undefined) {
-      snapshot.typingStats.completedTests = 1;
-    } else {
-      snapshot.typingStats.completedTests += 1;
-    }
-  }
+
+  snapshot.typingStats.timeTyping += time;
+  snapshot.typingStats.startedTests += started;
+  snapshot.typingStats.completedTests += 1;
 
   setSnapshot(snapshot);
 }
@@ -948,7 +971,7 @@ export function addXp(xp: number): void {
   setSnapshot(snapshot);
 }
 
-export function addBadge(badge: MonkeyTypes.Badge): void {
+export function addBadge(badge: SharedTypes.Badge): void {
   const snapshot = getSnapshot();
   if (!snapshot) return;
 

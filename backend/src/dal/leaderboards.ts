@@ -70,7 +70,7 @@ export async function update(
   leaderboardUpdating[`${language}_${mode}_${mode2}`] = true;
   const start1 = performance.now();
   const lb = db
-    .collection<MonkeyTypes.User>("users")
+    .collection<MonkeyTypes.DBUser>("users")
     .aggregate<SharedTypes.LeaderboardEntry>(
       [
         {

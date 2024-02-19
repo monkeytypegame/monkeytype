@@ -805,7 +805,7 @@ $("footer").on("click", ".leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     if (!Config.customTheme) {
       if (isAuthenticated()) {
-        if ((DB.getSnapshot()?.customThemes.length ?? 0) < 1) {
+        if ((DB.getSnapshot()?.customThemes?.length ?? 0) < 1) {
           Notifications.add("No custom themes!", 0);
           UpdateConfig.setCustomTheme(false);
           // UpdateConfig.setCustomThemeId("");

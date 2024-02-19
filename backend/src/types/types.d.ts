@@ -20,16 +20,6 @@ declare namespace MonkeyTypes {
 
   // Data Model
 
-  type UserProfileDetails = {
-    bio?: string;
-    keyboard?: string;
-    socialProfiles: {
-      twitter?: string;
-      github?: string;
-      website?: string;
-    };
-  };
-
   type Reward<T> = {
     type: string;
     item: T;
@@ -42,8 +32,8 @@ declare namespace MonkeyTypes {
 
   type BadgeReward = {
     type: "badge";
-    item: Badge;
-  } & Reward<Badge>;
+    item: SharedTypes.Badge;
+  } & Reward<SharedTypes.Badge>;
 
   type AllRewards = XpReward | BadgeReward;
 
@@ -56,65 +46,66 @@ declare namespace MonkeyTypes {
     rewards: AllRewards[];
   };
 
-  type UserIpHistory = string[];
-
-  type User = {
-    autoBanTimestamps?: number[];
-    addedAt: number;
-    verified?: boolean;
-    bananas?: number;
-    completedTests?: number;
-    discordId?: string;
-    email: string;
-    lastNameChange?: number;
-    lbMemory?: object;
-    lbPersonalBests?: LbPersonalBests;
-    name: string;
-    customThemes?: CustomTheme[];
-    personalBests: SharedTypes.PersonalBests;
-    quoteRatings?: UserQuoteRatings;
-    startedTests?: number;
-    tags?: UserTag[];
-    timeTyping?: number;
-    uid: string;
-    quoteMod?: boolean;
-    configurationMod?: boolean;
-    admin?: boolean;
-    canReport?: boolean;
-    banned?: boolean;
-    canManageApeKeys?: boolean;
-    favoriteQuotes?: Record<string, string[]>;
-    needsToChangeName?: boolean;
-    discordAvatar?: string;
+  type DBUser = Omit<
+    SharedTypes.User,
+    "resultFilterPresets" | "tags" | "customThemes"
+  > & {
+    _id: ObjectId;
     resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;
-    profileDetails?: UserProfileDetails;
-    inventory?: UserInventory;
-    xp?: number;
+    tags?: DBUserTag[];
+    lbPersonalBests?: LbPersonalBests;
+    customThemes?: DBCustomTheme[];
+    autoBanTimestamps?: number[];
     inbox?: MonkeyMail[];
-    streak?: UserStreak;
-    lastReultHashes?: string[];
-    lbOptOut?: boolean;
-    premium?: PremiumInfo;
-    ips?: UserIpHistory;
+    ips?: string[];
+    canReport?: boolean;
+    lastNameChange?: number;
+    canManageApeKeys?: boolean;
   };
 
-  type UserStreak = {
-    lastResultTimestamp: number;
-    length: number;
-    maxLength: number;
-    hourOffset?: number;
-  };
+  type DBCustomTheme = WithObjectId<SharedTypes.CustomTheme>;
 
-  type UserInventory = {
-    badges: Badge[];
-  };
+  type DBUserTag = WithObjectId<SharedTypes.UserTag>;
 
-  type Badge = {
-    id: number;
-    selected?: boolean;
-  };
-
-  type UserQuoteRatings = Record<string, Record<string, number>>;
+  // type User = {
+  //   autoBanTimestamps?: number[];
+  //   addedAt: number;
+  //   verified?: boolean;
+  //   bananas?: number;
+  //   completedTests?: number;
+  //   discordId?: string;
+  //   email: string;
+  //   lastNameChange?: number;
+  //   lbMemory?: object;
+  //   lbPersonalBests?: LbPersonalBests;
+  //   name: string;
+  //   customThemes?: MonkeyTypes.WithObjectIdArray<SharedTypes.CustomTheme[]>;
+  //   personalBests: SharedTypes.PersonalBests;
+  //   quoteRatings?: SharedTypes.UserQuoteRatings;
+  //   startedTests?: number;
+  //   tags?: MonkeyTypes.WithObjectIdArray<SharedTypes.UserTag[]>;
+  //   timeTyping?: number;
+  //   uid: string;
+  //   quoteMod?: boolean;
+  //   configurationMod?: boolean;
+  //   admin?: boolean;
+  //   canReport?: boolean;
+  //   banned?: boolean;
+  //   canManageApeKeys?: boolean;
+  //   favoriteQuotes?: Record<string, string[]>;
+  //   needsToChangeName?: boolean;
+  //   discordAvatar?: string;
+  //   resultFilterPresets?: WithObjectIdArray<SharedTypes.ResultFilters[]>;
+  //   profileDetails?: SharedTypes.UserProfileDetails;
+  //   inventory?: SharedTypes.UserInventory;
+  //   xp?: number;
+  //   inbox?: MonkeyMail[];
+  //   streak?: SharedTypes.UserStreak;
+  //   lastReultHashes?: string[];
+  //   lbOptOut?: boolean;
+  //   premium?: SharedTypes.PremiumInfo;
+  //   ips?: UserIpHistory;
+  // };
 
   type LbPersonalBests = {
     time: Record<number, Record<string, SharedTypes.PersonalBest>>;
@@ -128,18 +119,6 @@ declare namespace MonkeyTypes {
     {
       _id: ObjectId;
     }[];
-
-  type UserTag = {
-    _id: ObjectId;
-    name: string;
-    personalBests: SharedTypes.PersonalBests;
-  };
-
-  type CustomTheme = {
-    _id: ObjectId;
-    name: string;
-    colors: string[];
-  };
 
   type ApeKeyDB = SharedTypes.ApeKey & {
     _id: ObjectId;
@@ -187,10 +166,5 @@ declare namespace MonkeyTypes {
     properties?: string[];
     frontendForcedConfig?: Record<string, string[] | boolean[]>;
     frontendFunctions?: string[];
-  };
-
-  type PremiumInfo = {
-    startTimestamp: number;
-    expirationTimestamp: number;
   };
 }

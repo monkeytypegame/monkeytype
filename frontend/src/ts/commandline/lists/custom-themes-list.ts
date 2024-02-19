@@ -33,7 +33,11 @@ export function update(): void {
 
   if (!snapshot) return;
 
-  if (snapshot.customThemes.length === 0) {
+  if (snapshot.customThemes === undefined) {
+    return;
+  }
+
+  if (snapshot.customThemes?.length === 0) {
     return;
   }
   snapshot.customThemes.forEach((theme) => {

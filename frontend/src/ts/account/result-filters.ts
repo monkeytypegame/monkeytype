@@ -299,7 +299,7 @@ function setAllFilters(
   });
 }
 
-export function loadTags(tags: MonkeyTypes.Tag[]): void {
+export function loadTags(tags: MonkeyTypes.UserTag[]): void {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });

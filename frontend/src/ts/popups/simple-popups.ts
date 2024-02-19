@@ -1539,7 +1539,7 @@ list.updateCustomTheme = new SimplePopup(
       };
     }
 
-    const customTheme = snapshot.customThemes.find(
+    const customTheme = snapshot.customThemes?.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (customTheme === undefined) {
@@ -1585,7 +1585,7 @@ list.updateCustomTheme = new SimplePopup(
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
-    const customTheme = snapshot.customThemes.find(
+    const customTheme = snapshot.customThemes?.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (!customTheme) return;

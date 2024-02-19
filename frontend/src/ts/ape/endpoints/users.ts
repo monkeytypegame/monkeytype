@@ -5,7 +5,7 @@ export default class Users {
     this.httpClient = httpClient;
   }
 
-  async getData(): Ape.EndpointResponse {
+  async getData(): Ape.EndpointResponse<Ape.Users.GetUser> {
     return await this.httpClient.get(BASE_PATH);
   }
 
@@ -203,7 +203,7 @@ export default class Users {
   }
 
   async updateProfile(
-    profileUpdates: Partial<MonkeyTypes.UserDetails>,
+    profileUpdates: Partial<SharedTypes.UserProfileDetails>,
     selectedBadgeId?: number
   ): Promise<Ape.EndpointResponse> {
     return await this.httpClient.patch(`${BASE_PATH}/profile`, {
