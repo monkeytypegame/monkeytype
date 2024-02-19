@@ -18,34 +18,6 @@ declare namespace MonkeyTypes {
     ctx: Readonly<Context>;
   } & ExpressRequest;
 
-  // Data Model
-
-  type Reward<T> = {
-    type: string;
-    item: T;
-  };
-
-  type XpReward = {
-    type: "xp";
-    item: number;
-  } & Reward<number>;
-
-  type BadgeReward = {
-    type: "badge";
-    item: SharedTypes.Badge;
-  } & Reward<SharedTypes.Badge>;
-
-  type AllRewards = XpReward | BadgeReward;
-
-  type MonkeyMail = {
-    id: string;
-    subject: string;
-    body: string;
-    timestamp: number;
-    read: boolean;
-    rewards: AllRewards[];
-  };
-
   type DBUser = Omit<
     SharedTypes.User,
     "resultFilterPresets" | "tags" | "customThemes"
@@ -56,7 +28,7 @@ declare namespace MonkeyTypes {
     lbPersonalBests?: LbPersonalBests;
     customThemes?: DBCustomTheme[];
     autoBanTimestamps?: number[];
-    inbox?: MonkeyMail[];
+    inbox?: SharedTypes.MonkeyMail[];
     ips?: string[];
     canReport?: boolean;
     lastNameChange?: number;

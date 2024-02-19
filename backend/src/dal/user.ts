@@ -852,7 +852,7 @@ export async function getInbox(
 
 type AddToInboxBulkEntry = {
   uid: string;
-  mail: MonkeyTypes.MonkeyMail[];
+  mail: SharedTypes.MonkeyMail[];
 };
 
 export async function addToInboxBulk(
@@ -884,7 +884,7 @@ export async function addToInboxBulk(
 
 export async function addToInbox(
   uid: string,
-  mail: MonkeyTypes.MonkeyMail[],
+  mail: SharedTypes.MonkeyMail[],
   inboxConfig: SharedTypes.Configuration["users"]["inbox"]
 ): Promise<void> {
   const { enabled, maxMail } = inboxConfig;
@@ -910,7 +910,7 @@ export async function addToInbox(
 }
 
 function buildRewardUpdates(
-  rewards: MonkeyTypes.AllRewards[],
+  rewards: SharedTypes.AllRewards[],
   inventoryIsNull = false
 ): UpdateFilter<MonkeyTypes.DBUser> {
   let totalXp = 0;
@@ -962,7 +962,7 @@ export async function updateInbox(
   const mailToReadSet = new Set(mailToRead);
   const mailToDeleteSet = new Set(mailToDelete);
 
-  const allRewards: MonkeyTypes.AllRewards[] = [];
+  const allRewards: SharedTypes.AllRewards[] = [];
 
   const newInbox = inbox
     .filter((mail) => {

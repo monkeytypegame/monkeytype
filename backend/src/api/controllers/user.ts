@@ -785,7 +785,7 @@ export async function getProfile(
     details: profileDetails,
     allTimeLbs: alltimelbs,
     uid: user.uid,
-  };
+  } as SharedTypes.UserProfile;
 
   return new MonkeyResponse("Profile retrieved", profileData);
 }

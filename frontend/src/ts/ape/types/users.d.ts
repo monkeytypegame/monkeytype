@@ -5,4 +5,14 @@ declare namespace Ape.Users {
     inboxUnreadSize: number;
     isPremium: boolean;
   };
+  type GetOauthLink = {
+    url: string;
+  };
+  type LinkDiscord = {
+    discordId: string;
+    discordAvatar: string;
+  };
+  type GetInbox = {
+    inbox: SharedTypes.MonkeyMail[] | undefined;
+  };
 }

@@ -536,4 +536,65 @@ declare namespace SharedTypes {
     quoteMod?: boolean | string;
     resultFilterPresets?: ResultFilters[];
   };
+
+  type Reward<T> = {
+    type: string;
+    item: T;
+  };
+
+  type XpReward = {
+    type: "xp";
+    item: number;
+  } & Reward<number>;
+
+  type BadgeReward = {
+    type: "badge";
+    item: SharedTypes.Badge;
+  } & Reward<SharedTypes.Badge>;
+
+  type AllRewards = XpReward | BadgeReward;
+
+  type MonkeyMail = {
+    id: string;
+    subject: string;
+    body: string;
+    timestamp: number;
+    read: boolean;
+    rewards: AllRewards[];
+  };
+
+  type UserProfile = Pick<
+    User,
+    | "name"
+    | "banned"
+    | "addedAt"
+    | "discordId"
+    | "discordAvatar"
+    | "xp"
+    | "lbOptOut"
+    | "inventory"
+    | "uid"
+  > & {
+    typingStats: {
+      completedTests: User["completedTests"];
+      startedTests: User["startedTests"];
+      timeTyping: User["timeTyping"];
+    };
+    streak: UserStreak["length"];
+    maxStreak: UserStreak["maxLength"];
+    details: UserProfileDetails;
+    allTimeLbs: {
+      time: Record<string, Record<string, number | null>>;
+    };
+    personalBests: {
+      time: Pick<
+        Record<`${number}`, SharedTypes.PersonalBest[]>,
+        "15" | "30" | "60" | "120"
+      >;
+      words: Pick<
+        Record<`${number}`, SharedTypes.PersonalBest[]>,
+        "10" | "25" | "50" | "100"
+      >;
+    };
+  };
 }
