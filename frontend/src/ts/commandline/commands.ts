@@ -101,8 +101,6 @@ import * as ShareTestSettingsPopup from "../popups/share-test-settings-popup";
 import * as TestStats from "../test/test-stats";
 import * as QuoteSearchPopup from "../popups/quote-search-popup";
 import * as FPSCounter from "../elements/fps-counter";
-import * as TestInput from "../test/test-input";
-import * as TestWords from "../test/test-words";
 
 Misc.getLayoutsList()
   .then((layouts) => {
@@ -422,16 +420,7 @@ export const commands: MonkeyTypes.CommandsSubgroup = {
       visible: false,
       exec: async (): Promise<void> => {
         navigator.clipboard
-          .writeText(
-            JSON.stringify({
-              ...(TestStats.getStats() as object),
-              testWords: TestWords.words.list.slice(
-                0,
-                TestInput.input.history.length
-              ),
-              wordsHistory: TestInput.input.history,
-            })
-          )
+          .writeText(JSON.stringify(TestStats.getStats()))
           .then(() => {
             Notifications.add("Copied to clipboard", 1);
           })
