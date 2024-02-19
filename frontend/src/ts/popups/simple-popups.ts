@@ -434,8 +434,9 @@ async function reauthenticate(
   const user = getAuthenticatedUser();
 
   try {
-    const passwordAuthEnabled =
-      user.providerData.some((p) => p?.providerId === "password") !== undefined;
+    const passwordAuthEnabled = user.providerData.some(
+      (p) => p?.providerId === "password"
+    );
 
     if (!passwordAuthEnabled && method === "passwordOnly") {
       return {
@@ -1048,35 +1049,28 @@ list.clearTagPb = new SimplePopup(
       };
     }
 
-    if (response.data.resultCode === 1) {
-      const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
+    const tag = DB.getSnapshot()?.tags?.filter((t) => t._id === tagId)[0];
 
-      if (tag === undefined) {
-        return {
-          status: -1,
-          message: "Tag not found",
-        };
-      }
-      tag.personalBests = {
-        time: {},
-        words: {},
-        quote: {},
-        zen: {},
-        custom: {},
-      };
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
-      ).attr("aria-label", "No PB found");
-      return {
-        status: 1,
-        message: "Tag PB cleared",
-      };
-    } else {
+    if (tag === undefined) {
       return {
         status: -1,
-        message: "Failed to clear tag PB: " + response.data.message,
+        message: "Tag not found",
       };
     }
+    tag.personalBests = {
+      time: {},
+      words: {},
+      quote: {},
+      zen: {},
+      custom: {},
+    };
+    $(
+      `.pageSettings .section.tags .tagsList .tag[id="${tagId}"] .clearPbButton`
+    ).attr("aria-label", "No PB found");
+    return {
+      status: 1,
+      message: "Tag PB cleared",
+    };
   },
   (thisPopup) => {
     thisPopup.text = `Are you sure you want to clear PB for tag ${thisPopup.parameters[1]}?`;
@@ -1538,7 +1532,7 @@ list.updateCustomTheme = new SimplePopup(
       };
     }
 
-    const customTheme = snapshot.customThemes.find(
+    const customTheme = snapshot.customThemes?.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (customTheme === undefined) {
@@ -1584,7 +1578,7 @@ list.updateCustomTheme = new SimplePopup(
     const snapshot = DB.getSnapshot();
     if (!snapshot) return;
 
-    const customTheme = snapshot.customThemes.find(
+    const customTheme = snapshot.customThemes?.find(
       (t) => t._id === _thisPopup.parameters[0]
     );
     if (!customTheme) return;

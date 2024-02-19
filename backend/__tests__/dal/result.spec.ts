@@ -15,7 +15,8 @@ async function createDummyData(
   timestamp: number,
   tag?: string
 ): Promise<void> {
-  const dummyUser: MonkeyTypes.User = {
+  const dummyUser: MonkeyTypes.DBUser = {
+    _id: new ObjectId(),
     uid,
     addedAt: 0,
     email: "test@example.com",

@@ -28,7 +28,6 @@ import * as TestWords from "../test/test-words";
 import * as Hangul from "hangul-js";
 import * as CustomTextState from "../states/custom-text-name";
 import * as FunboxList from "../test/funbox/funbox-list";
-import * as Settings from "../pages/settings";
 import * as KeymapEvent from "../observables/keymap-event";
 import { IgnoredKeys } from "../constants/ignored-keys";
 import { ModifierKeys } from "../constants/modifier-keys";
@@ -193,7 +192,6 @@ function handleSpace(): void {
       f.functions.handleSpace();
     }
   }
-  Settings.groups["layout"]?.updateUI();
 
   dontInsertSpace = true;
 

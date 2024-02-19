@@ -157,7 +157,7 @@ describe("LeaderboardsDal", () => {
   });
 });
 
-function expectedLbEntry(rank: number, user: MonkeyTypes.User, time: string) {
+function expectedLbEntry(rank: number, user: MonkeyTypes.DBUser, time: string) {
   const lbBest: SharedTypes.PersonalBest =
     user.lbPersonalBests?.time[time].english;
 
@@ -178,13 +178,13 @@ function expectedLbEntry(rank: number, user: MonkeyTypes.User, time: string) {
 
 async function createUser(
   lbPersonalBests?: MonkeyTypes.LbPersonalBests,
-  userProperties?: Partial<MonkeyTypes.User>
-): Promise<MonkeyTypes.User> {
+  userProperties?: Partial<MonkeyTypes.DBUser>
+): Promise<MonkeyTypes.DBUser> {
   const uid = new ObjectId().toHexString();
   await UserDal.addUser("User " + uid, uid + "@example.com", uid);
 
   await DB.getDb()
-    ?.collection<MonkeyTypes.User>("users")
+    ?.collection<MonkeyTypes.DBUser>("users")
     .updateOne(
       { uid },
       {

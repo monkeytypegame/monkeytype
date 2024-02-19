@@ -26,8 +26,7 @@ declare namespace Ape {
     data: TData | null;
   };
 
-  // todo: remove any after all ape endpoints are typed
-  type EndpointResponse<TData = any> = Promise<HttpClientResponse<TData>>;
+  type EndpointResponse<TData> = Promise<HttpClientResponse<TData>>;
 
   type HttpClient = {
     get: HttpClientMethod;

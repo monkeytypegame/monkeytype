@@ -262,7 +262,7 @@ async function changeThemeList(): Promise<void> {
       return t.name;
     });
   } else if (Config.randomTheme === "custom" && DB.getSnapshot()) {
-    themesList = DB.getSnapshot()?.customThemes.map((ct) => ct._id) ?? [];
+    themesList = DB.getSnapshot()?.customThemes?.map((ct) => ct._id) ?? [];
   }
   Misc.shuffle(themesList);
   randomThemeIndex = 0;
@@ -284,7 +284,7 @@ export async function randomizeTheme(): Promise<void> {
   let colorsOverride: string[] | undefined;
 
   if (Config.randomTheme === "custom") {
-    const theme = DB.getSnapshot()?.customThemes.find(
+    const theme = DB.getSnapshot()?.customThemes?.find(
       (ct) => ct._id === randomTheme
     );
     colorsOverride = theme?.colors;
@@ -297,7 +297,7 @@ export async function randomizeTheme(): Promise<void> {
     let name = randomTheme.replace(/_/g, " ");
     if (Config.randomTheme === "custom") {
       name = (
-        DB.getSnapshot()?.customThemes.find((ct) => ct._id === randomTheme)
+        DB.getSnapshot()?.customThemes?.find((ct) => ct._id === randomTheme)
           ?.name ?? "custom"
       ).replace(/_/g, " ");
     }

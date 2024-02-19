@@ -13,7 +13,7 @@ export async function addResult(
   uid: string,
   result: DBResult
 ): Promise<{ insertedId: ObjectId }> {
-  let user: MonkeyTypes.User | null = null;
+  let user: MonkeyTypes.DBUser | null = null;
   try {
     user = await getUser(uid, "add result");
   } catch (e) {

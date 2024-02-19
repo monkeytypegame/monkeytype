@@ -100,6 +100,12 @@ async function apply(): Promise<void> {
         -1
       );
     } else {
+      if (response.data === null) {
+        Notifications.add("Tag was added but data returned was null", -1);
+        Loader.hide();
+        return;
+      }
+
       Notifications.add("Tag added", 1);
       DB.getSnapshot()?.tags?.push({
         display: propTagName,
