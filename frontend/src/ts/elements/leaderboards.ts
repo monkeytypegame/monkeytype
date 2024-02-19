@@ -10,7 +10,7 @@ import { getHTMLById as getBadgeHTMLbyId } from "../controllers/badge-controller
 import * as ConnectionState from "../states/connection";
 import * as Skeleton from "../popups/skeleton";
 import { debounce } from "throttle-debounce";
-import * as Format from "../utils/format";
+import Format from "../utils/format";
 
 const wrapperId = "leaderboardsWrapper";
 

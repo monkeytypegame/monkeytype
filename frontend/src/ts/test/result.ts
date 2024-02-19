@@ -26,6 +26,7 @@ import * as Focus from "./focus";
 import * as CustomText from "./custom-text";
 import * as CustomTextState from "./../states/custom-text-name";
 import * as Funbox from "./funbox/funbox";
+import Format from "../utils/format";
 
 import confetti from "canvas-confetti";
 import type { AnnotationOptions } from "chartjs-plugin-annotation";
@@ -214,7 +215,6 @@ export async function updateGraphPBLine(): Promise<void> {
 
 function updateWpmAndAcc(): void {
   let inf = false;
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   if (result.wpm >= 1000) {
     inf = true;
   }
@@ -225,11 +225,11 @@ function updateWpmAndAcc(): void {
       $("#result .stats .wpm .bottom").text("Infinite");
     } else {
       $("#result .stats .wpm .bottom").text(
-        Misc.roundTo2(typingSpeedUnit.fromWpm(result.wpm)).toFixed(2)
+        Format.typingSpeed(result.wpm, { showDecimalPlaces: true })
       );
     }
     $("#result .stats .raw .bottom").text(
-      Misc.roundTo2(typingSpeedUnit.fromWpm(result.rawWpm)).toFixed(2)
+      Format.typingSpeed(result.rawWpm, { showDecimalPlaces: true })
     );
 
     if (Config.typingSpeedUnit != "wpm") {
@@ -247,7 +247,9 @@ function updateWpmAndAcc(): void {
     }
 
     $("#result .stats .acc .bottom").text(
-      result.acc === 100 ? "100%" : Misc.roundTo2(result.acc).toFixed(2) + "%"
+      result.acc === 100
+        ? "100%"
+        : Format.percentage(result.acc, { showDecimalPlaces: true })
     );
     let time = Misc.roundTo2(result.testDuration).toFixed(2) + "s";
     if (result.testDuration > 61) {
@@ -262,11 +264,13 @@ function updateWpmAndAcc(): void {
     );
   } else {
     //not showing decimal places
-    let wpmHover = typingSpeedUnit.convertWithUnitSuffix(result.wpm, true);
-    let rawWpmHover = typingSpeedUnit.convertWithUnitSuffix(
-      result.rawWpm,
-      true
-    );
+    const decimalsAndSuffix = {
+      showDecimalPlaces: true,
+      suffix: ` ${Config.typingSpeedUnit}`,
+    };
+    let wpmHover = Format.typingSpeed(result.wpm, decimalsAndSuffix);
+    let rawWpmHover = Format.typingSpeed(result.rawWpm, decimalsAndSuffix);
+
     if (Config.typingSpeedUnit != "wpm") {
       wpmHover += " (" + result.wpm.toFixed(2) + " wpm)";
       rawWpmHover += " (" + result.rawWpm.toFixed(2) + " wpm)";
@@ -278,37 +282,43 @@ function updateWpmAndAcc(): void {
       $("#result .stats .wpm .bottom").text("Infinite");
     } else {
       $("#result .stats .wpm .bottom").text(
-        Math.round(typingSpeedUnit.fromWpm(result.wpm))
+        Format.typingSpeed(result.wpm, { showDecimalPlaces: false })
       );
     }
     $("#result .stats .raw .bottom").text(
-      Math.round(typingSpeedUnit.fromWpm(result.rawWpm))
+      Format.typingSpeed(result.rawWpm, { showDecimalPlaces: false })
     );
     $("#result .stats .raw .bottom").attr("aria-label", rawWpmHover);
 
-    $("#result .stats .acc .bottom").text(Math.floor(result.acc) + "%");
+    $("#result .stats .acc .bottom").text(
+      Format.percentage(result.acc, { showDecimalPlaces: false })
+    );
     $("#result .stats .acc .bottom").attr(
       "aria-label",
-      `${result.acc === 100 ? "100" : Misc.roundTo2(result.acc).toFixed(2)}% (${
-        TestInput.accuracy.correct
-      } correct / ${TestInput.accuracy.incorrect} incorrect)`
+      `${
+        result.acc === 100
+          ? "100"
+          : Format.percentage(result.acc, { showDecimalPlaces: true })
+      } (${TestInput.accuracy.correct} correct / ${
+        TestInput.accuracy.incorrect
+      } incorrect)`
     );
   }
 }
 
 function updateConsistency(): void {
+  $("#result .stats .consistency .bottom").text(
+    Format.percentage(result.consistency)
+  );
   if (Config.alwaysShowDecimalPlaces) {
-    $("#result .stats .consistency .bottom").text(
-      Misc.roundTo2(result.consistency).toFixed(2) + "%"
-    );
     $("#result .stats .consistency .bottom").attr(
       "aria-label",
-      `${result.keyConsistency.toFixed(2)}% key`
+      Format.percentage(result.keyConsistency, {
+        showDecimalPlaces: true,
+        suffix: " key",
+      })
     );
   } else {
-    $("#result .stats .consistency .bottom").text(
-      Math.round(result.consistency) + "%"
-    );
     $("#result .stats .consistency .bottom").attr(
       "aria-label",
       `${result.consistency}% (${result.keyConsistency}% key)`
@@ -417,11 +427,10 @@ export async function updateCrown(): Promise<void> {
     Config.lazyMode,
     Config.funbox
   );
-  const typingSpeedUnit = getTypingSpeedUnit(Config.typingSpeedUnit);
   pbDiff = Math.abs(result.wpm - lpb);
   $("#result .stats .wpm .crown").attr(
     "aria-label",
-    "+" + Misc.roundTo2(typingSpeedUnit.fromWpm(pbDiff))
+    "+" + Format.typingSpeed(pbDiff, { showDecimalPlaces: true })
   );
 }
 

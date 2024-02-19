@@ -8,7 +8,7 @@ import * as ConfigEvent from "../observables/config-event";
 import { isAuthenticated } from "../firebase";
 import * as CustomTextState from "../states/custom-text-name";
 import { getLanguageDisplayString } from "../utils/misc";
-import * as Format from "../utils/format";
+import Format from "../utils/format";
 
 ConfigEvent.subscribe((eventKey) => {
   if (
@@ -154,11 +154,11 @@ export async function update(): Promise<void> {
 
     if (isAuthenticated() && avgWPM > 0) {
       const avgWPMText = ["speed", "both"].includes(Config.showAverage)
-        ? Format.typingSpeed(avgWPM)
+        ? Format.typingSpeed(avgWPM, { suffix: ` ${Config.typingSpeedUnit}` })
         : "";
 
       const avgAccText = ["acc", "both"].includes(Config.showAverage)
-        ? `${avgAcc}% acc`
+        ? Format.percentage(avgAcc, { suffix: " acc" })
         : "";
 
       const text = `${avgWPMText} ${avgAccText}`.trim();

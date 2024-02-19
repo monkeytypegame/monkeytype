@@ -1,5 +1,3 @@
-import { roundTo2 } from "../utils/misc";
-
 class Unit implements MonkeyTypes.TypingSpeedUnitSettings {
   unit: SharedTypes.Config.TypingSpeedUnit;
   convertFactor: number;
@@ -27,14 +25,6 @@ class Unit implements MonkeyTypes.TypingSpeedUnitSettings {
 
   toWpm(val: number): number {
     return val / this.convertFactor;
-  }
-
-  convertWithUnitSuffix(wpm: number, withDecimals: boolean): string {
-    if (withDecimals) {
-      return roundTo2(this.fromWpm(wpm)).toFixed(2) + " " + this.unit;
-    } else {
-      return Math.round(this.fromWpm(wpm)) + " " + this.unit;
-    }
   }
 }
 

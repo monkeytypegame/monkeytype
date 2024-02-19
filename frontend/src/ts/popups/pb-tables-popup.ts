@@ -3,7 +3,7 @@ import format from "date-fns/format";
 import * as Skeleton from "./skeleton";
 import { getLanguageDisplayString, isPopupVisible } from "../utils/misc";
 import Config from "../config";
-import * as Format from "../utils/format";
+import Format from "../utils/format";
 
 type PersonalBest = {
   mode2: SharedTypes.Config.Mode2<SharedTypes.Config.Mode>;

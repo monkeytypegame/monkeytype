@@ -38,7 +38,7 @@ export class Formatting {
     return this.decimals(percentage, options);
   }
 
-  decimals(
+  private decimals(
     value: number | null | undefined,
     formatOptions: FormatOptions
   ): string {

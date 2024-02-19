@@ -22,7 +22,7 @@ import { debounce } from "throttle-debounce";
 import * as ResultWordHighlight from "../elements/result-word-highlight";
 import * as ActivePage from "../states/active-page";
 import html2canvas from "html2canvas";
-import * as Format from "../utils/format";
+import Format from "../utils/format";
 
 const debouncedZipfCheck = debounce(250, async () => {
   const supports = await Misc.checkIfLanguageSupportsZipf(Config.language);

@@ -1,7 +1,7 @@
 import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
-import * as Format from "../utils/format";
+import Format from "../utils/format";
 
 export async function update(burst: number): Promise<void> {
   if (!Config.showLiveBurst) return;

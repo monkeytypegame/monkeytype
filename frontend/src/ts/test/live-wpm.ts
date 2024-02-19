@@ -1,7 +1,7 @@
 import Config from "../config";
 import * as TestState from "../test/test-state";
 import * as ConfigEvent from "../observables/config-event";
-import * as Format from "../utils/format";
+import Format from "../utils/format";
 
 const liveWpmElement = document.querySelector("#liveWpm") as Element;
 const miniLiveWpmElement = document.querySelector(

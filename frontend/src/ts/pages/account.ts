@@ -23,7 +23,7 @@ import * as ActivePage from "../states/active-page";
 import { Auth } from "../firebase";
 import * as Loader from "../elements/loader";
 import * as ResultBatches from "../elements/result-batches";
-import * as Format from "../utils/format";
+import Format from "../utils/format";
 
 let filterDebug = false;
 //toggle filterdebug
